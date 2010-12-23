@@ -21,6 +21,8 @@
 
 #include <cstring>
 
+#include "constants.h"
+
 namespace Magnum {
 
 /** @brief Matrix */
@@ -85,7 +87,12 @@ template<class T, size_t size> class Matrix {
 
         /** @brief Equality operator */
         inline bool operator==(const Matrix<T, size>& other) const {
-            return memcmp(_data, other.data(), size*size*sizeof(T)) == 0;
+            for(size_t row = 0; row != size; ++row) {
+                for(size_t col = 0; col != size; ++col)
+                    if(std::abs(at(col, row) - other.at(col, row)) >= EPSILON) return false;
+            }
+
+            return true;
         }
 
         /** @brief Non-equality operator */
