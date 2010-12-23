@@ -79,7 +79,7 @@ void MatrixTest::copy() {
     /* Copy */
     Matrix4 m2(m1);
     Matrix4 m3;
-    m3.set(0, 0, 1.0f);
+    m3.set(0, 0, 1.0f); /* this line is here so it's not optimized to Matrix4 m3(m1) */
     m3 = m1;
 
     /* Change original */
@@ -89,7 +89,8 @@ void MatrixTest::copy() {
     Matrix4 original(false);
     original.set(2, 3, 1.0f);
 
-    QVERIFY(m2 == original && m3 == original);
+    QVERIFY(m2 == original);
+    QVERIFY(m3 == original);
 }
 
 void MatrixTest::multiplyIdentity() {
@@ -105,31 +106,31 @@ void MatrixTest::multiplyIdentity() {
 }
 
 void MatrixTest::multiply() {
-    float left[] = {
-         -3,  -1,  -1,  -5,   1,
-         -3,  -3,  -4,  -5,   3,
-         -1,  -5,   3,  -1,  -3,
-          3,   2,  -1,  -4,  -4,
-         -5,   3,  -2,  -1,  -1
+    int left[] = {
+         -3,  -3,  -1,   3,  -5,
+         -1,  -3,  -5,   2,   3,
+         -1,  -4,   3,  -1,  -2,
+         -5,  -5,  -1,  -4,  -1,
+          1,   3,  -3,  -4,  -1
     };
 
-    float right[] = {
-          0,   5,   3,  -3,   0,
-          5,   5,   2,   0,  -1,
-          3,   0,  -4,  -1,  -4,
-          4,   0,  -3,   2,   4,
-          4,  -2,   0,  -1,   3
+    int right[] = {
+          0,   5,   3,   4,   4,
+          5,   5,   0,   0,  -2,
+          3,   2,  -4,  -3,   0,
+         -3,   0,  -1,   2,  -1,
+          0,  -1,  -4,   4,   3
     };
 
-    float expected[] = {
-        -24, -22,   8,  -1, -12,
-        -35, -36,  16,   0,   8,
-        -32, -24, -22,   1, -20,
-        -25,  33,  29, -12, -26,
-          1,  -8,   2,  16,  -2
+    int expected[] = {
+        -24, -35, -32, -25,   1,
+        -22, -36, -24,  33,  -8,
+          8,  16, -22,  29,   2,
+         -1,   0,   1, -12,  16,
+        -12,   8, -20, -26,  -2
     };
 
-    bool is = Matrix<int, 5>(left)*Matrix<int, 5>(right) == Matrix<int, 5>(expected);
+    bool is = (Matrix<int, 5>(left)*Matrix<int, 5>(right) == Matrix<int, 5>(expected));
 
     QVERIFY(is);
 }

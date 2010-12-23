@@ -39,7 +39,7 @@ template<class T, size_t size> class Matrix {
 
         /**
          * @brief Constructor
-         * @param data  One-dimensional array of size*size length in column-major order.
+         * @param data  One-dimensional array of @c size*size length in column-major order.
          */
         inline Matrix(const T* data) { setData(data); }
 
@@ -56,13 +56,13 @@ template<class T, size_t size> class Matrix {
 
         /**
          * @brief Raw data
-         * @return One-dimensional array of size*size length in column-major order.
+         * @return One-dimensional array of @c size*size length in column-major order.
          */
         inline const T* data() const { return _data; }
 
         /**
          * @brief Set raw data
-         * @param data One-dimensional array of size*size length in column-major order.
+         * @param data One-dimensional array of @c size*size length in column-major order.
          */
         inline void setData(const T* data) {
             memcpy(_data, data, size*size*sizeof(T));
@@ -93,14 +93,14 @@ template<class T, size_t size> class Matrix {
             return !operator==(other);
         }
 
-        /** @brief Multiply operator */
+        /** @brief Multiply matrix operator */
         Matrix<T, size> operator*(const Matrix<T, size>& other) const {
             Matrix<T, size> out(false);
 
-            for(size_t col = 0; col != size; ++col) {
-                for(size_t row = 0; row != size; ++row) {
+            for(size_t row = 0; row != size; ++row) {
+                for(size_t col = 0; col != size; ++col) {
                     for(size_t pos = 0; pos != size; ++pos)
-                        out.add(col, row, at(col, pos)*other.at(pos, row));
+                        out.add(col, row, at(pos, row)*other.at(col, pos));
                 }
             }
 
