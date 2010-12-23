@@ -25,7 +25,15 @@
 
 namespace Magnum {
 
-/** @brief Matrix 4x4 */
+/**
+ * @brief Matrix 4x4
+ *
+ * @todo @c PERFORMANCE - make (T,T,T) - (Vec3&lt;T&gt;) alternatives calling
+ *      direction based on statistics, which is used more frequently
+ * @todo Rotation with Euler angles
+ * @todo Shearing
+ * @todo Reflection
+ */
 template<class T> class Matrix4: public Matrix<T, 4> {
     public:
         /**

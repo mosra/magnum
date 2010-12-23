@@ -26,7 +26,12 @@
 
 namespace Magnum {
 
-/** @brief Matrix */
+/**
+ * @brief Matrix
+ *
+ * @todo @c PERFORMANCE - implicit sharing
+ * @todo @c PERFORMANCE - loop unrolling for Matrix<T, 3> and Matrix<T, 4>
+ */
 template<class T, size_t size> class Matrix {
     public:
         /**
@@ -66,6 +71,8 @@ template<class T, size_t size> class Matrix {
         /**
          * @brief Set raw data
          * @param data One-dimensional array of @c size*size length in column-major order.
+         *
+         * @bug Creating Matrix<int, 5> from float* ??
          */
         inline void setData(const T* data) {
             memcpy(_data, data, size*size*sizeof(T));
