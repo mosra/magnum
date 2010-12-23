@@ -21,6 +21,7 @@
 
 #include <cstring>
 
+#include "Vector.h"
 #include "constants.h"
 
 namespace Magnum {
@@ -109,6 +110,18 @@ template<class T, size_t size> class Matrix {
                     for(size_t pos = 0; pos != size; ++pos)
                         out.add(col, row, at(pos, row)*other.at(col, pos));
                 }
+            }
+
+            return out;
+        }
+
+        /** @brief Multiply vector operator */
+        Vector<T, size> operator*(const Vector<T, size>& other) const {
+            Vector<T, size> out;
+
+            for(size_t row = 0; row != size; ++row) {
+                for(size_t pos = 0; pos != size; ++pos)
+                    out.add(row, at(pos, row)*other.at(pos));
             }
 
             return out;

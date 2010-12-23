@@ -135,6 +135,24 @@ void MatrixTest::multiply() {
     QVERIFY(is);
 }
 
+void MatrixTest::multiplyVector() {
+    int matrix[] = {
+         -3,  -3,  -1,   3,  -5,
+         -1,  -3,  -5,   2,   3,
+         -1,  -4,   3,  -1,  -2,
+         -5,  -5,  -1,  -4,  -1,
+          1,   3,  -3,  -4,  -1
+    };
+
+    int vector[] = { 0, 5, 3, 4, 4 };
+
+    int expected[] = { -24, -35, -32, -25, 1 };
+
+    bool is = (Matrix<int, 5>(matrix)*Vector<int, 5>(vector) == Vector<int, 5>(expected));
+
+    QVERIFY(is);
+}
+
 void MatrixTest::transposed() {
     float original[] = {
         0.0f,   1.0f,   2.0f,   3.0f,
