@@ -1,5 +1,5 @@
-#ifndef Magnum_Test_MatrixTest_h
-#define Magnum_Test_MatrixTest_h
+#ifndef Magnum_Math_Test_Matrix4Test_h
+#define Magnum_Math_Test_Matrix4Test_h
 /*
     Copyright © 2010 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -17,22 +17,17 @@
 
 #include <QtCore/QObject>
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace Math { namespace Test {
 
-class MatrixTest: public QObject {
+class Matrix4Test: public QObject {
     Q_OBJECT
 
     private slots:
-        void constructIdentity();
-        void constructZero();
-        void data();
-        void copy();
-        void multiplyIdentity();
-        void multiply();
-        void multiplyVector();
-        void transposed();
+        void translation();
+        void scaling();
+        void rotation();
 };
 
-}}
+}}}
 
 #endif

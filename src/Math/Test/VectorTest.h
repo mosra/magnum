@@ -1,3 +1,5 @@
+#ifndef Magnum_Math_Test_VectorTest_h
+#define Magnum_Math_Test_VectorTest_h
 /*
     Copyright © 2010 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -13,23 +15,25 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Vector3Test.h"
+#include <QtCore/QObject>
 
-#include <QtTest/QTest>
+namespace Magnum { namespace Math { namespace Test {
 
-#include "Vector3.h"
+class VectorTest: public QObject {
+    Q_OBJECT
 
-QTEST_APPLESS_MAIN(Magnum::Test::Vector3Test)
+    private slots:
+        void construct();
+        void data();
+        void bracketOperator();
+        void copy();
+        void dot();
+        void multiplyDivide();
+        void addSubstract();
+        void length();
+        void normalized();
+};
 
-namespace Magnum { namespace Test {
+}}}
 
-typedef Magnum::Vector3<float> Vector3;
-
-void Vector3Test::cross() {
-    Vector3 a(1, -1, 1);
-    Vector3 b(4, 3, 7);
-
-    QVERIFY(Vector3::cross(a, b) == Vector3(-10, -3, 7));
-}
-
-}}
+#endif

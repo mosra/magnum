@@ -1,5 +1,3 @@
-#ifndef Magnum_Test_Vector3Test_h
-#define Magnum_Test_Vector3Test_h
 /*
     Copyright © 2010 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,17 +13,23 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
+#include "Vector3Test.h"
 
-namespace Magnum { namespace Test {
+#include <QtTest/QTest>
 
-class Vector3Test: public QObject {
-    Q_OBJECT
+#include "Vector3.h"
 
-    private slots:
-        void cross();
-};
+QTEST_APPLESS_MAIN(Magnum::Math::Test::Vector3Test)
 
-}}
+namespace Magnum { namespace Math { namespace Test {
 
-#endif
+typedef Math::Vector3<float> Vector3;
+
+void Vector3Test::cross() {
+    Vector3 a(1, -1, 1);
+    Vector3 b(4, 3, 7);
+
+    QVERIFY(Vector3::cross(a, b) == Vector3(-10, -3, 7));
+}
+
+}}}

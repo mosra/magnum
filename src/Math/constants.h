@@ -1,3 +1,5 @@
+#ifndef Magnum_Math_constants_h
+#define Magnum_Math_constants_h
 /*
     Copyright © 2010 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -13,25 +15,18 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Vector4Test.h"
+/** @file
+ * @brief Constants
+ */
 
-#include <QtTest/QTest>
+namespace Magnum { namespace Math {
 
-#include "Vector4.h"
+/** @brief Pi */
+#define PI 3.1415926535
 
-QTEST_APPLESS_MAIN(Magnum::Test::Vector4Test)
-
-namespace Magnum { namespace Test {
-
-typedef Magnum::Vector4<float> Vector4;
-typedef Magnum::Vector3<float> Vector3;
-
-void Vector4Test::construct() {
-    QVERIFY(Vector4() == Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-}
-
-void Vector4Test::threeComponent() {
-    QVERIFY(Vector4(1.0f, 2.0f, 3.0f, 4.0f).xyz() == Vector3(1.0f, 2.0f, 3.0f));
-}
+/** @brief Maximal tolerance when comparing doubles */
+#define EPSILON 1.0e-8
 
 }}
+
+#endif

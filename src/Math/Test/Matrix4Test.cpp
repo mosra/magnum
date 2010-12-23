@@ -20,11 +20,11 @@
 #include "Matrix4.h"
 #include "constants.h"
 
-QTEST_APPLESS_MAIN(Magnum::Test::Matrix4Test)
+QTEST_APPLESS_MAIN(Magnum::Math::Test::Matrix4Test)
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace Math { namespace Test {
 
-typedef Magnum::Matrix4<float> Matrix4;
+typedef Math::Matrix4<float> Matrix4;
 
 void Matrix4Test::translation() {
     float matrix[] = {
@@ -59,4 +59,4 @@ void Matrix4Test::rotation() {
     QVERIFY(Matrix4::rotation(-74*PI/180.0f, -1.0f, 2.0f, 2.0f) == Matrix4(matrix));
 }
 
-}}
+}}}

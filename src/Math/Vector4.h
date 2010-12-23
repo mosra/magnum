@@ -1,5 +1,5 @@
-#ifndef Magnum_Vector4_h
-#define Magnum_Vector4_h
+#ifndef Magnum_Math_Vector4_h
+#define Magnum_Math_Vector4_h
 /*
     Copyright © 2010 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,14 +16,14 @@
 */
 
 /** @file
- * @brief Class Magnum::Vector4
+ * @brief Class Magnum::Math::Vector4
  */
 
 #include "Vector.h"
 
 #include "Vector3.h"
 
-namespace Magnum {
+namespace Magnum { namespace Math {
 
 /** @brief Vector (four-component) */
 template<class T> class Vector4: public Vector<T, 4> {
@@ -87,6 +87,6 @@ template<class T> class Vector4: public Vector<T, 4> {
         inline Vector3<T> rgb() const { return xyz(); }
 };
 
-}
+}}
 
 #endif

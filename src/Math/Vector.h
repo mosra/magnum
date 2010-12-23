@@ -1,5 +1,5 @@
-#ifndef Magnum_Vector_h
-#define Magnum_Vector_h
+#ifndef Magnum_Math_Vector_h
+#define Magnum_Math_Vector_h
 /*
     Copyright © 2010 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,13 +16,13 @@
 */
 
 /** @file
- * @brief Class Magnum::Vector
+ * @brief Class Magnum::Math::Vector
  */
 
 #include <cstring>
 #include <cmath>
 
-namespace Magnum {
+namespace Magnum { namespace Math {
 
 /** @brief Vector */
 template<class T, size_t size> class Vector {
@@ -156,6 +156,6 @@ template<class T, size_t size> class Vector {
         T _data[size];
 };
 
-}
+}}
 
 #endif

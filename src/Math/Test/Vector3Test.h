@@ -1,5 +1,5 @@
-#ifndef Magnum_Test_VectorTest_h
-#define Magnum_Test_VectorTest_h
+#ifndef Magnum_Math_Test_Vector3Test_h
+#define Magnum_Math_Test_Vector3Test_h
 /*
     Copyright © 2010 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -17,23 +17,15 @@
 
 #include <QtCore/QObject>
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace Math { namespace Test {
 
-class VectorTest: public QObject {
+class Vector3Test: public QObject {
     Q_OBJECT
 
     private slots:
-        void construct();
-        void data();
-        void bracketOperator();
-        void copy();
-        void dot();
-        void multiplyDivide();
-        void addSubstract();
-        void length();
-        void normalized();
+        void cross();
 };
 
-}}
+}}}
 
 #endif

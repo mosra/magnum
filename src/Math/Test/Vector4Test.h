@@ -1,5 +1,5 @@
-#ifndef Magnum_constants_h
-#define Magnum_constants_h
+#ifndef Magnum_Math_Test_Vector4Test_h
+#define Magnum_Math_Test_Vector4Test_h
 /*
     Copyright © 2010 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,18 +15,18 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-/** @file
- * @brief Constants
- */
+#include <QtCore/QObject>
 
-namespace Magnum {
+namespace Magnum { namespace Math { namespace Test {
 
-/** @brief Pi */
-#define PI 3.1415926535
+class Vector4Test: public QObject {
+    Q_OBJECT
 
-/** @brief Maximal tolerance when comparing doubles */
-#define EPSILON 1.0e-8
+    private slots:
+        void construct();
+        void threeComponent();
+};
 
-}
+}}}
 
 #endif

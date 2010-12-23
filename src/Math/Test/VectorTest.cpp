@@ -21,11 +21,11 @@
 #include "Vector.h"
 #include "constants.h"
 
-QTEST_APPLESS_MAIN(Magnum::Test::VectorTest)
+QTEST_APPLESS_MAIN(Magnum::Math::Test::VectorTest)
 
 using namespace std;
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace Math { namespace Test {
 
 typedef Vector<float, 4> Vector4;
 
@@ -119,4 +119,4 @@ void VectorTest::normalized() {
     QVERIFY(Vector4(vec).normalized() == Vector4(normalized));
 }
 
-}}
+}}}

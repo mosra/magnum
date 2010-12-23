@@ -1,5 +1,3 @@
-#ifndef Magnum_Test_Vector4Test_h
-#define Magnum_Test_Vector4Test_h
 /*
     Copyright © 2010 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,18 +13,25 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
+#include "Vector4Test.h"
 
-namespace Magnum { namespace Test {
+#include <QtTest/QTest>
 
-class Vector4Test: public QObject {
-    Q_OBJECT
+#include "Vector4.h"
 
-    private slots:
-        void construct();
-        void threeComponent();
-};
+QTEST_APPLESS_MAIN(Magnum::Math::Test::Vector4Test)
 
-}}
+namespace Magnum { namespace Math { namespace Test {
 
-#endif
+typedef Math::Vector4<float> Vector4;
+typedef Math::Vector3<float> Vector3;
+
+void Vector4Test::construct() {
+    QVERIFY(Vector4() == Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+}
+
+void Vector4Test::threeComponent() {
+    QVERIFY(Vector4(1.0f, 2.0f, 3.0f, 4.0f).xyz() == Vector3(1.0f, 2.0f, 3.0f));
+}
+
+}}}

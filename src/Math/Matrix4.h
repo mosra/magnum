@@ -1,5 +1,5 @@
-#ifndef Magnum_Matrix4_h
-#define Magnum_Matrix4_h
+#ifndef Magnum_Math_Matrix4_h
+#define Magnum_Math_Matrix4_h
 /*
     Copyright © 2010 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,14 +16,14 @@
 */
 
 /** @file
- * @brief Class Magnum::Matrix4
+ * @brief Class Magnum::Math::Matrix4
  */
 
 #include "Matrix.h"
 
 #include "Vector3.h"
 
-namespace Magnum {
+namespace Magnum { namespace Math {
 
 /**
  * @brief Matrix 4x4
@@ -138,6 +138,6 @@ template<class T> class Matrix4: public Matrix<T, 4> {
         inline Matrix4(const Matrix<T, 4>& other): Matrix<T, 4>(other) {}
 };
 
-}
+}}
 
 #endif

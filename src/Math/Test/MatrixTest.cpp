@@ -19,9 +19,9 @@
 
 #include "Matrix.h"
 
-QTEST_APPLESS_MAIN(Magnum::Test::MatrixTest)
+QTEST_APPLESS_MAIN(Magnum::Math::Test::MatrixTest)
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace Math { namespace Test {
 
 typedef Matrix<float, 4> Matrix4;
 
@@ -171,4 +171,4 @@ void MatrixTest::transposed() {
     QVERIFY(Matrix4(original).transposed() == Matrix4(transposed));
 }
 
-}}
+}}}

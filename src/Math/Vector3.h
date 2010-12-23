@@ -1,5 +1,5 @@
-#ifndef Magnum_Vector3_h
-#define Magnum_Vector3_h
+#ifndef Magnum_Math_Vector3_h
+#define Magnum_Math_Vector3_h
 /*
     Copyright © 2010 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,12 +16,12 @@
 */
 
 /** @file
- * @brief Class Magnum::Vector3
+ * @brief Class Magnum::Math::Vector3
  */
 
 #include "Vector.h"
 
-namespace Magnum {
+namespace Magnum { namespace Math {
 
 /** @brief Vector (three-component) */
 template<class T> class Vector3: public Vector<T, 3> {
@@ -69,6 +69,6 @@ template<class T> class Vector3: public Vector<T, 3> {
         inline void setB(T value) { setZ(value); } /**< @brief Set B component */
 };
 
-}
+}}
 
 #endif

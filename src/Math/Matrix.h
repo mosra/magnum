@@ -1,5 +1,5 @@
-#ifndef Magnum_Matrix_h
-#define Magnum_Matrix_h
+#ifndef Magnum_Math_Matrix_h
+#define Magnum_Math_Matrix_h
 /*
     Copyright © 2010 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Matrix
+ * @brief Class Magnum::Math::Matrix
  */
 
 #include <cstring>
@@ -24,7 +24,7 @@
 #include "Vector.h"
 #include "constants.h"
 
-namespace Magnum {
+namespace Magnum { namespace Math {
 
 /**
  * @brief Matrix
@@ -150,6 +150,6 @@ template<class T, size_t size> class Matrix {
         T _data[size*size];
 };
 
-}
+}}
 
 #endif
