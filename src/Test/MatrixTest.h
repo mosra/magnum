@@ -29,6 +29,7 @@ class MatrixTest: public QObject {
         void copy();
         void multiplyIdentity();
         void multiply();
+        void transposed();
 };
 
 }}
