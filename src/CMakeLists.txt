@@ -9,6 +9,7 @@ set(Magnum_SRCS
     AbstractObject.cpp
     AbstractShaderProgram.cpp
     Camera.cpp
+    Mesh.cpp
     Scene.cpp
     Shader.cpp
 )
