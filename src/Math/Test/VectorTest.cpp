@@ -125,4 +125,11 @@ void VectorTest::angle() {
     QCOMPARE(Vector3::angle(a, b), 1.16251f);
 }
 
+void VectorTest::negative() {
+    float vec[] = { 1.0f, -3.0f, 5.0f, -10.0f };
+    float negative[] = { -1.0f, 3.0f, -5.0f, 10.0f };
+
+    QVERIFY(-Vector4(vec) == negative);
+}
+
 }}}

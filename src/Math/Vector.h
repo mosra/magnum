@@ -148,6 +148,16 @@ template<class T, size_t size> class Vector {
             return out;
         }
 
+        /** @brief Negative vector */
+        Vector<T, size> operator-() const {
+            Vector<T, size> out;
+
+            for(size_t i = 0; i != size; ++i)
+                out.set(i, -at(i));
+
+            return out;
+        }
+
         /** @brief Vector length */
         T length() const {
             T out(0);

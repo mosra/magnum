@@ -33,6 +33,7 @@ class VectorTest: public QObject {
         void length();
         void normalized();
         void angle();
+        void negative();
 };
 
 }}}
