@@ -90,7 +90,7 @@ template<class T, size_t size> class Vector {
 
         /** @brief Dot product */
         T operator*(const Vector<T, size>& other) const {
-            T out;
+            T out(0);
 
             for(size_t i = 0; i != size; ++i)
                 out += at(i)*other.at(i);
@@ -140,7 +140,7 @@ template<class T, size_t size> class Vector {
 
         /** @brief Vector length */
         T length() const {
-            T out;
+            T out(0);
             for(size_t i = 0; i != size; ++i)
                 out += pow(at(i), 2);
 
