@@ -26,6 +26,7 @@ using namespace std;
 namespace Magnum { namespace Math { namespace Test {
 
 typedef Vector<float, 4> Vector4;
+typedef Vector<float, 3> Vector3;
 
 void VectorTest::construct() {
     float zero[] = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -115,6 +116,13 @@ void VectorTest::normalized() {
     float normalized[] = { 0.5f, 0.5f, 0.5f, 0.5f };
 
     QVERIFY(Vector4(vec).normalized() == Vector4(normalized));
+}
+
+void VectorTest::angle() {
+    float a[] = { 2.0f, 3.0f, 4.0f };
+    float b[] = { 1.0f, -2.0f, 3.0f };
+
+    QCOMPARE(Vector3::angle(a, b), 1.16251f);
 }
 
 }}}
