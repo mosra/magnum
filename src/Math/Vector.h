@@ -22,6 +22,8 @@
 #include <cstring>
 #include <cmath>
 
+#include "constants.h"
+
 namespace Magnum { namespace Math {
 
 /** @brief Vector */
@@ -80,7 +82,10 @@ template<class T, size_t size> class Vector {
 
         /** @brief Equality operator */
         inline bool operator==(const Vector<T, size>& other) const {
-            return memcmp(_data, other.data(), size*sizeof(T)) == 0;
+            for(size_t pos = 0; pos != size; ++pos)
+                if(std::abs(at(pos) - other.at(pos)) >= EPSILON) return false;
+
+            return true;
         }
 
         /** @brief Non-equality operator */
