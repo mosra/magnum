@@ -19,6 +19,8 @@ endif()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Magnum_SOURCE_DIR}/modules/")
 include(MagnumMacros)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic")
+
 add_subdirectory(src)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
