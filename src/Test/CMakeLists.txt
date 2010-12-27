@@ -1,0 +1,1 @@
+magnum_add_test(AbstractObjectTest AbstractObjectTest.h AbstractObjectTest.cpp Magnum)
