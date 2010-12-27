@@ -23,13 +23,13 @@ using namespace std;
 namespace Magnum {
 
 Mesh::~Mesh() {
-    for(map<Buffer*, pair<bool, vector<Attribute> > >::iterator it = buffers.begin(); it != buffers.end(); ++it)
+    for(map<Buffer*, pair<bool, vector<Attribute> > >::iterator it = _buffers.begin(); it != _buffers.end(); ++it)
         delete it->first;
 }
 
 Buffer* Mesh::addBuffer(bool interleaved) {
     Buffer* buffer = new Buffer(Buffer::ArrayBuffer);
-    buffers.insert(pair<Buffer*, pair<bool, vector<Attribute> > >(
+    _buffers.insert(pair<Buffer*, pair<bool, vector<Attribute> > >(
         buffer,
         pair<bool, vector<Attribute> >(interleaved, vector<Attribute>())
     ));
@@ -42,11 +42,11 @@ void Mesh::draw() {
     finalize();
 
     /* Enable vertex arrays for all attributes */
-    for(set<GLuint>::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
+    for(set<GLuint>::const_iterator it = _attributes.begin(); it != _attributes.end(); ++it)
         glEnableVertexAttribArray(*it);
 
     /* Bind attributes to vertex buffers */
-    for(map<Buffer*, pair<bool, vector<Attribute> > >::iterator it = buffers.begin(); it != buffers.end(); ++it) {
+    for(map<Buffer*, pair<bool, vector<Attribute> > >::const_iterator it = _buffers.begin(); it != _buffers.end(); ++it) {
         /* Bind buffer */
         it->first->bind();
 
@@ -69,10 +69,10 @@ void Mesh::draw() {
         it->first->unbind();
     }
 
-    glDrawArrays(primitive, 0, count);
+    glDrawArrays(_primitive, 0, count);
 
     /* Disable vertex arrays for all attributes */
-    for(set<GLuint>::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
+    for(set<GLuint>::const_iterator it = _attributes.begin(); it != _attributes.end(); ++it)
         glDisableVertexAttribArray(*it);
 }
 
@@ -81,7 +81,7 @@ void Mesh::finalize() {
     if(finalized) return;
 
     /* Finalize attribute positions for every buffer */
-    for(map<Buffer*, pair<bool, vector<Attribute> > >::iterator it = buffers.begin(); it != buffers.end(); ++it) {
+    for(map<Buffer*, pair<bool, vector<Attribute> > >::iterator it = _buffers.begin(); it != _buffers.end(); ++it) {
         /* Avoid confustion */
         bool interleaved = it->second.first;
         vector<Attribute>& attributes = it->second.second;
@@ -122,11 +122,11 @@ void Mesh::finalize() {
 
 void Mesh::bindAttribute(Buffer* buffer, GLuint attribute, GLint size, GLenum type) {
     /* The mesh is finalized or attribute is already bound, nothing to do */
-    if(finalized || attributes.find(attribute) != attributes.end()) return;
+    if(finalized || _attributes.find(attribute) != _attributes.end()) return;
 
     /* If buffer is not managed by this mesh, nothing to do */
-    map<Buffer*, pair<bool, vector<Attribute> > >::iterator found = buffers.find(buffer);
-    if(found == buffers.end()) return;
+    map<Buffer*, pair<bool, vector<Attribute> > >::iterator found = _buffers.find(buffer);
+    if(found == _buffers.end()) return;
 
     Attribute a;
     a.location = attribute;
@@ -136,7 +136,7 @@ void Mesh::bindAttribute(Buffer* buffer, GLuint attribute, GLint size, GLenum ty
     a.pointer = 0;
 
     found->second.second.push_back(a);
-    attributes.insert(attribute);
+    _attributes.insert(attribute);
 }
 
 GLsizei Mesh::sizeOf(GLenum type) {

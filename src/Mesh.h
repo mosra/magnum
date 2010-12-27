@@ -80,17 +80,20 @@ class Mesh {
 
         /**
          * @brief Constructor
-         * @param _primitive    Primitive type
+         * @param primitive     Primitive type
          * @param _count        Vertex count
          */
-        inline Mesh(Primitive _primitive, GLsizei _count): primitive(_primitive), count(_count), finalized(false) {}
+        inline Mesh(Primitive primitive, GLsizei _count): _primitive(primitive), count(_count), finalized(false) {}
 
         /**
          * @brief Destructor
          *
          * Deletes all associated buffers.
          */
-        ~Mesh();
+        virtual ~Mesh();
+
+        /** @brief Primitive type */
+        inline Primitive primitive() const { return _primitive; }
 
         /**
          * @brief Add buffer
@@ -118,14 +121,37 @@ class Mesh {
         template<class T> void bindAttribute(Buffer* buffer, GLuint attribute);
 
         /**
-         * @brief Draw a mesh
+         * @brief Draw the mesh
          *
          * Binds attributes to buffers and draws the mesh. Expects an active
          * shader with all uniforms set.
          */
-        void draw();
+        virtual void draw();
 
     protected:
+        struct Attribute {
+            GLuint location;
+            GLint size;
+            GLenum type;
+            GLsizei stride;
+            const GLvoid* pointer;
+        };
+
+        /**
+         * @brief Buffers with their attributes
+         * @return Map of associated buffers, evey buffer has:
+         * - boolean value which signalizes whether the buffer is interleaved
+         * - list of bound attributes
+         */
+        inline const std::map<Buffer*, std::pair<bool, std::vector<Attribute> > >& buffers() { return _buffers; }
+
+        /**
+         * @brief List of all bound attributes
+         *
+         * List of all bound attributes bound with bindAttribute().
+         */
+        inline const std::set<GLuint>& attributes() { return _attributes; }
+
         /**
          * @brief Finalize the mesh
          *
@@ -135,20 +161,12 @@ class Mesh {
         void finalize();
 
     private:
-        struct Attribute {
-            GLuint location;
-            GLint size;
-            GLenum type;
-            GLsizei stride;
-            const GLvoid* pointer;
-        };
-
-        std::map<Buffer*, std::pair<bool, std::vector<Attribute> > > buffers;
-        std::set<GLuint> attributes;
-
-        GLenum primitive;
+        Primitive _primitive;
         GLsizei count;
         bool finalized;
+
+        std::map<Buffer*, std::pair<bool, std::vector<Attribute> > > _buffers;
+        std::set<GLuint> _attributes;
 
         void bindAttribute(Buffer* buffer, GLuint attribute, GLint size, GLenum type);
 
