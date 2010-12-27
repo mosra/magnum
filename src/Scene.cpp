@@ -55,7 +55,7 @@ void Scene::draw() {
 void Scene::drawChildren(AbstractObject* object, const Matrix4& transformationMatrix) {
     for(set<AbstractObject*>::const_iterator it = object->children().begin(); it != object->children().end(); ++it) {
         /* Transformation matrix for the object */
-        Matrix4 matrix = (*it)->transformation()*transformationMatrix;
+        Matrix4 matrix = transformationMatrix*(*it)->transformation();
 
         /* Draw the object and its children */
         (*it)->draw(matrix, _camera->projectionMatrix());
