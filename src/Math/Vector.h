@@ -148,7 +148,7 @@ template<class T, size_t size> class Vector {
         }
 
         /** @brief Normalized vector (of length 1) */
-        Vector<T, size> normalized() const {
+        inline Vector<T, size> normalized() const {
             return *this/length();
         }
 
