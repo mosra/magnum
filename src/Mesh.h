@@ -36,6 +36,8 @@ class Buffer;
  *      shader as floating-point vec4)
  */
 class Mesh {
+    DISABLE_COPY(Mesh)
+
     public:
         /** @brief Primitive type */
         enum Primitive {
