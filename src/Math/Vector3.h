@@ -26,6 +26,15 @@ namespace Magnum { namespace Math {
 /** @brief Vector (three-component) */
 template<class T> class Vector3: public Vector<T, 3> {
     public:
+        /** @brief Unit vector in direction of X axis */
+        inline static Vector3<T> xAxis() { return Vector3<T>(1, 0, 0); }
+
+        /** @brief Unit vector in direction of Y axis */
+        inline static Vector3<T> yAxis() { return Vector3<T>(0, 1, 0); }
+
+        /** @brief Unit vector in direction of Z axis */
+        inline static Vector3<T> zAxis() { return Vector3<T>(0, 0, 1); }
+
         /** @brief Cross product */
         static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
             return Vector3<T>(a[1]*b[2]-a[2]*b[1],
