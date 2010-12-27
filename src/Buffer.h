@@ -118,12 +118,12 @@ class Buffer {
         }
 
         /** @brief Bind buffer */
-        inline void bind() {
+        inline void bind() const {
             glBindBuffer(_type, buffer);
         }
 
         /** @brief Unbind buffer */
-        inline void unbind() {
+        inline void unbind() const {
             glBindBuffer(_type, 0);
         }
 
