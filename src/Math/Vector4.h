@@ -50,7 +50,7 @@ template<class T> class Vector4: public Vector<T, 4> {
          * @param z     Z / B value
          * @param w     W / A value
          */
-        inline Vector4(T x, T y, T z, T w) {
+        inline Vector4(T x, T y, T z, T w = T(1)) {
             setX(x); setY(y); setZ(z); setW(w);
         }
 
