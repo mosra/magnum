@@ -30,8 +30,24 @@ namespace Magnum {
  */
 class Camera: public AbstractObject {
     public:
-        /** @copydoc AbstractObject::AbstractObject() */
-        inline Camera(AbstractObject* parent = 0): AbstractObject(parent) {}
+        /** @brief Aspect ratio policy */
+        enum AspectRatioPolicy {
+            NotPreserved,       /**< @brief Don't preserve aspect ratio */
+            Extend,             /**< @brief Extend on larger side of view */
+            Clip                /**< @brief Clip on smaller side of view */
+        };
+
+        /**
+         * @brief Constructor
+         * @param parent        Parent object
+         */
+        Camera(AbstractObject* parent = 0);
+
+        /** @brief Aspect ratio policy */
+        AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }
+
+        /** @brief Set aspect ratio policy */
+        void setAspectRatioPolicy(AspectRatioPolicy policy) { _aspectRatioPolicy = policy; }
 
         /**
          * @brief Camera matrix
@@ -47,7 +63,7 @@ class Camera: public AbstractObject {
          * Projection matrix handles e.g. perspective distortion and is applied
          * as last.
          */
-        virtual inline Matrix4 projectionMatrix() const { return Matrix4(); }
+        inline Matrix4 projectionMatrix() const { return _projectionMatrix; }
 
         /**
          * @brief Set viewport
@@ -55,10 +71,9 @@ class Camera: public AbstractObject {
          * @param height    Window / buffer height
          *
          * Called when assigning the camera to the scene or when window
-         * size changes. Default implementation preserves aspect ratio and
-         * sets viewport to whole window / buffer size.
+         * size changes.
          */
-        virtual void setViewport(int width, int height);
+        void setViewport(int width, int height);
 
         /**
          * @brief Draw camera
@@ -67,6 +82,15 @@ class Camera: public AbstractObject {
          * nothing.
          */
         virtual void draw(const Magnum::Matrix4& transformationMatrix, const Magnum::Matrix4& projectionMatrix) {}
+
+    private:
+        Matrix4 rawProjectionMatrix;
+        Matrix4 _projectionMatrix;
+
+        int viewportWidth, viewportHeight;
+        AspectRatioPolicy _aspectRatioPolicy;
+
+        void fixAspectRatio();
 };
 
 }
