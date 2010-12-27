@@ -7,8 +7,10 @@ add_subdirectory(Math)
 
 set(Magnum_SRCS
     AbstractObject.cpp
+    AbstractShaderProgram.cpp
     Camera.cpp
     Scene.cpp
+    Shader.cpp
 )
 
 add_library(Magnum SHARED ${Magnum_SRCS})
