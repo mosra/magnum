@@ -25,7 +25,7 @@ namespace Magnum { namespace Math {
 #define PI 3.1415926535
 
 /** @brief Maximal tolerance when comparing doubles */
-#define EPSILON 1.0e-8
+#define EPSILON 1.0e-7
 
 }}
 
