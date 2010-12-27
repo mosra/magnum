@@ -101,7 +101,7 @@ template<class T> class Matrix4: public Matrix<T, 4> {
 
             T sine = sin(angle);
             T cosine = cos(angle);
-            T oneMinusCosine = 1 - cosine;
+            T oneMinusCosine = T(1) - cosine;
 
             T xx = vn.x()*vn.x();
             T xy = vn.x()*vn.y();
@@ -110,7 +110,7 @@ template<class T> class Matrix4: public Matrix<T, 4> {
             T yz = vn.y()*vn.z();
             T zz = vn.z()*vn.z();
 
-            /* Don't creating identity matrix, as nearly all ones would be
+            /* Not creating identity matrix, as nearly all ones would be
                overwritten */
             Matrix4 out(false);
             out.set(3, 3, T(1));

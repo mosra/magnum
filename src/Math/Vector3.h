@@ -27,10 +27,10 @@ namespace Magnum { namespace Math {
 template<class T> class Vector3: public Vector<T, 3> {
     public:
         /** @brief Cross product */
-        static Vector3 cross(const Vector3& a, const Vector3& b) {
-            return Vector3(a[1]*b[2]-a[2]*b[1],
-                           a[2]*b[0]-a[0]*b[2],
-                           a[0]*b[1]-a[1]*b[0]);
+        static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
+            return Vector3<T>(a[1]*b[2]-a[2]*b[1],
+                              a[2]*b[0]-a[0]*b[2],
+                              a[0]*b[1]-a[1]*b[0]);
         }
 
         /** @copydoc Vector::Vector */
