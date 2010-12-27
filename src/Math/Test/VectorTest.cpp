@@ -15,11 +15,9 @@
 
 #include "VectorTest.h"
 
-#include <cmath>
 #include <QtTest/QTest>
 
 #include "Vector.h"
-#include "constants.h"
 
 QTEST_APPLESS_MAIN(Magnum::Math::Test::VectorTest)
 
@@ -109,7 +107,7 @@ void VectorTest::addSubstract() {
 void VectorTest::length() {
     float vec[] = { 1.0f, 2.0f, 3.0f, 4.0f };
 
-    QVERIFY(abs(Vector4(vec).length() - 5.4772256f) < EPSILON);
+    QCOMPARE(Vector4(vec).length(), 5.4772256f);
 }
 
 void VectorTest::normalized() {
