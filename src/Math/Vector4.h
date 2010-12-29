@@ -19,8 +19,6 @@
  * @brief Class Magnum::Math::Vector4
  */
 
-#include "Vector.h"
-
 #include "Vector3.h"
 
 namespace Magnum { namespace Math {

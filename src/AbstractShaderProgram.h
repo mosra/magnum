@@ -19,10 +19,8 @@
  * @brief Class Magnum::AbstractShaderProgram
  */
 
-#include <string>
 #include <map>
 
-#include "Magnum.h"
 #include "Shader.h"
 
 namespace Magnum {

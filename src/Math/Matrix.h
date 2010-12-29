@@ -19,10 +19,7 @@
  * @brief Class Magnum::Math::Matrix
  */
 
-#include <cstring>
-
 #include "Vector.h"
-#include "constants.h"
 
 namespace Magnum { namespace Math {
 

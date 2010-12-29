@@ -15,6 +15,10 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+/** @file
+ * @brief Basic definitions
+ */
+
 #include <GL/glew.h>
 
 #include "Math/Matrix4.h"
