@@ -58,7 +58,7 @@ template<class T, size_t size> class Matrix {
 
         /** @brief Assignment operator */
         inline Matrix<T, size>& operator=(const Matrix<T, size>& other) {
-            setData(other.data());
+            if(&other != this) setData(other.data());
             return *this;
         }
 

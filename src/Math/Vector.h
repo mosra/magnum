@@ -52,7 +52,7 @@ template<class T, size_t size> class Vector {
 
         /** @brief Assignment operator */
         inline Vector<T, size>& operator=(const Vector<T, size>& other) {
-            setData(other.data());
+            if(&other != this) setData(other.data());
             return *this;
         }
 
