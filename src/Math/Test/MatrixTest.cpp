@@ -54,12 +54,12 @@ void MatrixTest::constructZero() {
 void MatrixTest::data() {
     Matrix4 m(false);
 
-    m.set(2, 1, 1.0f);
-
     m.set(1, 2, 1.0f);
-    m.add(1, 2, 0.5f);
 
-    QVERIFY(m.at(2, 1) == 1.0f);
+    m.set(2, 1, 1.0f);
+    m.add(2, 1, 0.5f);
+
+    QVERIFY(m.at(1, 2) == 1.0f);
 
     float expected[] = {
         0.0f, 0.0f, 0.0f, 0.0f,
@@ -74,7 +74,7 @@ void MatrixTest::data() {
 void MatrixTest::copy() {
     Matrix4 m1(false);
 
-    m1.set(2, 3, 1.0f);
+    m1.set(3, 2, 1.0f);
 
     /* Copy */
     Matrix4 m2(m1);
@@ -83,11 +83,11 @@ void MatrixTest::copy() {
     m3 = m1;
 
     /* Change original */
-    m1.set(3, 2, 1.0f);
+    m1.set(2, 3, 1.0f);
 
     /* Verify the copy is the same as original */
     Matrix4 original(false);
-    original.set(2, 3, 1.0f);
+    original.set(3, 2, 1.0f);
 
     QVERIFY(m2 == original);
     QVERIFY(m3 == original);

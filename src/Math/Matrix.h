@@ -79,17 +79,17 @@ template<class T, size_t size> class Matrix {
         }
 
         /** @brief Value at given position */
-        inline T at(size_t col, size_t row) const {
+        inline T at(size_t row, size_t col) const {
             return _data[col*size+row];
         }
 
         /** @brief Set value at given position */
-        inline void set(size_t col, size_t row, T value) {
+        inline void set(size_t row, size_t col, T value) {
             _data[col*size+row] = value;
         }
 
         /** @brief Add value to given position */
-        inline void add(size_t col, size_t row, T value) {
+        inline void add(size_t row, size_t col, T value) {
             _data[col*size+row] += value;
         }
 
@@ -97,7 +97,7 @@ template<class T, size_t size> class Matrix {
         inline bool operator==(const Matrix<T, size>& other) const {
             for(size_t row = 0; row != size; ++row) {
                 for(size_t col = 0; col != size; ++col)
-                    if(std::abs(at(col, row) - other.at(col, row)) >= EPSILON) return false;
+                    if(std::abs(at(row, col) - other.at(row, col)) >= EPSILON) return false;
             }
 
             return true;
@@ -115,7 +115,7 @@ template<class T, size_t size> class Matrix {
             for(size_t row = 0; row != size; ++row) {
                 for(size_t col = 0; col != size; ++col) {
                     for(size_t pos = 0; pos != size; ++pos)
-                        out.add(col, row, at(pos, row)*other.at(col, pos));
+                        out.add(row, col, at(row, pos)*other.at(pos, col));
                 }
             }
 
@@ -128,7 +128,7 @@ template<class T, size_t size> class Matrix {
 
             for(size_t row = 0; row != size; ++row) {
                 for(size_t pos = 0; pos != size; ++pos)
-                    out.add(row, at(pos, row)*other.at(pos));
+                    out.add(row, at(row, pos)*other.at(pos));
             }
 
             return out;

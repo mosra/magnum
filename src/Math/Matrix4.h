@@ -52,9 +52,9 @@ template<class T> class Matrix4: public Matrix<T, 4> {
          */
         static Matrix4<T> translation(const Vector3<T>& vec) {
             Matrix4 out; /* (Identity matrix) */
-            out.set(3, 0, vec.x());
-            out.set(3, 1, vec.y());
-            out.set(3, 2, vec.z());
+            out.set(0, 3, vec.x());
+            out.set(1, 3, vec.y());
+            out.set(2, 3, vec.z());
             return out;
         }
 
@@ -116,13 +116,13 @@ template<class T> class Matrix4: public Matrix<T, 4> {
             out.set(3, 3, T(1));
 
             out.set(0, 0, cosine + xx*oneMinusCosine);
-            out.set(1, 0, xy*oneMinusCosine - vn.z()*sine);
-            out.set(2, 0, xz*oneMinusCosine + vn.y()*sine);
-            out.set(0, 1, xy*oneMinusCosine + vn.z()*sine);
+            out.set(0, 1, xy*oneMinusCosine - vn.z()*sine);
+            out.set(0, 2, xz*oneMinusCosine + vn.y()*sine);
+            out.set(1, 0, xy*oneMinusCosine + vn.z()*sine);
             out.set(1, 1, cosine + yy*oneMinusCosine);
-            out.set(2, 1, yz*oneMinusCosine - vn.x()*sine);
-            out.set(0, 2, xz*oneMinusCosine - vn.y()*sine);
-            out.set(1, 2, yz*oneMinusCosine + vn.x()*sine);
+            out.set(1, 2, yz*oneMinusCosine - vn.x()*sine);
+            out.set(2, 0, xz*oneMinusCosine - vn.y()*sine);
+            out.set(2, 1, yz*oneMinusCosine + vn.x()*sine);
             out.set(2, 2, cosine + zz*oneMinusCosine);
 
             return out;
