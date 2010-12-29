@@ -41,7 +41,7 @@ bool AbstractShaderProgram::use() {
     return true;
 }
 
-bool AbstractShaderProgram::loadShader(Shader* shader) {
+bool AbstractShaderProgram::attachShader(Shader* shader) {
     if(!shader) return false;
 
     GLuint _shader = shader->compile();

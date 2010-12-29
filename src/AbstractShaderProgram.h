@@ -32,7 +32,7 @@ namespace Magnum {
 
 This class is designed to be used via subclassing. Subclasses define these
 functions and properties:
- - @b Constructor, which loads particular shaders, links the program, binds
+ - @b Constructor, which attaches particular shaders, links the program, binds
    attribute locations and gets uniform locations.
  - <strong>Attribute location</strong> enum with indexes where the particular
    attribute is bound, for example:
@@ -103,7 +103,7 @@ class AbstractShaderProgram {
          * linking.
          * @note The shader should be deleted by caller after linking.
          */
-        bool loadShader(Shader* shader);
+        bool attachShader(Shader* shader);
 
         /**
          * @brief Bind attribute to given location

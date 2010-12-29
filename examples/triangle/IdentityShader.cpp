@@ -21,8 +21,8 @@ IdentityShader::IdentityShader() {
     Shader* vertexShader = Shader::fromFile(Shader::Vertex, "identity.vert");
     Shader* fragmentShader = Shader::fromFile(Shader::Fragment, "identity.frag");
 
-    loadShader(vertexShader);
-    loadShader(fragmentShader);
+    attachShader(vertexShader);
+    attachShader(fragmentShader);
 
     bindAttribute(Vertex, "vertex");
     bindAttribute(Color, "color");
