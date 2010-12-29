@@ -18,6 +18,41 @@
 namespace Magnum {
 
 Camera::Camera(AbstractObject* parent): AbstractObject(parent), viewportWidth(0), viewportHeight(0), _aspectRatioPolicy(Extend) {
+    setOrthographic(2, 1, 1000);
+}
+
+void Camera::setOrthographic(GLfloat size, GLfloat near, GLfloat far) {
+    /* Scale the volume down so it fits in (-1, 1) in all directions */
+    GLfloat xyScale = 2/size;
+    GLfloat zScale = 2/(far-near);
+    rawProjectionMatrix = Matrix4::scaling(xyScale, xyScale, -zScale);
+
+    /* Move the volume on z into (-1, 1) range */
+    rawProjectionMatrix = Matrix4::translation(0, 0, -1-near*zScale)*rawProjectionMatrix;
+
+    fixAspectRatio();
+}
+
+void Camera::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
+    /* First move the volume on z in (-1, 1) range */
+    rawProjectionMatrix = Matrix4::translation(0, 0, 2*far*near/(far+near));
+
+    /* Then apply magic perspective matrix (with reversed Z) */
+    static GLfloat a[] = {  1, 0,  0,  0,
+                            0, 1,  0,  0,
+                            0, 0,  -1,  -1,
+                            0, 0,  0,  0  };
+    rawProjectionMatrix = Matrix4(a)*rawProjectionMatrix;
+
+    /* Then scale the volume down so it fits in (-1, 1) in all directions */
+    GLfloat xyScale = 1/tan(fov/2);
+    GLfloat zScale = 1+2*near/(far-near);
+    rawProjectionMatrix = Matrix4::scaling(xyScale, xyScale, zScale)*rawProjectionMatrix;
+
+    /* And... another magic */
+    rawProjectionMatrix.set(3, 3, 0);
+
+    fixAspectRatio();
 }
 
 Matrix4 Camera::cameraMatrix() const {

@@ -40,6 +40,8 @@ class Camera: public AbstractObject {
         /**
          * @brief Constructor
          * @param parent        Parent object
+         *
+         * Calls <tt>setOrthographic(2, 1, 1000)</tt>.
          */
         Camera(AbstractObject* parent = 0);
 
@@ -48,6 +50,25 @@ class Camera: public AbstractObject {
 
         /** @brief Set aspect ratio policy */
         void setAspectRatioPolicy(AspectRatioPolicy policy) { _aspectRatioPolicy = policy; }
+
+        /**
+         * @brief Set orthographic projection
+         * @param size      Size of (square) view
+         * @param near      Near clipping plane
+         * @param far       Far clipping plane
+         *
+         * The volume of given size will be scaled down to range (-1, 1) on all
+         * directions.
+         */
+        void setOrthographic(GLfloat size, GLfloat near, GLfloat far);
+
+        /**
+         * @brief Set perspective projection
+         * @param fov       Field of view angle
+         * @param near      Near clipping plane
+         * @param far       Far clipping plane
+         */
+        void setPerspective(GLfloat fov, GLfloat near, GLfloat far);
 
         /**
          * @brief Camera matrix
