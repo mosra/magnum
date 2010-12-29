@@ -159,12 +159,8 @@ template<class T, size_t size> class Vector {
         }
 
         /** @brief Vector length */
-        T length() const {
-            T out(0);
-            for(size_t i = 0; i != size; ++i)
-                out += pow(at(i), 2);
-
-            return sqrt(out);
+        inline T length() const {
+            return sqrt(operator*(*this));
         }
 
         /** @brief Normalized vector (of length 1) */
