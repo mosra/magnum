@@ -31,6 +31,7 @@ class MatrixTest: public QObject {
         void multiply();
         void multiplyVector();
         void transposed();
+        void ij();
 };
 
 }}}

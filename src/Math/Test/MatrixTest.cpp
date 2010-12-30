@@ -24,6 +24,7 @@ QTEST_APPLESS_MAIN(Magnum::Math::Test::MatrixTest)
 namespace Magnum { namespace Math { namespace Test {
 
 typedef Matrix<float, 4> Matrix4;
+typedef Matrix<float, 3> Matrix3;
 
 void MatrixTest::constructIdentity() {
     Matrix4 identity;
@@ -169,6 +170,23 @@ void MatrixTest::transposed() {
     };
 
     QVERIFY(Matrix4(original).transposed() == Matrix4(transposed));
+}
+
+void MatrixTest::ij() {
+    float original[] = {
+        0.0f,   1.0f,   2.0f,   3.0f,
+        4.0f,   5.0f,   6.0f,   7.0f,
+        8.0f,   9.0f,   10.0f,  11.0f,
+        12.0f,  13.0f,  14.0f,  15.0f
+    };
+
+    float skipped[] = {
+        0.0f,   1.0f,   3.0f,
+        8.0f,   9.0f,   11.0f,
+        12.0f,  13.0f,  15.0f
+    };
+
+    QVERIFY(Matrix4(original).ij(2, 1) == Matrix3(skipped));
 }
 
 }}}

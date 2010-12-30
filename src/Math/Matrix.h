@@ -143,6 +143,19 @@ template<class T, size_t size> class Matrix {
             return out;
         }
 
+        /** @brief Matrix without given row and column */
+        Matrix<T, size-1> ij(size_t skipRow, size_t skipCol) const {
+            Matrix<T, size-1> out(false);
+
+            for(size_t row = 0; row != size-1; ++row) {
+                for(size_t col = 0; col != size-1; ++col)
+                    out.set(row, col, at(row + (row >= skipRow),
+                                         col + (col >= skipCol)));
+            }
+
+            return out;
+        }
+
     private:
         T _data[size*size];
 };
