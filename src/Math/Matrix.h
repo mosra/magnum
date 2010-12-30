@@ -156,9 +156,53 @@ template<class T, size_t size> class Matrix {
             return out;
         }
 
+        /**
+         * @brief Determinant
+         *
+         * Computed recursively using Laplace's formula expanded down to 2x2
+         * matrix, where the determinant is computed directly. Complexity is
+         * O(n!), the same as when computing the determinant directly.
+         */
+        T determinant() const {
+            T out(0);
+
+            for(size_t col = 0; col != size; ++col)
+                out += ((col & 1) ? -1 : 1)*at(0, col)*ij(0, col).determinant();
+
+            return out;
+        }
+
     private:
         T _data[size*size];
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* Barebone template specialization for 2x2 matrix (only for determinant computation) */
+template<class T> class Matrix<T, 2> {
+    public:
+        inline Matrix(bool identity = true) {
+            memset(_data, 0, 4*sizeof(T));
+            if(identity) {
+                set(0, 0, T(1));
+                set(1, 1, T(1));
+            }
+        }
+        inline Matrix<T, 2>& operator=(const Matrix<T, 2>& other) {
+            if(&other != this) setData(other.data());
+            return *this;
+        }
+        inline void setData(const T* data) { memcpy(_data, data, 4*sizeof(T)); }
+        inline T at(size_t row, size_t col) const { return _data[col*2+row]; }
+        inline void set(size_t row, size_t col, T value) { _data[col*2+row] = value; }
+
+        T determinant() const {
+            return at(0, 0)*at(1, 1) - at(0, 1)*at(1, 0);
+        }
+
+    private:
+        T _data[4];
+};
+#endif
 
 }}
 

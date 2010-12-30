@@ -189,4 +189,18 @@ void MatrixTest::ij() {
     QVERIFY(Matrix4(original).ij(2, 1) == Matrix3(skipped));
 }
 
+void MatrixTest::determinant() {
+    int m[] = {
+        1, 2, 2, 1, 0,
+        2, 3, 2, 1, -2,
+        1, 1, 1, 1, 0,
+        2, 0, 0, 1, 2,
+        3, 1, 0, 1, -2
+    };
+
+    int d = Matrix<int, 5>(m).determinant();
+
+    QVERIFY(d == -2);
+}
+
 }}}
