@@ -203,4 +203,25 @@ void MatrixTest::determinant() {
     QVERIFY(d == -2);
 }
 
+void MatrixTest::inverse() {
+    float m[] = {
+        3, 5, 8, 4,
+        4, 4, 7, 3,
+        7, -1, 8, 0,
+        9, 4, 5, 9
+    };
+
+    float inverse[] = {
+        -60/103.0f,      71/103.0f,     -4/103.0f,      3/103.0f,
+        -66/103.0f,     109/103.0f,     -25/103.0f,     -7/103.0f,
+        177/412.0f,     -97/206.0f,     53/412.0f,      -7/206.0f,
+        259/412.0f,     -185/206.0f,    31/412.0f,      27/206.0f
+    };
+
+    Matrix4 _inverse = Matrix4(m).inverse();
+
+    QVERIFY(_inverse == Matrix4(inverse));
+    QVERIFY(_inverse*Matrix4(m) == Matrix4());
+}
+
 }}}

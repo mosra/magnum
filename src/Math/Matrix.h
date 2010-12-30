@@ -172,6 +172,22 @@ template<class T, size_t size> class Matrix {
             return out;
         }
 
+        /**
+         * @brief Inverse matrix
+         */
+        Matrix<T, size> inverse() const {
+            Matrix<T, size> out(false);
+
+            T _determinant = determinant();
+
+            for(size_t row = 0; row != size; ++row) {
+                for(size_t col = 0; col != size; ++col)
+                    out.set(row, col, (((row+col) & 1) ? -1 : 1)*ij(col, row).determinant()/_determinant);
+            }
+
+            return out;
+        }
+
     private:
         T _data[size*size];
 };
