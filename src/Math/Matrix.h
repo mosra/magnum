@@ -133,7 +133,7 @@ template<class T, size_t size> class Matrix {
 
         /** @brief Transposed matrix */
         Matrix<T, size> transposed() const {
-            Matrix<T, size> out;
+            Matrix<T, size> out(false);
 
             for(size_t row = 0; row != size; ++row) {
                 for(size_t col = 0; col != size; ++col)
