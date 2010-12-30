@@ -25,6 +25,7 @@ namespace Magnum { namespace Math { namespace Test {
 
 typedef Matrix<float, 4> Matrix4;
 typedef Matrix<float, 3> Matrix3;
+typedef Vector<float, 4> Vector4;
 
 void MatrixTest::constructIdentity() {
     Matrix4 identity;
@@ -55,18 +56,22 @@ void MatrixTest::constructZero() {
 void MatrixTest::data() {
     Matrix4 m(false);
 
+    float vector[] = { 4.0f, 5.0f, 6.0f, 7.0f };
+
+    m.set(3, vector);
     m.set(1, 2, 1.0f);
 
     m.set(2, 1, 1.0f);
     m.add(2, 1, 0.5f);
 
     QVERIFY(m.at(1, 2) == 1.0f);
+    QVERIFY(m.at(3) == vector);
 
     float expected[] = {
         0.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 1.5f, 0.0f,
         0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 0.0f
+        4.0f, 5.0f, 6.0f, 7.0f
     };
 
     QVERIFY(m == Matrix4(expected));

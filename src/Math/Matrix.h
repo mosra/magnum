@@ -80,9 +80,19 @@ template<class T, size_t size> class Matrix {
             return _data[col*size+row];
         }
 
+        /** @brief Matrix column */
+        inline Vector<T, size> at(size_t col) const {
+            return _data+col*size;
+        }
+
         /** @brief Set value at given position */
         inline void set(size_t row, size_t col, T value) {
             _data[col*size+row] = value;
+        }
+
+        /** @brief Set matrix column */
+        inline void set(size_t col, const Vector<T, size>& value) {
+            memcpy(_data+col*size, value.data(), size*sizeof(T));
         }
 
         /** @brief Add value to given position */
