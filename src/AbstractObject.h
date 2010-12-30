@@ -70,11 +70,16 @@ class AbstractObject {
 
         /**
          * @brief Multiply transformation matrix
+         * @param transformation    Transformation matrix
+         * @param global            Whether to apply transformation as global
+         *      (multiply from left side) or as local (multiply from right
+         *      side)
          *
-         * Multiplies current transformation matrix <strong>from the
-         * left</strong> by new matrix.
+         * Multiplies current transformation matrix by new matrix.
          */
-        inline void multiplyTransformation(const Matrix4& transformation) { _transformation = transformation*_transformation; }
+        inline void multiplyTransformation(const Matrix4& transformation, bool global = true) {
+            _transformation = global ? transformation*_transformation : _transformation*transformation;
+        }
 
         /**
          * @brief Set transformation and parent from another object
@@ -92,13 +97,13 @@ class AbstractObject {
          *
          * Same as calling multiplyTransformation() with Matrix4::translation().
          */
-        inline void translate(Vector3 vec) {
-            multiplyTransformation(Matrix4::translation(vec));
+        inline void translate(Vector3 vec, bool global = true) {
+            multiplyTransformation(Matrix4::translation(vec), global);
         }
 
-        /** @copydoc translate(Vector3) */
-        inline void translate(GLfloat x, GLfloat y, GLfloat z) {
-            translate(Vector3(x, y, z));
+        /** @copydoc translate(Vector3, bool) */
+        inline void translate(GLfloat x, GLfloat y, GLfloat z, bool global = true) {
+            translate(Vector3(x, y, z), global);
         }
 
         /**
@@ -106,13 +111,13 @@ class AbstractObject {
          *
          * Same as calling multiplyTransformation() with Matrix4::scaling().
          */
-        inline void scale(Vector3 vec) {
-            multiplyTransformation(Matrix4::scaling(vec));
+        inline void scale(Vector3 vec, bool global = true) {
+            multiplyTransformation(Matrix4::scaling(vec), global);
         }
 
-        /** @copydoc scale(Vector3) */
-        inline void scale(GLfloat x, GLfloat y, GLfloat z) {
-            scale(Vector3(x, y, z));
+        /** @copydoc scale(Vector3, bool) */
+        inline void scale(GLfloat x, GLfloat y, GLfloat z, bool global = true) {
+            scale(Vector3(x, y, z), global);
         }
 
         /**
@@ -120,13 +125,13 @@ class AbstractObject {
          *
          * Same as calling multiplyTransformation() with Matrix4::rotation().
          */
-        inline void rotate(GLfloat angle, Vector3 vec) {
-            multiplyTransformation(Matrix4::rotation(angle, vec));
+        inline void rotate(GLfloat angle, Vector3 vec, bool global = true) {
+            multiplyTransformation(Matrix4::rotation(angle, vec), global);
         }
 
-        /** @copydoc rotate(GLfloat, Vector3) */
-        inline void rotate(GLfloat angle, GLfloat x, GLfloat y, GLfloat z) {
-            rotate(angle, Vector3(x, y, z));
+        /** @copydoc rotate(GLfloat, Vector3, bool) */
+        inline void rotate(GLfloat angle, GLfloat x, GLfloat y, GLfloat z, bool global = true) {
+            rotate(angle, Vector3(x, y, z), global);
         }
 
         /** @brief Draw object */
