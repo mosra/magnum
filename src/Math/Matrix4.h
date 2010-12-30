@@ -19,9 +19,8 @@
  * @brief Class Magnum::Math::Matrix4
  */
 
-#include "Matrix.h"
-
-#include "Vector3.h"
+#include "Matrix3.h"
+#include "Vector4.h"
 
 namespace Magnum { namespace Math {
 
@@ -136,6 +135,30 @@ template<class T> class Matrix4: public Matrix<T, 4> {
 
         /** @copydoc Matrix::Matrix(const Matrix<T, size>&) */
         inline Matrix4(const Matrix<T, 4>& other): Matrix<T, 4>(other) {}
+
+        /** @copydoc Matrix::operator=() */
+        inline Matrix4<T>& operator=(const Matrix<T, 4>& other) { return Matrix<T, 4>::operator=(other); }
+
+        /** @copydoc Matrix::at(size_t) */
+        inline Vector4<T> at(size_t col) const { return Matrix<T, 4>::at(col); }
+
+        /** @copydoc Matrix::at(size_t, size_t) */
+        inline T at(size_t row, size_t col) const { return Matrix<T, 4>::at(row, col); }
+
+        /** @copydoc Matrix::operator*(const Matrix<T, size>&) */
+        inline Matrix4<T> operator*(const Matrix<T, 4>& other) const { return Matrix<T, 4>::operator*(other); }
+
+        /** @copydoc Matrix::operator*(const Vector<T, size>&) */
+        inline Vector4<T> operator*(const Vector<T, 4>& other) const { return Matrix<T, 4>::operator*(other); }
+
+        /** @copydoc Matrix::transposed() */
+        inline Matrix4<T> transposed() const { return Matrix<T, 4>::transposed(); }
+
+        /** @copydoc Matrix::ij() */
+        inline Matrix3<T> ij(size_t skipRow, size_t skipCol) const { return Matrix<T, 4>::ij(skipRow, skipCol); }
+
+        /** @copydoc Matrix::inverse() */
+        inline Matrix4<T> inverse() const { return Matrix<T, 4>::inverse(); }
 };
 
 }}

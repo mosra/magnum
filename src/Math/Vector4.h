@@ -83,6 +83,27 @@ template<class T> class Vector4: public Vector<T, 4> {
          * @return First three components of the vector
          */
         inline Vector3<T> rgb() const { return xyz(); }
+
+        /** @copydoc Vector::operator=() */
+        inline Vector4<T>& operator=(const Vector<T, 4>& other) { return Vector<T, 4>::operator=(other); }
+
+        /** @copydoc Vector::operator*(T) */
+        inline Vector4<T> operator*(T number) const { return Vector<T, 4>::operator*(number); }
+
+        /** @copydoc Vector::operator/() */
+        inline Vector4<T> operator/(T number) const { return Vector<T, 4>::operator/(number); }
+
+        /** @copydoc Vector::operator+() */
+        inline Vector4<T> operator+(const Vector<T, 4>& other) const { return Vector<T, 4>::operator+(other); }
+
+        /** @copydoc Vector::operator-(const Vector<T, size>&) */
+        inline Vector4<T> operator-(const Vector<T, 4>& other) const { return Vector<T, 4>::operator-(other); }
+
+        /** @copydoc Vector::operator-() */
+        inline Vector4<T> operator-() const { return Vector<T, 4>::operator-(); }
+
+        /** @copydoc Vector::normalized() */
+        inline Vector4<T> normalized() const { return Vector<T, 4>::normalized(); }
 };
 
 }}

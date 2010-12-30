@@ -76,6 +76,27 @@ template<class T> class Vector3: public Vector<T, 3> {
         inline void setR(T value) { setX(value); } /**< @brief Set R component */
         inline void setG(T value) { setY(value); } /**< @brief Set G component */
         inline void setB(T value) { setZ(value); } /**< @brief Set B component */
+
+        /** @copydoc Vector::operator=() */
+        inline Vector3<T>& operator=(const Vector<T, 3>& other) { return Vector<T, 3>::operator=(other); }
+
+        /** @copydoc Vector::operator*(T) */
+        inline Vector3<T> operator*(T number) const { return Vector<T, 3>::operator*(number); }
+
+        /** @copydoc Vector::operator/() */
+        inline Vector3<T> operator/(T number) const { return Vector<T, 3>::operator/(number); }
+
+        /** @copydoc Vector::operator+() */
+        inline Vector3<T> operator+(const Vector<T, 3>& other) const { return Vector<T, 3>::operator+(other); }
+
+        /** @copydoc Vector::operator-(const Vector<T, size>&) */
+        inline Vector3<T> operator-(const Vector<T, 3>& other) const { return Vector<T, 3>::operator-(other); }
+
+        /** @copydoc Vector::operator-() */
+        inline Vector3<T> operator-() const { return Vector<T, 3>::operator-(); }
+
+        /** @copydoc Vector::normalized() */
+        inline Vector3<T> normalized() const { return Vector<T, 3>::normalized(); }
 };
 
 }}
