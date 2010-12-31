@@ -72,8 +72,17 @@ class Object {
         /** @brief Set parent object */
         virtual void setParent(Object* parent);
 
-        /** @brief Transformation matrix */
-        inline Matrix4 transformation() const { return _transformation; }
+        /**
+         * @brief Transformation matrix
+         *
+         * If the object is part of an scene and @c absolute is set to true,
+         * returns absolute transformation matrix (thus relative to actual
+         * camera), if the object is not part of an scene, returns
+         * transformation matrix composed of all matrices of parent objects.
+         * If @c absolute is set to false, returns transformation matrix
+         * relative to parent.
+         */
+        virtual Matrix4 transformation(bool absolute = false);
 
         /** @brief Set transformation matrix */
         inline void setTransformation(const Matrix4& transformation) { _transformation = transformation; }

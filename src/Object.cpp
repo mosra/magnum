@@ -43,6 +43,29 @@ void Object::setParent(Object* parent) {
     _parent = parent;
 }
 
+Matrix4 Object::transformation(bool absolute) {
+    if(!absolute) return _transformation;
+
+    Matrix4 t = _transformation;
+
+    Object* p = parent();
+    while(p != 0) {
+        t = p->transformation()*t;
+
+        /* We got to the scene, multiply with camera matrix */
+        if(p->parent() == p) {
+            Camera* camera = static_cast<Scene*>(p)->camera();
+            if(camera && camera != this) t = camera->cameraMatrix()*t;
+
+            break;
+        }
+
+        p = p->parent();
+    }
+
+    return t;
+}
+
 Object::~Object() {
     /* Remove the object from parent's children */
     setParent(0);
