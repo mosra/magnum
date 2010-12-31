@@ -28,6 +28,11 @@ class Scene: public Object {
     private:
         virtual void setParent(Object* parent) {}
         Object::setTransformation;
+        Object::multiplyTransformation;
+        Object::setTransformationFrom;
+        Object::translate;
+        Object::scale;
+        Object::rotate;
 
     public:
         /** @brief Features */
