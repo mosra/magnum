@@ -97,9 +97,9 @@ class Object {
          * Sets parent and transformation from another object, so they will
          * appear in the same place.
          */
-        inline void setTransformationFrom(const Object& another) {
-            setParent(another.parent());
-            setTransformation(another.transformation());
+        inline void setTransformationFrom(Object* another) {
+            setParent(another->parent());
+            setTransformation(another->transformation());
         }
 
         /**
