@@ -1,5 +1,5 @@
-#ifndef Magnum_AbstractObject_h
-#define Magnum_AbstractObject_h
+#ifndef Magnum_Object_h
+#define Magnum_Object_h
 /*
     Copyright © 2010 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::AbstractObject
+ * @brief Class Magnum::Object
  */
 
 #include <set>
@@ -31,8 +31,8 @@ namespace Magnum {
  * @todo Transform transformation when changing parent, so the object stays in
  * place.
  */
-class AbstractObject {
-    DISABLE_COPY(AbstractObject)
+class Object {
+    DISABLE_COPY(Object)
 
     public:
         /**
@@ -41,7 +41,7 @@ class AbstractObject {
          *
          * Sets all transformations to their default values.
          */
-        inline AbstractObject(AbstractObject* parent = 0): _parent(0) {
+        inline Object(Object* parent = 0): _parent(0) {
             setParent(parent);
         }
 
@@ -51,16 +51,16 @@ class AbstractObject {
          * Removes itself from parent's children list and destroys all own
          * children.
          */
-        virtual ~AbstractObject();
+        virtual ~Object();
 
         /** @brief Parent object */
-        inline AbstractObject* parent() const { return _parent; }
+        inline Object* parent() const { return _parent; }
 
         /** @brief Child objects */
-        inline const std::set<AbstractObject*>& children() const { return _children; }
+        inline const std::set<Object*>& children() const { return _children; }
 
         /** @brief Set parent object */
-        void setParent(AbstractObject* parent);
+        void setParent(Object* parent);
 
         /** @brief Transformation matrix */
         inline Matrix4 transformation() const { return _transformation; }
@@ -87,7 +87,7 @@ class AbstractObject {
          * Sets parent and transformation from another object, so they will
          * appear in the same place.
          */
-        inline void setTransformationFrom(const AbstractObject& another) {
+        inline void setTransformationFrom(const Object& another) {
             setParent(another.parent());
             setTransformation(another.transformation());
         }
@@ -134,12 +134,16 @@ class AbstractObject {
             rotate(angle, Vector3(x, y, z), global);
         }
 
-        /** @brief Draw object */
-        virtual void draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix) = 0;
+        /**
+         * @brief Draw object
+         *
+         * Default implementation does nothing.
+         */
+        virtual void draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix) {}
 
     private:
-        AbstractObject* _parent;
-        std::set<AbstractObject*> _children;
+        Object* _parent;
+        std::set<Object*> _children;
         Matrix4 _transformation;
 };
 

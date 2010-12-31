@@ -13,15 +13,15 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractObjectTest.h"
+#include "ObjectTest.h"
 
 #include <QtTest/QTest>
 
-QTEST_APPLESS_MAIN(Magnum::Test::AbstractObjectTest)
+QTEST_APPLESS_MAIN(Magnum::Test::ObjectTest)
 
 namespace Magnum { namespace Test {
 
-void AbstractObjectTest::parenting() {
+void ObjectTest::parenting() {
     Object root;
 
     Object* childOne = new Object(&root);

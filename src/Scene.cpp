@@ -52,8 +52,8 @@ void Scene::draw() {
     drawChildren(this, _camera->cameraMatrix());
 }
 
-void Scene::drawChildren(AbstractObject* object, const Matrix4& transformationMatrix) {
-    for(set<AbstractObject*>::const_iterator it = object->children().begin(); it != object->children().end(); ++it) {
+void Scene::drawChildren(Object* object, const Matrix4& transformationMatrix) {
+    for(set<Object*>::const_iterator it = object->children().begin(); it != object->children().end(); ++it) {
         /* Transformation matrix for the object */
         Matrix4 matrix = transformationMatrix*(*it)->transformation();
 

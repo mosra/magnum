@@ -19,7 +19,7 @@
  * @brief Class Magnum::Camera
  */
 
-#include "AbstractObject.h"
+#include "Object.h"
 
 namespace Magnum {
 
@@ -28,7 +28,7 @@ namespace Magnum {
  *
  * @todo Subclasses - perspective, FBO postprocessing etc.
  */
-class Camera: public AbstractObject {
+class Camera: public Object {
     public:
         /** @brief Aspect ratio policy */
         enum AspectRatioPolicy {
@@ -43,7 +43,7 @@ class Camera: public AbstractObject {
          *
          * Calls <tt>setOrthographic(2, 1, 1000)</tt>.
          */
-        Camera(AbstractObject* parent = 0);
+        Camera(Object* parent = 0);
 
         /** @brief Aspect ratio policy */
         AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }
@@ -95,14 +95,6 @@ class Camera: public AbstractObject {
          * size changes.
          */
         void setViewport(int width, int height);
-
-        /**
-         * @brief Draw camera
-         *
-         * Subclasses can draw for example an HUD. Default implementation does
-         * nothing.
-         */
-        virtual void draw(const Magnum::Matrix4& transformationMatrix, const Magnum::Matrix4& projectionMatrix) {}
 
     private:
         Matrix4 rawProjectionMatrix;

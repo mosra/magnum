@@ -15,15 +15,15 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractObject.h"
+#include "Object.h"
 #include "Mesh.h"
 #include "IdentityShader.h"
 
 namespace Magnum { namespace Examples {
 
-class Triangle: public AbstractObject {
+class Triangle: public Object {
     public:
-        Triangle(AbstractObject* parent = 0);
+        Triangle(Object* parent = 0);
 
         virtual void draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix);
 

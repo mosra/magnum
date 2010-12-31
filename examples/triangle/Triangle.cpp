@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Examples {
 
-Triangle::Triangle(AbstractObject* parent): AbstractObject(parent), mesh(Mesh::Triangles, 3) {
+Triangle::Triangle(Object* parent): Object(parent), mesh(Mesh::Triangles, 3) {
     /* Vertices and colors, interleaved */
     Vector4 data[] = {
         Vector4(-0.5f, -0.5f, 0.0f),    Vector4(1.0f, 0.0f, 0.0f),  /* Red lower left vertex */

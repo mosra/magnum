@@ -1,5 +1,5 @@
-#ifndef Magnum_Test_AbstractObjectTest_h
-#define Magnum_Test_AbstractObjectTest_h
+#ifndef Magnum_Test_ObjectTest_h
+#define Magnum_Test_ObjectTest_h
 /*
     Copyright © 2010 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -17,19 +17,11 @@
 
 #include <QtCore/QObject>
 
-#include "AbstractObject.h"
+#include "Object.h"
 
 namespace Magnum { namespace Test {
 
-class Object: public AbstractObject {
-    public:
-        inline Object(AbstractObject* parent = 0): AbstractObject(parent) {}
-        inline virtual void draw(const Magnum::Matrix4& transformationMatrix, const Magnum::Matrix4& projectionMatrix) {}
-
-        inline const std::set<AbstractObject*>& children() { return AbstractObject::children(); }
-};
-
-class AbstractObjectTest: public QObject {
+class ObjectTest: public QObject {
     Q_OBJECT
 
     private slots:

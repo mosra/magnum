@@ -13,13 +13,13 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractObject.h"
+#include "Object.h"
 
 using namespace std;
 
 namespace Magnum {
 
-void AbstractObject::setParent(AbstractObject* parent) {
+void Object::setParent(Object* parent) {
     if(_parent == parent) return;
 
     /* Remove the object from old parent children list */
@@ -34,12 +34,12 @@ void AbstractObject::setParent(AbstractObject* parent) {
     _parent = parent;
 }
 
-AbstractObject::~AbstractObject() {
+Object::~Object() {
     /* Remove the object from parent's children */
     setParent(0);
 
     /* Delete all children */
-    for(set<AbstractObject*>::const_iterator it = _children.begin(); it != _children.end(); ++it)
+    for(set<Object*>::const_iterator it = _children.begin(); it != _children.end(); ++it)
         delete *it;
 }
 

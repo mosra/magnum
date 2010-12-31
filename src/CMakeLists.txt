@@ -6,7 +6,7 @@ find_package(GLEW REQUIRED)
 add_subdirectory(Math)
 
 set(Magnum_SRCS
-    AbstractObject.cpp
+    Object.cpp
     AbstractShaderProgram.cpp
     Camera.cpp
     IndexedMesh.cpp

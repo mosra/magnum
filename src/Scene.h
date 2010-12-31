@@ -24,10 +24,10 @@
 namespace Magnum {
 
 /** @brief Scene */
-class Scene: public AbstractObject {
+class Scene: public Object {
     private:
-        AbstractObject::setTransformation;
-        AbstractObject::setParent;
+        Object::setParent;
+        Object::setTransformation;
 
     public:
         /** @brief Features */
@@ -38,7 +38,7 @@ class Scene: public AbstractObject {
         };
 
         /** @brief Constructor */
-        inline Scene(): AbstractObject(0), _features(0), _camera(0) {
+        inline Scene(): Object(0), _features(0), _camera(0) {
             setClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         }
 
@@ -90,7 +90,7 @@ class Scene: public AbstractObject {
         unsigned int viewportWidth, viewportHeight;
 
         inline virtual void draw(const Magnum::Matrix4& transformationMatrix, const Magnum::Matrix4& projectionMatrix) {}
-        void drawChildren(AbstractObject* object, const Matrix4& transformationMatrix);
+        void drawChildren(Object* object, const Matrix4& transformationMatrix);
 };
 
 }
