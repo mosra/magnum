@@ -26,7 +26,7 @@ namespace Magnum {
 /** @brief Scene */
 class Scene: public Object {
     private:
-        Object::setParent;
+        virtual void setParent(Object* parent) {}
         Object::setTransformation;
 
     public:
@@ -39,6 +39,7 @@ class Scene: public Object {
 
         /** @brief Constructor */
         inline Scene(): Object(0), _features(0), _camera(0) {
+            _parent = this;
             setClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         }
 

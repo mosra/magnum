@@ -22,14 +22,22 @@ namespace Magnum {
 void Object::setParent(Object* parent) {
     if(_parent == parent) return;
 
+    /* Set new parent and add the object to new parent children list */
+    if(parent != 0) {
+
+        /* Only Fry can be his own grandfather */
+        Object* p = parent;
+        while(p != 0 && p->parent() != p) {
+            if(p == this) return;
+            p = p->parent();
+        }
+
+        parent->_children.insert(this);
+    }
+
     /* Remove the object from old parent children list */
     if(_parent != 0)
         _parent->_children.erase(this);
-
-    /* Set new parent and add the object to new parent children list */
-    if(parent != 0) {
-        parent->_children.insert(this);
-    }
 
     _parent = parent;
 }

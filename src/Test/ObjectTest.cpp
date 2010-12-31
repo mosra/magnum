@@ -30,6 +30,14 @@ void ObjectTest::parenting() {
     QVERIFY(childOne->parent() == &root);
     QVERIFY(root.children().size() == 2);
 
+    /* A object cannot be parent of itself */
+    childOne->setParent(childOne);
+    QVERIFY(childOne->parent() == &root);
+
+    /* In fact, cyclic dependencies are not allowed at all */
+    root.setParent(childTwo);
+    QVERIFY(root.parent() == 0);
+
     /* Reparent to another */
     childTwo->setParent(childOne);
     QVERIFY(root.children().size() == 1 && *root.children().begin() == childOne);

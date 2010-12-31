@@ -25,6 +25,8 @@
 
 namespace Magnum {
 
+class Scene;
+
 /**
  * @brief Base for all positioned objects
  *
@@ -33,6 +35,8 @@ namespace Magnum {
  */
 class Object {
     DISABLE_COPY(Object)
+
+    friend class Scene;
 
     public:
         /**
@@ -60,7 +64,7 @@ class Object {
         inline const std::set<Object*>& children() const { return _children; }
 
         /** @brief Set parent object */
-        void setParent(Object* parent);
+        virtual void setParent(Object* parent);
 
         /** @brief Transformation matrix */
         inline Matrix4 transformation() const { return _transformation; }
