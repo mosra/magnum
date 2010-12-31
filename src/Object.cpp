@@ -41,6 +41,8 @@ void Object::setParent(Object* parent) {
         _parent->_children.erase(this);
 
     _parent = parent;
+
+    setDirty();
 }
 
 Matrix4 Object::transformation(bool absolute) {
@@ -85,6 +87,27 @@ Scene* Object::scene() const {
     }
 
     return 0;
+}
+
+void Object::setDirty() {
+    /* The object (and all its children) are already dirty, nothing to do */
+    if(dirty) return;
+
+    dirty = true;
+
+    /* Make all children dirty */
+    for(set<Object*>::iterator it = _children.begin(); it != _children.end(); ++it)
+        (*it)->setDirty();
+}
+
+void Object::setClean() {
+    /* The object (and all its parents) is already clean, nothing to do */
+    if(!dirty) return;
+
+    dirty = false;
+
+    /* Make all parents clean */
+    if(_parent != 0 && _parent != this) _parent->setClean();
 }
 
 }

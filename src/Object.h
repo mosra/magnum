@@ -45,7 +45,7 @@ class Object {
          *
          * Sets all transformations to their default values.
          */
-        inline Object(Object* parent = 0): _parent(0) {
+        inline Object(Object* parent = 0): _parent(0), dirty(true) {
             setParent(parent);
         }
 
@@ -85,7 +85,10 @@ class Object {
         virtual Matrix4 transformation(bool absolute = false);
 
         /** @brief Set transformation matrix */
-        inline void setTransformation(const Matrix4& transformation) { _transformation = transformation; }
+        inline void setTransformation(const Matrix4& transformation) {
+            _transformation = transformation;
+            setDirty();
+        }
 
         /**
          * @brief Multiply transformation matrix
@@ -98,6 +101,7 @@ class Object {
          */
         inline void multiplyTransformation(const Matrix4& transformation, bool global = true) {
             _transformation = global ? transformation*_transformation : _transformation*transformation;
+            setDirty();
         }
 
         /**
@@ -153,6 +157,54 @@ class Object {
             rotate(angle, Vector3(x, y, z), global);
         }
 
+        /** @{ @name Caching helpers
+         *
+         * If the object transformation is used many times when drawing (such
+         * as e.g. position of light object), it's good to cache these values,
+         * so they don't have to be computed again on every request.
+         *
+         * If the object or any parent is transformed, the transformed object
+         * and all its children are marked as dirty. If currently active camera
+         * is transformed, the scene goes through all children and calls
+         * setDirty() recursively on every clean object (if the object is
+         * already dirty, it and all its children are skipped, because they are
+         * dirty too).
+         *
+         * These functions are used to manage dirty status of the object. If
+         * the object doesn't cache anything, it's no need to bother about them,
+         * but if does, setClean() should be reimplemented and used to
+         * regenerate the cache. Thus the dirty status is managed only for
+         * these objects, which are calling setClean().
+         */
+
+        /**
+         * @brief Whether the object is dirty
+         * @return  True, if transformation of the object, any parent or camera
+         *      has changed since last asking, false otherwise.
+         */
+        inline bool isDirty() const { return dirty; }
+
+        /**
+         * @brief Set object and all its children as dirty
+         *
+         * Recursively calls setDirty() on every child. If the object is already
+         * marked as dirty, the function does nothing.
+         * @attention Reimplementations must also call this function!
+         */
+        virtual void setDirty();
+
+        /**
+         * @brief Set object and all its parents as clean
+         *
+         * Recursively calls setClean() on every parent. Default implementation
+         * only marks the object as clean, but if the object does any caching,
+         * this function should be reimplemented to regenerate the cache.
+         * @attention Reimplementations must also call this function!
+         */
+        virtual void setClean();
+
+        /*@}*/
+
         /**
          * @brief Draw object
          *
@@ -164,6 +216,7 @@ class Object {
         Object* _parent;
         std::set<Object*> _children;
         Matrix4 _transformation;
+        bool dirty;
 };
 
 }

@@ -62,4 +62,27 @@ void ObjectTest::scene() {
     QVERIFY(childOfOrphan->scene() == 0);
 }
 
+void ObjectTest::dirty() {
+    Scene scene;
+
+    Object* childOne = new Object(&scene);
+    Object* childTwo = new Object(childOne);
+    Object* childThree = new Object(childTwo);
+
+    /* Object is dirty at the beginning */
+    QVERIFY(childOne->isDirty());
+
+    /* Clean the object and all its parents */
+    childThree->setClean();
+    QVERIFY(!childThree->isDirty());
+    QVERIFY(!childTwo->isDirty());
+    QVERIFY(!childOne->isDirty());
+    QVERIFY(!scene.isDirty());
+
+    /* Mark object and all its children as dirty */
+    childTwo->setDirty();
+    QVERIFY(childTwo->isDirty());
+    QVERIFY(childThree->isDirty());
+}
+
 }}
