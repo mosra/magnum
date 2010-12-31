@@ -77,7 +77,11 @@ class Scene: public Object {
             if(_camera) _camera->setViewport(width, height);
         }
 
-        /** @brief Set camera */
+        /**
+         * @brief Set camera
+         *
+         * If the camera is not part of the scene, the function does nothing.
+         */
         void setCamera(Camera* camera);
 
         /**

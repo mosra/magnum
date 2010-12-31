@@ -37,8 +37,22 @@ void Scene::setClearColor(const Magnum::Vector4& color) {
 }
 
 void Scene::setCamera(Camera* camera) {
-    camera->setViewport(viewportWidth, viewportHeight);
+    /* Don't assign the same camera or camera which is not part of the scene */
+    if(camera == _camera || (camera && camera->scene() != this)) return;
+
+    Camera* oldCamera = _camera;
+
+    /* Set new camera active */
     _camera = camera;
+    if(_camera) {
+        _camera->setViewport(viewportWidth, viewportHeight);
+        _camera->setActive(this);
+    }
+
+    /* Set old camera inactive, if it is still active in this scene */
+    if(oldCamera && oldCamera->active() == this) oldCamera->setActive(0);
+
+    setDirty();
 }
 
 void Scene::draw() {

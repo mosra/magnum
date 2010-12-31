@@ -45,6 +45,20 @@ class Camera: public Object {
          */
         Camera(Object* parent = 0);
 
+        /**
+         * @brief Scene in which the camera is active
+         * @return If the camera is not active anywhere, returns 0.
+         */
+        inline Scene* active() const { return _active; }
+
+        /**
+         * @brief Make camera active in given scene
+         *
+         * If passed 0 as @c scene and this camera is active in an scene, the
+         * camera will be removed from that scene.
+         */
+        void setActive(Scene* scene);
+
         /** @brief Aspect ratio policy */
         AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }
 
@@ -76,7 +90,10 @@ class Camera: public Object {
          * Camera matrix describes world position relative to the camera and is
          * applied as first.
          */
-        Matrix4 cameraMatrix() const;
+        inline Matrix4 cameraMatrix() {
+            setClean();
+            return _cameraMatrix;
+        }
 
         /**
          * @brief Projection matrix
@@ -96,9 +113,23 @@ class Camera: public Object {
          */
         void setViewport(int width, int height);
 
+        /**
+         * Recalculates camera matrix.
+         */
+        virtual void setClean();
+
+        /**
+         * If the camera was active before and is still active, calls
+         * setDirty() on the scene, if is not part of the scene anymore, calls
+         * setCamera(0) on the scene.
+         */
+        virtual void setDirty();
+
     private:
         Matrix4 rawProjectionMatrix;
         Matrix4 _projectionMatrix;
+        Matrix4 _cameraMatrix;
+        Scene* _active;
 
         int viewportWidth, viewportHeight;
         AspectRatioPolicy _aspectRatioPolicy;

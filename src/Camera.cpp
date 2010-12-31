@@ -14,11 +14,29 @@
 */
 
 #include "Camera.h"
+#include "Scene.h"
 
 namespace Magnum {
 
-Camera::Camera(Object* parent): Object(parent), viewportWidth(0), viewportHeight(0), _aspectRatioPolicy(Extend) {
+Camera::Camera(Object* parent): Object(parent), _active(0), viewportWidth(0), viewportHeight(0), _aspectRatioPolicy(Extend) {
     setOrthographic(2, 1, 1000);
+}
+
+void Camera::setActive(Scene* _scene) {
+    if(_scene == _active || scene() != _scene) return;
+
+    Scene* oldActive = _active;
+
+    /* Set camera active in new scene */
+    _active = _scene;
+    if(_active) _active->setCamera(this);
+
+    /* Remove the camera from current active scene, if the camera is still
+       active there */
+    if(oldActive && oldActive->camera() == this) oldActive->setCamera(0);
+
+    /* Clean the path to scene */
+    setClean();
 }
 
 void Camera::setOrthographic(GLfloat size, GLfloat near, GLfloat far) {
@@ -55,17 +73,36 @@ void Camera::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
     fixAspectRatio();
 }
 
-Matrix4 Camera::cameraMatrix() const {
-    /** @todo How to do that? */
-    return Matrix4();
-}
-
 void Camera::setViewport(int width, int height) {
     glViewport(0, 0, width, height);
 
     viewportWidth = width;
     viewportHeight = height;
     fixAspectRatio();
+}
+
+void Camera::setClean() {
+    if(!isDirty()) return;
+    _cameraMatrix = transformation(true).inverse();
+    Object::setClean();
+}
+
+void Camera::setDirty() {
+    Object::setDirty();
+
+    /* Camera is active */
+    if(_active) {
+        Scene* currentScene = scene();
+
+        /* Camera is not part of the scene anymore, remove it from there */
+        if(!currentScene) _active->setCamera(0);
+
+        /* Otherwise set the scene dirty */
+        else _active->setDirty();
+
+        /* Clean up the path to scene immediately */
+        setClean();
+    }
 }
 
 void Camera::fixAspectRatio() {

@@ -83,6 +83,20 @@ void ObjectTest::dirty() {
     childTwo->setDirty();
     QVERIFY(childTwo->isDirty());
     QVERIFY(childThree->isDirty());
+
+    /* Set camera, makes everything dirty except path from camera to scene */
+    Camera* camera = new Camera(&scene);
+    scene.setCamera(camera);
+    QVERIFY(childOne->isDirty());
+    QVERIFY(!camera->isDirty());
+    QVERIFY(!scene.isDirty());
+
+    /* Clean up and try to move the camera -> makes all dirty (except path
+       from camera to scene) */
+    childThree->setClean();
+    QVERIFY(!scene.isDirty());
+    camera->translate(0, 0, 1);
+    QVERIFY(childOne->isDirty());
 }
 
 }}

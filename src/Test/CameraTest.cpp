@@ -14,9 +14,11 @@
 */
 
 #include "CameraTest.h"
-#include "Camera.h"
 
 #include <QtTest/QTest>
+
+#include "Camera.h"
+#include "Scene.h"
 
 QTEST_APPLESS_MAIN(Magnum::Test::CameraTest)
 
@@ -48,6 +50,26 @@ void CameraTest::perspective() {
     };
 
     QVERIFY(camera.projectionMatrix() == Matrix4(a));
+}
+
+void CameraTest::active() {
+    Object* object = new Object;
+    Camera* camera = new Camera(object);
+
+    Scene scene;
+
+    /* Camera is not part of the scene, do nothing */
+    scene.setCamera(camera);
+    QVERIFY(scene.camera() == 0);
+
+    /* Add camera if the camera is part of the scene */
+    object->setParent(&scene);
+    scene.setCamera(camera);
+    QVERIFY(scene.camera() == camera);
+
+    /* When camera is taken out of the scene, remove it */
+    object->setParent(0);
+    QVERIFY(scene.camera() == 0);
 }
 
 }}

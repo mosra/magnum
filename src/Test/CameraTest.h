@@ -25,6 +25,7 @@ class CameraTest: public QObject {
     private slots:
         void orthographic();
         void perspective();
+        void active();
 };
 
 }}
