@@ -14,6 +14,7 @@
 */
 
 #include "Object.h"
+#include "Scene.h"
 
 using namespace std;
 
@@ -49,6 +50,18 @@ Object::~Object() {
     /* Delete all children */
     for(set<Object*>::const_iterator it = _children.begin(); it != _children.end(); ++it)
         delete *it;
+}
+
+Scene* Object::scene() const {
+    /* Goes up the family tree until it finds object which is parent of itself
+       (that's the scene) */
+    Object* p = parent();
+    while(p != 0) {
+        if(p->parent() == p) return static_cast<Scene*>(p);
+        p = p->parent();
+    }
+
+    return 0;
 }
 
 }

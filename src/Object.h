@@ -57,6 +57,12 @@ class Object {
          */
         virtual ~Object();
 
+        /**
+         * @brief Scene
+         * @return If the object is not assigned to any scene, returns 0.
+         */
+        Scene* scene() const;
+
         /** @brief Parent object */
         inline Object* parent() const { return _parent; }
 

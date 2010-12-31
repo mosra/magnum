@@ -14,6 +14,7 @@
 */
 
 #include "ObjectTest.h"
+#include "Scene.h"
 
 #include <QtTest/QTest>
 
@@ -46,6 +47,19 @@ void ObjectTest::parenting() {
     /* Delete child */
     delete childTwo;
     QVERIFY(childOne->children().size() == 0);
+}
+
+void ObjectTest::scene() {
+    Scene scene;
+
+    Object* childOne = new Object(&scene);
+    Object* childTwo = new Object(childOne);
+
+    Object* orphan = new Object;
+    Object* childOfOrphan = new Object(orphan);
+
+    QVERIFY(childTwo->scene() == &scene);
+    QVERIFY(childOfOrphan->scene() == 0);
 }
 
 }}

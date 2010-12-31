@@ -26,6 +26,7 @@ class ObjectTest: public QObject {
 
     private slots:
         void parenting();
+        void scene();
 };
 
 }}
