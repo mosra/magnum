@@ -1,5 +1,5 @@
-#ifndef Magnum_CameraTest_h
-#define Magnum_CameraTest_h
+#ifndef Magnum_Test_CameraTest_h
+#define Magnum_Test_CameraTest_h
 /*
     Copyright © 2010 Vladimír Vondruš <mosra@centrum.cz>
 

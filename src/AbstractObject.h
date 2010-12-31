@@ -57,7 +57,7 @@ class AbstractObject {
         inline AbstractObject* parent() const { return _parent; }
 
         /** @brief Child objects */
-        const std::set<AbstractObject*>& children() const { return _children; }
+        inline const std::set<AbstractObject*>& children() const { return _children; }
 
         /** @brief Set parent object */
         void setParent(AbstractObject* parent);
