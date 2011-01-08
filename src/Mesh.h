@@ -94,11 +94,31 @@ class Mesh {
          */
         virtual ~Mesh();
 
+        /**
+         * @brief Whether the mesh is finalized
+         *
+         * When the mesh is finalized, no new attributes can be bound.
+         */
+        inline bool isFinalized() const { return finalized; }
+
         /** @brief Primitive type */
         inline Primitive primitive() const { return _primitive; }
 
+        /** @brief Set primitive type */
+        inline void setPrimitive(Primitive primitive) { _primitive = primitive; }
+
         /** @brief Vertex count */
         inline GLsizei vertexCount() const { return _vertexCount; }
+
+        /**
+         * @brief Set vertex count
+         *
+         * This forces recalculation of attribute positions upon next drawing.
+         */
+        inline void setVertexCount(GLsizei vertexCount) {
+            _vertexCount = vertexCount;
+            finalized = false;
+        };
 
         /**
          * @brief Add buffer
@@ -165,6 +185,14 @@ class Mesh {
          * this function is called, no new attribute can be bound.
          */
         void finalize();
+
+        /**
+         * @brief Set the mesh dirty
+         *
+         * Sets the attribute locations in buffers as dirty, so they are
+         * recalculated on next drawing.
+         */
+        inline void setDirty() { finalized = false; }
 
     private:
         Primitive _primitive;

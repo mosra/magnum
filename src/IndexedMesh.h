@@ -44,8 +44,14 @@ class IndexedMesh: public Mesh {
         /** @brief Index count */
         inline GLsizei indexCount() const { return _indexCount; }
 
+        /** @brief Set index count */
+        inline void setIndexCount(GLsizei count) { _indexCount = count; }
+
         /** @brief Index type */
         inline GLenum indexType() const { return _indexType; }
+
+        /** @brief Set index type */
+        inline void setIndexType(GLsizei type) { _indexType = type; }
 
         /**
          * @brief Index buffer
