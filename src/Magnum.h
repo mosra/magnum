@@ -22,8 +22,12 @@
 #include <GL/glew.h>
 
 #include "Math/Matrix4.h"
+#include "Math/Vector2.h"
 
 namespace Magnum {
+
+/** @brief Two-component floating-point vector */
+typedef Math::Vector2<GLfloat> Vector2;
 
 /** @brief Three-component floating-point vector */
 typedef Math::Vector3<GLfloat> Vector3;

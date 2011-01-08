@@ -210,6 +210,10 @@ template<> inline void Mesh::bindAttribute<GLdouble>(Buffer* buffer, GLuint attr
     bindAttribute(buffer, attribute, 1, GL_DOUBLE);
 }
 
+template<> inline void Mesh::bindAttribute<Vector2>(Buffer* buffer, GLuint attribute) {
+    bindAttribute(buffer, attribute, 2, GL_FLOAT);
+}
+
 template<> inline void Mesh::bindAttribute<Vector3>(Buffer* buffer, GLuint attribute) {
     bindAttribute(buffer, attribute, 3, GL_FLOAT);
 }
