@@ -18,8 +18,8 @@
 namespace Magnum { namespace Examples {
 
 IdentityShader::IdentityShader() {
-    Shader* vertexShader = Shader::fromFile(Shader::Vertex, "identity.vert");
-    Shader* fragmentShader = Shader::fromFile(Shader::Fragment, "identity.frag");
+    Shader* vertexShader = Shader::fromFile(Shader::Vertex, "IdentityShader.vert");
+    Shader* fragmentShader = Shader::fromFile(Shader::Fragment, "IdentityShader.frag");
 
     attachShader(vertexShader);
     attachShader(fragmentShader);
