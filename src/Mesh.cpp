@@ -69,7 +69,7 @@ void Mesh::draw() {
         it->first->unbind();
     }
 
-    glDrawArrays(_primitive, 0, count);
+    glDrawArrays(_primitive, 0, _vertexCount);
 
     /* Disable vertex arrays for all attributes */
     for(set<GLuint>::const_iterator it = _attributes.begin(); it != _attributes.end(); ++it)
@@ -111,7 +111,7 @@ void Mesh::finalize() {
                 ait->pointer = reinterpret_cast<const GLvoid*>(position);
 
                 /* Add attribute size (for all vertices) to position */
-                position += ait->size*sizeOf(ait->type)*count;
+                position += ait->size*sizeOf(ait->type)*_vertexCount;
             }
         }
     }

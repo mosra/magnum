@@ -83,9 +83,9 @@ class Mesh {
         /**
          * @brief Constructor
          * @param primitive     Primitive type
-         * @param _count        Vertex count
+         * @param vertexCount   Vertex count
          */
-        inline Mesh(Primitive primitive, GLsizei _count): _primitive(primitive), count(_count), finalized(false) {}
+        inline Mesh(Primitive primitive, GLsizei vertexCount): _primitive(primitive), _vertexCount(vertexCount), finalized(false) {}
 
         /**
          * @brief Destructor
@@ -96,6 +96,9 @@ class Mesh {
 
         /** @brief Primitive type */
         inline Primitive primitive() const { return _primitive; }
+
+        /** @brief Vertex count */
+        inline GLsizei vertexCount() const { return _vertexCount; }
 
         /**
          * @brief Add buffer
@@ -164,7 +167,7 @@ class Mesh {
 
     private:
         Primitive _primitive;
-        GLsizei count;
+        GLsizei _vertexCount;
         bool finalized;
 
         std::map<Buffer*, std::pair<bool, std::vector<Attribute> > > _buffers;
