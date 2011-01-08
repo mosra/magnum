@@ -18,6 +18,8 @@ set(Magnum_SRCS
 add_library(Magnum SHARED ${Magnum_SRCS})
 target_link_libraries(Magnum ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY})
 
+install(TARGETS Magnum DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+
 if(BUILD_TESTS)
     enable_testing()
     add_subdirectory(Test)

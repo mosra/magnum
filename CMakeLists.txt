@@ -19,9 +19,19 @@ endif()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Magnum_SOURCE_DIR}/modules/")
 include(MagnumMacros)
 
+set_parent_scope(MAGNUM_INCLUDE_DIR     "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set_parent_scope(MAGNUM_LIBRARY         Magnum)
+
+include(FindMagnum)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic")
 
+add_subdirectory(modules)
 add_subdirectory(src)
+
+install(DIRECTORY src/ DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}
+                 FILES_MATCHING PATTERN "*.h"
+                 PATTERN "*/Test" EXCLUDE)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
