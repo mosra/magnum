@@ -33,13 +33,19 @@ class IndexedMesh: public Mesh {
     public:
         /**
          * @brief Constructor
-         * @param _primitive    Primitive type
-         * @param _vertexCount  Count of unique vertices
-         * @param _indexCount   Count of indices
-         * @param _indexType    Type of indices (GL_UNSIGNED_BYTE,
+         * @param primitive     Primitive type
+         * @param vertexCount   Count of unique vertices
+         * @param indexCount    Count of indices
+         * @param indexType     Type of indices (GL_UNSIGNED_BYTE,
          *      GL_UNSIGNED_SHORT or GL_UNSIGNED_INT)
          */
-        inline IndexedMesh(Primitive _primitive, GLsizei _vertexCount, GLsizei _indexCount, GLenum _indexType = GL_UNSIGNED_SHORT): Mesh(_primitive, _vertexCount), _indexBuffer(Buffer::ElementArrayBuffer), indexCount(_indexCount), indexType(_indexType) {}
+        inline IndexedMesh(Primitive primitive, GLsizei vertexCount, GLsizei indexCount, GLenum indexType = GL_UNSIGNED_SHORT): Mesh(primitive, vertexCount), _indexBuffer(Buffer::ElementArrayBuffer), _indexCount(indexCount), _indexType(indexType) {}
+
+        /** @brief Index count */
+        inline GLsizei indexCount() const { return _indexCount; }
+
+        /** @brief Index type */
+        inline GLenum indexType() const { return _indexType; }
 
         /**
          * @brief Index buffer
@@ -59,8 +65,8 @@ class IndexedMesh: public Mesh {
 
     private:
         Buffer _indexBuffer;
-        GLsizei indexCount;
-        GLenum indexType;
+        GLsizei _indexCount;
+        GLenum _indexType;
 };
 
 }
