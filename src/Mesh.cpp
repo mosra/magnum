@@ -59,10 +59,10 @@ void Mesh::draw() {
                 case GL_UNSIGNED_SHORT:
                 case GL_INT:
                 case GL_UNSIGNED_INT:
-                    glVertexAttribIPointer(ait->location, ait->size, ait->type, ait->stride, ait->pointer);
+                    glVertexAttribIPointer(ait->attribute, ait->size, ait->type, ait->stride, ait->pointer);
                     break;
                 default:
-                    glVertexAttribPointer(ait->location, ait->size, ait->type, GL_FALSE, ait->stride, ait->pointer);
+                    glVertexAttribPointer(ait->attribute, ait->size, ait->type, GL_FALSE, ait->stride, ait->pointer);
             }
 
         /* Unbind buffer */
@@ -129,7 +129,7 @@ void Mesh::bindAttribute(Buffer* buffer, GLuint attribute, GLint size, GLenum ty
     if(found == _buffers.end()) return;
 
     Attribute a;
-    a.location = attribute;
+    a.attribute = attribute;
     a.size = size;
     a.type = type;
     a.stride = 0;
