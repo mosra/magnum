@@ -117,6 +117,9 @@ class Buffer {
             glDeleteBuffers(1, &buffer);
         }
 
+        /** @brief Buffer type */
+        inline Type type() const { return _type; }
+
         /** @brief Bind buffer */
         inline void bind() const {
             glBindBuffer(_type, buffer);
