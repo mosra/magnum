@@ -1,1 +1,2 @@
+add_subdirectory(texturedTriangle)
 add_subdirectory(triangle)
