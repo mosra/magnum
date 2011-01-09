@@ -84,6 +84,15 @@ template<class Vertex> class MeshBuilder {
         /** @brief Array with vertices */
         inline const std::set<Vertex*>& vertices() const { return _vertices; }
 
+        /** @brief Array with fixed vertices */
+        std::vector<Vertex> fixedVertices() const {
+            std::vector<Vertex> vertices;
+            for(typename std::set<Vertex*>::const_iterator it = _vertices.begin(); it != _vertices.end(); ++it)
+                vertices.push_back(**it);
+
+            return vertices;
+        }
+
         /** @brief Array with faces */
         inline const std::set<Face*>& faces() const { return _faces; }
 
