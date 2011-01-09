@@ -52,6 +52,15 @@ template<class T> class Vector4: public Vector<T, 4> {
             setX(x); setY(y); setZ(z); setW(w);
         }
 
+        /**
+         * @brief Constructor
+         * @param other     Three component vector
+         * @param w         W / A value
+         */
+        inline Vector4(const Vector<T, 3>& other, T w = T(1)) {
+            setX(other[0]); setY(other[1]); setZ(other[2]); setW(w);
+        }
+
         inline T x() const { return Vector<T, 4>::at(0); } /**< @brief X component */
         inline T y() const { return Vector<T, 4>::at(1); } /**< @brief Y component */
         inline T z() const { return Vector<T, 4>::at(2); } /**< @brief Z component */
