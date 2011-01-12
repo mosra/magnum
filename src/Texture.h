@@ -191,6 +191,17 @@ template<size_t dimensions> class Texture {
         }
 
         /**
+         * @brief Set border color
+         *
+         * Border color when wrapping is set to ClampToBorder.
+         */
+        void setBorderColor(const Vector4& color) {
+            bind();
+            glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, color.data());
+            unbind();
+        }
+
+        /**
          * @brief Generate mipmap
          *
          * @see setMinificationFilter()
