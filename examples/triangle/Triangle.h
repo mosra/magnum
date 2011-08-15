@@ -1,7 +1,7 @@
 #ifndef Magnum_Examples_Triangle_h
 #define Magnum_Examples_Triangle_h
 /*
-    Copyright © 2010 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2010, 2011 Vladimír Vondruš <mosra@centrum.cz>
 
     This file is part of Magnum.
 
