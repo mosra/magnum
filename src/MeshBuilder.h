@@ -170,6 +170,47 @@ template<class Vertex> class MeshBuilder {
         }
 
         /**
+         * @brief Subdivide mesh
+         * @param interpolator  Functor or function pointer which interpolates
+         *      two adjacent vertices: <tt>Vertex interpolator(Vertex a, Vertex
+         *      b)</tt>
+         *
+         * Goes through all triangle faces and subdivides them in four new.
+         * Cleaning the mesh is up to user.
+         */
+        template<class Interpolator> void subdivide(Interpolator interpolator) {
+            /* Copy of current faces */
+            std::set<Face*> f = faces();
+
+            /* Subdivide each face to four new */
+            for(typename std::set<Face*>::const_iterator face = f.begin(); face != f.end(); ++face) {
+                /* Interpolate each side */
+                Vertex* newVertices[3];
+                for(int i = 0; i != 3; ++i)
+                    newVertices[i] = new Vertex(interpolator(*(*face)->vertices[i], *(*face)->vertices[(i+1)%3]));
+
+                /*
+                 * Add three new faces (0, 1, 3) and update original (2)
+                 *
+                 *                orig 0
+                 *                /   \
+                 *               /  0  \
+                 *              /       \
+                 *          new 0 ----- new 2
+                 *          /   \       /  \
+                 *         /  1  \  2  / 3  \
+                 *        /       \   /      \
+                 *   orig 1 ----- new 1 ---- orig 2
+                 */
+                addFace(new Face((*face)->vertices[0], newVertices[0], newVertices[2]));
+                addFace(new Face(newVertices[0], (*face)->vertices[1], newVertices[1]));
+                addFace(new Face(newVertices[2], newVertices[1], (*face)->vertices[2]));
+                for(int i = 0; i != 3; ++i)
+                    (*face)->vertices[i] = newVertices[i];
+            }
+        }
+
+        /**
          * @brief Clean the mesh
          *
          * Removes duplicate vertices from the mesh.

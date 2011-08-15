@@ -27,6 +27,10 @@ class MeshBuilderTest: public QObject {
         void addFace();
         void removeFace();
         void cleanMesh();
+        void subdivide();
+
+    private:
+        inline static int interpolator(int a, int b) { return (a+b)/2; }
 };
 
 }}

@@ -150,4 +150,29 @@ void MeshBuilderTest::cleanMesh() {
     QVERIFY(builder.faces() == faces);
 }
 
+void MeshBuilderTest::subdivide() {
+    MeshBuilder<int> builder;
+
+    int* v1 = new int(0);
+    int* v2 = new int(2);
+    int* v3 = new int(6);
+    int* v4 = new int(8);
+
+    MeshBuilder<int>::Face* f1 = new MeshBuilder<int>::Face(v1, v2, v3);
+    builder.addFace(f1);
+    MeshBuilder<int>::Face* f2 = new MeshBuilder<int>::Face(v2, v3, v4);
+    builder.addFace(f2);
+
+    builder.subdivide(interpolator);
+
+    QVERIFY(builder.vertices().size() == 10);
+    QVERIFY(builder.faces().size() == 8);
+
+    /* This also effectively checks the data, as the vertices should be exactly
+       0, 1, 2, .. 8 */
+    builder.cleanMesh();
+    QVERIFY(builder.vertices().size() == 9);
+    QVERIFY(builder.faces().size() == 8);
+}
+
 }}
