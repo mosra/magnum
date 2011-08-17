@@ -84,6 +84,12 @@ class Camera: public Object {
          */
         void setPerspective(GLfloat fov, GLfloat near, GLfloat far);
 
+        /** @brief Near clipping plane */
+        inline GLfloat near() const { return _near; }
+
+        /** @brief Far clipping plane */
+        inline GLfloat far() const { return _far; }
+
         /**
          * @brief Camera matrix
          *
@@ -129,6 +135,7 @@ class Camera: public Object {
         Matrix4 rawProjectionMatrix;
         Matrix4 _projectionMatrix;
         Matrix4 _cameraMatrix;
+        GLfloat _near, _far;
         Scene* _active;
 
         int viewportWidth, viewportHeight;

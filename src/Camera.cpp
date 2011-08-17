@@ -40,6 +40,9 @@ void Camera::setActive(Scene* _scene) {
 }
 
 void Camera::setOrthographic(GLfloat size, GLfloat near, GLfloat far) {
+    _near = near;
+    _far = far;
+
     /* Scale the volume down so it fits in (-1, 1) in all directions */
     GLfloat xyScale = 2/size;
     GLfloat zScale = 2/(far-near);
@@ -52,6 +55,9 @@ void Camera::setOrthographic(GLfloat size, GLfloat near, GLfloat far) {
 }
 
 void Camera::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
+    _near = near;
+    _far = far;
+
     /* First move the volume on z in (-1, 1) range */
     rawProjectionMatrix = Matrix4::translation(0, 0, 2*far*near/(far+near));
 
