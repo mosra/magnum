@@ -29,6 +29,9 @@ namespace Magnum { namespace Math {
 /** @brief Vector */
 template<class T, size_t size> class Vector {
     public:
+        typedef T Type;
+        const static size_t Size = size;
+
         /** @brief Angle between vectors */
         inline static T angle(const Vector<T, size>& a, const Vector<T, size>& b) {
             return acos((a*b)/(a.length()*b.length()));
