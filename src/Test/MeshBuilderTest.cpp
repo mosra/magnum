@@ -27,152 +27,159 @@ using namespace std;
 namespace Magnum { namespace Test {
 
 void MeshBuilderTest::setData() {
-    MeshBuilder<int> builder;
+    MeshBuilder<Vector1> builder;
 
     int vertexData[] = { 1, 2, 3, 4 };
     GLubyte indices[] = { 0, 1, 2, 1, 2, 3 };
-    builder.setData(vertexData, indices, 4, 6);
+    builder.setData(reinterpret_cast<Vector1*>(vertexData), indices, 4, 6);
 
-    set<int*> vertices = builder.vertices();
-    QVERIFY(vertices.size() == 4);
-
-    int i = 1;
-    for(set<int*>::const_iterator it = vertices.begin(); it != vertices.end(); ++it)
-        QVERIFY(**it == i++);
-
-    set<MeshBuilder<int>::Face*> faces = builder.faces();
+    vector<MeshBuilder<Vector1>::Face> faces = builder.faces();
     QVERIFY(faces.size() == 2);
 
-    set<MeshBuilder<int>::Face*>::const_iterator it = faces.begin();
-    QVERIFY(*(*it)->vertices[0] == 1);
-    QVERIFY(*(*it)->vertices[1] == 2);
-    QVERIFY(*(*it)->vertices[2] == 3);
+    vector<MeshBuilder<Vector1>::Face>::const_iterator it = faces.begin();
+    QVERIFY(builder.vertices()[it->vertices[0]] == 1);
+    QVERIFY(builder.vertices()[it->vertices[1]] == 2);
+    QVERIFY(builder.vertices()[it->vertices[2]] == 3);
 
     it++;
-    QVERIFY(*(*it)->vertices[0] == 2);
-    QVERIFY(*(*it)->vertices[1] == 3);
-    QVERIFY(*(*it)->vertices[2] == 4);
+    QVERIFY(builder.vertices()[it->vertices[0]] == 2);
+    QVERIFY(builder.vertices()[it->vertices[1]] == 3);
+    QVERIFY(builder.vertices()[it->vertices[2]] == 4);
+
+    vector<Vector1> vertices = builder.vertices();
+    QVERIFY(vertices.size() == 4);
+
+    int i = 0;
+    for(auto it = vertices.begin(); it != vertices.end(); ++it)
+        QVERIFY(*it == ++i);
 }
 
 void MeshBuilderTest::addFace() {
-    MeshBuilder<int> builder;
+    Vector1 v1(1);
+    Vector1 v2(2);
+    Vector1 v3(3);
+    Vector1 v4(4);
+    MeshBuilder<Vector1>::Face f1(0, 1, 2);
+    MeshBuilder<Vector1>::Face f2(1, 2, 3);
 
-    int* v1 = new int(1);
-    int* v2 = new int(2);
-    int* v3 = new int(3);
-    int* v4 = new int(4);
-
-    MeshBuilder<int>::Face* f1 = new MeshBuilder<int>::Face(v1, v2, v3);
+    MeshBuilder<Vector1> builder;
+    builder.addVertex(v1);
+    builder.addVertex(v2);
+    builder.addVertex(v3);
+    builder.addVertex(v4);
     builder.addFace(f1);
-    MeshBuilder<int>::Face* f2 = new MeshBuilder<int>::Face(v2, v3, v4);
     builder.addFace(f2);
 
-    set<int*> vertices;
-    vertices.insert(v1);
-    vertices.insert(v2);
-    vertices.insert(v3);
-    vertices.insert(v4);
-
-    set<MeshBuilder<int>::Face*> faces;
-    faces.insert(f1);
-    faces.insert(f2);
-
+    vector<Vector1> vertices;
+    vertices.push_back(v1);
+    vertices.push_back(v2);
+    vertices.push_back(v3);
+    vertices.push_back(v4);
     QVERIFY(builder.vertices() == vertices);
-    QVERIFY(builder.faces() == faces);
-}
 
-void MeshBuilderTest::removeFace() {
-    MeshBuilder<int> builder;
-
-    int* v1 = new int(1);
-    int* v2 = new int(2);
-    int* v3 = new int(3);
-    int* v4 = new int(4);
-
-    MeshBuilder<int>::Face* f1 = new MeshBuilder<int>::Face(v1, v2, v3);
-    builder.addFace(f1);
-    MeshBuilder<int>::Face* f2 = new MeshBuilder<int>::Face(v2, v3, v4);
-    builder.addFace(f2);
-    MeshBuilder<int>::Face* f3 = new MeshBuilder<int>::Face(v2, v3, v1);
-    builder.addFace(f3);
-
-    /* Remove second face */
-    builder.removeFace(f2);
-
-    set<int*> vertices;
-    vertices.insert(v1);
-    vertices.insert(v2);
-    vertices.insert(v3);
-
-    set<MeshBuilder<int>::Face*> faces;
-    faces.insert(f1);
-    faces.insert(f3);
-
-    QVERIFY(builder.vertices() == vertices);
-    QVERIFY(builder.faces() == faces);
-
-    /* Remove third face (vertices shouldn't change) */
-    builder.removeFace(f3);
-    faces.erase(f3);
-    QVERIFY(builder.vertices() == vertices);
+    vector<MeshBuilder<Vector1>::Face> faces;
+    faces.push_back(f1);
+    faces.push_back(f2);
     QVERIFY(builder.faces() == faces);
 }
 
 void MeshBuilderTest::cleanMesh() {
-    MeshBuilder<int> builder;
+    Vector1 v1(1);
+    Vector1 v2(2);
+    Vector1 v3(1);
+    Vector1 v4(4);
+    MeshBuilder<Vector1>::Face f1(0, 1, 2);
+    MeshBuilder<Vector1>::Face f2(1, 2, 3);
 
-    int* v1 = new int(1);
-    int* v2 = new int(2);
-    int* v3 = new int(1);
-    int* v4 = new int(4);
-
-    MeshBuilder<int>::Face* f1 = new MeshBuilder<int>::Face(v1, v2, v3);
+    MeshBuilder<Vector1> builder;
+    builder.addVertex(v1);
+    builder.addVertex(v2);
+    builder.addVertex(v3);
+    builder.addVertex(v4);
     builder.addFace(f1);
-    MeshBuilder<int>::Face* f2 = new MeshBuilder<int>::Face(v2, v3, v4);
     builder.addFace(f2);
 
-    builder.cleanMesh();
-    int* unique = (f1->vertices[2] == v1) ? v1 : v3;
-
-    set<int*> vertices;
-    vertices.insert(unique);
-    vertices.insert(v2);
-    vertices.insert(v4);
-
-    set<MeshBuilder<int>::Face*> faces;
-    faces.insert(f1);
-    faces.insert(f2);
+    builder.cleanMesh(1);
 
     /* Verify cleanup */
-    QVERIFY(f1->vertices[2] == unique);
-    QVERIFY(f2->vertices[1] == unique);
+    vector<Vector1> vertices;
+    vertices.push_back(v1);
+    vertices.push_back(v2);
+    vertices.push_back(v4);
     QVERIFY(builder.vertices() == vertices);
-    QVERIFY(builder.faces() == faces);
+
+    vector<MeshBuilder<Vector1>::Face> faces;
+    faces.push_back(f1);
+    faces.push_back(f2);
+    QVERIFY(builder.faces()[0].vertices[0] == 0);
+    QVERIFY(builder.faces()[0].vertices[1] == 1);
+    QVERIFY(builder.faces()[0].vertices[2] == 0);
+    QVERIFY(builder.faces()[1].vertices[0] == 1);
+    QVERIFY(builder.faces()[1].vertices[1] == 0);
+    QVERIFY(builder.faces()[1].vertices[2] == 2);
+    QVERIFY(f1.vertices[2] == f2.vertices[1]);
 }
 
 void MeshBuilderTest::subdivide() {
-    MeshBuilder<int> builder;
+    Vector1 v1(0);
+    Vector1 v2(2);
+    Vector1 v3(6);
+    Vector1 v4(8);
+    MeshBuilder<Vector1>::Face f1(0, 1, 2);
+    MeshBuilder<Vector1>::Face f2(1, 2, 3);
 
-    int* v1 = new int(0);
-    int* v2 = new int(2);
-    int* v3 = new int(6);
-    int* v4 = new int(8);
-
-    MeshBuilder<int>::Face* f1 = new MeshBuilder<int>::Face(v1, v2, v3);
+    MeshBuilder<Vector1> builder;
+    builder.addVertex(v1);
+    builder.addVertex(v2);
+    builder.addVertex(v3);
+    builder.addVertex(v4);
     builder.addFace(f1);
-    MeshBuilder<int>::Face* f2 = new MeshBuilder<int>::Face(v2, v3, v4);
     builder.addFace(f2);
 
     builder.subdivide(interpolator);
+    QVERIFY(builder.faces().size() == 8);
 
     QVERIFY(builder.vertices().size() == 10);
-    QVERIFY(builder.faces().size() == 8);
+    QVERIFY(builder.vertices()[0] == Vector1(0));
+    QVERIFY(builder.vertices()[1] == Vector1(2));
+    QVERIFY(builder.vertices()[2] == Vector1(6));
+    QVERIFY(builder.vertices()[3] == Vector1(8));
+    QVERIFY(builder.vertices()[4] == Vector1(1));
+    QVERIFY(builder.vertices()[5] == Vector1(4));
+    QVERIFY(builder.vertices()[6] == Vector1(3));
+    QVERIFY(builder.vertices()[7] == Vector1(4));
+    QVERIFY(builder.vertices()[8] == Vector1(7));
+    QVERIFY(builder.vertices()[9] == Vector1(5));
 
-    /* This also effectively checks the data, as the vertices should be exactly
-       0, 1, 2, .. 8 */
-    builder.cleanMesh();
+    QVERIFY(builder.faces()[0].vertices[0] == 4);
+    QVERIFY(builder.faces()[0].vertices[1] == 5);
+    QVERIFY(builder.faces()[0].vertices[2] == 6);
+    QVERIFY(builder.faces()[1].vertices[0] == 7);
+    QVERIFY(builder.faces()[1].vertices[1] == 8);
+    QVERIFY(builder.faces()[1].vertices[2] == 9);
+    QVERIFY(builder.faces()[2].vertices[0] == 0);
+    QVERIFY(builder.faces()[2].vertices[1] == 4);
+    QVERIFY(builder.faces()[2].vertices[2] == 6);
+    QVERIFY(builder.faces()[3].vertices[0] == 4);
+    QVERIFY(builder.faces()[3].vertices[1] == 1);
+    QVERIFY(builder.faces()[3].vertices[2] == 5);
+    QVERIFY(builder.faces()[4].vertices[0] == 6);
+    QVERIFY(builder.faces()[4].vertices[1] == 5);
+    QVERIFY(builder.faces()[4].vertices[2] == 2);
+    QVERIFY(builder.faces()[5].vertices[0] == 1);
+    QVERIFY(builder.faces()[5].vertices[1] == 7);
+    QVERIFY(builder.faces()[5].vertices[2] == 9);
+    QVERIFY(builder.faces()[6].vertices[0] == 7);
+    QVERIFY(builder.faces()[6].vertices[1] == 2);
+    QVERIFY(builder.faces()[6].vertices[2] == 8);
+    QVERIFY(builder.faces()[7].vertices[0] == 9);
+    QVERIFY(builder.faces()[7].vertices[1] == 8);
+    QVERIFY(builder.faces()[7].vertices[2] == 3);
+
+    builder.cleanMesh(1);
+
+    /* Vertices 0, 1, 2, 3, 4, 5, 6, 7, 8 */
     QVERIFY(builder.vertices().size() == 9);
-    QVERIFY(builder.faces().size() == 8);
 }
 
 }}

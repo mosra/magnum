@@ -21,6 +21,8 @@
 
 #include <set>
 #include <map>
+#include <limits>
+#include <unordered_map>
 
 #include "Buffer.h"
 #include "IndexedMesh.h"
@@ -39,20 +41,28 @@ but it must have at least operator== implemented.
 */
 template<class Vertex> class MeshBuilder {
     public:
+        typedef size_t VertexPointer;
+
         /** @brief Triangle face */
         struct Face {
             /** @brief Implicit constructor */
             Face() {}
 
             /** @brief Constructor */
-            Face(Vertex* first, Vertex* second, Vertex* third) {
+            Face(VertexPointer first, VertexPointer second, VertexPointer third) {
                 vertices[0] = first;
                 vertices[1] = second;
                 vertices[2] = third;
             }
 
             /** @brief Vertex data */
-            Vertex* vertices[3];
+            VertexPointer vertices[3];
+
+            bool operator==(const Face& other) const {
+                return other.vertices[0] == vertices[0] &&
+                       other.vertices[1] == vertices[1] &&
+                       other.vertices[2] == vertices[2];
+            }
         };
 
         /**
@@ -65,36 +75,20 @@ template<class Vertex> class MeshBuilder {
         /**
          * @brief Clear mesh data
          *
-         * Should be called after the mesh is built and the builder is not
-         * needed. This function is also automatically called in destructor or
-         * when calling setData().
+         * The data are cleared automatically in destructor and when calling
+         * setData(). If you don't want to use the data after building the mesh,
+         * destroy the MeshBuilder or call this function.
          */
         void clear() {
-            for(typename std::set<Vertex*>::iterator it = _vertices.begin(); it != _vertices.end(); ++it)
-                delete *it;
-
-            for(typename std::set<Face*>::iterator it = _faces.begin(); it != _faces.end(); ++it)
-                delete *it;
-
             _vertices.clear();
             _faces.clear();
-            vertexFaces.clear();
         }
 
         /** @brief Array with vertices */
-        inline const std::set<Vertex*>& vertices() const { return _vertices; }
-
-        /** @brief Array with fixed vertices */
-        std::vector<Vertex> fixedVertices() const {
-            std::vector<Vertex> vertices;
-            for(typename std::set<Vertex*>::const_iterator it = _vertices.begin(); it != _vertices.end(); ++it)
-                vertices.push_back(**it);
-
-            return vertices;
-        }
+        inline const std::vector<Vertex>& vertices() const { return _vertices; }
 
         /** @brief Array with faces */
-        inline const std::set<Face*>& faces() const { return _faces; }
+        inline const std::vector<Face>& faces() const { return _faces; }
 
         /**
          * @brief Set mesh data
@@ -120,53 +114,20 @@ template<class Vertex> class MeshBuilder {
             setData<GLuint>(vertices, indices, vertexCount, indexCount, GL_UNSIGNED_INT);
         }
 
-        /**
-         * @brief Remove face from the mesh
-         * @param face      Pointer to face which to remove
-         *
-         * If face vertices are not shared with another face, they are removed
-         * too.
-         */
-        void removeFace(Face* face) {
-            /* Remove face from vertexFaces */
-            for(int i = 0; i != 3; ++i) {
-                typename std::multimap<Vertex*, Face*>::iterator it = vertexFaces.lower_bound(face->vertices[i]);
-                typename std::multimap<Vertex*, Face*>::iterator end = vertexFaces.upper_bound(face->vertices[i]);
-                for(; it != end; ++it) if(it->second == face) {
-                    vertexFaces.erase(it);
-                    break;
-                }
-
-                /* If the vertex is not part of any face anymore, remove it too */
-                if(vertexFaces.count(face->vertices[i]) == 0) {
-                    _vertices.erase(face->vertices[i]);
-                    delete face->vertices[i];
-                }
-            }
-
-            /* Remove face from faces and delete it */
-            _faces.erase(face);
-            delete face;
+        /** @brief Add vertex */
+        inline VertexPointer addVertex(const Vertex& v) {
+            _vertices.push_back(v);
+            return _vertices.size()-1;
         }
 
-        /**
-         * @brief Add face
-         * @param face      Pointer to face which to add
-         */
-        void addFace(Face* face) {
-            /* Don't insert the same face twice */
-            if(_faces.find(face) != _faces.end()) return;
+        /** @brief Add face */
+        inline void addFace(const Face& face) {
+            _faces.push_back(face);
+        }
 
-            /* Add vertex to vertexData, if it is not yet there */
-            for(int i = 0; i != 3; ++i)
-                _vertices.insert(face->vertices[i]);
-
-            /* Add vertices to vertexFaces */
-            for(int i = 0; i != 3; ++i)
-                vertexFaces.insert(std::pair<Vertex*, Face*>(face->vertices[i], face));
-
-            /* Add face to face list */
-            _faces.insert(face);
+        /** @brief Add face */
+        inline void addFace(VertexPointer first, VertexPointer second, VertexPointer third) {
+            _faces.push_back(Face(first, second, third));
         }
 
         /**
@@ -179,15 +140,15 @@ template<class Vertex> class MeshBuilder {
          * Cleaning the mesh is up to user.
          */
         template<class Interpolator> void subdivide(Interpolator interpolator) {
-            /* Copy of current faces */
-            std::set<Face*> f = faces();
+            size_t faceCount = _faces.size();
+            _faces.reserve(_faces.size()*4);
 
             /* Subdivide each face to four new */
-            for(typename std::set<Face*>::const_iterator face = f.begin(); face != f.end(); ++face) {
+            for(size_t i = 0; i != faceCount; ++i) {
                 /* Interpolate each side */
-                Vertex* newVertices[3];
-                for(int i = 0; i != 3; ++i)
-                    newVertices[i] = new Vertex(interpolator(*(*face)->vertices[i], *(*face)->vertices[(i+1)%3]));
+                VertexPointer newVertices[3];
+                for(int j = 0; j != 3; ++j)
+                    newVertices[j] = addVertex(interpolator(_vertices[_faces[i].vertices[j]], _vertices[_faces[i].vertices[(j+1)%3]]));
 
                 /*
                  * Add three new faces (0, 1, 3) and update original (2)
@@ -202,58 +163,88 @@ template<class Vertex> class MeshBuilder {
                  *        /       \   /      \
                  *   orig 1 ----- new 1 ---- orig 2
                  */
-                addFace(new Face((*face)->vertices[0], newVertices[0], newVertices[2]));
-                addFace(new Face(newVertices[0], (*face)->vertices[1], newVertices[1]));
-                addFace(new Face(newVertices[2], newVertices[1], (*face)->vertices[2]));
-                for(int i = 0; i != 3; ++i)
-                    (*face)->vertices[i] = newVertices[i];
+                addFace(_faces[i].vertices[0], newVertices[0], newVertices[2]);
+                addFace(newVertices[0], _faces[i].vertices[1], newVertices[1]);
+                addFace(newVertices[2], newVertices[1], _faces[i].vertices[2]);
+                for(size_t j = 0; j != 3; ++j)
+                    _faces[i].vertices[j] = newVertices[j];
             }
         }
 
         /**
          * @brief Clean the mesh
+         * @param epsilon       Epsilon value, vertices nearer than this
+         *      distance will be melt together.
          *
-         * Removes duplicate vertices from the mesh.
+         * Removes duplicate vertices from the mesh. With template parameter
+         * @c vertexSize you can specify how many initial vertex fields are
+         * important (for example, when dealing with perspective in 3D space,
+         * only first three fields of otherwise 4D vertex are important).
          */
-        void cleanMesh() {
-            /* Vertices scheduled for deletion */
-            std::vector<Vertex*> trashcan;
+        template<size_t vertexSize = Vertex::Size> void cleanMesh(typename Vertex::Type epsilon = EPSILON) {
+            if(_faces.empty()) return;
 
-            /* Foreach all vertices and for each find similar in the rest of the array */
-            for(typename std::set<Vertex*>::iterator it = _vertices.begin(); it != _vertices.end(); ++it) {
-                typename std::set<Vertex*>::iterator next = it;
-                for(typename std::set<Vertex*>::iterator similarIt = ++next; similarIt != _vertices.end(); ++similarIt) {
-                    if(**it == **similarIt) {
-                        /* Range of faces sharing that similar vertex */
-                        typename std::multimap<Vertex*, Face*>::iterator begin = vertexFaces.lower_bound(*similarIt);
-                        typename std::multimap<Vertex*, Face*>::iterator end = vertexFaces.upper_bound(*similarIt);
+            /* Get mesh bounds */
+            Vertex min, max;
+            for(size_t i = 0; i != Vertex::Size; ++i) {
+                min[i] = std::numeric_limits<typename Vertex::Type>::max();
+                max[i] = std::numeric_limits<typename Vertex::Type>::min();
+            }
+            for(auto it = _vertices.cbegin(); it != _vertices.cend(); ++it)
+                for(size_t i = 0; i != vertexSize; ++i)
+                    if((*it)[i] < min[i])
+                        min[i] = (*it)[i];
+                    else if((*it)[i] > max[i])
+                        max[i] = (*it)[i];
 
-                        /* Updated array of faces, now sharing the original vertex */
-                        std::multimap<Vertex*, Face*> updatedFaces;
+            /* Make epsilon so large that size_t can index all vertices inside
+               mesh bounds. */
+            Vertex size = max-min;
+            for(size_t i = 0; i != Vertex::Size; ++i)
+                if(static_cast<typename Vertex::Type>(size[i]/std::numeric_limits<size_t>::max()) > epsilon)
+                    epsilon = static_cast<typename Vertex::Type>(size[i]/std::numeric_limits<size_t>::max());
 
-                        /* Replace similar vertex in faces with this */
-                        for(typename std::multimap<Vertex*, Face*>::iterator faceIt = begin; faceIt != end; ++faceIt) {
-                            for(int i = 0; i != 3; ++i) if(*similarIt == faceIt->second->vertices[i]) {
-                                faceIt->second->vertices[i] = *it;
-                            }
+            /* First go with original vertex coordinates, then move them by
+               epsilon/2 in each direction. */
+            Vertex moved;
+            for(size_t moving = 0; moving <= vertexSize; ++moving) {
 
-                            updatedFaces.insert(std::pair<Vertex*, Face*>(*it, faceIt->second));
-                        }
+                /* Under each index is pointer to face which contains given vertex
+                and index of vertex in the face. */
+                std::unordered_map<Math::Vector<size_t, vertexSize>, HashedVertex, IndexHash<vertexSize>> table;
 
-                        /* Remove old faces, insert updated */
-                        vertexFaces.erase(begin, end);
-                        vertexFaces.insert(updatedFaces.begin(), updatedFaces.end());
+                /* Reserve space for all vertices */
+                table.reserve(_vertices.size());
 
-                        /* Schedule vertex for deletion */
-                        trashcan.push_back(*similarIt);
+                /* Go through all faces' vertices */
+                for(auto it = _faces.begin(); it != _faces.end(); ++it) {
+                    for(size_t i = 0; i != 3; ++i) {
+
+                        /* Index of a vertex in vertexSize-dimensional table */
+                        size_t index[vertexSize];
+                        for(size_t ii = 0; ii != vertexSize; ++ii)
+                            index[ii] = (_vertices[it->vertices[i]][ii]+moved[ii]-min[ii])/epsilon;
+
+                        /* Try inserting the vertex into table, if it already
+                           exists, change vertex pointer of the face to already
+                           existing vertex */
+                        HashedVertex v(it->vertices[i], table.size());
+                        auto result = table.insert(std::pair<Math::Vector<size_t, vertexSize>, HashedVertex>(index, v));
+                        it->vertices[i] = result.first->second.newVertexPointer;
                     }
                 }
-            }
 
-            /* Delete all scheduled vertices */
-            for(typename std::vector<Vertex*>::const_iterator it = trashcan.begin(); it != trashcan.end(); ++it) {
-                _vertices.erase(*it);
-                delete *it;
+                /* Shrink vertices array */
+                std::vector<Vertex> vertices(table.size());
+                for(auto it = table.cbegin(); it != table.cend(); ++it)
+                    vertices[it->second.newVertexPointer] = _vertices[it->second.oldVertexPointer];
+                std::swap(vertices, _vertices);
+
+                /* Move vertex coordinates by epsilon/2 in next direction */
+                if(moving != Vertex::Size) {
+                    moved = Vertex();
+                    moved[moving] = epsilon/2;
+                }
             }
         }
 
@@ -296,59 +287,59 @@ template<class Vertex> class MeshBuilder {
         }
 
     private:
-        std::set<Vertex*> _vertices;
-        std::multimap<Vertex*, Face*> vertexFaces;
-        std::set<Face*> _faces;
+        std::vector<Face> _faces;
+        std::vector<Vertex> _vertices;
+
+        typedef size_t FacePointer;
+
+        template<size_t vertexSize> class IndexHash {
+            public:
+                inline size_t operator()(const Math::Vector<size_t, vertexSize>& data) const {
+                    size_t a = 0;
+                    for(size_t i = 0; i != vertexSize; ++i)
+                        a ^= data[i];
+                    return a;
+                }
+        };
+
+        struct HashedVertex {
+            VertexPointer oldVertexPointer, newVertexPointer;
+
+            HashedVertex(VertexPointer oldVertexPointer, VertexPointer newVertexPointer): oldVertexPointer(oldVertexPointer), newVertexPointer(newVertexPointer) {}
+        };
 
         template<class IndexType> void setData(const Vertex* vertexData, const IndexType* indices, GLsizei vertexCount, GLsizei indexCount, GLenum indexType) {
             clear();
 
             /* Map vertex indices to vertex pointers */
-            std::map<IndexType, Vertex*> vertexMapping;
-            for(IndexType i = 0; i != vertexCount; ++i) {
-                Vertex* v = new Vertex(vertexData[i]);
-                _vertices.insert(v);
-                vertexMapping.insert(std::pair<IndexType, Vertex*>(i, v));
-            }
+            std::vector<Vertex> vertices;
+            vertices.reserve(vertexCount);
+            for(IndexType i = 0; i != vertexCount; ++i)
+                addVertex(Vertex(vertexData[i]));
 
             /* Faces array */
-            for(IndexType i = 0; i < indexCount; i += 3) {
-                Face* f = new Face;
-                for(int ii = 0; ii != 3; ++ii) {
-                    f->vertices[ii] = vertexMapping[indices[i+ii]];
-                    vertexFaces.insert(std::pair<Vertex*, Face*>(f->vertices[ii], f));
-                }
-                _faces.insert(f);
-            }
+            _faces.reserve(indexCount/3);
+            for(IndexType i = 0; i < indexCount; i += 3)
+                addFace(indices[i], indices[i+1], indices[i+2]);
         }
 
         template<class IndexType> void buildInternal(IndexedMesh* mesh, Buffer* vertexBuffer, Buffer::Usage vertexBufferUsage, Buffer::Usage indexBufferUsage, GLenum indexType) {
-            /* Update the mesh parameters */
-            mesh->setPrimitive(Mesh::Triangles);
-            mesh->setVertexCount(_vertices.size());
-            mesh->setIndexCount(_faces.size()*3);
-            mesh->setIndexType(indexType);
-
-            /* Convert vertex pointers to fixed vector and map vertex data
-               pointers to vertex indices */
-            std::vector<Vertex> vertices;
-            std::map<Vertex*, IndexType> indicesMapping;
-            IndexType i = 0;
-            for(typename std::set<Vertex*>::const_iterator it = _vertices.begin(); it != _vertices.end(); ++it) {
-                vertices.push_back(**it);
-                indicesMapping.insert(std::pair<Vertex*, IndexType>(*it, i++));
-            }
-
-            /* Create indices array */
+            /* Compress face array to index array */
             std::vector<IndexType> indices;
             indices.reserve(_faces.size()*3);
-            for(typename std::set<Face*>::const_iterator it = _faces.begin(); it != _faces.end(); ++it) {
-                for(int i = 0; i != 3; ++i)
-                    indices.push_back(indicesMapping[(*it)->vertices[i]]);
+            for(auto it = _faces.cbegin(); it != _faces.cend(); ++it) {
+                indices.push_back(it->vertices[0]);
+                indices.push_back(it->vertices[1]);
+                indices.push_back(it->vertices[2]);
             }
 
-            /* Create mesh */
-            vertexBuffer->setData(sizeof(Vertex)*vertices.size(), vertices.data(), vertexBufferUsage);
+            /* Update mesh parameters and fill it with data */
+            mesh->setPrimitive(Mesh::Triangles);
+            mesh->setVertexCount(_vertices.size());
+            mesh->setIndexCount(indices.size());
+            mesh->setIndexType(indexType);
+
+            vertexBuffer->setData(sizeof(Vertex)*_vertices.size(), _vertices.data(), vertexBufferUsage);
             mesh->indexBuffer()->setData(sizeof(IndexType)*indices.size(), indices.data(), indexBufferUsage);
         }
 };
