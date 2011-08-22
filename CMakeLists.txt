@@ -24,7 +24,7 @@ set_parent_scope(MAGNUM_LIBRARY         Magnum)
 
 include(FindMagnum)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -std=c++0x")
 
 add_subdirectory(modules)
 add_subdirectory(src)
