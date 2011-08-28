@@ -96,6 +96,9 @@ template<class T> class Vector4: public Vector<T, 4> {
         /** @copydoc Vector::operator=() */
         inline Vector4<T>& operator=(const Vector<T, 4>& other) { return Vector<T, 4>::operator=(other); }
 
+        /** @copydoc Vector::operator*(const Vector<T, size>&) */
+        inline T operator*(const Vector<T, 4>& other) const { return Vector<T, 4>::operator*(other); }
+
         /** @copydoc Vector::operator*(T) */
         inline Vector4<T> operator*(T number) const { return Vector<T, 4>::operator*(number); }
 
