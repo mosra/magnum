@@ -86,9 +86,11 @@ template<class Vertex> class MeshBuilder {
 
         /** @brief Array with vertices */
         inline const std::vector<Vertex>& vertices() const { return _vertices; }
+        inline std::vector<Vertex>& vertices() { return _vertices; }
 
         /** @brief Array with faces */
         inline const std::vector<Face>& faces() const { return _faces; }
+        inline std::vector<Face>& faces() { return _faces; }
 
         /**
          * @brief Set mesh data
