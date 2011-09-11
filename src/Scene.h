@@ -43,10 +43,7 @@ class Scene: public Object {
         };
 
         /** @brief Constructor */
-        inline Scene(): Object(0), _features(0), _camera(0) {
-            _parent = this;
-            setClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        }
+        Scene();
 
         /** @brief Clear color */
         inline Vector4 clearColor() const { return _clearColor; }
@@ -96,6 +93,7 @@ class Scene: public Object {
         unsigned int _features;
         Vector4 _clearColor;
         Camera* _camera;
+        GLuint vao;
 
         unsigned int viewportWidth, viewportHeight;
 

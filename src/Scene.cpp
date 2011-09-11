@@ -19,6 +19,15 @@ using namespace std;
 
 namespace Magnum {
 
+Scene::Scene(): Object(0), _features(0), _camera(0) {
+    _parent = this;
+    setClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
+    /* Bind default VAO */
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+}
+
 void Scene::setFeature(Scene::Feature feature, bool enabled) {
     GLenum _feature;
     switch(feature) {
