@@ -1,0 +1,22 @@
+/** @mainpage
+
+<p><strong>%Magnum</strong> is simple graphical engine written in C++11 and OpenGL 3 Core Profile. Features:</p>
+<ul>
+<li>Easy-to-use templated @ref Magnum::Math "mathematical library" for matrix/vector calculations.</li>
+<li>Hierarchical @ref Magnum::Scene "scene graph" which supports transformation caching for better performance.</li>
+<li>Classes for convenient usage of @ref Magnum::Shader "shaders", @ref Magnum::Buffer "buffers" and @ref Magnum::Texture "textures".</li>
+</ul>
+
+@section BasicUsage Basic usage
+
+<p>%Scene in %Magnum is composed of hierarchically connected object instances.
+To build the scene, you need @ref Magnum::Scene "Scene" object with assigned
+@ref Magnum::Camera "Camera" and some @ref Magnum::Object "Object" instances.
+When rendering using Magnum::Scene::draw(), the engine goes through all objects
+connected to the scene and calls Magnum::Object::draw() on them.</p>
+<p>All objects are by default empty. To make object renderable in the scene,
+you must reimplement Magnum::Object::draw(), and for example bind an
+@ref Magnum::AbstractShaderProgram "shader", @ref Magnum::Texture "texture" and
+render an prepared @ref Magnum::Mesh "mesh".</p>
+<p>Basic usage examples are in <tt>examples/</tt> subdirectory.</p>
+*/

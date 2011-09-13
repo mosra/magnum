@@ -1,0 +1,11 @@
+/** @namespace Magnum
+@brief Root namespace
+
+Contains classes needed for building meshes, setting up and rendering the scene.
+*/
+
+/** @namespace Magnum::Math
+@brief Math library
+
+Template classes for matrix and vector calculations.
+*/
