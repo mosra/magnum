@@ -1,6 +1,6 @@
 # Find Magnum - Magnum handling module for CMake
 #
-# This module defines:
+# This module depends on Corrade and additionally defines:
 #
 # MAGNUM_FOUND          - True if Magnum library is found
 # MAGNUM_INCLUDE_DIR    - Include dir for Magnum
@@ -11,7 +11,7 @@
 # MAGNUM_INCLUDE_INSTALL_DIR        - Include installation directory for headers
 #
 
-include(MagnumMacros)
+find_package(Corrade REQUIRED)
 
 if (MAGNUM_INCLUDE_DIR AND MAGNUM_LIBRARY)
 

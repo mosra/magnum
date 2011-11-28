@@ -6,6 +6,7 @@ pkgdesc="OpenGL 3 graphics engine"
 arch=('i686' 'x86_64')
 url="http://mosra.cz/blog/"
 license=('LGPLv3')
+depends=('corrade')
 makedepends=('cmake' 'mesa' 'glew')
 optdepends=('qt')
 options=(!strip)
