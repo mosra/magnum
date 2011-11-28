@@ -30,28 +30,51 @@ namespace Magnum {
 
 This class is designed to be used via subclassing. Subclasses define these
 functions and properties:
- - @b Constructor, which attaches particular shaders, links the program, binds
-   attribute locations and gets uniform locations.
  - <strong>Attribute location</strong> enum with indexes where the particular
    attribute is bound, for example:
 @code
 enum Attribute {
-    VertexCoordinates = 1,
-    Color = 2,
-    TextureCoordinates = 3,
-    Normal = 4
+    Vertex = 1,
+    Normal = 2,
+    TextureCoords = 3,
 };
 @endcode
    See also bindAttribute().
+ - @b Constructor, which attaches particular shaders, links the program, binds
+   attribute locations and gets uniform locations, for example:
+@code
+    // Load shaders from file and attach them to the program
+    Shader* vertexShader = Shader::fromFile(Shader::Vertex, "PhongShader.vert");
+    Shader* fragmentShader = Shader::fromFile(Shader::Fragment, "PhongShader.frag");
+    attachShader(vertexShader);
+    attachShader(fragmentShader);
+
+    // Bind attribute names to IDs
+    bindAttribute(Vertex, "vertex");
+    bindAttribute(Normal, "normal");
+    bindAttribute(TextureCoords, "textureCoords");
+
+    // Link, then delete now uneeded shaders
+    link();
+    delete vertexShader;
+    delete fragmentShader;
+
+    // Get locations of uniforms
+    transformationMatrixUniform = uniformLocation("transformationMatrix");
+    projectionMatrixUniform = uniformLocation("projectionMatrix");
+    // more uniforms like light location, colors etc.
+@endcode
  - <strong>Uniform binding functions</strong>, which set shader uniforms with
    setUniform() and setUniformArray() functions. Example:
 @code
-void setProjectionMatrixUniform(const Matrix4& matrix);
+void setTransformationMatrixUniform(const Matrix4& matrix) {
+    setUniform(transformationMatrixUniform, matrix);
+}
 @endcode
 
 Basic workflow with AbstractShaderProgram subclasses is: instancing the class
-(once at the beginning), then in every frame calling use(), binding uniforms
-and assigning vertex buffers to given attribute locations.
+(once at the beginning), then in every frame calling use(), setting uniforms
+and calling Mesh::draw() (see its documentation for more).
  */
 class AbstractShaderProgram {
     DISABLE_COPY(AbstractShaderProgram)
