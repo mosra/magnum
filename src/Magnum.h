@@ -41,17 +41,6 @@ typedef Math::Matrix3<GLfloat> Matrix3;
 /** @brief 4x4 floating-point matrix */
 typedef Math::Matrix4<GLfloat> Matrix4;
 
-/**
- * @brief Disable copying of given class
- * @param class             Class name
- *
- * Makes copy constructor and assignment operator private, so the class cannot
- * be copied. Should be placed at the beginning of class definition.
- */
-#define DISABLE_COPY(class) \
-    class(const class&); \
-    class& operator=(const class&);
-
 }
 
 #endif
