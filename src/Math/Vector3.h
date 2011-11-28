@@ -102,6 +102,12 @@ template<class T> class Vector3: public Vector<T, 3> {
         inline Vector3<T> normalized() const { return Vector<T, 3>::normalized(); }
 };
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector3<T>& value) {
+    return debug << static_cast<const Magnum::Math::Vector<T, 3>&>(value);
+}
+#endif
+
 }}
 
 #endif

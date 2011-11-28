@@ -58,6 +58,12 @@ template<class T> class Matrix3: public Matrix<T, 3> {
         inline Matrix3<T> inverse() const { return Matrix<T, 3>::inverse(); }
 };
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix3<T>& value) {
+    return debug << static_cast<const Magnum::Math::Matrix<T, 3>&>(value);
+}
+#endif
+
 }}
 
 #endif

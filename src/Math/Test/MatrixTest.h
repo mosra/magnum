@@ -34,6 +34,8 @@ class MatrixTest: public QObject {
         void ij();
         void determinant();
         void inverse();
+
+        void debug();
 };
 
 }}}

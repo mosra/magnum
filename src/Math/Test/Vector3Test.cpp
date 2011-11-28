@@ -15,11 +15,15 @@
 
 #include "Vector3Test.h"
 
+#include <sstream>
 #include <QtTest/QTest>
 
 #include "Vector3.h"
 
 QTEST_APPLESS_MAIN(Magnum::Math::Test::Vector3Test)
+
+using namespace std;
+using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
 
@@ -30,6 +34,12 @@ void Vector3Test::cross() {
     Vector3 b(4, 3, 7);
 
     QVERIFY(Vector3::cross(a, b) == Vector3(-10, -3, 7));
+}
+
+void Vector3Test::debug() {
+    ostringstream o;
+    Debug(&o) << Vector3(0.5f, 15.0f, 1.0f);
+    QCOMPARE(QString::fromStdString(o.str()), QString("Vector(0.5, 15, 1)\n"));
 }
 
 }}}

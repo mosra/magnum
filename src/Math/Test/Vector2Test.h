@@ -1,5 +1,5 @@
-#ifndef Magnum_Math_Test_Vector4Test_h
-#define Magnum_Math_Test_Vector4Test_h
+#ifndef Magnum_Math_Test_Vector2Test_h
+#define Magnum_Math_Test_Vector2Test_h
 /*
     Copyright © 2010, 2011 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -19,13 +19,10 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class Vector4Test: public QObject {
+class Vector2Test: public QObject {
     Q_OBJECT
 
     private slots:
-        void construct();
-        void threeComponent();
-
         void debug();
 };
 

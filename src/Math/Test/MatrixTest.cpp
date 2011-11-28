@@ -15,11 +15,15 @@
 
 #include "MatrixTest.h"
 
+#include <sstream>
 #include <QtTest/QTest>
 
 #include "Matrix.h"
 
 QTEST_APPLESS_MAIN(Magnum::Math::Test::MatrixTest)
+
+using namespace std;
+using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
 
@@ -227,6 +231,22 @@ void MatrixTest::inverse() {
 
     QVERIFY(_inverse == Matrix4(inverse));
     QVERIFY(_inverse*Matrix4(m) == Matrix4());
+}
+
+void MatrixTest::debug() {
+    float m[] = {
+        3, 5, 8, 4,
+        4, 4, 7, 3,
+        7, -1, 8, 0,
+        9, 4, 5, 9
+    };
+
+    ostringstream o;
+    Debug(&o) << Matrix4(m);
+    QCOMPARE(QString::fromStdString(o.str()), QString("Matrix(3, 4, 7, 9,\n"
+                                                      "       5, 4, -1, 4,\n"
+                                                      "       8, 7, 8, 5,\n"
+                                                      "       4, 3, 0, 9)\n"));
 }
 
 }}}

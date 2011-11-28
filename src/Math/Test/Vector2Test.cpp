@@ -13,35 +13,26 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Vector4Test.h"
+#include "Vector2Test.h"
 
 #include <sstream>
 #include <QtTest/QTest>
 
-#include "Vector4.h"
+#include "Vector2.h"
 
-QTEST_APPLESS_MAIN(Magnum::Math::Test::Vector4Test)
+QTEST_APPLESS_MAIN(Magnum::Math::Test::Vector2Test)
 
 using namespace std;
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
 
-typedef Math::Vector4<float> Vector4;
-typedef Math::Vector3<float> Vector3;
+typedef Math::Vector2<float> Vector2;
 
-void Vector4Test::construct() {
-    QVERIFY(Vector4() == Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-}
-
-void Vector4Test::threeComponent() {
-    QVERIFY(Vector4(1.0f, 2.0f, 3.0f, 4.0f).xyz() == Vector3(1.0f, 2.0f, 3.0f));
-}
-
-void Vector4Test::debug() {
+void Vector2Test::debug() {
     ostringstream o;
-    Debug(&o) << Vector4(0.5f, 15.0f, 1.0f, 1.0f);
-    QCOMPARE(QString::fromStdString(o.str()), QString("Vector(0.5, 15, 1, 1)\n"));
+    Debug(&o) << Vector2(0.5f, 15.0f);
+    QCOMPARE(QString::fromStdString(o.str()), QString("Vector(0.5, 15)\n"));
 }
 
 }}}

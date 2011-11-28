@@ -13,35 +13,34 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Vector4Test.h"
+#include "Matrix3Test.h"
 
 #include <sstream>
 #include <QtTest/QTest>
 
-#include "Vector4.h"
+#include "Matrix3.h"
 
-QTEST_APPLESS_MAIN(Magnum::Math::Test::Vector4Test)
+QTEST_APPLESS_MAIN(Magnum::Math::Test::Matrix3Test)
 
 using namespace std;
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
 
-typedef Math::Vector4<float> Vector4;
-typedef Math::Vector3<float> Vector3;
+typedef Math::Matrix3<float> Matrix3;
 
-void Vector4Test::construct() {
-    QVERIFY(Vector4() == Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-}
+void Matrix3Test::debug() {
+    float m[] = {
+        3, 5, 8,
+        4, 4, 7,
+        7, -1, 8,
+    };
 
-void Vector4Test::threeComponent() {
-    QVERIFY(Vector4(1.0f, 2.0f, 3.0f, 4.0f).xyz() == Vector3(1.0f, 2.0f, 3.0f));
-}
-
-void Vector4Test::debug() {
     ostringstream o;
-    Debug(&o) << Vector4(0.5f, 15.0f, 1.0f, 1.0f);
-    QCOMPARE(QString::fromStdString(o.str()), QString("Vector(0.5, 15, 1, 1)\n"));
+    Debug(&o) << Matrix3(m);
+    QCOMPARE(QString::fromStdString(o.str()), QString("Matrix(3, 4, 7,\n"
+                                                      "       5, 4, -1,\n"
+                                                      "       8, 7, 8)\n"));
 }
 
 }}}

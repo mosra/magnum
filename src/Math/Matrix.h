@@ -231,6 +231,21 @@ template<class T> class Matrix<T, 2> {
 };
 #endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T, size_t size> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix<T, size>& value) {
+    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
+    debug << "Matrix(";
+    for(size_t row = 0; row != size; ++row) {
+        if(row != 0) debug << ",\n       ";
+        for(size_t col = 0; col != size; ++col) {
+            if(col != 0) debug << ", ";
+            debug << value.at(row, col);
+        }
+    }
+    return debug << ')';
+}
+#endif
+
 }}
 
 #endif

@@ -22,6 +22,7 @@
 #include <cstring>
 #include <cmath>
 
+#include "Utility/Debug.h"
 #include "constants.h"
 
 namespace Magnum { namespace Math {
@@ -175,6 +176,18 @@ template<class T, size_t size> class Vector {
     private:
         T _data[size];
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T, size_t size> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector<T, size>& value) {
+    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
+    debug << "Vector(";
+    for(size_t i = 0; i != size; ++i) {
+        if(i != 0) debug << ", ";
+        debug << value.at(i);
+    }
+    return debug << ')';
+}
+#endif
 
 }}
 

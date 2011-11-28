@@ -1,8 +1,17 @@
 corrade_add_test(VectorTest VectorTest.h VectorTest.cpp)
+target_link_libraries(VectorTest ${CORRADE_UTILITY_LIBRARY})
+corrade_add_test(Vector2Test Vector2Test.h Vector2Test.cpp)
+target_link_libraries(Vector2Test ${CORRADE_UTILITY_LIBRARY})
 corrade_add_test(Vector3Test Vector3Test.h Vector3Test.cpp)
+target_link_libraries(Vector3Test ${CORRADE_UTILITY_LIBRARY})
 corrade_add_test(Vector4Test Vector4Test.h Vector4Test.cpp)
+target_link_libraries(Vector4Test ${CORRADE_UTILITY_LIBRARY})
 
 corrade_add_test(MatrixTest MatrixTest.h MatrixTest.cpp)
+target_link_libraries(MatrixTest ${CORRADE_UTILITY_LIBRARY})
+corrade_add_test(Matrix3Test Matrix3Test.h Matrix3Test.cpp)
+target_link_libraries(Matrix3Test ${CORRADE_UTILITY_LIBRARY})
 corrade_add_test(Matrix4Test Matrix4Test.h Matrix4Test.cpp)
+target_link_libraries(Matrix4Test ${CORRADE_UTILITY_LIBRARY})
 
 corrade_add_test(GeometryUtilsTest GeometryUtilsTest.h GeometryUtilsTest.cpp)

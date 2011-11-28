@@ -15,6 +15,7 @@
 
 #include "VectorTest.h"
 
+#include <sstream>
 #include <QtTest/QTest>
 
 #include "Vector.h"
@@ -22,6 +23,7 @@
 QTEST_APPLESS_MAIN(Magnum::Math::Test::VectorTest)
 
 using namespace std;
+using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
 
@@ -130,6 +132,14 @@ void VectorTest::negative() {
     float negative[] = { -1.0f, 3.0f, -5.0f, 10.0f };
 
     QVERIFY(-Vector4(vec) == negative);
+}
+
+void VectorTest::debug() {
+    float vec[] = { 0.5f, 15.0f, 1.0f, 1.0f };
+
+    ostringstream o;
+    Debug(&o) << Vector4(vec);
+    QCOMPARE(QString::fromStdString(o.str()), QString("Vector(0.5, 15, 1, 1)\n"));
 }
 
 }}}
