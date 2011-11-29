@@ -47,8 +47,8 @@ template<class T> class Vector2: public Vector<T, 2> {
         inline T x() const { return Vector<T, 2>::at(0); } /**< @brief X component */
         inline T y() const { return Vector<T, 2>::at(1); } /**< @brief Y component */
 
-        inline void setX(T value) { set(0, value); } /**< @brief Set X component */
-        inline void setY(T value) { set(1, value); } /**< @brief Set Y component */
+        inline void setX(T value) { this->set(0, value); } /**< @brief Set X component */
+        inline void setY(T value) { this->set(1, value); } /**< @brief Set Y component */
 
         /** @copydoc Vector::operator=() */
         inline Vector2<T>& operator=(const Vector<T, 2>& other) { return Vector<T, 2>::operator=(other); }

@@ -66,10 +66,10 @@ template<class T> class Vector4: public Vector<T, 4> {
         inline T z() const { return Vector<T, 4>::at(2); } /**< @brief Z component */
         inline T w() const { return Vector<T, 4>::at(3); } /**< @brief W component */
 
-        inline void setX(T value) { set(0, value); } /**< @brief Set X component */
-        inline void setY(T value) { set(1, value); } /**< @brief Set Y component */
-        inline void setZ(T value) { set(2, value); } /**< @brief Set Z component */
-        inline void setW(T value) { set(3, value); } /**< @brief Set W component */
+        inline void setX(T value) { this->set(0, value); } /**< @brief Set X component */
+        inline void setY(T value) { this->set(1, value); } /**< @brief Set Y component */
+        inline void setZ(T value) { this->set(2, value); } /**< @brief Set Z component */
+        inline void setW(T value) { this->set(3, value); } /**< @brief Set W component */
 
         /**
          * @brief XYZ part of the vector

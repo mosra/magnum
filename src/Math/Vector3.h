@@ -65,9 +65,9 @@ template<class T> class Vector3: public Vector<T, 3> {
         inline T y() const { return Vector<T, 3>::at(1); } /**< @brief Y component */
         inline T z() const { return Vector<T, 3>::at(2); } /**< @brief Z component */
 
-        inline void setX(T value) { set(0, value); } /**< @brief Set X component */
-        inline void setY(T value) { set(1, value); } /**< @brief Set Y component */
-        inline void setZ(T value) { set(2, value); } /**< @brief Set Z component */
+        inline void setX(T value) { this->set(0, value); } /**< @brief Set X component */
+        inline void setY(T value) { this->set(1, value); } /**< @brief Set Y component */
+        inline void setZ(T value) { this->set(2, value); } /**< @brief Set Z component */
 
         inline T r() const { return x(); } /**< @brief R component */
         inline T g() const { return x(); } /**< @brief G component */
