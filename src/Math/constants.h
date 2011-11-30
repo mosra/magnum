@@ -27,6 +27,21 @@ namespace Magnum { namespace Math {
 /** @brief Maximal tolerance when comparing floats */
 #define EPSILON 1.0e-6
 
+/**
+ * @brief Angle in degrees
+ *
+ * Function to make angle entering less error-prone. Converts the value to
+ * radians at compile time. For example @c deg(180.0f) is converted to @c 3.14f.
+ */
+template<class T> inline constexpr T deg(T value) { return value*PI/180; }
+
+/**
+ * @brief Angle in radians
+ *
+ * See also deg().
+ */
+template<class T> inline constexpr T rad(T value) { return value; }
+
 }}
 
 #endif

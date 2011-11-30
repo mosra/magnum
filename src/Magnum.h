@@ -41,6 +41,10 @@ typedef Math::Matrix3<GLfloat> Matrix3;
 /** @brief 4x4 floating-point matrix */
 typedef Math::Matrix4<GLfloat> Matrix4;
 
+/* Copying angle converters from Math namespace */
+using Math::deg;
+using Math::rad;
+
 }
 
 #endif

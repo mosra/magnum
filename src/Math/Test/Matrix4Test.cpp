@@ -60,7 +60,7 @@ void Matrix4Test::rotation() {
         0.0f,       0.0f,       0.0f,       1.0f
     };
 
-    QVERIFY(Matrix4::rotation(-74*PI/180.0f, -1.0f, 2.0f, 2.0f) == Matrix4(matrix));
+    QVERIFY(Matrix4::rotation(deg(-74.0f), -1.0f, 2.0f, 2.0f) == Matrix4(matrix));
 }
 
 void Matrix4Test::debug() {

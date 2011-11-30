@@ -40,7 +40,7 @@ void CameraTest::orthographic() {
 
 void CameraTest::perspective() {
     Camera camera;
-    camera.setPerspective(27*PI/180, 32.0f, 100);
+    camera.setPerspective(deg(27.0f), 32.0f, 100);
 
     GLfloat a[] = {
         4.1652994f, 0,          0,           0,
