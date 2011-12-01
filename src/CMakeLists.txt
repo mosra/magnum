@@ -9,6 +9,7 @@ add_subdirectory(Math)
 
 set(Magnum_SRCS
     Object.cpp
+    AbstractTexture.cpp
     AbstractShaderProgram.cpp
     Camera.cpp
     IndexedMesh.cpp

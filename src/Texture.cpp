@@ -17,17 +17,6 @@
 
 namespace Magnum {
 
-/* Check correctness of binary OR in setMinificationFilter(). If nobody fucks
-   anything up, this assert should produce the same results on all dimensions,
-   thus testing only on Texture1D. */
-static_assert(((Texture1D::NearestNeighborFilter|Texture1D::BaseMipLevel) == GL_NEAREST) &&
-              ((Texture1D::NearestNeighborFilter|Texture1D::NearestMipLevel) == GL_NEAREST_MIPMAP_NEAREST) &&
-              ((Texture1D::NearestNeighborFilter|Texture1D::LinearMipInterpolation) == GL_NEAREST_MIPMAP_LINEAR) &&
-              ((Texture1D::LinearFilter|Texture1D::BaseMipLevel) == GL_LINEAR) &&
-              ((Texture1D::LinearFilter|Texture1D::NearestMipLevel) == GL_LINEAR_MIPMAP_NEAREST) &&
-              ((Texture1D::LinearFilter|Texture1D::LinearMipInterpolation) == GL_LINEAR_MIPMAP_LINEAR),
-    "Unsupported constants for GL texture filtering");
-
 template<size_t dimensions> void Texture<dimensions>::setWrapping(const Math::Vector<Wrapping, dimensions>& wrapping) {
     bind();
     for(int i = 0; i != dimensions; ++i) {
@@ -47,23 +36,6 @@ template<size_t dimensions> void Texture<dimensions>::setWrapping(const Math::Ve
                 break;
         }
     }
-    unbind();
-}
-
-template<size_t dimensions> void Texture<dimensions>::setMinificationFilter(Filter filter, Mipmap mipmap) {
-    /* Only base mip level is supported on rectangle textures */
-    if(target == GL_TEXTURE_RECTANGLE) mipmap = BaseMipLevel;
-
-    bind();
-    glTexParameteri(target, GL_TEXTURE_MIN_FILTER, filter|mipmap);
-    unbind();
-}
-
-template<size_t dimensions> void Texture<dimensions>::generateMipmap() {
-    if(target == GL_TEXTURE_RECTANGLE) return;
-
-    bind();
-    glGenerateMipmap(target);
     unbind();
 }
 
