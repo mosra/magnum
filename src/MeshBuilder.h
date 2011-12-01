@@ -94,7 +94,7 @@ template<class Vertex> class MeshBuilder {
 
         /**
          * @brief Set mesh data
-         * @param vertices      Vertices
+         * @param vertexData    Vertex data
          * @param indices       Vertex indices
          * @param vertexCount   Vertex count
          * @param indexCount    Index count
@@ -102,18 +102,20 @@ template<class Vertex> class MeshBuilder {
          * Replaces mesh builder data with given data. Type of indices is
          * detected from given pointer.
          */
-        inline void setData(const Vertex* vertices, const GLubyte* indices, GLsizei vertexCount, GLsizei indexCount) {
-            setData<GLubyte>(vertices, indices, vertexCount, indexCount, GL_UNSIGNED_BYTE);
-        }
+        template<class IndexType> void setData(const Vertex* vertexData, const IndexType* indices, GLsizei vertexCount, GLsizei indexCount) {
+            clear();
 
-        /** @copydoc setData() */
-        inline void setData(const Vertex* vertices, const GLushort* indices, GLsizei vertexCount, GLsizei indexCount) {
-            setData<GLushort>(vertices, indices, vertexCount, indexCount, GL_UNSIGNED_SHORT);
-        }
+            /* Map vertex indices to vertex pointers */
+            std::vector<Vertex> vertices;
+            vertices.reserve(vertexCount);
+            /* Using TypeTraits::IndexType to ensure we have allowed type for indexing */
+            for(typename TypeTraits<IndexType>::IndexType i = 0; i != vertexCount; ++i)
+                addVertex(Vertex(vertexData[i]));
 
-        /** @copydoc setData() */
-        inline void setData(const Vertex* vertices, const GLuint* indices, GLsizei vertexCount, GLsizei indexCount) {
-            setData<GLuint>(vertices, indices, vertexCount, indexCount, GL_UNSIGNED_INT);
+            /* Faces array */
+            _faces.reserve(indexCount/3);
+            for(size_t i = 0; i < indexCount; i += 3)
+                addFace(indices[i], indices[i+1], indices[i+2]);
         }
 
         /** @brief Add vertex */
@@ -266,11 +268,11 @@ template<class Vertex> class MeshBuilder {
          */
         void build(IndexedMesh* mesh, Buffer* vertexBuffer, Buffer::Usage vertexBufferUsage, Buffer::Usage indexBufferUsage) {
             if(_faces.size()*3 <= 0xFF)
-                buildInternal<GLubyte>(mesh, vertexBuffer, vertexBufferUsage, indexBufferUsage, GL_UNSIGNED_BYTE);
+                buildInternal<GLubyte>(mesh, vertexBuffer, vertexBufferUsage, indexBufferUsage);
             else if(_faces.size()*3 <= 0xFFFF)
-                buildInternal<GLushort>(mesh, vertexBuffer, vertexBufferUsage, indexBufferUsage, GL_UNSIGNED_SHORT);
+                buildInternal<GLushort>(mesh, vertexBuffer, vertexBufferUsage, indexBufferUsage);
             else
-                buildInternal<GLuint>(mesh, vertexBuffer, vertexBufferUsage, indexBufferUsage, GL_UNSIGNED_INT);
+                buildInternal<GLuint>(mesh, vertexBuffer, vertexBufferUsage, indexBufferUsage);
         }
 
         /**
@@ -310,24 +312,10 @@ template<class Vertex> class MeshBuilder {
             HashedVertex(VertexPointer oldVertexPointer, VertexPointer newVertexPointer): oldVertexPointer(oldVertexPointer), newVertexPointer(newVertexPointer) {}
         };
 
-        template<class IndexType> void setData(const Vertex* vertexData, const IndexType* indices, GLsizei vertexCount, GLsizei indexCount, GLenum indexType) {
-            clear();
-
-            /* Map vertex indices to vertex pointers */
-            std::vector<Vertex> vertices;
-            vertices.reserve(vertexCount);
-            for(IndexType i = 0; i != vertexCount; ++i)
-                addVertex(Vertex(vertexData[i]));
-
-            /* Faces array */
-            _faces.reserve(indexCount/3);
-            for(IndexType i = 0; i < indexCount; i += 3)
-                addFace(indices[i], indices[i+1], indices[i+2]);
-        }
-
-        template<class IndexType> void buildInternal(IndexedMesh* mesh, Buffer* vertexBuffer, Buffer::Usage vertexBufferUsage, Buffer::Usage indexBufferUsage, GLenum indexType) {
-            /* Compress face array to index array */
-            std::vector<IndexType> indices;
+        template<class IndexType> void buildInternal(IndexedMesh* mesh, Buffer* vertexBuffer, Buffer::Usage vertexBufferUsage, Buffer::Usage indexBufferUsage) {
+            /* Compress face array to index array. Using TypeTraits::IndexType
+               to ensure we have allowed type for indexing */
+            std::vector<typename TypeTraits<IndexType>::IndexType> indices;
             indices.reserve(_faces.size()*3);
             for(auto it = _faces.cbegin(); it != _faces.cend(); ++it) {
                 indices.push_back(it->vertices[0]);
@@ -339,7 +327,7 @@ template<class Vertex> class MeshBuilder {
             mesh->setPrimitive(Mesh::Triangles);
             mesh->setVertexCount(_vertices.size());
             mesh->setIndexCount(indices.size());
-            mesh->setIndexType(indexType);
+            mesh->setIndexType(TypeTraits<IndexType>::glType());
 
             vertexBuffer->setData(sizeof(Vertex)*_vertices.size(), _vertices.data(), vertexBufferUsage);
             mesh->indexBuffer()->setData(sizeof(IndexType)*indices.size(), indices.data(), indexBufferUsage);
