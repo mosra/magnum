@@ -20,6 +20,7 @@
  */
 
 #include "Magnum.h"
+#include "TypeTraits.h"
 
 namespace Magnum {
 
@@ -226,54 +227,59 @@ template<size_t dimensions> class Texture {
          *      color channel is detected from format of passed data array.
          * @param data              Texture data.
          */
-        inline void setData(GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const GLubyte* data) {
-            setData(mipLevel, internalFormat, _dimensions, colorFormat, GL_UNSIGNED_BYTE, data);
+        template<class T> inline void setData(GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
+            bind();
+            DataHelper<typename TypeTraits<T>::TextureType, dimensions>()(target, mipLevel, internalFormat, _dimensions, colorFormat, data);
+            unbind();
         }
 
-        /** @copydoc setData() */
-        inline void setData(GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const GLbyte* data) {
-            setData(mipLevel, internalFormat, _dimensions, colorFormat, GL_BYTE, data);
-        }
+        /**
+         * @brief Helper for setting texture data
+         *
+         * Workaround for partial partial template specialization, see
+         * http://stackoverflow.com/questions/1757791/c-template-partial-specialization-specializing-one-member-function-only
+         */
+        template<class T, size_t textureDimensions> struct DataHelper {
+            #ifdef DOXYGEN_GENERATING_OUTPUT
+            /**
+             * @brief Functor
+             * @param target            Target, such as GL_TEXTURE_2D
+             * @param mipLevel          Mip level
+             * @param internalFormat    Internal texture format. One value from
+             *      InternalFormat or ColorFormat enum.
+             * @param _dimensions       Texture dimensions
+             * @param colorFormat       Color format of passed data. Data size per
+             *      color channel is detected from format of passed data array.
+             * @param data              Texture data.
+             *
+             * Calls glTexImage1D, glTexImage2D, glTexImage3D depending on
+             * dimension count.
+             */
+            inline void operator()(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, 1>& _dimensions, ColorFormat colorFormat, const T* data);
+            #endif
+        };
 
-        /** @copydoc setData() */
-        inline void setData(GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const GLushort* data) {
-            setData(mipLevel, internalFormat, _dimensions, colorFormat, GL_UNSIGNED_SHORT, data);
-        }
-
-        /** @copydoc setData() */
-        inline void setData(GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const GLshort* data) {
-            setData(mipLevel, internalFormat, _dimensions, colorFormat, GL_SHORT, data);
-        }
-
-        /** @copydoc setData() */
-        inline void setData(GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const GLuint* data) {
-            setData(mipLevel, internalFormat, _dimensions, colorFormat, GL_UNSIGNED_INT, data);
-        }
-
-        /** @copydoc setData() */
-        inline void setData(GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const GLint* data) {
-            setData(mipLevel, internalFormat, _dimensions, colorFormat, GL_INT, data);
-        }
-
-        /** @copydoc setData() */
-        inline void setData(GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const GLfloat* data) {
-            setData(mipLevel, internalFormat, _dimensions, colorFormat, GL_FLOAT, data);
-        }
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class T> struct DataHelper<T, 1> {
+            inline void operator()(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, 1>& _dimensions, ColorFormat colorFormat, const T* data) {
+                glTexImage1D(target, mipLevel, internalFormat, _dimensions.at(0), 0, colorFormat, TypeTraits<T>::glType(), data);
+            }
+        };
+        template<class T> struct DataHelper<T, 2> {
+            inline void operator()(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, 2>& _dimensions, ColorFormat colorFormat, const T* data) {
+                glTexImage2D(target, mipLevel, internalFormat, _dimensions.at(0), _dimensions.at(1), 0, colorFormat, TypeTraits<T>::glType(), data);
+            }
+        };
+        template<class T> struct DataHelper<T, 3> {
+            inline void operator()(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, 3>& _dimensions, ColorFormat colorFormat, const T* data) {
+                glTexImage3D(target, mipLevel, internalFormat, _dimensions.at(0), _dimensions.at(1), _dimensions.at(2), 0, colorFormat, TypeTraits<T>::glType(), data);
+            }
+        };
+        #endif
 
     private:
         GLuint texture;
         const GLenum target;
-
-        void setData(GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, GLenum pixelFormat, const GLvoid* data) {
-            bind();
-            if(dimensions == 1)
-                glTexImage1D(target, mipLevel, internalFormat, _dimensions.at(0), 0, colorFormat, pixelFormat, data);
-            else if(dimensions == 2)
-                glTexImage2D(target, mipLevel, internalFormat, _dimensions.at(0), _dimensions.at(1), 0, colorFormat, pixelFormat, data);
-            else if(dimensions == 3)
-                glTexImage3D(target, mipLevel, internalFormat, _dimensions.at(0), _dimensions.at(1), _dimensions.at(2), 0, colorFormat, pixelFormat, data);
-            unbind();
-        }
 };
 
 /** @brief One-dimensional texture */
