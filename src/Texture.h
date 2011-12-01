@@ -33,6 +33,8 @@ namespace Magnum {
  */
 template<size_t dimensions> class Texture {
     public:
+        static const size_t Dimensions = dimensions;    /**< @brief Texture dimension count */
+
         /** @brief Texture filtering */
         enum Filter {
             /**
