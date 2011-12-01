@@ -108,10 +108,13 @@ template<size_t dimensions> class Texture {
 
         /**
          * @brief Constructor
+         * @param target    Target, e.g. GL_TEXTURE_2D. If not set, target is
+         *      based on dimension count (GL_TEXTURE_1D, GL_TEXTURE_2D,
+         *      GL_TEXTURE_3D).
          *
          * Creates one OpenGL texture.
          */
-        inline Texture(): target(GL_TEXTURE_1D + dimensions - 1) {
+        inline Texture(GLenum target = GL_TEXTURE_1D + dimensions - 1): target(target) {
             glGenTextures(1, &texture);
         }
 
