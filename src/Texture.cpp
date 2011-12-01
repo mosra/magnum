@@ -30,17 +30,40 @@ static_assert(((Texture1D::NearestNeighborFilter|Texture1D::BaseMipLevel) == GL_
 
 template<size_t dimensions> void Texture<dimensions>::setWrapping(const Math::Vector<Wrapping, dimensions>& wrapping) {
     bind();
-    for(int i = 0; i != dimensions; ++i) switch(i) {
-        case 0:
-            glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapping.at(i));
-            break;
-        case 1:
-            glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapping.at(i));
-            break;
-        case 2:
-            glTexParameteri(target, GL_TEXTURE_WRAP_R, wrapping.at(i));
-            break;
+    for(int i = 0; i != dimensions; ++i) {
+        /* Repeat wrap modes are not available on rectangle textures. */
+        if(target == GL_TEXTURE_RECTANGLE && (wrapping.at(i) == Repeat || wrapping.at(i) == MirroredRepeat))
+            continue;
+
+        switch(i) {
+            case 0:
+                glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapping.at(i));
+                break;
+            case 1:
+                glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapping.at(i));
+                break;
+            case 2:
+                glTexParameteri(target, GL_TEXTURE_WRAP_R, wrapping.at(i));
+                break;
+        }
     }
+    unbind();
+}
+
+template<size_t dimensions> void Texture<dimensions>::setMinificationFilter(Filter filter, Mipmap mipmap) {
+    /* Only base mip level is supported on rectangle textures */
+    if(target == GL_TEXTURE_RECTANGLE) mipmap = BaseMipLevel;
+
+    bind();
+    glTexParameteri(target, GL_TEXTURE_MIN_FILTER, filter|mipmap);
+    unbind();
+}
+
+template<size_t dimensions> void Texture<dimensions>::generateMipmap() {
+    if(target == GL_TEXTURE_RECTANGLE) return;
+
+    bind();
+    glGenerateMipmap(target);
     unbind();
 }
 

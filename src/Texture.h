@@ -25,7 +25,7 @@
 namespace Magnum {
 
 /**
-@brief Texture
+@brief %Texture
 
 Template class for one- to three-dimensional textures. Recommended usage is via
 subclassing and setting texture data from e.g. constructor with setData().
@@ -33,6 +33,20 @@ subclassing and setting texture data from e.g. constructor with setData().
 @attention Don't forget to call setMinificationFilter() and
 setMagnificationFilter() after creating the texture, otherwise it will be
 unusable.
+
+The texture is bound via bind() and setting texture uniform on the shader to
+desired texture layer. In shader, the texture is used via @c sampler1D,
+@c sampler2D or @c sampler3D depending on dimension count.
+
+@section RectangleTextures Rectangle textures
+
+If you want to use rectangle textures, set target in constructor to
+@c GL_TEXTURE_RECTANGLE and in shader use @c sampler2DRect. Unlike @c sampler2D,
+which accepts coordinates between 0 and 1, @c sampler2DRect accepts coordinates
+between 0 and @c textureSizeInGivenDirection-1. Note that rectangle textures
+don't support mipmapping and repeating wrapping modes, see @ref Texture::Filter
+"Filter", @ref Texture::Mipmap "Mipmap" and generateMipmap() documentation
+for more information.
  */
 template<size_t dimensions> class Texture {
     public:
@@ -54,17 +68,18 @@ template<size_t dimensions> class Texture {
         /** @brief Mip level selection */
         enum Mipmap {
             /**
-             * Select base mip level.
+             * Select base mip level
              */
             BaseMipLevel = GL_NEAREST & ~GL_NEAREST,
 
             /**
-             * Select nearest mip level.
+             * Select nearest mip level. Unavailable on rectangle textures.
              */
             NearestMipLevel = GL_NEAREST_MIPMAP_NEAREST & ~GL_NEAREST,
 
             /**
-             * Linear interpolation of nearest mip levels.
+             * Linear interpolation of nearest mip levels. Unavailable on
+             * rectangle textures.
              */
             LinearMipInterpolation = GL_NEAREST_MIPMAP_LINEAR & ~GL_NEAREST
         };
@@ -72,12 +87,12 @@ template<size_t dimensions> class Texture {
         /** @brief Texture wrapping on the edge */
         enum Wrapping {
             /**
-             * Repeat texture
+             * Repeat texture. Unavailable on rectangle textures.
              */
             Repeat = GL_REPEAT,
 
             /**
-             * Repeat mirrored texture
+             * Repeat mirrored texture. Unavailable on rectangle textures.
              */
             MirroredRepeat = GL_MIRRORED_REPEAT,
 
@@ -114,9 +129,9 @@ template<size_t dimensions> class Texture {
 
         /**
          * @brief Constructor
-         * @param target    Target, e.g. GL_TEXTURE_2D. If not set, target is
-         *      based on dimension count (GL_TEXTURE_1D, GL_TEXTURE_2D,
-         *      GL_TEXTURE_3D).
+         * @param target    Target, e.g. @c GL_TEXTURE_RECTANGLE. If not set,
+         *      target is based on dimension count (@c GL_TEXTURE_1D,
+         *      @c GL_TEXTURE_2D, @c GL_TEXTURE_3D).
          *
          * Creates one OpenGL texture.
          */
@@ -152,20 +167,17 @@ template<size_t dimensions> class Texture {
          * @brief Set minification filter
          * @param filter        Filter
          * @param mipmap        Mipmap filtering. If set to anything else than
-         *      BaseLevel, make sure textures for all mip levels are set or call
-         *      generateMipmap().
+         *      BaseMipLevel, make sure textures for all mip levels are set or
+         *      call generateMipmap().
          *
          * Sets filter used when the object pixel size is smaller than the
-         * texture size.
+         * texture size. For rectangle textures only some modes are supported,
+         * see @ref Texture::Filter "Filter" and @ref Texture::Mipmap "Mipmap"
+         * documentation for more information.
          * @attention This and setMagnificationFilter() must be called after
          * creating the texture, otherwise it will be unusable.
-         * @see generateMipmap()
          */
-        inline void setMinificationFilter(Filter filter, Mipmap mipmap = BaseMipLevel) {
-            bind();
-            glTexParameteri(target, GL_TEXTURE_MIN_FILTER, filter|mipmap);
-            unbind();
-        }
+        void setMinificationFilter(Filter filter, Mipmap mipmap = BaseMipLevel);
 
         /**
          * @brief Set magnification filter
@@ -186,14 +198,18 @@ template<size_t dimensions> class Texture {
          * @brief Set wrapping
          * @param wrapping      Wrapping type for all texture dimensions
          *
-         * Sets wrapping type for coordinates out of range (-1, 1).
+         * Sets wrapping type for coordinates out of range (0, 1) for normal
+         * textures and (0, textureSizeInGivenDirection-1) for rectangle
+         * textures. Note that for rectangle textures repeating wrapping modes
+         * are unavailable.
          */
         void setWrapping(const Math::Vector<Wrapping, dimensions>& wrapping);
 
         /**
          * @brief Set border color
          *
-         * Border color when wrapping is set to ClampToBorder.
+         * Border color when @ref Texture::Wrapping "wrapping" is set to
+         * @c ClampToBorder.
          */
         inline void setBorderColor(const Vector4& color) {
             bind();
@@ -204,24 +220,22 @@ template<size_t dimensions> class Texture {
         /**
          * @brief Generate mipmap
          *
+         * Does nothing on rectangle textures.
          * @see setMinificationFilter()
          */
-        inline void generateMipmap() {
-            bind();
-            glGenerateMipmap(target);
-            unbind();
-        }
+        void generateMipmap();
 
     protected:
         /**
          * @brief Set texture data
          * @param mipLevel          Mip level
          * @param internalFormat    Internal texture format. One value from
-         *      InternalFormat or ColorFormat enum.
-         * @param _dimensions       Texture dimensions
+         *      @ref Texture::InternalFormat "InternalFormat" or
+         *      @ref Texture::ColorFormat "ColorFormat" enum.
+         * @param _dimensions       %Texture dimensions
          * @param colorFormat       Color format of passed data. Data size per
          *      color channel is detected from format of passed data array.
-         * @param data              Texture data.
+         * @param data              %Texture data
          */
         template<class T> inline void setData(GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             bind();
@@ -232,26 +246,26 @@ template<size_t dimensions> class Texture {
         /**
          * @brief Helper for setting texture data
          *
-         * Workaround for partial partial template specialization, see
-         * http://stackoverflow.com/questions/1757791/c-template-partial-specialization-specializing-one-member-function-only
+         * Workaround for partial template specialization.
          */
         template<class T, size_t textureDimensions> struct DataHelper {
             #ifdef DOXYGEN_GENERATING_OUTPUT
             /**
              * @brief Functor
-             * @param target            Target, such as GL_TEXTURE_2D
+             * @param target            Target, such as @c GL_TEXTURE_RECTANGLE
              * @param mipLevel          Mip level
              * @param internalFormat    Internal texture format. One value from
-             *      InternalFormat or ColorFormat enum.
-             * @param _dimensions       Texture dimensions
-             * @param colorFormat       Color format of passed data. Data size per
-             *      color channel is detected from format of passed data array.
-             * @param data              Texture data.
+             *      Texture::InternalFormat or Texture::ColorFormat enum.
+             * @param _dimensions       %Texture dimensions
+             * @param colorFormat       Color format of passed data. Data size
+             *      per color channel is detected from format of passed data
+             *      array.
+             * @param data              %Texture data
              *
-             * Calls glTexImage1D, glTexImage2D, glTexImage3D depending on
-             * dimension count.
+             * Calls @c glTexImage1D, @c glTexImage2D, @c glTexImage3D depending
+             * on dimension count.
              */
-            inline void operator()(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, 1>& _dimensions, ColorFormat colorFormat, const T* data);
+            inline void operator()(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, textureDimensions>& _dimensions, ColorFormat colorFormat, const T* data);
             #endif
         };
 
