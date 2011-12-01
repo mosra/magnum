@@ -25,11 +25,14 @@
 namespace Magnum {
 
 /**
- * @brief Texture
- *
- * Template class for one- to three-dimensional textures. Recommended usage is
- * via subclassing and setting texture data from e.g. constructor with
- * setData().
+@brief Texture
+
+Template class for one- to three-dimensional textures. Recommended usage is via
+subclassing and setting texture data from e.g. constructor with setData().
+
+@attention Don't forget to call setMinificationFilter() and
+setMagnificationFilter() after creating the texture, otherwise it will be
+unusable.
  */
 template<size_t dimensions> class Texture {
     public:
@@ -154,6 +157,9 @@ template<size_t dimensions> class Texture {
          *
          * Sets filter used when the object pixel size is smaller than the
          * texture size.
+         * @attention This and setMagnificationFilter() must be called after
+         * creating the texture, otherwise it will be unusable.
+         * @see generateMipmap()
          */
         inline void setMinificationFilter(Filter filter, Mipmap mipmap = BaseLevel) {
             bind();
@@ -167,6 +173,8 @@ template<size_t dimensions> class Texture {
          *
          * Sets filter used when the object pixel size is larger than largest
          * texture size.
+         * @attention This and setMinificationFilter() must be called after
+         * creating the texture, otherwise it will be unusable.
          */
         inline void setMagnificationFilter(Filter filter) {
             bind();
