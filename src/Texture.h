@@ -130,7 +130,7 @@ template<size_t dimensions> class Texture {
 
         /** @brief Bind texture for usage / rendering */
         inline void bind() const {
-            glBindTexture(dimensions, texture);
+            glBindTexture(target, texture);
         }
 
         /**
@@ -140,7 +140,7 @@ template<size_t dimensions> class Texture {
          * particular one.
          */
         inline void unbind() const {
-            glBindTexture(dimensions, texture);
+            glBindTexture(target, 0);
         }
 
         /**
