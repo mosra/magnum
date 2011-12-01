@@ -43,30 +43,30 @@ template<size_t dimensions> class Texture {
             /**
              * Nearest neighbor filtering
              */
-            NearestNeighbor = GL_NEAREST,
+            NearestNeighborFilter = GL_NEAREST,
 
             /**
              * Linear filtering
              */
-            Linear = GL_LINEAR
+            LinearFilter = GL_LINEAR
         };
 
         /** @brief Mip level selection */
         enum Mipmap {
             /**
-             * Select base mipmap level.
+             * Select base mip level.
              */
-            BaseLevel = 0,
+            BaseMipLevel = GL_NEAREST & ~GL_NEAREST,
 
             /**
              * Select nearest mip level.
              */
-            NearestLevel = 0x100,
+            NearestMipLevel = GL_NEAREST_MIPMAP_NEAREST & ~GL_NEAREST,
 
             /**
              * Linear interpolation of nearest mip levels.
              */
-            LinearInterpolation = 0x102
+            LinearMipInterpolation = GL_NEAREST_MIPMAP_LINEAR & ~GL_NEAREST
         };
 
         /** @brief Texture wrapping on the edge */
@@ -161,7 +161,7 @@ template<size_t dimensions> class Texture {
          * creating the texture, otherwise it will be unusable.
          * @see generateMipmap()
          */
-        inline void setMinificationFilter(Filter filter, Mipmap mipmap = BaseLevel) {
+        inline void setMinificationFilter(Filter filter, Mipmap mipmap = BaseMipLevel) {
             bind();
             glTexParameteri(target, GL_TEXTURE_MIN_FILTER, filter|mipmap);
             unbind();
