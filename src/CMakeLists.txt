@@ -15,6 +15,7 @@ set(Magnum_SRCS
     Mesh.cpp
     Scene.cpp
     Shader.cpp
+    Texture.cpp
 )
 
 add_library(Magnum SHARED ${Magnum_SRCS})

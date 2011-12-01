@@ -188,28 +188,14 @@ template<size_t dimensions> class Texture {
          *
          * Sets wrapping type for coordinates out of range (-1, 1).
          */
-        void setWrapping(const Math::Vector<Wrapping, dimensions>& wrapping) {
-            bind();
-            for(int i = 0; i != dimensions; ++i) switch(i) {
-                case 0:
-                    glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapping.at(i));
-                    break;
-                case 1:
-                    glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapping.at(i));
-                    break;
-                case 2:
-                    glTexParameteri(target, GL_TEXTURE_WRAP_R, wrapping.at(i));
-                    break;
-            }
-            unbind();
-        }
+        void setWrapping(const Math::Vector<Wrapping, dimensions>& wrapping);
 
         /**
          * @brief Set border color
          *
          * Border color when wrapping is set to ClampToBorder.
          */
-        void setBorderColor(const Vector4& color) {
+        inline void setBorderColor(const Vector4& color) {
             bind();
             glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, color.data());
             unbind();
@@ -220,7 +206,7 @@ template<size_t dimensions> class Texture {
          *
          * @see setMinificationFilter()
          */
-        void generateMipmap() {
+        inline void generateMipmap() {
             bind();
             glGenerateMipmap(target);
             unbind();
