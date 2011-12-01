@@ -114,7 +114,7 @@ template<class Vertex> class MeshBuilder {
 
             /* Faces array */
             _faces.reserve(indexCount/3);
-            for(size_t i = 0; i < indexCount; i += 3)
+            for(size_t i = 0; i < static_cast<size_t>(indexCount); i += 3)
                 addFace(indices[i], indices[i+1], indices[i+2]);
         }
 
