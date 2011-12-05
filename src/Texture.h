@@ -33,9 +33,11 @@ subclassing and setting texture data from e.g. constructor with setData().
 setMagnificationFilter() after creating the texture, otherwise it will be
 unusable.
 
-The texture is bound via bind() and setting texture uniform on the shader to
-desired texture layer. In shader, the texture is used via @c sampler1D,
-@c sampler2D or @c sampler3D depending on dimension count.
+The texture is bound via bind() and setting texture uniform on the shader to the
+texture (see AbstractShaderProgram::setUniform(GLint, const AbstractTexture*)).
+In shader, the texture is used via @c sampler1D, @c sampler2D or @c sampler3D
+depending on dimension count. Note that you can have more than one texture bound
+to the shader - the only requirement is to have each texture in another layer.
 
 @section RectangleTextures Rectangle textures
 

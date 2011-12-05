@@ -22,6 +22,7 @@
 #include <map>
 
 #include "Shader.h"
+#include "Texture.h"
 
 namespace Magnum {
 
@@ -195,6 +196,11 @@ class AbstractShaderProgram {
         /** @copydoc setUniform(GLint, GLint) */
         void setUniform(GLint location, const Matrix4& value) {
             glUniformMatrix4fv(location, 1, GL_FALSE, value.data());
+        }
+
+        /** @copydoc setUniform(GLint, GLint) */
+        void setUniform(GLint location, const AbstractTexture* value) {
+            setUniform(location, value->layer());
         }
 
     private:

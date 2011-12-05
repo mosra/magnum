@@ -127,6 +127,9 @@ class AbstractTexture {
             glDeleteTextures(1, &texture);
         }
 
+        /** @brief Texture layer */
+        inline GLint layer() const { return _layer; }
+
         /** @brief Bind texture for usage / rendering */
         inline void bind() const {
             glActiveTexture(GL_TEXTURE0 + _layer);
