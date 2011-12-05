@@ -53,13 +53,14 @@ template<size_t dimensions> class Texture: public AbstractTexture {
 
         /**
          * @brief Constructor
+         * @param layer     Texture layer (number between 0 and 31)
          * @param target    Target, e.g. @c GL_TEXTURE_RECTANGLE. If not set,
          *      target is based on dimension count (@c GL_TEXTURE_1D,
          *      @c GL_TEXTURE_2D, @c GL_TEXTURE_3D).
          *
          * Creates one OpenGL texture.
          */
-        inline Texture(GLenum target = DataHelper<dimensions>::target()): AbstractTexture(target) {}
+        inline Texture(GLint layer = 0, GLenum target = DataHelper<dimensions>::target()): AbstractTexture(layer, target) {}
 
         /**
          * @brief Set wrapping

@@ -17,6 +17,19 @@
 
 namespace Magnum {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* Check corretness of GL_TEXTURE0 + N == GL_TEXTUREN */
+#define texture_assert(num) static_assert(GL_TEXTURE0 + num == GL_TEXTURE##num,\
+    "Unsupported constants for GL texture layers")
+texture_assert(0); texture_assert(8);  texture_assert(16); texture_assert(24);
+texture_assert(1); texture_assert(9);  texture_assert(17); texture_assert(25);
+texture_assert(2); texture_assert(10); texture_assert(18); texture_assert(26);
+texture_assert(3); texture_assert(11); texture_assert(19); texture_assert(27);
+texture_assert(4); texture_assert(12); texture_assert(20); texture_assert(28);
+texture_assert(5); texture_assert(13); texture_assert(21); texture_assert(29);
+texture_assert(6); texture_assert(14); texture_assert(22); texture_assert(30);
+texture_assert(7); texture_assert(15); texture_assert(23); texture_assert(31);
+
 /* Check correctness of binary OR in setMinificationFilter(). If nobody fucks
    anything up, this assert should produce the same results on all dimensions,
    thus testing only on AbstractTexture. */
@@ -27,6 +40,7 @@ static_assert(((AbstractTexture::NearestNeighborFilter|AbstractTexture::BaseMipL
               ((AbstractTexture::LinearFilter|AbstractTexture::NearestMipLevel) == GL_LINEAR_MIPMAP_NEAREST) &&
               ((AbstractTexture::LinearFilter|AbstractTexture::LinearMipInterpolation) == GL_LINEAR_MIPMAP_LINEAR),
     "Unsupported constants for GL texture filtering");
+#endif
 
 void AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
     /* Only base mip level is supported on rectangle textures */

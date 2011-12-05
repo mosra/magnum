@@ -48,10 +48,11 @@ class CubeMapTexture: public Texture2D {
     public:
         /**
          * @brief Constructor
+         * @param layer     Texture layer (number between 0 and 31)
          *
          * Creates texture with target @c GL_TEXTURE_CUBE_MAP.
          */
-        inline CubeMapTexture(): Texture2D(GL_TEXTURE_CUBE_MAP) {}
+        inline CubeMapTexture(GLint layer = 0): Texture2D(layer, GL_TEXTURE_CUBE_MAP) {}
 
     protected:
         /** @brief Deleted. Use setDataPositiveX() and others instead. */

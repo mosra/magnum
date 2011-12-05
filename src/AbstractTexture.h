@@ -108,11 +108,13 @@ class AbstractTexture {
 
         /**
          * @brief Constructor
+         * @param layer     Texture layer (number between 0 and 31)
          * @param target    Target, e.g. @c GL_TEXTURE_2D.
          *
          * Creates one OpenGL texture.
          */
-        inline AbstractTexture(GLenum target): target(target) {
+        inline AbstractTexture(GLint layer, GLenum target): target(target), _layer(layer) {
+            glActiveTexture(GL_TEXTURE0 + layer);
             glGenTextures(1, &texture);
         }
 
@@ -127,6 +129,7 @@ class AbstractTexture {
 
         /** @brief Bind texture for usage / rendering */
         inline void bind() const {
+            glActiveTexture(GL_TEXTURE0 + _layer);
             glBindTexture(target, texture);
         }
 
@@ -137,6 +140,7 @@ class AbstractTexture {
          * particular one.
          */
         inline void unbind() const {
+            glActiveTexture(GL_TEXTURE0 + _layer);
             glBindTexture(target, 0);
         }
 
@@ -231,6 +235,7 @@ class AbstractTexture {
         };
 
     private:
+        const GLint _layer;
         GLuint texture;
 };
 
