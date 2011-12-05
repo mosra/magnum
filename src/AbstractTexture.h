@@ -200,8 +200,16 @@ class AbstractTexture {
          *
          * Workaround for partial template specialization.
          */
-        template<class T, size_t textureDimensions> struct DataHelper {
+        template<size_t textureDimensions> struct DataHelper {
             #ifdef DOXYGEN_GENERATING_OUTPUT
+            /**
+             * @brief Target for given dimension
+             *
+             * Returns @c GL_TEXTURE_1D, @c GL_TEXTURE_2D or @c GL_TEXTURE_3D
+             * based on dimension count.
+             */
+            inline constexpr static GLenum target();
+
             /**
              * @brief Set texture data
              * @param target            Target, such as @c GL_TEXTURE_RECTANGLE
@@ -218,31 +226,37 @@ class AbstractTexture {
              * Calls @c glTexImage1D, @c glTexImage2D, @c glTexImage3D depending
              * on dimension count.
              */
-            inline void operator()(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, textureDimensions>& dimensions, ColorFormat colorFormat, const T* data);
+            template<class T> inline static void set(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, textureDimensions>& dimensions, ColorFormat colorFormat, const T* data);
             #endif
         };
-
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class T> struct DataHelper<T, 1> {
-            inline void operator()(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, 1>& dimensions, ColorFormat colorFormat, const T* data) {
-                glTexImage1D(target, mipLevel, internalFormat, dimensions.at(0), 0, colorFormat, TypeTraits<T>::glType(), data);
-            }
-        };
-        template<class T> struct DataHelper<T, 2> {
-            inline void operator()(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, 2>& dimensions, ColorFormat colorFormat, const T* data) {
-                glTexImage2D(target, mipLevel, internalFormat, dimensions.at(0), dimensions.at(1), 0, colorFormat, TypeTraits<T>::glType(), data);
-            }
-        };
-        template<class T> struct DataHelper<T, 3> {
-            inline void operator()(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, 3>& dimensions, ColorFormat colorFormat, const T* data) {
-                glTexImage3D(target, mipLevel, internalFormat, dimensions.at(0), dimensions.at(1), dimensions.at(2), 0, colorFormat, TypeTraits<T>::glType(), data);
-            }
-        };
-        #endif
 
     private:
         GLuint texture;
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<> struct AbstractTexture::DataHelper<1> {
+    inline constexpr static GLenum target() { return GL_TEXTURE_1D; }
+
+    template<class T> inline static void set(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, 1>& dimensions, ColorFormat colorFormat, const T* data) {
+        glTexImage1D(target, mipLevel, internalFormat, dimensions.at(0), 0, colorFormat, TypeTraits<T>::glType(), data);
+    }
+};
+template<> struct AbstractTexture::DataHelper<2> {
+    inline constexpr static GLenum target() { return GL_TEXTURE_2D; }
+
+    template<class T> inline static void set(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, 2>& dimensions, ColorFormat colorFormat, const T* data) {
+        glTexImage2D(target, mipLevel, internalFormat, dimensions.at(0), dimensions.at(1), 0, colorFormat, TypeTraits<T>::glType(), data);
+    }
+};
+template<> struct AbstractTexture::DataHelper<3> {
+    inline constexpr static GLenum target() { return GL_TEXTURE_3D; }
+
+    template<class T> inline static void set(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, 3>& dimensions, ColorFormat colorFormat, const T* data) {
+        glTexImage3D(target, mipLevel, internalFormat, dimensions.at(0), dimensions.at(1), dimensions.at(2), 0, colorFormat, TypeTraits<T>::glType(), data);
+    }
+};
+#endif
 
 }
 

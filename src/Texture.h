@@ -59,7 +59,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          *
          * Creates one OpenGL texture.
          */
-        inline Texture(GLenum target = GL_TEXTURE_1D + dimensions - 1): AbstractTexture(target) {}
+        inline Texture(GLenum target = DataHelper<dimensions>::target()): AbstractTexture(target) {}
 
         /**
          * @brief Set wrapping
@@ -86,7 +86,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          */
         template<class T> inline void setData(GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             bind();
-            DataHelper<typename TypeTraits<T>::TextureType, dimensions>()(target, mipLevel, internalFormat, _dimensions, colorFormat, data);
+            DataHelper<dimensions>::template set<typename TypeTraits<T>::TextureType>(target, mipLevel, internalFormat, _dimensions, colorFormat, data);
             unbind();
         }
 };
