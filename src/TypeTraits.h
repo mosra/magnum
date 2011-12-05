@@ -31,7 +31,7 @@ the need for repeated code such as method overloading or template
 specialization for given types.
 
 This class and class methods are specialized only for types where it makes
-sense, it has empty implementation for unknown type or type which doesn't
+sense, it has empty implementation for unknown types or types which don't
 support given feature, thus forcing the compilation stop with an error.
 */
 template<class T> struct TypeTraits {

@@ -31,17 +31,17 @@ namespace Magnum {
 
 /**
 @brief Mesh builder
+@tparam Vertex      Vertex data
 
 Class for building meshes with triangle primitive from scratch or from
 prefabricated data and modifying them (adding/removing faces, cleaning duplicate
 vertices etc.).
 
-Vertex template can be absolutely anything (single integer, structure, class)
-but it must have at least operator== implemented.
+@todo Make it more generic for meshes with texture coordinates etc.
 */
 template<class Vertex> class MeshBuilder {
     public:
-        typedef size_t VertexPointer;
+        typedef size_t VertexPointer;   /**< @brief Type for indexing vertices */
 
         /** @brief Triangle face */
         struct Face {
@@ -58,6 +58,7 @@ template<class Vertex> class MeshBuilder {
             /** @brief Vertex data */
             VertexPointer vertices[3];
 
+            /** @brief Comparison operator */
             bool operator==(const Face& other) const {
                 return other.vertices[0] == vertices[0] &&
                        other.vertices[1] == vertices[1] &&
@@ -86,11 +87,11 @@ template<class Vertex> class MeshBuilder {
 
         /** @brief Array with vertices */
         inline const std::vector<Vertex>& vertices() const { return _vertices; }
-        inline std::vector<Vertex>& vertices() { return _vertices; }
+        inline std::vector<Vertex>& vertices() { return _vertices; } /**< @copydoc vertices() const */
 
         /** @brief Array with faces */
         inline const std::vector<Face>& faces() const { return _faces; }
-        inline std::vector<Face>& faces() { return _faces; }
+        inline std::vector<Face>& faces() { return _faces; } /**< @copydoc faces() const */
 
         /**
          * @brief Set mesh data

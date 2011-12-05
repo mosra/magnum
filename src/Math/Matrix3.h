@@ -39,16 +39,16 @@ template<class T> class Matrix3: public Matrix<T, 3> {
         /** @copydoc Matrix::operator=() */
         inline Matrix3<T>& operator=(const Matrix<T, 3>& other) { return Matrix<T, 3>::operator=(other); }
 
-        /** @copydoc Matrix::at(size_t) */
+        /** @copydoc Matrix::at(size_t) const */
         inline Vector3<T> at(size_t col) const { return Matrix<T, 3>::at(col); }
 
-        /** @copydoc Matrix::at(size_t, size_t) */
+        /** @copydoc Matrix::at(size_t, size_t) const */
         inline T at(size_t row, size_t col) const { return Matrix<T, 3>::at(row, col); }
 
-        /** @copydoc Matrix::operator*(const Matrix<T, size>&) */
+        /** @copydoc Matrix::operator*(const Matrix<T, size>&) const */
         inline Matrix3<T> operator*(const Matrix<T, 3>& other) const { return Matrix<T, 3>::operator*(other); }
 
-        /** @copydoc Matrix::operator*(const Vector<T, size>&) */
+        /** @copydoc Matrix::operator*(const Vector<T, size>&) const */
         inline Vector3<T> operator*(const Vector<T, 3>& other) const { return Matrix<T, 3>::operator*(other); }
 
         /** @copydoc Matrix::transposed() */
