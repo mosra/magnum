@@ -30,6 +30,8 @@ namespace Magnum {
 See Texture documentation for more information.
 */
 class AbstractTexture {
+    DISABLE_COPY(AbstractTexture)
+
     public:
         /** @brief Texture filtering */
         enum Filter {
