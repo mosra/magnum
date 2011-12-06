@@ -92,6 +92,21 @@ template<size_t dimensions> class Texture: public AbstractTexture {
             DataHelper<dimensions>::template set<typename TypeTraits<T>::TextureType>(target, mipLevel, internalFormat, _dimensions, colorFormat, data);
             unbind();
         }
+
+        /**
+         * @brief Set texture subdata
+         * @param mipLevel
+         * @param offset            Offset where to put data in the texture
+         * @param _dimensions       %Texture dimensions
+         * @param colorFormat       Color format of passed data. Data size per
+         *      color channel is detected from format of passed data array.
+         * @param data              %Texture data
+         */
+        template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLsizei, dimensions>& offset, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
+            bind();
+            DataHelper<dimensions>::template setSub<typename TypeTraits<T>::TextureType>(target, mipLevel, offset, _dimensions, colorFormat, data);
+            unbind();
+        }
 };
 
 /** @brief One-dimensional texture */

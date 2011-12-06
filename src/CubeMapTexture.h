@@ -58,6 +58,9 @@ class CubeMapTexture: public Texture2D {
         /** @brief Deleted. Use setDataPositiveX() and others instead. */
         template<class T> inline void setData(GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) = delete;
 
+        /** @brief Deleted. Use setSubDataPositiveX() and others instead. */
+        template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLsizei, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) = delete;
+
         /**
          * @brief Set texture data for positive X
          *
@@ -65,6 +68,15 @@ class CubeMapTexture: public Texture2D {
          */
         template<class T> inline void setDataPositiveX(GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             setData(GL_TEXTURE_CUBE_MAP_POSITIVE_X, mipLevel, internalFormat, _dimensions, colorFormat, data);
+        }
+
+        /**
+         * @brief Set texture subdata for positive X
+         *
+         * @copydetails Texture::setSubData()
+         */
+        template<class T> inline void setSubDataPositiveX(GLint mipLevel, const Math::Vector<GLsizei, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
+            setSubData(GL_TEXTURE_CUBE_MAP_POSITIVE_X, mipLevel, offset, _dimensions, colorFormat, data);
         }
 
         /**
@@ -77,12 +89,30 @@ class CubeMapTexture: public Texture2D {
         }
 
         /**
+         * @brief Set texture subdata for negative X
+         *
+         * @copydetails Texture::setSubData()
+         */
+        template<class T> inline void setSubDataNegativeX(GLint mipLevel, const Math::Vector<GLsizei, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
+            setSubData(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, mipLevel, offset, _dimensions, colorFormat, data);
+        }
+
+        /**
          * @brief Set texture data for positive Y
          *
          * @copydetails Texture::setData()
          */
         template<class T> inline void setDataPositiveY(GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             setData(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, mipLevel, internalFormat, _dimensions, colorFormat, data);
+        }
+
+        /**
+         * @brief Set texture subdata for positive Y
+         *
+         * @copydetails Texture::setSubData()
+         */
+        template<class T> inline void setSubDataPositiveY(GLint mipLevel, const Math::Vector<GLsizei, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
+            setSubData(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, mipLevel, offset, _dimensions, colorFormat, data);
         }
 
         /**
@@ -95,12 +125,30 @@ class CubeMapTexture: public Texture2D {
         }
 
         /**
+         * @brief Set texture subdata for negative Y
+         *
+         * @copydetails Texture::setSubData()
+         */
+        template<class T> inline void setSubDataNegativeY(GLint mipLevel, const Math::Vector<GLsizei, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
+            setSubData(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, mipLevel, offset, _dimensions, colorFormat, data);
+        }
+
+        /**
          * @brief Set texture data for positive Z
          *
          * @copydetails Texture::setData()
          */
         template<class T> inline void setDataPositiveZ(GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             setData(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, mipLevel, internalFormat, _dimensions, colorFormat, data);
+        }
+
+        /**
+         * @brief Set texture subdata for positive Z
+         *
+         * @copydetails Texture::setSubData()
+         */
+        template<class T> inline void setSubDataPositiveZ(GLint mipLevel, const Math::Vector<GLsizei, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
+            setSubData(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, mipLevel, offset, _dimensions, colorFormat, data);
         }
 
         /**
@@ -112,10 +160,25 @@ class CubeMapTexture: public Texture2D {
             setData(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, mipLevel, internalFormat, _dimensions, colorFormat, data);
         }
 
+        /**
+         * @brief Set texture subdata for negative Z
+         *
+         * @copydetails Texture::setSubData()
+         */
+        template<class T> inline void setSubDataNegativeZ(GLint mipLevel, const Math::Vector<GLsizei, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
+            setSubData(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, mipLevel, offset, _dimensions, colorFormat, data);
+        }
+
     private:
         template<class T> void setData(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             bind();
             DataHelper<Dimensions>::template set<typename TypeTraits<T>::TextureType>(target, mipLevel, internalFormat, _dimensions, colorFormat, data);
+            unbind();
+        }
+
+        template<class T> void setSubData(GLenum target, GLint mipLevel, const Math::Vector<GLsizei, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& dimensions, ColorFormat colorFormat, const T* data) {
+            bind();
+            DataHelper<Dimensions>::template setSub<typename TypeTraits<T>::TextureType>(target, mipLevel, dimensions, colorFormat, data);
             unbind();
         }
 };
