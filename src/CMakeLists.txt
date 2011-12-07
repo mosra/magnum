@@ -16,6 +16,7 @@ set(Magnum_SRCS
     Mesh.cpp
     Scene.cpp
     Shader.cpp
+    SizeTraits.cpp
     Texture.cpp
 )
 
