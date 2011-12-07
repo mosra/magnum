@@ -28,8 +28,6 @@ namespace Magnum {
  * @brief Indexed mesh
  */
 class IndexedMesh: public Mesh {
-    DISABLE_COPY(IndexedMesh)
-
     public:
         /**
          * @brief Constructor
