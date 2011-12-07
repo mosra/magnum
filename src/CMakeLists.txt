@@ -6,6 +6,7 @@ find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
 add_subdirectory(Math)
+add_subdirectory(Primitives)
 
 set(Magnum_SRCS
     Object.cpp
