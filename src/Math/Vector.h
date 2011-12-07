@@ -23,7 +23,7 @@
 #include <cmath>
 
 #include "Utility/Debug.h"
-#include "constants.h"
+#include "Math.h"
 
 namespace Magnum { namespace Math {
 

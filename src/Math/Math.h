@@ -1,5 +1,5 @@
-#ifndef Magnum_Math_constants_h
-#define Magnum_Math_constants_h
+#ifndef Magnum_Math_Math_h
+#define Magnum_Math_Math_h
 /*
     Copyright © 2010, 2011 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Constants
+ * @brief Math constants and utilities
  */
 
 namespace Magnum { namespace Math {

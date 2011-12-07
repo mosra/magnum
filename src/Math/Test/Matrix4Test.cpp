@@ -19,7 +19,6 @@
 #include <QtTest/QTest>
 
 #include "Matrix4.h"
-#include "constants.h"
 
 QTEST_APPLESS_MAIN(Magnum::Math::Test::Matrix4Test)
 
