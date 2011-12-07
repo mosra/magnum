@@ -1,5 +1,6 @@
 set(MagnumPrimitives_SRCS
     Cube.cpp
+    Icosphere.cpp
 )
 
 add_library(MagnumPrimitives STATIC ${MagnumPrimitives_SRCS})

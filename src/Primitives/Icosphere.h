@@ -1,0 +1,79 @@
+#ifndef Magnum_Primitives_Icosphere_h
+#define Magnum_Primitives_Icosphere_h
+/*
+    Copyright © 2010, 2011 Vladimír Vondruš <mosra@centrum.cz>
+
+    This file is part of Magnum.
+
+    Magnum is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License version 3
+    only, as published by the Free Software Foundation.
+
+    Magnum is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License version 3 for more details.
+*/
+
+/** @file
+ * @brief Class Magnum::Primitives::Icosphere
+ */
+
+#include "AbstractPrimitive.h"
+#include "MeshBuilder.h"
+#include "SizeTraits.h"
+
+namespace Magnum { namespace Primitives {
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+class _AbstractIcosphere {
+    public:
+        ~_AbstractIcosphere() {}
+
+    protected:
+        static const Vector4 initialVertices[];
+        static const GLubyte initialIndices[];
+};
+#endif
+
+/**
+ * @brief Icosphere primitive
+ * @tparam subdivisions     Number of subdivisions
+ */
+template<size_t subdivisions> class Icosphere: public AbstractPrimitive<typename SizeTraits<Log<256, Pow<4, subdivisions>::value*20*3>::value>::SizeType>, _AbstractIcosphere {
+    public:
+        Icosphere() {
+            if(vertexCount() == 0) subdivide();
+        }
+
+        inline Mesh::Primitive primitive() const { return Mesh::Triangles; }
+        inline size_t vertexCount() const { return builder()->vertexCount(); }
+        inline size_t indexCount() const { return builder()->faceCount()*3; }
+
+        inline void build(IndexedMesh* mesh, Buffer* vertexBuffer) {
+            /* mesh is prepared by the builder, no need to call prepareMesh */
+            builder()->build(mesh, vertexBuffer, Buffer::DrawStatic, Buffer::DrawStatic);
+        }
+
+    private:
+        static MeshBuilder<Vector4>* builder() {
+            static MeshBuilder<Vector4>* _builder = nullptr;
+            if(!_builder) _builder = new MeshBuilder<Vector4>();
+            return _builder;
+        }
+
+        static void subdivide() {
+            builder()->setData(initialVertices, initialIndices, 12, 60);
+
+            for(size_t i = 0; i != subdivisions; ++i)
+                builder()->subdivide([](const Vector4& a, const Vector4& b) {
+                    return (a+b).xyz().normalized();
+                });
+
+            if(subdivisions) builder()->cleanMesh();
+        }
+};
+
+}}
+
+#endif
