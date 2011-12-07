@@ -1,4 +1,5 @@
 set(MagnumPrimitives_SRCS
+    Cube.cpp
 )
 
 add_library(MagnumPrimitives STATIC ${MagnumPrimitives_SRCS})
