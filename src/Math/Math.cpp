@@ -1,5 +1,3 @@
-#ifndef Magnum_Math_Test_MathTest_h
-#define Magnum_Math_Test_MathTest_h
 /*
     Copyright © 2010, 2011 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,19 +13,15 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
+#include "Math.h"
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Math {
 
-class MathTest: public QObject {
-    Q_OBJECT
+size_t log(size_t base, size_t number) {
+    size_t log = 0;
+    while(number /= base)
+        ++log;
+    return log;
+}
 
-    private slots:
-        void degrad();
-        void pow();
-        void log();
-};
-
-}}}
-
-#endif
+}}

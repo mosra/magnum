@@ -15,6 +15,8 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#include <cstddef>
+
 /** @file
  * @brief Math constants and utilities
  */
@@ -26,6 +28,26 @@ namespace Magnum { namespace Math {
 
 /** @brief Maximal tolerance when comparing floats */
 #define EPSILON 1.0e-6
+
+/**
+ * @brief Integral power
+ *
+ * Returns integral power of base to the exponent.
+ */
+template<size_t exponent> inline constexpr size_t pow(size_t base) {
+    return base*pow<exponent-1>(base);
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<> inline constexpr size_t pow<0>(size_t base) { return 1; }
+#endif
+
+/**
+ * @brief Integral logarithm
+ *
+ * Returns integral logarithm of given number with given base.
+ */
+size_t log(size_t base, size_t number);
 
 /**
  * @brief Angle in degrees

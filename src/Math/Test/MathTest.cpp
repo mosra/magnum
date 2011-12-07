@@ -32,4 +32,14 @@ void MathTest::degrad() {
     QVERIFY(deg(90) == PI/2);
 }
 
+void MathTest::pow() {
+    QCOMPARE(Math::pow<10>(2), 1024ul);
+    QCOMPARE(Math::pow<0>(3), 1ul);
+}
+
+void MathTest::log() {
+    QCOMPARE(Math::log(2, 256), 8ul);
+    QCOMPARE(Math::log(256, 2), 0ul);
+}
+
 }}}
