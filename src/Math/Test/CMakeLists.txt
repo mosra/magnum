@@ -14,4 +14,5 @@ target_link_libraries(Matrix3Test ${CORRADE_UTILITY_LIBRARY})
 corrade_add_test(Matrix4Test Matrix4Test.h Matrix4Test.cpp)
 target_link_libraries(Matrix4Test ${CORRADE_UTILITY_LIBRARY})
 
+corrade_add_test(MathTest MathTest.h MathTest.cpp)
 corrade_add_test(GeometryUtilsTest GeometryUtilsTest.h GeometryUtilsTest.cpp)
