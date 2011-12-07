@@ -26,6 +26,7 @@
 
 #include "Buffer.h"
 #include "IndexedMesh.h"
+#include "SizeTraits.h"
 
 namespace Magnum {
 
@@ -273,13 +274,8 @@ template<class Vertex> class MeshBuilder {
          * them.
          * @note The mesh is @b not cleaned before building.
          */
-        void build(IndexedMesh* mesh, Buffer* vertexBuffer, Buffer::Usage vertexBufferUsage, Buffer::Usage indexBufferUsage) {
-            if(_faces.size()*3 <= 0xFF)
-                buildInternal<GLubyte>(mesh, vertexBuffer, vertexBufferUsage, indexBufferUsage);
-            else if(_faces.size()*3 <= 0xFFFF)
-                buildInternal<GLushort>(mesh, vertexBuffer, vertexBufferUsage, indexBufferUsage);
-            else
-                buildInternal<GLuint>(mesh, vertexBuffer, vertexBufferUsage, indexBufferUsage);
+        inline void build(IndexedMesh* mesh, Buffer* vertexBuffer, Buffer::Usage vertexBufferUsage, Buffer::Usage indexBufferUsage) {
+            SizeBasedCall<InternalBuilder>(_faces.size()*3)(this, mesh, vertexBuffer, vertexBufferUsage, indexBufferUsage);
         }
 
         /**
@@ -319,26 +315,28 @@ template<class Vertex> class MeshBuilder {
             HashedVertex(VertexPointer oldVertexPointer, VertexPointer newVertexPointer): oldVertexPointer(oldVertexPointer), newVertexPointer(newVertexPointer) {}
         };
 
-        template<class IndexType> void buildInternal(IndexedMesh* mesh, Buffer* vertexBuffer, Buffer::Usage vertexBufferUsage, Buffer::Usage indexBufferUsage) {
-            /* Compress face array to index array. Using TypeTraits::IndexType
-               to ensure we have allowed type for indexing */
-            std::vector<typename TypeTraits<IndexType>::IndexType> indices;
-            indices.reserve(_faces.size()*3);
-            for(auto it = _faces.cbegin(); it != _faces.cend(); ++it) {
-                indices.push_back(it->vertices[0]);
-                indices.push_back(it->vertices[1]);
-                indices.push_back(it->vertices[2]);
+        struct InternalBuilder {
+            template<class IndexType> static void run(MeshBuilder<Vertex>* builder, IndexedMesh* mesh, Buffer* vertexBuffer, Buffer::Usage vertexBufferUsage, Buffer::Usage indexBufferUsage) {
+                /* Compress face array to index array. Using TypeTraits::IndexType
+                to ensure we have allowed type for indexing */
+                std::vector<typename TypeTraits<IndexType>::IndexType> indices;
+                indices.reserve(builder->_faces.size()*3);
+                for(auto it = builder->_faces.cbegin(); it != builder->_faces.cend(); ++it) {
+                    indices.push_back(it->vertices[0]);
+                    indices.push_back(it->vertices[1]);
+                    indices.push_back(it->vertices[2]);
+                }
+
+                /* Update mesh parameters and fill it with data */
+                mesh->setPrimitive(Mesh::Triangles);
+                mesh->setVertexCount(builder->_vertices.size());
+                mesh->setIndexCount(indices.size());
+                mesh->setIndexType(TypeTraits<IndexType>::glType());
+
+                vertexBuffer->setData(sizeof(Vertex)*builder->_vertices.size(), builder->_vertices.data(), vertexBufferUsage);
+                mesh->indexBuffer()->setData(sizeof(IndexType)*indices.size(), indices.data(), indexBufferUsage);
             }
-
-            /* Update mesh parameters and fill it with data */
-            mesh->setPrimitive(Mesh::Triangles);
-            mesh->setVertexCount(_vertices.size());
-            mesh->setIndexCount(indices.size());
-            mesh->setIndexType(TypeTraits<IndexType>::glType());
-
-            vertexBuffer->setData(sizeof(Vertex)*_vertices.size(), _vertices.data(), vertexBufferUsage);
-            mesh->indexBuffer()->setData(sizeof(IndexType)*indices.size(), indices.data(), indexBufferUsage);
-        }
+        };
 };
 
 }
