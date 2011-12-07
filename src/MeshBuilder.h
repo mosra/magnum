@@ -85,9 +85,15 @@ template<class Vertex> class MeshBuilder {
             _faces.clear();
         }
 
+        /** @brief Vertex count */
+        inline size_t vertexCount() const { return _vertices.size(); }
+
         /** @brief Array with vertices */
         inline const std::vector<Vertex>& vertices() const { return _vertices; }
         inline std::vector<Vertex>& vertices() { return _vertices; } /**< @copydoc vertices() const */
+
+        /** @brief Face count */
+        inline size_t faceCount() const { return _faces.size(); }
 
         /** @brief Array with faces */
         inline const std::vector<Face>& faces() const { return _faces; }
