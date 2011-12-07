@@ -82,6 +82,15 @@ class Mesh {
         };
 
         /**
+         * @brief Implicit constructor
+         *
+         * Allows creating the object without knowing anything about mesh data.
+         * Note that you have to call setPrimitive() and setVertexCount()
+         * manually for mesh to draw properly.
+         */
+        inline Mesh(): _primitive(Triangles), _vertexCount(0), finalized(false) {}
+
+        /**
          * @brief Constructor
          * @param primitive     Primitive type
          * @param vertexCount   Vertex count

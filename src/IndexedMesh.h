@@ -30,6 +30,16 @@ namespace Magnum {
 class IndexedMesh: public Mesh {
     public:
         /**
+         * @brief Implicit constructor
+         *
+         * Allows creating the object without knowing anything about mesh data.
+         * Note that you have to call setPrimitive(), setVertexCount(),
+         * setIndexCount() and setIndexType() manually for mesh to draw
+         * properly.
+         */
+        inline IndexedMesh(): _indexBuffer(Buffer::ElementArrayBuffer), _indexCount(0), _indexType(GL_UNSIGNED_SHORT) {}
+
+        /**
          * @brief Constructor
          * @param primitive     Primitive type
          * @param vertexCount   Count of unique vertices
