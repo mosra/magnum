@@ -19,10 +19,12 @@ set(Magnum_SRCS
     Shader.cpp
     SizeTraits.cpp
     Texture.cpp
+
+    Math/Math.cpp
 )
 
 add_library(Magnum SHARED ${Magnum_SRCS})
-target_link_libraries(Magnum CorradePluginManager CorradeUtility MagnumMath ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY})
+target_link_libraries(Magnum CorradePluginManager CorradeUtility ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY})
 
 install(TARGETS Magnum DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 
