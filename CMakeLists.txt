@@ -18,8 +18,9 @@ endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Magnum_SOURCE_DIR}/modules/")
 
-set_parent_scope(MAGNUM_INCLUDE_DIR     "${CMAKE_CURRENT_SOURCE_DIR}/src")
-set_parent_scope(MAGNUM_LIBRARY         Magnum)
+set_parent_scope(MAGNUM_INCLUDE_DIR         "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set_parent_scope(MAGNUM_LIBRARY             Magnum)
+set_parent_scope(MAGNUM_PRIMITIVES_LIBRARY  MagnumPrimitives)
 include(FindMagnum)
 
 add_subdirectory(modules)
