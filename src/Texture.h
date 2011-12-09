@@ -112,7 +112,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          *      color channel is detected from format of passed data array.
          * @param data              %Texture data
          */
-        template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLsizei, dimensions>& offset, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
+        template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLint, dimensions>& offset, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             bind();
             DataHelper<dimensions>::setSub(target, mipLevel, offset, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
             unbind();
@@ -124,7 +124,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          * @param offset            Offset where to put data in the texture
          * @param image             Image
          */
-        inline void setSubData(GLint mipLevel, const Math::Vector<GLsizei, Dimensions>& offset, const Image<Dimensions>* image) {
+        inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Image<Dimensions>* image) {
             bind();
             DataHelper<dimensions>::setSub(target, mipLevel, offset, image->dimensions(), image->colorFormat(), image->type(), image->data());
             unbind();
