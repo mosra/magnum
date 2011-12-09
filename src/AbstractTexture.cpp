@@ -29,25 +29,30 @@ texture_assert(4); texture_assert(12); texture_assert(20); texture_assert(28);
 texture_assert(5); texture_assert(13); texture_assert(21); texture_assert(29);
 texture_assert(6); texture_assert(14); texture_assert(22); texture_assert(30);
 texture_assert(7); texture_assert(15); texture_assert(23); texture_assert(31);
+#undef texture_assert
 
 /* Check correctness of binary OR in setMinificationFilter(). If nobody fucks
    anything up, this assert should produce the same results on all dimensions,
    thus testing only on AbstractTexture. */
-static_assert(((AbstractTexture::NearestNeighborFilter|AbstractTexture::BaseMipLevel) == GL_NEAREST) &&
-              ((AbstractTexture::NearestNeighborFilter|AbstractTexture::NearestMipLevel) == GL_NEAREST_MIPMAP_NEAREST) &&
-              ((AbstractTexture::NearestNeighborFilter|AbstractTexture::LinearMipInterpolation) == GL_NEAREST_MIPMAP_LINEAR) &&
-              ((AbstractTexture::LinearFilter|AbstractTexture::BaseMipLevel) == GL_LINEAR) &&
-              ((AbstractTexture::LinearFilter|AbstractTexture::NearestMipLevel) == GL_LINEAR_MIPMAP_NEAREST) &&
-              ((AbstractTexture::LinearFilter|AbstractTexture::LinearMipInterpolation) == GL_LINEAR_MIPMAP_LINEAR),
+#define filter_or(filter, mipmap) \
+    (static_cast<GLint>(AbstractTexture::Filter::filter)|static_cast<GLint>(AbstractTexture::Mipmap::mipmap))
+static_assert((filter_or(NearestNeighbor, BaseLevel) == GL_NEAREST) &&
+              (filter_or(NearestNeighbor, NearestLevel) == GL_NEAREST_MIPMAP_NEAREST) &&
+              (filter_or(NearestNeighbor, LinearInterpolation) == GL_NEAREST_MIPMAP_LINEAR) &&
+              (filter_or(LinearInterpolation, BaseLevel) == GL_LINEAR) &&
+              (filter_or(LinearInterpolation, NearestLevel) == GL_LINEAR_MIPMAP_NEAREST) &&
+              (filter_or(LinearInterpolation, LinearInterpolation) == GL_LINEAR_MIPMAP_LINEAR),
     "Unsupported constants for GL texture filtering");
+#undef filter_or
 #endif
 
 void AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
     /* Only base mip level is supported on rectangle textures */
-    if(target == GL_TEXTURE_RECTANGLE) mipmap = BaseMipLevel;
+    if(target == GL_TEXTURE_RECTANGLE) mipmap = Mipmap::BaseLevel;
 
     bind();
-    glTexParameteri(target, GL_TEXTURE_MIN_FILTER, filter|mipmap);
+    glTexParameteri(target, GL_TEXTURE_MIN_FILTER,
+        static_cast<GLint>(filter)|static_cast<GLint>(mipmap));
     unbind();
 }
 

@@ -79,15 +79,13 @@ template<size_t dimensions> class Texture: public AbstractTexture {
         /**
          * @brief Set texture data
          * @param mipLevel          Mip level
-         * @param internalFormat    Internal texture format. One value from
-         *      @ref Texture::InternalFormat "InternalFormat" or
-         *      @ref Texture::ColorFormat "ColorFormat" enum.
+         * @param internalFormat    Internal texture format
          * @param _dimensions       %Texture dimensions
          * @param colorFormat       Color format of passed data. Data size per
          *      color channel is detected from format of passed data array.
          * @param data              %Texture data
          */
-        template<class T> inline void setData(GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
+        template<class T> inline void setData(GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             bind();
             DataHelper<dimensions>::template set<typename TypeTraits<T>::TextureType>(target, mipLevel, internalFormat, _dimensions, colorFormat, data);
             unbind();

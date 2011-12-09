@@ -34,39 +34,39 @@ class AbstractTexture {
 
     public:
         /** @brief Texture filtering */
-        enum Filter {
+        enum class Filter: GLint {
             /**
              * Nearest neighbor filtering
              */
-            NearestNeighborFilter = GL_NEAREST,
+            NearestNeighbor = GL_NEAREST,
 
             /**
-             * Linear filtering
+             * Linear interpolation filtering
              */
-            LinearFilter = GL_LINEAR
+            LinearInterpolation = GL_LINEAR
         };
 
         /** @brief Mip level selection */
-        enum Mipmap {
+        enum class Mipmap: GLint {
             /**
              * Select base mip level
              */
-            BaseMipLevel = GL_NEAREST & ~GL_NEAREST,
+            BaseLevel = GL_NEAREST & ~GL_NEAREST,
 
             /**
              * Select nearest mip level. Unavailable on rectangle textures.
              */
-            NearestMipLevel = GL_NEAREST_MIPMAP_NEAREST & ~GL_NEAREST,
+            NearestLevel = GL_NEAREST_MIPMAP_NEAREST & ~GL_NEAREST,
 
             /**
              * Linear interpolation of nearest mip levels. Unavailable on
              * rectangle textures.
              */
-            LinearMipInterpolation = GL_NEAREST_MIPMAP_LINEAR & ~GL_NEAREST
+            LinearInterpolation = GL_NEAREST_MIPMAP_LINEAR & ~GL_NEAREST
         };
 
         /** @brief Texture wrapping on the edge */
-        enum Wrapping {
+        enum class Wrapping: GLint {
             /**
              * Repeat texture. Unavailable on rectangle textures.
              */
@@ -91,7 +91,13 @@ class AbstractTexture {
         };
 
         /** @brief Internal format */
-        enum InternalFormat {
+        enum class InternalFormat: GLint {
+            Red = GL_RED,
+            RedGreen = GL_RG,
+            RGB = GL_RGB,
+            RGBA = GL_RGBA,
+            BGR = GL_BGR,
+            BGRA = GL_BGRA,
             CompressedRed = GL_COMPRESSED_RED,
             CompressedRedGreen = GL_COMPRESSED_RG,
             CompressedRGB = GL_COMPRESSED_RGB,
@@ -99,7 +105,7 @@ class AbstractTexture {
         };
 
         /** @brief Color format */
-        enum ColorFormat {
+        enum class ColorFormat: GLenum {
             Red = GL_RED,
             RedGreen = GL_RG,
             RGB = GL_RGB,
@@ -164,7 +170,7 @@ class AbstractTexture {
          * @attention This and setMagnificationFilter() must be called after
          * creating the texture, otherwise it will be unusable.
          */
-        void setMinificationFilter(Filter filter, Mipmap mipmap = BaseMipLevel);
+        void setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::BaseLevel);
 
         /**
          * @brief Set magnification filter
@@ -177,7 +183,7 @@ class AbstractTexture {
          */
         inline void setMagnificationFilter(Filter filter) {
             bind();
-            glTexParameteri(target, GL_TEXTURE_MAG_FILTER, filter);
+            glTexParameteri(target, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(filter));
             unbind();
         }
 
@@ -223,9 +229,7 @@ class AbstractTexture {
              * @brief Set texture data
              * @param target            Target, such as @c GL_TEXTURE_RECTANGLE
              * @param mipLevel          Mip level
-             * @param internalFormat    Internal texture format. One value from
-             *      @ref AbstractTexture::InternalFormat "InternalFormat" or
-             *      @ref AbstractTexture::ColorFormat "ColorFormat" enum.
+             * @param internalFormat    Internal texture format
              * @param dimensions        %Texture dimensions
              * @param colorFormat       Color format of passed data. Data size
              *      per color channel is detected from format of passed data
@@ -235,7 +239,7 @@ class AbstractTexture {
              * Calls @c glTexImage1D, @c glTexImage2D, @c glTexImage3D depending
              * on dimension count.
              */
-            template<class T> inline static void set(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, textureDimensions>& dimensions, ColorFormat colorFormat, const T* data);
+            template<class T> inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, textureDimensions>& dimensions, ColorFormat colorFormat, const T* data);
 
             /**
              * @brief Set texture subdata
@@ -264,34 +268,34 @@ class AbstractTexture {
 template<> struct AbstractTexture::DataHelper<1> {
     inline constexpr static GLenum target() { return GL_TEXTURE_1D; }
 
-    template<class T> inline static void set(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, 1>& dimensions, ColorFormat colorFormat, const T* data) {
-        glTexImage1D(target, mipLevel, internalFormat, dimensions.at(0), 0, colorFormat, TypeTraits<T>::glType(), data);
+    template<class T> inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 1>& dimensions, ColorFormat colorFormat, const T* data) {
+        glTexImage1D(target, mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), 0, static_cast<GLenum>(colorFormat), TypeTraits<T>::glType(), data);
     }
 
     template<class T> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<GLsizei, 1>& offset, const Math::Vector<GLsizei, 1>& dimensions, ColorFormat colorFormat, const T* data) {
-        glTexSubImage1D(target, mipLevel, offset.at(0), dimensions.at(0), colorFormat, TypeTraits<T>::glType(), data);
+        glTexSubImage1D(target, mipLevel, offset.at(0), dimensions.at(0), static_cast<GLenum>(colorFormat), TypeTraits<T>::glType(), data);
     }
 };
 template<> struct AbstractTexture::DataHelper<2> {
     inline constexpr static GLenum target() { return GL_TEXTURE_2D; }
 
-    template<class T> inline static void set(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, 2>& dimensions, ColorFormat colorFormat, const T* data) {
-        glTexImage2D(target, mipLevel, internalFormat, dimensions.at(0), dimensions.at(1), 0, colorFormat, TypeTraits<T>::glType(), data);
+    template<class T> inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 2>& dimensions, ColorFormat colorFormat, const T* data) {
+        glTexImage2D(target, mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), dimensions.at(1), 0, static_cast<GLenum>(colorFormat), TypeTraits<T>::glType(), data);
     }
 
     template<class T> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<GLsizei, 2>& offset, const Math::Vector<GLsizei, 2>& dimensions, ColorFormat colorFormat, const T* data) {
-        glTexSubImage2D(target, mipLevel, offset.at(0), offset.at(1), dimensions.at(0), dimensions.at(1), colorFormat, TypeTraits<T>::glType(), data);
+        glTexSubImage2D(target, mipLevel, offset.at(0), offset.at(1), dimensions.at(0), dimensions.at(1), static_cast<GLenum>(colorFormat), TypeTraits<T>::glType(), data);
     }
 };
 template<> struct AbstractTexture::DataHelper<3> {
     inline constexpr static GLenum target() { return GL_TEXTURE_3D; }
 
-    template<class T> inline static void set(GLenum target, GLint mipLevel, int internalFormat, const Math::Vector<GLsizei, 3>& dimensions, ColorFormat colorFormat, const T* data) {
-        glTexImage3D(target, mipLevel, internalFormat, dimensions.at(0), dimensions.at(1), dimensions.at(2), 0, colorFormat, TypeTraits<T>::glType(), data);
+    template<class T> inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 3>& dimensions, ColorFormat colorFormat, const T* data) {
+        glTexImage3D(target, mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), dimensions.at(1), dimensions.at(2), 0, static_cast<GLenum>(colorFormat), TypeTraits<T>::glType(), data);
     }
 
     template<class T> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<GLsizei, 2>& offset, const Math::Vector<GLsizei, 2>& dimensions, ColorFormat colorFormat, const T* data) {
-        glTexSubImage3D(target, mipLevel, offset.at(0), offset.at(1), offset.at(2), dimensions.at(0), dimensions.at(1), dimensions.at(2), colorFormat, TypeTraits<T>::glType(), data);
+        glTexSubImage3D(target, mipLevel, offset.at(0), offset.at(1), offset.at(2), dimensions.at(0), dimensions.at(1), dimensions.at(2), static_cast<GLenum>(colorFormat), TypeTraits<T>::glType(), data);
     }
 };
 #endif

@@ -21,18 +21,18 @@ template<size_t dimensions> void Texture<dimensions>::setWrapping(const Math::Ve
     bind();
     for(int i = 0; i != dimensions; ++i) {
         /* Repeat wrap modes are not available on rectangle textures. */
-        if(target == GL_TEXTURE_RECTANGLE && (wrapping.at(i) == Repeat || wrapping.at(i) == MirroredRepeat))
+        if(target == GL_TEXTURE_RECTANGLE && (wrapping.at(i) == Wrapping::Repeat || wrapping.at(i) == Wrapping::MirroredRepeat))
             continue;
 
         switch(i) {
             case 0:
-                glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapping.at(i));
+                glTexParameteri(target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.at(i)));
                 break;
             case 1:
-                glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapping.at(i));
+                glTexParameteri(target, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping.at(i)));
                 break;
             case 2:
-                glTexParameteri(target, GL_TEXTURE_WRAP_R, wrapping.at(i));
+                glTexParameteri(target, GL_TEXTURE_WRAP_R, static_cast<GLint>(wrapping.at(i)));
                 break;
         }
     }
