@@ -13,6 +13,8 @@
 #
 
 find_package(Corrade REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
 
 if (MAGNUM_INCLUDE_DIR AND MAGNUM_LIBRARY AND MAGNUM_PRIMITIVES_LIBRARY)
 

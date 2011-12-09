@@ -3,8 +3,6 @@ project(Magnum)
 
 option(BUILD_TESTS "Build unit tests (requires Qt4)." OFF)
 
-find_package(Corrade REQUIRED)
-
 if(BUILD_TESTS)
     find_package(Qt4)
 
@@ -17,6 +15,7 @@ if(BUILD_TESTS)
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Magnum_SOURCE_DIR}/modules/")
+find_package(Corrade REQUIRED)
 
 set_parent_scope(MAGNUM_INCLUDE_DIR         "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set_parent_scope(MAGNUM_LIBRARY             Magnum)
