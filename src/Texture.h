@@ -93,7 +93,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
 
         /**
          * @brief Set texture subdata
-         * @param mipLevel
+         * @param mipLevel          Mip level
          * @param offset            Offset where to put data in the texture
          * @param _dimensions       %Texture dimensions
          * @param colorFormat       Color format of passed data. Data size per

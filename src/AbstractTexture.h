@@ -107,7 +107,7 @@ class AbstractTexture {
 
         /**
          * @brief Constructor
-         * @param layer     Texture layer (number between 0 and 31)
+         * @param layer     %Texture layer (number between 0 and 31)
          * @param target    Target, e.g. @c GL_TEXTURE_2D.
          *
          * Creates one OpenGL texture.
