@@ -87,7 +87,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          */
         template<class T> inline void setData(GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             bind();
-            DataHelper<dimensions>::template set<typename TypeTraits<T>::TextureType>(target, mipLevel, internalFormat, _dimensions, colorFormat, data);
+            DataHelper<dimensions>::set(target, mipLevel, internalFormat, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
             unbind();
         }
 
@@ -102,7 +102,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          */
         template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLsizei, dimensions>& offset, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             bind();
-            DataHelper<dimensions>::template setSub<typename TypeTraits<T>::TextureType>(target, mipLevel, offset, _dimensions, colorFormat, data);
+            DataHelper<dimensions>::setSub(target, mipLevel, offset, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
             unbind();
         }
 };

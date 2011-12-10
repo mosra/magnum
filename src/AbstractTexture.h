@@ -222,15 +222,14 @@ class AbstractTexture {
              * @param mipLevel          Mip level
              * @param internalFormat    Internal texture format
              * @param dimensions        %Texture dimensions
-             * @param colorFormat       Color format of passed data. Data size
-             *      per color channel is detected from format of passed data
-             *      array.
+             * @param colorFormat       Color format of passed data
+             * @param type              Data type
              * @param data              %Texture data
              *
              * Calls @c glTexImage1D, @c glTexImage2D, @c glTexImage3D depending
              * on dimension count.
              */
-            template<class T> inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, textureDimensions>& dimensions, ColorFormat colorFormat, const T* data);
+            inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, textureDimensions>& dimensions, ColorFormat colorFormat, GLenum type, const void* data);
 
             /**
              * @brief Set texture subdata
@@ -238,15 +237,14 @@ class AbstractTexture {
              * @param mipLevel          Mip level
              * @param offset            Offset where to put data in the texture
              * @param dimensions        %Texture dimensions
-             * @param colorFormat       Color format of passed data. Data size
-             *      per color channel is detected from format of passed data
-             *      array.
+             * @param colorFormat       Color format of passed data
+             * @param type              Data type
              * @param data              %Texture data
              *
              * Calls @c glTexSubImage1D, @c glTexSubImage2D, @c glTexSubImage3D
              * depending on dimension count.
              */
-            template<class T> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<GLsizei, textureDimensions>& offset, const Math::Vector<GLsizei, textureDimensions>& dimensions, ColorFormat colorFormat, const T* data);
+            inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<GLsizei, textureDimensions>& offset, const Math::Vector<GLsizei, textureDimensions>& dimensions, ColorFormat colorFormat, GLenum type, const void* data);
             #endif
         };
 
@@ -259,34 +257,34 @@ class AbstractTexture {
 template<> struct AbstractTexture::DataHelper<1> {
     inline constexpr static GLenum target() { return GL_TEXTURE_1D; }
 
-    template<class T> inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 1>& dimensions, ColorFormat colorFormat, const T* data) {
-        glTexImage1D(target, mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), 0, static_cast<GLenum>(colorFormat), TypeTraits<T>::glType(), data);
+    inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 1>& dimensions, ColorFormat colorFormat, GLenum type, const void* data) {
+        glTexImage1D(target, mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), 0, static_cast<GLenum>(colorFormat), type, data);
     }
 
-    template<class T> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<GLsizei, 1>& offset, const Math::Vector<GLsizei, 1>& dimensions, ColorFormat colorFormat, const T* data) {
-        glTexSubImage1D(target, mipLevel, offset.at(0), dimensions.at(0), static_cast<GLenum>(colorFormat), TypeTraits<T>::glType(), data);
+    inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<GLsizei, 1>& offset, const Math::Vector<GLsizei, 1>& dimensions, ColorFormat colorFormat, GLenum type, const void* data) {
+        glTexSubImage1D(target, mipLevel, offset.at(0), dimensions.at(0), static_cast<GLenum>(colorFormat), type, data);
     }
 };
 template<> struct AbstractTexture::DataHelper<2> {
     inline constexpr static GLenum target() { return GL_TEXTURE_2D; }
 
-    template<class T> inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 2>& dimensions, ColorFormat colorFormat, const T* data) {
-        glTexImage2D(target, mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), dimensions.at(1), 0, static_cast<GLenum>(colorFormat), TypeTraits<T>::glType(), data);
+    inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 2>& dimensions, ColorFormat colorFormat, GLenum type, const void* data) {
+        glTexImage2D(target, mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), dimensions.at(1), 0, static_cast<GLenum>(colorFormat), type, data);
     }
 
-    template<class T> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<GLsizei, 2>& offset, const Math::Vector<GLsizei, 2>& dimensions, ColorFormat colorFormat, const T* data) {
-        glTexSubImage2D(target, mipLevel, offset.at(0), offset.at(1), dimensions.at(0), dimensions.at(1), static_cast<GLenum>(colorFormat), TypeTraits<T>::glType(), data);
+    inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<GLsizei, 2>& offset, const Math::Vector<GLsizei, 2>& dimensions, ColorFormat colorFormat, GLenum type, const void* data) {
+        glTexSubImage2D(target, mipLevel, offset.at(0), offset.at(1), dimensions.at(0), dimensions.at(1), static_cast<GLenum>(colorFormat), type, data);
     }
 };
 template<> struct AbstractTexture::DataHelper<3> {
     inline constexpr static GLenum target() { return GL_TEXTURE_3D; }
 
-    template<class T> inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 3>& dimensions, ColorFormat colorFormat, const T* data) {
-        glTexImage3D(target, mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), dimensions.at(1), dimensions.at(2), 0, static_cast<GLenum>(colorFormat), TypeTraits<T>::glType(), data);
+    inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 3>& dimensions, ColorFormat colorFormat, GLenum type, const void* data) {
+        glTexImage3D(target, mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), dimensions.at(1), dimensions.at(2), 0, static_cast<GLenum>(colorFormat), type, data);
     }
 
-    template<class T> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<GLsizei, 2>& offset, const Math::Vector<GLsizei, 2>& dimensions, ColorFormat colorFormat, const T* data) {
-        glTexSubImage3D(target, mipLevel, offset.at(0), offset.at(1), offset.at(2), dimensions.at(0), dimensions.at(1), dimensions.at(2), static_cast<GLenum>(colorFormat), TypeTraits<T>::glType(), data);
+    inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<GLsizei, 2>& offset, const Math::Vector<GLsizei, 2>& dimensions, ColorFormat colorFormat, GLenum type, const void* data) {
+        glTexSubImage3D(target, mipLevel, offset.at(0), offset.at(1), offset.at(2), dimensions.at(0), dimensions.at(1), dimensions.at(2), static_cast<GLenum>(colorFormat), type, data);
     }
 };
 #endif
