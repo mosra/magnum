@@ -92,6 +92,18 @@ template<size_t dimensions> class Texture: public AbstractTexture {
         }
 
         /**
+         * @brief Set texture data
+         * @param mipLevel          Mip level
+         * @param internalFormat    Internal texture format
+         * @param image             Image
+         */
+        inline void setData(GLint mipLevel, InternalFormat internalFormat, const Image<Dimensions>* image) {
+            bind();
+            DataHelper<dimensions>::set(target, mipLevel, internalFormat, image->dimensions(), image->colorFormat(), image->type(), image->data());
+            unbind();
+        }
+
+        /**
          * @brief Set texture subdata
          * @param mipLevel          Mip level
          * @param offset            Offset where to put data in the texture
@@ -103,6 +115,18 @@ template<size_t dimensions> class Texture: public AbstractTexture {
         template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLsizei, dimensions>& offset, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             bind();
             DataHelper<dimensions>::setSub(target, mipLevel, offset, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
+            unbind();
+        }
+
+        /**
+         * @brief Set texture subdata
+         * @param mipLevel          Mip level
+         * @param offset            Offset where to put data in the texture
+         * @param image             Image
+         */
+        inline void setSubData(GLint mipLevel, const Math::Vector<GLsizei, Dimensions>& offset, const Image<Dimensions>* image) {
+            bind();
+            DataHelper<dimensions>::setSub(target, mipLevel, offset, image->dimensions(), image->colorFormat(), image->type(), image->data());
             unbind();
         }
 };
