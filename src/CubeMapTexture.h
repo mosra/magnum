@@ -54,7 +54,6 @@ class CubeMapTexture: public Texture2D {
          */
         inline CubeMapTexture(GLint layer = 0): Texture2D(layer, GL_TEXTURE_CUBE_MAP) {}
 
-    protected:
         /** @brief Deleted. Use @ref setDataPositiveX(GLint, InternalFormat, const Math::Vector<GLsizei, Dimensions>&, ColorFormat, const T*) "setDataPositiveX()" and others instead. */
         template<class T> inline void setData(GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) = delete;
 

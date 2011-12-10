@@ -26,8 +26,7 @@ namespace Magnum {
 /**
 @brief %Texture
 
-Template class for one- to three-dimensional textures. Recommended usage is via
-subclassing and setting texture data from e.g. constructor with setData().
+Template class for one- to three-dimensional textures.
 
 @attention Don't forget to call setMinificationFilter() and
 setMagnificationFilter() after creating the texture, otherwise it will be
@@ -75,7 +74,6 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          */
         void setWrapping(const Math::Vector<Wrapping, dimensions>& wrapping);
 
-    protected:
         /**
          * @brief Set texture data
          * @param mipLevel          Mip level
