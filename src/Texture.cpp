@@ -17,7 +17,7 @@
 
 namespace Magnum {
 
-template<size_t dimensions> void Texture<dimensions>::setWrapping(const Math::Vector<Wrapping, dimensions>& wrapping) {
+template<size_t dimensions> void Texture<dimensions>::setWrapping(const Math::Vector<Wrapping, Dimensions>& wrapping) {
     bind();
     for(int i = 0; i != dimensions; ++i) {
         /* Repeat wrap modes are not available on rectangle textures. */

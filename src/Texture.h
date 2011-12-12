@@ -61,7 +61,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          *
          * Creates one OpenGL texture.
          */
-        inline Texture(GLint layer = 0, GLenum target = DataHelper<dimensions>::target()): AbstractTexture(layer, target) {}
+        inline Texture(GLint layer = 0, GLenum target = DataHelper<Dimensions>::target()): AbstractTexture(layer, target) {}
 
         /**
          * @brief Set wrapping
@@ -72,7 +72,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          * textures. Note that for rectangle textures repeating wrapping modes
          * are unavailable.
          */
-        void setWrapping(const Math::Vector<Wrapping, dimensions>& wrapping);
+        void setWrapping(const Math::Vector<Wrapping, Dimensions>& wrapping);
 
         /**
          * @brief Set texture data
@@ -83,9 +83,9 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          *      color channel is detected from format of passed data array.
          * @param data              %Texture data
          */
-        template<class T> inline void setData(GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
+        template<class T> inline void setData(GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             bind();
-            DataHelper<dimensions>::set(target, mipLevel, internalFormat, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
+            DataHelper<Dimensions>::set(target, mipLevel, internalFormat, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
             unbind();
         }
 
@@ -110,9 +110,9 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          *      color channel is detected from format of passed data array.
          * @param data              %Texture data
          */
-        template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLint, dimensions>& offset, const Math::Vector<GLsizei, dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
+        template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             bind();
-            DataHelper<dimensions>::setSub(target, mipLevel, offset, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
+            DataHelper<Dimensions>::setSub(target, mipLevel, offset, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
             unbind();
         }
 
@@ -124,7 +124,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          */
         inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Image<Dimensions>* image) {
             bind();
-            DataHelper<dimensions>::setSub(target, mipLevel, offset, image->dimensions(), image->colorFormat(), image->type(), image->data());
+            DataHelper<Dimensions>::setSub(target, mipLevel, offset, image->dimensions(), image->colorFormat(), image->type(), image->data());
             unbind();
         }
 };
