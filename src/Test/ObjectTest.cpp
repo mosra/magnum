@@ -37,7 +37,7 @@ void ObjectTest::parenting() {
 
     /* In fact, cyclic dependencies are not allowed at all */
     root.setParent(childTwo);
-    QVERIFY(root.parent() == 0);
+    QVERIFY(root.parent() == nullptr);
 
     /* Reparent to another */
     childTwo->setParent(childOne);
@@ -59,7 +59,7 @@ void ObjectTest::scene() {
     Object* childOfOrphan = new Object(orphan);
 
     QVERIFY(childTwo->scene() == &scene);
-    QVERIFY(childOfOrphan->scene() == 0);
+    QVERIFY(childOfOrphan->scene() == nullptr);
 }
 
 void ObjectTest::dirty() {

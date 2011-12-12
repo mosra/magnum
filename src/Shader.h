@@ -106,7 +106,7 @@ class Shader {
             Shader* s = new Shader(type);
             if(!s->addFile(filename)) {
                 delete s;
-                return 0;
+                return nullptr;
             }
 
             return s;

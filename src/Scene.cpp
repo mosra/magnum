@@ -19,7 +19,7 @@ using namespace std;
 
 namespace Magnum {
 
-Scene::Scene(): Object(0), _features(0), _camera(0) {
+Scene::Scene(): Object(nullptr), _features(0), _camera(nullptr) {
     _parent = this;
     setClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
@@ -59,7 +59,7 @@ void Scene::setCamera(Camera* camera) {
     }
 
     /* Set old camera inactive, if it is still active in this scene */
-    if(oldCamera && oldCamera->active() == this) oldCamera->setActive(0);
+    if(oldCamera && oldCamera->active() == this) oldCamera->setActive(nullptr);
 
     setDirty();
 }

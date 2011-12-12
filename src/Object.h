@@ -45,7 +45,7 @@ class Object {
          *
          * Sets all transformations to their default values.
          */
-        inline Object(Object* parent = 0): _parent(0), dirty(true) {
+        inline Object(Object* parent = nullptr): _parent(nullptr), dirty(true) {
             setParent(parent);
         }
 
@@ -59,7 +59,7 @@ class Object {
 
         /**
          * @brief Scene
-         * @return If the object is not assigned to any scene, returns 0.
+         * @return If the object is not assigned to any scene, returns nullptr.
          */
         Scene* scene() const;
 

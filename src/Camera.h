@@ -43,19 +43,19 @@ class Camera: public Object {
          *
          * Calls <tt>setOrthographic(2, 1, 1000)</tt>.
          */
-        Camera(Object* parent = 0);
+        Camera(Object* parent = nullptr);
 
         /**
          * @brief Scene in which the camera is active
-         * @return If the camera is not active anywhere, returns 0.
+         * @return If the camera is not active anywhere, returns nullptr.
          */
         inline Scene* active() const { return _active; }
 
         /**
          * @brief Make camera active in given scene
          *
-         * If passed 0 as @c scene and this camera is active in an scene, the
-         * camera will be removed from that scene.
+         * If passed nullptr as @c scene and this camera is active in an scene,
+         * the camera will be removed from that scene.
          */
         void setActive(Scene* scene);
 
@@ -127,7 +127,7 @@ class Camera: public Object {
         /**
          * If the camera was active before and is still active, calls
          * setDirty() on the scene, if is not part of the scene anymore, calls
-         * setCamera(0) on the scene.
+         * setCamera(nullptr) on the scene.
          */
         virtual void setDirty();
 

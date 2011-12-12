@@ -34,7 +34,7 @@ class Light: public Object {
          * @brief Constructor
          * @param parent        Parent object
          */
-        inline Light(Object* parent = 0): Object(parent) {}
+        inline Light(Object* parent = nullptr): Object(parent) {}
 
         /**
          * @brief Light position relative to the camera

@@ -33,7 +33,7 @@ void Camera::setActive(Scene* _scene) {
 
     /* Remove the camera from current active scene, if the camera is still
        active there */
-    if(oldActive && oldActive->camera() == this) oldActive->setCamera(0);
+    if(oldActive && oldActive->camera() == this) oldActive->setCamera(nullptr);
 
     /* Clean the path to scene */
     setClean();
@@ -101,7 +101,7 @@ void Camera::setDirty() {
         Scene* currentScene = scene();
 
         /* Camera is not part of the scene anymore, remove it from there */
-        if(!currentScene) _active->setCamera(0);
+        if(!currentScene) _active->setCamera(nullptr);
 
         /* Otherwise set the scene dirty */
         else _active->setDirty();
