@@ -37,7 +37,10 @@ class Buffer;
  *      shader as floating-point vec4)
  */
 class Mesh {
-    DISABLE_COPY(Mesh)
+    Mesh(const Mesh& other) = delete;
+    Mesh(Mesh&& other) = delete;
+    Mesh& operator=(const Mesh& other) = delete;
+    Mesh& operator=(Mesh&& other) = delete;
 
     public:
         /** @brief Primitive type */

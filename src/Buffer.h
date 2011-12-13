@@ -27,7 +27,10 @@ namespace Magnum {
  * @brief Class for managing buffers
  */
 class Buffer {
-    DISABLE_COPY(Buffer)
+    Buffer(const Buffer& other) = delete;
+    Buffer(Buffer&& other) = delete;
+    Buffer& operator=(const Buffer& other) = delete;
+    Buffer& operator=(Buffer&& other) = delete;
 
     public:
         /** @brief Buffer type */

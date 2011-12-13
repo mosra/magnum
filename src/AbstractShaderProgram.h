@@ -78,7 +78,10 @@ Basic workflow with AbstractShaderProgram subclasses is: instancing the class
 and calling Mesh::draw() (see its documentation for more).
  */
 class AbstractShaderProgram {
-    DISABLE_COPY(AbstractShaderProgram)
+    AbstractShaderProgram(const AbstractShaderProgram& other) = delete;
+    AbstractShaderProgram(AbstractShaderProgram&& other) = delete;
+    AbstractShaderProgram& operator=(const AbstractShaderProgram& other) = delete;
+    AbstractShaderProgram& operator=(AbstractShaderProgram&& other) = delete;
 
     public:
         /** @brief Logging level */

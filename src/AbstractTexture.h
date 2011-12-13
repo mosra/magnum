@@ -31,7 +31,10 @@ namespace Magnum {
 See Texture documentation for more information.
 */
 class AbstractTexture {
-    DISABLE_COPY(AbstractTexture)
+    AbstractTexture(const AbstractTexture& other) = delete;
+    AbstractTexture(AbstractTexture&& other) = delete;
+    AbstractTexture& operator=(const AbstractTexture& other) = delete;
+    AbstractTexture& operator=(AbstractTexture&& other) = delete;
 
     public:
         /** @brief Texture filtering */

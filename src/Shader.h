@@ -34,7 +34,10 @@ namespace Magnum {
  * for linking and usage.
  */
 class Shader {
-    DISABLE_COPY(Shader)
+    Shader(const Shader& other) = delete;
+    Shader(Shader&& other) = delete;
+    Shader& operator=(const Shader& other) = delete;
+    Shader& operator=(Shader&& other) = delete;
 
     public:
         /** @brief Logging level */

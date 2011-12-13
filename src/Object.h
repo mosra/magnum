@@ -34,7 +34,10 @@ class Scene;
  * place.
  */
 class Object {
-    DISABLE_COPY(Object)
+    Object(const Object& other) = delete;
+    Object(Object&& other) = delete;
+    Object& operator=(const Object& other) = delete;
+    Object& operator=(Object&& other) = delete;
 
     friend class Scene;
 

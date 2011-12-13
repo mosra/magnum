@@ -42,7 +42,10 @@ transparent envelope around the data, which holds additional information about
 data type and dimensions.
 */
 template<size_t imageDimensions> class Image {
-    DISABLE_COPY(Image)
+    Image<imageDimensions>(const Image<imageDimensions>& other) = delete;
+    Image<imageDimensions>(Image<imageDimensions>&& other) = delete;
+    Image<imageDimensions>& operator=(const Image<imageDimensions>& other) = delete;
+    Image<imageDimensions>& operator=(Image<imageDimensions>&& other) = delete;
 
     public:
         const static size_t Dimensions = imageDimensions;   /**< @brief Image dimension count */
