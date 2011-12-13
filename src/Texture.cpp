@@ -19,7 +19,7 @@ namespace Magnum {
 
 template<size_t dimensions> void Texture<dimensions>::setWrapping(const Math::Vector<Wrapping, Dimensions>& wrapping) {
     bind();
-    for(int i = 0; i != dimensions; ++i) {
+    for(size_t i = 0; i != Dimensions; ++i) {
         /* Repeat wrap modes are not available on rectangle textures. */
         if(target == GL_TEXTURE_RECTANGLE && (wrapping.at(i) == Wrapping::Repeat || wrapping.at(i) == Wrapping::MirroredRepeat))
             continue;
