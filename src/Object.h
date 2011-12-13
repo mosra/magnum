@@ -70,7 +70,7 @@ class Object {
         inline const std::set<Object*>& children() const { return _children; }
 
         /** @brief Set parent object */
-        virtual void setParent(Object* parent);
+        void setParent(Object* parent);
 
         /**
          * @brief Transformation matrix

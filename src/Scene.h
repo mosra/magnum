@@ -26,13 +26,16 @@ namespace Magnum {
 /** @brief %Scene */
 class Scene: public Object {
     private:
-        virtual void setParent(Object* parent) {}
-        Object::setTransformation;
-        Object::multiplyTransformation;
-        Object::setTransformationFrom;
-        Object::translate;
-        Object::scale;
-        Object::rotate;
+        void setParent(Object* parent) = delete;
+        void setTransformation(const Matrix4& transformation) = delete;
+        void multiplyTransformation(const Matrix4& transformation, bool global = true) = delete;
+        void setTransformationFrom(Object* another) = delete;
+        void translate(Vector3 vec, bool global = true) = delete;
+        void translate(GLfloat x, GLfloat y, GLfloat z, bool global = true) = delete;
+        void scale(Vector3 vec, bool global = true) = delete;
+        void scale(GLfloat x, GLfloat y, GLfloat z, bool global = true) = delete;
+        void rotate(GLfloat angle, Vector3 vec, bool global = true) = delete;
+        void rotate(GLfloat angle, GLfloat x, GLfloat y, GLfloat z, bool global = true) = delete;
 
     public:
         /** @brief Features */
