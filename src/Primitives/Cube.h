@@ -23,7 +23,7 @@
 
 namespace Magnum { namespace Primitives {
 
-/** @brief Cube primitive */
+/** @brief %Cube primitive */
 class Cube: public AbstractPrimitive<GLubyte> {
     public:
         inline Mesh::Primitive primitive() const { return Mesh::Triangles; }

@@ -82,6 +82,8 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          * @param colorFormat       Color format of passed data. Data size per
          *      color channel is detected from format of passed data array.
          * @param data              %Texture data
+         *
+         * Sets texture from given data. The data are not deleted afterwards.
          */
         template<class T> inline void setData(GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             bind();
@@ -94,6 +96,9 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          * @param mipLevel          Mip level
          * @param internalFormat    Internal texture format
          * @param image             Image
+         *
+         * Sets texture data from given image. The image is not deleted
+         * afterwards.
          */
         inline void setData(GLint mipLevel, InternalFormat internalFormat, const Image<Dimensions>* image) {
             bind();
@@ -109,6 +114,9 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          * @param colorFormat       Color format of passed data. Data size per
          *      color channel is detected from format of passed data array.
          * @param data              %Texture data
+         *
+         * Sets texture subdata from given data. The data are not deleted
+         * afterwards.
          */
         template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             bind();
@@ -121,6 +129,9 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          * @param mipLevel          Mip level
          * @param offset            Offset where to put data in the texture
          * @param image             Image
+         *
+         * Sets texture subdata from given image. The image is not deleted
+         * afterwards.
          */
         inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Image<Dimensions>* image) {
             bind();

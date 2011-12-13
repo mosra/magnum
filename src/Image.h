@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Image
+ * @brief Enum Magnum::ColorFormat, class Magnum::Image
  */
 
 #include "Magnum.h"
@@ -35,7 +35,7 @@ enum class ColorFormat: GLenum {
 };
 
 /**
-@brief Image
+@brief %Image
 
 Class for storing data, which are later fed to textures. It is just a
 transparent envelope around the data, which holds additional information about

@@ -37,7 +37,7 @@ class _AbstractIcosphere {
 #endif
 
 /**
- * @brief Icosphere primitive
+ * @brief %Icosphere primitive
  * @tparam subdivisions     Number of subdivisions
  */
 template<size_t subdivisions> class Icosphere: public AbstractPrimitive<typename SizeTraits<Log<256, Pow<4, subdivisions>::value*20*3>::value>::SizeType>, _AbstractIcosphere {

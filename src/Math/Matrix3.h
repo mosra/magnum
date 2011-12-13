@@ -24,7 +24,7 @@
 
 namespace Magnum { namespace Math {
 
-/** @brief Matrix 3x3 */
+/** @brief 3x3 matrix */
 template<class T> class Matrix3: public Matrix<T, 3> {
     public:
         /** @copydoc Matrix::Matrix(bool) */

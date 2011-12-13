@@ -24,7 +24,7 @@
 namespace Magnum {
 
 /**
- * @brief Camera object
+ * @brief %Camera object
  *
  * @todo Subclasses - perspective, FBO postprocessing etc.
  */

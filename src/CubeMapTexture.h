@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Cube map texture
+ * @brief Class Magnum::CubeMapTexture
  */
 
 #include "Texture.h"

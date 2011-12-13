@@ -23,7 +23,7 @@
 
 namespace Magnum { namespace Math {
 
-/** @brief Vector (two-component) */
+/** @brief Two-component vector */
 template<class T> class Vector2: public Vector<T, 2> {
     public:
         /** @copydoc Vector::Vector */

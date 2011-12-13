@@ -23,7 +23,7 @@
 
 namespace Magnum {
 
-/** @brief Scene */
+/** @brief %Scene */
 class Scene: public Object {
     private:
         virtual void setParent(Object* parent) {}

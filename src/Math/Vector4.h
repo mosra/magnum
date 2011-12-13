@@ -23,7 +23,7 @@
 
 namespace Magnum { namespace Math {
 
-/** @brief Vector (four-component) */
+/** @brief Four-component vector */
 template<class T> class Vector4: public Vector<T, 4> {
     public:
         /**

@@ -27,7 +27,7 @@
 namespace Magnum {
 
 /**
- * @brief Shader
+ * @brief %Shader
  *
  * Allows loading and compiling the shader from file or directly from source
  * string. Compiled shaders are then passed to AbstractShaderProgram subclasses

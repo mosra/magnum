@@ -23,7 +23,7 @@
 
 namespace Magnum { namespace Math {
 
-/** @brief Vector (three-component) */
+/** @brief Three-component vector */
 template<class T> class Vector3: public Vector<T, 3> {
     public:
         /** @brief Unit vector in direction of X axis */

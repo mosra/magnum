@@ -25,7 +25,7 @@
 namespace Magnum { namespace Math {
 
 /**
- * @brief Matrix 4x4
+ * @brief 4x4 matrix
  *
  * @todo @c PERFORMANCE - make (T,T,T) - (Vec3&lt;T&gt;) alternatives calling
  *      direction based on statistics, which is used more frequently

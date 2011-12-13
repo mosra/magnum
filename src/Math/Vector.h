@@ -27,7 +27,7 @@
 
 namespace Magnum { namespace Math {
 
-/** @brief Vector */
+/** @brief %Vector */
 template<class T, size_t size> class Vector {
     public:
         typedef T Type;                     /**< @brief Vector data type */
