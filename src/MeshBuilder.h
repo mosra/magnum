@@ -275,7 +275,7 @@ template<class Vertex> class MeshBuilder {
          * @note The mesh is @b not cleaned before building.
          */
         inline void build(IndexedMesh* mesh, Buffer* vertexBuffer, Buffer::Usage vertexBufferUsage, Buffer::Usage indexBufferUsage) {
-            SizeBasedCall<InternalBuilder>(_faces.size()*3)(this, mesh, vertexBuffer, vertexBufferUsage, indexBufferUsage);
+            SizeBasedCall<InternalBuilder>(_vertices.size())(this, mesh, vertexBuffer, vertexBufferUsage, indexBufferUsage);
         }
 
         /**
