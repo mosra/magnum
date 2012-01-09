@@ -37,7 +37,6 @@ class TGAImporter: public AbstractImporter {
         inline size_t image2DCount() const { return _image ? 1 : 0; }
         inline std::shared_ptr<Image2D> image2D(size_t id);
 
-    private:
         #pragma pack(1)
         struct Header {
             GLbyte  identsize;              /**< @brief Size of ID field that follows header (0) */
@@ -55,6 +54,7 @@ class TGAImporter: public AbstractImporter {
         };
         #pragma pack(8)
 
+    private:
         std::shared_ptr<Image2D> _image;
 };
 
