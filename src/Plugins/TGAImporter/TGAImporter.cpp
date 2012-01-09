@@ -26,6 +26,8 @@ PLUGIN_REGISTER(Magnum::Plugins::TGAImporter::TGAImporter, "cz.mosra.magnum.Abst
 
 namespace Magnum { namespace Plugins { namespace TGAImporter {
 
+static_assert(sizeof(TGAImporter::Header) == 18, "TGAImporter: header size is not 18 bytes");
+
 bool TGAImporter::open(std::istream& in) {
     if(_image) close();
     if(!in.good()) return false;
