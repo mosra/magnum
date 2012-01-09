@@ -15,6 +15,7 @@
 
 #include "TGAImporter.h"
 
+#include "Utility/Endianness.h"
 #include "Math/Vector2.h"
 #include "Image.h"
 
@@ -32,8 +33,11 @@ bool TGAImporter::open(std::istream& in) {
     Header header;
     in.read(reinterpret_cast<char*>(&header), sizeof(Header));
 
-    ColorFormat colorFormat;
+    /* Convert to machine endian */
+    header.width = Endianness::littleEndian<unsigned short>(header.width);
+    header.height = Endianness::littleEndian<unsigned short>(header.height);
 
+    ColorFormat colorFormat;
     switch(header.bpp) {
         case 24:
             colorFormat = ColorFormat::BGR;
