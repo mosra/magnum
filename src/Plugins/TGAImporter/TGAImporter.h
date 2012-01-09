@@ -50,7 +50,7 @@ class TGAImporter: public AbstractImporter {
             unsigned short  beginY;         /**< @brief Image y origin */
             unsigned short  width;          /**< @brief Image width */
             unsigned short  height;         /**< @brief Image height */
-            GLbyte  bpp;                    /**< @brief Bits per pixel (8 16, 24, 32) */
+            GLbyte  bpp;                    /**< @brief Bits per pixel (8, 16, 24, 32) */
             GLbyte  descriptor;             /**< @brief Image descriptor */
         };
         #pragma pack(8)

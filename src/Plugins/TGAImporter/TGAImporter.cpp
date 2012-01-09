@@ -48,7 +48,7 @@ bool TGAImporter::open(std::istream& in) {
             colorFormat = ColorFormat::BGRA;
             break;
         default:
-            Error() << "TGATexture: unsupported bits-per-pixel:" << (int) header.bpp;
+            Error() << "TGAImporter: unsupported bits-per-pixel:" << (int) header.bpp;
             return false;
     }
 
