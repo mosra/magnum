@@ -35,7 +35,7 @@ class TGAImporter: public AbstractImporter {
         void close();
 
         inline size_t image2DCount() const { return _image ? 1 : 0; }
-        inline std::shared_ptr<Image2D> image2D(size_t id);
+        std::shared_ptr<Image2D> image2D(size_t id);
 
         #pragma pack(1)
         struct Header {
