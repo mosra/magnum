@@ -29,6 +29,8 @@ namespace Magnum {
 class AbstractShaderProgram;
 class AbstractTexture;
 class AbstractMaterial;
+class Camera;
+class Light;
 class Mesh;
 class Object;
 class Scene;
@@ -100,7 +102,31 @@ class AbstractImporter: public Corrade::PluginManager::Plugin {
          */
         virtual inline std::shared_ptr<Scene> scene(size_t id) { return nullptr; }
 
-        /** @brief Object count */
+        /** @brief Light count */
+        virtual inline size_t lightCount() const { return 0; }
+
+        /**
+         * @brief Light
+         * @param id        Light ID, from range [0, lightCount()).
+         *
+         * Returns (shared) pointer to given light or nullptr, if no such
+         * light exists.
+         */
+        virtual inline std::shared_ptr<Light> light(size_t id) { return nullptr; }
+
+        /** @brief Camera count */
+        virtual inline size_t cameraCount() const { return 0; }
+
+        /**
+         * @brief Camera
+         * @param id        Camera ID, from range [0, cameraCount()).
+         *
+         * Returns (shared) pointer to given camera or nullptr, if no such
+         * camera exists.
+         */
+        virtual inline std::shared_ptr<Camera> camera(size_t id) { return nullptr; }
+
+        /** @brief Object count (without lights and cameras) */
         virtual inline size_t objectCount() const { return 0; }
 
         /**
