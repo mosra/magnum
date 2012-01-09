@@ -39,6 +39,16 @@ bool TGAImporter::open(std::istream& in) {
     header.width = Endianness::littleEndian<unsigned short>(header.width);
     header.height = Endianness::littleEndian<unsigned short>(header.height);
 
+    if(header.colorMapType != 0) {
+        Error() << "TGAImporter: paletted files are not supported";
+        return false;
+    }
+
+    if(header.imageType != 2) {
+        Error() << "TGAImporter: non-RGB files are not supported";
+        return false;
+    }
+
     ColorFormat colorFormat;
     switch(header.bpp) {
         case 24:
