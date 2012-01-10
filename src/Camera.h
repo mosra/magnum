@@ -109,6 +109,9 @@ class Camera: public Object {
          */
         inline Matrix4 projectionMatrix() const { return _projectionMatrix; }
 
+        /** @brief Viewport size */
+        inline Math::Vector2<unsigned int> viewport() const { return _viewport; }
+
         /**
          * @brief Set viewport size
          *
