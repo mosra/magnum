@@ -110,14 +110,17 @@ class Camera: public Object {
         inline Matrix4 projectionMatrix() const { return _projectionMatrix; }
 
         /**
-         * @brief Set viewport
-         * @param width     Window / buffer width
-         * @param height    Window / buffer height
+         * @brief Set viewport size
          *
          * Called when assigning the camera to the scene or when window
          * size changes.
          */
-        void setViewport(int width, int height);
+        void setViewport(const Math::Vector2<unsigned int>& size);
+
+        /** @copydoc setViewport(const Math::Vector2<size_t>& size); */
+        inline void setViewport(unsigned int width, unsigned int height) {
+            setViewport({width, height});
+        }
 
         /**
          * Recalculates camera matrix.
@@ -138,7 +141,7 @@ class Camera: public Object {
         GLfloat _near, _far;
         Scene* _active;
 
-        int viewportWidth, viewportHeight;
+        Math::Vector2<unsigned int> _viewport;
         AspectRatioPolicy _aspectRatioPolicy;
 
         void fixAspectRatio();

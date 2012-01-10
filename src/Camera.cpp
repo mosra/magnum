@@ -18,7 +18,7 @@
 
 namespace Magnum {
 
-Camera::Camera(Object* parent): Object(parent), _active(0), viewportWidth(0), viewportHeight(0), _aspectRatioPolicy(Extend) {
+Camera::Camera(Object* parent): Object(parent), _active(0), _aspectRatioPolicy(Extend) {
     setOrthographic(2, 1, 1000);
 }
 
@@ -79,11 +79,10 @@ void Camera::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
     fixAspectRatio();
 }
 
-void Camera::setViewport(int width, int height) {
-    glViewport(0, 0, width, height);
+void Camera::setViewport(const Math::Vector2<unsigned int>& size) {
+    glViewport(0, 0, size.x(), size.y());
 
-    viewportWidth = width;
-    viewportHeight = height;
+    _viewport = size;
     fixAspectRatio();
 }
 
@@ -113,23 +112,23 @@ void Camera::setDirty() {
 
 void Camera::fixAspectRatio() {
     /* Don't divide by zero */
-    if(viewportWidth == 0 || viewportHeight == 0) {
+    if(_viewport.x() == 0 || _viewport.y() == 0) {
         _projectionMatrix = rawProjectionMatrix;
         return;
     }
 
     /* Extend on larger side = scale larger side down */
     if(_aspectRatioPolicy == Extend) {
-        _projectionMatrix = ((viewportWidth > viewportHeight) ?
-            Matrix4::scaling(static_cast<GLfloat>(viewportHeight)/viewportWidth, 1, 1) :
-            Matrix4::scaling(1, static_cast<GLfloat>(viewportWidth)/viewportHeight, 1)
+        _projectionMatrix = ((_viewport.x() > _viewport.y()) ?
+            Matrix4::scaling(static_cast<GLfloat>(_viewport.y())/_viewport.x(), 1, 1) :
+            Matrix4::scaling(1, static_cast<GLfloat>(_viewport.x())/_viewport.y(), 1)
         )*rawProjectionMatrix;
 
     /* Clip on smaller side = scale smaller side up */
     } else if(_aspectRatioPolicy == Clip) {
-        _projectionMatrix = ((viewportWidth > viewportHeight) ?
-            Matrix4::scaling(1, static_cast<GLfloat>(viewportWidth)/viewportHeight, 1) :
-            Matrix4::scaling(static_cast<GLfloat>(viewportHeight)/viewportWidth, 1, 1)
+        _projectionMatrix = ((_viewport.x() > _viewport.y()) ?
+            Matrix4::scaling(1, static_cast<GLfloat>(_viewport.x())/_viewport.y(), 1) :
+            Matrix4::scaling(static_cast<GLfloat>(_viewport.y())/_viewport.x(), 1, 1)
         )*rawProjectionMatrix;
 
     /* Don't preserve anything */
