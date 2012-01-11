@@ -178,7 +178,7 @@ template<class T, size_t size> class Vector {
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T, size_t size> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector<T, size>& value) {
+template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector<T, size>& value) {
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
     debug << "Vector(";
     for(size_t i = 0; i != size; ++i) {

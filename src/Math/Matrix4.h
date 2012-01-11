@@ -162,7 +162,7 @@ template<class T> class Matrix4: public Matrix<T, 4> {
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix4<T>& value) {
+template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix4<T>& value) {
     return debug << static_cast<const Magnum::Math::Matrix<T, 4>&>(value);
 }
 #endif
