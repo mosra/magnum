@@ -25,22 +25,23 @@
 
 namespace Magnum { namespace Primitives {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class _AbstractIcosphere {
-    public:
-        ~_AbstractIcosphere() {}
+/**
+@brief Icosahedron
 
-    protected:
-        static const Vector4 initialVertices[];
-        static const GLubyte initialIndices[];
+@todo Use own computed (and more precise) icosahedron data, not these stolen
+from Blender.
+*/
+class Icosahedron {
+    public:
+        static const Vector4 vertices[];    /**< @brief Vertices */
+        static const GLubyte indices[];     /**< @brief Indices */
 };
-#endif
 
 /**
  * @brief %Icosphere primitive
  * @tparam subdivisions     Number of subdivisions
  */
-template<size_t subdivisions> class Icosphere: public AbstractPrimitive<typename SizeTraits<Log<256, Pow<4, subdivisions>::value*20*3>::value>::SizeType>, _AbstractIcosphere {
+template<size_t subdivisions> class Icosphere: public AbstractPrimitive<typename SizeTraits<Log<256, Pow<4, subdivisions>::value*20*3>::value>::SizeType> {
     public:
         Icosphere() {
             if(vertexCount() == 0) subdivide();
@@ -63,7 +64,7 @@ template<size_t subdivisions> class Icosphere: public AbstractPrimitive<typename
         }
 
         static void subdivide() {
-            builder()->setData(initialVertices, initialIndices, 12, 60);
+            builder()->setData(Icosahedron::vertices, Icosahedron::indices, 12, 60);
 
             for(size_t i = 0; i != subdivisions; ++i)
                 builder()->subdivide([](const Vector4& a, const Vector4& b) {

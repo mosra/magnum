@@ -17,13 +17,7 @@
 
 namespace Magnum { namespace Primitives {
 
-/**
- * @todo Use own computed (and more precise) icosahedron data, not these stolen
- * from Blender.
- */
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-const Vector4 _AbstractIcosphere::initialVertices[] = {
+const Vector4 Icosahedron::vertices[] = {
     Vector4(0, -0.525731f, 0.850651f),
     Vector4(0.850651f, 0, 0.525731f),
     Vector4(0.850651f, 0, -0.525731f),
@@ -37,7 +31,7 @@ const Vector4 _AbstractIcosphere::initialVertices[] = {
     Vector4(0, 0.525731f, -0.850651f),
     Vector4(0, 0.525731f, 0.850651f),
 };
-const GLubyte _AbstractIcosphere::initialIndices[] = {
+const GLubyte Icosahedron::indices[] = {
     1, 2, 6,
     1, 7, 2,
     3, 4, 5,
@@ -59,6 +53,5 @@ const GLubyte _AbstractIcosphere::initialIndices[] = {
     3, 9, 8,
     4, 8, 0
 };
-#endif
 
 }}
