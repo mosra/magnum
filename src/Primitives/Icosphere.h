@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Primitives::Icosphere
+ * @brief Class Magnum::Primitives::Icosahedron, Magnum::Primitives::Icosphere
  */
 
 #include "AbstractPrimitive.h"

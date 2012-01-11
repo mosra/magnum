@@ -120,7 +120,7 @@ class Camera: public Object {
          */
         void setViewport(const Math::Vector2<unsigned int>& size);
 
-        /** @copydoc setViewport(const Math::Vector2<size_t>& size); */
+        /** @copydoc setViewport(const Math::Vector2<unsigned int>& size); */
         inline void setViewport(unsigned int width, unsigned int height) {
             setViewport({width, height});
         }

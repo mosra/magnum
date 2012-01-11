@@ -24,6 +24,12 @@
 #include "Math/Matrix4.h"
 #include "Math/Vector2.h"
 
+/**
+ * @brief Root namespace
+ *
+ * Contains classes needed for building meshes, setting up and rendering the
+ * scene.
+ */
 namespace Magnum {
 
 /** @brief Two-component floating-point vector */

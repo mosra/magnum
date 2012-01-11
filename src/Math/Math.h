@@ -21,7 +21,14 @@
  * @brief Math constants and utilities
  */
 
-namespace Magnum { namespace Math {
+namespace Magnum {
+
+/**
+ * @brief %Math library
+ *
+ * Template classes for matrix and vector calculations.
+*/
+namespace Math {
 
 /** @brief Pi */
 #define PI 3.1415926535

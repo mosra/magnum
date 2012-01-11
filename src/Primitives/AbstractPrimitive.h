@@ -28,6 +28,11 @@ namespace Magnum {
 class Buffer;
 class IndexedMesh;
 
+/**
+ * @brief %Primitive library
+ *
+ * Basic primitives usable for testing.
+ */
 namespace Primitives {
 
 /**
