@@ -1,7 +1,7 @@
 #ifndef Magnum_Mesh_h
 #define Magnum_Mesh_h
 /*
-    Copyright © 2010, 2011 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
     This file is part of Magnum.
 
