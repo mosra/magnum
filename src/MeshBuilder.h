@@ -42,31 +42,6 @@ vertices etc.).
 */
 template<class Vertex> class MeshBuilder {
     public:
-        typedef size_t VertexPointer;   /**< @brief Type for indexing vertices */
-
-        /** @brief Triangle face */
-        struct Face {
-            /** @brief Implicit constructor */
-            Face() {}
-
-            /** @brief Constructor */
-            Face(VertexPointer first, VertexPointer second, VertexPointer third) {
-                vertices[0] = first;
-                vertices[1] = second;
-                vertices[2] = third;
-            }
-
-            /** @brief Vertex data */
-            VertexPointer vertices[3];
-
-            /** @brief Comparison operator */
-            bool operator==(const Face& other) const {
-                return other.vertices[0] == vertices[0] &&
-                       other.vertices[1] == vertices[1] &&
-                       other.vertices[2] == vertices[2];
-            }
-        };
-
         /**
          * @brief Destructor
          *
@@ -83,22 +58,20 @@ template<class Vertex> class MeshBuilder {
          */
         void clear() {
             _vertices.clear();
-            _faces.clear();
+            _indices.clear();
         }
 
         /** @brief Vertex count */
-        inline size_t vertexCount() const { return _vertices.size(); }
+        inline unsigned int vertexCount() const { return _vertices.size(); }
 
         /** @brief Array with vertices */
         inline const std::vector<Vertex>& vertices() const { return _vertices; }
-        inline std::vector<Vertex>& vertices() { return _vertices; } /**< @copydoc vertices() const */
 
-        /** @brief Face count */
-        inline size_t faceCount() const { return _faces.size(); }
+        /** @brief Index count */
+        inline unsigned int indexCount() const { return _indices.size(); }
 
-        /** @brief Array with faces */
-        inline const std::vector<Face>& faces() const { return _faces; }
-        inline std::vector<Face>& faces() { return _faces; } /**< @copydoc faces() const */
+        /** @brief Array with indices */
+        inline const std::vector<unsigned int>& indices() const { return _indices; }
 
         /**
          * @brief Set mesh data
@@ -110,36 +83,33 @@ template<class Vertex> class MeshBuilder {
          * Replaces mesh builder data with given data. Type of indices is
          * detected from given pointer.
          */
-        template<class IndexType> void setData(const Vertex* vertexData, const IndexType* indices, GLsizei vertexCount, GLsizei indexCount) {
+        template<class IndexType> void setData(const Vertex* vertexData, const IndexType* indices, unsigned int vertexCount, unsigned int indexCount) {
             clear();
 
-            /* Map vertex indices to vertex pointers */
+            /* Vertex array */
             std::vector<Vertex> vertices;
             vertices.reserve(vertexCount);
             /* Using TypeTraits::IndexType to ensure we have allowed type for indexing */
             for(typename TypeTraits<IndexType>::IndexType i = 0; i != vertexCount; ++i)
                 addVertex(Vertex(vertexData[i]));
 
-            /* Faces array */
-            _faces.reserve(indexCount/3);
-            for(size_t i = 0; i < static_cast<size_t>(indexCount); i += 3)
-                addFace(indices[i], indices[i+1], indices[i+2]);
+            /* Index array */
+            _indices.reserve(indexCount);
+            for(unsigned int i = 0; i != indexCount; ++i)
+                _indices.push_back(indices[i]);
         }
 
         /** @brief Add vertex */
-        inline VertexPointer addVertex(const Vertex& v) {
+        inline unsigned int addVertex(const Vertex& v) {
             _vertices.push_back(v);
             return _vertices.size()-1;
         }
 
         /** @brief Add face */
-        inline void addFace(const Face& face) {
-            _faces.push_back(face);
-        }
-
-        /** @brief Add face */
-        inline void addFace(VertexPointer first, VertexPointer second, VertexPointer third) {
-            _faces.push_back(Face(first, second, third));
+        inline void addFace(unsigned int first, unsigned int second, unsigned int third) {
+            _indices.push_back(first);
+            _indices.push_back(second);
+            _indices.push_back(third);
         }
 
         /**
@@ -152,15 +122,15 @@ template<class Vertex> class MeshBuilder {
          * Cleaning the mesh is up to user.
          */
         template<class Interpolator> void subdivide(Interpolator interpolator) {
-            size_t faceCount = _faces.size();
-            _faces.reserve(_faces.size()*4);
+            size_t indexCount = _indices.size();
+            _indices.reserve(_indices.size()*4);
 
             /* Subdivide each face to four new */
-            for(size_t i = 0; i != faceCount; ++i) {
+            for(size_t i = 0; i != indexCount; i += 3) {
                 /* Interpolate each side */
-                VertexPointer newVertices[3];
+                unsigned int newVertices[3];
                 for(int j = 0; j != 3; ++j)
-                    newVertices[j] = addVertex(interpolator(_vertices[_faces[i].vertices[j]], _vertices[_faces[i].vertices[(j+1)%3]]));
+                    newVertices[j] = addVertex(interpolator(_vertices[_indices[i+j]], _vertices[_indices[i+(j+1)%3]]));
 
                 /*
                  * Add three new faces (0, 1, 3) and update original (2)
@@ -175,11 +145,11 @@ template<class Vertex> class MeshBuilder {
                  *        /       \   /      \
                  *   orig 1 ----- new 1 ---- orig 2
                  */
-                addFace(_faces[i].vertices[0], newVertices[0], newVertices[2]);
-                addFace(newVertices[0], _faces[i].vertices[1], newVertices[1]);
-                addFace(newVertices[2], newVertices[1], _faces[i].vertices[2]);
+                addFace(_indices[i], newVertices[0], newVertices[2]);
+                addFace(newVertices[0], _indices[i+1], newVertices[1]);
+                addFace(newVertices[2], newVertices[1], _indices[i+2]);
                 for(size_t j = 0; j != 3; ++j)
-                    _faces[i].vertices[j] = newVertices[j];
+                    _indices[i+j] = newVertices[j];
             }
         }
 
@@ -194,7 +164,7 @@ template<class Vertex> class MeshBuilder {
          * only first three fields of otherwise 4D vertex are important).
          */
         template<size_t vertexSize = Vertex::Size> void cleanMesh(typename Vertex::Type epsilon = EPSILON) {
-            if(_faces.empty()) return;
+            if(_indices.empty()) return;
 
             /* Get mesh bounds */
             Vertex min, max;
@@ -229,27 +199,24 @@ template<class Vertex> class MeshBuilder {
                 table.reserve(_vertices.size());
 
                 /* Go through all faces' vertices */
-                for(auto it = _faces.begin(); it != _faces.end(); ++it) {
-                    for(size_t i = 0; i != 3; ++i) {
+                for(auto it = _indices.begin(); it != _indices.end(); ++it) {
+                    /* Index of a vertex in vertexSize-dimensional table */
+                    size_t index[vertexSize];
+                    for(size_t ii = 0; ii != vertexSize; ++ii)
+                        index[ii] = (_vertices[*it][ii]+moved[ii]-min[ii])/epsilon;
 
-                        /* Index of a vertex in vertexSize-dimensional table */
-                        size_t index[vertexSize];
-                        for(size_t ii = 0; ii != vertexSize; ++ii)
-                            index[ii] = (_vertices[it->vertices[i]][ii]+moved[ii]-min[ii])/epsilon;
-
-                        /* Try inserting the vertex into table, if it already
-                           exists, change vertex pointer of the face to already
-                           existing vertex */
-                        HashedVertex v(it->vertices[i], table.size());
-                        auto result = table.insert(std::pair<Math::Vector<size_t, vertexSize>, HashedVertex>(index, v));
-                        it->vertices[i] = result.first->second.newVertexPointer;
-                    }
+                    /* Try inserting the vertex into table, if it already
+                        exists, change vertex pointer of the face to already
+                        existing vertex */
+                    HashedVertex v(*it, table.size());
+                    auto result = table.insert(std::pair<Math::Vector<size_t, vertexSize>, HashedVertex>(index, v));
+                    *it = result.first->second.newIndex;
                 }
 
                 /* Shrink vertices array */
                 std::vector<Vertex> vertices(table.size());
                 for(auto it = table.cbegin(); it != table.cend(); ++it)
-                    vertices[it->second.newVertexPointer] = _vertices[it->second.oldVertexPointer];
+                    vertices[it->second.newIndex] = _vertices[it->second.oldIndex];
                 std::swap(vertices, _vertices);
 
                 /* Move vertex coordinates by epsilon/2 in next direction */
@@ -278,7 +245,7 @@ template<class Vertex> class MeshBuilder {
             mesh->setPrimitive(Mesh::Triangles);
             mesh->setVertexCount(_vertices.size());
             vertexBuffer->setData(sizeof(Vertex)*_vertices.size(), _vertices.data(), vertexBufferUsage);
-            SizeBasedCall<IndexBuilder>(_vertices.size())(mesh, _faces, indexBufferUsage);
+            SizeBasedCall<IndexBuilder>(_vertices.size())(mesh, _indices, indexBufferUsage);
         }
 
         /**
@@ -297,10 +264,8 @@ template<class Vertex> class MeshBuilder {
         }
 
     private:
-        std::vector<Face> _faces;
+        std::vector<unsigned int> _indices;
         std::vector<Vertex> _vertices;
-
-        typedef size_t FacePointer;
 
         template<size_t vertexSize> class IndexHash {
             public:
@@ -313,23 +278,20 @@ template<class Vertex> class MeshBuilder {
         };
 
         struct HashedVertex {
-            VertexPointer oldVertexPointer, newVertexPointer;
+            unsigned int oldIndex, newIndex;
 
-            HashedVertex(VertexPointer oldVertexPointer, VertexPointer newVertexPointer): oldVertexPointer(oldVertexPointer), newVertexPointer(newVertexPointer) {}
+            HashedVertex(unsigned int oldIndex, unsigned int newIndex): oldIndex(oldIndex), newIndex(newIndex) {}
         };
 
         struct IndexBuilder {
-            template<class IndexType> static void run(IndexedMesh* mesh, const std::vector<Face>& faces, Buffer::Usage indexBufferUsage) {
+            template<class IndexType> static void run(IndexedMesh* mesh, const std::vector<unsigned int>& _indices, Buffer::Usage indexBufferUsage) {
                 /* Compress face array to index array. Using
                    TypeTraits::IndexType to ensure we have allowed type for
                    indexing */
                 std::vector<typename TypeTraits<IndexType>::IndexType> indices;
-                indices.reserve(faces.size()*3);
-                for(auto it = faces.cbegin(); it != faces.cend(); ++it) {
-                    indices.push_back(it->vertices[0]);
-                    indices.push_back(it->vertices[1]);
-                    indices.push_back(it->vertices[2]);
-                }
+                indices.reserve(_indices.size());
+                for(auto it = _indices.cbegin(); it != _indices.cend(); ++it)
+                    indices.push_back(*it);
 
                 /* Update mesh parameters and fill index buffer */
                 mesh->setIndexCount(indices.size());

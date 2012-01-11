@@ -49,7 +49,7 @@ template<size_t subdivisions> class Icosphere: public AbstractPrimitive<typename
 
         inline Mesh::Primitive primitive() const { return Mesh::Triangles; }
         inline size_t vertexCount() const { return builder()->vertexCount(); }
-        inline size_t indexCount() const { return builder()->faceCount()*3; }
+        inline size_t indexCount() const { return builder()->indexCount(); }
 
         inline void build(IndexedMesh* mesh, Buffer* vertexBuffer) {
             /* mesh is prepared by the builder, no need to call prepareMesh */
