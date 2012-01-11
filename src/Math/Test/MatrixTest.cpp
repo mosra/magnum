@@ -247,6 +247,16 @@ void MatrixTest::debug() {
                                                       "       5, 4, -1, 4,\n"
                                                       "       8, 7, 8, 5,\n"
                                                       "       4, 3, 0, 9)\n"));
+
+    o.str("");
+    Debug(&o) << "a" << Matrix4() << "b" << Matrix4();
+    QCOMPARE(QString::fromStdString(o.str()), QString("a Matrix(1, 0, 0, 0,\n"
+                                                        "       0, 1, 0, 0,\n"
+                                                        "       0, 0, 1, 0,\n"
+                                                        "       0, 0, 0, 1) b Matrix(1, 0, 0, 0,\n"
+                                                        "       0, 1, 0, 0,\n"
+                                                        "       0, 0, 1, 0,\n"
+                                                        "       0, 0, 0, 1)\n"));
 }
 
 }}}

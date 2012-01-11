@@ -140,6 +140,10 @@ void VectorTest::debug() {
     ostringstream o;
     Debug(&o) << Vector4(vec);
     QCOMPARE(QString::fromStdString(o.str()), QString("Vector(0.5, 15, 1, 1)\n"));
+
+    o.str("");
+    Debug(&o) << "a" << Vector4() << "b" << Vector4();
+    QCOMPARE(QString::fromStdString(o.str()), QString("a Vector(0, 0, 0, 0) b Vector(0, 0, 0, 0)\n"));
 }
 
 }}}

@@ -233,8 +233,8 @@ template<class T> class Matrix<T, 2> {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix<T, size>& value) {
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
     debug << "Matrix(";
+    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
     for(size_t row = 0; row != size; ++row) {
         if(row != 0) debug << ",\n       ";
         for(size_t col = 0; col != size; ++col) {
@@ -242,7 +242,9 @@ template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utili
             debug << value.at(row, col);
         }
     }
-    return debug << ')';
+    debug << ')';
+    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
+    return debug;
 }
 #endif
 
