@@ -1,5 +1,5 @@
-#ifndef Magnum_Test_MeshBuilderBenchmark_h
-#define Magnum_Test_MeshBuilderBenchmark_h
+#ifndef Magnum_MeshTools_Test_SubdivideCleanBenchmark_h
+#define Magnum_MeshTools_Test_SubdivideCleanBenchmark_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -19,9 +19,9 @@
 
 #include "Magnum.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace MeshTools { namespace Test {
 
-class MeshBuilderBenchmark: public QObject {
+class SubdivideCleanBenchmark: public QObject {
     Q_OBJECT
 
     private slots:
@@ -35,5 +35,6 @@ class MeshBuilderBenchmark: public QObject {
         }
 };
 
-}}
+}}}
+
 #endif

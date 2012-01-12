@@ -30,18 +30,25 @@
 
 namespace Magnum {
 
+namespace MeshTools {
+    template<class Vertex> class AbstractTool;
+}
+
 /**
 @brief Mesh builder
 @tparam Vertex      Vertex data
 
 Class for building meshes with triangle primitive from scratch or from
-prefabricated data and modifying them (adding/removing faces, cleaning duplicate
-vertices etc.).
+prefabricated data and modifying them using MeshBuilder alone or tools from
+MeshTools namespace.
 
 @todo Make it more generic for meshes with texture coordinates etc.
 */
 template<class Vertex> class MeshBuilder {
+    friend class MeshTools::AbstractTool<Vertex>;
+
     public:
+
         /**
          * @brief Destructor
          *
@@ -113,121 +120,6 @@ template<class Vertex> class MeshBuilder {
         }
 
         /**
-         * @brief Subdivide mesh
-         * @param interpolator  Functor or function pointer which interpolates
-         *      two adjacent vertices: <tt>Vertex interpolator(Vertex a, Vertex
-         *      b)</tt>
-         *
-         * Goes through all triangle faces and subdivides them in four new.
-         * Cleaning the mesh is up to user.
-         */
-        template<class Interpolator> void subdivide(Interpolator interpolator) {
-            size_t indexCount = _indices.size();
-            _indices.reserve(_indices.size()*4);
-
-            /* Subdivide each face to four new */
-            for(size_t i = 0; i != indexCount; i += 3) {
-                /* Interpolate each side */
-                unsigned int newVertices[3];
-                for(int j = 0; j != 3; ++j)
-                    newVertices[j] = addVertex(interpolator(_vertices[_indices[i+j]], _vertices[_indices[i+(j+1)%3]]));
-
-                /*
-                 * Add three new faces (0, 1, 3) and update original (2)
-                 *
-                 *                orig 0
-                 *                /   \
-                 *               /  0  \
-                 *              /       \
-                 *          new 0 ----- new 2
-                 *          /   \       /  \
-                 *         /  1  \  2  / 3  \
-                 *        /       \   /      \
-                 *   orig 1 ----- new 1 ---- orig 2
-                 */
-                addFace(_indices[i], newVertices[0], newVertices[2]);
-                addFace(newVertices[0], _indices[i+1], newVertices[1]);
-                addFace(newVertices[2], newVertices[1], _indices[i+2]);
-                for(size_t j = 0; j != 3; ++j)
-                    _indices[i+j] = newVertices[j];
-            }
-        }
-
-        /**
-         * @brief Clean the mesh
-         * @param epsilon       Epsilon value, vertices nearer than this
-         *      distance will be melt together.
-         *
-         * Removes duplicate vertices from the mesh. With template parameter
-         * @c vertexSize you can specify how many initial vertex fields are
-         * important (for example, when dealing with perspective in 3D space,
-         * only first three fields of otherwise 4D vertex are important).
-         */
-        template<size_t vertexSize = Vertex::Size> void cleanMesh(typename Vertex::Type epsilon = EPSILON) {
-            if(_indices.empty()) return;
-
-            /* Get mesh bounds */
-            Vertex min, max;
-            for(size_t i = 0; i != Vertex::Size; ++i) {
-                min[i] = std::numeric_limits<typename Vertex::Type>::max();
-                max[i] = std::numeric_limits<typename Vertex::Type>::min();
-            }
-            for(auto it = _vertices.cbegin(); it != _vertices.cend(); ++it)
-                for(size_t i = 0; i != vertexSize; ++i)
-                    if((*it)[i] < min[i])
-                        min[i] = (*it)[i];
-                    else if((*it)[i] > max[i])
-                        max[i] = (*it)[i];
-
-            /* Make epsilon so large that size_t can index all vertices inside
-               mesh bounds. */
-            Vertex size = max-min;
-            for(size_t i = 0; i != Vertex::Size; ++i)
-                if(static_cast<typename Vertex::Type>(size[i]/std::numeric_limits<size_t>::max()) > epsilon)
-                    epsilon = static_cast<typename Vertex::Type>(size[i]/std::numeric_limits<size_t>::max());
-
-            /* First go with original vertex coordinates, then move them by
-               epsilon/2 in each direction. */
-            Vertex moved;
-            for(size_t moving = 0; moving <= vertexSize; ++moving) {
-
-                /* Under each index is pointer to face which contains given vertex
-                and index of vertex in the face. */
-                std::unordered_map<Math::Vector<size_t, vertexSize>, HashedVertex, IndexHash<vertexSize>> table;
-
-                /* Reserve space for all vertices */
-                table.reserve(_vertices.size());
-
-                /* Go through all faces' vertices */
-                for(auto it = _indices.begin(); it != _indices.end(); ++it) {
-                    /* Index of a vertex in vertexSize-dimensional table */
-                    size_t index[vertexSize];
-                    for(size_t ii = 0; ii != vertexSize; ++ii)
-                        index[ii] = (_vertices[*it][ii]+moved[ii]-min[ii])/epsilon;
-
-                    /* Try inserting the vertex into table, if it already
-                        exists, change vertex pointer of the face to already
-                        existing vertex */
-                    HashedVertex v(*it, table.size());
-                    auto result = table.insert(std::pair<Math::Vector<size_t, vertexSize>, HashedVertex>(index, v));
-                    *it = result.first->second.newIndex;
-                }
-
-                /* Shrink vertices array */
-                std::vector<Vertex> vertices(table.size());
-                for(auto it = table.cbegin(); it != table.cend(); ++it)
-                    vertices[it->second.newIndex] = _vertices[it->second.oldIndex];
-                std::swap(vertices, _vertices);
-
-                /* Move vertex coordinates by epsilon/2 in next direction */
-                if(moving != Vertex::Size) {
-                    moved = Vertex();
-                    moved[moving] = epsilon/2;
-                }
-            }
-        }
-
-        /**
          * @brief Build indexed mesh and fill existing buffers with it
          * @param mesh                  Mesh. The mesh primitive is set to
          *      Mesh::Triangles, if it is not already, vertex and index count
@@ -266,22 +158,6 @@ template<class Vertex> class MeshBuilder {
     private:
         std::vector<unsigned int> _indices;
         std::vector<Vertex> _vertices;
-
-        template<size_t vertexSize> class IndexHash {
-            public:
-                inline size_t operator()(const Math::Vector<size_t, vertexSize>& data) const {
-                    size_t a = 0;
-                    for(size_t i = 0; i != vertexSize; ++i)
-                        a ^= data[i];
-                    return a;
-                }
-        };
-
-        struct HashedVertex {
-            unsigned int oldIndex, newIndex;
-
-            HashedVertex(unsigned int oldIndex, unsigned int newIndex): oldIndex(oldIndex), newIndex(newIndex) {}
-        };
 
         struct IndexBuilder {
             template<class IndexType> static void run(IndexedMesh* mesh, const std::vector<unsigned int>& _indices, Buffer::Usage indexBufferUsage) {
