@@ -16,7 +16,7 @@ find_package(Corrade REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
-if (MAGNUM_INCLUDE_DIR AND MAGNUM_LIBRARY AND MAGNUM_PRIMITIVES_LIBRARY)
+if (MAGNUM_INCLUDE_DIR AND MAGNUM_LIBRARY AND MAGNUM_PRIMITIVES_LIBRARY AND MAGNUM_MESHTOOLS_LIBRARY)
 
     # Already in cache
     set(MAGNUM_FOUND TRUE)
@@ -25,6 +25,7 @@ else()
     # Libraries
     find_library(MAGNUM_LIBRARY Magnum)
     find_library(MAGNUM_PRIMITIVES_LIBRARY MagnumPrimitives)
+    find_library(MAGNUM_MESHTOOLS_LIBRARY MagnumMeshTools)
 
     # Paths
     find_path(MAGNUM_INCLUDE_DIR
@@ -37,6 +38,7 @@ else()
         MAGNUM_INCLUDE_DIR
         MAGNUM_LIBRARY
         MAGNUM_PRIMITIVES_LIBRARY
+        MAGNUM_MESHTOOLS_LIBRARY
     )
 
 endif()
