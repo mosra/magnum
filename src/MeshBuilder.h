@@ -32,6 +32,7 @@ namespace Magnum {
 
 namespace MeshTools {
     template<class Vertex> class AbstractTool;
+    class AbstractIndexTool;
 }
 
 /**
@@ -46,6 +47,7 @@ MeshTools namespace.
 */
 template<class Vertex> class MeshBuilder {
     friend class MeshTools::AbstractTool<Vertex>;
+    friend class MeshTools::AbstractIndexTool;
 
     public:
 

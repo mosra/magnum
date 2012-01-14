@@ -33,7 +33,8 @@ namespace MeshTools {
 /**
  * @brief Base class for mesh tools
  *
- * Provides access to internals of MeshBuilder instance for subclasses.
+ * Provides access to internals of MeshBuilder instance for subclasses. See
+ * also AbstractIndexTool.
  */
 template<class Vertex> class AbstractTool {
     public:
@@ -47,6 +48,25 @@ template<class Vertex> class AbstractTool {
         MeshBuilder<Vertex>& builder;       /**< @brief Builder instance */
         std::vector<Vertex>& vertices;      /**< @brief Builder vertices */
         std::vector<unsigned int>& indices; /**< @brief Builder indices */
+};
+
+/**
+ * @brief Base class for mesh tools operating only on indices
+ *
+ * Provides access only to index array and vertex count. See also
+ * AbstractTool.
+ */
+class AbstractIndexTool {
+    public:
+        /**
+         * @brief Constructor
+         * @param builder   %Mesh builder to operate on
+         */
+        template<class Vertex> inline AbstractIndexTool(MeshBuilder<Vertex>& builder): indices(builder._indices), vertexCount(builder.vertexCount()) {}
+
+    protected:
+        std::vector<unsigned int>& indices; /**< @brief Builder indices */
+        const unsigned int vertexCount;     /**< @brief Count of builder vertices */
 };
 
 }}
