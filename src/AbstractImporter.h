@@ -67,6 +67,8 @@ class AbstractImporter: public Corrade::PluginManager::Plugin {
     PLUGIN_INTERFACE("cz.mosra.magnum.AbstractImporter/0.1")
 
     public:
+        struct MeshData;
+
         /** @brief Constructor */
         AbstractImporter(Corrade::PluginManager::AbstractPluginManager* manager = nullptr, const std::string& plugin = ""): Plugin(manager, plugin) {}
 
@@ -140,6 +142,19 @@ class AbstractImporter: public Corrade::PluginManager::Plugin {
 
         /** @brief Mesh count */
         virtual inline size_t meshCount() const { return 0; }
+
+        /**
+         * @brief Mesh data
+         * @param meshId    Mesh ID, from range [0, meshCount()).
+         * @return (Shared) pointer to given mesh data or nullptr, if no
+         *      such mesh exists.
+         *
+         * If you modify the mesh data before mesh/object using them is
+         * requested, the changes will be reflected in the resulting mesh.
+         * This can be used for e.g. optimizing or modifying the data using
+         * functions from MeshTools.
+         */
+        virtual inline std::shared_ptr<MeshData> meshData(size_t meshId) { return nullptr; }
 
         /**
          * @brief Mesh
@@ -223,6 +238,45 @@ class AbstractImporter: public Corrade::PluginManager::Plugin {
         virtual inline std::shared_ptr<Image3D> image3D(size_t id) { return nullptr; }
 
         /*@}*/
+};
+
+/**
+@brief Mesh data
+
+Provides direct access to data of any mesh. See also
+AbstractImporter::meshData().
+*/
+class AbstractImporter::MeshData {
+    public:
+        /**
+         * @brief Indices
+         * @return Indices or nullptr if the mesh is not indexed.
+         */
+        virtual std::vector<unsigned int>* const indices() { return nullptr; }
+
+        /**
+         * @brief Vertices
+         * @param id    ID of vertex data array
+         * @return Vertices or nullptr if there is no vertex array with given
+         *      ID.
+         */
+        virtual std::vector<Vector3>* const vertices(size_t id) { return nullptr; }
+
+        /**
+         * @brief Normals
+         * @param id    ID of normal data array
+         * @return Vertices or nullptr if there is no normal array with given
+         *      ID.
+         */
+        virtual std::vector<Vector3>* const normals(size_t id) { return nullptr; }
+
+        /**
+         * @brief 2D texture coordinates
+         * @param id    ID of texture coordinates array
+         * @return Texture coordinates or nullptr if there is no texture
+         *      coordinates array with given ID.
+         */
+        virtual std::vector<Vector2>* const textureCoords2D(size_t id) { return nullptr; }
 };
 
 }
