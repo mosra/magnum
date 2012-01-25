@@ -7,6 +7,7 @@ add_subdirectory(MeshTools)
 add_subdirectory(Primitives)
 
 set(Magnum_SRCS
+    AbstractImporter.cpp
     Object.cpp
     AbstractTexture.cpp
     AbstractShaderProgram.cpp

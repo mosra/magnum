@@ -42,8 +42,9 @@ Importer is used for importing data like scenes, lights, objects, images,
 textures etc.
 
 @section AbstractImporterSubclassing Subclassing
-<p>Plugin implements functions open(), close() and one or more pairs of data
-access functions, based on which features are supported in given format.</p>
+<p>Plugin implements function features(), one or more open() functions,
+function close() and one or more pairs of data access functions, based on
+which features are supported in given format.</p>
 <p>For multi-data formats file opening shouldn't take long, all parsing should
 be done in data parsing functions, because the user might want to import only
 some data. This is obviously not the case for single-data formats like images,
@@ -69,17 +70,41 @@ class AbstractImporter: public Corrade::PluginManager::Plugin {
     public:
         struct MeshData;
 
+        /** @brief Features supported by this importer */
+        enum Feature {
+            OpenFile = 0x01,    /**< Can open files specified by filename */
+            OpenStream = 0x02,  /**< Can open files from input streams */
+        };
+
         /** @brief Constructor */
         AbstractImporter(Corrade::PluginManager::AbstractPluginManager* manager = nullptr, const std::string& plugin = ""): Plugin(manager, plugin) {}
 
         /**
+         * @brief Features supported by this importer
+         * @return OR-ed combination of values from Feature enum.
+         */
+        virtual int features() const = 0;
+
+        /**
          * @brief Open file
+         * @param filename  Filename
+         * @return Whether the file was successfully opened
+         *
+         * Closes previous file, if it was opened, and tries to open given
+         * file. See also Feature::OpenFile. Default implementation prints
+         * message to error output and returns false.
+         */
+        virtual bool open(const std::string& filename);
+
+        /**
+         * @brief Open stream
          * @param in        Input stream
          * @return Whether the file was successfully opened
          *
-         * Closes previous file, if it was opened, and tries to open given file.
+         * See also open(const std::string&), Feature::OpenStream. Default
+         * implementation prints message to error output and returns false.
          */
-        virtual bool open(std::istream& in) = 0;
+        virtual bool open(std::istream& in);
 
         /** @brief Close file */
         virtual void close() = 0;
