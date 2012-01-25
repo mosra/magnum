@@ -20,8 +20,9 @@
  */
 
 #include "AbstractPrimitive.h"
-#include "MeshBuilder.h"
 #include "SizeTraits.h"
+#include "MeshTools/Subdivide.h"
+#include "MeshTools/Clean.h"
 
 namespace Magnum { namespace Primitives {
 
@@ -67,11 +68,11 @@ template<size_t subdivisions> class Icosphere: public AbstractPrimitive<typename
             builder()->setData(Icosahedron::vertices, Icosahedron::indices, 12, 60);
 
             for(size_t i = 0; i != subdivisions; ++i)
-                builder()->subdivide([](const Vector4& a, const Vector4& b) {
+                MeshTools::subdivide(*builder(), [](const Vector4& a, const Vector4& b) {
                     return (a+b).xyz().normalized();
                 });
 
-            if(subdivisions) builder()->cleanMesh();
+            if(subdivisions) MeshTools::clean(*builder());
         }
 };
 
