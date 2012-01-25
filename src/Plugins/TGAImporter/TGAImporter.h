@@ -28,10 +28,12 @@ namespace Magnum { namespace Plugins { namespace TGAImporter {
 class TGAImporter: public AbstractImporter {
     public:
         TGAImporter(Corrade::PluginManager::AbstractPluginManager* manager = 0, const std::string& plugin = ""): AbstractImporter(manager, plugin) {}
-
         inline virtual ~TGAImporter() { close(); }
 
+        inline int features() const { return OpenFile|OpenStream; }
+
         bool open(std::istream& in);
+        bool open(const std::string& filename);
         void close();
 
         inline size_t image2DCount() const { return _image ? 1 : 0; }

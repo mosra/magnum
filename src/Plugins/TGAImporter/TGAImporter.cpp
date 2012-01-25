@@ -28,6 +28,13 @@ namespace Magnum { namespace Plugins { namespace TGAImporter {
 
 static_assert(sizeof(TGAImporter::Header) == 18, "TGAImporter: header size is not 18 bytes");
 
+bool TGAImporter::TGAImporter::open(const string& filename) {
+    ifstream in(filename.c_str());
+    bool status = open(in);
+    in.close();
+    return status;
+}
+
 bool TGAImporter::open(std::istream& in) {
     if(_image) close();
     if(!in.good()) return false;
