@@ -40,7 +40,7 @@ template<class Vertex> class AbstractTool {
     public:
         /**
          * @brief Constructor
-         * @param builder   %Mesh builder to operate on
+         * @param builder       %Mesh builder to operate on
          */
         inline AbstractTool(MeshBuilder<Vertex>& builder): builder(builder), vertices(builder._vertices), indices(builder._indices) {}
 
@@ -60,9 +60,16 @@ class AbstractIndexTool {
     public:
         /**
          * @brief Constructor
-         * @param builder   %Mesh builder to operate on
+         * @param builder       %Mesh builder to operate on
          */
         template<class Vertex> inline AbstractIndexTool(MeshBuilder<Vertex>& builder): indices(builder._indices), vertexCount(builder.vertexCount()) {}
+
+        /**
+         * @brief Constructor
+         * @param indices       Indices array to operate on
+         * @param vertexCount   Vertex count
+         */
+        inline AbstractIndexTool(std::vector<unsigned int>& indices, unsigned int vertexCount): indices(indices), vertexCount(vertexCount) {}
 
     protected:
         std::vector<unsigned int>& indices; /**< @brief Builder indices */

@@ -30,8 +30,11 @@ See tipsify() for full documentation.
 */
 class Tipsify: public AbstractIndexTool {
     public:
-        /** @copydoc AbstractIndexTool::AbstractIndexTool() */
+        /** @copydoc AbstractIndexTool::AbstractIndexTool(MeshBuilder<Vertex>&) */
         template<class Vertex> inline Tipsify(MeshBuilder<Vertex>& builder): AbstractIndexTool(builder) {}
+
+        /** @copydoc AbstractIndexTool::AbstractIndexTool(std::vector<unsigned int>&, unsigned int) */
+        inline Tipsify(std::vector<unsigned int>& indices, unsigned int vertexCount): AbstractIndexTool(indices, vertexCount) {}
 
         /**
          * @brief Functor
@@ -75,6 +78,18 @@ MeshTools::tipsify(builder, cacheSize);
 */
 template<class Vertex> inline void tipsify(MeshBuilder<Vertex>& builder, size_t cacheSize) {
     Tipsify(builder).run(cacheSize);
+}
+
+/**
+@brief %Tipsify the mesh
+@param indices      Indices array to operate on
+@param vertexCount  Vertex count
+@param cacheSize    Post-transform vertex cache size
+
+See tipsify(MeshBuilder<Vertex>&, size_t) for more information.
+*/
+inline void tipsify(std::vector<unsigned int>& indices, unsigned int vertexCount, size_t cacheSize) {
+    Tipsify(indices, vertexCount).run(cacheSize);
 }
 
 }}
