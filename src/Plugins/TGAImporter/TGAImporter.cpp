@@ -56,13 +56,13 @@ bool TGAImporter::open(std::istream& in) {
         return false;
     }
 
-    ColorFormat colorFormat;
+    AbstractTexture::ColorFormat colorFormat;
     switch(header.bpp) {
         case 24:
-            colorFormat = ColorFormat::BGR;
+            colorFormat = AbstractTexture::ColorFormat::BGR;
             break;
         case 32:
-            colorFormat = ColorFormat::BGRA;
+            colorFormat = AbstractTexture::ColorFormat::BGRA;
             break;
         default:
             Error() << "TGAImporter: unsupported bits-per-pixel:" << (int) header.bpp;
