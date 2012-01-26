@@ -21,7 +21,6 @@
 
 #include "Magnum.h"
 #include "TypeTraits.h"
-#include "Image.h"
 
 namespace Magnum {
 
@@ -106,6 +105,16 @@ class AbstractTexture {
             CompressedRedGreen = GL_COMPRESSED_RG,
             CompressedRGB = GL_COMPRESSED_RGB,
             CompressedRGBA = GL_COMPRESSED_RGBA
+        };
+
+        /** @brief Color format */
+        enum class ColorFormat: GLenum {
+            Red = GL_RED,
+            RedGreen = GL_RG,
+            RGB = GL_RGB,
+            RGBA = GL_RGBA,
+            BGR = GL_BGR,
+            BGRA = GL_BGRA
         };
 
         /**

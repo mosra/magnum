@@ -19,7 +19,7 @@
  * @brief Class Magnum::Texture
  */
 
-#include "AbstractTexture.h"
+#include "Image.h"
 
 namespace Magnum {
 

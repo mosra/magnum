@@ -16,23 +16,14 @@
 */
 
 /** @file
- * @brief Enum Magnum::ColorFormat, class Magnum::Image
+ * @brief Class Magnum::Image
  */
 
 #include "Magnum.h"
 #include "TypeTraits.h"
+#include "AbstractTexture.h"
 
 namespace Magnum {
-
-/** @brief Color format */
-enum class ColorFormat: GLenum {
-    Red = GL_RED,
-    RedGreen = GL_RG,
-    RGB = GL_RGB,
-    RGBA = GL_RGBA,
-    BGR = GL_BGR,
-    BGRA = GL_BGRA
-};
 
 /**
 @brief %Image
@@ -60,7 +51,7 @@ template<size_t imageDimensions> class Image {
          * @attention Note that the image data are not copied on construction,
          * but they are deleted on class destruction.
          */
-        template<class T> Image(const Math::Vector<GLsizei, Dimensions>& dimensions, ColorFormat colorFormat, const T* data): _dimensions(dimensions), _colorFormat(colorFormat), _type(TypeTraits<typename TypeTraits<T>::TextureType>::glType()), _data(reinterpret_cast<const char*>(data)) {}
+        template<class T> Image(const Math::Vector<GLsizei, Dimensions>& dimensions, AbstractTexture::ColorFormat colorFormat, const T* data): _dimensions(dimensions), _colorFormat(colorFormat), _type(TypeTraits<typename TypeTraits<T>::TextureType>::glType()), _data(reinterpret_cast<const char*>(data)) {}
 
         /** @brief Destructor */
         virtual ~Image() { delete[] _data; }
@@ -69,7 +60,7 @@ template<size_t imageDimensions> class Image {
         inline const Math::Vector<GLsizei, Dimensions>& dimensions() const { return _dimensions; }
 
         /** @brief Color format */
-        inline ColorFormat colorFormat() const { return _colorFormat; }
+        inline AbstractTexture::ColorFormat colorFormat() const { return _colorFormat; }
 
         /** @brief Data type */
         GLenum type() const { return _type; }
@@ -79,7 +70,7 @@ template<size_t imageDimensions> class Image {
 
     private:
         Math::Vector<GLsizei, Dimensions> _dimensions;
-        ColorFormat _colorFormat;
+        AbstractTexture::ColorFormat _colorFormat;
         GLenum _type;
         const char* _data;
 };
