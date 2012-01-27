@@ -23,9 +23,9 @@
 using namespace std;
 using namespace Corrade::Utility;
 
-QTEST_APPLESS_MAIN(Magnum::Plugins::TGAImporter::Test::TGAImporterTest)
+QTEST_APPLESS_MAIN(Magnum::Trade::TGAImporter::Test::TGAImporterTest)
 
-namespace Magnum { namespace Plugins { namespace TGAImporter { namespace Test {
+namespace Magnum { namespace Trade { namespace TGAImporter { namespace Test {
 
 void TGAImporterTest::paletted() {
     const char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };

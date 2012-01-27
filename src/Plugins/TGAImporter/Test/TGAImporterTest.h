@@ -1,5 +1,5 @@
-#ifndef Magnum_Plugins_TGAImporter_Test_TGAImporterTest_h
-#define Magnum_Plugins_TGAImporter_Test_TGAImporterTest_h
+#ifndef Magnum_Trade_TGAImporter_Test_TGAImporterTest_h
+#define Magnum_Trade_TGAImporter_Test_TGAImporterTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -17,7 +17,7 @@
 
 #include <QtCore/QObject>
 
-namespace Magnum { namespace Plugins { namespace TGAImporter { namespace Test {
+namespace Magnum { namespace Trade { namespace TGAImporter { namespace Test {
 
 class TGAImporterTest: public QObject {
     Q_OBJECT

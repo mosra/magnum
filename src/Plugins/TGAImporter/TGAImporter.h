@@ -1,5 +1,5 @@
-#ifndef Magnum_Plugins_TGAImporter_TGAImporter_h
-#define Magnum_Plugins_TGAImporter_TGAImporter_h
+#ifndef Magnum_Trade_TGAImporter_TGAImporter_h
+#define Magnum_Trade_TGAImporter_TGAImporter_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,14 +16,12 @@
 */
 
 /** @file
- * @brief Class Magnum::TGAImporter
+ * @brief Class Magnum::Trade::TGAImporter::TGAImporter
  */
 
-#include "AbstractImporter.h"
+#include "Trade/AbstractImporter.h"
 
-#include "Magnum.h"
-
-namespace Magnum { namespace Plugins { namespace TGAImporter {
+namespace Magnum { namespace Trade { namespace TGAImporter {
 
 class TGAImporter: public AbstractImporter {
     public:

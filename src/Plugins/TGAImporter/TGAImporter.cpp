@@ -17,14 +17,14 @@
 
 #include "Utility/Endianness.h"
 #include "Math/Vector2.h"
-#include "Image.h"
+#include "Trade/Image.h"
 
 using namespace std;
 using namespace Corrade::Utility;
 
-PLUGIN_REGISTER(Magnum::Plugins::TGAImporter::TGAImporter, "cz.mosra.magnum.AbstractImporter/0.1")
+PLUGIN_REGISTER(Magnum::Trade::TGAImporter::TGAImporter, "cz.mosra.magnum.Trade.AbstractImporter/0.1")
 
-namespace Magnum { namespace Plugins { namespace TGAImporter {
+namespace Magnum { namespace Trade { namespace TGAImporter {
 
 static_assert(sizeof(TGAImporter::Header) == 18, "TGAImporter: header size is not 18 bytes");
 
