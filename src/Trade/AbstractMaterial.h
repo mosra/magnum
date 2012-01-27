@@ -1,5 +1,5 @@
-#ifndef Magnum_AbstractMaterial_h
-#define Magnum_AbstractMaterial_h
+#ifndef Magnum_Trade_AbstractMaterial_h
+#define Magnum_Trade_AbstractMaterial_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,12 +16,12 @@
 */
 
 /** @file
- * @brief Class Magnum::AbstractMaterial
+ * @brief Class Magnum::Trade::AbstractMaterial
  */
 
 #include "Magnum.h"
 
-namespace Magnum {
+namespace Magnum { namespace Trade {
 
 /** @brief Base class for materials */
 class AbstractMaterial {
@@ -41,6 +41,6 @@ class AbstractMaterial {
         virtual bool use(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix) = 0;
 };
 
-}
+}}
 
 #endif

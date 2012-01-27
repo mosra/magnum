@@ -1,5 +1,5 @@
-#ifndef Magnum_Image_h
-#define Magnum_Image_h
+#ifndef Magnum_Trade_Image_h
+#define Magnum_Trade_Image_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,14 +16,12 @@
 */
 
 /** @file
- * @brief Class Magnum::Image
+ * @brief Class Magnum::Trade::Image
  */
 
-#include "Magnum.h"
-#include "TypeTraits.h"
 #include "AbstractTexture.h"
 
-namespace Magnum {
+namespace Magnum { namespace Trade {
 
 /**
 @brief %Image
@@ -84,6 +82,6 @@ typedef Image<2> Image2D;
 /** @brief Three-dimensional image */
 typedef Image<3> Image3D;
 
-}
+}}
 
 #endif

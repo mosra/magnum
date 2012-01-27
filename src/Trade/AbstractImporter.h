@@ -1,5 +1,5 @@
-#ifndef Magnum_AbstractImporter_h
-#define Magnum_AbstractImporter_h
+#ifndef Magnum_Trade_AbstractImporter_h
+#define Magnum_Trade_AbstractImporter_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::AbstractImporter
+ * @brief Class Magnum::Trade::AbstractImporter
  */
 
 #include <memory>
@@ -28,12 +28,21 @@ namespace Magnum {
 
 class AbstractShaderProgram;
 class AbstractTexture;
-class AbstractMaterial;
 class Camera;
 class Light;
 class Mesh;
 class Object;
 class Scene;
+
+/**
+@brief Data format exchange
+
+Contains plugin interfaces for importing data of various formats and classes
+for direct access to the data.
+*/
+namespace Trade {
+
+class AbstractMaterial;
 
 /**
 @brief Base class for importer plugins
@@ -65,7 +74,7 @@ any object deletes its child objects. Thus the class should store only one
 shared pointer to root of each object tree.</p>
 */
 class AbstractImporter: public Corrade::PluginManager::Plugin {
-    PLUGIN_INTERFACE("cz.mosra.magnum.AbstractImporter/0.1")
+    PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.1")
 
     public:
         struct MeshData;
@@ -304,6 +313,6 @@ class AbstractImporter::MeshData {
         virtual std::vector<Vector2>* const textureCoords2D(size_t id) { return nullptr; }
 };
 
-}
+}}
 
 #endif

@@ -18,7 +18,7 @@
 using namespace std;
 using namespace Corrade::Utility;
 
-namespace Magnum {
+namespace Magnum { namespace Trade {
 
 bool AbstractImporter::open(const std::string& filename) {
     Error() << plugin() << "doesn't support opening files";
@@ -30,4 +30,4 @@ bool AbstractImporter::open(std::istream& in) {
     return false;
 }
 
-}
+}}
