@@ -98,8 +98,6 @@ class Scene: public Object {
         Camera* _camera;
         GLuint vao;
 
-        unsigned int viewportWidth, viewportHeight;
-
         inline virtual void draw(const Magnum::Matrix4& transformationMatrix, const Magnum::Matrix4& projectionMatrix) {}
         void drawChildren(Object* object, const Matrix4& transformationMatrix);
 };

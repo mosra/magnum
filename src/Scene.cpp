@@ -54,7 +54,7 @@ void Scene::setCamera(Camera* camera) {
     /* Set new camera active */
     _camera = camera;
     if(_camera) {
-        _camera->setViewport(viewportWidth, viewportHeight);
+        if(oldCamera) _camera->setViewport(oldCamera->viewport());
         _camera->setActive(this);
     }
 
