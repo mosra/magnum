@@ -18,7 +18,7 @@
 
 namespace Magnum {
 
-Camera::Camera(Object* parent): Object(parent), _active(0), _aspectRatioPolicy(Extend) {
+Camera::Camera(Object* parent): Object(parent), _active(nullptr), _aspectRatioPolicy(Extend) {
     setOrthographic(2, 1, 1000);
 }
 
