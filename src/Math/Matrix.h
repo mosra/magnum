@@ -102,10 +102,9 @@ template<class T, size_t size> class Matrix {
 
         /** @brief Equality operator */
         inline bool operator==(const Matrix<T, size>& other) const {
-            /** @bug NaN comparisons! */
             for(size_t row = 0; row != size; ++row) {
                 for(size_t col = 0; col != size; ++col)
-                    if(std::abs(at(row, col) - other.at(row, col)) >= EPSILON) return false;
+                    if(!TypeTraits<T>::equals(at(row, col), other.at(row, col))) return false;
             }
 
             return true;

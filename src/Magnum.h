@@ -21,6 +21,7 @@
 
 #include <GL/glew.h>
 
+#include "Math/Math.h"
 #include "Math/Matrix4.h"
 #include "Math/Vector2.h"
 

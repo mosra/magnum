@@ -33,9 +33,6 @@ namespace Math {
 /** @brief Pi */
 #define PI 3.1415926535
 
-/** @brief Maximal tolerance when comparing floats */
-#define EPSILON 1.0e-6
-
 /**
  * @brief Integral power
  *

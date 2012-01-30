@@ -19,6 +19,7 @@
 #include <QtTest/QTest>
 
 #include "Vector.h"
+#include "Math.h"
 
 QTEST_APPLESS_MAIN(Magnum::Math::Test::VectorTest)
 
