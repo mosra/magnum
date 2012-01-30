@@ -59,7 +59,7 @@ template<class T> struct TypeTraits {
      *
      * Returns e.g. GL_UNSIGNED_INT for GLuint.
      */
-    constexpr static GLenum glType();
+    constexpr inline static GLenum glType();
 
     /**
      * @brief Size of plain OpenGL type
@@ -67,14 +67,14 @@ template<class T> struct TypeTraits {
      * Returns sizeof(GLfloat) for GLfloat, but also sizeof(GLfloat) for
      * Vector3. See count().
      */
-    constexpr static size_t size();
+    constexpr inline static size_t size();
 
     /**
      * @brief Count of plain elements in this type
      *
      * Returns 1 for plain OpenGL types like GLint, but e.g. 3 for Vector3.
      */
-    constexpr static size_t count();
+    constexpr inline static size_t count();
     #endif
 };
 
