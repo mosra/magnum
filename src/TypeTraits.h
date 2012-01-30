@@ -26,16 +26,13 @@ namespace Magnum {
 /**
 @brief Traits class for plain OpenGL types
 
-Traits classes are usable for detecting type features at compile time without
-the need for repeated code such as method overloading or template
-specialization for given types.
+@copydetails Math::TypeTraits
 
-This class and class methods are specialized only for types where it makes
-sense, it has empty implementation for unknown types or types which don't
-support given feature, thus forcing the compilation stop with an error.
+Where it makes sense, this class extends Math::TypeTraits with OpenGL-specific
+traits.
 */
-template<class T> struct TypeTraits {
-    #ifdef DOXYGEN_GENERATING_OUTPUT
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> struct TypeTraits: public Math::TypeTraits<T> {
     /**
      * @brief Type which can be used for indices
      *
@@ -75,14 +72,17 @@ template<class T> struct TypeTraits {
      * Returns 1 for plain OpenGL types like GLint, but e.g. 3 for Vector3.
      */
     constexpr inline static size_t count();
-    #endif
 };
+#else
+template<class T> struct TypeTraits {};
+#endif
 
 /** @todo Other texture types, referenced in glTexImage2D function manual */
 /** @todo Using Vector3 for textures? */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<> struct TypeTraits<GLubyte> {
+static_assert(sizeof(GLubyte) == sizeof(unsigned char), "GLubyte is not the same as unsigned char");
+template<> struct TypeTraits<GLubyte>: public Math::TypeTraits<unsigned char> {
     typedef GLubyte IndexType;
     typedef GLubyte TextureType;
 
@@ -91,7 +91,8 @@ template<> struct TypeTraits<GLubyte> {
     inline constexpr static size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLbyte> {
+static_assert(sizeof(GLbyte) == sizeof(char), "GLbyte is not the same as char");
+template<> struct TypeTraits<GLbyte>: public Math::TypeTraits<char> {
     /* Can not be used for indices */
     typedef GLbyte TextureType;
 
@@ -100,7 +101,8 @@ template<> struct TypeTraits<GLbyte> {
     inline constexpr static size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLushort> {
+static_assert(sizeof(GLushort) == sizeof(unsigned short), "GLushort is not the same as unsigned short");
+template<> struct TypeTraits<GLushort>: public Math::TypeTraits<unsigned short> {
     typedef GLushort IndexType;
     typedef GLushort TextureType;
 
@@ -109,7 +111,8 @@ template<> struct TypeTraits<GLushort> {
     inline constexpr static size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLshort> {
+static_assert(sizeof(GLshort) == sizeof(short), "GLshort is not the same as short");
+template<> struct TypeTraits<GLshort>: public Math::TypeTraits<short> {
     /* Can not be used for indices */
     typedef GLshort TextureType;
 
@@ -118,7 +121,8 @@ template<> struct TypeTraits<GLshort> {
     inline constexpr static size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLuint> {
+static_assert(sizeof(GLuint) == sizeof(unsigned int), "GLuint is not the same as unsigned int");
+template<> struct TypeTraits<GLuint>: public Math::TypeTraits<unsigned int> {
     typedef GLuint IndexType;
     typedef GLuint TextureType;
 
@@ -127,7 +131,8 @@ template<> struct TypeTraits<GLuint> {
     inline constexpr static size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLint> {
+static_assert(sizeof(GLint) == sizeof(unsigned int), "GLint is not the same as int");
+template<> struct TypeTraits<GLint>: public Math::TypeTraits<int> {
     /* Can not be used for indices */
     typedef GLint TextureType;
 
@@ -136,7 +141,8 @@ template<> struct TypeTraits<GLint> {
     inline constexpr static size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLfloat> {
+static_assert(sizeof(GLfloat) == sizeof(float), "GLfloat is not the same as float");
+template<> struct TypeTraits<GLfloat>: public Math::TypeTraits<float> {
     /* Can not be used for indices */
     typedef GLfloat TextureType;
 
@@ -145,7 +151,8 @@ template<> struct TypeTraits<GLfloat> {
     inline constexpr static size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLdouble> {
+static_assert(sizeof(GLdouble) == sizeof(double), "GLdouble is not the same as double");
+template<> struct TypeTraits<GLdouble>: public Math::TypeTraits<double> {
     /* Can not be used for indices */
     /* Can not be used for textures */
 

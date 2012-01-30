@@ -1,3 +1,5 @@
+corrade_add_test(TypeTraitsTest TypeTraitsTest.h TypeTraitsTest.cpp)
+
 corrade_add_test(VectorTest VectorTest.h VectorTest.cpp)
 target_link_libraries(VectorTest ${CORRADE_UTILITY_LIBRARY})
 corrade_add_test(Vector2Test Vector2Test.h Vector2Test.cpp)
