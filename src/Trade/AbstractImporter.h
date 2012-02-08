@@ -82,7 +82,7 @@ class AbstractImporter: public Corrade::PluginManager::Plugin {
         /** @brief Features supported by this importer */
         enum Feature {
             OpenFile = 0x01,    /**< Can open files specified by filename */
-            OpenStream = 0x02,  /**< Can open files from input streams */
+            OpenStream = 0x02   /**< Can open files from input streams */
         };
 
         /** @brief Constructor */
