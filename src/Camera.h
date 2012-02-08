@@ -21,6 +21,11 @@
 
 #include "Object.h"
 
+#ifdef WIN32 /* I so HATE windows.h */
+#undef near
+#undef far
+#endif
+
 namespace Magnum {
 
 /**
