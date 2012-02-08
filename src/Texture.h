@@ -48,7 +48,7 @@ don't support mipmapping and repeating wrapping modes, see @ref Texture::Filter
 "Filter", @ref Texture::Mipmap "Mipmap" and generateMipmap() documentation
 for more information.
  */
-template<size_t dimensions> class Texture: public AbstractTexture {
+template<size_t dimensions> class MAGNUM_EXPORT Texture: public AbstractTexture {
     public:
         static const size_t Dimensions = dimensions;    /**< @brief Texture dimension count */
 

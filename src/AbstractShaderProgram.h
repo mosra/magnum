@@ -77,7 +77,7 @@ Basic workflow with AbstractShaderProgram subclasses is: instancing the class
 (once at the beginning), then in every frame calling use(), setting uniforms
 and calling Mesh::draw() (see its documentation for more).
  */
-class AbstractShaderProgram {
+class MAGNUM_EXPORT AbstractShaderProgram {
     AbstractShaderProgram(const AbstractShaderProgram& other) = delete;
     AbstractShaderProgram(AbstractShaderProgram&& other) = delete;
     AbstractShaderProgram& operator=(const AbstractShaderProgram& other) = delete;

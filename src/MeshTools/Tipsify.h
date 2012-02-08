@@ -28,7 +28,7 @@ namespace Magnum { namespace MeshTools {
 
 See tipsify() for full documentation.
 */
-class Tipsify: public AbstractIndexTool {
+class MESHTOOLS_EXPORT Tipsify: public AbstractIndexTool {
     public:
         /** @copydoc AbstractIndexTool::AbstractIndexTool(MeshBuilder<Vertex>&) */
         template<class Vertex> inline Tipsify(MeshBuilder<Vertex>& builder): AbstractIndexTool(builder) {}

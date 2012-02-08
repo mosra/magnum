@@ -24,6 +24,11 @@ set(Magnum_SRCS
 )
 
 add_library(Magnum SHARED ${Magnum_SRCS})
+
+if(WIN32)
+    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS -DMAGNUM_EXPORTING)
+endif()
+
 target_link_libraries(Magnum CorradePluginManager CorradeUtility ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY})
 
 install(TARGETS Magnum DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})

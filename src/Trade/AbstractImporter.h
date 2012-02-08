@@ -73,7 +73,7 @@ having copies of shared pointers for them will lead to dangling pointers when
 any object deletes its child objects. Thus the class should store only one
 shared pointer to root of each object tree.</p>
 */
-class AbstractImporter: public Corrade::PluginManager::Plugin {
+class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
     PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.1")
 
     public:
@@ -280,7 +280,7 @@ class AbstractImporter: public Corrade::PluginManager::Plugin {
 Provides direct access to data of any mesh. See also
 AbstractImporter::meshData().
 */
-class AbstractImporter::MeshData {
+class MAGNUM_EXPORT AbstractImporter::MeshData {
     public:
         /**
          * @brief Indices

@@ -36,7 +36,7 @@ class Buffer;
  * @todo Support for normalized values (e.g. for color as char[4] passed to
  *      shader as floating-point vec4)
  */
-class Mesh {
+class MAGNUM_EXPORT Mesh {
     Mesh(const Mesh& other) = delete;
     Mesh(Mesh&& other) = delete;
     Mesh& operator=(const Mesh& other) = delete;

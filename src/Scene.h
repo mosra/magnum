@@ -24,7 +24,7 @@
 namespace Magnum {
 
 /** @brief %Scene */
-class Scene: public Object {
+class MAGNUM_EXPORT Scene: public Object {
     private:
         void setParent(Object* parent) = delete;
         void setTransformation(const Matrix4& transformation) = delete;

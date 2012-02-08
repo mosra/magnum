@@ -33,7 +33,7 @@ class Scene;
  * @todo Transform transformation when changing parent, so the object stays in
  * place.
  */
-class Object {
+class MAGNUM_EXPORT Object {
     Object(const Object& other) = delete;
     Object(Object&& other) = delete;
     Object& operator=(const Object& other) = delete;

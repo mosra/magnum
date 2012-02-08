@@ -27,7 +27,7 @@ namespace Magnum {
 /**
  * @brief Indexed mesh
  */
-class IndexedMesh: public Mesh {
+class MAGNUM_EXPORT IndexedMesh: public Mesh {
     public:
         /**
          * @brief Implicit constructor

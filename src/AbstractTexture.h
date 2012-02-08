@@ -29,7 +29,7 @@ namespace Magnum {
 
 See Texture documentation for more information.
 */
-class AbstractTexture {
+class MAGNUM_EXPORT AbstractTexture {
     AbstractTexture(const AbstractTexture& other) = delete;
     AbstractTexture(AbstractTexture&& other) = delete;
     AbstractTexture& operator=(const AbstractTexture& other) = delete;

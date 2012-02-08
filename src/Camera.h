@@ -28,7 +28,7 @@ namespace Magnum {
  *
  * @todo Subclasses - perspective, FBO postprocessing etc.
  */
-class Camera: public Object {
+class MAGNUM_EXPORT Camera: public Object {
     public:
         /** @brief Aspect ratio policy */
         enum AspectRatioPolicy {

@@ -33,7 +33,7 @@ namespace Magnum {
  * string. Compiled shaders are then passed to AbstractShaderProgram subclasses
  * for linking and usage.
  */
-class Shader {
+class MAGNUM_EXPORT Shader {
     Shader(const Shader& other) = delete;
     Shader(Shader&& other) = delete;
     Shader& operator=(const Shader& other) = delete;

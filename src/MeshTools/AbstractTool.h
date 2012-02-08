@@ -56,7 +56,7 @@ template<class Vertex> class AbstractTool {
  * Provides access only to index array and vertex count. See also
  * AbstractTool.
  */
-class AbstractIndexTool {
+class MAGNUM_EXPORT AbstractIndexTool {
     public:
         /**
          * @brief Constructor

@@ -17,6 +17,8 @@
 
 #include <cstddef>
 
+#include "utilities.h"
+
 /** @file
  * @brief Math constants and utilities
  */
@@ -51,7 +53,7 @@ template<> inline constexpr size_t pow<0>(size_t base) { return 1; }
  *
  * Returns integral logarithm of given number with given base.
  */
-size_t log(size_t base, size_t number);
+size_t MAGNUM_EXPORT log(size_t base, size_t number);
 
 /**
  * @brief Angle in degrees
