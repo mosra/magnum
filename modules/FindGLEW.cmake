@@ -13,8 +13,12 @@ if(GLEW_LIBRARY AND GLEW_INCLUDE_DIR)
 
 else()
 
-    # Static library
-    find_library(GLEW_LIBRARY GLEW)
+    # Library
+    if(NOT WIN32)
+        find_library(GLEW_LIBRARY GLEW)
+    else()
+        find_library(GLEW_LIBRARY glew32)
+    endif()
 
     # Include dir
     find_path(GLEW_INCLUDE_DIR
