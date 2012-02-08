@@ -7,3 +7,7 @@ if(BUILD_TESTS)
     enable_testing()
     add_subdirectory(Test)
 endif()
+
+if(WIN32)
+    target_link_libraries(TGAImporter ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY})
+endif()
