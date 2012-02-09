@@ -45,8 +45,19 @@ class MAGNUM_EXPORT Scene: public Object {
             FaceCulling     = 0x04  /**< @brief Face culling */
         };
 
-        /** @brief Constructor */
+        /**
+         * @brief Constructor
+         *
+         * Creates one default vertex array.
+         */
         Scene();
+
+        /**
+         * @brief Destructor
+         *
+         * Deletes the default vertex array.
+         */
+        inline ~Scene() { glDeleteVertexArrays(1, &vao); }
 
         /** @brief Clear color */
         inline Vector4 clearColor() const { return _clearColor; }
