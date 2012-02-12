@@ -55,8 +55,8 @@ void ObjectTest::scene() {
     Object* childOne = new Object(&scene);
     Object* childTwo = new Object(childOne);
 
-    Object* orphan = new Object;
-    Object* childOfOrphan = new Object(orphan);
+    Object orphan;
+    Object* childOfOrphan = new Object(&orphan);
 
     QVERIFY(childTwo->scene() == &scene);
     QVERIFY(childOfOrphan->scene() == nullptr);
