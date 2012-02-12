@@ -191,7 +191,7 @@ class MAGNUM_EXPORT Object {
          *
          * Recursively calls setDirty() on every child. If the object is already
          * marked as dirty, the function does nothing.
-         * @attention Reimplementations must also call this function!
+         * @attention Reimplementations must call also this function!
          */
         virtual void setDirty();
 
@@ -201,7 +201,7 @@ class MAGNUM_EXPORT Object {
          * Recursively calls setClean() on every parent. Default implementation
          * only marks the object as clean, but if the object does any caching,
          * this function should be reimplemented to regenerate the cache.
-         * @attention Reimplementations must also call this function!
+         * @attention Reimplementations must call also this function!
          */
         virtual void setClean();
 
