@@ -103,8 +103,7 @@ class MAGNUM_EXPORT Object {
          * Multiplies current transformation matrix by new matrix.
          */
         inline void multiplyTransformation(const Matrix4& transformation, bool global = true) {
-            _transformation = global ? transformation*_transformation : _transformation*transformation;
-            setDirty();
+            setTransformation(global ? transformation*_transformation : _transformation*transformation);
         }
 
         /**
