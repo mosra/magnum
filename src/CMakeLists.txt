@@ -12,6 +12,7 @@ set(Magnum_SRCS
     AbstractShaderProgram.cpp
     Camera.cpp
     IndexedMesh.cpp
+    Light.cpp
     Mesh.cpp
     Scene.cpp
     Shader.cpp

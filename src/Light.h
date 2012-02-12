@@ -47,11 +47,7 @@ class Light: public Object {
         /**
          * Recomputes light position.
          */
-        inline virtual void setClean() {
-            if(!isDirty()) return;
-            _position = transformation(true).at(3).xyz();
-            Object::setClean();
-        }
+        virtual void setClean();
 
     private:
         Vector3 _position;
