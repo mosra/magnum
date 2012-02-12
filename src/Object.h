@@ -26,6 +26,7 @@
 namespace Magnum {
 
 class Scene;
+class Camera;
 
 /**
  * @brief Base for all positioned objects
@@ -78,14 +79,21 @@ class MAGNUM_EXPORT Object {
         /**
          * @brief Transformation matrix
          *
-         * If the object is part of an scene and @c absolute is set to true,
-         * returns absolute transformation matrix (thus relative to actual
-         * camera), if the object is not part of an scene, returns
-         * transformation matrix composed of all matrices of parent objects.
-         * If @c absolute is set to false, returns transformation matrix
-         * relative to parent.
+         * @return Transformation matrix relative to parent.
          */
-        virtual Matrix4 transformation(bool absolute = false);
+        inline Matrix4 transformation() const {
+            return _transformation;
+        }
+
+        /**
+         * @brief Absolute transformation matrix
+         *
+         * If both this object and the camera is part of the same scene,
+         * returns absolute transformation matrix (relative to the camera).
+         * Otherwise returns transformation matrix relative to root object
+         * (in most cases this object's scene).
+         */
+        virtual Matrix4 absoluteTransformation(Camera* camera = nullptr);
 
         /** @brief Set transformation matrix */
         inline void setTransformation(const Matrix4& transformation) {
@@ -209,10 +217,14 @@ class MAGNUM_EXPORT Object {
 
         /**
          * @brief Draw object
+         * @param transformationMatrix      %Matrix specifying object
+         *      transformation relative to the scene.
+         * @param camera                    Active camera (containing
+         *      projection matrix)
          *
          * Default implementation does nothing.
          */
-        virtual void draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix) {}
+        virtual void draw(const Matrix4& transformationMatrix, Camera* camera) {}
 
     private:
         Object* _parent;

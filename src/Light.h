@@ -37,7 +37,7 @@ class Light: public Object {
         inline Light(Object* parent = nullptr): Object(parent) {}
 
         /**
-         * @brief Light position relative to the camera
+         * @brief Light position relative to root object (scene)
          */
         inline Vector3 position() {
             setClean();

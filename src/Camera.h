@@ -50,20 +50,6 @@ class MAGNUM_EXPORT Camera: public Object {
          */
         Camera(Object* parent = nullptr);
 
-        /**
-         * @brief Scene in which the camera is active
-         * @return If the camera is not active anywhere, returns nullptr.
-         */
-        inline Scene* active() const { return _active; }
-
-        /**
-         * @brief Make camera active in given scene
-         *
-         * If passed nullptr as @c scene and this camera is active in an scene,
-         * the camera will be removed from that scene.
-         */
-        void setActive(Scene* scene);
-
         /** @brief Aspect ratio policy */
         AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }
 
@@ -135,19 +121,11 @@ class MAGNUM_EXPORT Camera: public Object {
          */
         virtual void setClean();
 
-        /**
-         * If the camera was active before and is still active, calls
-         * setDirty() on the scene, if is not part of the scene anymore, calls
-         * setCamera(nullptr) on the scene.
-         */
-        virtual void setDirty();
-
     private:
         Matrix4 rawProjectionMatrix;
         Matrix4 _projectionMatrix;
         Matrix4 _cameraMatrix;
         GLfloat _near, _far;
-        Scene* _active;
 
         Math::Vector2<unsigned int> _viewport;
         AspectRatioPolicy _aspectRatioPolicy;

@@ -45,10 +45,11 @@ void Object::setParent(Object* parent) {
     setDirty();
 }
 
-Matrix4 Object::transformation(bool absolute) {
-    if(!absolute) return _transformation;
-
+Matrix4 Object::absoluteTransformation(Camera* camera) {
     Matrix4 t = _transformation;
+
+    /* Shortcut for absolute transformation of camera relative to itself */
+    if(camera == this) return Matrix4();
 
     Object* p = parent();
     while(p != nullptr) {
@@ -56,8 +57,8 @@ Matrix4 Object::transformation(bool absolute) {
 
         /* We got to the scene, multiply with camera matrix */
         if(p->parent() == p) {
-            Camera* camera = static_cast<Scene*>(p)->camera();
-            if(camera && camera != this) t = camera->cameraMatrix()*t;
+            if(camera && camera->scene() == scene())
+                t = camera->cameraMatrix()*t;
 
             break;
         }

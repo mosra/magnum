@@ -18,25 +18,8 @@
 
 namespace Magnum {
 
-Camera::Camera(Object* parent): Object(parent), _active(nullptr), _aspectRatioPolicy(Extend) {
+Camera::Camera(Object* parent): Object(parent), _aspectRatioPolicy(Extend) {
     setOrthographic(2, 1, 1000);
-}
-
-void Camera::setActive(Scene* _scene) {
-    if(_scene == _active || scene() != _scene) return;
-
-    Scene* oldActive = _active;
-
-    /* Set camera active in new scene */
-    _active = _scene;
-    if(_active) _active->setCamera(this);
-
-    /* Remove the camera from current active scene, if the camera is still
-       active there */
-    if(oldActive && oldActive->camera() == this) oldActive->setCamera(nullptr);
-
-    /* Clean the path to scene */
-    setClean();
 }
 
 void Camera::setOrthographic(GLfloat size, GLfloat near, GLfloat far) {
@@ -88,26 +71,8 @@ void Camera::setViewport(const Math::Vector2<unsigned int>& size) {
 
 void Camera::setClean() {
     if(!isDirty()) return;
-    _cameraMatrix = transformation(true).inverse();
+    _cameraMatrix = absoluteTransformation().inverse();
     Object::setClean();
-}
-
-void Camera::setDirty() {
-    Object::setDirty();
-
-    /* Camera is active */
-    if(_active) {
-        Scene* currentScene = scene();
-
-        /* Camera is not part of the scene anymore, remove it from there */
-        if(!currentScene) _active->setCamera(nullptr);
-
-        /* Otherwise set the scene dirty */
-        else _active->setDirty();
-
-        /* Clean up the path to scene immediately */
-        setClean();
-    }
 }
 
 void Camera::fixAspectRatio() {

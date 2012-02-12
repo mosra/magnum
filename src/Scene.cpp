@@ -19,7 +19,7 @@ using namespace std;
 
 namespace Magnum {
 
-Scene::Scene(): Object(nullptr), _features(0), _camera(nullptr) {
+Scene::Scene(): Object(nullptr), _features(0) {
     _parent = this;
     setClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
@@ -45,44 +45,22 @@ void Scene::setClearColor(const Magnum::Vector4& color) {
     _clearColor = color;
 }
 
-void Scene::setCamera(Camera* camera) {
-    /* Don't assign the same camera or camera which is not part of the scene */
-    if(camera == _camera || (camera && camera->scene() != this)) return;
-
-    Camera* oldCamera = _camera;
-
-    /* Set new camera active */
-    _camera = camera;
-    if(_camera) {
-        if(oldCamera) _camera->setViewport(oldCamera->viewport());
-        _camera->setActive(this);
-    }
-
-    /* Set old camera inactive, if it is still active in this scene */
-    if(oldCamera && oldCamera->active() == this) oldCamera->setActive(nullptr);
-
-    setDirty();
-}
-
-void Scene::draw() {
-    /* No camera available, nothing to do */
-    if(!_camera) return;
-
+void Scene::draw(Camera* camera) {
     /** @todo Clear only set features */
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
     /* Recursively draw child objects */
-    drawChildren(this, _camera->cameraMatrix());
+    drawChildren(this, camera->cameraMatrix(), camera);
 }
 
-void Scene::drawChildren(Object* object, const Matrix4& transformationMatrix) {
+void Scene::drawChildren(Object* object, const Matrix4& transformationMatrix, Camera* camera) {
     for(set<Object*>::const_iterator it = object->children().begin(); it != object->children().end(); ++it) {
         /* Transformation matrix for the object */
         Matrix4 matrix = transformationMatrix*(*it)->transformation();
 
         /* Draw the object and its children */
-        (*it)->draw(matrix, _camera->projectionMatrix());
-        drawChildren(*it, matrix);
+        (*it)->draw(matrix, camera);
+        drawChildren(*it, matrix, camera);
     }
 }
 
