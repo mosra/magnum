@@ -15,16 +15,14 @@
 
 #include "Shader.h"
 
-#include <iostream>
 #include <fstream>
 
 #define COMPILER_MESSAGE_MAX_LENGTH 1024
 
 using namespace std;
+using namespace Corrade::Utility;
 
 namespace Magnum {
-
-Shader::LogLevel Shader::_logLevel = Shader::Errors;
 
 bool Shader::addFile(const std::string& filename) {
     /* Open file */
@@ -32,8 +30,7 @@ bool Shader::addFile(const std::string& filename) {
     if(!file.good()) {
         file.close();
 
-        cerr << "Shader file " << filename << " cannot be opened." << endl;
-
+        Error() << "Shader file " << '\'' + filename + '\'' << " cannot be opened.";
         return false;
     }
 
@@ -77,26 +74,28 @@ GLuint Shader::compile() {
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
 
     /* Display errors or warnings */
-    if((status == GL_FALSE && _logLevel != None) || _logLevel == Warnings) {
-        /* Get message */
-        char message[COMPILER_MESSAGE_MAX_LENGTH];
-        glGetShaderInfoLog(shader, COMPILER_MESSAGE_MAX_LENGTH, 0, message);
+    char message[COMPILER_MESSAGE_MAX_LENGTH];
+    glGetShaderInfoLog(shader, COMPILER_MESSAGE_MAX_LENGTH, 0, message);
 
-        if(status == GL_FALSE || message[0] != 0) switch(_type) {
-            case Vertex:    cerr << "Vertex";       break;
-            case Geometry:  cerr << "Geometry";     break;
-            case Fragment:  cerr << "Fragment";     break;
+    if(status == GL_FALSE || message[0] != 0) {
+        Error err;
+        err << "Shader:";
+
+        switch(_type) {
+            case Vertex:    err << "vertex";        break;
+            case Geometry:  err << "geometry";      break;
+            case Fragment:  err << "fragment";      break;
         }
 
         /* Show error log and delete shader */
         if(status == GL_FALSE) {
-            cerr << " shader failed to compile. Error message:" << endl
-                 << message << endl;
+            err << "shader failed to compile with the following message:\n"
+                << message;
 
         /* Or just warnings, if there are any */
         } else if(message[0] != 0) {
-            cerr << " shader was compiled with the following warnings:" << endl
-                 << message << endl;
+            err << "shader was successfully compiled with the following message:\n"
+                << message;
         }
     }
 

@@ -40,13 +40,6 @@ class MAGNUM_EXPORT Shader {
     Shader& operator=(Shader&& other) = delete;
 
     public:
-        /** @brief Logging level */
-        enum LogLevel {
-            None,       /**< @brief Don't display anything */
-            Errors,     /**< @brief Display only errors */
-            Warnings    /**< @brief Display only errors and warnings */
-        };
-
         /** @brief Shader type */
         enum Type {
             Vertex = GL_VERTEX_SHADER,      /**< @brief Vertex shader */
@@ -60,16 +53,6 @@ class MAGNUM_EXPORT Shader {
             Compiled,       /**< @brief Shader is compiled */
             Failed          /**< @brief Compilation failed */
         };
-
-        /**
-         * @brief Log level
-         *
-         * Log level for displaying compilation messages.
-         */
-        inline static LogLevel logLevel() { return _logLevel; }
-
-        /** @brief Set log level */
-        inline static void setLogLevel(LogLevel level) { _logLevel = level; }
 
         /**
          * @brief Load shader from source
@@ -179,8 +162,6 @@ class MAGNUM_EXPORT Shader {
         GLuint compile();
 
     private:
-        static LogLevel _logLevel;
-
         Type _type;
         State _state;
 

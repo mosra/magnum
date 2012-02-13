@@ -84,23 +84,6 @@ class MAGNUM_EXPORT AbstractShaderProgram {
     AbstractShaderProgram& operator=(AbstractShaderProgram&& other) = delete;
 
     public:
-        /** @brief Logging level */
-        enum LogLevel {
-            None,       /**< @brief Don't display anything */
-            Errors,     /**< @brief Display only errors */
-            Warnings    /**< @brief Display only errors and warnings */
-        };
-
-        /**
-         * @brief Log level
-         *
-         * Log level for displaying compilation messages. Default is Errors.
-         */
-        inline static LogLevel logLevel() { return _logLevel; }
-
-        /** @brief Set log level */
-        inline static void setLogLevel(LogLevel level) { _logLevel = level; }
-
         /** @brief Default constructor */
         AbstractShaderProgram();
 
@@ -212,8 +195,6 @@ class MAGNUM_EXPORT AbstractShaderProgram {
             Linked,
             Failed
         };
-
-        static LogLevel _logLevel;
 
         GLuint program;
         State state;
