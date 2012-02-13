@@ -21,6 +21,7 @@ set(Magnum_SRCS
     Texture.cpp
 
     Trade/AbstractImporter.cpp
+    Trade/Mesh.cpp
 
     Math/Math.cpp
 )

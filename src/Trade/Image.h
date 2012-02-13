@@ -26,9 +26,8 @@ namespace Magnum { namespace Trade {
 /**
 @brief %Image
 
-Class for storing data, which are later fed to textures. It is just a
-transparent envelope around the data, which holds additional information about
-data type and dimensions.
+Provides access to image data and additional information about data type and
+dimensions.
 */
 template<size_t imageDimensions> class Image {
     Image<imageDimensions>(const Image<imageDimensions>& other) = delete;

@@ -19,26 +19,39 @@
  * @brief Class Magnum::Trade::AbstractMaterial
  */
 
-#include "Magnum.h"
-
 namespace Magnum { namespace Trade {
 
-/** @brief Base class for materials */
-class AbstractMaterial {
+/**
+@brief Base class for materials
+
+Subclasses provide access to parameters for given material type.
+*/
+class MAGNUM_EXPORT AbstractMaterial {
     AbstractMaterial(const AbstractMaterial& other) = delete;
     AbstractMaterial(AbstractMaterial&& other) = delete;
     AbstractMaterial& operator=(const AbstractMaterial& other) = delete;
     AbstractMaterial& operator=(AbstractMaterial&& other) = delete;
 
     public:
-        AbstractMaterial() = default;
+        /** @brief Material type */
+        enum Type {
+            Phong       /**< Phong shading */
+        };
 
         /**
-         * @brief Use material
-         *
-         * Uses associated shader and sets uniforms.
+         * @brief Constructor
+         * @param type      Material type
          */
-        virtual bool use(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix) = 0;
+        inline AbstractMaterial(Type type): _type(type) {}
+
+        /** @brief Destructor */
+        virtual ~AbstractMaterial() {}
+
+        /** @brief Material type */
+        inline Type type() const { return _type; }
+
+    private:
+        Type _type;
 };
 
 }}
