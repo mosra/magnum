@@ -36,5 +36,6 @@ install(TARGETS Magnum DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 
 if(BUILD_TESTS)
     enable_testing()
+    include_directories(${QT_INCLUDE_DIR})
     add_subdirectory(Test)
 endif()
