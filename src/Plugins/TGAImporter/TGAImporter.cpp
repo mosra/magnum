@@ -75,15 +75,16 @@ bool TGAImporter::open(std::istream& in) {
 
     Math::Vector2<GLsizei> dimensions(header.width, header.height);
 
-    _image = shared_ptr<Image2D>(new Image2D(dimensions, colorFormat, buffer));
+    _image = new Image2D(dimensions, colorFormat, buffer);
     return true;
 }
 
 void TGAImporter::close() {
-    _image = shared_ptr<Image2D>();
+    delete _image;
+    _image = nullptr;
 }
 
-shared_ptr<Image2D> TGAImporter::image2D(size_t id) {
+Image2D* TGAImporter::image2D(size_t id) {
     return _image;
 }
 

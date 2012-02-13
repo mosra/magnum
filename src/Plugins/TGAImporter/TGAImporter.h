@@ -25,7 +25,7 @@ namespace Magnum { namespace Trade { namespace TGAImporter {
 
 class TGAImporter: public AbstractImporter {
     public:
-        TGAImporter(Corrade::PluginManager::AbstractPluginManager* manager = 0, const std::string& plugin = ""): AbstractImporter(manager, plugin) {}
+        TGAImporter(Corrade::PluginManager::AbstractPluginManager* manager = 0, const std::string& plugin = ""): AbstractImporter(manager, plugin), _image(nullptr) {}
         inline virtual ~TGAImporter() { close(); }
 
         inline int features() const { return OpenFile|OpenStream; }
@@ -35,7 +35,7 @@ class TGAImporter: public AbstractImporter {
         void close();
 
         inline size_t image2DCount() const { return _image ? 1 : 0; }
-        std::shared_ptr<Image2D> image2D(size_t id);
+        Image2D* image2D(size_t id);
 
         #pragma pack(1)
         struct Header {
@@ -55,7 +55,7 @@ class TGAImporter: public AbstractImporter {
         #pragma pack(8)
 
     private:
-        std::shared_ptr<Image2D> _image;
+        Image2D* _image;
 };
 
 }}}
