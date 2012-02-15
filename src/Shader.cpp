@@ -47,7 +47,7 @@ bool Shader::addFile(const std::string& filename) {
 
     /* Add to sources and free the buffer */
     addSource(source);
-    delete source;
+    delete[] source;
 
     return true;
 }
