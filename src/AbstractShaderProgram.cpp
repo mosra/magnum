@@ -86,7 +86,7 @@ void AbstractShaderProgram::link() {
 
     /* Display errors or warnings */
     char message[LINKER_MESSAGE_MAX_LENGTH];
-    glGetProgramInfoLog(program, LINKER_MESSAGE_MAX_LENGTH, 0, message);
+    glGetProgramInfoLog(program, LINKER_MESSAGE_MAX_LENGTH, nullptr, message);
 
     /* Show error log and delete shader */
     if(status == GL_FALSE) {

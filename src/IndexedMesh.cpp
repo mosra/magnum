@@ -53,7 +53,7 @@ void IndexedMesh::draw() {
 
     /* Bind index array, draw the elements and unbind */
     _indexBuffer.bind();
-    glDrawElements(primitive(), _indexCount, _indexType, 0);
+    glDrawElements(primitive(), _indexCount, _indexType, nullptr);
     _indexBuffer.unbind();
 
     /* Disable vertex arrays for all attributes */

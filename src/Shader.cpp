@@ -63,7 +63,7 @@ GLuint Shader::compile() {
 
     /* Create shader and set its source */
     shader = glCreateShader(_type);
-    glShaderSource(shader, 1, _sources, 0);
+    glShaderSource(shader, 1, _sources, nullptr);
 
     /* Compile shader */
     glCompileShader(shader);
@@ -75,7 +75,7 @@ GLuint Shader::compile() {
 
     /* Display errors or warnings */
     char message[COMPILER_MESSAGE_MAX_LENGTH];
-    glGetShaderInfoLog(shader, COMPILER_MESSAGE_MAX_LENGTH, 0, message);
+    glGetShaderInfoLog(shader, COMPILER_MESSAGE_MAX_LENGTH, nullptr, message);
 
     if(status == GL_FALSE || message[0] != 0) {
         Error err;
