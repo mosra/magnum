@@ -74,8 +74,8 @@ Object::~Object() {
     setParent(nullptr);
 
     /* Delete all children */
-    for(set<Object*>::const_iterator it = _children.begin(); it != _children.end(); ++it)
-        delete *it;
+    while(!_children.empty())
+        delete *_children.begin();
 }
 
 Scene* Object::scene() const {
