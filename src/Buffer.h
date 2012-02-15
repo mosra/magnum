@@ -51,54 +51,54 @@ class Buffer {
             /**
              * Set once by the application and used infrequently for drawing.
              */
-            DrawStream = GL_STREAM_DRAW,
+            StreamDraw = GL_STREAM_DRAW,
 
             /**
              * Set once as output from an OpenGL command and used infequently
              * for drawing.
              */
-            ReadStream = GL_STREAM_READ,
+            StreamRead = GL_STREAM_READ,
 
             /**
              * Set once as output from an OpenGL command and used infrequently
              * for drawing or copying to other buffers.
              */
-            CopyStream = GL_STREAM_COPY,
+            StreamCopy = GL_STREAM_COPY,
 
             /**
              * Set once by the application and used frequently for drawing.
              */
-            DrawStatic = GL_STATIC_DRAW,
+            StaticDraw = GL_STATIC_DRAW,
 
             /**
              * Set once as output from an OpenGL command and queried many times
              * by the application.
              */
-            ReadStatic = GL_STATIC_READ,
+            StaticRead = GL_STATIC_READ,
 
             /**
              * Set once as output from an OpenGL command and used frequently
              * for drawing or copying to other buffers.
              */
-            CopyStatic = GL_STATIC_COPY,
+            StaticCopy = GL_STATIC_COPY,
 
             /**
              * Updated frequently by the application and used frequently
              * for drawing or copying to other images.
              */
-            DrawDynamic = GL_DYNAMIC_DRAW,
+            DynamicDraw = GL_DYNAMIC_DRAW,
 
             /**
              * Updated frequently as output from OpenGL command and queried
              * many times from the application.
              */
-            ReadDynamic = GL_DYNAMIC_READ,
+            DynamicRead = GL_DYNAMIC_READ,
 
             /**
              * Updated frequently as output from OpenGL command and used
              * frequently for drawing or copying to other images.
              */
-            CopyDynamic = GL_DYNAMIC_COPY
+            DynamicCopy = GL_DYNAMIC_COPY
         };
 
         /**

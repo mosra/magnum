@@ -54,7 +54,7 @@ template<size_t subdivisions> class Icosphere: public AbstractPrimitive<typename
 
         inline void build(IndexedMesh* mesh, Buffer* vertexBuffer) {
             /* mesh is prepared by the builder, no need to call prepareMesh */
-            builder()->build(mesh, vertexBuffer, Buffer::DrawStatic, Buffer::DrawStatic);
+            builder()->build(mesh, vertexBuffer, Buffer::StaticDraw, Buffer::StaticDraw);
         }
 
     private:
