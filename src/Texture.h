@@ -101,7 +101,7 @@ template<size_t dimensions> class MAGNUM_EXPORT Texture: public AbstractTexture 
          */
         inline void setData(GLint mipLevel, InternalFormat internalFormat, const Trade::Image<Dimensions>* image) {
             bind();
-            DataHelper<dimensions>::set(target, mipLevel, internalFormat, image->dimensions(), image->colorFormat(), image->type(), image->data());
+            DataHelper<Dimensions>::set(target, mipLevel, internalFormat, image->dimensions(), image->colorFormat(), image->type(), image->data());
         }
 
         /**
