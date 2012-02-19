@@ -28,7 +28,7 @@ namespace Magnum { namespace Trade {
 
 Provides access to object transformation and hierarchy.
 */
-struct MAGNUM_EXPORT Object {
+class MAGNUM_EXPORT Object {
     Object(const Object& other) = delete;
     Object(Object&& other) = delete;
     Object& operator=(const Object& other) = delete;
@@ -40,7 +40,10 @@ struct MAGNUM_EXPORT Object {
          */
         Object(size_t parent, const Matrix4& transformation): _parent(parent), _transformation(transformation) {}
 
+        /** @brief Parent object */
         inline size_t parent() const { return _parent; }
+
+        /** @brief Transformation relative to parent */
         inline size_t transformation() const { return _transformation; }
 
     private:
