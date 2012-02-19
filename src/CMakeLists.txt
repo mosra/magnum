@@ -19,6 +19,7 @@ set(Magnum_SRCS
     Shader.cpp
     SizeTraits.cpp
     Texture.cpp
+    TypeTraits.cpp
 
     Trade/AbstractImporter.cpp
     Trade/Mesh.cpp
