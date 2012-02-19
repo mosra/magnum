@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Enum Magnum::Type, class Magnum::TypeTraits
+ * @brief Enum Magnum::Type, class Magnum::TypeOf, Magnum::TypeInfo, Magnum::TypeTraits
  */
 
 #include "Magnum.h"
@@ -89,10 +89,63 @@ enum class Type: GLenum {
     Double = GL_DOUBLE                  /**< Double */
 };
 
+/**
+@brief Class for converting Type enum values to types
+
+When you want to use TypeTraits on type specified only as enum value, you can
+use this class to convert it into type, for example these two statements
+are equivalent:
+@code
+TypeTraits<TypeOf<Type::UnsignedByte>::Type>::TextureType data;
+TypeTraits<GLubyte>::TextureType data;
+@endcode
+*/
+template<Type T> class TypeOf {
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    typedef U Type; /**< @brief Type */
+    #endif
+};
+
+/**
+@brief Functor for runtime information about given type
+
+TypeTraits alone allows to get information about given type only at compile
+time, this class alows to get some information also at runtime with tiny
+performance loss.
+*/
+struct MAGNUM_EXPORT TypeInfo {
+    /**
+     * @brief Size of given type
+     *
+     * These two lines provide the same information, one at compile time,
+     * one at runtime:
+     * @code
+     * size_t size = TypeTraits<TypeOf<Type::UnsignedByte>::size();
+     * size_t size = TypeInfo::sizeOf(Type::UnsignedByte);
+     * @endcode
+     */
+    static size_t sizeOf(Type type);
+
+    /**
+     * @brief Whether the type is integral
+     * @return true for (un)signed byte, short and integer, false otherwise.
+     */
+    static bool isIntegral(Type type);
+};
+
 /** @todo Other texture types, referenced in glTexImage2D function manual */
 /** @todo Using Vector3 for textures? */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+template<> struct TypeOf<Type::UnsignedByte> { typedef GLubyte Type; };
+template<> struct TypeOf<Type::Byte> { typedef GLbyte Type; };
+template<> struct TypeOf<Type::UnsignedShort> { typedef GLushort Type; };
+template<> struct TypeOf<Type::Short> { typedef GLshort Type; };
+template<> struct TypeOf<Type::UnsignedInt> { typedef GLuint Type; };
+template<> struct TypeOf<Type::Int> { typedef GLint Type; };
+template<> struct TypeOf<Type::Float> { typedef GLfloat Type; };
+template<> struct TypeOf<Type::Double> { typedef GLdouble Type; };
+
 template<> struct TypeTraits<GLubyte>: public Math::TypeTraits<unsigned char> {
     typedef GLubyte IndexType;
     typedef GLubyte TextureType;

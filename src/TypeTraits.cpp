@@ -28,4 +28,35 @@ static_assert(sizeof(GLfloat) == sizeof(float), "GLfloat is not the same as floa
 static_assert(sizeof(GLdouble) == sizeof(double), "GLdouble is not the same as double");
 #endif
 
+size_t TypeInfo::sizeOf(Type type) {
+    switch(type) {
+        #define val(type) case Type::type: return TypeTraits<TypeOf<Type::type>::Type>::size();
+        val(UnsignedByte)
+        val(Byte)
+        val(UnsignedShort)
+        val(Short)
+        val(UnsignedInt)
+        val(Int)
+        val(Double)
+        val(Float)
+        #undef val
+
+        default: return 0;
+    }
+}
+
+bool TypeInfo::isIntegral(Type type) {
+    switch(type) {
+        case Type::UnsignedByte:
+        case Type::Byte:
+        case Type::UnsignedShort:
+        case Type::Short:
+        case Type::UnsignedInt:
+        case Type::Int:
+            return true;
+        default:
+            return false;
+    }
+}
+
 }
