@@ -72,7 +72,10 @@ template<size_t dimensions> class MAGNUM_EXPORT Texture: public AbstractTexture 
          * textures. Note that for rectangle textures repeating wrapping modes
          * are unavailable.
          */
-        void setWrapping(const Math::Vector<Wrapping, Dimensions>& wrapping);
+        inline void setWrapping(const Math::Vector<Wrapping, Dimensions>& wrapping) {
+            bind();
+            DataHelper<Dimensions>::setWrapping(target, wrapping);
+        }
 
         /**
          * @brief Set texture data

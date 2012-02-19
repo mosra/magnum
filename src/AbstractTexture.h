@@ -216,6 +216,13 @@ class MAGNUM_EXPORT AbstractTexture {
             inline constexpr static GLenum target();
 
             /**
+             * @brief Set texture wrapping
+             * @param target            Target, such as @c GL_TEXTURE_RECTANGLE
+             * @param wrapping          Wrapping type for all texture dimensions
+             */
+            inline static void setWrapping(GLenum target, const Math::Vector<Wrapping, Dimensions>& wrapping);
+
+            /**
              * @brief Set texture data
              * @param target            Target, such as @c GL_TEXTURE_RECTANGLE
              * @param mipLevel          Mip level
@@ -256,6 +263,10 @@ class MAGNUM_EXPORT AbstractTexture {
 template<> struct AbstractTexture::DataHelper<1> {
     inline constexpr static GLenum target() { return GL_TEXTURE_1D; }
 
+    inline static void setWrapping(GLenum target, const Math::Vector<Wrapping, 1>& wrapping) {
+        glTexParameteri(target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.at(0)));
+    }
+
     inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 1>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
         glTexImage1D(target, mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), 0, static_cast<GLenum>(colorFormat), static_cast<GLenum>(type), data);
     }
@@ -267,6 +278,11 @@ template<> struct AbstractTexture::DataHelper<1> {
 template<> struct AbstractTexture::DataHelper<2> {
     inline constexpr static GLenum target() { return GL_TEXTURE_2D; }
 
+    inline static void setWrapping(GLenum target, const Math::Vector<Wrapping, 2>& wrapping) {
+        glTexParameteri(target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.at(0)));
+        glTexParameteri(target, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping.at(1)));
+    }
+
     inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 2>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
         glTexImage2D(target, mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), dimensions.at(1), 0, static_cast<GLenum>(colorFormat), static_cast<GLenum>(type), data);
     }
@@ -277,6 +293,12 @@ template<> struct AbstractTexture::DataHelper<2> {
 };
 template<> struct AbstractTexture::DataHelper<3> {
     inline constexpr static GLenum target() { return GL_TEXTURE_3D; }
+
+    inline static void setWrapping(GLenum target, const Math::Vector<Wrapping, 3>& wrapping) {
+        glTexParameteri(target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.at(0)));
+        glTexParameteri(target, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping.at(1)));
+        glTexParameteri(target, GL_TEXTURE_WRAP_R, static_cast<GLint>(wrapping.at(2)));
+    }
 
     inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 3>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
         glTexImage3D(target, mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), dimensions.at(1), dimensions.at(2), 0, static_cast<GLenum>(colorFormat), static_cast<GLenum>(type), data);
