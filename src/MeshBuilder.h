@@ -150,7 +150,7 @@ template<class Vertex> class MeshBuilder {
          * @see build(IndexedMesh*, Buffer*, Buffer::Usage, Buffer::Usage)
          */
         IndexedMesh* build(Buffer::Usage vertexBufferUsage, Buffer::Usage indexBufferUsage) {
-            IndexedMesh mesh = new IndexedMesh(Mesh::Triangles, 0, 0, GL_UNSIGNED_BYTE);
+            IndexedMesh mesh = new IndexedMesh(Mesh::Triangles, 0, 0, Type::UnsignedByte);
             Buffer* vertexBuffer = mesh.addBuffer(true);
 
             build(mesh, vertexBuffer, vertexBufferUsage, indexBufferUsage);

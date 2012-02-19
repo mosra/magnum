@@ -157,7 +157,7 @@ class MAGNUM_EXPORT Mesh {
          * function does nothing.
          */
         template<class T> inline void bindAttribute(Buffer* buffer, GLuint attribute) {
-            bindAttribute(buffer, attribute, TypeTraits<T>::count(), TypeTraits<T>::glType());
+            bindAttribute(buffer, attribute, TypeTraits<T>::count(), static_cast<GLenum>(TypeTraits<T>::glType()));
         }
 
         /**

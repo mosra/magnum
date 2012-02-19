@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::TypeTraits
+ * @brief Enum Magnum::Type, class Magnum::TypeTraits
  */
 
 #include "Magnum.h"
@@ -54,9 +54,9 @@ template<class T> struct TypeTraits: public Math::TypeTraits<T> {
     /**
      * @brief OpenGL plain type ID
      *
-     * Returns e.g. GL_UNSIGNED_INT for GLuint.
+     * Returns e.g. Type::UnsignedInt for GLuint.
      */
-    constexpr inline static GLenum glType();
+    constexpr inline static Type glType();
 
     /**
      * @brief Size of plain OpenGL type
@@ -77,6 +77,18 @@ template<class T> struct TypeTraits: public Math::TypeTraits<T> {
 template<class T> struct TypeTraits {};
 #endif
 
+/** @brief OpenGL plain types */
+enum class Type: GLenum {
+    UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte (char) */
+    Byte = GL_BYTE,                     /**< Byte (char) */
+    UnsignedShort = GL_UNSIGNED_SHORT,  /**< Unsigned short */
+    Short = GL_SHORT,                   /**< Short */
+    UnsignedInt = GL_UNSIGNED_INT,      /**< Unsigned int */
+    Int = GL_INT,                       /**< Int */
+    Float = GL_FLOAT,                   /**< Float */
+    Double = GL_DOUBLE                  /**< Double */
+};
+
 /** @todo Other texture types, referenced in glTexImage2D function manual */
 /** @todo Using Vector3 for textures? */
 
@@ -85,7 +97,7 @@ template<> struct TypeTraits<GLubyte>: public Math::TypeTraits<unsigned char> {
     typedef GLubyte IndexType;
     typedef GLubyte TextureType;
 
-    inline constexpr static GLenum glType() { return GL_UNSIGNED_BYTE; }
+    inline constexpr static Type glType() { return Type::UnsignedByte; }
     inline constexpr static size_t size() { return sizeof(GLubyte); }
     inline constexpr static size_t count() { return 1; }
 };
@@ -94,7 +106,7 @@ template<> struct TypeTraits<GLbyte>: public Math::TypeTraits<char> {
     /* Can not be used for indices */
     typedef GLbyte TextureType;
 
-    inline constexpr static GLenum glType() { return GL_BYTE; }
+    inline constexpr static Type glType() { return Type::Byte; }
     inline constexpr static size_t size() { return sizeof(GLbyte); }
     inline constexpr static size_t count() { return 1; }
 };
@@ -103,7 +115,7 @@ template<> struct TypeTraits<GLushort>: public Math::TypeTraits<unsigned short> 
     typedef GLushort IndexType;
     typedef GLushort TextureType;
 
-    inline constexpr static GLenum glType() { return GL_UNSIGNED_SHORT; }
+    inline constexpr static Type glType() { return Type::UnsignedShort; }
     inline constexpr static size_t size() { return sizeof(GLushort); }
     inline constexpr static size_t count() { return 1; }
 };
@@ -112,7 +124,7 @@ template<> struct TypeTraits<GLshort>: public Math::TypeTraits<short> {
     /* Can not be used for indices */
     typedef GLshort TextureType;
 
-    inline constexpr static GLenum glType() { return GL_SHORT; }
+    inline constexpr static Type glType() { return Type::Short; }
     inline constexpr static size_t size() { return sizeof(GLshort); }
     inline constexpr static size_t count() { return 1; }
 };
@@ -121,7 +133,7 @@ template<> struct TypeTraits<GLuint>: public Math::TypeTraits<unsigned int> {
     typedef GLuint IndexType;
     typedef GLuint TextureType;
 
-    inline constexpr static GLenum glType() { return GL_UNSIGNED_INT; }
+    inline constexpr static Type glType() { return Type::UnsignedInt; }
     inline constexpr static size_t size() { return sizeof(GLuint); }
     inline constexpr static size_t count() { return 1; }
 };
@@ -130,7 +142,7 @@ template<> struct TypeTraits<GLint>: public Math::TypeTraits<int> {
     /* Can not be used for indices */
     typedef GLint TextureType;
 
-    inline constexpr static GLenum glType() { return GL_INT; }
+    inline constexpr static Type glType() { return Type::Int; }
     inline constexpr static size_t size() { return sizeof(GLint); }
     inline constexpr static size_t count() { return 1; }
 };
@@ -139,7 +151,7 @@ template<> struct TypeTraits<GLfloat>: public Math::TypeTraits<float> {
     /* Can not be used for indices */
     typedef GLfloat TextureType;
 
-    inline constexpr static GLenum glType() { return GL_FLOAT; }
+    inline constexpr static Type glType() { return Type::Float; }
     inline constexpr static size_t size() { return sizeof(GLfloat); }
     inline constexpr static size_t count() { return 1; }
 };
@@ -148,7 +160,7 @@ template<> struct TypeTraits<GLdouble>: public Math::TypeTraits<double> {
     /* Can not be used for indices */
     /* Can not be used for textures */
 
-    inline constexpr static GLenum glType() { return GL_DOUBLE; }
+    inline constexpr static Type glType() { return Type::Double; }
     inline constexpr static size_t size() { return sizeof(GLdouble); }
     inline constexpr static size_t count() { return 1; }
 };
@@ -157,7 +169,7 @@ template<class T, size_t vectorSize> struct TypeTraits<Math::Vector<T, vectorSiz
     /* Can not be used for indices */
     /* Can not be used for textures */
 
-    inline constexpr static GLenum glType() { return TypeTraits<T>::glType(); }
+    inline constexpr static Type glType() { return TypeTraits<T>::glType(); }
     inline constexpr static size_t size() { return sizeof(T); }
     inline constexpr static size_t count() { return vectorSize; }
 };
@@ -170,7 +182,7 @@ template<class T, size_t matrixSize> struct TypeTraits<Math::Matrix<T, matrixSiz
     /* Can not be used for indices */
     /* Can not be used for textures, obviously */
 
-    inline constexpr static GLenum glType() { return TypeTraits<T>::glType(); }
+    inline constexpr static Type glType() { return TypeTraits<T>::glType(); }
     inline constexpr static size_t size() { return sizeof(T); }
     inline constexpr static size_t count() { return matrixSize*matrixSize; }
 };

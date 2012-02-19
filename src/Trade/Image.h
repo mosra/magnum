@@ -60,7 +60,7 @@ template<size_t imageDimensions> class Image {
         inline AbstractTexture::ColorFormat colorFormat() const { return _colorFormat; }
 
         /** @brief Data type */
-        GLenum type() const { return _type; }
+        Type type() const { return _type; }
 
         /** @brief Pointer to raw data */
         inline const void* data() const { return _data; }
@@ -68,7 +68,7 @@ template<size_t imageDimensions> class Image {
     private:
         Math::Vector<GLsizei, Dimensions> _dimensions;
         AbstractTexture::ColorFormat _colorFormat;
-        GLenum _type;
+        Type _type;
         const char* _data;
 };
 
