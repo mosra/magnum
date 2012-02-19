@@ -131,7 +131,7 @@ template<> struct TypeTraits<GLuint>: public Math::TypeTraits<unsigned int> {
     inline constexpr static size_t count() { return 1; }
 };
 
-static_assert(sizeof(GLint) == sizeof(unsigned int), "GLint is not the same as int");
+static_assert(sizeof(GLint) == sizeof(int), "GLint is not the same as int");
 template<> struct TypeTraits<GLint>: public Math::TypeTraits<int> {
     /* Can not be used for indices */
     typedef GLint TextureType;
