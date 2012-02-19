@@ -36,7 +36,6 @@ template<size_t dimensions> void Texture<dimensions>::setWrapping(const Math::Ve
                 break;
         }
     }
-    unbind();
 }
 
 /* Instantiate all textures */

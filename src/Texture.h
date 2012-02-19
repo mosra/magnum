@@ -88,7 +88,6 @@ template<size_t dimensions> class MAGNUM_EXPORT Texture: public AbstractTexture 
         template<class T> inline void setData(GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             bind();
             DataHelper<Dimensions>::set(target, mipLevel, internalFormat, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
-            unbind();
         }
 
         /**
@@ -103,7 +102,6 @@ template<size_t dimensions> class MAGNUM_EXPORT Texture: public AbstractTexture 
         inline void setData(GLint mipLevel, InternalFormat internalFormat, const Trade::Image<Dimensions>* image) {
             bind();
             DataHelper<dimensions>::set(target, mipLevel, internalFormat, image->dimensions(), image->colorFormat(), image->type(), image->data());
-            unbind();
         }
 
         /**
@@ -121,7 +119,6 @@ template<size_t dimensions> class MAGNUM_EXPORT Texture: public AbstractTexture 
         template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             bind();
             DataHelper<Dimensions>::setSub(target, mipLevel, offset, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
-            unbind();
         }
 
         /**
@@ -136,7 +133,6 @@ template<size_t dimensions> class MAGNUM_EXPORT Texture: public AbstractTexture 
         inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Trade::Image<Dimensions>* image) {
             bind();
             DataHelper<Dimensions>::setSub(target, mipLevel, offset, image->dimensions(), image->colorFormat(), image->type(), image->data());
-            unbind();
         }
 };
 

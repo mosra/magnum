@@ -128,11 +128,6 @@ class Buffer {
             glBindBuffer(_type, buffer);
         }
 
-        /** @brief Unbind buffer */
-        inline void unbind() const {
-            glBindBuffer(_type, 0);
-        }
-
         /**
          * @brief Set buffer data
          * @param size      Data size
@@ -142,7 +137,6 @@ class Buffer {
         inline void setData(GLsizeiptr size, const GLvoid* data, Usage usage) {
             bind();
             glBufferData(_type, size, data, usage);
-            unbind();
         }
 
     private:

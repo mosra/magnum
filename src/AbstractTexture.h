@@ -148,17 +148,6 @@ class MAGNUM_EXPORT AbstractTexture {
         }
 
         /**
-         * @brief Unbind texture
-         *
-         * @note Unbinds any texture from given dimension, not only this
-         * particular one.
-         */
-        inline void unbind() const {
-            glActiveTexture(GL_TEXTURE0 + _layer);
-            glBindTexture(target, 0);
-        }
-
-        /**
          * @brief Set minification filter
          * @param filter        Filter
          * @param mipmap        Mipmap filtering. If set to anything else than
@@ -187,7 +176,6 @@ class MAGNUM_EXPORT AbstractTexture {
         inline void setMagnificationFilter(Filter filter) {
             bind();
             glTexParameteri(target, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(filter));
-            unbind();
         }
 
         /**
@@ -199,7 +187,6 @@ class MAGNUM_EXPORT AbstractTexture {
         inline void setBorderColor(const Vector4& color) {
             bind();
             glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, color.data());
-            unbind();
         }
 
         /**

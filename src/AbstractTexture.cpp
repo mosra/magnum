@@ -53,7 +53,6 @@ void AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
     bind();
     glTexParameteri(target, GL_TEXTURE_MIN_FILTER,
         static_cast<GLint>(filter)|static_cast<GLint>(mipmap));
-    unbind();
 }
 
 void AbstractTexture::generateMipmap() {
@@ -61,7 +60,6 @@ void AbstractTexture::generateMipmap() {
 
     bind();
     glGenerateMipmap(target);
-    unbind();
 }
 
 }

@@ -64,9 +64,6 @@ void Mesh::draw() {
                 default:
                     glVertexAttribPointer(ait->attribute, ait->size, ait->type, GL_FALSE, ait->stride, ait->pointer);
             }
-
-        /* Unbind buffer */
-        it->first->unbind();
     }
 
     glDrawArrays(_primitive, 0, _vertexCount);

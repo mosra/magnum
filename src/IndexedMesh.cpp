@@ -46,15 +46,11 @@ void IndexedMesh::draw() {
                 default:
                     glVertexAttribPointer(ait->attribute, ait->size, ait->type, GL_FALSE, ait->stride, ait->pointer);
             }
-
-        /* Unbind buffer */
-        it->first->unbind();
     }
 
     /* Bind index array, draw the elements and unbind */
     _indexBuffer.bind();
     glDrawElements(primitive(), _indexCount, _indexType, nullptr);
-    _indexBuffer.unbind();
 
     /* Disable vertex arrays for all attributes */
     for(set<GLuint>::const_iterator it = attributes().begin(); it != attributes().end(); ++it)
