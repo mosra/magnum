@@ -52,18 +52,9 @@ void Mesh::draw() {
 
         /* Bind all attributes to this buffer */
         for(vector<Attribute>::const_iterator ait = it->second.second.begin(); ait != it->second.second.end(); ++ait)
-            switch(ait->type) {
-                case GL_BYTE:
-                case GL_UNSIGNED_BYTE:
-                case GL_SHORT:
-                case GL_UNSIGNED_SHORT:
-                case GL_INT:
-                case GL_UNSIGNED_INT:
-                    glVertexAttribIPointer(ait->attribute, ait->size, ait->type, ait->stride, ait->pointer);
-                    break;
-                default:
-                    glVertexAttribPointer(ait->attribute, ait->size, ait->type, GL_FALSE, ait->stride, ait->pointer);
-            }
+            if(TypeInfo::isIntegral(ait->type))
+                glVertexAttribIPointer(ait->attribute, ait->size, static_cast<GLenum>(ait->type), ait->stride, ait->pointer);
+            else glVertexAttribPointer(ait->attribute, ait->size, static_cast<GLenum>(ait->type), GL_FALSE, ait->stride, ait->pointer);
     }
 
     glDrawArrays(_primitive, 0, _vertexCount);
@@ -92,7 +83,7 @@ void Mesh::finalize() {
                 ait->pointer = reinterpret_cast<const GLvoid*>(stride);
 
                 /* Add attribute size (per vertex) to stride */
-                stride += ait->size*sizeOf(ait->type);
+                stride += ait->size*TypeInfo::sizeOf(ait->type);
             }
 
             /* Set computed stride for all attributes */
@@ -108,7 +99,7 @@ void Mesh::finalize() {
                 ait->pointer = reinterpret_cast<const GLvoid*>(position);
 
                 /* Add attribute size (for all vertices) to position */
-                position += ait->size*sizeOf(ait->type)*_vertexCount;
+                position += ait->size*TypeInfo::sizeOf(ait->type)*_vertexCount;
             }
         }
     }
@@ -117,7 +108,7 @@ void Mesh::finalize() {
     finalized = true;
 }
 
-void Mesh::bindAttribute(Buffer* buffer, GLuint attribute, GLint size, GLenum type) {
+void Mesh::bindAttribute(Buffer* buffer, GLuint attribute, GLint size, Type type) {
     /* The mesh is finalized or attribute is already bound, nothing to do */
     if(finalized || _attributes.find(attribute) != _attributes.end()) return;
 
@@ -134,20 +125,6 @@ void Mesh::bindAttribute(Buffer* buffer, GLuint attribute, GLint size, GLenum ty
 
     found->second.second.push_back(a);
     _attributes.insert(attribute);
-}
-
-GLsizei Mesh::sizeOf(GLenum type) {
-    switch(type) {
-        case GL_BYTE:           return sizeof(GLbyte);
-        case GL_UNSIGNED_BYTE:  return sizeof(GLubyte);
-        case GL_SHORT:          return sizeof(GLshort);
-        case GL_UNSIGNED_SHORT: return sizeof(GLushort);
-        case GL_INT:            return sizeof(GLint);
-        case GL_UNSIGNED_INT:   return sizeof(GLuint);
-        case GL_FLOAT:          return sizeof(GLfloat);
-        case GL_DOUBLE:         return sizeof(GLdouble);
-        default: return 0;
-    }
 }
 
 }

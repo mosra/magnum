@@ -34,18 +34,9 @@ void IndexedMesh::draw() {
 
         /* Bind all attributes to this buffer */
         for(vector<Attribute>::const_iterator ait = it->second.second.begin(); ait != it->second.second.end(); ++ait)
-            switch(ait->type) {
-                case GL_BYTE:
-                case GL_UNSIGNED_BYTE:
-                case GL_SHORT:
-                case GL_UNSIGNED_SHORT:
-                case GL_INT:
-                case GL_UNSIGNED_INT:
-                    glVertexAttribIPointer(ait->attribute, ait->size, ait->type, ait->stride, ait->pointer);
-                    break;
-                default:
-                    glVertexAttribPointer(ait->attribute, ait->size, ait->type, GL_FALSE, ait->stride, ait->pointer);
-            }
+            if(TypeInfo::isIntegral(ait->type))
+                glVertexAttribIPointer(ait->attribute, ait->size, static_cast<GLenum>(ait->type), ait->stride, ait->pointer);
+            else glVertexAttribPointer(ait->attribute, ait->size, static_cast<GLenum>(ait->type), GL_FALSE, ait->stride, ait->pointer);
     }
 
     /* Bind index array, draw the elements and unbind */

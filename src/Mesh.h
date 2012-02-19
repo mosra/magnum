@@ -157,7 +157,7 @@ class MAGNUM_EXPORT Mesh {
          * function does nothing.
          */
         template<class T> inline void bindAttribute(Buffer* buffer, GLuint attribute) {
-            bindAttribute(buffer, attribute, TypeTraits<T>::count(), static_cast<GLenum>(TypeTraits<T>::glType()));
+            bindAttribute(buffer, attribute, TypeTraits<T>::count(), TypeTraits<T>::glType());
         }
 
         /**
@@ -173,7 +173,7 @@ class MAGNUM_EXPORT Mesh {
         struct Attribute {
             GLuint attribute;           /**< @brief Attribute ID */
             GLint size;                 /**< @brief How many items of @c type are in the attribute */
-            GLenum type;                /**< @brief Attribute item type */
+            Type type;                  /**< @brief Attribute item type */
             GLsizei stride;             /**< @brief Distance of two adjacent attributes of this type in interleaved buffer */
             const GLvoid* pointer;      /**< @brief Pointer to first attribute of this type in the buffer */
         };
@@ -217,9 +217,7 @@ class MAGNUM_EXPORT Mesh {
         std::map<Buffer*, std::pair<bool, std::vector<Attribute> > > _buffers;
         std::set<GLuint> _attributes;
 
-        void bindAttribute(Buffer* buffer, GLuint attribute, GLint size, GLenum type);
-
-        GLsizei sizeOf(GLenum type);
+        void bindAttribute(Buffer* buffer, GLuint attribute, GLint size, Type type);
 };
 
 }
