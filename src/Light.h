@@ -47,7 +47,7 @@ class Light: public Object {
         /**
          * Recomputes light position.
          */
-        virtual void setClean();
+        void setClean();
 
     private:
         Vector3 _position;

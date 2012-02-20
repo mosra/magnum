@@ -119,7 +119,7 @@ class MAGNUM_EXPORT Camera: public Object {
         /**
          * Recalculates camera matrix.
          */
-        virtual void setClean();
+        void setClean();
 
     private:
         Matrix4 rawProjectionMatrix;
