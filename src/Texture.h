@@ -25,6 +25,10 @@ namespace Magnum {
 
 /**
 @brief %Texture
+@tparam dimensions      %Texture dimension count
+@tparam target          %Target. If not set, target is based on dimension
+    count (@c Target::Texture1D, @c Target::Texture2D or
+    @c Target::Texture3D).
 
 Template class for one- to three-dimensional textures.
 
@@ -41,27 +45,26 @@ to the shader - the only requirement is to have each texture in another layer.
 @section RectangleTextures Rectangle textures
 
 If you want to use rectangle textures, set target in constructor to
-@c GL_TEXTURE_RECTANGLE and in shader use @c sampler2DRect. Unlike @c sampler2D,
+@c Target::Rectangle and in shader use @c sampler2DRect. Unlike @c sampler2D,
 which accepts coordinates between 0 and 1, @c sampler2DRect accepts coordinates
 between 0 and @c textureSizeInGivenDirection-1. Note that rectangle textures
 don't support mipmapping and repeating wrapping modes, see @ref Texture::Filter
 "Filter", @ref Texture::Mipmap "Mipmap" and generateMipmap() documentation
 for more information.
  */
-template<size_t dimensions> class MAGNUM_EXPORT Texture: public AbstractTexture {
+template<size_t dimensions> class Texture: public AbstractTexture {
     public:
-        static const size_t Dimensions = dimensions;    /**< @brief Texture dimension count */
+        static const size_t Dimensions = dimensions;    /**< @brief %Texture dimension count */
+        typedef typename DataHelper<Dimensions>::Target Target; /**< @brief %Texture target */
 
         /**
          * @brief Constructor
-         * @param layer     Texture layer (number between 0 and 31)
-         * @param target    Target, e.g. @c GL_TEXTURE_RECTANGLE. If not set,
-         *      target is based on dimension count (@c GL_TEXTURE_1D,
-         *      @c GL_TEXTURE_2D, @c GL_TEXTURE_3D).
+         * @param layer     %Texture layer (number between 0 and 31)
+         * @param target    %Texture target
          *
          * Creates one OpenGL texture.
          */
-        inline Texture(GLint layer = 0, GLenum target = DataHelper<Dimensions>::target()): AbstractTexture(layer, target) {}
+        inline Texture(GLint layer = 0, Target target = DataHelper<Dimensions>::target()): AbstractTexture(layer, static_cast<GLenum>(target)), target(target) {}
 
         /**
          * @brief Set wrapping
@@ -69,8 +72,7 @@ template<size_t dimensions> class MAGNUM_EXPORT Texture: public AbstractTexture 
          *
          * Sets wrapping type for coordinates out of range (0, 1) for normal
          * textures and (0, textureSizeInGivenDirection-1) for rectangle
-         * textures. Note that for rectangle textures repeating wrapping modes
-         * are unavailable.
+         * textures.
          */
         inline void setWrapping(const Math::Vector<Wrapping, Dimensions>& wrapping) {
             bind();
@@ -94,7 +96,7 @@ template<size_t dimensions> class MAGNUM_EXPORT Texture: public AbstractTexture 
         }
 
         /**
-         * @brief Set texture data
+         * @brief Set texture data from image
          * @param mipLevel          Mip level
          * @param internalFormat    Internal texture format
          * @param image             Image
@@ -125,7 +127,7 @@ template<size_t dimensions> class MAGNUM_EXPORT Texture: public AbstractTexture 
         }
 
         /**
-         * @brief Set texture subdata
+         * @brief Set texture subdata from image
          * @param mipLevel          Mip level
          * @param offset            Offset where to put data in the texture
          * @param image             Image
@@ -137,6 +139,9 @@ template<size_t dimensions> class MAGNUM_EXPORT Texture: public AbstractTexture 
             bind();
             DataHelper<Dimensions>::setSub(target, mipLevel, offset, image->dimensions(), image->colorFormat(), image->type(), image->data());
         }
+
+    private:
+        Target target;
 };
 
 /** @brief One-dimensional texture */

@@ -198,8 +198,6 @@ class MAGNUM_EXPORT AbstractTexture {
         void generateMipmap();
 
     protected:
-        const GLenum target;        /**< @brief Texture target */
-
         /**
          * @brief Helper for setting texture data
          *
@@ -208,12 +206,33 @@ class MAGNUM_EXPORT AbstractTexture {
         template<size_t textureDimensions> struct DataHelper {
             #ifdef DOXYGEN_GENERATING_OUTPUT
             /**
+             * @brief %Texture target
+             *
+             * Each dimension has its own unique subset of these targets.
+             */
+            enum class Target: GLenum {
+                Texture1D = GL_TEXTURE_1D,
+                Texture2D = GL_TEXTURE_2D,
+                Texture3D = GL_TEXTURE_3D,
+                Array1D = GL_TEXTURE_1D_ARRAY,
+                Array2D = GL_TEXTURE_2D_ARRAY,
+                Rectangle = GL_TEXTURE_RECTANGLE,
+                CubeMap = GL_TEXTURE_CUBE_MAP,
+                CubeMapPositiveX = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+                CubeMapNegativeX = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+                CubeMapPositiveY = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+                CubeMapNegativeY = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+                CubeMapPositiveZ = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+                CubeMapNegativeZ = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+            };
+
+            /**
              * @brief Target for given dimension
              *
-             * Returns @c GL_TEXTURE_1D, @c GL_TEXTURE_2D or @c GL_TEXTURE_3D
+             * Returns @c Target::Texture1D, @c Target::Texture2D or @c Target::Texture3D
              * based on dimension count.
              */
-            inline constexpr static GLenum target();
+            inline constexpr static Target target();
 
             /**
              * @brief Set texture wrapping
@@ -224,7 +243,7 @@ class MAGNUM_EXPORT AbstractTexture {
 
             /**
              * @brief Set texture data
-             * @param target            Target, such as @c GL_TEXTURE_RECTANGLE
+             * @param target            %Target
              * @param mipLevel          Mip level
              * @param internalFormat    Internal texture format
              * @param dimensions        %Texture dimensions
@@ -235,11 +254,11 @@ class MAGNUM_EXPORT AbstractTexture {
              * Calls @c glTexImage1D, @c glTexImage2D, @c glTexImage3D depending
              * on dimension count.
              */
-            inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, textureDimensions>& dimensions, ColorFormat colorFormat, Type type, const void* data);
+            inline static void set(Target target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, textureDimensions>& dimensions, ColorFormat colorFormat, Type type, const void* data);
 
             /**
              * @brief Set texture subdata
-             * @param target            Target, such as @c GL_TEXTURE_RECTANGLE
+             * @param target            %Target
              * @param mipLevel          Mip level
              * @param offset            Offset where to put data in the texture
              * @param dimensions        %Texture dimensions
@@ -250,62 +269,85 @@ class MAGNUM_EXPORT AbstractTexture {
              * Calls @c glTexSubImage1D, @c glTexSubImage2D, @c glTexSubImage3D
              * depending on dimension count.
              */
-            inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<GLint, textureDimensions>& offset, const Math::Vector<GLsizei, textureDimensions>& dimensions, ColorFormat colorFormat, Type type, const void* data);
+            inline static void setSub(SubTarget target, GLint mipLevel, const Math::Vector<GLint, textureDimensions>& offset, const Math::Vector<GLsizei, textureDimensions>& dimensions, ColorFormat colorFormat, Type type, const void* data);
             #endif
         };
 
     private:
+        const GLenum target;
         const GLint _layer;
         GLuint texture;
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> struct AbstractTexture::DataHelper<1> {
-    inline constexpr static GLenum target() { return GL_TEXTURE_1D; }
+    enum class Target: GLenum {
+        Texture1D = GL_TEXTURE_1D
+    };
 
-    inline static void setWrapping(GLenum target, const Math::Vector<Wrapping, 1>& wrapping) {
-        glTexParameteri(target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.at(0)));
+    inline constexpr static Target target() { return Target::Texture1D; }
+
+    inline static void setWrapping(Target target, const Math::Vector<Wrapping, 1>& wrapping) {
+        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.at(0)));
     }
 
-    inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 1>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
-        glTexImage1D(target, mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), 0, static_cast<GLenum>(colorFormat), static_cast<GLenum>(type), data);
+    inline static void set(Target target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 1>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
+        glTexImage1D(static_cast<GLenum>(target), mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), 0, static_cast<GLenum>(colorFormat), static_cast<GLenum>(type), data);
     }
 
-    inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<GLint, 1>& offset, const Math::Vector<GLsizei, 1>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
-        glTexSubImage1D(target, mipLevel, offset.at(0), dimensions.at(0), static_cast<GLenum>(colorFormat), static_cast<GLenum>(type), data);
+    inline static void setSub(Target target, GLint mipLevel, const Math::Vector<GLint, 1>& offset, const Math::Vector<GLsizei, 1>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
+        glTexSubImage1D(static_cast<GLenum>(target), mipLevel, offset.at(0), dimensions.at(0), static_cast<GLenum>(colorFormat), static_cast<GLenum>(type), data);
     }
 };
 template<> struct AbstractTexture::DataHelper<2> {
-    inline constexpr static GLenum target() { return GL_TEXTURE_2D; }
+    enum class Target: GLenum {
+        Texture2D = GL_TEXTURE_2D,
+        Array1D = GL_TEXTURE_1D_ARRAY,
+        Rectangle = GL_TEXTURE_RECTANGLE,
+        CubeMap = GL_TEXTURE_CUBE_MAP,
+        CubeMapPositiveX = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+        CubeMapNegativeX = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+        CubeMapPositiveY = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+        CubeMapNegativeY = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+        CubeMapPositiveZ = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+        CubeMapNegativeZ = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+    };
 
-    inline static void setWrapping(GLenum target, const Math::Vector<Wrapping, 2>& wrapping) {
-        glTexParameteri(target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.at(0)));
-        glTexParameteri(target, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping.at(1)));
+    inline constexpr static Target target() { return Target::Texture2D; }
+
+    inline static void setWrapping(Target target, const Math::Vector<Wrapping, 2>& wrapping) {
+        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.at(0)));
+        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping.at(1)));
     }
 
-    inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 2>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
-        glTexImage2D(target, mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), dimensions.at(1), 0, static_cast<GLenum>(colorFormat), static_cast<GLenum>(type), data);
+    inline static void set(Target target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 2>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
+        glTexImage2D(static_cast<GLenum>(target), mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), dimensions.at(1), 0, static_cast<GLenum>(colorFormat), static_cast<GLenum>(type), data);
     }
 
-    inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<GLint, 2>& offset, const Math::Vector<GLsizei, 2>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
-        glTexSubImage2D(target, mipLevel, offset.at(0), offset.at(1), dimensions.at(0), dimensions.at(1), static_cast<GLenum>(colorFormat), static_cast<GLenum>(type), data);
+    inline static void setSub(Target target, GLint mipLevel, const Math::Vector<GLint, 2>& offset, const Math::Vector<GLsizei, 2>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
+        glTexSubImage2D(static_cast<GLenum>(target), mipLevel, offset.at(0), offset.at(1), dimensions.at(0), dimensions.at(1), static_cast<GLenum>(colorFormat), static_cast<GLenum>(type), data);
     }
 };
 template<> struct AbstractTexture::DataHelper<3> {
-    inline constexpr static GLenum target() { return GL_TEXTURE_3D; }
+    enum class Target: GLenum {
+        Texture3D = GL_TEXTURE_3D,
+        Array2D = GL_TEXTURE_2D_ARRAY
+    };
 
-    inline static void setWrapping(GLenum target, const Math::Vector<Wrapping, 3>& wrapping) {
-        glTexParameteri(target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.at(0)));
-        glTexParameteri(target, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping.at(1)));
-        glTexParameteri(target, GL_TEXTURE_WRAP_R, static_cast<GLint>(wrapping.at(2)));
+    inline constexpr static Target target() { return Target::Texture3D; }
+
+    inline static void setWrapping(Target target, const Math::Vector<Wrapping, 3>& wrapping) {
+        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.at(0)));
+        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping.at(1)));
+        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_R, static_cast<GLint>(wrapping.at(2)));
     }
 
-    inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 3>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
-        glTexImage3D(target, mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), dimensions.at(1), dimensions.at(2), 0, static_cast<GLenum>(colorFormat), static_cast<GLenum>(type), data);
+    inline static void set(Target target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, 3>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
+        glTexImage3D(static_cast<GLenum>(target), mipLevel, static_cast<GLint>(internalFormat), dimensions.at(0), dimensions.at(1), dimensions.at(2), 0, static_cast<GLenum>(colorFormat), static_cast<GLenum>(type), data);
     }
 
-    inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<GLint, 3>& offset, const Math::Vector<GLsizei, 3>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
-        glTexSubImage3D(target, mipLevel, offset.at(0), offset.at(1), offset.at(2), dimensions.at(0), dimensions.at(1), dimensions.at(2), static_cast<GLenum>(colorFormat), static_cast<GLenum>(type), data);
+    inline static void setSub(Target target, GLint mipLevel, const Math::Vector<GLint, 3>& offset, const Math::Vector<GLsizei, 3>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
+        glTexSubImage3D(static_cast<GLenum>(target), mipLevel, offset.at(0), offset.at(1), offset.at(2), dimensions.at(0), dimensions.at(1), dimensions.at(2), static_cast<GLenum>(colorFormat), static_cast<GLenum>(type), data);
     }
 };
 #endif
