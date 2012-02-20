@@ -36,7 +36,7 @@ class MAGNUM_EXPORT AbstractTexture {
     AbstractTexture& operator=(AbstractTexture&& other) = delete;
 
     public:
-        /** @brief Texture filtering */
+        /** @brief %Texture filtering */
         enum class Filter: GLint {
             /**
              * Nearest neighbor filtering
@@ -68,7 +68,7 @@ class MAGNUM_EXPORT AbstractTexture {
             LinearInterpolation = GL_NEAREST_MIPMAP_LINEAR & ~GL_NEAREST
         };
 
-        /** @brief Texture wrapping on the edge */
+        /** @brief %Texture wrapping on the edge */
         enum class Wrapping: GLint {
             /**
              * Repeat texture. Unavailable on rectangle textures.
@@ -138,7 +138,7 @@ class MAGNUM_EXPORT AbstractTexture {
             glDeleteTextures(1, &texture);
         }
 
-        /** @brief Texture layer */
+        /** @brief %Texture layer */
         inline GLint layer() const { return _layer; }
 
         /** @brief Bind texture for usage / rendering */

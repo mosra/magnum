@@ -1,0 +1,5 @@
+/** @namespace Magnum::Shaders
+@brief Sample shaders
+
+Collection of shaders for testing purposes.
+*/

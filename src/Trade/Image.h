@@ -36,7 +36,7 @@ template<size_t imageDimensions> class Image {
     Image<imageDimensions>& operator=(Image<imageDimensions>&& other) = delete;
 
     public:
-        const static size_t Dimensions = imageDimensions;   /**< @brief Image dimension count */
+        const static size_t Dimensions = imageDimensions;   /**< @brief %Image dimension count */
 
         /**
          * @brief Constructor

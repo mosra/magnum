@@ -7,7 +7,7 @@ namespace Magnum {
 <li>Comprehensive use of C++11 features for security, performance and ease of development.</li>
 <li>Hierarchical @ref Scene "scene graph" which supports transformation caching for better performance, classes for convenient usage of @ref AbstractShaderProgram "shaders", @ref Buffer "buffers" and @ref Texture "textures".</li>
 <li>@ref MeshTools "Mesh tools" for cleaning, optimizing and generating meshes.</li>
-<li>Collection of pre-made @ref Primitives "graphic primitives" for testing purposes.</li>
+<li>Collection of pre-made @ref Primitives "graphic primitives" and @ref Shaders "shaders" for testing purposes.</li>
 </ul>
 
 @section BasicUsage Basic usage
