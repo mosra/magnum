@@ -19,7 +19,7 @@
  * @brief Class Magnum::Scene
  */
 
-#include "Camera.h"
+#include "Object.h"
 
 namespace Magnum {
 
@@ -59,37 +59,17 @@ class MAGNUM_EXPORT Scene: public Object {
          */
         inline ~Scene() { glDeleteVertexArrays(1, &vao); }
 
-        /** @brief Clear color */
-        inline Vector4 clearColor() const { return _clearColor; }
-
         /** @brief Which features are set */
         inline unsigned int features() const { return _features; }
 
         /** @brief Set feature */
         void setFeature(Feature feature, bool enabled);
 
-        /** @brief Set clear color */
-        void setClearColor(const Vector4& color);
-
-        /** @brief Set clear color */
-        inline void setClearColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a) {
-            setClearColor(Vector4(r, g, b, a));
-        }
-
-        /**
-         * @brief Draw whole scene
-         *
-         * Recursively draws all child objects with given camera.
-         */
-        virtual void draw(Camera* camera);
-
     private:
         unsigned int _features;
-        Vector4 _clearColor;
         GLuint vao;
 
         inline virtual void draw(const Magnum::Matrix4& transformationMatrix, Camera* camera) {}
-        void drawChildren(Object* object, const Matrix4& transformationMatrix, Camera* camera);
 };
 
 }

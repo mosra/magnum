@@ -16,11 +16,11 @@
 #include "Camera.h"
 #include "Scene.h"
 
+using namespace std;
+
 namespace Magnum {
 
-Camera::Camera(Object* parent): Object(parent), _aspectRatioPolicy(Extend) {
-    setOrthographic(2, 1, 1000);
-}
+Camera::Camera(Object* parent): Object(parent), _aspectRatioPolicy(Extend) {}
 
 void Camera::setOrthographic(GLfloat size, GLfloat near, GLfloat far) {
     _near = near;
@@ -98,6 +98,30 @@ void Camera::fixAspectRatio() {
 
     /* Don't preserve anything */
     } else _projectionMatrix = rawProjectionMatrix;
+}
+
+void Camera::setClearColor(const Magnum::Vector4& color) {
+    glClearColor(color.r(), color.g(), color.b(), color.a());
+    _clearColor = color;
+}
+
+void Camera::draw() {
+    /** @todo Clear only set features */
+    glClear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+    /* Recursively draw child objects */
+    drawChildren(scene(), cameraMatrix());
+}
+
+void Camera::drawChildren(Object* object, const Matrix4& transformationMatrix) {
+    for(set<Object*>::const_iterator it = object->children().begin(); it != object->children().end(); ++it) {
+        /* Transformation matrix for the object */
+        Matrix4 matrix = transformationMatrix*(*it)->transformation();
+
+        /* Draw the object and its children */
+        (*it)->draw(matrix, this);
+        drawChildren(*it, matrix);
+    }
 }
 
 }
