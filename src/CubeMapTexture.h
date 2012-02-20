@@ -65,24 +65,26 @@ class CubeMapTexture: public Texture2D {
         inline CubeMapTexture(GLint layer = 0): Texture(layer, Target::CubeMap) {}
 
         template<class T> inline void setData(GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) = delete;
-        void setData(GLint mipLevel, InternalFormat internalFormat, const Trade::ImageData<Dimensions>* image) = delete;
+        template<class T> void setData(GLint mipLevel, InternalFormat internalFormat, T* image) = delete;
         template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) = delete;
-        void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Trade::ImageData<Dimensions>* image) = delete;
+        template<class T> void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, T* image) = delete;
 
         /**
          * @copydoc Texture::setData(GLint, InternalFormat, const Math::Vector<GLsizei, Dimensions>&, ColorFormat, const T*)
          * @param coordinate   Coordinate
          */
         template<class T> inline void setData(Coordinate coordinate, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
-            setData(coordinate, mipLevel, internalFormat, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
+            bind();
+            DataHelper<Dimensions>::set(static_cast<Target>(coordinate), mipLevel, internalFormat, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
         }
 
         /**
-         * @copydetails Texture::setData(GLint, InternalFormat, const Trade::ImageData<Dimensions>*)
+         * @copydetails Texture::setData(GLint, InternalFormat, T*)
          * @param coordinate   Coordinate
          */
-        inline void setData(Coordinate coordinate, GLint mipLevel, InternalFormat internalFormat, const Trade::ImageData<Dimensions>* image) {
-            setData(coordinate, mipLevel, internalFormat, image->dimensions(), image->colorFormat(), image->type(), image->data());
+        template<class T> inline void setData(Coordinate coordinate, GLint mipLevel, InternalFormat internalFormat, T* image) {
+            bind();
+            DataHelper<Dimensions>::set(static_cast<Target>(coordinate), mipLevel, internalFormat, image);
         }
 
         /**
@@ -90,26 +92,17 @@ class CubeMapTexture: public Texture2D {
          * @param coordinate   Coordinate
          */
         template<class T> inline void setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
-            setSubData(coordinate, mipLevel, offset, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
+            bind();
+            DataHelper<Dimensions>::setSub(static_cast<Target>(coordinate), mipLevel, offset, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
         }
 
         /**
-         * @copydoc Texture::setSubData(GLint, const Math::Vector<GLint, Dimensions>&, const Trade::ImageData<Dimensions>*)
+         * @copydoc Texture::setSubData(GLint, const Math::Vector<GLint, Dimensions>&, T*)
          * @param coordinate   Coordinate
          */
-        inline void setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Trade::ImageData<Dimensions>* image) {
-            setSubData(coordinate, mipLevel, offset, image->dimensions(), image->colorFormat(), image->type(), image->data());
-        }
-
-    private:
-        inline void setData(Coordinate coordinate, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, Type type, const void* data) {
+        template<class T> inline void setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const T* image) {
             bind();
-            DataHelper<Dimensions>::set(static_cast<Target>(coordinate), mipLevel, internalFormat, _dimensions, colorFormat, type, data);
-        }
-
-        inline void setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
-            bind();
-            DataHelper<Dimensions>::setSub(static_cast<Target>(coordinate), mipLevel, offset, dimensions, colorFormat, type, data);
+            DataHelper<Dimensions>::setSub(static_cast<Target>(coordinate), mipLevel, offset, image);
         }
 };
 

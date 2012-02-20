@@ -99,14 +99,15 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          * @brief Set texture data from image
          * @param mipLevel          Mip level
          * @param internalFormat    Internal texture format
-         * @param image             Image
+         * @param image             Image, BufferedImage or for example
+         *      Trade::ImageData of the same dimension count
          *
          * Sets texture data from given image. The image is not deleted
          * afterwards.
          */
-        inline void setData(GLint mipLevel, InternalFormat internalFormat, const Trade::ImageData<Dimensions>* image) {
+        template<class T> inline void setData(GLint mipLevel, InternalFormat internalFormat, T* image) {
             bind();
-            DataHelper<Dimensions>::set(target, mipLevel, internalFormat, image->dimensions(), image->colorFormat(), image->type(), image->data());
+            DataHelper<Dimensions>::set(target, mipLevel, internalFormat, image);
         }
 
         /**
@@ -130,14 +131,15 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          * @brief Set texture subdata from image
          * @param mipLevel          Mip level
          * @param offset            Offset where to put data in the texture
-         * @param image             Image
+         * @param image             Image, BufferedImage or for example
+         *      Trade::ImageData of the same dimension count
          *
          * Sets texture subdata from given image. The image is not deleted
          * afterwards.
          */
-        inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Trade::ImageData<Dimensions>* image) {
+        template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, T* image) {
             bind();
-            DataHelper<Dimensions>::setSub(target, mipLevel, offset, image->dimensions(), image->colorFormat(), image->type(), image->data());
+            DataHelper<Dimensions>::setSub(target, mipLevel, offset, image);
         }
 
     private:

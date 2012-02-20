@@ -27,7 +27,7 @@ namespace Magnum { namespace Trade {
 @brief %Image
 
 Provides access to image data and additional information about data type and
-dimensions.
+dimensions. Can be used in the same situations as Image and BufferedImage.
 */
 template<size_t imageDimensions> class ImageData {
     ImageData<imageDimensions>(const ImageData<imageDimensions>& other) = delete;
@@ -40,15 +40,15 @@ template<size_t imageDimensions> class ImageData {
 
         /**
          * @brief Constructor
-         * @param dimensions        %Image dimensions
          * @param colorFormat       Color format of passed data. Data size
          *      per color channel is detected from format of passed data array.
+         * @param dimensions        %Image dimensions
          * @param data              %Image data
          *
          * @attention Note that the image data are not copied on construction,
          * but they are deleted on class destruction.
          */
-        template<class T> inline ImageData(const Math::Vector<GLsizei, Dimensions>& dimensions, AbstractTexture::ColorFormat colorFormat, const T* data): _dimensions(dimensions), _colorFormat(colorFormat), _type(TypeTraits<typename TypeTraits<T>::TextureType>::glType()), _data(reinterpret_cast<const char*>(data)) {}
+        template<class T> inline ImageData(AbstractTexture::ColorFormat colorFormat, const Math::Vector<GLsizei, Dimensions>& dimensions, const T* data): _colorFormat(colorFormat), _type(TypeTraits<typename TypeTraits<T>::TextureType>::glType()), _dimensions(dimensions), _data(reinterpret_cast<const char*>(data)) {}
 
         /** @brief Destructor */
         inline virtual ~ImageData() { delete[] _data; }
@@ -66,9 +66,9 @@ template<size_t imageDimensions> class ImageData {
         inline const void* data() const { return _data; }
 
     private:
-        Math::Vector<GLsizei, Dimensions> _dimensions;
         AbstractTexture::ColorFormat _colorFormat;
         Type _type;
+        Math::Vector<GLsizei, Dimensions> _dimensions;
         const char* _data;
 };
 

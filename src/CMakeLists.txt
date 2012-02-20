@@ -11,7 +11,9 @@ set(Magnum_SRCS
     Object.cpp
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
+    BufferedImage.cpp
     Camera.cpp
+    Image.cpp
     IndexedMesh.cpp
     Light.cpp
     Mesh.cpp
