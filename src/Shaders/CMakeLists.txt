@@ -1,5 +1,3 @@
-find_package(Qt4 REQUIRED)
-
 corrade_add_resource(Shaders shaders PhongShader.frag PhongShader.vert)
 set(Shaders_SRCS
     PhongShader.cpp
