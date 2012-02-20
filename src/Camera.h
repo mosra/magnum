@@ -103,7 +103,7 @@ class MAGNUM_EXPORT Camera: public Object {
         inline Matrix4 projectionMatrix() const { return _projectionMatrix; }
 
         /** @brief Viewport size */
-        inline Math::Vector2<unsigned int> viewport() const { return _viewport; }
+        inline Math::Vector2<GLsizei> viewport() const { return _viewport; }
 
         /**
          * @brief Set viewport size
@@ -111,10 +111,10 @@ class MAGNUM_EXPORT Camera: public Object {
          * Called when assigning the camera to the scene or when window
          * size changes.
          */
-        void setViewport(const Math::Vector2<unsigned int>& size);
+        void setViewport(const Math::Vector2<GLsizei>& size);
 
-        /** @copydoc setViewport(const Math::Vector2<unsigned int>& size); */
-        inline void setViewport(unsigned int width, unsigned int height) {
+        /** @copydoc setViewport(const Math::Vector2<GLsizei>& size); */
+        inline void setViewport(GLsizei width, GLsizei height) {
             setViewport({width, height});
         }
 
@@ -157,7 +157,7 @@ class MAGNUM_EXPORT Camera: public Object {
         Vector4 _clearColor;
         GLfloat _near, _far;
 
-        Math::Vector2<unsigned int> _viewport;
+        Math::Vector2<GLsizei> _viewport;
         AspectRatioPolicy _aspectRatioPolicy;
 
         void fixAspectRatio();

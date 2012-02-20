@@ -62,7 +62,7 @@ void Camera::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
     fixAspectRatio();
 }
 
-void Camera::setViewport(const Math::Vector2<unsigned int>& size) {
+void Camera::setViewport(const Math::Vector2<GLsizei>& size) {
     glViewport(0, 0, size.x(), size.y());
 
     _viewport = size;
