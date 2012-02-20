@@ -48,7 +48,7 @@ template<size_t subdivisions> class Icosphere: public AbstractPrimitive<typename
             if(vertexCount() == 0) subdivide();
         }
 
-        inline Mesh::Primitive primitive() const { return Mesh::Triangles; }
+        inline Mesh::Primitive primitive() const { return Mesh::Primitive::Triangles; }
         inline size_t vertexCount() const { return builder()->vertexCount(); }
         inline size_t indexCount() const { return builder()->indexCount(); }
 

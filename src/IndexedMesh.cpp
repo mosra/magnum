@@ -41,7 +41,7 @@ void IndexedMesh::draw() {
 
     /* Bind index array, draw the elements and unbind */
     _indexBuffer.bind();
-    glDrawElements(primitive(), _indexCount, static_cast<GLenum>(_indexType), nullptr);
+    glDrawElements(static_cast<GLenum>(primitive()), _indexCount, static_cast<GLenum>(_indexType), nullptr);
 
     /* Disable vertex arrays for all attributes */
     for(set<GLuint>::const_iterator it = attributes().begin(); it != attributes().end(); ++it)

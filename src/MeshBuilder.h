@@ -136,7 +136,7 @@ template<class Vertex> class MeshBuilder {
          * @note The mesh is @b not cleaned before building.
          */
         void build(IndexedMesh* mesh, Buffer* vertexBuffer, Buffer::Usage vertexBufferUsage, Buffer::Usage indexBufferUsage) {
-            mesh->setPrimitive(Mesh::Triangles);
+            mesh->setPrimitive(Mesh::Primitive::Triangles);
             mesh->setVertexCount(_vertices.size());
             vertexBuffer->setData(sizeof(Vertex)*_vertices.size(), _vertices.data(), vertexBufferUsage);
             SizeBasedCall<IndexBuilder>(_vertices.size())(mesh, _indices, indexBufferUsage);
@@ -150,7 +150,7 @@ template<class Vertex> class MeshBuilder {
          * @see build(IndexedMesh*, Buffer*, Buffer::Usage, Buffer::Usage)
          */
         IndexedMesh* build(Buffer::Usage vertexBufferUsage, Buffer::Usage indexBufferUsage) {
-            IndexedMesh mesh = new IndexedMesh(Mesh::Triangles, 0, 0, Type::UnsignedByte);
+            IndexedMesh mesh = new IndexedMesh;
             Buffer* vertexBuffer = mesh.addBuffer(true);
 
             build(mesh, vertexBuffer, vertexBufferUsage, indexBufferUsage);

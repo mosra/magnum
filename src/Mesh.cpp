@@ -57,7 +57,7 @@ void Mesh::draw() {
             else glVertexAttribPointer(ait->attribute, ait->size, static_cast<GLenum>(ait->type), GL_FALSE, ait->stride, ait->pointer);
     }
 
-    glDrawArrays(_primitive, 0, _vertexCount);
+    glDrawArrays(static_cast<GLenum>(_primitive), 0, _vertexCount);
 
     /* Disable vertex arrays for all attributes */
     for(set<GLuint>::const_iterator it = _attributes.begin(); it != _attributes.end(); ++it)
