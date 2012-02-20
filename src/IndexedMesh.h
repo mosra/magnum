@@ -37,7 +37,7 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          * setIndexCount() and setIndexType() manually for mesh to draw
          * properly.
          */
-        inline IndexedMesh(): _indexBuffer(Buffer::ElementArrayBuffer), _indexCount(0), _indexType(Type::UnsignedShort) {}
+        inline IndexedMesh(): _indexBuffer(Buffer::Target::ElementArray), _indexCount(0), _indexType(Type::UnsignedShort) {}
 
         /**
          * @brief Constructor
@@ -46,7 +46,7 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          * @param indexCount    Count of indices
          * @param indexType     Type of indices (indexable, see TypeTraits)
          */
-        inline IndexedMesh(Primitive primitive, GLsizei vertexCount, GLsizei indexCount, Type indexType = Type::UnsignedShort): Mesh(primitive, vertexCount), _indexBuffer(Buffer::ElementArrayBuffer), _indexCount(indexCount), _indexType(indexType) {}
+        inline IndexedMesh(Primitive primitive, GLsizei vertexCount, GLsizei indexCount, Type indexType = Type::UnsignedShort): Mesh(primitive, vertexCount), _indexBuffer(Buffer::Target::ElementArray), _indexCount(indexCount), _indexType(indexType) {}
 
         /** @brief Index count */
         inline GLsizei indexCount() const { return _indexCount; }

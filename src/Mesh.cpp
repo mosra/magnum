@@ -28,7 +28,7 @@ Mesh::~Mesh() {
 }
 
 Buffer* Mesh::addBuffer(bool interleaved) {
-    Buffer* buffer = new Buffer(Buffer::ArrayBuffer);
+    Buffer* buffer = new Buffer(Buffer::Target::Array);
     _buffers.insert(pair<Buffer*, pair<bool, vector<Attribute> > >(
         buffer,
         pair<bool, vector<Attribute> >(interleaved, vector<Attribute>())

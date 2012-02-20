@@ -49,8 +49,8 @@ const GLubyte Cube::_indices[] = {
 void Cube::build(IndexedMesh* mesh, Buffer* vertexBuffer) {
     prepareMesh(mesh);
 
-    vertexBuffer->setData(sizeof(_vertices), _vertices, Buffer::StaticDraw);
-    mesh->indexBuffer()->setData(sizeof(_indices), _indices, Buffer::StaticDraw);
+    vertexBuffer->setData(sizeof(_vertices), _vertices, Buffer::Usage::StaticDraw);
+    mesh->indexBuffer()->setData(sizeof(_indices), _indices, Buffer::Usage::StaticDraw);
 }
 
 }}
