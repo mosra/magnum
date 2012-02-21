@@ -95,27 +95,42 @@ class MAGNUM_EXPORT AbstractTexture {
 
         /** @brief Internal format */
         enum class InternalFormat: GLint {
-            Red = GL_RED,
-            RedGreen = GL_RG,
-            RGB = GL_RGB,
-            RGBA = GL_RGBA,
-            BGR = GL_BGR,
-            BGRA = GL_BGRA,
+            Red = GL_RED,       /**< One-component (red channel) */
+            RedGreen = GL_RG,   /**< Two-component (red and green channel) */
+            RGB = GL_RGB,       /**< Three-component (RGB) */
+            RGBA = GL_RGBA,     /**< Four-component (RGBA) */
+            BGR = GL_BGR,       /**< Three-component (BGR) */
+            BGRA = GL_BGRA,     /**< Four-component (BGRA) */
+
+            /** Compressed red channel */
             CompressedRed = GL_COMPRESSED_RED,
+
+            /** Compressed red and green channel */
             CompressedRedGreen = GL_COMPRESSED_RG,
+
+            /** Compressed RGB */
             CompressedRGB = GL_COMPRESSED_RGB,
+
+            /** Compressed RGBA */
             CompressedRGBA = GL_COMPRESSED_RGBA
         };
 
         /** @brief Color format */
         enum class ColorFormat: GLenum {
-            Red = GL_RED,
-            RedGreen = GL_RG,
-            RGB = GL_RGB,
-            RGBA = GL_RGBA,
-            BGR = GL_BGR,
-            BGRA = GL_BGRA
+            Red = GL_RED,       /**< One-component (red channel) */
+            RedGreen = GL_RG,   /**< Two-component (red and green channel) */
+            RGB = GL_RGB,       /**< Three-component (RGB) */
+            RGBA = GL_RGBA,     /**< Four-component (RGBA) */
+            BGR = GL_BGR,       /**< Three-component (BGR) */
+            BGRA = GL_BGRA      /**< Four-component (BGRA) */
         };
+
+        /**
+         * @brief Pixel size (in bytes)
+         * @param format    Color format
+         * @param type      Data type per color channel
+         */
+        static size_t pixelSize(ColorFormat format, Type type);
 
         /**
          * @brief Constructor

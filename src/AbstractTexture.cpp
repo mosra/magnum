@@ -46,6 +46,24 @@ static_assert((filter_or(NearestNeighbor, BaseLevel) == GL_NEAREST) &&
 #undef filter_or
 #endif
 
+size_t AbstractTexture::pixelSize(ColorFormat format, Type type) {
+    size_t size = TypeInfo::sizeOf(type);
+    switch(format) {
+        case ColorFormat::Red:
+            return 1*size;
+        case ColorFormat::RedGreen:
+            return 2*size;
+        case ColorFormat::RGB:
+        case ColorFormat::BGR:
+            return 3*size;
+        case ColorFormat::RGBA:
+        case ColorFormat::BGRA:
+            return 4*size;
+        default:
+            return 0;
+    }
+}
+
 void AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
     /* Only base mip level is supported on rectangle textures */
     if(target == GL_TEXTURE_RECTANGLE) mipmap = Mipmap::BaseLevel;
