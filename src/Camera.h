@@ -111,7 +111,7 @@ class MAGNUM_EXPORT Camera: public Object {
          * Called when assigning the camera to the scene or when window
          * size changes.
          */
-        void setViewport(const Math::Vector2<GLsizei>& size);
+        virtual void setViewport(const Math::Vector2<GLsizei>& size);
 
         /** @copydoc setViewport(const Math::Vector2<GLsizei>& size); */
         inline void setViewport(GLsizei width, GLsizei height) {
