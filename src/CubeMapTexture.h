@@ -65,9 +65,9 @@ class CubeMapTexture: public Texture2D {
         inline CubeMapTexture(GLint layer = 0): Texture(layer, Target::CubeMap) {}
 
         template<class T> inline void setData(GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) = delete;
-        void setData(GLint mipLevel, InternalFormat internalFormat, const Trade::Image<Dimensions>* image) = delete;
+        void setData(GLint mipLevel, InternalFormat internalFormat, const Trade::ImageData<Dimensions>* image) = delete;
         template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) = delete;
-        void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Trade::Image<Dimensions>* image) = delete;
+        void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Trade::ImageData<Dimensions>* image) = delete;
 
         /**
          * @copydoc Texture::setData(GLint, InternalFormat, const Math::Vector<GLsizei, Dimensions>&, ColorFormat, const T*)
@@ -78,10 +78,10 @@ class CubeMapTexture: public Texture2D {
         }
 
         /**
-         * @copydetails Texture::setData(GLint, InternalFormat, const Trade::Image<Dimensions>*)
+         * @copydetails Texture::setData(GLint, InternalFormat, const Trade::ImageData<Dimensions>*)
          * @param coordinate   Coordinate
          */
-        inline void setData(Coordinate coordinate, GLint mipLevel, InternalFormat internalFormat, const Trade::Image<Dimensions>* image) {
+        inline void setData(Coordinate coordinate, GLint mipLevel, InternalFormat internalFormat, const Trade::ImageData<Dimensions>* image) {
             setData(coordinate, mipLevel, internalFormat, image->dimensions(), image->colorFormat(), image->type(), image->data());
         }
 
@@ -94,10 +94,10 @@ class CubeMapTexture: public Texture2D {
         }
 
         /**
-         * @copydoc Texture::setSubData(GLint, const Math::Vector<GLint, Dimensions>&, const Trade::Image<Dimensions>*)
+         * @copydoc Texture::setSubData(GLint, const Math::Vector<GLint, Dimensions>&, const Trade::ImageData<Dimensions>*)
          * @param coordinate   Coordinate
          */
-        inline void setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Trade::Image<Dimensions>* image) {
+        inline void setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Trade::ImageData<Dimensions>* image) {
             setSubData(coordinate, mipLevel, offset, image->dimensions(), image->colorFormat(), image->type(), image->data());
         }
 

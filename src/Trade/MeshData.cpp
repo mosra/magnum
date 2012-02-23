@@ -1,5 +1,3 @@
-#ifndef Magnum_Trade_Texture_h
-#define Magnum_Trade_Texture_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,22 +13,15 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-/** @file
- * @brief Class Magnum::Trade::Texture
- */
+#include "MeshData.h"
 
 namespace Magnum { namespace Trade {
 
-/**
-@brief %Texture
-*/
-class MAGNUM_EXPORT Texture {
-    Texture(const Texture& other) = delete;
-    Texture(Texture&& other) = delete;
-    Texture& operator=(const Texture& other) = delete;
-    Texture& operator=(Texture&& other) = delete;
-};
+MeshData::~MeshData() {
+    delete _indices;
+    for(auto i: _vertices) delete i;
+    for(auto i: _normals) delete i;
+    for(auto i: _textureCoords2D) delete i;
+}
 
 }}
-
-#endif

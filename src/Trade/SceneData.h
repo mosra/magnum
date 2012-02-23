@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_Camera_h
-#define Magnum_Trade_Camera_h
+#ifndef Magnum_Trade_SceneData_h
+#define Magnum_Trade_SceneData_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,19 +16,19 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::Camera
+ * @brief Class Magnum::Trade::SceneData
  */
 
 namespace Magnum { namespace Trade {
 
 /**
-@brief %Camera
+@brief %Scene
 */
-class MAGNUM_EXPORT Camera {
-    Camera(const Camera& other) = delete;
-    Camera(Camera&& other) = delete;
-    Camera& operator=(const Camera& other) = delete;
-    Camera& operator=(Camera&& other) = delete;
+class MAGNUM_EXPORT SceneData {
+    SceneData(const SceneData& other) = delete;
+    SceneData(SceneData&& other) = delete;
+    SceneData& operator=(const SceneData& other) = delete;
+    SceneData& operator=(SceneData&& other) = delete;
 };
 
 }}

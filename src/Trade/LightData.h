@@ -1,3 +1,5 @@
+#ifndef Magnum_Trade_LightData_h
+#define Magnum_Trade_LightData_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -13,15 +15,22 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Mesh.h"
+/** @file
+ * @brief Class Magnum::Trade::LightData
+ */
 
 namespace Magnum { namespace Trade {
 
-Mesh::~Mesh() {
-    delete _indices;
-    for(auto i: _vertices) delete i;
-    for(auto i: _normals) delete i;
-    for(auto i: _textureCoords2D) delete i;
-}
+/**
+@brief %Light
+*/
+class MAGNUM_EXPORT LightData {
+    LightData(const LightData& other) = delete;
+    LightData(LightData&& other) = delete;
+    LightData& operator=(const LightData& other) = delete;
+    LightData& operator=(LightData&& other) = delete;
+};
 
 }}
+
+#endif

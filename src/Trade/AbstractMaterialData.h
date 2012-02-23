@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_AbstractMaterial_h
-#define Magnum_Trade_AbstractMaterial_h
+#ifndef Magnum_Trade_AbstractMaterialData_h
+#define Magnum_Trade_AbstractMaterialData_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::AbstractMaterial
+ * @brief Class Magnum::Trade::AbstractMaterialData
  */
 
 namespace Magnum { namespace Trade {
@@ -26,11 +26,11 @@ namespace Magnum { namespace Trade {
 
 Subclasses provide access to parameters for given material type.
 */
-class MAGNUM_EXPORT AbstractMaterial {
-    AbstractMaterial(const AbstractMaterial& other) = delete;
-    AbstractMaterial(AbstractMaterial&& other) = delete;
-    AbstractMaterial& operator=(const AbstractMaterial& other) = delete;
-    AbstractMaterial& operator=(AbstractMaterial&& other) = delete;
+class MAGNUM_EXPORT AbstractMaterialData {
+    AbstractMaterialData(const AbstractMaterialData& other) = delete;
+    AbstractMaterialData(AbstractMaterialData&& other) = delete;
+    AbstractMaterialData& operator=(const AbstractMaterialData& other) = delete;
+    AbstractMaterialData& operator=(AbstractMaterialData&& other) = delete;
 
     public:
         /** @brief Material type */
@@ -42,10 +42,10 @@ class MAGNUM_EXPORT AbstractMaterial {
          * @brief Constructor
          * @param type      Material type
          */
-        inline AbstractMaterial(Type type): _type(type) {}
+        inline AbstractMaterialData(Type type): _type(type) {}
 
         /** @brief Destructor */
-        virtual ~AbstractMaterial() {}
+        virtual ~AbstractMaterialData() {}
 
         /** @brief Material type */
         inline Type type() const { return _type; }

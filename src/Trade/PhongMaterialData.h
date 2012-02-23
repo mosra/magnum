@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_PhongMaterial_h
-#define Magnum_Trade_PhongMaterial_h
+#ifndef Magnum_Trade_PhongMaterialData_h
+#define Magnum_Trade_PhongMaterialData_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,18 +16,18 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::PhongMaterial
+ * @brief Class Magnum::Trade::PhongMaterialData
  */
 
 #include "Magnum.h"
-#include "AbstractMaterial.h"
+#include "AbstractMaterialData.h"
 
 namespace Magnum { namespace Trade {
 
 /**
 @brief Phong material
 */
-class MAGNUM_EXPORT PhongMaterial: public AbstractMaterial {
+class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
     public:
         /**
          * @brief Constructor
@@ -36,7 +36,7 @@ class MAGNUM_EXPORT PhongMaterial: public AbstractMaterial {
          * @param specularColor     Specular color
          * @param shininess         Shininess
          */
-        PhongMaterial(const Vector3& ambientColor, const Vector3& diffuseColor, const Vector3& specularColor, GLfloat shininess): AbstractMaterial(Phong), _ambientColor(ambientColor), _diffuseColor(diffuseColor), _specularColor(specularColor), _shininess(shininess) {}
+        PhongMaterialData(const Vector3& ambientColor, const Vector3& diffuseColor, const Vector3& specularColor, GLfloat shininess): AbstractMaterialData(Phong), _ambientColor(ambientColor), _diffuseColor(diffuseColor), _specularColor(specularColor), _shininess(shininess) {}
 
         /** @brief Ambient color */
         inline Vector3 ambientColor() const { return _ambientColor; }

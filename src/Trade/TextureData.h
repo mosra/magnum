@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_Scene_h
-#define Magnum_Trade_Scene_h
+#ifndef Magnum_Trade_TextureData_h
+#define Magnum_Trade_TextureData_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,19 +16,19 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::Scene
+ * @brief Class Magnum::Trade::TextureData
  */
 
 namespace Magnum { namespace Trade {
 
 /**
-@brief %Scene
+@brief %Texture
 */
-class MAGNUM_EXPORT Scene {
-    Scene(const Scene& other) = delete;
-    Scene(Scene&& other) = delete;
-    Scene& operator=(const Scene& other) = delete;
-    Scene& operator=(Scene&& other) = delete;
+class MAGNUM_EXPORT TextureData {
+    TextureData(const TextureData& other) = delete;
+    TextureData(TextureData&& other) = delete;
+    TextureData& operator=(const TextureData& other) = delete;
+    TextureData& operator=(TextureData&& other) = delete;
 };
 
 }}

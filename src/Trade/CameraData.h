@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_Light_h
-#define Magnum_Trade_Light_h
+#ifndef Magnum_Trade_CameraData_h
+#define Magnum_Trade_CameraData_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,19 +16,19 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::Light
+ * @brief Class Magnum::Trade::CameraData
  */
 
 namespace Magnum { namespace Trade {
 
 /**
-@brief %Light
+@brief %Camera
 */
-class MAGNUM_EXPORT Light {
-    Light(const Light& other) = delete;
-    Light(Light&& other) = delete;
-    Light& operator=(const Light& other) = delete;
-    Light& operator=(Light&& other) = delete;
+class MAGNUM_EXPORT CameraData {
+    CameraData(const CameraData& other) = delete;
+    CameraData(CameraData&& other) = delete;
+    CameraData& operator=(const CameraData& other) = delete;
+    CameraData& operator=(CameraData&& other) = delete;
 };
 
 }}

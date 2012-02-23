@@ -19,7 +19,7 @@
  * @brief Class Magnum::Texture
  */
 
-#include "Trade/Image.h"
+#include "Trade/ImageData.h"
 
 namespace Magnum {
 
@@ -104,7 +104,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          * Sets texture data from given image. The image is not deleted
          * afterwards.
          */
-        inline void setData(GLint mipLevel, InternalFormat internalFormat, const Trade::Image<Dimensions>* image) {
+        inline void setData(GLint mipLevel, InternalFormat internalFormat, const Trade::ImageData<Dimensions>* image) {
             bind();
             DataHelper<Dimensions>::set(target, mipLevel, internalFormat, image->dimensions(), image->colorFormat(), image->type(), image->data());
         }
@@ -135,7 +135,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          * Sets texture subdata from given image. The image is not deleted
          * afterwards.
          */
-        inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Trade::Image<Dimensions>* image) {
+        inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Trade::ImageData<Dimensions>* image) {
             bind();
             DataHelper<Dimensions>::setSub(target, mipLevel, offset, image->dimensions(), image->colorFormat(), image->type(), image->data());
         }

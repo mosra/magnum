@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_Image_h
-#define Magnum_Trade_Image_h
+#ifndef Magnum_Trade_ImageData_h
+#define Magnum_Trade_ImageData_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::Image
+ * @brief Class Magnum::Trade::ImageData
  */
 
 #include "AbstractTexture.h"
@@ -29,11 +29,11 @@ namespace Magnum { namespace Trade {
 Provides access to image data and additional information about data type and
 dimensions.
 */
-template<size_t imageDimensions> class Image {
-    Image<imageDimensions>(const Image<imageDimensions>& other) = delete;
-    Image<imageDimensions>(Image<imageDimensions>&& other) = delete;
-    Image<imageDimensions>& operator=(const Image<imageDimensions>& other) = delete;
-    Image<imageDimensions>& operator=(Image<imageDimensions>&& other) = delete;
+template<size_t imageDimensions> class ImageData {
+    ImageData<imageDimensions>(const ImageData<imageDimensions>& other) = delete;
+    ImageData<imageDimensions>(ImageData<imageDimensions>&& other) = delete;
+    ImageData<imageDimensions>& operator=(const ImageData<imageDimensions>& other) = delete;
+    ImageData<imageDimensions>& operator=(ImageData<imageDimensions>&& other) = delete;
 
     public:
         const static size_t Dimensions = imageDimensions;   /**< @brief %Image dimension count */
@@ -48,10 +48,10 @@ template<size_t imageDimensions> class Image {
          * @attention Note that the image data are not copied on construction,
          * but they are deleted on class destruction.
          */
-        template<class T> Image(const Math::Vector<GLsizei, Dimensions>& dimensions, AbstractTexture::ColorFormat colorFormat, const T* data): _dimensions(dimensions), _colorFormat(colorFormat), _type(TypeTraits<typename TypeTraits<T>::TextureType>::glType()), _data(reinterpret_cast<const char*>(data)) {}
+        template<class T> ImageData(const Math::Vector<GLsizei, Dimensions>& dimensions, AbstractTexture::ColorFormat colorFormat, const T* data): _dimensions(dimensions), _colorFormat(colorFormat), _type(TypeTraits<typename TypeTraits<T>::TextureType>::glType()), _data(reinterpret_cast<const char*>(data)) {}
 
         /** @brief Destructor */
-        virtual ~Image() { delete[] _data; }
+        virtual ~ImageData() { delete[] _data; }
 
         /** @brief %Image dimensions */
         inline const Math::Vector<GLsizei, Dimensions>& dimensions() const { return _dimensions; }
@@ -73,13 +73,13 @@ template<size_t imageDimensions> class Image {
 };
 
 /** @brief One-dimensional image */
-typedef Image<1> Image1D;
+typedef ImageData<1> ImageData1D;
 
 /** @brief Two-dimensional image */
-typedef Image<2> Image2D;
+typedef ImageData<2> ImageData2D;
 
 /** @brief Three-dimensional image */
-typedef Image<3> Image3D;
+typedef ImageData<3> ImageData3D;
 
 }}
 

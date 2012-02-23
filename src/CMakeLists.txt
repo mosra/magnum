@@ -21,7 +21,7 @@ set(Magnum_SRCS
     TypeTraits.cpp
 
     Trade/AbstractImporter.cpp
-    Trade/Mesh.cpp
+    Trade/MeshData.cpp
 
     Math/Math.cpp
 )

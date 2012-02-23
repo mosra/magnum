@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_Object_h
-#define Magnum_Trade_Object_h
+#ifndef Magnum_Trade_ObjectData_h
+#define Magnum_Trade_ObjectData_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::Object
+ * @brief Class Magnum::Trade::ObjectData
  */
 
 #include "Magnum.h"
@@ -28,17 +28,17 @@ namespace Magnum { namespace Trade {
 
 Provides access to object transformation and hierarchy.
 */
-class MAGNUM_EXPORT Object {
-    Object(const Object& other) = delete;
-    Object(Object&& other) = delete;
-    Object& operator=(const Object& other) = delete;
-    Object& operator=(Object&& other) = delete;
+class MAGNUM_EXPORT ObjectData {
+    ObjectData(const ObjectData& other) = delete;
+    ObjectData(ObjectData&& other) = delete;
+    ObjectData& operator=(const ObjectData& other) = delete;
+    ObjectData& operator=(ObjectData&& other) = delete;
 
     public:
         /**
          * @brief Constructor
          */
-        Object(size_t parent, const Matrix4& transformation): _parent(parent), _transformation(transformation) {}
+        ObjectData(size_t parent, const Matrix4& transformation): _parent(parent), _transformation(transformation) {}
 
         /** @brief Parent object */
         inline size_t parent() const { return _parent; }
