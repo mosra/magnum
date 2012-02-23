@@ -102,12 +102,12 @@ class CubeMapTexture: public Texture2D {
         }
 
     private:
-        void setData(Coordinate coordinate, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, Type type, const void* data) {
+        inline void setData(Coordinate coordinate, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, Type type, const void* data) {
             bind();
             DataHelper<Dimensions>::set(static_cast<Target>(coordinate), mipLevel, internalFormat, _dimensions, colorFormat, type, data);
         }
 
-        void setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
+        inline void setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& dimensions, ColorFormat colorFormat, Type type, const void* data) {
             bind();
             DataHelper<Dimensions>::setSub(static_cast<Target>(coordinate), mipLevel, offset, dimensions, colorFormat, type, data);
         }

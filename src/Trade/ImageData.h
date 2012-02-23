@@ -48,10 +48,10 @@ template<size_t imageDimensions> class ImageData {
          * @attention Note that the image data are not copied on construction,
          * but they are deleted on class destruction.
          */
-        template<class T> ImageData(const Math::Vector<GLsizei, Dimensions>& dimensions, AbstractTexture::ColorFormat colorFormat, const T* data): _dimensions(dimensions), _colorFormat(colorFormat), _type(TypeTraits<typename TypeTraits<T>::TextureType>::glType()), _data(reinterpret_cast<const char*>(data)) {}
+        template<class T> inline ImageData(const Math::Vector<GLsizei, Dimensions>& dimensions, AbstractTexture::ColorFormat colorFormat, const T* data): _dimensions(dimensions), _colorFormat(colorFormat), _type(TypeTraits<typename TypeTraits<T>::TextureType>::glType()), _data(reinterpret_cast<const char*>(data)) {}
 
         /** @brief Destructor */
-        virtual ~ImageData() { delete[] _data; }
+        inline virtual ~ImageData() { delete[] _data; }
 
         /** @brief %Image dimensions */
         inline const Math::Vector<GLsizei, Dimensions>& dimensions() const { return _dimensions; }
@@ -60,7 +60,7 @@ template<size_t imageDimensions> class ImageData {
         inline AbstractTexture::ColorFormat colorFormat() const { return _colorFormat; }
 
         /** @brief Data type */
-        Type type() const { return _type; }
+        inline Type type() const { return _type; }
 
         /** @brief Pointer to raw data */
         inline const void* data() const { return _data; }
