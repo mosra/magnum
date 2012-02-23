@@ -26,7 +26,7 @@ namespace Magnum { namespace Trade {
 
 Subclasses provide access to parameters for given material type.
 */
-class MAGNUM_EXPORT AbstractMaterialData {
+class AbstractMaterialData {
     AbstractMaterialData(const AbstractMaterialData& other) = delete;
     AbstractMaterialData(AbstractMaterialData&& other) = delete;
     AbstractMaterialData& operator=(const AbstractMaterialData& other) = delete;

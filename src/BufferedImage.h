@@ -114,7 +114,7 @@ template<size_t imageDimensions> class BufferedImage {
 typedef BufferedImage<1> BufferedImage1D;
 
 /** @brief Two-dimensional buffered image */
-class BufferedImage2D: public BufferedImage<2> {
+class MAGNUM_EXPORT BufferedImage2D: public BufferedImage<2> {
     public:
         /** @copydoc BufferedImage::BufferedImage */
         inline BufferedImage2D(AbstractTexture::ColorFormat colorFormat, Type type): BufferedImage(colorFormat, type) {}

@@ -119,7 +119,7 @@ template<size_t imageDimensions> class Image {
 typedef Image<1> Image1D;
 
 /** @brief Two-dimensional image */
-class Image2D: public Image<2> {
+class MAGNUM_EXPORT Image2D: public Image<2> {
     public:
         /** @copydoc Image::Image */
         inline Image2D(AbstractTexture::ColorFormat colorFormat, Type type): Image(colorFormat, type) {}
