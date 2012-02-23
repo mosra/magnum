@@ -51,10 +51,9 @@ textures etc.
 function close() and one or more pairs of data access functions, based on
 which features are supported in given format.</p>
 <p>For multi-data formats file opening shouldn't take long, all parsing should
-be done in data parsing functions or even in envelope classes such as Mesh,
-because the user might want to import only some data. This is obviously not
-the case for single-data formats like images, as the file contains all data
-user wants to import.</p>
+be done in data parsing functions, because the user might want to import only
+some data. This is obviously not the case for single-data formats like images,
+as the file contains all data user wants to import.</p>
 */
 class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
     PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.1")
@@ -100,11 +99,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
         virtual void close() = 0;
 
         /** @{ @name Data accessors
-         * Each function pair provides access to the data. The data are usually
-         * hierarchic, so in most cases scene will contain all objects, every
-         * object will have one of the materials, every material will have
-         * some shader for rendering and possibly even some textures, which are
-         * finally composed from images.
+         * Each function pair provides access to the data.
          */
 
         /** @brief Scene count */
