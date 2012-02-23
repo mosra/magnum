@@ -41,7 +41,7 @@ class MESHTOOLS_EXPORT Tipsify: public AbstractIndexTool {
          *
          * See tipsify() for full documentation.
          */
-        void run(size_t cacheSize);
+        void operator()(size_t cacheSize);
 
         /**
          * @brief Build vertex-triangle adjacency
@@ -69,7 +69,7 @@ This is convenience function supplementing direct usage of Tipsify class,
 instead of
 @code
 MeshBuilder<T> builder;
-MeshTools::Tipsify(builder).run(cacheSize);
+MeshTools::Tipsify{builder}(cacheSize);
 @endcode
 you can just write
 @code
@@ -77,7 +77,7 @@ MeshTools::tipsify(builder, cacheSize);
 @endcode
 */
 template<class Vertex> inline void tipsify(MeshBuilder<Vertex>& builder, size_t cacheSize) {
-    Tipsify(builder).run(cacheSize);
+    Tipsify{builder}(cacheSize);
 }
 
 /**
@@ -89,7 +89,7 @@ template<class Vertex> inline void tipsify(MeshBuilder<Vertex>& builder, size_t 
 See tipsify(MeshBuilder<Vertex>&, size_t) for more information.
 */
 inline void tipsify(std::vector<unsigned int>& indices, unsigned int vertexCount, size_t cacheSize) {
-    Tipsify(indices, vertexCount).run(cacheSize);
+    Tipsify(indices, vertexCount)(cacheSize);
 }
 
 }}

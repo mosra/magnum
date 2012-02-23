@@ -38,7 +38,7 @@ template<class Vertex, class Interpolator> class Subdivide: public AbstractTool<
          *
          * See subdivide() for full documentation.
          */
-        void run(Interpolator interpolator) {
+        void operator()(Interpolator interpolator) {
             size_t indexCount = this->indices.size();
             this->indices.reserve(this->indices.size()*4);
 
@@ -86,7 +86,7 @@ This is convenience function supplementing direct usage of Subdivide class,
 instead of
 @code
 MeshBuilder<T> builder;
-MeshTools::Subdivide<T, Interpolator>(builder).run(interpolator);
+MeshTools::Subdivide<T, Interpolator>{builder}(interpolator);
 @endcode
 you can just write
 @code
@@ -94,7 +94,7 @@ MeshTools::subdivide(builder, interpolator);
 @endcode
 */
 template<class Vertex, class Interpolator> inline void subdivide(MeshBuilder<Vertex>& builder, Interpolator interpolator) {
-    Subdivide<Vertex, Interpolator>(builder).run(interpolator);
+    Subdivide<Vertex, Interpolator>{builder}(interpolator);
 }
 
 }}

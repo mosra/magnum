@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace MeshTools {
 
-void Tipsify::run(size_t cacheSize) {
+void Tipsify::operator()(size_t cacheSize) {
     /* Neighboring triangles for each vertex, per-vertex live triangle count */
     std::vector<unsigned int> liveTriangleCount, neighborPosition, neighbors;
     buildAdjacency(liveTriangleCount, neighborPosition, neighbors);

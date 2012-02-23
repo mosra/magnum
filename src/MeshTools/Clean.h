@@ -38,7 +38,7 @@ template<class Vertex, size_t vertexSize = Vertex::Size> class Clean: public Abs
          *
          * See clean() for full documentation.
          */
-        void run(typename Vertex::Type epsilon = TypeTraits<typename Vertex::Type>::epsilon()) {
+        void operator()(typename Vertex::Type epsilon = TypeTraits<typename Vertex::Type>::epsilon()) {
             if(this->indices.empty()) return;
 
             /* Get mesh bounds */
@@ -136,7 +136,7 @@ This is convenience function supplementing direct usage of Clean class,
 instead of
 @code
 MeshBuilder<T> builder;
-MeshTools::Clean<T>(builder).run(epsilon);
+MeshTools::Clean<T>{builder}(epsilon);
 @endcode
 you can just write
 @code
@@ -149,7 +149,7 @@ MeshTools::clean<T, 3>(builder, epsilon);
 @endcode
 */
 template<class Vertex, size_t vertexSize = Vertex::Size> inline void clean(MeshBuilder<Vertex>& builder, typename Vertex::Type epsilon = TypeTraits<typename Vertex::Type>::epsilon()) {
-    Clean<Vertex, vertexSize>(builder).run(epsilon);
+    Clean<Vertex, vertexSize>{builder}(epsilon);
 }
 
 }}
