@@ -119,6 +119,14 @@ class Buffer {
         };
 
         /**
+         * @brief Unbind any buffer from given target
+         * @param target     %Target
+         */
+        inline static void unbind(Target target) {
+            glBindBuffer(static_cast<GLenum>(target), 0);
+        }
+
+        /**
          * @brief Constructor
          * @param defaultTarget Default target (used when calling bind()
          *      without parameter)
