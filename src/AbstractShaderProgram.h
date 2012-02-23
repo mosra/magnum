@@ -22,7 +22,7 @@
 #include <map>
 
 #include "Shader.h"
-#include "Texture.h"
+#include "AbstractTexture.h"
 
 namespace Magnum {
 
