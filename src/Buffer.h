@@ -188,6 +188,30 @@ class Buffer {
             glBufferData(static_cast<GLenum>(target), size, data, static_cast<GLenum>(usage));
         }
 
+        /**
+         * @brief Set buffer subdata
+         * @param offset    Offset
+         * @param size      Data size
+         * @param data      Pointer to data
+         *
+         * Sets buffer subdata with default target.
+         */
+        inline void setSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
+            setSubData(_defaultTarget, offset, size, data);
+        }
+
+        /**
+         * @brief Set buffer subdata
+         * @param target    %Target
+         * @param offset    Offset
+         * @param size      Data size
+         * @param data      Pointer to data
+         */
+        inline void setSubData(Target target, GLintptr offset, GLsizeiptr size, const GLvoid* data) {
+            bind(target);
+            glBufferSubData(static_cast<GLenum>(target), offset, size, data);
+        }
+
     private:
         GLuint buffer;
         Target _defaultTarget;
