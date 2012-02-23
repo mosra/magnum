@@ -35,7 +35,7 @@ class TGAImporter: public AbstractImporter {
         void close();
 
         inline size_t image2DCount() const { return _image ? 1 : 0; }
-        Image2D* image2D(size_t id);
+        ImageData2D* image2D(size_t id);
 
         #pragma pack(1)
         struct Header {
@@ -55,7 +55,7 @@ class TGAImporter: public AbstractImporter {
         #pragma pack(8)
 
     private:
-        Image2D* _image;
+        ImageData2D* _image;
 };
 
 }}}

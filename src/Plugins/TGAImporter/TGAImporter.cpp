@@ -17,7 +17,7 @@
 
 #include "Utility/Endianness.h"
 #include "Math/Vector2.h"
-#include "Trade/Image.h"
+#include "Trade/ImageData.h"
 
 using namespace std;
 using namespace Corrade::Utility;
@@ -75,7 +75,7 @@ bool TGAImporter::open(std::istream& in) {
 
     Math::Vector2<GLsizei> dimensions(header.width, header.height);
 
-    _image = new Image2D(dimensions, colorFormat, buffer);
+    _image = new ImageData2D(colorFormat, dimensions, buffer);
     return true;
 }
 
@@ -84,7 +84,7 @@ void TGAImporter::close() {
     _image = nullptr;
 }
 
-Image2D* TGAImporter::image2D(size_t id) {
+ImageData2D* TGAImporter::image2D(size_t id) {
     return _image;
 }
 
