@@ -28,8 +28,8 @@ class PhongShader: public AbstractShaderProgram {
     public:
         /** @brief Attribute */
         enum Attribute {
-            Vertex = 1,     /**< @brief Vertex position (four-component vector) */
-            Normal = 2      /**< @brief Normal direction (three-component vector) */
+            Vertex = 0,     /**< @brief Vertex position (four-component vector) */
+            Normal = 1      /**< @brief Normal direction (three-component vector) */
         };
 
         /** @brief Constructor */
