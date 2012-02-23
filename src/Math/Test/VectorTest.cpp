@@ -121,6 +121,12 @@ void VectorTest::normalized() {
     QVERIFY(Vector4(vec).normalized() == Vector4(normalized));
 }
 
+void VectorTest::product() {
+    float vec[] = { 1.0f, 2.0f, 3.0f };
+
+    QCOMPARE(Vector3(vec).product(), 6.0f);
+}
+
 void VectorTest::angle() {
     float a[] = { 2.0f, 3.0f, 4.0f };
     float b[] = { 1.0f, -2.0f, 3.0f };

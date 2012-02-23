@@ -172,6 +172,16 @@ template<class T, size_t size> class Vector {
             return *this/length();
         }
 
+        /** @brief Product of values in the vector */
+        T product() const {
+            T out = 1;
+
+            for(size_t i = 0; i != size; ++i)
+                out *= at(i);
+
+            return out;
+        }
+
     private:
         T _data[size];
 };
