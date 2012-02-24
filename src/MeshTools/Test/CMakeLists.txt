@@ -1,4 +1,6 @@
 corrade_add_test(CleanTest CleanTest.h CleanTest.cpp)
+corrade_add_test(CompressIndicesTest CompressIndicesTest.h CompressIndicesTest.cpp)
+target_link_libraries(CompressIndicesTest ${CORRADE_UTILITY_LIBRARY} ${MAGNUM_LIBRARY})
 corrade_add_test(SubdivideTest SubdivideTest.h SubdivideTest.cpp)
 corrade_add_test(SubdivideCleanBenchmark SubdivideCleanBenchmark.h SubdivideCleanBenchmark.cpp)
 target_link_libraries(SubdivideCleanBenchmark ${MAGNUM_PRIMITIVES_LIBRARY})
