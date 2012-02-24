@@ -19,7 +19,10 @@
  * @brief Class Magnum::MeshTools::Tipsify
  */
 
-#include "AbstractTool.h"
+#include <cstddef>
+#include <vector>
+
+#include "utilities.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -28,13 +31,14 @@ namespace Magnum { namespace MeshTools {
 
 See tipsify() for full documentation.
 */
-class MESHTOOLS_EXPORT Tipsify: public AbstractIndexTool {
+class MESHTOOLS_EXPORT Tipsify {
     public:
-        /** @copydoc AbstractIndexTool::AbstractIndexTool(MeshBuilder<Vertex>&) */
-        template<class Vertex> inline Tipsify(MeshBuilder<Vertex>& builder): AbstractIndexTool(builder) {}
-
-        /** @copydoc AbstractIndexTool::AbstractIndexTool(std::vector<unsigned int>&, unsigned int) */
-        inline Tipsify(std::vector<unsigned int>& indices, unsigned int vertexCount): AbstractIndexTool(indices, vertexCount) {}
+        /**
+         * @brief Constructor
+         *
+         * See tipsify() for full documentation.
+         */
+        inline Tipsify(std::vector<unsigned int>& indices, unsigned int vertexCount): indices(indices), vertexCount(vertexCount) {}
 
         /**
          * @brief Functor
@@ -50,12 +54,16 @@ class MESHTOOLS_EXPORT Tipsify: public AbstractIndexTool {
          * (used internally).
          */
         void buildAdjacency(std::vector<unsigned int>& liveTriangleCount, std::vector<unsigned int>& neighborOffset, std::vector<unsigned int>& neighbors) const;
+
+    private:
+        std::vector<unsigned int>& indices;
+        const unsigned int vertexCount;
 };
 
 /**
 @brief %Tipsify the mesh
-@tparam Vertex      Vertex data type (the same as in MeshBuilder)
-@param builder      %Mesh builder to operate on
+@param indices      Indices array to operate on
+@param vertexCount  Vertex count
 @param cacheSize    Post-transform vertex cache size
 
 Optimizes the mesh for vertex-bound applications by rearranging its index
@@ -75,18 +83,6 @@ you can just write
 @code
 MeshTools::tipsify(builder, cacheSize);
 @endcode
-*/
-template<class Vertex> inline void tipsify(MeshBuilder<Vertex>& builder, size_t cacheSize) {
-    Tipsify{builder}(cacheSize);
-}
-
-/**
-@brief %Tipsify the mesh
-@param indices      Indices array to operate on
-@param vertexCount  Vertex count
-@param cacheSize    Post-transform vertex cache size
-
-See tipsify(MeshBuilder<Vertex>&, size_t) for more information.
 */
 inline void tipsify(std::vector<unsigned int>& indices, unsigned int vertexCount, size_t cacheSize) {
     Tipsify(indices, vertexCount)(cacheSize);

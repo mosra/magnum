@@ -17,7 +17,6 @@
 
 #include <QtTest/QTest>
 
-#include "MeshBuilder.h"
 #include "MeshTools/Tipsify.h"
 
 QTEST_APPLESS_MAIN(Magnum::MeshTools::Test::TipsifyTest)
@@ -41,38 +40,34 @@ namespace Magnum { namespace MeshTools { namespace Test {
 
 */
 
-TipsifyTest::TipsifyTest(QObject* parent): QObject(parent) {
-    unsigned int vertices[19]; /* who cares */
-    static const unsigned int indices[] = {
-        4, 1, 0,
-        10, 9, 13,
-        6, 3, 2,
-        9, 5, 4,
-        12, 9, 8,
-        11, 7, 6,
+TipsifyTest::TipsifyTest(QObject* parent): QObject(parent), indices{
+    4, 1, 0,
+    10, 9, 13,
+    6, 3, 2,
+    9, 5, 4,
+    12, 9, 8,
+    11, 7, 6,
 
-        14, 15, 11,
-        2, 1, 5,
-        10, 6, 5,
-        10, 5, 9,
-        13, 14, 10,
-        1, 4, 5,
+    14, 15, 11,
+    2, 1, 5,
+    10, 6, 5,
+    10, 5, 9,
+    13, 14, 10,
+    1, 4, 5,
 
-        7, 3, 6,
-        6, 2, 5,
-        9, 4, 8,
-        6, 10, 11,
-        13, 9, 12,
-        14, 11, 10,
+    7, 3, 6,
+    6, 2, 5,
+    9, 4, 8,
+    6, 10, 11,
+    13, 9, 12,
+    14, 11, 10,
 
-        16, 17, 18
-    };
-    builder.setData(vertices, indices, 19, 19*3);
-}
+    16, 17, 18
+}, vertexCount(19) {}
 
 void TipsifyTest::buildAdjacency() {
     vector<unsigned int> liveTriangleCount, neighborOffset, neighbors;
-    Tipsify(builder).buildAdjacency(liveTriangleCount, neighborOffset, neighbors);
+    Tipsify(indices, vertexCount).buildAdjacency(liveTriangleCount, neighborOffset, neighbors);
 
     QVERIFY((liveTriangleCount == vector<unsigned int>{
         1, 3, 3, 2,
@@ -116,9 +111,9 @@ void TipsifyTest::buildAdjacency() {
 }
 
 void TipsifyTest::tipsify() {
-    MeshTools::tipsify(builder, 3);
+    MeshTools::tipsify(indices, vertexCount, 3);
 
-    QVERIFY((builder.indices() == vector<unsigned int>{
+    QVERIFY((indices == vector<unsigned int>{
         4, 1, 0,
         9, 5, 4,
         1, 4, 5,

@@ -17,8 +17,6 @@
 
 #include <QtCore/QObject>
 
-#include "MeshBuilder.h"
-
 namespace Magnum { namespace MeshTools { namespace Test {
 
 class TipsifyTest: public QObject {
@@ -32,7 +30,8 @@ class TipsifyTest: public QObject {
         void tipsify();
 
     private:
-        MeshBuilder<unsigned int> builder;
+        std::vector<unsigned int> indices;
+        size_t vertexCount;
 };
 
 }}}
