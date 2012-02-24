@@ -42,8 +42,7 @@ void TypeTraitsTest::equalsFloatingPoint() {
 }
 
 template<class T> void TypeTraitsTest::_equalsIntegral() {
-    QVERIFY(TypeTraits<T>::equals(1, 1+TypeTraits<T>::epsilon()));
-    QVERIFY(!TypeTraits<T>::equals(1, 2));
+    QVERIFY(!TypeTraits<T>::equals(1, 1+TypeTraits<T>::epsilon()));
 }
 
 template<class T> void TypeTraitsTest::_equalsFloatingPoint() {

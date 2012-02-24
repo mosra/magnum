@@ -44,7 +44,8 @@ template<class T> struct TypeTraits {
     /**
      * @brief Epsilon value for fuzzy compare
      *
-     * Returns 0 for integer types and reasonably small value for
+     * Returns minimal difference between numbers to be considered
+     * inequal. Returns 1 for integer types and reasonably small value for
      * floating-point types.
      */
     constexpr inline static T epsilon();
@@ -69,7 +70,7 @@ template<class T> struct TypeTraits {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T> struct _TypeTraitsIntegral {
-    constexpr inline static T epsilon() { return 0; }
+    constexpr inline static T epsilon() { return 1; }
 
     inline constexpr static bool equals(T a, T b) {
         return a == b;
