@@ -26,19 +26,13 @@ using namespace std;
 namespace Magnum { namespace MeshTools { namespace Test {
 
 void CleanTest::cleanMesh() {
-    MeshBuilder<Vector1> builder;
-    builder.addVertex(1);
-    builder.addVertex(2);
-    builder.addVertex(1);
-    builder.addVertex(4);
-    builder.addFace(0, 1, 2);
-    builder.addFace(1, 2, 3);
-
-    MeshTools::clean<Vector1, 1>(builder, 1);
+    vector<Vector1> vertices{1, 2, 1, 4};
+    vector<unsigned int> indices{0, 1, 2, 1, 2, 3};
+    MeshTools::clean(indices, vertices);
 
     /* Verify cleanup */
-    QVERIFY((builder.vertices() == vector<Vector1>{1, 2, 4}));
-    QVERIFY((builder.indices() == vector<unsigned int>{0, 1, 0, 1, 0, 2}));
+    QVERIFY((vertices == vector<Vector1>{1, 2, 4}));
+    QVERIFY((indices == vector<unsigned int>{0, 1, 0, 1, 0, 2}));
 }
 
 }}}

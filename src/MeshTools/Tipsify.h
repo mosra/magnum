@@ -76,12 +76,11 @@ Triangle Reordering for Vertex Locality and Reduced Overdraw</a>, SIGGRAPH
 This is convenience function supplementing direct usage of Tipsify class,
 instead of
 @code
-MeshBuilder<T> builder;
-MeshTools::Tipsify{builder}(cacheSize);
+MeshTools::Tipsify(indices, vertexCount)(cacheSize);
 @endcode
 you can just write
 @code
-MeshTools::tipsify(builder, cacheSize);
+MeshTools::tipsify(indices, vertexCount, cacheSize);
 @endcode
 */
 inline void tipsify(std::vector<unsigned int>& indices, unsigned int vertexCount, size_t cacheSize) {
