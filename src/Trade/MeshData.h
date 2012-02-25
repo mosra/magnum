@@ -46,7 +46,7 @@ class MAGNUM_EXPORT MeshData {
          * @param textureCoords2D   Array with two-dimensional texture
          *      coordinate arrays
          */
-        inline MeshData(Mesh::Primitive primitive, std::vector<unsigned int>* indices, std::vector<std::vector<Vector3>*> vertices, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D): _primitive(primitive), _indices(indices), _vertices(vertices), _normals(normals), _textureCoords2D(textureCoords2D) {}
+        inline MeshData(Mesh::Primitive primitive, std::vector<unsigned int>* indices, std::vector<std::vector<Vector4>*> vertices, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D): _primitive(primitive), _indices(indices), _vertices(vertices), _normals(normals), _textureCoords2D(textureCoords2D) {}
 
         /** @brief Destructor */
         ~MeshData();
@@ -69,7 +69,7 @@ class MAGNUM_EXPORT MeshData {
          * @return Vertices or nullptr if there is no vertex array with given
          *      ID.
          */
-        inline std::vector<Vector3>* vertices(size_t id) { return _vertices[id]; }
+        inline std::vector<Vector4>* vertices(size_t id) { return _vertices[id]; }
 
         /** @brief Count of normal arrays */
         inline size_t normalArrayCount() { return _normals.size(); };
@@ -96,8 +96,8 @@ class MAGNUM_EXPORT MeshData {
     private:
         Mesh::Primitive _primitive;
         std::vector<unsigned int>* _indices;
-        std::vector<std::vector<Vector3>*> _vertices,
-            _normals;
+        std::vector<std::vector<Vector4>*> _vertices;
+        std::vector<std::vector<Vector3>*> _normals;
         std::vector<std::vector<Vector2>*> _textureCoords2D;
 };
 
