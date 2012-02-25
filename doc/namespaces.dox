@@ -1,3 +1,9 @@
+/** @namespace Magnum::MeshTools
+@brief %Mesh tools
+
+Tools for generating, optimizing and cleaning meshes.
+*/
+
 /** @namespace Magnum::Shaders
 @brief Sample shaders
 
