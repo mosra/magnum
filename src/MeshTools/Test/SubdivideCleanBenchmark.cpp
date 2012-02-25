@@ -17,7 +17,6 @@
 
 #include <QtTest/QTest>
 
-#include "MeshBuilder.h"
 #include "Primitives/Icosphere.h"
 #include "MeshTools/Clean.h"
 #include "MeshTools/Subdivide.h"
@@ -28,50 +27,47 @@ namespace Magnum { namespace MeshTools { namespace Test {
 
 void SubdivideCleanBenchmark::subdivide() {
     QBENCHMARK {
-        MeshBuilder<Vector4> builder;
-        builder.setData(Primitives::Icosahedron::vertices, Primitives::Icosahedron::indices, 12, 60);
+        Primitives::Icosphere<0> icosphere;
 
         /* Subdivide 5 times */
-        MeshTools::subdivide(builder, interpolator);
-        MeshTools::subdivide(builder, interpolator);
-        MeshTools::subdivide(builder, interpolator);
-        MeshTools::subdivide(builder, interpolator);
-        MeshTools::subdivide(builder, interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
     }
 }
 
 void SubdivideCleanBenchmark::subdivideAndCleanMeshAfter() {
     QBENCHMARK {
-        MeshBuilder<Vector4> builder;
-        builder.setData(Primitives::Icosahedron::vertices, Primitives::Icosahedron::indices, 12, 60);
+        Primitives::Icosphere<0> icosphere;
 
         /* Subdivide 5 times */
-        MeshTools::subdivide(builder, interpolator);
-        MeshTools::subdivide(builder, interpolator);
-        MeshTools::subdivide(builder, interpolator);
-        MeshTools::subdivide(builder, interpolator);
-        MeshTools::subdivide(builder, interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
 
-        MeshTools::clean(builder);
+        MeshTools::clean(*icosphere.indices(), *icosphere.vertices(0));
     }
 }
 
 void SubdivideCleanBenchmark::subdivideAndCleanMeshBetween() {
     QBENCHMARK {
-        MeshBuilder<Vector4> builder;
-        builder.setData(Primitives::Icosahedron::vertices, Primitives::Icosahedron::indices, 12, 60);
+        Primitives::Icosphere<0> icosphere;
 
         /* Subdivide 5 times */
-        MeshTools::subdivide(builder, interpolator);
-        MeshTools::clean(builder);
-        MeshTools::subdivide(builder, interpolator);
-        MeshTools::clean(builder);
-        MeshTools::subdivide(builder, interpolator);
-        MeshTools::clean(builder);
-        MeshTools::subdivide(builder, interpolator);
-        MeshTools::clean(builder);
-        MeshTools::subdivide(builder, interpolator);
-        MeshTools::clean(builder);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
+        MeshTools::clean(*icosphere.indices(), *icosphere.vertices(0));
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
+        MeshTools::clean(*icosphere.indices(), *icosphere.vertices(0));
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
+        MeshTools::clean(*icosphere.indices(), *icosphere.vertices(0));
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
+        MeshTools::clean(*icosphere.indices(), *icosphere.vertices(0));
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
+        MeshTools::clean(*icosphere.indices(), *icosphere.vertices(0));
     }
 }
 

@@ -15,23 +15,11 @@
 
 #include "Cube.h"
 
-#include "Buffer.h"
-#include "IndexedMesh.h"
+using namespace std;
 
 namespace Magnum { namespace Primitives {
 
-const Vector4 Cube::_vertices[] = {
-    Vector4(-1.0f, -1.0f, -1.0f),
-    Vector4( 1.0f, -1.0f, -1.0f),
-    Vector4(-1.0f,  1.0f, -1.0f),
-    Vector4( 1.0f,  1.0f, -1.0f),
-    Vector4(-1.0f, -1.0f,  1.0f),
-    Vector4( 1.0f, -1.0f,  1.0f),
-    Vector4(-1.0f,  1.0f,  1.0f),
-    Vector4( 1.0f,  1.0f,  1.0f)
-};
-
-const GLubyte Cube::_indices[] = {
+Cube::Cube(): MeshData(Mesh::Primitive::Triangles, new vector<unsigned int>{
     0, 1, 2,
     2, 1, 3,
     1, 5, 3,
@@ -44,13 +32,15 @@ const GLubyte Cube::_indices[] = {
     2, 7, 6,
     4, 5, 1,
     4, 1, 0
-};
-
-void Cube::build(IndexedMesh* mesh, Buffer* vertexBuffer) {
-    prepareMesh(mesh);
-
-    vertexBuffer->setData(sizeof(_vertices), _vertices, Buffer::Usage::StaticDraw);
-    mesh->indexBuffer()->setData(sizeof(_indices), _indices, Buffer::Usage::StaticDraw);
-}
+}, {new vector<Vector4>{
+    Vector4(-1.0f, -1.0f, -1.0f),
+    Vector4( 1.0f, -1.0f, -1.0f),
+    Vector4(-1.0f,  1.0f, -1.0f),
+    Vector4( 1.0f,  1.0f, -1.0f),
+    Vector4(-1.0f, -1.0f,  1.0f),
+    Vector4( 1.0f, -1.0f,  1.0f),
+    Vector4(-1.0f,  1.0f,  1.0f),
+    Vector4( 1.0f,  1.0f,  1.0f)
+}}, {nullptr}, {nullptr}) {}
 
 }}

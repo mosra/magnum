@@ -15,23 +15,11 @@
 
 #include "Icosphere.h"
 
+using namespace std;
+
 namespace Magnum { namespace Primitives {
 
-const Vector4 Icosahedron::vertices[] = {
-    Vector4(0, -0.525731f, 0.850651f),
-    Vector4(0.850651f, 0, 0.525731f),
-    Vector4(0.850651f, 0, -0.525731f),
-    Vector4(-0.850651f, 0, -0.525731f),
-    Vector4(-0.850651f, 0, 0.525731f),
-    Vector4(-0.525731f, 0.850651f, 0),
-    Vector4(0.525731f, 0.850651f, 0),
-    Vector4(0.525731f, -0.850651f, 0),
-    Vector4(-0.525731f, -0.850651f, 0),
-    Vector4(0, -0.525731f, -0.850651f),
-    Vector4(0, 0.525731f, -0.850651f),
-    Vector4(0, 0.525731f, 0.850651f),
-};
-const GLubyte Icosahedron::indices[] = {
+Icosphere<0>::Icosphere(): MeshData(Mesh::Primitive::Triangles, new vector<unsigned int>{
     1, 2, 6,
     1, 7, 2,
     3, 4, 5,
@@ -52,6 +40,19 @@ const GLubyte Icosahedron::indices[] = {
     7, 1, 0,
     3, 9, 8,
     4, 8, 0
-};
+}, {new vector<Vector4>{
+    Vector4(0, -0.525731f, 0.850651f),
+    Vector4(0.850651f, 0, 0.525731f),
+    Vector4(0.850651f, 0, -0.525731f),
+    Vector4(-0.850651f, 0, -0.525731f),
+    Vector4(-0.850651f, 0, 0.525731f),
+    Vector4(-0.525731f, 0.850651f, 0),
+    Vector4(0.525731f, 0.850651f, 0),
+    Vector4(0.525731f, -0.850651f, 0),
+    Vector4(-0.525731f, -0.850651f, 0),
+    Vector4(0, -0.525731f, -0.850651f),
+    Vector4(0, 0.525731f, -0.850651f),
+    Vector4(0, 0.525731f, 0.850651f)
+}}, {nullptr}, {nullptr}) {}
 
 }}

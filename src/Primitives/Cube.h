@@ -19,22 +19,15 @@
  * @brief Class Magnum::Primitives::Cube
  */
 
-#include "AbstractPrimitive.h"
+#include "Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives {
 
 /** @brief %Cube primitive */
-class Cube: public AbstractPrimitive<GLubyte> {
+class Cube: public Trade::MeshData {
     public:
-        inline Mesh::Primitive primitive() const { return Mesh::Primitive::Triangles; }
-        inline size_t vertexCount() const { return 8; }
-        inline size_t indexCount() const { return 36; }
-
-        void build(IndexedMesh* mesh, Buffer* vertexBuffer);
-
-    private:
-        static const Vector4 _vertices[];
-        static const IndexType _indices[];
+        /** @brief Constructor */
+        Cube();
 };
 
 }}
