@@ -113,21 +113,11 @@ class MAGNUM_EXPORT Camera: public Object {
          */
         virtual void setViewport(const Math::Vector2<GLsizei>& size);
 
-        /** @copydoc setViewport(const Math::Vector2<GLsizei>& size); */
-        inline void setViewport(GLsizei width, GLsizei height) {
-            setViewport({width, height});
-        }
-
         /** @brief Clear color */
         inline Vector4 clearColor() const { return _clearColor; }
 
         /** @brief Set clear color */
         void setClearColor(const Vector4& color);
-
-        /** @copydoc setClearColor(const Vector4&) */
-        inline void setClearColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a) {
-            setClearColor(Vector4(r, g, b, a));
-        }
 
         /**
          * @brief Draw the scene

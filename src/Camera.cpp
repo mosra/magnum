@@ -29,10 +29,10 @@ void Camera::setOrthographic(GLfloat size, GLfloat near, GLfloat far) {
     /* Scale the volume down so it fits in (-1, 1) in all directions */
     GLfloat xyScale = 2/size;
     GLfloat zScale = 2/(far-near);
-    rawProjectionMatrix = Matrix4::scaling(xyScale, xyScale, -zScale);
+    rawProjectionMatrix = Matrix4::scaling({xyScale, xyScale, -zScale});
 
     /* Move the volume on z into (-1, 1) range */
-    rawProjectionMatrix = Matrix4::translation(0, 0, -1-near*zScale)*rawProjectionMatrix;
+    rawProjectionMatrix = Matrix4::translation(Vector3::zAxis(-1-near*zScale))*rawProjectionMatrix;
 
     fixAspectRatio();
 }
@@ -42,7 +42,7 @@ void Camera::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
     _far = far;
 
     /* First move the volume on z in (-1, 1) range */
-    rawProjectionMatrix = Matrix4::translation(0, 0, 2*far*near/(far+near));
+    rawProjectionMatrix = Matrix4::translation(Vector3::zAxis(2*far*near/(far+near)));
 
     /* Then apply magic perspective matrix (with reversed Z) */
     static GLfloat a[] = {  1, 0,  0,  0,
@@ -54,7 +54,7 @@ void Camera::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
     /* Then scale the volume down so it fits in (-1, 1) in all directions */
     GLfloat xyScale = 1/tan(fov/2);
     GLfloat zScale = 1+2*near/(far-near);
-    rawProjectionMatrix = Matrix4::scaling(xyScale, xyScale, zScale)*rawProjectionMatrix;
+    rawProjectionMatrix = Matrix4::scaling({xyScale, xyScale, zScale})*rawProjectionMatrix;
 
     /* And... another magic */
     rawProjectionMatrix.set(3, 3, 0);
@@ -85,15 +85,15 @@ void Camera::fixAspectRatio() {
     /* Extend on larger side = scale larger side down */
     if(_aspectRatioPolicy == Extend) {
         _projectionMatrix = ((_viewport.x() > _viewport.y()) ?
-            Matrix4::scaling(static_cast<GLfloat>(_viewport.y())/_viewport.x(), 1, 1) :
-            Matrix4::scaling(1, static_cast<GLfloat>(_viewport.x())/_viewport.y(), 1)
+            Matrix4::scaling({static_cast<GLfloat>(_viewport.y())/_viewport.x(), 1, 1}) :
+            Matrix4::scaling({1, static_cast<GLfloat>(_viewport.x())/_viewport.y(), 1})
         )*rawProjectionMatrix;
 
     /* Clip on smaller side = scale smaller side up */
     } else if(_aspectRatioPolicy == Clip) {
         _projectionMatrix = ((_viewport.x() > _viewport.y()) ?
-            Matrix4::scaling(1, static_cast<GLfloat>(_viewport.x())/_viewport.y(), 1) :
-            Matrix4::scaling(static_cast<GLfloat>(_viewport.y())/_viewport.x(), 1, 1)
+            Matrix4::scaling({1, static_cast<GLfloat>(_viewport.x())/_viewport.y(), 1}) :
+            Matrix4::scaling({static_cast<GLfloat>(_viewport.y())/_viewport.x(), 1, 1})
         )*rawProjectionMatrix;
 
     /* Don't preserve anything */

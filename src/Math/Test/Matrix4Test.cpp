@@ -38,7 +38,7 @@ void Matrix4Test::translation() {
         3.0f, 1.0f, 2.0f, 1.0f
     };
 
-    QVERIFY(Matrix4::translation(3.0f, 1.0f, 2.0f) == Matrix4(matrix));
+    QVERIFY(Matrix4::translation({3.0f, 1.0f, 2.0f}) == Matrix4(matrix));
 }
 
 void Matrix4Test::scaling() {
@@ -49,7 +49,7 @@ void Matrix4Test::scaling() {
         0.0f, 0.0f, 0.0f, 1.0f
     };
 
-    QVERIFY(Matrix4::scaling(3.0f, 1.5f, 2.0f) == Matrix4(matrix));
+    QVERIFY(Matrix4::scaling({3.0f, 1.5f, 2.0f}) == Matrix4(matrix));
 }
 
 void Matrix4Test::rotation() {
@@ -60,7 +60,7 @@ void Matrix4Test::rotation() {
         0.0f,       0.0f,       0.0f,       1.0f
     };
 
-    QVERIFY(Matrix4::rotation(deg(-74.0f), -1.0f, 2.0f, 2.0f) == Matrix4(matrix));
+    QVERIFY(Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f}) == Matrix4(matrix));
 }
 
 void Matrix4Test::debug() {

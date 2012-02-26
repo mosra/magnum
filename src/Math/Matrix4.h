@@ -27,24 +27,12 @@ namespace Magnum { namespace Math {
 /**
  * @brief 4x4 matrix
  *
- * @todo @c PERFORMANCE - make (T,T,T) - (Vec3&lt;T&gt;) alternatives calling
- *      direction based on statistics, which is used more frequently
  * @todo Rotation with Euler angles
  * @todo Shearing
  * @todo Reflection
  */
 template<class T> class Matrix4: public Matrix<T, 4> {
     public:
-        /**
-         * @brief Translation matrix
-         * @param x     Translation along X
-         * @param y     Translation along Y
-         * @param z     Translation along Z
-         */
-        inline static Matrix4 translation(T x, T y, T z) {
-            return translation(Vector3<T>(x, y, z));
-        }
-
         /**
          * @brief Translation matrix
          * @param vec   Translation vector
@@ -59,16 +47,6 @@ template<class T> class Matrix4: public Matrix<T, 4> {
 
         /**
          * @brief Scaling matrix
-         * @param x     Scaling along X
-         * @param y     Scaling along Y
-         * @param z     Scaling along Z
-         */
-        inline static Matrix4 scaling(T x, T y, T z) {
-            return scaling(Vector3<T>(x, y, z));
-        }
-
-        /**
-         * @brief Scaling matrix
          * @param vec   Scaling vector
          */
         static Matrix4 scaling(const Vector3<T>& vec) {
@@ -77,17 +55,6 @@ template<class T> class Matrix4: public Matrix<T, 4> {
             out.set(1, 1, vec.y());
             out.set(2, 2, vec.z());
             return out;
-        }
-
-        /**
-         * @brief Rotation matrix
-         * @param angle Rotation angle (counterclockwise, in radians)
-         * @param x     Rotation axis X coordinates
-         * @param y     Rotation axis Y coordinates
-         * @param z     Rotation axis Z coordinates
-         */
-        inline static Matrix4 rotation(T angle, T x, T y, T z) {
-            return rotation(angle, Vector3<T>(x, y, z));
         }
 
         /**
