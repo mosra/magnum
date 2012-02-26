@@ -26,7 +26,6 @@ namespace Magnum { namespace Math {
 /**
  * @brief %Matrix
  *
- * @todo @c PERFORMANCE - implicit sharing
  * @todo @c PERFORMANCE - loop unrolling for Matrix<T, 3> and Matrix<T, 4>
  */
 template<class T, size_t size> class Matrix {
