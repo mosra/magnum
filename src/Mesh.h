@@ -142,9 +142,23 @@ class MAGNUM_EXPORT Mesh {
          *      every vertex will be in one continuous place.
          *
          * Adds new buffer to the mesh. The buffer can be then filled with
-         * Buffer::setData().
+         * Buffer::setData(). See also isInterleaved().
+         *
+         * @todo Move interleaveability to Buffer itself?
          */
         Buffer* addBuffer(bool interleaved);
+
+        /**
+         * @brief Whether given buffer is interleaved
+         * @return True if the buffer belongs to the mesh and the buffer is
+         *      interleaved, false otherwise.
+         *
+         * See also addBuffer().
+         */
+        inline bool isInterleaved(Buffer* buffer) const {
+            auto found = _buffers.find(buffer);
+            return found != _buffers.end() && found->second.first;
+        }
 
         /**
          * @brief Bind attribute
