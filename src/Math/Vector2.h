@@ -40,9 +40,7 @@ template<class T> class Vector2: public Vector<T, 2> {
          * @param x     X value
          * @param y     Y value
          */
-        inline Vector2(T x, T y) {
-            setX(x); setY(y);
-        }
+        inline Vector2(T x, T y): Vector<T, 2>(x, y) {}
 
         inline T x() const { return Vector<T, 2>::at(0); } /**< @brief X component */
         inline T y() const { return Vector<T, 2>::at(1); } /**< @brief Y component */

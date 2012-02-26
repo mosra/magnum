@@ -44,6 +44,13 @@ template<class T, size_t size> class Vector {
         };
 
         /**
+         * @brief Initializer-list constructor
+         * @param first First value
+         * @param next  Next values
+         */
+        template<class ...U> inline Vector(T first, U&&... next): _data{first, std::forward<U>(next)...} {}
+
+        /**
          * @brief Constructor
          * @param data  Array of @c size length.
          */

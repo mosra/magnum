@@ -60,7 +60,7 @@ void MatrixTest::constructZero() {
 void MatrixTest::data() {
     Matrix4 m(false);
 
-    float vector[] = { 4.0f, 5.0f, 6.0f, 7.0f };
+    Vector4 vector(4.0f, 5.0f, 6.0f, 7.0f);
 
     m.set(3, vector);
     m.set(1, 2, 1.0f);
@@ -154,11 +154,7 @@ void MatrixTest::multiplyVector() {
           1,   3,  -3,  -4,  -1
     };
 
-    int vector[] = { 0, 5, 3, 4, 4 };
-
-    int expected[] = { -24, -35, -32, -25, 1 };
-
-    bool is = (Matrix<int, 5>(matrix)*Vector<int, 5>(vector) == Vector<int, 5>(expected));
+    bool is = (Matrix<int, 5>(matrix)*Vector<int, 5>(0, 5, 3, 4, 4) == Vector<int, 5>(-24, -35, -32, -25, 1));
 
     QVERIFY(is);
 }

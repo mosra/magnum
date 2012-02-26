@@ -32,9 +32,10 @@ typedef Vector<float, 4> Vector4;
 typedef Vector<float, 3> Vector3;
 
 void VectorTest::construct() {
-    float zero[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    QVERIFY((Vector4() == Vector4(0.0f, 0.0f, 0.0f, 0.0f)));
 
-    QVERIFY(Vector4() == Vector4(zero));
+    float data[] = { 1.0f, 2.0f, 3.0f, 4.0f };
+    QVERIFY((Vector4(data) == Vector4(1.0f, 2.0f, 3.0f, 4.0f)));
 }
 
 void VectorTest::data() {
@@ -44,8 +45,7 @@ void VectorTest::data() {
 
     v.set(0, 1.0f);
 
-    float data[] = { 1.0f, 0.0f, 1.5f, 0.0f };
-    QVERIFY(v == Vector4(data));
+    QVERIFY(v == Vector4(1.0f, 0.0f, 1.5f, 0.0f));
 }
 
 void VectorTest::bracketOperator() {
@@ -85,67 +85,49 @@ void VectorTest::copy() {
 }
 
 void VectorTest::dot() {
-    float first[] = { 1.0f, 0.5f, 0.75f, 1.5f };
-    float second[] = { 2.0f, 4.0f, 1.0f, 7.0f };
-
-    QVERIFY(Vector4(first)*Vector4(second) == 15.25f);
+    QVERIFY(Vector4(1.0f, 0.5f, 0.75f, 1.5f)*Vector4(2.0f, 4.0f, 1.0f, 7.0f) == 15.25f);
 }
 
 void VectorTest::multiplyDivide() {
-    float vec[] = { 1.0f, 2.0f, 3.0f, 4.0f };
-    float multiplied[] = { -1.5f, -3.0f, -4.5f, -6.0f };
+    Vector4 vec(1.0f, 2.0f, 3.0f, 4.0f);
+    Vector4 multiplied(-1.5f, -3.0f, -4.5f, -6.0f);
 
-    QVERIFY(Vector4(vec)*-1.5f == Vector4(multiplied));
-    QVERIFY(Vector4(multiplied)/-1.5f == Vector4(vec));
+    QVERIFY(vec*-1.5f == multiplied);
+    QVERIFY(multiplied/-1.5f == vec);
 }
 
 void VectorTest::addSubstract() {
-    float a[] = { 0.5f, -7.5f, 9.0f, -11.0f };
-    float b[] = { -0.5, 1.0f, 0.0f, 7.5f };
-    float expected[] = { 0.0f, -6.5f, 9.0f, -3.5f };
+    Vector4 a(0.5f, -7.5f, 9.0f, -11.0f);
+    Vector4 b(-0.5, 1.0f, 0.0f, 7.5f);
+    Vector4 expected(0.0f, -6.5f, 9.0f, -3.5f);
 
-    QVERIFY(Vector4(a)+Vector4(b) == Vector4(expected));
-    QVERIFY(Vector4(expected)-Vector4(b) == Vector4(a));
+    QVERIFY(a + b == expected);
+    QVERIFY(expected - b == a);
 }
 
 void VectorTest::length() {
-    float vec[] = { 1.0f, 2.0f, 3.0f, 4.0f };
-
-    QCOMPARE(Vector4(vec).length(), 5.4772256f);
+    QCOMPARE(Vector4(1.0f, 2.0f, 3.0f, 4.0f).length(), 5.4772256f);
 }
 
 void VectorTest::normalized() {
-    float vec[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-    float normalized[] = { 0.5f, 0.5f, 0.5f, 0.5f };
-
-    QVERIFY(Vector4(vec).normalized() == Vector4(normalized));
+    QVERIFY(Vector4(1.0f, 1.0f, 1.0f, 1.0f).normalized() == Vector4(0.5f, 0.5f, 0.5f, 0.5f));
 }
 
 void VectorTest::product() {
-    float vec[] = { 1.0f, 2.0f, 3.0f };
-
-    QCOMPARE(Vector3(vec).product(), 6.0f);
+    QCOMPARE(Vector3(1.0f, 2.0f, 3.0f).product(), 6.0f);
 }
 
 void VectorTest::angle() {
-    float a[] = { 2.0f, 3.0f, 4.0f };
-    float b[] = { 1.0f, -2.0f, 3.0f };
-
-    QCOMPARE(Vector3::angle(a, b), rad(1.16251f));
+    QCOMPARE(Vector3::angle({2.0f, 3.0f, 4.0f}, {1.0f, -2.0f, 3.0f}), rad(1.16251f));
 }
 
 void VectorTest::negative() {
-    float vec[] = { 1.0f, -3.0f, 5.0f, -10.0f };
-    float negative[] = { -1.0f, 3.0f, -5.0f, 10.0f };
-
-    QVERIFY(-Vector4(vec) == negative);
+    QVERIFY(-Vector4(1.0f, -3.0f, 5.0f, -10.0f) == Vector4(-1.0f, 3.0f, -5.0f, 10.0f));
 }
 
 void VectorTest::debug() {
-    float vec[] = { 0.5f, 15.0f, 1.0f, 1.0f };
-
     ostringstream o;
-    Debug(&o) << Vector4(vec);
+    Debug(&o) << Vector4(0.5f, 15.0f, 1.0f, 1.0f);
     QCOMPARE(QString::fromStdString(o.str()), QString("Vector(0.5, 15, 1, 1)\n"));
 
     o.str("");

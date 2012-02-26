@@ -57,18 +57,14 @@ template<class T> class Vector3: public Vector<T, 3> {
          * @param y     Y / G value
          * @param z     Z / B value
          */
-        inline Vector3(T x, T y, T z) {
-            setX(x); setY(y); setZ(z);
-        }
+        inline Vector3(T x, T y, T z): Vector<T, 3>(x, y, z) {}
 
         /**
          * @brief Constructor
          * @param other     Two component vector
          * @param z         Z / B value
          */
-        inline Vector3(const Vector<T, 2>& other, T z = T(0)) {
-            setX(other[0]); setY(other[1]); setZ(z);
-        }
+        inline Vector3(const Vector<T, 2>& other, T z = T(0)): Vector<T, 3>(other[0], other[1], other[2]) {}
 
         inline T x() const { return Vector<T, 3>::at(0); } /**< @brief X component */
         inline T y() const { return Vector<T, 3>::at(1); } /**< @brief Y component */
