@@ -41,10 +41,11 @@ class MAGNUM_EXPORT MeshData {
          * @param primitive         Primitive
          * @param indices           Array with indices or 0, if this is not
          *      indexed mesh
-         * @param vertices          Array with vertex arrays
-         * @param normals           Array with normal arrays
+         * @param vertices          Array with vertex arrays. At least one
+         *      vertex array should be present.
+         * @param normals           Array with normal arrays or empty array
          * @param textureCoords2D   Array with two-dimensional texture
-         *      coordinate arrays
+         *      coordinate arrays or empty array
          */
         inline MeshData(Mesh::Primitive primitive, std::vector<unsigned int>* indices, std::vector<std::vector<Vector4>*> vertices, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D): _primitive(primitive), _indices(indices), _vertices(vertices), _normals(normals), _textureCoords2D(textureCoords2D) {}
 
