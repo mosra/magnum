@@ -40,24 +40,24 @@ class MAGNUM_EXPORT Shader {
     Shader& operator=(Shader&& other) = delete;
 
     public:
-        /** @brief Shader type */
+        /** @brief %Shader type */
         enum Type {
             Vertex = GL_VERTEX_SHADER,      /**< @brief Vertex shader */
             Geometry = GL_GEOMETRY_SHADER,  /**< @brief Geometry shader */
             Fragment = GL_FRAGMENT_SHADER   /**< @brief Fragment shader */
         };
 
-        /** @brief Shader state */
+        /** @brief %Shader state */
         enum State {
-            Initialized,    /**< @brief Shader sloaded */
-            Compiled,       /**< @brief Shader is compiled */
+            Initialized,    /**< @brief %Shader is loaded */
+            Compiled,       /**< @brief %Shader is compiled */
             Failed          /**< @brief Compilation failed */
         };
 
         /**
          * @brief Load shader from source
-         * @param type      Shader type
-         * @param source    Shader source
+         * @param type      %Shader type
+         * @param source    %Shader source
          * @return Pointer to compiled shader
          *
          * Loads the shader from one source. Shorthand for
@@ -76,8 +76,8 @@ class MAGNUM_EXPORT Shader {
 
         /**
          * @brief Load shader from file
-         * @param type      Shader type
-         * @param filename  Source filename
+         * @param type      %Shader type
+         * @param filename  %Source filename
          * @return Pointer to compiled shader or zero, if file cannot be opened.
          *
          * Loads the shader from from one file. Shorthand for
@@ -114,7 +114,7 @@ class MAGNUM_EXPORT Shader {
         inline ~Shader() { if(shader) glDeleteShader(shader); }
 
         /**
-         * @brief Shader type
+         * @brief %Shader type
          *
          * Set in constructor.
          */
@@ -157,7 +157,7 @@ class MAGNUM_EXPORT Shader {
          * before, it tries to compile it. If compilation fails or no sources
          * are present, returns 0. If the shader was compiled already, returns
          * already existing shader.
-         * @see logLevel(), state()
+         * @see state()
          */
         GLuint compile();
 

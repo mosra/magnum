@@ -22,7 +22,7 @@
 namespace Magnum { namespace Trade {
 
 /**
-@brief %Texture
+@brief %Texture data
 */
 class MAGNUM_EXPORT TextureData {
     TextureData(const TextureData& other) = delete;

@@ -22,7 +22,7 @@
 namespace Magnum { namespace Trade {
 
 /**
-@brief %Scene
+@brief %Scene data
 */
 class MAGNUM_EXPORT SceneData {
     SceneData(const SceneData& other) = delete;

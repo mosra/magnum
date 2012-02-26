@@ -25,7 +25,7 @@
 namespace Magnum { namespace Trade {
 
 /**
-@brief Phong material
+@brief Phong material data
 */
 class PhongMaterialData: public AbstractMaterialData {
     public:

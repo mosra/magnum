@@ -80,7 +80,7 @@ template<class T, size_t size> class Matrix {
             return _data[col*size+row];
         }
 
-        /** @brief Matrix column */
+        /** @brief %Matrix column */
         inline Vector<T, size> at(size_t col) const {
             return _data+col*size;
         }
@@ -153,7 +153,7 @@ template<class T, size_t size> class Matrix {
             return out;
         }
 
-        /** @brief Matrix without given row and column */
+        /** @brief %Matrix without given row and column */
         Matrix<T, size-1> ij(size_t skipRow, size_t skipCol) const {
             Matrix<T, size-1> out(false);
 

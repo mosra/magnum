@@ -24,7 +24,7 @@
 namespace Magnum { namespace Trade {
 
 /**
-@brief %Mesh
+@brief %Mesh data
 
 Provides access to mesh data and additional information, such as primitive
 type.

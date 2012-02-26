@@ -24,7 +24,7 @@
 namespace Magnum { namespace Trade {
 
 /**
-@brief %Image
+@brief %Image data
 
 Provides access to image data and additional information about data type and
 dimensions. Can be used in the same situations as Image and BufferedImage.

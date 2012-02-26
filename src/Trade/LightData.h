@@ -22,7 +22,7 @@
 namespace Magnum { namespace Trade {
 
 /**
-@brief %Light
+@brief %Light data
 */
 class MAGNUM_EXPORT LightData {
     LightData(const LightData& other) = delete;

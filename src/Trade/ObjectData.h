@@ -24,7 +24,7 @@
 namespace Magnum { namespace Trade {
 
 /**
-@brief Object
+@brief %Object data
 
 Provides access to object transformation and hierarchy.
 */

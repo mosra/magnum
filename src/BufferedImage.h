@@ -75,7 +75,7 @@ template<size_t imageDimensions> class BufferedImage {
         /**
          * @brief Data
          *
-         * Binds the buffer to @ref Buffer::Target::PixelUnpack "pixel unpack
+         * Binds the buffer to @ref Buffer::Target "pixel unpack
          * target" and returns nullptr, so it can be used for texture updating
          * functions the same way as Image::data().
          */

@@ -22,7 +22,7 @@
 namespace Magnum { namespace Trade {
 
 /**
-@brief Base class for materials
+@brief Base class for material data
 
 Subclasses provide access to parameters for given material type.
 */

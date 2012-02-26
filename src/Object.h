@@ -62,7 +62,7 @@ class MAGNUM_EXPORT Object {
         virtual ~Object();
 
         /**
-         * @brief Scene
+         * @brief %Scene
          * @return If the object is not assigned to any scene, returns nullptr.
          */
         Scene* scene() const;
