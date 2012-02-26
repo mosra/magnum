@@ -15,6 +15,7 @@
 
 #include "AbstractShaderProgram.h"
 
+#include <cassert>
 #include <fstream>
 
 #define LINKER_MESSAGE_MAX_LENGTH 1024
@@ -52,6 +53,7 @@ bool AbstractShaderProgram::attachShader(Shader* shader) {
 bool AbstractShaderProgram::bindAttribute(GLuint location, const string& name) {
     if(state != Initialized) {
         Error() << "AbstractShaderProgram: attribute cannot be bound after linking.";
+        assert(0);
         return false;
     }
 
@@ -109,12 +111,13 @@ void AbstractShaderProgram::link() {
 GLint AbstractShaderProgram::uniformLocation(const std::string& name) {
     if(state != Linked) {
         Error() << "AbstractShaderProgram: uniform location cannot be retrieved before linking.";
+        assert(0);
         return -1;
     }
 
     GLint location = glGetUniformLocation(program, name.c_str());
     if(location == -1)
-        Error() << "AbstractShaderProgram: location of uniform \'" + name + "\' cannot be retrieved!";
+        Warning() << "AbstractShaderProgram: location of uniform \'" + name + "\' cannot be retrieved!";
     return location;
 }
 
