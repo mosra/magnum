@@ -16,9 +16,11 @@
 #include "Mesh.h"
 #include "Buffer.h"
 
+#include <cassert>
 #include <iostream>
 
 using namespace std;
+using namespace Corrade::Utility;
 
 namespace Magnum {
 
@@ -67,6 +69,11 @@ void Mesh::draw() {
 void Mesh::finalize() {
     /* Already finalized */
     if(finalized) return;
+
+    if(!_vertexCount) {
+        Error() << "Mesh: the mesh has zero vertex count!";
+        assert(0);
+    }
 
     /* Finalize attribute positions for every buffer */
     for(map<Buffer*, pair<bool, vector<Attribute> > >::iterator it = _buffers.begin(); it != _buffers.end(); ++it) {

@@ -214,7 +214,7 @@ class MAGNUM_EXPORT Mesh {
          * Computes location and stride of each attribute in its buffer. After
          * this function is called, no new attribute can be bound.
          */
-        void finalize();
+        virtual void finalize();
 
         /**
          * @brief Set the mesh dirty

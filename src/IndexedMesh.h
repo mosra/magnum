@@ -76,6 +76,9 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          */
         void draw();
 
+    protected:
+        void finalize();
+
     private:
         Buffer _indexBuffer;
         GLsizei _indexCount;

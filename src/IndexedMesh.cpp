@@ -15,7 +15,10 @@
 
 #include "IndexedMesh.h"
 
+#include <cassert>
+
 using namespace std;
+using namespace Corrade::Utility;
 
 namespace Magnum {
 
@@ -46,6 +49,15 @@ void IndexedMesh::draw() {
     /* Disable vertex arrays for all attributes */
     for(set<GLuint>::const_iterator it = attributes().begin(); it != attributes().end(); ++it)
         glDisableVertexAttribArray(*it);
+}
+
+void IndexedMesh::finalize() {
+    if(!_indexCount) {
+        Error() << "IndexedMesh: the mesh has zero index count!";
+        assert(0);
+    }
+
+    Mesh::finalize();
 }
 
 }
