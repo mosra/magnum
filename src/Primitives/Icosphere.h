@@ -48,11 +48,12 @@ template<size_t subdivisions> class Icosphere: public Icosphere<0> {
         /** @brief Constructor */
         Icosphere() {
             for(size_t i = 0; i != subdivisions; ++i)
-                MeshTools::subdivide(*indices(), *vertices(0), [](const Vector4& a, const Vector4& b) {
-                    return (a+b).xyz().normalized();
+                MeshTools::subdivide(*indices(), *normals(0), [](const Vector3& a, const Vector3& b) {
+                    return (a+b).normalized();
                 });
 
-            MeshTools::clean(*indices(), *vertices(0));
+            MeshTools::clean(*indices(), *normals(0));
+            vertices(0)->assign(normals(0)->begin(), normals(0)->end());
         }
 };
 

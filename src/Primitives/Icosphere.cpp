@@ -40,19 +40,21 @@ Icosphere<0>::Icosphere(): MeshData(Mesh::Primitive::Triangles, new vector<unsig
     7, 1, 0,
     3, 9, 8,
     4, 8, 0
-}, {new vector<Vector4>{
-    Vector4(0, -0.525731f, 0.850651f),
-    Vector4(0.850651f, 0, 0.525731f),
-    Vector4(0.850651f, 0, -0.525731f),
-    Vector4(-0.850651f, 0, -0.525731f),
-    Vector4(-0.850651f, 0, 0.525731f),
-    Vector4(-0.525731f, 0.850651f, 0),
-    Vector4(0.525731f, 0.850651f, 0),
-    Vector4(0.525731f, -0.850651f, 0),
-    Vector4(-0.525731f, -0.850651f, 0),
-    Vector4(0, -0.525731f, -0.850651f),
-    Vector4(0, 0.525731f, -0.850651f),
-    Vector4(0, 0.525731f, 0.850651f)
-}}, {nullptr}, {nullptr}) {}
+}, {new vector<Vector4>}, {new vector<Vector3>{
+    Vector3(0, -0.525731f, 0.850651f),
+    Vector3(0.850651f, 0, 0.525731f),
+    Vector3(0.850651f, 0, -0.525731f),
+    Vector3(-0.850651f, 0, -0.525731f),
+    Vector3(-0.850651f, 0, 0.525731f),
+    Vector3(-0.525731f, 0.850651f, 0),
+    Vector3(0.525731f, 0.850651f, 0),
+    Vector3(0.525731f, -0.850651f, 0),
+    Vector3(-0.525731f, -0.850651f, 0),
+    Vector3(0, -0.525731f, -0.850651f),
+    Vector3(0, 0.525731f, -0.850651f),
+    Vector3(0, 0.525731f, 0.850651f)
+}}, {nullptr}) {
+    vertices(0)->assign(normals(0)->begin(), normals(0)->end());
+}
 
 }}
