@@ -178,6 +178,17 @@ class Buffer {
 
         /**
          * @brief Set buffer data
+         * @param data      Vector with data
+         * @param usage     %Buffer usage
+         *
+         * Sets buffer data with default target.
+         */
+        template<class T> inline void setData(const std::vector<T>& data, Usage usage) {
+            setData(_defaultTarget, data, usage);
+        }
+
+        /**
+         * @brief Set buffer data
          * @param target    %Target
          * @param size      Data size
          * @param data      Pointer to data
@@ -186,6 +197,16 @@ class Buffer {
         inline void setData(Target target, GLsizeiptr size, const GLvoid* data, Usage usage) {
             bind(target);
             glBufferData(static_cast<GLenum>(target), size, data, static_cast<GLenum>(usage));
+        }
+
+        /**
+         * @brief Set buffer data
+         * @param target    %Target
+         * @param data      Vector with data
+         * @param usage     %Buffer usage
+         */
+        template<class T> inline void setData(Target target, const std::vector<T>& data, Usage usage) {
+            setData(target, data.size()*sizeof(T), data.data(), usage);
         }
 
         /**
@@ -202,6 +223,17 @@ class Buffer {
 
         /**
          * @brief Set buffer subdata
+         * @param offset    Offset
+         * @param data      Vector with data
+         *
+         * Sets buffer subdata with default target.
+         */
+        template<class T> inline void setSubData(GLintptr offset, const std::vector<T>& data) {
+            setSubData(_defaultTarget, offset, data);
+        }
+
+        /**
+         * @brief Set buffer subdata
          * @param target    %Target
          * @param offset    Offset
          * @param size      Data size
@@ -210,6 +242,16 @@ class Buffer {
         inline void setSubData(Target target, GLintptr offset, GLsizeiptr size, const GLvoid* data) {
             bind(target);
             glBufferSubData(static_cast<GLenum>(target), offset, size, data);
+        }
+
+        /**
+         * @brief Set buffer subdata
+         * @param target    %Target
+         * @param offset    Offset
+         * @param data      Vector with data
+         */
+        template<class T> inline void setSubData(Target target, GLintptr offset, const std::vector<T>& data) {
+            setSubData(target, offset, data.size()*sizeof(T), data.data());
         }
 
     private:
