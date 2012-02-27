@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::MeshTools::Clean
+ * @brief Class Magnum::MeshTools::Clean, function Magnum::MeshTools::clean()
  */
 
 #include <unordered_map>

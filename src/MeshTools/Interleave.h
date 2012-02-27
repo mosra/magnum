@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::MeshTools::Interleave
+ * @brief Class Magnum::MeshTools::Interleave, function Magnum::MeshTools::interleave()
  */
 
 #include <cassert>

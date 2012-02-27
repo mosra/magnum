@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::MeshTools::Subdivide
+ * @brief Class Magnum::MeshTools::Subdivide, function Magnum::MeshTools::subdivide()
  */
 
 #include <vector>

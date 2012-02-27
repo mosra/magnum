@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::MeshTools::Tipsify
+ * @brief Class Magnum::MeshTools::Tipsify, function Magnum::MeshTools::tipsify()
  */
 
 #include <cstddef>

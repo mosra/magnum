@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::MeshTools::CompressIndices
+ * @brief Class Magnum::MeshTools::CompressIndices, function Magnum::MeshTools::compressIndices()
  */
 
 #include <cstring>
