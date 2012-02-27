@@ -95,29 +95,29 @@ class Interleave {
             delete[] result.data;
         }
 
-        /** @brief Minimal count of passed attributes */
-        template<class T, class ...U> inline static size_t attributeCount(const std::vector<T>& attribute, const std::vector<U>&... attributes) {
-            size_t count = attributeCount(attributes...);
-            if(sizeof...(attributes) != 0 && count != attribute.size()) {
+        /** @brief Count of passed attributes */
+        template<class T, class ...U> inline static size_t attributeCount(const std::vector<T>& first, const std::vector<U>&... next) {
+            size_t count = attributeCount(next...);
+            if(sizeof...(next) != 0 && count != first.size()) {
                 Corrade::Utility::Error() << "MeshTools::Interleave: attribute arrays don't have the same length, nothing done.";
                 assert(0);
                 return 0;
             }
-            return attribute.size();
+            return first.size();
         }
 
         /** @brief Distance between two attributes in resulting array */
-        template<class T, class ...U> inline static size_t stride(const std::vector<T>& attribute, const std::vector<U>&... attributes) {
-            return sizeof(T) + stride(attributes...);
+        template<class T, class ...U> inline static size_t stride(const std::vector<T>& first, const std::vector<U>&... next) {
+            return sizeof(T) + stride(next...);
         }
 
     private:
-        template<class T, class ...U> void write(char* startingOffset, const std::vector<T>& attribute, const std::vector<U>&... attributes) const {
+        template<class T, class ...U> void write(char* startingOffset, const std::vector<T>& first, const std::vector<U>&... next) const {
             /* Copy the data to the buffer */
             for(size_t i = 0; i != result.attributeCount; ++i)
-                memcpy(startingOffset+i*result.stride, reinterpret_cast<const char*>(&attribute[i]), sizeof(T));
+                memcpy(startingOffset+i*result.stride, reinterpret_cast<const char*>(&first[i]), sizeof(T));
 
-            write(startingOffset+sizeof(T), attributes...);
+            write(startingOffset+sizeof(T), next...);
         }
 
         /* Terminator functions for recursive calls */
