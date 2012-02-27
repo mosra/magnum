@@ -31,30 +31,48 @@ typedef Matrix<float, 4> Matrix4;
 typedef Matrix<float, 3> Matrix3;
 typedef Vector<float, 4> Vector4;
 
+void MatrixTest::construct() {
+    float m[] = {
+        3.0f, 5.0f, 8.0f, 4.0f,
+        4.0f, 4.0f, 7.0f, 3.0f,
+        7.0f, -1.0f, 8.0f, 0.0f,
+        9.0f, 4.0f, 5.0f, 9.0f
+    };
+
+    Matrix4 expected(
+        3.0f, 5.0f, 8.0f, 4.0f,
+        4.0f, 4.0f, 7.0f, 3.0f,
+        7.0f, -1.0f, 8.0f, 0.0f,
+        9.0f, 4.0f, 5.0f, 9.0f
+    );
+
+    QVERIFY(Matrix4(m) == expected);
+}
+
 void MatrixTest::constructIdentity() {
     Matrix4 identity;
 
-    float identityExpected[] = {
+    Matrix4 identityExpected(
         1.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 1.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 1.0f
-    };
+    );
 
-    QVERIFY(identity == Matrix4(identityExpected));
+    QVERIFY(identity == identityExpected);
 }
 
 void MatrixTest::constructZero() {
     Matrix4 zero(false);
 
-    float zeroExpected[] = {
+    Matrix4 zeroExpected(
         0.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 0.0f
-    };
+    );
 
-    QVERIFY(zero == Matrix4(zeroExpected));
+    QVERIFY(zero == zeroExpected);
 }
 
 void MatrixTest::data() {
@@ -71,14 +89,14 @@ void MatrixTest::data() {
     QVERIFY(m.at(1, 2) == 1.0f);
     QVERIFY(m.at(3) == vector);
 
-    float expected[] = {
+    Matrix4 expected(
         0.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 1.5f, 0.0f,
         0.0f, 1.0f, 0.0f, 0.0f,
         4.0f, 5.0f, 6.0f, 7.0f
-    };
+    );
 
-    QVERIFY(m == Matrix4(expected));
+    QVERIFY(m == expected);
 }
 
 void MatrixTest::copy() {
@@ -104,141 +122,137 @@ void MatrixTest::copy() {
 }
 
 void MatrixTest::multiplyIdentity() {
-    float values[] = {
+    Matrix4 values(
         0.0f,   1.0f,   2.0f,   3.0f,
         4.0f,   5.0f,   6.0f,   7.0f,
         8.0f,   9.0f,   10.0f,  11.0f,
         12.0f,  13.0f,  14.0f,  15.0f
-    };
+    );
 
-    QVERIFY(Matrix4()*Matrix4(values) == Matrix4(values));
-    QVERIFY(Matrix4(values)*Matrix4() == Matrix4(values));
+    QVERIFY(Matrix4()*values == values);
+    QVERIFY(values*Matrix4() == values);
 }
 
 void MatrixTest::multiply() {
-    int left[] = {
+    Matrix<int, 5> left(
          -3,  -3,  -1,   3,  -5,
          -1,  -3,  -5,   2,   3,
          -1,  -4,   3,  -1,  -2,
          -5,  -5,  -1,  -4,  -1,
           1,   3,  -3,  -4,  -1
-    };
+    );
 
-    int right[] = {
+    Matrix<int, 5> right(
           0,   5,   3,   4,   4,
           5,   5,   0,   0,  -2,
           3,   2,  -4,  -3,   0,
          -3,   0,  -1,   2,  -1,
           0,  -1,  -4,   4,   3
-    };
+    );
 
-    int expected[] = {
+    Matrix<int, 5> expected(
         -24, -35, -32, -25,   1,
         -22, -36, -24,  33,  -8,
           8,  16, -22,  29,   2,
          -1,   0,   1, -12,  16,
         -12,   8, -20, -26,  -2
-    };
+    );
 
-    bool is = (Matrix<int, 5>(left)*Matrix<int, 5>(right) == Matrix<int, 5>(expected));
-
-    QVERIFY(is);
+    QVERIFY(left*right == expected);
 }
 
 void MatrixTest::multiplyVector() {
-    int matrix[] = {
+    Matrix<int, 5> matrix(
          -3,  -3,  -1,   3,  -5,
          -1,  -3,  -5,   2,   3,
          -1,  -4,   3,  -1,  -2,
          -5,  -5,  -1,  -4,  -1,
           1,   3,  -3,  -4,  -1
-    };
+    );
 
-    bool is = (Matrix<int, 5>(matrix)*Vector<int, 5>(0, 5, 3, 4, 4) == Vector<int, 5>(-24, -35, -32, -25, 1));
+    bool is = (matrix*Vector<int, 5>(0, 5, 3, 4, 4) == Vector<int, 5>(-24, -35, -32, -25, 1));
 
     QVERIFY(is);
 }
 
 void MatrixTest::transposed() {
-    float original[] = {
+    Matrix4 original(
         0.0f,   1.0f,   2.0f,   3.0f,
         4.0f,   5.0f,   6.0f,   7.0f,
         8.0f,   9.0f,   10.0f,  11.0f,
         12.0f,  13.0f,  14.0f,  15.0f
-    };
+    );
 
-    float transposed[] = {
+    Matrix4 transposed(
         0.0f,   4.0f,   8.0f,   12.0f,
         1.0f,   5.0f,   9.0f,   13.0f,
         2.0f,   6.0f,   10.0f,  14.0f,
         3.0f,   7.0f,   11.0f,  15.0f
-    };
+    );
 
-    QVERIFY(Matrix4(original).transposed() == Matrix4(transposed));
+    QVERIFY(original.transposed() == transposed);
 }
 
 void MatrixTest::ij() {
-    float original[] = {
+    Matrix4 original(
         0.0f,   1.0f,   2.0f,   3.0f,
         4.0f,   5.0f,   6.0f,   7.0f,
         8.0f,   9.0f,   10.0f,  11.0f,
         12.0f,  13.0f,  14.0f,  15.0f
-    };
+    );
 
-    float skipped[] = {
+    Matrix3 skipped(
         0.0f,   1.0f,   3.0f,
         8.0f,   9.0f,   11.0f,
         12.0f,  13.0f,  15.0f
-    };
+    );
 
-    QVERIFY(Matrix4(original).ij(2, 1) == Matrix3(skipped));
+    QVERIFY(original.ij(2, 1) == skipped);
 }
 
 void MatrixTest::determinant() {
-    int m[] = {
+    Matrix<int, 5> m(
         1, 2, 2, 1, 0,
         2, 3, 2, 1, -2,
         1, 1, 1, 1, 0,
         2, 0, 0, 1, 2,
         3, 1, 0, 1, -2
-    };
+    );
 
-    int d = Matrix<int, 5>(m).determinant();
-
-    QVERIFY(d == -2);
+    QVERIFY(m.determinant() == -2);
 }
 
 void MatrixTest::inverse() {
-    float m[] = {
-        3, 5, 8, 4,
-        4, 4, 7, 3,
-        7, -1, 8, 0,
-        9, 4, 5, 9
-    };
+    Matrix4 m(
+        3.0f, 5.0f, 8.0f, 4.0f,
+        4.0f, 4.0f, 7.0f, 3.0f,
+        7.0f, -1.0f, 8.0f, 0.0f,
+        9.0f, 4.0f, 5.0f, 9.0f
+    );
 
-    float inverse[] = {
+    Matrix4 inverse(
         -60/103.0f,      71/103.0f,     -4/103.0f,      3/103.0f,
         -66/103.0f,     109/103.0f,     -25/103.0f,     -7/103.0f,
         177/412.0f,     -97/206.0f,     53/412.0f,      -7/206.0f,
         259/412.0f,     -185/206.0f,    31/412.0f,      27/206.0f
-    };
+    );
 
-    Matrix4 _inverse = Matrix4(m).inverse();
+    Matrix4 _inverse = m.inverse();
 
-    QVERIFY(_inverse == Matrix4(inverse));
-    QVERIFY(_inverse*Matrix4(m) == Matrix4());
+    QVERIFY(_inverse == inverse);
+    QVERIFY(_inverse*m == Matrix4());
 }
 
 void MatrixTest::debug() {
-    float m[] = {
-        3, 5, 8, 4,
-        4, 4, 7, 3,
-        7, -1, 8, 0,
-        9, 4, 5, 9
-    };
+    Matrix4 m(
+        3.0f, 5.0f, 8.0f, 4.0f,
+        4.0f, 4.0f, 7.0f, 3.0f,
+        7.0f, -1.0f, 8.0f, 0.0f,
+        9.0f, 4.0f, 5.0f, 9.0f
+    );
 
     ostringstream o;
-    Debug(&o) << Matrix4(m);
+    Debug(&o) << m;
     QCOMPARE(QString::fromStdString(o.str()), QString("Matrix(3, 4, 7, 9,\n"
                                                       "       5, 4, -1, 4,\n"
                                                       "       8, 7, 8, 5,\n"

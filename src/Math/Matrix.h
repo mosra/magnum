@@ -42,6 +42,15 @@ template<class T, size_t size> class Matrix {
         }
 
         /**
+         * @brief Initializer-list constructor
+         * @param first First value
+         * @param next  Next values
+         *
+         * Note that the values are in column-major order.
+         */
+        template<class ...U> inline Matrix(T first, U&&... next): _data{first, std::forward<U>(next)...} {}
+
+        /**
          * @brief Constructor
          * @param data  One-dimensional array of @c size*size length in column-major order.
          */

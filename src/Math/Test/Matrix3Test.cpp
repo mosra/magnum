@@ -30,14 +30,14 @@ namespace Magnum { namespace Math { namespace Test {
 typedef Math::Matrix3<float> Matrix3;
 
 void Matrix3Test::debug() {
-    float m[] = {
-        3, 5, 8,
-        4, 4, 7,
-        7, -1, 8,
-    };
+    Matrix3 m(
+        3.0f, 5.0f, 8.0f,
+        4.0f, 4.0f, 7.0f,
+        7.0f, -1.0f, 8.0f
+    );
 
     ostringstream o;
-    Debug(&o) << Matrix3(m);
+    Debug(&o) << m;
     QCOMPARE(QString::fromStdString(o.str()), QString("Matrix(3, 4, 7,\n"
                                                       "       5, 4, -1,\n"
                                                       "       8, 7, 8)\n"));

@@ -76,26 +76,28 @@ template<class T> class Matrix4: public Matrix<T, 4> {
             T yz = vn.y()*vn.z();
             T zz = vn.z()*vn.z();
 
-            /* Not creating identity matrix, as nearly all ones would be
-               overwritten */
-            Matrix4 out(false);
-            out.set(3, 3, T(1));
-
-            out.set(0, 0, cosine + xx*oneMinusCosine);
-            out.set(0, 1, xy*oneMinusCosine - vn.z()*sine);
-            out.set(0, 2, xz*oneMinusCosine + vn.y()*sine);
-            out.set(1, 0, xy*oneMinusCosine + vn.z()*sine);
-            out.set(1, 1, cosine + yy*oneMinusCosine);
-            out.set(1, 2, yz*oneMinusCosine - vn.x()*sine);
-            out.set(2, 0, xz*oneMinusCosine - vn.y()*sine);
-            out.set(2, 1, yz*oneMinusCosine + vn.x()*sine);
-            out.set(2, 2, cosine + zz*oneMinusCosine);
-
-            return out;
+            return Matrix4( /* Column-major! */
+                cosine + xx*oneMinusCosine,
+                    xy*oneMinusCosine + vn.z()*sine,
+                        xz*oneMinusCosine - vn.y()*sine,
+                           T(0),
+                xy*oneMinusCosine - vn.z()*sine,
+                    cosine + yy*oneMinusCosine,
+                        yz*oneMinusCosine + vn.x()*sine,
+                           T(0),
+                xz*oneMinusCosine + vn.y()*sine,
+                    yz*oneMinusCosine - vn.x()*sine,
+                        cosine + zz*oneMinusCosine,
+                           T(0),
+                T(0), T(0), T(0), T(1)
+            );
         }
 
         /** @copydoc Matrix::Matrix(bool) */
         inline Matrix4(bool identity = true): Matrix<T, 4>(identity) {}
+
+        /** @copydoc Matrix::Matrix(T, U&&...) */
+        template<class ...U> inline Matrix4(T first, U&&... next): Matrix<T, 4>(first, std::forward<U>(next)...) {}
 
         /** @copydoc Matrix::Matrix(const T*) */
         inline Matrix4(const T* data): Matrix<T, 4>(data) {}

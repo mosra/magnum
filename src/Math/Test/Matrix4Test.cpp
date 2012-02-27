@@ -31,48 +31,48 @@ namespace Magnum { namespace Math { namespace Test {
 typedef Math::Matrix4<float> Matrix4;
 
 void Matrix4Test::translation() {
-    float matrix[] = {
+    Matrix4 matrix(
         1.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 1.0f, 0.0f,
         3.0f, 1.0f, 2.0f, 1.0f
-    };
+    );
 
-    QVERIFY(Matrix4::translation({3.0f, 1.0f, 2.0f}) == Matrix4(matrix));
+    QVERIFY(Matrix4::translation({3.0f, 1.0f, 2.0f}) == matrix);
 }
 
 void Matrix4Test::scaling() {
-    float matrix[] = {
+    Matrix4 matrix(
         3.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 1.5f, 0.0f, 0.0f,
         0.0f, 0.0f, 2.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 1.0f
-    };
+    );
 
-    QVERIFY(Matrix4::scaling({3.0f, 1.5f, 2.0f}) == Matrix4(matrix));
+    QVERIFY(Matrix4::scaling({3.0f, 1.5f, 2.0f}) == matrix);
 }
 
 void Matrix4Test::rotation() {
-    float matrix[] = {
+    Matrix4 matrix(
         0.35612214f,  -0.80181062f, 0.47987163f,  0.0f,
         0.47987163f,  0.59757638f,  0.6423595f,  0.0f,
         -0.80181062f, 0.0015183985f, 0.59757638f,  0.0f,
         0.0f,       0.0f,       0.0f,       1.0f
-    };
+    );
 
-    QVERIFY(Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f}) == Matrix4(matrix));
+    QVERIFY(Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f}) == matrix);
 }
 
 void Matrix4Test::debug() {
-    float m[] = {
-        3, 5, 8, 4,
-        4, 4, 7, 3,
-        7, -1, 8, 0,
-        9, 4, 5, 9
-    };
+    Matrix4 m(
+        3.0f, 5.0f, 8.0f, 4.0f,
+        4.0f, 4.0f, 7.0f, 3.0f,
+        7.0f, -1.0f, 8.0f, 0.0f,
+        9.0f, 4.0f, 5.0f, 9.0f
+    );
 
     ostringstream o;
-    Debug(&o) << Matrix4(m);
+    Debug(&o) << m;
     QCOMPARE(QString::fromStdString(o.str()), QString("Matrix(3, 4, 7, 9,\n"
                                                       "       5, 4, -1, 4,\n"
                                                       "       8, 7, 8, 5,\n"

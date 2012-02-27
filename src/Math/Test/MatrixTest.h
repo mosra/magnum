@@ -23,6 +23,7 @@ class MatrixTest: public QObject {
     Q_OBJECT
 
     private slots:
+        void construct();
         void constructIdentity();
         void constructZero();
         void data();

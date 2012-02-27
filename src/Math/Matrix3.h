@@ -30,6 +30,9 @@ template<class T> class Matrix3: public Matrix<T, 3> {
         /** @copydoc Matrix::Matrix(bool) */
         inline Matrix3(bool identity = true): Matrix<T, 3>(identity) {}
 
+        /** @copydoc Matrix::Matrix(T, U&&...) */
+        template<class ...U> inline Matrix3(T first, U&&... next): Matrix<T, 3>(first, std::forward<U>(next)...) {}
+
         /** @copydoc Matrix::Matrix(const T*) */
         inline Matrix3(const T* data): Matrix<T, 3>(data) {}
 
