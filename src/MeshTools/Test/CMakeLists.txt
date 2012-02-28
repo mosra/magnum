@@ -1,4 +1,5 @@
 corrade_add_test(CleanTest CleanTest.h CleanTest.cpp ${CORRADE_UTILITY_LIBRARY})
+corrade_add_test(CombineIndexedArraysTest CombineIndexedArraysTest.h CombineIndexedArraysTest.cpp ${CORRADE_UTILITY_LIBRARY})
 corrade_add_test(CompressIndicesTest CompressIndicesTest.h CompressIndicesTest.cpp ${CORRADE_UTILITY_LIBRARY} ${MAGNUM_LIBRARY})
 corrade_add_test(InterleaveTest InterleaveTest.h InterleaveTest.cpp ${CORRADE_UTILITY_LIBRARY})
 corrade_add_test(SubdivideTest SubdivideTest.h SubdivideTest.cpp ${CORRADE_UTILITY_LIBRARY})
