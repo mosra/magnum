@@ -43,7 +43,11 @@ template<> class Icosphere<0>: public Trade::MeshData {
  * @brief %Icosphere primitive
  * @tparam subdivisions     Number of subdivisions
  */
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template<size_t subdivisions> class Icosphere: public Icosphere<0> {
+#else
+template<size_t subdivisions> class Icosphere {
+#endif
     public:
         /** @brief Constructor */
         Icosphere() {

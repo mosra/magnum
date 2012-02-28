@@ -116,7 +116,12 @@ typedef BufferedImage<1> BufferedImage1D;
 /** @brief Two-dimensional buffered image */
 class MAGNUM_EXPORT BufferedImage2D: public BufferedImage<2> {
     public:
-        /** @copydoc BufferedImage::BufferedImage */
+        /**
+         * @brief Constructor
+         * @param colorFormat   Color format of the data.
+         * @param type          Data type per color channel
+         */
+        /* doxygen: @copydoc BufferedImage::BufferedImage doesn't work */
         inline BufferedImage2D(AbstractTexture::ColorFormat colorFormat, Type type): BufferedImage(colorFormat, type) {}
 
         /**

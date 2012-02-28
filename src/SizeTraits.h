@@ -35,8 +35,8 @@ if you want to store 289 elements, they occupy two bytes, so
 convenience you can use Log class to compute logarithms at compile time, e.g.
 <tt>%SizeTraits&lt;Log&lt;256, <strong>289</strong>&gt;::%value&gt;::%SizeType</tt>.
 */
-template<size_t byte> struct SizeTraits: public SizeTraits<byte - 1> {
-    #ifdef DOXYGEN_GENERATING_OUTPUT
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<size_t byte> struct SizeTraits {
     /**
      * @brief (Unsigned) type able to index the data
      *
@@ -44,8 +44,10 @@ template<size_t byte> struct SizeTraits: public SizeTraits<byte - 1> {
      * OpenGL doesn't have any type which would be able to store the indices.
      */
     typedef T SizeType;
-    #endif
 };
+#else
+template<size_t byte> struct SizeTraits: public SizeTraits<byte - 1> {};
+#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> struct SizeTraits<0> {

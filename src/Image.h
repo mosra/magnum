@@ -121,7 +121,15 @@ typedef Image<1> Image1D;
 /** @brief Two-dimensional image */
 class MAGNUM_EXPORT Image2D: public Image<2> {
     public:
-        /** @copydoc Image::Image */
+        /**
+         * @brief Constructor
+         * @param colorFormat       Color format of passed data
+         * @param type              Data type per color channel
+         *
+         * Dimensions and data pointer are are set to zero, call
+         * setDimensions() and setData() to fill the image with data.
+         */
+        /* doxygen: @copydoc Image::Image doesn't work */
         inline Image2D(AbstractTexture::ColorFormat colorFormat, Type type): Image(colorFormat, type) {}
 
         /**

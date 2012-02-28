@@ -96,7 +96,14 @@ template<class T> class Matrix4: public Matrix<T, 4> {
         /** @copydoc Matrix::Matrix(bool) */
         inline Matrix4(bool identity = true): Matrix<T, 4>(identity) {}
 
-        /** @copydoc Matrix::Matrix(T, U&&...) */
+        /**
+         * @brief Initializer-list constructor
+         * @param first First value
+         * @param next  Next values
+         *
+         * Note that the values are in column-major order.
+         */
+        /* doxygen: @copydoc Matrix::Matrix(T, U&&...) doesn't work */
         template<class ...U> inline Matrix4(T first, U&&... next): Matrix<T, 4>(first, std::forward<U>(next)...) {}
 
         /** @copydoc Matrix::Matrix(const T*) */
