@@ -32,6 +32,8 @@ typedef Math::Vector3<float> Vector3;
 
 void Vector4Test::construct() {
     QVERIFY(Vector4() == Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+    QVERIFY((Vector4(1, 2, 3, 4) == Vector<float, 4>(1.0f, 2.0f, 3.0f, 4.0f)));
+    QVERIFY((Vector4(Vector<float, 3>(1.0f, 2.0f, 3.0f), 4) == Vector<float, 4>(1.0f, 2.0f, 3.0f, 4.0f)));
 }
 
 void Vector4Test::threeComponent() {

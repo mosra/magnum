@@ -29,6 +29,11 @@ namespace Magnum { namespace Math { namespace Test {
 
 typedef Math::Vector3<float> Vector3;
 
+void Vector3Test::construct() {
+    QVERIFY((Vector3(1, 2, 3) == Vector<float, 3>(1.0f, 2.0f, 3.0f)));
+    QVERIFY((Vector3(Vector<float, 2>(1.0f, 2.0f), 3) == Vector<float, 3>(1.0f, 2.0f, 3.0f)));
+}
+
 void Vector3Test::cross() {
     Vector3 a(1, -1, 1);
     Vector3 b(4, 3, 7);

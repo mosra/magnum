@@ -29,6 +29,10 @@ namespace Magnum { namespace Math { namespace Test {
 
 typedef Math::Vector2<float> Vector2;
 
+void Vector2Test::construct() {
+    QVERIFY((Vector2(1, 2) == Vector<float, 2>(1.0f, 2.0f)));
+}
+
 void Vector2Test::debug() {
     ostringstream o;
     Debug(&o) << Vector2(0.5f, 15.0f);

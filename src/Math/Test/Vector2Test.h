@@ -23,6 +23,7 @@ class Vector2Test: public QObject {
     Q_OBJECT
 
     private slots:
+        void construct();
         void debug();
 };
 
