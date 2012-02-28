@@ -22,6 +22,7 @@
 #include <unordered_map>
 #include <limits>
 
+#include "Utility/MurmurHash2.h"
 #include "TypeTraits.h"
 
 namespace Magnum { namespace MeshTools {
@@ -113,10 +114,7 @@ template<class Vertex, size_t vertexSize = Vertex::Size> class Clean {
         class IndexHash {
             public:
                 inline size_t operator()(const Math::Vector<size_t, vertexSize>& data) const {
-                    size_t a = 0;
-                    for(size_t i = 0; i != vertexSize; ++i)
-                        a ^= data[i];
-                    return a;
+                    return *reinterpret_cast<const size_t*>(Corrade::Utility::MurmurHash2()(reinterpret_cast<const char*>(&data), sizeof(data)).byteArray());
                 }
         };
 
