@@ -133,8 +133,8 @@ template<class T> class Matrix4: public Matrix<T, 4> {
         /** @copydoc Matrix::ij() */
         inline Matrix3<T> ij(size_t skipRow, size_t skipCol) const { return Matrix<T, 4>::ij(skipRow, skipCol); }
 
-        /** @copydoc Matrix::inverse() */
-        inline Matrix4<T> inverse() const { return Matrix<T, 4>::inverse(); }
+        /** @copydoc Matrix::inversed() */
+        inline Matrix4<T> inversed() const { return Matrix<T, 4>::inversed(); }
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

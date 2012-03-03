@@ -197,7 +197,7 @@ template<class T, size_t size> class Matrix {
         /**
          * @brief Inverse matrix
          */
-        Matrix<T, size> inverse() const {
+        Matrix<T, size> inversed() const {
             Matrix<T, size> out(false);
 
             T _determinant = determinant();
