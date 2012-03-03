@@ -35,9 +35,9 @@ functions and properties:
    attribute is bound, for example:
 @code
 enum Attribute {
-    Vertex = 1,
-    Normal = 2,
-    TextureCoords = 3,
+    Vertex = 0,
+    Normal = 1,
+    TextureCoords = 2
 };
 @endcode
    See also bindAttribute().
