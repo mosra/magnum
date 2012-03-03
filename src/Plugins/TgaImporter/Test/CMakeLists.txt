@@ -1,0 +1,2 @@
+corrade_add_test(TgaImporterTest TgaImporterTest.h TgaImporterTest.cpp)
+target_link_libraries(TgaImporterTest TgaImporterTestLib)

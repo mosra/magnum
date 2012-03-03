@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_TGAImporter_TGAImporter_h
-#define Magnum_Trade_TGAImporter_TGAImporter_h
+#ifndef Magnum_Trade_TgaImporter_TgaImporter_h
+#define Magnum_Trade_TgaImporter_TgaImporter_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,17 +16,17 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::TGAImporter::TGAImporter
+ * @brief Class Magnum::Trade::TgaImporter::TgaImporter
  */
 
 #include "Trade/AbstractImporter.h"
 
-namespace Magnum { namespace Trade { namespace TGAImporter {
+namespace Magnum { namespace Trade { namespace TgaImporter {
 
-class TGAImporter: public AbstractImporter {
+class TgaImporter: public AbstractImporter {
     public:
-        TGAImporter(Corrade::PluginManager::AbstractPluginManager* manager = 0, const std::string& plugin = ""): AbstractImporter(manager, plugin), _image(nullptr) {}
-        inline virtual ~TGAImporter() { close(); }
+        TgaImporter(Corrade::PluginManager::AbstractPluginManager* manager = 0, const std::string& plugin = ""): AbstractImporter(manager, plugin), _image(nullptr) {}
+        inline virtual ~TgaImporter() { close(); }
 
         inline int features() const { return OpenFile|OpenStream; }
 

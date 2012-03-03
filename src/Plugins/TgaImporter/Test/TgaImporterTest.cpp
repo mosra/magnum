@@ -13,64 +13,64 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "TGAImporterTest.h"
+#include "TgaImporterTest.h"
 
 #include <QtTest/QTest>
 
 #include "Utility/Debug.h"
-#include "../TGAImporter.h"
+#include "../TgaImporter.h"
 
 using namespace std;
 using namespace Corrade::Utility;
 
-QTEST_APPLESS_MAIN(Magnum::Trade::TGAImporter::Test::TGAImporterTest)
+QTEST_APPLESS_MAIN(Magnum::Trade::TgaImporter::Test::TgaImporterTest)
 
-namespace Magnum { namespace Trade { namespace TGAImporter { namespace Test {
+namespace Magnum { namespace Trade { namespace TgaImporter { namespace Test {
 
-void TGAImporterTest::paletted() {
+void TgaImporterTest::paletted() {
     const char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     istringstream in(string(data, sizeof(data)));
 
     ostringstream debug;
     Error::setOutput(&debug);
 
-    TGAImporter importer;
+    TgaImporter importer;
     QVERIFY(!importer.open(in));
-    QCOMPARE(debug.str().c_str(), "TGAImporter: paletted files are not supported\n");
+    QCOMPARE(debug.str().c_str(), "TgaImporter: paletted files are not supported\n");
 }
 
-void TGAImporterTest::nonRgb() {
+void TgaImporterTest::nonRgb() {
     const char data[] = { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     istringstream in(string(data, sizeof(data)));
 
     ostringstream debug;
     Error::setOutput(&debug);
 
-    TGAImporter importer;
+    TgaImporter importer;
     QVERIFY(!importer.open(in));
-    QCOMPARE(debug.str().c_str(), "TGAImporter: non-RGB files are not supported\n");
+    QCOMPARE(debug.str().c_str(), "TgaImporter: non-RGB files are not supported\n");
 }
 
-void TGAImporterTest::bits16() {
+void TgaImporterTest::bits16() {
     const char data[] = { 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0 };
     istringstream in(string(data, sizeof(data)));
 
     ostringstream debug;
     Error::setOutput(&debug);
 
-    TGAImporter importer;
+    TgaImporter importer;
     QVERIFY(!importer.open(in));
-    QCOMPARE(debug.str().c_str(), "TGAImporter: unsupported bits-per-pixel: 16\n");
+    QCOMPARE(debug.str().c_str(), "TgaImporter: unsupported bits-per-pixel: 16\n");
 }
 
-void TGAImporterTest::bits24() {
+void TgaImporterTest::bits24() {
     const char data[] = {
         0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
         1, 2, 3, 2, 3, 4, 3, 4, 5, 4, 5, 6, 5, 6, 7, 6, 7, 8
     };
     std::istringstream in(string(data, sizeof(data)));
 
-    TGAImporter importer;
+    TgaImporter importer;
     QVERIFY(importer.open(in));
     auto image = importer.image2D(0);
     QVERIFY(image->colorFormat() == AbstractTexture::ColorFormat::BGR);
@@ -79,14 +79,14 @@ void TGAImporterTest::bits24() {
     QVERIFY(string(static_cast<const char*>(image->data())) == string(data + 18, 2*3*3));
 }
 
-void TGAImporterTest::bits32() {
+void TgaImporterTest::bits32() {
     const char data[] = {
         0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 32, 0,
         1, 2, 3, 1, 2, 3, 4, 1, 3, 4, 5, 1, 4, 5, 6, 1, 5, 6, 7, 1, 6, 7, 8, 1
     };
     std::istringstream in(string(data, sizeof(data)));
 
-    TGAImporter importer;
+    TgaImporter importer;
     QVERIFY(importer.open(in));
     auto image = importer.image2D(0);
     QVERIFY(image->colorFormat() == AbstractTexture::ColorFormat::BGRA);

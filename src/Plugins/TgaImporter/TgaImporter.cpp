@@ -13,7 +13,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "TGAImporter.h"
+#include "TgaImporter.h"
 
 #include "Utility/Endianness.h"
 #include "Math/Vector2.h"
@@ -22,20 +22,20 @@
 using namespace std;
 using namespace Corrade::Utility;
 
-PLUGIN_REGISTER(Magnum::Trade::TGAImporter::TGAImporter, "cz.mosra.magnum.Trade.AbstractImporter/0.1")
+PLUGIN_REGISTER(Magnum::Trade::TgaImporter::TgaImporter, "cz.mosra.magnum.Trade.AbstractImporter/0.1")
 
-namespace Magnum { namespace Trade { namespace TGAImporter {
+namespace Magnum { namespace Trade { namespace TgaImporter {
 
-static_assert(sizeof(TGAImporter::Header) == 18, "TGAImporter: header size is not 18 bytes");
+static_assert(sizeof(TgaImporter::Header) == 18, "TgaImporter: header size is not 18 bytes");
 
-bool TGAImporter::TGAImporter::open(const string& filename) {
+bool TgaImporter::TgaImporter::open(const string& filename) {
     ifstream in(filename.c_str());
     bool status = open(in);
     in.close();
     return status;
 }
 
-bool TGAImporter::open(std::istream& in) {
+bool TgaImporter::open(std::istream& in) {
     if(_image) close();
     if(!in.good()) return false;
 
@@ -47,12 +47,12 @@ bool TGAImporter::open(std::istream& in) {
     header.height = Endianness::littleEndian<unsigned short>(header.height);
 
     if(header.colorMapType != 0) {
-        Error() << "TGAImporter: paletted files are not supported";
+        Error() << "TgaImporter: paletted files are not supported";
         return false;
     }
 
     if(header.imageType != 2) {
-        Error() << "TGAImporter: non-RGB files are not supported";
+        Error() << "TgaImporter: non-RGB files are not supported";
         return false;
     }
 
@@ -65,7 +65,7 @@ bool TGAImporter::open(std::istream& in) {
             colorFormat = AbstractTexture::ColorFormat::BGRA;
             break;
         default:
-            Error() << "TGAImporter: unsupported bits-per-pixel:" << (int) header.bpp;
+            Error() << "TgaImporter: unsupported bits-per-pixel:" << (int) header.bpp;
             return false;
     }
 
@@ -79,12 +79,12 @@ bool TGAImporter::open(std::istream& in) {
     return true;
 }
 
-void TGAImporter::close() {
+void TgaImporter::close() {
     delete _image;
     _image = nullptr;
 }
 
-ImageData2D* TGAImporter::image2D(size_t id) {
+ImageData2D* TgaImporter::image2D(size_t id) {
     return _image;
 }
 
