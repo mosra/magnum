@@ -28,8 +28,8 @@ PhongShader::PhongShader() {
     attachShader(vertexShader);
     attachShader(fragmentShader);
 
-    bindAttribute(Vertex, "vertex");
-    bindAttribute(Normal, "normal");
+    bindAttribute(Vertex::Location, "vertex");
+    bindAttribute(Normal::Location, "normal");
 
     link();
     delete vertexShader;

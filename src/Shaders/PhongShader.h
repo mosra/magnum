@@ -26,11 +26,8 @@ namespace Magnum { namespace Shaders {
 /** @brief Phong shader */
 class PhongShader: public AbstractShaderProgram {
     public:
-        /** @brief Attribute */
-        enum Attribute {
-            Vertex = 0,     /**< @brief Vertex position (four-component vector) */
-            Normal = 1      /**< @brief Normal direction (three-component vector) */
-        };
+        typedef Attribute<0, Vector4> Vertex;   /**< @brief Vertex position */
+        typedef Attribute<1, Vector3> Normal;   /**< @brief Normal direction */
 
         /** @brief Constructor */
         PhongShader();

@@ -162,17 +162,17 @@ class MAGNUM_EXPORT Mesh {
 
         /**
          * @brief Bind attribute
+         * @tparam attribute    Attribute, defined in the shader
          * @param buffer        Buffer where bind the attribute to (pointer
          *      returned by addBuffer())
-         * @param attribute     Attribute
          *
          * Binds attribute of given type with given buffer. If the attribute is
          * already bound, given buffer isn't managed with this mesh (wasn't
          * initialized with addBuffer) or the mesh was already drawn, the
          * function does nothing.
          */
-        template<class T> inline void bindAttribute(Buffer* buffer, GLuint attribute) {
-            bindAttribute(buffer, attribute, TypeTraits<T>::count(), TypeTraits<T>::glType());
+        template<class Attribute> inline void bindAttribute(Buffer* buffer) {
+            bindAttribute(buffer, Attribute::Location, TypeTraits<typename Attribute::Type>::count(), TypeTraits<typename Attribute::Type>::glType());
         }
 
         /**

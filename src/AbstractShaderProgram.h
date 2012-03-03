@@ -31,14 +31,12 @@ namespace Magnum {
 
 This class is designed to be used via subclassing. Subclasses define these
 functions and properties:
- - <strong>Attribute location</strong> enum with indexes where the particular
-   attribute is bound, for example:
+ - <strong>Attribute location</strong> typedefs defining locations and types
+   for attribute binding with Mesh::bindAttribute(), for example:
 @code
-enum Attribute {
-    Vertex = 0,
-    Normal = 1,
-    TextureCoords = 2
-};
+typedef Attribute<0, Vector4> Vertex;
+typedef Attribute<1, Vector3> Normal;
+typedef Attribute<2, Vector2> TextureCoords;
 @endcode
    See also bindAttribute().
  - @b Constructor, which attaches particular shaders, links the program, binds
@@ -51,9 +49,9 @@ enum Attribute {
     attachShader(fragmentShader);
 
     // Bind attribute names to IDs
-    bindAttribute(Vertex, "vertex");
-    bindAttribute(Normal, "normal");
-    bindAttribute(TextureCoords, "textureCoords");
+    bindAttribute(Vertex::Location, "vertex");
+    bindAttribute(Normal::Location, "normal");
+    bindAttribute(TextureCoords::Location, "textureCoords");
 
     // Link, then delete now uneeded shaders
     link();
@@ -84,6 +82,17 @@ class MAGNUM_EXPORT AbstractShaderProgram {
     AbstractShaderProgram& operator=(AbstractShaderProgram&& other) = delete;
 
     public:
+        /**
+         * @brief Base struct for attribute location and type
+         *
+         * See AbstractShaderProgram documentation or Mesh::bindAttribute()
+         * for an example.
+         */
+        template<size_t i, class T> struct Attribute {
+            static const size_t Location = i;   /**< Location to which the attribute is bound */
+            typedef T Type;                     /**< Attribute type */
+        };
+
         /** @brief Default constructor */
         AbstractShaderProgram();
 
