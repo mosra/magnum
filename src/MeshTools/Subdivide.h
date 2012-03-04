@@ -93,11 +93,11 @@ template<class Vertex, class Interpolator> class Subdivide {
 /**
 @brief %Subdivide the mesh
 @tparam Vertex          Vertex data type (the same as in MeshBuilder)
-@tparam Interpolator    See @c interpolator function parameter
+@tparam Interpolator    See `interpolator` function parameter
 @param indices          Index array to operate on
 @param vertices         Vertex array to operate on
 @param interpolator     Functor or function pointer which interpolates
-    two adjacent vertices: <tt>Vertex interpolator(Vertex a, Vertex b)</tt>
+    two adjacent vertices: `Vertex interpolator(Vertex a, Vertex b)`
 
 Goes through all triangle faces and subdivides them into four new. Cleaning
 duplicate vertices in the mesh is up to user.

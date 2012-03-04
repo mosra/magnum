@@ -59,7 +59,7 @@ size_t MAGNUM_EXPORT log(size_t base, size_t number);
  * @brief Angle in degrees
  *
  * Function to make angle entering less error-prone. Converts the value to
- * radians at compile time. For example @c deg(180.0f) is converted to @c 3.14f.
+ * radians at compile time. For example `deg(180.0f)` is converted to `3.14f`.
  */
 template<class T> inline constexpr T deg(T value) { return value*PI/180; }
 

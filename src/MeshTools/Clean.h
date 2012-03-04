@@ -150,7 +150,7 @@ you can just write
 @code
 MeshTools::clean(indices, vertices, epsilon);
 @endcode
-However, when you want to specify @c vertexSize template parameter, you have
+However, when you want to specify `vertexSize` template parameter, you have
 to explicitly specify both of them:
 @code
 MeshTools::clean<T, 3>(indices, vertices, epsilon);

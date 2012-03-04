@@ -27,8 +27,7 @@ namespace Magnum {
 @brief %Texture
 @tparam dimensions      %Texture dimension count
 @tparam target          %Target. If not set, target is based on dimension
-    count (@c Target::Texture1D, @c Target::Texture2D or
-    @c Target::Texture3D).
+    count (`Target::Texture1D`, `Target::Texture2D` or `Target::Texture3D`).
 
 Template class for one- to three-dimensional textures.
 
@@ -38,16 +37,16 @@ unusable.
 
 The texture is bound via bind() and setting texture uniform on the shader to the
 texture (see AbstractShaderProgram::setUniform(GLint, const AbstractTexture*)).
-In shader, the texture is used via @c sampler1D, @c sampler2D or @c sampler3D
+In shader, the texture is used via `sampler1D`, `sampler2D` or `sampler3D`
 depending on dimension count. Note that you can have more than one texture bound
 to the shader - the only requirement is to have each texture in another layer.
 
 @section RectangleTextures Rectangle textures
 
 If you want to use rectangle textures, set target in constructor to
-@c Target::Rectangle and in shader use @c sampler2DRect. Unlike @c sampler2D,
-which accepts coordinates between 0 and 1, @c sampler2DRect accepts coordinates
-between 0 and @c textureSizeInGivenDirection-1. Note that rectangle textures
+`Target::Rectangle` and in shader use `sampler2DRect`. Unlike `sampler2D`,
+which accepts coordinates between 0 and 1, `sampler2DRect` accepts coordinates
+between 0 and `textureSizeInGivenDirection-1`. Note that rectangle textures
 don't support mipmapping and repeating wrapping modes, see @ref Texture::Filter
 "Filter", @ref Texture::Mipmap "Mipmap" and generateMipmap() documentation
 for more information.

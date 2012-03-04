@@ -187,7 +187,7 @@ class MAGNUM_EXPORT Mesh {
         /** @brief Vertex attribute */
         struct Attribute {
             GLuint attribute;           /**< @brief %Attribute ID */
-            GLint size;                 /**< @brief How many items of @c type are in the attribute */
+            GLint size;                 /**< @brief How many items of `type` are in the attribute */
             Type type;                  /**< @brief %Attribute item type */
             GLsizei stride;             /**< @brief Distance of two adjacent attributes of this type in interleaved buffer */
             const GLvoid* pointer;      /**< @brief Pointer to first attribute of this type in the buffer */

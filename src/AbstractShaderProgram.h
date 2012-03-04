@@ -31,16 +31,16 @@ namespace Magnum {
 
 This class is designed to be used via subclassing. Subclasses define these
 functions and properties:
- - <strong>Attribute location</strong> typedefs defining locations and types
-   for attribute binding with Mesh::bindAttribute(), for example:
+ - **Attribute location** typedefs defining locations and types for attribute
+   binding with Mesh::bindAttribute(), for example:
 @code
 typedef Attribute<0, Vector4> Vertex;
 typedef Attribute<1, Vector3> Normal;
 typedef Attribute<2, Vector2> TextureCoords;
 @endcode
    See also bindAttribute().
- - @b Constructor, which attaches particular shaders, links the program, binds
-   attribute locations and gets uniform locations, for example:
+ - **Constructor**, which attaches particular shaders, links the program,
+   binds attribute locations and gets uniform locations, for example:
 @code
     // Load shaders from file and attach them to the program
     Shader* vertexShader = Shader::fromFile(Shader::Vertex, "PhongShader.vert");
@@ -63,7 +63,7 @@ typedef Attribute<2, Vector2> TextureCoords;
     projectionMatrixUniform = uniformLocation("projectionMatrix");
     // more uniforms like light location, colors etc.
 @endcode
- - <strong>Uniform binding functions</strong>, which set shader uniforms with
+ - **Uniform binding functions**, which set shader uniforms with
    setUniform() and setUniformArray() functions. Example:
 @code
 void setTransformationMatrixUniform(const Matrix4& matrix) {
@@ -90,7 +90,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          */
         template<size_t i, class T> struct Attribute {
             static const size_t Location = i;   /**< Location to which the attribute is bound */
-            typedef T Type;                     /**< Attribute type */
+            typedef T Type;                     /**< %Attribute type */
         };
 
         /** @brief Default constructor */

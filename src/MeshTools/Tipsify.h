@@ -68,10 +68,9 @@ class MESHTOOLS_EXPORT Tipsify {
 
 Optimizes the mesh for vertex-bound applications by rearranging its index
 array for beter usage of post-transform vertex cache. Algorithm used:
-<em>Pedro V. Sander, Diego Nehab, and Joshua Barczak,
-<a href="http://gfx.cs.princeton.edu/pubs/Sander_2007_%3ETR/index.php">Fast
-Triangle Reordering for Vertex Locality and Reduced Overdraw</a>, SIGGRAPH
-2007</em>.
+*Pedro V. Sander, Diego Nehab, and Joshua Barczak - Fast Triangle Reordering
+for Vertex Locality and Reduced Overdraw, SIGGRAPH 2007,
+http://gfx.cs.princeton.edu/pubs/Sander_2007_%3ETR/index.php*.
 
 This is convenience function supplementing direct usage of Tipsify class,
 instead of

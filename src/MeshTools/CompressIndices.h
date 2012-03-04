@@ -108,8 +108,8 @@ class CompressIndices {
 
 This function takes index array and outputs them compressed to smallest
 possible size. For example when your indices have maximum number 463, it's
-wasteful to store them in array of <tt>unsigned int</tt>s, array of
-<tt>unsigned short</tt>s is sufficient.
+wasteful to store them in array of `unsigned int`s, array of
+`unsigned short`s is sufficient.
 
 This is convenience function supplementing direct usage of CompressIndices
 class, instead of

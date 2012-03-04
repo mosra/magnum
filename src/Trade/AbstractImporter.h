@@ -47,13 +47,14 @@ Importer is used for importing data like scenes, lights, objects, images,
 textures etc.
 
 @section AbstractImporterSubclassing Subclassing
-<p>Plugin implements function features(), one or more open() functions,
+Plugin implements function features(), one or more open() functions,
 function close() and one or more pairs of data access functions, based on
-which features are supported in given format.</p>
-<p>For multi-data formats file opening shouldn't take long, all parsing should
+which features are supported in given format.
+
+For multi-data formats file opening shouldn't take long, all parsing should
 be done in data parsing functions, because the user might want to import only
 some data. This is obviously not the case for single-data formats like images,
-as the file contains all data user wants to import.</p>
+as the file contains all data user wants to import.
 */
 class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
     PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.1")

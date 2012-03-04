@@ -135,7 +135,7 @@ class MAGNUM_EXPORT AbstractTexture {
         /**
          * @brief Constructor
          * @param layer     %Texture layer (number between 0 and 31)
-         * @param target    Target, e.g. @c GL_TEXTURE_2D.
+         * @param target    Target, e.g. `GL_TEXTURE_2D`.
          *
          * Creates one OpenGL texture.
          */
@@ -197,7 +197,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @brief Set border color
          *
          * Border color when @ref AbstractTexture::Wrapping "wrapping" is set
-         * to @c ClampToBorder.
+         * to `ClampToBorder`.
          */
         inline void setBorderColor(const Vector4& color) {
             bind();
@@ -244,14 +244,14 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * @brief Target for given dimension
              *
-             * Returns @c Target::Texture1D, @c Target::Texture2D or @c Target::Texture3D
-             * based on dimension count.
+             * Returns `Target::Texture1D`, `Target::Texture2D` or
+             * `Target::Texture3D` based on dimension count.
              */
             inline constexpr static Target target();
 
             /**
              * @brief Set texture wrapping
-             * @param target            Target, such as @c GL_TEXTURE_RECTANGLE
+             * @param target            Target, such as `GL_TEXTURE_RECTANGLE`
              * @param wrapping          Wrapping type for all texture dimensions
              */
             inline static void setWrapping(GLenum target, const Math::Vector<Wrapping, Dimensions>& wrapping);
@@ -266,7 +266,7 @@ class MAGNUM_EXPORT AbstractTexture {
              * @param type              Data type
              * @param data              %Texture data
              *
-             * Calls @c glTexImage1D, @c glTexImage2D, @c glTexImage3D depending
+             * Calls `glTexImage1D`, `glTexImage2D`, `glTexImage3D` depending
              * on dimension count.
              */
             inline static void set(Target target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, textureDimensions>& dimensions, ColorFormat colorFormat, Type type, const void* data);
@@ -293,7 +293,7 @@ class MAGNUM_EXPORT AbstractTexture {
              * @param type              Data type
              * @param data              %Texture data
              *
-             * Calls @c glTexSubImage1D, @c glTexSubImage2D, @c glTexSubImage3D
+             * Calls `glTexSubImage1D`, `glTexSubImage2D`, `glTexSubImage3D`
              * depending on dimension count.
              */
             inline static void setSub(SubTarget target, GLint mipLevel, const Math::Vector<GLint, textureDimensions>& offset, const Math::Vector<GLsizei, textureDimensions>& dimensions, ColorFormat colorFormat, Type type, const void* data);

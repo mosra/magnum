@@ -29,18 +29,18 @@ namespace Magnum {
 
 If you use indexed data, you would probably (for performance reasons) want to
 use the smallest type which is able to store all indices in given range. This
-class provides type suitable for given @b logarithmic size of data. For example,
-if you want to store 289 elements, they occupy two bytes, so
-<tt>%SizeTraits&lt;<strong>1</strong>&gt;::%SizeType</tt> is @c GLushort. For
-convenience you can use Log class to compute logarithms at compile time, e.g.
-<tt>%SizeTraits&lt;Log&lt;256, <strong>289</strong>&gt;::%value&gt;::%SizeType</tt>.
+class provides type suitable for given **logarithmic** size of data. For
+example, if you want to store 289 elements, they occupy two bytes, so
+`SizeTraits<1>::%SizeType` is `GLushort`. For convenience you can use Log class
+to compute logarithms at compile time, e.g.
+`SizeTraits<Log<256, 289>::%value>::%SizeType`.
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<size_t byte> struct SizeTraits {
     /**
      * @brief (Unsigned) type able to index the data
      *
-     * Not implemented for large sizes (> 2<sup>32</sup> elements), because
+     * Not implemented for large sizes (@f$ > 2^{32} @f$ elements), because
      * OpenGL doesn't have any type which would be able to store the indices.
      */
     typedef T SizeType;
@@ -66,8 +66,8 @@ template<> struct SizeTraits<4> {
 
 /**
 @brief Functor for calling templated function with type based on size
-@tparam Base    Base struct with templated function <tt>run()</tt>. See below
-    for example.
+@tparam Base    Base struct with templated function `run()`. See below for
+    example.
 
 If you have templated function which you want to call with type suitable for
 indexing data of some size, you will probably use cascade of IFs, like this:
@@ -84,8 +84,8 @@ else if(dataSize < 65536)
 @endcode
 But this approach leads to repetitive and unmaintainable code, especially if
 there are many arguments needed to pass to each function. The solution is to
-use this class. The only thing you need is to rename your function to
-<tt>run()</tt> and wrap it in a @c struct:
+use this class. The only thing you need is to rename your function to `run()`
+and wrap it in a `struct`:
 @code
 struct Foo {
     template<class IndexType> Bar run(Arg1 arg1, Arg2 arg2, ...);
@@ -106,10 +106,10 @@ template<class Base> struct SizeBasedCall: public Base {
 
     /**
      * @brief Functor
-     * @param arguments     Arguments passed to @c Base::run
-     * @return Return value of @c Base::run
+     * @param arguments     Arguments passed to `Base::run()`
+     * @return Return value of `Base::run()`
      *
-     * Calls @c Base::run based on data size (given in constructor). If there
+     * Calls `Base::run()` based on data size (given in constructor). If there
      * is no suitable type for indexing given data size, prints message to
      * error output and returns default-constructed value.
      */

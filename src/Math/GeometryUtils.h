@@ -35,9 +35,9 @@ template<class T> class GeometryUtils {
          * @param b         Ending point of the line
          * @return Value, NaN if the line lies on the plane or infinity if the
          * intersection doesn't exist. Intersection point can be then computed
-         * with <tt>a+intersection(...)*b</tt>. If returned value is in range
+         * with `a+intersection(...)*b`. If returned value is in range
          * @f$ [ 0 ; 1 ] @f$, the intersection is inside the line segment
-         * defined by @c a and @c b.
+         * defined by `a` and `b`.
          *
          * First the parametric equation of the plane is computed,
          * @f$ cx + dy + ez = f @f$. Parameters @f$ (c, d, e) @f$ are cross

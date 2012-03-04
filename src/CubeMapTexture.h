@@ -29,16 +29,16 @@ namespace Magnum {
 %Texture used mainly for environemnt maps, consisting of 6 square textures
 generating 6 faces of the cube as following. Note that all images must be
 turned upside down (+Y is top):
-<pre>
-          +----+
-          | -Y |
-+----+----+----+----+
-| -Z | -X | +Z | +X |
-+----+----+----+----+
-          | +Y |
-          +----+
-</pre>
-When using cube map texture in the shader, use @c samplerCube. Unlike normal
+
+              +----+
+              | -Y |
+    +----+----+----+----+
+    | -Z | -X | +Z | +X |
+    +----+----+----+----+
+              | +Y |
+              +----+
+
+When using cube map texture in the shader, use `samplerCube`. Unlike normal
 textures, coordinates for cube map textures is signed three-part vector from
 the center of the cube, which intersects one of the six sides of the cube map.
 

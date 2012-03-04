@@ -56,7 +56,7 @@ template<class T, size_t size> class Vector {
 
         /**
          * @brief Constructor
-         * @param data  Array of @c size length.
+         * @param data  Array with the same size as the vector.
          */
         inline Vector(const T* data) { setData(data); }
 
@@ -73,13 +73,13 @@ template<class T, size_t size> class Vector {
 
         /**
          * @brief Raw data
-         * @return Array of @c size length.
+         * @return Array with the same size as the vector
          */
         inline const T* data() const { return _data; }
 
         /**
          * @brief Set raw data
-         * @param data Array of @c size length.
+         * @param data Array with the same size as the vector
          */
         inline void setData(const T* data) {
             memcpy(_data, data, size*sizeof(T));

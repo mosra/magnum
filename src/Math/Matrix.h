@@ -56,7 +56,8 @@ template<class T, size_t size> class Matrix {
 
         /**
          * @brief Constructor
-         * @param data  One-dimensional array of @c size*size length in column-major order.
+         * @param data  One-dimensional array of `size*size` length in
+         *      column-major order.
          */
         inline Matrix(const T* data) { setData(data); }
 
@@ -73,13 +74,15 @@ template<class T, size_t size> class Matrix {
 
         /**
          * @brief Raw data
-         * @return One-dimensional array of @c size*size length in column-major order.
+         * @return One-dimensional array of `size*size` length in column-major
+         *      order.
          */
         inline const T* data() const { return _data; }
 
         /**
          * @brief Set raw data
-         * @param data One-dimensional array of @c size*size length in column-major order.
+         * @param data One-dimensional array of `size*size` length in
+         *      column-major order.
          *
          * @bug Creating Matrix<int, 5> from float* ??
          */

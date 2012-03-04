@@ -47,7 +47,7 @@ class MAGNUM_EXPORT Camera: public Object {
          * @param parent        Parent object
          *
          * Sets orthographic projection to the default OpenGL cube (range
-         * @f[ [-1; 1] @f] in all directions) and clear color to black.
+         * @f$ [-1; 1] @f$ in all directions) and clear color to black.
          * @see setOrthographic(), setClearColor()
          */
         Camera(Object* parent = nullptr);
@@ -65,7 +65,7 @@ class MAGNUM_EXPORT Camera: public Object {
          * @param far       Far clipping plane
          *
          * The volume of given size will be scaled down to range
-         * @f[ [-1; 1] @f] on all directions.
+         * @f$ [-1; 1] @f$ on all directions.
          */
         void setOrthographic(GLfloat size, GLfloat near, GLfloat far);
 
