@@ -31,6 +31,10 @@ static_assert(sizeof(TgaImporter::Header) == 18, "TgaImporter: header size is no
 
 bool TgaImporter::TgaImporter::open(const string& filename) {
     ifstream in(filename.c_str());
+    if(!in.good()) {
+        Error() << "TgaImporter: cannot open file" << filename;
+        return false;
+    }
     bool status = open(in);
     in.close();
     return status;
@@ -38,7 +42,10 @@ bool TgaImporter::TgaImporter::open(const string& filename) {
 
 bool TgaImporter::open(std::istream& in) {
     if(_image) close();
-    if(!in.good()) return false;
+    if(!in.good()) {
+        Error() << "TgaImporter: cannot read input stream";
+        return false;
+    }
 
     Header header;
     in.read(reinterpret_cast<char*>(&header), sizeof(Header));
