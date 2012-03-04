@@ -22,7 +22,8 @@
 using namespace std;
 using namespace Corrade::Utility;
 
-PLUGIN_REGISTER(Magnum::Trade::TgaImporter::TgaImporter, "cz.mosra.magnum.Trade.AbstractImporter/0.1")
+PLUGIN_REGISTER(TgaImporter, Magnum::Trade::TgaImporter::TgaImporter,
+                "cz.mosra.magnum.Trade.AbstractImporter/0.1")
 
 namespace Magnum { namespace Trade { namespace TgaImporter {
 
