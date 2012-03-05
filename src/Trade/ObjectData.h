@@ -35,20 +35,46 @@ class MAGNUM_EXPORT ObjectData {
     ObjectData& operator=(ObjectData&& other) = delete;
 
     public:
+        /** @brief Instance type */
+        enum class InstanceType {
+            Camera,     /**< Camera instance (see CameraData) */
+            Light,      /**< Light instance (see LightData) */
+            Mesh        /**< Mesh instance (see MeshData) */
+        };
+
         /**
          * @brief Constructor
+         * @param children          Child objects
+         * @param transformation    Transformation (relative to parent)
+         * @param instanceType      Instance type
+         * @param instanceId        Instance ID
          */
-        ObjectData(size_t parent, const Matrix4& transformation): _parent(parent), _transformation(transformation) {}
+        inline ObjectData(std::vector<size_t> children, const Matrix4& transformation, InstanceType instanceType, size_t instanceId): _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
 
-        /** @brief Parent object */
-        inline size_t parent() const { return _parent; }
+        /** @brief Child objects */
+        inline const std::vector<size_t>& children() const { return _children; }
 
-        /** @brief Transformation relative to parent */
-        inline size_t transformation() const { return _transformation; }
+        /** @brief Transformation (relative to parent) */
+        inline Matrix4 transformation() const { return _transformation; }
+
+        /**
+         * @brief Instance type
+         * @return Type of instance held by this object
+         */
+        inline InstanceType instanceType() const { return _instanceType; }
+
+        /**
+         * @brief Instance ID
+         * @return ID of given camera / light / mesh etc., specified by
+         *      instance()
+         */
+        inline size_t instanceId() const { return _instanceId; }
 
     private:
-        size_t _parent;
+        std::vector<size_t> _children;
         Matrix4 _transformation;
+        InstanceType _instanceType;
+        size_t _instanceId;
 };
 
 }}
