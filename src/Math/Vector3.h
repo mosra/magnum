@@ -91,14 +91,38 @@ template<class T> class Vector3: public Vector<T, 3> {
         /** @copydoc Vector::operator*(T) const */
         inline Vector3<T> operator*(T number) const { return Vector<T, 3>::operator*(number); }
 
+        /** @copydoc Vector::operator*=() */
+        inline Vector3<T>& operator*=(T number) {
+            Vector<T, 3>::operator*=(number);
+            return *this;
+        }
+
         /** @copydoc Vector::operator/() */
         inline Vector3<T> operator/(T number) const { return Vector<T, 3>::operator/(number); }
+
+        /** @copydoc Vector::operator/=() */
+        inline Vector3<T>& operator/=(T number) {
+            Vector<T, 3>::operator/=(number);
+            return *this;
+        }
 
         /** @copydoc Vector::operator+() */
         inline Vector3<T> operator+(const Vector<T, 3>& other) const { return Vector<T, 3>::operator+(other); }
 
+        /** @copydoc Vector::operator+=() */
+        inline Vector3<T>& operator+=(const Vector<T, 3>& other) {
+            Vector<T, 3>::operator+=(other);
+            return *this;
+        }
+
         /** @copydoc Vector::operator-(const Vector<T, size>&) const */
         inline Vector3<T> operator-(const Vector<T, 3>& other) const { return Vector<T, 3>::operator-(other); }
+
+        /** @copydoc Vector::operator-=() */
+        inline Vector3<T>& operator-=(const Vector<T, 3>& other) {
+            Vector<T, 3>::operator-=(other);
+            return *this;
+        }
 
         /** @copydoc Vector::operator-() */
         inline Vector3<T> operator-() const { return Vector<T, 3>::operator-(); }

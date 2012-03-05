@@ -144,6 +144,11 @@ template<class T, size_t size> class Matrix {
             return out;
         }
 
+        /** @brief Multiply and assign matrix operator */
+        inline Matrix<T, size>& operator*=(const Matrix<T, size>& other) {
+            return (*this = *this*other);
+        }
+
         /** @brief Multiply vector operator */
         Vector<T, size> operator*(const Vector<T, size>& other) const {
             Vector<T, size> out;

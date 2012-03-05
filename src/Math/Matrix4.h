@@ -124,6 +124,12 @@ template<class T> class Matrix4: public Matrix<T, 4> {
         /** @copydoc Matrix::operator*(const Matrix<T, size>&) const */
         inline Matrix4<T> operator*(const Matrix<T, 4>& other) const { return Matrix<T, 4>::operator*(other); }
 
+        /** @copydoc Matrix::operator*=() */
+        inline Matrix4<T>& operator*=(const Matrix<T, 4>& other) {
+            Matrix<T, 4>::operator*=(other);
+            return *this;
+        }
+
         /** @copydoc Matrix::operator*(const Vector<T, size>&) const */
         inline Vector4<T> operator*(const Vector<T, 4>& other) const { return Matrix<T, 4>::operator*(other); }
 

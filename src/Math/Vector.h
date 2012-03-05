@@ -124,43 +124,71 @@ template<class T, size_t size> class Vector {
         }
 
         /** @brief Multiply vector */
-        Vector<T, size> operator*(T number) const {
-            Vector<T, size> out;
+        inline Vector<T, size> operator*(T number) const {
+            return Vector<T, size>(*this)*=number;
+        }
 
+        /**
+         * @brief Multiply and assign vector
+         *
+         * More efficient than operator*(), because it does the computation
+         * in-place.
+         */
+        Vector<T, size>& operator*=(T number) {
             for(size_t i = 0; i != size; ++i)
-                out.set(i, at(i)*number);
-
-            return out;
+                set(i, at(i)*number);
+            return *this;
         }
 
         /** @brief Divide vector */
-        Vector<T, size> operator/(T number) const {
-            Vector<T, size> out;
+        inline Vector<T, size> operator/(T number) const {
+            return Vector<T, size>(*this)/=number;
+        }
 
+        /**
+         * @brief Divide and assign vector
+         *
+         * More efficient than operator/(), because it does the computation
+         * in-place.
+         */
+        Vector<T, size>& operator/=(T number) {
             for(size_t i = 0; i != size; ++i)
-                out.set(i, at(i)/number);
-
-            return out;
+                set(i, at(i)/number);
+            return *this;
         }
 
         /** @brief Add two vectors */
-        Vector<T, size> operator+(const Vector<T, size>& other) const {
-            Vector<T, size> out;
+        inline Vector<T, size> operator+(const Vector<T, size>& other) const {
+            return Vector<T, size>(*this)+=other;
+        }
 
+        /**
+         * @brief Add and assign vector
+         *
+         * More efficient than operator+(), because it does the computation
+         * in-place.
+         */
+        Vector<T, size>& operator+=(const Vector<T, size>& other) {
             for(size_t i = 0; i != size; ++i)
-                out.set(i, at(i)+other.at(i));
-
-            return out;
+                set(i, at(i)+other.at(i));
+            return *this;
         }
 
         /** @brief Substract two vectors */
-        Vector<T, size> operator-(const Vector<T, size>& other) const {
-            Vector<T, size> out;
+        inline Vector<T, size> operator-(const Vector<T, size>& other) const {
+            return Vector<T, size>(*this)-=other;
+        }
 
+        /**
+         * @brief Substract and assign vector
+         *
+         * More efficient than operator-(), because it does the computation
+         * in-place.
+         */
+        Vector<T, size>& operator-=(const Vector<T, size>& other) {
             for(size_t i = 0; i != size; ++i)
-                out.set(i, at(i)-other.at(i));
-
-            return out;
+                set(i, at(i)-other.at(i));
+            return *this;
         }
 
         /** @brief Negative vector */

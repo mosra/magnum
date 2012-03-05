@@ -158,7 +158,7 @@ void MatrixTest::multiply() {
         -12,   8, -20, -26,  -2
     );
 
-    QVERIFY(left*right == expected);
+    QVERIFY((left *= right) == expected);
 }
 
 void MatrixTest::multiplyVector() {

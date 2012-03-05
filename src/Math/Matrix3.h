@@ -58,6 +58,12 @@ template<class T> class Matrix3: public Matrix<T, 3> {
         /** @copydoc Matrix::operator*(const Matrix<T, size>&) const */
         inline Matrix3<T> operator*(const Matrix<T, 3>& other) const { return Matrix<T, 3>::operator*(other); }
 
+        /** @copydoc Matrix::operator*=() */
+        inline Matrix3<T>& operator*=(const Matrix<T, 3>& other) {
+            Matrix<T, 3>::operator*=(other);
+            return *this;
+        }
+
         /** @copydoc Matrix::operator*(const Vector<T, size>&) const */
         inline Vector3<T> operator*(const Vector<T, 3>& other) const { return Matrix<T, 3>::operator*(other); }
 
