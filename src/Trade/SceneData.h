@@ -19,6 +19,8 @@
  * @brief Class Magnum::Trade::SceneData
  */
 
+#include <vector>
+
 namespace Magnum { namespace Trade {
 
 /**
@@ -29,6 +31,19 @@ class MAGNUM_EXPORT SceneData {
     SceneData(SceneData&& other) = delete;
     SceneData& operator=(const SceneData& other) = delete;
     SceneData& operator=(SceneData&& other) = delete;
+
+    public:
+        /**
+         * @brief Constructor
+         * @param children  Child objects
+         */
+        inline SceneData(const std::vector<size_t>& children): _children(children) {}
+
+        /** @brief Child objects */
+        inline const std::vector<size_t>& children() const { return _children; }
+
+    private:
+        std::vector<size_t> _children;
 };
 
 }}
