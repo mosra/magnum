@@ -42,15 +42,13 @@ void GeometryUtilsTest::intersection_data() {
     QTest::addColumn<Vector3>("b");
     QTest::addColumn<float>("expected");
 
-    float plane[] = {
-        0, 0, 0,
-        1, 0, 0,
-        0, 1, 0
-    };
-    QTest::newRow("inside") << Matrix3(plane) << Vector3(0, 0, -1) << Vector3(0, 0, 1) << 0.5f;
-    QTest::newRow("outside") << Matrix3(plane) << Vector3(0, 0, 1) << Vector3(0, 0, 2) << -1.0f;
-    QTest::newRow("NaN") << Matrix3(plane) << Vector3(1, 0, 0) << Vector3(0, 1, 0) << numeric_limits<float>::quiet_NaN();
-    QTest::newRow("inf") << Matrix3(plane) << Vector3(1, 0, 1) << Vector3(0, 0, 1) << numeric_limits<float>::infinity();
+    Matrix3 plane(0.0f, 0.0f, 0.0f,
+                  1.0f, 0.0f, 0.0f,
+                  0.0f, 1.0f, 0.0f);
+    QTest::newRow("inside") << plane << Vector3(0, 0, -1) << Vector3(0, 0, 1) << 0.5f;
+    QTest::newRow("outside") << plane << Vector3(0, 0, 1) << Vector3(0, 0, 2) << -1.0f;
+    QTest::newRow("NaN") << plane << Vector3(1, 0, 0) << Vector3(0, 1, 0) << numeric_limits<float>::quiet_NaN();
+    QTest::newRow("inf") << plane << Vector3(1, 0, 1) << Vector3(0, 0, 1) << numeric_limits<float>::infinity();
 }
 
 void GeometryUtilsTest::intersection() {

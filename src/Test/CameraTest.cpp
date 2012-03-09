@@ -28,12 +28,10 @@ void CameraTest::orthographic() {
     Camera camera;
     camera.setOrthographic(5, 1, 9);
 
-    GLfloat a[] = {
-        0.4f,   0,      0,          0,
-        0,      0.4f,   0,          0,
-        0,      0,      -0.25f,    0,
-        0,      0,      -1.25f,     1
-    };
+    Matrix4 a(0.4f,   0.0f,   0.0f,       0.0f,
+              0.0f,   0.4f,   0.0f,       0.0f,
+              0.0f,   0.0f,   -0.25f,     0.0f,
+              0.0f,   0.0f,   -1.25f,     1.0f);
 
     QVERIFY(camera.projectionMatrix() == a);
 }
@@ -42,14 +40,12 @@ void CameraTest::perspective() {
     Camera camera;
     camera.setPerspective(deg(27.0f), 32.0f, 100);
 
-    GLfloat a[] = {
-        4.1652994f, 0,          0,           0,
-        0,          4.1652994f, 0,           0,
-        0,          0,         -1.9411764f, -1,
-        0,          0,         -94.1176452f, 0
-    };
+    Matrix4 a(4.1652994f, 0.0f,       0.0f,        0.0f,
+              0.0f,       4.1652994f, 0.0f,        0.0f,
+              0.0f,       0.0f,      -1.9411764f, -1.0f,
+              0.0f,       0.0f,      -94.1176452f, 0.0f);
 
-    QVERIFY(camera.projectionMatrix() == Matrix4(a));
+    QVERIFY(camera.projectionMatrix() == a);
 }
 
 }}
