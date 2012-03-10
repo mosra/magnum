@@ -92,7 +92,7 @@ template<class Vertex, size_t vertexSize = Vertex::Size> class Clean {
                         exists, change vertex pointer of the face to already
                         existing vertex */
                     HashedVertex v(*it, table.size());
-                    auto result = table.insert(std::pair<Math::Vector<size_t, vertexSize>, HashedVertex>(index, v));
+                    auto result = table.insert(std::pair<Math::Vector<size_t, vertexSize>, HashedVertex>(Math::Vector<size_t, vertexSize>::from(index), v));
                     *it = result.first->second.newIndex;
                 }
 

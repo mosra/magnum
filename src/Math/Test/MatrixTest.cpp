@@ -46,7 +46,7 @@ void MatrixTest::construct() {
         9.0f, 4.0f, 5.0f, 9.0f
     );
 
-    QVERIFY(Matrix4(m) == expected);
+    QVERIFY(Matrix4::from(m) == expected);
 }
 
 void MatrixTest::constructIdentity() {

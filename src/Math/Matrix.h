@@ -31,12 +31,28 @@ namespace Magnum { namespace Math {
 template<class T, size_t size> class Matrix {
     public:
         /**
+         * @brief %Matrix from array
+         * @return Reference to the data as if it was Matrix, thus doesn't
+         *      perform any copying.
+         *
+         * @attention Use with caution, the function doesn't check whether the
+         *      array is long enough.
+         */
+        inline constexpr static Matrix<T, size>& from(T* data) {
+            return *reinterpret_cast<Matrix<T, size>*>(data);
+        }
+
+        /** @copydoc from(T*) */
+        inline constexpr static const Matrix<T, size>& from(const T* data) {
+            return *reinterpret_cast<const Matrix<T, size>*>(data);
+        }
+
+        /**
          * @brief Default constructor
          * @param identity Create identity matrix instead of zero matrix.
          */
-        inline Matrix(bool identity = true) {
-            memset(_data, 0, size*size*sizeof(T));
-
+        inline Matrix(bool identity = true): _data() {
+            /** @todo constexpr how? */
             if(identity) for(size_t i = 0; i != size; ++i)
                 _data[size*i+i] = static_cast<T>(1);
         }
@@ -49,55 +65,32 @@ template<class T, size_t size> class Matrix {
          * Note that the values are in column-major order.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> inline Matrix(T first, U&&... next): _data{first, std::forward<U>(next)...} {}
+        template<class ...U> inline constexpr Matrix(T first, U&&... next): _data{first, std::forward<U>(next)...} {}
         #else
-        template<class ...U> inline Matrix(T first, U&&... next);
+        template<class ...U> inline constexpr Matrix(T first, U&&... next);
         #endif
 
-        /**
-         * @brief Constructor
-         * @param data  One-dimensional array of `size*size` length in
-         *      column-major order.
-         */
-        inline Matrix(const T* data) { setData(data); }
-
         /** @brief Copy constructor */
-        inline Matrix(const Matrix<T, size>& other) {
-            setData(other.data());
-        }
+        inline constexpr Matrix(const Matrix<T, size>& other) = default;
 
         /** @brief Assignment operator */
-        inline Matrix<T, size>& operator=(const Matrix<T, size>& other) {
-            if(&other != this) setData(other.data());
-            return *this;
-        }
+        inline Matrix<T, size>& operator=(const Matrix<T, size>& other) = default;
 
         /**
          * @brief Raw data
          * @return One-dimensional array of `size*size` length in column-major
          *      order.
          */
-        inline const T* data() const { return _data; }
-
-        /**
-         * @brief Set raw data
-         * @param data One-dimensional array of `size*size` length in
-         *      column-major order.
-         *
-         * @bug Creating Matrix<int, 5> from float* ??
-         */
-        inline void setData(const T* data) {
-            memcpy(_data, data, size*size*sizeof(T));
-        }
+        inline constexpr const T* data() const { return _data; }
 
         /** @brief Value at given position */
-        inline T at(size_t row, size_t col) const {
+        inline constexpr T at(size_t row, size_t col) const {
             return _data[col*size+row];
         }
 
         /** @brief %Matrix column */
-        inline Vector<T, size> at(size_t col) const {
-            return _data+col*size;
+        inline constexpr Vector<T, size> at(size_t col) const {
+            return *reinterpret_cast<const Vector<T, size>*>(_data+col*size);
         }
 
         /** @brief Set value at given position */
@@ -126,7 +119,7 @@ template<class T, size_t size> class Matrix {
         }
 
         /** @brief Non-equality operator */
-        inline bool operator!=(const Matrix<T, size>& other) const {
+        inline constexpr bool operator!=(const Matrix<T, size>& other) const {
             return !operator==(other);
         }
 
@@ -226,8 +219,7 @@ template<class T, size_t size> class Matrix {
 /* Barebone template specialization for 2x2 matrix (only for determinant computation) */
 template<class T> class Matrix<T, 2> {
     public:
-        inline Matrix(bool identity = true) {
-            memset(_data, 0, 4*sizeof(T));
+        inline Matrix(bool identity = true): _data() {
             if(identity) {
                 set(0, 0, T(1));
                 set(1, 1, T(1));

@@ -26,20 +26,25 @@ namespace Magnum { namespace Math {
 /** @brief Four-component vector */
 template<class T> class Vector4: public Vector<T, 4> {
     public:
+        /** @copydoc Vector::from(T*) */
+        inline constexpr static Vector4<T>& from(T* data) {
+            return *reinterpret_cast<Vector4<T>*>(data);
+        }
+
+        /** @copydoc Vector::from(const T*) */
+        inline constexpr static const Vector4<T>& from(const T* data) {
+            return *reinterpret_cast<const Vector4<T>*>(data);
+        }
+
         /**
          * @copydoc Vector::Vector
          *
          * W / A component is set to one.
          */
-        inline Vector4() {
-            setW(T(1));
-        }
-
-        /** @copydoc Vector::Vector(const T*) */
-        inline Vector4(const T* data): Vector<T, 4>(data) {}
+        inline constexpr Vector4(): Vector<T, 4>(T(0), T(0), T(0), T(1)) {}
 
         /** @copydoc Vector::Vector(const Vector&)  */
-        inline Vector4(const Vector<T, 4>& other): Vector<T, 4>(other) {}
+        inline constexpr Vector4(const Vector<T, 4>& other): Vector<T, 4>(other) {}
 
         /**
          * @brief Constructor
@@ -48,19 +53,19 @@ template<class T> class Vector4: public Vector<T, 4> {
          * @param z     Z / B value
          * @param w     W / A value
          */
-        inline Vector4(T x, T y, T z, T w = T(1)): Vector<T, 4>(x, y, z, w) {}
+        inline constexpr Vector4(T x, T y, T z, T w = T(1)): Vector<T, 4>(x, y, z, w) {}
 
         /**
          * @brief Constructor
          * @param other     Three component vector
          * @param w         W / A value
          */
-        inline Vector4(const Vector<T, 3>& other, T w = T(1)): Vector<T, 4>(other[0], other[1], other[2], w) {}
+        inline constexpr Vector4(const Vector<T, 3>& other, T w = T(1)): Vector<T, 4>(other[0], other[1], other[2], w) {}
 
-        inline T x() const { return Vector<T, 4>::at(0); } /**< @brief X component */
-        inline T y() const { return Vector<T, 4>::at(1); } /**< @brief Y component */
-        inline T z() const { return Vector<T, 4>::at(2); } /**< @brief Z component */
-        inline T w() const { return Vector<T, 4>::at(3); } /**< @brief W component */
+        inline constexpr T x() const { return Vector<T, 4>::at(0); } /**< @brief X component */
+        inline constexpr T y() const { return Vector<T, 4>::at(1); } /**< @brief Y component */
+        inline constexpr T z() const { return Vector<T, 4>::at(2); } /**< @brief Z component */
+        inline constexpr T w() const { return Vector<T, 4>::at(3); } /**< @brief W component */
 
         inline void setX(T value) { this->set(0, value); } /**< @brief Set X component */
         inline void setY(T value) { this->set(1, value); } /**< @brief Set Y component */
@@ -71,12 +76,12 @@ template<class T> class Vector4: public Vector<T, 4> {
          * @brief XYZ part of the vector
          * @return First three components of the vector
          */
-        inline Vector3<T> xyz() const { return Vector3<T>(Vector<T, 4>::data()); }
+        inline constexpr Vector3<T> xyz() const { return Vector3<T>::from(Vector<T, 4>::data()); }
 
-        inline T r() const { return x(); } /**< @brief R component */
-        inline T g() const { return y(); } /**< @brief G component */
-        inline T b() const { return z(); } /**< @brief B component */
-        inline T a() const { return w(); } /**< @brief A component */
+        inline constexpr T r() const { return x(); } /**< @brief R component */
+        inline constexpr T g() const { return y(); } /**< @brief G component */
+        inline constexpr T b() const { return z(); } /**< @brief B component */
+        inline constexpr T a() const { return w(); } /**< @brief A component */
 
         inline void setR(T value) { setX(value); } /**< @brief Set R component */
         inline void setG(T value) { setY(value); } /**< @brief Set G component */
@@ -87,7 +92,7 @@ template<class T> class Vector4: public Vector<T, 4> {
          * @brief RGB part of the vector
          * @return First three components of the vector
          */
-        inline Vector3<T> rgb() const { return xyz(); }
+        inline constexpr Vector3<T> rgb() const { return xyz(); }
 
         /** @copydoc Vector::operator=() */
         inline Vector4<T>& operator=(const Vector<T, 4>& other) { return Vector<T, 4>::operator=(other); }

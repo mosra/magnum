@@ -33,28 +33,40 @@ namespace Magnum { namespace Math {
  */
 template<class T> class Matrix4: public Matrix<T, 4> {
     public:
+        /** @copydoc Matrix::from(T*) */
+        inline constexpr static Matrix4<T>& from(T* data) {
+            return *reinterpret_cast<Matrix4<T>*>(data);
+        }
+
+        /** @copydoc Matrix::from(const T*) */
+        inline constexpr static const Matrix4<T>& from(const T* data) {
+            return *reinterpret_cast<const Matrix4<T>*>(data);
+        }
+
         /**
          * @brief Translation matrix
          * @param vec   Translation vector
          */
-        static Matrix4<T> translation(const Vector3<T>& vec) {
-            Matrix4 out; /* (Identity matrix) */
-            out.set(0, 3, vec.x());
-            out.set(1, 3, vec.y());
-            out.set(2, 3, vec.z());
-            return out;
+        static constexpr Matrix4<T> translation(const Vector3<T>& vec) {
+            return Matrix4( /* Column-major! */
+                1.0f, 0.0f, 0.0f, 0.0f,
+                0.0f, 1.0f, 0.0f, 0.0f,
+                0.0f, 0.0f, 1.0f, 0.0f,
+                vec.x(), vec.y(), vec.z(), 1.0f
+            );
         }
 
         /**
          * @brief Scaling matrix
          * @param vec   Scaling vector
          */
-        static Matrix4 scaling(const Vector3<T>& vec) {
-            Matrix4 out; /* (Identity matrix) */
-            out.set(0, 0, vec.x());
-            out.set(1, 1, vec.y());
-            out.set(2, 2, vec.z());
-            return out;
+        static constexpr Matrix4 scaling(const Vector3<T>& vec) {
+            return Matrix4( /* Column-major! */
+                vec.x(), 0.0f, 0.0f, 0.0f,
+                0.0f, vec.y(), 0.0f, 0.0f,
+                0.0f, 0.0f, vec.z(), 0.0f,
+                0.0f, 0.0f, 0.0f, 1.0f
+            );
         }
 
         /**
@@ -94,7 +106,13 @@ template<class T> class Matrix4: public Matrix<T, 4> {
         }
 
         /** @copydoc Matrix::Matrix(bool) */
-        inline Matrix4(bool identity = true): Matrix<T, 4>(identity) {}
+        inline constexpr Matrix4(bool identity = true): Matrix<T, 4>{
+            /** @todo Make this in Matrix itself, after it will be constexpr */
+            identity ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, identity ? 1.0f : 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, identity ? 1.0f : 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, identity ? 1.0f : 0.0f
+        } {}
 
         /**
          * @brief Initializer-list constructor
@@ -104,22 +122,19 @@ template<class T> class Matrix4: public Matrix<T, 4> {
          * Note that the values are in column-major order.
          */
         /* doxygen: @copydoc Matrix::Matrix(T, U&&...) doesn't work */
-        template<class ...U> inline Matrix4(T first, U&&... next): Matrix<T, 4>(first, std::forward<U>(next)...) {}
-
-        /** @copydoc Matrix::Matrix(const T*) */
-        inline Matrix4(const T* data): Matrix<T, 4>(data) {}
+        template<class ...U> inline constexpr Matrix4(T first, U&&... next): Matrix<T, 4>(first, std::forward<U>(next)...) {}
 
         /** @copydoc Matrix::Matrix(const Matrix<T, size>&) */
-        inline Matrix4(const Matrix<T, 4>& other): Matrix<T, 4>(other) {}
+        inline constexpr Matrix4(const Matrix<T, 4>& other): Matrix<T, 4>(other) {}
 
         /** @copydoc Matrix::operator=() */
-        inline Matrix4<T>& operator=(const Matrix<T, 4>& other) { return Matrix<T, 4>::operator=(other); }
+        inline constexpr Matrix4<T>& operator=(const Matrix<T, 4>& other) { return Matrix<T, 4>::operator=(other); }
 
         /** @copydoc Matrix::at(size_t) const */
-        inline Vector4<T> at(size_t col) const { return Matrix<T, 4>::at(col); }
+        inline constexpr Vector4<T> at(size_t col) const { return Matrix<T, 4>::at(col); }
 
         /** @copydoc Matrix::at(size_t, size_t) const */
-        inline T at(size_t row, size_t col) const { return Matrix<T, 4>::at(row, col); }
+        inline constexpr T at(size_t row, size_t col) const { return Matrix<T, 4>::at(row, col); }
 
         /** @copydoc Matrix::operator*(const Matrix<T, size>&) const */
         inline Matrix4<T> operator*(const Matrix<T, 4>& other) const { return Matrix<T, 4>::operator*(other); }

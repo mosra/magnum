@@ -19,7 +19,6 @@
  * @brief Class Magnum::Math::Vector
  */
 
-#include <cstring>
 #include <cmath>
 
 #include "Utility/Debug.h"
@@ -33,15 +32,30 @@ template<class T, size_t size> class Vector {
         typedef T Type;                     /**< @brief %Vector data type */
         const static size_t Size = size;    /**< @brief %Vector size */
 
+        /**
+         * @brief Vector from array
+         * @return Reference to the data as if it was Vector, thus doesn't
+         *      perform any copying.
+         *
+         * @attention Use with caution, the function doesn't check whether the
+         *      array is long enough.
+         */
+        inline constexpr static Vector<T, size>& from(T* data) {
+            return *reinterpret_cast<Vector<T, size>*>(data);
+        }
+
+        /** @copydoc from(T*) */
+        inline constexpr static const Vector<T, size>& from(const T* data) {
+            return *reinterpret_cast<Vector<T, size>*>(data);
+        }
+
         /** @brief Angle between vectors */
         inline static T angle(const Vector<T, size>& a, const Vector<T, size>& b) {
             return acos((a*b)/(a.length()*b.length()));
         }
 
         /** @brief Default constructor */
-        inline Vector() {
-            memset(_data, 0, size*sizeof(T));
-        };
+        inline constexpr Vector(): _data() {}
 
         /**
          * @brief Initializer-list constructor
@@ -49,47 +63,28 @@ template<class T, size_t size> class Vector {
          * @param next  Next values
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> inline Vector(T first, U&&... next): _data{first, std::forward<U>(next)...} {}
+        template<class ...U> inline constexpr Vector(T first, U&&... next): _data{first, std::forward<U>(next)...} {}
         #else
-        template<class ...U> inline Vector(T first, U&&... next);
+        template<class ...U> inline constexpr Vector(T first, U&&... next);
         #endif
 
-        /**
-         * @brief Constructor
-         * @param data  Array with the same size as the vector.
-         */
-        inline Vector(const T* data) { setData(data); }
-
         /** @brief Copy constructor */
-        inline Vector(const Vector<T, size>& other) {
-            setData(other.data());
-        }
+        inline constexpr Vector(const Vector<T, size>& other) = default;
 
         /** @brief Assignment operator */
-        inline Vector<T, size>& operator=(const Vector<T, size>& other) {
-            if(&other != this) setData(other.data());
-            return *this;
-        }
+        inline Vector<T, size>& operator=(const Vector<T, size>& other) = default;
 
         /**
          * @brief Raw data
          * @return Array with the same size as the vector
          */
-        inline const T* data() const { return _data; }
-
-        /**
-         * @brief Set raw data
-         * @param data Array with the same size as the vector
-         */
-        inline void setData(const T* data) {
-            memcpy(_data, data, size*sizeof(T));
-        }
+        inline constexpr const T* data() const { return _data; }
 
         /** @brief Value at given position */
-        inline T at(size_t pos) const { return _data[pos]; }
+        inline constexpr T at(size_t pos) const { return _data[pos]; }
 
         /** @brief Value at given position */
-        inline T operator[](size_t pos) const { return _data[pos]; }
+        inline constexpr T operator[](size_t pos) const { return _data[pos]; }
 
         /** @brief Reference to value at given position */
         inline T& operator[](size_t pos) { return _data[pos]; }

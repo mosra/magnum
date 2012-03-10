@@ -26,30 +26,37 @@ namespace Magnum { namespace Math {
 /** @brief Three-component vector */
 template<class T> class Vector3: public Vector<T, 3> {
     public:
+        /** @copydoc Vector::from(T*) */
+        inline constexpr static Vector3<T>& from(T* data) {
+            return *reinterpret_cast<Vector3<T>*>(data);
+        }
+
+        /** @copydoc Vector::from(const T*) */
+        inline constexpr static const Vector3<T>& from(const T* data) {
+            return *reinterpret_cast<const Vector3<T>*>(data);
+        }
+
         /** @brief Vector in direction of X axis */
-        inline static Vector3<T> xAxis(T length = 1) { return Vector3<T>(length, 0, 0); }
+        inline constexpr static Vector3<T> xAxis(T length = 1) { return Vector3<T>(length, 0, 0); }
 
         /** @brief Vector in direction of Y axis */
-        inline static Vector3<T> yAxis(T length = 1) { return Vector3<T>(0, length, 0); }
+        inline constexpr static Vector3<T> yAxis(T length = 1) { return Vector3<T>(0, length, 0); }
 
         /** @brief Vector in direction of Z axis */
-        inline static Vector3<T> zAxis(T length = 1) { return Vector3<T>(0, 0, length); }
+        inline constexpr static Vector3<T> zAxis(T length = 1) { return Vector3<T>(0, 0, length); }
 
         /** @brief Cross product */
-        static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
+        constexpr static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
             return Vector3<T>(a[1]*b[2]-a[2]*b[1],
                               a[2]*b[0]-a[0]*b[2],
                               a[0]*b[1]-a[1]*b[0]);
         }
 
         /** @copydoc Vector::Vector */
-        inline Vector3() {}
-
-        /** @copydoc Vector::Vector(const T*) */
-        inline Vector3(const T* data): Vector<T, 3>(data) {}
+        inline constexpr Vector3() {}
 
         /** @copydoc Vector::Vector(const Vector&)  */
-        inline Vector3(const Vector<T, 3>& other): Vector<T, 3>(other) {}
+        inline constexpr Vector3(const Vector<T, 3>& other): Vector<T, 3>(other) {}
 
         /**
          * @brief Constructor
@@ -57,26 +64,26 @@ template<class T> class Vector3: public Vector<T, 3> {
          * @param y     Y / G value
          * @param z     Z / B value
          */
-        inline Vector3(T x, T y, T z): Vector<T, 3>(x, y, z) {}
+        inline constexpr Vector3(T x, T y, T z): Vector<T, 3>(x, y, z) {}
 
         /**
          * @brief Constructor
          * @param other     Two component vector
          * @param z         Z / B value
          */
-        inline Vector3(const Vector<T, 2>& other, T z = T(0)): Vector<T, 3>(other[0], other[1], z) {}
+        inline constexpr Vector3(const Vector<T, 2>& other, T z = T(0)): Vector<T, 3>(other[0], other[1], z) {}
 
-        inline T x() const { return Vector<T, 3>::at(0); } /**< @brief X component */
-        inline T y() const { return Vector<T, 3>::at(1); } /**< @brief Y component */
-        inline T z() const { return Vector<T, 3>::at(2); } /**< @brief Z component */
+        inline constexpr T x() const { return Vector<T, 3>::at(0); } /**< @brief X component */
+        inline constexpr T y() const { return Vector<T, 3>::at(1); } /**< @brief Y component */
+        inline constexpr T z() const { return Vector<T, 3>::at(2); } /**< @brief Z component */
 
         inline void setX(T value) { this->set(0, value); } /**< @brief Set X component */
         inline void setY(T value) { this->set(1, value); } /**< @brief Set Y component */
         inline void setZ(T value) { this->set(2, value); } /**< @brief Set Z component */
 
-        inline T r() const { return x(); } /**< @brief R component */
-        inline T g() const { return x(); } /**< @brief G component */
-        inline T b() const { return z(); } /**< @brief B component */
+        inline constexpr T r() const { return x(); } /**< @brief R component */
+        inline constexpr T g() const { return x(); } /**< @brief G component */
+        inline constexpr T b() const { return z(); } /**< @brief B component */
 
         inline void setR(T value) { setX(value); } /**< @brief Set R component */
         inline void setG(T value) { setY(value); } /**< @brief Set G component */

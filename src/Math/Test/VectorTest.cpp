@@ -35,7 +35,7 @@ void VectorTest::construct() {
     QVERIFY((Vector4() == Vector4(0.0f, 0.0f, 0.0f, 0.0f)));
 
     float data[] = { 1.0f, 2.0f, 3.0f, 4.0f };
-    QVERIFY((Vector4(data) == Vector4(1.0f, 2.0f, 3.0f, 4.0f)));
+    QVERIFY((Vector4::from(data) == Vector4(1.0f, 2.0f, 3.0f, 4.0f)));
 }
 
 void VectorTest::data() {

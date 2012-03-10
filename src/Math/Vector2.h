@@ -26,24 +26,31 @@ namespace Magnum { namespace Math {
 /** @brief Two-component vector */
 template<class T> class Vector2: public Vector<T, 2> {
     public:
-        /** @copydoc Vector::Vector */
-        inline Vector2() {}
+        /** @copydoc Vector::from(T*) */
+        inline constexpr static Vector2<T>& from(T* data) {
+            return *reinterpret_cast<Vector2<T>*>(data);
+        }
 
-        /** @copydoc Vector::Vector(const T*) */
-        inline Vector2(const T* data): Vector<T, 2>(data) {}
+        /** @copydoc Vector::from(const T*) */
+        inline constexpr static const Vector2<T>& from(const T* data) {
+            return *reinterpret_cast<const Vector2<T>*>(data);
+        }
+
+        /** @copydoc Vector::Vector */
+        inline constexpr Vector2() {}
 
         /** @copydoc Vector::Vector(const Vector&)  */
-        inline Vector2(const Vector<T, 2>& other): Vector<T, 2>(other) {}
+        inline constexpr Vector2(const Vector<T, 2>& other): Vector<T, 2>(other) {}
 
         /**
          * @brief Constructor
          * @param x     X value
          * @param y     Y value
          */
-        inline Vector2(T x, T y): Vector<T, 2>(x, y) {}
+        inline constexpr Vector2(T x, T y): Vector<T, 2>(x, y) {}
 
-        inline T x() const { return Vector<T, 2>::at(0); } /**< @brief X component */
-        inline T y() const { return Vector<T, 2>::at(1); } /**< @brief Y component */
+        inline constexpr T x() const { return Vector<T, 2>::at(0); } /**< @brief X component */
+        inline constexpr T y() const { return Vector<T, 2>::at(1); } /**< @brief Y component */
 
         inline void setX(T value) { this->set(0, value); } /**< @brief Set X component */
         inline void setY(T value) { this->set(1, value); } /**< @brief Set Y component */
