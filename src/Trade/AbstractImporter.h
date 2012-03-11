@@ -104,6 +104,17 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * Each function pair provides access to the data.
          */
 
+        /**
+         * @brief Default scene
+         *
+         * When there is more than one scene, returns ID of the default one.
+         * Note that this function returns 0 even if there are no scenes.
+         *
+         * @note The function is not const, because the value will probably
+         *      be lazy-populated.
+         */
+        virtual inline size_t defaultScene() { return 0; }
+
         /** @brief %Scene count */
         virtual inline size_t sceneCount() const { return 0; }
 
