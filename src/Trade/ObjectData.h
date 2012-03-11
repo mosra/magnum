@@ -52,7 +52,7 @@ class MAGNUM_EXPORT ObjectData {
         inline ObjectData(std::vector<size_t> children, const Matrix4& transformation, InstanceType instanceType, size_t instanceId): _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
 
         /** @brief Child objects */
-        inline const std::vector<size_t>& children() const { return _children; }
+        inline std::vector<size_t>& children() { return _children; }
 
         /** @brief Transformation (relative to parent) */
         inline Matrix4 transformation() const { return _transformation; }
