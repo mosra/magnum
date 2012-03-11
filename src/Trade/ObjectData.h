@@ -26,7 +26,8 @@ namespace Magnum { namespace Trade {
 /**
 @brief %Object data
 
-Provides access to object transformation and hierarchy.
+Provides access to object transformation and hierarchy. See also
+MeshObjectData, which is specialized for objects with mesh instance type.
 */
 class MAGNUM_EXPORT ObjectData {
     ObjectData(const ObjectData& other) = delete;
@@ -51,6 +52,9 @@ class MAGNUM_EXPORT ObjectData {
          */
         inline ObjectData(std::vector<size_t> children, const Matrix4& transformation, InstanceType instanceType, size_t instanceId): _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
 
+        /** @brief Destructor */
+        inline virtual ~ObjectData() {}
+
         /** @brief Child objects */
         inline std::vector<size_t>& children() { return _children; }
 
@@ -60,13 +64,16 @@ class MAGNUM_EXPORT ObjectData {
         /**
          * @brief Instance type
          * @return Type of instance held by this object
+         *
+         * If the instance is of type InstanceType::Mesh, the instance can be
+         * casted to MeshObjectData and provide more information.
          */
         inline InstanceType instanceType() const { return _instanceType; }
 
         /**
          * @brief Instance ID
          * @return ID of given camera / light / mesh etc., specified by
-         *      instance()
+         *      instanceType()
          */
         inline size_t instanceId() const { return _instanceId; }
 
