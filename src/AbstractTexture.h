@@ -157,7 +157,7 @@ class MAGNUM_EXPORT AbstractTexture {
         inline GLint layer() const { return _layer; }
 
         /** @brief Bind texture for usage / rendering */
-        inline void bind() const {
+        inline void bind() {
             glActiveTexture(GL_TEXTURE0 + _layer);
             glBindTexture(target, texture);
         }

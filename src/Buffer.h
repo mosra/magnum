@@ -154,13 +154,13 @@ class Buffer {
          *
          * Binds buffer with default target.
          */
-        inline void bind() const { bind(_defaultTarget); }
+        inline void bind() { bind(_defaultTarget); }
 
         /**
          * @brief Bind buffer
          * @param target     %Target
          */
-        inline void bind(Target target) const {
+        inline void bind(Target target) {
             glBindBuffer(static_cast<GLenum>(target), buffer);
         }
 
