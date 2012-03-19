@@ -23,6 +23,7 @@
 
 #include "Shader.h"
 #include "AbstractTexture.h"
+#include "BufferedTexture.h"
 
 namespace Magnum {
 
@@ -215,6 +216,11 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /** @copydoc setUniform(GLint, GLint) */
         void setUniform(GLint location, const AbstractTexture* value) {
+            setUniform(location, value->layer());
+        }
+
+        /** @copydoc setUniform(GLint, GLint) */
+        void setUniform(GLint location, const BufferedTexture* value) {
             setUniform(location, value->layer());
         }
 
