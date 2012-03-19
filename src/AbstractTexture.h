@@ -25,9 +25,9 @@
 namespace Magnum {
 
 /**
-@brief Non-templated base for Texture
+@brief Non-templated base for one-, two- or three-dimensional textures.
 
-See Texture documentation for more information.
+See Texture, CubeMapTexture documentation for more information.
 */
 class MAGNUM_EXPORT AbstractTexture {
     AbstractTexture(const AbstractTexture& other) = delete;
@@ -156,7 +156,14 @@ class MAGNUM_EXPORT AbstractTexture {
         /** @brief %Texture layer */
         inline GLint layer() const { return _layer; }
 
-        /** @brief Bind texture for usage / rendering */
+        /**
+         * @brief Bind texture for usage / rendering
+         *
+         * Sets current texture as active in its texture layer. Note that
+         * only one texture can be bound to given layer.
+         *
+         * @see layer()
+         */
         inline void bind() {
             glActiveTexture(GL_TEXTURE0 + _layer);
             glBindTexture(target, texture);

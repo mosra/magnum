@@ -38,7 +38,7 @@ turned upside down (+Y is top):
               | +Y |
               +----+
 
-When using cube map texture in the shader, use `samplerCube`. Unlike normal
+When using cube map texture in the shader, use `samplerCube`. Unlike classic
 textures, coordinates for cube map textures is signed three-part vector from
 the center of the cube, which intersects one of the six sides of the cube map.
 
