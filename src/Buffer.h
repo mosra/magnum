@@ -149,6 +149,9 @@ class Buffer {
         /** @brief Default bind type */
         inline Target defaultTarget() const { return _defaultTarget; }
 
+        /** @brief OpenGL internal buffer ID */
+        inline GLuint id() const { return buffer; }
+
         /**
          * @brief Bind buffer
          *
