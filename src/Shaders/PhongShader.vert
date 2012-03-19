@@ -22,5 +22,5 @@ void main() {
     lightDirection = normalize(light.xyz - transformedVertex);
 
     /* Transform the vertex */
-    gl_Position = projectionMatrix*transformationMatrix*vertex;
+    gl_Position = projectionMatrix*transformedVertex4;
 }
