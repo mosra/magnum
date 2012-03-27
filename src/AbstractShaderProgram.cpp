@@ -50,34 +50,18 @@ bool AbstractShaderProgram::attachShader(Shader* shader) {
     return true;
 }
 
-bool AbstractShaderProgram::bindAttribute(GLuint location, const string& name) {
+void AbstractShaderProgram::bindAttribute(GLuint location, const string& name) {
     if(state != Initialized) {
         Error() << "AbstractShaderProgram: attribute cannot be bound after linking.";
         assert(0);
-        return false;
     }
 
-    /* Check whether given id already exists */
-    if(attributes.find(location) != attributes.end()) return false;
-
-    /* Check whether given name already exists */
-    for(map<GLuint, string>::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
-        if(it->second == name) return false;
-
-    attributes.insert(pair<GLuint, string>(location, name));
-    return true;
+    glBindAttribLocation(program, location, name.c_str());
 }
 
 void AbstractShaderProgram::link() {
     /* Already compiled or failed, exit */
     if(state != Initialized) return;
-
-    /* Set state to failed if anything goes wrong */
-    state = Failed;
-
-    /* Bind attributes to specified locations */
-    for(map<GLuint, string>::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
-        glBindAttribLocation(program, it->first, it->second.c_str());
 
     /* Link shader program */
     glLinkProgram(program);

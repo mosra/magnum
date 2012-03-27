@@ -126,15 +126,13 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @brief Bind attribute to given location
          * @param location      Location
          * @param name          Attribute name
-         * @return False if the location or name is already bound, true
-         * otherwise.
          *
-         * Binds attribute to the location which can be used later when binding
+         * Binds attribute to location which is be used later for binding
          * vertex buffers.
          * @note This function should be called between loadShader() calls
          * and link().
          */
-        bool bindAttribute(GLuint location, const std::string& name);
+        void bindAttribute(GLuint location, const std::string& name);
 
         /**
          * @brief Link the shader
@@ -207,7 +205,6 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         GLuint program;
         State state;
-        std::map<GLuint, std::string> attributes;
 };
 
 }
