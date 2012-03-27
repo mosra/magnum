@@ -63,7 +63,10 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          *
          * Creates one OpenGL texture.
          */
-        inline Texture(GLint layer = 0, Target target = DataHelper<Dimensions>::target()): AbstractTexture(layer, static_cast<GLenum>(target)), target(target) {}
+        inline Texture(GLint layer = 0, Target target = DataHelper<Dimensions>::target()): AbstractTexture(layer, static_cast<GLenum>(target)), _target(target) {}
+
+        /** @brief %Texture target */
+        inline Target target() const { return _target; }
 
         /**
          * @brief Set wrapping
@@ -75,7 +78,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          */
         inline void setWrapping(const Math::Vector<Wrapping, Dimensions>& wrapping) {
             bind();
-            DataHelper<Dimensions>::setWrapping(target, wrapping);
+            DataHelper<Dimensions>::setWrapping(_target, wrapping);
         }
 
         /**
@@ -91,7 +94,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          */
         template<class T> inline void setData(GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             bind();
-            DataHelper<Dimensions>::set(target, mipLevel, internalFormat, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
+            DataHelper<Dimensions>::set(_target, mipLevel, internalFormat, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
         }
 
         /**
@@ -106,7 +109,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          */
         template<class T> inline void setData(GLint mipLevel, InternalFormat internalFormat, T* image) {
             bind();
-            DataHelper<Dimensions>::set(target, mipLevel, internalFormat, image);
+            DataHelper<Dimensions>::set(_target, mipLevel, internalFormat, image);
         }
 
         /**
@@ -123,7 +126,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          */
         template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
             bind();
-            DataHelper<Dimensions>::setSub(target, mipLevel, offset, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
+            DataHelper<Dimensions>::setSub(_target, mipLevel, offset, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
         }
 
         /**
@@ -138,11 +141,11 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          */
         template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, T* image) {
             bind();
-            DataHelper<Dimensions>::setSub(target, mipLevel, offset, image);
+            DataHelper<Dimensions>::setSub(_target, mipLevel, offset, image);
         }
 
     private:
-        Target target;
+        Target _target;
 };
 
 /** @brief One-dimensional texture */
