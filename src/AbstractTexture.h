@@ -156,6 +156,9 @@ class MAGNUM_EXPORT AbstractTexture {
         /** @brief %Texture layer */
         inline GLint layer() const { return _layer; }
 
+        /** @brief OpenGL internal texture ID */
+        inline GLuint id() const { return texture; }
+
         /**
          * @brief Bind texture for usage / rendering
          *
