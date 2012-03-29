@@ -63,7 +63,7 @@ typedef Attribute<2, Vector2> TextureCoords;
     projectionMatrixUniform = uniformLocation("projectionMatrix");
     // more uniforms like light location, colors etc.
 @endcode
- - **Uniform binding functions**, which set shader uniforms with
+ - **Uniform binding functions**, which set shader uniforms using
    setUniform() and setUniformArray() functions. Example:
 @code
 void setTransformationMatrixUniform(const Matrix4& matrix) {
@@ -74,6 +74,18 @@ void setTransformationMatrixUniform(const Matrix4& matrix) {
 Basic workflow with AbstractShaderProgram subclasses is: instancing the class
 (once at the beginning), then in every frame calling use(), setting uniforms
 and calling Mesh::draw() (see its documentation for more).
+
+@section MultipleFragmentOutputs Multiple fragment shader outputs
+If your shader uses multiple fragment outputs, you can use
+bindFragmentDataLocation() *before linking* to bind their names to desired
+location, e.g.:
+@code
+bindFragmentDataLocation(0, "color");
+@endcode
+
+You should then clearly state in the documentation which output is on what
+position, so the user can set framebuffer attachments for them using
+Framebuffer::mapForDraw() or Framebuffer::mapDefaultForDraw().
  */
 class MAGNUM_EXPORT AbstractShaderProgram {
     AbstractShaderProgram(const AbstractShaderProgram& other) = delete;
@@ -133,6 +145,16 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * and link().
          */
         void bindAttribute(GLuint location, const std::string& name);
+
+        /**
+         * @brief Bind fragment data to given location
+         * @param location      Location
+         * @param name          Fragment output variable name
+         *
+         * @note This function should be called between loadShader() calls
+         * and link().
+         */
+        void bindFragmentDataLocation(GLuint location, const std::string& name);
 
         /**
          * @brief Link the shader

@@ -59,6 +59,15 @@ void AbstractShaderProgram::bindAttribute(GLuint location, const string& name) {
     glBindAttribLocation(program, location, name.c_str());
 }
 
+void AbstractShaderProgram::bindFragmentDataLocation(GLuint location, const std::string& name) {
+    if(state != Initialized) {
+        Error() << "AbstractShaderProgram: fragment data location cannot be bound after linking.";
+        assert(0);
+    }
+
+    glBindFragDataLocation(program, location, name.c_str());
+}
+
 void AbstractShaderProgram::link() {
     /* Already compiled or failed, exit */
     if(state != Initialized) return;
