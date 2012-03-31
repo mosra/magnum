@@ -1,12 +1,12 @@
 namespace Magnum {
 /** @mainpage
 
-%Magnum is simple graphical engine written in C++11 and OpenGL 3 Core Profile.
+%Magnum is 3D graphics engine written in C++11 and OpenGL 3 Core Profile.
 Features:
 
 - Easy-to-use templated @ref Math "mathematical library" for matrix/vector
   calculations.
-- Comprehensive use of C++11 features for security, performance and ease of
+- Comprehensive use of C++11 features for safety, performance and ease of
   development.
 - Hierarchical @ref Scene "scene graph" which supports transformation caching
   for better performance, classes for convenient usage of
@@ -15,6 +15,10 @@ Features:
 - @ref MeshTools "Mesh tools" for cleaning, optimizing and generating meshes.
   Collection of pre-made @ref Primitives "graphic primitives" and
   @ref Shaders "shaders" for testing purposes.
+
+@section BuildingLink Building Magnum
+
+Guide @ref Building "how to build Magnum" on different platforms.
 
 @section BasicUsage Basic usage
 

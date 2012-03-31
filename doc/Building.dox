@@ -1,0 +1,87 @@
+/** @page Building Building %Magnum
+
+%Magnum can be built either @ref BuildingCompilation "manually" or using
+already prepared packaging files, currently only
+@ref BuildingArch "ArchLinux PKGBUILDs". Guide how to @ref BuildingWin
+"crosscompile for Windows" is also available.
+
+@tableofcontents
+
+Minimal set of tools and libraries required for building is:
+
+- C++ compiler with good C++11 support. Currently the only compiler which
+  supports everything needed is **GCC** >= 4.6. **Clang** >= 3.1 (from SVN)
+  will probably work too.
+- **CMake** >= 2.6
+- **OpenGL** headers, on Linux most probably shipped with Mesa
+- **GLEW** - OpenGL extension wrangler
+- **Corrade** - Plugin management and utility library. You can get it at
+  http://mosra.cz/blog/corrade.php
+
+@section BuildingCompilation Compilation, installation
+The library can be built and installed using these four commands:
+
+    mkdir -p build
+    cd build
+    cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make
+    make install
+
+@subsection BuildingTests Building and running unit tests
+If you want to build also unit tests (which are not built by default), pass
+`-DBUILD_TESTS=True` to CMake. Unit tests use QtTest framework (you need at
+least **Qt 4.6**) and can be run using
+
+    ctest -V
+
+in build directory. Everything should pass ;-)
+
+@subsection BuildingDoc Building documentation
+The documentation (which you are currently reading) is written in **Doxygen**
+(preferrably 1.8 with Markdown support, but older versions should do good job
+too) and additionally uses **Graphviz** for class diagrams. The documentation
+can be build by running
+
+    doxygen
+
+in root directory (i.e. where `Doxyfile` is). Resulting HTML documentation
+will be in `build/doc/` directory.
+
+@section BuildingArch Building ArchLinux packages
+In `package/archlinux` directory is currently one PKGBUILD for Git development
+build. The package is also in AUR under the same name.
+
+There is also development PKGBUILD and MinGW development PKGBUILD in root,
+which allows you to build and install the package directly from source tree
+without downloading anything. The PKGBUILD also contains `check()` function
+which will run all unit tests before packaging. Note that the unit tests
+require Qt, as said above.
+
+@section BuildingWin Crosscompiling for Windows using MinGW
+@note This guide is tailored mainly for crosscompiling from ArchLinux. For
+this system there is also prepared `mingw32-magnum` development package in
+root, named `PKGBUILD-mingw32`.
+
+You will need MinGW32 versions of the compiler and all libraries (OpenGL
+headers, GLEW, Corrade), i.e. these ArchLinux packages:
+
+- `mingw32-gcc`, which depends on `mingw32-w32api` containing OpenGL headers
+- `mingw32-runtime`
+- `mingw32-glew`
+- `mingw32-corrade`
+
+Make sure you have `toolchains` Git submodule updated, or, if you build from
+source, download the files from https://github.com/mosra/toolchains and put
+them in toolchains/ subdirectory. Then create build directory and run cmake
+and make:
+
+    mkdir build-win
+    cd build-win
+    cmake .. \
+        -DCMAKE_TOOLCHAIN_FILE=../toolchains/archlinux/basic-mingw32.cmake \
+        -DCMAKE_INSTALL_PREFIX=/usr/i486-mingw32
+    make
+
+You may need to modify the `basic-mingw32.cmake` file and
+`CMAKE_INSTALL_PREFIX` to suit your distribution filesystem hierarchy. If
+everything goes well, in `build-win/` subdirectories will be the DLLs.
+*/
