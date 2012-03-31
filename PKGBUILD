@@ -9,6 +9,7 @@ license=('LGPLv3')
 depends=('corrade' 'glew')
 makedepends=('cmake' 'qt')
 options=(!strip)
+provides=('magnum-git')
 
 build() {
     mkdir -p "$startdir/build"

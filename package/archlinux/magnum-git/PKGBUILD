@@ -1,0 +1,41 @@
+# Author: mosra <mosra@centrum.cz>
+pkgname=magnum-git
+pkgver=20120331
+pkgrel=1
+pkgdesc="OpenGL 3 graphics engine (Git version)"
+arch=('i686' 'x86_64')
+url="https://github.com/mosra/magnum"
+license=('LGPLv3')
+depends=('corrade-git' 'glew')
+makedepends=('cmake' 'git')
+
+_gitroot="git://github.com/mosra/magnum.git"
+_gitname="magnum"
+
+build() {
+    cd "$srcdir"
+    msg "Connecting to Git server..."
+
+    if [ -d $_gitname ] ; then
+        cd $_gitname && git pull origin
+        msg "The local files are updated."
+    else
+        git clone $_gitroot $_gitname
+    fi
+
+    msg "Git checkout done."
+    msg "Starting make..."
+
+    mkdir -p "$srcdir/build"
+    cd "$srcdir/build"
+
+    cmake ../$_gitname \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr
+    make
+}
+
+package() {
+    cd "$srcdir/build"
+    make DESTDIR="$pkgdir/" install
+}
