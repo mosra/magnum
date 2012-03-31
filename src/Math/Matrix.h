@@ -27,6 +27,7 @@ namespace Magnum { namespace Math {
  * @brief %Matrix
  *
  * @todo @c PERFORMANCE - loop unrolling for Matrix<T, 3> and Matrix<T, 4>
+ * @todo first col, then row (cache adjacency)
  */
 template<class T, size_t size> class Matrix {
     public:
