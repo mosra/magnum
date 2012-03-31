@@ -99,7 +99,7 @@ template<size_t imageDimensions> class BufferedImage {
                 return;
             }
 
-            size_t textureSize = AbstractTexture::pixelSize(AbstractTexture::ColorFormat::RGB, Type::UnsignedByte)*dimensions.product();
+            size_t textureSize = AbstractTexture::pixelSize(AbstractTexture::ColorFormat::RGB, Type::UnsignedByte)*_dimensions.product();
             _buffer.setSubData(Buffer::Target::PixelPack, 0, textureSize, data);
         }
 
