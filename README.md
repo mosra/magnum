@@ -33,6 +33,6 @@ Want to learn more about the library? Found a bug or want to tell me an
 awesome idea? Feel free to visit my website or contact me at:
 
  * Website - http://mosra.cz/blog/
- * GitHub - http://github.com/mosra
+ * GitHub - https://github.com/mosra/magnum
  * E-mail - mosra@centrum.cz
  * Jabber - mosra@jabbim.cz
