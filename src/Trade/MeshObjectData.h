@@ -28,7 +28,7 @@ namespace Magnum { namespace Trade {
 
 Provides access to material information for given mesh instance.
 */
-class MAGNUM_EXPORT MeshObjectData: public ObjectData {
+class MeshObjectData: public ObjectData {
     MeshObjectData(const MeshObjectData& other) = delete;
     MeshObjectData(MeshObjectData&& other) = delete;
     MeshObjectData& operator=(const MeshObjectData& other) = delete;

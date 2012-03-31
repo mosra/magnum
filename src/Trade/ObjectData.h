@@ -29,7 +29,7 @@ namespace Magnum { namespace Trade {
 Provides access to object transformation and hierarchy. See also
 MeshObjectData, which is specialized for objects with mesh instance type.
 */
-class MAGNUM_EXPORT ObjectData {
+class ObjectData {
     ObjectData(const ObjectData& other) = delete;
     ObjectData(ObjectData&& other) = delete;
     ObjectData& operator=(const ObjectData& other) = delete;
