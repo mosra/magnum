@@ -122,7 +122,11 @@ template<class T> class Matrix4: public Matrix<T, 4> {
          * Note that the values are in column-major order.
          */
         /* doxygen: @copydoc Matrix::Matrix(T, U&&...) doesn't work */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> inline constexpr Matrix4(T first, U&&... next): Matrix<T, 4>(first, std::forward<U>(next)...) {}
+        #else
+        template<class ...U> inline constexpr Matrix4(T first, U&&... next);
+        #endif
 
         /** @copydoc Matrix::Matrix(const Matrix<T, size>&) */
         inline constexpr Matrix4(const Matrix<T, 4>& other): Matrix<T, 4>(other) {}

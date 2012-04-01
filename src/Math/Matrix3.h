@@ -53,7 +53,11 @@ template<class T> class Matrix3: public Matrix<T, 3> {
          * Note that the values are in column-major order.
          */
         /* doxygen: @copydoc Matrix::Matrix(T, U&&...) doesn't work */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> inline constexpr Matrix3(T first, U&&... next): Matrix<T, 3>(first, std::forward<U>(next)...) {}
+        #else
+        template<class ...U> inline constexpr Matrix3(T first, U&&... next);
+        #endif
 
         /** @copydoc Matrix::Matrix(const Matrix<T, size>&) */
         inline constexpr Matrix3(const Matrix<T, 3>& other): Matrix<T, 3>(other) {}
