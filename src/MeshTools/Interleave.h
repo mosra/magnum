@@ -52,7 +52,11 @@ class Interleave {
         };
 
         /** @brief Constructor */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
         inline Interleave(): result{0, 0, 0} {}
+        #else
+        inline Interleave() {}
+        #endif
 
         /**
          * @brief Functor
