@@ -62,8 +62,7 @@ template<size_t imageDimensions> class BufferedImage {
          */
         void setDimensions(const Math::Vector<GLsizei, Dimensions>& dimensions, Buffer::Usage usage) {
             _dimensions = dimensions;
-            size_t textureSize = AbstractTexture::pixelSize(AbstractTexture::ColorFormat::RGB, Type::UnsignedByte)*dimensions.product();
-            _buffer.setData(Buffer::Target::PixelPack, textureSize, nullptr, usage);
+            _buffer.setData(Buffer::Target::PixelPack, AbstractTexture::pixelSize(_colorFormat, _type)*dimensions.product(), nullptr, usage);
         }
 
         /** @brief Color format */
@@ -99,8 +98,7 @@ template<size_t imageDimensions> class BufferedImage {
                 return;
             }
 
-            size_t textureSize = AbstractTexture::pixelSize(AbstractTexture::ColorFormat::RGB, Type::UnsignedByte)*_dimensions.product();
-            _buffer.setSubData(Buffer::Target::PixelPack, 0, textureSize, data);
+            _buffer.setSubData(Buffer::Target::PixelPack, 0, AbstractTexture::pixelSize(_colorFormat, _type)*_dimensions.product(), data);
         }
 
     protected:
