@@ -14,9 +14,11 @@ set(Magnum_SRCS
     BufferedImage.cpp
     Camera.cpp
     Image.cpp
+    Framebuffer.cpp
     IndexedMesh.cpp
     Light.cpp
     Mesh.cpp
+    Renderbuffer.cpp
     Scene.cpp
     Shader.cpp
     SizeTraits.cpp
