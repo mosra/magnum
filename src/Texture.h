@@ -25,9 +25,6 @@ namespace Magnum {
 
 /**
 @brief %Texture
-@tparam dimensions      %Texture dimension count
-@tparam target          %Target. If not set, target is based on dimension
-    count (`Target::Texture1D`, `Target::Texture2D` or `Target::Texture3D`).
 
 Template class for one- to three-dimensional textures.
 
@@ -51,15 +48,15 @@ don't support mipmapping and repeating wrapping modes, see @ref Texture::Filter
 "Filter", @ref Texture::Mipmap "Mipmap" and generateMipmap() documentation
 for more information.
  */
-template<size_t dimensions> class Texture: public AbstractTexture {
+template<size_t textureDimensions> class Texture: public AbstractTexture {
     public:
-        static const size_t Dimensions = dimensions;    /**< @brief %Texture dimension count */
+        static const size_t Dimensions = textureDimensions; /**< @brief %Texture dimension count */
         typedef typename DataHelper<Dimensions>::Target Target; /**< @brief %Texture target */
 
         /**
          * @brief Constructor
-         * @param layer     %Texture layer (number between 0 and 31)
-         * @param target    %Texture target
+         * @param layer             %Texture layer (number between 0 and 31)
+         * @param target            %Texture target
          *
          * Creates one OpenGL texture.
          */
@@ -70,7 +67,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
 
         /**
          * @brief Set wrapping
-         * @param wrapping      Wrapping type for all texture dimensions
+         * @param wrapping          Wrapping type for all texture dimensions
          *
          * Sets wrapping type for coordinates out of range (0, 1) for normal
          * textures and (0, textureSizeInGivenDirection-1) for rectangle
@@ -85,16 +82,16 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          * @brief Set texture data
          * @param mipLevel          Mip level
          * @param internalFormat    Internal texture format
-         * @param _dimensions       %Texture dimensions
+         * @param dimensions        %Texture dimensions
          * @param colorFormat       Color format of passed data. Data size per
          *      color channel is detected from format of passed data array.
          * @param data              %Texture data
          *
          * Sets texture from given data. The data are not deleted afterwards.
          */
-        template<class T> inline void setData(GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
+        template<class T> inline void setData(GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, Dimensions>& dimensions, ColorFormat colorFormat, const T* data) {
             bind();
-            DataHelper<Dimensions>::set(_target, mipLevel, internalFormat, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
+            DataHelper<Dimensions>::set(_target, mipLevel, internalFormat, dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
         }
 
         /**
@@ -116,7 +113,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          * @brief Set texture subdata
          * @param mipLevel          Mip level
          * @param offset            Offset where to put data in the texture
-         * @param _dimensions       %Texture dimensions
+         * @param dimensions        %Texture dimensions
          * @param colorFormat       Color format of passed data. Data size per
          *      color channel is detected from format of passed data array.
          * @param data              %Texture data
@@ -124,9 +121,9 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          * Sets texture subdata from given data. The data are not deleted
          * afterwards.
          */
-        template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& _dimensions, ColorFormat colorFormat, const T* data) {
+        template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& dimensions, ColorFormat colorFormat, const T* data) {
             bind();
-            DataHelper<Dimensions>::setSub(_target, mipLevel, offset, _dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
+            DataHelper<Dimensions>::setSub(_target, mipLevel, offset, dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
         }
 
         /**
