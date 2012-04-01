@@ -82,22 +82,6 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
          * @brief Set texture data
          * @param mipLevel          Mip level
          * @param internalFormat    Internal texture format
-         * @param dimensions        %Texture dimensions
-         * @param colorFormat       Color format of passed data. Data size per
-         *      color channel is detected from format of passed data array.
-         * @param data              %Texture data
-         *
-         * Sets texture from given data. The data are not deleted afterwards.
-         */
-        template<class T> inline void setData(GLint mipLevel, InternalFormat internalFormat, const Math::Vector<GLsizei, Dimensions>& dimensions, ColorFormat colorFormat, const T* data) {
-            bind();
-            DataHelper<Dimensions>::set(_target, mipLevel, internalFormat, dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
-        }
-
-        /**
-         * @brief Set texture data from image
-         * @param mipLevel          Mip level
-         * @param internalFormat    Internal texture format
          * @param image             Image, BufferedImage or for example
          *      Trade::ImageData of the same dimension count
          *
@@ -111,23 +95,6 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
 
         /**
          * @brief Set texture subdata
-         * @param mipLevel          Mip level
-         * @param offset            Offset where to put data in the texture
-         * @param dimensions        %Texture dimensions
-         * @param colorFormat       Color format of passed data. Data size per
-         *      color channel is detected from format of passed data array.
-         * @param data              %Texture data
-         *
-         * Sets texture subdata from given data. The data are not deleted
-         * afterwards.
-         */
-        template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const Math::Vector<GLsizei, Dimensions>& dimensions, ColorFormat colorFormat, const T* data) {
-            bind();
-            DataHelper<Dimensions>::setSub(_target, mipLevel, offset, dimensions, colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType(), data);
-        }
-
-        /**
-         * @brief Set texture subdata from image
          * @param mipLevel          Mip level
          * @param offset            Offset where to put data in the texture
          * @param image             Image, BufferedImage or for example
