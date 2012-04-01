@@ -19,7 +19,7 @@
  * @brief Class Magnum::Trade::ImageData
  */
 
-#include "AbstractTexture.h"
+#include "AbstractImage.h"
 
 namespace Magnum { namespace Trade {
 
@@ -29,12 +29,7 @@ namespace Magnum { namespace Trade {
 Provides access to image data and additional information about data type and
 dimensions. Can be used in the same situations as Image and BufferedImage.
 */
-template<size_t imageDimensions> class ImageData {
-    ImageData<imageDimensions>(const ImageData<imageDimensions>& other) = delete;
-    ImageData<imageDimensions>(ImageData<imageDimensions>&& other) = delete;
-    ImageData<imageDimensions>& operator=(const ImageData<imageDimensions>& other) = delete;
-    ImageData<imageDimensions>& operator=(ImageData<imageDimensions>&& other) = delete;
-
+template<size_t imageDimensions> class ImageData: public AbstractImage {
     public:
         const static size_t Dimensions = imageDimensions;   /**< @brief %Image dimension count */
 
@@ -48,7 +43,7 @@ template<size_t imageDimensions> class ImageData {
          * @attention Note that the image data are not copied on construction,
          * but they are deleted on class destruction.
          */
-        template<class T> inline ImageData(AbstractTexture::ColorFormat colorFormat, const Math::Vector<GLsizei, Dimensions>& dimensions, const T* data): _colorFormat(colorFormat), _type(TypeTraits<typename TypeTraits<T>::TextureType>::glType()), _dimensions(dimensions), _data(reinterpret_cast<const char*>(data)) {}
+        template<class T> inline ImageData(ColorFormat colorFormat, const Math::Vector<GLsizei, Dimensions>& dimensions, const T* data): AbstractImage(colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType()), _dimensions(dimensions), _data(reinterpret_cast<const char*>(data)) {}
 
         /** @brief Destructor */
         inline virtual ~ImageData() { delete[] _data; }
@@ -56,18 +51,10 @@ template<size_t imageDimensions> class ImageData {
         /** @brief %Image dimensions */
         inline const Math::Vector<GLsizei, Dimensions>& dimensions() const { return _dimensions; }
 
-        /** @brief Color format */
-        inline AbstractTexture::ColorFormat colorFormat() const { return _colorFormat; }
-
-        /** @brief Data type */
-        inline Type type() const { return _type; }
-
         /** @brief Pointer to raw data */
         inline const void* data() const { return _data; }
 
     private:
-        AbstractTexture::ColorFormat _colorFormat;
-        Type _type;
         Math::Vector<GLsizei, Dimensions> _dimensions;
         const char* _data;
 };

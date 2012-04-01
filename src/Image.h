@@ -19,7 +19,7 @@
  * @brief Class Magnum::Image
  */
 
-#include "AbstractTexture.h"
+#include "AbstractImage.h"
 
 namespace Magnum {
 
@@ -31,12 +31,7 @@ BufferedImage, which stores image data in GPU memory, or for example with
 Trade::ImageData. See also Image2D, which has additional data updating
 functions.
 */
-template<size_t imageDimensions> class Image {
-    Image<imageDimensions>(const Image<imageDimensions>& other) = delete;
-    Image<imageDimensions>(Image<imageDimensions>&& other) = delete;
-    Image<imageDimensions>& operator=(const Image<imageDimensions>& other) = delete;
-    Image<imageDimensions>& operator=(Image<imageDimensions>&& other) = delete;
-
+template<size_t imageDimensions> class Image: public AbstractImage {
     public:
         const static size_t Dimensions = imageDimensions;   /**< @brief Image dimension count */
 
@@ -50,20 +45,20 @@ template<size_t imageDimensions> class Image {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        template<class T> inline Image(AbstractTexture::ColorFormat colorFormat, const Math::Vector<GLsizei, Dimensions>& dimensions, T* data): _colorFormat(colorFormat), _type(TypeTraits<typename TypeTraits<T>::TextureType>::glType()), _dimensions(dimensions), _data(data) {}
+        template<class T> inline Image(ColorFormat colorFormat, const Math::Vector<GLsizei, Dimensions>& dimensions, T* data): AbstractImage(colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType()), _dimensions(dimensions), _data(data) {}
 
         /**
          * @brief Constructor
          * @param colorFormat       Color format of passed data
          * @param type              Data type per color channel
          *
-         * Dimensions and data pointer are are set to zero, call
+         * Dimensions and data pointer are set to zero, call
          * setDimensions() and setData() to fill the image with data.
          */
-        inline Image(AbstractTexture::ColorFormat colorFormat, Type type): _colorFormat(colorFormat), _type(type), _data(nullptr) {}
+        inline Image(ColorFormat colorFormat, Type type): AbstractImage(colorFormat, type), _data(nullptr) {}
 
         /** @brief Destructor */
-        inline virtual ~Image() { delete[] _data; }
+        inline ~Image() { delete[] _data; }
 
         /** @brief %Image dimensions */
         inline const Math::Vector<GLsizei, Dimensions>& dimensions() const { return _dimensions; }
@@ -79,12 +74,6 @@ template<size_t imageDimensions> class Image {
             delete _data;
             _data = 0;
         }
-
-        /** @brief Color format */
-        inline AbstractTexture::ColorFormat colorFormat() const { return _colorFormat; }
-
-        /** @brief Data type */
-        inline Type type() const { return _type; }
 
         /** @brief Pointer to raw data */
         inline const void* data() const { return _data; }
@@ -109,8 +98,6 @@ template<size_t imageDimensions> class Image {
         }
 
     protected:
-        AbstractTexture::ColorFormat _colorFormat;      /**< @brief Color format */
-        Type _type;                                     /**< @brief Data type per color channel */
         Math::Vector<GLsizei, Dimensions> _dimensions;  /**< @brief %Image dimensions */
         char* _data;                                    /**< @brief %Image data */
 };
@@ -130,7 +117,7 @@ class MAGNUM_EXPORT Image2D: public Image<2> {
          * setDimensions() and setData() to fill the image with data.
          */
         /* doxygen: @copydoc Image::Image doesn't work */
-        inline Image2D(AbstractTexture::ColorFormat colorFormat, Type type): Image(colorFormat, type) {}
+        inline Image2D(ColorFormat colorFormat, Type type): Image(colorFormat, type) {}
 
         /**
          * @brief Set image data from current framebuffer

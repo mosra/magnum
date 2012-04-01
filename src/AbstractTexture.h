@@ -20,7 +20,6 @@
  */
 
 #include "Magnum.h"
-#include "TypeTraits.h"
 
 namespace Magnum {
 
@@ -315,23 +314,6 @@ class MAGNUM_EXPORT AbstractTexture {
         class InternalFormat;
 
         /*@}*/
-
-        /** @brief Color format */
-        enum class ColorFormat: GLenum {
-            Red = GL_RED,       /**< One-component (red channel) */
-            RedGreen = GL_RG,   /**< Two-component (red and green channel) */
-            RGB = GL_RGB,       /**< Three-component (RGB) */
-            RGBA = GL_RGBA,     /**< Four-component (RGBA) */
-            BGR = GL_BGR,       /**< Three-component (BGR) */
-            BGRA = GL_BGRA      /**< Four-component (BGRA) */
-        };
-
-        /**
-         * @brief Pixel size (in bytes)
-         * @param format    Color format
-         * @param type      Data type per color channel
-         */
-        static size_t pixelSize(ColorFormat format, Type type);
 
         /**
          * @brief Constructor

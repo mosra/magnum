@@ -19,7 +19,7 @@
  * @brief Class Magnum::BufferedImage
  */
 
-#include "AbstractTexture.h"
+#include "AbstractImage.h"
 #include "Buffer.h"
 
 namespace Magnum {
@@ -31,12 +31,7 @@ Class for storing image data in GPU memory. Can be replaced with Image, which
 stores image data in client memory, or for example with Trade::ImageData. See
 also BufferedImage2D, which has additional data updating functions.
 */
-template<size_t imageDimensions> class BufferedImage {
-    BufferedImage(const BufferedImage<imageDimensions>& other) = delete;
-    BufferedImage(BufferedImage<imageDimensions>&& other) = delete;
-    BufferedImage& operator=(const BufferedImage<imageDimensions>& other) = delete;
-    BufferedImage& operator=(BufferedImage<imageDimensions>&& other) = delete;
-
+template<size_t imageDimensions> class BufferedImage: public AbstractImage {
     public:
         const static size_t Dimensions = imageDimensions;   /**< @brief Image dimension count */
 
@@ -45,9 +40,7 @@ template<size_t imageDimensions> class BufferedImage {
          * @param colorFormat   Color format of the data.
          * @param type          Data type per color channel
          */
-        BufferedImage(AbstractTexture::ColorFormat colorFormat, Type type): _colorFormat(colorFormat), _type(type), _buffer(Buffer::Target::PixelPack) {}
-
-        inline virtual ~BufferedImage() {}
+        BufferedImage(ColorFormat colorFormat, Type type): AbstractImage(colorFormat, type), _buffer(Buffer::Target::PixelPack) {}
 
         /** @brief %Image dimensions */
         inline Math::Vector<GLsizei, Dimensions> dimensions() const { return _dimensions; }
@@ -62,14 +55,8 @@ template<size_t imageDimensions> class BufferedImage {
          */
         void setDimensions(const Math::Vector<GLsizei, Dimensions>& dimensions, Buffer::Usage usage) {
             _dimensions = dimensions;
-            _buffer.setData(Buffer::Target::PixelPack, AbstractTexture::pixelSize(_colorFormat, _type)*dimensions.product(), nullptr, usage);
+            _buffer.setData(Buffer::Target::PixelPack, pixelSize(_colorFormat, _type)*dimensions.product(), nullptr, usage);
         }
-
-        /** @brief Color format */
-        inline AbstractTexture::ColorFormat colorFormat() const { return _colorFormat; }
-
-        /** @brief Data type */
-        inline Type type() const { return _type; }
 
         /**
          * @brief Data
@@ -98,12 +85,10 @@ template<size_t imageDimensions> class BufferedImage {
                 return;
             }
 
-            _buffer.setSubData(Buffer::Target::PixelPack, 0, AbstractTexture::pixelSize(_colorFormat, _type)*_dimensions.product(), data);
+            _buffer.setSubData(Buffer::Target::PixelPack, 0, pixelSize(_colorFormat, _type)*_dimensions.product(), data);
         }
 
     protected:
-        AbstractTexture::ColorFormat _colorFormat;      /**< @brief Color format */
-        Type _type;                                     /**< @brief Data type per color channel */
         Math::Vector<GLsizei, Dimensions> _dimensions;  /**< @brief %Image dimensions */
         Buffer _buffer;                                 /**< @brief %Image buffer */
 };
@@ -120,7 +105,7 @@ class MAGNUM_EXPORT BufferedImage2D: public BufferedImage<2> {
          * @param type          Data type per color channel
          */
         /* doxygen: @copydoc BufferedImage::BufferedImage doesn't work */
-        inline BufferedImage2D(AbstractTexture::ColorFormat colorFormat, Type type): BufferedImage(colorFormat, type) {}
+        inline BufferedImage2D(ColorFormat colorFormat, Type type): BufferedImage(colorFormat, type) {}
 
         /**
          * @brief Set image data from current framebuffer

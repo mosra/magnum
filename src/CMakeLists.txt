@@ -9,6 +9,7 @@ add_subdirectory(Shaders)
 
 set(Magnum_SRCS
     Object.cpp
+    AbstractImage.cpp
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
     BufferedImage.cpp
