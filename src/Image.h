@@ -100,7 +100,7 @@ template<size_t imageDimensions> class Image {
          */
         template<class T> void setData(const T* data) {
             if(TypeTraits<typename TypeTraits<T>::TextureType>::glType() != _type) {
-                Corrade::Utility::Error() << "Image: Passed data have type" << TypeTraits<typename TypeTraits<T>::TextureType>::glType() << "but it should be" << _type;
+                Corrade::Utility::Error() << "Image: Passed data have wrong type";
                 return;
             }
 

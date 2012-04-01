@@ -95,7 +95,7 @@ template<size_t imageDimensions> class BufferedImage {
          */
         template<class T> void setData(const T* data) {
             if(TypeTraits<typename TypeTraits<T>::TextureType>::glType() != _type) {
-                Corrade::Utility::Error() << "BufferedImage: Passed data have type" << TypeTraits<typename TypeTraits<T>::TextureType>::glType() << "but it should be" << _type;
+                Corrade::Utility::Error() << "BufferedImage: Passed data have wrong type";
                 return;
             }
 
