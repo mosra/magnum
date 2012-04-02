@@ -73,9 +73,9 @@ void TgaImporterTest::bits24() {
     TgaImporter importer;
     QVERIFY(importer.open(in));
     auto image = importer.image2D(0);
-    QVERIFY(image->colorFormat() == AbstractTexture::ColorFormat::BGR);
+    QVERIFY(image->components() == AbstractImage::Components::BGR);
     QVERIFY(image->dimensions() == Math::Vector2<GLsizei>(2, 3));
-    QVERIFY(image->type() == TypeTraits<GLubyte>::glType());
+    QVERIFY(image->type() == TypeTraits<GLubyte>::imageType());
     QVERIFY(string(static_cast<const char*>(image->data())) == string(data + 18, 2*3*3));
 }
 
@@ -89,9 +89,9 @@ void TgaImporterTest::bits32() {
     TgaImporter importer;
     QVERIFY(importer.open(in));
     auto image = importer.image2D(0);
-    QVERIFY(image->colorFormat() == AbstractTexture::ColorFormat::BGRA);
+    QVERIFY(image->components() == AbstractImage::Components::BGRA);
     QVERIFY(image->dimensions() == Math::Vector2<GLsizei>(2, 3));
-    QVERIFY(image->type() == TypeTraits<GLubyte>::glType());
+    QVERIFY(image->type() == TypeTraits<GLubyte>::imageType());
     QVERIFY(string(static_cast<const char*>(image->data()), 2*3*3) == string(data + 18, 2*3*3));
 }
 

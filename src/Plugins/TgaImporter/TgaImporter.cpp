@@ -64,13 +64,13 @@ bool TgaImporter::open(std::istream& in) {
         return false;
     }
 
-    AbstractTexture::ColorFormat colorFormat;
+    AbstractImage::Components components;
     switch(header.bpp) {
         case 24:
-            colorFormat = AbstractTexture::ColorFormat::BGR;
+            components = AbstractImage::Components::BGR;
             break;
         case 32:
-            colorFormat = AbstractTexture::ColorFormat::BGRA;
+            components = AbstractImage::Components::BGRA;
             break;
         default:
             Error() << "TgaImporter: unsupported bits-per-pixel:" << (int) header.bpp;
@@ -83,7 +83,7 @@ bool TgaImporter::open(std::istream& in) {
 
     Math::Vector2<GLsizei> dimensions(header.width, header.height);
 
-    _image = new ImageData2D(colorFormat, dimensions, buffer);
+    _image = new ImageData2D(dimensions, components, buffer);
     return true;
 }
 
