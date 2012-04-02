@@ -70,6 +70,9 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
             return nullptr;
         }
 
+        /** @brief %Image buffer */
+        inline Buffer* buffer() { return &_buffer; }
+
         /**
          * @brief Set image data
          * @param data              %Image data
