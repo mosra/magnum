@@ -94,7 +94,7 @@ class MAGNUM_EXPORT AbstractTexture {
 
         /** @{ @name Internal texture formats */
 
-        /** @brief Number of components for each value */
+        /** @brief Color components */
         enum class Components {
             /**
              * Red component only. Green and blue are set to `0`, alpha is set
@@ -536,11 +536,11 @@ template<> struct AbstractTexture::DataHelper<1> {
     }
 
     template<class T> inline static void set(Target target, GLint mipLevel, InternalFormat internalFormat, T* image) {
-        glTexImage1D(static_cast<GLenum>(target), mipLevel, internalFormat, image->dimensions().at(0), 0, static_cast<GLenum>(image->colorFormat()), static_cast<GLenum>(image->type()), image->data());
+        glTexImage1D(static_cast<GLenum>(target), mipLevel, internalFormat, image->dimensions().at(0), 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 
     template<class T> inline static void setSub(Target target, GLint mipLevel, const Math::Vector<GLint, 1>& offset, T* image) {
-        glTexSubImage1D(static_cast<GLenum>(target), mipLevel, offset.at(0), image->dimensions().at(0), static_cast<GLenum>(image->colorFormat()), static_cast<GLenum>(image->type()), image->data());
+        glTexSubImage1D(static_cast<GLenum>(target), mipLevel, offset.at(0), image->dimensions().at(0), static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 };
 template<> struct AbstractTexture::DataHelper<2> {
@@ -565,11 +565,11 @@ template<> struct AbstractTexture::DataHelper<2> {
     }
 
     template<class T> inline static void set(Target target, GLint mipLevel, InternalFormat internalFormat, T* image) {
-        glTexImage2D(static_cast<GLenum>(target), mipLevel, internalFormat, image->dimensions().at(0), image->dimensions().at(1), 0, static_cast<GLenum>(image->colorFormat()), static_cast<GLenum>(image->type()), image->data());
+        glTexImage2D(static_cast<GLenum>(target), mipLevel, internalFormat, image->dimensions().at(0), image->dimensions().at(1), 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 
     template<class T> inline static void setSub(Target target, GLint mipLevel, const Math::Vector<GLint, 2>& offset, T* image) {
-        glTexSubImage2D(static_cast<GLenum>(target), mipLevel, offset.at(0), offset.at(1), image->dimensions().at(0), image->dimensions().at(1), static_cast<GLenum>(image->colorFormat()), static_cast<GLenum>(image->type()), image->data());
+        glTexSubImage2D(static_cast<GLenum>(target), mipLevel, offset.at(0), offset.at(1), image->dimensions().at(0), image->dimensions().at(1), static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 };
 template<> struct AbstractTexture::DataHelper<3> {
@@ -587,11 +587,11 @@ template<> struct AbstractTexture::DataHelper<3> {
     }
 
     template<class T> inline static void set(Target target, GLint mipLevel, InternalFormat internalFormat, T* image) {
-        glTexImage3D(static_cast<GLenum>(target), mipLevel, internalFormat, image->dimensions().at(0), image->dimensions().at(1), image->dimensions().at(2), 0, static_cast<GLenum>(image->colorFormat()), static_cast<GLenum>(image->type()), image->data());
+        glTexImage3D(static_cast<GLenum>(target), mipLevel, internalFormat, image->dimensions().at(0), image->dimensions().at(1), image->dimensions().at(2), 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 
     template<class T> inline static void setSub(Target target, GLint mipLevel, const Math::Vector<GLint, 3>& offset, T* image) {
-        glTexSubImage3D(static_cast<GLenum>(target), mipLevel, offset.at(0), offset.at(1), offset.at(2), image->dimensions().at(0), image->dimensions().at(1), image->dimensions().at(2), static_cast<GLenum>(image->colorFormat()), static_cast<GLenum>(image->type()), image->data());
+        glTexSubImage3D(static_cast<GLenum>(target), mipLevel, offset.at(0), offset.at(1), offset.at(2), image->dimensions().at(0), image->dimensions().at(1), image->dimensions().at(2), static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 };
 #endif

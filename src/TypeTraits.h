@@ -19,7 +19,7 @@
  * @brief Enum Magnum::Type, class Magnum::TypeOf, Magnum::TypeInfo, Magnum::TypeTraits
  */
 
-#include "Magnum.h"
+#include "AbstractImage.h"
 
 namespace Magnum {
 
@@ -56,7 +56,7 @@ template<class T> struct TypeTraits: public Math::TypeTraits<T> {
      * GLubyte. This function is not present for types unusable for image data,
      * like GLdouble and Matrix3.
      */
-    constexpr inline static Type imageType();
+    constexpr inline static AbstractImage::ComponentType imageType();
 
     /**
      * @brief Size of plain OpenGL type
@@ -149,7 +149,7 @@ template<> struct TypeOf<Type::Double> { typedef GLdouble Type; };
 template<> struct TypeTraits<GLubyte>: public Math::TypeTraits<unsigned char> {
     inline constexpr static Type type() { return Type::UnsignedByte; }
     inline constexpr static Type indexType() { return Type::UnsignedByte; }
-    inline constexpr static Type imageType() { return Type::UnsignedByte; }
+    inline constexpr static AbstractImage::ComponentType imageType() { return AbstractImage::ComponentType::UnsignedByte; }
     inline constexpr static size_t size() { return sizeof(GLubyte); }
     inline constexpr static size_t count() { return 1; }
 };
@@ -157,7 +157,7 @@ template<> struct TypeTraits<GLubyte>: public Math::TypeTraits<unsigned char> {
 template<> struct TypeTraits<GLbyte>: public Math::TypeTraits<char> {
     inline constexpr static Type type() { return Type::Byte; }
     /* Can not be used for indices */
-    inline constexpr static Type imageType() { return Type::Byte; }
+    inline constexpr static AbstractImage::ComponentType imageType() { return AbstractImage::ComponentType::Byte; }
     inline constexpr static size_t size() { return sizeof(GLbyte); }
     inline constexpr static size_t count() { return 1; }
 };
@@ -165,7 +165,7 @@ template<> struct TypeTraits<GLbyte>: public Math::TypeTraits<char> {
 template<> struct TypeTraits<GLushort>: public Math::TypeTraits<unsigned short> {
     inline constexpr static Type type() { return Type::UnsignedShort; }
     inline constexpr static Type indexType() { return Type::UnsignedShort; }
-    inline constexpr static Type imageType() { return Type::UnsignedShort; }
+    inline constexpr static AbstractImage::ComponentType imageType() { return AbstractImage::ComponentType::UnsignedShort; }
     inline constexpr static size_t size() { return sizeof(GLushort); }
     inline constexpr static size_t count() { return 1; }
 };
@@ -173,7 +173,7 @@ template<> struct TypeTraits<GLushort>: public Math::TypeTraits<unsigned short> 
 template<> struct TypeTraits<GLshort>: public Math::TypeTraits<short> {
     inline constexpr static Type type() { return Type::Short; }
     /* Can not be used for indices */
-    inline constexpr static Type imageType() { return Type::Short; }
+    inline constexpr static AbstractImage::ComponentType imageType() { return AbstractImage::ComponentType::Short; }
     inline constexpr static size_t size() { return sizeof(GLshort); }
     inline constexpr static size_t count() { return 1; }
 };
@@ -181,7 +181,7 @@ template<> struct TypeTraits<GLshort>: public Math::TypeTraits<short> {
 template<> struct TypeTraits<GLuint>: public Math::TypeTraits<unsigned int> {
     inline constexpr static Type type() { return Type::UnsignedInt; }
     inline constexpr static Type indexType() { return Type::UnsignedInt; }
-    inline constexpr static Type imageType() { return Type::UnsignedInt; }
+    inline constexpr static AbstractImage::ComponentType imageType() { return AbstractImage::ComponentType::UnsignedInt; }
     inline constexpr static size_t size() { return sizeof(GLuint); }
     inline constexpr static size_t count() { return 1; }
 };
@@ -189,7 +189,7 @@ template<> struct TypeTraits<GLuint>: public Math::TypeTraits<unsigned int> {
 template<> struct TypeTraits<GLint>: public Math::TypeTraits<int> {
     inline constexpr static Type type() { return Type::Int; }
     /* Can not be used for indices */
-    inline constexpr static Type imageType() { return Type::Int; }
+    inline constexpr static AbstractImage::ComponentType imageType() { return AbstractImage::ComponentType::Int; }
     inline constexpr static size_t size() { return sizeof(GLint); }
     inline constexpr static size_t count() { return 1; }
 };
@@ -197,7 +197,7 @@ template<> struct TypeTraits<GLint>: public Math::TypeTraits<int> {
 template<> struct TypeTraits<GLfloat>: public Math::TypeTraits<float> {
     inline constexpr static Type type() { return Type::Float; }
     /* Can not be used for indices */
-    inline constexpr static Type imageType() { return Type::Float; }
+    inline constexpr static AbstractImage::ComponentType imageType() { return AbstractImage::ComponentType::Float; }
     inline constexpr static size_t size() { return sizeof(GLfloat); }
     inline constexpr static size_t count() { return 1; }
 };

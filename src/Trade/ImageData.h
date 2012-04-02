@@ -20,6 +20,7 @@
  */
 
 #include "AbstractImage.h"
+#include "TypeTraits.h"
 
 namespace Magnum { namespace Trade {
 
@@ -35,15 +36,27 @@ template<size_t imageDimensions> class ImageData: public AbstractImage {
 
         /**
          * @brief Constructor
-         * @param colorFormat       Color format of passed data. Data size
-         *      per color channel is detected from format of passed data array.
          * @param dimensions        %Image dimensions
+         * @param components        Color components. Data type is detected
+         *      from passed data array.
          * @param data              %Image data
          *
-         * @attention Note that the image data are not copied on construction,
-         * but they are deleted on class destruction.
+         * Note that the image data are not copied on construction, but they
+         * are deleted on class destruction.
          */
-        template<class T> inline ImageData(ColorFormat colorFormat, const Math::Vector<GLsizei, Dimensions>& dimensions, const T* data): AbstractImage(colorFormat, TypeTraits<T>::imageType()), _dimensions(dimensions), _data(reinterpret_cast<const char*>(data)) {}
+        template<class T> inline ImageData(const Math::Vector<GLsizei, Dimensions>& dimensions, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _dimensions(dimensions), _data(reinterpret_cast<char*>(data)) {}
+
+        /**
+         * @brief Constructor
+         * @param dimensions        %Image dimensions
+         * @param components        Color components
+         * @param type              Data type
+         * @param data              %Image data
+         *
+         * Note that the image data are not copied on construction, but they
+         * are deleted on class destruction.
+         */
+        inline ImageData(const Math::Vector<GLsizei, Dimensions>& dimensions, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _dimensions(dimensions), _data(reinterpret_cast<char*>(data)) {}
 
         /** @brief Destructor */
         inline virtual ~ImageData() { delete[] _data; }
@@ -56,7 +69,7 @@ template<size_t imageDimensions> class ImageData: public AbstractImage {
 
     private:
         Math::Vector<GLsizei, Dimensions> _dimensions;
-        const char* _data;
+        char* _data;
 };
 
 /** @brief One-dimensional image */

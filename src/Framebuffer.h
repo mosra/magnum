@@ -19,7 +19,9 @@
  * @brief Class Magnum::Framebuffer
  */
 
+#include "BufferedImage.h"
 #include "CubeMapTexture.h"
+#include "Image.h"
 #include "Renderbuffer.h"
 
 namespace Magnum {
@@ -166,6 +168,27 @@ class MAGNUM_EXPORT Framebuffer {
         inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, BlitMask blitMask) {
             glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(AbstractTexture::Filter::NearestNeighbor));
         }
+
+        /**
+         * @brief Read block of pixels from framebuffer to image
+         * @param offset            Offset in the framebuffer
+         * @param dimensions        Image dimensions
+         * @param components        Color components
+         * @param type              Data type
+         * @param image             %Image where to put the data
+         */
+        static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& dimensions, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image);
+
+        /**
+         * @brief Read block of pixels from framebuffer to buffered image
+         * @param offset            Offset in the framebuffer
+         * @param dimensions        Image dimensions
+         * @param components        Color components
+         * @param type              Data type
+         * @param image             Buffered image where to put the data
+         * @param usage             %Buffer usage
+         */
+        static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& dimensions, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage);
 
         /**
          * @brief Constructor

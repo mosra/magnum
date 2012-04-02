@@ -21,6 +21,7 @@
 
 #include "AbstractImage.h"
 #include "Buffer.h"
+#include "TypeTraits.h"
 
 namespace Magnum {
 
@@ -28,8 +29,7 @@ namespace Magnum {
 @brief %Buffered image
 
 Class for storing image data in GPU memory. Can be replaced with Image, which
-stores image data in client memory, or for example with Trade::ImageData. See
-also BufferedImage2D, which has additional data updating functions.
+stores image data in client memory, or for example with Trade::ImageData.
 */
 template<size_t imageDimensions> class BufferedImage: public AbstractImage {
     public:
@@ -37,26 +37,16 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
 
         /**
          * @brief Constructor
-         * @param colorFormat   Color format of the data.
-         * @param type          Data type per color channel
+         * @param components        Color components
+         * @param type              Data type
+         *
+         * Dimensions and buffer are empty, call setData() to fill the image
+         * with data.
          */
-        BufferedImage(ColorFormat colorFormat, Type type): AbstractImage(colorFormat, type), _buffer(Buffer::Target::PixelPack) {}
+        BufferedImage(Components components, ComponentType type): AbstractImage(components, type), _buffer(Buffer::Target::PixelPack) {}
 
         /** @brief %Image dimensions */
         inline Math::Vector<GLsizei, Dimensions> dimensions() const { return _dimensions; }
-
-        /**
-         * @brief Set image dimensions
-         * @param dimensions    %Image dimensions
-         * @param usage         %Image buffer usage
-         *
-         * Saves the dimensions and resizes the buffer to be able to hold
-         * given pixmap size.
-         */
-        void setDimensions(const Math::Vector<GLsizei, Dimensions>& dimensions, Buffer::Usage usage) {
-            _dimensions = dimensions;
-            _buffer.setData(Buffer::Target::PixelPack, pixelSize(_colorFormat, _type)*dimensions.product(), nullptr, usage);
-        }
 
         /**
          * @brief Data
@@ -75,20 +65,35 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
 
         /**
          * @brief Set image data
+         * @param dimensions        %Image dimensions
+         * @param components        Color components. Data type is detected
+         *      from passed data array.
          * @param data              %Image data
+         * @param usage             %Image buffer usage
          *
          * Updates the image buffer with given data. The data are not deleted
-         * after filling the buffer. Note that the data must have the right
-         * size and type of passed data must be the same as data type passed
-         * in constructor.
+         * after filling the buffer.
          */
-        template<class T> void setData(const T* data) {
-            if(TypeTraits<T>::imageType() != _type) {
-                Corrade::Utility::Error() << "BufferedImage: Passed data have wrong type";
-                return;
-            }
+        template<class T> inline void setData(const Math::Vector<GLsizei, Dimensions>& dimensions, Components components, const T* data, Buffer::Usage usage) {
+            setData(dimensions, components, TypeTraits<T>::imageType(), data, usage);
+        }
 
-            _buffer.setSubData(Buffer::Target::PixelPack, 0, pixelSize(_colorFormat, _type)*_dimensions.product(), data);
+        /**
+         * @brief Set image data
+         * @param dimensions        %Image dimensions
+         * @param components        Color components
+         * @param type              Data type
+         * @param data              %Image data
+         * @param usage             %Image buffer usage
+         *
+         * Updates the image buffer with given data. The data are not deleted
+         * after filling the buffer.
+         */
+        void setData(const Math::Vector<GLsizei, Dimensions>& dimensions, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage) {
+            _components = components;
+            _type = type;
+            _dimensions = dimensions;
+            _buffer.setData(Buffer::Target::PixelPack, pixelSize(_components, _type)*dimensions.product(), data, usage);
         }
 
     protected:
@@ -100,24 +105,7 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
 typedef BufferedImage<1> BufferedImage1D;
 
 /** @brief Two-dimensional buffered image */
-class MAGNUM_EXPORT BufferedImage2D: public BufferedImage<2> {
-    public:
-        /**
-         * @brief Constructor
-         * @param colorFormat   Color format of the data.
-         * @param type          Data type per color channel
-         */
-        /* doxygen: @copydoc BufferedImage::BufferedImage doesn't work */
-        inline BufferedImage2D(ColorFormat colorFormat, Type type): BufferedImage(colorFormat, type) {}
-
-        /**
-         * @brief Set image data from current framebuffer
-         * @param offset        Offset of the pixamp to read
-         *
-         * Reads pixmap from given offset with already set dimensions.
-         */
-        void setDataFromFramebuffer(const Math::Vector2<GLint>& offset);
-};
+typedef BufferedImage<2> BufferedImage2D;
 
 /** @brief Three-dimensional buffered image */
 typedef BufferedImage<3> BufferedImage3D;
