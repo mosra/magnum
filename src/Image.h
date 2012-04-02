@@ -45,7 +45,7 @@ template<size_t imageDimensions> class Image: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        template<class T> inline Image(ColorFormat colorFormat, const Math::Vector<GLsizei, Dimensions>& dimensions, T* data): AbstractImage(colorFormat, TypeTraits<typename TypeTraits<T>::TextureType>::glType()), _dimensions(dimensions), _data(data) {}
+        template<class T> inline Image(ColorFormat colorFormat, const Math::Vector<GLsizei, Dimensions>& dimensions, T* data): AbstractImage(colorFormat, TypeTraits<T>::imageType()), _dimensions(dimensions), _data(data) {}
 
         /**
          * @brief Constructor
@@ -88,7 +88,7 @@ template<size_t imageDimensions> class Image: public AbstractImage {
          * constructor.
          */
         template<class T> void setData(const T* data) {
-            if(TypeTraits<typename TypeTraits<T>::TextureType>::glType() != _type) {
+            if(TypeTraits<T>::imageType() != _type) {
                 Corrade::Utility::Error() << "Image: Passed data have wrong type";
                 return;
             }

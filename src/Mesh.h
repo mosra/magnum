@@ -172,7 +172,7 @@ class MAGNUM_EXPORT Mesh {
          * function does nothing.
          */
         template<class Attribute> inline void bindAttribute(Buffer* buffer) {
-            bindAttribute(buffer, Attribute::Location, TypeTraits<typename Attribute::Type>::count(), TypeTraits<typename Attribute::Type>::glType());
+            bindAttribute(buffer, Attribute::Location, TypeTraits<typename Attribute::Type>::count(), TypeTraits<typename Attribute::Type>::type());
         }
 
         /**

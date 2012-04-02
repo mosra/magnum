@@ -83,7 +83,7 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
          * in constructor.
          */
         template<class T> void setData(const T* data) {
-            if(TypeTraits<typename TypeTraits<T>::TextureType>::glType() != _type) {
+            if(TypeTraits<T>::imageType() != _type) {
                 Corrade::Utility::Error() << "BufferedImage: Passed data have wrong type";
                 return;
             }

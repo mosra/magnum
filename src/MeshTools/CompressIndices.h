@@ -94,7 +94,7 @@ class CompressIndices {
                     memcpy(buffer+i*sizeof(IndexType), reinterpret_cast<const char*>(&index), sizeof(IndexType));
                 }
 
-                return Result{indices.size(), TypeTraits<IndexType>::glType(), buffer};
+                return Result{indices.size(), TypeTraits<IndexType>::indexType(), buffer};
             }
         };
 
