@@ -23,6 +23,10 @@
 
 namespace Magnum { namespace Math {
 
+namespace Implementation {
+    template<class T, size_t size> class MatrixDeterminant;
+}
+
 /**
  * @brief %Matrix
  *
@@ -187,14 +191,7 @@ template<class T, size_t size> class Matrix {
          * matrix, where the determinant is computed directly. Complexity is
          * O(n!), the same as when computing the determinant directly.
          */
-        T determinant() const {
-            T out(0);
-
-            for(size_t col = 0; col != size; ++col)
-                out += ((col & 1) ? -1 : 1)*at(0, col)*ij(0, col).determinant();
-
-            return out;
-        }
+        inline T determinant() const { return Implementation::MatrixDeterminant<T, size>()(*this); }
 
         /**
          * @brief Inverse matrix
@@ -216,32 +213,41 @@ template<class T, size_t size> class Matrix {
         T _data[size*size];
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-/* Barebone template specialization for 2x2 matrix (only for determinant computation) */
-template<class T> class Matrix<T, 2> {
+namespace Implementation {
+
+/** @brief Matrix determinant implementation for >2x2 matrices */
+template<class T, size_t size> class MatrixDeterminant {
     public:
-        inline Matrix(bool identity = true): _data() {
-            if(identity) {
-                set(0, 0, T(1));
-                set(1, 1, T(1));
-            }
-        }
-        inline Matrix<T, 2>& operator=(const Matrix<T, 2>& other) {
-            if(&other != this) setData(other.data());
-            return *this;
-        }
-        inline void setData(const T* data) { memcpy(_data, data, 4*sizeof(T)); }
-        inline T at(size_t row, size_t col) const { return _data[col*2+row]; }
-        inline void set(size_t row, size_t col, T value) { _data[col*2+row] = value; }
+        /** @brief Functor */
+        T operator()(const Matrix<T, size>& m) {
+            T out(0);
 
-        T determinant() const {
-            return at(0, 0)*at(1, 1) - at(0, 1)*at(1, 0);
-        }
+            for(size_t col = 0; col != size; ++col)
+                out += ((col & 1) ? -1 : 1)*m.at(0, col)*m.ij(0, col).determinant();
 
-    private:
-        T _data[4];
+            return out;
+        }
 };
-#endif
+
+/** @brief Matrix determinant implementation for 2x2 matrix */
+template<class T> class MatrixDeterminant<T, 2> {
+    public:
+        /** @brief Functor */
+        inline constexpr T operator()(const Matrix<T, 2>& m) {
+            return m.at(0, 0)*m.at(1, 1) - m.at(0, 1)*m.at(1, 0);
+        }
+};
+
+/** @brief Matrix determinant implementation for 1x1 matrix */
+template<class T> class MatrixDeterminant<T, 1> {
+    public:
+        /** @brief Functor */
+        inline constexpr T operator()(const Matrix<T, 1>& m) {
+            return m.at(0, 0);
+        }
+};
+
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix<T, size>& value) {
