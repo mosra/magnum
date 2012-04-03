@@ -95,7 +95,7 @@ template<class T, size_t size> class Matrix {
 
         /** @brief %Matrix column */
         inline constexpr Vector<T, size> at(size_t col) const {
-            return *reinterpret_cast<const Vector<T, size>*>(_data+col*size);
+            return Vector<T, size>::from(_data+col*size);
         }
 
         /** @brief Set value at given position */
@@ -105,7 +105,7 @@ template<class T, size_t size> class Matrix {
 
         /** @brief Set matrix column */
         inline void set(size_t col, const Vector<T, size>& value) {
-            memcpy(_data+col*size, value.data(), size*sizeof(T));
+            Vector<T, size>::from(_data+col*size) = value;
         }
 
         /** @brief Add value to given position */

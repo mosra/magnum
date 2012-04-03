@@ -50,7 +50,7 @@ template<class T, size_t size> class Vector {
 
         /** @copydoc from(T*) */
         inline constexpr static const Vector<T, size>& from(const T* data) {
-            return *reinterpret_cast<Vector<T, size>*>(data);
+            return *reinterpret_cast<const Vector<T, size>*>(data);
         }
 
         /** @brief Angle between vectors */
