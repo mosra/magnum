@@ -21,6 +21,16 @@
 
 #include <cmath>
 
+/** @brief Precision when testing floats for equality */
+#ifndef FLOAT_EQUALITY_PRECISION
+#define FLOAT_EQUALITY_PRECISION 1.0e-6
+#endif
+
+/** @brief Precision when testing doubles for equality */
+#ifndef DOUBLE_EQUALITY_PRECISION
+#define DOUBLE_EQUALITY_PRECISION 1.0e-12
+#endif
+
 namespace Magnum { namespace Math {
 
 /**
@@ -99,10 +109,10 @@ template<class T> struct _TypeTraitsFloatingPoint {
     }
 };
 template<> struct TypeTraits<float>: public _TypeTraitsFloatingPoint<float> {
-    constexpr inline static float epsilon() { return 1.0e-6f; }
+    constexpr inline static float epsilon() { return FLOAT_EQUALITY_PRECISION; }
 };
 template<> struct TypeTraits<double>: public _TypeTraitsFloatingPoint<double> {
-    constexpr inline static double epsilon() { return 1.0e-12; }
+    constexpr inline static double epsilon() { return DOUBLE_EQUALITY_PRECISION; }
 };
 #endif
 
