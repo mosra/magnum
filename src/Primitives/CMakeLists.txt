@@ -2,6 +2,7 @@ set(MagnumPrimitives_SRCS
     Capsule.cpp
     Cube.cpp
     Icosphere.cpp
+    Plane.cpp
     UVSphere.cpp
 )
 
