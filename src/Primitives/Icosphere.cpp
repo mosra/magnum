@@ -53,7 +53,7 @@ Icosphere<0>::Icosphere(): MeshData(Mesh::Primitive::Triangles, new vector<unsig
     Vector3(0, -0.525731f, -0.850651f),
     Vector3(0, 0.525731f, -0.850651f),
     Vector3(0, 0.525731f, 0.850651f)
-}}, {nullptr}) {
+}}, {}) {
     vertices(0)->assign(normals(0)->begin(), normals(0)->end());
 }
 
