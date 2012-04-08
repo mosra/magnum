@@ -43,6 +43,25 @@ class MAGNUM_EXPORT Mesh {
     Mesh& operator=(Mesh&& other) = delete;
 
     public:
+        /** @brief Polygon mode */
+        enum class PolygonMode: GLenum {
+            /**
+             * Interior of the polygon is filled.
+             */
+            Fill = GL_FILL,
+
+            /**
+             * Boundary edges are filled. See also setLineWidth().
+             */
+            Line = GL_LINE,
+
+            /**
+             * Starts of boundary edges are drawn as points. See also
+             * setPointSize().
+             */
+            Point = GL_POINT
+        };
+
         /** @brief Primitive type */
         enum class Primitive: GLenum {
             /**
@@ -83,6 +102,29 @@ class MAGNUM_EXPORT Mesh {
              */
             TriangleFan = GL_TRIANGLE_FAN
         };
+
+        /**
+         * @brief Set polygon drawing mode
+         *
+         * Initial value is PolygonMode::Fill.
+         */
+        inline static void setPolygonMode(PolygonMode mode) {
+            glPolygonMode(GL_FRONT_AND_BACK, static_cast<GLenum>(mode));
+        }
+
+        /**
+         * @brief Set line width
+         *
+         * Initial value is 1.
+         */
+        inline static void setLineWidth(GLfloat width) {
+            glLineWidth(width);
+        }
+
+        /** @brief Set point size */
+        inline static void setPointSize(GLfloat size) {
+            glPointSize(size);
+        }
 
         /**
          * @brief Implicit constructor
