@@ -17,6 +17,7 @@ set(Magnum_SRCS
     IndexedMesh.cpp
     Light.cpp
     Mesh.cpp
+    Query.cpp
     Renderbuffer.cpp
     Scene.cpp
     Shader.cpp
