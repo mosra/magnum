@@ -65,13 +65,13 @@ class MAGNUM_EXPORT Object {
          * @brief %Scene
          * @return If the object is not assigned to any scene, returns nullptr.
          */
-        Scene* scene() const;
+        Scene* scene();
 
         /** @brief Parent object */
-        inline Object* parent() const { return _parent; }
+        inline Object* parent() { return _parent; }
 
         /** @brief Child objects */
-        inline const std::set<Object*>& children() const { return _children; }
+        inline const std::set<Object*>& children() { return _children; }
 
         /** @brief Set parent object */
         void setParent(Object* parent);

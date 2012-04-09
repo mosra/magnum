@@ -79,7 +79,7 @@ Object::~Object() {
         delete *_children.begin();
 }
 
-Scene* Object::scene() const {
+Scene* Object::scene() {
     /* Goes up the family tree until it finds object which is parent of itself
        (that's the scene) */
     Object* p = parent();
