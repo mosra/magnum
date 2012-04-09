@@ -28,7 +28,7 @@ namespace Magnum {
 
 See Image, BufferedImage, Trade::ImageData documentation for more information.
 */
-class AbstractImage {
+class MAGNUM_EXPORT AbstractImage {
     AbstractImage(const AbstractImage& other) = delete;
     AbstractImage(AbstractImage&& other) = delete;
     AbstractImage& operator=(const AbstractImage& other) = delete;
