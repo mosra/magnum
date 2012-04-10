@@ -25,18 +25,6 @@ namespace Magnum {
 
 /** @brief %Scene */
 class MAGNUM_EXPORT Scene: public Object {
-    private:
-        void setParent(Object* parent) = delete;
-        void setTransformation(const Matrix4& transformation) = delete;
-        void multiplyTransformation(const Matrix4& transformation, bool global = true) = delete;
-        void setTransformationFrom(Object* another) = delete;
-        void translate(Vector3 vec, bool global = true) = delete;
-        void translate(GLfloat x, GLfloat y, GLfloat z, bool global = true) = delete;
-        void scale(Vector3 vec, bool global = true) = delete;
-        void scale(GLfloat x, GLfloat y, GLfloat z, bool global = true) = delete;
-        void rotate(GLfloat angle, Vector3 vec, bool global = true) = delete;
-        void rotate(GLfloat angle, GLfloat x, GLfloat y, GLfloat z, bool global = true) = delete;
-
     public:
         /** @brief Features */
         enum Feature {
@@ -58,6 +46,14 @@ class MAGNUM_EXPORT Scene: public Object {
          * Deletes the default vertex array.
          */
         inline ~Scene() { glDeleteVertexArrays(1, &vao); }
+
+        void setParent(Object* parent) = delete;
+        void setTransformation(const Matrix4& transformation) = delete;
+        void multiplyTransformation(const Matrix4& transformation, bool global = true) = delete;
+        void setTransformationFrom(Object* another) = delete;
+        void translate(Vector3 vec, bool global = true) = delete;
+        void scale(Vector3 vec, bool global = true) = delete;
+        void rotate(GLfloat angle, Vector3 vec, bool global = true) = delete;
 
         /** @brief Which features are set */
         inline unsigned int features() const { return _features; }

@@ -96,10 +96,7 @@ class MAGNUM_EXPORT Object {
         virtual Matrix4 absoluteTransformation(Camera* camera = nullptr);
 
         /** @brief Set transformation matrix */
-        inline void setTransformation(const Matrix4& transformation) {
-            _transformation = transformation;
-            setDirty();
-        }
+        void setTransformation(const Matrix4& transformation);
 
         /**
          * @brief Multiply transformation matrix

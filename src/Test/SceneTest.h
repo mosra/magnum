@@ -25,6 +25,7 @@ class SceneTest: public QObject {
     Q_OBJECT
 
     private slots:
+        void transformation();
         void parent();
 };
 

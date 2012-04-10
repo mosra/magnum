@@ -22,9 +22,10 @@ using namespace std;
 namespace Magnum {
 
 void Object::setParent(Object* parent) {
-    if(_parent == parent) return;
+    /* Skip if nothing to do or this is scene */
+    if(_parent == parent || _parent == this) return;
 
-    /* Set new parent and add the object to new parent children list */
+    /* Add the object to children list of new parent */
     if(parent != nullptr) {
 
         /* Only Fry can be his own grandfather */
@@ -41,6 +42,7 @@ void Object::setParent(Object* parent) {
     if(_parent != nullptr)
         _parent->_children.erase(this);
 
+    /* Set new parent */
     _parent = parent;
 
     setDirty();
@@ -89,6 +91,13 @@ Scene* Object::scene() {
     }
 
     return nullptr;
+}
+
+void Object::setTransformation(const Matrix4& transformation) {
+    if(_parent == this) return;
+
+    _transformation = transformation;
+    setDirty();
 }
 
 void Object::setDirty() {

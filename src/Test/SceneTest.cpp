@@ -23,6 +23,14 @@ QTEST_APPLESS_MAIN(Magnum::Test::SceneTest)
 
 namespace Magnum { namespace Test {
 
+void SceneTest::transformation() {
+    Scene scene;
+
+    Object* scenePointer = &scene;
+    scenePointer->setTransformation(Matrix4::translation({1.0f, 1.0f, 1.0f}));
+    QVERIFY(scene.transformation() == Matrix4());
+}
+
 void SceneTest::parent() {
     Scene scene;
 
@@ -30,9 +38,11 @@ void SceneTest::parent() {
 
     /* Scene parent cannot be changed */
     Object* scenePointer = &scene;
-    Object* object = new Object;
-    scenePointer->setParent(object);
+    Object object;
+    scenePointer->setParent(&object);
     QVERIFY(scene.parent() == &scene);
+    QVERIFY(scene.children().empty());
+    QVERIFY(object.children().empty());
 }
 
 }}
