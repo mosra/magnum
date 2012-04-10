@@ -24,7 +24,7 @@ build() {
 
 check() {
     cd "$startdir/build"
-    ctest -E "ObjectTest|SceneTest" # fix me!
+    ctest
 }
 
 package() {

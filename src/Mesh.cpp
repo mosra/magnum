@@ -27,6 +27,8 @@ namespace Magnum {
 Mesh::~Mesh() {
     for(map<Buffer*, pair<bool, vector<Attribute> > >::iterator it = _buffers.begin(); it != _buffers.end(); ++it)
         delete it->first;
+
+    glDeleteVertexArrays(1, &vao);
 }
 
 Buffer* Mesh::addBuffer(bool interleaved) {
@@ -40,30 +42,15 @@ Buffer* Mesh::addBuffer(bool interleaved) {
 }
 
 void Mesh::draw() {
+    bind();
+
     /* Finalize the mesh, if it is not already */
     finalize();
 
-    /* Enable vertex arrays for all attributes */
-    for(set<GLuint>::const_iterator it = _attributes.begin(); it != _attributes.end(); ++it)
-        glEnableVertexAttribArray(*it);
-
-    /* Bind attributes to vertex buffers */
-    for(map<Buffer*, pair<bool, vector<Attribute> > >::const_iterator it = _buffers.begin(); it != _buffers.end(); ++it) {
-        /* Bind buffer */
-        it->first->bind();
-
-        /* Bind all attributes to this buffer */
-        for(vector<Attribute>::const_iterator ait = it->second.second.begin(); ait != it->second.second.end(); ++ait)
-            if(TypeInfo::isIntegral(ait->type))
-                glVertexAttribIPointer(ait->attribute, ait->size, static_cast<GLenum>(ait->type), ait->stride, ait->pointer);
-            else glVertexAttribPointer(ait->attribute, ait->size, static_cast<GLenum>(ait->type), GL_FALSE, ait->stride, ait->pointer);
-    }
-
+    /** @todo Start at given index */
     glDrawArrays(static_cast<GLenum>(_primitive), 0, _vertexCount);
 
-    /* Disable vertex arrays for all attributes */
-    for(set<GLuint>::const_iterator it = _attributes.begin(); it != _attributes.end(); ++it)
-        glDisableVertexAttribArray(*it);
+    unbind();
 }
 
 void Mesh::finalize() {
@@ -74,6 +61,10 @@ void Mesh::finalize() {
         Error() << "Mesh: the mesh has zero vertex count!";
         assert(0);
     }
+
+    /* Enable vertex arrays for all attributes */
+    for(set<GLuint>::const_iterator it = _attributes.begin(); it != _attributes.end(); ++it)
+        glEnableVertexAttribArray(*it);
 
     /* Finalize attribute positions for every buffer */
     for(map<Buffer*, pair<bool, vector<Attribute> > >::iterator it = _buffers.begin(); it != _buffers.end(); ++it) {
@@ -109,6 +100,15 @@ void Mesh::finalize() {
                 position += ait->size*TypeInfo::sizeOf(ait->type)*_vertexCount;
             }
         }
+
+        /* Bind buffer */
+        it->first->bind();
+
+        /* Bind all attributes to this buffer */
+        for(vector<Attribute>::const_iterator ait = attributes.begin(); ait != attributes.end(); ++ait)
+            if(TypeInfo::isIntegral(ait->type))
+                glVertexAttribIPointer(ait->attribute, ait->size, static_cast<GLenum>(ait->type), ait->stride, ait->pointer);
+            else glVertexAttribPointer(ait->attribute, ait->size, static_cast<GLenum>(ait->type), GL_FALSE, ait->stride, ait->pointer);
     }
 
     /* Mesh is now finalized, attribute binding is not allowed */

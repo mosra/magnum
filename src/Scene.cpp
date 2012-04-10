@@ -17,14 +17,6 @@
 
 namespace Magnum {
 
-Scene::Scene(): Object(nullptr), _features(0) {
-    _parent = this;
-
-    /* Bind default VAO */
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-}
-
 void Scene::setFeature(Scene::Feature feature, bool enabled) {
     GLenum _feature;
     switch(feature) {
