@@ -83,6 +83,20 @@ void ObjectTest::dirty() {
     childTwo->setDirty();
     QVERIFY(childTwo->isDirty());
     QVERIFY(childThree->isDirty());
+
+    /* Reparent object => make it dirty */
+    childThree->setClean();
+    childOne->setParent(nullptr);
+    childOne->setParent(&scene);
+    QVERIFY(childOne->isDirty());
+    QVERIFY(childTwo->isDirty());
+    QVERIFY(childThree->isDirty());
+
+    /* Set object transformation => make it dirty */
+    childThree->setClean();
+    childTwo->setTransformation({});
+    QVERIFY(childTwo->isDirty());
+    QVERIFY(childThree->isDirty());
 }
 
 }}
