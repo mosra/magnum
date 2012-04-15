@@ -26,7 +26,7 @@ namespace Magnum { namespace Primitives {
 /**
 @brief %Plane primitive
 
-2x2 plane orthogonal to Z axis.
+2x2 plane with normals in positive Z direction.
 */
 class Plane: public Trade::MeshData {
     public:

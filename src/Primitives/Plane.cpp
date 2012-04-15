@@ -24,6 +24,11 @@ Plane::Plane(): MeshData(Mesh::Primitive::TriangleStrip, nullptr, {new vector<Ve
     {1.0f, 1.0f, 0.0f},
     {-1.0f, -1.0f, 0.0f},
     {-1.0f, 1.0f, 0.0f}
-}}, {}, {}) {}
+}}, {new vector<Vector3>{
+    {0.0f, 0.0f, 1.0f},
+    {0.0f, 0.0f, 1.0f},
+    {0.0f, 0.0f, 1.0f},
+    {0.0f, 0.0f, 1.0f}
+}}, {}) {}
 
 }}
