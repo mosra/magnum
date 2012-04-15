@@ -60,9 +60,10 @@ class MAGNUM_EXPORT MeshData {
          * @return Indices or nullptr if the mesh is not indexed.
          */
         inline std::vector<unsigned int>* indices() { return _indices; }
+        inline const std::vector<unsigned int>* indices() const { return _indices; } /**< @copydoc indices() */
 
         /** @brief Count of vertex arrays */
-        inline size_t vertexArrayCount() { return _vertices.size(); };
+        inline size_t vertexArrayCount() const { return _vertices.size(); };
 
         /**
          * @brief Vertices
@@ -71,9 +72,10 @@ class MAGNUM_EXPORT MeshData {
          *      ID.
          */
         inline std::vector<Vector4>* vertices(size_t id) { return _vertices[id]; }
+        inline const std::vector<Vector4>* vertices(size_t id) const { return _vertices[id]; } /**< @copydoc vertices() */
 
         /** @brief Count of normal arrays */
-        inline size_t normalArrayCount() { return _normals.size(); };
+        inline size_t normalArrayCount() const { return _normals.size(); };
 
         /**
          * @brief Normals
@@ -82,9 +84,10 @@ class MAGNUM_EXPORT MeshData {
          *      ID.
          */
         inline std::vector<Vector3>* normals(size_t id) { return _normals[id]; }
+        inline const std::vector<Vector3>* normals(size_t id) const { return _normals[id]; } /**< @copydoc normals() */
 
         /** @brief Count of 2D texture coordinate arrays */
-        inline size_t textureCoords2DArrayCount() { return _textureCoords2D.size(); };
+        inline size_t textureCoords2DArrayCount() const { return _textureCoords2D.size(); };
 
         /**
          * @brief 2D texture coordinates
@@ -93,6 +96,7 @@ class MAGNUM_EXPORT MeshData {
          *      coordinates array with given ID.
          */
         inline std::vector<Vector2>* textureCoords2D(size_t id) { return _textureCoords2D[id]; }
+        inline const std::vector<Vector2>* textureCoords2D(size_t id) const { return _textureCoords2D[id]; } /**< @copydoc textureCoords2D() */
 
     private:
         Mesh::Primitive _primitive;
