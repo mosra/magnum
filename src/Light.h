@@ -39,7 +39,7 @@ class Light: public Object {
         /**
          * @brief Light position relative to root object (scene)
          */
-        inline Vector3 position() {
+        inline Vector4 position() {
             setClean();
             return _position;
         }
@@ -50,7 +50,7 @@ class Light: public Object {
         void setClean();
 
     private:
-        Vector3 _position;
+        Vector4 _position;
 };
 
 }

@@ -19,7 +19,7 @@ namespace Magnum {
 
 void Light::setClean() {
     if(!isDirty()) return;
-    _position = absoluteTransformation().at(3).xyz();
+    _position = absoluteTransformation().at(3);
     Object::setClean();
 }
 
