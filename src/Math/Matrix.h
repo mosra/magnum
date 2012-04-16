@@ -70,9 +70,9 @@ template<class T, size_t size> class Matrix {
          * Note that the values are in column-major order.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> inline constexpr Matrix(T first, U&&... next): _data{first, std::forward<U>(next)...} {}
+        template<class ...U> inline constexpr Matrix(T first, U... next): _data{first, next...} {}
         #else
-        template<class ...U> inline constexpr Matrix(T first, U&&... next);
+        template<class ...U> inline constexpr Matrix(T first, U... next);
         #endif
 
         /** @brief Copy constructor */

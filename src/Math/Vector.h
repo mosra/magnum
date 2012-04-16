@@ -67,9 +67,9 @@ template<class T, size_t size> class Vector {
          * @param next  Next values
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> inline constexpr Vector(T first, U&&... next): _data{first, std::forward<U>(next)...} {}
+        template<class ...U> inline constexpr Vector(T first, U... next): _data{first, next...} {}
         #else
-        template<class ...U> inline constexpr Vector(T first, U&&... next);
+        template<class ...U> inline constexpr Vector(T first, U... next);
         #endif
 
         /**
