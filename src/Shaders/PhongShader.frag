@@ -18,14 +18,17 @@ void main() {
     /* Ambient color */
     color.rgb = ambientColor*lightAmbientColor;
 
+    vec3 normalizedTransformedNormal = normalize(transformedNormal);
+    vec3 normalizedLightDirection = normalize(lightDirection);
+
     /* Add diffuse color */
-    float intensity = max(0.0, dot(transformedNormal, lightDirection));
+    float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection));
     color.rgb += diffuseColor*lightDiffuseColor*intensity;
 
     /* Add specular color, if needed */
     if(intensity != 0) {
-        vec3 reflection = reflect(-lightDirection, transformedNormal);
-        float specularity = pow(max(0.0, dot(transformedNormal, reflection)), shininess);
+        vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
+        float specularity = pow(max(0.0, dot(normalizedTransformedNormal, reflection)), shininess);
         color.rgb += specularColor*lightSpecularColor*specularity;
     }
 
