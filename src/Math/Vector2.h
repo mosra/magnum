@@ -36,8 +36,8 @@ template<class T> class Vector2: public Vector<T, 2> {
             return *reinterpret_cast<const Vector2<T>*>(data);
         }
 
-        /** @copydoc Vector::Vector */
-        inline constexpr Vector2() {}
+        /** @copydoc Vector::Vector(T) */
+        inline constexpr explicit Vector2(T value = T()): Vector<T, 2>(value, value) {}
 
         /** @copydoc Vector::Vector(const Vector&)  */
         inline constexpr Vector2(const Vector<T, 2>& other): Vector<T, 2>(other) {}

@@ -43,6 +43,9 @@ template<class T> class Vector4: public Vector<T, 4> {
          */
         inline constexpr Vector4(): Vector<T, 4>(T(0), T(0), T(0), T(1)) {}
 
+        /** @copydoc Vector::Vector(T) */
+        inline constexpr explicit Vector4(T value): Vector<T, 4>(value, value, value, value) {}
+
         /** @copydoc Vector::Vector(const Vector&)  */
         inline constexpr Vector4(const Vector<T, 4>& other): Vector<T, 4>(other) {}
 

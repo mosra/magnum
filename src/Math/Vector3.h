@@ -52,8 +52,8 @@ template<class T> class Vector3: public Vector<T, 3> {
                               a[0]*b[1]-a[1]*b[0]);
         }
 
-        /** @copydoc Vector::Vector */
-        inline constexpr Vector3() {}
+        /** @copydoc Vector::Vector(T) */
+        inline constexpr explicit Vector3(T value = T()): Vector<T, 3>(value, value, value) {}
 
         /** @copydoc Vector::Vector(const Vector&)  */
         inline constexpr Vector3(const Vector<T, 3>& other): Vector<T, 3>(other) {}

@@ -72,6 +72,15 @@ template<class T, size_t size> class Vector {
         template<class ...U> inline constexpr Vector(T first, U&&... next);
         #endif
 
+        /**
+         * @brief Constructor
+         * @param value Value for all fields
+         */
+        inline explicit Vector(T value) {
+            for(size_t i = 0; i != size; ++i)
+                _data[i] = value;
+        }
+
         /** @brief Copy constructor */
         inline constexpr Vector(const Vector<T, size>& other) = default;
 
