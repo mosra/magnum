@@ -38,7 +38,7 @@ template<class T> class Matrix3: public Matrix<T, 3> {
         }
 
         /** @copydoc Matrix::Matrix(bool) */
-        inline constexpr Matrix3(bool identity = true): Matrix<T, 3>{
+        inline constexpr explicit Matrix3(bool identity = true): Matrix<T, 3>{
             /** @todo Make this in Matrix itself, after it will be constexpr */
             identity ? 1.0f : 0.0f, 0.0f, 0.0f,
             0.0f, identity ? 1.0f : 0.0f, 0.0f,

@@ -56,7 +56,7 @@ template<class T, size_t size> class Matrix {
          * @brief Default constructor
          * @param identity Create identity matrix instead of zero matrix.
          */
-        inline Matrix(bool identity = true): _data() {
+        inline explicit Matrix(bool identity = true): _data() {
             /** @todo constexpr how? */
             if(identity) for(size_t i = 0; i != size; ++i)
                 _data[size*i+i] = static_cast<T>(1);
