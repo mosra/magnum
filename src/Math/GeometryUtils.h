@@ -65,11 +65,11 @@ template<class T> class GeometryUtils {
          */
         static T intersection(const Matrix3<T>& plane, const Vector3<T>& a, const Vector3<T>& b) {
             /* Cross product of two vectors defining the plane */
-            Vector3<T> crossProduct = Vector3<T>::cross(plane.at(1)-plane.at(0), plane.at(2)-plane.at(0));
+            Vector3<T> crossProduct = Vector3<T>::cross(plane[1]-plane[0], plane[2]-plane[0]);
 
             /* Compute f with cross product and one of the points defining the
                plane */
-            T f = crossProduct*plane.at(0);
+            T f = crossProduct*plane[0];
 
             /* Compute t */
             return (f-crossProduct*a)/(crossProduct*(b-a));

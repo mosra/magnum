@@ -40,45 +40,29 @@ void VectorTest::construct() {
 
 void VectorTest::data() {
     Vector4 v;
-    v.set(2, 1.0f);
-    v.add(2, 0.5f);
+    v[2] = 1.5f;
 
-    v.set(0, 1.0f);
+    v[0] = 1.0f;
 
     QVERIFY(v == Vector4(1.0f, 0.0f, 1.5f, 0.0f));
-}
-
-void VectorTest::bracketOperator() {
-    Vector4 v1, v2;
-    v1.set(0, 1.0f);
-    v1.set(1, v1.at(0));
-    v1.set(3, 0.5f);
-    v1.add(3, 2.5f);
-
-    v2[0] = 1.0f;
-    v2[1] = v2[0];
-    v2[3] = 0.5f;
-    v2[3] += 2.5f;
-
-    QVERIFY(v1 == v2);
 }
 
 void VectorTest::copy() {
     Vector4 v1;
 
-    v1.set(3, 1.0f);
+    v1[3] = 1.0f;
 
     Vector4 v2(v1);
     Vector4 v3;
-    v3.set(0, 0.0f); /* this line is here so it's not optimized to Vector4 v3(v1) */
+    v3[0] = 0.0f; /* this line is here so it's not optimized to Vector4 v3(v1) */
     v3 = v1;
 
     /* Change original */
-    v1.set(2, 1.0f);
+    v1[2] = 1.0f;
 
     /* Verify the copy is the same as original original */
     Vector4 original;
-    original.set(3, 1.0f);
+    original[3] = 1.0f;
 
     QVERIFY(v2 == original);
     QVERIFY(v3 == original);

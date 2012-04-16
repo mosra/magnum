@@ -57,7 +57,7 @@ void Camera::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
     rawProjectionMatrix = Matrix4::scaling({xyScale, xyScale, zScale})*rawProjectionMatrix;
 
     /* And... another magic */
-    rawProjectionMatrix.set(3, 3, 0);
+    rawProjectionMatrix[3][3] = 0;
 
     fixAspectRatio();
 }

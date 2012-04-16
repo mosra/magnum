@@ -532,15 +532,15 @@ template<> struct AbstractTexture::DataHelper<1> {
     inline constexpr static Target target() { return Target::Texture1D; }
 
     inline static void setWrapping(Target target, const Math::Vector<Wrapping, 1>& wrapping) {
-        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.at(0)));
+        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
     }
 
     template<class T> inline static void set(Target target, GLint mipLevel, InternalFormat internalFormat, T* image) {
-        glTexImage1D(static_cast<GLenum>(target), mipLevel, internalFormat, image->dimensions().at(0), 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        glTexImage1D(static_cast<GLenum>(target), mipLevel, internalFormat, image->dimensions()[0], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 
     template<class T> inline static void setSub(Target target, GLint mipLevel, const Math::Vector<GLint, 1>& offset, T* image) {
-        glTexSubImage1D(static_cast<GLenum>(target), mipLevel, offset.at(0), image->dimensions().at(0), static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        glTexSubImage1D(static_cast<GLenum>(target), mipLevel, offset[0], image->dimensions()[0], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 };
 template<> struct AbstractTexture::DataHelper<2> {
@@ -560,16 +560,16 @@ template<> struct AbstractTexture::DataHelper<2> {
     inline constexpr static Target target() { return Target::Texture2D; }
 
     inline static void setWrapping(Target target, const Math::Vector<Wrapping, 2>& wrapping) {
-        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.at(0)));
-        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping.at(1)));
+        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
+        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
     }
 
     template<class T> inline static void set(Target target, GLint mipLevel, InternalFormat internalFormat, T* image) {
-        glTexImage2D(static_cast<GLenum>(target), mipLevel, internalFormat, image->dimensions().at(0), image->dimensions().at(1), 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        glTexImage2D(static_cast<GLenum>(target), mipLevel, internalFormat, image->dimensions()[0], image->dimensions()[1], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 
     template<class T> inline static void setSub(Target target, GLint mipLevel, const Math::Vector<GLint, 2>& offset, T* image) {
-        glTexSubImage2D(static_cast<GLenum>(target), mipLevel, offset.at(0), offset.at(1), image->dimensions().at(0), image->dimensions().at(1), static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        glTexSubImage2D(static_cast<GLenum>(target), mipLevel, offset[0], offset[1], image->dimensions()[0], image->dimensions()[1], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 };
 template<> struct AbstractTexture::DataHelper<3> {
@@ -581,17 +581,17 @@ template<> struct AbstractTexture::DataHelper<3> {
     inline constexpr static Target target() { return Target::Texture3D; }
 
     inline static void setWrapping(Target target, const Math::Vector<Wrapping, 3>& wrapping) {
-        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.at(0)));
-        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping.at(1)));
-        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_R, static_cast<GLint>(wrapping.at(2)));
+        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
+        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
+        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_R, static_cast<GLint>(wrapping[2]));
     }
 
     template<class T> inline static void set(Target target, GLint mipLevel, InternalFormat internalFormat, T* image) {
-        glTexImage3D(static_cast<GLenum>(target), mipLevel, internalFormat, image->dimensions().at(0), image->dimensions().at(1), image->dimensions().at(2), 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        glTexImage3D(static_cast<GLenum>(target), mipLevel, internalFormat, image->dimensions()[0], image->dimensions()[1], image->dimensions()[2], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 
     template<class T> inline static void setSub(Target target, GLint mipLevel, const Math::Vector<GLint, 3>& offset, T* image) {
-        glTexSubImage3D(static_cast<GLenum>(target), mipLevel, offset.at(0), offset.at(1), offset.at(2), image->dimensions().at(0), image->dimensions().at(1), image->dimensions().at(2), static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        glTexSubImage3D(static_cast<GLenum>(target), mipLevel, offset[0], offset[1], offset[2], image->dimensions()[0], image->dimensions()[1], image->dimensions()[2], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 };
 #endif

@@ -58,11 +58,11 @@ template<class T> class Matrix3: public Matrix<T, 3> {
         /** @copydoc Matrix::operator=() */
         inline constexpr Matrix3<T>& operator=(const Matrix<T, 3>& other) { return Matrix<T, 3>::operator=(other); }
 
-        /** @copydoc Matrix::at(size_t) const */
-        inline constexpr Vector3<T> at(size_t col) const { return Matrix<T, 3>::at(col); }
+        /** @copydoc Matrix::operator[](size_t) */
+        inline Vector3<T>& operator[](size_t col) { return Vector3<T>::from(Matrix<T, 3>::data()+col*3); }
 
-        /** @copydoc Matrix::at(size_t, size_t) const */
-        inline constexpr T at(size_t row, size_t col) const { return Matrix<T, 3>::at(row, col); }
+        /** @copydoc Matrix::operator[](size_t) const */
+        inline constexpr const Vector3<T>& operator[](size_t col) const { return Vector3<T>::from(Matrix<T, 3>::data()+col*3); }
 
         /** @copydoc Matrix::operator*(const Matrix<T, size>&) const */
         inline Matrix3<T> operator*(const Matrix<T, 3>& other) const { return Matrix<T, 3>::operator*(other); }

@@ -73,21 +73,21 @@ template<class T> class Vector3: public Vector<T, 3> {
          */
         inline constexpr Vector3(const Vector<T, 2>& other, T z = T(0)): Vector<T, 3>(other[0], other[1], z) {}
 
-        inline constexpr T x() const { return Vector<T, 3>::at(0); } /**< @brief X component */
-        inline constexpr T y() const { return Vector<T, 3>::at(1); } /**< @brief Y component */
-        inline constexpr T z() const { return Vector<T, 3>::at(2); } /**< @brief Z component */
+        inline constexpr T x() const { return (*this)[0]; } /**< @brief X component */
+        inline constexpr T y() const { return (*this)[1]; } /**< @brief Y component */
+        inline constexpr T z() const { return (*this)[2]; } /**< @brief Z component */
 
-        inline void setX(T value) { this->set(0, value); } /**< @brief Set X component */
-        inline void setY(T value) { this->set(1, value); } /**< @brief Set Y component */
-        inline void setZ(T value) { this->set(2, value); } /**< @brief Set Z component */
+        inline void setX(T value) { (*this)[0] = value; }   /**< @brief Set X component */
+        inline void setY(T value) { (*this)[1] = value; }   /**< @brief Set Y component */
+        inline void setZ(T value) { (*this)[2] = value; }   /**< @brief Set Z component */
 
-        inline constexpr T r() const { return x(); } /**< @brief R component */
-        inline constexpr T g() const { return x(); } /**< @brief G component */
-        inline constexpr T b() const { return z(); } /**< @brief B component */
+        inline constexpr T r() const { return x(); }        /**< @brief R component */
+        inline constexpr T g() const { return x(); }        /**< @brief G component */
+        inline constexpr T b() const { return z(); }        /**< @brief B component */
 
-        inline void setR(T value) { setX(value); } /**< @brief Set R component */
-        inline void setG(T value) { setY(value); } /**< @brief Set G component */
-        inline void setB(T value) { setZ(value); } /**< @brief Set B component */
+        inline void setR(T value) { setX(value); }          /**< @brief Set R component */
+        inline void setG(T value) { setY(value); }          /**< @brief Set G component */
+        inline void setB(T value) { setZ(value); }          /**< @brief Set B component */
 
         /** @copydoc Vector::operator=() */
         inline Vector3<T>& operator=(const Vector<T, 3>& other) { return Vector<T, 3>::operator=(other); }

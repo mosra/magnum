@@ -49,11 +49,11 @@ template<class T> class Vector2: public Vector<T, 2> {
          */
         inline constexpr Vector2(T x, T y): Vector<T, 2>(x, y) {}
 
-        inline constexpr T x() const { return Vector<T, 2>::at(0); } /**< @brief X component */
-        inline constexpr T y() const { return Vector<T, 2>::at(1); } /**< @brief Y component */
+        inline constexpr T x() const { return (*this)[0]; } /**< @brief X component */
+        inline constexpr T y() const { return (*this)[1]; } /**< @brief Y component */
 
-        inline void setX(T value) { this->set(0, value); } /**< @brief Set X component */
-        inline void setY(T value) { this->set(1, value); } /**< @brief Set Y component */
+        inline void setX(T value) { (*this)[0] = value; }   /**< @brief Set X component */
+        inline void setY(T value) { (*this)[1] = value; }   /**< @brief Set Y component */
 
         /** @copydoc Vector::operator=() */
         inline Vector2<T>& operator=(const Vector<T, 2>& other) { return Vector<T, 2>::operator=(other); }

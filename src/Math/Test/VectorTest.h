@@ -25,7 +25,6 @@ class VectorTest: public QObject {
     private slots:
         void construct();
         void data();
-        void bracketOperator();
         void copy();
         void dot();
         void multiplyDivide();

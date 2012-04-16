@@ -65,15 +65,15 @@ template<class T> class Vector4: public Vector<T, 4> {
          */
         inline constexpr Vector4(const Vector<T, 3>& other, T w = T(1)): Vector<T, 4>(other[0], other[1], other[2], w) {}
 
-        inline constexpr T x() const { return Vector<T, 4>::at(0); } /**< @brief X component */
-        inline constexpr T y() const { return Vector<T, 4>::at(1); } /**< @brief Y component */
-        inline constexpr T z() const { return Vector<T, 4>::at(2); } /**< @brief Z component */
-        inline constexpr T w() const { return Vector<T, 4>::at(3); } /**< @brief W component */
+        inline constexpr T x() const { return (*this)[0]; } /**< @brief X component */
+        inline constexpr T y() const { return (*this)[1]; } /**< @brief Y component */
+        inline constexpr T z() const { return (*this)[2]; } /**< @brief Z component */
+        inline constexpr T w() const { return (*this)[3]; } /**< @brief W component */
 
-        inline void setX(T value) { this->set(0, value); } /**< @brief Set X component */
-        inline void setY(T value) { this->set(1, value); } /**< @brief Set Y component */
-        inline void setZ(T value) { this->set(2, value); } /**< @brief Set Z component */
-        inline void setW(T value) { this->set(3, value); } /**< @brief Set W component */
+        inline void setX(T value) { (*this)[0] = value; }   /**< @brief Set X component */
+        inline void setY(T value) { (*this)[1] = value; }   /**< @brief Set Y component */
+        inline void setZ(T value) { (*this)[2] = value; }   /**< @brief Set Z component */
+        inline void setW(T value) { (*this)[3] = value; }   /**< @brief Set W component */
 
         /**
          * @brief XYZ part of the vector
@@ -81,15 +81,15 @@ template<class T> class Vector4: public Vector<T, 4> {
          */
         inline constexpr Vector3<T> xyz() const { return Vector3<T>::from(Vector<T, 4>::data()); }
 
-        inline constexpr T r() const { return x(); } /**< @brief R component */
-        inline constexpr T g() const { return y(); } /**< @brief G component */
-        inline constexpr T b() const { return z(); } /**< @brief B component */
-        inline constexpr T a() const { return w(); } /**< @brief A component */
+        inline constexpr T r() const { return x(); }    /**< @brief R component */
+        inline constexpr T g() const { return y(); }    /**< @brief G component */
+        inline constexpr T b() const { return z(); }    /**< @brief B component */
+        inline constexpr T a() const { return w(); }    /**< @brief A component */
 
-        inline void setR(T value) { setX(value); } /**< @brief Set R component */
-        inline void setG(T value) { setY(value); } /**< @brief Set G component */
-        inline void setB(T value) { setZ(value); } /**< @brief Set B component */
-        inline void setA(T value) { setA(value); } /**< @brief Set A component */
+        inline void setR(T value) { setX(value); }      /**< @brief Set R component */
+        inline void setG(T value) { setY(value); }      /**< @brief Set G component */
+        inline void setB(T value) { setZ(value); }      /**< @brief Set B component */
+        inline void setA(T value) { setA(value); }      /**< @brief Set A component */
 
         /**
          * @brief RGB part of the vector

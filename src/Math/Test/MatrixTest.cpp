@@ -80,14 +80,13 @@ void MatrixTest::data() {
 
     Vector4 vector(4.0f, 5.0f, 6.0f, 7.0f);
 
-    m.set(3, vector);
-    m.set(1, 2, 1.0f);
+    m[3] = vector;
+    m[2][1] = 1.0f;
 
-    m.set(2, 1, 1.0f);
-    m.add(2, 1, 0.5f);
+    m[1][2] = 1.5f;
 
-    QVERIFY(m.at(1, 2) == 1.0f);
-    QVERIFY(m.at(3) == vector);
+    QVERIFY(m[2][1] == 1.0f);
+    QVERIFY(m[3] == vector);
 
     Matrix4 expected(
         0.0f, 0.0f, 0.0f, 0.0f,
@@ -102,20 +101,20 @@ void MatrixTest::data() {
 void MatrixTest::copy() {
     Matrix4 m1(false);
 
-    m1.set(3, 2, 1.0f);
+    m1[2][3] = 1.0f;
 
     /* Copy */
     Matrix4 m2(m1);
     Matrix4 m3;
-    m3.set(0, 0, 1.0f); /* this line is here so it's not optimized to Matrix4 m3(m1) */
+    m3[0][0] = 1.0f; /* this line is here so it's not optimized to Matrix4 m3(m1) */
     m3 = m1;
 
     /* Change original */
-    m1.set(2, 3, 1.0f);
+    m1[3][2] = 1.0f;
 
     /* Verify the copy is the same as original */
     Matrix4 original(false);
-    original.set(3, 2, 1.0f);
+    original[2][3] = 1.0f;
 
     QVERIFY(m2 == original);
     QVERIFY(m3 == original);
@@ -207,7 +206,7 @@ void MatrixTest::ij() {
         12.0f,  13.0f,  15.0f
     );
 
-    QVERIFY(original.ij(2, 1) == skipped);
+    QVERIFY(original.ij(1, 2) == skipped);
 }
 
 void MatrixTest::determinant() {
