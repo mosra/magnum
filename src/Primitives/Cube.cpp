@@ -32,15 +32,17 @@ Cube::Cube(): MeshData(Mesh::Primitive::Triangles, new vector<unsigned int>{
     2, 7, 6,
     4, 5, 1,
     4, 1, 0
-}, {new vector<Vector4>{
-    Vector4(-1.0f, -1.0f, -1.0f),
-    Vector4( 1.0f, -1.0f, -1.0f),
-    Vector4(-1.0f,  1.0f, -1.0f),
-    Vector4( 1.0f,  1.0f, -1.0f),
-    Vector4(-1.0f, -1.0f,  1.0f),
-    Vector4( 1.0f, -1.0f,  1.0f),
-    Vector4(-1.0f,  1.0f,  1.0f),
-    Vector4( 1.0f,  1.0f,  1.0f)
-}}, {}, {}) {}
+}, {new vector<Vector4>}, {new vector<Vector3>{
+    {-1.0f, -1.0f, -1.0f},
+    { 1.0f, -1.0f, -1.0f},
+    {-1.0f,  1.0f, -1.0f},
+    { 1.0f,  1.0f, -1.0f},
+    {-1.0f, -1.0f,  1.0f},
+    { 1.0f, -1.0f,  1.0f},
+    {-1.0f,  1.0f,  1.0f},
+    { 1.0f,  1.0f,  1.0f}
+}}, {}) {
+    vertices(0)->assign(normals(0)->begin(), normals(0)->end());
+}
 
 }}
