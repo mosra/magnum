@@ -53,9 +53,19 @@ template<class T, size_t size> class Vector {
             return *reinterpret_cast<const Vector<T, size>*>(data);
         }
 
+        /** @brief Dot product */
+        static T dot(const Vector<T, size>& a, const Vector<T, size>& b) {
+            T out(0);
+
+            for(size_t i = 0; i != size; ++i)
+                out += a[i]*b[i];
+
+            return out;
+        }
+
         /** @brief Angle between vectors */
         inline static T angle(const Vector<T, size>& a, const Vector<T, size>& b) {
-            return acos((a*b)/(a.length()*b.length()));
+            return acos(dot(a, b)/(a.length()*b.length()));
         }
 
         /** @brief Default constructor */
@@ -109,16 +119,6 @@ template<class T, size_t size> class Vector {
         /** @brief Non-equality operator */
         inline bool operator!=(const Vector<T, size>& other) const {
             return !operator==(other);
-        }
-
-        /** @brief Dot product */
-        T operator*(const Vector<T, size>& other) const {
-            T out(0);
-
-            for(size_t i = 0; i != size; ++i)
-                out += (*this)[i]*other[i];
-
-            return out;
         }
 
         /** @brief Multiply vector */
@@ -205,7 +205,7 @@ template<class T, size_t size> class Vector {
 
         /** @brief %Vector length */
         inline T length() const {
-            return sqrt(operator*(*this));
+            return sqrt(dot(*this, *this));
         }
 
         /** @brief Normalized vector (of length 1) */

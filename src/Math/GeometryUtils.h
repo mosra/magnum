@@ -69,10 +69,10 @@ template<class T> class GeometryUtils {
 
             /* Compute f with cross product and one of the points defining the
                plane */
-            T f = crossProduct*plane[0];
+            T f = Vector3<T>::dot(crossProduct, plane[0]);
 
             /* Compute t */
-            return (f-crossProduct*a)/(crossProduct*(b-a));
+            return (f-Vector3<T>::dot(crossProduct, a)/Vector3<T>::dot(crossProduct, b-a));
         }
 };
 

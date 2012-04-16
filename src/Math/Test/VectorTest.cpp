@@ -69,7 +69,7 @@ void VectorTest::copy() {
 }
 
 void VectorTest::dot() {
-    QVERIFY(Vector4(1.0f, 0.5f, 0.75f, 1.5f)*Vector4(2.0f, 4.0f, 1.0f, 7.0f) == 15.25f);
+    QVERIFY(Vector4::dot({1.0f, 0.5f, 0.75f, 1.5f}, {2.0f, 4.0f, 1.0f, 7.0f}) == 15.25f);
 }
 
 void VectorTest::multiplyDivide() {
