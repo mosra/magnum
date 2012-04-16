@@ -25,6 +25,17 @@ namespace Magnum { namespace Math {
 
 namespace Implementation {
     template<class T, size_t size> class MatrixDeterminant;
+
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    template<size_t ...> struct Sequence {};
+
+    template<size_t N, size_t ...S> struct GenerateSequence:
+        GenerateSequence<N-1, N-1, S...> {};
+
+    template<size_t ...S> struct GenerateSequence<0, S...> {
+        typedef Sequence<S...> Type;
+    };
+    #endif
 }
 
 /**
@@ -50,6 +61,15 @@ template<class T, size_t size> class Matrix {
         /** @copydoc from(T*) */
         inline constexpr static const Matrix<T, size>& from(const T* data) {
             return *reinterpret_cast<const Matrix<T, size>*>(data);
+        }
+
+        /**
+         * @brief %Matrix from column vectors
+         * @param first First column vector
+         * @param next  Next column vectors
+         */
+        template<class ...U> inline constexpr static Matrix<T, size> from(const Vector<T, size>& first, const U&... next) {
+            return from(typename Implementation::GenerateSequence<size>::Type(), first, next...);
         }
 
         /**
@@ -189,6 +209,14 @@ template<class T, size_t size> class Matrix {
         }
 
     private:
+        template<size_t ...sequence, class ...U> inline constexpr static Matrix<T, size> from(Implementation::Sequence<sequence...> s, const Vector<T, size>& first, U... next) {
+            return from(s, next..., first[sequence]...);
+        }
+
+        template<size_t ...sequence, class ...U> inline constexpr static Matrix<T, size> from(Implementation::Sequence<sequence...> s, T first, U... next) {
+            return Matrix<T, size>(first, next...);
+        }
+
         T _data[size*size];
 };
 

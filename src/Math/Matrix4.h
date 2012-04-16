@@ -43,6 +43,11 @@ template<class T> class Matrix4: public Matrix<T, 4> {
             return *reinterpret_cast<const Matrix4<T>*>(data);
         }
 
+        /** @copydoc Matrix::from(const Vector<T, size>&, const U&...) */
+        template<class ...U> inline constexpr static Matrix4<T> from(const Vector<T, 4>& first, const U&... next) {
+            return Matrix<T, 4>::from(first, next...);
+        }
+
         /**
          * @brief Translation matrix
          * @param vec   Translation vector

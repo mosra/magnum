@@ -37,6 +37,11 @@ template<class T> class Matrix3: public Matrix<T, 3> {
             return *reinterpret_cast<const Matrix3<T>*>(data);
         }
 
+        /** @copydoc Matrix::from(const Vector<T, size>&, const U&...) */
+        template<class ...U> inline constexpr static Matrix3<T> from(const Vector<T, 3>& first, const U&... next) {
+            return Matrix<T, 3>::from(first, next...);
+        }
+
         /** @copydoc Matrix::Matrix(bool) */
         inline constexpr explicit Matrix3(bool identity = true): Matrix<T, 3>{
             /** @todo Make this in Matrix itself, after it will be constexpr */

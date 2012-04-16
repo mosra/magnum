@@ -24,6 +24,7 @@ class MatrixTest: public QObject {
 
     private slots:
         void construct();
+        void constructFromVectors();
         void constructIdentity();
         void constructZero();
         void data();
