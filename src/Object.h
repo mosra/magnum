@@ -141,16 +141,6 @@ class MAGNUM_EXPORT Object {
         }
 
         /**
-         * @copydoc scale(Vector3, bool)
-         *
-         * Scales the object proportionally in all dimensions.
-         * @todo Make this functionality in Math::Vector3?
-         */
-        inline void scale(GLfloat xyz, bool global = true) {
-            scale({xyz, xyz, xyz}, global);
-        }
-
-        /**
          * @brief Rotate object
          *
          * Same as calling multiplyTransformation() with Matrix4::rotation().
