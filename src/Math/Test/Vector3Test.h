@@ -25,6 +25,7 @@ class Vector3Test: public QObject {
     private slots:
         void construct();
         void cross();
+        void axis();
 
         void debug();
 };

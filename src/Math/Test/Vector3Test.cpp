@@ -41,6 +41,12 @@ void Vector3Test::cross() {
     QVERIFY(Vector3::cross(a, b) == Vector3(-10, -3, 7));
 }
 
+void Vector3Test::axis() {
+    QVERIFY(Vector3::xAxis(5.0f) == Vector3(5.0f, 0.0f, 0.0f));
+    QVERIFY(Vector3::yAxis(6.0f) == Vector3(0.0f, 6.0f, 0.0f));
+    QVERIFY(Vector3::zAxis(7.0f) == Vector3(0.0f, 0.0f, 7.0f));
+}
+
 void Vector3Test::debug() {
     ostringstream o;
     Debug(&o) << Vector3(0.5f, 15.0f, 1.0f);

@@ -37,13 +37,13 @@ template<class T> class Vector3: public Vector<T, 3> {
         }
 
         /** @brief Vector in direction of X axis */
-        inline constexpr static Vector3<T> xAxis(T length = 1) { return Vector3<T>(length, 0, 0); }
+        inline constexpr static Vector3<T> xAxis(T length = T(1)) { return Vector3<T>(length, T(), T()); }
 
         /** @brief Vector in direction of Y axis */
-        inline constexpr static Vector3<T> yAxis(T length = 1) { return Vector3<T>(0, length, 0); }
+        inline constexpr static Vector3<T> yAxis(T length = T(1)) { return Vector3<T>(T(), length, T()); }
 
         /** @brief Vector in direction of Z axis */
-        inline constexpr static Vector3<T> zAxis(T length = 1) { return Vector3<T>(0, 0, length); }
+        inline constexpr static Vector3<T> zAxis(T length = T(1)) { return Vector3<T>(T(), T(), length); }
 
         /** @brief Cross product */
         constexpr static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
