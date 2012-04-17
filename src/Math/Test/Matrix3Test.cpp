@@ -29,6 +29,28 @@ namespace Magnum { namespace Math { namespace Test {
 
 typedef Math::Matrix3<float> Matrix3;
 
+void Matrix3Test::constructIdentity() {
+    Matrix3 identity;
+    Matrix3 identity2(Matrix3::Identity);
+    Matrix3 identity3(Matrix3::Identity, 4.0f);
+
+    Matrix3 identityExpected(
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f
+    );
+
+    Matrix3 identity3Expected(
+        4.0f, 0.0f, 0.0f,
+        0.0f, 4.0f, 0.0f,
+        0.0f, 0.0f, 4.0f
+    );
+
+    QVERIFY(identity == identityExpected);
+    QVERIFY(identity2 == identityExpected);
+    QVERIFY(identity3 == identity3Expected);
+}
+
 void Matrix3Test::debug() {
     Matrix3 m(
         3.0f, 5.0f, 8.0f,

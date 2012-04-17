@@ -23,6 +23,8 @@ class Matrix4Test: public QObject {
     Q_OBJECT
 
     private slots:
+        void constructIdentity();
+
         void translation();
         void scaling();
         void rotation();

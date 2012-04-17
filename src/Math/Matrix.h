@@ -90,12 +90,13 @@ template<class T, size_t size> class Matrix {
          * @brief Default constructor
          *
          * You can also explicitly call this constructor with
-         * `Matrix m(Matrix::Identity);`.
+         * `Matrix m(Matrix::Identity);`. Optional parameter @p value allows
+         * you to specify value on diagonal.
          */
-        inline explicit Matrix(IdentityType = Identity): _data() {
+        inline explicit Matrix(IdentityType = Identity, T value = T(1)): _data() {
             /** @todo constexpr how? */
             for(size_t i = 0; i != size; ++i)
-                _data[size*i+i] = static_cast<T>(1);
+                _data[size*i+i] = value;
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT

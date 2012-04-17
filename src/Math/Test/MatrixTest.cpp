@@ -66,6 +66,7 @@ void MatrixTest::constructFromVectors() {
 void MatrixTest::constructIdentity() {
     Matrix4 identity;
     Matrix4 identity2(Matrix4::Identity);
+    Matrix4 identity3(Matrix4::Identity, 4.0f);
 
     Matrix4 identityExpected(
         1.0f, 0.0f, 0.0f, 0.0f,
@@ -74,8 +75,16 @@ void MatrixTest::constructIdentity() {
         0.0f, 0.0f, 0.0f, 1.0f
     );
 
+    Matrix4 identity3Expected(
+        4.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 4.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 4.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 4.0f
+    );
+
     QVERIFY(identity == identityExpected);
     QVERIFY(identity2 == identityExpected);
+    QVERIFY(identity3 == identity3Expected);
 }
 
 void MatrixTest::constructZero() {
