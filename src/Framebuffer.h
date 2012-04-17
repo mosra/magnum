@@ -27,7 +27,7 @@
 namespace Magnum {
 
 /**
-@brief Framebuffer
+@brief %Framebuffer
 */
 class MAGNUM_EXPORT Framebuffer {
     Framebuffer(const Framebuffer& other) = delete;

@@ -24,7 +24,7 @@
 namespace Magnum {
 
 /**
-@brief Renderbuffer
+@brief %Renderbuffer
 
 Attachable to Framebuffer as render target.
 */

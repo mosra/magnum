@@ -15,7 +15,3 @@ Basic primitives for testing purposes.
 
 Collection of shaders for testing purposes.
 */
-
-/** @namespace Magnum::Math::Implementation
-@brief Internal math implementation
-*/

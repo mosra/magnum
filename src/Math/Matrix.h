@@ -23,10 +23,10 @@
 
 namespace Magnum { namespace Math {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<class T, size_t size> class MatrixDeterminant;
 
-    #ifndef DOXYGEN_GENERATING_OUTPUT
     template<size_t ...> struct Sequence {};
 
     template<size_t N, size_t ...S> struct GenerateSequence:
@@ -35,8 +35,8 @@ namespace Implementation {
     template<size_t ...S> struct GenerateSequence<0, S...> {
         typedef Sequence<S...> Type;
     };
-    #endif
 }
+#endif
 
 /**
  * @brief %Matrix
@@ -220,9 +220,9 @@ template<class T, size_t size> class Matrix {
         T _data[size*size];
 };
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
-/** @brief Matrix determinant implementation for >2x2 matrices */
 template<class T, size_t size> class MatrixDeterminant {
     public:
         /** @brief Functor */
@@ -236,7 +236,6 @@ template<class T, size_t size> class MatrixDeterminant {
         }
 };
 
-/** @brief Matrix determinant implementation for 2x2 matrix */
 template<class T> class MatrixDeterminant<T, 2> {
     public:
         /** @brief Functor */
@@ -245,7 +244,6 @@ template<class T> class MatrixDeterminant<T, 2> {
         }
 };
 
-/** @brief Matrix determinant implementation for 1x1 matrix */
 template<class T> class MatrixDeterminant<T, 1> {
     public:
         /** @brief Functor */
@@ -256,7 +254,6 @@ template<class T> class MatrixDeterminant<T, 1> {
 
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix<T, size>& value) {
     debug << "Matrix(";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
