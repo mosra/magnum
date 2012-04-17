@@ -74,7 +74,7 @@ class MAGNUM_EXPORT Object {
         inline const std::set<Object*>& children() { return _children; }
 
         /** @brief Set parent object */
-        void setParent(Object* parent);
+        Object* setParent(Object* parent);
 
         /**
          * @brief Transformation matrix
@@ -96,7 +96,7 @@ class MAGNUM_EXPORT Object {
         virtual Matrix4 absoluteTransformation(Camera* camera = nullptr);
 
         /** @brief Set transformation matrix */
-        void setTransformation(const Matrix4& transformation);
+        Object* setTransformation(const Matrix4& transformation);
 
         /**
          * @brief Multiply transformation matrix
@@ -107,8 +107,9 @@ class MAGNUM_EXPORT Object {
          *
          * Multiplies current transformation matrix by new matrix.
          */
-        inline void multiplyTransformation(const Matrix4& transformation, bool global = true) {
+        inline Object* multiplyTransformation(const Matrix4& transformation, bool global = true) {
             setTransformation(global ? transformation*_transformation : _transformation*transformation);
+            return this;
         }
 
         /**
@@ -116,8 +117,9 @@ class MAGNUM_EXPORT Object {
          *
          * Same as calling multiplyTransformation() with Matrix4::translation().
          */
-        inline void translate(Vector3 vec, bool global = true) {
+        inline Object* translate(Vector3 vec, bool global = true) {
             multiplyTransformation(Matrix4::translation(vec), global);
+            return this;
         }
 
         /**
@@ -125,8 +127,9 @@ class MAGNUM_EXPORT Object {
          *
          * Same as calling multiplyTransformation() with Matrix4::scaling().
          */
-        inline void scale(Vector3 vec, bool global = true) {
+        inline Object* scale(Vector3 vec, bool global = true) {
             multiplyTransformation(Matrix4::scaling(vec), global);
+            return this;
         }
 
         /**
@@ -134,8 +137,9 @@ class MAGNUM_EXPORT Object {
          *
          * Same as calling multiplyTransformation() with Matrix4::rotation().
          */
-        inline void rotate(GLfloat angle, Vector3 vec, bool global = true) {
+        inline Object* rotate(GLfloat angle, Vector3 vec, bool global = true) {
             multiplyTransformation(Matrix4::rotation(angle, vec), global);
+            return this;
         }
 
         /** @{ @name Caching helpers
