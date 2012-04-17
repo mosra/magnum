@@ -42,13 +42,20 @@ template<class T> class Matrix3: public Matrix<T, 3> {
             return Matrix<T, 3>::from(first, next...);
         }
 
-        /** @copydoc Matrix::Matrix(bool) */
-        inline constexpr explicit Matrix3(bool identity = true): Matrix<T, 3>{
+        /** @copydoc Matrix::Matrix(ZeroType) */
+        inline constexpr explicit Matrix3(typename Matrix<T, 3>::ZeroType): Matrix<T, 3>(Matrix<T, 3>::Zero) {}
+
+        /** @copydoc Matrix::Matrix(IdentityType) */
+        inline constexpr explicit Matrix3(typename Matrix<T, 3>::IdentityType = Matrix<T, 3>::Identity): Matrix<T, 3>{
             /** @todo Make this in Matrix itself, after it will be constexpr */
-            identity ? 1.0f : 0.0f, 0.0f, 0.0f,
-            0.0f, identity ? 1.0f : 0.0f, 0.0f,
-            0.0f, 0.0f, identity ? 1.0f : 0.0f
+            1.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, 1.0f
         } {}
+
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class U> explicit Matrix3(U) = delete;
+        #endif
 
         /** @copydoc Matrix::Matrix(T, U...) */
         #ifndef DOXYGEN_GENERATING_OUTPUT

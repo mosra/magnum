@@ -65,6 +65,7 @@ void MatrixTest::constructFromVectors() {
 
 void MatrixTest::constructIdentity() {
     Matrix4 identity;
+    Matrix4 identity2(Matrix4::Identity);
 
     Matrix4 identityExpected(
         1.0f, 0.0f, 0.0f, 0.0f,
@@ -74,10 +75,11 @@ void MatrixTest::constructIdentity() {
     );
 
     QVERIFY(identity == identityExpected);
+    QVERIFY(identity2 == identityExpected);
 }
 
 void MatrixTest::constructZero() {
-    Matrix4 zero(false);
+    Matrix4 zero(Matrix4::Zero);
 
     Matrix4 zeroExpected(
         0.0f, 0.0f, 0.0f, 0.0f,
@@ -90,7 +92,7 @@ void MatrixTest::constructZero() {
 }
 
 void MatrixTest::data() {
-    Matrix4 m(false);
+    Matrix4 m(Matrix4::Zero);
 
     Vector4 vector(4.0f, 5.0f, 6.0f, 7.0f);
 
@@ -113,7 +115,7 @@ void MatrixTest::data() {
 }
 
 void MatrixTest::copy() {
-    Matrix4 m1(false);
+    Matrix4 m1(Matrix4::Zero);
 
     m1[2][3] = 1.0f;
 
@@ -127,7 +129,7 @@ void MatrixTest::copy() {
     m1[3][2] = 1.0f;
 
     /* Verify the copy is the same as original */
-    Matrix4 original(false);
+    Matrix4 original(Matrix4::Zero);
     original[2][3] = 1.0f;
 
     QVERIFY(m2 == original);

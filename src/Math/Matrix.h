@@ -73,15 +73,34 @@ template<class T, size_t size> class Matrix {
             return from(typename Implementation::GenerateSequence<size>::Type(), first, next...);
         }
 
+        /** @brief Pass to constructor to create zero-filled matrix */
+        enum ZeroType { Zero };
+
+        /**
+         * @brief Zero-filled matrix constructor
+         *
+         * Use this constructor by calling `Matrix m(Matrix::Zero);`.
+         */
+        inline constexpr explicit Matrix(ZeroType): _data() {}
+
+        /** @brief Pass to constructor to create identity matrix */
+        enum IdentityType { Identity };
+
         /**
          * @brief Default constructor
-         * @param identity Create identity matrix instead of zero matrix.
+         *
+         * You can also explicitly call this constructor with
+         * `Matrix m(Matrix::Identity);`.
          */
-        inline explicit Matrix(bool identity = true): _data() {
+        inline explicit Matrix(IdentityType = Identity): _data() {
             /** @todo constexpr how? */
-            if(identity) for(size_t i = 0; i != size; ++i)
+            for(size_t i = 0; i != size; ++i)
                 _data[size*i+i] = static_cast<T>(1);
         }
+
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class U> explicit Matrix(U) = delete;
+        #endif
 
         /**
          * @brief Initializer-list constructor
@@ -136,7 +155,7 @@ template<class T, size_t size> class Matrix {
 
         /** @brief Multiply matrix operator */
         Matrix<T, size> operator*(const Matrix<T, size>& other) const {
-            Matrix<T, size> out(false);
+            Matrix<T, size> out(Zero);
 
             for(size_t row = 0; row != size; ++row)
                 for(size_t col = 0; col != size; ++col)
@@ -164,7 +183,7 @@ template<class T, size_t size> class Matrix {
 
         /** @brief Transposed matrix */
         Matrix<T, size> transposed() const {
-            Matrix<T, size> out(false);
+            Matrix<T, size> out(Zero);
 
             for(size_t row = 0; row != size; ++row)
                 for(size_t col = 0; col != size; ++col)
@@ -175,7 +194,7 @@ template<class T, size_t size> class Matrix {
 
         /** @brief %Matrix without given column and row */
         Matrix<T, size-1> ij(size_t skipCol, size_t skipRow) const {
-            Matrix<T, size-1> out(false);
+            Matrix<T, size-1> out(Matrix<T, size-1>::Zero);
 
             for(size_t row = 0; row != size-1; ++row)
                 for(size_t col = 0; col != size-1; ++col)
@@ -198,7 +217,7 @@ template<class T, size_t size> class Matrix {
          * @brief Inverse matrix
          */
         Matrix<T, size> inversed() const {
-            Matrix<T, size> out(false);
+            Matrix<T, size> out(Zero);
 
             T _determinant = determinant();
 
