@@ -29,11 +29,12 @@ namespace Implementation {
 
     template<size_t ...> struct Sequence {};
 
-    template<size_t N, size_t ...S> struct GenerateSequence:
-        GenerateSequence<N-1, N-1, S...> {};
+    /* E.g. GenerateSequence<3>::Type is Sequence<0, 1, 2> */
+    template<size_t N, size_t ...sequence> struct GenerateSequence:
+        GenerateSequence<N-1, N-1, sequence...> {};
 
-    template<size_t ...S> struct GenerateSequence<0, S...> {
-        typedef Sequence<S...> Type;
+    template<size_t ...sequence> struct GenerateSequence<0, sequence...> {
+        typedef Sequence<sequence...> Type;
     };
 }
 #endif

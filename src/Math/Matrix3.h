@@ -50,7 +50,7 @@ template<class T> class Matrix3: public Matrix<T, 3> {
             0.0f, 0.0f, identity ? 1.0f : 0.0f
         } {}
 
-        /** @copydoc Matrix::Matrix(T, U&&...) */
+        /** @copydoc Matrix::Matrix(T, U...) */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> inline constexpr Matrix3(T first, U... next): Matrix<T, 3>(first, next...) {}
         #else

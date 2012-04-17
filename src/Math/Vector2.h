@@ -37,6 +37,7 @@ template<class T> class Vector2: public Vector<T, 2> {
         }
 
         /** @copydoc Vector::Vector(T) */
+        /** @todo Use original constructor when it is constexpr */
         inline constexpr explicit Vector2(T value = T()): Vector<T, 2>(value, value) {}
 
         /** @copydoc Vector::Vector(const Vector&)  */
