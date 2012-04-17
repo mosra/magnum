@@ -112,17 +112,6 @@ class MAGNUM_EXPORT Object {
         }
 
         /**
-         * @brief Set transformation and parent from another object
-         *
-         * Sets parent and transformation from another object, so they will
-         * appear in the same place.
-         */
-        inline void setTransformationFrom(Object* another) {
-            setParent(another->parent());
-            setTransformation(another->transformation());
-        }
-
-        /**
          * @brief Translate object
          *
          * Same as calling multiplyTransformation() with Matrix4::translation().
