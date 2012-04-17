@@ -39,7 +39,6 @@ class MAGNUM_EXPORT Scene: public Object {
         void setParent(Object* parent) = delete;
         void setTransformation(const Matrix4& transformation) = delete;
         void multiplyTransformation(const Matrix4& transformation, bool global = true) = delete;
-        void setTransformationFrom(Object* another) = delete;
         void translate(Vector3 vec, bool global = true) = delete;
         void scale(Vector3 vec, bool global = true) = delete;
         void rotate(GLfloat angle, Vector3 vec, bool global = true) = delete;
