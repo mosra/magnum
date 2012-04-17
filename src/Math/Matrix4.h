@@ -158,6 +158,14 @@ template<class T> class Matrix4: public Matrix<T, 4> {
 
         /** @copydoc Matrix::inversed() */
         inline Matrix4<T> inversed() const { return Matrix<T, 4>::inversed(); }
+
+        /** @brief Rotation part of the matrix */
+        inline Matrix3<T> rotation() const {
+            return Matrix3<T>::from(
+                (*this)[0].xyz().normalized(),
+                (*this)[1].xyz().normalized(),
+                (*this)[2].xyz().normalized());
+        }
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

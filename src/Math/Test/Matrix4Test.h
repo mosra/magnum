@@ -26,6 +26,7 @@ class Matrix4Test: public QObject {
         void translation();
         void scaling();
         void rotation();
+        void rotationPart();
 
         void debug();
 };

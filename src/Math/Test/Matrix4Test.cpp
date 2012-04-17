@@ -29,6 +29,7 @@ using namespace Corrade::Utility;
 namespace Magnum { namespace Math { namespace Test {
 
 typedef Math::Matrix4<float> Matrix4;
+typedef Math::Matrix3<float> Matrix3;
 
 void Matrix4Test::translation() {
     Matrix4 matrix(
@@ -61,6 +62,20 @@ void Matrix4Test::rotation() {
     );
 
     QVERIFY(Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f}) == matrix);
+}
+
+void Matrix4Test::rotationPart() {
+    Matrix3 expectedRotationPart(
+        0.35612214f,  -0.80181062f, 0.47987163f,
+        0.47987163f,  0.59757638f,  0.6423595f,
+        -0.80181062f, 0.0015183985f, 0.59757638f
+    );
+
+    Matrix4 rotation = Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f});
+    QVERIFY(rotation.rotation() == expectedRotationPart);
+
+    Matrix4 rotationTransformed = Matrix4::translation({2.0f, 5.0f, -3.0f})*rotation*Matrix4::scaling(Vector3<float>(9.0f));
+    QVERIFY(rotationTransformed.rotation() == expectedRotationPart);
 }
 
 void Matrix4Test::debug() {
