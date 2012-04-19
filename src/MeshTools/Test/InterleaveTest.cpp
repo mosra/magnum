@@ -15,7 +15,9 @@
 
 #include "InterleaveTest.h"
 
+#ifndef NDEBUG
 #define NDEBUG
+#endif
 
 #include <sstream>
 #include <QtTest/QTest>
