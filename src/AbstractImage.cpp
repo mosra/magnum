@@ -19,7 +19,7 @@
 namespace Magnum {
 
 size_t AbstractImage::pixelSize(Components format, ComponentType type) {
-    size_t size;
+    size_t size = 0;
     switch(type) {
         case ComponentType::RGB332:
         case ComponentType::BGR233:
