@@ -137,7 +137,10 @@ template<class T> class Matrix4: public Matrix<T, 4> {
         inline constexpr Matrix4(const Matrix<T, 4>& other): Matrix<T, 4>(other) {}
 
         /** @copydoc Matrix::operator=() */
-        inline constexpr Matrix4<T>& operator=(const Matrix<T, 4>& other) { return Matrix<T, 4>::operator=(other); }
+        inline Matrix4<T>& operator=(const Matrix<T, 4>& other) {
+            Matrix<T, 4>::operator=(other);
+            return *this;
+        }
 
         /** @copydoc Matrix::operator[](size_t) */
         inline Vector4<T>& operator[](size_t col) { return Vector4<T>::from(Matrix<T, 4>::data()+col*4); }

@@ -99,7 +99,10 @@ template<class T> class Vector4: public Vector<T, 4> {
         inline constexpr Vector3<T> rgb() const { return xyz(); }
 
         /** @copydoc Vector::operator=() */
-        inline Vector4<T>& operator=(const Vector<T, 4>& other) { return Vector<T, 4>::operator=(other); }
+        inline Vector4<T>& operator=(const Vector<T, 4>& other) {
+            Vector<T, 4>::operator=(other);
+            return *this;
+        }
 
         /** @copydoc Vector::operator*(T) const */
         inline Vector4<T> operator*(T number) const { return Vector<T, 4>::operator*(number); }
