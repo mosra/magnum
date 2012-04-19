@@ -15,6 +15,11 @@ build() {
     mkdir -p "$startdir/build"
     cd "$startdir/build/"
 
+    if [ "$CXX" = clang++ ] ; then
+        newcxxflags=$(echo $CXXFLAGS | sed s/--param=ssp-buffer-size=4//g)
+        export CXXFLAGS="$newcxxflags"
+    fi
+
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_PREFIX=/usr \
