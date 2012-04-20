@@ -9,9 +9,9 @@ already prepared packaging files, currently only
 
 Minimal set of tools and libraries required for building is:
 
-- C++ compiler with good C++11 support. Currently the only compiler which
-  supports everything needed is **GCC** >= 4.6. **Clang** >= 3.1 (from SVN)
-  will probably work too.
+- C++ compiler with good C++11 support. Currently the only compilers which
+  support everything needed are **GCC** >= 4.6 and **Clang** >= 3.1 (from
+  SVN).
 - **CMake** >= 2.6
 - **OpenGL** headers, on Linux most probably shipped with Mesa
 - **GLEW** - OpenGL extension wrangler
@@ -25,6 +25,9 @@ The library can be built and installed using these four commands:
     cd build
     cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make
     make install
+
+If you want to build with another compiler (e.g. Clang), pass
+`-DCMAKE_CXX_COMPILER=clang++` to CMake.
 
 @subsection BuildingTests Building and running unit tests
 If you want to build also unit tests (which are not built by default), pass
@@ -55,6 +58,13 @@ which allows you to build and install the package directly from source tree
 without downloading anything. The PKGBUILD also contains `check()` function
 which will run all unit tests before packaging. Note that the unit tests
 require Qt, as said above.
+
+If you want to build with another compiler (e.g. Clang), run makepkg this way:
+
+    CXX=clang++ makepkg
+
+Both development PKGBUILDs can detect when Clang is used and remove
+unsupported CXX flags.
 
 @section BuildingWin Crosscompiling for Windows using MinGW
 @note This guide is tailored mainly for crosscompiling from ArchLinux. For
