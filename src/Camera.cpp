@@ -85,15 +85,15 @@ void Camera::fixAspectRatio() {
     /* Extend on larger side = scale larger side down */
     if(_aspectRatioPolicy == Extend) {
         _projectionMatrix = ((_viewport.x() > _viewport.y()) ?
-            Matrix4::scaling({static_cast<GLfloat>(_viewport.y())/_viewport.x(), 1, 1}) :
-            Matrix4::scaling({1, static_cast<GLfloat>(_viewport.x())/_viewport.y(), 1})
+            Matrix4::scaling({GLfloat(_viewport.y())/_viewport.x(), 1, 1}) :
+            Matrix4::scaling({1, GLfloat(_viewport.x())/_viewport.y(), 1})
         )*rawProjectionMatrix;
 
     /* Clip on smaller side = scale smaller side up */
     } else if(_aspectRatioPolicy == Clip) {
         _projectionMatrix = ((_viewport.x() > _viewport.y()) ?
-            Matrix4::scaling({1, static_cast<GLfloat>(_viewport.x())/_viewport.y(), 1}) :
-            Matrix4::scaling({static_cast<GLfloat>(_viewport.y())/_viewport.x(), 1, 1})
+            Matrix4::scaling({1, GLfloat(_viewport.x())/_viewport.y(), 1}) :
+            Matrix4::scaling({GLfloat(_viewport.y())/_viewport.x(), 1, 1})
         )*rawProjectionMatrix;
 
     /* Don't preserve anything */

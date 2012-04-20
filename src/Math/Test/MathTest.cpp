@@ -25,7 +25,7 @@ namespace Magnum { namespace Math { namespace Test {
 
 void MathTest::degrad() {
     QCOMPARE(deg(90.0), PI/2);
-    QCOMPARE(deg(90.0f), static_cast<float>(PI/2));
+    QCOMPARE(deg(90.0f), float(PI/2));
     QCOMPARE(rad(PI/2), PI/2);
 
     QEXPECT_FAIL(0, "Integral parameter is not converted to floating point", Continue);
