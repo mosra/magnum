@@ -46,6 +46,8 @@ namespace Implementation {
  * @todo first col, then row (cache adjacency)
  */
 template<class T, size_t size> class Matrix {
+    friend class Matrix<T, size+1>; /* for ij() */
+
     public:
         /**
          * @brief %Matrix from array
@@ -160,7 +162,7 @@ template<class T, size_t size> class Matrix {
             for(size_t row = 0; row != size; ++row)
                 for(size_t col = 0; col != size; ++col)
                     for(size_t pos = 0; pos != size; ++pos)
-                        out[col][row] += (*this)[pos][row]*other[col][pos];
+                        out(col, row) += (*this)(pos, row)*other(col, pos);
 
             return out;
         }
@@ -176,7 +178,7 @@ template<class T, size_t size> class Matrix {
 
             for(size_t row = 0; row != size; ++row)
                 for(size_t pos = 0; pos != size; ++pos)
-                    out[row] += (*this)[pos][row]*other[pos];
+                    out[row] += (*this)(pos, row)*other[pos];
 
             return out;
         }
@@ -187,7 +189,7 @@ template<class T, size_t size> class Matrix {
 
             for(size_t row = 0; row != size; ++row)
                 for(size_t col = 0; col != size; ++col)
-                    out[row][col] = (*this)[col][row];
+                    out(row, col) = (*this)(col, row);
 
             return out;
         }
@@ -198,8 +200,8 @@ template<class T, size_t size> class Matrix {
 
             for(size_t row = 0; row != size-1; ++row)
                 for(size_t col = 0; col != size-1; ++col)
-                    out[col][row] = (*this)[col + (col >= skipCol)]
-                                           [row + (row >= skipRow)];
+                    out(col, row) = (*this)(col + (col >= skipCol),
+                                            row + (row >= skipRow));
 
             return out;
         }
@@ -223,7 +225,7 @@ template<class T, size_t size> class Matrix {
 
             for(size_t row = 0; row != size; ++row)
                 for(size_t col = 0; col != size; ++col)
-                    out[col][row] = (((row+col) & 1) ? -1 : 1)*ij(row, col).determinant()/_determinant;
+                    out(col, row) = (((row+col) & 1) ? -1 : 1)*ij(row, col).determinant()/_determinant;
 
             return out;
         }
@@ -235,6 +237,15 @@ template<class T, size_t size> class Matrix {
 
         template<size_t ...sequence, class ...U> inline constexpr static Matrix<T, size> from(Implementation::Sequence<sequence...> s, T first, U... next) {
             return Matrix<T, size>(first, next...);
+        }
+
+        /* Used internally instead of [][], because GCC does some heavy
+           optimalization in release mode which breaks it */
+        inline T& operator()(size_t col, size_t row) {
+            return _data[col*size+row];
+        }
+        inline constexpr const T& operator()(size_t col, size_t row) const {
+            return _data[col*size+row];
         }
 
         T _data[size*size];
