@@ -45,10 +45,10 @@ void Camera::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
     rawProjectionMatrix = Matrix4::translation(Vector3::zAxis(2*far*near/(far+near)));
 
     /* Then apply magic perspective matrix (with reversed Z) */
-    static Matrix4 a(1.0f, 0.0f,  0.0f,  0.0f,
-                     0.0f, 1.0f,  0.0f,  0.0f,
-                     0.0f, 0.0f,  -1.0f,  -1.0f,
-                     0.0f, 0.0f,  0.0f,  0.0f);
+    static const Matrix4 a(1.0f, 0.0f,  0.0f,  0.0f,
+                           0.0f, 1.0f,  0.0f,  0.0f,
+                           0.0f, 0.0f,  -1.0f,  -1.0f,
+                           0.0f, 0.0f,  0.0f,  0.0f);
     rawProjectionMatrix = a*rawProjectionMatrix;
 
     /* Then scale the volume down so it fits in (-1, 1) in all directions */
