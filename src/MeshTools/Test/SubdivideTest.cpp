@@ -15,6 +15,7 @@
 
 #include "SubdivideTest.h"
 
+#include <sstream>
 #include <QtTest/QTest>
 
 #include "MeshTools/Clean.h"
@@ -23,8 +24,19 @@
 QTEST_APPLESS_MAIN(Magnum::MeshTools::Test::SubdivideTest)
 
 using namespace std;
+using namespace Corrade::Utility;
 
 namespace Magnum { namespace MeshTools { namespace Test {
+
+void SubdivideTest::wrongIndexCount() {
+    stringstream ss;
+    Error::setOutput(&ss);
+
+    vector<Vector1> vertices;
+    vector<unsigned int> indices{0, 1};
+    MeshTools::subdivide(indices, vertices, interpolator);
+    QVERIFY(ss.str() == "MeshTools::subdivide(): index count is not divisible by 3!\n");
+}
 
 void SubdivideTest::subdivide() {
     vector<Vector1> vertices{0, 2, 6, 8};

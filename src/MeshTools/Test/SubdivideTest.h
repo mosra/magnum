@@ -23,6 +23,7 @@ class SubdivideTest: public QObject {
     Q_OBJECT
 
     private slots:
+        void wrongIndexCount();
         void subdivide();
 
     private:
