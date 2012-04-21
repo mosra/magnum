@@ -16,32 +16,21 @@
 */
 
 /** @file
- * @brief Class Magnum::MeshTools::Subdivide, function Magnum::MeshTools::subdivide()
+ * @brief Function Magnum::MeshTools::subdivide()
  */
 
 #include <vector>
+#include "Utility/Debug.h"
 
 namespace Magnum { namespace MeshTools {
 
-/**
-@brief %Mesh subdivisor implementation
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
 
-See subdivide() for full documentation.
-*/
 template<class Vertex, class Interpolator> class Subdivide {
     public:
-        /**
-         * @brief Constructor
-         *
-         * See subdivide() for full documentation.
-         */
         inline Subdivide(std::vector<unsigned int>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
 
-        /**
-         * @brief Functor
-         *
-         * See subdivide() for full documentation.
-         */
         void operator()(Interpolator interpolator) {
             size_t indexCount = indices.size();
             indices.reserve(indices.size()*4);
@@ -90,9 +79,12 @@ template<class Vertex, class Interpolator> class Subdivide {
         }
 };
 
+}
+#endif
+
 /**
 @brief %Subdivide the mesh
-@tparam Vertex          Vertex data type (the same as in MeshBuilder)
+@tparam Vertex          Vertex data type
 @tparam Interpolator    See `interpolator` function parameter
 @param indices          Index array to operate on
 @param vertices         Vertex array to operate on
@@ -101,19 +93,9 @@ template<class Vertex, class Interpolator> class Subdivide {
 
 Goes through all triangle faces and subdivides them into four new. Cleaning
 duplicate vertices in the mesh is up to user.
-
-This is convenience function supplementing direct usage of Subdivide class,
-instead of
-@code
-MeshTools::Subdivide<T, Interpolator>(indices, vertices)(interpolator);
-@endcode
-you can just write
-@code
-MeshTools::subdivide(indices, vertices, interpolator);
-@endcode
 */
 template<class Vertex, class Interpolator> inline void subdivide(std::vector<unsigned int>& indices, std::vector<Vertex>& vertices, Interpolator interpolator) {
-    Subdivide<Vertex, Interpolator>(indices, vertices)(interpolator);
+    Implementation::Subdivide<Vertex, Interpolator>(indices, vertices)(interpolator);
 }
 
 }}

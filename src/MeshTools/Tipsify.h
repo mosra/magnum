@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::MeshTools::Tipsify, function Magnum::MeshTools::tipsify()
+ * @brief Function Magnum::MeshTools::tipsify()
  */
 
 #include <cstddef>
@@ -26,25 +26,13 @@
 
 namespace Magnum { namespace MeshTools {
 
-/**
-@brief %Mesh tipsifier implementation
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
 
-See tipsify() for full documentation.
-*/
 class MESHTOOLS_EXPORT Tipsify {
     public:
-        /**
-         * @brief Constructor
-         *
-         * See tipsify() for full documentation.
-         */
         inline Tipsify(std::vector<unsigned int>& indices, unsigned int vertexCount): indices(indices), vertexCount(vertexCount) {}
 
-        /**
-         * @brief Functor
-         *
-         * See tipsify() for full documentation.
-         */
         void operator()(size_t cacheSize);
 
         /**
@@ -60,6 +48,9 @@ class MESHTOOLS_EXPORT Tipsify {
         const unsigned int vertexCount;
 };
 
+}
+#endif
+
 /**
 @brief %Tipsify the mesh
 @param indices      Indices array to operate on
@@ -71,19 +62,9 @@ array for beter usage of post-transform vertex cache. Algorithm used:
 *Pedro V. Sander, Diego Nehab, and Joshua Barczak - Fast Triangle Reordering
 for Vertex Locality and Reduced Overdraw, SIGGRAPH 2007,
 http://gfx.cs.princeton.edu/pubs/Sander_2007_%3ETR/index.php*.
-
-This is convenience function supplementing direct usage of Tipsify class,
-instead of
-@code
-MeshTools::Tipsify(indices, vertexCount)(cacheSize);
-@endcode
-you can just write
-@code
-MeshTools::tipsify(indices, vertexCount, cacheSize);
-@endcode
 */
 inline void tipsify(std::vector<unsigned int>& indices, unsigned int vertexCount, size_t cacheSize) {
-    Tipsify(indices, vertexCount)(cacheSize);
+    Implementation::Tipsify(indices, vertexCount)(cacheSize);
 }
 
 }}

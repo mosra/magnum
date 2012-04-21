@@ -36,44 +36,47 @@ namespace Magnum { namespace MeshTools { namespace Test {
 void InterleaveTest::attributeCount() {
     stringstream ss;
     Error::setOutput(&ss);
-    QCOMPARE((Interleave::attributeCount(vector<char>{0, 1, 2},
+    QCOMPARE((Implementation::Interleave::attributeCount(vector<char>{0, 1, 2},
         vector<char>{0, 1, 2, 3, 4, 5})), size_t(0));
-    QVERIFY(ss.str() == "MeshTools::Interleave: attribute arrays don't have the same length, nothing done.\n");
+    QVERIFY(ss.str() == "MeshTools::interleave(): attribute arrays don't have the same length, nothing done.\n");
 
-    QCOMPARE((Interleave::attributeCount(vector<char>{0, 1, 2},
+    QCOMPARE((Implementation::Interleave::attributeCount(vector<char>{0, 1, 2},
         vector<char>{3, 4, 5})), size_t(3));
 }
 
 void InterleaveTest::stride() {
-    QCOMPARE(Interleave::stride(vector<char>()), size_t(1));
-    QCOMPARE(Interleave::stride(vector<int>()), size_t(4));
-    QCOMPARE((Interleave::stride(vector<char>(), vector<int>())), size_t(5));
+    QCOMPARE(Implementation::Interleave::stride(vector<char>()), size_t(1));
+    QCOMPARE(Implementation::Interleave::stride(vector<int>()), size_t(4));
+    QCOMPARE((Implementation::Interleave::stride(vector<char>(), vector<int>())), size_t(5));
 }
 
 void InterleaveTest::write() {
-    Interleave::Result data = MeshTools::interleave(
+    size_t attributeCount;
+    size_t stride;
+    char* data;
+    tie(attributeCount, stride, data) = MeshTools::interleave(
         vector<char>{0, 1, 2},
         vector<int>{3, 4, 5},
         vector<short>{6, 7, 8});
 
-    QCOMPARE(data.attributeCount, size_t(3));
-    QCOMPARE(data.stride, size_t(7));
-    size_t size = data.attributeCount*data.stride;
+    QCOMPARE(attributeCount, size_t(3));
+    QCOMPARE(stride, size_t(7));
+    size_t size = attributeCount*stride;
     if(!Endianness::isBigEndian()) {
-        QVERIFY((vector<char>(data.data, data.data+size) == vector<char>{
+        QVERIFY((vector<char>(data, data+size) == vector<char>{
             0x00, 0x03, 0x00, 0x00, 0x00, 0x06, 0x00,
             0x01, 0x04, 0x00, 0x00, 0x00, 0x07, 0x00,
             0x02, 0x05, 0x00, 0x00, 0x00, 0x08, 0x00
         }));
     } else {
-        QVERIFY((vector<char>(data.data, data.data+size) == vector<char>{
+        QVERIFY((vector<char>(data, data+size) == vector<char>{
             0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x06,
             0x01, 0x00, 0x00, 0x00, 0x04, 0x00, 0x07,
             0x02, 0x00, 0x00, 0x00, 0x05, 0x00, 0x08
         }));
     }
 
-    delete[] data.data;
+    delete[] data;
 }
 
 }}}

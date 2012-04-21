@@ -16,110 +16,77 @@
 */
 
 /** @file
- * @brief Class Magnum::MeshTools::Interleave, function Magnum::MeshTools::interleave()
+ * @brief Function Magnum::MeshTools::interleave()
  */
 
 #include <cassert>
 #include <cstring>
 #include <vector>
 #include <limits>
+#include <tuple>
 
 #include "Mesh.h"
 #include "Buffer.h"
 
 namespace Magnum { namespace MeshTools {
 
-/**
-@brief Vertex attribute interleaver implementation
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
 
-See interleave() for full documentation.
-*/
 class Interleave {
     public:
-        /**
-         * @brief Interleaved attribute array
-         *
-         * Size of the data buffer can be computed as follows:
-         * @code
-         * Result result;
-         * size_t size = result.attributeCount*result.stride;
-         * @endcode
-         */
-        struct Result {
-            size_t attributeCount;  /**< @brief Attribute count */
-            size_t stride;          /**< @brief Distance between two attributes in resulting array */
-            char* data;             /**< @brief Data buffer */
-        };
+        inline Interleave(): _attributeCount(0), _stride(0), _data(nullptr) {}
 
-        /** @brief Constructor */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline Interleave(): result{0, 0, 0} {}
-        #else
-        inline Interleave() {}
-        #endif
-
-        /**
-         * @brief Functor
-         *
-         * See interleave(const std::vector<T>&...) for full documentation.
-         */
-        template<class ...T> Result operator()(const std::vector<T>&... attributes) {
+        template<class ...T> std::tuple<size_t, size_t, char*> operator()(const std::vector<T>&... attributes) {
             /* Compute buffer size and stride */
-            result.attributeCount = attributeCount(attributes...);
-            if(result.attributeCount) {
-                result.stride = stride(attributes...);
+            _attributeCount = attributeCount(attributes...);
+            if(_attributeCount) {
+                _stride = stride(attributes...);
 
                 /* Create output buffer */
-                result.data = new char[result.attributeCount*result.stride];
+                _data = new char[_attributeCount*_stride];
 
                 /* Save the data */
-                write(result.data, attributes...);
+                write(_data, attributes...);
             }
 
-            return result;
+            return std::make_tuple(_attributeCount, _stride, _data);
         }
 
-        /**
-         * @brief Functor
-         *
-         * See interleave(Mesh*, Buffer*, Buffer::Usage, const std::vector<T>&...) for full documentation.
-         */
         template<class ...T> void operator()(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<T>&... attributes) {
             if(!mesh->isInterleaved(buffer)) {
-                Corrade::Utility::Error() << "MeshTools::Interleave: the buffer is not interleaved, nothing done";
+                Corrade::Utility::Error() << "MeshTools::interleave(): the buffer is not interleaved, nothing done";
                 assert(0);
                 return;
             }
 
             operator()(attributes...);
 
-            mesh->setVertexCount(result.attributeCount);
-            buffer->setData(result.attributeCount*result.stride, result.data, usage);
+            mesh->setVertexCount(_attributeCount);
+            buffer->setData(_attributeCount*_stride, _data, usage);
 
-            delete[] result.data;
+            delete[] _data;
         }
 
-        /** @brief Count of passed attributes */
         template<class T, class ...U> inline static size_t attributeCount(const std::vector<T>& first, const std::vector<U>&... next) {
             size_t count = attributeCount(next...);
             if(sizeof...(next) != 0 && count != first.size()) {
-                Corrade::Utility::Error() << "MeshTools::Interleave: attribute arrays don't have the same length, nothing done.";
+                Corrade::Utility::Error() << "MeshTools::interleave(): attribute arrays don't have the same length, nothing done.";
                 assert(0);
                 return 0;
             }
             return first.size();
         }
 
-        /** @brief Distance between two attributes in resulting array */
         template<class T, class ...U> inline static size_t stride(const std::vector<T>& first, const std::vector<U>&... next) {
             return sizeof(T) + stride(next...);
         }
 
     private:
-        template<class T, class ...U> void write(char* startingOffset, const std::vector<T>& first, const std::vector<U>&... next) const {
+        template<class T, class ...U> void write(char* startingOffset, const std::vector<T>& first, const std::vector<U>&... next) {
             /* Copy the data to the buffer */
-            for(size_t i = 0; i != result.attributeCount; ++i)
-                memcpy(startingOffset+i*result.stride, reinterpret_cast<const char*>(&first[i]), sizeof(T));
+            for(size_t i = 0; i != _attributeCount; ++i)
+                memcpy(startingOffset+i*_stride, reinterpret_cast<const char*>(&first[i]), sizeof(T));
 
             write(startingOffset+sizeof(T), next...);
         }
@@ -127,35 +94,44 @@ class Interleave {
         /* Terminator functions for recursive calls */
         inline static size_t attributeCount() { return 0; }
         inline static size_t stride() { return 0; }
-        inline void write(char*) const {}
+        inline void write(char*) {}
 
-        Result result;
+        size_t _attributeCount;
+        size_t _stride;
+        char* _data;
 };
+
+}
+#endif
 
 /**
 @brief %Interleave vertex attributes
 @param attributes   Attribute arrays
-@return Interleaved attribute array. Deleting the buffer is user's
-    responsibility.
+@return Attribute count, stride and interleaved attribute array. Deleting the
+    array is user responsibility.
 
-This function takes two or more attribute arrays and interleaves them, so data
-for each attribute are in continuous place in memory.
+This function takes two or more attribute arrays and returns them interleaved,
+so data for each attribute are in continuous place in memory. Size of the data
+buffer can be computed from attribute count and stride, as shown below. Example
+usage:
+@code
+size_t attributeCount;
+size_t stride;
+char* data;
+std::tie(attributeCount, stride, data) = MeshTools::interleave(attributes);
+size_t dataSize = attributeCount*stride;
+// ...
+delete[] data;
+@endcode
+
+See also interleave(Mesh*, Buffer*, Buffer::Usage, const std::vector<T>&...),
+which writes the interleaved array directly into buffer of given mesh.
 
 @attention Each vector should have the same size, if not, resulting array has
-zero length.
-
-This is convenience function supplementing direct usage of Interleave class,
-instead of
-@code
-MeshTools::Interleave()(attributes...);
-@endcode
-you can just write
-@code
-MeshTools::interleave(attributes...);
-@endcode
+    zero length.
 */
-template<class ...T> inline Interleave::Result interleave(const std::vector<T>&... attributes) {
-    return Interleave()(attributes...);
+template<class ...T> inline std::tuple<size_t, size_t, char*> interleave(const std::vector<T>&... attributes) {
+    return Implementation::Interleave()(attributes...);
 }
 
 /**
@@ -170,21 +146,11 @@ the output to given array buffer and updates vertex count in the mesh
 accordingly.
 
 @attention The buffer must be set as interleaved (see Mesh::addBuffer()),
-otherwise this function does nothing. Binding the attributes to shader is
-left to user.
-
-This is convenience function supplementing direct usage of Interleave class,
-instead of
-@code
-MeshTools::Interleave()(mesh, buffer, usage, attributes...);
-@endcode
-you can just write
-@code
-MeshTools::interleave(mesh, buffer, usage, attributes...);
-@endcode
+    otherwise this function does nothing. Binding the attributes to shader is
+    left to user.
 */
 template<class ...T> inline void interleave(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<T>&... attributes) {
-    return Interleave()(mesh, buffer, usage, attributes...);
+    return Implementation::Interleave()(mesh, buffer, usage, attributes...);
 }
 
 }}

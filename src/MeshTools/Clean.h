@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::MeshTools::Clean, function Magnum::MeshTools::clean()
+ * @brief Function Magnum::MeshTools::clean()
  */
 
 #include <unordered_map>
@@ -27,25 +27,13 @@
 
 namespace Magnum { namespace MeshTools {
 
-/**
-@brief %Mesh cleaner implementation
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
 
-See clean() for full documentation.
-*/
 template<class Vertex, size_t vertexSize = Vertex::Size> class Clean {
     public:
-        /**
-         * @brief Constructor
-         *
-         * See clean() for full documentation.
-         */
         inline Clean(std::vector<unsigned int>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
 
-        /**
-         * @brief Functor
-         *
-         * See clean() for full documentation.
-         */
         void operator()(typename Vertex::Type epsilon = TypeTraits<typename Vertex::Type>::epsilon()) {
             if(indices.empty()) return;
 
@@ -128,6 +116,9 @@ template<class Vertex, size_t vertexSize = Vertex::Size> class Clean {
         std::vector<Vertex>& vertices;
 };
 
+}
+#endif
+
 /**
 @brief %Clean the mesh
 @tparam Vertex      Vertex data type
@@ -140,24 +131,9 @@ template<class Vertex, size_t vertexSize = Vertex::Size> class Clean {
     melt together.
 
 Removes duplicate vertices from the mesh.
-
-This is convenience function supplementing direct usage of Clean class,
-instead of
-@code
-MeshTools::Clean<T>(indices, vertices)(epsilon);
-@endcode
-you can just write
-@code
-MeshTools::clean(indices, vertices, epsilon);
-@endcode
-However, when you want to specify `vertexSize` template parameter, you have
-to explicitly specify both of them:
-@code
-MeshTools::clean<T, 3>(indices, vertices, epsilon);
-@endcode
 */
 template<class Vertex, size_t vertexSize = Vertex::Size> inline void clean(std::vector<unsigned int>& indices, std::vector<Vertex>& vertices, typename Vertex::Type epsilon = TypeTraits<typename Vertex::Type>::epsilon()) {
-    Clean<Vertex, vertexSize>(indices, vertices)(epsilon);
+    Implementation::Clean<Vertex, vertexSize>(indices, vertices)(epsilon);
 }
 
 }}

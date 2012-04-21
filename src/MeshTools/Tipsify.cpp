@@ -17,7 +17,8 @@
 
 #include <stack>
 
-namespace Magnum { namespace MeshTools {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Magnum { namespace MeshTools { namespace Implementation {
 
 void Tipsify::operator()(size_t cacheSize) {
     /* Neighboring triangles for each vertex, per-vertex live triangle count */
@@ -145,4 +146,5 @@ void Tipsify::buildAdjacency(std::vector<unsigned int>& liveTriangleCount, std::
         neighbors[neighborOffset[indices[i]+1]++] = i/3;
 }
 
-}}
+}}}
+#endif

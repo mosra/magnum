@@ -67,7 +67,7 @@ TipsifyTest::TipsifyTest(QObject* parent): QObject(parent), indices{
 
 void TipsifyTest::buildAdjacency() {
     vector<unsigned int> liveTriangleCount, neighborOffset, neighbors;
-    Tipsify(indices, vertexCount).buildAdjacency(liveTriangleCount, neighborOffset, neighbors);
+    Implementation::Tipsify(indices, vertexCount).buildAdjacency(liveTriangleCount, neighborOffset, neighbors);
 
     QVERIFY((liveTriangleCount == vector<unsigned int>{
         1, 3, 3, 2,

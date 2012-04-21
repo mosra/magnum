@@ -28,62 +28,71 @@ using namespace Corrade::Utility;
 namespace Magnum { namespace MeshTools { namespace Test {
 
 void CompressIndicesTest::compressChar() {
-    CompressIndices::Result result = MeshTools::compressIndices(
+    size_t indexCount;
+    Type indexType;
+    char* data;
+    tie(indexCount, indexType, data) = MeshTools::compressIndices(
         vector<unsigned int>{1, 2, 3, 0, 4});
 
-    QVERIFY(result.indexCount == 5);
-    QVERIFY(result.indexType == Type::UnsignedByte);
-    QVERIFY((vector<char>(result.data, result.data+result.indexCount*TypeInfo::sizeOf(result.indexType)) ==
+    QVERIFY(indexCount == 5);
+    QVERIFY(indexType == Type::UnsignedByte);
+    QVERIFY((vector<char>(data, data+indexCount*TypeInfo::sizeOf(indexType)) ==
         vector<char>{ 0x01, 0x02, 0x03, 0x00, 0x04 }));
 
-    delete[] result.data;
+    delete[] data;
 }
 
 void CompressIndicesTest::compressShort() {
-    CompressIndices::Result result = MeshTools::compressIndices(
+    size_t indexCount;
+    Type indexType;
+    char* data;
+    tie(indexCount, indexType, data) = MeshTools::compressIndices(
         vector<unsigned int>{1, 256, 0, 5});
 
-    QVERIFY(result.indexCount == 4);
-    QVERIFY(result.indexType == Type::UnsignedShort);
+    QVERIFY(indexCount == 4);
+    QVERIFY(indexType == Type::UnsignedShort);
     if(!Endianness::isBigEndian()) {
-        QVERIFY((vector<char>(result.data, result.data+result.indexCount*TypeInfo::sizeOf(result.indexType)) ==
+        QVERIFY((vector<char>(data, data+indexCount*TypeInfo::sizeOf(indexType)) ==
             vector<char>{ 0x01, 0x00,
                           0x00, 0x01,
                           0x00, 0x00,
                           0x05, 0x00 }));
     } else {
-        QVERIFY((vector<char>(result.data, result.data+result.indexCount*TypeInfo::sizeOf(result.indexType)) ==
+        QVERIFY((vector<char>(data, data+indexCount*TypeInfo::sizeOf(indexType)) ==
             vector<char>{ 0x00, 0x01,
                           0x01, 0x00,
                           0x00, 0x00,
                           0x00, 0x05 }));
     }
 
-    delete[] result.data;
+    delete[] data;
 }
 
 void CompressIndicesTest::compressInt() {
-    CompressIndices::Result result = MeshTools::compressIndices(
+    size_t indexCount;
+    Type indexType;
+    char* data;
+    tie(indexCount, indexType, data) = MeshTools::compressIndices(
         vector<unsigned int>{65536, 3, 2});
 
-    QVERIFY(result.indexCount == 3);
-    QVERIFY(result.indexType == Type::UnsignedInt);
+    QVERIFY(indexCount == 3);
+    QVERIFY(indexType == Type::UnsignedInt);
 
     if(!Endianness::isBigEndian()) {
-        QVERIFY((vector<char>(result.data, result.data+result.indexCount*TypeInfo::sizeOf(result.indexType)) ==
+        QVERIFY((vector<char>(data, data+indexCount*TypeInfo::sizeOf(indexType)) ==
             vector<char>{ 0x00, 0x00, 0x01, 0x00,
                           0x03, 0x00, 0x00, 0x00,
                           0x02, 0x00, 0x00, 0x00
             }));
     } else {
-        QVERIFY((vector<char>(result.data, result.data+result.indexCount*TypeInfo::sizeOf(result.indexType)) ==
+        QVERIFY((vector<char>(data, data+indexCount*TypeInfo::sizeOf(indexType)) ==
             vector<char>{ 0x00, 0x01, 0x00, 0x00,
                           0x00, 0x00, 0x00, 0x03,
                           0x00, 0x00, 0x00, 0x02
             }));
     }
 
-    delete[] result.data;
+    delete[] data;
 }
 
 }}}
