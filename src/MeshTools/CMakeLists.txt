@@ -1,4 +1,5 @@
 set(MagnumMeshTools_SRCS
+    FlipNormals.cpp
     GenerateFlatNormals.cpp
     Tipsify.cpp
 )
