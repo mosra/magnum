@@ -36,7 +36,7 @@ if(WIN32)
     set_target_properties(Magnum PROPERTIES COMPILE_FLAGS -DMAGNUM_EXPORTING)
 endif()
 
-target_link_libraries(Magnum CorradePluginManager CorradeUtility ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY})
+target_link_libraries(Magnum ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY} ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY})
 
 install(TARGETS Magnum DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 
