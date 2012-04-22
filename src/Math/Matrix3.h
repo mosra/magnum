@@ -94,8 +94,8 @@ template<class T> class Matrix3: public Matrix<T, 3> {
         /** @copydoc Matrix::transposed() */
         inline Matrix3<T> transposed() const { return Matrix<T, 3>::transposed(); }
 
-        /** @copydoc Matrix::inversed() */
-        inline Matrix3<T> inversed() const { return Matrix<T, 3>::inversed(); }
+        /** @copydoc Matrix::inverted() */
+        inline Matrix3<T> inverted() const { return Matrix<T, 3>::inverted(); }
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

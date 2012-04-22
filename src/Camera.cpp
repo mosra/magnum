@@ -71,7 +71,7 @@ void Camera::setViewport(const Math::Vector2<GLsizei>& size) {
 
 void Camera::setClean() {
     if(!isDirty()) return;
-    _cameraMatrix = absoluteTransformation().inversed();
+    _cameraMatrix = absoluteTransformation().inverted();
     Object::setClean();
 }
 

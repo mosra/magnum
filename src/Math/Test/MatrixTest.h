@@ -35,7 +35,7 @@ class MatrixTest: public QObject {
         void transposed();
         void ij();
         void determinant();
-        void inversed();
+        void inverted();
 
         void debug();
 };

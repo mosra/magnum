@@ -216,9 +216,9 @@ template<class T, size_t size> class Matrix {
         inline T determinant() const { return Implementation::MatrixDeterminant<T, size>()(*this); }
 
         /**
-         * @brief Inverse matrix
+         * @brief Inverted matrix
          */
-        Matrix<T, size> inversed() const {
+        Matrix<T, size> inverted() const {
             Matrix<T, size> out(Zero);
 
             T _determinant = determinant();

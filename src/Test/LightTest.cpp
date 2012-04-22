@@ -51,13 +51,13 @@ void LightTest::position() {
     Camera camera(&cameraParent);
 
     QVERIFY(light.position(&camera) == (Matrix4::translation(Vector3::zAxis(3))*
-        Matrix4::rotation(deg(90.0f), Vector3::xAxis()).inversed())[3].xyz());
+        Matrix4::rotation(deg(90.0f), Vector3::xAxis()).inverted())[3].xyz());
 
     /* Set another camera */
     Camera another(&cameraParent);
     another.scale(Vector3(3.0f));
     QVERIFY(light.position(&another) == (Matrix4::translation(Vector3::zAxis(3))*
-        (Matrix4::scaling(Vector3(3.0f))*Matrix4::rotation(deg(90.0f), Vector3::xAxis())).inversed())[3].xyz());
+        (Matrix4::scaling(Vector3(3.0f))*Matrix4::rotation(deg(90.0f), Vector3::xAxis())).inverted())[3].xyz());
 }
 
 }}

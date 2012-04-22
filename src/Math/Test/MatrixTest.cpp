@@ -246,7 +246,7 @@ void MatrixTest::determinant() {
     QVERIFY(m.determinant() == -2);
 }
 
-void MatrixTest::inversed() {
+void MatrixTest::inverted() {
     Matrix4 m(
         3.0f, 5.0f, 8.0f, 4.0f,
         4.0f, 4.0f, 7.0f, 3.0f,
@@ -261,7 +261,7 @@ void MatrixTest::inversed() {
         259/412.0f,     -185/206.0f,    31/412.0f,      27/206.0f
     );
 
-    Matrix4 _inverse = m.inversed();
+    Matrix4 _inverse = m.inverted();
 
     QVERIFY(_inverse == inverse);
     QVERIFY(_inverse*m == Matrix4());
