@@ -34,15 +34,15 @@ class Light: public Object {
          * @brief Constructor
          * @param parent        Parent object
          */
-        inline Light(Object* parent = nullptr): Object(parent) {}
+        inline Light(Object* parent = nullptr): Object(parent), _camera(nullptr) {}
 
         /**
-         * @brief Light position relative to root object (scene)
+         * @brief Light position relative to given camera
+         *
+         * The position is cached until the camera is changed to another or
+         * the light dirty bit is set.
          */
-        inline Vector4 position() {
-            setClean();
-            return _position;
-        }
+        Vector3 position(Camera* camera);
 
         /**
          * Recomputes light position.
@@ -50,7 +50,8 @@ class Light: public Object {
         void setClean();
 
     private:
-        Vector4 _position;
+        Camera* _camera;
+        Vector3 _position;
 };
 
 }

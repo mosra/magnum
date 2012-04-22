@@ -1,3 +1,5 @@
+#ifndef Magnum_Test_LightTest_h
+#define Magnum_Test_LightTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -13,27 +15,18 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Light.h"
-#include "Camera.h"
+#include <QtCore/QObject>
 
-namespace Magnum {
+namespace Magnum { namespace Test {
 
-Vector3 Light::position(Camera* camera) {
-    CORRADE_ASSERT(scene() && camera->scene() == scene(), "Light: camera and light aren't in the same scene!", Vector3())
+class LightTest: public QObject {
+    Q_OBJECT
 
-    if(camera != _camera) {
-        _camera = camera;
-        setDirty();
-    }
+    private slots:
+        void positionWrongCamera();
+        void position();
+};
 
-    setClean();
-    return _position;
-}
+}}
 
-void Light::setClean() {
-    if(!isDirty()) return;
-    _position = (absoluteTransformation()*_camera->cameraMatrix())[3].xyz();
-    Object::setClean();
-}
-
-}
+#endif

@@ -42,6 +42,15 @@ install(TARGETS Magnum DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 
 if(BUILD_TESTS)
     enable_testing()
+
+    # Library with graceful assert for testing
+    add_library(MagnumTestLib SHARED ${Magnum_SRCS})
+    if(WIN32)
+        set_target_properties(MagnumTestLib PROPERTIES COMPILE_FLAGS -DMAGNUM_EXPORTING)
+    endif()
+    set_target_properties(MagnumTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
+    target_link_libraries(MagnumTestLib ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY} ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY})
+
     include_directories(${QT_INCLUDE_DIR})
     add_subdirectory(Test)
 endif()
