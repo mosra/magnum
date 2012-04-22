@@ -37,7 +37,7 @@ template<class T, size_t size> class Vector {
         const static size_t Size = size;    /**< @brief %Vector size */
 
         /**
-         * @brief Vector from array
+         * @brief %Vector from array
          * @return Reference to the data as if it was Vector, thus doesn't
          *      perform any copying.
          *
@@ -53,7 +53,13 @@ template<class T, size_t size> class Vector {
             return *reinterpret_cast<const Vector<T, size>*>(data);
         }
 
-        /** @brief Dot product */
+        /**
+         * @brief Dot product
+         *
+         * @f[
+         * a \cdot b = \sum_{i=1}^n a_ib_i
+         * @f]
+         */
         static T dot(const Vector<T, size>& a, const Vector<T, size>& b) {
             T out(0);
 
@@ -63,7 +69,13 @@ template<class T, size_t size> class Vector {
             return out;
         }
 
-        /** @brief Angle between vectors */
+        /**
+         * @brief Angle between vectors
+         *
+         * @f[
+         * \phi = \frac{a \cdot b}{|a| \cdot |b|}
+         * @f]
+         */
         inline static T angle(const Vector<T, size>& a, const Vector<T, size>& b) {
             return acos(dot(a, b)/(a.length()*b.length()));
         }

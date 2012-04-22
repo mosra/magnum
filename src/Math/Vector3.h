@@ -36,16 +36,23 @@ template<class T> class Vector3: public Vector<T, 3> {
             return *reinterpret_cast<const Vector3<T>*>(data);
         }
 
-        /** @brief Vector in direction of X axis */
+        /** @brief %Vector in direction of X axis */
         inline constexpr static Vector3<T> xAxis(T length = T(1)) { return Vector3<T>(length, T(), T()); }
 
-        /** @brief Vector in direction of Y axis */
+        /** @brief %Vector in direction of Y axis */
         inline constexpr static Vector3<T> yAxis(T length = T(1)) { return Vector3<T>(T(), length, T()); }
 
-        /** @brief Vector in direction of Z axis */
+        /** @brief %Vector in direction of Z axis */
         inline constexpr static Vector3<T> zAxis(T length = T(1)) { return Vector3<T>(T(), T(), length); }
 
-        /** @brief Cross product */
+        /**
+         * @brief Cross product
+         *
+         * @f[
+         * \begin{pmatrix} c_1 \\ c_2 \\ c_3 \end{pmatrix} =
+         * \begin{pmatrix}a_2b_3 - a_3b_2 \\ a_3b_1 - a_1b_3 \\ a_1b_2 - a_2b_1 \end{pmatrix}
+         * @f]
+         */
         constexpr static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
             return Vector3<T>(a[1]*b[2]-a[2]*b[1],
                               a[2]*b[0]-a[0]*b[2],

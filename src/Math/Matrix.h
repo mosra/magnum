@@ -209,14 +209,26 @@ template<class T, size_t size> class Matrix {
         /**
          * @brief Determinant
          *
-         * Computed recursively using Laplace's formula expanded down to 2x2
-         * matrix, where the determinant is computed directly. Complexity is
-         * O(n!), the same as when computing the determinant directly.
+         * Computed recursively using Laplace's formula:
+         * @f[
+         * \det(A) = \sum_{j=1}^n (-1)^{i+j} a_{i,j} \det(A^{i,j})
+         * @f]
+         * @f$ A^{i, j} @f$ is matrix without i-th row and j-th column, see
+         * ij(). The formula is expanded down to 2x2 matrix, where the
+         * determinant is computed directly:
+         * @f[
+         * \det(A) = a_{0, 0} a_{1, 1} - a_{1, 0} a_{0, 1}
+         * @f]
          */
         inline T determinant() const { return Implementation::MatrixDeterminant<T, size>()(*this); }
 
         /**
          * @brief Inverted matrix
+         *
+         * Computed using Cramer's rule:
+         * @f[
+         * A^{-1} = \frac{1}{\det(A)} Adj(A)
+         * @f]
          */
         Matrix<T, size> inverted() const {
             Matrix<T, size> out(Zero);
