@@ -169,6 +169,14 @@ template<class T> class Matrix4: public Matrix<T, 4> {
         /** @copydoc Matrix::inverted() */
         inline Matrix4<T> inverted() const { return Matrix<T, 4>::inverted(); }
 
+        /** @brief Rotation and scaling part of the matrix */
+        inline Matrix3<T> rotationScaling() const {
+            return Matrix3<T>::from(
+                (*this)[0].xyz(),
+                (*this)[1].xyz(),
+                (*this)[2].xyz());
+        }
+
         /** @brief Rotation part of the matrix */
         inline Matrix3<T> rotation() const {
             return Matrix3<T>::from(

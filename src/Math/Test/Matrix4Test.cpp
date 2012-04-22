@@ -88,6 +88,23 @@ void Matrix4Test::rotation() {
     QVERIFY(Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f}) == matrix);
 }
 
+void Matrix4Test::rotationScalingPart() {
+    Matrix4 m(
+        3.0f, 5.0f, 8.0f, 4.0f,
+        4.0f, 4.0f, 7.0f, 3.0f,
+        7.0f, -1.0f, 8.0f, 0.0f,
+        9.0f, 4.0f, 5.0f, 9.0f
+    );
+
+    Matrix3 expected(
+        3.0f, 5.0f, 8.0f,
+        4.0f, 4.0f, 7.0f,
+        7.0f, -1.0f, 8.0f
+    );
+
+    QVERIFY(m.rotationScaling() == expected);
+}
+
 void Matrix4Test::rotationPart() {
     Matrix3 expectedRotationPart(
         0.35612214f,  -0.80181062f, 0.47987163f,
