@@ -15,11 +15,6 @@
 
 #include "IndexedMesh.h"
 
-#include <cassert>
-
-using namespace std;
-using namespace Corrade::Utility;
-
 namespace Magnum {
 
 void IndexedMesh::draw() {
@@ -37,10 +32,7 @@ void IndexedMesh::draw() {
 void IndexedMesh::finalize() {
     if(isFinalized()) return;
 
-    if(!_indexCount) {
-        Error() << "IndexedMesh: the mesh has zero index count!";
-        assert(0);
-    }
+    CORRADE_ASSERT(_indexCount, "IndexedMesh: the mesh has zero index count!", )
 
     /* Finalize attribute positions */
     Mesh::finalize();

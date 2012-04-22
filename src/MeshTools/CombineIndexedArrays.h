@@ -19,7 +19,6 @@
  * @brief Function Magnum::MeshTools::combineIndexedArrays()
  */
 
-#include <cassert>
 #include <vector>
 #include <numeric>
 #include <tuple>
@@ -58,12 +57,8 @@ class CombineIndexedArrays {
 
     private:
         template<class ...T> inline static size_t indexCount(const std::vector<unsigned int>& first, const std::vector<T>&... next) {
-            size_t count = indexCount(next...);
-            if(sizeof...(next) != 0 && count != first.size()) {
-                Corrade::Utility::Error() << "MeshTools::combineIndexedArrays(): index arrays don't have the same length, nothing done.";
-                assert(0);
-                return 0;
-            }
+            CORRADE_ASSERT(sizeof...(next) == 0 || indexCount(next...) == first.size(), "MeshTools::combineIndexedArrays(): index arrays don't have the same length, nothing done.", 0)
+
             return first.size();
         }
 

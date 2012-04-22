@@ -13,8 +13,6 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <cassert>
-
 #include "UVSphere.h"
 
 using namespace std;
@@ -23,10 +21,7 @@ using namespace Corrade::Utility;
 namespace Magnum { namespace Primitives {
 
 UVSphere::UVSphere(unsigned int rings, unsigned int segments, TextureCoords textureCoords): Capsule(segments, textureCoords) {
-    if(rings < 2 || segments < 3) {
-        Error() << "UVSphere must have at least two rings and three segments";
-        assert(0);
-    }
+    CORRADE_ASSERT(rings >= 2 && segments >= 3, "UVSphere must have at least two rings and three segments", )
 
     GLfloat textureCoordsVIncrement = 1.0f/rings;
     GLfloat ringAngleIncrement = PI/rings;

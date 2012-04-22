@@ -15,8 +15,6 @@
 
 #include "CombineIndexedArraysTest.h"
 
-#define NDEBUG
-
 #include <sstream>
 #include <QtTest/QTest>
 

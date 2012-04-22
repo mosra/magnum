@@ -19,7 +19,6 @@
  * @brief Function Magnum::MeshTools::interleave()
  */
 
-#include <cassert>
 #include <cstring>
 #include <vector>
 #include <limits>
@@ -54,11 +53,7 @@ class Interleave {
         }
 
         template<class ...T> void operator()(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<T>&... attributes) {
-            if(!mesh->isInterleaved(buffer)) {
-                Corrade::Utility::Error() << "MeshTools::interleave(): the buffer is not interleaved, nothing done";
-                assert(0);
-                return;
-            }
+            CORRADE_ASSERT(mesh->isInterleaved(buffer), "MeshTools::interleave(): the buffer is not interleaved, nothing done", )
 
             operator()(attributes...);
 
@@ -69,12 +64,8 @@ class Interleave {
         }
 
         template<class T, class ...U> inline static size_t attributeCount(const std::vector<T>& first, const std::vector<U>&... next) {
-            size_t count = attributeCount(next...);
-            if(sizeof...(next) != 0 && count != first.size()) {
-                Corrade::Utility::Error() << "MeshTools::interleave(): attribute arrays don't have the same length, nothing done.";
-                assert(0);
-                return 0;
-            }
+            CORRADE_ASSERT(sizeof...(next) == 0 || attributeCount(next...) == first.size(), "MeshTools::interleave(): attribute arrays don't have the same length, nothing done.", 0)
+
             return first.size();
         }
 

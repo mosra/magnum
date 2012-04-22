@@ -18,15 +18,11 @@
 #include "MeshTools/Clean.h"
 
 using namespace std;
-using namespace Corrade::Utility;
 
 namespace Magnum { namespace MeshTools {
 
 tuple<vector<unsigned int>, vector<Vector3>> generateFlatNormals(const std::vector< unsigned int >& indices, const vector< Vector4 >& vertices) {
-    if(indices.size()%3 != 0) {
-        Error() << "MeshTools::generateFlatNormals(): index count is not divisible by 3!";
-        return tuple<vector<unsigned int>, vector<Vector3>>();
-    }
+    CORRADE_ASSERT(!(indices.size()%3), "MeshTools::generateFlatNormals(): index count is not divisible by 3!", (tuple<vector<unsigned int>, vector<Vector3>>()))
 
     /* Create normal for every triangle (assuming counterclockwise winding) */
     vector<unsigned int> normalIndices;
