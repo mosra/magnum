@@ -24,12 +24,9 @@ QTEST_APPLESS_MAIN(Magnum::Math::Test::MathTest)
 namespace Magnum { namespace Math { namespace Test {
 
 void MathTest::degrad() {
-    QCOMPARE(deg(90.0), PI/2);
-    QCOMPARE(deg(90.0f), float(PI/2));
-    QCOMPARE(rad(PI/2), PI/2);
-
-    QEXPECT_FAIL(0, "Integral parameter is not converted to floating point", Continue);
-    QVERIFY(deg(90) == PI/2);
+    QCOMPARE(deg(90.0), Constants<double>::Pi/2);
+    QCOMPARE(deg(90.0f), Constants<float>::Pi/2);
+    QCOMPARE(rad(Constants<double>::Pi/2), Constants<double>::Pi/2);
 }
 
 void MathTest::pow() {

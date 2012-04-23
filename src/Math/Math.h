@@ -32,8 +32,27 @@ namespace Magnum {
 */
 namespace Math {
 
-/** @brief Pi */
-#define PI 3.1415926535
+/** @brief Numeric constants */
+template<class T> struct Constants {
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    static constexpr T Pi;      /**< @brief Pi */
+    static constexpr T Sqrt2;   /**< @brief Square root of 2 */
+    static constexpr T Sqrt3;   /**< @brief Square root of 3 */
+    #endif
+};
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<> struct Constants<double> {
+    static constexpr double Pi = 3.14159265359;
+    static constexpr double Sqrt2 = 1.41421356237;
+    static constexpr double Sqrt3 = 1.73205080757;
+};
+template<> struct Constants<float> {
+    static constexpr float Pi = 3.14159265359f;
+    static constexpr float Sqrt2 = 1.41421356237f;
+    static constexpr float Sqrt3 = 1.73205080757f;
+};
+#endif
 
 /**
  * @brief Integral power
@@ -61,7 +80,7 @@ size_t MAGNUM_EXPORT log(size_t base, size_t number);
  * Function to make angle entering less error-prone. Converts the value to
  * radians at compile time. For example `deg(180.0f)` is converted to `3.14f`.
  */
-template<class T> inline constexpr T deg(T value) { return value*PI/180; }
+template<class T> inline constexpr T deg(T value) { return value*Constants<T>::Pi/180; }
 
 /**
  * @brief Angle in radians
