@@ -57,7 +57,7 @@ template<class T> class Vector2: public Vector<T, 2> {
         inline void setY(T value) { (*this)[1] = value; }   /**< @brief Set Y component */
 
         /** @copydoc Vector::operator=() */
-        inline Vector2<T>& operator=(const Vector<T, 2>& other) {
+        inline Vector2<T>& operator=(const Vector2<T>& other) {
             Vector<T, 2>::operator=(other);
             return *this;
         }

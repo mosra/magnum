@@ -98,7 +98,7 @@ template<class T> class Vector3: public Vector<T, 3> {
         inline void setB(T value) { setZ(value); }          /**< @brief Set B component */
 
         /** @copydoc Vector::operator=() */
-        inline Vector3<T>& operator=(const Vector<T, 3>& other) {
+        inline Vector3<T>& operator=(const Vector3<T>& other) {
             Vector<T, 3>::operator=(other);
             return *this;
         }

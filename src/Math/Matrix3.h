@@ -68,7 +68,7 @@ template<class T> class Matrix3: public Matrix<T, 3> {
         inline constexpr Matrix3(const Matrix<T, 3>& other): Matrix<T, 3>(other) {}
 
         /** @copydoc Matrix::operator=() */
-        inline Matrix3<T>& operator=(const Matrix<T, 3>& other) {
+        inline Matrix3<T>& operator=(const Matrix3<T>& other) {
             Matrix<T, 3>::operator=(other);
             return *this;
         }
