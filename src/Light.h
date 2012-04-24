@@ -44,10 +44,11 @@ class Light: public Object {
          */
         Vector3 position(Camera* camera);
 
+    protected:
         /**
          * Recomputes light position.
          */
-        void setClean();
+        void clean(const Matrix4& absoluteTransformation);
 
     private:
         Camera* _camera;

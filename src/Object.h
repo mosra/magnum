@@ -159,25 +159,37 @@ class MAGNUM_EXPORT Object {
 
         /*@}*/
 
+        /**
+         * @brief Draw object
+         * @param transformationMatrix      %Matrix specifying object
+         *      transformation relative to the scene.
+         * @param camera                    Active camera (containing
+         *      projection matrix)
+         *
+         * Default implementation does nothing.
+         */
+        virtual void draw(const Matrix4& transformationMatrix, Camera* camera) {}
+
         /** @{ @name Caching helpers
          *
          * If the object (absolute) transformation or anything depending on it
          * is used many times when drawing (such as e.g. position of light
          * object), it's good to cache these values, so they don't have to be
-         * computed again on every request.
+         * recalculated again on every request.
          *
-         * If the object or any parent is transformed, the transformed object
-         * and all its children are marked as dirty. If currently active camera
-         * is transformed, the scene goes through all children and calls
-         * setDirty() recursively on every clean object (if the object is
-         * already dirty, it and all its children are skipped, because they are
-         * dirty too).
+         * If setDirty() is called on an object (or the object is transformed),
+         * it and all its children are marked as dirty. If any object is
+         * already dirty, it and all its children are skipped, because they
+         * are already dirty too.
+         *
+         * If setClean() is called on an object, it and all its parents are
+         * cleaned. If any object is already clean, it and all its parents are
+         * skipped, because they are already clean too.
          *
          * These functions are used to manage dirty status of the object. If
-         * the object doesn't cache anything, it's no need to bother about them,
-         * but if does, setClean() should be reimplemented and used to
-         * regenerate the cache. Thus the dirty status is managed only for
-         * these objects, which are calling setClean().
+         * the object doesn't cache anything, it's no need to bother about
+         * them, but if does, clean() should be reimplemented and used to
+         * regenerate the cache.
          */
 
         /**
@@ -190,36 +202,52 @@ class MAGNUM_EXPORT Object {
         /**
          * @brief Set object and all its children as dirty
          *
-         * Recursively calls setDirty() on every child. If the object is already
-         * marked as dirty, the function does nothing.
-         * @attention Reimplementations must call also this function!
+         * Recursively calls setDirty() on every child. If the object is
+         * already marked as dirty, the function does nothing. It is usually
+         * not needed to reimplement this function, only if you for example
+         * need to reset some state on object which is not child of this. All
+         * computations should be done in setClean().
          *
-         * @see setClean()
+         * Reimplementations should call this function at the end, i.e.:
+         * @code
+         * void setDirty() {
+         *     // ...
+         *
+         *     Object::setDirty();
+         * }
+         * @endcode
          */
         virtual void setDirty();
 
         /**
          * @brief Set object and all its parents as clean
          *
-         * Recursively calls setClean() on every parent. Default implementation
-         * only marks the object as clean, but if the object does any caching,
-         * this function should be reimplemented to regenerate the cache.
-         * @attention Reimplementations must call also this function!
+         * Recursively calls clean() on every parent which is not already
+         * clean.
          */
-        virtual void setClean();
+        void setClean();
+
+    protected:
+        /**
+         * @brief Clean the object
+         *
+         * When reimplementing, use absolute transformation passed as
+         * parameter instead of absoluteTransformation(), which is not
+         * efficient. The reimplementation should call this function at the
+         * beginning, i.e.:
+         * @code
+         * void clean(const Matrix4& absoluteTransformation) {
+         *     Object::clean(absoluteTransformation);
+         *
+         *     // ...
+         * }
+         * @endcode
+         */
+        virtual inline void clean(const Matrix4& absoluteTransformation) {
+            dirty = false;
+        }
 
         /*@}*/
-
-        /**
-         * @brief Draw object
-         * @param transformationMatrix      %Matrix specifying object
-         *      transformation relative to the scene.
-         * @param camera                    Active camera (containing
-         *      projection matrix)
-         *
-         * Default implementation does nothing.
-         */
-        virtual void draw(const Matrix4& transformationMatrix, Camera* camera) {}
 
     private:
         Object* _parent;

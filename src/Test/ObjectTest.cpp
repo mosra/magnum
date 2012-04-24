@@ -130,36 +130,60 @@ void ObjectTest::scene() {
 void ObjectTest::dirty() {
     Scene scene;
 
-    Object* childOne = new Object(&scene);
-    Object* childTwo = new Object(childOne);
-    Object* childThree = new Object(childTwo);
+    CleaningObject* childOne = new CleaningObject(&scene);
+    childOne->scale(Vector3(2.0f));
+    CleaningObject* childTwo = new CleaningObject(childOne);
+    childTwo->translate(Vector3::xAxis(1.0f));
+    CleaningObject* childThree = new CleaningObject(childTwo);
+    childThree->rotate(deg(90.0f), Vector3::yAxis());
 
     /* Object is dirty at the beginning */
+    QVERIFY(scene.isDirty());
     QVERIFY(childOne->isDirty());
 
-    /* Clean the object and all its parents */
-    childThree->setClean();
-    QVERIFY(!childThree->isDirty());
-    QVERIFY(!childTwo->isDirty());
-    QVERIFY(!childOne->isDirty());
+    /* Clean the object and all its dirty parents (but not children) */
+    childOne->setClean();
+    QVERIFY(childOne->cleanedAbsoluteTransformation == childOne->absoluteTransformation());
     QVERIFY(!scene.isDirty());
+    QVERIFY(!childOne->isDirty());
+    QVERIFY(childTwo->isDirty());
+    QVERIFY(childThree->isDirty());
 
-    /* Mark object and all its children as dirty */
+    /* If the object itself is already clean, it shouldn't clean it again */
+    childOne->cleanedAbsoluteTransformation = Matrix4(Matrix4::Zero);
+    childOne->setClean();
+    QVERIFY(childOne->cleanedAbsoluteTransformation == Matrix4(Matrix4::Zero));
+
+    /* If any object in the hierarchy is already clean, it shouldn't clean it again */
+    childTwo->setClean();
+    QVERIFY(childOne->cleanedAbsoluteTransformation == Matrix4(Matrix4::Zero));
+    QVERIFY(childTwo->cleanedAbsoluteTransformation == childTwo->absoluteTransformation());
+    QVERIFY(!childOne->isDirty());
+    QVERIFY(!childTwo->isDirty());
+    QVERIFY(childThree->isDirty());
+
+    /* Mark object and all its children as dirty (but not parents) */
     childTwo->setDirty();
+    QVERIFY(!scene.isDirty());
+    QVERIFY(!childOne->isDirty());
     QVERIFY(childTwo->isDirty());
     QVERIFY(childThree->isDirty());
 
-    /* Reparent object => make it dirty */
+    /* Reparent object => make it and its children dirty (but not parents) */
     childThree->setClean();
-    childOne->setParent(nullptr);
-    childOne->setParent(&scene);
-    QVERIFY(childOne->isDirty());
+    QVERIFY(childThree->cleanedAbsoluteTransformation == childThree->absoluteTransformation());
+    childTwo->setParent(nullptr);
+    QVERIFY(childTwo->isDirty());
+    QVERIFY(!childOne->isDirty());
+    childTwo->setParent(&scene);
+    QVERIFY(!scene.isDirty());
     QVERIFY(childTwo->isDirty());
     QVERIFY(childThree->isDirty());
 
-    /* Set object transformation => make it dirty */
+    /* Set object transformation => make it and its children dirty (but not parents) */
     childThree->setClean();
-    childTwo->setTransformation({});
+    childTwo->setTransformation(Matrix4::translation(Vector3::xAxis(1.0f)));
+    QVERIFY(!scene.isDirty());
     QVERIFY(childTwo->isDirty());
     QVERIFY(childThree->isDirty());
 }

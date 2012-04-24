@@ -14,6 +14,8 @@
 */
 
 #include "Object.h"
+
+#include <stack>
 #include "Scene.h"
 #include "Camera.h"
 
@@ -118,13 +120,33 @@ void Object::setDirty() {
 }
 
 void Object::setClean() {
-    /* The object (and all its parents) is already clean, nothing to do */
+    /* The object (and all its parents) are already clean, nothing to do */
     if(!dirty) return;
 
-    dirty = false;
+    /* Collect all parents */
+    stack<Object*> objects;
+    Object* p = this;
+    for(;;) {
+        objects.push(p);
 
-    /* Make all parents clean */
-    if(_parent != nullptr && _parent != this) _parent->setClean();
+        /* Stop on root object / scene / clean object */
+        if(p->parent() == nullptr || p->parent() == p || !p->parent()->isDirty())
+            break;
+
+        p = p->parent();
+    }
+
+    /* Call setClean(const Matrix4&) for every parent and also this object */
+    Object* o = objects.top();
+    objects.pop();
+    Matrix4 absoluteTransformation = o->absoluteTransformation();
+    o->clean(absoluteTransformation);
+    while(!objects.empty()) {
+        o = objects.top();
+        objects.pop();
+        absoluteTransformation = absoluteTransformation*o->transformation();
+        o->clean(absoluteTransformation);
+    }
 }
 
 }

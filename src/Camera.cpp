@@ -69,10 +69,10 @@ void Camera::setViewport(const Math::Vector2<GLsizei>& size) {
     fixAspectRatio();
 }
 
-void Camera::setClean() {
-    if(!isDirty()) return;
-    _cameraMatrix = absoluteTransformation().inverted();
-    Object::setClean();
+void Camera::clean(const Matrix4& absoluteTransformation) {
+    Object::clean(absoluteTransformation);
+
+    _cameraMatrix = absoluteTransformation.inverted();
 }
 
 void Camera::fixAspectRatio() {

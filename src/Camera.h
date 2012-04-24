@@ -127,12 +127,12 @@ class MAGNUM_EXPORT Camera: public Object {
          */
         virtual void draw();
 
+    protected:
         /**
          * Recalculates camera matrix.
          */
-        void setClean();
+        void clean(const Matrix4& absoluteTransformation);
 
-    protected:
         /**
          * @brief Draw object children
          *

@@ -30,10 +30,10 @@ Vector3 Light::position(Camera* camera) {
     return _position;
 }
 
-void Light::setClean() {
-    if(!isDirty()) return;
-    _position = (absoluteTransformation()*_camera->cameraMatrix())[3].xyz();
-    Object::setClean();
+void Light::clean(const Matrix4& absoluteTransformation) {
+    Object::clean(absoluteTransformation);
+
+    _position = (absoluteTransformation*_camera->cameraMatrix())[3].xyz();
 }
 
 }

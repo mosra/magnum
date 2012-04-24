@@ -31,6 +31,19 @@ class ObjectTest: public QObject {
         void absoluteTransformation();
         void scene();
         void dirty();
+
+    private:
+        class CleaningObject: public Object {
+            public:
+                CleaningObject(Object* parent = nullptr): Object(parent) {}
+
+                inline void clean(const Matrix4& absoluteTransformation) {
+                    Object::clean(absoluteTransformation);
+
+                    cleanedAbsoluteTransformation = absoluteTransformation;
+                }
+                Matrix4 cleanedAbsoluteTransformation;
+        };
 };
 
 }}
