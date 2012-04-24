@@ -103,10 +103,9 @@ class MAGNUM_EXPORT Object {
         /**
          * @brief Absolute transformation
          *
-         * If both this object and the camera is part of the same scene,
-         * returns absolute transformation matrix (relative to the camera).
-         * Otherwise returns transformation matrix relative to root object
-         * (in most cases scene of this object).
+         * Returns absolute transformation matrix relative to the camera or
+         * root object, if no camera is specified. If the camera is specified,
+         * it should be part of the same scene as object.
          *
          * Note that the absolute transformation is computed from all parent
          * objects every time it is asked, unless this function is

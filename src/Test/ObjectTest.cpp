@@ -15,8 +15,13 @@
 
 #include "ObjectTest.h"
 #include "Scene.h"
+#include "Camera.h"
 
+#include <sstream>
 #include <QtTest/QTest>
+
+using namespace std;
+using namespace Corrade::Utility;
 
 QTEST_APPLESS_MAIN(Magnum::Test::ObjectTest)
 
@@ -68,6 +73,45 @@ void ObjectTest::transformation() {
         Matrix4::translation(Vector3::xAxis(1.0f))*
         Matrix4::scaling(Vector3(2.0f)));
     QVERIFY(o2.transformation() == o.transformation());
+}
+
+void ObjectTest::absoluteTransformationWrongCamera() {
+    stringstream ss;
+    Error::setOutput(&ss);
+
+    Scene s;
+    Object o(&s);
+    o.translate(Vector3::yAxis());
+    Camera c;
+    QVERIFY(o.absoluteTransformation(&c) == Matrix4::translation(Vector3::yAxis()));
+    QVERIFY(ss.str() == "Object::absoluteTransformation(): the camera is not part of the same scene as object!\n");
+
+    ss.str("");
+    Object o2;
+    o2.translate(Vector3::xAxis());
+    QVERIFY(o2.absoluteTransformation(&c) == Matrix4::translation(Vector3::xAxis()));
+    QVERIFY(ss.str() == "Object::absoluteTransformation(): the object is not part of camera scene!\n");
+}
+
+void ObjectTest::absoluteTransformation() {
+    Scene s;
+    Camera c(&s);
+    c.translate(Vector3::zAxis(2.0f));
+    QVERIFY(s.absoluteTransformation() == Matrix4());
+    QVERIFY(c.absoluteTransformation(&c) == Matrix4());
+
+    Object o(&s);
+    o.scale(Vector3(2.0f));
+    Object o2(&o);
+    o.rotate(deg(90.0f), Vector3::yAxis());
+    QVERIFY((o2.absoluteTransformation() ==
+        Matrix4::scaling(Vector3(2.0f))*Matrix4::rotation(deg(90.0f), Vector3::yAxis())));
+    QVERIFY((o2.absoluteTransformation(&c) ==
+        (Matrix4::translation(Vector3::zAxis(2.0f)).inverted())*Matrix4::scaling(Vector3(2.0f))*Matrix4::rotation(deg(90.0f), Vector3::yAxis())));
+
+    Object o3;
+    o3.translate({1.0f, 2.0f, 3.0f});
+    QVERIFY(o3.absoluteTransformation() == Matrix4::translation({1.0f, 2.0f, 3.0f}));
 }
 
 void ObjectTest::scene() {

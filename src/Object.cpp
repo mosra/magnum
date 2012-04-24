@@ -50,10 +50,10 @@ Object* Object::setParent(Object* parent) {
 }
 
 Matrix4 Object::absoluteTransformation(Camera* camera) {
-    Matrix4 t = _transformation;
-
     /* Shortcut for absolute transformation of camera relative to itself */
     if(camera == this) return Matrix4();
+
+    Matrix4 t = _transformation;
 
     Object* p = parent();
     while(p != nullptr) {
@@ -61,14 +61,18 @@ Matrix4 Object::absoluteTransformation(Camera* camera) {
 
         /* We got to the scene, multiply with camera matrix */
         if(p->parent() == p) {
-            if(camera && camera->scene() == scene())
+            if(camera) {
+                CORRADE_ASSERT(camera->scene() == scene(), "Object::absoluteTransformation(): the camera is not part of the same scene as object!", t)
                 t = camera->cameraMatrix()*t;
+            }
 
             break;
         }
 
         p = p->parent();
     }
+
+    CORRADE_ASSERT(p != nullptr || camera == nullptr, "Object::absoluteTransformation(): the object is not part of camera scene!", t)
 
     return t;
 }

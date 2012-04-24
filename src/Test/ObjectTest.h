@@ -27,6 +27,8 @@ class ObjectTest: public QObject {
     private slots:
         void parenting();
         void transformation();
+        void absoluteTransformationWrongCamera();
+        void absoluteTransformation();
         void scene();
         void dirty();
 };
