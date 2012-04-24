@@ -21,3 +21,10 @@ Basic primitives for testing purposes.
 
 Collection of shaders for testing purposes.
 */
+
+/** @namespace Magnum::Physics
+@brief %Physics library
+
+Collision detection system and rigid body objects. See @ref CollisionDetection
+for introduction.
+*/

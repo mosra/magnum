@@ -4,6 +4,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CORRADE_INCLUDE_DIR})
 
 add_subdirectory(Math)
 add_subdirectory(MeshTools)
+add_subdirectory(Physics)
 add_subdirectory(Primitives)
 add_subdirectory(Shaders)
 

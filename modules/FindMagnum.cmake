@@ -5,6 +5,7 @@
 # MAGNUM_FOUND                      - True if Magnum library is found
 # MAGNUM_INCLUDE_DIR                - Include dir for Magnum
 # MAGNUM_LIBRARY                    - Magnum library
+# MAGNUM_PHYSICS_LIBRARY            - Magnum physics library
 # MAGNUM_PRIMITIVES_LIBRARY         - Library with primitives
 #
 # MAGNUM_LIBRARY_INSTALL_DIR        - Library installation directory
@@ -16,7 +17,7 @@ find_package(Corrade REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
-if (MAGNUM_INCLUDE_DIR AND MAGNUM_LIBRARY AND MAGNUM_PRIMITIVES_LIBRARY AND MAGNUM_MESHTOOLS_LIBRARY AND MAGNUM_SHADERS_LIBRARY)
+if (MAGNUM_INCLUDE_DIR AND MAGNUM_LIBRARY AND MAGNUM_PHYSICS_LIBRARY AND MAGNUM_PRIMITIVES_LIBRARY AND MAGNUM_MESHTOOLS_LIBRARY AND MAGNUM_SHADERS_LIBRARY)
 
     # Already in cache
     set(MAGNUM_FOUND TRUE)
@@ -24,6 +25,7 @@ if (MAGNUM_INCLUDE_DIR AND MAGNUM_LIBRARY AND MAGNUM_PRIMITIVES_LIBRARY AND MAGN
 else()
     # Libraries
     find_library(MAGNUM_LIBRARY Magnum)
+    find_library(MAGNUM_PHYSICS_LIBRARY MagnumPhysics)
     find_library(MAGNUM_PRIMITIVES_LIBRARY MagnumPrimitives)
     find_library(MAGNUM_MESHTOOLS_LIBRARY MagnumMeshTools)
     find_library(MAGNUM_SHADERS_LIBRARY MagnumShaders)
@@ -38,6 +40,7 @@ else()
     find_package_handle_standard_args("Magnum" DEFAULT_MSG
         MAGNUM_INCLUDE_DIR
         MAGNUM_LIBRARY
+        MAGNUM_PHYSICS_LIBRARY
         MAGNUM_PRIMITIVES_LIBRARY
         MAGNUM_MESHTOOLS_LIBRARY
         MAGNUM_SHADERS_LIBRARY

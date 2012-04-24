@@ -1,0 +1,111 @@
+namespace Magnum { namespace Physics {
+/** @page CollisionDetection Collision detection system
+
+The collision detection system consists of a low-level part, consisting of
+shape collection providing collision detection and high-level part,
+consisting of rigid bodies and their groups.
+
+@subpage CollisionDetectionShapes
+
+@page CollisionDetectionShapes Shapes providing collision detection features
+
+The essential thing in collision detection is to define a complex object with
+collection of simple shapes, for which it is easy to detect collisions. These
+shapes can be either one-, two- or three-dimensional and they can be grouped
+together using five different set operations.
+
+@tableofcontents
+
+@section CollisionDetectionShapeCollection Available shapes
+
+@subsection CollisionDetectionShapes1D One-dimensional shapes
+
+- Physics::Point - @copybrief Physics::Point
+- Physics::Line - @copybrief Physics::Line
+- Physics::LineSegment - @copybrief Physics::LineSegment
+
+One-dimensional shapes don't provide collision detection with each other
+because of numerical instability.
+
+@subsection CollisionDetectionShapes2D Two-dimensional shapes
+
+- Physics::Plane - @copybrief Physics::Plane
+
+@subsection CollisionDetectionShapes3D Three-dimensional shapes
+
+- Physics::Sphere - @copybrief Physics::Sphere
+- Physics::Capsule - @copybrief Physics::Capsule
+- Physics::AxisAlignedBox - @copybrief Physics::AxisAlignedBox
+- Physics::Box - @copybrief Physics::Box
+
+The easiest (and most efficient) shape combination for detecting collisions
+is point and sphere, followed by two spheres. Computing collision of two boxes
+is least efficient.
+
+@section CollisionDetectionShapeGroups Creating hierarchic groups of shapes
+
+Shapes can be grouped together using one of five set operations: complement,
+union, intersection, difference and XOR. These operations are mapped to
+operator~(), operator|(), operator&(), operator-() and operator^(), so for
+example creating complement of union of sphere and box is simple as this:
+@code
+Physics::Sphere sphere;
+Physics::Box box;
+
+Physics::ShapeGroup group = ~(sphere|box);
+@endcode
+
+The resulting object internally stores copies of both shapes, so the original
+instances can be destroyed. For simple combinations appropriate resulting
+shape is generated (e.g. intersection of line and three-dimensional object
+can be a line segment) and stored inside ShapeGroup instead of two original
+objects.
+
+@subsection CollisionDetectionShapeReference Referencing the shapes for later changes
+
+Sometimes you may want to modify the shape based on changes of the object
+itself. In previous example all the shapes were copied into ShapeGroup, so it
+was not possible to change their properties such as sphere radius without
+recreating the group again. You can, however, explicitly pass a reference to
+original object, so you can change it later:
+@code
+Physics::Sphere sphere;
+Physics::Box box;
+
+Physics::ShapeGroup group = ~(std::ref(sphere)|box);
+
+sphere.setRadius(2.0f);
+@endcode
+
+Note that passing a reference implies that you must not destroy the original
+instance (in this case the sphere). Also because the referenced instance could
+change, there are no shape optimizations done, unlike above.
+
+@subsection CollisionDetectionShapeSimplification Providing simplified version of shape for better performance
+
+If there are many shapes grouped together, it might hurt performance of
+collision detection, because it might be testing collision with more shapes
+than necessary. It's then good to specify simplified version of such shape,
+so the collision detection is done on the original if and only if collision
+was detected with the simplified shape. It is in fact intersection group -
+the collision is initially detected on first (simplified) shape and then on
+the other:
+@code
+Physics::AxisAlignedBox simplified;
+
+Physics::ShapeGroup object = simplified & (sphere|box);
+@endcode
+
+@section CollisionDetectionShapeCollisions Detecting shape collisions
+
+Shape pairs which have collision detection implemented can be tested for
+collision using operator%(), for example:
+@code
+Physics::Point point;
+Physics::Sphere sphere;
+
+bool collide = point % sphere;
+@endcode
+
+*/
+}}}

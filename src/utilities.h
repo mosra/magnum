@@ -32,9 +32,15 @@ namespace Magnum {
 #else
     #define MESHTOOLS_EXPORT __declspec(dllimport)
 #endif
+#ifdef PHYSICS_EXPORTING
+    #define PHYSICS_EXPORT __declspec(dllexport)
+#else
+    #define PHYSICS_EXPORT __declspec(dllimport)
+#endif
 #else
     #define MAGNUM_EXPORT
     #define MESHTOOLS_EXPORT
+    #define PHYSICS_EXPORT
 #endif
 
 }

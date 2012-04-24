@@ -1,0 +1,7 @@
+corrade_add_test(PhysicsAxisAlignedBoxTest AxisAlignedBoxTest.h AxisAlignedBoxTest.cpp MagnumPhysics)
+corrade_add_test(PhysicsCapsuleTest CapsuleTest.h CapsuleTest.cpp MagnumPhysics)
+corrade_add_test(PhysicsLineTest LineTest.h LineTest.cpp MagnumPhysics)
+corrade_add_test(PhysicsPlaneTest PlaneTest.h PlaneTest.cpp MagnumPhysics)
+corrade_add_test(PhysicsPointTest PointTest.h PointTest.cpp MagnumPhysics)
+corrade_add_test(PhysicsShapeGroupTest ShapeGroupTest.h ShapeGroupTest.cpp MagnumPhysics)
+corrade_add_test(PhysicsSphereTest SphereTest.h SphereTest.cpp MagnumPhysics)

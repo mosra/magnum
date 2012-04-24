@@ -19,6 +19,7 @@ find_package(Corrade REQUIRED)
 
 set_parent_scope(MAGNUM_INCLUDE_DIR         "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set_parent_scope(MAGNUM_LIBRARY             Magnum)
+set_parent_scope(MAGNUM_PHYSICS_LIBRARY     MagnumPhysics)
 set_parent_scope(MAGNUM_PRIMITIVES_LIBRARY  MagnumPrimitives)
 set_parent_scope(MAGNUM_MESHTOOLS_LIBRARY   MagnumMeshTools)
 set_parent_scope(MAGNUM_SHADERS_LIBRARY     MagnumShaders)
