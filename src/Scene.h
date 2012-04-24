@@ -38,10 +38,10 @@ class MAGNUM_EXPORT Scene: public Object {
 
         void setParent(Object* parent) = delete;
         void setTransformation(const Matrix4& transformation) = delete;
-        void multiplyTransformation(const Matrix4& transformation, bool global = true) = delete;
-        void translate(Vector3 vec, bool global = true) = delete;
-        void scale(Vector3 vec, bool global = true) = delete;
-        void rotate(GLfloat angle, Vector3 vec, bool global = true) = delete;
+        void multiplyTransformation(const Matrix4& transformation, Transformation type = Transformation::Global) = delete;
+        void translate(Vector3 vec, Transformation type = Transformation::Global) = delete;
+        void scale(Vector3 vec, Transformation type = Transformation::Global) = delete;
+        void rotate(GLfloat angle, Vector3 vec, Transformation type = Transformation::Global) = delete;
 
         /** @brief Which features are set */
         inline unsigned int features() const { return _features; }

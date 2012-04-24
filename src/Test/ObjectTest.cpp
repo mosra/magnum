@@ -49,6 +49,27 @@ void ObjectTest::parenting() {
     QVERIFY(childOne->children().size() == 0);
 }
 
+void ObjectTest::transformation() {
+    Object o;
+    Object o2;
+
+    o.setTransformation(Matrix4::translation(Vector3::xAxis(1.0f)));
+    o2.translate(Vector3::xAxis(1.0f));
+    o.multiplyTransformation(Matrix4::rotation(deg(35.0f), Vector3::zAxis()));
+    o2.rotate(deg(35.0f), Vector3::zAxis());
+
+    QVERIFY(o.transformation() == Matrix4::rotation(deg(35.0f), Vector3::zAxis())*
+        Matrix4::translation(Vector3::xAxis(1.0f)));
+    QVERIFY(o2.transformation() == o.transformation());
+
+    o.multiplyTransformation(Matrix4::scaling(Vector3(2.0f)), Object::Transformation::Local);
+    o2.scale(Vector3(2.0f), Object::Transformation::Local);
+    QVERIFY(o.transformation() == Matrix4::rotation(deg(35.0f), Vector3::zAxis())*
+        Matrix4::translation(Vector3::xAxis(1.0f))*
+        Matrix4::scaling(Vector3(2.0f)));
+    QVERIFY(o2.transformation() == o.transformation());
+}
+
 void ObjectTest::scene() {
     Scene scene;
 

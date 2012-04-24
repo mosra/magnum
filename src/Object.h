@@ -86,6 +86,15 @@ class MAGNUM_EXPORT Object {
          * to parent.
          */
 
+        /** @brief Transformation type */
+        enum class Transformation: char {
+            /** Global transformation, applied after all other transformations. */
+            Global = 0x00,
+
+            /** Local transformation, applied before all other transformations. */
+            Local = 0x01
+        };
+
         /** @brief Transformation */
         inline Matrix4 transformation() const {
             return _transformation;
@@ -111,12 +120,11 @@ class MAGNUM_EXPORT Object {
         /**
          * @brief Multiply transformation
          * @param transformation    Transformation
-         * @param global            Whether to apply transformation as global
-         *      (multiply from left side) or as local (multiply from right
-         *      side)
+         * @param type              Transformation type
          */
-        inline Object* multiplyTransformation(const Matrix4& transformation, bool global = true) {
-            setTransformation(global ? transformation*_transformation : _transformation*transformation);
+        inline Object* multiplyTransformation(const Matrix4& transformation, Transformation type = Transformation::Global) {
+            setTransformation(type == Transformation::Global ?
+                transformation*_transformation : _transformation*transformation);
             return this;
         }
 
@@ -125,8 +133,8 @@ class MAGNUM_EXPORT Object {
          *
          * Same as calling multiplyTransformation() with Matrix4::translation().
          */
-        inline Object* translate(Vector3 vec, bool global = true) {
-            multiplyTransformation(Matrix4::translation(vec), global);
+        inline Object* translate(Vector3 vec, Transformation type = Transformation::Global) {
+            multiplyTransformation(Matrix4::translation(vec), type);
             return this;
         }
 
@@ -135,8 +143,8 @@ class MAGNUM_EXPORT Object {
          *
          * Same as calling multiplyTransformation() with Matrix4::scaling().
          */
-        inline Object* scale(Vector3 vec, bool global = true) {
-            multiplyTransformation(Matrix4::scaling(vec), global);
+        inline Object* scale(Vector3 vec, Transformation type = Transformation::Global) {
+            multiplyTransformation(Matrix4::scaling(vec), type);
             return this;
         }
 
@@ -145,8 +153,8 @@ class MAGNUM_EXPORT Object {
          *
          * Same as calling multiplyTransformation() with Matrix4::rotation().
          */
-        inline Object* rotate(GLfloat angle, Vector3 vec, bool global = true) {
-            multiplyTransformation(Matrix4::rotation(angle, vec), global);
+        inline Object* rotate(GLfloat angle, Vector3 vec, Transformation type = Transformation::Global) {
+            multiplyTransformation(Matrix4::rotation(angle, vec), type);
             return this;
         }
 
