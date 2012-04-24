@@ -75,6 +75,8 @@ template<class T, size_t size> class Vector {
          * @f[
          * \phi = \frac{a \cdot b}{|a| \cdot |b|}
          * @f]
+         *
+         * @todo optimize - Assume the vectors are normalized?
          */
         inline static T angle(const Vector<T, size>& a, const Vector<T, size>& b) {
             return acos(dot(a, b)/(a.length()*b.length()));

@@ -61,6 +61,8 @@ class MAGNUM_EXPORT Object {
          */
         virtual ~Object();
 
+        /** @{ @name Scene hierarchy */
+
         /**
          * @brief %Scene
          * @return If the object is not assigned to any scene, returns nullptr.
@@ -76,36 +78,42 @@ class MAGNUM_EXPORT Object {
         /** @brief Set parent object */
         Object* setParent(Object* parent);
 
-        /**
-         * @brief Transformation matrix
+        /*@}*/
+
+        /** @{ @name Object transformation
          *
-         * @return Transformation matrix relative to parent.
+         * All transformations (except absoluteTransformation()) are relative
+         * to parent.
          */
+
+        /** @brief Transformation */
         inline Matrix4 transformation() const {
             return _transformation;
         }
 
         /**
-         * @brief Absolute transformation matrix
+         * @brief Absolute transformation
          *
          * If both this object and the camera is part of the same scene,
          * returns absolute transformation matrix (relative to the camera).
          * Otherwise returns transformation matrix relative to root object
-         * (in most cases this object's scene).
+         * (in most cases scene of this object).
+         *
+         * Note that the absolute transformation is computed from all parent
+         * objects every time it is asked, unless this function is
+         * reimplemented in a different way.
          */
         virtual Matrix4 absoluteTransformation(Camera* camera = nullptr);
 
-        /** @brief Set transformation matrix */
+        /** @brief Set transformation */
         Object* setTransformation(const Matrix4& transformation);
 
         /**
-         * @brief Multiply transformation matrix
-         * @param transformation    Transformation matrix
+         * @brief Multiply transformation
+         * @param transformation    Transformation
          * @param global            Whether to apply transformation as global
          *      (multiply from left side) or as local (multiply from right
          *      side)
-         *
-         * Multiplies current transformation matrix by new matrix.
          */
         inline Object* multiplyTransformation(const Matrix4& transformation, bool global = true) {
             setTransformation(global ? transformation*_transformation : _transformation*transformation);
@@ -142,11 +150,14 @@ class MAGNUM_EXPORT Object {
             return this;
         }
 
+        /*@}*/
+
         /** @{ @name Caching helpers
          *
-         * If the object transformation is used many times when drawing (such
-         * as e.g. position of light object), it's good to cache these values,
-         * so they don't have to be computed again on every request.
+         * If the object (absolute) transformation or anything depending on it
+         * is used many times when drawing (such as e.g. position of light
+         * object), it's good to cache these values, so they don't have to be
+         * computed again on every request.
          *
          * If the object or any parent is transformed, the transformed object
          * and all its children are marked as dirty. If currently active camera
@@ -175,6 +186,8 @@ class MAGNUM_EXPORT Object {
          * Recursively calls setDirty() on every child. If the object is already
          * marked as dirty, the function does nothing.
          * @attention Reimplementations must call also this function!
+         *
+         * @see setClean()
          */
         virtual void setDirty();
 
