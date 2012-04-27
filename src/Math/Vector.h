@@ -218,9 +218,25 @@ template<class T, size_t size> class Vector {
             return out;
         }
 
-        /** @brief %Vector length */
+        /**
+         * @brief %Vector length
+         *
+         * @see lengthSquared()
+         */
         inline T length() const {
             return sqrt(dot(*this, *this));
+        }
+
+        /**
+         * @brief %Vector length squared
+         *
+         * More efficient than length() for comparing vector length with
+         * other values, because it doesn't compute the square root, just the
+         * dot product: @f$ a \cdot a < length \cdot length @f$ is faster
+         * than @f$ \sqrt{a \cdot a} < length @f$.
+         */
+        inline T lengthSquared() const {
+            return dot(*this, *this);
         }
 
         /** @brief Normalized vector (of length 1) */

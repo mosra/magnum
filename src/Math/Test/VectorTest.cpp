@@ -93,6 +93,10 @@ void VectorTest::length() {
     QCOMPARE(Vector4(1.0f, 2.0f, 3.0f, 4.0f).length(), 5.4772256f);
 }
 
+void VectorTest::lengthSquared() {
+    QCOMPARE(Vector4(1.0f, 2.0f, 3.0f, 4.0f).lengthSquared(), 30.0f);
+}
+
 void VectorTest::normalized() {
     QVERIFY(Vector4(1.0f, 1.0f, 1.0f, 1.0f).normalized() == Vector4(0.5f, 0.5f, 0.5f, 0.5f));
 }

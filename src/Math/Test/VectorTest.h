@@ -30,6 +30,7 @@ class VectorTest: public QObject {
         void multiplyDivide();
         void addSubstract();
         void length();
+        void lengthSquared();
         void normalized();
         void product();
         void angle();
