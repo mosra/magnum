@@ -1,1 +1,2 @@
+corrade_add_test(MathGeometryDistanceTest DistanceTest.h DistanceTest.cpp)
 corrade_add_test(MathGeometryIntersectionTest IntersectionTest.h IntersectionTest.cpp)
