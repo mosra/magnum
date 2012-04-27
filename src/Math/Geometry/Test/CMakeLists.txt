@@ -1,0 +1,1 @@
+corrade_add_test(MathGeometryIntersectionTest IntersectionTest.h IntersectionTest.cpp)

@@ -1,5 +1,5 @@
-#ifndef Magnum_Math_GeometryUtils_h
-#define Magnum_Math_GeometryUtils_h
+#ifndef Magnum_Math_Geometry_Intersection_h
+#define Magnum_Math_Geometry_Intersection_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,26 +16,24 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::GeometryUtils
+ * @brief Class Magnum::Math::Geometry::Intersection
  */
 
-#include "Vector3.h"
+#include "Math/Vector3.h"
 
-namespace Magnum { namespace Math {
+namespace Magnum { namespace Math { namespace Geometry {
 
-/**
-@brief Geometry utils
-*/
-class GeometryUtils {
+/** @brief Functions for computing intersections */
+class Intersection {
     public:
         /**
-         * @brief Intersection of a plane and line
+         * @brief %Intersection of a plane and line
          * @param planePosition Plane position
          * @param planeNormal   Plane normal
          * @param a             Starting point of the line
          * @param b             Ending point of the line
-         * @return Intersection point position, NaN if the line lies on the
-         * plane or infinity if the intersection doesn't exist. Intersection
+         * @return %Intersection point position, NaN if the line lies on the
+         * plane or infinity if the intersection doesn't exist. %Intersection
          * point can be computed from the position with `a+intersection(...)*b`.
          * If returned value is in range @f$ [ 0 ; 1 ] @f$, the intersection
          * is inside the line segment defined by `a` and `b`.
@@ -56,7 +54,7 @@ class GeometryUtils {
          *      \end{array}
          * @f]
          */
-        template<class T> static T intersection(const Vector3<T>& planePosition, const Vector3<T>& planeNormal, const Vector3<T>& a, const Vector3<T>& b) {
+        template<class T> static T planeLine(const Vector3<T>& planePosition, const Vector3<T>& planeNormal, const Vector3<T>& a, const Vector3<T>& b) {
             /* Compute f from normal and plane position */
             T f = Vector3<T>::dot(planePosition, planeNormal);
 
@@ -65,6 +63,6 @@ class GeometryUtils {
         }
 };
 
-}}
+}}}
 
 #endif

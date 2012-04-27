@@ -1,3 +1,9 @@
+/** @namespace Magnum::Math::Geometry
+@brief %Geometry library
+
+Functions for computing intersections, distances, areas and volumes.
+*/
+
 /** @namespace Magnum::MeshTools
 @brief %Mesh tools
 

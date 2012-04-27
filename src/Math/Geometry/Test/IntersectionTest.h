@@ -1,5 +1,5 @@
-#ifndef Magnum_Math_Test_GeometryUtilsTest_h
-#define Magnum_Math_Test_GeometryUtilsTest_h
+#ifndef Magnum_Math_Geometry_Test_IntersectionTest_h
+#define Magnum_Math_Geometry_Test_IntersectionTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -17,15 +17,15 @@
 
 #include <QtCore/QObject>
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Math { namespace Geometry { namespace Test {
 
-class GeometryUtilsTest: public QObject {
+class IntersectionTest: public QObject {
     Q_OBJECT
 
     private slots:
-        void intersection();
+        void planeLine();
 };
 
-}}}
+}}}}
 
 #endif

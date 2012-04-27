@@ -10,4 +10,3 @@ corrade_add_test(MathMatrix3Test Matrix3Test.h Matrix3Test.cpp ${CORRADE_UTILITY
 corrade_add_test(MathMatrix4Test Matrix4Test.h Matrix4Test.cpp ${CORRADE_UTILITY_LIBRARY})
 
 corrade_add_test(MathTest MathTest.h MathTest.cpp MagnumMath)
-corrade_add_test(MathGeometryUtilsTest GeometryUtilsTest.h GeometryUtilsTest.cpp)
