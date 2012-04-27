@@ -22,6 +22,7 @@
 #include "AbstractShape.h"
 #include "Point.h"
 #include "Line.h"
+#include "LineSegment.h"
 
 namespace Magnum { namespace Physics {
 
@@ -68,6 +69,9 @@ class PHYSICS_EXPORT Sphere: public AbstractShape {
         /** @brief Collision with line */
         bool operator%(const Line& other) const;
 
+        /** @brief Collision with line segment */
+        bool operator%(const LineSegment& other) const;
+
         /** @brief Collision with sphere */
         bool operator%(const Sphere& other) const;
 
@@ -82,6 +86,7 @@ class PHYSICS_EXPORT Sphere: public AbstractShape {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 inline bool operator%(const Point& a, const Sphere& b) { return b % a; }
 inline bool operator%(const Line& a, const Sphere& b) { return b % a; }
+inline bool operator%(const LineSegment& a, const Sphere& b) { return b % a; }
 #endif
 
 }}

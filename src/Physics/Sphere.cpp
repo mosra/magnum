@@ -32,6 +32,8 @@ bool Sphere::collides(const AbstractShape* other) const {
         return *this % *static_cast<const Point*>(other);
     if(other->type() == Type::Line)
         return *this % *static_cast<const Line*>(other);
+    if(other->type() == Type::LineSegment)
+        return *this % *static_cast<const LineSegment*>(other);
     if(other->type() == Type::Sphere)
         return *this % *static_cast<const Sphere*>(other);
 
@@ -45,6 +47,11 @@ bool Sphere::operator%(const Point& other) const {
 
 bool Sphere::operator%(const Line& other) const {
     return Distance::linePointSquared(other.transformedA(), other.transformedB(), transformedPosition()) <
+        Math::pow<2>(transformedRadius());
+}
+
+bool Sphere::operator%(const LineSegment& other) const {
+    return Distance::lineSegmentPointSquared(other.transformedA(), other.transformedB(), transformedPosition()) <
         Math::pow<2>(transformedRadius());
 }
 

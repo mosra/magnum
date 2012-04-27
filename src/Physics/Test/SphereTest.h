@@ -26,6 +26,7 @@ class SphereTest: public AbstractShapeTest {
         void applyTransformation();
         void collisionPoint();
         void collisionLine();
+        void collisionLineSegment();
         void collisionSphere();
 };
 
