@@ -23,7 +23,6 @@ class GeometryUtilsTest: public QObject {
     Q_OBJECT
 
     private slots:
-        void intersection_data();
         void intersection();
 };
 

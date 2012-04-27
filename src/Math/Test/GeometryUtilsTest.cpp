@@ -18,52 +18,36 @@
 #include <limits>
 #include <QtTest/QTest>
 
-#include "Matrix3.h"
 #include "GeometryUtils.h"
 
 QTEST_APPLESS_MAIN(Magnum::Math::Test::GeometryUtilsTest)
-
-typedef Magnum::Math::Matrix3<float> Matrix3;
-typedef Magnum::Math::Vector3<float> Vector3;
-
-Q_DECLARE_METATYPE(Matrix3)
-Q_DECLARE_METATYPE(Vector3)
 
 using namespace std;
 
 namespace Magnum { namespace Math { namespace Test {
 
-using ::Matrix3;
-using ::Vector3;
-
-void GeometryUtilsTest::intersection_data() {
-    QTest::addColumn<Matrix3>("plane");
-    QTest::addColumn<Vector3>("a");
-    QTest::addColumn<Vector3>("b");
-    QTest::addColumn<float>("expected");
-
-    Matrix3 plane(0.0f, 0.0f, 0.0f,
-                  1.0f, 0.0f, 0.0f,
-                  0.0f, 1.0f, 0.0f);
-    QTest::newRow("inside") << plane << Vector3(0, 0, -1) << Vector3(0, 0, 1) << 0.5f;
-    QTest::newRow("outside") << plane << Vector3(0, 0, 1) << Vector3(0, 0, 2) << -1.0f;
-    QTest::newRow("NaN") << plane << Vector3(1, 0, 0) << Vector3(0, 1, 0) << numeric_limits<float>::quiet_NaN();
-    QTest::newRow("inf") << plane << Vector3(1, 0, 1) << Vector3(0, 0, 1) << numeric_limits<float>::infinity();
-}
+typedef Magnum::Math::Vector3<float> Vector3;
 
 void GeometryUtilsTest::intersection() {
-    QFETCH(Matrix3, plane);
-    QFETCH(Vector3, a);
-    QFETCH(Vector3, b);
-    QFETCH(float, expected);
+    Vector3 planePosition;
+    Vector3 planeNormal(0.0f, 0.0f, 1.0f);
 
-    /* Handling also NaN, which cannot be fuzzy compared */
-    float actual = GeometryUtils<float>::intersection(plane, a, b);
+    /* Inside line segment */
+    QCOMPARE((GeometryUtils::intersection(planePosition, planeNormal,
+        Vector3(0, 0, -1), Vector3(0, 0, 1))), 0.5f);
 
-    /* All possible workarounds for comparing to inf and NaN */
-    if(expected > numeric_limits<float>::max()) QCOMPARE(actual, expected);
-    else if(expected != expected) QVERIFY(actual != actual);
-    else QVERIFY(actual == expected);
+    /* Outside line segment */
+    QCOMPARE((GeometryUtils::intersection(planePosition, planeNormal,
+        Vector3(0, 0, 1), Vector3(0, 0, 2))), -1.0f);
+
+    /* Line lies on the plane */
+    float nan = GeometryUtils::intersection(planePosition, planeNormal,
+        Vector3(1, 0, 0), Vector3(0, 1, 0));
+    QVERIFY(nan != nan);
+
+    /* Line is parallell to the plane */
+    QCOMPARE((GeometryUtils::intersection(planePosition, planeNormal,
+        Vector3(1, 0, 1), Vector3(0, 0, 1))), numeric_limits<float>::infinity());
 }
 
 }}}
