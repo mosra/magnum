@@ -43,4 +43,28 @@ void DistanceTest::linePoint() {
         Constants<float>::Sqrt2/Constants<float>::Sqrt3);
 }
 
+void DistanceTest::lineSegmentPoint() {
+    Vector3 a(0.0f);
+    Vector3 b(1.0f);
+
+    /* Point on the line segment */
+    QCOMPARE((Distance::lineSegmentPoint(a, b, Vector3(0.25f))), 0.0f);
+
+    /* Point on the line, outside the segment, closer to A */
+    QCOMPARE((Distance::lineSegmentPoint(a, b, Vector3(-1.0f))), +Constants<float>::Sqrt3);
+
+    /* Point on the line, outside the segment, closer to B */
+    QCOMPARE((Distance::lineSegmentPoint(a, b, Vector3(1.0f+1.0f/Constants<float>::Sqrt3))), 1.0f);
+
+    /* Point next to the line segment */
+    QCOMPARE((Distance::lineSegmentPoint(a, b, Vector3(1.0f, 0.0f, 1.0f))),
+        Constants<float>::Sqrt2/Constants<float>::Sqrt3);
+
+    /* Point outside the line segment, closer to A */
+    QCOMPARE((Distance::lineSegmentPoint(a, b, Vector3(1.0f, 0.0f, 1.0f)-Vector3(1.0f))), 1.0f);
+
+    /* Point outside the line segment, closer to B */
+    QCOMPARE((Distance::lineSegmentPoint(a, b, Vector3(1.0f, 0.0f, 1.0f)+Vector3(1.0f))), +Constants<float>::Sqrt2);
+}
+
 }}}}

@@ -24,6 +24,7 @@ class DistanceTest: public QObject {
 
     private slots:
         void linePoint();
+        void lineSegmentPoint();
 };
 
 }}}}
