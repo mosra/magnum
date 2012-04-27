@@ -57,7 +57,7 @@ template<class T, size_t size> class Vector {
          * @brief Dot product
          *
          * @f[
-         * a \cdot b = \sum_{i=1}^n a_ib_i
+         * a \cdot b = \sum_{i=0}^{n-1} a_ib_i
          * @f]
          */
         static T dot(const Vector<T, size>& a, const Vector<T, size>& b) {

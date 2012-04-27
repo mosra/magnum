@@ -49,8 +49,8 @@ template<class T> class Vector3: public Vector<T, 3> {
          * @brief Cross product
          *
          * @f[
-         * \begin{pmatrix} c_1 \\ c_2 \\ c_3 \end{pmatrix} =
-         * \begin{pmatrix}a_2b_3 - a_3b_2 \\ a_3b_1 - a_1b_3 \\ a_1b_2 - a_2b_1 \end{pmatrix}
+         * \begin{pmatrix} c_0 \\ c_1 \\ c_2 \end{pmatrix} =
+         * \begin{pmatrix}a_1b_2 - a_2b_1 \\ a_2b_0 - a_0b_2 \\ a_0b_1 - a_1b_0 \end{pmatrix}
          * @f]
          */
         constexpr static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
