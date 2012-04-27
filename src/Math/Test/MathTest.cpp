@@ -30,8 +30,9 @@ void MathTest::degrad() {
 }
 
 void MathTest::pow() {
-    QCOMPARE(Math::pow<10>(2), 1024ul);
-    QCOMPARE(Math::pow<0>(3), 1ul);
+    QCOMPARE(Math::pow<10>(2ul), 1024ul);
+    QCOMPARE(Math::pow<0>(3ul), 1ul);
+    QCOMPARE(Math::pow<2>(2.0f), 4.0f);
 }
 
 void MathTest::log() {

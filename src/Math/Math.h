@@ -52,6 +52,17 @@ template<> struct Constants<float> {
     static constexpr float Sqrt2 = 1.41421356237f;
     static constexpr float Sqrt3 = 1.73205080757f;
 };
+
+namespace Implementation {
+    template<size_t exponent> struct Pow {
+        template<class T> inline constexpr T operator()(T base) const {
+            return base*Pow<exponent-1>()(base);
+        }
+    };
+    template<> struct Pow<0> {
+        template<class T> inline constexpr T operator()(T base) const { return 1; }
+    };
+}
 #endif
 
 /**
@@ -59,13 +70,9 @@ template<> struct Constants<float> {
  *
  * Returns integral power of base to the exponent.
  */
-template<size_t exponent> inline constexpr size_t pow(size_t base) {
-    return base*pow<exponent-1>(base);
+template<size_t exponent, class T> inline constexpr T pow(T base) {
+    return Implementation::Pow<exponent>()(base);
 }
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<> inline constexpr size_t pow<0>(size_t base) { return 1; }
-#endif
 
 /**
  * @brief Integral logarithm
