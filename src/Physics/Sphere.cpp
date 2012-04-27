@@ -15,6 +15,10 @@
 
 #include "Sphere.h"
 
+#include "Math/Geometry/Distance.h"
+
+using namespace Magnum::Math::Geometry;
+
 namespace Magnum { namespace Physics {
 
 void Sphere::applyTransformation(const Matrix4& transformation) {
@@ -26,6 +30,8 @@ void Sphere::applyTransformation(const Matrix4& transformation) {
 bool Sphere::collides(const AbstractShape* other) const {
     if(other->type() == Type::Point)
         return *this % *static_cast<const Point*>(other);
+    if(other->type() == Type::Line)
+        return *this % *static_cast<const Line*>(other);
     if(other->type() == Type::Sphere)
         return *this % *static_cast<const Sphere*>(other);
 
@@ -34,6 +40,11 @@ bool Sphere::collides(const AbstractShape* other) const {
 
 bool Sphere::operator%(const Point& other) const {
     return (other.transformedPosition()-transformedPosition()).lengthSquared() <
+        Math::pow<2>(transformedRadius());
+}
+
+bool Sphere::operator%(const Line& other) const {
+    return Distance::linePointSquared(other.transformedA(), other.transformedB(), transformedPosition()) <
         Math::pow<2>(transformedRadius());
 }
 
