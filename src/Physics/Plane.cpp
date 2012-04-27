@@ -15,11 +15,30 @@
 
 #include "Plane.h"
 
+#include <limits>
+
+#include "Math/Geometry/Intersection.h"
+
+using namespace std;
+using namespace Magnum::Math::Geometry;
+
 namespace Magnum { namespace Physics {
 
 void Plane::applyTransformation(const Matrix4& transformation) {
     _transformedPosition = (transformation*Vector4(_position)).xyz();
     _transformedNormal = transformation.rotation()*_normal;
+}
+
+bool Plane::collides(const AbstractShape* other) const {
+    if(other->type() == Type::Line)
+        return *this % *static_cast<const Line*>(other);
+
+    return AbstractShape::collides(other);
+}
+
+bool Plane::operator%(const Line& other) const {
+    float t = Intersection::planeLine(transformedPosition(), transformedNormal(), other.transformedA(), other.transformedB());
+    return t != t || (t != numeric_limits<float>::infinity() && t != -numeric_limits<float>::infinity());
 }
 
 }}

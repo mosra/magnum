@@ -15,15 +15,16 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
+#include "AbstractShapeTest.h"
 
 namespace Magnum { namespace Physics { namespace Test {
 
-class PlaneTest: public QObject {
+class PlaneTest: public AbstractShapeTest {
     Q_OBJECT
 
     private slots:
         void applyTransformation();
+        void collisionLine();
 };
 
 }}}

@@ -21,6 +21,8 @@
 
 #include "AbstractShape.h"
 
+#include "Line.h"
+
 namespace Magnum { namespace Physics {
 
 /** @brief Infinite plane, defined by position and normal */
@@ -30,6 +32,8 @@ class PHYSICS_EXPORT Plane: public AbstractShape {
         inline constexpr Plane(const Vector3& position, const Vector3& normal): _position(position), _transformedPosition(position), _normal(normal), _transformedNormal(normal) {}
 
         void applyTransformation(const Matrix4& transformation);
+
+        bool collides(const AbstractShape* other) const;
 
         /** @brief Position */
         inline Vector3 position() const { return _position; }
@@ -57,6 +61,9 @@ class PHYSICS_EXPORT Plane: public AbstractShape {
             return _transformedNormal;
         }
 
+        /** @brief Collision with line */
+        bool operator%(const Line& other) const;
+
     protected:
         inline Type type() const { return Type::Plane; }
 
@@ -64,6 +71,10 @@ class PHYSICS_EXPORT Plane: public AbstractShape {
         Vector3 _position, _transformedPosition,
             _normal, _transformedNormal;
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+inline bool operator%(const Line& a, const Plane& b) { return b % a; }
+#endif
 
 }}
 

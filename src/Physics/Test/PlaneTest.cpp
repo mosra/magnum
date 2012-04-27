@@ -36,4 +36,20 @@ void PlaneTest::applyTransformation() {
     QVERIFY(plane.transformedNormal() == Vector3(Math::Constants<float>::Sqrt2, -Math::Constants<float>::Sqrt2, 0));
 }
 
+void PlaneTest::collisionLine() {
+    Physics::Plane plane(Vector3(), Vector3::yAxis());
+    Physics::Line line({0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f});
+    Physics::Line line2({0.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 0.0f});
+    Physics::Line line3({0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 0.0f});
+
+    randomTransformation(plane);
+    randomTransformation(line);
+    randomTransformation(line2);
+    randomTransformation(line3);
+
+    VERIFY_COLLIDES(plane, line);
+    VERIFY_COLLIDES(plane, line2);
+    VERIFY_NOT_COLLIDES(plane, line3);
+}
+
 }}}
