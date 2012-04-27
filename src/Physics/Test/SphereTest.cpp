@@ -41,4 +41,17 @@ void SphereTest::applyTransformation() {
     QCOMPARE(sphere.transformedRadius(), Math::Constants<GLfloat>::Sqrt3*7.0f);
 }
 
+void SphereTest::collisionPoint() {
+    Physics::Sphere sphere({1.0f, 2.0f, 3.0f}, 2.0f);
+    Physics::Point point({1.0f, 3.0f, 3.0f});
+    Physics::Point point2({1.0f, 3.0f, 1.0f});
+
+    randomTransformation(sphere);
+    randomTransformation(point);
+    randomTransformation(point2);
+
+    VERIFY_COLLIDES(sphere, point);
+    VERIFY_NOT_COLLIDES(sphere, point2);
+}
+
 }}}

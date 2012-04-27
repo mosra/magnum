@@ -20,6 +20,7 @@
  */
 
 #include "AbstractShape.h"
+#include "Point.h"
 
 namespace Magnum { namespace Physics {
 
@@ -35,6 +36,8 @@ class PHYSICS_EXPORT Sphere: public AbstractShape {
         inline constexpr Sphere(const Vector3& position, float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
 
         void applyTransformation(const Matrix4& transformation);
+
+        bool collides(const AbstractShape* other) const;
 
         /** @brief Position */
         inline Vector3 position() const { return _position; }
@@ -58,6 +61,9 @@ class PHYSICS_EXPORT Sphere: public AbstractShape {
             return _transformedRadius;
         }
 
+        /** @brief Collision with point */
+        bool operator%(const Point& other) const;
+
     protected:
         inline Type type() const { return Type::Sphere; }
 
@@ -65,6 +71,10 @@ class PHYSICS_EXPORT Sphere: public AbstractShape {
         Vector3 _position, _transformedPosition;
         float _radius, _transformedRadius;
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+inline bool operator%(const Point& a, const Sphere& b) { return b % a; }
+#endif
 
 }}
 
