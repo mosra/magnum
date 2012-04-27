@@ -26,6 +26,8 @@ void Sphere::applyTransformation(const Matrix4& transformation) {
 bool Sphere::collides(const AbstractShape* other) const {
     if(other->type() == Type::Point)
         return *this % *static_cast<const Point*>(other);
+    if(other->type() == Type::Sphere)
+        return *this % *static_cast<const Sphere*>(other);
 
     return AbstractShape::collides(other);
 }
@@ -33,6 +35,11 @@ bool Sphere::collides(const AbstractShape* other) const {
 bool Sphere::operator%(const Point& other) const {
     return (other.transformedPosition()-transformedPosition()).lengthSquared() <
         Math::pow<2>(transformedRadius());
+}
+
+bool Sphere::operator%(const Sphere& other) const {
+    return (other.transformedPosition()-transformedPosition()).lengthSquared() <
+        Math::pow<2>(transformedRadius()+other.transformedRadius());
 }
 
 }}

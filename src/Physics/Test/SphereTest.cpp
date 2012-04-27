@@ -54,4 +54,17 @@ void SphereTest::collisionPoint() {
     VERIFY_NOT_COLLIDES(sphere, point2);
 }
 
+void SphereTest::collisionSphere() {
+    Physics::Sphere sphere({1.0f, 2.0f, 3.0f}, 2.0f);
+    Physics::Sphere sphere1({1.0f, 3.0f, 5.0f}, 1.0f);
+    Physics::Sphere sphere2({1.0f, 3.0f, 0.0f}, 1.0f);
+
+    randomTransformation(sphere);
+    randomTransformation(sphere1);
+    randomTransformation(sphere2);
+
+    VERIFY_COLLIDES(sphere, sphere1);
+    VERIFY_NOT_COLLIDES(sphere, sphere2);
+}
+
 }}}

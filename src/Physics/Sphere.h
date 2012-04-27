@@ -64,6 +64,9 @@ class PHYSICS_EXPORT Sphere: public AbstractShape {
         /** @brief Collision with point */
         bool operator%(const Point& other) const;
 
+        /** @brief Collision with sphere */
+        bool operator%(const Sphere& other) const;
+
     protected:
         inline Type type() const { return Type::Sphere; }
 
