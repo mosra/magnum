@@ -22,6 +22,7 @@
 #include "AbstractShape.h"
 
 #include "Line.h"
+#include "LineSegment.h"
 
 namespace Magnum { namespace Physics {
 
@@ -64,6 +65,9 @@ class PHYSICS_EXPORT Plane: public AbstractShape {
         /** @brief Collision with line */
         bool operator%(const Line& other) const;
 
+        /** @brief Collision with line segment */
+        bool operator%(const LineSegment& other) const;
+
     protected:
         inline Type type() const { return Type::Plane; }
 
@@ -74,6 +78,7 @@ class PHYSICS_EXPORT Plane: public AbstractShape {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 inline bool operator%(const Line& a, const Plane& b) { return b % a; }
+inline bool operator%(const LineSegment& a, const Plane& b) { return b % a; }
 #endif
 
 }}

@@ -25,6 +25,7 @@ class PlaneTest: public AbstractShapeTest {
     private slots:
         void applyTransformation();
         void collisionLine();
+        void collisionLineSegment();
 };
 
 }}}

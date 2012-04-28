@@ -52,4 +52,20 @@ void PlaneTest::collisionLine() {
     VERIFY_NOT_COLLIDES(plane, line3);
 }
 
+void PlaneTest::collisionLineSegment() {
+    Physics::Plane plane(Vector3(), Vector3::yAxis());
+    Physics::LineSegment line({0.0f, -0.1f, 0.0f}, {0.0f, 7.0f, 0.0f});
+    Physics::LineSegment line2({0.0f, 0.1f, 0.0f}, {0.0f, 7.0f, 0.0f});
+    Physics::LineSegment line3({0.0f, -7.0f, 0.0f}, {0.0f, -0.1f, 0.0f});
+
+    randomTransformation(plane);
+    randomTransformation(line);
+    randomTransformation(line2);
+    randomTransformation(line3);
+
+    VERIFY_COLLIDES(plane, line);
+    VERIFY_NOT_COLLIDES(plane, line2);
+    VERIFY_NOT_COLLIDES(plane, line3);
+}
+
 }}}

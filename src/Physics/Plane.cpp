@@ -32,6 +32,8 @@ void Plane::applyTransformation(const Matrix4& transformation) {
 bool Plane::collides(const AbstractShape* other) const {
     if(other->type() == Type::Line)
         return *this % *static_cast<const Line*>(other);
+    if(other->type() == Type::LineSegment)
+        return *this % *static_cast<const LineSegment*>(other);
 
     return AbstractShape::collides(other);
 }
@@ -39,6 +41,12 @@ bool Plane::collides(const AbstractShape* other) const {
 bool Plane::operator%(const Line& other) const {
     float t = Intersection::planeLine(transformedPosition(), transformedNormal(), other.transformedA(), other.transformedB());
     return t != t || (t != numeric_limits<float>::infinity() && t != -numeric_limits<float>::infinity());
+}
+
+bool Plane::operator%(const LineSegment& other) const {
+    float t = Intersection::planeLine(transformedPosition(), transformedNormal(), other.transformedA(), other.transformedB());
+    Corrade::Utility::Debug() << transformedPosition() << transformedNormal() << other.transformedA() << other.transformedB() << t;
+    return t > 0.0f && t < 1.0f;
 }
 
 }}
