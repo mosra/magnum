@@ -25,6 +25,7 @@ class CapsuleTest: public AbstractShapeTest {
     private slots:
         void applyTransformation();
         void collisionPoint();
+        void collisionSphere();
 };
 
 }}}

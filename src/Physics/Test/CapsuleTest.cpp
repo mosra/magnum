@@ -52,4 +52,20 @@ void CapsuleTest::collisionPoint() {
     VERIFY_NOT_COLLIDES(capsule, point2);
 }
 
+void CapsuleTest::collisionSphere() {
+    Physics::Capsule capsule({-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}, 2.0f);
+    Physics::Sphere sphere({3.0f, 0.0f, 0.0f}, 0.9f);
+    Physics::Sphere sphere1({3.5f, 1.0f, 0.0f}, 0.6f);
+    Physics::Sphere sphere2({1.0f, 4.1f, 0.0f}, 1.0f);
+
+    randomTransformation(capsule);
+    randomTransformation(sphere);
+    randomTransformation(sphere1);
+    randomTransformation(sphere2);
+
+    VERIFY_COLLIDES(capsule, sphere);
+    VERIFY_COLLIDES(capsule, sphere1);
+    VERIFY_NOT_COLLIDES(capsule, sphere2);
+}
+
 }}}

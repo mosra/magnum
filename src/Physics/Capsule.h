@@ -21,6 +21,7 @@
 
 #include "AbstractShape.h"
 #include "Point.h"
+#include "Sphere.h"
 
 namespace Magnum { namespace Physics {
 
@@ -65,6 +66,9 @@ class PHYSICS_EXPORT Capsule: public AbstractShape {
         /** @brief Collision with point */
         bool operator%(const Point& other) const;
 
+        /** @brief Collision with sphere */
+        bool operator%(const Sphere& other) const;
+
     protected:
         inline Type type() const { return Type::Capsule; }
 
@@ -76,6 +80,7 @@ class PHYSICS_EXPORT Capsule: public AbstractShape {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 inline bool operator%(const Point& a, const Capsule& b) { return b % a; }
+inline bool operator%(const Sphere& a, const Capsule& b) { return b % a; }
 #endif
 
 }}

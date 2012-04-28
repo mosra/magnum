@@ -31,6 +31,8 @@ void Capsule::applyTransformation(const Matrix4& transformation) {
 bool Capsule::collides(const AbstractShape* other) const {
     if(other->type() == Type::Point)
         return *this % *static_cast<const Point*>(other);
+    if(other->type() == Type::Sphere)
+        return *this % *static_cast<const Sphere*>(other);
 
     return AbstractShape::collides(other);
 }
@@ -38,6 +40,11 @@ bool Capsule::collides(const AbstractShape* other) const {
 bool Capsule::operator%(const Point& other) const {
     return Distance::lineSegmentPointSquared(transformedA(), transformedB(), other.transformedPosition()) <
         Math::pow<2>(transformedRadius());
+}
+
+bool Capsule::operator%(const Sphere& other) const {
+    return Distance::lineSegmentPointSquared(transformedA(), transformedB(), other.transformedPosition()) <
+        Math::pow<2>(transformedRadius()+other.transformedRadius());
 }
 
 }}
