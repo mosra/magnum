@@ -59,7 +59,7 @@ class Intersection {
             T f = Vector3<T>::dot(planePosition, planeNormal);
 
             /* Compute t */
-            return (f-Vector3<T>::dot(planeNormal, a)/Vector3<T>::dot(planeNormal, b-a));
+            return (f-Vector3<T>::dot(planeNormal, a))/Vector3<T>::dot(planeNormal, b-a);
         }
 };
 

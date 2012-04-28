@@ -29,25 +29,25 @@ namespace Magnum { namespace Math { namespace Geometry { namespace Test {
 typedef Magnum::Math::Vector3<float> Vector3;
 
 void IntersectionTest::planeLine() {
-    Vector3 planePosition;
+    Vector3 planePosition(-1.0f, 1.0f, 0.5f);
     Vector3 planeNormal(0.0f, 0.0f, 1.0f);
 
     /* Inside line segment */
     QCOMPARE((Intersection::planeLine(planePosition, planeNormal,
-        Vector3(0, 0, -1), Vector3(0, 0, 1))), 0.5f);
+        Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 0.0f, 1.0f))), 0.75f);
 
     /* Outside line segment */
     QCOMPARE((Intersection::planeLine(planePosition, planeNormal,
-        Vector3(0, 0, 1), Vector3(0, 0, 2))), -1.0f);
+        Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 2.0f))), -0.5f);
 
     /* Line lies on the plane */
     float nan = Intersection::planeLine(planePosition, planeNormal,
-        Vector3(1, 0, 0), Vector3(0, 1, 0));
+        Vector3(1.0f, 0.5f, 0.5f), Vector3(0.0f, 1.0f, 0.5f));
     QVERIFY(nan != nan);
 
     /* Line is parallell to the plane */
     QCOMPARE((Intersection::planeLine(planePosition, planeNormal,
-        Vector3(1, 0, 1), Vector3(0, 0, 1))), numeric_limits<float>::infinity());
+        Vector3(1.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f))), numeric_limits<float>::infinity());
 }
 
 }}}}
