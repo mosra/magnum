@@ -20,6 +20,7 @@
  */
 
 #include "AbstractShape.h"
+#include "Point.h"
 
 namespace Magnum { namespace Physics {
 
@@ -35,6 +36,8 @@ class PHYSICS_EXPORT Capsule: public AbstractShape {
         inline constexpr Capsule(const Vector3& a, const Vector3& b, float radius): _a(a), _transformedA(a), _b(b), _transformedB(b), _radius(radius), _transformedRadius(radius) {}
 
         void applyTransformation(const Matrix4& transformation);
+
+        bool collides(const AbstractShape* other) const;
 
         inline Vector3 a() const { return _a; }         /**< @brief Start point */
         inline Vector3 b() const { return _a; }         /**< @brief End point */
@@ -59,6 +62,9 @@ class PHYSICS_EXPORT Capsule: public AbstractShape {
             return _transformedRadius;
         }
 
+        /** @brief Collision with point */
+        bool operator%(const Point& other) const;
+
     protected:
         inline Type type() const { return Type::Capsule; }
 
@@ -67,6 +73,10 @@ class PHYSICS_EXPORT Capsule: public AbstractShape {
             _b, _transformedB;
         float _radius, _transformedRadius;
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+inline bool operator%(const Point& a, const Capsule& b) { return b % a; }
+#endif
 
 }}
 

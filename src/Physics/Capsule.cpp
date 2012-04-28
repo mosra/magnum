@@ -15,6 +15,10 @@
 
 #include "Capsule.h"
 
+#include "Math/Geometry/Distance.h"
+
+using namespace Magnum::Math::Geometry;
+
 namespace Magnum { namespace Physics {
 
 void Capsule::applyTransformation(const Matrix4& transformation) {
@@ -22,6 +26,18 @@ void Capsule::applyTransformation(const Matrix4& transformation) {
     _transformedB = (transformation*Vector4(_b)).xyz();
     float scaling = (transformation.rotationScaling()*Vector3(1/Math::Constants<float>::Sqrt3)).length();
     _transformedRadius = scaling*_radius;
+}
+
+bool Capsule::collides(const AbstractShape* other) const {
+    if(other->type() == Type::Point)
+        return *this % *static_cast<const Point*>(other);
+
+    return AbstractShape::collides(other);
+}
+
+bool Capsule::operator%(const Point& other) const {
+    return Distance::lineSegmentPointSquared(transformedA(), transformedB(), other.transformedPosition()) <
+        Math::pow<2>(transformedRadius());
 }
 
 }}

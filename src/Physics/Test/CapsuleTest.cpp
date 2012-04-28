@@ -36,4 +36,20 @@ void CapsuleTest::applyTransformation() {
     QCOMPARE(capsule.transformedRadius(), Math::Constants<GLfloat>::Sqrt3*7.0f);
 }
 
+void CapsuleTest::collisionPoint() {
+    Physics::Capsule capsule({-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}, 2.0f);
+    Physics::Point point({2.0f, 0.0f, 0.0f});
+    Physics::Point point1({2.9f, 1.0f, 0.0f});
+    Physics::Point point2({1.0f, 3.1f, 0.0f});
+
+    randomTransformation(capsule);
+    randomTransformation(point);
+    randomTransformation(point1);
+    randomTransformation(point2);
+
+    VERIFY_COLLIDES(capsule, point);
+    VERIFY_COLLIDES(capsule, point1);
+    VERIFY_NOT_COLLIDES(capsule, point2);
+}
+
 }}}
