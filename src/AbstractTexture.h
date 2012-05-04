@@ -35,47 +35,47 @@ class MAGNUM_EXPORT AbstractTexture {
     AbstractTexture& operator=(AbstractTexture&& other) = delete;
 
     public:
-        /** @brief %Texture filtering */
+        /**
+         * @brief %Texture filtering
+         *
+         * @see setMagnificationFilter() and setMinificationFilter()
+         */
         enum class Filter: GLint {
-            /**
-             * Nearest neighbor filtering
-             */
-            NearestNeighbor = GL_NEAREST,
-
-            /**
-             * Linear interpolation filtering
-             */
-            LinearInterpolation = GL_LINEAR
+            NearestNeighbor = GL_NEAREST,   /**< Nearest neighbor filtering */
+            LinearInterpolation = GL_LINEAR /**< Linear interpolation filtering */
         };
 
-        /** @brief Mip level selection */
+        /**
+         * @brief Mip level selection
+         *
+         * @see setMinificationFilter()
+         */
         enum class Mipmap: GLint {
-            /**
-             * Select base mip level
-             */
-            BaseLevel = GL_NEAREST & ~GL_NEAREST,
+            BaseLevel = GL_NEAREST & ~GL_NEAREST, /**< Select base mip level */
 
             /**
-             * Select nearest mip level. Unavailable on rectangle textures.
+             * Select nearest mip level. **Unavailable on rectangle textures.**
              */
             NearestLevel = GL_NEAREST_MIPMAP_NEAREST & ~GL_NEAREST,
 
             /**
-             * Linear interpolation of nearest mip levels. Unavailable on
-             * rectangle textures.
+             * Linear interpolation of nearest mip levels. **Unavailable on
+             * rectangle textures.**
              */
             LinearInterpolation = GL_NEAREST_MIPMAP_LINEAR & ~GL_NEAREST
         };
 
-        /** @brief %Texture wrapping on the edge */
+        /**
+         * @brief %Texture wrapping
+         *
+         * @see @ref Texture::setWrapping() "setWrapping()"
+         */
         enum class Wrapping: GLint {
-            /**
-             * Repeat texture. Unavailable on rectangle textures.
-             */
+            /** Repeat texture. **Unavailable on rectangle textures.** */
             Repeat = GL_REPEAT,
 
             /**
-             * Repeat mirrored texture. Unavailable on rectangle textures.
+             * Repeat mirrored texture. **Unavailable on rectangle textures.**
              */
             MirroredRepeat = GL_MIRRORED_REPEAT,
 
@@ -247,14 +247,10 @@ class MAGNUM_EXPORT AbstractTexture {
              */
             RGB9Exponent5 = GL_RGB9_E5,
 
-            /**
-             * Compressed red channel, unsigned normalized.
-             */
+            /** Compressed red channel, unsigned normalized. */
             CompressedRed = GL_COMPRESSED_RED,
 
-            /**
-             * Compressed red and green channel, unsigned normalized.
-             */
+            /** Compressed red and green channel, unsigned normalized. */
             CompressedRedGreen = GL_COMPRESSED_RG,
 
             /** Compressed RGB, unsigned normalized. */
@@ -363,12 +359,14 @@ class MAGNUM_EXPORT AbstractTexture {
          *      call generateMipmap().
          *
          * Sets filter used when the object pixel size is smaller than the
-         * texture size. For rectangle textures only some modes are supported,
+         * texture size.
+         * @attention This, @ref Texture::setWrapping() "setWrapping()" and
+         * setMagnificationFilter() must be called after creating the texture,
+         * otherwise the texture will be incomplete.
+         * @attention For rectangle textures only some modes are supported,
          * see @ref AbstractTexture::Filter "Filter" and
          * @ref AbstractTexture::Mipmap "Mipmap" documentation for more
          * information.
-         * @attention This and setMagnificationFilter() must be called after
-         * creating the texture, otherwise it will be unusable.
          */
         void setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::BaseLevel);
 
@@ -378,8 +376,9 @@ class MAGNUM_EXPORT AbstractTexture {
          *
          * Sets filter used when the object pixel size is larger than largest
          * texture size.
-         * @attention This and setMinificationFilter() must be called after
-         * creating the texture, otherwise it will be unusable.
+         * @attention This, @ref Texture::setWrapping() "setWrapping()" and
+         * setMinificationFilter() must be called after creating the texture,
+         * otherwise the texture will be incomplete.
          */
         inline void setMagnificationFilter(Filter filter) {
             bind();
@@ -400,7 +399,7 @@ class MAGNUM_EXPORT AbstractTexture {
         /**
          * @brief Generate mipmap
          *
-         * Does nothing on rectangle textures.
+         * Can not be used for rectangle textures.
          * @see setMinificationFilter()
          */
         void generateMipmap();
@@ -559,10 +558,7 @@ template<> struct AbstractTexture::DataHelper<2> {
 
     inline constexpr static Target target() { return Target::Texture2D; }
 
-    inline static void setWrapping(Target target, const Math::Vector<Wrapping, 2>& wrapping) {
-        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
-        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
-    }
+    static void setWrapping(Target target, const Math::Vector<Wrapping, 2>& wrapping);
 
     template<class T> inline static void set(Target target, GLint mipLevel, InternalFormat internalFormat, T* image) {
         glTexImage2D(static_cast<GLenum>(target), mipLevel, internalFormat, image->dimensions()[0], image->dimensions()[1], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
@@ -580,11 +576,7 @@ template<> struct AbstractTexture::DataHelper<3> {
 
     inline constexpr static Target target() { return Target::Texture3D; }
 
-    inline static void setWrapping(Target target, const Math::Vector<Wrapping, 3>& wrapping) {
-        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
-        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
-        glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_R, static_cast<GLint>(wrapping[2]));
-    }
+    static void setWrapping(Target target, const Math::Vector<Wrapping, 3>& wrapping);
 
     template<class T> inline static void set(Target target, GLint mipLevel, InternalFormat internalFormat, T* image) {
         glTexImage3D(static_cast<GLenum>(target), mipLevel, internalFormat, image->dimensions()[0], image->dimensions()[1], image->dimensions()[2], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());

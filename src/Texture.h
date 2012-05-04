@@ -28,9 +28,9 @@ namespace Magnum {
 
 Template class for one- to three-dimensional textures.
 
-@attention Don't forget to call setMinificationFilter() and
-setMagnificationFilter() after creating the texture, otherwise it will be
-unusable.
+@attention Don't forget to call setWrapping(), setMinificationFilter() and
+setMagnificationFilter() after creating the texture, otherwise the texture
+will be incomplete.
 
 The texture is bound via bind() and setting texture uniform on the shader to the
 texture (see AbstractShaderProgram::setUniform(GLint, const AbstractTexture*)).
@@ -72,6 +72,12 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
          * Sets wrapping type for coordinates out of range (0, 1) for normal
          * textures and (0, textureSizeInGivenDirection-1) for rectangle
          * textures.
+         * @attention This, setMinificationFilter() and
+         * setMagnificationFilter() must be called after creating the texture,
+         * otherwise the texture will be incomplete.
+         * @attention For rectangle textures only some modes are supported,
+         * see @ref AbstractTexture::Wrapping "Wrapping" documentation for
+         * more information.
          */
         inline void setWrapping(const Math::Vector<Wrapping, Dimensions>& wrapping) {
             bind();

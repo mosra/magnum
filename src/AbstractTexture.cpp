@@ -47,8 +47,7 @@ static_assert((filter_or(NearestNeighbor, BaseLevel) == GL_NEAREST) &&
 #endif
 
 void AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
-    /* Only base mip level is supported on rectangle textures */
-    if(target == GL_TEXTURE_RECTANGLE) mipmap = Mipmap::BaseLevel;
+    CORRADE_ASSERT(target != GL_TEXTURE_RECTANGLE || mipmap == Mipmap::BaseLevel, "AbstractTexture: rectangle textures cannot have mipmaps", )
 
     bind();
     glTexParameteri(target, GL_TEXTURE_MIN_FILTER,
@@ -56,7 +55,7 @@ void AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
 }
 
 void AbstractTexture::generateMipmap() {
-    if(target == GL_TEXTURE_RECTANGLE) return;
+    CORRADE_ASSERT(target != GL_TEXTURE_RECTANGLE, "AbstractTexture: rectangle textures cannot have mipmaps", )
 
     bind();
     glGenerateMipmap(target);
@@ -98,6 +97,19 @@ AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components comp
     else if(components == Components::RGBA)
         internalFormatSwitch(RGBA)
     #undef internalFormatSwitch
+}
+
+void AbstractTexture::DataHelper<2>::setWrapping(Target target, const Math::Vector<Wrapping, 2>& wrapping) {
+    CORRADE_ASSERT(target != Target::Rectangle || ((wrapping[0] == Wrapping::ClampToEdge || wrapping[0] == Wrapping::ClampToBorder) && (wrapping[0] == Wrapping::ClampToEdge || wrapping[1] == Wrapping::ClampToEdge)), "AbstractTexture: rectangle texture wrapping must either clamp to border or to edge", )
+
+    glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
+    glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
+}
+
+void AbstractTexture::DataHelper<3>::setWrapping(Target target, const Math::Vector<Wrapping, 3>& wrapping) {
+    glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
+    glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
+    glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_R, static_cast<GLint>(wrapping[2]));
 }
 
 }
