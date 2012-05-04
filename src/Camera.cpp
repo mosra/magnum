@@ -106,11 +106,14 @@ void Camera::setClearColor(const Magnum::Vector4& color) {
 }
 
 void Camera::draw() {
+    Scene* s = scene();
+    CORRADE_ASSERT(s, "Camera: cannot draw without camera attached to scene", )
+
     /** @todo Clear only set features */
     glClear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
     /* Recursively draw child objects */
-    drawChildren(scene(), cameraMatrix());
+    drawChildren(s, cameraMatrix());
 }
 
 void Camera::drawChildren(Object* object, const Matrix4& transformationMatrix) {
