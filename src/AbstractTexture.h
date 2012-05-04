@@ -27,6 +27,8 @@ namespace Magnum {
 @brief Non-templated base for one-, two- or three-dimensional textures.
 
 See Texture, CubeMapTexture documentation for more information.
+@todo Add glPixelStore encapsulation
+@todo Anisotropic filtering
 */
 class MAGNUM_EXPORT AbstractTexture {
     AbstractTexture(const AbstractTexture& other) = delete;

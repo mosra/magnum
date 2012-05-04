@@ -26,6 +26,13 @@
 namespace Magnum {
 
 /**
+@todo Quaternions:
+ - interpolation between rotations (=> animation, continuous collision detection)
+ - better rotation representation (4 floats instead of 9/16 floats when using
+   matrices)
+*/
+
+/**
  * @brief %Math library
  *
  * Template classes for matrix and vector calculations.

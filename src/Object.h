@@ -29,6 +29,16 @@ class Scene;
 class Camera;
 
 /**
+@todo User-specified Object implementation:
+- for front-to-back sorting, LoD changes etc.
+- for different parent/children implementation (e.g. no std::set, direct
+  access to scene etc.)
+- for using doubles/halves instead of floats
+- for using quat + position instead of matrices (where (asymmetric) scaling is
+  not needed)
+*/
+
+/**
  * @brief Base for all positioned objects
  *
  * @todo Transform transformation when changing parent, so the object stays in

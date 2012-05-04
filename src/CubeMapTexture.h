@@ -43,6 +43,7 @@ textures, coordinates for cube map textures is signed three-part vector from
 the center of the cube, which intersects one of the six sides of the cube map.
 
 See Texture documentation for more information about usage.
+@todo The wrap mode is 3D, not 2D! http://www.opengl.org/wiki/Common_Mistakes#Creating_a_Cubemap_Texture
 */
 class CubeMapTexture: public Texture2D {
     public:

@@ -95,6 +95,7 @@ void AbstractShaderProgram::link() {
 }
 
 GLint AbstractShaderProgram::uniformLocation(const std::string& name) {
+    /** @todo What if linking just failed (not programmer error?) */
     CORRADE_ASSERT(state == Linked, "AbstractShaderProgram: uniform location cannot be retrieved before linking.", -1)
 
     GLint location = glGetUniformLocation(program, name.c_str());
