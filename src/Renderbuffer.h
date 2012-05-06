@@ -91,14 +91,14 @@ class Renderbuffer {
                 InternalFormat(Components components, ComponentType type);
 
                 /** @copydoc AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Format) */
-                inline constexpr InternalFormat(Format format): internalFormat(static_cast<GLint>(format)) {}
+                inline constexpr InternalFormat(Format format): internalFormat(static_cast<GLenum>(format)) {}
 
                 /** @brief OpenGL internal format ID */
                 /* doxygen: @copydoc AbstractTexture::InternalFormat::operator GLint() doesn't work */
-                inline constexpr operator GLint() const { return internalFormat; }
+                inline constexpr operator GLenum() const { return internalFormat; }
 
             private:
-                GLint internalFormat;
+                GLenum internalFormat;
         };
 
         /*@}*/
@@ -136,7 +136,7 @@ class Renderbuffer {
          */
         inline void setStorage(InternalFormat internalFormat, const Math::Vector2<GLsizei>& size) {
             bind();
-            glRenderbufferStorage(GL_RENDERBUFFER, static_cast<GLenum>(internalFormat), size.x(), size.y());
+            glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, size.x(), size.y());
         }
 
     private:
