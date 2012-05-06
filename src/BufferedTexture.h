@@ -45,11 +45,63 @@ class BufferedTexture {
     BufferedTexture& operator=(BufferedTexture&& other) = delete;
 
     public:
+        /** @{ @name Internal buffered texture formats */
+
         /** @copydoc Renderbuffer::Components */
-        typedef Renderbuffer::Components Components;
+        enum class Components {
+            Red, RedGreen, RGBA
+        };
 
         /** @copydoc Renderbuffer::ComponentType */
-        typedef Renderbuffer::ComponentType ComponentType;
+        enum class ComponentType {
+            UnsignedByte, Byte, UnsignedShort, Short, UnsignedInt, Int, Half,
+            Float, NormalizedUnsignedByte, NormalizedUnsignedShort
+        };
+
+        /** @copydoc AbstractTexture::Format */
+        enum class Format: GLenum {
+            /**
+             * Three-component RGB, float, each component 32bit, 96bit total.
+             *
+             * @requires_gl40 Extension <tt>ARB_texture_buffer_object_rgb32</tt>
+             */
+            RGB32Float = GL_RGB32F,
+
+            /**
+             * Three-component RGB, unsigned non-normalized, each component
+             * 32bit, 96bit total.
+             *
+             * @requires_gl40 Extension <tt>ARB_texture_buffer_object_rgb32</tt>
+             */
+            RGB32UnsignedInt = GL_RGB32UI,
+
+            /**
+             * Three-component RGB, signed non-normalized, each component
+             * 32bit, 96bit total.
+             *
+             * @requires_gl40 Extension <tt>ARB_texture_buffer_object_rgb32</tt>
+             */
+            RGB32Int = GL_RGB32I
+        };
+
+        /** @copydoc AbstractTexture::InternalFormat */
+        class MAGNUM_EXPORT InternalFormat {
+            public:
+                /** @copydoc AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components, AbstractTexture::ComponentType) */
+                InternalFormat(Components components, ComponentType type);
+
+                /** @copydoc AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Format) */
+                inline constexpr InternalFormat(Format format): internalFormat(static_cast<GLenum>(format)) {}
+
+                /** @brief OpenGL internal format ID */
+                /* doxygen: @copydoc AbstractTexture::InternalFormat::operator GLint() doesn't work */
+                inline constexpr operator GLint() const { return internalFormat; }
+
+            private:
+                GLint internalFormat;
+        };
+
+        /*@}*/
 
         /**
          * @brief Constructor
@@ -76,23 +128,31 @@ class BufferedTexture {
 
         /**
          * @brief Set texture buffer
-         * @param components    Component count
-         * @param type          Data type per component
-         * @param buffer        %Buffer with data
+         * @param internalFormat    Internal format
+         * @param buffer            %Buffer with data
          *
          * Binds given buffer to this texture. The buffer itself can be then
          * filled with data of proper format at any time using Buffer own data
          * setting functions.
          */
-        void setBuffer(Components components, ComponentType type, Buffer* buffer) {
+        void setBuffer(InternalFormat internalFormat, Buffer* buffer) {
             bind();
-            glTexBuffer(GL_TEXTURE_BUFFER, components|type, buffer->id());
+            glTexBuffer(GL_TEXTURE_BUFFER, internalFormat, buffer->id());
         }
 
     private:
         GLint _layer;
         GLuint texture;
 };
+
+/** @copydoc operator|(AbstractTexture::Components, AbstractTexture::ComponentType) */
+inline BufferedTexture::InternalFormat operator|(BufferedTexture::Components components, BufferedTexture::ComponentType type) {
+    return BufferedTexture::InternalFormat(components, type);
+}
+/** @copydoc operator|(AbstractTexture::ComponentType, AbstractTexture::Components) */
+inline BufferedTexture::InternalFormat operator|(BufferedTexture::ComponentType type, BufferedTexture::Components components) {
+    return BufferedTexture::InternalFormat(components, type);
+}
 
 }
 
