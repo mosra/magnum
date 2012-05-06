@@ -45,14 +45,22 @@ class Buffer {
              *
              * @requires_gl31 Extension <tt>ARB_copy_buffer</tt>
              */
+            #if defined(GL_COPY_READ_BUFFER_BINDING) || defined(DOXYGEN_GENERATING_OUTPUT)
+            CopyRead = GL_COPY_READ_BUFFER_BINDING,
+            #else
             CopyRead = GL_COPY_READ_BUFFER,
+            #endif
 
             /**
              * Target for copies.
              *
              * @requires_gl31 Extension <tt>ARB_copy_buffer</tt>
              */
+            #if defined(GL_COPY_WRITE_BUFFER_BINDING) || defined(DOXYGEN_GENERATING_OUTPUT)
+            CopyWrite = GL_COPY_WRITE_BUFFER_BINDING,
+            #else
             CopyWrite = GL_COPY_WRITE_BUFFER,
+            #endif
 
             /** Used for storing vertex indices. */
             ElementArray = GL_ELEMENT_ARRAY_BUFFER,
