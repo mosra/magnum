@@ -96,7 +96,6 @@ template<class T, size_t size> class Matrix {
          * you to specify value on diagonal.
          */
         inline explicit Matrix(IdentityType = Identity, T value = T(1)): _data() {
-            /** @todo constexpr how? */
             for(size_t i = 0; i != size; ++i)
                 _data[size*i+i] = value;
         }

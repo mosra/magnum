@@ -114,7 +114,6 @@ template<class T> class Matrix4: public Matrix<T, 4> {
 
         /** @copydoc Matrix::Matrix(IdentityType, T) */
         inline constexpr explicit Matrix4(typename Matrix<T, 4>::IdentityType = Matrix<T, 4>::Identity, T value = T(1)): Matrix<T, 4>(
-            /** @todo Make this in Matrix itself, after it will be constexpr */
             value, 0.0f, 0.0f, 0.0f,
             0.0f, value, 0.0f, 0.0f,
             0.0f, 0.0f, value, 0.0f,

@@ -101,7 +101,6 @@ template<class T, size_t size> class Vector {
          * @param value Value for all fields
          */
         inline explicit Vector(T value) {
-            /** @todo constexprize */
             for(size_t i = 0; i != size; ++i)
                 _data[i] = value;
         }
