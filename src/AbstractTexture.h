@@ -273,7 +273,7 @@ class MAGNUM_EXPORT AbstractTexture {
             /** RTGC compressed red and green channel, signed normalized. */
             CompressedRtgcSignedRedGreen = GL_COMPRESSED_SIGNED_RG_RGTC2,
 
-            #if defined(GL_RGB565) || defined(DOXYGEN_GENERATING_OUTPUT)
+            #if defined(GL_COMPRESSED_RGBA_BPTC_UNORM) || defined(DOXYGEN_GENERATING_OUTPUT)
             /** BTPC compressed RGBA, unsigned normalized. */
             CompressedBtpcRGBA = GL_COMPRESSED_RGBA_BPTC_UNORM,
 
