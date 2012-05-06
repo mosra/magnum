@@ -51,7 +51,21 @@ class MAGNUM_EXPORT Shader {
              */
             Geometry = GL_GEOMETRY_SHADER,
 
-            Fragment = GL_FRAGMENT_SHADER   /**< Fragment shader */
+            Fragment = GL_FRAGMENT_SHADER,  /**< Fragment shader */
+
+            /**
+             * Tesselation control shader
+             *
+             * @requires_gl40 Extension <tt>ARB_tesselation_shader</tt>
+             */
+            TesselationControl = GL_TESS_CONTROL_SHADER,
+
+            /**
+             * Tesselation evaluation shader
+             *
+             * @requires_gl40 Extension <tt>ARB_tesselation_shader</tt>
+             */
+            TesselationEvaluation = GL_TESS_EVALUATION_SHADER
         };
 
         /** @brief %Shader state */
