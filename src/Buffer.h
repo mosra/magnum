@@ -81,7 +81,14 @@ class Buffer {
              *
              * @requires_gl31 Extension <tt>ARB_uniform_buffer_object</tt>
              */
-            Uniform = GL_UNIFORM_BUFFER
+            Uniform = GL_UNIFORM_BUFFER,
+
+            /**
+             * Used for supplying arguments for instanced drawing.
+             *
+             * @requires_gl40 Extension <tt>ARB_draw_indirect</tt>
+             */
+            DrawIndirect = GL_DRAW_INDIRECT_BUFFER
         };
 
         /** @brief Buffer usage */
