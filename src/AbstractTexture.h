@@ -427,12 +427,6 @@ class MAGNUM_EXPORT AbstractTexture {
                 Array2D = GL_TEXTURE_2D_ARRAY,
                 Rectangle = GL_TEXTURE_RECTANGLE,
                 CubeMap = GL_TEXTURE_CUBE_MAP,
-                CubeMapPositiveX = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
-                CubeMapNegativeX = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-                CubeMapPositiveY = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
-                CubeMapNegativeY = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-                CubeMapPositiveZ = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-                CubeMapNegativeZ = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
             };
 
             /**
@@ -549,13 +543,7 @@ template<> struct AbstractTexture::DataHelper<2> {
         Texture2D = GL_TEXTURE_2D,
         Array1D = GL_TEXTURE_1D_ARRAY,
         Rectangle = GL_TEXTURE_RECTANGLE,
-        CubeMap = GL_TEXTURE_CUBE_MAP,
-        CubeMapPositiveX = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
-        CubeMapNegativeX = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-        CubeMapPositiveY = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
-        CubeMapNegativeY = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-        CubeMapPositiveZ = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-        CubeMapNegativeZ = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+        CubeMap = GL_TEXTURE_CUBE_MAP
     };
 
     inline constexpr static Target target() { return Target::Texture2D; }
