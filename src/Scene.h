@@ -47,6 +47,7 @@ class MAGNUM_EXPORT Scene: public Object {
         inline unsigned int features() const { return _features; }
 
         /** @brief Set feature */
+        /** @todo Depth clamping (OpenGL 3.2, ARB_depth_clamp) */
         void setFeature(Feature feature, bool enabled);
 
     private:

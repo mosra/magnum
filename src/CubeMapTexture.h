@@ -44,6 +44,7 @@ the center of the cube, which intersects one of the six sides of the cube map.
 
 See Texture documentation for more information about usage.
 @todo The wrap mode is 3D, not 2D! http://www.opengl.org/wiki/Common_Mistakes#Creating_a_Cubemap_Texture
+@todo Cube map arrays (OpenGL 4.0, ARB_texture_cube_map_array)
 */
 class CubeMapTexture: public Texture2D {
     public:
