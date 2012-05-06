@@ -58,6 +58,13 @@ class CubeMapTexture: public Texture2D {
         };
 
         /**
+         * @brief Enable/disable seamless cube map textures
+         */
+        inline static void setSeamless(bool enabled) {
+            enabled ? glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS) : glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+        }
+
+        /**
          * @brief Constructor
          * @param layer     Texture layer (number between 0 and 31)
          *
