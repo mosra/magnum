@@ -121,9 +121,24 @@ class MAGNUM_EXPORT Mesh {
             glLineWidth(width);
         }
 
-        /** @brief Set point size */
+        /**
+         * @brief Set point size
+         *
+         * @see setProgramPointSize()
+         */
         inline static void setPointSize(GLfloat size) {
             glPointSize(size);
+        }
+
+        /**
+         * @brief Enable/disable programmable point size
+         *
+         * If enabled, the point size is taken from vertex/geometry shader
+         * builtin `gl_PointSize`.
+         * @see setPointSize()
+         */
+        inline static void setProgramPointSize(bool enabled) {
+            enabled ? glEnable(GL_PROGRAM_POINT_SIZE) : glDisable(GL_PROGRAM_POINT_SIZE);
         }
 
         /**
