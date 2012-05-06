@@ -116,14 +116,61 @@ class MAGNUM_EXPORT AbstractTexture {
 
         /** @brief Type of data per each component */
         enum class ComponentType {
-            UnsignedByte,   /**< Unsigned byte (char) */
-            Byte,           /**< Byte (char) */
-            UnsignedShort,  /**< Unsigned short */
-            Short,          /**< Short */
-            UnsignedInt,    /**< Unsigned integer */
-            Int,            /**< Integer */
-            Half,           /**< Half float (16 bit) */
-            Float,          /**< Float (32 bit) */
+            /**
+             * (Non-normalized) unsigned byte
+             *
+             * @requires_gl30 Extension <tt>EXT_texture_integer</tt>
+             */
+            UnsignedByte,
+
+            /**
+             * (Non-normalized) byte
+             *
+             * @requires_gl30 Extension <tt>EXT_texture_integer</tt>
+             */
+            Byte,
+
+            /**
+             * (Non-normalized) unsigned short
+             *
+             * @requires_gl30 Extension <tt>EXT_texture_integer</tt>
+             */
+            UnsignedShort,
+
+            /**
+             * (Non-normalized) short
+             *
+             * @requires_gl30 Extension <tt>EXT_texture_integer</tt>
+             */
+            Short,
+
+            /**
+             * (Non-normalized) unsigned integer
+             *
+             * @requires_gl30 Extension <tt>EXT_texture_integer</tt>
+             */
+            UnsignedInt,
+
+            /**
+             * (Non-normalized) integer
+             *
+             * @requires_gl30 Extension <tt>EXT_texture_integer</tt>
+             */
+            Int,
+
+            /**
+             * Half float (16 bit)
+             *
+             * @requires_gl30 Extension <tt>ARB_texture_float</tt>
+             */
+            Half,
+
+            /**
+             * Float (32 bit)
+             *
+             * @requires_gl30 Extension <tt>ARB_texture_float</tt>
+             */
+            Float,
 
             /**
              * Normalized unsigned byte, i.e. values from range
@@ -134,6 +181,8 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * Normalized byte, i.e. values from range
              * @f$ [-128; 127] @f$ are converted to range @f$ [0.0; 1.0] @f$.
+             *
+             * @requires_gl31 (no extension providing this functionality)
              */
             NormalizedByte,
 
@@ -146,6 +195,8 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * Normalized short, i.e. values from range
              * @f$ [-32768; 32767] @f$ are converted to range @f$ [0.0; 1.0] @f$.
+             *
+             * @requires_gl31 (no extension providing this functionality)
              */
             NormalizedShort
         };
@@ -160,12 +211,16 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * One-component (red channel), unsigned normalized, probably
              * 8bit.
+             *
+             * @requires_gl30 (no extension providing this functionality)
              */
             Red = GL_RED,
 
             /**
              * Two-component (red and green channel), unsigned normalized,
              * each component probably 8bit, 16bit total.
+             *
+             * @requires_gl30 (no extension providing this functionality)
              */
             RedGreen = GL_RG,
 
@@ -212,8 +267,10 @@ class MAGNUM_EXPORT AbstractTexture {
             RGB10Alpha2 = GL_RGB10_A2,
 
             /**
-             * Four-component RGBA, unsigned integers, each RGB component
-             * 10bit, alpha channel 2bit, 32bit total.
+             * Four-component RGBA, unsigned non-normalized, each RGB
+             * component 10bit, alpha channel 2bit, 32bit total.
+             *
+             * @requires_gl33 Extension <tt>ARB_texture_rgb10_a2ui</tt>
              */
             RGB10Alpha2Unsigned = GL_RGB10_A2UI,
 
@@ -232,6 +289,8 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * Three-component RGB, float, red and green 11bit, blue 10bit,
              * 32bit total.
+             *
+             * @requires_gl30 Extension <tt>EXT_packed_float</tt>
              */
             RG11B10Float = GL_R11F_G11F_B10F,
 
@@ -244,8 +303,10 @@ class MAGNUM_EXPORT AbstractTexture {
             #endif
 
             /**
-             * Three-component RGB, unsigned integers with exponent, each
-             * component 9bit, exponent 5bit, 32bit total.
+             * Three-component RGB, unsigned with exponent, each component
+             * 9bit, exponent 5bit, 32bit total.
+             *
+             * @requires_gl30 Extension <tt>EXT_texture_shared_exponent</tt>
              */
             RGB9Exponent5 = GL_RGB9_E5,
 
@@ -261,29 +322,61 @@ class MAGNUM_EXPORT AbstractTexture {
             /** Compressed RGBA, unsigned normalized. */
             CompressedRGBA = GL_COMPRESSED_RGBA,
 
-            /** RTGC compressed red channel, unsigned normalized. */
+            /**
+             * RTGC compressed red channel, unsigned normalized.
+             *
+             * @requires_gl30 Extension <tt>EXT_texture_compression_rgtc</tt>
+             */
             CompressedRtgcRed = GL_COMPRESSED_RED_RGTC1,
 
-            /** RTGC compressed red channel, signed normalized. */
+            /**
+             * RTGC compressed red channel, signed normalized.
+             *
+             * @requires_gl30 Extension <tt>EXT_texture_compression_rgtc</tt>
+             */
             CompressedRtgcSignedRed = GL_COMPRESSED_SIGNED_RED_RGTC1,
 
-            /** RTGC compressed red and green channel, unsigned normalized. */
+            /**
+             * RTGC compressed red and green channel, unsigned normalized.
+             *
+             * @requires_gl30 Extension <tt>EXT_texture_compression_rgtc</tt>
+             */
             CompressedRtgcRedGreen = GL_COMPRESSED_RG_RGTC2,
 
-            /** RTGC compressed red and green channel, signed normalized. */
+            /**
+             * RTGC compressed red and green channel, signed normalized.
+             *
+             * @requires_gl30 Extension <tt>EXT_texture_compression_rgtc</tt>
+             */
             CompressedRtgcSignedRedGreen = GL_COMPRESSED_SIGNED_RG_RGTC2,
 
             #if defined(GL_COMPRESSED_RGBA_BPTC_UNORM) || defined(DOXYGEN_GENERATING_OUTPUT)
-            /** BTPC compressed RGBA, unsigned normalized. */
+            /**
+             * BTPC compressed RGBA, unsigned normalized.
+             *
+             * @requires_gl42 Extension <tt>ARB_texture_compression_btpc</tt>
+             */
             CompressedBtpcRGBA = GL_COMPRESSED_RGBA_BPTC_UNORM,
 
-            /** BTPC compressed sRGBA, unsigned normalized. */
+            /**
+             * BTPC compressed sRGBA, unsigned normalized.
+             *
+             * @requires_gl42 Extension <tt>ARB_texture_compression_btpc</tt>
+             */
             CompressedBtpcSRGBA = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM,
 
-            /** BTPC compressed RGB, signed float. */
+            /**
+             * BTPC compressed RGB, signed float.
+             *
+             * @requires_gl42 Extension <tt>ARB_texture_compression_btpc</tt>
+             */
             CompressedBtpcRGBSignedFloat = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT,
 
-            /** BTPC compressed RGB, unsigned float. */
+            /**
+             * BTPC compressed RGB, unsigned float.
+             *
+             * @requires_gl42 Extension <tt>ARB_texture_compression_btpc</tt>
+             */
             CompressedBtpcRGBUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
             #endif
 
@@ -299,13 +392,25 @@ class MAGNUM_EXPORT AbstractTexture {
             /** 24bit depth component. */
             Depth24 = GL_DEPTH_COMPONENT24,
 
-            /** 32bit float depth component. */
+            /**
+             * 32bit float depth component.
+             *
+             * @requires_gl30 Extension <tt>ARB_depth_buffer_float</tt>
+             */
             Depth32Float = GL_DEPTH_COMPONENT32F,
 
-            /** 24bit depth and 8bit stencil component.  */
+            /**
+             * 24bit depth and 8bit stencil component.
+             *
+             * @requires_gl30 Extension <tt>EXT_packed_depth_stencil</tt>
+             */
             Depth24Stencil8 = GL_DEPTH24_STENCIL8,
 
-            /** 32bit float depth component and 8bit stencil component. */
+            /**
+             * 32bit float depth component and 8bit stencil component.
+             *
+             * @requires_gl30 Extension <tt>ARB_depth_buffer_float</tt>
+             */
             Depth32FloatStencil8 = GL_DEPTH32F_STENCIL8
         };
 
@@ -420,13 +525,32 @@ class MAGNUM_EXPORT AbstractTexture {
              * Each dimension has its own unique subset of these targets.
              */
             enum class Target: GLenum {
-                Texture1D = GL_TEXTURE_1D,
-                Texture2D = GL_TEXTURE_2D,
-                Texture3D = GL_TEXTURE_3D,
+                Texture1D = GL_TEXTURE_1D, /**< One-dimensional texture */
+                Texture2D = GL_TEXTURE_2D, /**< Two-dimensional texture */
+                Texture3D = GL_TEXTURE_3D, /**< Three-dimensional texture */
+
+                /**
+                 * Array of one-dimensional textures
+                 *
+                 * @requires_gl30 Extension <tt>EXT_texture_array</tt>
+                 */
                 Array1D = GL_TEXTURE_1D_ARRAY,
+
+                /**
+                 * Array of two-dimensional textures
+                 *
+                 * @requires_gl30 Extension <tt>EXT_texture_array</tt>
+                 */
                 Array2D = GL_TEXTURE_2D_ARRAY,
+
+                /**
+                 * Rectangle texture
+                 *
+                 * @requires_gl31 Extension <tt>ARB_texture_rectangle</tt>
+                 */
                 Rectangle = GL_TEXTURE_RECTANGLE,
-                CubeMap = GL_TEXTURE_CUBE_MAP,
+
+                CubeMap = GL_TEXTURE_CUBE_MAP /**< Cube map texture */
             };
 
             /**

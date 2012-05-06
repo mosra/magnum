@@ -31,10 +31,13 @@ namespace Magnum {
 class Buffer;
 
 /**
- * @brief Base class for managing non-indexed meshes
- *
- * @todo Support for normalized values (e.g. for color as char[4] passed to
- *      shader as floating-point vec4)
+@brief Base class for managing non-indexed meshes
+
+@todo Support for normalized values (e.g. for color as char[4] passed to
+     shader as floating-point vec4)
+
+@requires_gl30 Extension <tt>APPLE_vertex_array_object</tt>
+@requires_gl30 Extension <tt>EXT_gpu_shader4</tt> (for unsigned integer attributes)
  */
 class MAGNUM_EXPORT Mesh {
     Mesh(const Mesh& other) = delete;

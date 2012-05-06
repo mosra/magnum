@@ -16,6 +16,10 @@ Features:
   Collection of pre-made @ref Primitives "graphic primitives" and
   @ref Shaders "shaders" for testing purposes.
 
+The engine is meant to be run on OpenGL 3 capable hardware, but most of the
+functionality is working on OpenGL 2.1 hardware too. See also
+@ref RequiredExtensions.
+
 @section BuildingLink Building Magnum
 
 Guide @ref Building "how to build Magnum" on different platforms.

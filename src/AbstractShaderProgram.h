@@ -154,6 +154,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *
          * @note This function should be called between loadShader() calls
          * and link().
+         *
+         * @requires_gl30 Extension <tt>EXT_gpu_shader4</tt>
          */
         void bindFragmentDataLocation(GLuint location, const std::string& name);
 
@@ -184,7 +186,11 @@ class MAGNUM_EXPORT AbstractShaderProgram {
             glUniform1i(location, value);
         }
 
-        /** @copydoc setUniform(GLint, GLint) */
+        /**
+         * @copydoc setUniform(GLint, GLint)
+         *
+         * @requires_gl30 Extension <tt>EXT_gpu_shader4</tt>
+         */
         void setUniform(GLint location, GLuint value) {
             glUniform1ui(location, value);
         }

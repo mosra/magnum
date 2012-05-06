@@ -38,10 +38,18 @@ class Buffer {
             /** Used for storing vertex attributes. */
             Array = GL_ARRAY_BUFFER,
 
-            /** Source for copies. */
+            /**
+             * Source for copies.
+             *
+             * @requires_gl31 Extension <tt>ARB_copy_buffer</tt>
+             */
             CopyRead = GL_COPY_READ_BUFFER,
 
-            /** Target for copies. */
+            /**
+             * Target for copies.
+             *
+             * @requires_gl31 Extension <tt>ARB_copy_buffer</tt>
+             */
             CopyWrite = GL_COPY_WRITE_BUFFER,
 
             /** Used for storing vertex indices. */
@@ -53,13 +61,26 @@ class Buffer {
             /** Target for pixel pack operations. */
             PixelPack = GL_PIXEL_PACK_BUFFER,
 
-            /** Source for texel fetches. */
+            /**
+             * Source for texel fetches.
+             *
+             * @see BufferedTexture
+             * @requires_gl31 Extension <tt>ARB_texture_buffer_object</tt>
+             */
             Texture = GL_TEXTURE_BUFFER,
 
-            /** Target for transform feedback. */
+            /**
+             * Target for transform feedback.
+             *
+             * @requires_gl30 Extension <tt>EXT_transform_feedback</tt>
+             */
             TransformFeedback = GL_TRANSFORM_FEEDBACK_BUFFER,
 
-            /** Used for storing uniforms. */
+            /**
+             * Used for storing uniforms.
+             *
+             * @requires_gl31 Extension <tt>ARB_uniform_buffer_object</tt>
+             */
             Uniform = GL_UNIFORM_BUFFER
         };
 

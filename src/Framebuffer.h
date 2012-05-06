@@ -28,6 +28,8 @@ namespace Magnum {
 
 /**
 @brief %Framebuffer
+
+@requires_gl30 Extension <tt>EXT_framebuffer_object</tt>
 */
 class MAGNUM_EXPORT Framebuffer {
     Framebuffer(const Framebuffer& other) = delete;
@@ -38,8 +40,19 @@ class MAGNUM_EXPORT Framebuffer {
     public:
         /** @brief %Framebuffer target */
         enum class Target: GLenum {
-            Read = GL_READ_FRAMEBUFFER,     /**< For reading only. */
-            Draw = GL_DRAW_FRAMEBUFFER,     /**< For drawing only. */
+            /**
+             * For reading only.
+             *
+             * @requires_gl30 Extension <tt>EXT_framebuffer_blit</tt>
+             */
+            Read = GL_READ_FRAMEBUFFER,
+
+            /**
+             * For drawing only.
+             *
+             * @requires_gl30 Extension <tt>EXT_framebuffer_blit</tt>
+             */
+            Draw = GL_DRAW_FRAMEBUFFER,
             ReadDraw = GL_FRAMEBUFFER       /**< For both reading and drawing. */
         };
 
@@ -146,6 +159,8 @@ class MAGNUM_EXPORT Framebuffer {
          * mapDefaultForDraw() for binding particular framebuffer for reading
          * and drawing. If multiple attachments are specified in mapForDraw()
          * / mapDefaultForDraw(), the data are written to each of them.
+         *
+         * @requires_gl30 Extension <tt>EXT_framebuffer_blit</tt>
          */
         inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, const Math::Vector2<GLint>& destinationBottomLeft, const Math::Vector2<GLint>& destinationTopRight, BlitMask blitMask, AbstractTexture::Filter filter) {
             glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), destinationBottomLeft.x(), destinationBottomLeft.y(), destinationTopRight.x(), destinationTopRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(filter));
@@ -164,6 +179,8 @@ class MAGNUM_EXPORT Framebuffer {
          * no interpolation is needed and thus
          * AbstractTexture::Filter::NearestNeighbor filtering is used by
          * default.
+         *
+         * @requires_gl30 Extension <tt>EXT_framebuffer_blit</tt>
          */
         inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, BlitMask blitMask) {
             glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(AbstractTexture::Filter::NearestNeighbor));
@@ -266,6 +283,8 @@ class MAGNUM_EXPORT Framebuffer {
          * @param depthStencilAttachment Depth/stencil attachment
          * @param texture           1D texture
          * @param mipLevel          Mip level
+         *
+         * @requires_gl30 Extension <tt>EXT_framebuffer_object</tt>
          */
         inline void attachTexture1D(Target target, DepthStencilAttachment depthStencilAttachment, Texture1D* texture, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -280,6 +299,8 @@ class MAGNUM_EXPORT Framebuffer {
          * @param colorAttachment   Color attachment ID (number between 0 and 15)
          * @param texture           1D texture
          * @param mipLevel          Mip level
+         *
+         * @requires_gl30 Extension <tt>EXT_framebuffer_object</tt>
          */
         inline void attachTexture1D(Target target, unsigned int colorAttachment, Texture1D* texture, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -297,6 +318,7 @@ class MAGNUM_EXPORT Framebuffer {
          *      should be always 0.
          *
          * @see attachCubeMapTexture()
+         * @requires_gl30 Extension <tt>EXT_framebuffer_object</tt>
          */
         inline void attachTexture2D(Target target, DepthStencilAttachment depthStencilAttachment, Texture2D* texture, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -314,6 +336,7 @@ class MAGNUM_EXPORT Framebuffer {
          *      should be always 0.
          *
          * @see attachCubeMapTexture()
+         * @requires_gl30 Extension <tt>EXT_framebuffer_object</tt>
          */
         inline void attachTexture2D(Target target, unsigned int colorAttachment, Texture2D* texture, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -331,6 +354,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @param mipLevel          Mip level
          *
          * @see attachTexture2D()
+         * @requires_gl30 Extension <tt>EXT_framebuffer_object</tt>
          */
         inline void attachCubeMapTexture(Target target, DepthStencilAttachment depthStencilAttachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -347,6 +371,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @param mipLevel          Mip level
          *
          * @see attachTexture2D()
+         * @requires_gl30 Extension <tt>EXT_framebuffer_object</tt>
          */
         inline void attachCubeMapTexture(Target target, unsigned int colorAttachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -361,6 +386,8 @@ class MAGNUM_EXPORT Framebuffer {
          * @param texture           3D texture
          * @param mipLevel          Mip level
          * @param layer             Layer of 2D image within a 3D texture
+         *
+         * @requires_gl30 Extension <tt>EXT_framebuffer_object</tt>
          */
         inline void attachTexture3D(Target target, DepthStencilAttachment depthStencilAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {
             /** @todo Check for internal format compatibility */
@@ -376,6 +403,8 @@ class MAGNUM_EXPORT Framebuffer {
          * @param texture           3D texture
          * @param mipLevel          Mip level
          * @param layer             Layer of 2D image within a 3D texture.
+         *
+         * @requires_gl30 Extension <tt>EXT_framebuffer_object</tt>
          */
         inline void attachTexture3D(Target target, unsigned int colorAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {
             /** @todo Check for internal format compatibility */

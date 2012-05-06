@@ -47,6 +47,8 @@ between 0 and `textureSizeInGivenDirection-1`. Note that rectangle textures
 don't support mipmapping and repeating wrapping modes, see @ref Texture::Filter
 "Filter", @ref Texture::Mipmap "Mipmap" and generateMipmap() documentation
 for more information.
+
+@requires_gl31 Extension <tt>ARB_texture_rectangle</tt> (rectangle textures)
  */
 template<size_t textureDimensions> class Texture: public AbstractTexture {
     public:

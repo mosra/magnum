@@ -56,6 +56,8 @@ class MAGNUM_EXPORT AbstractQuery {
          *
          * Note that this function is blocking until the result is available.
          * See resultAvailable().
+         *
+         * @requires_gl33 Extension <tt>ARB_timer_query</tt> (64bit integers)
          */
         template<class T> T result() = delete;
 
@@ -105,7 +107,11 @@ class MAGNUM_EXPORT Query: public AbstractQuery {
             /** Count of primitives written to transform feedback buffer. */
             TransformFeedbackPrimitivesWritten = GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN,
 
-            /** Elapsed time */
+            /**
+             * Elapsed time
+             *
+             * @requires_gl33 Extension <tt>ARB_timer_query</tt>
+             */
             TimeElapsed = GL_TIME_ELAPSED
         };
 
@@ -173,7 +179,11 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
             /** Count of samples passed from fragment shader */
             SamplesPassed = GL_SAMPLES_PASSED,
 
-            /** Whether any samples passed from fragment shader */
+            /**
+             * Whether any samples passed from fragment shader
+             *
+             * @requires_gl33 Extension <tt>ARB_occlusion_query2</tt>
+             */
             AnySamplesPassed = GL_ANY_SAMPLES_PASSED
         };
 
@@ -258,6 +268,8 @@ GLuint timeElapsed1 = tmp-q1.result<GLuint>();
 GLuint timeElapsed2 = q3.result<GLuint>()-tmp;
 @endcode
 Using this query results in fewer OpenGL calls when doing more measures.
+
+@requires_gl33 Extension <tt>ARB_timer_query</tt>
 */
 class TimeQuery: public AbstractQuery {
     public:

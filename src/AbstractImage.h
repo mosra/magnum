@@ -67,7 +67,11 @@ class MAGNUM_EXPORT AbstractImage {
             /** Stencil index. For framebuffer reading only. */
             StencilIndex = GL_STENCIL_INDEX,
 
-            /** Depth and stencil component. For framebuffer reading only. */
+            /**
+             * Depth and stencil component. For framebuffer reading only.
+             *
+             * @requires_gl30 Extension <tt>EXT_packed_depth_stencil</tt>
+             */
             DepthStencil = GL_DEPTH_STENCIL
         };
 
@@ -80,7 +84,11 @@ class MAGNUM_EXPORT AbstractImage {
             UnsignedInt = GL_UNSIGNED_INT,  /**< Each component unsigned int */
             Int = GL_INT,                   /**< Each component int */
 
-            /** Each component half float (16bit). For framebuffer reading only. */
+            /**
+             * Each component half float (16bit). For framebuffer reading only.
+             *
+             * @requires_gl30 Extension <tt>NV_half_float</tt> / <tt>ARB_half_float_pixel</tt>
+             */
             HalfFloat = GL_HALF_FLOAT,
 
             Float = GL_FLOAT,               /**< Each component float (32bit) */
@@ -160,6 +168,8 @@ class MAGNUM_EXPORT AbstractImage {
             /**
              * Three-component BGR, float, red and green 11bit, blue 10bit,
              * 32bit total. For framebuffer reading only.
+             *
+             * @requires_gl30 Extension <tt>EXT_packed_float</tt>
              */
             B10GR11Float = GL_UNSIGNED_INT_10F_11F_11F_REV,
 
@@ -167,18 +177,24 @@ class MAGNUM_EXPORT AbstractImage {
              * Three-component BGR, unsigned integers with exponent, each
              * component 9bit, exponent 5bit, 32bit total. For framebuffer
              * reading only.
+             *
+             * @requires_gl30 Extension <tt>EXT_texture_shared_exponent</tt>
              */
             Exponent5RGB9 = GL_UNSIGNED_INT_5_9_9_9_REV,
 
             /**
              * 24bit depth and 8bit stencil component, 32bit total. For
              * framebuffer reading only.
+             *
+             * @requires_gl30 Extension <tt>EXT_packed_depth_stencil</tt>
              */
             Depth24Stencil8 = GL_UNSIGNED_INT_24_8,
 
             /**
              * 32bit float depth component and 8bit stencil component, 64bit
              * total. For framebuffer reading only.
+             *
+             * @requires_gl30 Extension <tt>ARB_depth_buffer_float</tt>
              */
             Depth32FloatStencil8 = GL_FLOAT_32_UNSIGNED_INT_24_8_REV
         };

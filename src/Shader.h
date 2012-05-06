@@ -42,9 +42,16 @@ class MAGNUM_EXPORT Shader {
     public:
         /** @brief %Shader type */
         enum Type {
-            Vertex = GL_VERTEX_SHADER,      /**< @brief Vertex shader */
-            Geometry = GL_GEOMETRY_SHADER,  /**< @brief Geometry shader */
-            Fragment = GL_FRAGMENT_SHADER   /**< @brief Fragment shader */
+            Vertex = GL_VERTEX_SHADER,      /**< Vertex shader */
+
+            /**
+             * Geometry shader
+             *
+             * @requires_gl32 Extension <tt>ARB_geometry_shader4</tt>
+             */
+            Geometry = GL_GEOMETRY_SHADER,
+
+            Fragment = GL_FRAGMENT_SHADER   /**< Fragment shader */
         };
 
         /** @brief %Shader state */

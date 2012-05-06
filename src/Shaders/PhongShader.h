@@ -23,7 +23,12 @@
 
 namespace Magnum { namespace Shaders {
 
-/** @brief Phong shader */
+/**
+@brief Phong shader
+
+@requires_gl33 The shader is written in GLSL 3.3, although it should be trivial
+    to port it to older versions.
+*/
 class PhongShader: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Vector4> Vertex;   /**< @brief Vertex position */

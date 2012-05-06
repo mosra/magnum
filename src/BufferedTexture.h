@@ -35,6 +35,8 @@ using data setting functions in Buffer itself.
 
 When using buffered texture in the shader, use `samplerBuffer` and fetch the
 data using integer coordinates in `texelFetch()`.
+
+@requires_gl31 Extension <tt>ARB_texture_buffer_object</tt>
 */
 class BufferedTexture {
     BufferedTexture(const BufferedTexture& other) = delete;
