@@ -25,11 +25,10 @@
 namespace Magnum { namespace Math {
 
 /**
- * @brief 4x4 matrix
- *
- * @todo Rotation with Euler angles
- * @todo Shearing
- * @todo Reflection
+@brief 4x4 matrix
+
+@todo Shearing
+@todo Reflection
  */
 template<class T> class Matrix4: public Matrix<T, 4> {
     public:

@@ -29,9 +29,7 @@
 namespace Magnum {
 
 /**
- * @brief %Camera object
- *
- * @todo Subclasses - perspective, FBO postprocessing etc.
+@brief %Camera object
  */
 class MAGNUM_EXPORT Camera: public Object {
     public:
