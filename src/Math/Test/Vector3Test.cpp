@@ -30,8 +30,8 @@ namespace Magnum { namespace Math { namespace Test {
 typedef Math::Vector3<float> Vector3;
 
 void Vector3Test::construct() {
-    QVERIFY((Vector3(1, 2, 3) == Vector<float, 3>(1.0f, 2.0f, 3.0f)));
-    QVERIFY((Vector3(Vector<float, 2>(1.0f, 2.0f), 3) == Vector<float, 3>(1.0f, 2.0f, 3.0f)));
+    QVERIFY((Vector3(1, 2, 3) == Vector<3, float>(1.0f, 2.0f, 3.0f)));
+    QVERIFY((Vector3(Vector<2, float>(1.0f, 2.0f), 3) == Vector<3, float>(1.0f, 2.0f, 3.0f)));
 }
 
 void Vector3Test::cross() {

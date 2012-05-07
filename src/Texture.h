@@ -120,7 +120,7 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
          * see @ref AbstractTexture::Wrapping "Wrapping" documentation for
          * more information.
          */
-        inline void setWrapping(const Math::Vector<Wrapping, Dimensions>& wrapping) {
+        inline void setWrapping(const Math::Vector<Dimensions, Wrapping>& wrapping) {
             bind();
             DataHelper<Dimensions>::setWrapping(_target, wrapping);
         }
@@ -150,7 +150,7 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
          * Sets texture subdata from given image. The image is not deleted
          * afterwards.
          */
-        template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, T* image) {
+        template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<Dimensions, GLint>& offset, T* image) {
             bind();
             DataHelper<Dimensions>::setSub(_target, mipLevel, offset, image);
         }

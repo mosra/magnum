@@ -27,9 +27,9 @@ using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
 
-typedef Matrix<float, 4> Matrix4;
-typedef Matrix<float, 3> Matrix3;
-typedef Vector<float, 4> Vector4;
+typedef Matrix<4, float> Matrix4;
+typedef Matrix<3, float> Matrix3;
+typedef Vector<4, float> Vector4;
 
 void MatrixTest::construct() {
     float m[] = {
@@ -158,7 +158,7 @@ void MatrixTest::multiplyIdentity() {
 }
 
 void MatrixTest::multiply() {
-    Matrix<int, 5> left(
+    Matrix<5, int> left(
          -3,  -3,  -1,   3,  -5,
          -1,  -3,  -5,   2,   3,
          -1,  -4,   3,  -1,  -2,
@@ -166,7 +166,7 @@ void MatrixTest::multiply() {
           1,   3,  -3,  -4,  -1
     );
 
-    Matrix<int, 5> right(
+    Matrix<5, int> right(
           0,   5,   3,   4,   4,
           5,   5,   0,   0,  -2,
           3,   2,  -4,  -3,   0,
@@ -174,7 +174,7 @@ void MatrixTest::multiply() {
           0,  -1,  -4,   4,   3
     );
 
-    Matrix<int, 5> expected(
+    Matrix<5, int> expected(
         -24, -35, -32, -25,   1,
         -22, -36, -24,  33,  -8,
           8,  16, -22,  29,   2,
@@ -186,7 +186,7 @@ void MatrixTest::multiply() {
 }
 
 void MatrixTest::multiplyVector() {
-    Matrix<int, 5> matrix(
+    Matrix<5, int> matrix(
          -3,  -3,  -1,   3,  -5,
          -1,  -3,  -5,   2,   3,
          -1,  -4,   3,  -1,  -2,
@@ -194,7 +194,7 @@ void MatrixTest::multiplyVector() {
           1,   3,  -3,  -4,  -1
     );
 
-    bool is = (matrix*Vector<int, 5>(0, 5, 3, 4, 4) == Vector<int, 5>(-24, -35, -32, -25, 1));
+    bool is = (matrix*Vector<5, int>(0, 5, 3, 4, 4) == Vector<5, int>(-24, -35, -32, -25, 1));
 
     QVERIFY(is);
 }
@@ -235,7 +235,7 @@ void MatrixTest::ij() {
 }
 
 void MatrixTest::determinant() {
-    Matrix<int, 5> m(
+    Matrix<5, int> m(
         1, 2, 2, 1, 0,
         2, 3, 2, 1, -2,
         1, 1, 1, 1, 0,

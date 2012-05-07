@@ -64,7 +64,7 @@ template<class Vertex, size_t vertexSize = Vertex::Size> class Clean {
 
                 /* Under each index is pointer to face which contains given vertex
                    and index of vertex in the face. */
-                std::unordered_map<Math::Vector<size_t, vertexSize>, HashedVertex, IndexHash> table;
+                std::unordered_map<Math::Vector<vertexSize, size_t>, HashedVertex, IndexHash> table;
 
                 /* Reserve space for all vertices */
                 table.reserve(vertices.size());
@@ -80,7 +80,7 @@ template<class Vertex, size_t vertexSize = Vertex::Size> class Clean {
                         exists, change vertex pointer of the face to already
                         existing vertex */
                     HashedVertex v(*it, table.size());
-                    auto result = table.insert(std::pair<Math::Vector<size_t, vertexSize>, HashedVertex>(Math::Vector<size_t, vertexSize>::from(index), v));
+                    auto result = table.insert(std::pair<Math::Vector<vertexSize, size_t>, HashedVertex>(Math::Vector<vertexSize, size_t>::from(index), v));
                     *it = result.first->second.newIndex;
                 }
 
@@ -101,7 +101,7 @@ template<class Vertex, size_t vertexSize = Vertex::Size> class Clean {
     private:
         class IndexHash {
             public:
-                inline size_t operator()(const Math::Vector<size_t, vertexSize>& data) const {
+                inline size_t operator()(const Math::Vector<vertexSize, size_t>& data) const {
                     return *reinterpret_cast<const size_t*>(Corrade::Utility::MurmurHash2()(reinterpret_cast<const char*>(&data), sizeof(data)).byteArray());
                 }
         };

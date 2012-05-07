@@ -31,10 +31,10 @@ namespace Magnum { namespace Math {
 
 @todo Swizzling
 */
-template<class T, size_t size> class Vector {
+template<size_t size, class T> class Vector {
     public:
-        typedef T Type;                     /**< @brief %Vector data type */
         const static size_t Size = size;    /**< @brief %Vector size */
+        typedef T Type;                     /**< @brief %Vector data type */
 
         /**
          * @brief %Vector from array
@@ -44,13 +44,13 @@ template<class T, size_t size> class Vector {
          * @attention Use with caution, the function doesn't check whether the
          *      array is long enough.
          */
-        inline constexpr static Vector<T, size>& from(T* data) {
-            return *reinterpret_cast<Vector<T, size>*>(data);
+        inline constexpr static Vector<size, T>& from(T* data) {
+            return *reinterpret_cast<Vector<size, T>*>(data);
         }
 
         /** @copydoc from(T*) */
-        inline constexpr static const Vector<T, size>& from(const T* data) {
-            return *reinterpret_cast<const Vector<T, size>*>(data);
+        inline constexpr static const Vector<size, T>& from(const T* data) {
+            return *reinterpret_cast<const Vector<size, T>*>(data);
         }
 
         /**
@@ -60,7 +60,7 @@ template<class T, size_t size> class Vector {
          * a \cdot b = \sum_{i=0}^{n-1} a_ib_i
          * @f]
          */
-        static T dot(const Vector<T, size>& a, const Vector<T, size>& b) {
+        static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
             T out(0);
 
             for(size_t i = 0; i != size; ++i)
@@ -78,7 +78,7 @@ template<class T, size_t size> class Vector {
          *
          * @todo optimize - Assume the vectors are normalized?
          */
-        inline static T angle(const Vector<T, size>& a, const Vector<T, size>& b) {
+        inline static T angle(const Vector<size, T>& a, const Vector<size, T>& b) {
             return acos(dot(a, b)/(a.length()*b.length()));
         }
 
@@ -106,10 +106,10 @@ template<class T, size_t size> class Vector {
         }
 
         /** @brief Copy constructor */
-        inline constexpr Vector(const Vector<T, size>& other) = default;
+        inline constexpr Vector(const Vector<size, T>& other) = default;
 
         /** @brief Assignment operator */
-        inline Vector<T, size>& operator=(const Vector<T, size>& other) = default;
+        inline Vector<size, T>& operator=(const Vector<size, T>& other) = default;
 
         /**
          * @brief Raw data
@@ -123,7 +123,7 @@ template<class T, size_t size> class Vector {
         inline constexpr T operator[](size_t pos) const { return _data[pos]; } /**< @copydoc operator[]() */
 
         /** @brief Equality operator */
-        inline bool operator==(const Vector<T, size>& other) const {
+        inline bool operator==(const Vector<size, T>& other) const {
             for(size_t pos = 0; pos != size; ++pos)
                 if(!TypeTraits<T>::equals((*this)[pos], other[pos])) return false;
 
@@ -131,13 +131,13 @@ template<class T, size_t size> class Vector {
         }
 
         /** @brief Non-equality operator */
-        inline bool operator!=(const Vector<T, size>& other) const {
+        inline bool operator!=(const Vector<size, T>& other) const {
             return !operator==(other);
         }
 
         /** @brief Multiply vector */
-        inline Vector<T, size> operator*(T number) const {
-            return Vector<T, size>(*this)*=number;
+        inline Vector<size, T> operator*(T number) const {
+            return Vector<size, T>(*this)*=number;
         }
 
         /**
@@ -146,7 +146,7 @@ template<class T, size_t size> class Vector {
          * More efficient than operator*(), because it does the computation
          * in-place.
          */
-        Vector<T, size>& operator*=(T number) {
+        Vector<size, T>& operator*=(T number) {
             for(size_t i = 0; i != size; ++i)
                 (*this)[i] *= number;
 
@@ -154,8 +154,8 @@ template<class T, size_t size> class Vector {
         }
 
         /** @brief Divide vector */
-        inline Vector<T, size> operator/(T number) const {
-            return Vector<T, size>(*this)/=number;
+        inline Vector<size, T> operator/(T number) const {
+            return Vector<size, T>(*this)/=number;
         }
 
         /**
@@ -164,7 +164,7 @@ template<class T, size_t size> class Vector {
          * More efficient than operator/(), because it does the computation
          * in-place.
          */
-        Vector<T, size>& operator/=(T number) {
+        Vector<size, T>& operator/=(T number) {
             for(size_t i = 0; i != size; ++i)
                 (*this)[i] /= number;
 
@@ -172,8 +172,8 @@ template<class T, size_t size> class Vector {
         }
 
         /** @brief Add two vectors */
-        inline Vector<T, size> operator+(const Vector<T, size>& other) const {
-            return Vector<T, size>(*this)+=other;
+        inline Vector<size, T> operator+(const Vector<size, T>& other) const {
+            return Vector<size, T>(*this)+=other;
         }
 
         /**
@@ -182,7 +182,7 @@ template<class T, size_t size> class Vector {
          * More efficient than operator+(), because it does the computation
          * in-place.
          */
-        Vector<T, size>& operator+=(const Vector<T, size>& other) {
+        Vector<size, T>& operator+=(const Vector<size, T>& other) {
             for(size_t i = 0; i != size; ++i)
                 (*this)[i] += other[i];
 
@@ -190,8 +190,8 @@ template<class T, size_t size> class Vector {
         }
 
         /** @brief Substract two vectors */
-        inline Vector<T, size> operator-(const Vector<T, size>& other) const {
-            return Vector<T, size>(*this)-=other;
+        inline Vector<size, T> operator-(const Vector<size, T>& other) const {
+            return Vector<size, T>(*this)-=other;
         }
 
         /**
@@ -200,7 +200,7 @@ template<class T, size_t size> class Vector {
          * More efficient than operator-(), because it does the computation
          * in-place.
          */
-        Vector<T, size>& operator-=(const Vector<T, size>& other) {
+        Vector<size, T>& operator-=(const Vector<size, T>& other) {
             for(size_t i = 0; i != size; ++i)
                 (*this)[i] -= other[i];
 
@@ -208,8 +208,8 @@ template<class T, size_t size> class Vector {
         }
 
         /** @brief Negative vector */
-        Vector<T, size> operator-() const {
-            Vector<T, size> out;
+        Vector<size, T> operator-() const {
+            Vector<size, T> out;
 
             for(size_t i = 0; i != size; ++i)
                 out[i] = -(*this)[i];
@@ -239,7 +239,7 @@ template<class T, size_t size> class Vector {
         }
 
         /** @brief Normalized vector (of length 1) */
-        inline Vector<T, size> normalized() const {
+        inline Vector<size, T> normalized() const {
             return *this/length();
         }
 
@@ -258,7 +258,7 @@ template<class T, size_t size> class Vector {
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector<T, size>& value) {
+template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector<size, T>& value) {
     debug << "Vector(";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
     for(size_t i = 0; i != size; ++i) {

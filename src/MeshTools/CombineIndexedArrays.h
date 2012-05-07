@@ -43,7 +43,7 @@ class CombineIndexedArrays {
             std::iota(result.begin(), result.end(), 0);
 
             /* All index combinations */
-            std::vector<Math::Vector<unsigned int, sizeof...(indexedArrays)> > indexCombinations(_indexCount);
+            std::vector<Math::Vector<sizeof...(indexedArrays), unsigned int> > indexCombinations(_indexCount);
             writeCombinedIndices(indexCombinations, std::get<0>(indexedArrays)...);
 
             /* Make the combinations unique */
@@ -62,7 +62,7 @@ class CombineIndexedArrays {
             return first.size();
         }
 
-        template<size_t size, class ...T> static void writeCombinedIndices(std::vector<Math::Vector<unsigned int, size>>& output, const std::vector<unsigned int>& first, const std::vector<T>&... next) {
+        template<size_t size, class ...T> static void writeCombinedIndices(std::vector<Math::Vector<size, unsigned int>>& output, const std::vector<unsigned int>& first, const std::vector<T>&... next) {
             /* Copy the data to output */
             for(size_t i = 0; i != output.size(); ++i)
                 output[i][size-sizeof...(next)-1] = first[i];
@@ -70,7 +70,7 @@ class CombineIndexedArrays {
             writeCombinedIndices(output, next...);
         }
 
-        template<size_t size, class T, class ...U> static void writeCombinedArrays(const std::vector<Math::Vector<unsigned int, size>>& combinedIndices, std::vector<T>& first, std::vector<U>&... next) {
+        template<size_t size, class T, class ...U> static void writeCombinedArrays(const std::vector<Math::Vector<size, unsigned int>>& combinedIndices, std::vector<T>& first, std::vector<U>&... next) {
             /* Rewrite output array */
             std::vector<T> output;
             for(size_t i = 0; i != combinedIndices.size(); ++i)
@@ -82,8 +82,8 @@ class CombineIndexedArrays {
 
         /* Terminator functions for recursive calls */
         inline static size_t indexCount() { return 0; }
-        template<size_t size> inline static void writeCombinedIndices(std::vector<Math::Vector<unsigned int, size>>&) {}
-        template<size_t size> inline static void writeCombinedArrays(const std::vector<Math::Vector<unsigned int, size>>&) {}
+        template<size_t size> inline static void writeCombinedIndices(std::vector<Math::Vector<size, unsigned int>>&) {}
+        template<size_t size> inline static void writeCombinedArrays(const std::vector<Math::Vector<size, unsigned int>>&) {}
 };
 
 }

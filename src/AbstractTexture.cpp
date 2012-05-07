@@ -100,14 +100,14 @@ AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components comp
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-void AbstractTexture::DataHelper<2>::setWrapping(GLenum target, const Math::Vector<Wrapping, 2>& wrapping) {
+void AbstractTexture::DataHelper<2>::setWrapping(GLenum target, const Math::Vector<2, Wrapping>& wrapping) {
     CORRADE_ASSERT(target != GL_TEXTURE_RECTANGLE || ((wrapping[0] == Wrapping::ClampToEdge || wrapping[0] == Wrapping::ClampToBorder) && (wrapping[0] == Wrapping::ClampToEdge || wrapping[1] == Wrapping::ClampToEdge)), "AbstractTexture: rectangle texture wrapping must either clamp to border or to edge", )
 
     glTexParameteri(target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
     glTexParameteri(target, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
 }
 
-void AbstractTexture::DataHelper<3>::setWrapping(GLenum target, const Math::Vector<Wrapping, 3>& wrapping) {
+void AbstractTexture::DataHelper<3>::setWrapping(GLenum target, const Math::Vector<3, Wrapping>& wrapping) {
     glTexParameteri(target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
     glTexParameteri(target, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
     glTexParameteri(target, GL_TEXTURE_WRAP_R, static_cast<GLint>(wrapping[2]));

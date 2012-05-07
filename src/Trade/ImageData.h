@@ -44,7 +44,7 @@ template<size_t imageDimensions> class ImageData: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        template<class T> inline ImageData(const Math::Vector<GLsizei, Dimensions>& dimensions, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _dimensions(dimensions), _data(reinterpret_cast<char*>(data)) {}
+        template<class T> inline ImageData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _dimensions(dimensions), _data(reinterpret_cast<char*>(data)) {}
 
         /**
          * @brief Constructor
@@ -56,19 +56,19 @@ template<size_t imageDimensions> class ImageData: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        inline ImageData(const Math::Vector<GLsizei, Dimensions>& dimensions, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _dimensions(dimensions), _data(reinterpret_cast<char*>(data)) {}
+        inline ImageData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _dimensions(dimensions), _data(reinterpret_cast<char*>(data)) {}
 
         /** @brief Destructor */
         inline virtual ~ImageData() { delete[] _data; }
 
         /** @brief %Image dimensions */
-        inline const Math::Vector<GLsizei, Dimensions>& dimensions() const { return _dimensions; }
+        inline const Math::Vector<Dimensions, GLsizei>& dimensions() const { return _dimensions; }
 
         /** @brief Pointer to raw data */
         inline const void* data() const { return _data; }
 
     private:
-        Math::Vector<GLsizei, Dimensions> _dimensions;
+        Math::Vector<Dimensions, GLsizei> _dimensions;
         char* _data;
 };
 

@@ -77,7 +77,7 @@ class CubeMapTexture: public AbstractTexture {
         /**
          * @copydoc Texture::setWrapping()
          */
-        inline void setWrapping(const Math::Vector<Wrapping, 3>& wrapping) {
+        inline void setWrapping(const Math::Vector<3, Wrapping>& wrapping) {
             bind();
             DataHelper<3>::setWrapping(GL_TEXTURE_CUBE_MAP, wrapping);
         }
@@ -92,10 +92,10 @@ class CubeMapTexture: public AbstractTexture {
         }
 
         /**
-         * @copydoc Texture::setSubData(GLint, const Math::Vector<GLint, Dimensions>&, T*)
+         * @copydoc Texture::setSubData(GLint, const Math::Vector<Dimensions, GLint>&, T*)
          * @param coordinate    Coordinate
          */
-        template<class T> inline void setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector<GLint, 2>& offset, const T* image) {
+        template<class T> inline void setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector<2, GLint>& offset, const T* image) {
             bind();
             DataHelper<2>::setSub(static_cast<GLenum>(coordinate), mipLevel, offset, image);
         }

@@ -210,7 +210,7 @@ template<> struct TypeTraits<GLdouble>: public Math::TypeTraits<double> {
     inline constexpr static size_t count() { return 1; }
 };
 
-template<class T, size_t vectorSize> struct TypeTraits<Math::Vector<T, vectorSize>> {
+template<class T, size_t vectorSize> struct TypeTraits<Math::Vector<vectorSize, T>> {
     inline constexpr static Type type() { return TypeTraits<T>::type(); }
     /* Can not be used for indices */
     /* Can not be used for images */
@@ -218,11 +218,11 @@ template<class T, size_t vectorSize> struct TypeTraits<Math::Vector<T, vectorSiz
     inline constexpr static size_t count() { return vectorSize; }
 };
 
-template<class T> struct TypeTraits<Math::Vector2<T>>: public TypeTraits<Math::Vector<T, 2>> {};
-template<class T> struct TypeTraits<Math::Vector3<T>>: public TypeTraits<Math::Vector<T, 3>> {};
-template<class T> struct TypeTraits<Math::Vector4<T>>: public TypeTraits<Math::Vector<T, 4>> {};
+template<class T> struct TypeTraits<Math::Vector2<T>>: public TypeTraits<Math::Vector<2, T>> {};
+template<class T> struct TypeTraits<Math::Vector3<T>>: public TypeTraits<Math::Vector<3, T>> {};
+template<class T> struct TypeTraits<Math::Vector4<T>>: public TypeTraits<Math::Vector<4, T>> {};
 
-template<class T, size_t matrixSize> struct TypeTraits<Math::Matrix<T, matrixSize>> {
+template<class T, size_t matrixSize> struct TypeTraits<Math::Matrix<matrixSize, T>> {
     inline constexpr static Type type() { return TypeTraits<T>::type(); }
     /* Can not be used for indices */
     /* Can not be used for images */
@@ -230,8 +230,8 @@ template<class T, size_t matrixSize> struct TypeTraits<Math::Matrix<T, matrixSiz
     inline constexpr static size_t count() { return matrixSize*matrixSize; }
 };
 
-template<class T> struct TypeTraits<Math::Matrix3<T>>: public TypeTraits<Math::Matrix<T, 3>> {};
-template<class T> struct TypeTraits<Math::Matrix4<T>>: public TypeTraits<Math::Matrix<T, 4>> {};
+template<class T> struct TypeTraits<Math::Matrix3<T>>: public TypeTraits<Math::Matrix<3, T>> {};
+template<class T> struct TypeTraits<Math::Matrix4<T>>: public TypeTraits<Math::Matrix<4, T>> {};
 #endif
 
 }

@@ -24,7 +24,7 @@
 namespace Magnum { namespace Math {
 
 /** @brief Three-component vector */
-template<class T> class Vector3: public Vector<T, 3> {
+template<class T> class Vector3: public Vector<3, T> {
     public:
         /** @copydoc Vector::from(T*) */
         inline constexpr static Vector3<T>& from(T* data) {
@@ -60,10 +60,10 @@ template<class T> class Vector3: public Vector<T, 3> {
         }
 
         /** @copydoc Vector::Vector(T) */
-        inline constexpr explicit Vector3(T value = T()): Vector<T, 3>(value, value, value) {}
+        inline constexpr explicit Vector3(T value = T()): Vector<3, T>(value, value, value) {}
 
         /** @copydoc Vector::Vector(const Vector&)  */
-        inline constexpr Vector3(const Vector<T, 3>& other): Vector<T, 3>(other) {}
+        inline constexpr Vector3(const Vector<3, T>& other): Vector<3, T>(other) {}
 
         /**
          * @brief Constructor
@@ -71,14 +71,14 @@ template<class T> class Vector3: public Vector<T, 3> {
          * @param y     Y / G value
          * @param z     Z / B value
          */
-        inline constexpr Vector3(T x, T y, T z): Vector<T, 3>(x, y, z) {}
+        inline constexpr Vector3(T x, T y, T z): Vector<3, T>(x, y, z) {}
 
         /**
          * @brief Constructor
          * @param other     Two component vector
          * @param z         Z / B value
          */
-        inline constexpr Vector3(const Vector<T, 2>& other, T z = T(0)): Vector<T, 3>(other[0], other[1], z) {}
+        inline constexpr Vector3(const Vector<2, T>& other, T z = T(0)): Vector<3, T>(other[0], other[1], z) {}
 
         inline constexpr T x() const { return (*this)[0]; } /**< @brief X component */
         inline constexpr T y() const { return (*this)[1]; } /**< @brief Y component */
@@ -98,56 +98,56 @@ template<class T> class Vector3: public Vector<T, 3> {
 
         /** @copydoc Vector::operator=() */
         inline Vector3<T>& operator=(const Vector3<T>& other) {
-            Vector<T, 3>::operator=(other);
+            Vector<3, T>::operator=(other);
             return *this;
         }
 
         /** @copydoc Vector::operator*(T) const */
-        inline Vector3<T> operator*(T number) const { return Vector<T, 3>::operator*(number); }
+        inline Vector3<T> operator*(T number) const { return Vector<3, T>::operator*(number); }
 
         /** @copydoc Vector::operator*=() */
         inline Vector3<T>& operator*=(T number) {
-            Vector<T, 3>::operator*=(number);
+            Vector<3, T>::operator*=(number);
             return *this;
         }
 
         /** @copydoc Vector::operator/() */
-        inline Vector3<T> operator/(T number) const { return Vector<T, 3>::operator/(number); }
+        inline Vector3<T> operator/(T number) const { return Vector<3, T>::operator/(number); }
 
         /** @copydoc Vector::operator/=() */
         inline Vector3<T>& operator/=(T number) {
-            Vector<T, 3>::operator/=(number);
+            Vector<3, T>::operator/=(number);
             return *this;
         }
 
         /** @copydoc Vector::operator+() */
-        inline Vector3<T> operator+(const Vector<T, 3>& other) const { return Vector<T, 3>::operator+(other); }
+        inline Vector3<T> operator+(const Vector<3, T>& other) const { return Vector<3, T>::operator+(other); }
 
         /** @copydoc Vector::operator+=() */
-        inline Vector3<T>& operator+=(const Vector<T, 3>& other) {
-            Vector<T, 3>::operator+=(other);
+        inline Vector3<T>& operator+=(const Vector<3, T>& other) {
+            Vector<3, T>::operator+=(other);
             return *this;
         }
 
-        /** @copydoc Vector::operator-(const Vector<T, size>&) const */
-        inline Vector3<T> operator-(const Vector<T, 3>& other) const { return Vector<T, 3>::operator-(other); }
+        /** @copydoc Vector::operator-(const Vector<size, T>&) const */
+        inline Vector3<T> operator-(const Vector<3, T>& other) const { return Vector<3, T>::operator-(other); }
 
         /** @copydoc Vector::operator-=() */
-        inline Vector3<T>& operator-=(const Vector<T, 3>& other) {
-            Vector<T, 3>::operator-=(other);
+        inline Vector3<T>& operator-=(const Vector<3, T>& other) {
+            Vector<3, T>::operator-=(other);
             return *this;
         }
 
         /** @copydoc Vector::operator-() */
-        inline Vector3<T> operator-() const { return Vector<T, 3>::operator-(); }
+        inline Vector3<T> operator-() const { return Vector<3, T>::operator-(); }
 
         /** @copydoc Vector::normalized() */
-        inline Vector3<T> normalized() const { return Vector<T, 3>::normalized(); }
+        inline Vector3<T> normalized() const { return Vector<3, T>::normalized(); }
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector3<T>& value) {
-    return debug << static_cast<const Magnum::Math::Vector<T, 3>&>(value);
+    return debug << static_cast<const Magnum::Math::Vector<3, T>&>(value);
 }
 #endif
 

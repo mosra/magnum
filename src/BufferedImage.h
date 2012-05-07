@@ -46,7 +46,7 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
         BufferedImage(Components components, ComponentType type): AbstractImage(components, type), _buffer(Buffer::Target::PixelPack) {}
 
         /** @brief %Image dimensions */
-        inline Math::Vector<GLsizei, Dimensions> dimensions() const { return _dimensions; }
+        inline Math::Vector<Dimensions, GLsizei> dimensions() const { return _dimensions; }
 
         /**
          * @brief Data
@@ -74,7 +74,7 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
          * Updates the image buffer with given data. The data are not deleted
          * after filling the buffer.
          */
-        template<class T> inline void setData(const Math::Vector<GLsizei, Dimensions>& dimensions, Components components, const T* data, Buffer::Usage usage) {
+        template<class T> inline void setData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, const T* data, Buffer::Usage usage) {
             setData(dimensions, components, TypeTraits<T>::imageType(), data, usage);
         }
 
@@ -89,7 +89,7 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
          * Updates the image buffer with given data. The data are not deleted
          * after filling the buffer.
          */
-        void setData(const Math::Vector<GLsizei, Dimensions>& dimensions, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage) {
+        void setData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage) {
             _components = components;
             _type = type;
             _dimensions = dimensions;
@@ -97,7 +97,7 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
         }
 
     protected:
-        Math::Vector<GLsizei, Dimensions> _dimensions;  /**< @brief %Image dimensions */
+        Math::Vector<Dimensions, GLsizei> _dimensions;  /**< @brief %Image dimensions */
         Buffer _buffer;                                 /**< @brief %Image buffer */
 };
 

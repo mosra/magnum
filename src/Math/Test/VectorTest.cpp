@@ -28,8 +28,8 @@ using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
 
-typedef Vector<float, 4> Vector4;
-typedef Vector<float, 3> Vector3;
+typedef Vector<4, float> Vector4;
+typedef Vector<3, float> Vector3;
 
 void VectorTest::construct() {
     QVERIFY((Vector4() == Vector4(0.0f, 0.0f, 0.0f, 0.0f)));

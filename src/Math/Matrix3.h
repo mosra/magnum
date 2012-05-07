@@ -25,7 +25,7 @@
 namespace Magnum { namespace Math {
 
 /** @brief 3x3 matrix */
-template<class T> class Matrix3: public Matrix<T, 3> {
+template<class T> class Matrix3: public Matrix<3, T> {
     public:
         /** @copydoc Matrix::from(T*) */
         inline constexpr static Matrix3<T>& from(T* data) {
@@ -37,16 +37,16 @@ template<class T> class Matrix3: public Matrix<T, 3> {
             return *reinterpret_cast<const Matrix3<T>*>(data);
         }
 
-        /** @copydoc Matrix::from(const Vector<T, size>&, const U&...) */
-        template<class ...U> inline constexpr static Matrix3<T> from(const Vector<T, 3>& first, const U&... next) {
-            return Matrix<T, 3>::from(first, next...);
+        /** @copydoc Matrix::from(const Vector<size, T>&, const U&...) */
+        template<class ...U> inline constexpr static Matrix3<T> from(const Vector<3, T>& first, const U&... next) {
+            return Matrix<3, T>::from(first, next...);
         }
 
         /** @copydoc Matrix::Matrix(ZeroType) */
-        inline constexpr explicit Matrix3(typename Matrix<T, 3>::ZeroType): Matrix<T, 3>(Matrix<T, 3>::Zero) {}
+        inline constexpr explicit Matrix3(typename Matrix<3, T>::ZeroType): Matrix<3, T>(Matrix<3, T>::Zero) {}
 
         /** @copydoc Matrix::Matrix(IdentityType, T) */
-        inline constexpr explicit Matrix3(typename Matrix<T, 3>::IdentityType = Matrix<T, 3>::Identity, T value = T(1)): Matrix<T, 3>(
+        inline constexpr explicit Matrix3(typename Matrix<3, T>::IdentityType = Matrix<3, T>::Identity, T value = T(1)): Matrix<3, T>(
             value, 0.0f, 0.0f,
             0.0f, value, 0.0f,
             0.0f, 0.0f, value
@@ -58,48 +58,48 @@ template<class T> class Matrix3: public Matrix<T, 3> {
 
         /** @copydoc Matrix::Matrix(T, U...) */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> inline constexpr Matrix3(T first, U... next): Matrix<T, 3>(first, next...) {}
+        template<class ...U> inline constexpr Matrix3(T first, U... next): Matrix<3, T>(first, next...) {}
         #else
         template<class ...U> inline constexpr Matrix3(T first, U... next) {}
         #endif
 
-        /** @copydoc Matrix::Matrix(const Matrix<T, size>&) */
-        inline constexpr Matrix3(const Matrix<T, 3>& other): Matrix<T, 3>(other) {}
+        /** @copydoc Matrix::Matrix(const Matrix<size, T>&) */
+        inline constexpr Matrix3(const Matrix<3, T>& other): Matrix<3, T>(other) {}
 
         /** @copydoc Matrix::operator=() */
         inline Matrix3<T>& operator=(const Matrix3<T>& other) {
-            Matrix<T, 3>::operator=(other);
+            Matrix<3, T>::operator=(other);
             return *this;
         }
 
         /** @copydoc Matrix::operator[](size_t) */
-        inline Vector3<T>& operator[](size_t col) { return Vector3<T>::from(Matrix<T, 3>::data()+col*3); }
+        inline Vector3<T>& operator[](size_t col) { return Vector3<T>::from(Matrix<3, T>::data()+col*3); }
 
         /** @copydoc Matrix::operator[](size_t) const */
-        inline constexpr const Vector3<T>& operator[](size_t col) const { return Vector3<T>::from(Matrix<T, 3>::data()+col*3); }
+        inline constexpr const Vector3<T>& operator[](size_t col) const { return Vector3<T>::from(Matrix<3, T>::data()+col*3); }
 
-        /** @copydoc Matrix::operator*(const Matrix<T, size>&) const */
-        inline Matrix3<T> operator*(const Matrix<T, 3>& other) const { return Matrix<T, 3>::operator*(other); }
+        /** @copydoc Matrix::operator*(const Matrix<size, T>&) const */
+        inline Matrix3<T> operator*(const Matrix<3, T>& other) const { return Matrix<3, T>::operator*(other); }
 
         /** @copydoc Matrix::operator*=() */
-        inline Matrix3<T>& operator*=(const Matrix<T, 3>& other) {
-            Matrix<T, 3>::operator*=(other);
+        inline Matrix3<T>& operator*=(const Matrix<3, T>& other) {
+            Matrix<3, T>::operator*=(other);
             return *this;
         }
 
-        /** @copydoc Matrix::operator*(const Vector<T, size>&) const */
-        inline Vector3<T> operator*(const Vector<T, 3>& other) const { return Matrix<T, 3>::operator*(other); }
+        /** @copydoc Matrix::operator*(const Vector<size, T>&) const */
+        inline Vector3<T> operator*(const Vector<3, T>& other) const { return Matrix<3, T>::operator*(other); }
 
         /** @copydoc Matrix::transposed() */
-        inline Matrix3<T> transposed() const { return Matrix<T, 3>::transposed(); }
+        inline Matrix3<T> transposed() const { return Matrix<3, T>::transposed(); }
 
         /** @copydoc Matrix::inverted() */
-        inline Matrix3<T> inverted() const { return Matrix<T, 3>::inverted(); }
+        inline Matrix3<T> inverted() const { return Matrix<3, T>::inverted(); }
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix3<T>& value) {
-    return debug << static_cast<const Magnum::Math::Matrix<T, 3>&>(value);
+    return debug << static_cast<const Magnum::Math::Matrix<3, T>&>(value);
 }
 #endif
 
