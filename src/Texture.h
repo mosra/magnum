@@ -68,18 +68,18 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
             Texture3D = GL_TEXTURE_3D, /**< Three-dimensional texture */
 
             /**
-             * Array of one-dimensional textures (i.e. two dimensions in total)
+             * One-dimensional texture array (i.e. two dimensions in total)
              *
              * @requires_gl30 Extension <tt>EXT_texture_array</tt>
              */
-            Array1D = GL_TEXTURE_1D_ARRAY,
+            Texture1DArray = GL_TEXTURE_1D_ARRAY,
 
             /**
-             * Array of two-dimensional textures (i.e. three dimensions in total)
+             * Two-dimensional texture array (i.e. three dimensions in total)
              *
              * @requires_gl30 Extension <tt>EXT_texture_array</tt>
              */
-            Array2D = GL_TEXTURE_2D_ARRAY,
+            Texture2DArray = GL_TEXTURE_2D_ARRAY,
 
             /**
              * Rectangle texture (i.e. two dimensions)

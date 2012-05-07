@@ -587,7 +587,7 @@ template<> struct AbstractTexture::DataHelper<1> {
 template<> struct AbstractTexture::DataHelper<2> {
     enum class Target: GLenum {
         Texture2D = GL_TEXTURE_2D,
-        Array1D = GL_TEXTURE_1D_ARRAY,
+        Texture1DArray = GL_TEXTURE_1D_ARRAY,
         Rectangle = GL_TEXTURE_RECTANGLE
     };
 
@@ -610,7 +610,7 @@ template<> struct AbstractTexture::DataHelper<2> {
 template<> struct AbstractTexture::DataHelper<3> {
     enum class Target: GLenum {
         Texture3D = GL_TEXTURE_3D,
-        Array2D = GL_TEXTURE_2D_ARRAY
+        Texture2DArray = GL_TEXTURE_2D_ARRAY
     };
 
     inline constexpr static Target target() { return Target::Texture3D; }
