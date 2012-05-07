@@ -26,7 +26,8 @@ namespace Magnum {
 /**
 @brief Non-templated base for one-, two- or three-dimensional textures.
 
-See Texture, CubeMapTexture documentation for more information.
+See Texture, CubeMapTexture and CubeMapTextureArray documentation for more
+information.
 @todo Add glPixelStore encapsulation
 @todo Anisotropic filtering
 */

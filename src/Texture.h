@@ -50,7 +50,7 @@ for more information.
 
 @requires_gl31 Extension <tt>ARB_texture_rectangle</tt> (rectangle textures)
 
-@see CubeMapTexture
+@see CubeMapTexture, CubeMapTextureArray
  */
 template<size_t textureDimensions> class Texture: public AbstractTexture {
     public:

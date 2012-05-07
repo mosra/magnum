@@ -43,7 +43,8 @@ textures, coordinates for cube map textures is signed three-part vector from
 the center of the cube, which intersects one of the six sides of the cube map.
 
 See Texture documentation for more information about usage.
-@todo Cube map arrays (OpenGL 4.0, ARB_texture_cube_map_array)
+
+@see CubeMapTextureArray
 */
 class CubeMapTexture: public AbstractTexture {
     public:
