@@ -16,6 +16,7 @@ capable of OpenGL 2.1 only).
 - @subpage RequiresGL40
 - @subpage RequiresGL41
 - @subpage RequiresGL42
+- @subpage RequiresExtension
 
 @page RequiresGL30 Functionality requiring OpenGL 3.0
 @page RequiresGL31 Functionality requiring OpenGL 3.1
@@ -24,5 +25,6 @@ capable of OpenGL 2.1 only).
 @page RequiresGL40 Functionality requiring OpenGL 4.0
 @page RequiresGL41 Functionality requiring OpenGL 4.1
 @page RequiresGL42 Functionality requiring OpenGL 4.2
+@page RequiresExtension Functionality requiring specific OpenGL extension
 
 */
