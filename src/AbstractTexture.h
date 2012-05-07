@@ -512,89 +512,9 @@ class MAGNUM_EXPORT AbstractTexture {
         void generateMipmap();
 
     protected:
-        /**
-         * @brief Helper for setting texture data
-         *
-         * Workaround for partial template specialization.
-         */
-        template<size_t textureDimensions> struct DataHelper {
-            #ifdef DOXYGEN_GENERATING_OUTPUT
-            /**
-             * @brief %Texture target
-             *
-             * Each dimension has its own unique subset of these targets.
-             */
-            enum class Target: GLenum {
-                Texture1D = GL_TEXTURE_1D, /**< One-dimensional texture */
-                Texture2D = GL_TEXTURE_2D, /**< Two-dimensional texture */
-                Texture3D = GL_TEXTURE_3D, /**< Three-dimensional texture */
-
-                /**
-                 * Array of one-dimensional textures
-                 *
-                 * @requires_gl30 Extension <tt>EXT_texture_array</tt>
-                 */
-                Array1D = GL_TEXTURE_1D_ARRAY,
-
-                /**
-                 * Array of two-dimensional textures
-                 *
-                 * @requires_gl30 Extension <tt>EXT_texture_array</tt>
-                 */
-                Array2D = GL_TEXTURE_2D_ARRAY,
-
-                /**
-                 * Rectangle texture
-                 *
-                 * @requires_gl31 Extension <tt>ARB_texture_rectangle</tt>
-                 */
-                Rectangle = GL_TEXTURE_RECTANGLE,
-
-                CubeMap = GL_TEXTURE_CUBE_MAP /**< Cube map texture */
-            };
-
-            /**
-             * @brief Target for given dimension
-             *
-             * Returns `Target::Texture1D`, `Target::Texture2D` or
-             * `Target::Texture3D` based on dimension count.
-             */
-            inline constexpr static Target target();
-
-            /**
-             * @brief Set texture wrapping
-             * @param target            Target, such as `GL_TEXTURE_RECTANGLE`
-             * @param wrapping          Wrapping type for all texture dimensions
-             */
-            inline static void setWrapping(GLenum target, const Math::Vector<Wrapping, Dimensions>& wrapping);
-
-            /**
-             * @brief Set texture data
-             * @param target            %Target
-             * @param mipLevel          Mip level
-             * @param internalFormat    Internal texture format
-             * @param image             Image, BufferedImage or for example
-             *      Trade::ImageData of the same dimension count
-             *
-             * Calls `glTexImage1D`, `glTexImage2D`, `glTexImage3D` depending
-             * on dimension count.
-             */
-            template<class T> inline static void set(Target target, GLint mipLevel, InternalFormat internalFormat, T* image);
-
-            /**
-             * @brief Set texture subdata
-             * @param target            %Target
-             * @param mipLevel          Mip level
-             * @param offset            Offset where to put data in the texture
-             * @param image             Image, BufferedImage or for example
-             *      Trade::ImageData of the same dimension count
-             *
-             * Calls `glTexSubImage1D`, `glTexSubImage2D`, `glTexSubImage3D`
-             * depending on dimension count.
-             */
-            template<class T> inline static void setSub(Target target, GLint mipLevel, const Math::Vector<GLint, textureDimensions>& offset, T* image);
-            #endif
-        };
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<size_t textureDimensions> struct DataHelper {};
+        #endif
 
     private:
         const GLenum target;

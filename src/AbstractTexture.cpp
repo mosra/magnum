@@ -99,6 +99,7 @@ AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components comp
     #undef internalFormatSwitch
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 void AbstractTexture::DataHelper<2>::setWrapping(Target target, const Math::Vector<Wrapping, 2>& wrapping) {
     CORRADE_ASSERT(target != Target::Rectangle || ((wrapping[0] == Wrapping::ClampToEdge || wrapping[0] == Wrapping::ClampToBorder) && (wrapping[0] == Wrapping::ClampToEdge || wrapping[1] == Wrapping::ClampToEdge)), "AbstractTexture: rectangle texture wrapping must either clamp to border or to edge", )
 
@@ -111,5 +112,6 @@ void AbstractTexture::DataHelper<3>::setWrapping(Target target, const Math::Vect
     glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
     glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_R, static_cast<GLint>(wrapping[2]));
 }
+#endif
 
 }

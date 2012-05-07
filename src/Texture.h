@@ -53,12 +53,54 @@ for more information.
 template<size_t textureDimensions> class Texture: public AbstractTexture {
     public:
         static const size_t Dimensions = textureDimensions; /**< @brief %Texture dimension count */
+
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        /**
+         * @brief %Texture target
+         *
+         * Each dimension has its own unique subset of these targets.
+         */
+        enum class Target: GLenum {
+            Texture1D = GL_TEXTURE_1D, /**< One-dimensional texture */
+            Texture2D = GL_TEXTURE_2D, /**< Two-dimensional texture */
+            Texture3D = GL_TEXTURE_3D, /**< Three-dimensional texture */
+
+            /**
+             * Array of one-dimensional textures (i.e. two dimensions in total)
+             *
+             * @requires_gl30 Extension <tt>EXT_texture_array</tt>
+             */
+            Array1D = GL_TEXTURE_1D_ARRAY,
+
+            /**
+             * Array of two-dimensional textures (i.e. three dimensions in total)
+             *
+             * @requires_gl30 Extension <tt>EXT_texture_array</tt>
+             */
+            Array2D = GL_TEXTURE_2D_ARRAY,
+
+            /**
+             * Rectangle texture (i.e. two dimensions)
+             *
+             * @requires_gl31 Extension <tt>ARB_texture_rectangle</tt>
+             */
+            Rectangle = GL_TEXTURE_RECTANGLE,
+
+            /**
+             * Cube map texture. Use CubeMapTexture class.
+             */
+            CubeMap = GL_TEXTURE_CUBE_MAP
+        };
+        #else
         typedef typename DataHelper<Dimensions>::Target Target; /**< @brief %Texture target */
+        #endif
 
         /**
          * @brief Constructor
          * @param layer             %Texture layer (number between 0 and 31)
-         * @param target            %Texture target
+         * @param target            %Texture target. If not set, default value
+         *      is `Target::Texture1D`, `Target::Texture2D` or
+         *      `Target::Texture3D` based on dimension count.
          *
          * Creates one OpenGL texture.
          */
