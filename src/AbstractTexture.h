@@ -468,9 +468,6 @@ class MAGNUM_EXPORT AbstractTexture {
          *
          * Sets filter used when the object pixel size is smaller than the
          * texture size.
-         * @attention This, @ref Texture::setWrapping() "setWrapping()" and
-         * setMagnificationFilter() must be called after creating the texture,
-         * otherwise the texture will be incomplete.
          * @attention For rectangle textures only some modes are supported,
          * see @ref AbstractTexture::Filter "Filter" and
          * @ref AbstractTexture::Mipmap "Mipmap" documentation for more
@@ -484,9 +481,6 @@ class MAGNUM_EXPORT AbstractTexture {
          *
          * Sets filter used when the object pixel size is larger than largest
          * texture size.
-         * @attention This, @ref Texture::setWrapping() "setWrapping()" and
-         * setMinificationFilter() must be called after creating the texture,
-         * otherwise the texture will be incomplete.
          */
         inline void setMagnificationFilter(Filter filter) {
             bind();
