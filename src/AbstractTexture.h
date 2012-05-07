@@ -29,7 +29,6 @@ namespace Magnum {
 See Texture, CubeMapTexture and CubeMapTextureArray documentation for more
 information.
 @todo Add glPixelStore encapsulation
-@todo Anisotropic filtering
 */
 class MAGNUM_EXPORT AbstractTexture {
     AbstractTexture(const AbstractTexture& other) = delete;
@@ -420,6 +419,14 @@ class MAGNUM_EXPORT AbstractTexture {
         /*@}*/
 
         /**
+         * @brief Max supported anisotropy
+         *
+         * @see setMaxAnisotropy()
+         * @requires_extension <tt>EXT_texture_filter_anisotropic</tt>
+         */
+        static GLfloat maxSupportedAnisotropy();
+
+        /**
          * @brief Constructor
          * @param layer     %Texture layer (number between 0 and 31)
          * @param target    Target, e.g. `GL_TEXTURE_2D`.
@@ -496,6 +503,20 @@ class MAGNUM_EXPORT AbstractTexture {
         inline void setBorderColor(const Vector4& color) {
             bind();
             glTexParameterfv(_target, GL_TEXTURE_BORDER_COLOR, color.data());
+        }
+
+        /**
+         * @brief Set max anisotropy
+         *
+         * Default value is `1.0`, which means no anisotropy. Set to value
+         * greater than `1.0` for anisotropic filtering.
+         *
+         * @see maxSupportedAnisotropy()
+         * @requires_extension <tt>EXT_texture_filter_anisotropic</tt>
+         */
+        inline void setMaxAnisotropy(GLfloat anisotropy) {
+            bind();
+            glTexParameterf(_target, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
         }
 
         /**

@@ -46,6 +46,12 @@ static_assert((filter_or(NearestNeighbor, BaseLevel) == GL_NEAREST) &&
 #undef filter_or
 #endif
 
+GLfloat AbstractTexture::maxSupportedAnisotropy() {
+    GLfloat value;
+    glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &value);
+    return value;
+}
+
 void AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
     CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE || mipmap == Mipmap::BaseLevel, "AbstractTexture: rectangle textures cannot have mipmaps", )
 
