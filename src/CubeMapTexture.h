@@ -43,19 +43,18 @@ textures, coordinates for cube map textures is signed three-part vector from
 the center of the cube, which intersects one of the six sides of the cube map.
 
 See Texture documentation for more information about usage.
-@todo The wrap mode is 3D, not 2D! http://www.opengl.org/wiki/Common_Mistakes#Creating_a_Cubemap_Texture
 @todo Cube map arrays (OpenGL 4.0, ARB_texture_cube_map_array)
 */
-class CubeMapTexture: public Texture2D {
+class CubeMapTexture: public AbstractTexture {
     public:
         /** @brief Cube map coordinate */
         enum Coordinate: GLenum {
-            PositiveX = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
-            NegativeX = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-            PositiveY = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
-            NegativeY = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-            PositiveZ = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-            NegativeZ = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+            PositiveX = GL_TEXTURE_CUBE_MAP_POSITIVE_X,     /**< +X cube side */
+            NegativeX = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,     /**< -X cube side */
+            PositiveY = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,     /**< +Y cube side */
+            NegativeY = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,     /**< -Y cube side */
+            PositiveZ = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,     /**< +Z cube side */
+            NegativeZ = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z      /**< -Z cube side */
         };
 
         /**
@@ -71,29 +70,34 @@ class CubeMapTexture: public Texture2D {
          * @brief Constructor
          * @param layer     Texture layer (number between 0 and 31)
          *
-         * Creates texture with target Target::CubeMap.
+         * Creates one cube map OpenGL texture.
          */
-        inline CubeMapTexture(GLint layer = 0): Texture(layer, Target::CubeMap) {}
-
-        template<class T> void setData(GLint mipLevel, InternalFormat internalFormat, T* image) = delete;
-        template<class T> void setSubData(GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, T* image) = delete;
+        inline CubeMapTexture(GLint layer = 0): AbstractTexture(layer, GL_TEXTURE_CUBE_MAP) {}
 
         /**
-         * @copydetails Texture::setData(GLint, InternalFormat, T*)
-         * @param coordinate   Coordinate
+         * @copydoc Texture::setWrapping()
+         */
+        inline void setWrapping(const Math::Vector<Wrapping, 3>& wrapping) {
+            bind();
+            DataHelper<3>::setWrapping(GL_TEXTURE_CUBE_MAP, wrapping);
+        }
+
+        /**
+         * @copydoc Texture::setData(GLint, InternalFormat, T*)
+         * @param coordinate    Coordinate
          */
         template<class T> inline void setData(Coordinate coordinate, GLint mipLevel, InternalFormat internalFormat, T* image) {
             bind();
-            DataHelper<Dimensions>::set(static_cast<Target>(coordinate), mipLevel, internalFormat, image);
+            DataHelper<2>::set(static_cast<GLenum>(coordinate), mipLevel, internalFormat, image);
         }
 
         /**
          * @copydoc Texture::setSubData(GLint, const Math::Vector<GLint, Dimensions>&, T*)
-         * @param coordinate   Coordinate
+         * @param coordinate    Coordinate
          */
-        template<class T> inline void setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector<GLint, Dimensions>& offset, const T* image) {
+        template<class T> inline void setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector<GLint, 2>& offset, const T* image) {
             bind();
-            DataHelper<Dimensions>::setSub(static_cast<Target>(coordinate), mipLevel, offset, image);
+            DataHelper<2>::setSub(static_cast<GLenum>(coordinate), mipLevel, offset, image);
         }
 };
 

@@ -49,6 +49,8 @@ don't support mipmapping and repeating wrapping modes, see @ref Texture::Filter
 for more information.
 
 @requires_gl31 Extension <tt>ARB_texture_rectangle</tt> (rectangle textures)
+
+@see CubeMapTexture
  */
 template<size_t textureDimensions> class Texture: public AbstractTexture {
     public:
@@ -84,12 +86,7 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
              *
              * @requires_gl31 Extension <tt>ARB_texture_rectangle</tt>
              */
-            Rectangle = GL_TEXTURE_RECTANGLE,
-
-            /**
-             * Cube map texture. Use CubeMapTexture class.
-             */
-            CubeMap = GL_TEXTURE_CUBE_MAP
+            Rectangle = GL_TEXTURE_RECTANGLE
         };
         #else
         typedef typename DataHelper<Dimensions>::Target Target; /**< @brief %Texture target */
@@ -104,10 +101,10 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
          *
          * Creates one OpenGL texture.
          */
-        inline Texture(GLint layer = 0, Target target = DataHelper<Dimensions>::target()): AbstractTexture(layer, static_cast<GLenum>(target)), _target(target) {}
+        inline Texture(GLint layer = 0, Target target = DataHelper<Dimensions>::target()): AbstractTexture(layer, static_cast<GLenum>(target)) {}
 
         /** @brief %Texture target */
-        inline Target target() const { return _target; }
+        inline Target target() const { return static_cast<Target>(_target); }
 
         /**
          * @brief Set wrapping
@@ -157,9 +154,6 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
             bind();
             DataHelper<Dimensions>::setSub(_target, mipLevel, offset, image);
         }
-
-    private:
-        Target _target;
 };
 
 /** @brief One-dimensional texture */

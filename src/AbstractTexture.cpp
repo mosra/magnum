@@ -47,18 +47,18 @@ static_assert((filter_or(NearestNeighbor, BaseLevel) == GL_NEAREST) &&
 #endif
 
 void AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
-    CORRADE_ASSERT(target != GL_TEXTURE_RECTANGLE || mipmap == Mipmap::BaseLevel, "AbstractTexture: rectangle textures cannot have mipmaps", )
+    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE || mipmap == Mipmap::BaseLevel, "AbstractTexture: rectangle textures cannot have mipmaps", )
 
     bind();
-    glTexParameteri(target, GL_TEXTURE_MIN_FILTER,
+    glTexParameteri(_target, GL_TEXTURE_MIN_FILTER,
         static_cast<GLint>(filter)|static_cast<GLint>(mipmap));
 }
 
 void AbstractTexture::generateMipmap() {
-    CORRADE_ASSERT(target != GL_TEXTURE_RECTANGLE, "AbstractTexture: rectangle textures cannot have mipmaps", )
+    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE, "AbstractTexture: rectangle textures cannot have mipmaps", )
 
     bind();
-    glGenerateMipmap(target);
+    glGenerateMipmap(_target);
 }
 
 AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components components, AbstractTexture::ComponentType type) {
@@ -100,17 +100,17 @@ AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components comp
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-void AbstractTexture::DataHelper<2>::setWrapping(Target target, const Math::Vector<Wrapping, 2>& wrapping) {
-    CORRADE_ASSERT(target != Target::Rectangle || ((wrapping[0] == Wrapping::ClampToEdge || wrapping[0] == Wrapping::ClampToBorder) && (wrapping[0] == Wrapping::ClampToEdge || wrapping[1] == Wrapping::ClampToEdge)), "AbstractTexture: rectangle texture wrapping must either clamp to border or to edge", )
+void AbstractTexture::DataHelper<2>::setWrapping(GLenum target, const Math::Vector<Wrapping, 2>& wrapping) {
+    CORRADE_ASSERT(target != GL_TEXTURE_RECTANGLE || ((wrapping[0] == Wrapping::ClampToEdge || wrapping[0] == Wrapping::ClampToBorder) && (wrapping[0] == Wrapping::ClampToEdge || wrapping[1] == Wrapping::ClampToEdge)), "AbstractTexture: rectangle texture wrapping must either clamp to border or to edge", )
 
-    glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
-    glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
+    glTexParameteri(target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
+    glTexParameteri(target, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
 }
 
-void AbstractTexture::DataHelper<3>::setWrapping(Target target, const Math::Vector<Wrapping, 3>& wrapping) {
-    glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
-    glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
-    glTexParameteri(static_cast<GLenum>(target), GL_TEXTURE_WRAP_R, static_cast<GLint>(wrapping[2]));
+void AbstractTexture::DataHelper<3>::setWrapping(GLenum target, const Math::Vector<Wrapping, 3>& wrapping) {
+    glTexParameteri(target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
+    glTexParameteri(target, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
+    glTexParameteri(target, GL_TEXTURE_WRAP_R, static_cast<GLint>(wrapping[2]));
 }
 #endif
 
