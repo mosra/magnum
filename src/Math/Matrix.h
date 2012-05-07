@@ -263,6 +263,43 @@ template<size_t size, class T> class Matrix {
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+#define MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Type, VectorType, size)       \
+    inline constexpr static Type<T>& from(T* data) {                        \
+        return *reinterpret_cast<Type<T>*>(data);                           \
+    }                                                                       \
+    inline constexpr static const Type<T>& from(const T* data) {            \
+        return *reinterpret_cast<const Type<T>*>(data);                     \
+    }                                                                       \
+    template<class ...U> inline constexpr static Type<T> from(const Vector<size, T>& first, const U&... next) { \
+        return Matrix<size, T>::from(first, next...);                       \
+    }                                                                       \
+                                                                            \
+    inline Type<T>& operator=(const Type<T>& other) {                       \
+        Matrix<size, T>::operator=(other);                                  \
+        return *this;                                                       \
+    }                                                                       \
+                                                                            \
+    inline VectorType<T>& operator[](size_t col) {                          \
+        return VectorType<T>::from(Matrix<size, T>::data()+col*size);       \
+    }                                                                       \
+    inline constexpr const VectorType<T>& operator[](size_t col) const {    \
+        return VectorType<T>::from(Matrix<size, T>::data()+col*size);       \
+    }                                                                       \
+                                                                            \
+    inline Type<T> operator*(const Matrix<size, T>& other) const {          \
+        return Matrix<size, T>::operator*(other);                           \
+    }                                                                       \
+    inline Type<T>& operator*=(const Matrix<size, T>& other) {              \
+        Matrix<size, T>::operator*=(other);                                 \
+        return *this;                                                       \
+    }                                                                       \
+    inline VectorType<T> operator*(const Vector<size, T>& other) const {    \
+        return Matrix<size, T>::operator*(other);                           \
+    }                                                                       \
+                                                                            \
+    inline Type<T> transposed() const { return Matrix<size, T>::transposed(); } \
+    inline Type<T> inverted() const { return Matrix<size, T>::inverted(); }
+
 namespace Implementation {
 
 template<size_t size, class T> class MatrixDeterminant {

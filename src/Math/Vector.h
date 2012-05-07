@@ -258,6 +258,52 @@ template<size_t size, class T> class Vector {
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+#define MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Type, size)                   \
+    inline constexpr static Type<T>& from(T* data) {                        \
+        return *reinterpret_cast<Type<T>*>(data);                           \
+    }                                                                       \
+    inline constexpr static const Type<T>& from(const T* data) {            \
+        return *reinterpret_cast<const Type<T>*>(data);                     \
+    }                                                                       \
+                                                                            \
+    inline Type<T>& operator=(const Type<T>& other) {                       \
+        Vector<size, T>::operator=(other);                                  \
+        return *this;                                                       \
+    }                                                                       \
+                                                                            \
+    inline Type<T> operator*(T number) const {                              \
+        return Vector<size, T>::operator*(number);                          \
+    }                                                                       \
+    inline Type<T>& operator*=(T number) {                                  \
+        Vector<size, T>::operator*=(number);                                \
+        return *this;                                                       \
+    }                                                                       \
+    inline Type<T> operator/(T number) const {                              \
+        return Vector<size, T>::operator/(number);                          \
+    }                                                                       \
+    inline Type<T>& operator/=(T number) {                                  \
+        Vector<size, T>::operator/=(number);                                \
+        return *this;                                                       \
+    }                                                                       \
+                                                                            \
+    inline Type<T> operator+(const Vector<size, T>& other) const {          \
+        return Vector<size, T>::operator+(other);                           \
+    }                                                                       \
+    inline Type<T>& operator+=(const Vector<size, T>& other) {              \
+        Vector<size, T>::operator+=(other);                                 \
+        return *this;                                                       \
+    }                                                                       \
+    inline Type<T> operator-(const Vector<size, T>& other) const {          \
+        return Vector<size, T>::operator-(other);                           \
+    }                                                                       \
+    inline Type<T>& operator-=(const Vector<size, T>& other) {              \
+        Vector<size, T>::operator-=(other);                                 \
+        return *this;                                                       \
+    }                                                                       \
+                                                                            \
+    inline Type<T> operator-() const { return Vector<size, T>::operator-(); } \
+    inline Type<T> normalized() const { return Vector<size, T>::normalized(); }
+
 template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector<size, T>& value) {
     debug << "Vector(";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);

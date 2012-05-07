@@ -26,20 +26,10 @@ namespace Magnum { namespace Math {
 /** @brief Two-component vector */
 template<class T> class Vector2: public Vector<2, T> {
     public:
-        /** @copydoc Vector::from(T*) */
-        inline constexpr static Vector2<T>& from(T* data) {
-            return *reinterpret_cast<Vector2<T>*>(data);
-        }
-
-        /** @copydoc Vector::from(const T*) */
-        inline constexpr static const Vector2<T>& from(const T* data) {
-            return *reinterpret_cast<const Vector2<T>*>(data);
-        }
-
         /** @copydoc Vector::Vector(T) */
         inline constexpr explicit Vector2(T value = T()): Vector<2, T>(value, value) {}
 
-        /** @copydoc Vector::Vector(const Vector&)  */
+        /** @copydoc Vector::Vector(const Vector&) */
         inline constexpr Vector2(const Vector<2, T>& other): Vector<2, T>(other) {}
 
         /**
@@ -55,53 +45,7 @@ template<class T> class Vector2: public Vector<2, T> {
         inline void setX(T value) { (*this)[0] = value; }   /**< @brief Set X component */
         inline void setY(T value) { (*this)[1] = value; }   /**< @brief Set Y component */
 
-        /** @copydoc Vector::operator=() */
-        inline Vector2<T>& operator=(const Vector2<T>& other) {
-            Vector<2, T>::operator=(other);
-            return *this;
-        }
-
-        /** @copydoc Vector::operator*(T) const */
-        inline Vector2<T> operator*(T number) const { return Vector<2, T>::operator*(number); }
-
-        /** @copydoc Vector::operator*=() */
-        inline Vector2<T>& operator*=(T number) {
-            Vector<2, T>::operator*=(number);
-            return *this;
-        }
-
-        /** @copydoc Vector::operator/() */
-        inline Vector2<T> operator/(T number) const { return Vector<2, T>::operator/(number); }
-
-        /** @copydoc Vector::operator/=() */
-        inline Vector2<T>& operator/=(T number) {
-            Vector<2, T>::operator/=(number);
-            return *this;
-        }
-
-        /** @copydoc Vector::operator+() */
-        inline Vector2<T> operator+(const Vector<2, T>& other) const { return Vector<2, T>::operator+(other); }
-
-        /** @copydoc Vector::operator+=() */
-        inline Vector2<T>& operator+=(const Vector<2, T>& other) {
-            Vector<2, T>::operator+=(other);
-            return *this;
-        }
-
-        /** @copydoc Vector::operator-(const Vector<size, T>&) const */
-        inline Vector2<T> operator-(const Vector<2, T>& other) const { return Vector<2, T>::operator-(other); }
-
-        /** @copydoc Vector::operator-=() */
-        inline Vector2<T>& operator-=(const Vector<2, T>& other) {
-            Vector<2, T>::operator-=(other);
-            return *this;
-        }
-
-        /** @copydoc Vector::operator-() */
-        inline Vector2<T> operator-() const { return Vector<2, T>::operator-(); }
-
-        /** @copydoc Vector::normalized() */
-        inline Vector2<T> normalized() const { return Vector<2, T>::normalized(); }
+        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector2, 2)
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

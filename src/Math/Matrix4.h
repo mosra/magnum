@@ -32,21 +32,6 @@ namespace Magnum { namespace Math {
  */
 template<class T> class Matrix4: public Matrix<4, T> {
     public:
-        /** @copydoc Matrix::from(T*) */
-        inline constexpr static Matrix4<T>& from(T* data) {
-            return *reinterpret_cast<Matrix4<T>*>(data);
-        }
-
-        /** @copydoc Matrix::from(const T*) */
-        inline constexpr static const Matrix4<T>& from(const T* data) {
-            return *reinterpret_cast<const Matrix4<T>*>(data);
-        }
-
-        /** @copydoc Matrix::from(const Vector<size, T>&, const U&...) */
-        template<class ...U> inline constexpr static Matrix4<T> from(const Vector<4, T>& first, const U&... next) {
-            return Matrix<4, T>::from(first, next...);
-        }
-
         /**
          * @brief Translation matrix
          * @param vec   Translation vector
@@ -134,38 +119,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
         /** @copydoc Matrix::Matrix(const Matrix<size, T>&) */
         inline constexpr Matrix4(const Matrix<4, T>& other): Matrix<4, T>(other) {}
 
-        /** @copydoc Matrix::operator=() */
-        inline Matrix4<T>& operator=(const Matrix4<T>& other) {
-            Matrix<4, T>::operator=(other);
-            return *this;
-        }
-
-        /** @copydoc Matrix::operator[](size_t) */
-        inline Vector4<T>& operator[](size_t col) { return Vector4<T>::from(Matrix<4, T>::data()+col*4); }
-
-        /** @copydoc Matrix::operator[](size_t) const */
-        inline constexpr const Vector4<T>& operator[](size_t col) const { return Vector4<T>::from(Matrix<4, T>::data()+col*4); }
-
-        /** @copydoc Matrix::operator*(const Matrix<size, T>&) const */
-        inline Matrix4<T> operator*(const Matrix<4, T>& other) const { return Matrix<4, T>::operator*(other); }
-
-        /** @copydoc Matrix::operator*=() */
-        inline Matrix4<T>& operator*=(const Matrix<4, T>& other) {
-            Matrix<4, T>::operator*=(other);
-            return *this;
-        }
-
-        /** @copydoc Matrix::operator*(const Vector<size, T>&) const */
-        inline Vector4<T> operator*(const Vector<4, T>& other) const { return Matrix<4, T>::operator*(other); }
-
-        /** @copydoc Matrix::transposed() */
-        inline Matrix4<T> transposed() const { return Matrix<4, T>::transposed(); }
-
         /** @copydoc Matrix::ij() */
         inline Matrix3<T> ij(size_t skipRow, size_t skipCol) const { return Matrix<4, T>::ij(skipRow, skipCol); }
-
-        /** @copydoc Matrix::inverted() */
-        inline Matrix4<T> inverted() const { return Matrix<4, T>::inverted(); }
 
         /** @brief Rotation and scaling part of the matrix */
         inline Matrix3<T> rotationScaling() const {
@@ -182,6 +137,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
                 (*this)[1].xyz().normalized(),
                 (*this)[2].xyz().normalized());
         }
+
+        MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix4, Vector4, 4)
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

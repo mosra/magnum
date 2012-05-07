@@ -26,16 +26,6 @@ namespace Magnum { namespace Math {
 /** @brief Four-component vector */
 template<class T> class Vector4: public Vector<4, T> {
     public:
-        /** @copydoc Vector::from(T*) */
-        inline constexpr static Vector4<T>& from(T* data) {
-            return *reinterpret_cast<Vector4<T>*>(data);
-        }
-
-        /** @copydoc Vector::from(const T*) */
-        inline constexpr static const Vector4<T>& from(const T* data) {
-            return *reinterpret_cast<const Vector4<T>*>(data);
-        }
-
         /**
          * @copydoc Vector::Vector
          *
@@ -46,7 +36,7 @@ template<class T> class Vector4: public Vector<4, T> {
         /** @copydoc Vector::Vector(T) */
         inline constexpr explicit Vector4(T value): Vector<4, T>(value, value, value, value) {}
 
-        /** @copydoc Vector::Vector(const Vector&)  */
+        /** @copydoc Vector::Vector(const Vector&) */
         inline constexpr Vector4(const Vector<4, T>& other): Vector<4, T>(other) {}
 
         /**
@@ -97,53 +87,7 @@ template<class T> class Vector4: public Vector<4, T> {
          */
         inline constexpr Vector3<T> rgb() const { return xyz(); }
 
-        /** @copydoc Vector::operator=() */
-        inline Vector4<T>& operator=(const Vector4<T>& other) {
-            Vector<4, T>::operator=(other);
-            return *this;
-        }
-
-        /** @copydoc Vector::operator*(T) const */
-        inline Vector4<T> operator*(T number) const { return Vector<4, T>::operator*(number); }
-
-        /** @copydoc Vector::operator*=() */
-        inline Vector4<T>& operator*=(T number) {
-            Vector<4, T>::operator*=(number);
-            return *this;
-        }
-
-        /** @copydoc Vector::operator/() */
-        inline Vector4<T> operator/(T number) const { return Vector<4, T>::operator/(number); }
-
-        /** @copydoc Vector::operator/=() */
-        inline Vector4<T>& operator/=(T number) {
-            Vector<4, T>::operator/=(number);
-            return *this;
-        }
-
-        /** @copydoc Vector::operator+() */
-        inline Vector4<T> operator+(const Vector<4, T>& other) const { return Vector<4, T>::operator+(other); }
-
-        /** @copydoc Vector::operator+=() */
-        inline Vector4<T>& operator+=(const Vector<4, T>& other) {
-            Vector<4, T>::operator+=(other);
-            return *this;
-        }
-
-        /** @copydoc Vector::operator-(const Vector<size, T>&) const */
-        inline Vector4<T> operator-(const Vector<4, T>& other) const { return Vector<4, T>::operator-(other); }
-
-        /** @copydoc Vector::operator-=() */
-        inline Vector4<T>& operator-=(const Vector<4, T>& other) {
-            Vector<4, T>::operator-=(other);
-            return *this;
-        }
-
-        /** @copydoc Vector::operator-() */
-        inline Vector4<T> operator-() const { return Vector<4, T>::operator-(); }
-
-        /** @copydoc Vector::normalized() */
-        inline Vector4<T> normalized() const { return Vector<4, T>::normalized(); }
+        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector4, 4)
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

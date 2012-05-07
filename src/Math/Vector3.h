@@ -26,16 +26,6 @@ namespace Magnum { namespace Math {
 /** @brief Three-component vector */
 template<class T> class Vector3: public Vector<3, T> {
     public:
-        /** @copydoc Vector::from(T*) */
-        inline constexpr static Vector3<T>& from(T* data) {
-            return *reinterpret_cast<Vector3<T>*>(data);
-        }
-
-        /** @copydoc Vector::from(const T*) */
-        inline constexpr static const Vector3<T>& from(const T* data) {
-            return *reinterpret_cast<const Vector3<T>*>(data);
-        }
-
         /** @brief %Vector in direction of X axis */
         inline constexpr static Vector3<T> xAxis(T length = T(1)) { return Vector3<T>(length, T(), T()); }
 
@@ -62,7 +52,7 @@ template<class T> class Vector3: public Vector<3, T> {
         /** @copydoc Vector::Vector(T) */
         inline constexpr explicit Vector3(T value = T()): Vector<3, T>(value, value, value) {}
 
-        /** @copydoc Vector::Vector(const Vector&)  */
+        /** @copydoc Vector::Vector(const Vector&) */
         inline constexpr Vector3(const Vector<3, T>& other): Vector<3, T>(other) {}
 
         /**
@@ -96,53 +86,7 @@ template<class T> class Vector3: public Vector<3, T> {
         inline void setG(T value) { setY(value); }          /**< @brief Set G component */
         inline void setB(T value) { setZ(value); }          /**< @brief Set B component */
 
-        /** @copydoc Vector::operator=() */
-        inline Vector3<T>& operator=(const Vector3<T>& other) {
-            Vector<3, T>::operator=(other);
-            return *this;
-        }
-
-        /** @copydoc Vector::operator*(T) const */
-        inline Vector3<T> operator*(T number) const { return Vector<3, T>::operator*(number); }
-
-        /** @copydoc Vector::operator*=() */
-        inline Vector3<T>& operator*=(T number) {
-            Vector<3, T>::operator*=(number);
-            return *this;
-        }
-
-        /** @copydoc Vector::operator/() */
-        inline Vector3<T> operator/(T number) const { return Vector<3, T>::operator/(number); }
-
-        /** @copydoc Vector::operator/=() */
-        inline Vector3<T>& operator/=(T number) {
-            Vector<3, T>::operator/=(number);
-            return *this;
-        }
-
-        /** @copydoc Vector::operator+() */
-        inline Vector3<T> operator+(const Vector<3, T>& other) const { return Vector<3, T>::operator+(other); }
-
-        /** @copydoc Vector::operator+=() */
-        inline Vector3<T>& operator+=(const Vector<3, T>& other) {
-            Vector<3, T>::operator+=(other);
-            return *this;
-        }
-
-        /** @copydoc Vector::operator-(const Vector<size, T>&) const */
-        inline Vector3<T> operator-(const Vector<3, T>& other) const { return Vector<3, T>::operator-(other); }
-
-        /** @copydoc Vector::operator-=() */
-        inline Vector3<T>& operator-=(const Vector<3, T>& other) {
-            Vector<3, T>::operator-=(other);
-            return *this;
-        }
-
-        /** @copydoc Vector::operator-() */
-        inline Vector3<T> operator-() const { return Vector<3, T>::operator-(); }
-
-        /** @copydoc Vector::normalized() */
-        inline Vector3<T> normalized() const { return Vector<3, T>::normalized(); }
+        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector3, 3)
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
