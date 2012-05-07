@@ -145,10 +145,16 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
          * @param mipLevel          Mip level
          * @param offset            Offset where to put data in the texture
          * @param image             Image, BufferedImage or for example
-         *      Trade::ImageData of the same dimension count
+         *      Trade::ImageData
          *
          * Sets texture subdata from given image. The image is not deleted
-         * afterwards.
+         * afterwards. The image can have either the same dimension count or
+         * have one dimension less, but at least one dimension.
+         *
+         * If the image has one dimension less than the texture, the image is
+         * taken as if it had the last dimension equal to 1. It can be used
+         * for e.g. updating 3D texture with multiple 2D images or for filling
+         * 1D texture array (which is two-dimensional) with 1D images.
          */
         template<class Image> inline void setSubData(GLint mipLevel, const Math::Vector<Dimensions, GLint>& offset, Image* image) {
             bind();

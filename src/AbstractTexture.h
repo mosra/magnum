@@ -601,6 +601,10 @@ template<> struct AbstractTexture::DataHelper<2> {
     template<class Image> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<2, GLint>& offset, Image* image, const Math::Vector<2, GLsizei>& = Math::Vector<Image::Dimensions, GLsizei>()) {
         glTexSubImage2D(target, mipLevel, offset[0], offset[1], image->dimensions()[0], image->dimensions()[1], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
+
+    template<class Image> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<2, GLint>& offset, Image* image, const Math::Vector<1, GLsizei>& = Math::Vector<Image::Dimensions, GLsizei>()) {
+        glTexSubImage2D(target, mipLevel, offset[0], offset[1], image->dimensions()[0], 1, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+    }
 };
 template<> struct AbstractTexture::DataHelper<3> {
     enum class Target: GLenum {
@@ -618,6 +622,10 @@ template<> struct AbstractTexture::DataHelper<3> {
 
     template<class Image> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<3, GLint>& offset, Image* image, const Math::Vector<3, GLsizei>& = Math::Vector<Image::Dimensions, GLsizei>()) {
         glTexSubImage3D(target, mipLevel, offset[0], offset[1], offset[2], image->dimensions()[0], image->dimensions()[1], image->dimensions()[2], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+    }
+
+    template<class Image> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<3, GLint>& offset, Image* image, const Math::Vector<2, GLsizei>& = Math::Vector<Image::Dimensions, GLsizei>()) {
+        glTexSubImage3D(target, mipLevel, offset[0], offset[1], offset[2], image->dimensions()[0], image->dimensions()[1], 1, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 };
 #endif
