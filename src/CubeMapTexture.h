@@ -83,19 +83,19 @@ class CubeMapTexture: public AbstractTexture {
         }
 
         /**
-         * @copydoc Texture::setData(GLint, InternalFormat, T*)
+         * @copydoc Texture::setData(GLint, InternalFormat, Image*)
          * @param coordinate    Coordinate
          */
-        template<class T> inline void setData(Coordinate coordinate, GLint mipLevel, InternalFormat internalFormat, T* image) {
+        template<class Image> inline void setData(Coordinate coordinate, GLint mipLevel, InternalFormat internalFormat, Image* image) {
             bind();
             DataHelper<2>::set(static_cast<GLenum>(coordinate), mipLevel, internalFormat, image);
         }
 
         /**
-         * @copydoc Texture::setSubData(GLint, const Math::Vector<Dimensions, GLint>&, T*)
+         * @copydoc Texture::setSubData(GLint, const Math::Vector<Dimensions, GLint>&, Image*)
          * @param coordinate    Coordinate
          */
-        template<class T> inline void setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector<2, GLint>& offset, const T* image) {
+        template<class Image> inline void setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector<2, GLint>& offset, const Image* image) {
             bind();
             DataHelper<2>::setSub(static_cast<GLenum>(coordinate), mipLevel, offset, image);
         }

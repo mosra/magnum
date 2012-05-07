@@ -135,7 +135,7 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
          * Sets texture data from given image. The image is not deleted
          * afterwards.
          */
-        template<class T> inline void setData(GLint mipLevel, InternalFormat internalFormat, T* image) {
+        template<class Image> inline void setData(GLint mipLevel, InternalFormat internalFormat, Image* image) {
             bind();
             DataHelper<Dimensions>::set(_target, mipLevel, internalFormat, image);
         }
@@ -150,7 +150,7 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
          * Sets texture subdata from given image. The image is not deleted
          * afterwards.
          */
-        template<class T> inline void setSubData(GLint mipLevel, const Math::Vector<Dimensions, GLint>& offset, T* image) {
+        template<class Image> inline void setSubData(GLint mipLevel, const Math::Vector<Dimensions, GLint>& offset, Image* image) {
             bind();
             DataHelper<Dimensions>::setSub(_target, mipLevel, offset, image);
         }
