@@ -135,8 +135,14 @@ template<size_t size, class T> class Vector {
             return !operator==(other);
         }
 
-        /** @brief Multiply vector */
-        inline Vector<size, T> operator*(T number) const {
+        /**
+         * @brief Multiply vector
+         *
+         * Note that corresponding operator with swapped type order
+         * (multiplying number with vector) is not available, because it would
+         * cause ambiguity in some cases.
+         */
+        template<class U> inline Vector<size, T> operator*(U number) const {
             return Vector<size, T>(*this)*=number;
         }
 
@@ -146,7 +152,7 @@ template<size_t size, class T> class Vector {
          * More efficient than operator*(), because it does the computation
          * in-place.
          */
-        Vector<size, T>& operator*=(T number) {
+        template<class U> Vector<size, T>& operator*=(U number) {
             for(size_t i = 0; i != size; ++i)
                 (*this)[i] *= number;
 
@@ -154,7 +160,7 @@ template<size_t size, class T> class Vector {
         }
 
         /** @brief Divide vector */
-        inline Vector<size, T> operator/(T number) const {
+        template<class U> inline Vector<size, T> operator/(U number) const {
             return Vector<size, T>(*this)/=number;
         }
 
@@ -164,7 +170,7 @@ template<size_t size, class T> class Vector {
          * More efficient than operator/(), because it does the computation
          * in-place.
          */
-        Vector<size, T>& operator/=(T number) {
+        template<class U> Vector<size, T>& operator/=(U number) {
             for(size_t i = 0; i != size; ++i)
                 (*this)[i] /= number;
 
@@ -271,17 +277,17 @@ template<size_t size, class T> class Vector {
         return *this;                                                       \
     }                                                                       \
                                                                             \
-    inline Type<T> operator*(T number) const {                              \
+    template<class U> inline Type<T> operator*(U number) const {            \
         return Vector<size, T>::operator*(number);                          \
     }                                                                       \
-    inline Type<T>& operator*=(T number) {                                  \
+    template<class U> inline Type<T>& operator*=(U number) {                \
         Vector<size, T>::operator*=(number);                                \
         return *this;                                                       \
     }                                                                       \
-    inline Type<T> operator/(T number) const {                              \
+    template<class U> inline Type<T> operator/(U number) const {            \
         return Vector<size, T>::operator/(number);                          \
     }                                                                       \
-    inline Type<T>& operator/=(T number) {                                  \
+    template<class U> inline Type<T>& operator/=(U number) {                \
         Vector<size, T>::operator/=(number);                                \
         return *this;                                                       \
     }                                                                       \

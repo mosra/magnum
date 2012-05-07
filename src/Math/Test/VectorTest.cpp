@@ -78,6 +78,11 @@ void VectorTest::multiplyDivide() {
 
     QVERIFY(vec*-1.5f == multiplied);
     QVERIFY(multiplied/-1.5f == vec);
+
+    Math::Vector<1, char> vecChar(32);
+    Math::Vector<1, char> multipliedChar(-48);
+    QVERIFY(vecChar*-1.5f == multipliedChar);
+    QVERIFY(multipliedChar/-1.5f == vecChar);
 }
 
 void VectorTest::addSubstract() {
