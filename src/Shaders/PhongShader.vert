@@ -5,7 +5,7 @@ uniform mat4 projectionMatrix;
 uniform vec3 light;
 
 in vec4 vertex;
-in vec4 normal;
+in vec3 normal;
 
 out vec3 transformedNormal;
 out vec3 lightDirection;
@@ -16,10 +16,10 @@ void main() {
     vec3 transformedVertex = transformedVertex4.xyz/transformedVertex4.w;
 
     /* Transformed normal vector */
-    transformedNormal = normalize(mat3x3(transformationMatrix)*normal.xyz);
+    transformedNormal = normalize(mat3x3(transformationMatrix)*normal);
 
     /* Direction to the light */
-    lightDirection = normalize(light.xyz - transformedVertex);
+    lightDirection = normalize(light - transformedVertex);
 
     /* Transform the vertex */
     gl_Position = projectionMatrix*transformedVertex4;
