@@ -104,15 +104,21 @@ class MAGNUM_EXPORT AbstractShaderProgram {
             typedef T Type;                     /**< %Attribute type */
         };
 
-        /** @brief Default constructor */
-        AbstractShaderProgram();
+        /**
+         * @brief Constructor
+         *
+         * Creates one OpenGL shader program.
+         */
+        inline AbstractShaderProgram(): state(Initialized) {
+            program = glCreateProgram();
+        }
 
         /**
          * @brief Destructor
          *
-         * Deletes the shader program.
+         * Deletes associated OpenGL shader program.
          */
-        ~AbstractShaderProgram();
+        inline ~AbstractShaderProgram() { glDeleteProgram(program); }
 
         /**
          * @brief Use shader

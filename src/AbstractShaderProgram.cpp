@@ -24,14 +24,6 @@ using namespace Corrade::Utility;
 
 namespace Magnum {
 
-AbstractShaderProgram::AbstractShaderProgram(): state(Initialized) {
-    program = glCreateProgram();
-}
-
-AbstractShaderProgram::~AbstractShaderProgram() {
-    if(program) glDeleteProgram(program);
-}
-
 bool AbstractShaderProgram::use() {
     if(state != Linked) return false;
 
@@ -85,11 +77,7 @@ void AbstractShaderProgram::link() {
                 << message;
     }
 
-    if(status == GL_FALSE) {
-        glDeleteProgram(program);
-        program = 0;
-        state = Failed;
-    } else state = Linked;
+    state = status == GL_FALSE ? Failed : Linked;
 }
 
 GLint AbstractShaderProgram::uniformLocation(const std::string& name) {

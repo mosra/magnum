@@ -29,7 +29,7 @@ Shader::Shader(Shader&& other): _type(other._type), _state(other._state), source
 }
 
 Shader& Shader::operator=(Shader&& other) {
-    if(shader) glDeleteShader(shader);
+    glDeleteShader(shader);
 
     _type = other._type;
     _state = other._state;
@@ -79,7 +79,6 @@ GLuint Shader::compile() {
         _sources[i] = static_cast<const GLchar*>(sources[i].c_str());
 
     /* Create shader and set its source */
-    shader = glCreateShader(_type);
     glShaderSource(shader, sources.size(), _sources, nullptr);
 
     /* Compile shader */
@@ -119,12 +118,12 @@ GLuint Shader::compile() {
     }
 
     if(status == GL_FALSE) {
-        glDeleteShader(shader);
-        shader = 0;
         _state = Failed;
-    } else _state = Compiled;
-
-    return shader;
+        return 0;
+    } else {
+        _state = Compiled;
+        return shader;
+    }
 }
 
 }
