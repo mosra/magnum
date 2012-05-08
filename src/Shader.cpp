@@ -63,7 +63,7 @@ GLuint Shader::compile() {
 
     /* Create shader and set its source */
     shader = glCreateShader(_type);
-    glShaderSource(shader, 1, _sources, nullptr);
+    glShaderSource(shader, sources.size(), _sources, nullptr);
 
     /* Compile shader */
     glCompileShader(shader);
