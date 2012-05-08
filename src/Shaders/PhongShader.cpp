@@ -23,17 +23,13 @@ namespace Magnum { namespace Shaders {
 
 PhongShader::PhongShader() {
     Resource rs("shaders");
-    Shader* vertexShader = Shader::fromData(Shader::Vertex, rs.get("PhongShader.vert"));
-    Shader* fragmentShader = Shader::fromData(Shader::Fragment, rs.get("PhongShader.frag"));
-    attachShader(vertexShader);
-    attachShader(fragmentShader);
+    attachShader(Shader::fromData(Shader::Vertex, rs.get("PhongShader.vert")));
+    attachShader(Shader::fromData(Shader::Fragment, rs.get("PhongShader.frag")));
 
     bindAttribute(Vertex::Location, "vertex");
     bindAttribute(Normal::Location, "normal");
 
     link();
-    delete vertexShader;
-    delete fragmentShader;
 
     ambientColorUniform = uniformLocation("ambientColor");
     diffuseColorUniform = uniformLocation("diffuseColor");

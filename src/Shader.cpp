@@ -24,6 +24,23 @@ using namespace Corrade::Utility;
 
 namespace Magnum {
 
+Shader::Shader(Shader&& other): _type(other._type), _state(other._state), sources(other.sources), shader(other.shader) {
+    other.shader = 0;
+}
+
+Shader& Shader::operator=(Shader&& other) {
+    if(shader) glDeleteShader(shader);
+
+    _type = other._type;
+    _state = other._state;
+    sources = other.sources;
+    shader = other.shader;
+
+    other.shader = 0;
+
+    return *this;
+}
+
 bool Shader::addFile(const std::string& filename) {
     /* Open file */
     ifstream file(filename.c_str());

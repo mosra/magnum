@@ -44,20 +44,16 @@ typedef Attribute<2, Vector2> TextureCoords;
    binds attribute locations and gets uniform locations, for example:
 @code
 // Load shaders from file and attach them to the program
-Shader* vertexShader = Shader::fromFile(Shader::Vertex, "PhongShader.vert");
-Shader* fragmentShader = Shader::fromFile(Shader::Fragment, "PhongShader.frag");
-attachShader(vertexShader);
-attachShader(fragmentShader);
+attachShader(Shader::fromFile(Shader::Vertex, "PhongShader.vert"));
+attachShader(Shader::fromFile(Shader::Fragment, "PhongShader.frag"));
 
 // Bind attribute names to IDs
 bindAttribute(Vertex::Location, "vertex");
 bindAttribute(Normal::Location, "normal");
 bindAttribute(TextureCoords::Location, "textureCoords");
 
-// Link, then delete now uneeded shaders
+// Link
 link();
-delete vertexShader;
-delete fragmentShader;
 
 // Get locations of uniforms
 transformationMatrixUniform = uniformLocation("transformationMatrix");
@@ -133,9 +129,13 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *
          * Compiles the shader, if it is not already, and prepares it for
          * linking.
-         * @note The shader should be deleted by caller after linking.
          */
-        bool attachShader(Shader* shader);
+        bool attachShader(Shader& shader);
+
+        /** @copydoc attachShader(Shader&) */
+        inline bool attachShader(Shader&& shader) {
+            return attachShader(shader);
+        }
 
         /**
          * @brief Bind attribute to given location

@@ -35,9 +35,7 @@ namespace Magnum {
  */
 class MAGNUM_EXPORT Shader {
     Shader(const Shader& other) = delete;
-    Shader(Shader&& other) = delete;
     Shader& operator=(const Shader& other) = delete;
-    Shader& operator=(Shader&& other) = delete;
 
     public:
         /** @brief %Shader type */
@@ -79,19 +77,19 @@ class MAGNUM_EXPORT Shader {
          * @brief Load shader from source
          * @param type      %Shader type
          * @param source    %Shader source
-         * @return Pointer to compiled shader
+         * @return Shader instance
          *
          * Loads the shader from one source. Shorthand for
          * @code
-         * Shader* s = new Shader(type);
-         * s->addData(data);
+         * Shader s(type);
+         * s.addData(data);
          * @endcode
-         * Note that it is also possible to compile shader from more than one
+         * Note that it is also possible to create shader from more than one
          * source.
          */
-        inline static Shader* fromData(Type type, const std::string& source) {
-            Shader* s = new Shader(type);
-            s->addSource(source);
+        inline static Shader fromData(Type type, const std::string& source) {
+            Shader s(type);
+            s.addSource(source);
             return s;
         }
 
@@ -99,38 +97,41 @@ class MAGNUM_EXPORT Shader {
          * @brief Load shader from file
          * @param type      %Shader type
          * @param filename  %Source filename
-         * @return Pointer to compiled shader or zero, if file cannot be opened.
+         * @return Shader instance
          *
          * Loads the shader from from one file. Shorthand for
          * @code
-         * Shader* s = new Shader(type);
-         * if(!s->addFile(filename)) delete s;
+         * Shader s(type);
+         * s.addFile(filename);
          * @endcode
-         * Note that it is also possible to compile shader from more than one
+         * Note that it is also possible to create shader from more than one
          * source.
          */
-        inline static Shader* fromFile(Type type, const char* filename) {
-            Shader* s = new Shader(type);
-            if(!s->addFile(filename)) {
-                delete s;
-                return nullptr;
-            }
-
+        inline static Shader fromFile(Type type, const char* filename) {
+            Shader s(type);
+            s.addFile(filename);
             return s;
         }
 
         /**
          * @brief Constructor
          *
-         * Creates empty shader. Sources can be added with addData() or addFile().
+         * Creates empty OpenGL shader. Sources can be added with addData()
+         * or addFile().
          * @see fromData(), fromFile()
          */
         inline Shader(Type type): _type(type), _state(Initialized), shader(0) {}
 
+        /** @brief Move constructor */
+        Shader(Shader&& other);
+
+        /** @brief Move assignment operator */
+        Shader& operator=(Shader&& other);
+
         /**
          * @brief Destructor
          *
-         * If the shader is compiled, deletes it.
+         * Deletes associated OpenGL shader.
          */
         inline ~Shader() { if(shader) glDeleteShader(shader); }
 
