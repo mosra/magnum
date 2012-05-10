@@ -19,7 +19,7 @@
  * @brief Class Magnum::Math::Vector3
  */
 
-#include "Vector.h"
+#include "Vector2.h"
 
 namespace Magnum { namespace Math {
 
@@ -77,6 +77,12 @@ template<class T> class Vector3: public Vector<3, T> {
         inline void setX(T value) { (*this)[0] = value; }   /**< @brief Set X component */
         inline void setY(T value) { (*this)[1] = value; }   /**< @brief Set Y component */
         inline void setZ(T value) { (*this)[2] = value; }   /**< @brief Set Z component */
+
+        /**
+         * @brief XY part of the vector
+         * @return First two components of the vector
+         */
+        inline constexpr Vector2<T> xy() const { return Vector2<T>::from(Vector<3, T>::data()); }
 
         inline constexpr T r() const { return x(); }        /**< @brief R component */
         inline constexpr T g() const { return x(); }        /**< @brief G component */

@@ -71,6 +71,12 @@ template<class T> class Vector4: public Vector<4, T> {
          */
         inline constexpr Vector3<T> xyz() const { return Vector3<T>::from(Vector<4, T>::data()); }
 
+        /**
+         * @brief XY part of the vector
+         * @return First two components of the vector
+         */
+        inline constexpr Vector2<T> xy() const { return Vector2<T>::from(Vector<4, T>::data()); }
+
         inline constexpr T r() const { return x(); }    /**< @brief R component */
         inline constexpr T g() const { return y(); }    /**< @brief G component */
         inline constexpr T b() const { return z(); }    /**< @brief B component */

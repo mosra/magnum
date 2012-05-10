@@ -29,6 +29,7 @@ namespace Magnum { namespace Math { namespace Test {
 
 typedef Math::Vector4<float> Vector4;
 typedef Math::Vector3<float> Vector3;
+typedef Math::Vector2<float> Vector2;
 
 void Vector4Test::construct() {
     QVERIFY(Vector4() == Vector4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -38,6 +39,10 @@ void Vector4Test::construct() {
 
 void Vector4Test::threeComponent() {
     QVERIFY(Vector4(1.0f, 2.0f, 3.0f, 4.0f).xyz() == Vector3(1.0f, 2.0f, 3.0f));
+}
+
+void Vector4Test::twoComponent() {
+    QVERIFY(Vector4(1.0f, 2.0f, 3.0f, 4.0f).xy() == Vector2(1.0f, 2.0f));
 }
 
 void Vector4Test::debug() {

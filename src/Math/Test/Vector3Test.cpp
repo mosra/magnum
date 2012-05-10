@@ -28,6 +28,7 @@ using namespace Corrade::Utility;
 namespace Magnum { namespace Math { namespace Test {
 
 typedef Math::Vector3<float> Vector3;
+typedef Math::Vector2<float> Vector2;
 
 void Vector3Test::construct() {
     QVERIFY((Vector3(1, 2, 3) == Vector<3, float>(1.0f, 2.0f, 3.0f)));
@@ -45,6 +46,10 @@ void Vector3Test::axis() {
     QVERIFY(Vector3::xAxis(5.0f) == Vector3(5.0f, 0.0f, 0.0f));
     QVERIFY(Vector3::yAxis(6.0f) == Vector3(0.0f, 6.0f, 0.0f));
     QVERIFY(Vector3::zAxis(7.0f) == Vector3(0.0f, 0.0f, 7.0f));
+}
+
+void Vector3Test::twoComponent() {
+    QVERIFY(Vector3(1.0f, 2.0f, 3.0f).xy() == Vector2(1.0f, 2.0f));
 }
 
 void Vector3Test::debug() {

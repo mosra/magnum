@@ -26,6 +26,7 @@ class Vector3Test: public QObject {
         void construct();
         void cross();
         void axis();
+        void twoComponent();
 
         void debug();
 };

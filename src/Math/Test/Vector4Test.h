@@ -25,6 +25,7 @@ class Vector4Test: public QObject {
     private slots:
         void construct();
         void threeComponent();
+        void twoComponent();
 
         void debug();
 };
