@@ -24,7 +24,7 @@ build() {
 
 check() {
     cd "$startdir/build"
-    ctest
+    ctest --output-on-failure
 }
 
 package() {
