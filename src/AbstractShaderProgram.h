@@ -211,6 +211,11 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         }
 
         /** @copydoc setUniform(GLint, GLint) */
+        void setUniform(GLint location, const Vector2& value) {
+            glUniform2fv(location, 1, value.data());
+        }
+
+        /** @copydoc setUniform(GLint, GLint) */
         void setUniform(GLint location, const Vector3& value) {
             glUniform3fv(location, 1, value.data());
         }
