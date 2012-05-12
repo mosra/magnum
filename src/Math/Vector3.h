@@ -68,7 +68,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * @param other     Two component vector
          * @param z         Z / B value
          */
-        inline constexpr Vector3(const Vector<2, T>& other, T z = T(0)): Vector<3, T>(other[0], other[1], z) {}
+        inline constexpr Vector3(const Vector<2, T>& other, T z): Vector<3, T>(other[0], other[1], z) {}
 
         inline constexpr T x() const { return (*this)[0]; } /**< @brief X component */
         inline constexpr T y() const { return (*this)[1]; } /**< @brief Y component */
