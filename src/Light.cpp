@@ -14,26 +14,13 @@
 */
 
 #include "Light.h"
-#include "Camera.h"
 
 namespace Magnum {
-
-Vector3 Light::position(Camera* camera) {
-    CORRADE_ASSERT(scene() && camera->scene() == scene(), "Light: camera and light aren't in the same scene!", Vector3())
-
-    if(camera != _camera) {
-        _camera = camera;
-        setDirty();
-    }
-
-    setClean();
-    return _position;
-}
 
 void Light::clean(const Matrix4& absoluteTransformation) {
     Object::clean(absoluteTransformation);
 
-    _position = (absoluteTransformation*_camera->cameraMatrix())[3].xyz();
+    _position = absoluteTransformation[3];
 }
 
 }

@@ -34,15 +34,15 @@ class Light: public Object {
          * @brief Constructor
          * @param parent        Parent object
          */
-        inline Light(Object* parent = nullptr): Object(parent), _camera(nullptr) {}
+        inline Light(Object* parent = nullptr): Object(parent) {}
 
         /**
-         * @brief Light position relative to given camera
-         *
-         * The position is cached until the camera is changed to another or
-         * the light dirty bit is set.
+         * @brief Light position relative to root object (scene)
          */
-        Vector3 position(Camera* camera);
+        inline Vector4 position() {
+            setClean();
+            return _position;
+        }
 
     protected:
         /**
@@ -51,8 +51,7 @@ class Light: public Object {
         void clean(const Matrix4& absoluteTransformation);
 
     private:
-        Camera* _camera;
-        Vector3 _position;
+        Vector4 _position;
 };
 
 }
