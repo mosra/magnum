@@ -21,7 +21,6 @@ set(Magnum_SRCS
     Mesh.cpp
     Query.cpp
     Renderbuffer.cpp
-    Scene.cpp
     Shader.cpp
     SizeTraits.cpp
     TypeTraits.cpp

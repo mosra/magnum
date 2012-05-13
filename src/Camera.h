@@ -33,12 +33,25 @@ namespace Magnum {
  */
 class MAGNUM_EXPORT Camera: public Object {
     public:
+        /** @brief Features */
+        enum class Feature: GLenum {
+            AlphaBlending = GL_BLEND,   /**< Alpha blending */
+            DepthTest = GL_DEPTH_TEST,  /**< Depth test */
+            FaceCulling = GL_CULL_FACE  /**< Face culling */
+        };
+
         /** @brief Aspect ratio policy */
         enum AspectRatioPolicy {
             NotPreserved,       /**< @brief Don't preserve aspect ratio */
             Extend,             /**< @brief Extend on larger side of view */
             Clip                /**< @brief Clip on smaller side of view */
         };
+
+        /** @brief Set feature */
+        /** @todo Depth clamping (OpenGL 3.2, ARB_depth_clamp) */
+        inline static void setFeature(Feature feature, bool enabled) {
+            enabled ? glEnable(static_cast<GLenum>(feature)) : glDisable(static_cast<GLenum>(feature));
+        }
 
         /**
          * @brief Constructor

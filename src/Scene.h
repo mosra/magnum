@@ -26,15 +26,8 @@ namespace Magnum {
 /** @brief %Scene */
 class MAGNUM_EXPORT Scene: public Object {
     public:
-        /** @brief Features */
-        enum Feature {
-            AlphaBlending   = 0x01, /**< @brief Alpha blending */
-            DepthTest       = 0x02, /**< @brief Depth test */
-            FaceCulling     = 0x04  /**< @brief Face culling */
-        };
-
         /** @brief Constructor */
-        inline Scene(): _features(0) { _parent = this; }
+        inline Scene() { _parent = this; }
 
         void setParent(Object* parent) = delete;
         void setTransformation(const Matrix4& transformation) = delete;
@@ -43,16 +36,7 @@ class MAGNUM_EXPORT Scene: public Object {
         void scale(Vector3 vec, Transformation type = Transformation::Global) = delete;
         void rotate(GLfloat angle, Vector3 vec, Transformation type = Transformation::Global) = delete;
 
-        /** @brief Which features are set */
-        inline unsigned int features() const { return _features; }
-
-        /** @brief Set feature */
-        /** @todo Depth clamping (OpenGL 3.2, ARB_depth_clamp) */
-        void setFeature(Feature feature, bool enabled);
-
     private:
-        unsigned int _features;
-
         inline virtual void draw(const Magnum::Matrix4& transformationMatrix, Camera* camera) {}
 };
 
