@@ -38,9 +38,7 @@ PhongShader::PhongShader() {
     transformationMatrixUniform = uniformLocation("transformationMatrix");
     projectionMatrixUniform = uniformLocation("projectionMatrix");
     lightUniform = uniformLocation("light");
-    lightAmbientColorUniform = uniformLocation("lightAmbientColor");
-    lightDiffuseColorUniform = uniformLocation("lightDiffuseColor");
-    lightSpecularColorUniform = uniformLocation("lightSpecularColor");
+    lightColorUniform = uniformLocation("lightColor");
 }
 
 }}

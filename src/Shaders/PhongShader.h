@@ -37,22 +37,35 @@ class PhongShader: public AbstractShaderProgram {
         /** @brief Constructor */
         PhongShader();
 
-        /** @brief %Object ambient color */
+        /**
+         * @brief %Ambient color
+         *
+         * If not set, default value is `(0.0f, 0.0f, 0.0f)`.
+         */
         inline void setAmbientColorUniform(const Vector3& color) {
             setUniform(ambientColorUniform, color);
         }
 
-        /** @brief %Object diffuse color */
+        /** @brief Diffuse color */
         inline void setDiffuseColorUniform(const Vector3& color) {
             setUniform(diffuseColorUniform, color);
         }
 
-        /** @brief %Object specular color */
+        /**
+         * @brief Specular color
+         *
+         * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
+         */
         inline void setSpecularColorUniform(const Vector3& color) {
             setUniform(specularColorUniform, color);
         }
 
-        /** @brief %Object shininess */
+        /**
+         * @brief Shininess
+         *
+         * The larger value, the harder surface (smaller specular highlight).
+         * If not set, default value is `80.0f`.
+         */
         inline void setShininessUniform(GLfloat shininess) {
             setUniform(shininessUniform, shininess);
         }
@@ -72,19 +85,13 @@ class PhongShader: public AbstractShaderProgram {
             setUniform(lightUniform, light);
         }
 
-        /** @brief %Light ambient color */
-        inline void setLightAmbientColorUniform(const Vector3& color) {
-            setUniform(lightAmbientColorUniform, color);
-        }
-
-        /** @brief %Light diffuse color */
-        inline void setLightDiffuseColorUniform(const Vector3& color) {
-            setUniform(lightDiffuseColorUniform, color);
-        }
-
-        /** @brief %Light specular color */
-        inline void setLightSpecularColorUniform(const Vector3& color) {
-            setUniform(lightSpecularColorUniform, color);
+        /**
+         * @brief %Light color
+         *
+         * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
+         */
+        inline void setLightColorUniform(const Vector3& color) {
+            setUniform(lightColorUniform, color);
         }
 
     private:
@@ -95,9 +102,7 @@ class PhongShader: public AbstractShaderProgram {
             transformationMatrixUniform,
             projectionMatrixUniform,
             lightUniform,
-            lightAmbientColorUniform,
-            lightDiffuseColorUniform,
-            lightSpecularColorUniform;
+            lightColorUniform;
 };
 
 }}
