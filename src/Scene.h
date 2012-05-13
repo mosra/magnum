@@ -52,7 +52,6 @@ class MAGNUM_EXPORT Scene: public Object {
 
     private:
         unsigned int _features;
-        GLuint vao;
 
         inline virtual void draw(const Magnum::Matrix4& transformationMatrix, Camera* camera) {}
 };
