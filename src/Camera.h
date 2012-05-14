@@ -33,10 +33,15 @@ namespace Magnum {
  */
 class MAGNUM_EXPORT Camera: public Object {
     public:
-        /** @brief Features */
+        /**
+         * @brief Features
+         *
+         * If not specified otherwise, all features are disabled by default.
+         */
         enum class Feature: GLenum {
             AlphaBlending = GL_BLEND,   /**< Alpha blending */
             DepthTest = GL_DEPTH_TEST,  /**< Depth test */
+            Dithering = GL_DITHER,      /**< Dithering (enabled by default) */
             FaceCulling = GL_CULL_FACE  /**< Face culling */
         };
 
