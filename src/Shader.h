@@ -39,7 +39,7 @@ class MAGNUM_EXPORT Shader {
 
     public:
         /** @brief %Shader type */
-        enum Type {
+        enum class Type: GLenum {
             Vertex = GL_VERTEX_SHADER,      /**< Vertex shader */
 
             /**
@@ -121,7 +121,7 @@ class MAGNUM_EXPORT Shader {
          * @see fromData(), fromFile()
          */
         inline Shader(Type type): _type(type), _state(Initialized), shader(0) {
-            shader = glCreateShader(_type);
+            shader = glCreateShader(static_cast<GLenum>(_type));
         }
 
         /**
