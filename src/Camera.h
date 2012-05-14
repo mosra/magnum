@@ -41,10 +41,10 @@ class MAGNUM_EXPORT Camera: public Object {
         };
 
         /** @brief Aspect ratio policy */
-        enum AspectRatioPolicy {
-            NotPreserved,       /**< @brief Don't preserve aspect ratio */
-            Extend,             /**< @brief Extend on larger side of view */
-            Clip                /**< @brief Clip on smaller side of view */
+        enum class AspectRatioPolicy {
+            NotPreserved,   /**< Don't preserve aspect ratio */
+            Extend,         /**< Extend on larger side of view */
+            Clip            /**< Clip on smaller side of view */
         };
 
         /** @brief Set feature */

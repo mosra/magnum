@@ -20,7 +20,7 @@ using namespace std;
 
 namespace Magnum {
 
-Camera::Camera(Object* parent): Object(parent), _aspectRatioPolicy(Extend) {}
+Camera::Camera(Object* parent): Object(parent), _aspectRatioPolicy(AspectRatioPolicy::Extend) {}
 
 void Camera::setOrthographic(GLfloat size, GLfloat near, GLfloat far) {
     _near = near;
@@ -83,14 +83,14 @@ void Camera::fixAspectRatio() {
     }
 
     /* Extend on larger side = scale larger side down */
-    if(_aspectRatioPolicy == Extend) {
+    if(_aspectRatioPolicy == AspectRatioPolicy::Extend) {
         _projectionMatrix = ((_viewport.x() > _viewport.y()) ?
             Matrix4::scaling({GLfloat(_viewport.y())/_viewport.x(), 1, 1}) :
             Matrix4::scaling({1, GLfloat(_viewport.x())/_viewport.y(), 1})
         )*rawProjectionMatrix;
 
     /* Clip on smaller side = scale smaller side up */
-    } else if(_aspectRatioPolicy == Clip) {
+    } else if(_aspectRatioPolicy == AspectRatioPolicy::Clip) {
         _projectionMatrix = ((_viewport.x() > _viewport.y()) ?
             Matrix4::scaling({1, GLfloat(_viewport.x())/_viewport.y(), 1}) :
             Matrix4::scaling({GLfloat(_viewport.y())/_viewport.x(), 1, 1})
