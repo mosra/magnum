@@ -28,7 +28,7 @@ namespace Magnum {
  *
  * Provides cached light position.
  */
-class Light: public Object {
+class MAGNUM_EXPORT Light: public Object {
     public:
         /**
          * @brief Constructor

@@ -555,7 +555,7 @@ You can also use the constructor directly instead of binary OR:
 InternalFormat fmt2(Components::RGBA, ComponentType::NormalizedUnsignedByte);
 @endcode
 */
-class AbstractTexture::InternalFormat {
+class MAGNUM_EXPORT AbstractTexture::InternalFormat {
     public:
         /** @brief Constructor from component count and data type per component */
         InternalFormat(Components components, ComponentType type);
@@ -599,7 +599,7 @@ template<> struct AbstractTexture::DataHelper<1> {
         glTexSubImage1D(target, mipLevel, offset[0], image->dimensions()[0], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 };
-template<> struct AbstractTexture::DataHelper<2> {
+template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
     enum class Target: GLenum {
         Texture2D = GL_TEXTURE_2D,
         Texture1DArray = GL_TEXTURE_1D_ARRAY,
@@ -622,7 +622,7 @@ template<> struct AbstractTexture::DataHelper<2> {
         glTexSubImage2D(target, mipLevel, offset[0], offset[1], image->dimensions()[0], 1, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 };
-template<> struct AbstractTexture::DataHelper<3> {
+template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     enum class Target: GLenum {
         Texture3D = GL_TEXTURE_3D,
         Texture2DArray = GL_TEXTURE_2D_ARRAY
