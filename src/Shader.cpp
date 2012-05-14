@@ -71,7 +71,7 @@ bool Shader::addFile(const std::string& filename) {
 
 GLuint Shader::compile() {
     /* Already compiled, return */
-    if(_state != Initialized) return shader;
+    if(_state != State::Initialized) return shader;
 
     /* Array of sources */
     const GLchar** _sources = new const GLchar*[sources.size()];
@@ -118,10 +118,10 @@ GLuint Shader::compile() {
     }
 
     if(status == GL_FALSE) {
-        _state = Failed;
+        _state = State::Failed;
         return 0;
     } else {
-        _state = Compiled;
+        _state = State::Compiled;
         return shader;
     }
 }

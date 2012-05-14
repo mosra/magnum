@@ -67,10 +67,10 @@ class MAGNUM_EXPORT Shader {
         };
 
         /** @brief %Shader state */
-        enum State {
-            Initialized,    /**< @brief %Shader is loaded */
-            Compiled,       /**< @brief %Shader is compiled */
-            Failed          /**< @brief Compilation failed */
+        enum class State {
+            Initialized,    /**< %Shader is loaded */
+            Compiled,       /**< %Shader is compiled */
+            Failed          /**< Compilation failed */
         };
 
         /**
@@ -120,7 +120,7 @@ class MAGNUM_EXPORT Shader {
          * or addFile().
          * @see fromData(), fromFile()
          */
-        inline Shader(Type type): _type(type), _state(Initialized), shader(0) {
+        inline Shader(Type type): _type(type), _state(State::Initialized), shader(0) {
             shader = glCreateShader(static_cast<GLenum>(_type));
         }
 
@@ -161,7 +161,7 @@ class MAGNUM_EXPORT Shader {
          * @see addFile()
          */
         inline void addSource(const std::string& source) {
-            if(_state == Initialized) sources.push_back(source);
+            if(_state == State::Initialized) sources.push_back(source);
         }
 
         /**
