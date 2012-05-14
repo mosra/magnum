@@ -50,7 +50,7 @@ class MAGNUM_EXPORT Camera: public Object {
 
             DepthTest = GL_DEPTH_TEST,  /**< Depth test */
             Dithering = GL_DITHER,      /**< Dithering (enabled by default) */
-            FaceCulling = GL_CULL_FACE  /**< Face culling */
+            FaceCulling = GL_CULL_FACE  /**< Back face culling */
         };
 
         /** @brief Aspect ratio policy */
