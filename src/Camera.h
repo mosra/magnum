@@ -40,6 +40,14 @@ class MAGNUM_EXPORT Camera: public Object {
          */
         enum class Feature: GLenum {
             AlphaBlending = GL_BLEND,   /**< Alpha blending */
+
+            /**
+             * Depth clamping. If enabled, ignores near and far clipping plane.
+             *
+             * @requires_gl32 Extension <tt>ARB_depth_clamp</tt>
+             */
+            DepthClamp = GL_DEPTH_CLAMP,
+
             DepthTest = GL_DEPTH_TEST,  /**< Depth test */
             Dithering = GL_DITHER,      /**< Dithering (enabled by default) */
             FaceCulling = GL_CULL_FACE  /**< Face culling */
@@ -53,7 +61,6 @@ class MAGNUM_EXPORT Camera: public Object {
         };
 
         /** @brief Set feature */
-        /** @todo Depth clamping (OpenGL 3.2, ARB_depth_clamp) */
         inline static void setFeature(Feature feature, bool enabled) {
             enabled ? glEnable(static_cast<GLenum>(feature)) : glDisable(static_cast<GLenum>(feature));
         }
