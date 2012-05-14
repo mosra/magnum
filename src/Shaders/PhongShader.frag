@@ -8,6 +8,7 @@ uniform float shininess = 80.0;
 
 in vec3 transformedNormal;
 in vec3 lightDirection;
+in vec3 cameraDirection;
 
 out vec4 color;
 
@@ -25,7 +26,7 @@ void main() {
     /* Add specular color, if needed */
     if(intensity != 0) {
         vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
-        float specularity = pow(max(0.0, dot(normalizedTransformedNormal, reflection)), shininess);
+        float specularity = pow(max(0.0, dot(normalize(cameraDirection), reflection)), shininess);
         color.rgb += specularColor*specularity;
     }
 

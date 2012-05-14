@@ -9,6 +9,7 @@ in vec3 normal;
 
 out vec3 transformedNormal;
 out vec3 lightDirection;
+out vec3 cameraDirection;
 
 void main() {
     /* Transformed vertex position */
@@ -20,6 +21,9 @@ void main() {
 
     /* Direction to the light */
     lightDirection = normalize(light - transformedVertex);
+
+    /* Direction to the camera */
+    cameraDirection = -transformedVertex;
 
     /* Transform the vertex */
     gl_Position = projectionMatrix*transformedVertex4;
