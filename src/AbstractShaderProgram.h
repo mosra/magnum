@@ -83,6 +83,9 @@ bindFragmentDataLocation(0, "color");
 You should then clearly state in the documentation which output is on what
 position, so the user can set framebuffer attachments for them using
 Framebuffer::mapForDraw() or Framebuffer::mapDefaultForDraw().
+
+@todo Uniform arrays support
+
  */
 class MAGNUM_EXPORT AbstractShaderProgram {
     AbstractShaderProgram(const AbstractShaderProgram& other) = delete;
@@ -190,58 +193,99 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *
          * @attention This function doesn't check whether this shader is in use!
          */
+        inline void setUniform(GLint location, GLfloat value) {
+            glUniform1f(location, value);
+        }
+
+        /** @copydoc setUniform(GLint, GLfloat) */
+        inline void setUniform(GLint location, const Vector2& value) {
+            glUniform2fv(location, 1, value.data());
+        }
+
+        /** @copydoc setUniform(GLint, GLfloat) */
+        inline void setUniform(GLint location, const Vector3& value) {
+            glUniform3fv(location, 1, value.data());
+        }
+
+        /** @copydoc setUniform(GLint, GLfloat) */
+        inline void setUniform(GLint location, const Vector4& value) {
+            glUniform4fv(location, 1, value.data());
+        }
+
+
+        /** @copydoc setUniform(GLint, GLfloat) */
         inline void setUniform(GLint location, GLint value) {
             glUniform1i(location, value);
         }
 
-        /** @todo setUniform() for arbitrary vectors (size and also type) */
+        /** @copydoc setUniform(GLint, GLint) */
+        inline void setUniform(GLint location, const Math::Vector2<GLint>& value) {
+            glUniform2iv(location, 1, value.data());
+        }
+
+        /** @copydoc setUniform(GLint, GLint) */
+        inline void setUniform(GLint location, const Math::Vector3<GLint>& value) {
+            glUniform3iv(location, 1, value.data());
+        }
+
+        /** @copydoc setUniform(GLint, GLint) */
+        inline void setUniform(GLint location, const Math::Vector4<GLint>& value) {
+            glUniform4iv(location, 1, value.data());
+        }
 
         /**
          * @copydoc setUniform(GLint, GLint)
          *
          * @requires_gl30 Extension <tt>EXT_gpu_shader4</tt>
          */
-        void setUniform(GLint location, GLuint value) {
+        inline void setUniform(GLint location, GLuint value) {
             glUniform1ui(location, value);
         }
 
-        /** @copydoc setUniform(GLint, GLint) */
-        void setUniform(GLint location, GLfloat value) {
-            glUniform1f(location, value);
+        /**
+         * @copydoc setUniform(GLint, GLint)
+         *
+         * @requires_gl30 Extension <tt>EXT_gpu_shader4</tt>
+         */
+        inline void setUniform(GLint location, const Math::Vector2<GLuint>& value) {
+            glUniform2uiv(location, 1, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLint)
+         *
+         * @requires_gl30 Extension <tt>EXT_gpu_shader4</tt>
+         */
+        inline void setUniform(GLint location, const Math::Vector3<GLuint>& value) {
+            glUniform3uiv(location, 1, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLuint)
+         *
+         * @requires_gl30 Extension <tt>EXT_gpu_shader4</tt>
+         */
+        inline void setUniform(GLint location, const Math::Vector4<GLuint>& value) {
+            glUniform4uiv(location, 1, value.data());
         }
 
         /** @copydoc setUniform(GLint, GLint) */
-        void setUniform(GLint location, const Vector2& value) {
-            glUniform2fv(location, 1, value.data());
-        }
-
-        /** @copydoc setUniform(GLint, GLint) */
-        void setUniform(GLint location, const Vector3& value) {
-            glUniform3fv(location, 1, value.data());
-        }
-
-        /** @copydoc setUniform(GLint, GLint) */
-        void setUniform(GLint location, const Vector4& value) {
-            glUniform4fv(location, 1, value.data());
-        }
-
-        /** @copydoc setUniform(GLint, GLint) */
-        void setUniform(GLint location, const Matrix3& value) {
+        inline void setUniform(GLint location, const Matrix3& value) {
             glUniformMatrix3fv(location, 1, GL_FALSE, value.data());
         }
 
         /** @copydoc setUniform(GLint, GLint) */
-        void setUniform(GLint location, const Matrix4& value) {
+        inline void setUniform(GLint location, const Matrix4& value) {
             glUniformMatrix4fv(location, 1, GL_FALSE, value.data());
         }
 
         /** @copydoc setUniform(GLint, GLint) */
-        void setUniform(GLint location, const AbstractTexture* value) {
+        inline void setUniform(GLint location, const AbstractTexture* value) {
             setUniform(location, value->layer());
         }
 
         /** @copydoc setUniform(GLint, GLint) */
-        void setUniform(GLint location, const BufferedTexture* value) {
+        inline void setUniform(GLint location, const BufferedTexture* value) {
             setUniform(location, value->layer());
         }
 
