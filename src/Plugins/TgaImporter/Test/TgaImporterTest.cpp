@@ -36,6 +36,18 @@ void TgaImporterTest::openInexistent() {
     QCOMPARE(debug.str().c_str(), "TgaImporter: cannot open file inexistent.file\n");
 }
 
+void TgaImporterTest::openShort() {
+    const char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    istringstream in(string(data, sizeof(data)));
+
+    ostringstream debug;
+    Error::setOutput(&debug);
+
+    TgaImporter importer;
+    QVERIFY(!importer.open(in));
+    QCOMPARE(debug.str().c_str(), "TgaImporter: the file is too short: 17 bytes\n");
+}
+
 void TgaImporterTest::paletted() {
     const char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     istringstream in(string(data, sizeof(data)));

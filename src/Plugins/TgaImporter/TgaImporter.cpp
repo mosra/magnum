@@ -47,6 +47,15 @@ bool TgaImporter::open(std::istream& in) {
         return false;
     }
 
+    /* Check if the file is long enough */
+    in.seekg(0, istream::end);
+    streampos filesize = in.tellg();
+    in.seekg(0, istream::beg);
+    if(filesize < streampos(sizeof(Header))) {
+        Error() << "TgaImporter: the file is too short:" << filesize << "bytes";
+        return false;
+    }
+
     Header header;
     in.read(reinterpret_cast<char*>(&header), sizeof(Header));
 

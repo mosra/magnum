@@ -24,6 +24,7 @@ class TgaImporterTest: public QObject {
 
     private slots:
         void openInexistent();
+        void openShort();
         void paletted();
         void nonRgb();
         void bits16();
