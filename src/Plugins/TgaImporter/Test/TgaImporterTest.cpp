@@ -27,6 +27,15 @@ QTEST_APPLESS_MAIN(Magnum::Trade::TgaImporter::Test::TgaImporterTest)
 
 namespace Magnum { namespace Trade { namespace TgaImporter { namespace Test {
 
+void TgaImporterTest::openInexistent() {
+    ostringstream debug;
+    Error::setOutput(&debug);
+
+    TgaImporter importer;
+    QVERIFY(!importer.open("inexistent.file"));
+    QCOMPARE(debug.str().c_str(), "TgaImporter: cannot open file inexistent.file\n");
+}
+
 void TgaImporterTest::paletted() {
     const char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     istringstream in(string(data, sizeof(data)));
