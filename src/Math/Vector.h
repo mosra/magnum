@@ -91,7 +91,9 @@ template<size_t size, class T> class Vector {
          * @param next  Next values
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> inline constexpr Vector(T first, U... next): _data{first, next...} {}
+        template<class ...U> inline constexpr Vector(T first, U... next): _data{first, next...} {
+            static_assert(sizeof...(next)+1 == size, "Improper number of arguments passed to Vector constructor");
+        }
         #else
         template<class ...U> inline constexpr Vector(T first, U... next);
         #endif

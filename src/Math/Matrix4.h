@@ -105,10 +105,6 @@ template<class T> class Matrix4: public Matrix<4, T> {
             0.0f, 0.0f, 0.0f, value
         ) {}
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class U> explicit Matrix4(U) = delete;
-        #endif
-
         /** @copydoc Matrix::Matrix(T, U...) */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> inline constexpr Matrix4(T first, U... next): Matrix<4, T>(first, next...) {}

@@ -37,10 +37,6 @@ template<class T> class Matrix3: public Matrix<3, T> {
             0.0f, 0.0f, value
         ) {}
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class U> explicit Matrix3(U) = delete;
-        #endif
-
         /** @copydoc Matrix::Matrix(T, U...) */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> inline constexpr Matrix3(T first, U... next): Matrix<3, T>(first, next...) {}

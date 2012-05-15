@@ -72,6 +72,7 @@ template<size_t size, class T> class Matrix {
          * @param next  Next column vectors
          */
         template<class ...U> inline constexpr static Matrix<size, T> from(const Vector<size, T>& first, const U&... next) {
+            static_assert(sizeof...(next)+1 == size, "Improper number of arguments passed to Matrix from Vector constructor");
             return from(typename Implementation::GenerateSequence<size>::Type(), first, next...);
         }
 
@@ -100,10 +101,6 @@ template<size_t size, class T> class Matrix {
                 _data[size*i+i] = value;
         }
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class U> explicit Matrix(U) = delete;
-        #endif
-
         /**
          * @brief Initializer-list constructor
          * @param first First value
@@ -112,7 +109,9 @@ template<size_t size, class T> class Matrix {
          * Note that the values are in column-major order.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> inline constexpr Matrix(T first, U... next): _data{first, next...} {}
+        template<class ...U> inline constexpr Matrix(T first, U... next): _data{first, next...} {
+            static_assert(sizeof...(next)+1 == size*size, "Improper number of arguments passed to Matrix constructor");
+        }
         #else
         template<class ...U> inline constexpr Matrix(T first, U... next);
         #endif
