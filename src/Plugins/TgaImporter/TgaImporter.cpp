@@ -40,7 +40,7 @@ bool TgaImporter::TgaImporter::open(const string& filename) {
     return status;
 }
 
-bool TgaImporter::open(std::istream& in) {
+bool TgaImporter::open(istream& in) {
     if(_image) close();
     if(!in.good()) {
         Error() << "TgaImporter: cannot read input stream";
