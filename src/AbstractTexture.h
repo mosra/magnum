@@ -414,7 +414,36 @@ class MAGNUM_EXPORT AbstractTexture {
             Depth32FloatStencil8 = GL_DEPTH32F_STENCIL8
         };
 
-        class InternalFormat;
+        /**
+         * @brief Internal format
+         *
+         * When specifying internal format, you can either specify as binary
+         * OR of component count (using Component enum) and data type per
+         * component (value from ComponentType enum), or using one of named
+         * internal formats from Format enum, e.g.:
+         * @code
+         * InternalFormat fmt1 = Format::RGBA;
+         * InternalFormat fmt2 = Components::RGBA|ComponentType::NormalizedUnsignedByte;
+         * @endcode
+         * You can also use the constructor directly instead of binary OR:
+         * @code
+         * InternalFormat fmt2(Components::RGBA, ComponentType::NormalizedUnsignedByte);
+         * @endcode
+         */
+        class MAGNUM_EXPORT InternalFormat {
+            public:
+                /** @brief Constructor from component count and data type per component */
+                InternalFormat(Components components, ComponentType type);
+
+                /** @brief Constructor from named internal format */
+                inline constexpr InternalFormat(Format format): internalFormat(static_cast<GLint>(format)) {}
+
+                /** @brief OpenGL internal format ID */
+                inline constexpr operator GLint() const { return internalFormat; }
+
+            private:
+                GLint internalFormat;
+        };
 
         /*@}*/
 
@@ -539,36 +568,7 @@ class MAGNUM_EXPORT AbstractTexture {
         GLuint texture;
 };
 
-/**
-@brief Internal format
 
-When specifying internal format, you can either specify as binary OR of
-component count (using Component enum) and data type per component (value from
-ComponentType enum), or using one of named internal formats from Format enum,
-e.g.:
-@code
-InternalFormat fmt1 = Format::RGBA;
-InternalFormat fmt2 = Components::RGBA|ComponentType::NormalizedUnsignedByte;
-@endcode
-You can also use the constructor directly instead of binary OR:
-@code
-InternalFormat fmt2(Components::RGBA, ComponentType::NormalizedUnsignedByte);
-@endcode
-*/
-class MAGNUM_EXPORT AbstractTexture::InternalFormat {
-    public:
-        /** @brief Constructor from component count and data type per component */
-        InternalFormat(Components components, ComponentType type);
-
-        /** @brief Constructor from named internal format */
-        inline constexpr InternalFormat(Format format): internalFormat(static_cast<GLint>(format)) {}
-
-        /** @brief OpenGL internal format ID */
-        inline constexpr operator GLint() const { return internalFormat; }
-
-    private:
-        GLint internalFormat;
-};
 
 /** @brief Convertor of component count and data type to InternalFormat */
 inline AbstractTexture::InternalFormat operator|(AbstractTexture::Components components, AbstractTexture::ComponentType type) {

@@ -52,7 +52,11 @@ class MAGNUM_EXPORT Mesh {
     Mesh& operator=(Mesh&& other) = delete;
 
     public:
-        /** @brief Polygon mode */
+        /**
+         * @brief Polygon mode
+         *
+         * @see setPolygonMode()
+         */
         enum class PolygonMode: GLenum {
             /**
              * Interior of the polygon is filled.
@@ -71,7 +75,11 @@ class MAGNUM_EXPORT Mesh {
             Point = GL_POINT
         };
 
-        /** @brief Primitive type */
+        /**
+         * @brief Primitive type
+         *
+         * @see primitive(), setPrimitive()
+         */
         enum class Primitive: GLenum {
             /**
              * Single points

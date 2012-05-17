@@ -37,6 +37,7 @@ class MAGNUM_EXPORT Camera: public Object {
          * @brief Features
          *
          * If not specified otherwise, all features are disabled by default.
+         * @see setFeature()
          */
         enum class Feature: GLenum {
             AlphaBlending = GL_BLEND,   /**< Alpha blending */
@@ -53,7 +54,11 @@ class MAGNUM_EXPORT Camera: public Object {
             FaceCulling = GL_CULL_FACE  /**< Back face culling */
         };
 
-        /** @brief Aspect ratio policy */
+        /**
+         * @brief Aspect ratio policy
+         *
+         * @see aspectRatioPolicy(), setAspectRatioPolicy()
+         */
         enum class AspectRatioPolicy {
             NotPreserved,   /**< Don't preserve aspect ratio */
             Extend,         /**< Extend on larger side of view */
