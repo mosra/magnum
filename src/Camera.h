@@ -155,8 +155,7 @@ class MAGNUM_EXPORT Camera: public Object {
          */
         virtual void draw();
 
-        /* It's here just so the function is not hidden by draw() */
-        void draw(const Matrix4& transformationMatrix, Camera* camera) {}
+        using Object::draw; /* Don't hide Object's draw() */
 
     protected:
         /**
