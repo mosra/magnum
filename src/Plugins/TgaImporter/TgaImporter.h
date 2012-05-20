@@ -21,10 +21,15 @@
 
 #include "Trade/AbstractImporter.h"
 
-namespace Magnum { namespace Trade { namespace TgaImporter {
+namespace Magnum { namespace Trade {
 
+/** @brief TGA importer */
+namespace TgaImporter {
+
+/** @brief TGA importer plugin */
 class TgaImporter: public AbstractImporter {
     public:
+        /** @copydoc AbstractImporter::AbstractImporter() */
         TgaImporter(Corrade::PluginManager::AbstractPluginManager* manager = 0, const std::string& plugin = ""): AbstractImporter(manager, plugin), _image(nullptr) {}
         inline virtual ~TgaImporter() { close(); }
 
@@ -38,6 +43,7 @@ class TgaImporter: public AbstractImporter {
         ImageData2D* image2D(size_t id);
 
         #pragma pack(1)
+        /** @brief TGA file header */
         struct Header {
             GLbyte  identsize;              /**< @brief Size of ID field that follows header (0) */
             GLbyte  colorMapType;           /**< @brief 0 = None, 1 = paletted */
