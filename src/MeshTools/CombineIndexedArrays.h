@@ -113,8 +113,8 @@ std::vector<Vector2> textureCoordinates;
 
 std::vector<unsigned int> indices = MeshTools::combineIndexedArrays(
     std::make_tuple(std::cref(vertexIndices), std::ref(vertices)),
-    std::make_tuple(std::cref(normaTextureIndices), std::ref(normals)),
-    std::make_tuple(std::cref(normaTextureIndices), std::ref(textureCoordinates))
+    std::make_tuple(std::cref(normalTextureIndices), std::ref(normals)),
+    std::make_tuple(std::cref(normalTextureIndices), std::ref(textureCoordinates))
 );
 @endcode
 `vertices`, `normals` and `textureCoordinates` will then contain combined
