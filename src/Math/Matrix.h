@@ -61,7 +61,7 @@ template<size_t size, class T> class Matrix {
             return *reinterpret_cast<Matrix<size, T>*>(data);
         }
 
-        /** @copydoc from(T*) */
+        /** @copybrief from(T*) @copydetails from(T*) */
         inline constexpr static const Matrix<size, T>& from(const T* data) {
             return *reinterpret_cast<const Matrix<size, T>*>(data);
         }
@@ -128,14 +128,14 @@ template<size_t size, class T> class Matrix {
          *      order.
          */
         inline T* data() { return _data; }
-        inline constexpr const T* data() const { return _data; } /**< @copydoc data() */
+        inline constexpr const T* data() const { return _data; } /**< @copybrief data() @copydetails data() */
 
         /** @brief %Matrix column */
         inline Vector<size, T>& operator[](size_t col) {
             return Vector<size, T>::from(_data+col*size);
         }
 
-        /** @copydoc operator[]() */
+        /** @copybrief operator[]() @copydetails operator[]() */
         inline constexpr const Vector<size, T>& operator[](size_t col) const {
             return Vector<size, T>::from(_data+col*size);
         }

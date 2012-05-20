@@ -48,7 +48,7 @@ template<size_t size, class T> class Vector {
             return *reinterpret_cast<Vector<size, T>*>(data);
         }
 
-        /** @copydoc from(T*) */
+        /** @copybrief from(T*) @copydetails from(T*) */
         inline constexpr static const Vector<size, T>& from(const T* data) {
             return *reinterpret_cast<const Vector<size, T>*>(data);
         }
@@ -118,11 +118,11 @@ template<size_t size, class T> class Vector {
          * @return Array with the same size as the vector
          */
         inline T* data() { return _data; }
-        inline constexpr const T* data() const { return _data; } /**< @copydoc data() */
+        inline constexpr const T* data() const { return _data; } /**< @copybrief data() @copydetails data() */
 
         /** @brief Value at given position */
         inline T& operator[](size_t pos) { return _data[pos]; }
-        inline constexpr T operator[](size_t pos) const { return _data[pos]; } /**< @copydoc operator[]() */
+        inline constexpr T operator[](size_t pos) const { return _data[pos]; } /**< @copybrief operator[]() @copydetails operator[]() */
 
         /** @brief Equality operator */
         inline bool operator==(const Vector<size, T>& other) const {
