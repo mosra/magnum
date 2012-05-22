@@ -539,7 +539,6 @@ class MAGNUM_EXPORT AbstractTexture {
          *
          * Default value is `1.0`, which means no anisotropy. Set to value
          * greater than `1.0` for anisotropic filtering.
-         *
          * @see maxSupportedAnisotropy()
          * @requires_extension <tt>EXT_texture_filter_anisotropic</tt>
          */
@@ -553,6 +552,7 @@ class MAGNUM_EXPORT AbstractTexture {
          *
          * Can not be used for rectangle textures.
          * @see setMinificationFilter()
+         * @requires_gl30 Extension <tt>EXT_framebuffer_object</tt>
          */
         void generateMipmap();
 
