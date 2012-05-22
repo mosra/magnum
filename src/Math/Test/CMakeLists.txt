@@ -1,4 +1,4 @@
-corrade_add_test(MathTypeTraitsTest TypeTraitsTest.h TypeTraitsTest.cpp)
+corrade_add_test(MathMathTypeTraitsTest MathTypeTraitsTest.h MathTypeTraitsTest.cpp)
 
 corrade_add_test(MathVectorTest VectorTest.h VectorTest.cpp ${CORRADE_UTILITY_LIBRARY})
 corrade_add_test(MathVector2Test Vector2Test.h Vector2Test.cpp ${CORRADE_UTILITY_LIBRARY})

@@ -13,17 +13,17 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "TypeTraitsTest.h"
+#include "MathTypeTraitsTest.h"
 
 #include <QtTest/QTest>
 
-#include "TypeTraits.h"
+#include "MathTypeTraits.h"
 
-QTEST_APPLESS_MAIN(Magnum::Math::Test::TypeTraitsTest)
+QTEST_APPLESS_MAIN(Magnum::Math::Test::MathTypeTraitsTest)
 
 namespace Magnum { namespace Math { namespace Test {
 
-void TypeTraitsTest::equalsIntegral() {
+void MathTypeTraitsTest::equalsIntegral() {
     _equalsIntegral<unsigned char>();
     _equalsIntegral<char>();
     _equalsIntegral<unsigned short>();
@@ -36,23 +36,23 @@ void TypeTraitsTest::equalsIntegral() {
     _equalsIntegral<long long>();
 }
 
-void TypeTraitsTest::equalsFloatingPoint() {
+void MathTypeTraitsTest::equalsFloatingPoint() {
     _equalsFloatingPoint<float>();
     _equalsFloatingPoint<double>();
 }
 
-template<class T> void TypeTraitsTest::_equalsIntegral() {
-    QVERIFY(!TypeTraits<T>::equals(1, 1+TypeTraits<T>::epsilon()));
+template<class T> void MathTypeTraitsTest::_equalsIntegral() {
+    QVERIFY(!MathTypeTraits<T>::equals(1, 1+MathTypeTraits<T>::epsilon()));
 }
 
-template<class T> void TypeTraitsTest::_equalsFloatingPoint() {
-    QVERIFY(TypeTraits<T>::equals(1.0f+TypeTraits<T>::epsilon()/2, 1.0f));
-    QVERIFY(!TypeTraits<T>::equals(1.0f+TypeTraits<T>::epsilon()*2, 1.0f));
+template<class T> void MathTypeTraitsTest::_equalsFloatingPoint() {
+    QVERIFY(MathTypeTraits<T>::equals(1.0f+MathTypeTraits<T>::epsilon()/2, 1.0f));
+    QVERIFY(!MathTypeTraits<T>::equals(1.0f+MathTypeTraits<T>::epsilon()*2, 1.0f));
 
     QEXPECT_FAIL(0, "Comparing to infinity is broken", Continue);
-    QVERIFY(TypeTraits<T>::equals(std::numeric_limits<T>::infinity(),
+    QVERIFY(MathTypeTraits<T>::equals(std::numeric_limits<T>::infinity(),
                                   std::numeric_limits<T>::infinity()));
-    QVERIFY(!TypeTraits<T>::equals(std::numeric_limits<T>::quiet_NaN(),
+    QVERIFY(!MathTypeTraits<T>::equals(std::numeric_limits<T>::quiet_NaN(),
                                    std::numeric_limits<T>::quiet_NaN()));
 }
 

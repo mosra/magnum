@@ -1,5 +1,5 @@
-#ifndef Magnum_Math_TypeTraits_h
-#define Magnum_Math_TypeTraits_h
+#ifndef Magnum_Math_MathTypeTraits_h
+#define Magnum_Math_MathTypeTraits_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::TypeTraits
+ * @brief Class Magnum::Math::MathTypeTraits
  */
 
 #include <cmath>
@@ -44,7 +44,7 @@ This class and class methods are specialized only for types where it makes
 sense, it has empty implementation for unknown types or types which don't
 support given feature, thus forcing the compilation stop with an error.
 */
-template<class T> struct TypeTraits {
+template<class T> struct MathTypeTraits {
     #ifdef DOXYGEN_GENERATING_OUTPUT
     /* Development note: the following values are implemented as inline
        functions, not as static const variables, because the compiler will
@@ -79,39 +79,39 @@ template<class T> struct TypeTraits {
  */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T> struct _TypeTraitsIntegral {
+template<class T> struct _MathTypeTraitsIntegral {
     constexpr inline static T epsilon() { return 1; }
 
     inline constexpr static bool equals(T a, T b) {
         return a == b;
     }
 };
-template<> struct TypeTraits<unsigned char>: public _TypeTraitsIntegral<unsigned char> {};
-template<> struct TypeTraits<char>: public _TypeTraitsIntegral<char> {};
+template<> struct MathTypeTraits<unsigned char>: public _MathTypeTraitsIntegral<unsigned char> {};
+template<> struct MathTypeTraits<char>: public _MathTypeTraitsIntegral<char> {};
 
-template<> struct TypeTraits<unsigned short>: public _TypeTraitsIntegral<unsigned short> {};
-template<> struct TypeTraits<short>: public _TypeTraitsIntegral<short> {};
+template<> struct MathTypeTraits<unsigned short>: public _MathTypeTraitsIntegral<unsigned short> {};
+template<> struct MathTypeTraits<short>: public _MathTypeTraitsIntegral<short> {};
 
-template<> struct TypeTraits<unsigned int>: public _TypeTraitsIntegral<unsigned int> {};
-template<> struct TypeTraits<int>: public _TypeTraitsIntegral<int> {};
+template<> struct MathTypeTraits<unsigned int>: public _MathTypeTraitsIntegral<unsigned int> {};
+template<> struct MathTypeTraits<int>: public _MathTypeTraitsIntegral<int> {};
 
 /* long is 32 bits somewhere and 64 bits elsewhere, so it cannot be mapped to
    any of them */
-template<> struct TypeTraits<long unsigned int>: public _TypeTraitsIntegral<long unsigned int> {};
-template<> struct TypeTraits<long int>: public _TypeTraitsIntegral<long int> {};
+template<> struct MathTypeTraits<long unsigned int>: public _MathTypeTraitsIntegral<long unsigned int> {};
+template<> struct MathTypeTraits<long int>: public _MathTypeTraitsIntegral<long int> {};
 
-template<> struct TypeTraits<unsigned long long>: public _TypeTraitsIntegral<unsigned long long> {};
-template<> struct TypeTraits<long long>: public _TypeTraitsIntegral<long long> {};
+template<> struct MathTypeTraits<unsigned long long>: public _MathTypeTraitsIntegral<unsigned long long> {};
+template<> struct MathTypeTraits<long long>: public _MathTypeTraitsIntegral<long long> {};
 
-template<class T> struct _TypeTraitsFloatingPoint {
+template<class T> struct _MathTypeTraitsFloatingPoint {
     inline static bool equals(T a, T b) {
-        return std::abs(a - b) < TypeTraits<T>::epsilon();
+        return std::abs(a - b) < MathTypeTraits<T>::epsilon();
     }
 };
-template<> struct TypeTraits<float>: public _TypeTraitsFloatingPoint<float> {
+template<> struct MathTypeTraits<float>: public _MathTypeTraitsFloatingPoint<float> {
     constexpr inline static float epsilon() { return FLOAT_EQUALITY_PRECISION; }
 };
-template<> struct TypeTraits<double>: public _TypeTraitsFloatingPoint<double> {
+template<> struct MathTypeTraits<double>: public _MathTypeTraitsFloatingPoint<double> {
     constexpr inline static double epsilon() { return DOUBLE_EQUALITY_PRECISION; }
 };
 #endif

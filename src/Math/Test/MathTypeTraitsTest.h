@@ -1,5 +1,5 @@
-#ifndef Magnum_Math_Test_TypeTraitsTest_h
-#define Magnum_Math_Test_TypeTraitsTest_h
+#ifndef Magnum_Math_Test_MathTypeTraitsTest_h
+#define Magnum_Math_Test_MathTypeTraitsTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class TypeTraitsTest: public QObject {
+class MathTypeTraitsTest: public QObject {
     Q_OBJECT
 
     private slots:

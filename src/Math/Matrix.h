@@ -158,7 +158,7 @@ template<size_t size, class T> class Matrix {
         /** @brief Equality operator */
         inline bool operator==(const Matrix<size, T>& other) const {
             for(size_t i = 0; i != size*size; ++i)
-                if(!TypeTraits<T>::equals(_data[i], other._data[i])) return false;
+                if(!MathTypeTraits<T>::equals(_data[i], other._data[i])) return false;
 
             return true;
         }

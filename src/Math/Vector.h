@@ -22,7 +22,7 @@
 #include <cmath>
 
 #include "Utility/Debug.h"
-#include "TypeTraits.h"
+#include "MathTypeTraits.h"
 
 namespace Magnum { namespace Math {
 
@@ -145,7 +145,7 @@ template<size_t size, class T> class Vector {
         /** @brief Equality operator */
         inline bool operator==(const Vector<size, T>& other) const {
             for(size_t pos = 0; pos != size; ++pos)
-                if(!TypeTraits<T>::equals((*this)[pos], other[pos])) return false;
+                if(!MathTypeTraits<T>::equals((*this)[pos], other[pos])) return false;
 
             return true;
         }
