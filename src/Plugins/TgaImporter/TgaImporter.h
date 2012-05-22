@@ -48,12 +48,12 @@ class TgaImporter: public AbstractImporter {
             unsigned short  colorMapStart;  /**< @brief First color map entry */
             unsigned short  colorMapLength; /**< @brief Number of colors */
             unsigned char   colorMapBpp;    /**< @brief Bits per palette entry */
-            unsigned short  beginX;         /**< @brief Image x origin */
-            unsigned short  beginY;         /**< @brief Image y origin */
-            unsigned short  width;          /**< @brief Image width */
-            unsigned short  height;         /**< @brief Image height */
+            unsigned short  beginX;         /**< @brief %Image x origin */
+            unsigned short  beginY;         /**< @brief %Image y origin */
+            unsigned short  width;          /**< @brief %Image width */
+            unsigned short  height;         /**< @brief %Image height */
             GLbyte  bpp;                    /**< @brief Bits per pixel (8, 16, 24, 32) */
-            GLbyte  descriptor;             /**< @brief Image descriptor */
+            GLbyte  descriptor;             /**< @brief %Image descriptor */
         };
         #pragma pack(8)
 
