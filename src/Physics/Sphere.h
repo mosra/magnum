@@ -35,7 +35,7 @@ applying transformation, the scale factor is averaged from all axes.
 class PHYSICS_EXPORT Sphere: public AbstractShape {
     public:
         /** @brief Constructor */
-        inline constexpr Sphere(const Vector3& position, float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
+        inline Sphere(const Vector3& position, float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
 
         void applyTransformation(const Matrix4& transformation);
 

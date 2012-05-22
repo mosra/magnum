@@ -27,7 +27,7 @@ namespace Magnum { namespace Physics {
 class Box: public AbstractShape {
     public:
         /** @brief Constructor */
-        inline constexpr Box(const Matrix4& transformation): _transformation(transformation), _transformedTransformation(transformation) {}
+        inline Box(const Matrix4& transformation): _transformation(transformation), _transformedTransformation(transformation) {}
 
         inline void applyTransformation(const Matrix4& transformation) {
             _transformedTransformation = transformation*_transformation;

@@ -27,7 +27,7 @@ namespace Magnum { namespace Physics {
 class LineSegment: public Line {
     public:
         /** @brief Constructor */
-        LineSegment(const Vector3& a, const Vector3& b): Line(a, b) {}
+        inline LineSegment(const Vector3& a, const Vector3& b): Line(a, b) {}
 
     protected:
         inline Type type() const { return Type::LineSegment; }

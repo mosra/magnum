@@ -27,7 +27,7 @@ namespace Magnum { namespace Physics {
 class PHYSICS_EXPORT AxisAlignedBox: public AbstractShape {
     public:
         /** @brief Constructor */
-        inline constexpr AxisAlignedBox(const Vector3& position, const Vector3& size): _position(position), _transformedPosition(position), _size(size), _transformedSize(size) {}
+        inline AxisAlignedBox(const Vector3& position, const Vector3& size): _position(position), _transformedPosition(position), _size(size), _transformedSize(size) {}
 
         void applyTransformation(const Matrix4& transformation);
 

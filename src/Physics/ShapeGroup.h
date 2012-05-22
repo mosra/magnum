@@ -95,7 +95,7 @@ class PHYSICS_EXPORT ShapeGroup: public AbstractShape {
         virtual Type type() const { return Type::ShapeGroup; }
 
     private:
-        inline constexpr ShapeGroup(int operation, AbstractShape* a, AbstractShape* b): operation(operation), a(a), b(b) {}
+        inline ShapeGroup(int operation, AbstractShape* a, AbstractShape* b): operation(operation), a(a), b(b) {}
 
         int operation;
         AbstractShape* a;

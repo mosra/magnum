@@ -34,7 +34,7 @@ applying transformation, the scale factor is averaged from all axes.
 class PHYSICS_EXPORT Capsule: public AbstractShape {
     public:
         /** @brief Constructor */
-        inline constexpr Capsule(const Vector3& a, const Vector3& b, float radius): _a(a), _transformedA(a), _b(b), _transformedB(b), _radius(radius), _transformedRadius(radius) {}
+        inline Capsule(const Vector3& a, const Vector3& b, float radius): _a(a), _transformedA(a), _b(b), _transformedB(b), _radius(radius), _transformedRadius(radius) {}
 
         void applyTransformation(const Matrix4& transformation);
 

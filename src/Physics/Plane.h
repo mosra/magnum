@@ -30,7 +30,7 @@ namespace Magnum { namespace Physics {
 class PHYSICS_EXPORT Plane: public AbstractShape {
     public:
         /** @brief Constructor */
-        inline constexpr Plane(const Vector3& position, const Vector3& normal): _position(position), _transformedPosition(position), _normal(normal), _transformedNormal(normal) {}
+        inline Plane(const Vector3& position, const Vector3& normal): _position(position), _transformedPosition(position), _normal(normal), _transformedNormal(normal) {}
 
         void applyTransformation(const Matrix4& transformation);
 

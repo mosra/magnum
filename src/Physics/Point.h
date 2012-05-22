@@ -27,7 +27,7 @@ namespace Magnum { namespace Physics {
 class Point: public AbstractShape {
     public:
         /** @brief Constructor */
-        inline constexpr Point(const Vector3& position): _position(position), _transformedPosition(position) {}
+        inline Point(const Vector3& position): _position(position), _transformedPosition(position) {}
 
         inline void applyTransformation(const Matrix4& transformation) {
             _transformedPosition = (transformation*Vector4(_position)).xyz();
