@@ -5,8 +5,8 @@ corrade_add_test(MeshToolsFlipNormalsTest FlipNormalsTest.h FlipNormalsTest.cpp 
 corrade_add_test(MeshToolsGenerateFlatNormalsTest GenerateFlatNormalsTest.h GenerateFlatNormalsTest.cpp MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsInterleaveTest InterleaveTest.h InterleaveTest.cpp ${CORRADE_UTILITY_LIBRARY})
 corrade_add_test(MeshToolsSubdivideTest SubdivideTest.h SubdivideTest.cpp ${CORRADE_UTILITY_LIBRARY})
-corrade_add_test(MeshToolsSubdivideCleanBenchmark SubdivideCleanBenchmark.h SubdivideCleanBenchmark.cpp ${MAGNUM_PRIMITIVES_LIBRARY})
-corrade_add_test(MeshToolsTipsifyTest TipsifyTest.h TipsifyTest.cpp ${MAGNUM_MESHTOOLS_LIBRARY})
+corrade_add_test(MeshToolsSubdivideCleanBenchmark SubdivideCleanBenchmark.h SubdivideCleanBenchmark.cpp MagnumPrimitives)
+corrade_add_test(MeshToolsTipsifyTest TipsifyTest.h TipsifyTest.cpp MagnumMeshTools)
 
 # Graceful assert for testing
 set_target_properties(MeshToolsCombineIndexedArraysTest MeshToolsInterleaveTest MeshToolsSubdivideTest PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)

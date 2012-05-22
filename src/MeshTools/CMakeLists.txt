@@ -31,7 +31,7 @@ if(BUILD_TESTS)
         ${MagnumMeshTools_GracefulAssert_SRCS}
     )
     set_target_properties(MagnumMeshToolsTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
-    target_link_libraries(MagnumMeshToolsTestLib ${MAGNUM_LIBRARY})
+    target_link_libraries(MagnumMeshToolsTestLib Magnum)
 
     add_subdirectory(Test)
 endif()
