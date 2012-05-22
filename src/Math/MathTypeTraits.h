@@ -45,8 +45,9 @@ sense, it has empty implementation for unknown types or types which don't
 support given feature, thus forcing the compilation stop with an error.
 
 @internal The following values are implemented as inline functions, not as
-    static const variables, because unlike static const variables the
-    functions can be overloaded, deleted and hidden.
+    static const variables, because the compiler will inline the return values
+    instead of referencing to static data and unlike static const variables
+    the functions can be overloaded, deleted and hidden.
 */
 template<class T> struct MathTypeTraits {
     #ifdef DOXYGEN_GENERATING_OUTPUT
