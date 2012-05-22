@@ -31,7 +31,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
         inline constexpr explicit Matrix3(typename Matrix<3, T>::ZeroType): Matrix<3, T>(Matrix<3, T>::Zero) {}
 
         /** @copydoc Matrix::Matrix(IdentityType, T) */
-        inline constexpr explicit Matrix3(typename Matrix<3, T>::IdentityType = Matrix<3, T>::Identity, T value = T(1)): Matrix<3, T>(
+        inline constexpr explicit Matrix3(typename Matrix<3, T>::IdentityType = (Matrix<3, T>::Identity), T value = T(1)): Matrix<3, T>(
             value, 0.0f, 0.0f,
             0.0f, value, 0.0f,
             0.0f, 0.0f, value

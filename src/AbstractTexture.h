@@ -594,11 +594,11 @@ template<> struct AbstractTexture::DataHelper<1> {
         glTexParameteri(target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
     }
 
-    template<class Image> inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image, const Math::Vector<1, GLsizei>& = Math::Vector<Image::Dimensions, GLsizei>()) {
+    template<class Image> inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image, const Math::Vector<1, GLsizei>& = (Math::Vector<Image::Dimensions, GLsizei>())) {
         glTexImage1D(target, mipLevel, internalFormat, image->dimensions()[0], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 
-    template<class Image> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<1, GLint>& offset, Image* image, const Math::Vector<1, GLsizei>& = Math::Vector<Image::Dimensions, GLsizei>()) {
+    template<class Image> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<1, GLint>& offset, Image* image, const Math::Vector<1, GLsizei>& = (Math::Vector<Image::Dimensions, GLsizei>())) {
         glTexSubImage1D(target, mipLevel, offset[0], image->dimensions()[0], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 };
@@ -613,15 +613,15 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
 
     static void setWrapping(GLenum target, const Math::Vector<2, Wrapping>& wrapping);
 
-    template<class Image> inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image, const Math::Vector<2, GLsizei>& = Math::Vector<Image::Dimensions, GLsizei>()) {
+    template<class Image> inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image, const Math::Vector<2, GLsizei>& = (Math::Vector<Image::Dimensions, GLsizei>())) {
         glTexImage2D(target, mipLevel, internalFormat, image->dimensions()[0], image->dimensions()[1], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 
-    template<class Image> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<2, GLint>& offset, Image* image, const Math::Vector<2, GLsizei>& = Math::Vector<Image::Dimensions, GLsizei>()) {
+    template<class Image> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<2, GLint>& offset, Image* image, const Math::Vector<2, GLsizei>& = (Math::Vector<Image::Dimensions, GLsizei>())) {
         glTexSubImage2D(target, mipLevel, offset[0], offset[1], image->dimensions()[0], image->dimensions()[1], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 
-    template<class Image> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<2, GLint>& offset, Image* image, const Math::Vector<1, GLsizei>& = Math::Vector<Image::Dimensions, GLsizei>()) {
+    template<class Image> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<2, GLint>& offset, Image* image, const Math::Vector<1, GLsizei>& = (Math::Vector<Image::Dimensions, GLsizei>())) {
         glTexSubImage2D(target, mipLevel, offset[0], offset[1], image->dimensions()[0], 1, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 };
@@ -635,15 +635,15 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
 
     static void setWrapping(GLenum target, const Math::Vector<3, Wrapping>& wrapping);
 
-    template<class Image> inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image, const Math::Vector<3, GLsizei>& = Math::Vector<Image::Dimensions, GLsizei>()) {
+    template<class Image> inline static void set(GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image, const Math::Vector<3, GLsizei>& = (Math::Vector<Image::Dimensions, GLsizei>())) {
         glTexImage3D(target, mipLevel, internalFormat, image->dimensions()[0], image->dimensions()[1], image->dimensions()[2], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 
-    template<class Image> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<3, GLint>& offset, Image* image, const Math::Vector<3, GLsizei>& = Math::Vector<Image::Dimensions, GLsizei>()) {
+    template<class Image> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<3, GLint>& offset, Image* image, const Math::Vector<3, GLsizei>& = (Math::Vector<Image::Dimensions, GLsizei>())) {
         glTexSubImage3D(target, mipLevel, offset[0], offset[1], offset[2], image->dimensions()[0], image->dimensions()[1], image->dimensions()[2], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 
-    template<class Image> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<3, GLint>& offset, Image* image, const Math::Vector<2, GLsizei>& = Math::Vector<Image::Dimensions, GLsizei>()) {
+    template<class Image> inline static void setSub(GLenum target, GLint mipLevel, const Math::Vector<3, GLint>& offset, Image* image, const Math::Vector<2, GLsizei>& = (Math::Vector<Image::Dimensions, GLsizei>())) {
         glTexSubImage3D(target, mipLevel, offset[0], offset[1], offset[2], image->dimensions()[0], image->dimensions()[1], 1, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 };
