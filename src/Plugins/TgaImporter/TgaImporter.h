@@ -21,10 +21,22 @@
 
 #include "Trade/AbstractImporter.h"
 
+#ifdef _WIN32
+    #ifdef TgaImporter_EXPORTS
+        #define TGAIMPORTER_EXPORT __declspec(dllexport)
+    #else
+        #define TGAIMPORTER_EXPORT __declspec(dllimport)
+    #endif
+    #define TGAIMPORTER_LOCAL
+#else
+    #define TGAIMPORTER_EXPORT __attribute__ ((visibility ("default")))
+    #define TGAIMPORTER_LOCAL __attribute__ ((visibility ("hidden")))
+#endif
+
 namespace Magnum { namespace Trade { namespace TgaImporter {
 
 /** @brief TGA importer plugin */
-class TgaImporter: public AbstractImporter {
+class TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     public:
         /** @copydoc AbstractImporter::AbstractImporter() */
         TgaImporter(Corrade::PluginManager::AbstractPluginManager* manager = 0, const std::string& plugin = ""): AbstractImporter(manager, plugin), _image(nullptr) {}
@@ -41,7 +53,7 @@ class TgaImporter: public AbstractImporter {
 
         #pragma pack(1)
         /** @brief TGA file header */
-        struct Header {
+        struct TGAIMPORTER_LOCAL Header {
             GLbyte  identsize;              /**< @brief Size of ID field that follows header (0) */
             GLbyte  colorMapType;           /**< @brief 0 = None, 1 = paletted */
             GLbyte  imageType;              /**< @brief 0 = none, 1 = indexed, 2 = rgb, 3 = grey, +8=rle */
