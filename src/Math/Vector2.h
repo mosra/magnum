@@ -48,11 +48,10 @@ template<class T> class Vector2: public Vector<2, T> {
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector2, 2)
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
+/** @debugoperator{Vector2} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector2<T>& value) {
     return debug << static_cast<const Magnum::Math::Vector<2, T>&>(value);
 }
-#endif
 
 }}
 

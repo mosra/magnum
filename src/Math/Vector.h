@@ -266,6 +266,19 @@ template<size_t size, class T> class Vector {
         T _data[size];
 };
 
+/** @debugoperator{Vector} */
+template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector<size, T>& value) {
+    debug << "Vector(";
+    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
+    for(size_t i = 0; i != size; ++i) {
+        if(i != 0) debug << ", ";
+        debug << value[i];
+    }
+    debug << ')';
+    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
+    return debug;
+}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Type, size)                   \
     inline constexpr static Type<T>& from(T* data) {                        \
@@ -312,18 +325,6 @@ template<size_t size, class T> class Vector {
                                                                             \
     inline Type<T> operator-() const { return Vector<size, T>::operator-(); } \
     inline Type<T> normalized() const { return Vector<size, T>::normalized(); }
-
-template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector<size, T>& value) {
-    debug << "Vector(";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
-    for(size_t i = 0; i != size; ++i) {
-        if(i != 0) debug << ", ";
-        debug << value[i];
-    }
-    debug << ')';
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
-    return debug;
-}
 #endif
 
 }}

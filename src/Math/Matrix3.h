@@ -50,11 +50,10 @@ template<class T> class Matrix3: public Matrix<3, T> {
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix3, Vector3, 3)
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
+/** @debugoperator{Matrix3} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix3<T>& value) {
     return debug << static_cast<const Magnum::Math::Matrix<3, T>&>(value);
 }
-#endif
 
 }}
 

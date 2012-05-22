@@ -260,6 +260,22 @@ template<size_t size, class T> class Matrix {
         T _data[size*size];
 };
 
+/** @debugoperator{Matrix} */
+template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix<size, T>& value) {
+    debug << "Matrix(";
+    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
+    for(size_t row = 0; row != size; ++row) {
+        if(row != 0) debug << ",\n       ";
+        for(size_t col = 0; col != size; ++col) {
+            if(col != 0) debug << ", ";
+            debug << value[col][row];
+        }
+    }
+    debug << ')';
+    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
+    return debug;
+}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Type, VectorType, size)       \
     inline constexpr static Type<T>& from(T* data) {                        \
@@ -329,21 +345,6 @@ template<class T> class MatrixDeterminant<1, T> {
         }
 };
 
-}
-
-template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix<size, T>& value) {
-    debug << "Matrix(";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
-    for(size_t row = 0; row != size; ++row) {
-        if(row != 0) debug << ",\n       ";
-        for(size_t col = 0; col != size; ++col) {
-            if(col != 0) debug << ", ";
-            debug << value[col][row];
-        }
-    }
-    debug << ')';
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
-    return debug;
 }
 #endif
 

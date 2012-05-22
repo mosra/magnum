@@ -137,11 +137,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix4, Vector4, 4)
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
+/** @debugoperator{Matrix4} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix4<T>& value) {
     return debug << static_cast<const Magnum::Math::Matrix<4, T>&>(value);
 }
-#endif
 
 }}
 
