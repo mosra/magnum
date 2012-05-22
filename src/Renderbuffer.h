@@ -146,11 +146,15 @@ class Renderbuffer {
         GLuint renderbuffer;
 };
 
-/** @copydoc operator|(AbstractTexture::Components, AbstractTexture::ComponentType) */
+/** @relates Renderbuffer
+@brief Convertor of component count and data type to InternalFormat
+*/
 inline Renderbuffer::InternalFormat operator|(Renderbuffer::Components components, Renderbuffer::ComponentType type) {
     return Renderbuffer::InternalFormat(components, type);
 }
-/** @copydoc operator|(AbstractTexture::ComponentType, AbstractTexture::Components) */
+/** @relates Renderbuffer
+ * @overload
+ */
 inline Renderbuffer::InternalFormat operator|(Renderbuffer::ComponentType type, Renderbuffer::Components components) {
     return Renderbuffer::InternalFormat(components, type);
 }

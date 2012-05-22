@@ -148,11 +148,15 @@ class BufferedTexture {
         GLuint texture;
 };
 
-/** @copydoc operator|(AbstractTexture::Components, AbstractTexture::ComponentType) */
+/** @relates BufferedTexture
+@brief Convertor of component count and data type to InternalFormat
+*/
 inline BufferedTexture::InternalFormat operator|(BufferedTexture::Components components, BufferedTexture::ComponentType type) {
     return BufferedTexture::InternalFormat(components, type);
 }
-/** @copydoc operator|(AbstractTexture::ComponentType, AbstractTexture::Components) */
+/** @relates BufferedTexture
+ * @overload
+ */
 inline BufferedTexture::InternalFormat operator|(BufferedTexture::ComponentType type, BufferedTexture::Components components) {
     return BufferedTexture::InternalFormat(components, type);
 }

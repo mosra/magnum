@@ -568,13 +568,16 @@ class MAGNUM_EXPORT AbstractTexture {
         GLuint texture;
 };
 
-
-
-/** @brief Convertor of component count and data type to InternalFormat */
+/** @relates AbstractTexture
+@brief Convertor of component count and data type to InternalFormat
+*/
 inline AbstractTexture::InternalFormat operator|(AbstractTexture::Components components, AbstractTexture::ComponentType type) {
     return AbstractTexture::InternalFormat(components, type);
 }
-/** @brief Convertor of component count and data type to InternalFormat */
+
+/** @relates AbstractTexture
+ * @overload
+ */
 inline AbstractTexture::InternalFormat operator|(AbstractTexture::ComponentType type, AbstractTexture::Components components) {
     return AbstractTexture::InternalFormat(components, type);
 }
