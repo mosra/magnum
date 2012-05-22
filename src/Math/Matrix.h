@@ -61,7 +61,11 @@ template<size_t size, class T> class Matrix {
             return *reinterpret_cast<Matrix<size, T>*>(data);
         }
 
-        /** @copybrief from(T*) @copydetails from(T*) */
+        /**
+         * @copybrief from(T*)
+         * @copydetails from(T*)
+         * @todoc Remove workaround when Doxygen supports \@copydoc again
+         */
         inline constexpr static const Matrix<size, T>& from(const T* data) {
             return *reinterpret_cast<const Matrix<size, T>*>(data);
         }
@@ -107,6 +111,7 @@ template<size_t size, class T> class Matrix {
          * @param next  Next values
          *
          * Note that the values are in column-major order.
+         * @todoc Remove workaround when Doxygen supports uniform initialization
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> inline constexpr Matrix(T first, U... next): _data{first, next...} {
@@ -128,14 +133,24 @@ template<size_t size, class T> class Matrix {
          *      order.
          */
         inline T* data() { return _data; }
-        inline constexpr const T* data() const { return _data; } /**< @copybrief data() @copydetails data() */
+
+        /**
+         * @copybrief data()
+         * @copydetails data()
+         * @todoc Remove workaround when Doxygen supports \@copydoc again
+         */
+        inline constexpr const T* data() const { return _data; }
 
         /** @brief %Matrix column */
         inline Vector<size, T>& operator[](size_t col) {
             return Vector<size, T>::from(_data+col*size);
         }
 
-        /** @copybrief operator[]() @copydetails operator[]() */
+        /**
+         * @copybrief operator[]()
+         * @copydetails operator[]()
+         * @todoc Remove workaround when Doxygen supports \@copydoc again
+         */
         inline constexpr const Vector<size, T>& operator[](size_t col) const {
             return Vector<size, T>::from(_data+col*size);
         }

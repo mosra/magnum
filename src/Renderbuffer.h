@@ -93,8 +93,11 @@ class Renderbuffer {
                 /** @copydoc AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Format) */
                 inline constexpr InternalFormat(Format format): internalFormat(static_cast<GLenum>(format)) {}
 
-                /** @brief OpenGL internal format ID */
-                /* doxygen: @copydoc AbstractTexture::InternalFormat::operator GLint() doesn't work */
+                /**
+                 * @brief OpenGL internal format ID
+                 *
+                 * @todoc Remove workaround when Doxygen supports \@copydoc for conversion operators
+                 */
                 inline constexpr operator GLenum() const { return internalFormat; }
 
             private:
