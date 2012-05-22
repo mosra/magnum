@@ -12,7 +12,7 @@ Minimal set of tools and libraries required for building is:
 - C++ compiler with good C++11 support. Currently the only compilers which
   support everything needed are **GCC** >= 4.6 and **Clang** >= 3.1 (from
   SVN).
-- **CMake** >= 2.6
+- **CMake** >= 2.8.8 (needed for `OBJECT` library target)
 - **OpenGL** headers, on Linux most probably shipped with Mesa
 - **GLEW** - OpenGL extension wrangler
 - **Corrade** - Plugin management and utility library. You can get it at

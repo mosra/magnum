@@ -1,11 +1,23 @@
+# Files shared between main library and unit test library
 set(MagnumMeshTools_SRCS
-    FlipNormals.cpp
-    GenerateFlatNormals.cpp
     Tipsify.cpp
 )
+add_library(MagnumMeshToolsObjects OBJECT ${MagnumMeshTools_SRCS})
+if(USE_FPIC)
+    set_target_properties(MagnumMeshToolsObjects PROPERTIES COMPILE_FLAGS -fPIC)
+endif()
 
-add_library(MagnumMeshTools SHARED ${MagnumMeshTools_SRCS})
+# Files compiled with different flags for main library and unit test library
+set(MagnumMeshTools_GracefulAssert_SRCS
+    FlipNormals.cpp
+    GenerateFlatNormals.cpp
+)
 
+# Main library
+add_library(MagnumMeshTools SHARED
+    $<TARGET_OBJECTS:MagnumMeshToolsObjects>
+    ${MagnumMeshTools_GracefulAssert_SRCS}
+)
 target_link_libraries(MagnumMeshTools Magnum)
 
 install(TARGETS MagnumMeshTools DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
@@ -14,7 +26,10 @@ if(BUILD_TESTS)
     enable_testing()
 
     # Library with graceful assert for testing
-    add_library(MagnumMeshToolsTestLib SHARED ${MagnumMeshTools_SRCS})
+    add_library(MagnumMeshToolsTestLib SHARED
+        $<TARGET_OBJECTS:MagnumMeshToolsObjects>
+        ${MagnumMeshTools_GracefulAssert_SRCS}
+    )
     set_target_properties(MagnumMeshToolsTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
     target_link_libraries(MagnumMeshToolsTestLib ${MAGNUM_LIBRARY})
 

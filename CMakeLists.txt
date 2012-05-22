@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 2.6)
+# CMake 2.8.8 required for OBJECT library target
+cmake_minimum_required(VERSION 2.8.8)
 project(Magnum)
 
 option(BUILD_TESTS "Build unit tests (requires Qt4)." OFF)

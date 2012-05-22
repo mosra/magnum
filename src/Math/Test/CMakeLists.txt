@@ -9,4 +9,6 @@ corrade_add_test(MathMatrixTest MatrixTest.h MatrixTest.cpp ${CORRADE_UTILITY_LI
 corrade_add_test(MathMatrix3Test Matrix3Test.h Matrix3Test.cpp ${CORRADE_UTILITY_LIBRARY})
 corrade_add_test(MathMatrix4Test Matrix4Test.h Matrix4Test.cpp ${CORRADE_UTILITY_LIBRARY})
 
-corrade_add_test(MathTest MathTest.h MathTest.cpp MagnumMath)
+set(MathTest_MOC MathTest.h)
+set(MathTest_SRCS MathTest.cpp $<TARGET_OBJECTS:MagnumMathObjects>)
+corrade_add_multifile_test(MathTest MathTest_MOC MathTest_SRCS)
