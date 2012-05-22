@@ -21,10 +21,7 @@
 
 #include "Trade/AbstractImporter.h"
 
-namespace Magnum { namespace Trade {
-
-/** @brief TGA importer */
-namespace TgaImporter {
+namespace Magnum { namespace Trade { namespace TgaImporter {
 
 /** @brief TGA importer plugin */
 class TgaImporter: public AbstractImporter {
