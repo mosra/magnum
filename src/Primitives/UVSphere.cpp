@@ -24,13 +24,13 @@ UVSphere::UVSphere(unsigned int rings, unsigned int segments, TextureCoords text
     CORRADE_ASSERT(rings >= 2 && segments >= 3, "UVSphere must have at least two rings and three segments", )
 
     GLfloat textureCoordsVIncrement = 1.0f/rings;
-    GLfloat ringAngleIncrement = Math::Constants<GLfloat>::Pi/rings;
+    GLfloat ringAngleIncrement = Math::Constants<GLfloat>::pi()/rings;
 
     /* Bottom cap vertex */
     capVertex(-1.0f, -1.0f, 0.0f);
 
     /* Vertex rings */
-    vertexRings(rings-1, 0.0f, -Math::Constants<GLfloat>::Pi/2+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
+    vertexRings(rings-1, 0.0f, -Math::Constants<GLfloat>::pi()/2+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
 
     /* Top cap vertex */
     capVertex(1.0f, 1.0f, 1.0f);

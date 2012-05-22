@@ -24,13 +24,13 @@ Capsule::Capsule(unsigned int rings, unsigned int segments, GLfloat length, Text
 
     GLfloat height = 2.0f+length;
     GLfloat textureCoordsVIncrement = 1.0f/(rings*height);
-    GLfloat ringAngleIncrement = Math::Constants<GLfloat>::Pi/(2*rings);
+    GLfloat ringAngleIncrement = Math::Constants<GLfloat>::pi()/(2*rings);
 
     /* Bottom cap vertex */
     capVertex(-height/2, -1.0f, 0.0f);
 
     /* Rings of bottom hemisphere */
-    vertexRings(rings, -length/2, -Math::Constants<GLfloat>::Pi/2+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
+    vertexRings(rings, -length/2, -Math::Constants<GLfloat>::pi()/2+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
 
     /* Rings of top hemisphere */
     vertexRings(rings, length/2, 0.0f, ringAngleIncrement, (1.0f + length)/height, textureCoordsVIncrement);
@@ -53,7 +53,7 @@ void Capsule::capVertex(GLfloat y, GLfloat normalY, GLfloat textureCoordsV) {
 }
 
 void Capsule::vertexRings(unsigned int count, GLfloat centerY, GLfloat startRingAngle, GLfloat ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement) {
-    GLfloat segmentAngleIncrement = 2*Math::Constants<GLfloat>::Pi/segments;
+    GLfloat segmentAngleIncrement = 2*Math::Constants<GLfloat>::pi()/segments;
     GLfloat x, y, z;
     for(unsigned int i = 0; i != count; ++i) {
         GLfloat ringAngle = startRingAngle + i*ringAngleIncrement;

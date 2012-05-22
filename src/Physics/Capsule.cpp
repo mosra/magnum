@@ -24,7 +24,7 @@ namespace Magnum { namespace Physics {
 void Capsule::applyTransformation(const Matrix4& transformation) {
     _transformedA = (transformation*Vector4(_a)).xyz();
     _transformedB = (transformation*Vector4(_b)).xyz();
-    float scaling = (transformation.rotationScaling()*Vector3(1/Math::Constants<float>::Sqrt3)).length();
+    float scaling = (transformation.rotationScaling()*Vector3(1/Math::Constants<float>::sqrt3())).length();
     _transformedRadius = scaling*_radius;
 }
 

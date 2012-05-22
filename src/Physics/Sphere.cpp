@@ -23,7 +23,7 @@ namespace Magnum { namespace Physics {
 
 void Sphere::applyTransformation(const Matrix4& transformation) {
     _transformedPosition = (transformation*Vector4(_position)).xyz();
-    float scaling = (transformation.rotationScaling()*Vector3(1/Math::Constants<float>::Sqrt3)).length();
+    float scaling = (transformation.rotationScaling()*Vector3(1/Math::Constants<float>::sqrt3())).length();
     _transformedRadius = scaling*_radius;
 }
 

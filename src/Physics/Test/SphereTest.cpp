@@ -37,8 +37,8 @@ void SphereTest::applyTransformation() {
     QCOMPARE(sphere.transformedRadius(), 14.0f);
 
     /* Apply average scaling to radius */
-    sphere.applyTransformation(Matrix4::scaling({Math::Constants<GLfloat>::Sqrt3, -Math::Constants<GLfloat>::Sqrt2, 2.0f}));
-    QCOMPARE(sphere.transformedRadius(), Math::Constants<GLfloat>::Sqrt3*7.0f);
+    sphere.applyTransformation(Matrix4::scaling({Math::Constants<GLfloat>::sqrt3(), -Math::Constants<GLfloat>::sqrt2(), 2.0f}));
+    QCOMPARE(sphere.transformedRadius(), Math::Constants<GLfloat>::sqrt3()*7.0f);
 }
 
 void SphereTest::collisionPoint() {

@@ -32,25 +32,29 @@ namespace Magnum { namespace Math {
    matrices)
 */
 
-/** @brief Numeric constants */
+/**
+@brief Numeric constants
+
+@internal See MathTypeTraits class for implementation notes.
+*/
 template<class T> struct Constants {
     #ifdef DOXYGEN_GENERATING_OUTPUT
-    static constexpr T Pi;      /**< @brief Pi */
-    static constexpr T Sqrt2;   /**< @brief Square root of 2 */
-    static constexpr T Sqrt3;   /**< @brief Square root of 3 */
+    static inline constexpr T pi();     /**< @brief Pi */
+    static inline constexpr T sqrt2();  /**< @brief Square root of 2 */
+    static inline constexpr T sqrt3();  /**< @brief Square root of 3 */
     #endif
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> struct Constants<double> {
-    static constexpr double Pi = 3.14159265359;
-    static constexpr double Sqrt2 = 1.41421356237;
-    static constexpr double Sqrt3 = 1.73205080757;
+    static inline constexpr double pi() { return 3.14159265359; }
+    static inline constexpr double sqrt2() { return 1.41421356237; }
+    static inline constexpr double sqrt3() { return 1.73205080757; }
 };
 template<> struct Constants<float> {
-    static constexpr float Pi = 3.14159265359f;
-    static constexpr float Sqrt2 = 1.41421356237f;
-    static constexpr float Sqrt3 = 1.73205080757f;
+    static inline constexpr float pi() { return 3.14159265359f; }
+    static inline constexpr float sqrt2() { return 1.41421356237f; }
+    static inline constexpr float sqrt3() { return 1.73205080757f; }
 };
 
 namespace Implementation {
@@ -87,7 +91,7 @@ size_t MAGNUM_EXPORT log(size_t base, size_t number);
  * Function to make angle entering less error-prone. Converts the value to
  * radians at compile time. For example `deg(180.0f)` is converted to `3.14f`.
  */
-template<class T> inline constexpr T deg(T value) { return value*Constants<T>::Pi/180; }
+template<class T> inline constexpr T deg(T value) { return value*Constants<T>::pi()/180; }
 
 /**
  * @brief Angle in radians
