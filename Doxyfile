@@ -458,7 +458,7 @@ HIDE_SCOPE_NAMES       = NO
 # will put a list of the files that are included by a file in the documentation
 # of that file.
 
-SHOW_INCLUDE_FILES     = YES
+SHOW_INCLUDE_FILES     = NO
 
 # If the FORCE_LOCAL_INCLUDES tag is set to YES then Doxygen
 # will list include files with double quotes in the documentation
