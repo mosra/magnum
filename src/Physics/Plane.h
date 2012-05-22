@@ -76,10 +76,12 @@ class PHYSICS_EXPORT Plane: public AbstractShape {
             _normal, _transformedNormal;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
+/** @collisionoperator{Line,Plane} */
 inline bool operator%(const Line& a, const Plane& b) { return b % a; }
+
+/** @collisionoperator{LineSegment,Plane} */
 inline bool operator%(const LineSegment& a, const Plane& b) { return b % a; }
-#endif
+
 
 }}
 

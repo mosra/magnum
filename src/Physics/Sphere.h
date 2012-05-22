@@ -83,11 +83,14 @@ class PHYSICS_EXPORT Sphere: public AbstractShape {
         float _radius, _transformedRadius;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
+/** @collisionoperator{Point,Sphere} */
 inline bool operator%(const Point& a, const Sphere& b) { return b % a; }
+
+/** @collisionoperator{Line,Sphere} */
 inline bool operator%(const Line& a, const Sphere& b) { return b % a; }
+
+/** @collisionoperator{LineSegment,Sphere} */
 inline bool operator%(const LineSegment& a, const Sphere& b) { return b % a; }
-#endif
 
 }}
 

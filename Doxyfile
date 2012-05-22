@@ -196,6 +196,7 @@ TAB_SIZE               = 8
 
 ALIASES                = \
     "debugoperator{1}=@relates \1\n@brief Debug output operator" \
+    "collisionoperator{2}=@relates \1\n@brief Collision of %\1 and %\2\n@see \2::operator%(const \1&) const" \
     "todoc=@xrefitem todox \"Documentation todo\" \"Documentation-related todo list\"" \
     "requires_gl30=@xrefitem RequiresGL30 \"Requires OpenGL 3.0\" \"Functionality requiring OpenGL 3.0\"" \
     "requires_gl31=@xrefitem RequiresGL31 \"Requires OpenGL 3.1\" \"Functionality requiring OpenGL 3.1\"" \

@@ -78,10 +78,11 @@ class PHYSICS_EXPORT Capsule: public AbstractShape {
         float _radius, _transformedRadius;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
+/** @collisionoperator{Point,Capsule} */
 inline bool operator%(const Point& a, const Capsule& b) { return b % a; }
+
+/** @collisionoperator{Sphere,Capsule} */
 inline bool operator%(const Sphere& a, const Capsule& b) { return b % a; }
-#endif
 
 }}
 
