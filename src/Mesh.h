@@ -210,7 +210,7 @@ class MAGNUM_EXPORT Mesh {
         inline void setVertexCount(GLsizei vertexCount) {
             _vertexCount = vertexCount;
             finalized = false;
-        };
+        }
 
         /**
          * @brief Add buffer

@@ -63,7 +63,7 @@ class MAGNUM_EXPORT MeshData {
         inline const std::vector<unsigned int>* indices() const { return _indices; } /**< @overload */
 
         /** @brief Count of vertex arrays */
-        inline size_t vertexArrayCount() const { return _vertices.size(); };
+        inline size_t vertexArrayCount() const { return _vertices.size(); }
 
         /**
          * @brief Vertices
@@ -75,7 +75,7 @@ class MAGNUM_EXPORT MeshData {
         inline const std::vector<Vector4>* vertices(size_t id) const { return _vertices[id]; } /**< @overload */
 
         /** @brief Count of normal arrays */
-        inline size_t normalArrayCount() const { return _normals.size(); };
+        inline size_t normalArrayCount() const { return _normals.size(); }
 
         /**
          * @brief Normals
@@ -87,7 +87,7 @@ class MAGNUM_EXPORT MeshData {
         inline const std::vector<Vector3>* normals(size_t id) const { return _normals[id]; } /**< @overload */
 
         /** @brief Count of 2D texture coordinate arrays */
-        inline size_t textureCoords2DArrayCount() const { return _textureCoords2D.size(); };
+        inline size_t textureCoords2DArrayCount() const { return _textureCoords2D.size(); }
 
         /**
          * @brief 2D texture coordinates
