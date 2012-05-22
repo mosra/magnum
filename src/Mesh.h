@@ -274,11 +274,11 @@ class MAGNUM_EXPORT Mesh {
          * Computes location and stride of each attribute in its buffer. After
          * this function is called, no new attribute can be bound.
          */
-        void finalize();
+        MAGNUM_LOCAL void finalize();
 
     private:
         /** @brief Vertex attribute */
-        struct Attribute {
+        struct MAGNUM_LOCAL Attribute {
             GLuint attribute;           /**< @brief %Attribute ID */
             GLint size;                 /**< @brief How many items of `type` are in the attribute */
             Type type;                  /**< @brief %Attribute item type */
@@ -307,7 +307,7 @@ class MAGNUM_EXPORT Mesh {
          */
         std::set<GLuint> _attributes;
 
-        void bindAttribute(Buffer* buffer, GLuint attribute, GLint size, Type type);
+        MAGNUM_EXPORT void bindAttribute(Buffer* buffer, GLuint attribute, GLint size, Type type);
 };
 
 }

@@ -180,7 +180,7 @@ class MAGNUM_EXPORT Camera: public Object {
         Math::Vector2<GLsizei> _viewport;
         AspectRatioPolicy _aspectRatioPolicy;
 
-        void fixAspectRatio();
+        MAGNUM_LOCAL void fixAspectRatio();
 };
 
 }

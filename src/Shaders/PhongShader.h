@@ -20,6 +20,7 @@
  */
 
 #include "AbstractShaderProgram.h"
+#include "ShadersVisibility.h"
 
 namespace Magnum { namespace Shaders {
 
@@ -29,7 +30,7 @@ namespace Magnum { namespace Shaders {
 @requires_gl33 The shader is written in GLSL 3.3, although it should be trivial
     to port it to older versions.
 */
-class PhongShader: public AbstractShaderProgram {
+class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Vector4> Vertex;   /**< @brief Vertex position */
         typedef Attribute<1, Vector3> Normal;   /**< @brief Normal direction */

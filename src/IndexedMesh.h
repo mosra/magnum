@@ -77,7 +77,7 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
         void draw();
 
     protected:
-        void finalize();
+        MAGNUM_LOCAL void finalize();
 
     private:
         Buffer _indexBuffer;

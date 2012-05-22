@@ -22,6 +22,7 @@
 #include <tuple>
 
 #include "Magnum.h"
+#include "MeshToolsVisibility.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -47,7 +48,7 @@ use the same indices.
 @attention Index count must be divisible by 3, otherwise zero length result
     is generated.
 */
-std::tuple<std::vector<unsigned int>, std::vector<Vector3>> generateFlatNormals(const std::vector<unsigned int>& indices, const std::vector<Vector4>& vertices);
+std::tuple<std::vector<unsigned int>, std::vector<Vector3>> MESHTOOLS_EXPORT generateFlatNormals(const std::vector<unsigned int>& indices, const std::vector<Vector4>& vertices);
 
 }}
 

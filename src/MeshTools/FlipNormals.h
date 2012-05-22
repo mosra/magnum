@@ -20,6 +20,7 @@
  */
 
 #include "Magnum.h"
+#include "MeshToolsVisibility.h"
 
 namespace Magnum { namespace MeshTools {
 

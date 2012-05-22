@@ -48,7 +48,7 @@ class MAGNUM_EXPORT Light: public Object {
         /**
          * Recomputes light position.
          */
-        void clean(const Matrix4& absoluteTransformation);
+        MAGNUM_LOCAL void clean(const Matrix4& absoluteTransformation);
 
     private:
         Vector4 _position;
