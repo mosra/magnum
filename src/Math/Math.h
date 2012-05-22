@@ -23,7 +23,7 @@
  * @brief Math constants and utilities
  */
 
-namespace Magnum {
+namespace Magnum { namespace Math {
 
 /**
 @todo Quaternions:
@@ -31,13 +31,6 @@ namespace Magnum {
  - better rotation representation (4 floats instead of 9/16 floats when using
    matrices)
 */
-
-/**
- * @brief %Math library
- *
- * Template classes for matrix and vector calculations.
-*/
-namespace Math {
 
 /** @brief Numeric constants */
 template<class T> struct Constants {

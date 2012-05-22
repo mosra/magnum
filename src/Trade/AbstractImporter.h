@@ -22,15 +22,7 @@
 #include "PluginManager/Plugin.h"
 #include "ImageData.h"
 
-namespace Magnum {
-
-/**
-@brief Data format exchange
-
-Contains plugin interfaces for importing data of various formats and classes
-for direct access to the data.
-*/
-namespace Trade {
+namespace Magnum { namespace Trade {
 
 class AbstractMaterialData;
 class CameraData;

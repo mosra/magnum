@@ -1,30 +1,77 @@
+/** @dir magnum
+ * @brief %Magnum library
+ */
+/** @dir magnum/src
+ * @brief Namespace Magnum
+ */
+/** @namespace Magnum
+@brief Root namespace
+
+Contains classes needed for building meshes, setting up and rendering the
+scene.
+*/
+
+/** @dir Math
+ * @brief Namespace Magnum::Math
+ */
+/** @namespace Magnum::Math
+@brief %Math library
+
+Template classes for matrix and vector calculations.
+*/
+
+/** @dir Math/Geometry
+ * @brief Namespace Magnum::Math::Geometry
+ */
 /** @namespace Magnum::Math::Geometry
 @brief %Geometry library
 
 Functions for computing intersections, distances, areas and volumes.
 */
 
+/** @dir MeshTools
+ * @brief Namespace Magnum::MeshTools
+ */
 /** @namespace Magnum::MeshTools
 @brief %Mesh tools
 
 Tools for generating, optimizing and cleaning meshes.
 */
 
+/** @dir Primitives
+ * @brief Namespace Magnum::Primitives
+ */
 /** @namespace Magnum::Primitives
 @brief Primitive library
 
 Basic primitives for testing purposes.
 */
 
+/** @dir Shaders
+ * @brief Namespace Magnum::Shaders
+ */
 /** @namespace Magnum::Shaders
 @brief Sample shaders
 
 Collection of shaders for testing purposes.
 */
 
+/** @dir Physics
+ * @brief Namespace Magnum::Physics
+ */
 /** @namespace Magnum::Physics
 @brief %Physics library
 
 Collision detection system and rigid body objects. See @ref CollisionDetection
 for introduction.
+*/
+
+/** @dir Trade
+ * @brief Namespace Magnum::Trade
+ */
+/** @namespace Magnum::Trade
+@brief Data format exchange
+
+Contains plugin interfaces for importing data of various formats and classes
+for direct access to the data.
 */
