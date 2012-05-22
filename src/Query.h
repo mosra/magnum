@@ -59,7 +59,7 @@ class MAGNUM_EXPORT AbstractQuery {
          *
          * @requires_gl33 Extension <tt>ARB_timer_query</tt> (64bit integers)
          */
-        template<class T> T result() = delete;
+        template<class T> T result();
 
     protected:
         GLuint query; /**< @brief OpenGL internal query ID */
