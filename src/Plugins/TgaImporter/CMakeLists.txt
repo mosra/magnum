@@ -1,7 +1,5 @@
 add_library(TgaImporterObjects OBJECT TgaImporter.cpp)
-if(USE_FPIC)
-    set_target_properties(TgaImporterObjects PROPERTIES COMPILE_FLAGS -fPIC)
-endif()
+set_target_properties(TgaImporterObjects PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
 
 corrade_add_plugin(TgaImporter ${MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR} TgaImporter.conf $<TARGET_OBJECTS:TgaImporterObjects>)
 target_link_libraries(TgaImporter ${MAGNUM_LIBRARY})
