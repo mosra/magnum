@@ -121,6 +121,20 @@ class MAGNUM_EXPORT Mesh {
         };
 
         /**
+         * @brief Buffer type
+         *
+         * If storing more than one attribute data in the buffer, the data of
+         * one attribute can be either kept together or interleaved with data
+         * for another attributes, so data for every vertex will be in one
+         * continuous place.
+         * @see addBuffer()
+         */
+        enum class BufferType: bool {
+            Interleaved,    /**< Interleaved buffer */
+            NonInterleaved  /**< Non-interleaved buffer */
+        };
+
+        /**
          * @brief Set polygon drawing mode
          *
          * Initial value is PolygonMode::Fill.
@@ -214,17 +228,14 @@ class MAGNUM_EXPORT Mesh {
 
         /**
          * @brief Add buffer
-         * @param interleaved   If storing more than one attribute data in the
-         *      buffer, the data of one attribute can be either kept together
-         *      or interleaved with data for another attributes, so data for
-         *      every vertex will be in one continuous place.
+         * @param interleaved   Whether the buffer is interleaved
          *
          * Adds new buffer to the mesh. The buffer can be then filled with
          * Buffer::setData(). See also isInterleaved().
          *
          * @todo Move interleaveability to Buffer itself?
          */
-        Buffer* addBuffer(bool interleaved);
+        Buffer* addBuffer(BufferType interleaved);
 
         /**
          * @brief Whether given buffer is interleaved
@@ -235,7 +246,7 @@ class MAGNUM_EXPORT Mesh {
          */
         inline bool isInterleaved(Buffer* buffer) const {
             auto found = _buffers.find(buffer);
-            return found != _buffers.end() && found->second.first;
+            return found != _buffers.end() && found->second.first == BufferType::Interleaved;
         }
 
         /**
@@ -298,7 +309,7 @@ class MAGNUM_EXPORT Mesh {
          * - boolean value which signalizes whether the buffer is interleaved
          * - list of bound attributes
          */
-        std::map<Buffer*, std::pair<bool, std::vector<Attribute> > > _buffers;
+        std::map<Buffer*, std::pair<BufferType, std::vector<Attribute> > > _buffers;
 
         /**
          * @brief List of all bound attributes

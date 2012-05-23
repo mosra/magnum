@@ -21,18 +21,15 @@ using namespace std;
 namespace Magnum {
 
 Mesh::~Mesh() {
-    for(map<Buffer*, pair<bool, vector<Attribute> > >::iterator it = _buffers.begin(); it != _buffers.end(); ++it)
-        delete it->first;
+    for(auto it: _buffers)
+        delete it.first;
 
     glDeleteVertexArrays(1, &vao);
 }
 
-Buffer* Mesh::addBuffer(bool interleaved) {
+Buffer* Mesh::addBuffer(BufferType interleaved) {
     Buffer* buffer = new Buffer(Buffer::Target::Array);
-    _buffers.insert(pair<Buffer*, pair<bool, vector<Attribute> > >(
-        buffer,
-        pair<bool, vector<Attribute> >(interleaved, vector<Attribute>())
-    ));
+    _buffers.insert(make_pair(buffer, make_pair(interleaved, vector<Attribute>())));
 
     return buffer;
 }
@@ -60,10 +57,10 @@ void Mesh::finalize() {
         glEnableVertexAttribArray(*it);
 
     /* Finalize attribute positions for every buffer */
-    for(map<Buffer*, pair<bool, vector<Attribute> > >::iterator it = _buffers.begin(); it != _buffers.end(); ++it) {
+    for(auto it: _buffers) {
         /* Avoid confustion */
-        bool interleaved = it->second.first;
-        vector<Attribute>& attributes = it->second.second;
+        bool interleaved = it.second.first == BufferType::Interleaved;
+        vector<Attribute>& attributes = it.second.second;
 
         /* Interleaved buffer, set stride and position of first attribute */
         if(interleaved) {
@@ -95,7 +92,7 @@ void Mesh::finalize() {
         }
 
         /* Bind buffer */
-        it->first->bind();
+        it.first->bind();
 
         /* Bind all attributes to this buffer */
         for(vector<Attribute>::const_iterator ait = attributes.begin(); ait != attributes.end(); ++ait)
@@ -113,7 +110,7 @@ void Mesh::bindAttribute(Buffer* buffer, GLuint attribute, GLint size, Type type
     if(finalized || _attributes.find(attribute) != _attributes.end()) return;
 
     /* If buffer is not managed by this mesh, nothing to do */
-    map<Buffer*, pair<bool, vector<Attribute> > >::iterator found = _buffers.find(buffer);
+    auto found = _buffers.find(buffer);
     if(found == _buffers.end()) return;
 
     Attribute a;
