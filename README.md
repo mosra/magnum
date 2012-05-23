@@ -20,9 +20,9 @@ crosscompiling.
 Minimal dependencies
 --------------------
 
- * C++ compiler with good C++11 support. Currently the only compilers which
-   support everything needed are **GCC** >= 4.6 and **Clang** >= 3.1 (from
-   SVN).
+ * C++ compiler with good C++11 support. Currently there are two compilers
+   which are tested to support everything needed: **GCC** >= 4.6 and **Clang**
+   >= 3.1.
  * **CMake** >= 2.8.8 (needed for `OBJECT` library target)
  * **OpenGL headers**, on Linux most probably shipped with Mesa
  * **GLEW** - OpenGL extension wrangler
