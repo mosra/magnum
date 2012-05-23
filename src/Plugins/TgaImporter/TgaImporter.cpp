@@ -24,7 +24,9 @@ using namespace Corrade::Utility;
 
 namespace Magnum { namespace Trade { namespace TgaImporter {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 static_assert(sizeof(TgaImporter::Header) == 18, "TgaImporter: header size is not 18 bytes");
+#endif
 
 bool TgaImporter::TgaImporter::open(const string& filename) {
     ifstream in(filename.c_str());
