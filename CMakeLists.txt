@@ -16,14 +16,10 @@ if(BUILD_TESTS)
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Magnum_SOURCE_DIR}/modules/")
-find_package(Corrade REQUIRED)
 
-set_parent_scope(MAGNUM_INCLUDE_DIR         "${CMAKE_CURRENT_SOURCE_DIR}/src")
-set_parent_scope(MAGNUM_LIBRARY             Magnum)
-set_parent_scope(MAGNUM_PHYSICS_LIBRARY     MagnumPhysics)
-set_parent_scope(MAGNUM_PRIMITIVES_LIBRARY  MagnumPrimitives)
-set_parent_scope(MAGNUM_MESHTOOLS_LIBRARY   MagnumMeshTools)
-set_parent_scope(MAGNUM_SHADERS_LIBRARY     MagnumShaders)
+# Populate MAGNUM_*_INSTALL_DIR variables, check for dependencies
+set(MAGNUM_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set(MAGNUM_LIBRARY      Magnum)
 include(FindMagnum)
 
 add_subdirectory(modules)

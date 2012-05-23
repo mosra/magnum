@@ -1,58 +1,129 @@
-# Find Magnum - Magnum handling module for CMake
+# - Find Magnum
 #
-# This module depends on Corrade and additionally defines:
+# Basic usage:
 #
-# MAGNUM_FOUND                      - True if Magnum library is found
-# MAGNUM_INCLUDE_DIR                - Include dir for Magnum
-# MAGNUM_LIBRARY                    - Magnum library
-# MAGNUM_PHYSICS_LIBRARY            - Magnum physics library
-# MAGNUM_PRIMITIVES_LIBRARY         - Library with primitives
+#  find_package(Magnum [REQUIRED])
 #
-# MAGNUM_LIBRARY_INSTALL_DIR        - Library installation directory
-# MAGNUM_CMAKE_MODULE_INSTALL_DIR   - Installation dir for CMake modules
-# MAGNUM_INCLUDE_INSTALL_DIR        - Include installation directory for headers
+# This command tries to find Magnum library and then defines:
+#
+#  MAGNUM_FOUND                 - Whether the library was found
+#  MAGNUM_LIBRARY               - Magnum library
+#  MAGNUM_INCLUDE_DIR           - Root include dir
+#  MAGNUM_PLUGINS_IMPORTER_DIR  - Directory with importer plugins
+#
+# This command will try to find only the base library, not the optional
+# components. The base library depends on Corrade, OpenGL and GLEW libraries.
+# Additional dependencies are specified by the components. The optional
+# components are:
+#
+#  MeshTools     - MeshTools library
+#  Physics       - Physics library
+#  Primitives    - Library with stock geometric primitives (static)
+#  Shaders       - Library with stock shaders
+#
+# Example usage with specifying additional components is:
+#
+#  find_package(Magnum [REQUIRED|COMPONENTS] MeshTools Primitives GlutContext)
+#
+# For each component is then defined:
+#
+#  MAGNUM_*_FOUND   - Whether the component was found
+#  MAGNUM_*_LIBRARY - Component library
+#
+# Additionally these variables are defined for internal usage:
+#
+#  MAGNUM_LIBRARY_INSTALL_DIR           - Library installation directory
+#  MAGNUM_PLUGINS_INSTALL_DIR           - Plugin installation directory
+#  MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR  - Importer plugin installation directory
+#  MAGNUM_CMAKE_MODULE_INSTALL_DIR      - Installation dir for CMake modules
+#  MAGNUM_INCLUDE_INSTALL_DIR           - Header installation directory
+#  MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR   - Plugin header installation directory
 #
 
+# Dependencies
 find_package(Corrade REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
-if (MAGNUM_INCLUDE_DIR AND MAGNUM_LIBRARY AND MAGNUM_PHYSICS_LIBRARY AND MAGNUM_PRIMITIVES_LIBRARY AND MAGNUM_MESHTOOLS_LIBRARY AND MAGNUM_SHADERS_LIBRARY)
+# Magnum library
+find_library(MAGNUM_LIBRARY Magnum)
 
-    # Already in cache
-    set(MAGNUM_FOUND TRUE)
+# Root include dir
+find_path(MAGNUM_INCLUDE_DIR
+    NAMES Magnum.h
+    PATH_SUFFIXES Magnum
+)
 
-else()
-    # Libraries
-    find_library(MAGNUM_LIBRARY Magnum)
-    find_library(MAGNUM_PHYSICS_LIBRARY MagnumPhysics)
-    find_library(MAGNUM_PRIMITIVES_LIBRARY MagnumPrimitives)
-    find_library(MAGNUM_MESHTOOLS_LIBRARY MagnumMeshTools)
-    find_library(MAGNUM_SHADERS_LIBRARY MagnumShaders)
+# Additional components
+foreach(component ${Magnum_FIND_COMPONENTS})
+    string(TOUPPER ${component} _COMPONENT)
 
-    # Paths
-    find_path(MAGNUM_INCLUDE_DIR
-        NAMES Magnum.h
-        PATH_SUFFIXES Magnum
-    )
+    # Find the library
+    find_library(MAGNUM_${_COMPONENT}_LIBRARY Magnum${component})
 
-    include(FindPackageHandleStandardArgs)
-    find_package_handle_standard_args("Magnum" DEFAULT_MSG
-        MAGNUM_INCLUDE_DIR
-        MAGNUM_LIBRARY
-        MAGNUM_PHYSICS_LIBRARY
-        MAGNUM_PRIMITIVES_LIBRARY
-        MAGNUM_MESHTOOLS_LIBRARY
-        MAGNUM_SHADERS_LIBRARY
-    )
+    set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX ${component})
 
-endif()
+    # Mesh tools library
+    if(${component} STREQUAL MeshTools)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES CompressIndices.h)
+    endif()
+
+    # Physics library
+    if(${component} STREQUAL Physics)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES AbstractShape.h)
+    endif()
+
+    # Primitives library
+    if(${component} STREQUAL Primitives)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Cube.h)
+    endif()
+
+    # Shaders library
+    if(${component} STREQUAL Shaders)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES PhongShader.h)
+    endif()
+
+    # Try to find the includes
+    if(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES)
+        find_path(_MAGNUM_${_COMPONENT}_INCLUDE_DIR
+            NAMES ${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES}
+            PATHS ${MAGNUM_INCLUDE_DIR}/${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX}
+        )
+    endif()
+
+    # Decide if the library was found
+    if(MAGNUM_${_COMPONENT}_LIBRARY AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
+        set(Magnum_${component}_FOUND TRUE)
+    else()
+        set(Magnum_${component}_FOUND FALSE)
+    endif()
+endforeach()
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(Magnum
+    REQUIRED_VARS MAGNUM_INCLUDE_DIR MAGNUM_LIBRARY
+    HANDLE_COMPONENTS
+)
 
 # Installation dirs
-include(CorradeLibSuffix)
-set_parent_scope(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
-set_parent_scope(MAGNUM_PLUGINS_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum)
-set_parent_scope(MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/importers)
-set_parent_scope(MAGNUM_CMAKE_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
-set_parent_scope(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
-set_parent_scope(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum/Plugins)
+set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
+set(MAGNUM_PLUGINS_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum)
+set(MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/importers)
+set(MAGNUM_CMAKE_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
+set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
+set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum/Plugins)
+mark_as_advanced(FORCE
+    MAGNUM_LIBRARY_INSTALL_DIR
+    MAGNUM_PLUGINS_INSTALL_DIR
+    MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR
+    MAGNUM_CMAKE_MODULE_INSTALL_DIR
+    MAGNUM_INCLUDE_INSTALL_DIR
+    MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR
+)
+
+# Importer plugins dir
+if(NOT WIN32)
+    set(MAGNUM_PLUGINS_IMPORTER_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/importers)
+else()
+    set(MAGNUM_PLUGINS_IMPORTER_DIR importers)
+endif()
