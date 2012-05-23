@@ -22,9 +22,6 @@
 using namespace std;
 using namespace Corrade::Utility;
 
-PLUGIN_REGISTER(TgaImporter, Magnum::Trade::TgaImporter::TgaImporter,
-                "cz.mosra.magnum.Trade.AbstractImporter/0.1")
-
 namespace Magnum { namespace Trade { namespace TgaImporter {
 
 static_assert(sizeof(TgaImporter::Header) == 18, "TgaImporter: header size is not 18 bytes");
