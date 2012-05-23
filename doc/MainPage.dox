@@ -32,16 +32,21 @@ functionality is working on OpenGL 2.1 hardware too. See also
 
 Guide @ref Building "how to build Magnum" on different platforms.
 
-@section BasicUsage Basic usage
+@section GettingStarted Getting started
 
-%Scene in %Magnum is composed of hierarchically connected object instances.
-To build the scene, you need Scene object with assigned Camera and some Object
-instances. When rendering using Camera::draw(), the engine goes through all
-objects connected to camera scene and calls Object::draw() on them.
+Applications using Magnum have at least two parts. One part manages OpenGL
+context using some toolkit and takes care of window resizing, mouse and
+keyboard input, while the other manages the scene and does the rendering.
+While it is possible for you to manage the OpenGL context and events on your
+own, Magnum provides implementations for the most common toolkits (such as
+GLUT, SDL or Qt) in Contexts namespace. %Scene in %Magnum is composed of
+hierarchically connected object instances. To build the scene you need Scene
+object with assigned camera and at least one Object instance.
 
-All objects are by default empty. To make object renderable in the scene,
-you must reimplement Object::draw(), and for example bind an
-@ref AbstractShaderProgram "shader", @ref Texture "texture" and
-render an prepared @ref Mesh "mesh".
+The best way to get started is to @ref ExamplesTriangle "render your first triangle"
+in step-by-step tutorial. Then you can dig deeper and try
+@ref Examples "other examples", read about fundamental principles in the
+documentation or start experimenting on your own!
+
 */
 }
