@@ -1,11 +1,17 @@
 Magnum is 3D graphics engine written in C++11 and OpenGL 3 Core Profile.
 Features:
 
- * Easy-to-use templated mathematical library for matrix/vector calculations.
+ * Easy-to-use templated mathematical library for matrix/vector calculations
+   and geometry.
  * Hierarchical scene graph which supports transformation caching for better
    performance, classes for convenient usage of shaders, buffers and textures.
- * Mesh tools for cleaning, optimizing and generating meshes. Collection of
-   pre-made graphic primitives and shaders for testing purposes.
+   Access to framebuffer and occlusion queries.
+ * Physics library for collision detection and rigid body dynamics. Mesh tools
+   for cleaning, optimizing and generating meshes.
+ * Plugin-based data exchange framework for importing image, mesh, material
+   and scene data in various formats.
+ * Collection of pre-made graphic primitives and shaders for testing purposes.
+ * Classes for easy creation of OpenGL context with various toolkits.
  * Comprehensive use of C++11 features for safety, performance and ease of
    development. All code which doesn't directly interact with OpenGL is
    covered with unit tests.

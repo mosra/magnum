@@ -1,4 +1,4 @@
-/** @page Building Building %Magnum
+/** @page Building Building
 
 %Magnum can be built either @ref BuildingCompilation "manually" or using
 already prepared packaging files, currently only
@@ -40,9 +40,9 @@ in build directory. Everything should pass ;-)
 
 @subsection BuildingDoc Building documentation
 The documentation (which you are currently reading) is written in **Doxygen**
-(preferrably 1.8 with Markdown support, but older versions should do good job
-too) and additionally uses **Graphviz** for class diagrams. The documentation
-can be build by running
+(version 1.8 with Markdown support is used, but older versions should do good
+job too) and additionally uses **Graphviz** for class diagrams and  **TeX**
+for math formulas. The documentation can be build by running
 
     doxygen
 
