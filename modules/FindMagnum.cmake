@@ -16,6 +16,7 @@
 # Additional dependencies are specified by the components. The optional
 # components are:
 #
+#  GlutContext   - GLUT context (depends on GLUT package)
 #  MeshTools     - MeshTools library
 #  Physics       - Physics library
 #  Primitives    - Library with stock geometric primitives (static)
@@ -62,6 +63,20 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     find_library(MAGNUM_${_COMPONENT}_LIBRARY Magnum${component})
 
     set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX ${component})
+
+    # Contexts
+    if(${component} MATCHES .+Context)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Contexts)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES ${component}.h)
+
+        # GLUT context dependencies
+        if(${component} STREQUAL GlutContext)
+            find_package(GLUT)
+            if(NOT GLUT_FOUND)
+                unset(MAGNUM_${_COMPONENT}_LIBRARY)
+            endif()
+        endif()
+    endif()
 
     # Mesh tools library
     if(${component} STREQUAL MeshTools)

@@ -46,6 +46,7 @@ add_library(Magnum SHARED
 target_link_libraries(Magnum ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY} ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY})
 install(TARGETS Magnum DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 
+add_subdirectory(Contexts)
 add_subdirectory(Math)
 add_subdirectory(MeshTools)
 add_subdirectory(Physics)

@@ -11,6 +11,15 @@ Contains classes needed for building meshes, setting up and rendering the
 scene.
 */
 
+/** @dir Contexts
+ * @brief Namespace Magnum::Contexts
+ */
+/** @namespace Magnum::Contexts
+@brief Context creation
+
+Base classes for creating OpenGL contexts with various toolkits.
+*/
+
 /** @dir Math
  * @brief Namespace Magnum::Math
  */

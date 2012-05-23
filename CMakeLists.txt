@@ -27,4 +27,5 @@ add_subdirectory(src)
 
 install(DIRECTORY src/ DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}
                  FILES_MATCHING PATTERN "*.h"
-                 PATTERN "*/Test" EXCLUDE)
+                 PATTERN "*/Test" EXCLUDE
+                 PATTERN "src/Contexts" EXCLUDE)
