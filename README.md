@@ -2,20 +2,23 @@ Magnum is 3D graphics engine written in C++11 and OpenGL 3 Core Profile.
 Features:
 
  * Easy-to-use templated mathematical library for matrix/vector calculations.
- * Comprehensive use of C++11 features for safety, performance and ease of
-   development.
  * Hierarchical scene graph which supports transformation caching for better
    performance, classes for convenient usage of shaders, buffers and textures.
  * Mesh tools for cleaning, optimizing and generating meshes. Collection of
    pre-made graphic primitives and shaders for testing purposes.
+ * Comprehensive use of C++11 features for safety, performance and ease of
+   development. All code which doesn't directly interact with OpenGL is
+   covered with unit tests.
+ * Actively maintained Doxygen documentation. Occasionally updated snapshot is
+   also available online at http://mosra.cz/blog/magnum-doc .
 
 INSTALLATION
 ============
 
 You can either use packaging scripts, which are stored in package/
 subdirectory, or compile and install everything manually. Note that Doxygen
-documentation contains more comprehensive guide for building, packaging and
-crosscompiling.
+documentation (see above or build your own using instructions below) contains
+more comprehensive guide for building, packaging and crosscompiling.
 
 Minimal dependencies
 --------------------
@@ -53,10 +56,10 @@ in build directory. Everything should pass ;-)
 Building documentation
 ----------------------
 
-The documentation (which you are currently reading) is written in **Doxygen**
-(preferrably 1.8 with Markdown support, but older versions should do good job
-too) and additionally uses **Graphviz** for class diagrams. The documentation
-can be build by running
+The documentation is written in **Doxygen** (version 1.8 with Markdown support
+is used, but older versions should do good job too) and additionally uses
+**Graphviz** for class diagrams and **TeX** for math formulas. The
+documentation can be build by running:
 
     doxygen
 

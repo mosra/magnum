@@ -6,8 +6,6 @@ Features:
 
 - Easy-to-use templated @ref Math "mathematical library" for matrix/vector
   calculations.
-- Comprehensive use of C++11 features for safety, performance and ease of
-  development.
 - Hierarchical @ref Scene "scene graph" which supports transformation caching
   for better performance, classes for convenient usage of
   @ref AbstractShaderProgram "shaders", @ref Buffer "buffers" and
@@ -15,6 +13,9 @@ Features:
 - @ref MeshTools "Mesh tools" for cleaning, optimizing and generating meshes.
   Collection of pre-made @ref Primitives "graphic primitives" and
   @ref Shaders "shaders" for testing purposes.
+- Comprehensive use of C++11 features for safety, performance and ease of
+  development. All code which doesn't directly interact with OpenGL is
+  covered with unit tests.
 
 The engine is meant to be run on OpenGL 3 capable hardware, but most of the
 functionality is working on OpenGL 2.1 hardware too. See also
