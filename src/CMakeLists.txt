@@ -2,13 +2,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -std=c++0x -fvisibility=
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CORRADE_INCLUDE_DIR})
 
-# On 64bit Linux with GCC flag -fPIC is needed for building some static libraries
-if(CMAKE_SIZEOF_VOID_P EQUAL 8 AND CMAKE_COMPILER_IS_GNUCC AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    set(USE_FPIC ON)
-else()
-    set(USE_FPIC OFF)
-endif()
-
 # Files shared between main library and unit test library
 set(Magnum_SRCS
     AbstractImage.cpp
@@ -37,10 +30,7 @@ set(MagnumMath_SRCS
 )
 add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
 
-if(USE_FPIC)
-    set_target_properties(MagnumObjects PROPERTIES COMPILE_FLAGS -fPIC)
-    set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS -fPIC)
-endif()
+set_target_properties(MagnumObjects MagnumMathObjects PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
 
 # Files compiled with different flags for main library and unit test library
 set(Magnum_GracefulAssert_SRCS
