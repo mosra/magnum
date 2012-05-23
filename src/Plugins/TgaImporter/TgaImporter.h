@@ -21,6 +21,7 @@
 
 #include "Trade/AbstractImporter.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 #ifdef _WIN32
     #ifdef TgaImporter_EXPORTS
         #define TGAIMPORTER_EXPORT __declspec(dllexport)
@@ -31,6 +32,7 @@
 #else
     #define TGAIMPORTER_EXPORT __attribute__ ((visibility ("default")))
     #define TGAIMPORTER_LOCAL __attribute__ ((visibility ("hidden")))
+#endif
 #endif
 
 namespace Magnum { namespace Trade { namespace TgaImporter {
