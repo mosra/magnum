@@ -76,6 +76,14 @@ foreach(component ${Magnum_FIND_COMPONENTS})
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
         endif()
+
+        # SDL2 context dependencies
+        if(${component} STREQUAL Sdl2Context)
+            find_package(SDL2)
+            if(NOT SDL2_FOUND)
+                unset(MAGNUM_${_COMPONENT}_LIBRARY)
+            endif()
+        endif()
     endif()
 
     # Mesh tools library
