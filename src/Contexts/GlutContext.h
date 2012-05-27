@@ -39,10 +39,12 @@ class GlutContext: public AbstractContext {
     public:
         /**
          * @brief Constructor
-         * @param argc      Count of arguments of <tt>main()</tt> function
-         * @param argv      Arguments of <tt>main()</tt> function
+         * @param argc      Count of arguments of `main()` function
+         * @param argv      Arguments of `main()` function
          * @param title     Window title
          * @param size      Window size
+         *
+         * Creates double-buffered RGBA window with depth and stencil buffers.
          */
         GlutContext(int& argc, char** argv, const std::string& title = "Magnum GLUT context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
 
