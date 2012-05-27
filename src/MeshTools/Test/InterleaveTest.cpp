@@ -25,7 +25,7 @@
 QTEST_APPLESS_MAIN(Magnum::MeshTools::Test::InterleaveTest)
 
 using namespace std;
-using namespace Corrade::Utility;
+using Corrade::Utility::Endianness;
 
 namespace Magnum { namespace MeshTools { namespace Test {
 

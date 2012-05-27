@@ -23,7 +23,7 @@
 QTEST_APPLESS_MAIN(Magnum::MeshTools::Test::CompressIndicesTest)
 
 using namespace std;
-using namespace Corrade::Utility;
+using Corrade::Utility::Endianness;
 
 namespace Magnum { namespace MeshTools { namespace Test {
 

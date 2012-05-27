@@ -17,12 +17,10 @@
 
 #include "Utility/Resource.h"
 
-using namespace Corrade::Utility;
-
 namespace Magnum { namespace Shaders {
 
 PhongShader::PhongShader() {
-    Resource rs("shaders");
+    Corrade::Utility::Resource rs("shaders");
     attachShader(Shader::fromData(Shader::Type::Vertex, rs.get("PhongShader.vert")));
     attachShader(Shader::fromData(Shader::Type::Fragment, rs.get("PhongShader.frag")));
 

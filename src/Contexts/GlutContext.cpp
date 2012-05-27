@@ -15,8 +15,6 @@
 
 #include "GlutContext.h"
 
-using namespace Corrade::Utility;
-
 namespace Magnum { namespace Contexts {
 
 GlutContext* GlutContext::instance = nullptr;

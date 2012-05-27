@@ -21,7 +21,6 @@
 #include <QtTest/QTest>
 
 using namespace std;
-using namespace Corrade::Utility;
 
 QTEST_APPLESS_MAIN(Magnum::Test::ObjectTest)
 

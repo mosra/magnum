@@ -16,7 +16,6 @@
 #include "AbstractImporter.h"
 
 using namespace std;
-using namespace Corrade::Utility;
 
 namespace Magnum { namespace Trade {
 

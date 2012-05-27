@@ -16,7 +16,6 @@
 #include "UVSphere.h"
 
 using namespace std;
-using namespace Corrade::Utility;
 
 namespace Magnum { namespace Primitives {
 

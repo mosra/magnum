@@ -124,7 +124,7 @@ template<class Base> struct SizeBasedCall: public Base {
                 return Base::template run<GLuint>(std::forward<Args>(arguments)...);
         }
 
-        Corrade::Utility::Error() << "SizeBasedCall: no type able to index" << size << "elements.";
+        Error() << "SizeBasedCall: no type able to index" << size << "elements.";
         return decltype(Base::template run<GLubyte>(std::forward<Args>(arguments)...))();
     }
 

@@ -27,6 +27,11 @@
 
 namespace Magnum {
 
+/* Bring debugging facility from Corrade::Utility namespace */
+using Corrade::Utility::Debug;
+using Corrade::Utility::Warning;
+using Corrade::Utility::Error;
+
 /** @brief Two-component floating-point vector */
 typedef Math::Vector2<GLfloat> Vector2;
 

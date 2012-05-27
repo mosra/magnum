@@ -20,7 +20,6 @@
 #define COMPILER_MESSAGE_MAX_LENGTH 1024
 
 using namespace std;
-using namespace Corrade::Utility;
 
 namespace Magnum {
 

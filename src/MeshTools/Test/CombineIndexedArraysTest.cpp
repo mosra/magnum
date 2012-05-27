@@ -23,7 +23,6 @@
 QTEST_APPLESS_MAIN(Magnum::MeshTools::Test::CombineIndexedArraysTest)
 
 using namespace std;
-using namespace Corrade::Utility;
 
 namespace Magnum { namespace MeshTools { namespace Test {
 

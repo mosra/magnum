@@ -15,8 +15,6 @@
 
 #include "Sdl2Context.h"
 
-using namespace Corrade::Utility;
-
 namespace Magnum { namespace Contexts {
 
 Sdl2Context::Sdl2Context(int argc, char** argv, const std::string& name, const Math::Vector2<GLsizei>& size): _redraw(true) {
