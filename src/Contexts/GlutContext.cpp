@@ -34,7 +34,7 @@ GlutContext::GlutContext(int& argc, char** argv, const std::string& title, const
     glutReshapeFunc(staticViewportEvent);
     glutSpecialFunc(staticKeyEvent);
     glutMouseFunc(staticMouseEvent);
-    glutMotionFunc(staticMouseMoveEvent);
+    glutMotionFunc(staticMouseMotionEvent);
     glutDisplayFunc(staticDrawEvent);
 
     /* Init GLEW */

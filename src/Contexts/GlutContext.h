@@ -162,7 +162,7 @@ class GlutContext: public AbstractContext {
          * when no button is pressed. Mouse tracking is disabled by default.
          */
         inline void setMouseTracking(bool enabled) {
-            glutPassiveMotionFunc(enabled ? staticMouseMoveEvent : nullptr);
+            glutPassiveMotionFunc(enabled ? staticMouseMotionEvent : nullptr);
         }
 
         /** @brief Set mouse cursor */
@@ -185,14 +185,14 @@ class GlutContext: public AbstractContext {
         virtual inline void mouseEvent(MouseButton button, MouseState state, const Math::Vector2<int>& position) {}
 
         /**
-         * @brief Mouse move event
+         * @brief Mouse motion event
          *
          * Called when any mouse button is pressed and mouse is moved. Default
          * implementation does nothing.
          *
          * @see setMouseTracking()
          */
-        virtual inline void mouseMoveEvent(const Math::Vector2<int>& position) {}
+        virtual inline void mouseMotionEvent(const Math::Vector2<int>& position) {}
 
         /*@}*/
 
@@ -209,8 +209,8 @@ class GlutContext: public AbstractContext {
             instance->mouseEvent(static_cast<MouseButton>(button), static_cast<MouseState>(state), {x, y});
         }
 
-        inline static void staticMouseMoveEvent(int x, int y) {
-            instance->mouseMoveEvent({x, y});
+        inline static void staticMouseMotionEvent(int x, int y) {
+            instance->mouseMotionEvent({x, y});
         }
 
         inline static void staticDrawEvent() {
