@@ -45,7 +45,6 @@ bool Plane::operator%(const Line& other) const {
 
 bool Plane::operator%(const LineSegment& other) const {
     float t = Intersection::planeLine(transformedPosition(), transformedNormal(), other.transformedA(), other.transformedB());
-    Corrade::Utility::Debug() << transformedPosition() << transformedNormal() << other.transformedA() << other.transformedB() << t;
     return t > 0.0f && t < 1.0f;
 }
 
