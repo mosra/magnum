@@ -124,7 +124,12 @@ class MAGNUM_EXPORT AbstractTexture {
             RGBA            /**< Red, green, blue component and alpha. */
         };
 
-        /** @brief Type of data per each component */
+        /**
+         * @brief Type of data per each component
+         *
+         * `NormalizedUnsignedByte` and `NormalizedUnsignedShort` are the
+         * main ones for general usage.
+         */
         enum class ComponentType {
             /**
              * (Non-normalized) unsigned byte
@@ -237,12 +242,18 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * Three-component RGB, unsigned normalized, each component
              * probably 8bit, 24bit total.
+             *
+             * Prefer to use the exactly specified version of this format, in
+             * this case `Components::RGB|ComponentType::%NormalizedUnsignedByte`.
              */
             RGB = GL_RGB,
 
             /**
              * Four-component RGBA, unsigned normalized, each component
              * probably 8bit, 24bit total.
+             *
+             * Prefer to use the exactly specified version of this format, in
+             * this case `Components::RGBA|ComponentType::%NormalizedUnsignedByte`.
              */
             RGBA = GL_RGBA,
 
