@@ -26,7 +26,7 @@ namespace Magnum {
 /**
 @brief Cube map texture array
 
-For information about usage, see CubeMapTexture class documentation.
+For information about usage, see CubeMapTexture documentation.
 
 When using cube map texture in the shader, use `samplerCubeArray`. Unlike
 classic textures, coordinates for cube map textures is signed three-part

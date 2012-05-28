@@ -24,10 +24,20 @@
 namespace Magnum {
 
 /**
-@brief Non-templated base for one-, two- or three-dimensional textures.
+@brief Base for textures
+
+@attention Don't forget to call @ref Texture::setWrapping() "setWrapping()",
+setMinificationFilter() and setMagnificationFilter() after creating the
+texture, otherwise the texture will be incomplete. If you specified mipmap
+filtering in setMinificationFilter(), be sure to also either explicitly set
+all mip levels or call generateMipmap().
+
+The texture is bound via bind() and setting texture uniform on the shader to the
+texture (see AbstractShaderProgram::setUniform(GLint, const AbstractTexture*)).
 
 See Texture, CubeMapTexture and CubeMapTextureArray documentation for more
 information.
+
 @todo Add glPixelStore encapsulation
 */
 class MAGNUM_EXPORT AbstractTexture {

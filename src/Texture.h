@@ -26,16 +26,9 @@ namespace Magnum {
 /**
 @brief %Texture
 
-Template class for one- to three-dimensional textures.
+Template class for one- to three-dimensional textures. See AbstractTexture
+documentation for more information about usage.
 
-@attention Don't forget to call setWrapping(), setMinificationFilter() and
-setMagnificationFilter() after creating the texture, otherwise the texture
-will be incomplete. If you specified mipmap filtering in
-setMinificationFilter(), be sure to also either explicitly set all mip levels
-or call generateMipmap().
-
-The texture is bound via bind() and setting texture uniform on the shader to the
-texture (see AbstractShaderProgram::setUniform(GLint, const AbstractTexture*)).
 In shader, the texture is used via `sampler1D`, `sampler2D` or `sampler3D`
 depending on dimension count. Note that you can have more than one texture bound
 to the shader - the only requirement is to have each texture in another layer.
