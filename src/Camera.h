@@ -40,7 +40,7 @@ class MAGNUM_EXPORT Camera: public Object {
          * @see setFeature()
          */
         enum class Feature: GLenum {
-            AlphaBlending = GL_BLEND,   /**< Alpha blending */
+            AlphaBlending = GL_BLEND,       /**< Alpha blending */
 
             /**
              * Depth clamping. If enabled, ignores near and far clipping plane.
@@ -49,9 +49,10 @@ class MAGNUM_EXPORT Camera: public Object {
              */
             DepthClamp = GL_DEPTH_CLAMP,
 
-            DepthTest = GL_DEPTH_TEST,  /**< Depth test */
-            Dithering = GL_DITHER,      /**< Dithering (enabled by default) */
-            FaceCulling = GL_CULL_FACE  /**< Back face culling */
+            DepthTest = GL_DEPTH_TEST,      /**< Depth test */
+            StencilTest = GL_STENCIL_TEST,  /**< Stencil test */
+            Dithering = GL_DITHER,          /**< Dithering (enabled by default) */
+            FaceCulling = GL_CULL_FACE      /**< Back face culling */
         };
 
         /**
