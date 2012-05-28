@@ -55,6 +55,7 @@ class TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
 
         #pragma pack(1)
         /** @brief TGA file header */
+        /** @todoc Enable @c INLINE_SIMPLE_STRUCTS again when unclosed &lt;component&gt; in tagfile is fixed*/
         struct TGAIMPORTER_LOCAL Header {
             GLbyte  identsize;              /**< @brief Size of ID field that follows header (0) */
             GLbyte  colorMapType;           /**< @brief 0 = None, 1 = paletted */
