@@ -38,7 +38,7 @@ bool AbstractShaderProgram::attachShader(Shader& shader) {
     return true;
 }
 
-void AbstractShaderProgram::bindAttribute(GLuint location, const string& name) {
+void AbstractShaderProgram::bindAttributeLocation(GLuint location, const string& name) {
     CORRADE_ASSERT(state == Initialized, "AbstractShaderProgram: attribute cannot be bound after linking.", )
 
     glBindAttribLocation(program, location, name.c_str());

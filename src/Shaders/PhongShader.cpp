@@ -24,9 +24,6 @@ PhongShader::PhongShader() {
     attachShader(Shader::fromData(Shader::Type::Vertex, rs.get("PhongShader.vert")));
     attachShader(Shader::fromData(Shader::Type::Fragment, rs.get("PhongShader.frag")));
 
-    bindAttribute(Vertex::Location, "vertex");
-    bindAttribute(Normal::Location, "normal");
-
     link();
 
     ambientColorUniform = uniformLocation("ambientColor");

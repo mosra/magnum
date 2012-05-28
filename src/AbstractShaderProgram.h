@@ -30,6 +30,8 @@ namespace Magnum {
 /**
 @brief Base class for shaders
 
+@section AbstractShaderProgramSubclassing Subclassing workflow
+
 This class is designed to be used via subclassing. Subclasses define these
 functions and properties:
  - **Attribute location** typedefs defining locations and types for attribute
@@ -39,18 +41,12 @@ typedef Attribute<0, Vector4> Vertex;
 typedef Attribute<1, Vector3> Normal;
 typedef Attribute<2, Vector2> TextureCoords;
 @endcode
-   See also bindAttribute().
- - **Constructor**, which attaches particular shaders, links the program,
-   binds attribute locations and gets uniform locations, for example:
+ - **Constructor**, which attaches particular shaders, links the program and
+   gets uniform locations, for example:
 @code
 // Load shaders from file and attach them to the program
 attachShader(Shader::fromFile(Shader::Vertex, "PhongShader.vert"));
 attachShader(Shader::fromFile(Shader::Fragment, "PhongShader.frag"));
-
-// Bind attribute names to IDs
-bindAttribute(Vertex::Location, "vertex");
-bindAttribute(Normal::Location, "normal");
-bindAttribute(TextureCoords::Location, "textureCoords");
 
 // Link
 link();
@@ -61,28 +57,43 @@ projectionMatrixUniform = uniformLocation("projectionMatrix");
 // more uniforms like light location, colors etc.
 @endcode
  - **Uniform binding functions**, which set shader uniforms using
-   setUniform() and setUniformArray() functions. Example:
+   setUniform() functions. Example:
 @code
 void setTransformationMatrixUniform(const Matrix4& matrix) {
     setUniform(transformationMatrixUniform, matrix);
 }
 @endcode
 
+@subsection AbstractShaderProgramAttributeLocation Binding attribute location
+The preferred workflow is to specify attribute location for vertex shader
+input attributes and fragment shader output attributes explicitly in the
+shader code, e.g.:
+@code
+layout(location = 0) in vec4 vertex;
+layout(location = 1) in vec3 normal;
+layout(location = 2) in vec2 textureCoords;
+@endcode
+@requires_gl33 Extension @extension{ARB,explicit_attrib_location} (for
+    explicit attribute location instead of using bindAttributeLocation())
+
+If you don't have the required extension, you can use functions bindAttributeLocation()
+and bindFragmentDataLocation() between attaching of shaders and linking the
+program:
+@code
+// Shaders attached...
+
+bindAttributeLocation(Vertex::Location, "vertex");
+bindAttributeLocation(Normal::Location, "normal");
+bindAttributeLocation(TextureCoords::Location, "textureCoords");
+
+// Link...
+@endcode
+
+@section AbstractShaderProgramRenderingWorkflow Rendering workflow
+
 Basic workflow with AbstractShaderProgram subclasses is: instancing the class
 (once at the beginning), then in every frame calling use(), setting uniforms
 and calling Mesh::draw() (see its documentation for more).
-
-@section MultipleFragmentOutputs Multiple fragment shader outputs
-If your shader uses multiple fragment outputs, you can use
-bindFragmentDataLocation() *before linking* to bind their names to desired
-location, e.g.:
-@code
-bindFragmentDataLocation(0, "color");
-@endcode
-
-You should then clearly state in the documentation which output is on what
-position, so the user can set framebuffer attachments for them using
-Framebuffer::mapForDraw() or Framebuffer::mapDefaultForDraw().
 
 @todo Uniform arrays support
 
@@ -152,19 +163,27 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @param name          Attribute name
          *
          * Binds attribute to location which is be used later for binding
-         * vertex buffers.
-         * @note This function should be called between loadShader() calls
-         * and link().
+         * vertex buffers. Preferred usage is to
+         * @note This function should be called between attachShader() calls
+         *      and link().
+         * @deprecated Preferred usage is to specify attribute location
+         *      explicitly in the shader instead of using this function. See
+         *      @ref AbstractShaderProgramAttributeLocation "class documentation"
+         *      for more information.
          */
-        void bindAttribute(GLuint location, const std::string& name);
+        void bindAttributeLocation(GLuint location, const std::string& name);
 
         /**
          * @brief Bind fragment data to given location
          * @param location      Location
          * @param name          Fragment output variable name
          *
-         * @note This function should be called between loadShader() calls
-         * and link().
+         * @note This function should be called between attachShader() calls
+         *      and link().
+         * @deprecated Preferred usage is to specify attribute location
+         *      explicitly in the shader instead of using this function. See
+         *      @ref AbstractShaderProgramAttributeLocation "class documentation"
+         *      for more information.
          *
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          */
@@ -211,7 +230,6 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         inline void setUniform(GLint location, const Vector4& value) {
             glUniform4fv(location, 1, value.data());
         }
-
 
         /** @copydoc setUniform(GLint, GLfloat) */
         inline void setUniform(GLint location, GLint value) {
