@@ -216,7 +216,7 @@ class MAGNUM_EXPORT AbstractImage {
         inline AbstractImage(Components components, ComponentType type): _components(components), _type(type) {}
 
         /** @brief Destructor */
-        inline virtual ~AbstractImage() {}
+        virtual ~AbstractImage() = 0;
 
         /** @brief Color components */
         inline Components components() const { return _components; }
@@ -228,6 +228,8 @@ class MAGNUM_EXPORT AbstractImage {
         Components _components;     /**< @brief Color components */
         ComponentType _type;        /**< @brief Data type */
 };
+
+inline AbstractImage::~AbstractImage() {}
 
 }
 

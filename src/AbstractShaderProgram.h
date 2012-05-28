@@ -121,7 +121,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *
          * Deletes associated OpenGL shader program.
          */
-        inline ~AbstractShaderProgram() { glDeleteProgram(program); }
+        virtual ~AbstractShaderProgram() = 0;
 
         /**
          * @brief Use shader
@@ -299,6 +299,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         GLuint program;
         State state;
 };
+
+inline AbstractShaderProgram::~AbstractShaderProgram() { glDeleteProgram(program); }
 
 }
 

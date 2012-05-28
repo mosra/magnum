@@ -472,9 +472,7 @@ class MAGNUM_EXPORT AbstractTexture {
          *
          * Deletes assigned OpenGL texture.
          */
-        inline virtual ~AbstractTexture() {
-            glDeleteTextures(1, &texture);
-        }
+        virtual ~AbstractTexture() = 0;
 
         /** @brief %Texture layer */
         inline GLint layer() const { return _layer; }
@@ -567,6 +565,8 @@ class MAGNUM_EXPORT AbstractTexture {
         const GLint _layer;
         GLuint texture;
 };
+
+inline AbstractTexture::~AbstractTexture() { glDeleteTextures(1, &texture); }
 
 /** @relates AbstractTexture
 @brief Convertor of component count and data type to InternalFormat
