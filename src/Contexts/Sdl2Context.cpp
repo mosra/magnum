@@ -82,6 +82,12 @@ int Sdl2Context::exec() {
                             _redraw = true;
                             break;
                     } break;
+                case SDL_KEYDOWN:
+                    keyPressEvent(static_cast<Key>(event.key.keysym.sym), event.key.repeat);
+                    break;
+                case SDL_KEYUP:
+                    keyReleaseEvent(static_cast<Key>(event.key.keysym.sym));
+                    break;
                 case SDL_MOUSEBUTTONDOWN:
                 case SDL_MOUSEBUTTONUP:
                     mouseEvent(static_cast<MouseButton>(event.button.button),

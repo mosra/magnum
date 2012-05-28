@@ -30,7 +30,7 @@ namespace Magnum { namespace Contexts {
 /** @nosubgrouping
 @brief SDL2 context
 
-Currently doesn't have any mouse/keyboard handling.
+Supports keyboard and mouse handling.
 
 You need to implement at least drawEvent() and viewportEvent() to be able to
 draw on the screen.
@@ -72,6 +72,37 @@ class Sdl2Context: public AbstractContext {
 
         /** @copydoc GlutContext::redraw() */
         inline void redraw() { _redraw = true; }
+
+        /*@}*/
+
+        /** @{ @name Keyboard handling */
+    public:
+        /**
+         * @brief Key
+         * @see keyPressEvent(), keyReleaseEvent()
+         */
+        enum class Key: SDL_Keycode {
+            Up = SDLK_UP,                   /**< Up arrow */
+            Down = SDLK_DOWN,               /**< Down arrow */
+            Left = SDLK_LEFT,               /**< Left arrow */
+            Right = SDLK_RIGHT,             /**< Right arrow */
+            Plus = SDLK_PLUS,               /**< Plus */
+            Minus = SDLK_MINUS              /**< Minus */
+        };
+
+    protected:
+        /**
+         * @brief Key press event
+         * @param key       Key pressed
+         * @param repeat    Non-zero if this is a key repeat
+         */
+        inline virtual void keyPressEvent(Key key, Uint8 repeat) {}
+
+        /**
+         * @brief Key release event
+         * @param key       Key release
+         */
+        inline virtual void keyReleaseEvent(Key key) {}
 
         /*@}*/
 
