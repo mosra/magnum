@@ -20,7 +20,7 @@
 namespace Magnum { namespace Shaders {
 
 PhongShader::PhongShader() {
-    Corrade::Utility::Resource rs("shaders");
+    Corrade::Utility::Resource rs("MagnumShaders");
     attachShader(Shader::fromData(Shader::Type::Vertex, rs.get("PhongShader.vert")));
     attachShader(Shader::fromData(Shader::Type::Fragment, rs.get("PhongShader.frag")));
 

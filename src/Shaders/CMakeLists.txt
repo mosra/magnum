@@ -1,4 +1,4 @@
-corrade_add_resource(Shaders shaders PhongShader.frag PhongShader.vert)
+corrade_add_resource(Shaders MagnumShaders PhongShader.frag PhongShader.vert)
 set(Shaders_SRCS
     PhongShader.cpp
     ${Shaders}
