@@ -21,7 +21,6 @@
 #include "../TgaImporter.h"
 
 using namespace std;
-using namespace Corrade::Utility;
 
 QTEST_APPLESS_MAIN(Magnum::Trade::TgaImporter::Test::TgaImporterTest)
 
