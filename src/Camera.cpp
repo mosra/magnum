@@ -20,6 +20,21 @@ using namespace std;
 
 namespace Magnum {
 
+GLbitfield Camera::clearMask = GL_COLOR_BUFFER_BIT;
+
+void Camera::setFeature(Feature feature, bool enabled) {
+    /* Enable or disable the feature */
+    enabled ? glEnable(static_cast<GLenum>(feature)) : glDisable(static_cast<GLenum>(feature));
+
+    /* Update clear mask, if needed */
+    GLbitfield clearMaskChange;
+    if(feature == Feature::DepthTest) clearMaskChange = GL_DEPTH_BUFFER_BIT;
+    else if(feature == Feature::StencilTest) clearMaskChange = GL_STENCIL_BUFFER_BIT;
+    else return;
+
+    enabled ? clearMask |= clearMaskChange : clearMask &= ~clearMaskChange;
+}
+
 Camera::Camera(Object* parent): Object(parent), _aspectRatioPolicy(AspectRatioPolicy::Extend) {}
 
 void Camera::setOrthographic(GLfloat size, GLfloat near, GLfloat far) {
@@ -109,8 +124,7 @@ void Camera::draw() {
     Scene* s = scene();
     CORRADE_ASSERT(s, "Camera: cannot draw without camera attached to scene", )
 
-    /** @todo Clear only set features */
-    glClear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    clear();
 
     /* Recursively draw child objects */
     drawChildren(s, cameraMatrix());

@@ -67,9 +67,7 @@ class MAGNUM_EXPORT Camera: public Object {
         };
 
         /** @brief Set feature */
-        inline static void setFeature(Feature feature, bool enabled) {
-            enabled ? glEnable(static_cast<GLenum>(feature)) : glDisable(static_cast<GLenum>(feature));
-        }
+        static void setFeature(Feature feature, bool enabled);
 
         /**
          * @brief Constructor
@@ -151,14 +149,24 @@ class MAGNUM_EXPORT Camera: public Object {
         /**
          * @brief Draw the scene
          *
-         * Clears the color, depth and stencil buffer and draws the scene
-         * using drawChildren().
+         * Calls clear() and draws the scene using drawChildren().
          */
         virtual void draw();
 
         using Object::draw; /* Don't hide Object's draw() */
 
     protected:
+        /**
+         * @brief Clear framebuffer
+         *
+         * Clears color buffer, depth and stencil buffer in currently active
+         * framebuffer. If depth or stencil test is not enabled, it doesn't
+         * clear these buffers.
+         *
+         * @see setFeature()
+         */
+        inline static void clear() { glClear(clearMask); }
+
         /**
          * Recalculates camera matrix.
          */
@@ -172,6 +180,8 @@ class MAGNUM_EXPORT Camera: public Object {
         void drawChildren(Object* object, const Matrix4& transformationMatrix);
 
     private:
+        static GLbitfield clearMask;
+
         Matrix4 rawProjectionMatrix;
         Matrix4 _projectionMatrix;
         Matrix4 _cameraMatrix;
