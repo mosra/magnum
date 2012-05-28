@@ -75,6 +75,61 @@ class Sdl2Context: public AbstractContext {
 
         /*@}*/
 
+        /** @{ @name Mouse handling */
+
+    public:
+        /**
+         * @brief Mouse button
+         * @see mouseEvent()
+         */
+        enum class MouseButton: Uint8 {
+            Left = SDL_BUTTON_LEFT,         /**< Left button */
+            Middle = SDL_BUTTON_MIDDLE,     /**< Middle button */
+            Right = SDL_BUTTON_RIGHT        /**< Right button */
+        };
+
+        /**
+         * @brief Mouse state
+         * @see mouseEvent()
+         */
+        enum class MouseState: Uint8 {
+            Pressed = SDL_PRESSED,          /**< Button pressed */
+            Released = SDL_RELEASED         /**< Button released */
+        };
+
+    protected:
+        /**
+         * @brief Mouse event
+         * @param button    Mouse button
+         * @param state     Mouse state
+         * @param position  Mouse position relative to the window
+         *
+         * Called when mouse button is pressed or released. Default
+         * implementation does nothing.
+         */
+        virtual inline void mouseEvent(MouseButton button, MouseState state, const Math::Vector2<int>& position) {}
+
+        /**
+         * @brief Mouse wheel event
+         * @param direction Wheel rotation direction. Negative Y is up and
+         *      positive X is right.
+         *
+         * Called when mouse wheel is rotated. Default implementation does
+         * nothing.
+         */
+        virtual inline void mouseWheelEvent(const Math::Vector2<int>& direction) {}
+
+        /**
+         * @brief Mouse motion event
+         * @param position  Mouse position relative to the window
+         * @param delta     Mouse position relative to last motion event
+         *
+         * Called when mouse is moved. Default implementation does nothing.
+         */
+        virtual inline void mouseMotionEvent(const Math::Vector2<int>& position, const Math::Vector2<int>& delta) {}
+
+        /*@}*/
+
     private:
         SDL_Window* window;
         SDL_GLContext context;

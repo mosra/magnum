@@ -82,6 +82,19 @@ int Sdl2Context::exec() {
                             _redraw = true;
                             break;
                     } break;
+                case SDL_MOUSEBUTTONDOWN:
+                case SDL_MOUSEBUTTONUP:
+                    mouseEvent(static_cast<MouseButton>(event.button.button),
+                               static_cast<MouseState>(event.button.state),
+                               {event.button.x, event.button.y});
+                    break;
+                case SDL_MOUSEWHEEL:
+                    mouseWheelEvent({event.wheel.x, event.wheel.y});
+                    break;
+                case SDL_MOUSEMOTION:
+                    mouseMotionEvent({event.motion.x, event.motion.y},
+                                     {event.motion.xrel, event.motion.yrel});
+                    break;
                 case SDL_QUIT:
                     return 0;
             }
