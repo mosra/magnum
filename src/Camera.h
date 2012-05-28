@@ -45,7 +45,7 @@ class MAGNUM_EXPORT Camera: public Object {
             /**
              * Depth clamping. If enabled, ignores near and far clipping plane.
              *
-             * @requires_gl32 Extension <tt>ARB_depth_clamp</tt>
+             * @requires_gl32 Extension @extension{ARB,depth_clamp}
              */
             DepthClamp = GL_DEPTH_CLAMP,
 

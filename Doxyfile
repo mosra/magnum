@@ -205,7 +205,8 @@ ALIASES                = \
     "requires_gl40=@xrefitem RequiresGL40 \"Requires OpenGL 4.0\" \"Functionality requiring OpenGL 4.0\"" \
     "requires_gl41=@xrefitem RequiresGL41 \"Requires OpenGL 4.1\" \"Functionality requiring OpenGL 4.1\"" \
     "requires_gl42=@xrefitem RequiresGL42 \"Requires OpenGL 4.2\" \"Functionality requiring OpenGL 4.2\"" \
-    "requires_extension=@xrefitem RequiresExtension \"Requires extension\" \"Functionality requiring specific OpenGL extension\""
+    "requires_extension=@xrefitem RequiresExtension \"Requires extension\" \"Functionality requiring specific OpenGL extension\"" \
+    "extension{2}=<a href=\"http://www.opengl.org/registry/specs/\1/\2.txt\"><tt>\1_\2</tt></a>"
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding

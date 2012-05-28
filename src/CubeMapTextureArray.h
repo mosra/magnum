@@ -33,7 +33,7 @@ classic textures, coordinates for cube map textures is signed three-part
 vector from the center of the cube, which intersects one of the six sides of
 the cube map.
 
-@requires_gl40 Extension <tt>ARB_texture_cube_map_array</tt>
+@requires_gl40 Extension @extension{ARB,texture_cube_map_array}
 */
 class CubeMapTextureArray: public AbstractTexture {
     public:
@@ -50,7 +50,7 @@ class CubeMapTextureArray: public AbstractTexture {
         /**
          * @brief Enable/disable seamless cube map textures
          *
-         * @requires_gl32 Extension <tt>ARB_seamless_cube_map</tt>
+         * @requires_gl32 Extension @extension{ARB,seamless_cube_map}
          */
         inline static void setSeamless(bool enabled) {
             enabled ? glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS) : glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);

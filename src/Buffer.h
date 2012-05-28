@@ -43,7 +43,7 @@ class Buffer {
             /**
              * Source for copies.
              *
-             * @requires_gl31 Extension <tt>ARB_copy_buffer</tt>
+             * @requires_gl31 Extension @extension{ARB,copy_buffer}
              */
             #if defined(GL_COPY_READ_BUFFER_BINDING) || defined(DOXYGEN_GENERATING_OUTPUT)
             CopyRead = GL_COPY_READ_BUFFER_BINDING,
@@ -54,7 +54,7 @@ class Buffer {
             /**
              * Target for copies.
              *
-             * @requires_gl31 Extension <tt>ARB_copy_buffer</tt>
+             * @requires_gl31 Extension @extension{ARB,copy_buffer}
              */
             #if defined(GL_COPY_WRITE_BUFFER_BINDING) || defined(DOXYGEN_GENERATING_OUTPUT)
             CopyWrite = GL_COPY_WRITE_BUFFER_BINDING,
@@ -75,28 +75,28 @@ class Buffer {
              * Source for texel fetches.
              *
              * @see BufferedTexture
-             * @requires_gl31 Extension <tt>ARB_texture_buffer_object</tt>
+             * @requires_gl31 Extension @extension{ARB,texture_buffer_object}
              */
             Texture = GL_TEXTURE_BUFFER,
 
             /**
              * Target for transform feedback.
              *
-             * @requires_gl30 Extension <tt>EXT_transform_feedback</tt>
+             * @requires_gl30 Extension @extension{EXT,transform_feedback}
              */
             TransformFeedback = GL_TRANSFORM_FEEDBACK_BUFFER,
 
             /**
              * Used for storing uniforms.
              *
-             * @requires_gl31 Extension <tt>ARB_uniform_buffer_object</tt>
+             * @requires_gl31 Extension @extension{ARB,uniform_buffer_object}
              */
             Uniform = GL_UNIFORM_BUFFER,
 
             /**
              * Used for supplying arguments for instanced drawing.
              *
-             * @requires_gl40 Extension <tt>ARB_draw_indirect</tt>
+             * @requires_gl40 Extension @extension{ARB,draw_indirect}
              */
             DrawIndirect = GL_DRAW_INDIRECT_BUFFER
         };

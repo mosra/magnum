@@ -45,7 +45,7 @@ class MAGNUM_EXPORT Shader {
             /**
              * Geometry shader
              *
-             * @requires_gl32 Extension <tt>ARB_geometry_shader4</tt>
+             * @requires_gl32 Extension @extension{ARB,geometry_shader4}
              */
             Geometry = GL_GEOMETRY_SHADER,
 
@@ -54,14 +54,14 @@ class MAGNUM_EXPORT Shader {
             /**
              * Tesselation control shader
              *
-             * @requires_gl40 Extension <tt>ARB_tesselation_shader</tt>
+             * @requires_gl40 Extension @extension{ARB,tessellation_shader}
              */
             TesselationControl = GL_TESS_CONTROL_SHADER,
 
             /**
              * Tesselation evaluation shader
              *
-             * @requires_gl40 Extension <tt>ARB_tesselation_shader</tt>
+             * @requires_gl40 Extension @extension{ARB,tessellation_shader}
              */
             TesselationEvaluation = GL_TESS_EVALUATION_SHADER
         };

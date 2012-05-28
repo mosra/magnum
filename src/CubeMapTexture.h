@@ -61,7 +61,7 @@ class CubeMapTexture: public AbstractTexture {
         /**
          * @brief Enable/disable seamless cube map textures
          *
-         * @requires_gl32 Extension <tt>ARB_seamless_cube_map</tt>
+         * @requires_gl32 Extension @extension{ARB,seamless_cube_map}
          */
         inline static void setSeamless(bool enabled) {
             enabled ? glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS) : glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);

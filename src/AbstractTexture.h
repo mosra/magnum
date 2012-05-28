@@ -119,56 +119,56 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * (Non-normalized) unsigned byte
              *
-             * @requires_gl30 Extension <tt>EXT_texture_integer</tt>
+             * @requires_gl30 Extension @extension{EXT,texture_integer}
              */
             UnsignedByte,
 
             /**
              * (Non-normalized) byte
              *
-             * @requires_gl30 Extension <tt>EXT_texture_integer</tt>
+             * @requires_gl30 Extension @extension{EXT,texture_integer}
              */
             Byte,
 
             /**
              * (Non-normalized) unsigned short
              *
-             * @requires_gl30 Extension <tt>EXT_texture_integer</tt>
+             * @requires_gl30 Extension @extension{EXT,texture_integer}
              */
             UnsignedShort,
 
             /**
              * (Non-normalized) short
              *
-             * @requires_gl30 Extension <tt>EXT_texture_integer</tt>
+             * @requires_gl30 Extension @extension{EXT,texture_integer}
              */
             Short,
 
             /**
              * (Non-normalized) unsigned integer
              *
-             * @requires_gl30 Extension <tt>EXT_texture_integer</tt>
+             * @requires_gl30 Extension @extension{EXT,texture_integer}
              */
             UnsignedInt,
 
             /**
              * (Non-normalized) integer
              *
-             * @requires_gl30 Extension <tt>EXT_texture_integer</tt>
+             * @requires_gl30 Extension @extension{EXT,texture_integer}
              */
             Int,
 
             /**
              * Half float (16 bit)
              *
-             * @requires_gl30 Extension <tt>ARB_texture_float</tt>
+             * @requires_gl30 Extension @extension{ARB,texture_float}
              */
             Half,
 
             /**
              * Float (32 bit)
              *
-             * @requires_gl30 Extension <tt>ARB_texture_float</tt>
+             * @requires_gl30 Extension @extension{ARB,texture_float}
              */
             Float,
 
@@ -270,7 +270,7 @@ class MAGNUM_EXPORT AbstractTexture {
              * Four-component RGBA, unsigned non-normalized, each RGB
              * component 10bit, alpha channel 2bit, 32bit total.
              *
-             * @requires_gl33 Extension <tt>ARB_texture_rgb10_a2ui</tt>
+             * @requires_gl33 Extension @extension{ARB,texture_rgb10_a2ui}
              */
             RGB10Alpha2Unsigned = GL_RGB10_A2UI,
 
@@ -290,7 +290,7 @@ class MAGNUM_EXPORT AbstractTexture {
              * Three-component RGB, float, red and green 11bit, blue 10bit,
              * 32bit total.
              *
-             * @requires_gl30 Extension <tt>EXT_packed_float</tt>
+             * @requires_gl30 Extension @extension{EXT,packed_float}
              */
             RG11B10Float = GL_R11F_G11F_B10F,
 
@@ -306,7 +306,7 @@ class MAGNUM_EXPORT AbstractTexture {
              * Three-component RGB, unsigned with exponent, each component
              * 9bit, exponent 5bit, 32bit total.
              *
-             * @requires_gl30 Extension <tt>EXT_texture_shared_exponent</tt>
+             * @requires_gl30 Extension @extension{EXT,texture_shared_exponent}
              */
             RGB9Exponent5 = GL_RGB9_E5,
 
@@ -325,59 +325,59 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * RTGC compressed red channel, unsigned normalized.
              *
-             * @requires_gl30 Extension <tt>EXT_texture_compression_rgtc</tt>
+             * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
              */
             CompressedRtgcRed = GL_COMPRESSED_RED_RGTC1,
 
             /**
              * RTGC compressed red channel, signed normalized.
              *
-             * @requires_gl30 Extension <tt>EXT_texture_compression_rgtc</tt>
+             * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
              */
             CompressedRtgcSignedRed = GL_COMPRESSED_SIGNED_RED_RGTC1,
 
             /**
              * RTGC compressed red and green channel, unsigned normalized.
              *
-             * @requires_gl30 Extension <tt>EXT_texture_compression_rgtc</tt>
+             * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
              */
             CompressedRtgcRedGreen = GL_COMPRESSED_RG_RGTC2,
 
             /**
              * RTGC compressed red and green channel, signed normalized.
              *
-             * @requires_gl30 Extension <tt>EXT_texture_compression_rgtc</tt>
+             * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
              */
             CompressedRtgcSignedRedGreen = GL_COMPRESSED_SIGNED_RG_RGTC2,
 
             #if defined(GL_COMPRESSED_RGBA_BPTC_UNORM) || defined(DOXYGEN_GENERATING_OUTPUT)
             /**
-             * BTPC compressed RGBA, unsigned normalized.
+             * BPTC compressed RGBA, unsigned normalized.
              *
-             * @requires_gl42 Extension <tt>ARB_texture_compression_btpc</tt>
+             * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
              */
-            CompressedBtpcRGBA = GL_COMPRESSED_RGBA_BPTC_UNORM,
+            CompressedBptcRGBA = GL_COMPRESSED_RGBA_BPTC_UNORM,
 
             /**
-             * BTPC compressed sRGBA, unsigned normalized.
+             * BPTC compressed sRGBA, unsigned normalized.
              *
-             * @requires_gl42 Extension <tt>ARB_texture_compression_btpc</tt>
+             * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
              */
-            CompressedBtpcSRGBA = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM,
+            CompressedBptcSRGBA = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM,
 
             /**
-             * BTPC compressed RGB, signed float.
+             * BPTC compressed RGB, signed float.
              *
-             * @requires_gl42 Extension <tt>ARB_texture_compression_btpc</tt>
+             * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
              */
-            CompressedBtpcRGBSignedFloat = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT,
+            CompressedBptcRGBSignedFloat = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT,
 
             /**
-             * BTPC compressed RGB, unsigned float.
+             * BPTC compressed RGB, unsigned float.
              *
-             * @requires_gl42 Extension <tt>ARB_texture_compression_btpc</tt>
+             * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
              */
-            CompressedBtpcRGBUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
+            CompressedBptcRGBUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
             #endif
 
             /** Depth component. */
@@ -395,21 +395,21 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * 32bit float depth component.
              *
-             * @requires_gl30 Extension <tt>ARB_depth_buffer_float</tt>
+             * @requires_gl30 Extension @extension{ARB,depth_buffer_float}
              */
             Depth32Float = GL_DEPTH_COMPONENT32F,
 
             /**
              * 24bit depth and 8bit stencil component.
              *
-             * @requires_gl30 Extension <tt>EXT_packed_depth_stencil</tt>
+             * @requires_gl30 Extension @extension{EXT,packed_depth_stencil}
              */
             Depth24Stencil8 = GL_DEPTH24_STENCIL8,
 
             /**
              * 32bit float depth component and 8bit stencil component.
              *
-             * @requires_gl30 Extension <tt>ARB_depth_buffer_float</tt>
+             * @requires_gl30 Extension @extension{ARB,depth_buffer_float}
              */
             Depth32FloatStencil8 = GL_DEPTH32F_STENCIL8
         };
@@ -451,7 +451,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @brief Max supported anisotropy
          *
          * @see setMaxAnisotropy()
-         * @requires_extension <tt>EXT_texture_filter_anisotropic</tt>
+         * @requires_extension @extension{EXT,texture_filter_anisotropic}
          */
         static GLfloat maxSupportedAnisotropy();
 
@@ -538,7 +538,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * Default value is `1.0`, which means no anisotropy. Set to value
          * greater than `1.0` for anisotropic filtering.
          * @see maxSupportedAnisotropy()
-         * @requires_extension <tt>EXT_texture_filter_anisotropic</tt>
+         * @requires_extension @extension{EXT,texture_filter_anisotropic}
          */
         inline void setMaxAnisotropy(GLfloat anisotropy) {
             bind();
@@ -550,7 +550,7 @@ class MAGNUM_EXPORT AbstractTexture {
          *
          * Can not be used for rectangle textures.
          * @see setMinificationFilter()
-         * @requires_gl30 Extension <tt>EXT_framebuffer_object</tt>
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         void generateMipmap();
 

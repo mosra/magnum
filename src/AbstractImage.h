@@ -70,7 +70,7 @@ class MAGNUM_EXPORT AbstractImage {
             /**
              * Depth and stencil component. For framebuffer reading only.
              *
-             * @requires_gl30 Extension <tt>EXT_packed_depth_stencil</tt>
+             * @requires_gl30 Extension @extension{EXT,packed_depth_stencil}
              */
             DepthStencil = GL_DEPTH_STENCIL
         };
@@ -87,7 +87,7 @@ class MAGNUM_EXPORT AbstractImage {
             /**
              * Each component half float (16bit). For framebuffer reading only.
              *
-             * @requires_gl30 Extension <tt>NV_half_float</tt> / <tt>ARB_half_float_pixel</tt>
+             * @requires_gl30 Extension @extension{NV,half_float} / @extension{ARB,half_float_pixel}
              */
             HalfFloat = GL_HALF_FLOAT,
 
@@ -169,7 +169,7 @@ class MAGNUM_EXPORT AbstractImage {
              * Three-component BGR, float, red and green 11bit, blue 10bit,
              * 32bit total. For framebuffer reading only.
              *
-             * @requires_gl30 Extension <tt>EXT_packed_float</tt>
+             * @requires_gl30 Extension @extension{EXT,packed_float}
              */
             B10GR11Float = GL_UNSIGNED_INT_10F_11F_11F_REV,
 
@@ -178,7 +178,7 @@ class MAGNUM_EXPORT AbstractImage {
              * component 9bit, exponent 5bit, 32bit total. For framebuffer
              * reading only.
              *
-             * @requires_gl30 Extension <tt>EXT_texture_shared_exponent</tt>
+             * @requires_gl30 Extension @extension{EXT,texture_shared_exponent}
              */
             Exponent5RGB9 = GL_UNSIGNED_INT_5_9_9_9_REV,
 
@@ -186,7 +186,7 @@ class MAGNUM_EXPORT AbstractImage {
              * 24bit depth and 8bit stencil component, 32bit total. For
              * framebuffer reading only.
              *
-             * @requires_gl30 Extension <tt>EXT_packed_depth_stencil</tt>
+             * @requires_gl30 Extension @extension{EXT,packed_depth_stencil}
              */
             Depth24Stencil8 = GL_UNSIGNED_INT_24_8,
 
@@ -194,7 +194,7 @@ class MAGNUM_EXPORT AbstractImage {
              * 32bit float depth component and 8bit stencil component, 64bit
              * total. For framebuffer reading only.
              *
-             * @requires_gl30 Extension <tt>ARB_depth_buffer_float</tt>
+             * @requires_gl30 Extension @extension{ARB,depth_buffer_float}
              */
             Depth32FloatStencil8 = GL_FLOAT_32_UNSIGNED_INT_24_8_REV
         };

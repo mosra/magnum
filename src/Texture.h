@@ -50,7 +50,7 @@ don't support mipmapping and repeating wrapping modes, see @ref Texture::Filter
 "Filter", @ref Texture::Mipmap "Mipmap" and generateMipmap() documentation
 for more information.
 
-@requires_gl31 Extension <tt>ARB_texture_rectangle</tt> (rectangle textures)
+@requires_gl31 Extension @extension{ARB,texture_rectangle} (rectangle textures)
 
 @see CubeMapTexture, CubeMapTextureArray
  */
@@ -72,21 +72,21 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
             /**
              * One-dimensional texture array (i.e. two dimensions in total)
              *
-             * @requires_gl30 Extension <tt>EXT_texture_array</tt>
+             * @requires_gl30 Extension @extension{EXT,texture_array}
              */
             Texture1DArray = GL_TEXTURE_1D_ARRAY,
 
             /**
              * Two-dimensional texture array (i.e. three dimensions in total)
              *
-             * @requires_gl30 Extension <tt>EXT_texture_array</tt>
+             * @requires_gl30 Extension @extension{EXT,texture_array}
              */
             Texture2DArray = GL_TEXTURE_2D_ARRAY,
 
             /**
              * Rectangle texture (i.e. two dimensions)
              *
-             * @requires_gl31 Extension <tt>ARB_texture_rectangle</tt>
+             * @requires_gl31 Extension @extension{ARB,texture_rectangle}
              */
             Rectangle = GL_TEXTURE_RECTANGLE
         };

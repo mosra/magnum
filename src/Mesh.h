@@ -36,8 +36,8 @@ class Buffer;
 @todo Support for normalized values (e.g. for color as char[4] passed to
      shader as floating-point vec4)
 
-@requires_gl30 Extension <tt>APPLE_vertex_array_object</tt>
-@requires_gl30 Extension <tt>EXT_gpu_shader4</tt> (for unsigned integer attributes)
+@requires_gl30 Extension @extension{APPLE,vertex_array_object}
+@requires_gl30 Extension @extension{EXT,gpu_shader4} (for unsigned integer attributes)
 
 @todo Support for provoking vertex (OpenGL 3.2, ARB_provoking_vertex)
 @todo Support for packed unsigned integer types for attributes (OpenGL 3.3, ARB_vertex_type_2_10_10_10_rev)

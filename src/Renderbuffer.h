@@ -28,7 +28,7 @@ namespace Magnum {
 
 Attachable to Framebuffer as render target.
 
-@requires_gl30 Extension <tt>EXT_framebuffer_object</tt>
+@requires_gl30 Extension @extension{EXT,framebuffer_object}
 */
 class Renderbuffer {
     Renderbuffer(const Renderbuffer& other) = delete;

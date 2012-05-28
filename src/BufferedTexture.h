@@ -36,7 +36,7 @@ using data setting functions in Buffer itself.
 When using buffered texture in the shader, use `samplerBuffer` and fetch the
 data using integer coordinates in `texelFetch()`.
 
-@requires_gl31 Extension <tt>ARB_texture_buffer_object</tt>
+@requires_gl31 Extension @extension{ARB,texture_buffer_object}
 */
 class BufferedTexture {
     BufferedTexture(const BufferedTexture& other) = delete;
@@ -63,7 +63,7 @@ class BufferedTexture {
             /**
              * Three-component RGB, float, each component 32bit, 96bit total.
              *
-             * @requires_gl40 Extension <tt>ARB_texture_buffer_object_rgb32</tt>
+             * @requires_gl40 Extension @extension{ARB,texture_buffer_object_rgb32}
              */
             RGB32Float = GL_RGB32F,
 
@@ -71,7 +71,7 @@ class BufferedTexture {
              * Three-component RGB, unsigned non-normalized, each component
              * 32bit, 96bit total.
              *
-             * @requires_gl40 Extension <tt>ARB_texture_buffer_object_rgb32</tt>
+             * @requires_gl40 Extension @extension{ARB,texture_buffer_object_rgb32}
              */
             RGB32UnsignedInt = GL_RGB32UI,
 
@@ -79,7 +79,7 @@ class BufferedTexture {
              * Three-component RGB, signed non-normalized, each component
              * 32bit, 96bit total.
              *
-             * @requires_gl40 Extension <tt>ARB_texture_buffer_object_rgb32</tt>
+             * @requires_gl40 Extension @extension{ARB,texture_buffer_object_rgb32}
              */
             RGB32Int = GL_RGB32I
         };
