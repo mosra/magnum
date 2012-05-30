@@ -115,11 +115,6 @@ void Camera::fixAspectRatio() {
     } else _projectionMatrix = rawProjectionMatrix;
 }
 
-void Camera::setClearColor(const Magnum::Vector4& color) {
-    glClearColor(color.r(), color.g(), color.b(), color.a());
-    _clearColor = color;
-}
-
 void Camera::draw() {
     Scene* s = scene();
     CORRADE_ASSERT(s, "Camera: cannot draw without camera attached to scene", )

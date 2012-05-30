@@ -70,6 +70,15 @@ class MAGNUM_EXPORT Camera: public Object {
         static void setFeature(Feature feature, bool enabled);
 
         /**
+         * @brief Set clear color
+         *
+         * Initial value is `{0.0f, 0.0f, 0.0f, 1.0f}`.
+         */
+        inline static void setClearColor(const Vector4& color) {
+            glClearColor(color.r(), color.g(), color.b(), color.a());
+        }
+
+        /**
          * @brief Constructor
          * @param parent        Parent object
          *
@@ -140,12 +149,6 @@ class MAGNUM_EXPORT Camera: public Object {
          */
         virtual void setViewport(const Math::Vector2<GLsizei>& size);
 
-        /** @brief Clear color */
-        inline Vector4 clearColor() const { return _clearColor; }
-
-        /** @brief Set clear color */
-        void setClearColor(const Vector4& color);
-
         /**
          * @brief Draw the scene
          *
@@ -185,7 +188,6 @@ class MAGNUM_EXPORT Camera: public Object {
         Matrix4 rawProjectionMatrix;
         Matrix4 _projectionMatrix;
         Matrix4 _cameraMatrix;
-        Vector4 _clearColor;
         GLfloat _near, _far;
 
         Math::Vector2<GLsizei> _viewport;
