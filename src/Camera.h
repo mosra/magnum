@@ -79,6 +79,27 @@ class MAGNUM_EXPORT Camera: public Object {
         }
 
         /**
+         * @brief Set clear depth
+         *
+         * Initial value is `1.0`.
+         */
+        inline static void setClearDepth(GLdouble depth) { glClearDepth(depth); }
+
+        /**
+         * @overload
+         *
+         * @requires_gl41 Extension @extension{ARB,ES2_compatibility}
+         */
+        inline static void setClearDepth(GLfloat depth) { glClearDepthf(depth); }
+
+        /**
+         * @brief Set clear stencil
+         *
+         * Initial value is `0`.
+         */
+        inline static void setClearStencil(GLint stencil) { glClearStencil(stencil); }
+
+        /**
          * @brief Constructor
          * @param parent        Parent object
          *
