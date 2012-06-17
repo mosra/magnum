@@ -197,15 +197,15 @@ TAB_SIZE               = 8
 ALIASES                = \
     "debugoperator{1}=@relates \1\n@brief Debug output operator" \
     "collisionoperator{2}=@relates \1\n@brief Collision of %\1 and %\2\n@see \2::operator%(const \1&) const" \
-    "todoc=@xrefitem todox \"Documentation todo\" \"Documentation-related todo list\"" \
-    "requires_gl30=@xrefitem RequiresGL30 \"Requires OpenGL 3.0\" \"Functionality requiring OpenGL 3.0\"" \
-    "requires_gl31=@xrefitem RequiresGL31 \"Requires OpenGL 3.1\" \"Functionality requiring OpenGL 3.1\"" \
-    "requires_gl32=@xrefitem RequiresGL32 \"Requires OpenGL 3.2\" \"Functionality requiring OpenGL 3.2\"" \
-    "requires_gl33=@xrefitem RequiresGL33 \"Requires OpenGL 3.3\" \"Functionality requiring OpenGL 3.3\"" \
-    "requires_gl40=@xrefitem RequiresGL40 \"Requires OpenGL 4.0\" \"Functionality requiring OpenGL 4.0\"" \
-    "requires_gl41=@xrefitem RequiresGL41 \"Requires OpenGL 4.1\" \"Functionality requiring OpenGL 4.1\"" \
-    "requires_gl42=@xrefitem RequiresGL42 \"Requires OpenGL 4.2\" \"Functionality requiring OpenGL 4.2\"" \
-    "requires_extension=@xrefitem RequiresExtension \"Requires extension\" \"Functionality requiring specific OpenGL extension\"" \
+    "todoc=@xrefitem todoc \"Documentation todo\" \"Documentation-related todo list\"" \
+    "requires_gl30=@xrefitem requires-gl30 \"Requires OpenGL 3.0\" \"Functionality requiring OpenGL 3.0\"" \
+    "requires_gl31=@xrefitem requires-gl31 \"Requires OpenGL 3.1\" \"Functionality requiring OpenGL 3.1\"" \
+    "requires_gl32=@xrefitem requires-gl32 \"Requires OpenGL 3.2\" \"Functionality requiring OpenGL 3.2\"" \
+    "requires_gl33=@xrefitem requires-gl33 \"Requires OpenGL 3.3\" \"Functionality requiring OpenGL 3.3\"" \
+    "requires_gl40=@xrefitem requires-gl40 \"Requires OpenGL 4.0\" \"Functionality requiring OpenGL 4.0\"" \
+    "requires_gl41=@xrefitem requires-gl41 \"Requires OpenGL 4.1\" \"Functionality requiring OpenGL 4.1\"" \
+    "requires_gl42=@xrefitem requires-gl42 \"Requires OpenGL 4.2\" \"Functionality requiring OpenGL 4.2\"" \
+    "requires_extension=@xrefitem requires-extension \"Requires extension\" \"Functionality requiring specific OpenGL extension\"" \
     "extension{2}=<a href=\"http://www.opengl.org/registry/specs/\1/\2.txt\"><tt>\1_\2</tt></a>"
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).

@@ -1,0 +1,380 @@
+namespace Magnum {
+/** @page coding-style Coding style
+@brief Coding style and best practices to preserve maintainability and
+consistent style across whole project.
+
+@tableofcontents
+
+Please note that if you have a good excuse to either break the rules or modify
+them, feel free to do it (and update this guide accordingly, if appropriate).
+Nothing is worse than rule that hurts productivity instead of improving it.
+
+@section cpp C++ code
+
+All C++ header and source files are named after the class they contain with no
+case change. Thus there should be only one class per file, but if the classes
+are closely related and small enough, you can make an exception (see Query.h
+or TypeTraits.h for example).
+
+Code in the root Magnum namespace is in `src/` directory, each subnamespace is
+in its own subdirectory. Unit tests are in `Test` subnamespace (and
+subdirectory). Implementation details (helper classes etc.) which shouldn't be
+visible to end users should be in `Implementation` subnamespace in the same
+file as the class/function for which the implementation is. See @ref documentation
+section below for guide how to hide it also from Doxygen documentation.
+
+@subsection cpp-headers Headers
+
+Headers have an strict structure. Include guards are basically include path
+with slashes replaced with underscores to make refactoring as easy as possible.
+Directly after them is license block, blank line, then file documentation,
+blank line and after that the contents of the header. Include guard ending is
+only `endif`, without any additional comments.
+
+It's probably common practice, but repeating won't hurt: headers shouldn't
+have `using` declarations inside them (unless there is good excuse, see
+Magnum.h).
+
+@subsection cpp-sources Source files
+
+Source file have similar structure as headers - first license block, then
+blank line, then the includes, then contents of the file.
+
+Unlike headers, it's good to use `using` declaration in source files as much
+as needed to make the code less verbose (unless the name is used only once).
+
+@subsection cpp-format Code format
+
+@subsubsection cpp-naming Naming
+
+Namespaces, classes and structs, enums, type template names and static
+constants should be named with `CamelCase`, i.e. first letter of the name and
+each successive word uppercase, other lowercase. E.g. `%CubeMapTextureArray`.
+Classes with pure virtual methods or base classes which are not meant to be
+used directly should be prefixed with `Abstract`. If the class is not meant
+to be instanced directly and doesn't have any pure virtual methods, consider
+using pure virtual destructor (see AbstractTexture source for example).
+
+Functions, function parameters, non-type template names and variables should
+be named with `camelCase`, i.e. first letter of the name lowercase, each
+successive word starting with uppercase. E.g. `generateFlatNormals()`.
+
+Preprocessor macros should be written in uppercase with underscores between
+words, e.g. `MAGNUM_EXPORTING`.
+
+Redundant information and abbrevations in names are not recommended (use
+`determinant`, `inverse` and `attribute` instead of `det`, `inv` and `attr`).
+Hungarian notation, `I` and `E` prefixes for interfaces and enums are
+forbidden and cruelly punished, if found. Acronyms should be written with
+first letter uppercase only to avoid visual collision with preprocessor macros
+(`Http`, `Collada` and `Bptc` instead of `HTTP`, `COLLADA` and `BPTC`). When
+writing wrappers for OpenGL functions and defines, try to match the original
+name as closely as possible, although expanding abbrevations (and removing
+redundant prefixes) is encouraged.
+
+Private variables clashing with (mostly getter) function names can have
+one underscore before them, don't use two underscores, as they are reserved
+for internal usage by the C++ standard. Underscores before the name shouldn't
+be used in public API or function parameters, as it looks ugly in the
+documentation.
+
+@subsubsection cpp-namespace Namespace declarations
+
+Namespace declaration is on one line, separated with blank lines on both
+sides. The code inside the declaration is not indented to save horizontal
+space.
+@code
+namespace Magnum { namespace Math { namespace Geometry {
+
+// ...
+
+}}}
+@endcode
+
+The only exception is with forward declarations: use indentation where it
+improves readability, e.g.:
+@code
+namespace Corrade { namespace PluginManager {
+    class AbstractPluginManager;
+}}
+
+namespace Magnum {
+
+namespace Math {
+    class Matrix4;
+
+    namespace Geometry {
+        class Distance;
+    }
+}
+
+// the actual code...
+
+}
+@endcode
+
+@subsubsection cpp-classes Class and structure declarations
+
+Class and structure protection levels are ordered as following: first friend
+declarations, then public members, then protected members and finally private
+members, so class public interface is easy to spot at the top of the file.
+
+Members are ordered as following: first classes and enums, then static
+functions, then non-static functions, then static variables, then non-static
+variables. Again, classes and methods are more important for user than
+variables, static members are more important than non-static.
+
+@subsubsection cpp-style Blocks, whitespace and indentation
+
+The goal is to preserve readability with minimal amount of wasted vertical
+and horizontal space.
+
+Each file must have one blank line at the end (Git will warn you in the
+diff if it's not the case), indentation is done exclusively with spaces (4
+spaces). Trailing whitespaces are not permitted (and you should set up your
+Git installation to warn about that).
+
+The code should be wrapped around 80th column, exceptions for long single-line
+statements are allowed unless it hurts readability.
+
+Indented is everything except namespace declarations (as specified above) -
+blocks, class protection levels, `case` statements. Overlong line breaks are
+indented also with 4 spaces or better where it makes more sense (e.g. for
+aligning similar code), multiline comments are indented with three spaces for
+the comment text block to be aligned.
+
+Whitespace is **not allowed** inside parentheses and between function name or
+branch/loop statement and left parenthesis (or between constructed variable
+name and left brace) and before semicolon. It **must be** around block braces
+if the block is not empty. It **must not** be space before, but after the
+comma.
+@code
+if ( statement ){foo (a ,b) ;} // awful!
+if(statement) { foo(a, b); }   // good
+@endcode
+
+Whitespace should be around operators with low precedence (namely `+`, `-`,
+`<<`, `>>` but not on unary `-`), around all boolean and comparison operators,
+around `=` and related operators and around ternary operator. Whitespace is
+should be around `/`, `*`, `%` to indicate they have precedence before
+addition and substraction. Whitespace can or need not to be around binary
+operators, whichever looks better in particular content.
+
+Block opening braces start on the same line as corresponding statement (class/
+function declaration, branch and loop statement), `else` and `else if`
+statements have both braces on the same line too:
+@code
+if(expression) {
+    // ...
+} else if(another || expression) {
+    // ...
+} else {
+    // ...
+}
+@endcode
+
+If the block is only one statement and short enough, it can be on the same line:
+@code
+void setClearDepth(GLfloat depth) { clearDepth = depth; }
+@endcode
+@code
+if(!initialized) return false;
+@endcode
+
+@subsubsection cpp-switches Switch statements
+
+Switch statements are usually very verbose and thus they are often subject of
+various shortening and whitespace tricks. The goal is to make them as readable
+as possible without wasting too much vertical space, for example:
+@code
+switch(type) {
+    case Byte:      size = 8;   break;
+    case Short:     size = 16;  break;
+    case Int:       size = 32;  break;
+    case Long:      size = 64;  break;
+    case LongLong:  size = 128; break;
+
+    default:        size = 0;
+}
+@endcode
+
+@subsubsection cpp-virtual Virtual functions
+
+Only base virtual functions should have `virtual` keyword, not the
+reimplementations.
+
+@subsubsection cpp-includes Includes
+
+Includes should be organized into separate groups separated with blank line -
+first header belonging to the particular source file (if the file is source
+file), then system includes, then includes from the engine itself and then
+internal includes used only in the particular file (e.g. `configure.h`).
+Includes from system libraries and dependencies are in angle brackets,
+includes from engine itself are in quotes. Includes should be sorted by
+"level" (e.g. C includes (`&lt;cstdlib&gt;`) before C++ includes
+(`&lt;string&gt;`) and those before dependencies (`&lt;GL/gl.h&gt;`)), then by
+path name.
+
+@subsubsection cpp-macros Preprocessor macros
+
+Preprocessor macros should have the same indentation as surrounding code. If
+the macro is long or contains code which should be spanned or multiple lines,
+it should be wrapped on multiple lines, each successive line indented and the
+line wrapping indicator `\` should be aligned around 80th column, preferably
+on some tab-stop.
+
+@section comments Comments
+
+All comments should be in C-style (i.e. slash and asterisk, not two slashes).
+There should always be space after leading asterisk and before trailing
+asterisk, this is also the case for C++-style comments, if are used somewhere
+(mostly in the documentation, because nesting of C-style comments is
+impossible).
+
+Multi-line comments should be done in a way which preserves block align (so
+when first line starts with slash, asterisk and space, the second line should
+be indented with three spaces to align the text).
+
+@section documentation Doxygen documentation
+
+Doxygen documentation uses C-style comments with two asterisks, each
+successive line should start with asterisk and space. However, documentation
+block starting at beginning of the line (with no indentation) and spanning
+more lines shouldn't have leading asterisks and use whole 80 column width to
+avoid wasted space.
+
+Doxygen commands are prefixed with `@`.
+
+If the documentation comment is short enough, it can be on one line. If not,
+the first line should contain only the slash and two asterisks. However, there
+are exceptions for commands that can be on the first line of the multiline
+documentation block - namely @c \@page, @c \@name, @c \@file, @c \@namespace
+and other commands for "out-of-place" documentation.
+
+Doxygen documentation is mainly in header files, additional documentation
+pages which doesn't belong to any particular class (e.g. namespaces,
+overview...) is in `doc/` directory. In source file should be only @c \@todo
+items related to particular lines of code. Documentation pages and additional
+documentation files should be named in lowercase with dashes between words.
+Additional documentation files use `*.dox` extension.
+
+File documentation block is after license block, it explains only in
+@c \@brief what content given header contains.
+
+Namespace documentation is only in file `namespaces.dox` inside `doc/`
+directory.
+
+Class and function documentation block nearly always starts with an @c \@brief
+description (the only exception is enum value documentation). After that is
+documentation of template parameters, function parameters and return value.
+These are documented only if it's not obvious from the description or
+function/parameter name (i.e. it's not needed for setters).
+
+Trivial function overloads (e.g. const overloads) are marked only with
+@c \@overload keyword and are always *after* the original documented function.
+
+If the documentation is short enough, it can be placed after the documented
+element only if it doesn't exceed 80 character limit too much (e.g. enum value
+documentation).
+
+For hiding implementation details from documentation or for working around
+Doxygen parsing issues (and false positive warnings), preprocessor define
+`DOXYGEN_GENERATING_OUTPUT` can be used. It is defined only when doxygen
+generates the documentation. If that works around some Doxygen parsing bug,
+don't forget to mark it with @c \@todoc (see below).
+
+@subsection documentation-commands Special documentation commands
+
+@subsubsection documentation-commands-todoc Documentation-related TODOs
+
+TODOs about documentation (or about Doxygen workarounds) should be written
+with @c \@todoc instead of @c \@todo. They will appear on @ref todoc
+"separate page".
+
+@subsubsection documentation-commands-debugoperator Debugging operators
+
+Operators for printing types on Corrade's debug output should be marked with
+@c \@debugoperator, e.g.:
+@code
+// @debugoperator{Matrix4}
+template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Matrix4<T>& value) {
+    // ...
+}
+@endcode
+They will appear as related functions within documentation of class specified
+as the parameter.
+
+@subsubsection documentation-commands-collisionoperator Physics collision operators
+
+Out-of-class operators for collision in Physics namespace should be marked with
+@c \@collisionoperator, e.g.:
+@code
+// @collisionoperator{Point,Sphere}
+inline bool operator%(const Point& a, const Sphere& b) { return b % a; }
+@endcode
+They will appear as related functions within documentation of class for which
+the operator is implemented (not of class in which the operator is
+implemented), thus efficiently connecting the two classes together in the
+documentation.
+
+@subsubsection documentation-commands-extension Links to OpenGL extensions
+
+If an OpenGL extension is referenced in the documentation, it should be done
+with @c \@extension command:
+@code
+@extension{ARB,timer_query}
+@endcode
+It produces link to the specification of the extension in OpenGL registry,
+e.g. @extension{ARB,timer_query}.
+
+@subsubsection documentation-commands-requires Classes and functions requiring specific OpenGL version or extensions
+
+If any class or function requires specific OpenGL version above 2.1, it should
+be marked with appropriate command @c \@requires_glXX, where `XX` is version
+number (e.g. `42` for OpenGL 4.2) or @c \@requires_extension for specific
+extension which is not in any core OpenGL version. It should be used in
+conjunction with @c \@extension command, if there is an extension providing
+the same functionality. For example:
+@code
+@requires_GL33 Extension @extension{ARB,timer_query}
+@endcode
+
+If class is marked with the command, member and related functions shouldn't be
+marked. On the other hand, if the version/extension is needed only by one
+function, only the function should be marked. If the extension is needed only
+for some functionality (not related to any member function), it should be
+noted in the description.
+
+All classes and functions using those commands are cross-referenced in page
+@ref required-extensions.
+
+@section git Git commit messages, branch and tag format
+
+It is encouraged to follow best practices of git commit messages as explained
+here: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
+
+In short, each commit message should be in this format, each line at most 72
+characters long:
+
+~~~~
+Capitalized short summary
+
+More detailed explanation text, if necessary, wrapped on multiple lines.
+
+ - Bullet points, indented with one space before (if there is preceeding
+   paragraph) and one space after the bullet, indented to have the text
+   aligned. Colons are allowed too, but not mixed.
+ - Bullet points are separated from surrounding text with blank lines.
+
+It is good to use *emphasise*, _underline_ or `code` as in Markdown, if
+necessary, but they shouldn't be overused.
+
+    Multi-line code examples are indented with four spaces, as in Markdown
+    syntax.
+~~~~
+
+Branches and tags should be named with lowercase names with words separated
+with colons (`-`), e.g. `physics-performance-tweaks`. Version tags start with
+`v`, followed by version number, e.g. `v1.0.3`.
+*/
+}

@@ -27,7 +27,7 @@ namespace Magnum { namespace Physics {
 /**
 @brief Base class for shapes
 
-See @ref CollisionDetection for brief introduction.
+See @ref collision-detection for brief introduction.
 */
 class PHYSICS_EXPORT AbstractShape {
     public:

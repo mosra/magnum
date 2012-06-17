@@ -1,13 +1,6 @@
 namespace Magnum { namespace Physics {
-/** @page CollisionDetection Collision detection system
-
-The collision detection system consists of a low-level part, consisting of
-shape collection providing collision detection and high-level part,
-consisting of rigid bodies and their groups.
-
-@subpage CollisionDetectionShapes
-
-@page CollisionDetectionShapes Shapes providing collision detection features
+/** @page collision-detection Collision detection
+@brief Collection of simple shapes for high performance collision detection.
 
 The essential thing in collision detection is to define a complex object with
 collection of simple shapes, for which it is easy to detect collisions. These

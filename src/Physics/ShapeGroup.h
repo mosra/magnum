@@ -32,7 +32,7 @@ namespace Magnum { namespace Physics {
 @brief Collider group with defined set operation
 
 Result of union, intersection, substraction or XOR of two collider objects.
-See @ref CollisionDetection for brief introduction.
+See @ref collision-detection for brief introduction.
 */
 class PHYSICS_EXPORT ShapeGroup: public AbstractShape {
     #ifndef DOXYGEN_GENERATING_OUTPUT

@@ -26,13 +26,13 @@ Features:
 
 The engine is meant to be run on OpenGL 3 capable hardware, but most of the
 functionality is working on OpenGL 2.1 hardware too. See also
-@ref RequiredExtensions.
+@ref required-extensions.
 
-@section BuildingLink Building Magnum
+@section download-build Downloading and building Magnum
 
-Guide @ref Building "how to build Magnum" on different platforms.
+Guide @ref building "how to download and build Magnum" on different platforms.
 
-@section GettingStarted Getting started
+@section getting-started Getting started
 
 Applications using %Magnum have at least two parts. One part manages OpenGL
 context using some toolkit and takes care of window resizing, mouse and
@@ -43,12 +43,28 @@ GLUT, SDL or Qt) in Contexts namespace. %Scene in %Magnum is composed of
 hierarchically connected object instances. To build the scene you need Scene
 object with assigned camera and at least one Object instance.
 
-@subsection GettingStartedExamples Tutorials and examples
+@subsection getting-started-examples Tutorials and examples
 
-The best way to get started is to @ref ExamplesTriangle "render your first triangle"
-in step-by-step tutorial. Then you can dig deeper and try
-@ref Examples "other examples", read about fundamental principles in the
-documentation or start experimenting on your own!
+The best way to get started is to @ref examples-triangle "render your first triangle"
+in step-by-step tutorial. Then you can dig deeper and try @ref example-index
+"other examples", read about fundamental principles in the documentation or
+start experimenting on your own!
+
+@subsection getting-started-hacking Hacking Magnum
+
+If you want to hack on this engine, if you spotted a bug, need an feature or
+have an awesome idea, you can get a copy of the sources from GitHub and start
+right now! There is the already mentioned guide about
+@ref building "how to download and build Magnum" and also guide about
+@ref coding-style "coding style and best practices" which you should follow to
+make the library as consistent and maintainable as possible.
+
+Feel free to get more information or contact the author at:
+
+- GitHub - https://github.com/mosra/magnum
+- Website - http://mosra.cz/blog/
+- E-mail - mosra@centrum.cz
+- Jabber - mosra@jabbim.cz
 
 */
 }
