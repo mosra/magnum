@@ -15,7 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-/** @file
+/** @file /TypeTraits.h
  * @brief Enum Magnum::Type, class Magnum::TypeOf, Magnum::TypeInfo, Magnum::TypeTraits
  */
 
