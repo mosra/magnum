@@ -77,8 +77,8 @@ template<class Vertex, size_t vertexSize = Vertex::Size> class Clean {
                         index[ii] = (vertices[*it][ii]+moved[ii]-min[ii])/epsilon;
 
                     /* Try inserting the vertex into table, if it already
-                        exists, change vertex pointer of the face to already
-                        existing vertex */
+                       exists, change vertex pointer of the face to already
+                       existing vertex */
                     HashedVertex v(*it, table.size());
                     auto result = table.insert(std::pair<Math::Vector<vertexSize, size_t>, HashedVertex>(Math::Vector<vertexSize, size_t>::from(index), v));
                     *it = result.first->second.newIndex;
@@ -121,14 +121,14 @@ template<class Vertex, size_t vertexSize = Vertex::Size> class Clean {
 
 /** @ingroup mesh
 @brief %Clean the mesh
-@tparam Vertex      Vertex data type
-@tparam vertexSize  How many initial vertex fields are important (for example,
-    when dealing with perspective in 3D space, only first three fields of
-    otherwise 4D vertex are important)
-@param indices      Index array to operate on
-@param vertices     Vertex array to operate on
-@param epsilon      Epsilon value, vertices nearer than this distance will be
-    melt together.
+@tparam Vertex          Vertex data type
+@tparam vertexSize      How many initial vertex fields are important (for
+    example, when dealing with perspective in 3D space, only first three
+    fields of otherwise 4D vertex are important)
+@param[in,out] indices  Index array to operate on
+@param[in,out] vertices Vertex array to operate on
+@param[in] epsilon      Epsilon value, vertices nearer than this distance will
+    be melt together.
 
 Removes duplicate vertices from the mesh.
 */

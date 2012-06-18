@@ -91,7 +91,7 @@ class CombineIndexedArrays {
 
 /** @ingroup mesh
 @brief Combine indexed arrays
-@param indexedArrays Index and attribute arrays
+@param[in,out] indexedArrays Index and attribute arrays
 @return Array with resulting indices
 
 When you have e.g. vertex, normal and texture array, each indexed with

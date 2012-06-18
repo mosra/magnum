@@ -88,8 +88,8 @@ template<class Vertex, class Interpolator> class Subdivide {
 @brief %Subdivide the mesh
 @tparam Vertex          Vertex data type
 @tparam Interpolator    See `interpolator` function parameter
-@param indices          Index array to operate on
-@param vertices         Vertex array to operate on
+@param[in,out] indices  Index array to operate on
+@param[in,out] vertices Vertex array to operate on
 @param interpolator     Functor or function pointer which interpolates
     two adjacent vertices: `Vertex interpolator(Vertex a, Vertex b)`
 

@@ -107,9 +107,9 @@ inline std::tuple<size_t, Type, char*> compressIndices(const std::vector<unsigne
 
 /**
 @brief Compress vertex indices and write them to index buffer
-@param indices  Index array
 @param mesh     Output mesh
 @param usage    Index buffer usage
+@param indices  Index array
 
 The same as compressIndices(const std::vector<unsigned int>&), but this
 function writes the output to mesh's index buffer and updates index count and

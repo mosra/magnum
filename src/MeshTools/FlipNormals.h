@@ -46,8 +46,8 @@ void MESHTOOLS_EXPORT flipNormals(std::vector<Vector3>& normals);
 
 /**
 @brief Flip mesh normals and face winding
-@param indices      Index array to operate on
-@param normals      Normal array to operate on
+@param[in,out] indices  Index array to operate on
+@param[in,out] normals  Normal array to operate on
 
 Flips normal vectors and face winding in index array for face culling to work
 properly too. See also flipNormals(std::vector<Vector3>&) and

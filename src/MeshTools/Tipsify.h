@@ -53,9 +53,9 @@ class MESHTOOLS_EXPORT Tipsify {
 
 /** @ingroup mesh
 @brief %Tipsify the mesh
-@param indices      Indices array to operate on
-@param vertexCount  Vertex count
-@param cacheSize    Post-transform vertex cache size
+@param[in,out] indices  Indices array to operate on
+@param[in] vertexCount  Vertex count
+@param[in] cacheSize    Post-transform vertex cache size
 
 Optimizes the mesh for vertex-bound applications by rearranging its index
 array for beter usage of post-transform vertex cache. Algorithm used:
