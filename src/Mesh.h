@@ -30,7 +30,7 @@ namespace Magnum {
 
 class Buffer;
 
-/**
+/** @ingroup rendering mesh
 @brief Base class for managing non-indexed meshes
 
 @todo Support for normalized values (e.g. for color as char[4] passed to

@@ -24,6 +24,10 @@
 
 namespace Magnum { namespace MeshTools {
 
+/** @addtogroup mesh
+ * @{
+ */
+
 /**
 @brief Flip face winding
 
@@ -56,6 +60,8 @@ inline void flipNormals(std::vector<unsigned int>& indices, std::vector<Vector3>
     flipFaceWinding(indices);
     flipNormals(normals);
 }
+
+/*@}*/
 
 }}
 

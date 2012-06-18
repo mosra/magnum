@@ -73,6 +73,10 @@ class CompressIndices {
 }
 #endif
 
+/** @addtogroup mesh
+ * @{
+ */
+
 /**
 @brief Compress vertex indices
 @param indices  Index array
@@ -114,6 +118,8 @@ type in the mesh accordingly.
 inline void compressIndices(IndexedMesh* mesh, Buffer::Usage usage, const std::vector<unsigned int>& indices) {
     return Implementation::CompressIndices{indices}(mesh, usage);
 }
+
+/*@}*/
 
 }}
 

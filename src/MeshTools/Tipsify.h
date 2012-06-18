@@ -51,7 +51,7 @@ class MESHTOOLS_EXPORT Tipsify {
 }
 #endif
 
-/**
+/** @ingroup mesh
 @brief %Tipsify the mesh
 @param indices      Indices array to operate on
 @param vertexCount  Vertex count

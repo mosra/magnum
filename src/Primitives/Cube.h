@@ -23,7 +23,9 @@
 
 namespace Magnum { namespace Primitives {
 
-/** @brief %Cube primitive */
+/** @ingroup mesh
+@brief %Cube primitive
+*/
 class Cube: public Trade::MeshData {
     public:
         /** @brief Constructor */

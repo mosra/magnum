@@ -27,7 +27,7 @@
 
 namespace Magnum {
 
-/**
+/** @ingroup rendering
 @brief Base class for shaders
 
 @section AbstractShaderProgramSubclassing Subclassing workflow

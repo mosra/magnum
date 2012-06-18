@@ -23,6 +23,10 @@
 
 namespace Magnum {
 
+/** @addtogroup rendering
+ * @{
+ */
+
 /**
 @brief Base class for queries
 
@@ -278,6 +282,8 @@ class TimeQuery: public AbstractQuery {
             glQueryCounter(query, GL_TIMESTAMP);
         }
 };
+
+/*@}*/
 
 }
 

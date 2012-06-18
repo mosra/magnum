@@ -25,6 +25,10 @@
 
 namespace Magnum {
 
+/** @addtogroup textures
+ * @{
+ */
+
 /**
 @brief %Buffered image
 
@@ -109,6 +113,8 @@ typedef BufferedImage<2> BufferedImage2D;
 
 /** @brief Three-dimensional buffered image */
 typedef BufferedImage<3> BufferedImage3D;
+
+/*@}*/
 
 }
 

@@ -23,7 +23,7 @@
 
 namespace Magnum {
 
-/**
+/** @ingroup textures
 @brief Cube map texture array
 
 For information about usage, see CubeMapTexture documentation.

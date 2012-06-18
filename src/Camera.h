@@ -28,7 +28,7 @@
 
 namespace Magnum {
 
-/**
+/** @ingroup scene
 @brief %Camera object
  */
 class MAGNUM_EXPORT Camera: public Object {

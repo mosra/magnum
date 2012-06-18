@@ -95,6 +95,10 @@ class Interleave {
 }
 #endif
 
+/** @addtogroup mesh
+ * @{
+ */
+
 /**
 @brief %Interleave vertex attributes
 @param attributes   Attribute arrays
@@ -143,6 +147,8 @@ accordingly.
 template<class ...T> inline void interleave(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<T>&... attributes) {
     return Implementation::Interleave()(mesh, buffer, usage, attributes...);
 }
+
+/*@}*/
 
 }}
 

@@ -89,7 +89,7 @@ class CombineIndexedArrays {
 }
 #endif
 
-/**
+/** @ingroup mesh
 @brief Combine indexed arrays
 @param indexedArrays Index and attribute arrays
 @return Array with resulting indices

@@ -26,7 +26,7 @@
 
 namespace Magnum { namespace MeshTools {
 
-/**
+/** @ingroup mesh
 @brief Generate flat normals
 @param indices      Array of triangle face indexes
 @param vertices     Vertex array

@@ -23,7 +23,7 @@
 
 namespace Magnum { namespace Primitives {
 
-/**
+/** @ingroup mesh
 @brief %Plane primitive
 
 2x2 plane with normals in positive Z direction.

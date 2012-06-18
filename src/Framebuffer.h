@@ -26,7 +26,7 @@
 
 namespace Magnum {
 
-/**
+/** @ingroup textures
 @brief %Framebuffer
 
 @requires_gl30 Extension @extension{EXT,framebuffer_object}

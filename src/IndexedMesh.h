@@ -24,7 +24,7 @@
 
 namespace Magnum {
 
-/**
+/** @ingroup rendering mesh
  * @brief Indexed mesh
  */
 class MAGNUM_EXPORT IndexedMesh: public Mesh {

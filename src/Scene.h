@@ -23,7 +23,9 @@
 
 namespace Magnum {
 
-/** @brief %Scene */
+/** @ingroup scene
+@brief %Scene
+*/
 class MAGNUM_EXPORT Scene: public Object {
     public:
         /** @brief Constructor */

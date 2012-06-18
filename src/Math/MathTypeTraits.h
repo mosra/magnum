@@ -33,7 +33,7 @@
 
 namespace Magnum { namespace Math {
 
-/**
+/** @ingroup utility
 @brief Traits class for numeric types
 
 Traits classes are usable for detecting type features at compile time without

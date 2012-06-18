@@ -23,7 +23,7 @@
 
 namespace Magnum {
 
-/**
+/** @ingroup textures
 @brief Base for textures
 
 @attention Don't forget to call @ref Texture::setWrapping() "setWrapping()",
