@@ -47,7 +47,7 @@ class MeshObjectData: public ObjectData {
         inline MeshObjectData(std::vector<size_t> children, const Matrix4& transformation, size_t instance, size_t material): ObjectData(children, transformation, InstanceType::Mesh, instance), _material(material) {}
 
         /** @brief Material ID */
-        inline size_t material() { return _material; }
+        inline size_t material() const { return _material; }
 
     private:
         size_t _material;
