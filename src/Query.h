@@ -31,6 +31,7 @@ namespace Magnum {
 @brief Base class for queries
 
 See Query, SampleQuery, TimeQuery documentation for more information.
+@todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
 */
 class MAGNUM_EXPORT AbstractQuery {
     public:

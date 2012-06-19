@@ -26,7 +26,8 @@ namespace Magnum {
 /** @ingroup rendering
 @brief Class for managing buffers
 
-@todo Support for buffer copying (OpenGL 3.1, ARB_copy_buffer)
+@todo Support for buffer copying (OpenGL 3.1, @extension{ARB,copy_buffer})
+@todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
  */
 class Buffer {
     Buffer(const Buffer& other) = delete;

@@ -39,11 +39,11 @@ class Buffer;
 @requires_gl30 Extension @extension{APPLE,vertex_array_object}
 @requires_gl30 Extension @extension{EXT,gpu_shader4} (for unsigned integer attributes)
 
-@todo Support for provoking vertex (OpenGL 3.2, ARB_provoking_vertex)
-@todo Support for packed unsigned integer types for attributes (OpenGL 3.3, ARB_vertex_type_2_10_10_10_rev)
-@todo Support for fixed precision type for attributes (OpenGL 4.1, ARB_ES2_compatibility)
-@todo Support for double type for attributes (OpenGL 4.1, ARB_vertex_attrib_64bit)
-@todo Support for indirect draw buffer (OpenGL 4.0, ARB_draw_indirect)
+@todo Support for provoking vertex (OpenGL 3.2, @extension{ARB,provoking_vertex})
+@todo Support for packed unsigned integer types for attributes (OpenGL 3.3, @extension{ARB,vertex_type_2_10_10_10_rev})
+@todo Support for fixed precision type for attributes (OpenGL 4.1, @extension{ARB,ES2_compatibility})
+@todo Support for double type for attributes (OpenGL 4.1, @extension{ARB,vertex_attrib_64bit})
+@todo Support for indirect draw buffer (OpenGL 4.0, @extension{ARB,draw_indirect})
  */
 class MAGNUM_EXPORT Mesh {
     Mesh(const Mesh& other) = delete;

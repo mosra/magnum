@@ -111,7 +111,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * See AbstractShaderProgram documentation or Mesh::bindAttribute()
          * for an example.
          *
-         * @todo Support for BGRA attribute type (OpenGL 3.2, ARB_vertex_array_bgra)
+         * @todo Support for BGRA attribute type (OpenGL 3.2, @extension{ARB,vertex_array_bgra})
          */
         template<size_t i, class T> struct Attribute {
             static const size_t Location = i;   /**< Location to which the attribute is bound */
