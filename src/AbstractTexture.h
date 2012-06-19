@@ -32,8 +32,9 @@ texture, otherwise the texture will be incomplete. If you specified mipmap
 filtering in setMinificationFilter(), be sure to also either explicitly set
 all mip levels or call generateMipmap().
 
-The texture is bound via bind() and setting texture uniform on the shader to the
-texture (see AbstractShaderProgram::setUniform(GLint, const AbstractTexture*)).
+The texture is bound to shader via bind(). Texture uniform on the shader must
+also be set to particular texture layer using
+AbstractShaderProgram::setUniform(GLint, GLint).
 
 See Texture, CubeMapTexture and CubeMapTextureArray documentation for more
 information.
@@ -469,6 +470,14 @@ class MAGNUM_EXPORT AbstractTexture {
         /*@}*/
 
         /**
+         * @brief Max supported layer count
+         *
+         * At least 48.
+         * @see bind(GLint)
+         */
+        static GLint maxSupportedLayerCount();
+
+        /**
          * @brief Max supported anisotropy
          *
          * @see setMaxAnisotropy()
@@ -478,13 +487,11 @@ class MAGNUM_EXPORT AbstractTexture {
 
         /**
          * @brief Constructor
-         * @param layer     %Texture layer (number between 0 and 31)
          * @param target    Target, e.g. `GL_TEXTURE_2D`.
          *
          * Creates one OpenGL texture.
          */
-        inline AbstractTexture(GLint layer, GLenum target): _target(target), _layer(layer) {
-            glActiveTexture(GL_TEXTURE0 + layer);
+        inline AbstractTexture(GLenum target): _target(target) {
             glGenTextures(1, &texture);
         }
 
@@ -495,23 +502,19 @@ class MAGNUM_EXPORT AbstractTexture {
          */
         virtual ~AbstractTexture() = 0;
 
-        /** @brief %Texture layer */
-        inline GLint layer() const { return _layer; }
-
         /** @brief OpenGL internal texture ID */
         inline GLuint id() const { return texture; }
 
         /**
-         * @brief Bind texture for usage / rendering
+         * @brief Bind texture for rendering
          *
-         * Sets current texture as active in its texture layer. Note that
-         * only one texture can be bound to given layer.
-         *
-         * @see layer()
+         * Sets current texture as active in given layer. The layer must be
+         * between 0 and maxSupportedLayerCount(). Note that only one texture
+         * can be bound to given layer.
          */
-        inline void bind() {
-            glActiveTexture(GL_TEXTURE0 + _layer);
-            glBindTexture(_target, texture);
+        inline void bind(GLint layer) {
+            glActiveTexture(GL_TEXTURE0 + layer);
+            bind();
         }
 
         /**
@@ -582,8 +585,17 @@ class MAGNUM_EXPORT AbstractTexture {
 
         const GLenum _target;       /**< @brief Target */
 
+        /**
+         * @brief Bind texture for parameter modification
+         *
+         * Unlike bind(GLint) doesn't bind the texture to any particular
+         * layer, thus unusable for binding for rendering.
+         */
+        inline void bind() {
+            glBindTexture(_target, texture);
+        }
+
     private:
-        const GLint _layer;
         GLuint texture;
 };
 

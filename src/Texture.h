@@ -93,14 +93,13 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
 
         /**
          * @brief Constructor
-         * @param layer             %Texture layer (number between 0 and 31)
          * @param target            %Texture target. If not set, default value
          *      is `Target::Texture1D`, `Target::Texture2D` or
          *      `Target::Texture3D` based on dimension count.
          *
          * Creates one OpenGL texture.
          */
-        inline Texture(GLint layer = 0, Target target = DataHelper<Dimensions>::target()): AbstractTexture(layer, static_cast<GLenum>(target)) {}
+        inline Texture(Target target = DataHelper<Dimensions>::target()): AbstractTexture(static_cast<GLenum>(target)) {}
 
         /** @brief %Texture target */
         inline constexpr Target target() const { return static_cast<Target>(_target); }

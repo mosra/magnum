@@ -22,8 +22,6 @@
 #include <map>
 
 #include "Shader.h"
-#include "AbstractTexture.h"
-#include "BufferedTexture.h"
 
 namespace Magnum {
 
@@ -34,33 +32,44 @@ namespace Magnum {
 
 This class is designed to be used via subclassing. Subclasses define these
 functions and properties:
- - **Attribute location** typedefs defining locations and types for attribute
-   binding with Mesh::bindAttribute(), for example:
+ - <strong>%Attribute location</strong> typedefs defining locations and types
+   for attribute binding with Mesh::bindAttribute(), for example:
 @code
 typedef Attribute<0, Vector4> Vertex;
 typedef Attribute<1, Vector3> Normal;
 typedef Attribute<2, Vector2> TextureCoords;
 @endcode
+ - **Layers for texture uniforms** to which the textures will be bound before
+   rendering, for example:
+@code
+static const GLint DiffuseTextureLayer = 0;
+static const GLint SpecularTextureLayer = 1;
+@endcode
  - **Constructor**, which attaches particular shaders, links the program and
    gets uniform locations, for example:
 @code
-// Load shaders from file and attach them to the program
-attachShader(Shader::fromFile(Shader::Vertex, "PhongShader.vert"));
-attachShader(Shader::fromFile(Shader::Fragment, "PhongShader.frag"));
+MyShader() {
+    // Load shaders from file and attach them to the program
+    attachShader(Shader::fromFile(Shader::Vertex, "PhongShader.vert"));
+    attachShader(Shader::fromFile(Shader::Fragment, "PhongShader.frag"));
 
-// Link
-link();
+    // Link
+    link();
 
-// Get locations of uniforms
-transformationMatrixUniform = uniformLocation("transformationMatrix");
-projectionMatrixUniform = uniformLocation("projectionMatrix");
-// more uniforms like light location, colors etc.
+    // Get locations of uniforms
+    transformationMatrixUniform = uniformLocation("transformationMatrix");
+    projectionMatrixUniform = uniformLocation("projectionMatrix");
+    // more uniforms like light location, colors etc.
+}
 @endcode
- - **Uniform binding functions**, which set shader uniforms using
-   setUniform() functions. Example:
+ - **Uniform setting functions**, which will provide public interface for
+   protected setUniform() functions. Example:
 @code
 void setTransformationMatrixUniform(const Matrix4& matrix) {
     setUniform(transformationMatrixUniform, matrix);
+}
+void setProjectionMatrixUniform(const Matrix4& matrix) {
+    setUniform(projectionMatrixUniform, matrix);
 }
 @endcode
 
@@ -89,11 +98,40 @@ bindAttributeLocation(TextureCoords::Location, "textureCoords");
 // Link...
 @endcode
 
+@subsection AbstractShaderProgramTextureLayer Binding texture layer uniforms
+The preferred workflow is to specify texture layers directly in the shader
+code, e.g.:
+@code
+layout(binding = 0) uniform sampler2D diffuseTexture;
+layout(binding = 1) uniform sampler2D specularTexture;
+@endcode
+@requires_gl42 Extension @extension{ARB,shading_language_420pack} (for explicit
+    texture layer binding instead of using setUniform(GLint, GLint))
+
+If you don't have the required extension (or if you want to change the layer
+later), you can set the texture layer uniform using setUniform(GLint, GLint):
+@code
+use();
+setUniform(uniformLocation("diffuseTexture"), DiffuseTextureLayer);
+setUniform(uniformLocation("specularTexture"), SpecularTextureLayer);
+@endcode
+
 @section AbstractShaderProgramRenderingWorkflow Rendering workflow
 
-Basic workflow with AbstractShaderProgram subclasses is: instancing the class
-(once at the beginning), then in every frame calling use(), setting uniforms
-and calling Mesh::draw() (see its documentation for more).
+Basic workflow with %AbstractShaderProgram subclasses is: instancing the class
+(once at the beginning), then in Object::draw() reimplementation calling
+use(), setting uniforms, binding required textures to their respective layers
+using AbstractTexture::bind(GLint) and calling Mesh::draw(). For example:
+@code
+void draw(const Magnum::Matrix4& transformationMatrix, Magnum::Camera* camera) {
+    shader.use();
+    shader.setTransformationMatrixUniform(transformationMatrix);
+    shader.setProjectionMatrixUniform(camera->projectionMatrix());
+    diffuseTexture.bind(MyShader::DiffuseTextureLayer);
+    specularTexture.bind(MyShader::SpecularTextureLayer);
+    mesh.draw();
+}
+@endcode
 
 @todo Uniform arrays support
 
@@ -295,16 +333,6 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         /** @copydoc setUniform(GLint, GLint) */
         inline void setUniform(GLint location, const Matrix4& value) {
             glUniformMatrix4fv(location, 1, GL_FALSE, value.data());
-        }
-
-        /** @copydoc setUniform(GLint, GLint) */
-        inline void setUniform(GLint location, const AbstractTexture* value) {
-            setUniform(location, value->layer());
-        }
-
-        /** @copydoc setUniform(GLint, GLint) */
-        inline void setUniform(GLint location, const BufferedTexture* value) {
-            setUniform(location, value->layer());
         }
 
     private:

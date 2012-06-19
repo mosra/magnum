@@ -108,10 +108,10 @@ class BufferedTexture {
 
         /**
          * @brief Constructor
-         * @param layer     %Texture layer (number between 0 and 31)
+         *
+         * Creates one OpenGL texture.
          */
-        inline BufferedTexture(GLint layer = 0): _layer(layer) {
-            glActiveTexture(GL_TEXTURE0 + layer);
+        inline BufferedTexture() {
             glGenTextures(1, &texture);
         }
 
@@ -120,13 +120,10 @@ class BufferedTexture {
             glDeleteTextures(1, &texture);
         }
 
-        /** @copydoc AbstractTexture::layer() */
-        inline GLint layer() const { return _layer; }
-
-        /** @copydoc AbstractTexture::bind() */
-        inline void bind() const {
-            glActiveTexture(GL_TEXTURE0 + _layer);
-            glBindTexture(GL_TEXTURE_BUFFER, texture);
+        /** @copydoc AbstractTexture::bind(GLint) */
+        inline void bind(GLint layer) {
+            glActiveTexture(GL_TEXTURE0 + layer);
+            bind();
         }
 
         /**
@@ -144,8 +141,12 @@ class BufferedTexture {
         }
 
     private:
-        GLint _layer;
         GLuint texture;
+
+        /** @copydoc AbstractTexture::bind() */
+        inline void bind() {
+            glBindTexture(GL_TEXTURE_BUFFER, texture);
+        }
 };
 
 /** @relates BufferedTexture

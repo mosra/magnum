@@ -70,11 +70,10 @@ class CubeMapTexture: public AbstractTexture {
 
         /**
          * @brief Constructor
-         * @param layer     Texture layer (number between 0 and 31)
          *
          * Creates one cube map OpenGL texture.
          */
-        inline CubeMapTexture(GLint layer = 0): AbstractTexture(layer, GL_TEXTURE_CUBE_MAP) {}
+        inline CubeMapTexture(): AbstractTexture(GL_TEXTURE_CUBE_MAP) {}
 
         /**
          * @copydoc Texture::setWrapping()
