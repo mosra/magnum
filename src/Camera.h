@@ -110,7 +110,7 @@ class MAGNUM_EXPORT Camera: public Object {
         Camera(Object* parent = nullptr);
 
         /** @brief Aspect ratio policy */
-        AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }
+        inline AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }
 
         /** @brief Set aspect ratio policy */
         void setAspectRatioPolicy(AspectRatioPolicy policy) { _aspectRatioPolicy = policy; }
