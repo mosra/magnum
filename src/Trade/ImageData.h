@@ -59,7 +59,7 @@ template<size_t imageDimensions> class ImageData: public AbstractImage {
         inline ImageData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _dimensions(dimensions), _data(reinterpret_cast<char*>(data)) {}
 
         /** @brief Destructor */
-        inline virtual ~ImageData() { delete[] _data; }
+        inline ~ImageData() { delete[] _data; }
 
         /** @brief %Image dimensions */
         inline const Math::Vector<Dimensions, GLsizei>& dimensions() const { return _dimensions; }
