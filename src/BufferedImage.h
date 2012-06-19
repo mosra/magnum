@@ -50,7 +50,7 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
         BufferedImage(Components components, ComponentType type): AbstractImage(components, type), _buffer(Buffer::Target::PixelPack) {}
 
         /** @brief %Image dimensions */
-        inline Math::Vector<Dimensions, GLsizei> dimensions() const { return _dimensions; }
+        inline constexpr Math::Vector<Dimensions, GLsizei> dimensions() const { return _dimensions; }
 
         /**
          * @brief Data

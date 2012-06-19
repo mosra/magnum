@@ -103,7 +103,7 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
         inline Texture(GLint layer = 0, Target target = DataHelper<Dimensions>::target()): AbstractTexture(layer, static_cast<GLenum>(target)) {}
 
         /** @brief %Texture target */
-        inline Target target() const { return static_cast<Target>(_target); }
+        inline constexpr Target target() const { return static_cast<Target>(_target); }
 
         /**
          * @brief Set wrapping

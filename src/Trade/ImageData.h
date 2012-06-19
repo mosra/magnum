@@ -62,10 +62,10 @@ template<size_t imageDimensions> class ImageData: public AbstractImage {
         inline ~ImageData() { delete[] _data; }
 
         /** @brief %Image dimensions */
-        inline const Math::Vector<Dimensions, GLsizei>& dimensions() const { return _dimensions; }
+        inline constexpr const Math::Vector<Dimensions, GLsizei>& dimensions() const { return _dimensions; }
 
         /** @brief Pointer to raw data */
-        inline const void* data() const { return _data; }
+        inline constexpr const void* data() const { return _data; }
 
     private:
         Math::Vector<Dimensions, GLsizei> _dimensions;
