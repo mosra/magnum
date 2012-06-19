@@ -45,7 +45,7 @@ class AbstractMaterialData {
         inline AbstractMaterialData(Type type): _type(type) {}
 
         /** @brief Destructor */
-        virtual ~AbstractMaterialData() {}
+        virtual ~AbstractMaterialData() = 0;
 
         /** @brief Material type */
         inline Type type() const { return _type; }
@@ -53,6 +53,8 @@ class AbstractMaterialData {
     private:
         Type _type;
 };
+
+inline AbstractMaterialData::~AbstractMaterialData() {}
 
 }}
 
