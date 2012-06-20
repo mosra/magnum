@@ -17,7 +17,7 @@
 
 #include <cstddef>
 
-#include "Visibility.h"
+#include "visibility.h"
 
 /** @file
  * @brief Math constants and utilities

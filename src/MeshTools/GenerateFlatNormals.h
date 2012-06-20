@@ -22,7 +22,7 @@
 #include <tuple>
 
 #include "Magnum.h"
-#include "MeshToolsVisibility.h"
+#include "visibilityMeshTools.h"
 
 namespace Magnum { namespace MeshTools {
 

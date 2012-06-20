@@ -11,10 +11,17 @@ Nothing is worse than rule that hurts productivity instead of improving it.
 
 @section cpp C++ code
 
+@subsection cpp-files File naming and directory structure
+
 All C++ header and source files are named after the class they contain with no
 case change. Thus there should be only one class per file, but if the classes
 are closely related and small enough, you can make an exception (see Query.h
 or TypeTraits.h for example).
+
+Supporting headers (not relevant to end user), such as various `configure.h`,
+`visibility.h` etc., which are used only internally and don't contain any
+code, should have first letter of the name lowercased to distinguish them from
+API headers.
 
 Code in the root Magnum namespace is in `src/` directory, each subnamespace is
 in its own subdirectory. Unit tests are in `Test` subnamespace (and

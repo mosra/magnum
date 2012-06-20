@@ -1,5 +1,5 @@
-#ifndef Magnum_MeshTools_MeshToolsVisibility_h
-#define Magnum_MeshTools_MeshToolsVisibility_h
+#ifndef Magnum_visibility_h
+#define Magnum_visibility_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,13 +16,15 @@
 */
 
 #ifdef _WIN32
-    #ifdef MagnumMeshTools_EXPORTS
-        #define MESHTOOLS_EXPORT __declspec(dllexport)
+    #ifdef Magnum_EXPORTS
+        #define MAGNUM_EXPORT __declspec(dllexport)
     #else
-        #define MESHTOOLS_EXPORT __declspec(dllimport)
+        #define MAGNUM_EXPORT __declspec(dllimport)
     #endif
+    #define MAGNUM_LOCAL
 #else
-    #define MESHTOOLS_EXPORT __attribute__ ((visibility ("default")))
+    #define MAGNUM_EXPORT __attribute__ ((visibility ("default")))
+    #define MAGNUM_LOCAL __attribute__ ((visibility ("hidden")))
 #endif
 
 #endif

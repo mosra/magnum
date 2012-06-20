@@ -22,7 +22,7 @@
 #include <cstddef>
 #include <vector>
 
-#include "MeshToolsVisibility.h"
+#include "visibilityMeshTools.h"
 
 namespace Magnum { namespace MeshTools {
 
