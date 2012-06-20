@@ -40,6 +40,7 @@ See Texture, CubeMapTexture and CubeMapTextureArray documentation for more
 information.
 
 @todo Add glPixelStore encapsulation
+@todo Texture copying
 */
 class MAGNUM_EXPORT AbstractTexture {
     AbstractTexture(const AbstractTexture& other) = delete;
