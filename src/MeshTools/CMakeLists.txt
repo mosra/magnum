@@ -3,7 +3,10 @@ set(MagnumMeshTools_SRCS
     Tipsify.cpp
 )
 add_library(MagnumMeshToolsObjects OBJECT ${MagnumMeshTools_SRCS})
-set_target_properties(MagnumMeshToolsObjects PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
+
+# Set shared library flags for the objects, as they will be part of shared lib
+# TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
+set_target_properties(MagnumMeshToolsObjects PROPERTIES COMPILE_FLAGS "-DMagnumMeshToolsObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
 # Files compiled with different flags for main library and unit test library
 set(MagnumMeshTools_GracefulAssert_SRCS

@@ -9,7 +9,6 @@ set(MagnumPhysics_SRCS
 )
 
 add_library(MagnumPhysics SHARED ${MagnumPhysics_SRCS})
-set_target_properties(MagnumPhysics PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
 
 target_link_libraries(MagnumPhysics Magnum)
 

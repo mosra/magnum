@@ -16,7 +16,7 @@
 */
 
 #ifdef _WIN32
-    #ifdef MagnumMeshTools_EXPORTS
+    #if defined(MagnumMeshTools_EXPORTS) || defined(MagnumMeshToolsObjects_EXPORTS)
         #define MESHTOOLS_EXPORT __declspec(dllexport)
     #else
         #define MESHTOOLS_EXPORT __declspec(dllimport)

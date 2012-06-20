@@ -16,7 +16,7 @@
 */
 
 #ifdef _WIN32
-    #ifdef Magnum_EXPORTS
+    #if defined(Magnum_EXPORTS) || defined(MagnumObjects_EXPORTS)
         #define MAGNUM_EXPORT __declspec(dllexport)
     #else
         #define MAGNUM_EXPORT __declspec(dllimport)
