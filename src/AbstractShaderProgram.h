@@ -181,6 +181,38 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
     protected:
         /**
+         * @brief Program parameters
+         *
+         * @see setParameter()
+         */
+        enum class Parameter: GLenum {
+            /**
+             * Allow retrieving program binary. Disabled by default.
+             *
+             * @requires_gl41 Extension @extension{ARB,get_program_binary}
+             */
+            RetrievableBinary = GL_PROGRAM_BINARY_RETRIEVABLE_HINT,
+
+            /**
+             * Allow the program to be bound to individual pipeline stages.
+             * Disabled by default.
+             *
+             * @requires_gl41 Extension @extension{ARB,separate_shader_objects}
+             */
+            Separable = GL_PROGRAM_SEPARABLE
+        };
+
+        /**
+         * @brief Set program parameter
+         *
+         * @note This function should be called after attachShader() calls and
+         *      before link().
+         */
+        inline void setParameter(Parameter parameter, bool value) {
+            glProgramParameteri(program, static_cast<GLenum>(parameter), value ? GL_TRUE : GL_FALSE);
+        }
+
+        /**
          * @brief Load shader
          * @return False if the shader wasn't successfully compiled, true
          *      otherwise.
@@ -202,8 +234,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *
          * Binds attribute to location which is be used later for binding
          * vertex buffers. Preferred usage is to
-         * @note This function should be called between attachShader() calls
-         *      and link().
+         * @note This function should be called after attachShader() calls and
+         *      before link().
          * @deprecated Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgramAttributeLocation "class documentation"
@@ -216,8 +248,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @param location      Location
          * @param name          Fragment output variable name
          *
-         * @note This function should be called between attachShader() calls
-         *      and link().
+         * @note This function should be called after attachShader() calls and
+         *      before link().
          * @deprecated Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgramAttributeLocation "class documentation"
