@@ -43,15 +43,6 @@ class MAGNUM_EXPORT Shader {
             Vertex = GL_VERTEX_SHADER,      /**< Vertex shader */
 
             /**
-             * Geometry shader
-             *
-             * @requires_gl32 Extension @extension{ARB,geometry_shader4}
-             */
-            Geometry = GL_GEOMETRY_SHADER,
-
-            Fragment = GL_FRAGMENT_SHADER,  /**< Fragment shader */
-
-            /**
              * Tesselation control shader
              *
              * @requires_gl40 Extension @extension{ARB,tessellation_shader}
@@ -63,7 +54,16 @@ class MAGNUM_EXPORT Shader {
              *
              * @requires_gl40 Extension @extension{ARB,tessellation_shader}
              */
-            TesselationEvaluation = GL_TESS_EVALUATION_SHADER
+            TesselationEvaluation = GL_TESS_EVALUATION_SHADER,
+
+            /**
+             * Geometry shader
+             *
+             * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+             */
+            Geometry = GL_GEOMETRY_SHADER,
+
+            Fragment = GL_FRAGMENT_SHADER   /**< Fragment shader */
         };
 
         /** @brief %Shader state */
