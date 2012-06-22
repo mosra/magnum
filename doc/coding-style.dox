@@ -123,8 +123,9 @@ namespace Math {
 @subsubsection cpp-classes Class and structure declarations
 
 Class and structure protection levels are ordered as following: first friend
-declarations, then public members, then protected members and finally private
-members, so class public interface is easy to spot at the top of the file.
+declarations, then deleted copy/move constructors and assignment operators,
+then public members, then protected members and finally private members, so
+class public interface is easy to spot at the top of the file.
 
 Members are ordered as following: first classes and enums, then static
 functions, then non-static functions, then static variables, then non-static
