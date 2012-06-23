@@ -21,6 +21,7 @@
 
 #include "PluginManager/Plugin.h"
 #include "ImageData.h"
+#include "Set.h"
 
 namespace Magnum { namespace Trade {
 
@@ -52,20 +53,24 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
     PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.1")
 
     public:
-        /** @brief Features supported by this importer */
-        enum Feature {
+        /**
+         * @brief Features supported by this importer
+         *
+         * @see Features, features()
+         */
+        enum class Feature {
             OpenFile = 0x01,    /**< Can open files specified by filename */
             OpenStream = 0x02   /**< Can open files from input streams */
         };
 
+        /** @brief Set of features supported by this importer */
+        typedef Set<Feature, int> Features;
+
         /** @brief Constructor */
         inline AbstractImporter(Corrade::PluginManager::AbstractPluginManager* manager = nullptr, const std::string& plugin = ""): Plugin(manager, plugin) {}
 
-        /**
-         * @brief Features supported by this importer
-         * @return OR-ed combination of values from Feature enum.
-         */
-        virtual int features() const = 0;
+        /** @brief Features supported by this importer */
+        virtual Features features() const = 0;
 
         /**
          * @brief Open file
@@ -223,6 +228,8 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
 
         /*@}*/
 };
+
+SET_OPERATORS(AbstractImporter::Features)
 
 }}
 
