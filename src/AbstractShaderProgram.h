@@ -134,7 +134,7 @@ void draw(const Magnum::Matrix4& transformationMatrix, Magnum::Camera* camera) {
 @endcode
 
 @todo Uniform arrays support
-
+@todo DSA for uniforms - glProgramUniform*() (OpenGL 4.1, @extension{ARB,separate_shader_objects})
  */
 class MAGNUM_EXPORT AbstractShaderProgram {
     AbstractShaderProgram(const AbstractShaderProgram& other) = delete;
