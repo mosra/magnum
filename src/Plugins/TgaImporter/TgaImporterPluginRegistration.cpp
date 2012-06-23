@@ -16,4 +16,4 @@
 #include "TgaImporter.h"
 
 PLUGIN_REGISTER(TgaImporter, Magnum::Trade::TgaImporter::TgaImporter,
-                "cz.mosra.magnum.Trade.AbstractImporter/0.1")
+                "cz.mosra.magnum.Trade.AbstractImporter/0.2")

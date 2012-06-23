@@ -100,7 +100,7 @@ void TgaImporter::close() {
     _image = nullptr;
 }
 
-ImageData2D* TgaImporter::image2D(size_t id) {
+ImageData2D* TgaImporter::image2D(unsigned int id) {
     return _image;
 }
 

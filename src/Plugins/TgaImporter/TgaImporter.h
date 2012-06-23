@@ -44,14 +44,14 @@ class TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         TgaImporter(Corrade::PluginManager::AbstractPluginManager* manager = 0, const std::string& plugin = ""): AbstractImporter(manager, plugin), _image(nullptr) {}
         inline virtual ~TgaImporter() { close(); }
 
-        inline int features() const { return OpenFile|OpenStream; }
+        inline Features features() const { return Feature::OpenFile|Feature::OpenStream; }
 
         bool open(std::istream& in);
         bool open(const std::string& filename);
         void close();
 
-        inline size_t image2DCount() const { return _image ? 1 : 0; }
-        ImageData2D* image2D(size_t id);
+        inline unsigned int image2DCount() const { return _image ? 1 : 0; }
+        ImageData2D* image2D(unsigned int id);
 
         #pragma pack(1)
         /** @brief TGA file header */
