@@ -40,7 +40,8 @@ class ObjectData {
         enum class InstanceType {
             Camera,     /**< Camera instance (see CameraData) */
             Light,      /**< Light instance (see LightData) */
-            Mesh        /**< Mesh instance (see MeshData) */
+            Mesh,       /**< Mesh instance (see MeshData) */
+            Empty       /**< Empty */
         };
 
         /**
@@ -51,7 +52,15 @@ class ObjectData {
          * @param instanceType      Instance type
          * @param instanceId        Instance ID
          */
-        inline ObjectData(const std::string& name, std::vector<unsigned int> children, const Matrix4& transformation, InstanceType instanceType, unsigned int instanceId): _name(name), _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
+        inline ObjectData(const std::string& name, const std::vector<unsigned int>& children, const Matrix4& transformation, InstanceType instanceType, unsigned int instanceId): _name(name), _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
+
+        /**
+         * @brief Constructor for empty instance
+         * @param name              Object name
+         * @param children          Child objects
+         * @param transformation    Transformation (relative to parent)
+         */
+        inline ObjectData(const std::string& name, const std::vector<unsigned int>& children, const Matrix4& transformation): _name(name), _children(children), _transformation(transformation), _instanceType(InstanceType::Empty), _instanceId(-1) {}
 
         /** @brief Destructor */
         inline virtual ~ObjectData() {}
@@ -79,14 +88,14 @@ class ObjectData {
          * @return ID of given camera / light / mesh etc., specified by
          *      instanceType()
          */
-        inline unsigned int instanceId() const { return _instanceId; }
+        inline int instanceId() const { return _instanceId; }
 
     private:
         std::string _name;
         std::vector<unsigned int> _children;
         Matrix4 _transformation;
         InstanceType _instanceType;
-        unsigned int _instanceId;
+        int _instanceId;
 };
 
 }}
