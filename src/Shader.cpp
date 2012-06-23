@@ -100,8 +100,8 @@ GLuint Shader::compile() {
             case Type::Vertex:      err << "vertex";        break;
             case Type::Geometry:    err << "geometry";      break;
             case Type::Fragment:    err << "fragment";      break;
-            case Type::TesselationControl: err << "tesselation control"; break;
-            case Type::TesselationEvaluation: err << "tesselation evaluation"; break;
+            case Type::TessellationControl: err << "tessellation control"; break;
+            case Type::TessellationEvaluation: err << "tessellation evaluation"; break;
         }
 
         /* Show error log and delete shader */
