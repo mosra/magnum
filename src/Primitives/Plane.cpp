@@ -19,7 +19,7 @@ using namespace std;
 
 namespace Magnum { namespace Primitives {
 
-Plane::Plane(): MeshData(Mesh::Primitive::TriangleStrip, nullptr, {new vector<Vector4>{
+Plane::Plane(): MeshData("", Mesh::Primitive::TriangleStrip, nullptr, {new vector<Vector4>{
     {1.0f, -1.0f, 0.0f},
     {1.0f, 1.0f, 0.0f},
     {-1.0f, -1.0f, 0.0f},

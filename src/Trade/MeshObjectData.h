@@ -37,6 +37,7 @@ class MeshObjectData: public ObjectData {
     public:
         /**
          * @brief Constructor
+         * @param name              %Mesh object name
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          * @param instance          Instance ID
@@ -44,7 +45,7 @@ class MeshObjectData: public ObjectData {
          *
          * Creates object with mesh instance type.
          */
-        inline MeshObjectData(std::vector<unsigned int> children, const Matrix4& transformation, unsigned int instance, unsigned int material): ObjectData(children, transformation, InstanceType::Mesh, instance), _material(material) {}
+        inline MeshObjectData(const std::string& name, const std::vector<unsigned int>& children, const Matrix4& transformation, unsigned int instance, unsigned int material): ObjectData(name, children, transformation, InstanceType::Mesh, instance), _material(material) {}
 
         /** @brief Material ID */
         inline unsigned int material() const { return _material; }

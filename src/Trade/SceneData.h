@@ -19,6 +19,7 @@
  * @brief Class Magnum::Trade::SceneData
  */
 
+#include <string>
 #include <vector>
 
 namespace Magnum { namespace Trade {
@@ -35,14 +36,19 @@ class MAGNUM_EXPORT SceneData {
     public:
         /**
          * @brief Constructor
+         * @param name      %Scene name
          * @param children  Child objects
          */
-        inline SceneData(const std::vector<unsigned int>& children): _children(children) {}
+        inline SceneData(const std::string& name, const std::vector<unsigned int>& children): _name(name), _children(children) {}
+
+        /** @brief %Scene name */
+        inline std::string name() const { return _name; }
 
         /** @brief Child objects */
         inline const std::vector<unsigned int>& children() const { return _children; }
 
     private:
+        std::string _name;
         std::vector<unsigned int> _children;
 };
 

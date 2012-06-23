@@ -19,6 +19,8 @@
  * @brief Class Magnum::Trade::CameraData
  */
 
+#include <string>
+
 namespace Magnum { namespace Trade {
 
 /**
@@ -29,6 +31,19 @@ class MAGNUM_EXPORT CameraData {
     CameraData(CameraData&& other) = delete;
     CameraData& operator=(const CameraData& other) = delete;
     CameraData& operator=(CameraData&& other) = delete;
+
+    public:
+        /**
+         * @brief Constructor
+         * @param name      %Camera name
+         */
+        inline CameraData(const std::string& name): _name(name) {}
+
+        /** @brief %Camera name */
+        inline std::string name() const { return _name; }
+
+    private:
+        std::string _name;
 };
 
 }}

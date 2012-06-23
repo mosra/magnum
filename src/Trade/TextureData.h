@@ -19,6 +19,8 @@
  * @brief Class Magnum::Trade::TextureData
  */
 
+#include <string>
+
 namespace Magnum { namespace Trade {
 
 /**
@@ -29,6 +31,19 @@ class MAGNUM_EXPORT TextureData {
     TextureData(TextureData&& other) = delete;
     TextureData& operator=(const TextureData& other) = delete;
     TextureData& operator=(TextureData&& other) = delete;
+
+    public:
+        /**
+         * @brief Constructor
+         * @param name      %Texture name
+         */
+        inline TextureData(const std::string& name): _name(name) {}
+
+        /** @brief %Texture name */
+        inline std::string name() const { return _name; }
+
+    private:
+        std::string _name;
 };
 
 }}

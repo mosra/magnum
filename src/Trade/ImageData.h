@@ -36,6 +36,7 @@ template<size_t imageDimensions> class ImageData: public AbstractImage {
 
         /**
          * @brief Constructor
+         * @param name              %Image name
          * @param dimensions        %Image dimensions
          * @param components        Color components. Data type is detected
          *      from passed data array.
@@ -44,10 +45,11 @@ template<size_t imageDimensions> class ImageData: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        template<class T> inline ImageData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _dimensions(dimensions), _data(reinterpret_cast<char*>(data)) {}
+        template<class T> inline ImageData(const std::string& name, const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _name(name), _dimensions(dimensions), _data(reinterpret_cast<char*>(data)) {}
 
         /**
          * @brief Constructor
+         * @param name              %Image name
          * @param dimensions        %Image dimensions
          * @param components        Color components
          * @param type              Data type
@@ -56,10 +58,13 @@ template<size_t imageDimensions> class ImageData: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        inline ImageData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _dimensions(dimensions), _data(reinterpret_cast<char*>(data)) {}
+        inline ImageData(const std::string& name, const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _name(name), _dimensions(dimensions), _data(reinterpret_cast<char*>(data)) {}
 
         /** @brief Destructor */
         inline ~ImageData() { delete[] _data; }
+
+        /** @brief %Image name */
+        inline std::string name() const { return _name; }
 
         /** @brief %Image dimensions */
         inline constexpr const Math::Vector<Dimensions, GLsizei>& dimensions() const { return _dimensions; }
@@ -68,6 +73,7 @@ template<size_t imageDimensions> class ImageData: public AbstractImage {
         inline constexpr const void* data() const { return _data; }
 
     private:
+        std::string _name;
         Math::Vector<Dimensions, GLsizei> _dimensions;
         char* _data;
 };

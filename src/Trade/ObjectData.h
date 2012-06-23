@@ -45,15 +45,19 @@ class ObjectData {
 
         /**
          * @brief Constructor
+         * @param name              Object name
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          * @param instanceType      Instance type
          * @param instanceId        Instance ID
          */
-        inline ObjectData(std::vector<unsigned int> children, const Matrix4& transformation, InstanceType instanceType, unsigned int instanceId): _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
+        inline ObjectData(const std::string& name, std::vector<unsigned int> children, const Matrix4& transformation, InstanceType instanceType, unsigned int instanceId): _name(name), _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
 
         /** @brief Destructor */
         inline virtual ~ObjectData() {}
+
+        /** @brief %Object name */
+        inline std::string name() const { return _name; }
 
         /** @brief Child objects */
         inline std::vector<unsigned int>& children() { return _children; }
@@ -78,6 +82,7 @@ class ObjectData {
         inline unsigned int instanceId() const { return _instanceId; }
 
     private:
+        std::string _name;
         std::vector<unsigned int> _children;
         Matrix4 _transformation;
         InstanceType _instanceType;

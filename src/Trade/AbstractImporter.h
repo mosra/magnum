@@ -116,6 +116,14 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
         virtual inline unsigned int sceneCount() const { return 0; }
 
         /**
+         * @brief %Scene ID for given name
+         *
+         * If no scene for given name exists, returns -1.
+         * @see SceneData::name()
+         */
+        virtual inline int sceneForName(const std::string& name) { return -1; }
+
+        /**
          * @brief %Scene
          * @param id        %Scene ID, from range [0, sceneCount()).
          *
@@ -127,6 +135,14 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
         virtual inline unsigned int lightCount() const { return 0; }
 
         /**
+         * @brief %Light ID for given name
+         *
+         * If no light for given name exists, returns -1.
+         * @see LightData::name()
+         */
+        virtual inline int lightForName(const std::string& name) { return -1; }
+
+        /**
          * @brief %Light
          * @param id        %Light ID, from range [0, lightCount()).
          *
@@ -136,6 +152,14 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
 
         /** @brief %Camera count */
         virtual inline unsigned int cameraCount() const { return 0; }
+
+        /**
+         * @brief %Camera ID for given name
+         *
+         * If no camera for given name exists, returns -1.
+         * @see CameraData::name()
+         */
+        virtual inline int cameraForName(const std::string& name) { return -1; }
 
         /**
          * @brief %Camera
@@ -150,6 +174,14 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
         virtual inline unsigned int objectCount() const { return 0; }
 
         /**
+         * @brief %Object ID for given name
+         *
+         * If no scene for given name exists, returns -1.
+         * @see ObjectData::name()
+         */
+        virtual inline int objectForName(const std::string& name) { return -1; }
+
+        /**
          * @brief %Object
          * @param id        %Object ID, from range [0, objectCount()).
          *
@@ -162,6 +194,14 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
         virtual inline unsigned int meshCount() const { return 0; }
 
         /**
+         * @brief %Mesh ID for given name
+         *
+         * If no mesh for given name exists, returns -1.
+         * @see MeshData::name()
+         */
+        virtual inline int meshForName(const std::string& name) { return -1; }
+
+        /**
          * @brief %Mesh
          * @param id        %Mesh ID, from range [0, meshCount()).
          *
@@ -171,6 +211,14 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
 
         /** @brief Material count */
         virtual inline unsigned int materialCount() const { return 0; }
+
+        /**
+         * @brief Material ID for given name
+         *
+         * If no material for given name exists, returns -1.
+         * @see AbstractMaterialData::name()
+         */
+        virtual inline int materialForName(const std::string& name) { return -1; }
 
         /**
          * @brief Material
@@ -185,6 +233,14 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
         virtual inline unsigned int textureCount() const { return 0; }
 
         /**
+         * @brief %Texture ID for given name
+         *
+         * If no texture for given name exists, returns -1.
+         * @see TextureData::name()
+         */
+        virtual inline int textureForName(const std::string& name) { return -1; }
+
+        /**
          * @brief %Texture
          * @param id        %Texture ID, from range [0, textureCount()).
          *
@@ -195,6 +251,14 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
 
         /** @brief One-dimensional image count */
         virtual inline unsigned int image1DCount() const { return 0; }
+
+        /**
+         * @brief One-dimensional image ID for given name
+         *
+         * If no image for given name exists, returns -1.
+         * @see ImageData1D::name()
+         */
+        virtual inline int image1DForName(const std::string& name) { return -1; }
 
         /**
          * @brief One-dimensional image
@@ -208,6 +272,14 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
         virtual inline unsigned int image2DCount() const { return 0; }
 
         /**
+         * @brief Two-dimensional image ID for given name
+         *
+         * If no image for given name exists, returns -1.
+         * @see ImageData2D::name()
+         */
+        virtual inline int image2DForName(const std::string& name) { return -1; }
+
+        /**
          * @brief Two-dimensional image
          * @param id        %Image ID, from range [0, image2DCount()).
          *
@@ -217,6 +289,14 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
 
         /** @brief Three-dimensional image count */
         virtual inline unsigned int image3DCount() const { return 0; }
+
+        /**
+         * @brief Three-dimensional image ID for given name
+         *
+         * If no image for given name exists, returns -1.
+         * @see ImageData3D::name()
+         */
+        virtual inline int image3DForName(const std::string& name) { return -1; }
 
         /**
          * @brief Three-dimensional image

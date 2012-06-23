@@ -31,12 +31,13 @@ class PhongMaterialData: public AbstractMaterialData {
     public:
         /**
          * @brief Constructor
+         * @param name              Material name
          * @param ambientColor      Ambient color
          * @param diffuseColor      Diffuse color
          * @param specularColor     Specular color
          * @param shininess         Shininess
          */
-        PhongMaterialData(const Vector3& ambientColor, const Vector3& diffuseColor, const Vector3& specularColor, GLfloat shininess): AbstractMaterialData(Phong), _ambientColor(ambientColor), _diffuseColor(diffuseColor), _specularColor(specularColor), _shininess(shininess) {}
+        PhongMaterialData(const std::string& name, const Vector3& ambientColor, const Vector3& diffuseColor, const Vector3& specularColor, GLfloat shininess): AbstractMaterialData(name, Phong), _ambientColor(ambientColor), _diffuseColor(diffuseColor), _specularColor(specularColor), _shininess(shininess) {}
 
         /** @brief Ambient color */
         inline Vector3 ambientColor() const { return _ambientColor; }
