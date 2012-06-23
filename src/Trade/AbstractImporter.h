@@ -100,15 +100,15 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * @brief Default scene
          *
          * When there is more than one scene, returns ID of the default one.
-         * Note that this function returns 0 even if there are no scenes.
+         * If there is no default scene, returns -1.
          *
          * @note The function is not const, because the value will probably
          *      be lazy-populated.
          */
-        virtual inline size_t defaultScene() { return 0; }
+        virtual inline int defaultScene() { return -1; }
 
         /** @brief %Scene count */
-        virtual inline size_t sceneCount() const { return 0; }
+        virtual inline unsigned int sceneCount() const { return 0; }
 
         /**
          * @brief %Scene
@@ -116,10 +116,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * Returns pointer to given scene or nullptr, if no such scene exists.
          */
-        virtual inline SceneData* scene(size_t id) { return nullptr; }
+        virtual inline SceneData* scene(unsigned int id) { return nullptr; }
 
         /** @brief %Light count */
-        virtual inline size_t lightCount() const { return 0; }
+        virtual inline unsigned int lightCount() const { return 0; }
 
         /**
          * @brief %Light
@@ -127,10 +127,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * Returns pointer to given light or nullptr, if no such light exists.
          */
-        virtual inline LightData* light(size_t id) { return nullptr; }
+        virtual inline LightData* light(unsigned int id) { return nullptr; }
 
         /** @brief %Camera count */
-        virtual inline size_t cameraCount() const { return 0; }
+        virtual inline unsigned int cameraCount() const { return 0; }
 
         /**
          * @brief %Camera
@@ -139,10 +139,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * Returns pointer to given camera or nullptr, if no such camera
          * exists.
          */
-        virtual inline CameraData* camera(size_t id) { return nullptr; }
+        virtual inline CameraData* camera(unsigned int id) { return nullptr; }
 
         /** @brief %Object count */
-        virtual inline size_t objectCount() const { return 0; }
+        virtual inline unsigned int objectCount() const { return 0; }
 
         /**
          * @brief %Object
@@ -151,10 +151,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * Returns pointer to given object or nullptr, if no such object
          * exists.
          */
-        virtual inline ObjectData* object(size_t id) { return nullptr; }
+        virtual inline ObjectData* object(unsigned int id) { return nullptr; }
 
         /** @brief %Mesh count */
-        virtual inline size_t meshCount() const { return 0; }
+        virtual inline unsigned int meshCount() const { return 0; }
 
         /**
          * @brief %Mesh
@@ -162,10 +162,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * Returns pointer to given mesh or nullptr, if no such mesh exists.
          */
-        virtual inline MeshData* mesh(size_t id) { return nullptr; }
+        virtual inline MeshData* mesh(unsigned int id) { return nullptr; }
 
         /** @brief Material count */
-        virtual inline size_t materialCount() const { return 0; }
+        virtual inline unsigned int materialCount() const { return 0; }
 
         /**
          * @brief Material
@@ -174,10 +174,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * Returns pointer to given material or nullptr, if no such material
          * exists.
          */
-        virtual inline AbstractMaterialData* material(size_t id) { return nullptr; }
+        virtual inline AbstractMaterialData* material(unsigned int id) { return nullptr; }
 
         /** @brief %Texture count */
-        virtual inline size_t textureCount() const { return 0; }
+        virtual inline unsigned int textureCount() const { return 0; }
 
         /**
          * @brief %Texture
@@ -186,10 +186,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * Returns pointer to given texture or nullptr, if no such texture
          * exists.
          */
-        virtual inline TextureData* texture(size_t id) { return nullptr; }
+        virtual inline TextureData* texture(unsigned int id) { return nullptr; }
 
         /** @brief One-dimensional image count */
-        virtual inline size_t image1DCount() const { return 0; }
+        virtual inline unsigned int image1DCount() const { return 0; }
 
         /**
          * @brief One-dimensional image
@@ -197,10 +197,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * Returns pointer to given image or nullptr, if no such image exists.
          */
-        virtual inline ImageData1D* image1D(size_t id) { return nullptr; }
+        virtual inline ImageData1D* image1D(unsigned int id) { return nullptr; }
 
         /** @brief Two-dimensional image count */
-        virtual inline size_t image2DCount() const { return 0; }
+        virtual inline unsigned int image2DCount() const { return 0; }
 
         /**
          * @brief Two-dimensional image
@@ -208,10 +208,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * Returns pointer to given image or nullptr, if no such image exists.
          */
-        virtual inline ImageData2D* image2D(size_t id) { return nullptr; }
+        virtual inline ImageData2D* image2D(unsigned int id) { return nullptr; }
 
         /** @brief Three-dimensional image count */
-        virtual inline size_t image3DCount() const { return 0; }
+        virtual inline unsigned int image3DCount() const { return 0; }
 
         /**
          * @brief Three-dimensional image
@@ -219,7 +219,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * Returns pointer to given image or nullptr, if no such image exists.
          */
-        virtual inline ImageData3D* image3D(size_t id) { return nullptr; }
+        virtual inline ImageData3D* image3D(unsigned int id) { return nullptr; }
 
         /*@}*/
 };

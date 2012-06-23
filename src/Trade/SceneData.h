@@ -37,13 +37,13 @@ class MAGNUM_EXPORT SceneData {
          * @brief Constructor
          * @param children  Child objects
          */
-        inline SceneData(const std::vector<size_t>& children): _children(children) {}
+        inline SceneData(const std::vector<unsigned int>& children): _children(children) {}
 
         /** @brief Child objects */
-        inline const std::vector<size_t>& children() const { return _children; }
+        inline const std::vector<unsigned int>& children() const { return _children; }
 
     private:
-        std::vector<size_t> _children;
+        std::vector<unsigned int> _children;
 };
 
 }}

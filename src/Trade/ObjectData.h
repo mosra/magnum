@@ -50,13 +50,13 @@ class ObjectData {
          * @param instanceType      Instance type
          * @param instanceId        Instance ID
          */
-        inline ObjectData(std::vector<size_t> children, const Matrix4& transformation, InstanceType instanceType, size_t instanceId): _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
+        inline ObjectData(std::vector<unsigned int> children, const Matrix4& transformation, InstanceType instanceType, unsigned int instanceId): _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
 
         /** @brief Destructor */
         inline virtual ~ObjectData() {}
 
         /** @brief Child objects */
-        inline std::vector<size_t>& children() { return _children; }
+        inline std::vector<unsigned int>& children() { return _children; }
 
         /** @brief Transformation (relative to parent) */
         inline Matrix4 transformation() const { return _transformation; }
@@ -75,13 +75,13 @@ class ObjectData {
          * @return ID of given camera / light / mesh etc., specified by
          *      instanceType()
          */
-        inline size_t instanceId() const { return _instanceId; }
+        inline unsigned int instanceId() const { return _instanceId; }
 
     private:
-        std::vector<size_t> _children;
+        std::vector<unsigned int> _children;
         Matrix4 _transformation;
         InstanceType _instanceType;
-        size_t _instanceId;
+        unsigned int _instanceId;
 };
 
 }}

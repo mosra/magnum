@@ -44,13 +44,13 @@ class MeshObjectData: public ObjectData {
          *
          * Creates object with mesh instance type.
          */
-        inline MeshObjectData(std::vector<size_t> children, const Matrix4& transformation, size_t instance, size_t material): ObjectData(children, transformation, InstanceType::Mesh, instance), _material(material) {}
+        inline MeshObjectData(std::vector<unsigned int> children, const Matrix4& transformation, unsigned int instance, unsigned int material): ObjectData(children, transformation, InstanceType::Mesh, instance), _material(material) {}
 
         /** @brief Material ID */
-        inline size_t material() const { return _material; }
+        inline unsigned int material() const { return _material; }
 
     private:
-        size_t _material;
+        unsigned int _material;
 };
 
 }}

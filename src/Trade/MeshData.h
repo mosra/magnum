@@ -63,7 +63,7 @@ class MAGNUM_EXPORT MeshData {
         inline const std::vector<unsigned int>* indices() const { return _indices; } /**< @overload */
 
         /** @brief Count of vertex arrays */
-        inline size_t vertexArrayCount() const { return _vertices.size(); }
+        inline unsigned int vertexArrayCount() const { return _vertices.size(); }
 
         /**
          * @brief Vertices
@@ -71,11 +71,11 @@ class MAGNUM_EXPORT MeshData {
          * @return Vertices or nullptr if there is no vertex array with given
          *      ID.
          */
-        inline std::vector<Vector4>* vertices(size_t id) { return _vertices[id]; }
-        inline const std::vector<Vector4>* vertices(size_t id) const { return _vertices[id]; } /**< @overload */
+        inline std::vector<Vector4>* vertices(unsigned int id) { return _vertices[id]; }
+        inline const std::vector<Vector4>* vertices(unsigned int id) const { return _vertices[id]; } /**< @overload */
 
         /** @brief Count of normal arrays */
-        inline size_t normalArrayCount() const { return _normals.size(); }
+        inline unsigned int normalArrayCount() const { return _normals.size(); }
 
         /**
          * @brief Normals
@@ -83,11 +83,11 @@ class MAGNUM_EXPORT MeshData {
          * @return Vertices or nullptr if there is no normal array with given
          *      ID.
          */
-        inline std::vector<Vector3>* normals(size_t id) { return _normals[id]; }
-        inline const std::vector<Vector3>* normals(size_t id) const { return _normals[id]; } /**< @overload */
+        inline std::vector<Vector3>* normals(unsigned int id) { return _normals[id]; }
+        inline const std::vector<Vector3>* normals(unsigned int id) const { return _normals[id]; } /**< @overload */
 
         /** @brief Count of 2D texture coordinate arrays */
-        inline size_t textureCoords2DArrayCount() const { return _textureCoords2D.size(); }
+        inline unsigned int textureCoords2DArrayCount() const { return _textureCoords2D.size(); }
 
         /**
          * @brief 2D texture coordinates
@@ -95,8 +95,8 @@ class MAGNUM_EXPORT MeshData {
          * @return %Texture coordinates or nullptr if there is no texture
          *      coordinates array with given ID.
          */
-        inline std::vector<Vector2>* textureCoords2D(size_t id) { return _textureCoords2D[id]; }
-        inline const std::vector<Vector2>* textureCoords2D(size_t id) const { return _textureCoords2D[id]; } /**< @overload */
+        inline std::vector<Vector2>* textureCoords2D(unsigned int id) { return _textureCoords2D[id]; }
+        inline const std::vector<Vector2>* textureCoords2D(unsigned int id) const { return _textureCoords2D[id]; } /**< @overload */
 
     private:
         Mesh::Primitive _primitive;
