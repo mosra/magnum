@@ -96,7 +96,8 @@ bool TgaImporter::open(istream& in, const string& name) {
 }
 
 void TgaImporter::close() {
-    delete _image;
+    /** @todo fixme: delete it only if it wasn't retrieved by user */
+    //delete _image;
     _image = nullptr;
 }
 
