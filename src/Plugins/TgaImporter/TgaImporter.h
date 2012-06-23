@@ -46,8 +46,22 @@ class TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
 
         inline Features features() const { return Feature::OpenFile|Feature::OpenStream; }
 
-        bool open(std::istream& in);
-        bool open(const std::string& filename);
+        /**
+         * @brief Open input stream with specific image name
+         *
+         * @see open(std::istream&), ImageData2D::name()
+         */
+        bool open(std::istream& in, const std::string& name);
+        inline bool open(std::istream& in) { return open(in, ""); }
+
+        /**
+         * @brief Open file with specific image name
+         *
+         * @see open(const std::string&), ImageData2D::name()
+         */
+        bool open(const std::string& filename, const std::string& name);
+        inline bool open(const std::string& filename) { return open(filename, ""); }
+
         void close();
 
         inline unsigned int image2DCount() const { return _image ? 1 : 0; }

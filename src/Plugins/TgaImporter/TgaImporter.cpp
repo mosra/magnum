@@ -28,18 +28,18 @@ namespace Magnum { namespace Trade { namespace TgaImporter {
 static_assert(sizeof(TgaImporter::Header) == 18, "TgaImporter: header size is not 18 bytes");
 #endif
 
-bool TgaImporter::TgaImporter::open(const string& filename) {
+bool TgaImporter::TgaImporter::open(const string& filename, const string& name) {
     ifstream in(filename.c_str());
     if(!in.good()) {
         Error() << "TgaImporter: cannot open file" << filename;
         return false;
     }
-    bool status = open(in);
+    bool status = open(in, name);
     in.close();
     return status;
 }
 
-bool TgaImporter::open(istream& in) {
+bool TgaImporter::open(istream& in, const string& name) {
     if(_image) close();
     if(!in.good()) {
         Error() << "TgaImporter: cannot read input stream";
@@ -91,7 +91,7 @@ bool TgaImporter::open(istream& in) {
 
     Math::Vector2<GLsizei> dimensions(header.width, header.height);
 
-    _image = new ImageData2D(dimensions, components, buffer);
+    _image = new ImageData2D(name, dimensions, components, buffer);
     return true;
 }
 
