@@ -89,6 +89,16 @@ foreach(component ${Magnum_FIND_COMPONENTS})
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
         endif()
+
+        # X/EGL context dependencies
+        if(${component} STREQUAL EglContext)
+            find_package(OpenGLES2)
+            find_package(EGL)
+            find_package(X11)
+            if(NOT OPENGLES2_FOUND OR NOT EGL_FOUND OR NOT X11_FOUND)
+                unset(MAGNUM_${_COMPONENT}_LIBRARY)
+            endif()
+        endif()
     endif()
 
     # Mesh tools library
