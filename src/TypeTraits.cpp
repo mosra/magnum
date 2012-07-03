@@ -25,7 +25,9 @@ static_assert(sizeof(GLshort) == sizeof(short), "GLshort is not the same as shor
 static_assert(sizeof(GLuint) == sizeof(unsigned int), "GLuint is not the same as unsigned int");
 static_assert(sizeof(GLint) == sizeof(int), "GLint is not the same as int");
 static_assert(sizeof(GLfloat) == sizeof(float), "GLfloat is not the same as float");
+#ifndef MAGNUM_TARGET_GLES
 static_assert(sizeof(GLdouble) == sizeof(double), "GLdouble is not the same as double");
+#endif
 #endif
 
 size_t TypeInfo::sizeOf(Type type) {
@@ -37,7 +39,9 @@ size_t TypeInfo::sizeOf(Type type) {
         val(Short)
         val(UnsignedInt)
         val(Int)
+        #ifndef MAGNUM_TARGET_GLES
         val(Double)
+        #endif
         val(Float)
         #undef val
 

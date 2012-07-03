@@ -19,7 +19,13 @@
  * @brief Basic definitions
  */
 
+#include "configureMagnum.h"
+
+#ifndef MAGNUM_TARGET_GLES
 #include <GL/glew.h>
+#else
+#include <GLES2/gl2.h>
+#endif
 
 #include "Math/Math.h"
 #include "Math/Matrix4.h"

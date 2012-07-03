@@ -17,6 +17,7 @@
 
 namespace Magnum {
 
+#ifndef MAGNUM_TARGET_GLES
 Renderbuffer::InternalFormat::InternalFormat(Components components, ComponentType type) {
     #define internalFormatSwitch(c) switch(type) {                          \
         case ComponentType::UnsignedByte:                                   \
@@ -48,5 +49,6 @@ Renderbuffer::InternalFormat::InternalFormat(Components components, ComponentTyp
         internalFormatSwitch(RGBA)
     #undef internalFormatSwitch
 }
+#endif
 
 }

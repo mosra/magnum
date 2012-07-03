@@ -40,6 +40,7 @@ Sdl2Context::Sdl2Context(int argc, char** argv, const std::string& name, const M
 
     context = SDL_GL_CreateContext(window);
 
+    #ifndef MAGNUM_TARGET_GLES
     /* This must be enabled, otherwise (on my NVidia) it crashes when creating
        VAO. WTF. */
     glewExperimental = true;
@@ -50,6 +51,7 @@ Sdl2Context::Sdl2Context(int argc, char** argv, const std::string& name, const M
         Error() << "Sdl2Context: cannot initialize GLEW:" << glewGetErrorString(err);
         exit(1);
     }
+    #endif
 
     /* Push resize event, so viewportEvent() is called at startup */
     SDL_Event* sizeEvent = new SDL_Event;

@@ -69,12 +69,6 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          */
         inline Buffer* indexBuffer() { return &_indexBuffer; }
 
-        /**
-         * @brief Draw the mesh
-         *
-         * Binds attributes to buffers, bind index buffer and draws the mesh.
-         * Expects an active shader with all uniforms set.
-         */
         void draw();
 
     protected:

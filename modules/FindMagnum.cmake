@@ -43,8 +43,13 @@
 
 # Dependencies
 find_package(Corrade REQUIRED)
-find_package(OpenGL REQUIRED)
-find_package(GLEW REQUIRED)
+
+if(NOT TARGET_GLES)
+    find_package(OpenGL REQUIRED)
+    find_package(GLEW REQUIRED)
+else()
+    find_package(OpenGLES2 REQUIRED)
+endif()
 
 # Magnum library
 find_library(MAGNUM_LIBRARY Magnum)

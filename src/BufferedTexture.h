@@ -24,6 +24,7 @@
 
 namespace Magnum {
 
+#ifndef MAGNUM_TARGET_GLES
 /** @ingroup textures
 @brief Buffered texture
 
@@ -36,6 +37,7 @@ using data setting functions in Buffer itself.
 When using buffered texture in the shader, use `samplerBuffer` and fetch the
 data using integer coordinates in `texelFetch()`.
 
+@requires_gl
 @requires_gl31 Extension @extension{ARB,texture_buffer_object}
 */
 class BufferedTexture {
@@ -161,6 +163,7 @@ inline BufferedTexture::InternalFormat operator|(BufferedTexture::Components com
 inline BufferedTexture::InternalFormat operator|(BufferedTexture::ComponentType type, BufferedTexture::Components components) {
     return BufferedTexture::InternalFormat(components, type);
 }
+#endif
 
 }
 

@@ -18,10 +18,18 @@
 namespace Magnum {
 
 void IndexedMesh::draw() {
+    /* Vertex array must be bound before finalization */
+    #ifndef MAGNUM_TARGET_GLES
     bind();
+    #endif
 
-    /* Finalize the mesh, if it is not already */
     finalize();
+
+    /* Buffers must be bound after initialization */
+    #ifdef MAGNUM_TARGET_GLES
+    bind();
+    _indexBuffer.bind();
+    #endif
 
     /** @todo Start at given index */
     glDrawElements(static_cast<GLenum>(primitive()), _indexCount, static_cast<GLenum>(_indexType), nullptr);
@@ -38,8 +46,10 @@ void IndexedMesh::finalize() {
     /* Finalize attribute positions */
     Mesh::finalize();
 
-    /* Bind index buffer */
+    /* Bind index buffer to VAO too */
+    #ifndef MAGNUM_TARGET_GLES
     _indexBuffer.bind();
+    #endif
 }
 #endif
 

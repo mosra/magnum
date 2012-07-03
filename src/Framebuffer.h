@@ -44,26 +44,31 @@ class MAGNUM_EXPORT Framebuffer {
          * @see bind(), bindDefault()
          */
         enum class Target: GLenum {
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * For reading only.
-             *
+             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
              */
             Read = GL_READ_FRAMEBUFFER,
 
             /**
              * For drawing only.
-             *
+             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
              */
             Draw = GL_DRAW_FRAMEBUFFER,
+            #endif
+
             ReadDraw = GL_FRAMEBUFFER       /**< For both reading and drawing. */
         };
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Draw attachment for default framebuffer
          *
          * @see mapDefaultForDraw()
+         * @requires_gl
          */
         enum class DefaultDrawAttachment: GLenum {
             None = GL_NONE,                 /**< Don't use the output. */
@@ -77,6 +82,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @brief Read attachment for default framebuffer
          *
          * @see mapDefaultForRead()
+         * @requires_gl
          */
         enum class DefaultReadAttachment: GLenum {
             FrontLeft = GL_FRONT_LEFT,      /**< Read from front left framebuffer. */
@@ -89,6 +95,7 @@ class MAGNUM_EXPORT Framebuffer {
             Back = GL_BACK,                 /**< Read from back framebuffers. */
             FrontAndBack = GL_FRONT_AND_BACK /**< Read from front and back framebuffers. */
         };
+        #endif
 
         /**
          * @brief Attachment for depth/stencil part of fragment shader output
@@ -101,8 +108,16 @@ class MAGNUM_EXPORT Framebuffer {
          */
         enum class DepthStencilAttachment: GLenum {
             Depth = GL_DEPTH_ATTACHMENT,    /**< Depth output only. */
-            Stencil = GL_STENCIL_ATTACHMENT, /**< Stencil output only. */
-            DepthStencil = GL_DEPTH_STENCIL_ATTACHMENT /**< Both depth and stencil output. */
+
+            Stencil = GL_STENCIL_ATTACHMENT /**< Stencil output only. */
+
+            #ifndef MAGNUM_TARGET_GLES
+            ,
+            /**
+             * Both depth and stencil output.
+             */
+            DepthStencil = GL_DEPTH_STENCIL_ATTACHMENT
+            #endif
         };
 
         /**
@@ -139,6 +154,7 @@ class MAGNUM_EXPORT Framebuffer {
             glBindFramebuffer(static_cast<GLenum>(target), 0);
         }
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Map given attachments of default framebuffer for drawing
          * @param attachments       Default attachments. If any value is
@@ -150,6 +166,7 @@ class MAGNUM_EXPORT Framebuffer {
          * should have either renderbuffer or texture attached for writing to
          * work properly.
          * @see mapForDraw(), mapDefaultForRead()
+         * @requires_gl
          */
         static void mapDefaultForDraw(std::initializer_list<DefaultDrawAttachment> attachments);
 
@@ -160,12 +177,15 @@ class MAGNUM_EXPORT Framebuffer {
          * Each used attachment should have either renderbuffer or texture
          * attached to work properly.
          * @see mapForRead(), mapDefaultForDraw()
+         * @requires_gl
          */
         inline static void mapDefaultForRead(DefaultReadAttachment attachment) {
             bindDefault(Target::Read);
             glReadBuffer(static_cast<GLenum>(attachment));
         }
+        #endif
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Copy block of pixels from read to draw framebuffer
          * @param bottomLeft        Bottom left coordinates of source rectangle
@@ -181,7 +201,7 @@ class MAGNUM_EXPORT Framebuffer {
          * mapDefaultForDraw() for binding particular framebuffer for reading
          * and drawing. If multiple attachments are specified in mapForDraw()
          * / mapDefaultForDraw(), the data are written to each of them.
-         *
+         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
          */
         inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, const Math::Vector2<GLint>& destinationBottomLeft, const Math::Vector2<GLint>& destinationTopRight, BlitMask blitMask, AbstractTexture::Filter filter) {
@@ -201,12 +221,13 @@ class MAGNUM_EXPORT Framebuffer {
          * no interpolation is needed and thus
          * AbstractTexture::Filter::NearestNeighbor filtering is used by
          * default.
-         *
+         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
          */
         inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, BlitMask blitMask) {
             glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(AbstractTexture::Filter::NearestNeighbor));
         }
+        #endif
 
         /**
          * @brief Read block of pixels from framebuffer to image
@@ -218,6 +239,7 @@ class MAGNUM_EXPORT Framebuffer {
          */
         static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& dimensions, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image);
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Read block of pixels from framebuffer to buffered image
          * @param offset            Offset in the framebuffer
@@ -226,8 +248,11 @@ class MAGNUM_EXPORT Framebuffer {
          * @param type              Data type
          * @param image             Buffered image where to put the data
          * @param usage             %Buffer usage
+         *
+         * @requires_gl
          */
         static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& dimensions, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage);
+        #endif
 
         /**
          * @brief Constructor
@@ -248,6 +273,7 @@ class MAGNUM_EXPORT Framebuffer {
             glBindFramebuffer(static_cast<GLenum>(target), framebuffer);
         }
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Map given color attachments of current framebuffer for drawing
          * @param colorAttachments  Color attachment IDs. If any value is -1,
@@ -259,6 +285,7 @@ class MAGNUM_EXPORT Framebuffer {
          * should have either renderbuffer or texture attached for writing to
          * work properly.
          * @see mapDefaultForDraw(), mapForRead()
+         * @requires_gl
          */
         void mapForDraw(std::initializer_list<int> colorAttachments);
 
@@ -269,11 +296,13 @@ class MAGNUM_EXPORT Framebuffer {
          * The color attachment should have either renderbuffer or texture
          * attached for reading to work properly.
          * @see mapDefaultForRead(), mapForDraw()
+         * @requires_gl
          */
         inline void mapForRead(unsigned int colorAttachment) {
             bind(Target::Read);
             glReadBuffer(GL_COLOR_ATTACHMENT0 + colorAttachment);
         }
+        #endif
 
         /**
          * @brief Attach renderbuffer to given framebuffer depth/stencil attachment
@@ -299,12 +328,15 @@ class MAGNUM_EXPORT Framebuffer {
             glFramebufferRenderbuffer(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, GL_RENDERBUFFER, renderbuffer->id());
         }
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Attach 1D texture to given framebuffer depth/stencil attachment
          * @param target            %Target
          * @param depthStencilAttachment Depth/stencil attachment
          * @param texture           1D texture
          * @param mipLevel          Mip level
+         *
+         * @requires_gl
          */
         inline void attachTexture1D(Target target, DepthStencilAttachment depthStencilAttachment, Texture1D* texture, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -319,6 +351,8 @@ class MAGNUM_EXPORT Framebuffer {
          * @param colorAttachment   Color attachment ID (number between 0 and 15)
          * @param texture           1D texture
          * @param mipLevel          Mip level
+         *
+         * @requires_gl
          */
         inline void attachTexture1D(Target target, unsigned int colorAttachment, Texture1D* texture, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -326,6 +360,7 @@ class MAGNUM_EXPORT Framebuffer {
             bind(target);
             glFramebufferTexture1D(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, static_cast<GLenum>(texture->target()), texture->id(), mipLevel);
         }
+        #endif
 
         /**
          * @brief Attach 2D texture to given framebuffer depth/stencil attachment
@@ -393,6 +428,7 @@ class MAGNUM_EXPORT Framebuffer {
             glFramebufferTexture2D(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, static_cast<GLenum>(coordinate), texture->id(), mipLevel);
         }
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Attach 3D texture to given framebuffer depth/stencil attachment
          * @param target            %Target
@@ -400,6 +436,8 @@ class MAGNUM_EXPORT Framebuffer {
          * @param texture           3D texture
          * @param mipLevel          Mip level
          * @param layer             Layer of 2D image within a 3D texture
+         *
+         * @requires_gl
          */
         inline void attachTexture3D(Target target, DepthStencilAttachment depthStencilAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {
             /** @todo Check for internal format compatibility */
@@ -415,6 +453,8 @@ class MAGNUM_EXPORT Framebuffer {
          * @param texture           3D texture
          * @param mipLevel          Mip level
          * @param layer             Layer of 2D image within a 3D texture.
+         *
+         * @requires_gl
          */
         inline void attachTexture3D(Target target, unsigned int colorAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {
             /** @todo Check for internal format compatibility */
@@ -422,6 +462,7 @@ class MAGNUM_EXPORT Framebuffer {
             bind(target);
             glFramebufferTexture3D(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, static_cast<GLenum>(texture->target()), texture->id(), mipLevel, layer);
         }
+        #endif
 
     private:
         GLuint framebuffer;

@@ -23,6 +23,7 @@
 
 namespace Magnum {
 
+#ifndef MAGNUM_TARGET_GLES
 /** @addtogroup rendering
  * @{
  */
@@ -32,6 +33,7 @@ namespace Magnum {
 
 See Query, SampleQuery, TimeQuery documentation for more information.
 @todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
+@requires_gl
 */
 class MAGNUM_EXPORT AbstractQuery {
     public:
@@ -98,6 +100,7 @@ if(!q.resultAvailable()) {
 // ...or block until the result is available
 GLuint primitiveCount = q.result<GLuint>();
 @endcode
+@requires_gl
 */
 class MAGNUM_EXPORT Query: public AbstractQuery {
     public:
@@ -176,6 +179,7 @@ q.beginConditionalRender(SampleQuery::ConditionalRenderMode::Wait);
 // render full version of the object only if the query returns nonzero result
 q.endConditionalRender();
 @endcode
+@requires_gl
 */
 class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
     public:
@@ -273,7 +277,7 @@ GLuint timeElapsed1 = tmp-q1.result<GLuint>();
 GLuint timeElapsed2 = q3.result<GLuint>()-tmp;
 @endcode
 Using this query results in fewer OpenGL calls when doing more measures.
-
+@requires_gl
 @requires_gl33 Extension @extension{ARB,timer_query}
 */
 class TimeQuery: public AbstractQuery {
@@ -285,6 +289,7 @@ class TimeQuery: public AbstractQuery {
 };
 
 /*@}*/
+#endif
 
 }
 

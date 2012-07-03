@@ -42,26 +42,28 @@ class MAGNUM_EXPORT Shader {
         enum class Type: GLenum {
             Vertex = GL_VERTEX_SHADER,      /**< Vertex shader */
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Tessellation control shader
-             *
+             * @requires_gl
              * @requires_gl40 Extension @extension{ARB,tessellation_shader}
              */
             TessellationControl = GL_TESS_CONTROL_SHADER,
 
             /**
              * Tessellation evaluation shader
-             *
+             * @requires_gl
              * @requires_gl40 Extension @extension{ARB,tessellation_shader}
              */
             TessellationEvaluation = GL_TESS_EVALUATION_SHADER,
 
             /**
              * Geometry shader
-             *
+             * @requires_gl
              * @requires_gl32 Extension @extension{ARB,geometry_shader4}
              */
             Geometry = GL_GEOMETRY_SHADER,
+            #endif
 
             Fragment = GL_FRAGMENT_SHADER   /**< Fragment shader */
         };

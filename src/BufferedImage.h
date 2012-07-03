@@ -25,6 +25,7 @@
 
 namespace Magnum {
 
+#ifndef MAGNUM_TARGET_GLES
 /** @addtogroup textures
  * @{
  */
@@ -34,6 +35,7 @@ namespace Magnum {
 
 Class for storing image data in GPU memory. Can be replaced with Image, which
 stores image data in client memory, or for example with Trade::ImageData.
+@requires_gl
 */
 template<size_t imageDimensions> class BufferedImage: public AbstractImage {
     public:
@@ -115,6 +117,7 @@ typedef BufferedImage<2> BufferedImage2D;
 typedef BufferedImage<3> BufferedImage3D;
 
 /*@}*/
+#endif
 
 }
 

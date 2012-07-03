@@ -33,12 +33,12 @@ class Buffer;
 /** @ingroup rendering mesh
 @brief Base class for managing non-indexed meshes
 
-@todo Support for normalized values (e.g. for color as char[4] passed to
-     shader as floating-point vec4)
-
+VAOs are used for desktop OpenGL (not in OpenGL ES).
 @requires_gl30 Extension @extension{APPLE,vertex_array_object}
 @requires_gl30 Extension @extension{EXT,gpu_shader4} (for unsigned integer attributes)
 
+@todo Support for normalized values (e.g. for color as char[4] passed to
+     shader as floating-point vec4)
 @todo Support for provoking vertex (OpenGL 3.2, @extension{ARB,provoking_vertex})
 @todo Support for packed unsigned integer types for attributes (OpenGL 3.3, @extension{ARB,vertex_type_2_10_10_10_rev})
 @todo Support for fixed precision type for attributes (OpenGL 4.1, @extension{ARB,ES2_compatibility})
@@ -53,10 +53,12 @@ class MAGNUM_EXPORT Mesh {
     Mesh& operator=(Mesh&& other) = delete;
 
     public:
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Polygon mode
          *
          * @see setPolygonMode()
+         * @requires_gl
          */
         enum class PolygonMode: GLenum {
             /**
@@ -75,6 +77,7 @@ class MAGNUM_EXPORT Mesh {
              */
             Point = GL_POINT
         };
+        #endif
 
         /**
          * @brief Primitive type
@@ -135,14 +138,17 @@ class MAGNUM_EXPORT Mesh {
             NonInterleaved  /**< Non-interleaved buffer */
         };
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Set polygon drawing mode
          *
          * Initial value is PolygonMode::Fill.
+         * @requires_gl
          */
         inline static void setPolygonMode(PolygonMode mode) {
             glPolygonMode(GL_FRONT_AND_BACK, static_cast<GLenum>(mode));
         }
+        #endif
 
         /**
          * @brief Set line width
@@ -153,10 +159,12 @@ class MAGNUM_EXPORT Mesh {
             glLineWidth(width);
         }
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Set point size
          *
          * @see setProgramPointSize()
+         * @requires_gl
          */
         inline static void setPointSize(GLfloat size) {
             glPointSize(size);
@@ -168,10 +176,12 @@ class MAGNUM_EXPORT Mesh {
          * If enabled, the point size is taken from vertex/geometry shader
          * builtin `gl_PointSize`.
          * @see setPointSize()
+         * @requires_gl
          */
         inline static void setProgramPointSize(bool enabled) {
             enabled ? glEnable(GL_PROGRAM_POINT_SIZE) : glDisable(GL_PROGRAM_POINT_SIZE);
         }
+        #endif
 
         /**
          * @brief Implicit constructor
@@ -182,7 +192,9 @@ class MAGNUM_EXPORT Mesh {
          * to draw properly.
          */
         inline Mesh(Primitive primitive = Primitive::Triangles): _primitive(primitive), _vertexCount(0), finalized(false) {
+            #ifndef MAGNUM_TARGET_GLES
             glGenVertexArrays(1, &vao);
+            #endif
         }
 
         /**
@@ -191,7 +203,9 @@ class MAGNUM_EXPORT Mesh {
          * @param vertexCount   Vertex count
          */
         inline Mesh(Primitive primitive, GLsizei vertexCount): _primitive(primitive), _vertexCount(vertexCount), finalized(false) {
+            #ifndef MAGNUM_TARGET_GLES
             glGenVertexArrays(1, &vao);
+            #endif
         }
 
         /**
@@ -268,18 +282,20 @@ class MAGNUM_EXPORT Mesh {
         /**
          * @brief Draw the mesh
          *
-         * Binds attributes to buffers and draws the mesh. Expects an active
-         * shader with all uniforms set.
+         * Expects an active shader with all uniforms set.
          */
         virtual void draw();
 
     protected:
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        /** @brief Unbind any vertex array object */
-        inline static void unbind() { glBindVertexArray(0); }
+        /** @brief Bind all buffers */
+        void bindBuffers();
 
-        /** @brief Bind vertex array object of current mesh */
-        inline void bind() { glBindVertexArray(vao); }
+        /** @brief Bind vertex array or all buffers */
+        void bind();
+
+        /** @brief Unbind vertex array or all buffers */
+        void unbind();
 
         /**
          * @brief Finalize the mesh
@@ -300,7 +316,9 @@ class MAGNUM_EXPORT Mesh {
             const GLvoid* pointer;      /**< @brief Pointer to first attribute of this type in the buffer */
         };
 
+        #ifndef MAGNUM_TARGET_GLES
         GLuint vao;
+        #endif
         Primitive _primitive;
         GLsizei _vertexCount;
         bool finalized;

@@ -1,15 +1,18 @@
 /** @page required-extensions Functionality requiring specific OpenGL version or extensions
-@brief Functions not available on OpenGL 2.1 hardware.
+@brief List of functions not available on OpenGL 2.1 / OpenGL ES 2.
 
 The engine is meant to be run on OpenGL 3 capable hardware, but most of the
 functionality is working in OpenGL 2.1 hardware too (i.e. integrated Intel
-GPUs), unless stated otherwise. Following are lists of functionality requiring
-specific OpenGL version. In most cases it is also specified which extension is
-required for given functionality, so if given hardware supports required
-extension, it doesn't need to have required OpenGL version too (e.g.
-`APPLE_vertex_array_object` is supported on Intel GPUs even if they are
-capable of OpenGL 2.1 only).
+GPUs), unless stated otherwise. OpenGL ES 2 is also supported, see
+@ref building for guide how to build the engine for it.
 
+Following are lists of functionality requiring specific OpenGL version. In
+most cases it is also specified which extension is required for given
+functionality, so if given hardware supports required extension, it doesn't
+need to have required OpenGL version too (e.g. `APPLE_vertex_array_object` is
+supported on Intel GPUs even if they are capable of OpenGL 2.1 only).
+
+- @subpage requires-gl
 - @subpage requires-gl30
 - @subpage requires-gl31
 - @subpage requires-gl32
@@ -19,6 +22,7 @@ capable of OpenGL 2.1 only).
 - @subpage requires-gl42
 - @subpage requires-extension
 
+@page requires-gl Functionality requiring desktop OpenGL (not available on OpenGL ES 2)
 @page requires-gl30 Functionality requiring OpenGL 3.0
 @page requires-gl31 Functionality requiring OpenGL 3.1
 @page requires-gl32 Functionality requiring OpenGL 3.2

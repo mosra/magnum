@@ -47,6 +47,7 @@ don't support mipmapping and repeating wrapping modes, see @ref Texture::Filter
 "Filter", @ref Texture::Mipmap "Mipmap" and generateMipmap() documentation
 for more information.
 
+@requires_gl (rectangle textures)
 @requires_gl31 Extension @extension{ARB,texture_rectangle} (rectangle textures)
 
 @see CubeMapTexture, CubeMapTextureArray
@@ -62,27 +63,37 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
          * Each dimension has its own unique subset of these targets.
          */
         enum class Target: GLenum {
-            Texture1D = GL_TEXTURE_1D, /**< One-dimensional texture */
+            /**
+             * One-dimensional texture
+             * @requires_gl
+             */
+            Texture1D = GL_TEXTURE_1D,
+
             Texture2D = GL_TEXTURE_2D, /**< Two-dimensional texture */
-            Texture3D = GL_TEXTURE_3D, /**< Three-dimensional texture */
+
+            /**
+             * Three-dimensional texture
+             * @requires_gl
+             */
+            Texture3D = GL_TEXTURE_3D,
 
             /**
              * One-dimensional texture array (i.e. two dimensions in total)
-             *
+             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,texture_array}
              */
             Texture1DArray = GL_TEXTURE_1D_ARRAY,
 
             /**
              * Two-dimensional texture array (i.e. three dimensions in total)
-             *
+             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,texture_array}
              */
             Texture2DArray = GL_TEXTURE_2D_ARRAY,
 
             /**
              * Rectangle texture (i.e. two dimensions)
-             *
+             * @requires_gl
              * @requires_gl31 Extension @extension{ARB,texture_rectangle}
              */
             Rectangle = GL_TEXTURE_RECTANGLE
@@ -157,14 +168,26 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
         }
 };
 
-/** @brief One-dimensional texture */
+#ifndef MAGNUM_TARGET_GLES
+/**
+@brief One-dimensional texture
+
+@requires_gl
+*/
 typedef Texture<1> Texture1D;
+#endif
 
 /** @brief Two-dimensional texture */
 typedef Texture<2> Texture2D;
 
-/** @brief Three-dimensional texture */
+#ifndef MAGNUM_TARGET_GLES
+/**
+@brief Three-dimensional texture
+
+@requires_gl
+*/
 typedef Texture<3> Texture3D;
+#endif
 
 /*@}*/
 

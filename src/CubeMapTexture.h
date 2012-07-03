@@ -59,14 +59,17 @@ class CubeMapTexture: public AbstractTexture {
             NegativeZ = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z      /**< -Z cube side */
         };
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Enable/disable seamless cube map textures
          *
+         * @requires_gl
          * @requires_gl32 Extension @extension{ARB,seamless_cube_map}
          */
         inline static void setSeamless(bool enabled) {
             enabled ? glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS) : glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
         }
+        #endif
 
         /**
          * @brief Constructor

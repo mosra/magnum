@@ -45,34 +45,64 @@ class MAGNUM_EXPORT AbstractImage {
 
         /** @brief Color components */
         enum class Components: GLenum {
-            Red = GL_RED,                   /**< One-component (red channel) */
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * One-component (red channel)
+             * @requires_gl
+             */
+            Red = GL_RED,
 
-            /** One-component (green channel). For framebuffer reading only. */
+            /**
+             * One-component (green channel). For framebuffer reading only.
+             * @requires_gl
+             */
             Green = GL_GREEN,
 
-            /** One-component (green channel). For framebuffer reading only. */
+            /**
+             * One-component (green channel). For framebuffer reading only.
+             * @requires_gl
+             */
             Blue = GL_BLUE,
 
-            /** Two-component (red and green channel). For texture data only. */
+            /**
+             * Two-component (red and green channel). For texture data only.
+             * @requires_gl
+             */
             RedGreen = GL_RG,
+            #endif
 
             RGB = GL_RGB,                   /**< Three-component RGB */
-            BGR = GL_BGR,                   /**< Three-component BGR */
             RGBA = GL_RGBA,                 /**< Four-component RGBA */
-            BGRA = GL_BGRA,                 /**< Four-component BGRA */
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Three-component BGR
+             * @requires_gl
+             */
+            BGR = GL_BGR,
+
+            /**
+             * Four-component BGRA
+             * @requires_gl
+             */
+            BGRA = GL_BGRA,
+            #endif
 
             /** Depth component. For framebuffer reading only. */
             Depth = GL_DEPTH_COMPONENT,
 
             /** Stencil index. For framebuffer reading only. */
-            StencilIndex = GL_STENCIL_INDEX,
+            StencilIndex = GL_STENCIL_INDEX
 
+            #ifndef MAGNUM_TARGET_GLES
+            ,
             /**
              * Depth and stencil component. For framebuffer reading only.
-             *
+             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,packed_depth_stencil}
              */
             DepthStencil = GL_DEPTH_STENCIL
+            #endif
         };
 
         /** @brief Data type */
@@ -84,26 +114,33 @@ class MAGNUM_EXPORT AbstractImage {
             UnsignedInt = GL_UNSIGNED_INT,  /**< Each component unsigned int */
             Int = GL_INT,                   /**< Each component int */
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Each component half float (16bit). For framebuffer reading only.
              *
+             * @requires_gl
              * @requires_gl30 Extension @extension{NV,half_float} / @extension{ARB,half_float_pixel}
              */
             HalfFloat = GL_HALF_FLOAT,
+            #endif
 
             Float = GL_FLOAT,               /**< Each component float (32bit) */
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Three-component RGB, unsigned normalized, red and green 3bit,
              * blue 2bit, 8bit total.
+             * @requires_gl
              */
             RGB332 = GL_UNSIGNED_BYTE_3_3_2,
 
             /**
              * Three-component BGR, unsigned normalized, red and green 3bit,
              * blue 2bit, 8bit total.
+             * @requires_gl
              */
             BGR233 = GL_UNSIGNED_BYTE_2_3_3_REV,
+            #endif
 
             /**
              * Three-component RGB, unsigned normalized, red and blue 5bit,
@@ -111,11 +148,14 @@ class MAGNUM_EXPORT AbstractImage {
              */
             RGB565 = GL_UNSIGNED_SHORT_5_6_5,
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Three-component BGR, unsigned normalized, red and blue 5bit,
              * green 6bit, 16bit total.
+             * @requires_gl
              */
             BGR565 = GL_UNSIGNED_SHORT_5_6_5_REV,
+            #endif
 
             /**
              * Four-component RGBA, unsigned normalized, each component 4bit,
@@ -123,11 +163,14 @@ class MAGNUM_EXPORT AbstractImage {
              */
             RGBA4 = GL_UNSIGNED_SHORT_4_4_4_4,
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Four-component ABGR, unsigned normalized, each component 4bit,
              * 16bit total.
+             * @requires_gl
              */
             ABGR4 = GL_UNSIGNED_SHORT_4_4_4_4_REV,
+            #endif
 
             /**
              * Four-component RGBA, unsigned normalized, each RGB component
@@ -135,40 +178,46 @@ class MAGNUM_EXPORT AbstractImage {
              */
             RGB5Alpha1 = GL_UNSIGNED_SHORT_5_5_5_1,
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Four-component ABGR, unsigned normalized, each RGB component
              * 5bit, alpha 1bit, 16bit total.
+             * @requires_gl
              */
             Alpha1BGR5 = GL_UNSIGNED_SHORT_1_5_5_5_REV,
 
             /**
              * Four-component RGBA, unsigned normalized, each component 8bit,
              * 32bit total.
+             * @requires_gl
              */
             RGBA8 = GL_UNSIGNED_INT_8_8_8_8,
 
             /**
              * Four-component ABGR, unsigned normalized, each component 8bit,
              * 32bit total.
+             * @requires_gl
              */
             ABGR8 = GL_UNSIGNED_INT_8_8_8_8_REV,
 
             /**
              * Four-component RGBA, unsigned normalized, each RGB component
              * 10bit, alpha 2bit, 32bit total.
+             * @requires_gl
              */
             RGB10Alpha2 = GL_UNSIGNED_INT_10_10_10_2,
 
             /**
              * Four-component ABGR, unsigned normalized, each RGB component
              * 10bit, alpha 2bit, 32bit total.
+             * @requires_gl
              */
             Alpha2RGB10 = GL_UNSIGNED_INT_2_10_10_10_REV,
 
             /**
              * Three-component BGR, float, red and green 11bit, blue 10bit,
              * 32bit total. For framebuffer reading only.
-             *
+             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,packed_float}
              */
             B10GR11Float = GL_UNSIGNED_INT_10F_11F_11F_REV,
@@ -177,7 +226,7 @@ class MAGNUM_EXPORT AbstractImage {
              * Three-component BGR, unsigned integers with exponent, each
              * component 9bit, exponent 5bit, 32bit total. For framebuffer
              * reading only.
-             *
+             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,texture_shared_exponent}
              */
             Exponent5RGB9 = GL_UNSIGNED_INT_5_9_9_9_REV,
@@ -185,7 +234,7 @@ class MAGNUM_EXPORT AbstractImage {
             /**
              * 24bit depth and 8bit stencil component, 32bit total. For
              * framebuffer reading only.
-             *
+             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,packed_depth_stencil}
              */
             Depth24Stencil8 = GL_UNSIGNED_INT_24_8,
@@ -193,10 +242,11 @@ class MAGNUM_EXPORT AbstractImage {
             /**
              * 32bit float depth component and 8bit stencil component, 64bit
              * total. For framebuffer reading only.
-             *
+             * @requires_gl
              * @requires_gl30 Extension @extension{ARB,depth_buffer_float}
              */
             Depth32FloatStencil8 = GL_FLOAT_32_UNSIGNED_INT_24_8_REV
+            #endif
         };
 
         /*@}*/

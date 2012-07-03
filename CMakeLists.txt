@@ -2,6 +2,8 @@
 cmake_minimum_required(VERSION 2.8.8)
 project(Magnum)
 
+option(TARGET_GLES "Build for OpenGL ES 2 instead of desktop OpenGL" OFF)
+
 option(BUILD_TESTS "Build unit tests (requires Qt4)." OFF)
 
 if(BUILD_TESTS)

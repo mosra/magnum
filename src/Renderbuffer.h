@@ -39,10 +39,12 @@ class Renderbuffer {
     public:
         /** @{ @name Internal renderbuffer formats */
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @copydoc AbstractTexture::Components
          *
          * Like AbstractTexture::Components, without three-component RGB.
+         * @requires_gl
          */
         enum class Components {
             Red, RedGreen, RGBA
@@ -53,11 +55,13 @@ class Renderbuffer {
          *
          * Like AbstractTexture::ComponentType, without normalized signed
          * types.
+         * @requires_gl
          */
         enum class ComponentType {
             UnsignedByte, Byte, UnsignedShort, Short, UnsignedInt, Int, Half,
             Float, NormalizedUnsignedByte, NormalizedUnsignedShort
         };
+        #endif
 
         /**
          * @copydoc AbstractTexture::Format
@@ -67,21 +71,43 @@ class Renderbuffer {
          * compressed formats.
          */
         enum class Format: GLenum {
-            Red = GL_RED, RedGreen = GL_RG, RGBA = GL_RGBA, BGRA = GL_BGRA,
-            SRGBA = GL_SRGB8_ALPHA8,
+            #ifndef MAGNUM_TARGET_GLES
+            Red = GL_RED, RedGreen = GL_RG,
+            #endif
+
+            RGBA = GL_RGBA,
+
+            #ifndef MAGNUM_TARGET_GLES
+            BGRA = GL_BGRA, SRGBA = GL_SRGB8_ALPHA8,
             RGB10Alpha2 = GL_RGB10_A2, RGB10AlphaUnsigned2 = GL_RGB10_A2UI,
+            #endif
+
             RGB5Alpha1 = GL_RGB5_A1, RGBA4 = GL_RGBA4,
+
+            #ifndef MAGNUM_TARGET_GLES
             RFloat11GFloat11BFloat10 = GL_R11F_G11F_B10F,
+            #endif
 
             #if defined(GL_RGB565) || defined(DOXYGEN_GENERATING_OUTPUT)
             RGB565 = GL_RGB565,
             #endif
 
-            Depth = GL_DEPTH_COMPONENT, DepthStencil = GL_DEPTH_STENCIL,
-            Depth16 = GL_DEPTH_COMPONENT16, Depth24 = GL_DEPTH_COMPONENT24,
+            Depth = GL_DEPTH_COMPONENT,
+
+            #ifndef MAGNUM_TARGET_GLES
+            DepthStencil = GL_DEPTH_STENCIL,
+            #endif
+
+            #ifdef MAGNUM_TARGET_GLES
+            Depth16 = GL_DEPTH_COMPONENT16
+            #else
+            Depth16 = GL_DEPTH_COMPONENT16,
+
+            Depth24 = GL_DEPTH_COMPONENT24,
             DepthFloat = GL_DEPTH_COMPONENT32F,
             Depth24Stencil8 = GL_DEPTH24_STENCIL8,
             DepthFloatStencil8 = GL_DEPTH32F_STENCIL8
+            #endif
 
             /** @todo GL_STENCIL_INDEX1 - GL_STENCIL_INDEX16 (renderbuffer only) */
         };
@@ -89,8 +115,10 @@ class Renderbuffer {
         /** @copydoc AbstractTexture::InternalFormat */
         class MAGNUM_EXPORT InternalFormat {
             public:
+                #ifndef MAGNUM_TARGET_GLES
                 /** @copydoc AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components, AbstractTexture::ComponentType) */
                 InternalFormat(Components components, ComponentType type);
+                #endif
 
                 /** @copydoc AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Format) */
                 inline constexpr InternalFormat(Format format): internalFormat(static_cast<GLenum>(format)) {}
@@ -148,8 +176,11 @@ class Renderbuffer {
         GLuint renderbuffer;
 };
 
+#ifndef MAGNUM_TARGET_GLES
 /** @relates Renderbuffer
 @brief Convertor of component count and data type to InternalFormat
+
+@requires_gl
 */
 inline Renderbuffer::InternalFormat operator|(Renderbuffer::Components components, Renderbuffer::ComponentType type) {
     return Renderbuffer::InternalFormat(components, type);
@@ -160,6 +191,7 @@ inline Renderbuffer::InternalFormat operator|(Renderbuffer::Components component
 inline Renderbuffer::InternalFormat operator|(Renderbuffer::ComponentType type, Renderbuffer::Components components) {
     return Renderbuffer::InternalFormat(components, type);
 }
+#endif
 
 }
 

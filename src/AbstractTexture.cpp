@@ -40,14 +40,18 @@ GLint AbstractTexture::maxSupportedLayerCount() {
     return value;
 }
 
+#ifndef MAGNUM_TARGET_GLES
 GLfloat AbstractTexture::maxSupportedAnisotropy() {
     GLfloat value;
     glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &value);
     return value;
 }
+#endif
 
 void AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
+    #ifndef MAGNUM_TARGET_GLES
     CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE || mipmap == Mipmap::BaseLevel, "AbstractTexture: rectangle textures cannot have mipmaps", )
+    #endif
 
     bind();
     glTexParameteri(_target, GL_TEXTURE_MIN_FILTER,
@@ -55,12 +59,15 @@ void AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
 }
 
 void AbstractTexture::generateMipmap() {
+    #ifndef MAGNUM_TARGET_GLES
     CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE, "AbstractTexture: rectangle textures cannot have mipmaps", )
+    #endif
 
     bind();
     glGenerateMipmap(_target);
 }
 
+#ifndef MAGNUM_TARGET_GLES
 AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components components, AbstractTexture::ComponentType type) {
     #define internalFormatSwitch(c) switch(type) {                          \
         case ComponentType::UnsignedByte:                                   \
@@ -98,10 +105,13 @@ AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components comp
         internalFormatSwitch(RGBA)
     #undef internalFormatSwitch
 }
+#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 void AbstractTexture::DataHelper<2>::setWrapping(GLenum target, const Math::Vector<2, Wrapping>& wrapping) {
+    #ifndef MAGNUM_TARGET_GLES
     CORRADE_ASSERT(target != GL_TEXTURE_RECTANGLE || ((wrapping[0] == Wrapping::ClampToEdge || wrapping[0] == Wrapping::ClampToBorder) && (wrapping[0] == Wrapping::ClampToEdge || wrapping[1] == Wrapping::ClampToEdge)), "AbstractTexture: rectangle texture wrapping must either clamp to border or to edge", )
+    #endif
 
     glTexParameteri(target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
     glTexParameteri(target, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
@@ -110,7 +120,9 @@ void AbstractTexture::DataHelper<2>::setWrapping(GLenum target, const Math::Vect
 void AbstractTexture::DataHelper<3>::setWrapping(GLenum target, const Math::Vector<3, Wrapping>& wrapping) {
     glTexParameteri(target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
     glTexParameteri(target, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
+    #ifndef MAGNUM_TARGET_GLES
     glTexParameteri(target, GL_TEXTURE_WRAP_R, static_cast<GLint>(wrapping[2]));
+    #endif
 }
 #endif
 

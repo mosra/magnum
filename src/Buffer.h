@@ -41,24 +41,32 @@ class Buffer {
             /** Used for storing vertex attributes. */
             Array = GL_ARRAY_BUFFER,
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Source for copies.
-             *
+             * @requires_gl
              * @requires_gl31 Extension @extension{ARB,copy_buffer}
              */
             CopyRead = GL_COPY_READ_BUFFER,
 
             /**
              * Target for copies.
-             *
+             * @requires_gl
              * @requires_gl31 Extension @extension{ARB,copy_buffer}
              */
             CopyWrite = GL_COPY_WRITE_BUFFER,
+            #endif
 
             /** Used for storing vertex indices. */
-            ElementArray = GL_ELEMENT_ARRAY_BUFFER,
+            ElementArray = GL_ELEMENT_ARRAY_BUFFER
 
-            /** Source for texture update operations. */
+            #ifndef MAGNUM_TARGET_GLES
+            ,
+
+            /**
+             * Source for texture update operations.
+             * @requires_gl
+             */
             PixelUnpack = GL_PIXEL_UNPACK_BUFFER,
 
             /** Target for pixel pack operations. */
@@ -68,30 +76,32 @@ class Buffer {
              * Source for texel fetches.
              *
              * @see BufferedTexture
+             * @requires_gl
              * @requires_gl31 Extension @extension{ARB,texture_buffer_object}
              */
             Texture = GL_TEXTURE_BUFFER,
 
             /**
              * Target for transform feedback.
-             *
+             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,transform_feedback}
              */
             TransformFeedback = GL_TRANSFORM_FEEDBACK_BUFFER,
 
             /**
              * Used for storing uniforms.
-             *
+             * @requires_gl
              * @requires_gl31 Extension @extension{ARB,uniform_buffer_object}
              */
             Uniform = GL_UNIFORM_BUFFER,
 
             /**
              * Used for supplying arguments for instanced drawing.
-             *
+             * @requires_gl
              * @requires_gl40 Extension @extension{ARB,draw_indirect}
              */
             DrawIndirect = GL_DRAW_INDIRECT_BUFFER
+            #endif
         };
 
         /** @brief Buffer usage */
@@ -101,52 +111,66 @@ class Buffer {
              */
             StreamDraw = GL_STREAM_DRAW,
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Set once as output from an OpenGL command and used infequently
              * for drawing.
+             * @requires_gl
              */
             StreamRead = GL_STREAM_READ,
 
             /**
              * Set once as output from an OpenGL command and used infrequently
              * for drawing or copying to other buffers.
+             * @requires_gl
              */
             StreamCopy = GL_STREAM_COPY,
+            #endif
 
             /**
              * Set once by the application and used frequently for drawing.
              */
             StaticDraw = GL_STATIC_DRAW,
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Set once as output from an OpenGL command and queried many
              * times by the application.
+             * @requires_gl
              */
             StaticRead = GL_STATIC_READ,
 
             /**
              * Set once as output from an OpenGL command and used frequently
              * for drawing or copying to other buffers.
+             * @requires_gl
              */
             StaticCopy = GL_STATIC_COPY,
+            #endif
 
             /**
              * Updated frequently by the application and used frequently
              * for drawing or copying to other images.
              */
-            DynamicDraw = GL_DYNAMIC_DRAW,
+            DynamicDraw = GL_DYNAMIC_DRAW
+
+            #ifndef MAGNUM_TARGET_GLES
+            ,
 
             /**
              * Updated frequently as output from OpenGL command and queried
              * many times from the application.
+             * @requires_gl
              */
             DynamicRead = GL_DYNAMIC_READ,
 
             /**
              * Updated frequently as output from OpenGL command and used
              * frequently for drawing or copying to other images.
+             * @requires_gl
              */
             DynamicCopy = GL_DYNAMIC_COPY
+            #endif
         };
 
         /**

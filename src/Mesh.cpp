@@ -21,10 +21,12 @@ using namespace std;
 namespace Magnum {
 
 Mesh::~Mesh() {
-    for(auto it: _buffers)
+    for(auto& it: _buffers)
         delete it.first;
 
+    #ifndef MAGNUM_TARGET_GLES
     glDeleteVertexArrays(1, &vao);
+    #endif
 }
 
 Buffer* Mesh::addBuffer(BufferType interleaved) {
@@ -35,15 +37,40 @@ Buffer* Mesh::addBuffer(BufferType interleaved) {
 }
 
 void Mesh::draw() {
+    /* Vertex array must be bound before finalization */
+    #ifndef MAGNUM_TARGET_GLES
     bind();
+    #endif
 
-    /* Finalize the mesh, if it is not already */
+    /* Finalize, if not already */
     finalize();
+
+    /* Buffers must be bound after initialization */
+    #ifdef MAGNUM_TARGET_GLES
+    bind();
+    #endif
 
     /** @todo Start at given index */
     glDrawArrays(static_cast<GLenum>(_primitive), 0, _vertexCount);
 
     unbind();
+}
+
+void Mesh::bind() {
+    #ifndef MAGNUM_TARGET_GLES
+    glBindVertexArray(vao);
+    #else
+    bindBuffers();
+    #endif
+}
+
+void Mesh::unbind() {
+    #ifndef MAGNUM_TARGET_GLES
+    glBindVertexArray(0);
+    #else
+    for(set<GLuint>::const_iterator it = _attributes.begin(); it != _attributes.end(); ++it)
+        glDisableVertexAttribArray(*it);
+    #endif
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -53,12 +80,8 @@ void Mesh::finalize() {
 
     CORRADE_ASSERT(_vertexCount, "Mesh: the mesh has zero vertex count!", )
 
-    /* Enable vertex arrays for all attributes */
-    for(set<GLuint>::const_iterator it = _attributes.begin(); it != _attributes.end(); ++it)
-        glEnableVertexAttribArray(*it);
-
     /* Finalize attribute positions for every buffer */
-    for(auto it: _buffers) {
+    for(auto& it: _buffers) {
         /* Avoid confustion */
         bool interleaved = it.second.first == BufferType::Interleaved;
         vector<Attribute>& attributes = it.second.second;
@@ -91,19 +114,37 @@ void Mesh::finalize() {
                 position += ait->size*TypeInfo::sizeOf(ait->type)*_vertexCount;
             }
         }
+    }
+
+    /* Mesh is now finalized, attribute binding is not allowed */
+    finalized = true;
+
+    #ifndef MAGNUM_TARGET_GLES
+    bindBuffers();
+    #endif
+}
+
+void Mesh::bindBuffers() {
+    /* Enable vertex arrays for all attributes */
+    for(set<GLuint>::const_iterator it = _attributes.begin(); it != _attributes.end(); ++it)
+        glEnableVertexAttribArray(*it);
+
+    for(auto& it: _buffers) {
+        /* Avoid confusion */
+        vector<Attribute>& attributes = it.second.second;
 
         /* Bind buffer */
         it.first->bind();
 
         /* Bind all attributes to this buffer */
         for(vector<Attribute>::const_iterator ait = attributes.begin(); ait != attributes.end(); ++ait)
+            #ifndef MAGNUM_TARGET_GLES
             if(TypeInfo::isIntegral(ait->type))
                 glVertexAttribIPointer(ait->attribute, ait->size, static_cast<GLenum>(ait->type), ait->stride, ait->pointer);
-            else glVertexAttribPointer(ait->attribute, ait->size, static_cast<GLenum>(ait->type), GL_FALSE, ait->stride, ait->pointer);
+            else
+            #endif
+                glVertexAttribPointer(ait->attribute, ait->size, static_cast<GLenum>(ait->type), GL_FALSE, ait->stride, ait->pointer);
     }
-
-    /* Mesh is now finalized, attribute binding is not allowed */
-    finalized = true;
 }
 #endif
 

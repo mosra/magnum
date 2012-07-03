@@ -82,6 +82,8 @@ layout(location = 0) in vec4 vertex;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 textureCoords;
 @endcode
+@requires_gl (for explicit attribute location instead of using
+    bindAttributeLocation())
 @requires_gl33 Extension @extension{ARB,explicit_attrib_location} (for
     explicit attribute location instead of using bindAttributeLocation())
 
@@ -105,6 +107,8 @@ code, e.g.:
 layout(binding = 0) uniform sampler2D diffuseTexture;
 layout(binding = 1) uniform sampler2D specularTexture;
 @endcode
+@requires_gl (for explicit texture layer binding instead of using
+    setUniform(GLint, GLint))
 @requires_gl42 Extension @extension{ARB,shading_language_420pack} (for explicit
     texture layer binding instead of using setUniform(GLint, GLint))
 
@@ -180,10 +184,12 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         bool use();
 
     protected:
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Allow retrieving program binary
          *
          * Disabled by default.
+         * @requires_gl
          * @requires_gl41 Extension @extension{ARB,get_program_binary}
          * @note This function should be called after attachShader() calls and
          *      before link().
@@ -196,6 +202,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @brief Allow the program to be bound to individual pipeline stages
          *
          * Disabled by default.
+         * @requires_gl
          * @requires_gl41 Extension @extension{ARB,separate_shader_objects}
          * @note This function should be called after attachShader() calls and
          *      before link().
@@ -203,6 +210,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         inline void setSeparable(bool enabled) {
             glProgramParameteri(program, GL_PROGRAM_SEPARABLE, enabled ? GL_TRUE : GL_FALSE);
         }
+        #endif
 
         /**
          * @brief Load shader
@@ -235,6 +243,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          */
         void bindAttributeLocation(GLuint location, const std::string& name);
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Bind fragment data to given location
          * @param location      Location
@@ -246,10 +255,11 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgramAttributeLocation "class documentation"
          *      for more information.
-         *
+         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          */
         void bindFragmentDataLocation(GLuint location, const std::string& name);
+        #endif
 
         /**
          * @brief Link the shader
@@ -313,9 +323,10 @@ class MAGNUM_EXPORT AbstractShaderProgram {
             glUniform4iv(location, 1, value.data());
         }
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @copydoc setUniform(GLint, GLint)
-         *
+         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          */
         inline void setUniform(GLint location, GLuint value) {
@@ -324,7 +335,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLint)
-         *
+         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          */
         inline void setUniform(GLint location, const Math::Vector2<GLuint>& value) {
@@ -333,7 +344,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLint)
-         *
+         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          */
         inline void setUniform(GLint location, const Math::Vector3<GLuint>& value) {
@@ -342,12 +353,13 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLuint)
-         *
+         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          */
         inline void setUniform(GLint location, const Math::Vector4<GLuint>& value) {
             glUniform4uiv(location, 1, value.data());
         }
+        #endif
 
         /** @copydoc setUniform(GLint, GLint) */
         inline void setUniform(GLint location, const Matrix3& value) {

@@ -42,12 +42,14 @@ class MAGNUM_EXPORT Camera: public Object {
         enum class Feature: GLenum {
             AlphaBlending = GL_BLEND,       /**< Alpha blending */
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Depth clamping. If enabled, ignores near and far clipping plane.
-             *
+             * @requires_gl
              * @requires_gl32 Extension @extension{ARB,depth_clamp}
              */
             DepthClamp = GL_DEPTH_CLAMP,
+            #endif
 
             DepthTest = GL_DEPTH_TEST,      /**< Depth test */
             StencilTest = GL_STENCIL_TEST,  /**< Stencil test */
@@ -78,12 +80,15 @@ class MAGNUM_EXPORT Camera: public Object {
             glClearColor(color.r(), color.g(), color.b(), color.a());
         }
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Set clear depth
          *
          * Initial value is `1.0`.
+         * @requires_gl See setClearDepth(GLfloat), which is supported in OpenGL ES.
          */
         inline static void setClearDepth(GLdouble depth) { glClearDepth(depth); }
+        #endif
 
         /**
          * @overload

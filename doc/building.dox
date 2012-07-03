@@ -14,7 +14,8 @@ Minimal set of tools and libraries required for building is:
   which are tested to support everything needed: **GCC** >= 4.6 and **Clang**
   >= 3.1.
 - **CMake** >= 2.8.8 (needed for `OBJECT` library target)
-- **OpenGL** headers, on Linux most probably shipped with Mesa
+- **OpenGL** headers, on Linux most probably shipped with Mesa or
+  **OpenGL ES 2** headers, if targetting OpenGL ES 2.
 - **GLEW** - OpenGL extension wrangler
 - **Corrade** - Plugin management and utility library. You can get it at
   http://github.com/mosra/corrade or at http://mosra.cz/blog/corrade.php.
@@ -41,6 +42,9 @@ The library can be built and installed using these four commands:
     cd build
     cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make
     make install
+
+By default the engine is built for desktop OpenGL. If you want to target
+OpenGL ES 2, pass `-DTARGET_GLES=True` to CMake.
 
 If you want to build with another compiler (e.g. Clang), pass
 `-DCMAKE_CXX_COMPILER=clang++` to CMake.

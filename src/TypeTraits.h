@@ -89,8 +89,16 @@ enum class Type: GLenum {
     Short = GL_SHORT,                   /**< Short */
     UnsignedInt = GL_UNSIGNED_INT,      /**< Unsigned int */
     Int = GL_INT,                       /**< Int */
-    Float = GL_FLOAT,                   /**< Float */
-    Double = GL_DOUBLE                  /**< Double */
+    Float = GL_FLOAT                    /**< Float */
+
+    #ifndef MAGNUM_TARGET_GLES
+    ,
+    /**
+     * Double
+     * @requires_gl
+     */
+    Double = GL_DOUBLE
+    #endif
 };
 
 /**
@@ -150,7 +158,9 @@ template<> struct TypeOf<Type::Short> { typedef GLshort Type; };
 template<> struct TypeOf<Type::UnsignedInt> { typedef GLuint Type; };
 template<> struct TypeOf<Type::Int> { typedef GLint Type; };
 template<> struct TypeOf<Type::Float> { typedef GLfloat Type; };
+#ifndef MAGNUM_TARGET_GLES
 template<> struct TypeOf<Type::Double> { typedef GLdouble Type; };
+#endif
 
 template<> struct TypeTraits<GLubyte>: public Math::MathTypeTraits<unsigned char> {
     inline constexpr static Type type() { return Type::UnsignedByte; }
@@ -208,6 +218,7 @@ template<> struct TypeTraits<GLfloat>: public Math::MathTypeTraits<float> {
     inline constexpr static size_t count() { return 1; }
 };
 
+#ifndef MAGNUM_TARGET_GLES
 template<> struct TypeTraits<GLdouble>: public Math::MathTypeTraits<double> {
     inline constexpr static Type type() { return Type::Double; }
     /* Can not be used for indices */
@@ -215,6 +226,7 @@ template<> struct TypeTraits<GLdouble>: public Math::MathTypeTraits<double> {
     inline constexpr static size_t size() { return sizeof(GLdouble); }
     inline constexpr static size_t count() { return 1; }
 };
+#endif
 
 template<class T, size_t vectorSize> struct TypeTraits<Math::Vector<vectorSize, T>> {
     inline constexpr static Type type() { return TypeTraits<T>::type(); }

@@ -17,6 +17,7 @@
 
 namespace Magnum {
 
+#ifndef MAGNUM_TARGET_GLES
 bool AbstractQuery::resultAvailable() {
     GLuint result;
     glGetQueryObjectuiv(query, GL_QUERY_RESULT_AVAILABLE, &result);
@@ -78,5 +79,6 @@ void SampleQuery::end() {
     delete target;
     target = nullptr;
 }
+#endif
 
 }

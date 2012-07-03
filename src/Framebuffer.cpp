@@ -17,6 +17,7 @@
 
 namespace Magnum {
 
+#ifndef MAGNUM_TARGET_GLES
 void Framebuffer::mapDefaultForDraw(std::initializer_list<DefaultDrawAttachment> attachments) {
     GLenum* _attachments = new GLenum[attachments.size()];
     for(auto it = attachments.begin(); it != attachments.end(); ++it)
@@ -36,6 +37,7 @@ void Framebuffer::mapForDraw(std::initializer_list<int> colorAttachments) {
     glDrawBuffers(colorAttachments.size(), attachments);
     delete[] attachments;
 }
+#endif
 
 void Framebuffer::read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& dimensions, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image) {
     char* data = new char[AbstractImage::pixelSize(components, type)*dimensions.product()];
@@ -43,6 +45,7 @@ void Framebuffer::read(const Math::Vector2<GLint>& offset, const Math::Vector2<G
     image->setData(dimensions, components, type, data);
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void Framebuffer::read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& dimensions, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage) {
     /* If the buffer doesn't have sufficient size, resize it */
     /** @todo Explicitly reset also when buffer usage changes */
@@ -52,5 +55,6 @@ void Framebuffer::read(const Math::Vector2<GLint>& offset, const Math::Vector2<G
     image->buffer()->bind(Buffer::Target::PixelPack);
     glReadPixels(offset.x(), offset.y(), dimensions.x(), dimensions.y(), static_cast<GLenum>(components), static_cast<GLenum>(type), nullptr);
 }
+#endif
 
 }

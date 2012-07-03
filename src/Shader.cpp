@@ -98,10 +98,14 @@ GLuint Shader::compile() {
 
         switch(_type) {
             case Type::Vertex:      err << "vertex";        break;
+            #ifndef MAGNUM_TARGET_GLES
             case Type::Geometry:    err << "geometry";      break;
+            #endif
             case Type::Fragment:    err << "fragment";      break;
+            #ifndef MAGNUM_TARGET_GLES
             case Type::TessellationControl: err << "tessellation control"; break;
             case Type::TessellationEvaluation: err << "tessellation evaluation"; break;
+            #endif
         }
 
         /* Show error log and delete shader */

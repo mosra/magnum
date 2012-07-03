@@ -1,0 +1,1 @@
+#cmakedefine MAGNUM_TARGET_GLES

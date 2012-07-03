@@ -44,11 +44,13 @@ void AbstractShaderProgram::bindAttributeLocation(GLuint location, const string&
     glBindAttribLocation(program, location, name.c_str());
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::bindFragmentDataLocation(GLuint location, const std::string& name) {
     CORRADE_ASSERT(state == Initialized, "AbstractShaderProgram: fragment data location cannot be bound after linking.", )
 
     glBindFragDataLocation(program, location, name.c_str());
 }
+#endif
 
 void AbstractShaderProgram::link() {
     /* Already compiled or failed, exit */

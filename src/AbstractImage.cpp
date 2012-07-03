@@ -21,16 +21,25 @@ namespace Magnum {
 size_t AbstractImage::pixelSize(Components format, ComponentType type) {
     size_t size = 0;
     switch(type) {
+        #ifndef MAGNUM_TARGET_GLES
         case ComponentType::RGB332:
         case ComponentType::BGR233:
             return 1;
+        #endif
         case ComponentType::RGB565:
+        #ifndef MAGNUM_TARGET_GLES
         case ComponentType::BGR565:
+        #endif
         case ComponentType::RGBA4:
+        #ifndef MAGNUM_TARGET_GLES
         case ComponentType::ABGR4:
+        #endif
         case ComponentType::RGB5Alpha1:
+        #ifndef MAGNUM_TARGET_GLES
         case ComponentType::Alpha1BGR5:
+        #endif
             return 2;
+        #ifndef MAGNUM_TARGET_GLES
         case ComponentType::RGBA8:
         case ComponentType::ABGR8:
         case ComponentType::RGB10Alpha2:
@@ -41,13 +50,16 @@ size_t AbstractImage::pixelSize(Components format, ComponentType type) {
             return 4;
         case ComponentType::Depth32FloatStencil8:
             return 8;
+        #endif
         case ComponentType::UnsignedByte:
         case ComponentType::Byte:
             size = 1; break;
         case ComponentType::UnsignedShort:
         case ComponentType::Short:
+        #ifndef MAGNUM_TARGET_GLES
         case ComponentType::HalfFloat:
             size = 2; break;
+        #endif
         case ComponentType::UnsignedInt:
         case ComponentType::Int:
         case ComponentType::Float:
@@ -55,15 +67,21 @@ size_t AbstractImage::pixelSize(Components format, ComponentType type) {
     }
 
     switch(format) {
+        #ifndef MAGNUM_TARGET_GLES
         case Components::Red:
             return 1*size;
         case Components::RedGreen:
             return 2*size;
+        #endif
         case Components::RGB:
+        #ifndef MAGNUM_TARGET_GLES
         case Components::BGR:
+        #endif
             return 3*size;
         case Components::RGBA:
+        #ifndef MAGNUM_TARGET_GLES
         case Components::BGRA:
+        #endif
             return 4*size;
         default:
             return 0;
