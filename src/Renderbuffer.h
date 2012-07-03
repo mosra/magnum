@@ -82,6 +82,8 @@ class Renderbuffer {
             DepthFloat = GL_DEPTH_COMPONENT32F,
             Depth24Stencil8 = GL_DEPTH24_STENCIL8,
             DepthFloatStencil8 = GL_DEPTH32F_STENCIL8
+
+            /** @todo GL_STENCIL_INDEX1 - GL_STENCIL_INDEX16 (renderbuffer only) */
         };
 
         /** @copydoc AbstractTexture::InternalFormat */

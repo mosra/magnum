@@ -44,6 +44,7 @@ class Buffer;
 @todo Support for fixed precision type for attributes (OpenGL 4.1, @extension{ARB,ES2_compatibility})
 @todo Support for double type for attributes (OpenGL 4.1, @extension{ARB,vertex_attrib_64bit})
 @todo Support for indirect draw buffer (OpenGL 4.0, @extension{ARB,draw_indirect})
+@todo Redo in a way that allows glMultiDrawArrays, glDrawArraysInstanced etc.
  */
 class MAGNUM_EXPORT Mesh {
     Mesh(const Mesh& other) = delete;
@@ -273,6 +274,7 @@ class MAGNUM_EXPORT Mesh {
         virtual void draw();
 
     protected:
+        #ifndef DOXYGEN_GENERATING_OUTPUT
         /** @brief Unbind any vertex array object */
         inline static void unbind() { glBindVertexArray(0); }
 
@@ -286,6 +288,7 @@ class MAGNUM_EXPORT Mesh {
          * this function is called, no new attribute can be bound.
          */
         MAGNUM_LOCAL void finalize();
+        #endif
 
     private:
         /** @brief Vertex attribute */

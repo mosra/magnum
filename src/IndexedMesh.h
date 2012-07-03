@@ -52,6 +52,7 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
         inline GLsizei indexCount() const { return _indexCount; }
 
         /** @brief Set index count */
+        /** @todo definalize after that? */
         inline void setIndexCount(GLsizei count) { _indexCount = count; }
 
         /** @brief Index type */
@@ -77,7 +78,9 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
         void draw();
 
     protected:
+        #ifndef DOXYGEN_GENERATING_OUTPUT
         MAGNUM_LOCAL void finalize();
+        #endif
 
     private:
         Buffer _indexBuffer;

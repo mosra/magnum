@@ -29,6 +29,7 @@ void IndexedMesh::draw() {
     unbind();
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 void IndexedMesh::finalize() {
     if(isFinalized()) return;
 
@@ -40,5 +41,6 @@ void IndexedMesh::finalize() {
     /* Bind index buffer */
     _indexBuffer.bind();
 }
+#endif
 
 }

@@ -46,6 +46,7 @@ void Mesh::draw() {
     unbind();
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 void Mesh::finalize() {
     /* Already finalized */
     if(finalized) return;
@@ -104,6 +105,7 @@ void Mesh::finalize() {
     /* Mesh is now finalized, attribute binding is not allowed */
     finalized = true;
 }
+#endif
 
 void Mesh::bindAttribute(Buffer* buffer, GLuint attribute, GLint size, Type type) {
     /* The mesh is finalized or attribute is already bound, nothing to do */

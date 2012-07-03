@@ -38,7 +38,11 @@ class MAGNUM_EXPORT Framebuffer {
     Framebuffer& operator=(Framebuffer&& other) = delete;
 
     public:
-        /** @brief %Framebuffer target */
+        /**
+         * @brief %Framebuffer target
+         *
+         * @see bind(), bindDefault()
+         */
         enum class Target: GLenum {
             /**
              * For reading only.
@@ -56,7 +60,11 @@ class MAGNUM_EXPORT Framebuffer {
             ReadDraw = GL_FRAMEBUFFER       /**< For both reading and drawing. */
         };
 
-        /** @brief Draw attachment for default framebuffer */
+        /**
+         * @brief Draw attachment for default framebuffer
+         *
+         * @see mapDefaultForDraw()
+         */
         enum class DefaultDrawAttachment: GLenum {
             None = GL_NONE,                 /**< Don't use the output. */
             BackLeft = GL_BACK_LEFT,        /**< Write output to back left framebuffer. */
@@ -65,7 +73,11 @@ class MAGNUM_EXPORT Framebuffer {
             FrontRight = GL_FRONT_RIGHT     /**< Write output to front right framebuffer. */
         };
 
-        /** @brief Read attachment for default framebuffer */
+        /**
+         * @brief Read attachment for default framebuffer
+         *
+         * @see mapDefaultForRead()
+         */
         enum class DefaultReadAttachment: GLenum {
             FrontLeft = GL_FRONT_LEFT,      /**< Read from front left framebuffer. */
             FrontRight = GL_FRONT_RIGHT,    /**< Read from front right framebuffer. */
@@ -78,7 +90,15 @@ class MAGNUM_EXPORT Framebuffer {
             FrontAndBack = GL_FRONT_AND_BACK /**< Read from front and back framebuffers. */
         };
 
-        /** @brief Attachment for depth/stencil part of fragment shader output */
+        /**
+         * @brief Attachment for depth/stencil part of fragment shader output
+         *
+         * @see attachRenderbuffer(Target, DepthStencilAttachment, Renderbuffer*),
+         *      attachTexture1D(Target, DepthStencilAttachment, Texture1D*, GLint),
+         *      attachTexture2D(Target, DepthStencilAttachment, Texture2D*, GLint),
+         *      attachCubeMapTexture(Target, DepthStencilAttachment, CubeMapTexture*, CubeMapTexture::Coordinate, GLint),
+         *      attachTexture3D(Target, DepthStencilAttachment, Texture3D*, GLint)
+         */
         enum class DepthStencilAttachment: GLenum {
             Depth = GL_DEPTH_ATTACHMENT,    /**< Depth output only. */
             Stencil = GL_STENCIL_ATTACHMENT, /**< Stencil output only. */
@@ -90,6 +110,8 @@ class MAGNUM_EXPORT Framebuffer {
          *
          * Specifies which data are copied when performing blit operation
          * using blit().
+         *
+         * @todo Use class Set
          */
         enum class BlitMask: GLbitfield {
             Color = GL_COLOR_BUFFER_BIT,    /**< Color only. */

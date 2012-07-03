@@ -50,7 +50,7 @@ class Sdl2Context: public AbstractContext {
         Sdl2Context(int argc, char** argv, const std::string& title = "Magnum SDL2 context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
 
         /**
-         * @brief Destructors
+         * @brief Destructor
          *
          * Deletes context and destroys the window.
          */
