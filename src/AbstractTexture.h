@@ -233,6 +233,8 @@ class MAGNUM_EXPORT AbstractTexture {
          *
          * For more information about default values for unused components and
          * normalization see enums Components and ComponentType.
+         * @todo ES2 - GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_ALPHA? They are
+         *      deprecated everywhere else.
          */
         enum class Format: GLenum {
             #ifndef MAGNUM_TARGET_GLES
