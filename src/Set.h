@@ -49,18 +49,18 @@ template<class T, class U> class Set {
         typedef U UnderlyingType;   /**< @brief Underlying type of the enum */
 
         /** @brief Create empty set */
-        constexpr inline Set(): value() {}
+        inline constexpr Set(): value() {}
 
         /** @brief Create set from one value */
-        constexpr inline Set(T value): value(static_cast<UnderlyingType>(value)) {}
+        inline constexpr Set(T value): value(static_cast<UnderlyingType>(value)) {}
 
         /** @brief Add value to the set */
-        constexpr inline Set<T, U> operator|(T other) const {
+        inline constexpr Set<T, U> operator|(T other) const {
             return Set<T, U>(value | static_cast<UnderlyingType>(other));
         }
 
         /** @brief Union of two sets */
-        constexpr inline Set<T, U> operator|(Set<T, U> other) const {
+        inline constexpr Set<T, U> operator|(Set<T, U> other) const {
             return Set<T, U>(value | other.value);
         }
 
@@ -77,12 +77,12 @@ template<class T, class U> class Set {
         }
 
         /** @brief Check if given value is in the set */
-        constexpr inline T operator&(T other) const {
+        inline constexpr T operator&(T other) const {
             return static_cast<T>(value & static_cast<UnderlyingType>(other));
         }
 
         /** @brief Intersection of two sets */
-        constexpr inline Set<T, U> operator&(Set<T, U> other) const {
+        inline constexpr Set<T, U> operator&(Set<T, U> other) const {
             return Set<T, U>(value & other.value);
         }
 
@@ -93,12 +93,12 @@ template<class T, class U> class Set {
         }
 
         /** @brief Value in underlying type */
-        constexpr inline UnderlyingType toUnderlyingType() const {
+        inline constexpr UnderlyingType toUnderlyingType() const {
             return value;
         }
 
     private:
-        constexpr inline explicit Set(UnderlyingType type): value(type) {}
+        inline constexpr explicit Set(UnderlyingType type): value(type) {}
 
         UnderlyingType value;
 };

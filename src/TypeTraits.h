@@ -42,7 +42,7 @@ template<class T> struct TypeTraits: public Math::MathTypeTraits<T> {
      *
      * Returns e.g. Type::UnsignedInt for GLuint.
      */
-    constexpr inline static Type type();
+    inline constexpr static Type type();
 
     /**
      * @brief OpenGL type ID for indices
@@ -51,7 +51,7 @@ template<class T> struct TypeTraits: public Math::MathTypeTraits<T> {
      * unsigned types). This function is not present for types unusable for
      * vertex indices, like GLfloat or GLint.
      */
-    constexpr inline static Type indexType();
+    inline constexpr static Type indexType();
 
     /**
      * @brief OpenGL type ID for images
@@ -60,7 +60,7 @@ template<class T> struct TypeTraits: public Math::MathTypeTraits<T> {
      * GLubyte. This function is not present for types unusable for image data,
      * like GLdouble and Matrix3.
      */
-    constexpr inline static AbstractImage::ComponentType imageType();
+    inline constexpr static AbstractImage::ComponentType imageType();
 
     /**
      * @brief Size of plain OpenGL type
@@ -68,14 +68,14 @@ template<class T> struct TypeTraits: public Math::MathTypeTraits<T> {
      * Returns sizeof(GLfloat) for GLfloat, but also sizeof(GLfloat) for
      * Vector3. See count().
      */
-    constexpr inline static size_t size();
+    inline constexpr static size_t size();
 
     /**
      * @brief Count of plain elements in this type
      *
      * Returns 1 for plain OpenGL types like GLint, but e.g. 3 for Vector3.
      */
-    constexpr inline static size_t count();
+    inline constexpr static size_t count();
 };
 #else
 template<class T> struct TypeTraits {};

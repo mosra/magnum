@@ -36,7 +36,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief Translation matrix
          * @param vec   Translation vector
          */
-        static constexpr Matrix4<T> translation(const Vector3<T>& vec) {
+        inline constexpr static Matrix4<T> translation(const Vector3<T>& vec) {
             return Matrix4( /* Column-major! */
                 1.0f, 0.0f, 0.0f, 0.0f,
                 0.0f, 1.0f, 0.0f, 0.0f,
@@ -49,7 +49,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief Scaling matrix
          * @param vec   Scaling vector
          */
-        static constexpr Matrix4 scaling(const Vector3<T>& vec) {
+        inline constexpr static Matrix4 scaling(const Vector3<T>& vec) {
             return Matrix4( /* Column-major! */
                 vec.x(), 0.0f, 0.0f, 0.0f,
                 0.0f, vec.y(), 0.0f, 0.0f,

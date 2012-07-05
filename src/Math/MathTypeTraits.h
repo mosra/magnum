@@ -58,7 +58,7 @@ template<class T> struct MathTypeTraits {
      * inequal. Returns 1 for integer types and reasonably small value for
      * floating-point types.
      */
-    constexpr inline static T epsilon();
+    inline constexpr static T epsilon();
 
     /**
      * @brief Fuzzy compare
@@ -80,7 +80,7 @@ template<class T> struct MathTypeTraits {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T> struct _MathTypeTraitsIntegral {
-    constexpr inline static T epsilon() { return 1; }
+    inline constexpr static T epsilon() { return 1; }
 
     inline constexpr static bool equals(T a, T b) {
         return a == b;
@@ -109,10 +109,10 @@ template<class T> struct _MathTypeTraitsFloatingPoint {
     }
 };
 template<> struct MathTypeTraits<float>: public _MathTypeTraitsFloatingPoint<float> {
-    constexpr inline static float epsilon() { return FLOAT_EQUALITY_PRECISION; }
+    inline constexpr static float epsilon() { return FLOAT_EQUALITY_PRECISION; }
 };
 template<> struct MathTypeTraits<double>: public _MathTypeTraitsFloatingPoint<double> {
-    constexpr inline static double epsilon() { return DOUBLE_EQUALITY_PRECISION; }
+    inline constexpr static double epsilon() { return DOUBLE_EQUALITY_PRECISION; }
 };
 #endif
 

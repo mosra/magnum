@@ -43,7 +43,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * \begin{pmatrix}a_1b_2 - a_2b_1 \\ a_2b_0 - a_0b_2 \\ a_0b_1 - a_1b_0 \end{pmatrix}
          * @f]
          */
-        constexpr static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
+        inline constexpr static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
             return Vector3<T>(a[1]*b[2]-a[2]*b[1],
                               a[2]*b[0]-a[0]*b[2],
                               a[0]*b[1]-a[1]*b[0]);
