@@ -1,5 +1,5 @@
-#ifndef Magnum_Shaders_visibilityShaders_h
-#define Magnum_Shaders_visibilityShaders_h
+#ifndef Magnum_magnumVisibility_h
+#define Magnum_magnumVisibility_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,13 +16,15 @@
 */
 
 #ifdef _WIN32
-    #ifdef MagnumShaders_EXPORTS
-        #define SHADERS_EXPORT __declspec(dllexport)
+    #if defined(Magnum_EXPORTS) || defined(MagnumObjects_EXPORTS)
+        #define MAGNUM_EXPORT __declspec(dllexport)
     #else
-        #define SHADERS_EXPORT __declspec(dllimport)
+        #define MAGNUM_EXPORT __declspec(dllimport)
     #endif
+    #define MAGNUM_LOCAL
 #else
-    #define SHADERS_EXPORT __attribute__ ((visibility ("default")))
+    #define MAGNUM_EXPORT __attribute__ ((visibility ("default")))
+    #define MAGNUM_LOCAL __attribute__ ((visibility ("hidden")))
 #endif
 
 #endif

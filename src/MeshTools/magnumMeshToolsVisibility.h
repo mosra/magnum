@@ -1,5 +1,5 @@
-#ifndef Magnum_MeshTools_visibilityMeshTools_h
-#define Magnum_MeshTools_visibilityMeshTools_h
+#ifndef Magnum_MeshTools_magnumMeshToolsVisibility_h
+#define Magnum_MeshTools_magnumMeshToolsVisibility_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 

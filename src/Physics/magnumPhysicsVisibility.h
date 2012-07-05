@@ -1,5 +1,5 @@
-#ifndef Magnum_Physics_visibilityPhysics_h
-#define Magnum_Physics_visibilityPhysics_h
+#ifndef Magnum_Physics_magnumPhysicsVisibility_h
+#define Magnum_Physics_magnumPhysicsVisibility_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 

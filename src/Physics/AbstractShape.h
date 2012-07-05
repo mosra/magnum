@@ -20,7 +20,7 @@
  */
 
 #include "Magnum.h"
-#include "visibilityPhysics.h"
+#include "magnumPhysicsVisibility.h"
 
 namespace Magnum { namespace Physics {
 

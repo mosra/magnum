@@ -20,7 +20,7 @@
  */
 
 #include "AbstractShaderProgram.h"
-#include "visibilityShaders.h"
+#include "magnumShadersVisibility.h"
 
 namespace Magnum { namespace Shaders {
 

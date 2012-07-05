@@ -17,7 +17,7 @@
 
 #include <cstddef>
 
-#include "visibility.h"
+#include "magnumVisibility.h"
 
 /** @file
  * @brief Math constants and utilities
