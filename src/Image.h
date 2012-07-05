@@ -107,7 +107,7 @@ template<size_t imageDimensions> class Image: public AbstractImage {
          * data are not copied, but they are deleted on destruction.
          */
         void setData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, GLvoid* data) {
-            delete _data;
+            delete[] _data;
             _components = components;
             _type = type;
             _dimensions = dimensions;
