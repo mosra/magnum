@@ -23,6 +23,7 @@
 #include "CubeMapTexture.h"
 #include "Image.h"
 #include "Renderbuffer.h"
+#include "Set.h"
 
 namespace Magnum {
 
@@ -125,26 +126,15 @@ class MAGNUM_EXPORT Framebuffer {
          *
          * Specifies which data are copied when performing blit operation
          * using blit().
-         *
-         * @todo Use class Set
+         * @see BlitMask
          */
-        enum class BlitMask: GLbitfield {
-            Color = GL_COLOR_BUFFER_BIT,    /**< Color only. */
-            Depth = GL_DEPTH_BUFFER_BIT,    /**< Depth value only. */
-            Stencil = GL_STENCIL_BUFFER_BIT, /**< Stencil value only. */
-
-            /** Color and depth value. */
-            ColorDepth = GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT,
-
-            /** Color and stencil value. */
-            ColorStencil = GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT,
-
-            /** Depth and stencil value */
-            DepthStencil = GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT,
-
-            /** Color, depth and stencil value. */
-            ColorDepthStencil = GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT
+        enum class Blit: GLbitfield {
+            Color = GL_COLOR_BUFFER_BIT,    /**< Color */
+            Depth = GL_DEPTH_BUFFER_BIT,    /**< Depth value */
+            Stencil = GL_STENCIL_BUFFER_BIT /**< Stencil value */
         };
+
+        typedef Set<Blit, GLbitfield> BlitMask; /**< @brief Output mask for blitting */
 
         /**
          * @brief Bind default framebuffer to given target
