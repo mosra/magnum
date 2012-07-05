@@ -106,7 +106,7 @@ template<class Base> struct SizeBasedCall: public Base {
      * @brief Constructor
      * @param size          Data size
      */
-    template<typename ...Args> SizeBasedCall(size_t size): size(size) {}
+    SizeBasedCall(size_t size): size(size) {}
 
     /**
      * @brief Functor
