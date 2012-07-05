@@ -176,9 +176,11 @@ class MAGNUM_EXPORT AbstractImage {
              * Four-component RGBA, unsigned normalized, each RGB component
              * 5bit, alpha 1bit, 16bit total.
              */
-            RGB5Alpha1 = GL_UNSIGNED_SHORT_5_5_5_1,
+            RGB5Alpha1 = GL_UNSIGNED_SHORT_5_5_5_1
 
             #ifndef MAGNUM_TARGET_GLES
+            ,
+
             /**
              * Four-component ABGR, unsigned normalized, each RGB component
              * 5bit, alpha 1bit, 16bit total.
