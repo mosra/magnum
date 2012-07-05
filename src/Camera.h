@@ -110,7 +110,7 @@ class MAGNUM_EXPORT Camera: public Object {
          *
          * Sets orthographic projection to the default OpenGL cube (range
          * @f$ [-1; 1] @f$ in all directions) and clear color to black.
-         * @see setOrthographic(), setClearColor()
+         * @see setOrthographic(), setPerspective()
          */
         Camera(Object* parent = nullptr);
 
@@ -170,8 +170,7 @@ class MAGNUM_EXPORT Camera: public Object {
         /**
          * @brief Set viewport size
          *
-         * Called when assigning the camera to the scene or when window
-         * size changes.
+         * Call when window size changes.
          */
         virtual void setViewport(const Math::Vector2<GLsizei>& size);
 
