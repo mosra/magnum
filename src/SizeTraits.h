@@ -117,19 +117,39 @@ template<class Base> struct SizeBasedCall: public Base {
      * is no suitable type for indexing given data size, prints message to
      * error output and returns default-constructed value.
      */
+    #ifndef MAGNUM_GCC45_COMPATIBILITY
     template<typename ...Args> auto operator()(Args&&... arguments) -> decltype(Base::template run<GLubyte>(std::forward<Args>(arguments)...)) {
+    #else
+    template<typename Args> auto operator()(Args&& arguments) -> decltype(Base::template run<GLubyte>(std::forward<Args>(arguments))) {
+    #endif
         switch(Math::log(256, size)) {
             case 0:
+                #ifndef MAGNUM_GCC45_COMPATIBILITY
                 return Base::template run<GLubyte>(std::forward<Args>(arguments)...);
+                #else
+                return Base::template run<GLubyte>(std::forward<Args>(arguments));
+                #endif
             case 1:
+                #ifndef MAGNUM_GCC45_COMPATIBILITY
                 return Base::template run<GLushort>(std::forward<Args>(arguments)...);
+                #else
+                return Base::template run<GLushort>(std::forward<Args>(arguments));
+                #endif
             case 2:
             case 3:
+                #ifndef MAGNUM_GCC45_COMPATIBILITY
                 return Base::template run<GLuint>(std::forward<Args>(arguments)...);
+                #else
+                return Base::template run<GLuint>(std::forward<Args>(arguments));
+                #endif
         }
 
         Error() << "SizeBasedCall: no type able to index" << size << "elements.";
+        #ifndef MAGNUM_GCC45_COMPATIBILITY
         return decltype(Base::template run<GLubyte>(std::forward<Args>(arguments)...))();
+        #else
+        return decltype(Base::template run<GLubyte>(std::forward<Args>(arguments)))();
+        #endif
     }
 
     private:
