@@ -52,13 +52,17 @@ template<size_t subdivisions> class Icosphere {
         /** @brief Constructor */
         Icosphere() {
             for(size_t i = 0; i != subdivisions; ++i)
-                MeshTools::subdivide(*indices(), *normals(0), [](const Vector3& a, const Vector3& b) {
-                    return (a+b).normalized();
-                });
+                MeshTools::subdivide(*indices(), *normals(0), interpolator);
 
             MeshTools::clean(*indices(), *normals(0));
             vertices(0)->assign(normals(0)->begin(), normals(0)->end());
         }
+
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        static Vector3 interpolator(const Vector3& a, const Vector3& b) {
+            return (a+b).normalized();
+        }
+        #endif
 };
 
 }}
