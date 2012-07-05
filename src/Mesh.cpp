@@ -56,6 +56,7 @@ void Mesh::draw() {
     unbind();
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 void Mesh::bind() {
     #ifndef MAGNUM_TARGET_GLES
     glBindVertexArray(vao);
@@ -73,7 +74,6 @@ void Mesh::unbind() {
     #endif
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 void Mesh::finalize() {
     /* Already finalized */
     if(finalized) return;
