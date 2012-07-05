@@ -17,6 +17,7 @@
 
 #include <cstddef>
 
+#include "magnumCompatibility.h"
 #include "magnumVisibility.h"
 
 /** @file

@@ -4,6 +4,10 @@ if(TARGET_GLES)
     set(MAGNUM_TARGET_GLES 1)
 endif()
 
+if(GCC45_COMPATIBILITY)
+    set(MAGNUM_GCC45_COMPATIBILITY 1)
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/magnumConfigure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h)
 

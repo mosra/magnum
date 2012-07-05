@@ -21,6 +21,8 @@
 
 #include <cmath>
 
+#include "magnumCompatibility.h"
+
 /** @brief Precision when testing floats for equality */
 #ifndef FLOAT_EQUALITY_PRECISION
 #define FLOAT_EQUALITY_PRECISION 1.0e-6
