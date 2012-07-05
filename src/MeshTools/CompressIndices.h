@@ -21,6 +21,7 @@
 
 #include <cstring>
 #include <vector>
+#include <tuple>
 #include <algorithm>
 
 #include "TypeTraits.h"

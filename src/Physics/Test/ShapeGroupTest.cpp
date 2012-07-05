@@ -15,6 +15,7 @@
 
 #include "ShapeGroupTest.h"
 
+#include <functional>
 #include <QtTest/QTest>
 
 #include "Physics/Point.h"
