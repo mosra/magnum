@@ -19,7 +19,7 @@
  * @brief Basic definitions
  */
 
-#include "configureMagnum.h"
+#include "magnumConfigure.h"
 
 #ifndef MAGNUM_TARGET_GLES
 #include <GL/glew.h>

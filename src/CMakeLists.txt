@@ -4,8 +4,8 @@ if(TARGET_GLES)
     set(MAGNUM_TARGET_GLES 1)
 endif()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configureMagnum.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/configureMagnum.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/magnumConfigure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CORRADE_INCLUDE_DIR})
 
@@ -61,7 +61,7 @@ endif()
 install(TARGETS Magnum DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 
 # Install also configure file
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configureMagnum.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 
 add_subdirectory(Contexts)
 add_subdirectory(Math)
