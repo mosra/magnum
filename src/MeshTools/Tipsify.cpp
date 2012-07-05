@@ -74,7 +74,9 @@ void Tipsify::operator()(size_t cacheSize) {
 
         /* Go through candidates in 1-ring around fanning vertex */
         int candidatePriority = -1;
-        for(unsigned int v: candidates) {
+        for(auto it = candidates.begin(); it != candidates.end(); ++it) {
+            unsigned int v = *it;
+
             /* Skip if it doesn't have any live triangles */
             if(!liveTriangleCount[v]) continue;
 

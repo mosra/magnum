@@ -21,8 +21,8 @@ using namespace std;
 namespace Magnum {
 
 Mesh::~Mesh() {
-    for(auto& it: _buffers)
-        delete it.first;
+    for(auto it = _buffers.begin(); it != _buffers.end(); ++it)
+        delete it->first;
 
     #ifndef MAGNUM_TARGET_GLES
     glDeleteVertexArrays(1, &vao);
@@ -81,10 +81,10 @@ void Mesh::finalize() {
     CORRADE_ASSERT(_vertexCount, "Mesh: the mesh has zero vertex count!", )
 
     /* Finalize attribute positions for every buffer */
-    for(auto& it: _buffers) {
+    for(auto it = _buffers.begin(); it != _buffers.end(); ++it) {
         /* Avoid confustion */
-        bool interleaved = it.second.first == BufferType::Interleaved;
-        vector<Attribute>& attributes = it.second.second;
+        bool interleaved = it->second.first == BufferType::Interleaved;
+        vector<Attribute>& attributes = it->second.second;
 
         /* Interleaved buffer, set stride and position of first attribute */
         if(interleaved) {
@@ -129,12 +129,12 @@ void Mesh::bindBuffers() {
     for(set<GLuint>::const_iterator it = _attributes.begin(); it != _attributes.end(); ++it)
         glEnableVertexAttribArray(*it);
 
-    for(auto& it: _buffers) {
+    for(auto it = _buffers.begin(); it != _buffers.end(); ++it) {
         /* Avoid confusion */
-        vector<Attribute>& attributes = it.second.second;
+        vector<Attribute>& attributes = it->second.second;
 
         /* Bind buffer */
-        it.first->bind();
+        it->first->bind();
 
         /* Bind all attributes to this buffer */
         for(vector<Attribute>::const_iterator ait = attributes.begin(); ait != attributes.end(); ++ait)
