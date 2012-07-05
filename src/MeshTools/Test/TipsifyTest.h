@@ -15,6 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#include <vector>
 #include <QtCore/QObject>
 
 namespace Magnum { namespace MeshTools { namespace Test {

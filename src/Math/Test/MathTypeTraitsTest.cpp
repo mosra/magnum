@@ -15,6 +15,7 @@
 
 #include "MathTypeTraitsTest.h"
 
+#include <limits>
 #include <QtTest/QTest>
 
 #include "MathTypeTraits.h"
