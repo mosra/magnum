@@ -24,7 +24,7 @@ namespace Magnum { namespace Physics { namespace Test {
 class AbstractShapeTest: public QObject {
     protected:
         template<class T> void randomTransformation(T& shape) {
-            shape.applyTransformation(Matrix4::translation({7.0f, 8.0f, -9.0f}));
+            shape.applyTransformation(Matrix4::translation(Vector3(7.0f, 8.0f, -9.0f)));
         }
 };
 
