@@ -101,7 +101,11 @@ based on data size:
 bar = SizeBasedCall<Foo>(dataSize)(arg1, arg2, ...);
 @endcode
 */
+#ifndef MAGNUM_GCC44_COMPATIBILITY
 template<class Base> struct SizeBasedCall: public Base {
+#else
+template<class Return, class Base> struct SizeBasedCall: public Base {
+#endif
     /**
      * @brief Constructor
      * @param size          Data size
@@ -120,7 +124,11 @@ template<class Base> struct SizeBasedCall: public Base {
     #ifndef MAGNUM_GCC45_COMPATIBILITY
     template<typename ...Args> auto operator()(Args&&... arguments) -> decltype(Base::template run<GLubyte>(std::forward<Args>(arguments)...)) {
     #else
+    #ifdef MAGNUM_GCC44_COMPATIBILITY
+    template<typename Args> Return operator()(Args&& arguments) {
+    #else
     template<typename Args> auto operator()(Args&& arguments) -> decltype(Base::template run<GLubyte>(std::forward<Args>(arguments))) {
+    #endif
     #endif
         switch(Math::log(256, size)) {
             case 0:
@@ -148,7 +156,11 @@ template<class Base> struct SizeBasedCall: public Base {
         #ifndef MAGNUM_GCC45_COMPATIBILITY
         return decltype(Base::template run<GLubyte>(std::forward<Args>(arguments)...))();
         #else
+        #ifdef MAGNUM_GCC44_COMPATIBILITY
+        return Return();
+        #else
         return decltype(Base::template run<GLubyte>(std::forward<Args>(arguments)))();
+        #endif
         #endif
     }
 
