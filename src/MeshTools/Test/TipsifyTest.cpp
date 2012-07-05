@@ -40,7 +40,7 @@ namespace Magnum { namespace MeshTools { namespace Test {
 
 */
 
-TipsifyTest::TipsifyTest(QObject* parent): QObject(parent), indices{
+TipsifyTest::TipsifyTest(): indices{
     4, 1, 0,
     10, 9, 13,
     6, 3, 2,

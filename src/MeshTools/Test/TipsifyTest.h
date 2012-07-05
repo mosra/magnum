@@ -23,7 +23,7 @@ class TipsifyTest: public QObject {
     Q_OBJECT
 
     public:
-        explicit TipsifyTest(QObject* parent = nullptr);
+        TipsifyTest();
 
     private slots:
         void buildAdjacency();
