@@ -43,15 +43,16 @@ void GenerateFlatNormalsTest::generate() {
     /* Two vertices connected by one edge, each winded in another direction */
     vector<unsigned int> indices;
     vector<Vector3> normals;
-    tie(indices, normals) = MeshTools::generateFlatNormals({
-        0, 1, 2,
-        1, 2, 3
-    }, {
+    vector<Vector4> vertices{
         {-1.0f, 0.0f, 0.0f},
         {0.0f, -1.0f, 0.0f},
         {0.0f, 1.0f, 0.0f},
         {1.0f, 0.0f, 0.0f}
-    });
+    };
+    tie(indices, normals) = MeshTools::generateFlatNormals({
+        0, 1, 2,
+        1, 2, 3
+    }, vertices);
 
 
     QVERIFY((indices == vector<unsigned int>{
