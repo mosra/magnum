@@ -248,6 +248,9 @@ template<size_t size, class T> class Matrix {
             return Matrix<size, T>(first, next...);
         }
 
+    #ifdef MAGNUM_GCC45_COMPATIBILITY
+    protected:
+    #endif
         /* Used internally instead of [][], because GCC does some heavy
            optimalization in release mode which breaks it */
         inline T& operator()(size_t col, size_t row) {
@@ -257,6 +260,9 @@ template<size_t size, class T> class Matrix {
             return _data[col*size+row];
         }
 
+    #ifdef MAGNUM_GCC45_COMPATIBILITY
+    private:
+    #endif
         T _data[size*size];
 };
 
