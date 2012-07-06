@@ -10,5 +10,9 @@ corrade_add_test(MathMatrix3Test Matrix3Test.h Matrix3Test.cpp ${CORRADE_UTILITY
 corrade_add_test(MathMatrix4Test Matrix4Test.h Matrix4Test.cpp ${CORRADE_UTILITY_LIBRARY})
 
 set(MathTest_MOC MathTest.h)
-set(MathTest_SRCS MathTest.cpp $<TARGET_OBJECTS:MagnumMathObjects>)
+if(NOT CMAKE_NO_OBJECT_TARGET)
+    set(MathTest_SRCS MathTest.cpp $<TARGET_OBJECTS:MagnumMathObjects>)
+else()
+    set(MathTest_SRCS MathTest.cpp ${MagnumMath_SRCS})
+endif()
 corrade_add_multifile_test(MathTest MathTest_MOC MathTest_SRCS)

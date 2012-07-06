@@ -38,17 +38,23 @@ set(Magnum_SRCS
     Trade/AbstractImporter.cpp
     Trade/MeshData.cpp
 )
-add_library(MagnumObjects OBJECT ${Magnum_SRCS})
+if(NOT CMAKE_NO_OBJECT_TARGET)
+    add_library(MagnumObjects OBJECT ${Magnum_SRCS})
+endif()
 
 # Files shared between main library and math unit test library
 set(MagnumMath_SRCS
     Math/Math.cpp
 )
-add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
+if(NOT CMAKE_NO_OBJECT_TARGET)
+    add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
+endif()
 
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
-set_target_properties(MagnumObjects MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+if(NOT CMAKE_NO_OBJECT_TARGET)
+    set_target_properties(MagnumObjects MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+endif()
 
 # Files compiled with different flags for main library and unit test library
 set(Magnum_GracefulAssert_SRCS
@@ -56,11 +62,19 @@ set(Magnum_GracefulAssert_SRCS
 )
 
 # Main library
-add_library(Magnum SHARED
-    $<TARGET_OBJECTS:MagnumObjects>
-    $<TARGET_OBJECTS:MagnumMathObjects>
-    ${Magnum_GracefulAssert_SRCS}
-)
+if(NOT CMAKE_NO_OBJECT_TARGET)
+    add_library(Magnum SHARED
+        $<TARGET_OBJECTS:MagnumObjects>
+        $<TARGET_OBJECTS:MagnumMathObjects>
+        ${Magnum_GracefulAssert_SRCS}
+    )
+else()
+    add_library(Magnum SHARED
+        ${Magnum_SRCS}
+        ${MagnumMath_SRCS}
+        ${Magnum_GracefulAssert_SRCS}
+    )
+endif()
 target_link_libraries(Magnum ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY})
 if(NOT TARGET_GLES)
     target_link_libraries(Magnum ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY})
@@ -83,10 +97,17 @@ if(BUILD_TESTS)
     enable_testing()
 
     # Library with graceful assert for testing
-    add_library(MagnumTestLib SHARED
-        $<TARGET_OBJECTS:MagnumObjects>
-        ${Magnum_GracefulAssert_SRCS}
-    )
+    if(NOT CMAKE_NO_OBJECT_TARGET)
+        add_library(MagnumTestLib SHARED
+            $<TARGET_OBJECTS:MagnumObjects>
+            ${Magnum_GracefulAssert_SRCS}
+        )
+    else()
+        add_library(MagnumTestLib SHARED
+            ${Magnum_SRCS}
+            ${Magnum_GracefulAssert_SRCS}
+        )
+    endif()
     set_target_properties(MagnumTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
     target_link_libraries(MagnumTestLib ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY})
     if(NOT TARGET_GLES)

@@ -1,5 +1,5 @@
 # CMake 2.8.8 required for OBJECT library target
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8)
 project(Magnum)
 
 option(TARGET_GLES "Build for OpenGL ES 2 instead of desktop OpenGL" OFF)
@@ -17,6 +17,11 @@ if(BUILD_TESTS)
     else()
         enable_testing()
     endif()
+endif()
+
+if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION} VERSION_LESS 2.8.8)
+    set(CMAKE_NO_OBJECT_TARGET 1)
+    message(WARNING "CMake version < 2.8.8 is used, compilation with tests enabled will take a lot more time.")
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Magnum_SOURCE_DIR}/modules/")
