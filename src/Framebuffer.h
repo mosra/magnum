@@ -30,7 +30,8 @@ namespace Magnum {
 /** @ingroup textures
 @brief %Framebuffer
 
-@requires_gl30 Extension @extension{EXT,framebuffer_object}
+Provides operations with framebuffers (configuring, clearing, blitting...) and
+creation and attaching of named framebuffers.
 */
 class MAGNUM_EXPORT Framebuffer {
     Framebuffer(const Framebuffer& other) = delete;
@@ -40,9 +41,47 @@ class MAGNUM_EXPORT Framebuffer {
 
     public:
         /**
+         * @brief Features
+         *
+         * If not specified otherwise, all features are disabled by default.
+         * @see setFeature()
+         */
+        enum class Feature: GLenum {
+            AlphaBlending = GL_BLEND,       /**< Alpha blending */
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Depth clamping. If enabled, ignores near and far clipping plane.
+             * @requires_gl
+             * @requires_gl32 Extension @extension{ARB,depth_clamp}
+             */
+            DepthClamp = GL_DEPTH_CLAMP,
+            #endif
+
+            DepthTest = GL_DEPTH_TEST,      /**< Depth test */
+            StencilTest = GL_STENCIL_TEST,  /**< Stencil test */
+            Dithering = GL_DITHER,          /**< Dithering (enabled by default) */
+            FaceCulling = GL_CULL_FACE      /**< Back face culling */
+        };
+
+        /**
+         * @brief Mask for clearing
+         *
+         * @see ClearMask, clear(), clear(ClearMask)
+         */
+        enum class Clear: GLbitfield {
+            Color = GL_COLOR_BUFFER_BIT,    /**< Color */
+            Depth = GL_DEPTH_BUFFER_BIT,    /**< Depth value */
+            Stencil = GL_STENCIL_BUFFER_BIT /**< Stencil value */
+        };
+
+        typedef Set<Clear, GLbitfield> ClearMask;       /**< @brief Mask for clearing */
+
+        /**
          * @brief %Framebuffer target
          *
          * @see bind(), bindDefault()
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         enum class Target: GLenum {
             #ifndef MAGNUM_TARGET_GLES
@@ -70,6 +109,7 @@ class MAGNUM_EXPORT Framebuffer {
          *
          * @see mapDefaultForDraw()
          * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         enum class DefaultDrawAttachment: GLenum {
             None = GL_NONE,                 /**< Don't use the output. */
@@ -84,6 +124,7 @@ class MAGNUM_EXPORT Framebuffer {
          *
          * @see mapDefaultForRead()
          * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         enum class DefaultReadAttachment: GLenum {
             FrontLeft = GL_FRONT_LEFT,      /**< Read from front left framebuffer. */
@@ -106,6 +147,7 @@ class MAGNUM_EXPORT Framebuffer {
          *      attachTexture2D(Target, DepthStencilAttachment, Texture2D*, GLint),
          *      attachCubeMapTexture(Target, DepthStencilAttachment, CubeMapTexture*, CubeMapTexture::Coordinate, GLint),
          *      attachTexture3D(Target, DepthStencilAttachment, Texture3D*, GLint)
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         enum class DepthStencilAttachment: GLenum {
             Depth = GL_DEPTH_ATTACHMENT,    /**< Depth output only. */
@@ -127,6 +169,7 @@ class MAGNUM_EXPORT Framebuffer {
          * Specifies which data are copied when performing blit operation
          * using blit().
          * @see BlitMask
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         enum class Blit: GLbitfield {
             Color = GL_COLOR_BUFFER_BIT,    /**< Color */
@@ -134,11 +177,79 @@ class MAGNUM_EXPORT Framebuffer {
             Stencil = GL_STENCIL_BUFFER_BIT /**< Stencil value */
         };
 
-        typedef Set<Blit, GLbitfield> BlitMask; /**< @brief Output mask for blitting */
+        /**
+         * @brief Output mask for blitting
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         */
+        typedef Set<Blit, GLbitfield> BlitMask;
+
+        /** @brief Set feature */
+        static void setFeature(Feature feature, bool enabled);
+
+        /**
+         * @brief Set clear color
+         *
+         * Initial value is `{0.0f, 0.0f, 0.0f, 1.0f}`.
+         */
+        inline static void setClearColor(const Vector4& color) {
+            glClearColor(color.r(), color.g(), color.b(), color.a());
+        }
+
+        /**
+         * @brief Clear framebuffer
+         *
+         * Clears color buffer, depth and stencil buffer in currently active
+         * framebuffer. If depth or stencil test is not enabled, it doesn't
+         * clear these buffers.
+         *
+         * @see setFeature(), clear(ClearMask)
+         */
+        inline static void clear() { glClear(static_cast<GLbitfield>(clearMask)); }
+
+        /**
+         * @brief Clear specified buffers in framebuffer
+         *
+         * @see clear()
+         */
+        inline static void clear(ClearMask mask) { glClear(static_cast<GLbitfield>(mask)); }
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Set clear depth
+         *
+         * Initial value is `1.0`.
+         * @requires_gl See setClearDepth(GLfloat), which is supported in OpenGL ES.
+         */
+        inline static void setClearDepth(GLdouble depth) { glClearDepth(depth); }
+        #endif
+
+        /**
+         * @overload
+         *
+         * @requires_gl41 Extension @extension{ARB,ES2_compatibility}
+         */
+        inline static void setClearDepth(GLfloat depth) { glClearDepthf(depth); }
+
+        /**
+         * @brief Set clear stencil
+         *
+         * Initial value is `0`.
+         */
+        inline static void setClearStencil(GLint stencil) { glClearStencil(stencil); }
+
+        /**
+         * @brief Set viewport size
+         *
+         * Call when window size changes.
+         * @see Camera::setViewport()
+         */
+        static void setViewport(const Math::Vector2<GLint>& position, const Math::Vector2<GLsizei>& size);
 
         /**
          * @brief Bind default framebuffer to given target
          * @param target     %Target
+         *
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         inline static void bindDefault(Target target) {
             glBindFramebuffer(static_cast<GLenum>(target), 0);
@@ -157,6 +268,7 @@ class MAGNUM_EXPORT Framebuffer {
          * work properly.
          * @see mapForDraw(), mapDefaultForRead()
          * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         static void mapDefaultForDraw(std::initializer_list<DefaultDrawAttachment> attachments);
 
@@ -168,6 +280,7 @@ class MAGNUM_EXPORT Framebuffer {
          * attached to work properly.
          * @see mapForRead(), mapDefaultForDraw()
          * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         inline static void mapDefaultForRead(DefaultReadAttachment attachment) {
             bindDefault(Target::Read);
@@ -226,6 +339,8 @@ class MAGNUM_EXPORT Framebuffer {
          * @param components        Color components
          * @param type              Data type
          * @param image             %Image where to put the data
+         *
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& dimensions, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image);
 
@@ -240,6 +355,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @param usage             %Buffer usage
          *
          * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& dimensions, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage);
         #endif
@@ -248,6 +364,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @brief Constructor
          *
          * Generates new OpenGL framebuffer.
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         inline Framebuffer() { glGenFramebuffers(1, &framebuffer); }
 
@@ -255,10 +372,15 @@ class MAGNUM_EXPORT Framebuffer {
          * @brief Destructor
          *
          * Deletes associated OpenGL framebuffer.
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         inline ~Framebuffer() { glDeleteFramebuffers(1, &framebuffer); }
 
-        /** @brief Bind framebuffer */
+        /**
+         * @brief Bind framebuffer
+         *
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         */
         inline void bind(Target target) {
             glBindFramebuffer(static_cast<GLenum>(target), framebuffer);
         }
@@ -276,6 +398,7 @@ class MAGNUM_EXPORT Framebuffer {
          * work properly.
          * @see mapDefaultForDraw(), mapForRead()
          * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         void mapForDraw(std::initializer_list<int> colorAttachments);
 
@@ -287,6 +410,7 @@ class MAGNUM_EXPORT Framebuffer {
          * attached for reading to work properly.
          * @see mapDefaultForRead(), mapForDraw()
          * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         inline void mapForRead(unsigned int colorAttachment) {
             bind(Target::Read);
@@ -299,6 +423,8 @@ class MAGNUM_EXPORT Framebuffer {
          * @param target            %Target
          * @param depthStencilAttachment Depth/stencil attachment
          * @param renderbuffer      Renderbuffer
+         *
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         inline void attachRenderbuffer(Target target, DepthStencilAttachment depthStencilAttachment, Renderbuffer* renderbuffer) {
             /** @todo Check for internal format compatibility */
@@ -311,6 +437,8 @@ class MAGNUM_EXPORT Framebuffer {
          * @param target            %Target
          * @param colorAttachment   Color attachment ID (number between 0 and 15)
          * @param renderbuffer      Renderbuffer
+         *
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         inline void attachRenderbuffer(Target target, unsigned int colorAttachment, Renderbuffer* renderbuffer) {
             /** @todo Check for internal format compatibility */
@@ -327,6 +455,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @param mipLevel          Mip level
          *
          * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         inline void attachTexture1D(Target target, DepthStencilAttachment depthStencilAttachment, Texture1D* texture, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -343,6 +472,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @param mipLevel          Mip level
          *
          * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         inline void attachTexture1D(Target target, unsigned int colorAttachment, Texture1D* texture, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -361,6 +491,7 @@ class MAGNUM_EXPORT Framebuffer {
          *      should be always 0.
          *
          * @see attachCubeMapTexture()
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         inline void attachTexture2D(Target target, DepthStencilAttachment depthStencilAttachment, Texture2D* texture, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -378,6 +509,7 @@ class MAGNUM_EXPORT Framebuffer {
          *      should be always 0.
          *
          * @see attachCubeMapTexture()
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         inline void attachTexture2D(Target target, unsigned int colorAttachment, Texture2D* texture, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -395,6 +527,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @param mipLevel          Mip level
          *
          * @see attachTexture2D()
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         inline void attachCubeMapTexture(Target target, DepthStencilAttachment depthStencilAttachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -411,6 +544,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @param mipLevel          Mip level
          *
          * @see attachTexture2D()
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         inline void attachCubeMapTexture(Target target, unsigned int colorAttachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -428,6 +562,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @param layer             Layer of 2D image within a 3D texture
          *
          * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         inline void attachTexture3D(Target target, DepthStencilAttachment depthStencilAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {
             /** @todo Check for internal format compatibility */
@@ -445,6 +580,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @param layer             Layer of 2D image within a 3D texture.
          *
          * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         inline void attachTexture3D(Target target, unsigned int colorAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {
             /** @todo Check for internal format compatibility */
@@ -455,6 +591,8 @@ class MAGNUM_EXPORT Framebuffer {
         #endif
 
     private:
+        static ClearMask clearMask;
+
         GLuint framebuffer;
 };
 

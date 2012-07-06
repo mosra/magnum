@@ -34,30 +34,6 @@ namespace Magnum {
 class MAGNUM_EXPORT Camera: public Object {
     public:
         /**
-         * @brief Features
-         *
-         * If not specified otherwise, all features are disabled by default.
-         * @see setFeature()
-         */
-        enum class Feature: GLenum {
-            AlphaBlending = GL_BLEND,       /**< Alpha blending */
-
-            #ifndef MAGNUM_TARGET_GLES
-            /**
-             * Depth clamping. If enabled, ignores near and far clipping plane.
-             * @requires_gl
-             * @requires_gl32 Extension @extension{ARB,depth_clamp}
-             */
-            DepthClamp = GL_DEPTH_CLAMP,
-            #endif
-
-            DepthTest = GL_DEPTH_TEST,      /**< Depth test */
-            StencilTest = GL_STENCIL_TEST,  /**< Stencil test */
-            Dithering = GL_DITHER,          /**< Dithering (enabled by default) */
-            FaceCulling = GL_CULL_FACE      /**< Back face culling */
-        };
-
-        /**
          * @brief Aspect ratio policy
          *
          * @see aspectRatioPolicy(), setAspectRatioPolicy()
@@ -67,42 +43,6 @@ class MAGNUM_EXPORT Camera: public Object {
             Extend,         /**< Extend on larger side of view */
             Clip            /**< Clip on smaller side of view */
         };
-
-        /** @brief Set feature */
-        static void setFeature(Feature feature, bool enabled);
-
-        /**
-         * @brief Set clear color
-         *
-         * Initial value is `{0.0f, 0.0f, 0.0f, 1.0f}`.
-         */
-        inline static void setClearColor(const Vector4& color) {
-            glClearColor(color.r(), color.g(), color.b(), color.a());
-        }
-
-        #ifndef MAGNUM_TARGET_GLES
-        /**
-         * @brief Set clear depth
-         *
-         * Initial value is `1.0`.
-         * @requires_gl See setClearDepth(GLfloat), which is supported in OpenGL ES.
-         */
-        inline static void setClearDepth(GLdouble depth) { glClearDepth(depth); }
-        #endif
-
-        /**
-         * @overload
-         *
-         * @requires_gl41 Extension @extension{ARB,ES2_compatibility}
-         */
-        inline static void setClearDepth(GLfloat depth) { glClearDepthf(depth); }
-
-        /**
-         * @brief Set clear stencil
-         *
-         * Initial value is `0`.
-         */
-        inline static void setClearStencil(GLint stencil) { glClearStencil(stencil); }
 
         /**
          * @brief Constructor
@@ -171,30 +111,22 @@ class MAGNUM_EXPORT Camera: public Object {
          * @brief Set viewport size
          *
          * Call when window size changes.
+         *
+         * Calls Framebuffer::setViewport() and stores viewport size
+         * internally.
          */
         virtual void setViewport(const Math::Vector2<GLsizei>& size);
 
         /**
          * @brief Draw the scene
          *
-         * Calls clear() and draws the scene using drawChildren().
+         * Calls Framebuffer::clear() and draws the scene using drawChildren().
          */
         virtual void draw();
 
         using Object::draw; /* Don't hide Object's draw() */
 
     protected:
-        /**
-         * @brief Clear framebuffer
-         *
-         * Clears color buffer, depth and stencil buffer in currently active
-         * framebuffer. If depth or stencil test is not enabled, it doesn't
-         * clear these buffers.
-         *
-         * @see setFeature()
-         */
-        inline static void clear() { glClear(clearMask); }
-
         /**
          * Recalculates camera matrix.
          */
@@ -208,8 +140,6 @@ class MAGNUM_EXPORT Camera: public Object {
         void drawChildren(Object* object, const Matrix4& transformationMatrix);
 
     private:
-        static GLbitfield clearMask;
-
         Matrix4 rawProjectionMatrix;
         Matrix4 _projectionMatrix;
         Matrix4 _cameraMatrix;

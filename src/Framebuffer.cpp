@@ -17,6 +17,25 @@
 
 namespace Magnum {
 
+Framebuffer::ClearMask Framebuffer::clearMask = Framebuffer::Clear::Color;
+
+void Framebuffer::setFeature(Feature feature, bool enabled) {
+    /* Enable or disable the feature */
+    enabled ? glEnable(static_cast<GLenum>(feature)) : glDisable(static_cast<GLenum>(feature));
+
+    /* Update clear mask, if needed */
+    ClearMask clearMaskChange;
+    if(feature == Feature::DepthTest) clearMaskChange = Clear::Color;
+    else if(feature == Feature::StencilTest) clearMaskChange = Clear::Stencil;
+    else return;
+
+    enabled ? clearMask |= clearMaskChange : clearMask &= ~clearMaskChange;
+}
+
+void Framebuffer::setViewport(const Math::Vector2<GLint>& position, const Math::Vector2<GLsizei>& size) {
+    glViewport(position.x(), position.y(), size.x(), size.y());
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void Framebuffer::mapDefaultForDraw(std::initializer_list<DefaultDrawAttachment> attachments) {
     GLenum* _attachments = new GLenum[attachments.size()];

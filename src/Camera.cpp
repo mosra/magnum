@@ -14,26 +14,12 @@
 */
 
 #include "Camera.h"
+#include "Framebuffer.h"
 #include "Scene.h"
 
 using namespace std;
 
 namespace Magnum {
-
-GLbitfield Camera::clearMask = GL_COLOR_BUFFER_BIT;
-
-void Camera::setFeature(Feature feature, bool enabled) {
-    /* Enable or disable the feature */
-    enabled ? glEnable(static_cast<GLenum>(feature)) : glDisable(static_cast<GLenum>(feature));
-
-    /* Update clear mask, if needed */
-    GLbitfield clearMaskChange;
-    if(feature == Feature::DepthTest) clearMaskChange = GL_DEPTH_BUFFER_BIT;
-    else if(feature == Feature::StencilTest) clearMaskChange = GL_STENCIL_BUFFER_BIT;
-    else return;
-
-    enabled ? clearMask |= clearMaskChange : clearMask &= ~clearMaskChange;
-}
 
 Camera::Camera(Object* parent): Object(parent), _aspectRatioPolicy(AspectRatioPolicy::Extend) {}
 
@@ -78,7 +64,7 @@ void Camera::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
 }
 
 void Camera::setViewport(const Math::Vector2<GLsizei>& size) {
-    glViewport(0, 0, size.x(), size.y());
+    Framebuffer::setViewport({0, 0}, size);
 
     _viewport = size;
     fixAspectRatio();
@@ -119,7 +105,7 @@ void Camera::draw() {
     Scene* s = scene();
     CORRADE_ASSERT(s, "Camera: cannot draw without camera attached to scene", )
 
-    clear();
+    Framebuffer::clear();
 
     /* Recursively draw child objects */
     drawChildren(s, cameraMatrix());
