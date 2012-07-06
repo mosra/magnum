@@ -87,7 +87,7 @@ template<class T, class U> class Set {
         }
 
         /** @brief Intersect two sets and assign */
-        inline Set<T, U>& operator&=(Set<T, U> other) const {
+        inline Set<T, U>& operator&=(Set<T, U> other) {
             value &= other.value;
             return *this;
         }
