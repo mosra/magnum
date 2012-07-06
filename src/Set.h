@@ -93,7 +93,7 @@ template<class T, class U> class Set {
         }
 
         /** @brief Value in underlying type */
-        inline constexpr UnderlyingType toUnderlyingType() const {
+        inline constexpr explicit operator UnderlyingType() const {
             return value;
         }
 
