@@ -92,6 +92,11 @@ template<class T, class U> class Set {
             return *this;
         }
 
+        /** @brief Set complement */
+        inline constexpr Set<T, U> operator~() const {
+            return Set<T, U>(~value);
+        }
+
         /** @brief Value in underlying type */
         inline constexpr explicit operator UnderlyingType() const {
             return value;
