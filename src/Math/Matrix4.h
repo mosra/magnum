@@ -62,6 +62,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief Rotation matrix
          * @param angle Rotation angle (counterclockwise, in radians)
          * @param vec   Rotation vector
+         *
+         * @todo optimize - Assume the vectors are normalized?
          */
         static Matrix4<T> rotation(T angle, const Vector3<T>& vec) {
             Vector3<T> vn = vec.normalized();
