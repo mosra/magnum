@@ -19,6 +19,11 @@
 
 #define COMPILER_MESSAGE_MAX_LENGTH 1024
 
+/* libgles-omap3-dev_4.03.00.02-r15.6 on BeagleBoard/Ångström linux 2011.3 doesn't have GLchar */
+#ifdef MAGNUM_TARGET_GLES
+typedef char GLchar;
+#endif
+
 using namespace std;
 
 namespace Magnum {
