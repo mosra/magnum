@@ -9,6 +9,25 @@ Please note that if you have a good excuse to either break the rules or modify
 them, feel free to do it (and update this guide accordingly, if appropriate).
 Nothing is worse than rule that hurts productivity instead of improving it.
 
+@section cmake CMake code
+
+All cmake functions and macros (e.g. `add_executable()`, `set()`) are
+lowercase, keywords (e.g. `FILES`, `DESTINATION`) are uppercase. Variables are
+mostly uppercase with underscores between words, except for variables with
+direct relation to any named target - then they have the target name as prefix
+with no case change, followed with underscore, the rest of variable name is
+uppercase, e.g. variable holding all sources for target `MagnuMeshTools` will
+be named `MagnumMeshTools_SRCS`.
+
+Multi-line calls (i.e. `set()`) have trailing parenthesis on the same line as
+last parameter, *not* on separate line:
+@code
+set(Magnum_SRCS
+    Object.cpp
+    Camera.cpp
+    Light.cpp)
+@endcode
+
 @section cpp C++ code
 
 @subsection cpp-files File naming and directory structure
