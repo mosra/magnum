@@ -1,10 +1,9 @@
-corrade_add_resource(Shaders MagnumShaders PhongShader.frag PhongShader.vert)
-set(Shaders_SRCS
+corrade_add_resource(MagnumShaders_RCS MagnumShaders PhongShader.frag PhongShader.vert)
+set(MagnumShaders_SRCS
     PhongShader.cpp
-    ${Shaders}
-)
+    ${MagnumShaders_RCS})
 
-add_library(MagnumShaders SHARED ${Shaders_SRCS})
+add_library(MagnumShaders SHARED ${MagnumShaders_SRCS})
 
 target_link_libraries(MagnumShaders Magnum)
 

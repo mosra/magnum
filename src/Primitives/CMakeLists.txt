@@ -3,8 +3,7 @@ set(MagnumPrimitives_SRCS
     Cube.cpp
     Icosphere.cpp
     Plane.cpp
-    UVSphere.cpp
-)
+    UVSphere.cpp)
 
 add_library(MagnumPrimitives STATIC ${MagnumPrimitives_SRCS})
 target_link_libraries(MagnumPrimitives Magnum)

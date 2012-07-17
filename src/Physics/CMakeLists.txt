@@ -5,8 +5,7 @@ set(MagnumPhysics_SRCS
     Line.cpp
     Plane.cpp
     ShapeGroup.cpp
-    Sphere.cpp
-)
+    Sphere.cpp)
 
 add_library(MagnumPhysics SHARED ${MagnumPhysics_SRCS})
 
