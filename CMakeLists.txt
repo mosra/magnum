@@ -10,11 +10,10 @@ if(BUILD_TESTS)
     find_package(Qt4)
 
     if(NOT QT4_FOUND)
-        message(WARNING "Qt4 is required for building unit tests. No tests will be build.")
-        set(BUILD_TESTS OFF)
-    else()
-        enable_testing()
+        message(FATAL_ERROR "Qt4, required for building unit tests, was not found. Set BUILD_TESTS to OFF to skip building them.")
     endif()
+
+    enable_testing()
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Magnum_SOURCE_DIR}/modules/")
