@@ -32,9 +32,9 @@ template<class T> class Matrix3: public Matrix<3, T> {
 
         /** @copydoc Matrix::Matrix(IdentityType, T) */
         inline constexpr explicit Matrix3(typename Matrix<3, T>::IdentityType = (Matrix<3, T>::Identity), T value = T(1)): Matrix<3, T>(
-            value, 0.0f, 0.0f,
-            0.0f, value, 0.0f,
-            0.0f, 0.0f, value
+            value, T(0), T(0),
+            T(0), value, T(0),
+            T(0), T(0), value
         ) {}
 
         /** @copydoc Matrix::Matrix(T, U...) */
