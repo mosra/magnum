@@ -92,7 +92,6 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
         # X/EGL context dependencies
         if(${component} STREQUAL EglContext)
-            find_package(OpenGLES2)
             find_package(EGL)
             find_package(X11)
             if(NOT OPENGLES2_FOUND OR NOT EGL_FOUND OR NOT X11_FOUND)
