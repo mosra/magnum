@@ -7,6 +7,9 @@
 # This command tries to find Magnum library and then defines:
 #
 #  MAGNUM_FOUND                 - Whether the library was found
+#  MAGNUM_TARGET_GLES           - Defined if Magnum was built for OpenGL ES,
+#   slightly reducing feature count. The same variable is also #defined in
+#   Magnum headers.
 #  MAGNUM_LIBRARY               - Magnum library
 #  MAGNUM_INCLUDE_DIR           - Root include dir
 #  MAGNUM_PLUGINS_IMPORTER_DIR  - Directory with importer plugins
@@ -47,13 +50,6 @@
 # Dependencies
 find_package(Corrade REQUIRED)
 
-if(NOT TARGET_GLES)
-    find_package(OpenGL REQUIRED)
-    find_package(GLEW REQUIRED)
-else()
-    find_package(OpenGLES2 REQUIRED)
-endif()
-
 # Magnum library
 find_library(MAGNUM_LIBRARY Magnum)
 
@@ -62,6 +58,22 @@ find_path(MAGNUM_INCLUDE_DIR
     NAMES Magnum.h
     PATH_SUFFIXES Magnum
 )
+
+# Configuration
+file(READ ${MAGNUM_INCLUDE_DIR}/magnumConfigure.h _magnumConfigure)
+
+# Built for OpenGL ES?
+string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES" _TARGET_GLES)
+if(NOT _TARGET_GLES EQUAL -1)
+    set(MAGNUM_TARGET_GLES 1)
+endif()
+
+if(NOT MAGNUM_TARGET_GLES)
+    find_package(OpenGL REQUIRED)
+    find_package(GLEW REQUIRED)
+else()
+    find_package(OpenGLES2 REQUIRED)
+endif()
 
 # Additional components
 foreach(component ${Magnum_FIND_COMPONENTS})
