@@ -56,8 +56,7 @@ find_library(MAGNUM_LIBRARY Magnum)
 # Root include dir
 find_path(MAGNUM_INCLUDE_DIR
     NAMES Magnum.h
-    PATH_SUFFIXES Magnum
-)
+    PATH_SUFFIXES Magnum)
 
 # Configuration
 file(READ ${MAGNUM_INCLUDE_DIR}/magnumConfigure.h _magnumConfigure)
@@ -139,8 +138,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     if(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES)
         find_path(_MAGNUM_${_COMPONENT}_INCLUDE_DIR
             NAMES ${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES}
-            PATHS ${MAGNUM_INCLUDE_DIR}/${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX}
-        )
+            PATHS ${MAGNUM_INCLUDE_DIR}/${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX})
     endif()
 
     # Decide if the library was found
@@ -154,8 +152,7 @@ endforeach()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Magnum
     REQUIRED_VARS MAGNUM_INCLUDE_DIR MAGNUM_LIBRARY
-    HANDLE_COMPONENTS
-)
+    HANDLE_COMPONENTS)
 
 # Installation dirs
 set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
@@ -170,8 +167,7 @@ mark_as_advanced(FORCE
     MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR
     MAGNUM_CMAKE_MODULE_INSTALL_DIR
     MAGNUM_INCLUDE_INSTALL_DIR
-    MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR
-)
+    MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR)
 
 # Importer plugins dir
 if(NOT WIN32)
