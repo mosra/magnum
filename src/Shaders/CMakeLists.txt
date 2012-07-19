@@ -3,7 +3,9 @@ set(MagnumShaders_SRCS
     PhongShader.cpp
     ${MagnumShaders_RCS})
 set(MagnumShaders_HEADERS
-    PhongShader.h)
+    PhongShader.h
+
+    magnumShadersVisibility.h)
 
 add_library(MagnumShaders SHARED ${MagnumShaders_SRCS})
 
