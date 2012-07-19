@@ -25,6 +25,9 @@ class Matrix3Test: public QObject {
     private slots:
         void constructIdentity();
 
+        void translation();
+        void scaling();
+        void rotation();
         void debug();
 };
 

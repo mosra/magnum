@@ -19,6 +19,7 @@
 #include <QtTest/QTest>
 
 #include "Matrix3.h"
+#include "Math.h"
 
 QTEST_APPLESS_MAIN(Magnum::Math::Test::Matrix3Test)
 
@@ -49,6 +50,36 @@ void Matrix3Test::constructIdentity() {
     QVERIFY(identity == identityExpected);
     QVERIFY(identity2 == identityExpected);
     QVERIFY(identity3 == identity3Expected);
+}
+
+void Matrix3Test::translation() {
+    Matrix3 matrix(
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        3.0f, 1.0f, 1.0f
+    );
+
+    QVERIFY(Matrix3::translation({3.0f, 1.0f}) == matrix);
+}
+
+void Matrix3Test::scaling() {
+    Matrix3 matrix(
+        3.0f, 0.0f, 0.0f,
+        0.0f, 1.5f, 0.0f,
+        0.0f, 0.0f, 1.0f
+    );
+
+    QVERIFY(Matrix3::scaling({3.0f, 1.5f}) == matrix);
+}
+
+void Matrix3Test::rotation() {
+    Matrix3 matrix(
+        0.965926f, 0.258819f, 0.0f,
+        -0.258819f, 0.965926f, 0.0f,
+        0.0f, 0.0f, 1.0f
+    );
+
+    QVERIFY(Matrix3::rotation(deg(15.0f)) == matrix);
 }
 
 void Matrix3Test::debug() {

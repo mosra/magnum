@@ -24,9 +24,56 @@
 
 namespace Magnum { namespace Math {
 
-/** @brief 3x3 matrix */
+/**
+@brief 3x3 matrix
+
+Provides functions for transformations in 2D. See also Matrix4 for 3D
+transformations.
+*/
 template<class T> class Matrix3: public Matrix<3, T> {
     public:
+        /**
+         * @brief 2D translation matrix
+         * @param vec   Translation vector
+         *
+         * @see Matrix4::translation()
+         */
+        inline constexpr static Matrix3<T> translation(const Vector2<T>& vec) {
+            return Matrix3<T>( /* Column-major! */
+                T(1), T(0), T(0),
+                T(0), T(1), T(0),
+                vec.x(), vec.y(), T(1)
+            );
+        }
+
+        /**
+         * @brief 2D scaling matrix
+         * @param vec   Scaling vector
+         *
+         * @see Matrix4::scaling()
+         */
+        inline constexpr static Matrix3<T> scaling(const Vector2<T>& vec) {
+            return Matrix3<T>( /* Column-major! */
+                vec.x(), T(0), T(0),
+                T(0), vec.y(), T(0),
+                T(0), T(0), T(1)
+            );
+        }
+
+        /**
+         * @brief 3D rotation matrix
+         * @param angle Rotation angle (counterclockwise, in radians)
+         *
+         * @see Matrix4::rotation()
+         */
+        static Matrix3<T> rotation(T angle) {
+            return Matrix3<T>( /* Column-major! */
+                T(cos(angle)), T(sin(angle)), T(0),
+                -T(sin(angle)), T(cos(angle)), T(0),
+                T(0), T(0), T(1)
+            );
+        }
+
         /** @copydoc Matrix::Matrix(ZeroType) */
         inline constexpr explicit Matrix3(typename Matrix<3, T>::ZeroType): Matrix<3, T>(Matrix<3, T>::Zero) {}
 

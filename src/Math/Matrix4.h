@@ -27,14 +27,18 @@ namespace Magnum { namespace Math {
 /**
 @brief 4x4 matrix
 
+Provides functions for transformations in 3D. See also Matrix3 for 2D
+transformations.
 @todo Shearing
 @todo Reflection
  */
 template<class T> class Matrix4: public Matrix<4, T> {
     public:
         /**
-         * @brief Translation matrix
+         * @brief 3D translation matrix
          * @param vec   Translation vector
+         *
+         * @see Matrix3::translation()
          */
         inline constexpr static Matrix4<T> translation(const Vector3<T>& vec) {
             return Matrix4<T>( /* Column-major! */
@@ -46,8 +50,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
         }
 
         /**
-         * @brief Scaling matrix
+         * @brief 3D scaling matrix
          * @param vec   Scaling vector
+         *
+         * @see Matrix3::scaling()
          */
         inline constexpr static Matrix4<T> scaling(const Vector3<T>& vec) {
             return Matrix4<T>( /* Column-major! */
@@ -59,10 +65,11 @@ template<class T> class Matrix4: public Matrix<4, T> {
         }
 
         /**
-         * @brief Rotation matrix
+         * @brief 3D rotation matrix
          * @param angle Rotation angle (counterclockwise, in radians)
          * @param vec   Rotation vector
          *
+         * @see Matrix3::rotation()
          * @todo optimize - Assume the vectors are normalized?
          */
         static Matrix4<T> rotation(T angle, const Vector3<T>& vec) {
