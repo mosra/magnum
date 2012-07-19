@@ -16,11 +16,14 @@
 # Additional dependencies are specified by the components. The optional
 # components are:
 #
-#  GlutContext   - GLUT context (depends on GLUT package)
 #  MeshTools     - MeshTools library
 #  Physics       - Physics library
 #  Primitives    - Library with stock geometric primitives (static)
 #  Shaders       - Library with stock shaders
+#
+#  EglContext    - EGL context (depends on EGL and X11 libraries)
+#  GlutContext   - GLUT context (depends on GLUT library)
+#  Sdl2Context   - SDL2 context (depends on SDL2 library)
 #
 # Example usage with specifying additional components is:
 #
