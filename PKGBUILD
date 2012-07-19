@@ -29,7 +29,7 @@ build() {
 
 check() {
     cd "$startdir/build"
-    ctest --output-on-failure
+    ctest --output-on-failure -E Benchmark
 }
 
 package() {
