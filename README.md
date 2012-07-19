@@ -74,7 +74,8 @@ documentation can be build by running:
     doxygen
 
 in root directory (i.e. where `Doxyfile` is). Resulting HTML documentation
-will be in `build/doc/` directory.
+will be in `build/doc/` directory. You might need to create `build/` directory
+if it doesn't exist yet.
 
 PLUGINS AND EXAMPLES
 ====================
