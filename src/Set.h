@@ -81,6 +81,11 @@ template<class T, class U> class Set {
             return Set<T, U>(~value);
         }
 
+        /** @brief Value as boolean */
+        inline constexpr explicit operator bool() const {
+            return value == 0;
+        }
+
         /** @brief Value in underlying type */
         inline constexpr explicit operator UnderlyingType() const {
             return value;
