@@ -2,9 +2,29 @@
 cmake_minimum_required(VERSION 2.8.8)
 project(Magnum)
 
+include(CMakeDependentOption)
+
 option(TARGET_GLES "Build for OpenGL ES 2 instead of desktop OpenGL" OFF)
 
+# Parts of the library
+option(WITH_EVERYTHING "Build everything (doesn't include contexts)" ON)
+option(WITH_MESHTOOLS "Build MeshTools library" OFF)
+option(WITH_PHYSICS "Build Physics library" OFF)
+option(WITH_PRIMITIVES "Builf Primitives library" OFF)
+option(WITH_SHADERS "Build Shaders library" OFF)
+
+cmake_dependent_option(WITH_EGLCONTEXT "Build EglContext library" OFF "TARGET_GLES" OFF)
+cmake_dependent_option(WITH_GLUTCONTEXT "Build GlutContext library" OFF "NOT TARGET_GLES" OFF)
+option(WITH_SDL2CONTEXT "Build Sdl2Context library" OFF)
+
 option(BUILD_TESTS "Build unit tests (requires Qt4)." OFF)
+
+if(WITH_EVERYTHING)
+    set(WITH_MESHTOOLS ON)
+    set(WITH_PHYSICS ON)
+    set(WITH_PRIMITIVES ON)
+    set(WITH_SHADERS ON)
+endif()
 
 if(BUILD_TESTS)
     find_package(Qt4)
@@ -25,8 +45,3 @@ include(FindMagnum)
 
 add_subdirectory(modules)
 add_subdirectory(src)
-
-install(DIRECTORY src/ DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}
-                 FILES_MATCHING PATTERN "*.h"
-                 PATTERN "*/Test" EXCLUDE
-                 PATTERN "src/Contexts" EXCLUDE)

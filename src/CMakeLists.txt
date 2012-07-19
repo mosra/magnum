@@ -28,6 +28,34 @@ set(Magnum_SRCS
 
     Trade/AbstractImporter.cpp
     Trade/MeshData.cpp)
+set(Magnum_HEADERS
+    AbstractImage.h
+    AbstractShaderProgram.h
+    AbstractTexture.h
+    BufferedImage.h
+    BufferedTexture.h
+    Buffer.h
+    Camera.h
+    CubeMapTextureArray.h
+    CubeMapTexture.h
+    Framebuffer.h
+    Image.h
+    ImageWrapper.h
+    IndexedMesh.h
+    Light.h
+    Magnum.h
+    Mesh.h
+    Object.h
+    Query.h
+    Renderbuffer.h
+    Scene.h
+    Set.h
+    Shader.h
+    SizeTraits.h
+    Texture.h
+    TypeTraits.h
+
+    magnumVisibility.h)
 add_library(MagnumObjects OBJECT ${Magnum_SRCS})
 
 # Files shared between main library and math unit test library
@@ -56,20 +84,33 @@ else()
 endif()
 
 install(TARGETS Magnum DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+install(FILES ${Magnum_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 
 # Install also configure file
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 
 add_subdirectory(Contexts)
 add_subdirectory(Math)
-add_subdirectory(MeshTools)
-add_subdirectory(Physics)
-add_subdirectory(Primitives)
-add_subdirectory(Shaders)
+add_subdirectory(Trade)
+
+if(WITH_MESHTOOLS)
+    add_subdirectory(MeshTools)
+endif()
+
+if(WITH_PHYSICS)
+    add_subdirectory(Physics)
+endif()
+
+if(WITH_PRIMITIVES)
+    add_subdirectory(Primitives)
+endif()
+
+if(WITH_SHADERS)
+    add_subdirectory(Shaders)
+endif()
 
 if(BUILD_TESTS)
     enable_testing()
-
     include_directories(${QT_INCLUDE_DIR})
 
     # Library with graceful assert for testing

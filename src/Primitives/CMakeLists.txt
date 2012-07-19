@@ -4,11 +4,18 @@ set(MagnumPrimitives_SRCS
     Icosphere.cpp
     Plane.cpp
     UVSphere.cpp)
+set(MagnumPrimitives_HEADERS
+    Capsule.h
+    Cube.h
+    Icosphere.h
+    Plane.h
+    UVSphere.h)
 
 add_library(MagnumPrimitives STATIC ${MagnumPrimitives_SRCS})
 target_link_libraries(MagnumPrimitives Magnum)
 
 install(TARGETS MagnumPrimitives DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+install(FILES ${MagnumPrimitives_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Primitives)
 
 if(BUILD_TESTS)
     enable_testing()

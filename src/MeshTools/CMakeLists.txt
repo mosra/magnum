@@ -1,6 +1,17 @@
 # Files shared between main library and unit test library
 set(MagnumMeshTools_SRCS
     Tipsify.cpp)
+set(MagnumMeshTools_HEADERS
+    Clean.h
+    CombineIndexedArrays.h
+    CompressIndices.h
+    FlipNormals.h
+    GenerateFlatNormals.h
+    Interleave.h
+    Subdivide.h
+    Tipsify.h
+
+    magnumMeshToolsVisibility.h)
 add_library(MagnumMeshToolsObjects OBJECT ${MagnumMeshTools_SRCS})
 
 # Set shared library flags for the objects, as they will be part of shared lib
@@ -19,6 +30,7 @@ add_library(MagnumMeshTools SHARED
 target_link_libraries(MagnumMeshTools Magnum)
 
 install(TARGETS MagnumMeshTools DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+install(FILES ${MagnumMeshTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/MeshTools)
 
 if(BUILD_TESTS)
     enable_testing()
