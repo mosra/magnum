@@ -37,6 +37,7 @@
 #
 #  MAGNUM_*_FOUND   - Whether the component was found
 #  MAGNUM_*_LIBRARIES - Component library and dependent libraries
+#  MAGNUM_*_INCLUDE_DIRS - Include dirs of module dependencies
 #
 # Additionally these variables are defined for internal usage:
 #
@@ -108,6 +109,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             find_package(SDL2)
             if(SDL2_FOUND)
                 set(_MAGNUM_${_COMPONENT}_LIBRARIES ${SDL2_LIBRARY})
+                set(_MAGNUM_${_COMPONENT}_INCLUDE_DIRS ${SDL2_INCLUDE_DIR})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
@@ -155,6 +157,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     # Decide if the library was found
     if(MAGNUM_${_COMPONENT}_LIBRARY AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
         set(MAGNUM_${_COMPONENT}_LIBRARIES ${MAGNUM_${_COMPONENT}_LIBRARY} ${_MAGNUM_${_COMPONENT}_LIBRARIES})
+        set(MAGNUM_${_COMPONENT}_INCLUDE_DIRS ${_MAGNUM_${_COMPONENT}_INCLUDE_DIRS})
         set(Magnum_${component}_FOUND TRUE)
     else()
         set(Magnum_${component}_FOUND FALSE)
