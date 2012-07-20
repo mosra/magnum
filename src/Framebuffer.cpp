@@ -25,7 +25,7 @@ void Framebuffer::setFeature(Feature feature, bool enabled) {
 
     /* Update clear mask, if needed */
     ClearMask clearMaskChange;
-    if(feature == Feature::DepthTest) clearMaskChange = Clear::Color;
+    if(feature == Feature::DepthTest) clearMaskChange = Clear::Depth;
     else if(feature == Feature::StencilTest) clearMaskChange = Clear::Stencil;
     else return;
 
