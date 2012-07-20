@@ -1,5 +1,9 @@
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wold-style-cast -pedantic -std=c++0x -fvisibility=hidden -fno-rtti -fno-exceptions")
 
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion")
+endif()
+
 # If targeting GLES, save it into configuration header
 if(TARGET_GLES)
     set(MAGNUM_TARGET_GLES 1)
