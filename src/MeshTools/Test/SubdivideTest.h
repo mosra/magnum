@@ -34,8 +34,8 @@ class SubdivideTest: public QObject {
 
                 Vector1(): data(0) {}
                 Vector1(int i): data(i) {}
-                int operator[](size_t i) const { return data; }
-                int& operator[](size_t i) { return data; }
+                int operator[](size_t) const { return data; }
+                int& operator[](size_t) { return data; }
                 bool operator==(Vector1 i) const { return i.data == data; }
                 Vector1 operator-(Vector1 i) const { return data-i.data; }
 

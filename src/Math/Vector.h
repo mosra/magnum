@@ -109,10 +109,10 @@ template<size_t size, class T> class Vector {
         }
 
         /** @brief Copy constructor */
-        inline constexpr Vector(const Vector<size, T>& other) = default;
+        inline constexpr Vector(const Vector<size, T>&) = default;
 
         /** @brief Assignment operator */
-        inline Vector<size, T>& operator=(const Vector<size, T>& other) = default;
+        inline Vector<size, T>& operator=(const Vector<size, T>&) = default;
 
         /**
          * @brief Raw data

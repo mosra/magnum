@@ -178,7 +178,7 @@ class MAGNUM_EXPORT Object {
          *
          * Default implementation does nothing.
          */
-        virtual void draw(const Matrix4& transformationMatrix, Camera* camera) {}
+        virtual void draw(const Matrix4& transformationMatrix, Camera* camera);
 
         /** @{ @name Caching helpers
          *
@@ -253,9 +253,7 @@ class MAGNUM_EXPORT Object {
          * }
          * @endcode
          */
-        virtual inline void clean(const Matrix4& absoluteTransformation) {
-            dirty = false;
-        }
+        virtual void clean(const Matrix4& absoluteTransformation);
 
         /*@}*/
 
@@ -265,6 +263,11 @@ class MAGNUM_EXPORT Object {
         Matrix4 _transformation;
         bool dirty;
 };
+
+/* Implementations for inline functions with unused parameters */
+inline void Object::draw(const Matrix4&, Camera*) {}
+inline void Object::clean(const Matrix4&) { dirty = false; }
+
 
 }
 

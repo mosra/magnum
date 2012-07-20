@@ -96,13 +96,13 @@ class Sdl2Context: public AbstractContext {
          * @param key       Key pressed
          * @param repeat    Non-zero if this is a key repeat
          */
-        inline virtual void keyPressEvent(Key key, Uint8 repeat) {}
+        virtual void keyPressEvent(Key key, Uint8 repeat);
 
         /**
          * @brief Key release event
          * @param key       Key release
          */
-        inline virtual void keyReleaseEvent(Key key) {}
+        virtual void keyReleaseEvent(Key key);
 
         /*@}*/
 
@@ -138,7 +138,7 @@ class Sdl2Context: public AbstractContext {
          * Called when mouse button is pressed or released. Default
          * implementation does nothing.
          */
-        virtual inline void mouseEvent(MouseButton button, MouseState state, const Math::Vector2<int>& position) {}
+        virtual void mouseEvent(MouseButton button, MouseState state, const Math::Vector2<int>& position);
 
         /**
          * @brief Mouse wheel event
@@ -148,7 +148,7 @@ class Sdl2Context: public AbstractContext {
          * Called when mouse wheel is rotated. Default implementation does
          * nothing.
          */
-        virtual inline void mouseWheelEvent(const Math::Vector2<int>& direction) {}
+        virtual void mouseWheelEvent(const Math::Vector2<int>& direction);
 
         /**
          * @brief Mouse motion event
@@ -157,7 +157,7 @@ class Sdl2Context: public AbstractContext {
          *
          * Called when mouse is moved. Default implementation does nothing.
          */
-        virtual inline void mouseMotionEvent(const Math::Vector2<int>& position, const Math::Vector2<int>& delta) {}
+        virtual void mouseMotionEvent(const Math::Vector2<int>& position, const Math::Vector2<int>& delta);
 
         /*@}*/
 
@@ -167,6 +167,13 @@ class Sdl2Context: public AbstractContext {
 
         bool _redraw;
 };
+
+/* Implementations for inline functions with unused parameters */
+inline void Sdl2Context::keyPressEvent(Sdl2Context::Key, Uint8) {}
+inline void Sdl2Context::keyReleaseEvent(Sdl2Context::Key) {}
+inline void Sdl2Context::mouseEvent(Sdl2Context::MouseButton, Sdl2Context::MouseState, const Math::Vector2<int>&) {}
+inline void Sdl2Context::mouseWheelEvent(const Math::Vector2<int>&) {}
+inline void Sdl2Context::mouseMotionEvent(const Math::Vector2<int>&, const Math::Vector2<int>&) {}
 
 }}
 

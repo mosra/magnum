@@ -117,10 +117,10 @@ template<size_t size, class T> class Matrix {
         #endif
 
         /** @brief Copy constructor */
-        inline constexpr Matrix(const Matrix<size, T>& other) = default;
+        inline constexpr Matrix(const Matrix<size, T>&) = default;
 
         /** @brief Assignment operator */
-        inline Matrix<size, T>& operator=(const Matrix<size, T>& other) = default;
+        inline Matrix<size, T>& operator=(const Matrix<size, T>&) = default;
 
         /**
          * @brief Raw data
@@ -244,7 +244,7 @@ template<size_t size, class T> class Matrix {
             return from(s, next..., first[sequence]...);
         }
 
-        template<size_t ...sequence, class ...U> inline constexpr static Matrix<size, T> from(Implementation::Sequence<sequence...> s, T first, U... next) {
+        template<size_t ...sequence, class ...U> inline constexpr static Matrix<size, T> from(Implementation::Sequence<sequence...>, T first, U... next) {
             return Matrix<size, T>(first, next...);
         }
 
