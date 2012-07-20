@@ -81,7 +81,7 @@ bool TgaImporter::open(istream& in, const string& name) {
             components = AbstractImage::Components::BGRA;
             break;
         default:
-            Error() << "TgaImporter: unsupported bits-per-pixel:" << (int) header.bpp;
+            Error() << "TgaImporter: unsupported bits-per-pixel:" << int(header.bpp);
             return false;
     }
 
