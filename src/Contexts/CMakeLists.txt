@@ -31,6 +31,8 @@ if(WITH_EGLCONTEXT)
     find_package(X11)
     if(EGL_FOUND AND X11_FOUND)
         add_library(MagnumEglContext STATIC EglContext.cpp)
+        # X11 macros are a mess, disable warnings for C-style casts
+        set_target_properties(MagnumEglContext PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
         install(FILES EglContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
         install(TARGETS MagnumEglContext DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
     else()
