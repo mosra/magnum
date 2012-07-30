@@ -39,7 +39,7 @@ class MAGNUM_EXPORT Scene: public Object {
         void rotate(GLfloat angle, Vector3 vec, Transformation type = Transformation::Global) = delete;
 
     private:
-        inline virtual void draw(const Magnum::Matrix4& transformationMatrix, Camera* camera) {}
+        inline void draw(const Magnum::Matrix4&, Camera*) {}
 };
 
 }

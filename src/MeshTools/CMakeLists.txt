@@ -1,7 +1,17 @@
 # Files shared between main library and unit test library
 set(MagnumMeshTools_SRCS
-    Tipsify.cpp
-)
+    Tipsify.cpp)
+set(MagnumMeshTools_HEADERS
+    Clean.h
+    CombineIndexedArrays.h
+    CompressIndices.h
+    FlipNormals.h
+    GenerateFlatNormals.h
+    Interleave.h
+    Subdivide.h
+    Tipsify.h
+
+    magnumMeshToolsVisibility.h)
 if(NOT CMAKE_NO_OBJECT_TARGET)
     add_library(MagnumMeshToolsObjects OBJECT ${MagnumMeshTools_SRCS})
 endif()
@@ -15,24 +25,22 @@ endif()
 # Files compiled with different flags for main library and unit test library
 set(MagnumMeshTools_GracefulAssert_SRCS
     FlipNormals.cpp
-    GenerateFlatNormals.cpp
-)
+    GenerateFlatNormals.cpp)
 
 # Main library
 if(NOT CMAKE_NO_OBJECT_TARGET)
     add_library(MagnumMeshTools SHARED
         $<TARGET_OBJECTS:MagnumMeshToolsObjects>
-        ${MagnumMeshTools_GracefulAssert_SRCS}
-    )
+        ${MagnumMeshTools_GracefulAssert_SRCS})
 else()
     add_library(MagnumMeshTools SHARED
         ${MagnumMeshTools_SRCS}
-        ${MagnumMeshTools_GracefulAssert_SRCS}
-    )
+        ${MagnumMeshTools_GracefulAssert_SRCS})
 endif()
 target_link_libraries(MagnumMeshTools Magnum)
 
 install(TARGETS MagnumMeshTools DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+install(FILES ${MagnumMeshTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/MeshTools)
 
 if(BUILD_TESTS)
     enable_testing()
@@ -41,13 +49,11 @@ if(BUILD_TESTS)
     if(NOT CMAKE_NO_OBJECT_TARGET)
         add_library(MagnumMeshToolsTestLib SHARED
             $<TARGET_OBJECTS:MagnumMeshToolsObjects>
-            ${MagnumMeshTools_GracefulAssert_SRCS}
-        )
+            ${MagnumMeshTools_GracefulAssert_SRCS})
     else()
         add_library(MagnumMeshToolsTestLib SHARED
             ${MagnumMeshTools_SRCS}
-            ${MagnumMeshTools_GracefulAssert_SRCS}
-        )
+            ${MagnumMeshTools_GracefulAssert_SRCS})
     endif()
     set_target_properties(MagnumMeshToolsTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
     target_link_libraries(MagnumMeshToolsTestLib Magnum)

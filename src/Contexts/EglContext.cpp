@@ -15,6 +15,8 @@
 
 #include "EglContext.h"
 
+#define None 0L // redef Xlib nonsense
+
 using namespace std;
 
 namespace Magnum { namespace Contexts {

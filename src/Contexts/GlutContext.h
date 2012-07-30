@@ -127,7 +127,7 @@ class GlutContext: public AbstractContext {
          *
          * Called when an key is pressed. Default implementation does nothing.
          */
-        virtual inline void keyEvent(Key key, const Math::Vector2<int>& position) {}
+        virtual void keyEvent(Key key, const Math::Vector2<int>& position);
 
         /*@}*/
 
@@ -182,7 +182,7 @@ class GlutContext: public AbstractContext {
          * Called when mouse button is pressed or released. Default
          * implementation does nothing.
          */
-        virtual inline void mouseEvent(MouseButton button, MouseState state, const Math::Vector2<int>& position) {}
+        virtual void mouseEvent(MouseButton button, MouseState state, const Math::Vector2<int>& position);
 
         /**
          * @brief Mouse motion event
@@ -192,7 +192,7 @@ class GlutContext: public AbstractContext {
          *
          * @see setMouseTracking()
          */
-        virtual inline void mouseMotionEvent(const Math::Vector2<int>& position) {}
+        virtual void mouseMotionEvent(const Math::Vector2<int>& position);
 
         /*@}*/
 
@@ -222,6 +222,11 @@ class GlutContext: public AbstractContext {
         int& argc;
         char** argv;
 };
+
+/* Implementations for inline functions with unused parameters */
+inline void GlutContext::keyEvent(GlutContext::Key, const Math::Vector2<int>&) {}
+inline void GlutContext::mouseEvent(GlutContext::MouseButton, GlutContext::MouseState, const Math::Vector2<int>&) {}
+inline void GlutContext::mouseMotionEvent(const Math::Vector2<int>&) {}
 
 }}
 

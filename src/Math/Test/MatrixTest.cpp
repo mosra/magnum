@@ -110,7 +110,7 @@ void MatrixTest::data() {
 
     m[1][2] = 1.5f;
 
-    QVERIFY(m[2][1] == 1.0f);
+    QCOMPARE(m[2][1], 1.0f);
     QVERIFY(m[3] == vector);
 
     Matrix4 expected(

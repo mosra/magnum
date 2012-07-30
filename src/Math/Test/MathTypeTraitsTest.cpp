@@ -47,8 +47,8 @@ template<class T> void MathTypeTraitsTest::_equalsIntegral() {
 }
 
 template<class T> void MathTypeTraitsTest::_equalsFloatingPoint() {
-    QVERIFY(MathTypeTraits<T>::equals(1.0f+MathTypeTraits<T>::epsilon()/2, 1.0f));
-    QVERIFY(!MathTypeTraits<T>::equals(1.0f+MathTypeTraits<T>::epsilon()*2, 1.0f));
+    QVERIFY(MathTypeTraits<T>::equals(T(1)+MathTypeTraits<T>::epsilon()/T(2), T(1)));
+    QVERIFY(!MathTypeTraits<T>::equals(T(1)+MathTypeTraits<T>::epsilon()*T(2), T(1)));
 
     QEXPECT_FAIL(0, "Comparing to infinity is broken", Continue);
     QVERIFY(MathTypeTraits<T>::equals(std::numeric_limits<T>::infinity(),

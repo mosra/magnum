@@ -19,12 +19,12 @@ using namespace std;
 
 namespace Magnum { namespace Trade {
 
-bool AbstractImporter::open(const std::string& filename) {
+bool AbstractImporter::open(const std::string&) {
     Error() << plugin() << "doesn't support opening files";
     return false;
 }
 
-bool AbstractImporter::open(std::istream& in) {
+bool AbstractImporter::open(std::istream&) {
     Error() << plugin() << "doesn't support opening input streams";
     return false;
 }

@@ -27,43 +27,52 @@ namespace Magnum { namespace Math {
 /**
 @brief 4x4 matrix
 
+Provides functions for transformations in 3D. See also Matrix3 for 2D
+transformations.
 @todo Shearing
 @todo Reflection
  */
 template<class T> class Matrix4: public Matrix<4, T> {
     public:
         /**
-         * @brief Translation matrix
+         * @brief 3D translation matrix
          * @param vec   Translation vector
+         *
+         * @see Matrix3::translation()
          */
         inline constexpr static Matrix4<T> translation(const Vector3<T>& vec) {
-            return Matrix4( /* Column-major! */
-                1.0f, 0.0f, 0.0f, 0.0f,
-                0.0f, 1.0f, 0.0f, 0.0f,
-                0.0f, 0.0f, 1.0f, 0.0f,
-                vec.x(), vec.y(), vec.z(), 1.0f
+            return Matrix4<T>( /* Column-major! */
+                T(1), T(0), T(0), T(0),
+                T(0), T(1), T(0), T(0),
+                T(0), T(0), T(1), T(0),
+                vec.x(), vec.y(), vec.z(), T(1)
             );
         }
 
         /**
-         * @brief Scaling matrix
+         * @brief 3D scaling matrix
          * @param vec   Scaling vector
+         *
+         * @see Matrix3::scaling()
          */
-        inline constexpr static Matrix4 scaling(const Vector3<T>& vec) {
-            return Matrix4( /* Column-major! */
-                vec.x(), 0.0f, 0.0f, 0.0f,
-                0.0f, vec.y(), 0.0f, 0.0f,
-                0.0f, 0.0f, vec.z(), 0.0f,
-                0.0f, 0.0f, 0.0f, 1.0f
+        inline constexpr static Matrix4<T> scaling(const Vector3<T>& vec) {
+            return Matrix4<T>( /* Column-major! */
+                vec.x(), T(0), T(0), T(0),
+                T(0), vec.y(), T(0), T(0),
+                T(0), T(0), vec.z(), T(0),
+                T(0), T(0), T(0), T(1)
             );
         }
 
         /**
-         * @brief Rotation matrix
+         * @brief 3D rotation matrix
          * @param angle Rotation angle (counterclockwise, in radians)
          * @param vec   Rotation vector
+         *
+         * @see Matrix3::rotation()
+         * @todo optimize - Assume the vectors are normalized?
          */
-        static Matrix4 rotation(T angle, const Vector3<T>& vec) {
+        static Matrix4<T> rotation(T angle, const Vector3<T>& vec) {
             Vector3<T> vn = vec.normalized();
 
             T sine = sin(angle);
@@ -77,7 +86,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
             T yz = vn.y()*vn.z();
             T zz = vn.z()*vn.z();
 
-            return Matrix4( /* Column-major! */
+            return Matrix4<T>( /* Column-major! */
                 cosine + xx*oneMinusCosine,
                     xy*oneMinusCosine + vn.z()*sine,
                         xz*oneMinusCosine - vn.y()*sine,
@@ -99,10 +108,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
 
         /** @copydoc Matrix::Matrix(IdentityType, T) */
         inline constexpr explicit Matrix4(typename Matrix<4, T>::IdentityType = (Matrix<4, T>::Identity), T value = T(1)): Matrix<4, T>(
-            value, 0.0f, 0.0f, 0.0f,
-            0.0f, value, 0.0f, 0.0f,
-            0.0f, 0.0f, value, 0.0f,
-            0.0f, 0.0f, 0.0f, value
+            value, T(0), T(0), T(0),
+            T(0), value, T(0), T(0),
+            T(0), T(0), value, T(0),
+            T(0), T(0), T(0), value
         ) {}
 
         /** @copydoc Matrix::Matrix(T, U...) */

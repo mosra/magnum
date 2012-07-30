@@ -54,31 +54,15 @@ template<class T, class U> class Set {
         /** @brief Create set from one value */
         inline constexpr Set(T value): value(static_cast<UnderlyingType>(value)) {}
 
-        /** @brief Add value to the set */
-        inline constexpr Set<T, U> operator|(T other) const {
-            return Set<T, U>(value | static_cast<UnderlyingType>(other));
-        }
-
         /** @brief Union of two sets */
         inline constexpr Set<T, U> operator|(Set<T, U> other) const {
             return Set<T, U>(value | other.value);
-        }
-
-        /** @brief Add value to the set and assign */
-        inline Set<T, U>& operator|=(T other) {
-            value |= static_cast<UnderlyingType>(other);
-            return *this;
         }
 
         /** @brief Union two sets and assign */
         inline Set<T, U>& operator|=(Set<T, U> other) {
             value |= other.value;
             return *this;
-        }
-
-        /** @brief Check if given value is in the set */
-        inline constexpr T operator&(T other) const {
-            return static_cast<T>(value & static_cast<UnderlyingType>(other));
         }
 
         /** @brief Intersection of two sets */
@@ -95,6 +79,11 @@ template<class T, class U> class Set {
         /** @brief Set complement */
         inline constexpr Set<T, U> operator~() const {
             return Set<T, U>(~value);
+        }
+
+        /** @brief Value as boolean */
+        inline constexpr explicit operator bool() const {
+            return value == 0;
         }
 
         /** @brief Value in underlying type */

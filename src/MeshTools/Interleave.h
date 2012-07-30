@@ -69,7 +69,7 @@ class Interleave {
             return first.size();
         }
 
-        template<class T, class ...U> inline static size_t stride(const T& first, const U&... next) {
+        template<class T, class ...U> inline static size_t stride(const T&, const U&... next) {
             return sizeof(typename T::value_type) + stride(next...);
         }
 

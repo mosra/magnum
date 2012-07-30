@@ -65,7 +65,7 @@ namespace Implementation {
         }
     };
     template<> struct Pow<0> {
-        template<class T> inline constexpr T operator()(T base) const { return 1; }
+        template<class T> inline constexpr T operator()(T) const { return 1; }
     };
 }
 #endif

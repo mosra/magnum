@@ -9,6 +9,31 @@ Please note that if you have a good excuse to either break the rules or modify
 them, feel free to do it (and update this guide accordingly, if appropriate).
 Nothing is worse than rule that hurts productivity instead of improving it.
 
+You can also take inspiration from other thorougly written coding style
+guidelines of large projects:
+
+ - LLVM: http://llvm.org/docs/CodingStandards.html
+ - Qt: http://qt-project.org/wiki/Qt_Coding_Style
+
+@section cmake CMake code
+
+All cmake functions and macros (e.g. `add_executable()`, `set()`) are
+lowercase, keywords (e.g. `FILES`, `DESTINATION`) are uppercase. Variables are
+mostly uppercase with underscores between words, except for variables with
+direct relation to any named target - then they have the target name as prefix
+with no case change, followed with underscore, the rest of variable name is
+uppercase, e.g. variable holding all sources for target `MagnuMeshTools` will
+be named `MagnumMeshTools_SRCS`.
+
+Multi-line calls (i.e. `set()`) have trailing parenthesis on the same line as
+last parameter, *not* on separate line:
+@code
+set(Magnum_SRCS
+    Object.cpp
+    Camera.cpp
+    Light.cpp)
+@endcode
+
 @section cpp C++ code
 
 @subsection cpp-files File naming and directory structure
@@ -206,9 +231,10 @@ switch(type) {
 }
 @endcode
 
-@subsubsection cpp-virtual Virtual functions
+@subsubsection cpp-keywords Class member and function keywords
 
-Only base virtual functions should have `virtual` keyword, not the
+Use keywords in this order: `template virtual inline constexpr static`. Only
+base virtual functions should have `virtual` keyword, not the
 reimplementations.
 
 @subsubsection cpp-includes Includes
@@ -230,6 +256,49 @@ the macro is long or contains code which should be spanned or multiple lines,
 it should be wrapped on multiple lines, each successive line indented and the
 line wrapping indicator `\` should be aligned around 80th column, preferably
 on some tab-stop.
+
+@subsection cpp-constexpr Constant expressions and constants
+
+Use `constexpr` keyword as much as possible, mainly for getters and static
+pure functions, e.g. Matrix4::translation(). If the function is not a single
+return-statement, try hard to make it so.
+
+Traits class members and class constants which are not meant to be referenced
+or pointed to should be defined as inline (constexpr) function, because
+declaring them as static const variable will result in another (probably
+unwanted) symbol.
+
+@subsection cpp-assert Assertions
+
+Use asserts as much as possible. %Corrade utility library has convenient
+`CORRADE_ASSERT()` macro, which does everything needed - checks the statement,
+prints given message to error output and exits immediately or returns default
+value:
+
+@code
+T operator[](size_t pos) const {
+    CORRADE_ASSERT(pos < size(), "Index out of range", T())
+    return data[pos];
+}
+@endcode
+
+@subsection cpp-forbidden Forbidden C/C++ features
+
+Don't use C-style casts, use C++-style `static_cast` and `reinterpret_cast`
+instead. For numeric types (e.g. casting from int to float) you can use
+"constructor cast":
+
+@code
+int a = 22;
+int b = 7;
+float pi = ((float) a)/b;           // bad!
+float pi = static_cast<float>(a)/b; // good
+float pi = float(a)/b;              // even better here
+@endcode
+
+Don't use RTTI (`dynamic_cast` and `std::typeinfo`) and exceptions. They
+violate C++ principle of "don't pay for what you don't use" and thus they are
+disabled in the code (GCC/Clang option `-fno-rtti -fno-exceptions`).
 
 @section comments Comments
 

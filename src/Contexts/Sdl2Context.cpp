@@ -17,7 +17,7 @@
 
 namespace Magnum { namespace Contexts {
 
-Sdl2Context::Sdl2Context(int argc, char** argv, const std::string& name, const Math::Vector2<GLsizei>& size): _redraw(true) {
+Sdl2Context::Sdl2Context(int, char**, const std::string& name, const Math::Vector2<GLsizei>& size): _redraw(true) {
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         Error() << "Cannot initialize SDL.";
         exit(1);

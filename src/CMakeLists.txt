@@ -1,5 +1,10 @@
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -std=c++0x -fvisibility=hidden")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wold-style-cast -pedantic -std=c++0x -fvisibility=hidden -fno-rtti -fno-exceptions")
 
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion")
+endif()
+
+# If targeting GLES, save it into configuration header
 if(TARGET_GLES)
     set(MAGNUM_TARGET_GLES 1)
 endif()
@@ -36,19 +41,49 @@ set(Magnum_SRCS
     TypeTraits.cpp
 
     Trade/AbstractImporter.cpp
-    Trade/MeshData.cpp
-)
+    Trade/MeshData.cpp)
+set(Magnum_HEADERS
+    AbstractImage.h
+    AbstractShaderProgram.h
+    AbstractTexture.h
+    BufferedImage.h
+    BufferedTexture.h
+    Buffer.h
+    Camera.h
+    CubeMapTextureArray.h
+    CubeMapTexture.h
+    Framebuffer.h
+    Image.h
+    ImageWrapper.h
+    IndexedMesh.h
+    Light.h
+    Magnum.h
+    Mesh.h
+    Object.h
+    Query.h
+    Renderbuffer.h
+    Scene.h
+    Set.h
+    Shader.h
+    SizeTraits.h
+    Texture.h
+    TypeTraits.h
+
+    magnumVisibility.h)
 if(NOT CMAKE_NO_OBJECT_TARGET)
     add_library(MagnumObjects OBJECT ${Magnum_SRCS})
 endif()
 
 # Files shared between main library and math unit test library
 set(MagnumMath_SRCS
-    Math/Math.cpp
-)
+    Math/Math.cpp)
 if(NOT CMAKE_NO_OBJECT_TARGET)
     add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
 endif()
+
+# Files compiled with different flags for main library and unit test library
+set(Magnum_GracefulAssert_SRCS
+    Object.cpp)
 
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
@@ -56,24 +91,17 @@ if(NOT CMAKE_NO_OBJECT_TARGET)
     set_target_properties(MagnumObjects MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 endif()
 
-# Files compiled with different flags for main library and unit test library
-set(Magnum_GracefulAssert_SRCS
-    Object.cpp
-)
-
 # Main library
 if(NOT CMAKE_NO_OBJECT_TARGET)
     add_library(Magnum SHARED
         $<TARGET_OBJECTS:MagnumObjects>
         $<TARGET_OBJECTS:MagnumMathObjects>
-        ${Magnum_GracefulAssert_SRCS}
-    )
+        ${Magnum_GracefulAssert_SRCS})
 else()
     add_library(Magnum SHARED
         ${Magnum_SRCS}
         ${MagnumMath_SRCS}
-        ${Magnum_GracefulAssert_SRCS}
-    )
+        ${Magnum_GracefulAssert_SRCS})
 endif()
 target_link_libraries(Magnum ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY})
 if(NOT TARGET_GLES)
@@ -81,32 +109,46 @@ if(NOT TARGET_GLES)
 else()
     target_link_libraries(Magnum ${OPENGLES2_LIBRARY})
 endif()
+
 install(TARGETS Magnum DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+install(FILES ${Magnum_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 
 # Install also configure file
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 
 add_subdirectory(Contexts)
 add_subdirectory(Math)
-add_subdirectory(MeshTools)
-add_subdirectory(Physics)
-add_subdirectory(Primitives)
-add_subdirectory(Shaders)
+add_subdirectory(Trade)
+
+if(WITH_MESHTOOLS)
+    add_subdirectory(MeshTools)
+endif()
+
+if(WITH_PHYSICS)
+    add_subdirectory(Physics)
+endif()
+
+if(WITH_PRIMITIVES)
+    add_subdirectory(Primitives)
+endif()
+
+if(WITH_SHADERS)
+    add_subdirectory(Shaders)
+endif()
 
 if(BUILD_TESTS)
     enable_testing()
+    include_directories(${QT_INCLUDE_DIR})
 
     # Library with graceful assert for testing
     if(NOT CMAKE_NO_OBJECT_TARGET)
         add_library(MagnumTestLib SHARED
             $<TARGET_OBJECTS:MagnumObjects>
-            ${Magnum_GracefulAssert_SRCS}
-        )
+            ${Magnum_GracefulAssert_SRCS})
     else()
         add_library(MagnumTestLib SHARED
             ${Magnum_SRCS}
-            ${Magnum_GracefulAssert_SRCS}
-        )
+            ${Magnum_GracefulAssert_SRCS})
     endif()
     set_target_properties(MagnumTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
     target_link_libraries(MagnumTestLib ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY})
@@ -116,6 +158,5 @@ if(BUILD_TESTS)
         target_link_libraries(MagnumTestLib ${OPENGLES2_LIBRARY})
     endif()
 
-    include_directories(${QT_INCLUDE_DIR})
     add_subdirectory(Test)
 endif()
