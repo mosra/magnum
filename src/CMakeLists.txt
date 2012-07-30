@@ -69,6 +69,7 @@ set(Magnum_HEADERS
     Texture.h
     TypeTraits.h
 
+    magnumCompatibility.h
     magnumVisibility.h)
 if(NOT CMAKE_NO_OBJECT_TARGET)
     add_library(MagnumObjects OBJECT ${Magnum_SRCS})
