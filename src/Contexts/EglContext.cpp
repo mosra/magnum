@@ -21,7 +21,7 @@ using namespace std;
 
 namespace Magnum { namespace Contexts {
 
-EglContext::EglContext(int& argc, char** argv, const string& title, const Math::Vector2<GLsizei>& size): viewportSize(size) {
+EglContext::EglContext(int&, char**, const string& title, const Math::Vector2<GLsizei>& size): viewportSize(size) {
     /* Get default X display and root window, init EGL */
     xDisplay = XOpenDisplay(0);
     display = eglGetDisplay(xDisplay);
