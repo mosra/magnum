@@ -165,7 +165,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 endforeach()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Magnum
+find_package_handle_standard_args(Magnum DEFAULT_MSG
     REQUIRED_VARS MAGNUM_INCLUDE_DIR MAGNUM_LIBRARY
     HANDLE_COMPONENTS)
 
