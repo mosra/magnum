@@ -19,7 +19,8 @@
  * @brief Class Magnum::Trade::AbstractImporter
  */
 
-#include "PluginManager/Plugin.h"
+#include <PluginManager/Plugin.h>
+
 #include "ImageData.h"
 #include "Set.h"
 

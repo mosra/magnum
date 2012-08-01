@@ -16,7 +16,6 @@
 #include "SphereTest.h"
 
 #include <QtTest/QTest>
-#include "Utility/Debug.h"
 
 #include "Physics/Sphere.h"
 

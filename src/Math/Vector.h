@@ -20,8 +20,8 @@
  */
 
 #include <cmath>
+#include <Utility/Debug.h>
 
-#include "Utility/Debug.h"
 #include "MathTypeTraits.h"
 
 namespace Magnum { namespace Math {

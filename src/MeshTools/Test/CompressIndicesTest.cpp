@@ -16,8 +16,8 @@
 #include "CompressIndicesTest.h"
 
 #include <QtTest/QTest>
+#include <Utility/Endianness.h>
 
-#include "Utility/Endianness.h"
 #include "MeshTools/CompressIndices.h"
 
 QTEST_APPLESS_MAIN(Magnum::MeshTools::Test::CompressIndicesTest)
