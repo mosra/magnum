@@ -15,14 +15,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
+#include <TestSuite/Tester.h>
 
 namespace Magnum { namespace Trade { namespace TgaImporter { namespace Test {
 
-class TgaImporterTest: public QObject {
-    Q_OBJECT
+class TgaImporterTest: public Corrade::TestSuite::Tester<TgaImporterTest> {
+    public:
+        TgaImporterTest();
 
-    private slots:
         void openInexistent();
         void openShort();
         void paletted();

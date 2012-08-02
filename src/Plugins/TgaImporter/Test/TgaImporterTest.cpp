@@ -15,24 +15,31 @@
 
 #include "TgaImporterTest.h"
 
-#include <QtTest/QTest>
-
-#include "Utility/Debug.h"
 #include "../TgaImporter.h"
 
 using namespace std;
 
-QTEST_APPLESS_MAIN(Magnum::Trade::TgaImporter::Test::TgaImporterTest)
+CORRADE_TEST_MAIN(Magnum::Trade::TgaImporter::Test::TgaImporterTest)
 
 namespace Magnum { namespace Trade { namespace TgaImporter { namespace Test {
+
+TgaImporterTest::TgaImporterTest() {
+    addTests(&TgaImporterTest::openInexistent,
+             &TgaImporterTest::openShort,
+             &TgaImporterTest::paletted,
+             &TgaImporterTest::nonRgb,
+             &TgaImporterTest::bits16,
+             &TgaImporterTest::bits24,
+             &TgaImporterTest::bits32);
+}
 
 void TgaImporterTest::openInexistent() {
     ostringstream debug;
     Error::setOutput(&debug);
 
     TgaImporter importer;
-    QVERIFY(!importer.open("inexistent.file"));
-    QCOMPARE(debug.str().c_str(), "TgaImporter: cannot open file inexistent.file\n");
+    CORRADE_VERIFY(!importer.open("inexistent.file"));
+    CORRADE_COMPARE(debug.str(), "TgaImporter: cannot open file inexistent.file\n");
 }
 
 void TgaImporterTest::openShort() {
@@ -43,8 +50,8 @@ void TgaImporterTest::openShort() {
     Error::setOutput(&debug);
 
     TgaImporter importer;
-    QVERIFY(!importer.open(in));
-    QCOMPARE(debug.str().c_str(), "TgaImporter: the file is too short: 17 bytes\n");
+    CORRADE_VERIFY(!importer.open(in));
+    CORRADE_COMPARE(debug.str(), "TgaImporter: the file is too short: 17 bytes\n");
 }
 
 void TgaImporterTest::paletted() {
@@ -55,8 +62,8 @@ void TgaImporterTest::paletted() {
     Error::setOutput(&debug);
 
     TgaImporter importer;
-    QVERIFY(!importer.open(in));
-    QCOMPARE(debug.str().c_str(), "TgaImporter: paletted files are not supported\n");
+    CORRADE_VERIFY(!importer.open(in));
+    CORRADE_COMPARE(debug.str(), "TgaImporter: paletted files are not supported\n");
 }
 
 void TgaImporterTest::nonRgb() {
@@ -67,8 +74,8 @@ void TgaImporterTest::nonRgb() {
     Error::setOutput(&debug);
 
     TgaImporter importer;
-    QVERIFY(!importer.open(in));
-    QCOMPARE(debug.str().c_str(), "TgaImporter: non-RGB files are not supported\n");
+    CORRADE_VERIFY(!importer.open(in));
+    CORRADE_COMPARE(debug.str(), "TgaImporter: non-RGB files are not supported\n");
 }
 
 void TgaImporterTest::bits16() {
@@ -79,8 +86,8 @@ void TgaImporterTest::bits16() {
     Error::setOutput(&debug);
 
     TgaImporter importer;
-    QVERIFY(!importer.open(in));
-    QCOMPARE(debug.str().c_str(), "TgaImporter: unsupported bits-per-pixel: 16\n");
+    CORRADE_VERIFY(!importer.open(in));
+    CORRADE_COMPARE(debug.str(), "TgaImporter: unsupported bits-per-pixel: 16\n");
 }
 
 void TgaImporterTest::bits24() {
@@ -91,12 +98,12 @@ void TgaImporterTest::bits24() {
     std::istringstream in(string(data, sizeof(data)));
 
     TgaImporter importer;
-    QVERIFY(importer.open(in));
+    CORRADE_VERIFY(importer.open(in));
     auto image = importer.image2D(0);
-    QVERIFY(image->components() == AbstractImage::Components::BGR);
-    QVERIFY(image->dimensions() == Math::Vector2<GLsizei>(2, 3));
-    QVERIFY(image->type() == TypeTraits<GLubyte>::imageType());
-    QVERIFY(string(static_cast<const char*>(image->data())) == string(data + 18, 2*3*3));
+    CORRADE_VERIFY(image->components() == AbstractImage::Components::BGR);
+    CORRADE_COMPARE(image->dimensions(), Math::Vector2<GLsizei>(2, 3));
+    CORRADE_VERIFY(image->type() == TypeTraits<GLubyte>::imageType());
+    CORRADE_COMPARE(string(static_cast<const char*>(image->data()), 2*3*3), string(data + 18, 2*3*3));
 }
 
 void TgaImporterTest::bits32() {
@@ -107,12 +114,12 @@ void TgaImporterTest::bits32() {
     std::istringstream in(string(data, sizeof(data)));
 
     TgaImporter importer;
-    QVERIFY(importer.open(in));
+    CORRADE_VERIFY(importer.open(in));
     auto image = importer.image2D(0);
-    QVERIFY(image->components() == AbstractImage::Components::BGRA);
-    QVERIFY(image->dimensions() == Math::Vector2<GLsizei>(2, 3));
-    QVERIFY(image->type() == TypeTraits<GLubyte>::imageType());
-    QVERIFY(string(static_cast<const char*>(image->data()), 2*3*3) == string(data + 18, 2*3*3));
+    CORRADE_VERIFY(image->components() == AbstractImage::Components::BGRA);
+    CORRADE_COMPARE(image->dimensions(), Math::Vector2<GLsizei>(2, 3));
+    CORRADE_VERIFY(image->type() == TypeTraits<GLubyte>::imageType());
+    CORRADE_COMPARE(string(static_cast<const char*>(image->data()), 2*3*3), string(data + 18, 2*3*3));
 }
 
 }}}}
