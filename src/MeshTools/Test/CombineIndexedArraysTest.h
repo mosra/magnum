@@ -15,14 +15,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
+#include <TestSuite/Tester.h>
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class CombineIndexedArraysTest: public QObject {
-    Q_OBJECT
+class CombineIndexedArraysTest: public Corrade::TestSuite::Tester<CombineIndexedArraysTest> {
+    public:
+        CombineIndexedArraysTest();
 
-    private slots:
         void wrongIndexCount();
         void combine();
 };

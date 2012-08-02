@@ -16,12 +16,11 @@
 #include "Matrix4Test.h"
 
 #include <sstream>
-#include <QtTest/QTest>
 
 #include "Matrix4.h"
 #include "Math.h"
 
-QTEST_APPLESS_MAIN(Magnum::Math::Test::Matrix4Test)
+CORRADE_TEST_MAIN(Magnum::Math::Test::Matrix4Test)
 
 using namespace std;
 using namespace Corrade::Utility;
@@ -30,6 +29,16 @@ namespace Magnum { namespace Math { namespace Test {
 
 typedef Math::Matrix4<float> Matrix4;
 typedef Math::Matrix3<float> Matrix3;
+
+Matrix4Test::Matrix4Test() {
+    addTests(&Matrix4Test::constructIdentity,
+             &Matrix4Test::translation,
+             &Matrix4Test::scaling,
+             &Matrix4Test::rotation,
+             &Matrix4Test::rotationScalingPart,
+             &Matrix4Test::rotationPart,
+             &Matrix4Test::debug);
+}
 
 void Matrix4Test::constructIdentity() {
     Matrix4 identity;
@@ -50,9 +59,9 @@ void Matrix4Test::constructIdentity() {
         0.0f, 0.0f, 0.0f, 4.0f
     );
 
-    QVERIFY(identity == identityExpected);
-    QVERIFY(identity2 == identityExpected);
-    QVERIFY(identity3 == identity3Expected);
+    CORRADE_COMPARE(identity, identityExpected);
+    CORRADE_COMPARE(identity2, identityExpected);
+    CORRADE_COMPARE(identity3, identity3Expected);
 }
 
 void Matrix4Test::translation() {
@@ -63,7 +72,7 @@ void Matrix4Test::translation() {
         3.0f, 1.0f, 2.0f, 1.0f
     );
 
-    QVERIFY(Matrix4::translation({3.0f, 1.0f, 2.0f}) == matrix);
+    CORRADE_COMPARE(Matrix4::translation({3.0f, 1.0f, 2.0f}), matrix);
 }
 
 void Matrix4Test::scaling() {
@@ -74,7 +83,7 @@ void Matrix4Test::scaling() {
         0.0f, 0.0f, 0.0f, 1.0f
     );
 
-    QVERIFY(Matrix4::scaling({3.0f, 1.5f, 2.0f}) == matrix);
+    CORRADE_COMPARE(Matrix4::scaling({3.0f, 1.5f, 2.0f}), matrix);
 }
 
 void Matrix4Test::rotation() {
@@ -85,7 +94,7 @@ void Matrix4Test::rotation() {
         0.0f,       0.0f,       0.0f,       1.0f
     );
 
-    QVERIFY(Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f}) == matrix);
+    CORRADE_COMPARE(Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f}), matrix);
 }
 
 void Matrix4Test::rotationScalingPart() {
@@ -102,7 +111,7 @@ void Matrix4Test::rotationScalingPart() {
         7.0f, -1.0f, 8.0f
     );
 
-    QVERIFY(m.rotationScaling() == expected);
+    CORRADE_COMPARE(m.rotationScaling(), expected);
 }
 
 void Matrix4Test::rotationPart() {
@@ -113,10 +122,10 @@ void Matrix4Test::rotationPart() {
     );
 
     Matrix4 rotation = Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f});
-    QVERIFY(rotation.rotation() == expectedRotationPart);
+    CORRADE_COMPARE(rotation.rotation(), expectedRotationPart);
 
     Matrix4 rotationTransformed = Matrix4::translation({2.0f, 5.0f, -3.0f})*rotation*Matrix4::scaling(Vector3<float>(9.0f));
-    QVERIFY(rotationTransformed.rotation() == expectedRotationPart);
+    CORRADE_COMPARE(rotationTransformed.rotation(), expectedRotationPart);
 }
 
 void Matrix4Test::debug() {
@@ -129,10 +138,10 @@ void Matrix4Test::debug() {
 
     ostringstream o;
     Debug(&o) << m;
-    QCOMPARE(QString::fromStdString(o.str()), QString("Matrix(3, 4, 7, 9,\n"
-                                                      "       5, 4, -1, 4,\n"
-                                                      "       8, 7, 8, 5,\n"
-                                                      "       4, 3, 0, 9)\n"));
+    CORRADE_COMPARE(o.str(), "Matrix(3, 4, 7, 9,\n"
+                             "       5, 4, -1, 4,\n"
+                             "       8, 7, 8, 5,\n"
+                             "       4, 3, 0, 9)\n");
 }
 
 }}}

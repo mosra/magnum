@@ -16,11 +16,10 @@
 #include "MatrixTest.h"
 
 #include <sstream>
-#include <QtTest/QTest>
 
 #include "Matrix.h"
 
-QTEST_APPLESS_MAIN(Magnum::Math::Test::MatrixTest)
+CORRADE_TEST_MAIN(Magnum::Math::Test::MatrixTest)
 
 using namespace std;
 using namespace Corrade::Utility;
@@ -30,6 +29,23 @@ namespace Magnum { namespace Math { namespace Test {
 typedef Matrix<4, float> Matrix4;
 typedef Matrix<3, float> Matrix3;
 typedef Vector<4, float> Vector4;
+
+MatrixTest::MatrixTest() {
+    addTests(&MatrixTest::construct,
+             &MatrixTest::constructFromVectors,
+             &MatrixTest::constructIdentity,
+             &MatrixTest::constructZero,
+             &MatrixTest::data,
+             &MatrixTest::copy,
+             &MatrixTest::multiplyIdentity,
+             &MatrixTest::multiply,
+             &MatrixTest::multiplyVector,
+             &MatrixTest::transposed,
+             &MatrixTest::ij,
+             &MatrixTest::determinant,
+             &MatrixTest::inverted,
+             &MatrixTest::debug);
+}
 
 void MatrixTest::construct() {
     float m[] = {
@@ -46,7 +62,7 @@ void MatrixTest::construct() {
         9.0f, 4.0f, 5.0f, 9.0f
     );
 
-    QVERIFY(Matrix4::from(m) == expected);
+    CORRADE_COMPARE(Matrix4::from(m), expected);
 }
 
 void MatrixTest::constructFromVectors() {
@@ -60,7 +76,7 @@ void MatrixTest::constructFromVectors() {
                      9.0f, 10.0f, 11.0f, 12.0f,
                      13.0f, 14.0f, 15.0f, 16.0f);
 
-    QVERIFY(actual == expected);
+    CORRADE_COMPARE(actual, expected);
 }
 
 void MatrixTest::constructIdentity() {
@@ -82,9 +98,9 @@ void MatrixTest::constructIdentity() {
         0.0f, 0.0f, 0.0f, 4.0f
     );
 
-    QVERIFY(identity == identityExpected);
-    QVERIFY(identity2 == identityExpected);
-    QVERIFY(identity3 == identity3Expected);
+    CORRADE_COMPARE(identity, identityExpected);
+    CORRADE_COMPARE(identity2, identityExpected);
+    CORRADE_COMPARE(identity3, identity3Expected);
 }
 
 void MatrixTest::constructZero() {
@@ -97,7 +113,7 @@ void MatrixTest::constructZero() {
         0.0f, 0.0f, 0.0f, 0.0f
     );
 
-    QVERIFY(zero == zeroExpected);
+    CORRADE_COMPARE(zero, zeroExpected);
 }
 
 void MatrixTest::data() {
@@ -110,8 +126,8 @@ void MatrixTest::data() {
 
     m[1][2] = 1.5f;
 
-    QCOMPARE(m[2][1], 1.0f);
-    QVERIFY(m[3] == vector);
+    CORRADE_COMPARE(m[2][1], 1.0f);
+    CORRADE_COMPARE(m[3], vector);
 
     Matrix4 expected(
         0.0f, 0.0f, 0.0f, 0.0f,
@@ -120,7 +136,7 @@ void MatrixTest::data() {
         4.0f, 5.0f, 6.0f, 7.0f
     );
 
-    QVERIFY(m == expected);
+    CORRADE_COMPARE(m, expected);
 }
 
 void MatrixTest::copy() {
@@ -141,8 +157,8 @@ void MatrixTest::copy() {
     Matrix4 original(Matrix4::Zero);
     original[2][3] = 1.0f;
 
-    QVERIFY(m2 == original);
-    QVERIFY(m3 == original);
+    CORRADE_COMPARE(m2, original);
+    CORRADE_COMPARE(m3, original);
 }
 
 void MatrixTest::multiplyIdentity() {
@@ -153,8 +169,8 @@ void MatrixTest::multiplyIdentity() {
         12.0f,  13.0f,  14.0f,  15.0f
     );
 
-    QVERIFY(Matrix4()*values == values);
-    QVERIFY(values*Matrix4() == values);
+    CORRADE_COMPARE(Matrix4()*values, values);
+    CORRADE_COMPARE(values*Matrix4(), values);
 }
 
 void MatrixTest::multiply() {
@@ -182,7 +198,7 @@ void MatrixTest::multiply() {
         -12,   8, -20, -26,  -2
     );
 
-    QVERIFY((left *= right) == expected);
+    CORRADE_COMPARE((left *= right), expected);
 }
 
 void MatrixTest::multiplyVector() {
@@ -194,9 +210,7 @@ void MatrixTest::multiplyVector() {
           1,   3,  -3,  -4,  -1
     );
 
-    bool is = (matrix*Vector<5, int>(0, 5, 3, 4, 4) == Vector<5, int>(-24, -35, -32, -25, 1));
-
-    QVERIFY(is);
+    CORRADE_COMPARE((matrix*Vector<5, int>(0, 5, 3, 4, 4)), (Vector<5, int>(-24, -35, -32, -25, 1)));
 }
 
 void MatrixTest::transposed() {
@@ -214,7 +228,7 @@ void MatrixTest::transposed() {
         3.0f,   7.0f,   11.0f,  15.0f
     );
 
-    QVERIFY(original.transposed() == transposed);
+    CORRADE_COMPARE(original.transposed(), transposed);
 }
 
 void MatrixTest::ij() {
@@ -231,7 +245,7 @@ void MatrixTest::ij() {
         12.0f,  13.0f,  15.0f
     );
 
-    QVERIFY(original.ij(1, 2) == skipped);
+    CORRADE_COMPARE(original.ij(1, 2), skipped);
 }
 
 void MatrixTest::determinant() {
@@ -243,7 +257,7 @@ void MatrixTest::determinant() {
         3, 1, 0, 1, -2
     );
 
-    QVERIFY(m.determinant() == -2);
+    CORRADE_COMPARE(m.determinant(), -2);
 }
 
 void MatrixTest::inverted() {
@@ -263,8 +277,8 @@ void MatrixTest::inverted() {
 
     Matrix4 _inverse = m.inverted();
 
-    QVERIFY(_inverse == inverse);
-    QVERIFY(_inverse*m == Matrix4());
+    CORRADE_COMPARE(_inverse, inverse);
+    CORRADE_COMPARE(_inverse*m, Matrix4());
 }
 
 void MatrixTest::debug() {
@@ -277,20 +291,20 @@ void MatrixTest::debug() {
 
     ostringstream o;
     Debug(&o) << m;
-    QCOMPARE(QString::fromStdString(o.str()), QString("Matrix(3, 4, 7, 9,\n"
-                                                      "       5, 4, -1, 4,\n"
-                                                      "       8, 7, 8, 5,\n"
-                                                      "       4, 3, 0, 9)\n"));
+    CORRADE_COMPARE(o.str(), "Matrix(3, 4, 7, 9,\n"
+                             "       5, 4, -1, 4,\n"
+                             "       8, 7, 8, 5,\n"
+                             "       4, 3, 0, 9)\n");
 
     o.str("");
     Debug(&o) << "a" << Matrix4() << "b" << Matrix4();
-    QCOMPARE(QString::fromStdString(o.str()), QString("a Matrix(1, 0, 0, 0,\n"
-                                                        "       0, 1, 0, 0,\n"
-                                                        "       0, 0, 1, 0,\n"
-                                                        "       0, 0, 0, 1) b Matrix(1, 0, 0, 0,\n"
-                                                        "       0, 1, 0, 0,\n"
-                                                        "       0, 0, 1, 0,\n"
-                                                        "       0, 0, 0, 1)\n"));
+    CORRADE_COMPARE(o.str(), "a Matrix(1, 0, 0, 0,\n"
+                             "       0, 1, 0, 0,\n"
+                             "       0, 0, 1, 0,\n"
+                             "       0, 0, 0, 1) b Matrix(1, 0, 0, 0,\n"
+                             "       0, 1, 0, 0,\n"
+                             "       0, 0, 1, 0,\n"
+                             "       0, 0, 0, 1)\n");
 }
 
 }}}

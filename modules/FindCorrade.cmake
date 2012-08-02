@@ -1,59 +1,123 @@
-# Find Corrade - Corrade handling module for CMake
+# - Find Corrade
 #
-# This module defines:
+# Basic usage:
+#  find_package(Corrade [REQUIRED])
+# This module tries to find Corrade library and then defines:
+#  CORRADE_FOUND                    - True if Corrade library is found
+#  CORRADE_INCLUDE_DIR              - Include dir for Corrade
+#  CORRADE_LIBRARIES                - All Corrade libraries
+#  CORRADE_UTILITY_LIBRARY          - Corrade Utility library
+#  CORRADE_PLUGINMANAGER_LIBRARY    - Corrade Plugin manager library
+#  CORRADE_RC_EXECUTABLE            - Corrade resource compiler executable
+# If Corrade library is found, these macros and functions are defined:
 #
-# CORRADECORE_FOUND                 - True if Corrade library is found
 #
-# CORRADE_INCLUDE_DIR               - Include dir for Corrade
+# Add unit test using Corrade's TestSuite.
+#  corrade_add_test2(test_name
+#                    sources...
+#                    [LIBRARIES libraries...])
+# Test name is also executable name. You can also specify libraries to link
+# with instead of using target_link_libraries(). Note that the
+# enable_testing() must be called explicitly.
 #
-# CORRADE_LIBRARIES                 - All corrade libraries
-# CORRADE_UTILITY_LIBRARY           - Corrade Utility library
-# CORRADE_PLUGINMANAGER_LIBRARY     - Corrade Plugin manager library
-# CORRADE_RC_EXECUTABLE             - Corrade resource compiler executable
 #
-# CORRADE_BINARY_INSTALL_DIR        - Binary installation directory
-# CORRADE_LIBRARY_INSTALL_DIR       - Library installation directory
-# CORRADE_CMAKE_MODULE_INSTALL_DIR  - Installation dir for CMake modules
-# CORRADE_INCLUDE_INSTALL_DIR       - Include installation directory for Corrade headers
+# Add QtTest unit test.
+#  corrade_add_test(test_name moc_header source_file
+#                   [libraries...])
+# These tests contain mainly from one source file and one header, which is
+# processed by Qt meta-object compiler. The executable is then linked to QtCore
+# and QtTest library, more libraries can be specified as another parameters.
+# Test name is also executable name. Header file is processed with Qt's moc.
+#
+# Note: Before using this function you must find package Qt4. The
+# enable_testing() function must be also called explicitly.
+#
+#
+# Add QtTest unit test with multiple source files.
+#  corrade_add_multifile_test(test_name
+#                             moc_header_variable
+#                             source_files_variable)
+# Useful when there is need to compile more than one cpp/h file into the test.
+#
+# Example usage:
+#  set(test_headers ComplexTest.h MyObject.h)
+#  set(test_sources ComplexTest.cpp MyObject.cpp)
+#  corrade_add_test(MyComplexTest test_headers test_sources
+#                   CoreLibrary AnotherLibrary)
+#
+# Compile data resources into application binary.
+#  corrade_add_resource(name group_name
+#                       file [ALIAS alias]
+#                       [file1 [ALIAS alias1]...])
+# Depends on corrade-rc, which is part of Corrade utilities. This command
+# generates resource file with group group_name from given files in current
+# build directory. Argument name is name under which the resources can be
+# explicitly loaded. Variable 'name' contains compiled resource filename,
+# which is then used for compiling library / executable.
+#
+# Example usage:
+#  corrade_add_resource(name group_name file1 ALIAS alias1 file2 file3)
+#  add_executable(app source1 source2 ... ${name})
+#
+# Add dynamic plugin.
+#  corrade_add_plugin(plugin_name install_dir metadata_file
+#                     sources...)
+# The macro adds preprocessor directive CORRADE_DYNAMIC_PLUGIN. Additional
+# libraries can be linked in via target_link_libraries(plugin_name ...). If
+# install_dir is set to CMAKE_CURRENT_BINARY_DIR (e.g. for testing purposes),
+# the files are copied directly, without need to run 'make install'.
+#
+#
+# Add static plugin.
+#  corrade_add_static_plugin(static_plugins_variable
+#                            plugin_name metadata_file
+#                            sources...)
+# The macro adds preprocessor directive CORRADE_STATIC_PLUGIN. Additional
+# libraries can be linked in via target_link_libraries(plugin_name ...).
+#
+# Plugin library name will be added at the end of static_plugins_variable and
+# the variable is meant to be used for linking plugins to main
+# executable/library, e.g:
+#  target_link_libraries(app lib1 lib2 ... ${static_plugins_variable})
+#
+# This variable is set with parent scope to be available in parent directory.
+# If there are more intermediate directories between plugin directory and main
+# executable directory, the variable can be propagated to parent scope like
+# this:
+#  set(static_plugins_variable ${static_plugins_variable} PARENT_SCOPE)
+#
+# Find and install DLLs for bundling with Windows build.
+#  corrade_bundle_dlls(library_install_dir
+#                      dlls...
+#                      [PATHS paths...])
+# It is possible to specify also additional paths for searching. DLL names can
+# also contain paths, they will be installed into exact specified path. If an
+# DLL is not found, fatal error message is printed.
 #
 
-if (CORRADE_UTILITY_INCLUDE_DIR AND CORRADE_PLUGINMANAGER_INCLUDE_DIR AND CORRADE_UTILITY_LIBRARY AND CORRADE_PLUGINMANAGER_LIBRARY AND CORRADE_RC_EXECUTABLE)
+# Libraries
+find_library(CORRADE_UTILITY_LIBRARY CorradeUtility)
+find_library(CORRADE_PLUGINMANAGER_LIBRARY CorradePluginManager)
 
-    # Already in cache
-    set(CORRADECORE_FOUND TRUE)
+# RC executable
+find_program(CORRADE_RC_EXECUTABLE corrade-rc)
 
-else()
-    # Libraries
-    find_library(CORRADE_UTILITY_LIBRARY CorradeUtility)
-    find_library(CORRADE_PLUGINMANAGER_LIBRARY CorradePluginManager)
+# Paths
+find_path(CORRADE_INCLUDE_DIR
+    NAMES PluginManager Utility
+    PATH_SUFFIXES Corrade)
 
-    # RC executable
-    find_program(CORRADE_RC_EXECUTABLE corrade-rc)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(Corrade DEFAULT_MSG
+    CORRADE_INCLUDE_DIR
+    CORRADE_UTILITY_LIBRARY
+    CORRADE_PLUGINMANAGER_LIBRARY
+    CORRADE_RC_EXECUTABLE)
 
-    # Paths
-    find_path(CORRADE_INCLUDE_DIR
-        NAMES PluginManager Utility
-        PATH_SUFFIXES Corrade
-    )
-
-    include(FindPackageHandleStandardArgs)
-    find_package_handle_standard_args("Corrade" DEFAULT_MSG
-        CORRADE_INCLUDE_DIR
-        CORRADE_UTILITY_LIBRARY
-        CORRADE_PLUGINMANAGER_LIBRARY
-        CORRADE_RC_EXECUTABLE
-    )
-
+if(NOT CORRADE_FOUND)
+    return()
 endif()
 
-if(CORRADE_FOUND)
-    include(CorradeMacros)
-
-    include(CorradeLibSuffix)
-    set_parent_scope(CORRADE_BINARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/bin)
-    set_parent_scope(CORRADE_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
-    set_parent_scope(CORRADE_CMAKE_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
-    set_parent_scope(CORRADE_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Corrade)
-
-    set_parent_scope(CORRADE_LIBRARIES ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY})
-endif()
+include(CorradeMacros)
+include(CorradeLibSuffix)
+set(CORRADE_LIBRARIES ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY})

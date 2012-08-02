@@ -16,15 +16,19 @@
 #include "CombineIndexedArraysTest.h"
 
 #include <sstream>
-#include <QtTest/QTest>
 
 #include "MeshTools/CombineIndexedArrays.h"
 
-QTEST_APPLESS_MAIN(Magnum::MeshTools::Test::CombineIndexedArraysTest)
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::CombineIndexedArraysTest)
 
 using namespace std;
 
 namespace Magnum { namespace MeshTools { namespace Test {
+
+CombineIndexedArraysTest::CombineIndexedArraysTest() {
+    addTests(&CombineIndexedArraysTest::wrongIndexCount,
+             &CombineIndexedArraysTest::combine);
+}
 
 void CombineIndexedArraysTest::wrongIndexCount() {
     stringstream ss;
@@ -34,8 +38,8 @@ void CombineIndexedArraysTest::wrongIndexCount() {
         tuple<const vector<unsigned int>&, vector<unsigned int>&>(vector<unsigned int>{0, 1, 0}, array),
         tuple<const vector<unsigned int>&, vector<unsigned int>&>(vector<unsigned int>{3, 4}, array));
 
-    QVERIFY(result.size() == 0);
-    QVERIFY(ss.str() == "MeshTools::combineIndexedArrays(): index arrays don't have the same length, nothing done.\n");
+    CORRADE_COMPARE(result.size(), 0);
+    CORRADE_COMPARE(ss.str(), "MeshTools::combineIndexedArrays(): index arrays don't have the same length, nothing done.\n");
 }
 
 void CombineIndexedArraysTest::combine() {
@@ -48,11 +52,10 @@ void CombineIndexedArraysTest::combine() {
         tuple<const vector<unsigned int>&, vector<unsigned int>&>(vector<unsigned int>{3, 4, 3}, array2),
         tuple<const vector<unsigned int>&, vector<unsigned int>&>(vector<unsigned int>{6, 7, 6}, array3));
 
-    QVERIFY((result == vector<unsigned int>{0, 1, 0}));
-    QVERIFY((array1 == vector<unsigned int>{0, 1}));
-    QVERIFY((array2 == vector<unsigned int>{3, 4}));
-    QVERIFY((array3 == vector<unsigned int>{6, 7}));
+    CORRADE_COMPARE(result, (vector<unsigned int>{0, 1, 0}));
+    CORRADE_COMPARE(array1, (vector<unsigned int>{0, 1}));
+    CORRADE_COMPARE(array2, (vector<unsigned int>{3, 4}));
+    CORRADE_COMPARE(array3, (vector<unsigned int>{6, 7}));
 }
-
 
 }}}

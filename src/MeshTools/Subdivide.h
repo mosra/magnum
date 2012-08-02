@@ -20,7 +20,7 @@
  */
 
 #include <vector>
-#include "Utility/Debug.h"
+#include <Utility/Debug.h>
 
 namespace Magnum { namespace MeshTools {
 

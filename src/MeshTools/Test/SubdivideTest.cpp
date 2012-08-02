@@ -16,16 +16,20 @@
 #include "SubdivideTest.h"
 
 #include <sstream>
-#include <QtTest/QTest>
 
 #include "MeshTools/Clean.h"
 #include "MeshTools/Subdivide.h"
 
-QTEST_APPLESS_MAIN(Magnum::MeshTools::Test::SubdivideTest)
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::SubdivideTest)
 
 using namespace std;
 
 namespace Magnum { namespace MeshTools { namespace Test {
+
+SubdivideTest::SubdivideTest() {
+    addTests(&SubdivideTest::wrongIndexCount,
+             &SubdivideTest::subdivide);
+}
 
 void SubdivideTest::wrongIndexCount() {
     stringstream ss;
@@ -34,7 +38,7 @@ void SubdivideTest::wrongIndexCount() {
     vector<Vector1> vertices;
     vector<unsigned int> indices{0, 1};
     MeshTools::subdivide(indices, vertices, interpolator);
-    QVERIFY(ss.str() == "MeshTools::subdivide(): index count is not divisible by 3!\n");
+    CORRADE_COMPARE(ss.str(), "MeshTools::subdivide(): index count is not divisible by 3!\n");
 }
 
 void SubdivideTest::subdivide() {
@@ -42,15 +46,15 @@ void SubdivideTest::subdivide() {
     vector<unsigned int> indices{0, 1, 2, 1, 2, 3};
     MeshTools::subdivide(indices, vertices, interpolator);
 
-    QVERIFY(indices.size() == 24);
+    CORRADE_COMPARE(indices.size(), 24);
 
-    QVERIFY((vertices == vector<Vector1>{0, 2, 6, 8, 1, 4, 3, 4, 7, 5}));
-    QVERIFY((indices == vector<unsigned int>{4, 5, 6, 7, 8, 9, 0, 4, 6, 4, 1, 5, 6, 5, 2, 1, 7, 9, 7, 2, 8, 9, 8, 3}));
+    CORRADE_VERIFY(vertices == (vector<Vector1>{0, 2, 6, 8, 1, 4, 3, 4, 7, 5}));
+    CORRADE_COMPARE(indices, (vector<unsigned int>{4, 5, 6, 7, 8, 9, 0, 4, 6, 4, 1, 5, 6, 5, 2, 1, 7, 9, 7, 2, 8, 9, 8, 3}));
 
     MeshTools::clean(indices, vertices);
 
     /* Vertices 0, 1, 2, 3, 4, 5, 6, 7, 8 */
-    QVERIFY(vertices.size() == 9);
+    CORRADE_COMPARE(vertices.size(), 9);
 }
 
 }}}

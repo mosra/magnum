@@ -16,17 +16,14 @@
 */
 
 #include <vector>
-#include <QtCore/QObject>
+#include <TestSuite/Tester.h>
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class TipsifyTest: public QObject {
-    Q_OBJECT
-
+class TipsifyTest: public Corrade::TestSuite::Tester<TipsifyTest> {
     public:
         TipsifyTest();
 
-    private slots:
         void buildAdjacency();
         void tipsify();
 

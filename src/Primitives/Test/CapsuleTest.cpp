@@ -18,20 +18,23 @@
 
 #include "CapsuleTest.h"
 
-#include <QtTest/QTest>
-
-QTEST_APPLESS_MAIN(Magnum::Primitives::Test::CapsuleTest)
-
 #include "Primitives/Capsule.h"
 
 using namespace std;
 
+CORRADE_TEST_MAIN(Magnum::Primitives::Test::CapsuleTest)
+
 namespace Magnum { namespace Primitives { namespace Test {
+
+CapsuleTest::CapsuleTest() {
+    addTests(&CapsuleTest::withoutTextureCoords,
+             &CapsuleTest::withTextureCoords);
+}
 
 void CapsuleTest::withoutTextureCoords() {
     Capsule capsule(2, 3, 1.0f);
 
-    QVERIFY((*capsule.vertices(0) == vector<Vector4>{
+    CORRADE_COMPARE(*capsule.vertices(0), (vector<Vector4>{
         Vector4(0.0f, -1.5f, 0.0f),
 
         Vector4(0.0f, -1.20711f, 0.707107f),
@@ -53,7 +56,7 @@ void CapsuleTest::withoutTextureCoords() {
         Vector4(0.0f, 1.5f, 0.0f)
     }));
 
-    QVERIFY((*capsule.normals(0) == vector<Vector3>{
+    CORRADE_COMPARE(*capsule.normals(0), (vector<Vector3>{
         Vector3(0.0f, -1.0f, 0.0f),
 
         Vector3(0.0f, -0.707107f, 0.707107f),
@@ -75,7 +78,7 @@ void CapsuleTest::withoutTextureCoords() {
         Vector3(0.0f, 1.0f, 0.0f)
     }));
 
-    QVERIFY((*capsule.indices() == vector<unsigned int>{
+    CORRADE_COMPARE(*capsule.indices(), (vector<unsigned int>{
         0, 2, 1, 0, 3, 2, 0, 1, 3,
         1, 2, 5, 1, 5, 4, 2, 3, 6, 2, 6, 5, 3, 1, 4, 3, 4, 6,
         4, 5, 8, 4, 8, 7, 5, 6, 9, 5, 9, 8, 6, 4, 7, 6, 7, 9,
@@ -87,7 +90,7 @@ void CapsuleTest::withoutTextureCoords() {
 void CapsuleTest::withTextureCoords() {
     Capsule capsule(2, 3, 1.0f, Capsule::TextureCoords::Generate);
 
-    QVERIFY((*capsule.vertices(0) == vector<Vector4>{
+    CORRADE_COMPARE(*capsule.vertices(0), (vector<Vector4>{
         Vector4(0.0f, -1.5f, 0.0f),
 
         Vector4(0.0f, -1.20711f, 0.707107f),
@@ -113,7 +116,7 @@ void CapsuleTest::withTextureCoords() {
         Vector4(0.0f, 1.5f, 0.0f)
     }));
 
-    QVERIFY((*capsule.textureCoords2D(0) == vector<Vector2>{
+    CORRADE_COMPARE(*capsule.textureCoords2D(0), (vector<Vector2>{
         Vector2(0.5f, 0.0f),
 
         Vector2(0.0f, 0.166667f),
@@ -139,7 +142,7 @@ void CapsuleTest::withTextureCoords() {
         Vector2(0.5f, 1.0f)
     }));
 
-    QVERIFY((*capsule.indices() == vector<unsigned int>{
+    CORRADE_COMPARE(*capsule.indices(), (vector<unsigned int>{
         0, 2, 1, 0, 3, 2, 0, 4, 3,
         1, 2, 6, 1, 6, 5, 2, 3, 7, 2, 7, 6, 3, 4, 8, 3, 8, 7,
         5, 6, 10, 5, 10, 9, 6, 7, 11, 6, 11, 10, 7, 8, 12, 7, 12, 11,

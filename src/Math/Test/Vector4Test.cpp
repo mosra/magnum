@@ -16,11 +16,10 @@
 #include "Vector4Test.h"
 
 #include <sstream>
-#include <QtTest/QTest>
 
 #include "Vector4.h"
 
-QTEST_APPLESS_MAIN(Magnum::Math::Test::Vector4Test)
+CORRADE_TEST_MAIN(Magnum::Math::Test::Vector4Test)
 
 using namespace std;
 using namespace Corrade::Utility;
@@ -31,24 +30,31 @@ typedef Math::Vector4<float> Vector4;
 typedef Math::Vector3<float> Vector3;
 typedef Math::Vector2<float> Vector2;
 
+Vector4Test::Vector4Test() {
+    addTests(&Vector4Test::construct,
+             &Vector4Test::threeComponent,
+             &Vector4Test::twoComponent,
+             &Vector4Test::debug);
+}
+
 void Vector4Test::construct() {
-    QVERIFY(Vector4() == Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-    QVERIFY((Vector4(1, 2, 3, 4) == Vector<4, float>(1.0f, 2.0f, 3.0f, 4.0f)));
-    QVERIFY((Vector4(Vector<3, float>(1.0f, 2.0f, 3.0f), 4) == Vector<4, float>(1.0f, 2.0f, 3.0f, 4.0f)));
+    CORRADE_COMPARE(Vector4(), Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+    CORRADE_COMPARE(Vector4(1, 2, 3, 4), (Vector<4, float>(1.0f, 2.0f, 3.0f, 4.0f)));
+    CORRADE_COMPARE(Vector4(Vector<3, float>(1.0f, 2.0f, 3.0f), 4), (Vector<4, float>(1.0f, 2.0f, 3.0f, 4.0f)));
 }
 
 void Vector4Test::threeComponent() {
-    QVERIFY(Vector4(1.0f, 2.0f, 3.0f, 4.0f).xyz() == Vector3(1.0f, 2.0f, 3.0f));
+    CORRADE_COMPARE(Vector4(1.0f, 2.0f, 3.0f, 4.0f).xyz(), Vector3(1.0f, 2.0f, 3.0f));
 }
 
 void Vector4Test::twoComponent() {
-    QVERIFY(Vector4(1.0f, 2.0f, 3.0f, 4.0f).xy() == Vector2(1.0f, 2.0f));
+    CORRADE_COMPARE(Vector4(1.0f, 2.0f, 3.0f, 4.0f).xy(), Vector2(1.0f, 2.0f));
 }
 
 void Vector4Test::debug() {
     ostringstream o;
     Debug(&o) << Vector4(0.5f, 15.0f, 1.0f, 1.0f);
-    QCOMPARE(QString::fromStdString(o.str()), QString("Vector(0.5, 15, 1, 1)\n"));
+    CORRADE_COMPARE(o.str(), "Vector(0.5, 15, 1, 1)\n");
 }
 
 }}}

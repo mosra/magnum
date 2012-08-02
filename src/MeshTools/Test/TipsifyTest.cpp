@@ -19,7 +19,7 @@
 
 #include "MeshTools/Tipsify.h"
 
-QTEST_APPLESS_MAIN(Magnum::MeshTools::Test::TipsifyTest)
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::TipsifyTest)
 
 using namespace std;
 
@@ -63,13 +63,16 @@ TipsifyTest::TipsifyTest(): indices{
     14, 11, 10,
 
     16, 17, 18
-}, vertexCount(19) {}
+}, vertexCount(19) {
+    addTests(&TipsifyTest::buildAdjacency,
+             &TipsifyTest::tipsify);
+}
 
 void TipsifyTest::buildAdjacency() {
     vector<unsigned int> liveTriangleCount, neighborOffset, neighbors;
     Implementation::Tipsify(indices, vertexCount).buildAdjacency(liveTriangleCount, neighborOffset, neighbors);
 
-    QVERIFY((liveTriangleCount == vector<unsigned int>{
+    CORRADE_COMPARE(liveTriangleCount, (vector<unsigned int>{
         1, 3, 3, 2,
         4, 6, 6, 2,
         2, 6, 6, 4,
@@ -77,7 +80,7 @@ void TipsifyTest::buildAdjacency() {
         1, 1, 1
     }));
 
-    QVERIFY((neighborOffset == vector<unsigned int>{
+    CORRADE_COMPARE(neighborOffset, (vector<unsigned int>{
         0, 1, 4, 7,
         9, 13, 19, 25,
         27, 29, 35, 41,
@@ -85,7 +88,7 @@ void TipsifyTest::buildAdjacency() {
         54, 55, 56, 57
     }));
 
-    QVERIFY((neighbors == vector<unsigned int>{
+    CORRADE_COMPARE(neighbors, (vector<unsigned int>{
         0,
         0, 7, 11,
         2, 7, 13,
@@ -113,7 +116,7 @@ void TipsifyTest::buildAdjacency() {
 void TipsifyTest::tipsify() {
     MeshTools::tipsify(indices, vertexCount, 3);
 
-    QVERIFY((indices == vector<unsigned int>{
+    CORRADE_COMPARE(indices, (vector<unsigned int>{
         4, 1, 0,
         9, 5, 4,
         1, 4, 5,

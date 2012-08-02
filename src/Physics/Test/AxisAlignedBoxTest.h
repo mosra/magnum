@@ -15,14 +15,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
+#include <TestSuite/Tester.h>
 
 namespace Magnum { namespace Physics { namespace Test {
 
-class AxisAlignedBoxTest: public QObject {
-    Q_OBJECT
+class AxisAlignedBoxTest: public Corrade::TestSuite::Tester<AxisAlignedBoxTest> {
+    public:
+        AxisAlignedBoxTest();
 
-    private slots:
         void applyTransformation();
 };
 

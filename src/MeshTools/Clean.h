@@ -21,8 +21,8 @@
 
 #include <unordered_map>
 #include <limits>
+#include <Utility/MurmurHash2.h>
 
-#include "Utility/MurmurHash2.h"
 #include "TypeTraits.h"
 
 namespace Magnum { namespace MeshTools {

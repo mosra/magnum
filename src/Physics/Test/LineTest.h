@@ -15,14 +15,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
+#include <TestSuite/Tester.h>
 
 namespace Magnum { namespace Physics { namespace Test {
 
-class LineTest: public QObject {
-    Q_OBJECT
+class LineTest: public Corrade::TestSuite::Tester<LineTest> {
+    public:
+        LineTest();
 
-    private slots:
         void applyTransformation();
 };
 

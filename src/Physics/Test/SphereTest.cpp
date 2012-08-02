@@ -15,30 +15,35 @@
 
 #include "SphereTest.h"
 
-#include <QtTest/QTest>
-#include "Utility/Debug.h"
-
 #include "Physics/Sphere.h"
 
-QTEST_APPLESS_MAIN(Magnum::Physics::Test::SphereTest)
+CORRADE_TEST_MAIN(Magnum::Physics::Test::SphereTest)
 
 namespace Magnum { namespace Physics { namespace Test {
+
+SphereTest::SphereTest() {
+    addTests(&SphereTest::applyTransformation,
+             &SphereTest::collisionPoint,
+             &SphereTest::collisionLine,
+             &SphereTest::collisionLineSegment,
+             &SphereTest::collisionSphere);
+}
 
 void SphereTest::applyTransformation() {
     Physics::Sphere sphere({1.0f, 2.0f, 3.0f}, 7.0f);
 
     sphere.applyTransformation(Matrix4::rotation(deg(90.0f), Vector3::yAxis()));
-    QVERIFY((sphere.transformedPosition() == Vector3(3.0f, 2.0f, -1.0f)));
-    QCOMPARE(sphere.transformedRadius(), 7.0f);
+    CORRADE_COMPARE(sphere.transformedPosition(), Vector3(3.0f, 2.0f, -1.0f));
+    CORRADE_COMPARE(sphere.transformedRadius(), 7.0f);
 
     /* Symmetric scaling */
     sphere.applyTransformation(Matrix4::scaling(Vector3(2.0f)));
-    QVERIFY((sphere.transformedPosition() == Vector3(2.0f, 4.0f, 6.0f)));
-    QCOMPARE(sphere.transformedRadius(), 14.0f);
+    CORRADE_COMPARE(sphere.transformedPosition(), Vector3(2.0f, 4.0f, 6.0f));
+    CORRADE_COMPARE(sphere.transformedRadius(), 14.0f);
 
     /* Apply average scaling to radius */
     sphere.applyTransformation(Matrix4::scaling({Math::Constants<GLfloat>::sqrt3(), -Math::Constants<GLfloat>::sqrt2(), 2.0f}));
-    QCOMPARE(sphere.transformedRadius(), Math::Constants<GLfloat>::sqrt3()*7.0f);
+    CORRADE_COMPARE(sphere.transformedRadius(), Math::Constants<GLfloat>::sqrt3()*7.0f);
 }
 
 void SphereTest::collisionPoint() {

@@ -15,25 +15,28 @@
 
 #include "CapsuleTest.h"
 
-#include <QtTest/QTest>
-
 #include "Physics/Capsule.h"
 
-QTEST_APPLESS_MAIN(Magnum::Physics::Test::CapsuleTest)
+CORRADE_TEST_MAIN(Magnum::Physics::Test::CapsuleTest)
 
 namespace Magnum { namespace Physics { namespace Test {
+
+CapsuleTest::CapsuleTest() {
+    addTests(&CapsuleTest::applyTransformation,
+             &CapsuleTest::collisionPoint);
+}
 
 void CapsuleTest::applyTransformation() {
     Physics::Capsule capsule({1.0f, 2.0f, 3.0f}, {-1.0f, -2.0f, -3.0f}, 7.0f);
 
     capsule.applyTransformation(Matrix4::rotation(deg(90.0f), Vector3::zAxis()));
-    QVERIFY((capsule.transformedA() == Vector3(-2.0f, 1.0f, 3.0f)));
-    QVERIFY((capsule.transformedB() == Vector3(2.0f, -1.0f, -3.0f)));
-    QCOMPARE(capsule.radius(), 7.0f);
+    CORRADE_COMPARE(capsule.transformedA(), Vector3(-2.0f, 1.0f, 3.0f));
+    CORRADE_COMPARE(capsule.transformedB(), Vector3(2.0f, -1.0f, -3.0f));
+    CORRADE_COMPARE(capsule.radius(), 7.0f);
 
     /* Apply average scaling to radius */
     capsule.applyTransformation(Matrix4::scaling({Math::Constants<GLfloat>::sqrt3(), -Math::Constants<GLfloat>::sqrt2(), 2.0f}));
-    QCOMPARE(capsule.transformedRadius(), Math::Constants<GLfloat>::sqrt3()*7.0f);
+    CORRADE_COMPARE(capsule.transformedRadius(), Math::Constants<GLfloat>::sqrt3()*7.0f);
 }
 
 void CapsuleTest::collisionPoint() {

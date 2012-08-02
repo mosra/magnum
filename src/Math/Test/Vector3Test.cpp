@@ -16,11 +16,10 @@
 #include "Vector3Test.h"
 
 #include <sstream>
-#include <QtTest/QTest>
 
 #include "Vector3.h"
 
-QTEST_APPLESS_MAIN(Magnum::Math::Test::Vector3Test)
+CORRADE_TEST_MAIN(Magnum::Math::Test::Vector3Test)
 
 using namespace std;
 using namespace Corrade::Utility;
@@ -30,32 +29,40 @@ namespace Magnum { namespace Math { namespace Test {
 typedef Math::Vector3<float> Vector3;
 typedef Math::Vector2<float> Vector2;
 
+Vector3Test::Vector3Test() {
+    addTests(&Vector3Test::construct,
+             &Vector3Test::cross,
+             &Vector3Test::axis,
+             &Vector3Test::twoComponent,
+             &Vector3Test::debug);
+}
+
 void Vector3Test::construct() {
-    QVERIFY((Vector3(1, 2, 3) == Vector<3, float>(1.0f, 2.0f, 3.0f)));
-    QVERIFY((Vector3(Vector<2, float>(1.0f, 2.0f), 3) == Vector<3, float>(1.0f, 2.0f, 3.0f)));
+    CORRADE_COMPARE(Vector3(1, 2, 3), (Vector<3, float>(1.0f, 2.0f, 3.0f)));
+    CORRADE_COMPARE(Vector3(Vector<2, float>(1.0f, 2.0f), 3), (Vector<3, float>(1.0f, 2.0f, 3.0f)));
 }
 
 void Vector3Test::cross() {
     Vector3 a(1, -1, 1);
     Vector3 b(4, 3, 7);
 
-    QVERIFY(Vector3::cross(a, b) == Vector3(-10, -3, 7));
+    CORRADE_COMPARE(Vector3::cross(a, b), Vector3(-10, -3, 7));
 }
 
 void Vector3Test::axis() {
-    QVERIFY(Vector3::xAxis(5.0f) == Vector3(5.0f, 0.0f, 0.0f));
-    QVERIFY(Vector3::yAxis(6.0f) == Vector3(0.0f, 6.0f, 0.0f));
-    QVERIFY(Vector3::zAxis(7.0f) == Vector3(0.0f, 0.0f, 7.0f));
+    CORRADE_COMPARE(Vector3::xAxis(5.0f), Vector3(5.0f, 0.0f, 0.0f));
+    CORRADE_COMPARE(Vector3::yAxis(6.0f), Vector3(0.0f, 6.0f, 0.0f));
+    CORRADE_COMPARE(Vector3::zAxis(7.0f), Vector3(0.0f, 0.0f, 7.0f));
 }
 
 void Vector3Test::twoComponent() {
-    QVERIFY(Vector3(1.0f, 2.0f, 3.0f).xy() == Vector2(1.0f, 2.0f));
+    CORRADE_COMPARE(Vector3(1.0f, 2.0f, 3.0f).xy(), Vector2(1.0f, 2.0f));
 }
 
 void Vector3Test::debug() {
     ostringstream o;
     Debug(&o) << Vector3(0.5f, 15.0f, 1.0f);
-    QCOMPARE(QString::fromStdString(o.str()), QString("Vector(0.5, 15, 1)\n"));
+    CORRADE_COMPARE(o.str(), "Vector(0.5, 15, 1)\n");
 }
 
 }}}

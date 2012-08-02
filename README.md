@@ -56,8 +56,8 @@ Building and running unit tests
 -------------------------------
 
 If you want to build also unit tests (which are not built by default), pass
-`-DBUILD_TESTS=True` to CMake. Unit tests use QtTest framework (you need at
-least **Qt 4.6**) and can be run using
+`-DBUILD_TESTS=True` to CMake. Unit tests use Corrade's TestSuite framework
+and can be run using
 
     ctest -V
 

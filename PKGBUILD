@@ -7,7 +7,7 @@ arch=('i686' 'x86_64')
 url="https://github.com/mosra/magnum"
 license=('LGPLv3')
 depends=('corrade' 'glew')
-makedepends=('cmake' 'qt')
+makedepends=('cmake')
 options=(!strip)
 provides=('magnum-git')
 

@@ -15,20 +15,23 @@
 
 #include "UVSphereTest.h"
 
-#include <QtTest/QTest>
-
 #include "Primitives/UVSphere.h"
 
 using namespace std;
 
-QTEST_APPLESS_MAIN(Magnum::Primitives::Test::UVSphereTest)
+CORRADE_TEST_MAIN(Magnum::Primitives::Test::UVSphereTest)
 
 namespace Magnum { namespace Primitives { namespace Test {
+
+UVSphereTest::UVSphereTest() {
+    addTests(&UVSphereTest::withoutTextureCoords,
+             &UVSphereTest::withTextureCoords);
+}
 
 void UVSphereTest::withoutTextureCoords() {
     UVSphere sphere(3, 3);
 
-    QVERIFY((*sphere.vertices(0) == vector<Vector4>{
+    CORRADE_COMPARE(*sphere.vertices(0), (vector<Vector4>{
         Vector4(0.0f, -1.0f, 0.0f),
 
         Vector4(0.0f, -0.5f, 0.866025f),
@@ -42,7 +45,7 @@ void UVSphereTest::withoutTextureCoords() {
         Vector4(0.0f, 1.0f, 0.0f)
     }));
 
-    QVERIFY((*sphere.normals(0) == vector<Vector3>{
+    CORRADE_COMPARE(*sphere.normals(0), (vector<Vector3>{
         Vector3(0.0f, -1.0f, 0.0f),
 
         Vector3(0.0f, -0.5f, 0.866025f),
@@ -56,7 +59,7 @@ void UVSphereTest::withoutTextureCoords() {
         Vector3(0.0f, 1.0f, 0.0f)
     }));
 
-    QVERIFY((*sphere.indices() == vector<unsigned int>{
+    CORRADE_COMPARE(*sphere.indices(), (vector<unsigned int>{
         0, 2, 1, 0, 3, 2, 0, 1, 3,
         1, 2, 5, 1, 5, 4, 2, 3, 6, 2, 6, 5, 3, 1, 4, 3, 4, 6,
         4, 5, 7, 5, 6, 7, 6, 4, 7
@@ -66,7 +69,7 @@ void UVSphereTest::withoutTextureCoords() {
 void UVSphereTest::withTextureCoords() {
     UVSphere sphere(3, 3, UVSphere::TextureCoords::Generate);
 
-    QVERIFY((*sphere.vertices(0) == vector<Vector4>{
+    CORRADE_COMPARE(*sphere.vertices(0), (vector<Vector4>{
         Vector4(0.0f, -1.0f, 0.0f),
 
         Vector4(0.0f, -0.5f, 0.866025f),
@@ -82,7 +85,7 @@ void UVSphereTest::withTextureCoords() {
         Vector4(0.0f, 1.0f, 0.0f)
     }));
 
-    QVERIFY((*sphere.textureCoords2D(0) == vector<Vector2>{
+    CORRADE_COMPARE(*sphere.textureCoords2D(0), (vector<Vector2>{
         Vector2(0.5f, 0.0f),
 
         Vector2(0.0f, 0.333333f),
@@ -98,7 +101,7 @@ void UVSphereTest::withTextureCoords() {
         Vector2(0.5f, 1.0f)
     }));
 
-    QVERIFY((*sphere.indices() == vector<unsigned int>{
+    CORRADE_COMPARE(*sphere.indices(), (vector<unsigned int>{
         0, 2, 1, 0, 3, 2, 0, 4, 3,
         1, 2, 6, 1, 6, 5, 2, 3, 7, 2, 7, 6, 3, 4, 8, 3, 8, 7,
         5, 6, 9, 6, 7, 9, 7, 8, 9

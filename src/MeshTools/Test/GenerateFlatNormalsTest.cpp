@@ -16,14 +16,19 @@
 #include "GenerateFlatNormalsTest.h"
 
 #include <sstream>
-#include <QtTest/QTest>
+
 #include "MeshTools/GenerateFlatNormals.h"
 
-QTEST_APPLESS_MAIN(Magnum::MeshTools::Test::GenerateFlatNormalsTest)
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::GenerateFlatNormalsTest)
 
 using namespace std;
 
 namespace Magnum { namespace MeshTools { namespace Test {
+
+GenerateFlatNormalsTest::GenerateFlatNormalsTest() {
+    addTests(&GenerateFlatNormalsTest::wrongIndexCount,
+             &GenerateFlatNormalsTest::generate);
+}
 
 void GenerateFlatNormalsTest::wrongIndexCount() {
     stringstream ss;
@@ -34,9 +39,9 @@ void GenerateFlatNormalsTest::wrongIndexCount() {
         0, 1
     }, {});
 
-    QVERIFY(indices.size() == 0);
-    QVERIFY(normals.size() == 0);
-    QVERIFY(ss.str() == "MeshTools::generateFlatNormals(): index count is not divisible by 3!\n");
+    CORRADE_COMPARE(indices.size(), 0);
+    CORRADE_COMPARE(normals.size(), 0);
+    CORRADE_COMPARE(ss.str(), "MeshTools::generateFlatNormals(): index count is not divisible by 3!\n");
 }
 
 void GenerateFlatNormalsTest::generate() {
@@ -55,11 +60,11 @@ void GenerateFlatNormalsTest::generate() {
     }, vertices);
 
 
-    QVERIFY((indices == vector<unsigned int>{
+    CORRADE_COMPARE(indices, (vector<unsigned int>{
         0, 0, 0,
         1, 1, 1
     }));
-    QVERIFY((normals == vector<Vector3>{
+    CORRADE_COMPARE(normals, (vector<Vector3>{
         Vector3::zAxis(),
         -Vector3::zAxis()
     }));

@@ -16,13 +16,17 @@
 #include "MathTypeTraitsTest.h"
 
 #include <limits>
-#include <QtTest/QTest>
 
 #include "MathTypeTraits.h"
 
-QTEST_APPLESS_MAIN(Magnum::Math::Test::MathTypeTraitsTest)
+CORRADE_TEST_MAIN(Magnum::Math::Test::MathTypeTraitsTest)
 
 namespace Magnum { namespace Math { namespace Test {
+
+MathTypeTraitsTest::MathTypeTraitsTest() {
+    addTests(&MathTypeTraitsTest::equalsIntegral,
+             &MathTypeTraitsTest::equalsFloatingPoint);
+}
 
 void MathTypeTraitsTest::equalsIntegral() {
     _equalsIntegral<unsigned char>();
@@ -43,18 +47,21 @@ void MathTypeTraitsTest::equalsFloatingPoint() {
 }
 
 template<class T> void MathTypeTraitsTest::_equalsIntegral() {
-    QVERIFY(!MathTypeTraits<T>::equals(1, 1+MathTypeTraits<T>::epsilon()));
+    CORRADE_VERIFY(!MathTypeTraits<T>::equals(1, 1+MathTypeTraits<T>::epsilon()));
 }
 
 template<class T> void MathTypeTraitsTest::_equalsFloatingPoint() {
-    QVERIFY(MathTypeTraits<T>::equals(T(1)+MathTypeTraits<T>::epsilon()/T(2), T(1)));
-    QVERIFY(!MathTypeTraits<T>::equals(T(1)+MathTypeTraits<T>::epsilon()*T(2), T(1)));
+    CORRADE_VERIFY(MathTypeTraits<T>::equals(T(1)+MathTypeTraits<T>::epsilon()/T(2), T(1)));
+    CORRADE_VERIFY(!MathTypeTraits<T>::equals(T(1)+MathTypeTraits<T>::epsilon()*T(2), T(1)));
 
-    QEXPECT_FAIL(0, "Comparing to infinity is broken", Continue);
-    QVERIFY(MathTypeTraits<T>::equals(std::numeric_limits<T>::infinity(),
-                                  std::numeric_limits<T>::infinity()));
-    QVERIFY(!MathTypeTraits<T>::equals(std::numeric_limits<T>::quiet_NaN(),
-                                   std::numeric_limits<T>::quiet_NaN()));
+    {
+        CORRADE_EXPECT_FAIL("Comparing to infinity is broken");
+        CORRADE_VERIFY(MathTypeTraits<T>::equals(std::numeric_limits<T>::infinity(),
+                                                std::numeric_limits<T>::infinity()));
+    }
+
+    CORRADE_VERIFY(!MathTypeTraits<T>::equals(std::numeric_limits<T>::quiet_NaN(),
+                                              std::numeric_limits<T>::quiet_NaN()));
 }
 
 }}}

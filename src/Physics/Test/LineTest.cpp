@@ -15,19 +15,21 @@
 
 #include "LineTest.h"
 
-#include <QtTest/QTest>
-
 #include "Physics/Line.h"
 
-QTEST_APPLESS_MAIN(Magnum::Physics::Test::LineTest)
+CORRADE_TEST_MAIN(Magnum::Physics::Test::LineTest)
 
 namespace Magnum { namespace Physics { namespace Test {
+
+LineTest::LineTest() {
+    addTests(&LineTest::applyTransformation);
+}
 
 void LineTest::applyTransformation() {
     Physics::Line line({1.0f, 2.0f, 3.0f}, {-1.0f, -2.0f, -3.0f});
     line.applyTransformation(Matrix4::rotation(deg(90.0f), Vector3::zAxis()));
-    QVERIFY((line.transformedA() == Vector3(-2.0f, 1.0f, 3.0f)));
-    QVERIFY((line.transformedB() == Vector3(2.0f, -1.0f, -3.0f)));
+    CORRADE_COMPARE(line.transformedA(), Vector3(-2.0f, 1.0f, 3.0f));
+    CORRADE_COMPARE(line.transformedB(), Vector3(2.0f, -1.0f, -3.0f));
 }
 
 }}}
