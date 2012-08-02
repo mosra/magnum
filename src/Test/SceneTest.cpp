@@ -15,34 +15,37 @@
 
 #include "SceneTest.h"
 
-#include <QtTest/QTest>
-
 #include "Scene.h"
 
-QTEST_APPLESS_MAIN(Magnum::Test::SceneTest)
+CORRADE_TEST_MAIN(Magnum::Test::SceneTest)
 
 namespace Magnum { namespace Test {
+
+SceneTest::SceneTest() {
+    addTests(&SceneTest::transformation,
+             &SceneTest::parent);
+}
 
 void SceneTest::transformation() {
     Scene scene;
 
     Object* scenePointer = &scene;
     scenePointer->setTransformation(Matrix4::translation({1.0f, 1.0f, 1.0f}));
-    QVERIFY(scene.transformation() == Matrix4());
+    CORRADE_COMPARE(scene.transformation(), Matrix4());
 }
 
 void SceneTest::parent() {
     Scene scene;
 
-    QVERIFY(scene.parent() == &scene);
+    CORRADE_VERIFY(scene.parent() == &scene);
 
     /* Scene parent cannot be changed */
     Object* scenePointer = &scene;
     Object object;
     scenePointer->setParent(&object);
-    QVERIFY(scene.parent() == &scene);
-    QVERIFY(scene.children().empty());
-    QVERIFY(object.children().empty());
+    CORRADE_VERIFY(scene.parent() == &scene);
+    CORRADE_VERIFY(scene.children().empty());
+    CORRADE_VERIFY(object.children().empty());
 }
 
 }}

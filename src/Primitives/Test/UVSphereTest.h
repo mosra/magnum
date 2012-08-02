@@ -15,14 +15,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
+#include <TestSuite/Tester.h>
 
 namespace Magnum { namespace Primitives { namespace Test {
 
-class UVSphereTest: public QObject {
-    Q_OBJECT
+class UVSphereTest: public Corrade::TestSuite::Tester<UVSphereTest> {
+    public:
+        UVSphereTest();
 
-    private slots:
         void withoutTextureCoords();
         void withTextureCoords();
 };

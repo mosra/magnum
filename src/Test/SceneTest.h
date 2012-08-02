@@ -15,16 +15,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
-
-#include "Object.h"
+#include <TestSuite/Tester.h>
 
 namespace Magnum { namespace Test {
 
-class SceneTest: public QObject {
-    Q_OBJECT
+class SceneTest: public Corrade::TestSuite::Tester<SceneTest> {
+    public:
+        SceneTest();
 
-    private slots:
         void transformation();
         void parent();
 };

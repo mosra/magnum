@@ -16,11 +16,10 @@
 #include "Vector2Test.h"
 
 #include <sstream>
-#include <QtTest/QTest>
 
 #include "Vector2.h"
 
-QTEST_APPLESS_MAIN(Magnum::Math::Test::Vector2Test)
+CORRADE_TEST_MAIN(Magnum::Math::Test::Vector2Test)
 
 using namespace std;
 using namespace Corrade::Utility;
@@ -29,14 +28,19 @@ namespace Magnum { namespace Math { namespace Test {
 
 typedef Math::Vector2<float> Vector2;
 
+Vector2Test::Vector2Test() {
+    addTests(&Vector2Test::construct,
+             &Vector2Test::debug);
+}
+
 void Vector2Test::construct() {
-    QVERIFY((Vector2(1, 2) == Vector<2, float>(1.0f, 2.0f)));
+    CORRADE_COMPARE(Vector2(1, 2), (Vector<2, float>(1.0f, 2.0f)));
 }
 
 void Vector2Test::debug() {
     ostringstream o;
     Debug(&o) << Vector2(0.5f, 15.0f);
-    QCOMPARE(QString::fromStdString(o.str()), QString("Vector(0.5, 15)\n"));
+    CORRADE_COMPARE(o.str(), "Vector(0.5, 15)\n");
 }
 
 }}}

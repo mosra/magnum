@@ -27,12 +27,6 @@ if(WITH_EVERYTHING)
 endif()
 
 if(BUILD_TESTS)
-    find_package(Qt4)
-
-    if(NOT QT4_FOUND)
-        message(FATAL_ERROR "Qt4, required for building unit tests, was not found. Set BUILD_TESTS to OFF to skip building them.")
-    endif()
-
     enable_testing()
 endif()
 

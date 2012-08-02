@@ -15,17 +15,20 @@
 
 #include "ShapeGroupTest.h"
 
-#include <QtTest/QTest>
-
 #include "Physics/Point.h"
 #include "Physics/Sphere.h"
 #include "Physics/ShapeGroup.h"
 
-QTEST_APPLESS_MAIN(Magnum::Physics::Test::ShapeGroupTest)
-
 using namespace std;
 
+CORRADE_TEST_MAIN(Magnum::Physics::Test::ShapeGroupTest)
+
 namespace Magnum { namespace Physics { namespace Test {
+
+ShapeGroupTest::ShapeGroupTest() {
+    addTests(&ShapeGroupTest::copy,
+             &ShapeGroupTest::reference);
+}
 
 void ShapeGroupTest::copy() {
     ShapeGroup group;
@@ -38,6 +41,8 @@ void ShapeGroupTest::copy() {
 
     /* Just to test that it doesn't crash */
     group.applyTransformation(Matrix4::translation(Vector3::xAxis(1.0f)));
+
+    CORRADE_VERIFY(true);
 }
 
 void ShapeGroupTest::reference() {
@@ -48,8 +53,8 @@ void ShapeGroupTest::reference() {
 
     group.applyTransformation(Matrix4::translation(Vector3(1.0f)));
 
-    QVERIFY((point.transformedPosition() == Vector3(2.0f, 3.0f, 4.0f)));
-    QVERIFY((sphere.transformedPosition() == Vector3(3.0f, 2.0f, 31.0f)));
+    CORRADE_VERIFY((point.transformedPosition() == Vector3(2.0f, 3.0f, 4.0f)));
+    CORRADE_VERIFY((sphere.transformedPosition() == Vector3(3.0f, 2.0f, 31.0f)));
 }
 
 }}}

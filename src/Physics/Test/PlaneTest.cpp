@@ -15,25 +15,29 @@
 
 #include "PlaneTest.h"
 
-#include <QtTest/QTest>
-
 #include "Physics/Plane.h"
 
-QTEST_APPLESS_MAIN(Magnum::Physics::Test::PlaneTest)
+CORRADE_TEST_MAIN(Magnum::Physics::Test::PlaneTest)
 
 namespace Magnum { namespace Physics { namespace Test {
+
+PlaneTest::PlaneTest() {
+    addTests(&PlaneTest::applyTransformation,
+             &PlaneTest::collisionLine,
+             &PlaneTest::collisionLineSegment);
+}
 
 void PlaneTest::applyTransformation() {
     Physics::Plane plane({1.0f, 2.0f, 3.0f}, {Math::Constants<float>::sqrt2(), -Math::Constants<float>::sqrt2(), 0});
 
     plane.applyTransformation(Matrix4::rotation(deg(90.0f), Vector3::xAxis()));
-    QVERIFY(plane.transformedPosition() == Vector3(1.0f, -3.0f, 2.0f));
-    QVERIFY(plane.transformedNormal() == Vector3(Math::Constants<float>::sqrt2(), 0, -Math::Constants<float>::sqrt2()));
+    CORRADE_COMPARE(plane.transformedPosition(), Vector3(1.0f, -3.0f, 2.0f));
+    CORRADE_COMPARE(plane.transformedNormal(), Vector3(Math::Constants<float>::sqrt2(), 0, -Math::Constants<float>::sqrt2()));
 
     /* The normal should stay normalized */
     plane.applyTransformation(Matrix4::scaling({1.5f, 2.0f, 3.0f}));
-    QVERIFY(plane.transformedPosition() == Vector3(1.5f, 4.0f, 9.0f));
-    QVERIFY(plane.transformedNormal() == Vector3(Math::Constants<float>::sqrt2(), -Math::Constants<float>::sqrt2(), 0));
+    CORRADE_COMPARE(plane.transformedPosition(), Vector3(1.5f, 4.0f, 9.0f));
+    CORRADE_COMPARE(plane.transformedNormal(), Vector3(Math::Constants<float>::sqrt2(), -Math::Constants<float>::sqrt2(), 0));
 }
 
 void PlaneTest::collisionLine() {

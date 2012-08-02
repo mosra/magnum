@@ -15,14 +15,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
+#include <TestSuite/Tester.h>
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class GenerateFlatNormalsTest: public QObject {
-    Q_OBJECT
+class GenerateFlatNormalsTest: public Corrade::TestSuite::Tester<GenerateFlatNormalsTest> {
+    public:
+        GenerateFlatNormalsTest();
 
-    private slots:
         void wrongIndexCount();
         void generate();
 };

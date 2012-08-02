@@ -15,13 +15,13 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtTest/QTest>
+#include <TestSuite/Tester.h>
 
 #include "Magnum.h"
 
 namespace Magnum { namespace Physics { namespace Test {
 
-class AbstractShapeTest: public QObject {
+class AbstractShapeTest {
     protected:
         template<class T> void randomTransformation(T& shape) {
             shape.applyTransformation(Matrix4::translation({7.0f, 8.0f, -9.0f}));
@@ -29,16 +29,16 @@ class AbstractShapeTest: public QObject {
 };
 
 #define VERIFY_COLLIDES(a, b)                                               \
-    QVERIFY(a % b);                                                         \
-    QVERIFY(b % a);                                                         \
-    QVERIFY(a.collides(&b));                                                \
-    QVERIFY(b.collides(&a));
+    CORRADE_VERIFY(a % b);                                                  \
+    CORRADE_VERIFY(b % a);                                                  \
+    CORRADE_VERIFY(a.collides(&b));                                         \
+    CORRADE_VERIFY(b.collides(&a));
 
 #define VERIFY_NOT_COLLIDES(a, b)                                           \
-    QVERIFY(!(a % b));                                                      \
-    QVERIFY(!(b % a));                                                      \
-    QVERIFY(!(a.collides(&b)));                                             \
-    QVERIFY(!(b.collides(&a)));
+    CORRADE_VERIFY(!(a % b));                                               \
+    CORRADE_VERIFY(!(b % a));                                               \
+    CORRADE_VERIFY(!(a.collides(&b)));                                      \
+    CORRADE_VERIFY(!(b.collides(&a)));
 
 }}}
 

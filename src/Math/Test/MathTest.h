@@ -15,14 +15,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
+#include <TestSuite/Tester.h>
 
 namespace Magnum { namespace Math { namespace Test {
 
-class MathTest: public QObject {
-    Q_OBJECT
+class MathTest: public Corrade::TestSuite::Tester<MathTest> {
+    public:
+        MathTest();
 
-    private slots:
         void degrad();
         void pow();
         void log();

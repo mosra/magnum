@@ -19,10 +19,10 @@
 
 namespace Magnum { namespace Physics { namespace Test {
 
-class PlaneTest: public AbstractShapeTest {
-    Q_OBJECT
+class PlaneTest: public Corrade::TestSuite::Tester<PlaneTest>, AbstractShapeTest {
+    public:
+        PlaneTest();
 
-    private slots:
         void applyTransformation();
         void collisionLine();
         void collisionLineSegment();

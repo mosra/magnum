@@ -15,14 +15,17 @@
 
 #include "CameraTest.h"
 
-#include <QtTest/QTest>
-
 #include "Camera.h"
 #include "Scene.h"
 
-QTEST_APPLESS_MAIN(Magnum::Test::CameraTest)
+CORRADE_TEST_MAIN(Magnum::Test::CameraTest)
 
 namespace Magnum { namespace Test {
+
+CameraTest::CameraTest() {
+    addTests(&CameraTest::orthographic,
+             &CameraTest::perspective);
+}
 
 void CameraTest::orthographic() {
     Camera camera;
@@ -33,7 +36,7 @@ void CameraTest::orthographic() {
               0.0f,   0.0f,   -0.25f,     0.0f,
               0.0f,   0.0f,   -1.25f,     1.0f);
 
-    QVERIFY(camera.projectionMatrix() == a);
+    CORRADE_COMPARE(camera.projectionMatrix(), a);
 }
 
 void CameraTest::perspective() {
@@ -45,7 +48,7 @@ void CameraTest::perspective() {
               0.0f,       0.0f,      -1.9411764f, -1.0f,
               0.0f,       0.0f,      -94.1176452f, 0.0f);
 
-    QVERIFY(camera.projectionMatrix() == a);
+    CORRADE_COMPARE(camera.projectionMatrix(), a);
 }
 
 }}

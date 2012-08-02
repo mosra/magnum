@@ -15,14 +15,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
+#include <TestSuite/Tester.h>
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class SubdivideTest: public QObject {
-    Q_OBJECT
+class SubdivideTest: public Corrade::TestSuite::Tester<SubdivideTest> {
+    public:
+        SubdivideTest();
 
-    private slots:
         void wrongIndexCount();
         void subdivide();
 

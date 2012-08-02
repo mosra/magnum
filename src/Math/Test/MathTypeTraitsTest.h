@@ -15,14 +15,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
+#include <TestSuite/Tester.h>
 
 namespace Magnum { namespace Math { namespace Test {
 
-class MathTypeTraitsTest: public QObject {
-    Q_OBJECT
+class MathTypeTraitsTest: public Corrade::TestSuite::Tester<MathTypeTraitsTest> {
+    public:
+        MathTypeTraitsTest();
 
-    private slots:
         void equalsFloatingPoint();
         void equalsIntegral();
 

@@ -18,13 +18,21 @@
 #include "Camera.h"
 
 #include <sstream>
-#include <QtTest/QTest>
 
 using namespace std;
 
-QTEST_APPLESS_MAIN(Magnum::Test::ObjectTest)
+CORRADE_TEST_MAIN(Magnum::Test::ObjectTest)
 
 namespace Magnum { namespace Test {
+
+ObjectTest::ObjectTest() {
+    addTests(&ObjectTest::parenting,
+             &ObjectTest::transformation,
+             &ObjectTest::absoluteTransformationWrongCamera,
+             &ObjectTest::absoluteTransformation,
+             &ObjectTest::scene,
+             &ObjectTest::dirty);
+}
 
 void ObjectTest::parenting() {
     Object root;
@@ -32,25 +40,25 @@ void ObjectTest::parenting() {
     Object* childOne = new Object(&root);
     Object* childTwo = new Object(&root);
 
-    QVERIFY(childOne->parent() == &root);
-    QVERIFY(root.children().size() == 2);
+    CORRADE_VERIFY(childOne->parent() == &root);
+    CORRADE_COMPARE(root.children().size(), 2);
 
     /* A object cannot be parent of itself */
     childOne->setParent(childOne);
-    QVERIFY(childOne->parent() == &root);
+    CORRADE_VERIFY(childOne->parent() == &root);
 
     /* In fact, cyclic dependencies are not allowed at all */
     root.setParent(childTwo);
-    QVERIFY(root.parent() == nullptr);
+    CORRADE_VERIFY(root.parent() == nullptr);
 
     /* Reparent to another */
     childTwo->setParent(childOne);
-    QVERIFY(root.children().size() == 1 && *root.children().begin() == childOne);
-    QVERIFY(childOne->children().size() == 1 && *childOne->children().begin() == childTwo);
+    CORRADE_VERIFY(root.children().size() == 1 && *root.children().begin() == childOne);
+    CORRADE_VERIFY(childOne->children().size() == 1 && *childOne->children().begin() == childTwo);
 
     /* Delete child */
     delete childTwo;
-    QVERIFY(childOne->children().size() == 0);
+    CORRADE_VERIFY(childOne->children().empty());
 }
 
 void ObjectTest::transformation() {
@@ -62,16 +70,16 @@ void ObjectTest::transformation() {
     o.multiplyTransformation(Matrix4::rotation(deg(35.0f), Vector3::zAxis()));
     o2.rotate(deg(35.0f), Vector3::zAxis());
 
-    QVERIFY(o.transformation() == Matrix4::rotation(deg(35.0f), Vector3::zAxis())*
+    CORRADE_COMPARE(o.transformation(), Matrix4::rotation(deg(35.0f), Vector3::zAxis())*
         Matrix4::translation(Vector3::xAxis(1.0f)));
-    QVERIFY(o2.transformation() == o.transformation());
+    CORRADE_COMPARE(o2.transformation(), o.transformation());
 
     o.multiplyTransformation(Matrix4::scaling(Vector3(2.0f)), Object::Transformation::Local);
     o2.scale(Vector3(2.0f), Object::Transformation::Local);
-    QVERIFY(o.transformation() == Matrix4::rotation(deg(35.0f), Vector3::zAxis())*
+    CORRADE_COMPARE(o.transformation(), Matrix4::rotation(deg(35.0f), Vector3::zAxis())*
         Matrix4::translation(Vector3::xAxis(1.0f))*
         Matrix4::scaling(Vector3(2.0f)));
-    QVERIFY(o2.transformation() == o.transformation());
+    CORRADE_COMPARE(o2.transformation(), o.transformation());
 }
 
 void ObjectTest::absoluteTransformationWrongCamera() {
@@ -82,35 +90,35 @@ void ObjectTest::absoluteTransformationWrongCamera() {
     Object o(&s);
     o.translate(Vector3::yAxis());
     Camera c;
-    QVERIFY(o.absoluteTransformation(&c) == Matrix4::translation(Vector3::yAxis()));
-    QVERIFY(ss.str() == "Object::absoluteTransformation(): the camera is not part of the same scene as object!\n");
+    CORRADE_COMPARE(o.absoluteTransformation(&c), Matrix4::translation(Vector3::yAxis()));
+    CORRADE_COMPARE(ss.str(), "Object::absoluteTransformation(): the camera is not part of the same scene as object!\n");
 
     ss.str("");
     Object o2;
     o2.translate(Vector3::xAxis());
-    QVERIFY(o2.absoluteTransformation(&c) == Matrix4::translation(Vector3::xAxis()));
-    QVERIFY(ss.str() == "Object::absoluteTransformation(): the object is not part of camera scene!\n");
+    CORRADE_COMPARE(o2.absoluteTransformation(&c), Matrix4::translation(Vector3::xAxis()));
+    CORRADE_COMPARE(ss.str(), "Object::absoluteTransformation(): the object is not part of camera scene!\n");
 }
 
 void ObjectTest::absoluteTransformation() {
     Scene s;
     Camera c(&s);
     c.translate(Vector3::zAxis(2.0f));
-    QVERIFY(s.absoluteTransformation() == Matrix4());
-    QVERIFY(c.absoluteTransformation(&c) == Matrix4());
+    CORRADE_COMPARE(s.absoluteTransformation(), Matrix4());
+    CORRADE_COMPARE(c.absoluteTransformation(&c), Matrix4());
 
     Object o(&s);
     o.scale(Vector3(2.0f));
     Object o2(&o);
     o.rotate(deg(90.0f), Vector3::yAxis());
-    QVERIFY((o2.absoluteTransformation() ==
-        Matrix4::scaling(Vector3(2.0f))*Matrix4::rotation(deg(90.0f), Vector3::yAxis())));
-    QVERIFY((o2.absoluteTransformation(&c) ==
-        (Matrix4::translation(Vector3::zAxis(2.0f)).inverted())*Matrix4::scaling(Vector3(2.0f))*Matrix4::rotation(deg(90.0f), Vector3::yAxis())));
+    CORRADE_COMPARE(o2.absoluteTransformation(),
+        Matrix4::scaling(Vector3(2.0f))*Matrix4::rotation(deg(90.0f), Vector3::yAxis()));
+    CORRADE_COMPARE(o2.absoluteTransformation(&c),
+        (Matrix4::translation(Vector3::zAxis(2.0f)).inverted())*Matrix4::scaling(Vector3(2.0f))*Matrix4::rotation(deg(90.0f), Vector3::yAxis()));
 
     Object o3;
     o3.translate({1.0f, 2.0f, 3.0f});
-    QVERIFY(o3.absoluteTransformation() == Matrix4::translation({1.0f, 2.0f, 3.0f}));
+    CORRADE_COMPARE(o3.absoluteTransformation(), Matrix4::translation({1.0f, 2.0f, 3.0f}));
 }
 
 void ObjectTest::scene() {
@@ -122,8 +130,8 @@ void ObjectTest::scene() {
     Object orphan;
     Object* childOfOrphan = new Object(&orphan);
 
-    QVERIFY(childTwo->scene() == &scene);
-    QVERIFY(childOfOrphan->scene() == nullptr);
+    CORRADE_VERIFY(childTwo->scene() == &scene);
+    CORRADE_VERIFY(childOfOrphan->scene() == nullptr);
 }
 
 void ObjectTest::dirty() {
@@ -137,54 +145,54 @@ void ObjectTest::dirty() {
     childThree->rotate(deg(90.0f), Vector3::yAxis());
 
     /* Object is dirty at the beginning */
-    QVERIFY(scene.isDirty());
-    QVERIFY(childOne->isDirty());
+    CORRADE_VERIFY(scene.isDirty());
+    CORRADE_VERIFY(childOne->isDirty());
 
     /* Clean the object and all its dirty parents (but not children) */
     childOne->setClean();
-    QVERIFY(childOne->cleanedAbsoluteTransformation == childOne->absoluteTransformation());
-    QVERIFY(!scene.isDirty());
-    QVERIFY(!childOne->isDirty());
-    QVERIFY(childTwo->isDirty());
-    QVERIFY(childThree->isDirty());
+    CORRADE_COMPARE(childOne->cleanedAbsoluteTransformation, childOne->absoluteTransformation());
+    CORRADE_VERIFY(!scene.isDirty());
+    CORRADE_VERIFY(!childOne->isDirty());
+    CORRADE_VERIFY(childTwo->isDirty());
+    CORRADE_VERIFY(childThree->isDirty());
 
     /* If the object itself is already clean, it shouldn't clean it again */
     childOne->cleanedAbsoluteTransformation = Matrix4(Matrix4::Zero);
     childOne->setClean();
-    QVERIFY(childOne->cleanedAbsoluteTransformation == Matrix4(Matrix4::Zero));
+    CORRADE_COMPARE(childOne->cleanedAbsoluteTransformation, Matrix4(Matrix4::Zero));
 
     /* If any object in the hierarchy is already clean, it shouldn't clean it again */
     childTwo->setClean();
-    QVERIFY(childOne->cleanedAbsoluteTransformation == Matrix4(Matrix4::Zero));
-    QVERIFY(childTwo->cleanedAbsoluteTransformation == childTwo->absoluteTransformation());
-    QVERIFY(!childOne->isDirty());
-    QVERIFY(!childTwo->isDirty());
-    QVERIFY(childThree->isDirty());
+    CORRADE_COMPARE(childOne->cleanedAbsoluteTransformation, Matrix4(Matrix4::Zero));
+    CORRADE_COMPARE(childTwo->cleanedAbsoluteTransformation, childTwo->absoluteTransformation());
+    CORRADE_VERIFY(!childOne->isDirty());
+    CORRADE_VERIFY(!childTwo->isDirty());
+    CORRADE_VERIFY(childThree->isDirty());
 
     /* Mark object and all its children as dirty (but not parents) */
     childTwo->setDirty();
-    QVERIFY(!scene.isDirty());
-    QVERIFY(!childOne->isDirty());
-    QVERIFY(childTwo->isDirty());
-    QVERIFY(childThree->isDirty());
+    CORRADE_VERIFY(!scene.isDirty());
+    CORRADE_VERIFY(!childOne->isDirty());
+    CORRADE_VERIFY(childTwo->isDirty());
+    CORRADE_VERIFY(childThree->isDirty());
 
     /* Reparent object => make it and its children dirty (but not parents) */
     childThree->setClean();
-    QVERIFY(childThree->cleanedAbsoluteTransformation == childThree->absoluteTransformation());
+    CORRADE_COMPARE(childThree->cleanedAbsoluteTransformation, childThree->absoluteTransformation());
     childTwo->setParent(nullptr);
-    QVERIFY(childTwo->isDirty());
-    QVERIFY(!childOne->isDirty());
+    CORRADE_VERIFY(childTwo->isDirty());
+    CORRADE_VERIFY(!childOne->isDirty());
     childTwo->setParent(&scene);
-    QVERIFY(!scene.isDirty());
-    QVERIFY(childTwo->isDirty());
-    QVERIFY(childThree->isDirty());
+    CORRADE_VERIFY(!scene.isDirty());
+    CORRADE_VERIFY(childTwo->isDirty());
+    CORRADE_VERIFY(childThree->isDirty());
 
     /* Set object transformation => make it and its children dirty (but not parents) */
     childThree->setClean();
     childTwo->setTransformation(Matrix4::translation(Vector3::xAxis(1.0f)));
-    QVERIFY(!scene.isDirty());
-    QVERIFY(childTwo->isDirty());
-    QVERIFY(childThree->isDirty());
+    CORRADE_VERIFY(!scene.isDirty());
+    CORRADE_VERIFY(childTwo->isDirty());
+    CORRADE_VERIFY(childThree->isDirty());
 }
 
 }}

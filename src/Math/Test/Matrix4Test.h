@@ -15,14 +15,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
+#include <TestSuite/Tester.h>
 
 namespace Magnum { namespace Math { namespace Test {
 
-class Matrix4Test: public QObject {
-    Q_OBJECT
+class Matrix4Test: public Corrade::TestSuite::Tester<Matrix4Test> {
+    public:
+        Matrix4Test();
 
-    private slots:
         void constructIdentity();
 
         void translation();

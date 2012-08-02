@@ -16,12 +16,11 @@
 #include "Matrix3Test.h"
 
 #include <sstream>
-#include <QtTest/QTest>
 
 #include "Matrix3.h"
 #include "Math.h"
 
-QTEST_APPLESS_MAIN(Magnum::Math::Test::Matrix3Test)
+CORRADE_TEST_MAIN(Magnum::Math::Test::Matrix3Test)
 
 using namespace std;
 using namespace Corrade::Utility;
@@ -29,6 +28,14 @@ using namespace Corrade::Utility;
 namespace Magnum { namespace Math { namespace Test {
 
 typedef Math::Matrix3<float> Matrix3;
+
+Matrix3Test::Matrix3Test() {
+    addTests(&Matrix3Test::constructIdentity,
+             &Matrix3Test::translation,
+             &Matrix3Test::scaling,
+             &Matrix3Test::rotation,
+             &Matrix3Test::debug);
+}
 
 void Matrix3Test::constructIdentity() {
     Matrix3 identity;
@@ -47,9 +54,9 @@ void Matrix3Test::constructIdentity() {
         0.0f, 0.0f, 4.0f
     );
 
-    QVERIFY(identity == identityExpected);
-    QVERIFY(identity2 == identityExpected);
-    QVERIFY(identity3 == identity3Expected);
+    CORRADE_COMPARE(identity, identityExpected);
+    CORRADE_COMPARE(identity2, identityExpected);
+    CORRADE_COMPARE(identity3, identity3Expected);
 }
 
 void Matrix3Test::translation() {
@@ -59,7 +66,7 @@ void Matrix3Test::translation() {
         3.0f, 1.0f, 1.0f
     );
 
-    QVERIFY(Matrix3::translation({3.0f, 1.0f}) == matrix);
+    CORRADE_COMPARE(Matrix3::translation({3.0f, 1.0f}), matrix);
 }
 
 void Matrix3Test::scaling() {
@@ -69,7 +76,7 @@ void Matrix3Test::scaling() {
         0.0f, 0.0f, 1.0f
     );
 
-    QVERIFY(Matrix3::scaling({3.0f, 1.5f}) == matrix);
+    CORRADE_COMPARE(Matrix3::scaling({3.0f, 1.5f}), matrix);
 }
 
 void Matrix3Test::rotation() {
@@ -79,7 +86,7 @@ void Matrix3Test::rotation() {
         0.0f, 0.0f, 1.0f
     );
 
-    QVERIFY(Matrix3::rotation(deg(15.0f)) == matrix);
+    CORRADE_COMPARE(Matrix3::rotation(deg(15.0f)), matrix);
 }
 
 void Matrix3Test::debug() {
@@ -91,9 +98,9 @@ void Matrix3Test::debug() {
 
     ostringstream o;
     Debug(&o) << m;
-    QCOMPARE(QString::fromStdString(o.str()), QString("Matrix(3, 4, 7,\n"
-                                                      "       5, 4, -1,\n"
-                                                      "       8, 7, 8)\n"));
+    CORRADE_COMPARE(o.str(), "Matrix(3, 4, 7,\n"
+                             "       5, 4, -1,\n"
+                             "       8, 7, 8)\n");
 }
 
 }}}

@@ -15,15 +15,17 @@
 
 #include "CleanTest.h"
 
-#include <QtTest/QTest>
-
 #include "MeshTools/Clean.h"
 
-QTEST_APPLESS_MAIN(Magnum::MeshTools::Test::CleanTest)
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::CleanTest)
 
 using namespace std;
 
 namespace Magnum { namespace MeshTools { namespace Test {
+
+CleanTest::CleanTest() {
+    addTests(&CleanTest::cleanMesh);
+}
 
 void CleanTest::cleanMesh() {
     vector<Vector1> vertices{1, 2, 1, 4};
@@ -31,8 +33,8 @@ void CleanTest::cleanMesh() {
     MeshTools::clean(indices, vertices);
 
     /* Verify cleanup */
-    QVERIFY((vertices == vector<Vector1>{1, 2, 4}));
-    QVERIFY((indices == vector<unsigned int>{0, 1, 0, 1, 0, 2}));
+    CORRADE_VERIFY(vertices == (vector<Vector1>{1, 2, 4}));
+    CORRADE_COMPARE(indices, (vector<unsigned int>{0, 1, 0, 1, 0, 2}));
 }
 
 }}}

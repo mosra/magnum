@@ -1,14 +1,12 @@
-corrade_add_test(MathMathTypeTraitsTest MathTypeTraitsTest.h MathTypeTraitsTest.cpp)
+corrade_add_test2(MathMathTypeTraitsTest MathTypeTraitsTest.cpp)
 
-corrade_add_test(MathVectorTest VectorTest.h VectorTest.cpp ${CORRADE_UTILITY_LIBRARY})
-corrade_add_test(MathVector2Test Vector2Test.h Vector2Test.cpp ${CORRADE_UTILITY_LIBRARY})
-corrade_add_test(MathVector3Test Vector3Test.h Vector3Test.cpp ${CORRADE_UTILITY_LIBRARY})
-corrade_add_test(MathVector4Test Vector4Test.h Vector4Test.cpp ${CORRADE_UTILITY_LIBRARY})
+corrade_add_test2(MathVectorTest VectorTest.cpp)
+corrade_add_test2(MathVector2Test Vector2Test.cpp)
+corrade_add_test2(MathVector3Test Vector3Test.cpp)
+corrade_add_test2(MathVector4Test Vector4Test.cpp)
 
-corrade_add_test(MathMatrixTest MatrixTest.h MatrixTest.cpp ${CORRADE_UTILITY_LIBRARY})
-corrade_add_test(MathMatrix3Test Matrix3Test.h Matrix3Test.cpp ${CORRADE_UTILITY_LIBRARY})
-corrade_add_test(MathMatrix4Test Matrix4Test.h Matrix4Test.cpp ${CORRADE_UTILITY_LIBRARY})
+corrade_add_test2(MathMatrixTest MatrixTest.cpp)
+corrade_add_test2(MathMatrix3Test Matrix3Test.cpp)
+corrade_add_test2(MathMatrix4Test Matrix4Test.cpp)
 
-set(MathTest_MOC MathTest.h)
-set(MathTest_SRCS MathTest.cpp $<TARGET_OBJECTS:MagnumMathObjects>)
-corrade_add_multifile_test(MathTest MathTest_MOC MathTest_SRCS)
+corrade_add_test2(MathTest MathTest.cpp $<TARGET_OBJECTS:MagnumMathObjects>)

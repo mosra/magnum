@@ -15,14 +15,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
+#include <TestSuite/Tester.h>
 
 namespace Magnum { namespace Test {
 
-class CameraTest: public QObject {
-    Q_OBJECT
+class CameraTest: public Corrade::TestSuite::Tester<CameraTest> {
+    public:
+        CameraTest();
 
-    private slots:
         void orthographic();
         void perspective();
 };

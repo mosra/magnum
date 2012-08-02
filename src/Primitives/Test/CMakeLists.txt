@@ -1,2 +1,2 @@
-corrade_add_test(PrimitivesCapsuleTest CapsuleTest.h CapsuleTest.cpp MagnumPrimitives)
-corrade_add_test(PrimitivesUVSphereTest UVSphereTest.h UVSphereTest.cpp MagnumPrimitives)
+corrade_add_test2(PrimitivesCapsuleTest CapsuleTest.cpp LIBRARIES MagnumPrimitives)
+corrade_add_test2(PrimitivesUVSphereTest UVSphereTest.cpp LIBRARIES MagnumPrimitives)

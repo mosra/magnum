@@ -15,14 +15,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
+#include <TestSuite/Tester.h>
 
 namespace Magnum { namespace Math { namespace Geometry { namespace Test {
 
-class IntersectionTest: public QObject {
-    Q_OBJECT
+class IntersectionTest: public Corrade::TestSuite::Tester<IntersectionTest> {
+    public:
+        IntersectionTest();
 
-    private slots:
         void planeLine();
 };
 

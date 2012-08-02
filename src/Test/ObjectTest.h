@@ -15,16 +15,16 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <QtCore/QObject>
+#include <TestSuite/Tester.h>
 
 #include "Object.h"
 
 namespace Magnum { namespace Test {
 
-class ObjectTest: public QObject {
-    Q_OBJECT
+class ObjectTest: public Corrade::TestSuite::Tester<ObjectTest> {
+    public:
+        ObjectTest();
 
-    private slots:
         void parenting();
         void transformation();
         void absoluteTransformationWrongCamera();
