@@ -19,11 +19,12 @@
  * @brief Class Magnum::Framebuffer
  */
 
+#include <Utility/Set.h>
+
 #include "BufferedImage.h"
 #include "CubeMapTexture.h"
 #include "Image.h"
 #include "Renderbuffer.h"
-#include "Set.h"
 
 namespace Magnum {
 
@@ -75,7 +76,7 @@ class MAGNUM_EXPORT Framebuffer {
             Stencil = GL_STENCIL_BUFFER_BIT /**< Stencil value */
         };
 
-        typedef Set<Clear, GLbitfield> ClearMask;       /**< @brief Mask for clearing */
+        typedef Corrade::Utility::Set<Clear, GLbitfield> ClearMask; /**< @brief Mask for clearing */
 
         /**
          * @brief %Framebuffer target
@@ -181,7 +182,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @brief Output mask for blitting
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        typedef Set<Blit, GLbitfield> BlitMask;
+        typedef Corrade::Utility::Set<Blit, GLbitfield> BlitMask;
 
         /** @brief Set feature */
         static void setFeature(Feature feature, bool enabled);

@@ -19,10 +19,10 @@
  * @brief Class Magnum::Trade::AbstractImporter
  */
 
+#include <Utility/Set.h>
 #include <PluginManager/Plugin.h>
 
 #include "ImageData.h"
-#include "Set.h"
 
 namespace Magnum { namespace Trade {
 
@@ -65,7 +65,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
         };
 
         /** @brief Set of features supported by this importer */
-        typedef Set<Feature, int> Features;
+        typedef Corrade::Utility::Set<Feature, int> Features;
 
         /** @brief Constructor */
         inline AbstractImporter(Corrade::PluginManager::AbstractPluginManager* manager = nullptr, const std::string& plugin = ""): Plugin(manager, plugin) {}
