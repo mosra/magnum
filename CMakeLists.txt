@@ -17,7 +17,7 @@ cmake_dependent_option(WITH_EGLCONTEXT "Build EglContext library" OFF "TARGET_GL
 cmake_dependent_option(WITH_GLUTCONTEXT "Build GlutContext library" OFF "NOT TARGET_GLES" OFF)
 option(WITH_SDL2CONTEXT "Build Sdl2Context library" OFF)
 
-option(BUILD_TESTS "Build unit tests (requires Qt4)." OFF)
+option(BUILD_TESTS "Build unit tests." OFF)
 
 if(WITH_EVERYTHING)
     set(WITH_MESHTOOLS ON)
