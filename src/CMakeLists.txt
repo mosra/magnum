@@ -143,7 +143,6 @@ endif()
 
 if(BUILD_TESTS)
     enable_testing()
-    include_directories(${QT_INCLUDE_DIR})
 
     # Library with graceful assert for testing
     if(NOT CMAKE_NO_OBJECT_TARGET)
