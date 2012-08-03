@@ -15,7 +15,8 @@
 
 #include "TgaImporter.h"
 
-#include "Utility/Endianness.h"
+#include <Utility/Endianness.h>
+
 #include "Math/Vector2.h"
 #include "Trade/ImageData.h"
 
