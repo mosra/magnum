@@ -95,15 +95,26 @@ void TgaImporterTest::bits24() {
         0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
         1, 2, 3, 2, 3, 4, 3, 4, 5, 4, 5, 6, 5, 6, 7, 6, 7, 8
     };
+    #ifndef MAGNUM_TARGET_GLES
+    const char* pixels = data + 18;
+    #else
+    const char pixels[] = {
+        3, 2, 1, 4, 3, 2, 5, 4, 3, 6, 5, 4, 7, 6, 5, 8, 7, 6
+    };
+    #endif
     std::istringstream in(string(data, sizeof(data)));
 
     TgaImporter importer;
     CORRADE_VERIFY(importer.open(in));
     auto image = importer.image2D(0);
+    #ifndef MAGNUM_TARGET_GLES
     CORRADE_VERIFY(image->components() == AbstractImage::Components::BGR);
+    #else
+    CORRADE_VERIFY(image->components() == AbstractImage::Components::RGB);
+    #endif
     CORRADE_COMPARE(image->dimensions(), Math::Vector2<GLsizei>(2, 3));
     CORRADE_VERIFY(image->type() == TypeTraits<GLubyte>::imageType());
-    CORRADE_COMPARE(string(static_cast<const char*>(image->data()), 2*3*3), string(data + 18, 2*3*3));
+    CORRADE_COMPARE(string(static_cast<const char*>(image->data()), 2*3*3), string(pixels, 2*3*3));
 }
 
 void TgaImporterTest::bits32() {
@@ -111,15 +122,26 @@ void TgaImporterTest::bits32() {
         0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 32, 0,
         1, 2, 3, 1, 2, 3, 4, 1, 3, 4, 5, 1, 4, 5, 6, 1, 5, 6, 7, 1, 6, 7, 8, 1
     };
+    #ifndef MAGNUM_TARGET_GLES
+    const char* pixels = data + 18;
+    #else
+    const char pixels[] = {
+        3, 2, 1, 1, 4, 3, 2, 1, 5, 4, 3, 1, 6, 5, 4, 1, 7, 6, 5, 1, 8, 7, 6, 1
+    };
+    #endif
     std::istringstream in(string(data, sizeof(data)));
 
     TgaImporter importer;
     CORRADE_VERIFY(importer.open(in));
     auto image = importer.image2D(0);
+    #ifndef MAGNUM_TARGET_GLES
     CORRADE_VERIFY(image->components() == AbstractImage::Components::BGRA);
+    #else
+    CORRADE_VERIFY(image->components() == AbstractImage::Components::RGBA);
+    #endif
     CORRADE_COMPARE(image->dimensions(), Math::Vector2<GLsizei>(2, 3));
     CORRADE_VERIFY(image->type() == TypeTraits<GLubyte>::imageType());
-    CORRADE_COMPARE(string(static_cast<const char*>(image->data()), 2*3*3), string(data + 18, 2*3*3));
+    CORRADE_COMPARE(string(static_cast<const char*>(image->data()), 2*3*3), string(pixels, 2*3*3));
 }
 
 }}}}

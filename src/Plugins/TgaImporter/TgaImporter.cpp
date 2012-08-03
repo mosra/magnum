@@ -15,9 +15,11 @@
 
 #include "TgaImporter.h"
 
+#include <algorithm>
 #include <Utility/Endianness.h>
 
 #include "Math/Vector2.h"
+#include "Math/Swizzle.h"
 #include "Trade/ImageData.h"
 
 using namespace std;
@@ -76,10 +78,18 @@ bool TgaImporter::open(istream& in, const string& name) {
     AbstractImage::Components components;
     switch(header.bpp) {
         case 24:
+            #ifndef MAGNUM_TARGET_GLES
             components = AbstractImage::Components::BGR;
+            #else
+            components = AbstractImage::Components::RGB;
+            #endif
             break;
         case 32:
+            #ifndef MAGNUM_TARGET_GLES
             components = AbstractImage::Components::BGRA;
+            #else
+            components = AbstractImage::Components::RGBA;
+            #endif
             break;
         default:
             Error() << "TgaImporter: unsupported bits-per-pixel:" << int(header.bpp);
@@ -91,6 +101,18 @@ bool TgaImporter::open(istream& in, const string& name) {
     in.read(reinterpret_cast<char*>(buffer), size);
 
     Math::Vector2<GLsizei> dimensions(header.width, header.height);
+
+    #ifdef MAGNUM_TARGET_GLES
+    if(components == AbstractImage::Components::RGB) {
+        Math::Vector3<GLubyte>* data = reinterpret_cast<Math::Vector3<GLubyte>*>(buffer);
+        std::transform(data, data + dimensions.product(), data,
+            [](Math::Vector3<GLubyte> pixel) { return Math::swizzle<'b', 'g', 'r'>(pixel); });
+    } else /* RGBA */ {
+        Math::Vector4<GLubyte>* data = reinterpret_cast<Math::Vector4<GLubyte>*>(buffer);
+        std::transform(data, data + dimensions.product(), data,
+            [](Math::Vector4<GLubyte> pixel) { return Math::swizzle<'b', 'g', 'r', 'a'>(pixel); });
+    }
+    #endif
 
     _image = new ImageData2D(name, dimensions, components, buffer);
     return true;
