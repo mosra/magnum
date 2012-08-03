@@ -103,7 +103,11 @@ template<size_t size, class T> class Vector {
          * @brief Constructor
          * @param value Value for all fields
          */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class U> inline explicit Vector(typename std::enable_if<std::is_same<T, U>::value && size != 1, U>::type value) {
+        #else
         inline explicit Vector(T value) {
+        #endif
             for(size_t i = 0; i != size; ++i)
                 _data[i] = value;
         }
