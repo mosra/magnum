@@ -70,12 +70,16 @@ template<class T> class Vector4: public Vector<4, T> {
         /**
          * @brief XYZ part of the vector
          * @return First three components of the vector
+         *
+         * @see swizzle()
          */
         inline constexpr Vector3<T> xyz() const { return Vector3<T>::from(Vector<4, T>::data()); }
 
         /**
          * @brief XY part of the vector
          * @return First two components of the vector
+         *
+         * @see swizzle()
          */
         inline constexpr Vector2<T> xy() const { return Vector2<T>::from(Vector<4, T>::data()); }
 
@@ -92,6 +96,8 @@ template<class T> class Vector4: public Vector<4, T> {
         /**
          * @brief RGB part of the vector
          * @return First three components of the vector
+         *
+         * @see swizzle()
          */
         inline constexpr Vector3<T> rgb() const { return xyz(); }
 
