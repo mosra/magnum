@@ -18,7 +18,7 @@
 #define None 0L // redef Xlib nonsense
 
 /* Mask for X events */
-#define INPUT_MASK KeyPressMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask
+#define INPUT_MASK KeyPressMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|StructureNotifyMask
 
 using namespace std;
 
@@ -140,6 +140,16 @@ int EglContext::exec() {
         XEvent event;
         while(XCheckWindowEvent(xDisplay, xWindow, INPUT_MASK, &event)) {
             switch(event.type) {
+                /* Window resizing */
+                case ConfigureNotify: {
+                    Math::Vector2<int> size(event.xconfigure.width, event.xconfigure.height);
+                    if(size != viewportSize) {
+                        viewportSize = size;
+                        viewportEvent(size);
+                    }
+                } break;
+
+                /* Key/mouse events */
                 case KeyPress:
                     keyPressEvent(static_cast<Key>(XLookupKeysym(&event.xkey, 0)), {event.xkey.x, event.xkey.y});
                     break;
