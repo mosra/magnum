@@ -111,7 +111,7 @@ class EglContext: public AbstractContext {
          *
          * Called when an key is pressed. Default implementation does nothing.
          */
-        virtual void keyPressEvent(Key key, const Math::Vector2<int>& position) = 0;
+        virtual void keyPressEvent(Key key, const Math::Vector2<int>& position);
 
         /**
          * @brief Key press event
@@ -120,7 +120,7 @@ class EglContext: public AbstractContext {
          *
          * Called when an key is released. Default implementation does nothing.
          */
-        virtual void keyReleaseEvent(Key key, const Math::Vector2<int>& position) = 0;
+        virtual void keyReleaseEvent(Key key, const Math::Vector2<int>& position);
 
         /*@}*/
 
