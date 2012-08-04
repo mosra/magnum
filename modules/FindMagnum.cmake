@@ -147,6 +147,9 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         find_path(_MAGNUM_${_COMPONENT}_INCLUDE_DIR
             NAMES ${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES}
             PATHS ${MAGNUM_INCLUDE_DIR}/${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX})
+
+        # Don't expose this variable to end users
+        mark_as_advanced(FORCE _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
     endif()
 
     # Decide if the library was found
