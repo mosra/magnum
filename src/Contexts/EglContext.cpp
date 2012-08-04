@@ -17,6 +17,9 @@
 
 #define None 0L // redef Xlib nonsense
 
+/* Mask for X events */
+#define INPUT_MASK KeyPressMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask
+
 using namespace std;
 
 namespace Magnum { namespace Contexts {
@@ -98,6 +101,9 @@ EglContext::EglContext(int&, char**, const string& title, const Math::Vector2<GL
         exit(1);
     }
 
+    /* Capture exposure, keyboard and mouse button events */
+    XSelectInput(xDisplay, xWindow, INPUT_MASK);
+
     /* Set OpenGL context as current */
     eglMakeCurrent(display, surface, surface, context);
 
@@ -131,6 +137,24 @@ int EglContext::exec() {
     viewportEvent(viewportSize);
 
     while(true) {
+        XEvent event;
+        while(XCheckWindowEvent(xDisplay, xWindow, INPUT_MASK, &event)) {
+            switch(event.type) {
+                case KeyPress:
+                    keyPressEvent(static_cast<Key>(XLookupKeysym(&event.xkey, 0)), {event.xkey.x, event.xkey.y});
+                    break;
+                case KeyRelease:
+                    keyReleaseEvent(static_cast<Key>(XLookupKeysym(&event.xkey, 0)), {event.xkey.x, event.xkey.y});
+                    break;
+                case ButtonPress:
+                    mousePressEvent(static_cast<MouseButton>(event.xbutton.button), {event.xbutton.x, event.xbutton.y});
+                    break;
+                case ButtonRelease:
+                    mouseReleaseEvent(static_cast<MouseButton>(event.xbutton.button), {event.xbutton.x, event.xbutton.y});
+                    break;
+            }
+        }
+
         /** @todo Handle at least window closing and resizing */
         drawEvent();
     }
