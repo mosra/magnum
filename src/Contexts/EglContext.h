@@ -155,6 +155,7 @@ class EglContext: public AbstractContext {
     private:
         Display* xDisplay;
         Window xWindow;
+        Atom deleteWindow;
 
         EGLDisplay display;
         EGLSurface surface;

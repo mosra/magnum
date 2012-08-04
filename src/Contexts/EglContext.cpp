@@ -83,6 +83,10 @@ EglContext::EglContext(int&, char**, const string& title, const Math::Vector2<GL
     XSetStandardProperties(xDisplay, xWindow, title.c_str(), 0, None, 0, 0, 0);
     XFree(visInfo);
 
+    /* Be notified about closing the window */
+    deleteWindow = XInternAtom(xDisplay, "WM_DELETE_WINDOW", True);
+    XSetWMProtocols(xDisplay, xWindow, &deleteWindow, 1);
+
     /* Create context and window surface */
     static const EGLint contextAttributes[] = {
         #ifdef MAGNUM_TARGET_GLES
@@ -138,6 +142,13 @@ int EglContext::exec() {
 
     while(true) {
         XEvent event;
+
+        /* Closed window */
+        if(XCheckTypedWindowEvent(xDisplay, xWindow, ClientMessage, &event) &&
+           Atom(event.xclient.data.l[0]) == deleteWindow) {
+            return 0;
+        }
+
         while(XCheckWindowEvent(xDisplay, xWindow, INPUT_MASK, &event)) {
             switch(event.type) {
                 /* Window resizing */
