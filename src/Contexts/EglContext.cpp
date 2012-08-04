@@ -98,8 +98,7 @@ EglContext::EglContext(int&, char**, const string& title, const Math::Vector2<GL
         exit(1);
     }
 
-    /* Show window and set OpenGL context as current */
-    XMapWindow(xDisplay, xWindow);
+    /* Set OpenGL context as current */
     eglMakeCurrent(display, surface, surface, context);
 
     /** @bug Fixme: GLEW initialization fails (thinks that the context is not created) */
@@ -125,12 +124,14 @@ EglContext::~EglContext() {
 }
 
 int EglContext::exec() {
+    /* Show window */
+    XMapWindow(xDisplay, xWindow);
+
     /* Call viewportEvent for the first time */
     viewportEvent(viewportSize);
 
     while(true) {
         /** @todo Handle at least window closing and resizing */
-        eglMakeCurrent(display, surface, surface, context);
         drawEvent();
     }
 
