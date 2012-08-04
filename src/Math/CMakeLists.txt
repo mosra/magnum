@@ -6,6 +6,7 @@ set(MagnumMath_HEADERS
     Matrix.h
     Matrix3.h
     Matrix4.h
+    Swizzle.h
     Vector.h
     Vector2.h
     Vector3.h

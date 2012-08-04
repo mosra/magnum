@@ -67,7 +67,6 @@ set(Magnum_HEADERS
     Query.h
     Renderbuffer.h
     Scene.h
-    Set.h
     Shader.h
     SizeTraits.h
     Texture.h

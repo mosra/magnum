@@ -62,6 +62,8 @@ class EglContext: public AbstractContext {
 
         int exec();
 
+        /** @{ @name Drawing functions */
+
     protected:
         /** @copydoc GlutContext::viewportEvent() */
         virtual void viewportEvent(const Math::Vector2<GLsizei>& size) = 0;
@@ -72,9 +74,88 @@ class EglContext: public AbstractContext {
         /** @copydoc GlutContext::swapBuffers() */
         inline void swapBuffers() { eglSwapBuffers(display, surface); }
 
+        /*@}*/
+
+        /** @{ @name Keyboard handling */
+
+    public:
+        /** @brief Key */
+        enum class Key: KeySym {
+            Up = XK_Up,                 /**< Up arrow */
+            Down = XK_Down,             /**< Down arrow */
+            Left = XK_Left,             /**< Left arrow */
+            Right = XK_Right,           /**< Right arrow */
+            F1 = XK_F1,                 /**< F1 */
+            F2 = XK_F2,                 /**< F2 */
+            F3 = XK_F3,                 /**< F3 */
+            F4 = XK_F4,                 /**< F4 */
+            F5 = XK_F5,                 /**< F5 */
+            F6 = XK_F6,                 /**< F6 */
+            F7 = XK_F7,                 /**< F7 */
+            F8 = XK_F8,                 /**< F8 */
+            F9 = XK_F9,                 /**< F9 */
+            F10 = XK_F10,               /**< F10 */
+            F11 = XK_F11,               /**< F11 */
+            F12 = XK_F12,               /**< F12 */
+            Home = XK_Home,             /**< Home */
+            End = XK_End,               /**< End */
+            PageUp = XK_Page_Up,        /**< Page up */
+            PageDown = XK_Page_Down     /**< Page down */
+        };
+
+    protected:
+        /**
+         * @brief Key press event
+         * @param key       Key pressed
+         * @param position  Cursor position
+         *
+         * Called when an key is pressed. Default implementation does nothing.
+         */
+        virtual void keyPressEvent(Key key, const Math::Vector2<int>& position) = 0;
+
+        /**
+         * @brief Key press event
+         * @param key       Key released
+         * @param position  Cursor position
+         *
+         * Called when an key is released. Default implementation does nothing.
+         */
+        virtual void keyReleaseEvent(Key key, const Math::Vector2<int>& position) = 0;
+
+        /*@}*/
+
+        /** @{ @name Mouse handling */
+    public:
+        /** @brief Mouse button */
+        enum class MouseButton: unsigned int {
+            Left = Button1,         /**< Left button */
+            Middle = Button2,       /**< Middle button */
+            Right = Button3,        /**< Right button */
+            WheelUp = Button4,      /**< Wheel up */
+            WheelDown = Button5     /**< Wheel down */
+        };
+
+    protected:
+        /**
+         * @brief Mouse press event
+         *
+         * Called when mouse button is pressed. Default implementation does
+         * nothing.
+         */
+        virtual void mousePressEvent(MouseButton button, const Math::Vector2<int>& position);
+
+        /**
+         * @brief Mouse release event
+         *
+         * Called when mouse button is released. Default implementation does
+         * nothing.
+         */
+        virtual void mouseReleaseEvent(MouseButton button, const Math::Vector2<int>& position);
+
     private:
         Display* xDisplay;
         Window xWindow;
+        Atom deleteWindow;
 
         EGLDisplay display;
         EGLSurface surface;
@@ -83,6 +164,12 @@ class EglContext: public AbstractContext {
         /** @todo Get this from the created window */
         Math::Vector2<GLsizei> viewportSize;
 };
+
+inline void EglContext::keyPressEvent(EglContext::Key, const Math::Vector2<int>&) {}
+inline void EglContext::keyReleaseEvent(EglContext::Key, const Math::Vector2<int>&) {}
+inline void EglContext::mousePressEvent(EglContext::MouseButton, const Math::Vector2<int>&) {}
+inline void EglContext::mouseReleaseEvent(EglContext::MouseButton, const Math::Vector2<int>&) {}
+
 
 }}
 

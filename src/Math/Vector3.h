@@ -81,6 +81,8 @@ template<class T> class Vector3: public Vector<3, T> {
         /**
          * @brief XY part of the vector
          * @return First two components of the vector
+         *
+         * @see swizzle()
          */
         inline constexpr Vector2<T> xy() const { return Vector2<T>::from(Vector<3, T>::data()); }
 

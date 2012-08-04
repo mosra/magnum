@@ -17,6 +17,9 @@
 
 #define None 0L // redef Xlib nonsense
 
+/* Mask for X events */
+#define INPUT_MASK KeyPressMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|StructureNotifyMask
+
 using namespace std;
 
 namespace Magnum { namespace Contexts {
@@ -73,12 +76,16 @@ EglContext::EglContext(int&, char**, const string& title, const Math::Vector2<GL
     XSetWindowAttributes attr;
     attr.background_pixel = 0;
     attr.border_pixel = 0;
-    attr.colormap = XCreateColormap( xDisplay, root, visInfo->visual, AllocNone);
-    attr.event_mask = StructureNotifyMask|ExposureMask|KeyPressMask;
+    attr.colormap = XCreateColormap(xDisplay, root, visInfo->visual, AllocNone);
+    attr.event_mask = 0;
     unsigned long mask = CWBackPixel|CWBorderPixel|CWColormap|CWEventMask;
     xWindow = XCreateWindow(xDisplay, root, 20, 20, size.x(), size.y(), 0, visInfo->depth, InputOutput, visInfo->visual, mask, &attr);
     XSetStandardProperties(xDisplay, xWindow, title.c_str(), 0, None, 0, 0, 0);
     XFree(visInfo);
+
+    /* Be notified about closing the window */
+    deleteWindow = XInternAtom(xDisplay, "WM_DELETE_WINDOW", True);
+    XSetWMProtocols(xDisplay, xWindow, &deleteWindow, 1);
 
     /* Create context and window surface */
     static const EGLint contextAttributes[] = {
@@ -98,8 +105,10 @@ EglContext::EglContext(int&, char**, const string& title, const Math::Vector2<GL
         exit(1);
     }
 
-    /* Show window and set OpenGL context as current */
-    XMapWindow(xDisplay, xWindow);
+    /* Capture exposure, keyboard and mouse button events */
+    XSelectInput(xDisplay, xWindow, INPUT_MASK);
+
+    /* Set OpenGL context as current */
     eglMakeCurrent(display, surface, surface, context);
 
     /** @bug Fixme: GLEW initialization fails (thinks that the context is not created) */
@@ -125,12 +134,49 @@ EglContext::~EglContext() {
 }
 
 int EglContext::exec() {
+    /* Show window */
+    XMapWindow(xDisplay, xWindow);
+
     /* Call viewportEvent for the first time */
     viewportEvent(viewportSize);
 
     while(true) {
+        XEvent event;
+
+        /* Closed window */
+        if(XCheckTypedWindowEvent(xDisplay, xWindow, ClientMessage, &event) &&
+           Atom(event.xclient.data.l[0]) == deleteWindow) {
+            return 0;
+        }
+
+        while(XCheckWindowEvent(xDisplay, xWindow, INPUT_MASK, &event)) {
+            switch(event.type) {
+                /* Window resizing */
+                case ConfigureNotify: {
+                    Math::Vector2<int> size(event.xconfigure.width, event.xconfigure.height);
+                    if(size != viewportSize) {
+                        viewportSize = size;
+                        viewportEvent(size);
+                    }
+                } break;
+
+                /* Key/mouse events */
+                case KeyPress:
+                    keyPressEvent(static_cast<Key>(XLookupKeysym(&event.xkey, 0)), {event.xkey.x, event.xkey.y});
+                    break;
+                case KeyRelease:
+                    keyReleaseEvent(static_cast<Key>(XLookupKeysym(&event.xkey, 0)), {event.xkey.x, event.xkey.y});
+                    break;
+                case ButtonPress:
+                    mousePressEvent(static_cast<MouseButton>(event.xbutton.button), {event.xbutton.x, event.xbutton.y});
+                    break;
+                case ButtonRelease:
+                    mouseReleaseEvent(static_cast<MouseButton>(event.xbutton.button), {event.xbutton.x, event.xbutton.y});
+                    break;
+            }
+        }
+
         /** @todo Handle at least window closing and resizing */
-        eglMakeCurrent(display, surface, surface, context);
         drawEvent();
     }
 
