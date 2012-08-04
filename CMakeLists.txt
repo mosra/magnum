@@ -32,12 +32,15 @@ if(BUILD_TESTS)
     enable_testing()
 endif()
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Magnum_SOURCE_DIR}/modules/")
+
 if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION} VERSION_LESS 2.8.8)
     set(CMAKE_NO_OBJECT_TARGET 1)
     message(WARNING "CMake version < 2.8.8 is used, compilation with tests enabled will take a lot more time.")
-endif()
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Magnum_SOURCE_DIR}/modules/")
+    cmake_policy(SET CMP0017 NEW)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Magnum_SOURCE_DIR}/modules-compatibility/")
+endif()
 
 # Check dependencies
 find_package(Corrade REQUIRED)
