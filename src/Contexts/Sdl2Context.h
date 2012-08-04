@@ -100,7 +100,7 @@ class Sdl2Context: public AbstractContext {
 
         /**
          * @brief Key release event
-         * @param key       Key release
+         * @param key       Key released
          */
         virtual void keyReleaseEvent(Key key);
 

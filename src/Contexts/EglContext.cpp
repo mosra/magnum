@@ -73,7 +73,7 @@ EglContext::EglContext(int&, char**, const string& title, const Math::Vector2<GL
     XSetWindowAttributes attr;
     attr.background_pixel = 0;
     attr.border_pixel = 0;
-    attr.colormap = XCreateColormap( xDisplay, root, visInfo->visual, AllocNone);
+    attr.colormap = XCreateColormap(xDisplay, root, visInfo->visual, AllocNone);
     attr.event_mask = StructureNotifyMask|ExposureMask|KeyPressMask;
     unsigned long mask = CWBackPixel|CWBorderPixel|CWColormap|CWEventMask;
     xWindow = XCreateWindow(xDisplay, root, 20, 20, size.x(), size.y(), 0, visInfo->depth, InputOutput, visInfo->visual, mask, &attr);
