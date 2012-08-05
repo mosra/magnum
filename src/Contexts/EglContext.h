@@ -100,7 +100,54 @@ class EglContext: public AbstractContext {
             Home = XK_Home,             /**< Home */
             End = XK_End,               /**< End */
             PageUp = XK_Page_Up,        /**< Page up */
-            PageDown = XK_Page_Down     /**< Page down */
+            PageDown = XK_Page_Down,    /**< Page down */
+
+            Space = XK_space,           /**< Space */
+            Comma = XK_comma,           /**< Comma */
+            Period = XK_period,         /**< Period */
+            Minus = XK_minus,           /**< Minus */
+            Plus = XK_plus,             /**< Plus */
+            Slash = XK_slash,           /**< Slash */
+            Percent = XK_percent,       /**< Percent */
+            Equal = XK_equal,           /**< Equal */
+
+            Zero = XK_0,                /**< Zero */
+            One = XK_1,                 /**< One */
+            Two = XK_2,                 /**< Two */
+            Three = XK_3,               /**< Three */
+            Four = XK_4,                /**< Four */
+            Five = XK_5,                /**< Five */
+            Six = XK_6,                 /**< Six */
+            Seven = XK_7,               /**< Seven */
+            Eight = XK_8,               /**< Eight */
+            Nine = XK_9,                /**< Nine */
+
+            A = XK_a,                   /**< Small letter A */
+            B = XK_b,                   /**< Small letter B */
+            C = XK_c,                   /**< Small letter C */
+            D = XK_d,                   /**< Small letter D */
+            E = XK_e,                   /**< Small letter E */
+            F = XK_f,                   /**< Small letter F */
+            G = XK_g,                   /**< Small letter G */
+            H = XK_h,                   /**< Small letter H */
+            I = XK_i,                   /**< Small letter I */
+            J = XK_j,                   /**< Small letter J */
+            K = XK_k,                   /**< Small letter K */
+            L = XK_l,                   /**< Small letter L */
+            M = XK_m,                   /**< Small letter M */
+            N = XK_n,                   /**< Small letter N */
+            O = XK_o,                   /**< Small letter O */
+            P = XK_p,                   /**< Small letter P */
+            Q = XK_q,                   /**< Small letter Q */
+            R = XK_r,                   /**< Small letter R */
+            S = XK_s,                   /**< Small letter S */
+            T = XK_t,                   /**< Small letter T */
+            U = XK_u,                   /**< Small letter U */
+            V = XK_v,                   /**< Small letter V */
+            W = XK_w,                   /**< Small letter W */
+            X = XK_x,                   /**< Small letter X */
+            Y = XK_y,                   /**< Small letter Y */
+            Z = XK_z                    /**< Small letter Z */
         };
 
     protected:
