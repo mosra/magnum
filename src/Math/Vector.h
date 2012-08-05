@@ -26,11 +26,21 @@
 
 namespace Magnum { namespace Math {
 
-/**
-@brief %Vector
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
+    template<size_t ...> struct Sequence {};
 
-@todo Swizzling
-*/
+    /* E.g. GenerateSequence<3>::Type is Sequence<0, 1, 2> */
+    template<size_t N, size_t ...sequence> struct GenerateSequence:
+        GenerateSequence<N-1, N-1, sequence...> {};
+
+    template<size_t ...sequence> struct GenerateSequence<0, sequence...> {
+        typedef Sequence<sequence...> Type;
+    };
+}
+#endif
+
+/** @brief %Vector */
 template<size_t size, class T> class Vector {
     public:
         const static size_t Size = size;    /**< @brief %Vector size */

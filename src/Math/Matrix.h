@@ -26,16 +26,6 @@ namespace Magnum { namespace Math {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<size_t size, class T> class MatrixDeterminant;
-
-    template<size_t ...> struct Sequence {};
-
-    /* E.g. GenerateSequence<3>::Type is Sequence<0, 1, 2> */
-    template<size_t N, size_t ...sequence> struct GenerateSequence:
-        GenerateSequence<N-1, N-1, sequence...> {};
-
-    template<size_t ...sequence> struct GenerateSequence<0, sequence...> {
-        typedef Sequence<sequence...> Type;
-    };
 }
 #endif
 
