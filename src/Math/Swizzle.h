@@ -48,6 +48,26 @@ namespace Implementation {
     template<class T> struct TypeForSize<2, T> { typedef Vector2<T> Type; };
     template<class T> struct TypeForSize<3, T> { typedef Vector3<T> Type; };
     template<class T> struct TypeForSize<4, T> { typedef Vector4<T> Type; };
+
+    inline constexpr size_t getPosition(size_t size, size_t position) {
+        return size > position ? position : throw;
+    }
+
+    template<size_t size> inline constexpr size_t getComponent(char component) {
+        return component == 'x' ? getPosition(size, 0) :
+               component == 'y' ? getPosition(size, 1) :
+               component == 'z' ? getPosition(size, 2) :
+               component == 'w' ? getPosition(size, 3) :
+               component == 'r' ? getPosition(size, 0) :
+               component == 'g' ? getPosition(size, 1) :
+               component == 'b' ? getPosition(size, 2) :
+               component == 'a' ? getPosition(size, 3) :
+               throw;
+    }
+
+    template<size_t size, class T, size_t ...sequence> inline constexpr Vector<sizeof...(sequence), T> swizzleFrom(Sequence<sequence...>, const Vector<size, T>& vector, const char(&components)[sizeof...(sequence)+1]) {
+        return {vector[getComponent<size>(components[sequence])]...};
+    }
 }
 #endif
 
@@ -66,10 +86,41 @@ elements is unlimited, but must be at least one. If the resulting vector is
 two, three or four-component, corresponding Vector2, Vector3 or Vector4
 specialization is returned.
 
+@attention This function is less convenient to write than
+swizzle(const Vector<size, T>&, const char(&)[newSize]), but the evaluation of
+the swizzling operation is guaranteed to be always done at compile time
+instead of at runtime.
+
 @see Vector4::xyz(), Vector4::rgb(), Vector4::xy(), Vector3::xy()
 */
 template<char ...components, size_t size, class T> inline constexpr typename Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const Vector<size, T>& vector) {
     return {vector[Implementation::GetComponent<size, components>::value()]...};
+}
+
+/**
+@brief Swizzle Vector components
+
+Creates new vector from given components. Example:
+@code
+Vector4<int> original(1, 2, 3, 4);
+
+auto vec = swizzle(original, "abbgrr");
+// vec == { 4, 3, 3, 2, 1, 1 }
+@endcode
+You can use letters `x`, `y`, `z`, `w` and `r`, `g`, `b`, `a`. Count of
+elements is unlimited, but must be at least one. If the resulting vector is
+two, three or four-component, corresponding Vector2, Vector3 or Vector4
+specialization is returned.
+
+@attention This function is more convenient to write than
+swizzle(const Vector<size, T>&), but unless the result is marked with
+`constexpr`, the evaluation of the swizzling operation probably won't be
+evaluated at compile time, but at runtime.
+
+@see Vector4::xyz(), Vector4::rgb(), Vector4::xy(), Vector3::xy()
+*/
+template<size_t size, class T, size_t newSize> inline constexpr typename Implementation::TypeForSize<newSize-1, T>::Type swizzle(const Vector<size, T>& vector, const char(&components)[newSize]) {
+    return Implementation::swizzleFrom(typename Implementation::GenerateSequence<newSize-1>::Type(), vector, components);
 }
 
 }}

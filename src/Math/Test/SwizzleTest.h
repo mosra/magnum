@@ -25,6 +25,7 @@ class SwizzleTest: public Corrade::TestSuite::Tester<SwizzleTest> {
 
         void xyzw();
         void rgba();
+        void fromSmall();
         void type();
         void defaultType();
 };

@@ -32,31 +32,48 @@ template<size_t size> using Vector = Math::Vector<size, int>;
 SwizzleTest::SwizzleTest() {
     addTests(&SwizzleTest::xyzw,
              &SwizzleTest::rgba,
+             &SwizzleTest::fromSmall,
              &SwizzleTest::type,
              &SwizzleTest::defaultType);
 }
 
 void SwizzleTest::xyzw() {
     Vector4 orig(2, 4, 5, 7);
-    CORRADE_COMPARE((swizzle<'z', 'x', 'w', 'y'>(orig)), Vector4(5, 2, 7, 4));
+    Vector4 swizzled(5, 2, 7, 4);
+    CORRADE_COMPARE(swizzle(orig, "zxwy"), swizzled);
+    CORRADE_COMPARE((swizzle<'z', 'x', 'w', 'y'>(orig)), swizzled);
 }
 
 void SwizzleTest::rgba() {
     Vector4 orig(2, 4, 5, 7);
-    CORRADE_COMPARE((swizzle<'b', 'r', 'a', 'g'>(orig)), Vector4(5, 2, 7, 4));
+    Vector4 swizzled(5, 2, 7, 4);
+    CORRADE_COMPARE(swizzle(orig, "brag"), swizzled);
+    CORRADE_COMPARE((swizzle<'b', 'r', 'a', 'g'>(orig)), swizzled);
+}
+
+void SwizzleTest::fromSmall() {
+    /* Force compile-time evaluation for both */
+    constexpr Vector2 orig(1, 2);
+    CORRADE_VERIFY((integral_constant<bool, swizzle(orig, "gxr").x() == 2>::value));
+    CORRADE_COMPARE((swizzle<'g', 'x', 'r'>(orig)), Vector3(2, 1, 1));
 }
 
 void SwizzleTest::type() {
     Vector4 orig;
     CORRADE_VERIFY((is_same<decltype(swizzle<'y', 'a'>(orig)), Vector2>::value));
+    CORRADE_VERIFY((is_same<decltype(swizzle(orig, "ya")), Vector2>::value));
     CORRADE_VERIFY((is_same<decltype(swizzle<'y', 'z', 'a'>(orig)), Vector3>::value));
+    CORRADE_VERIFY((is_same<decltype(swizzle(orig, "yza")), Vector3>::value));
     CORRADE_VERIFY((is_same<decltype(swizzle<'y', 'a', 'y', 'x'>(orig)), Vector4>::value));
+    CORRADE_VERIFY((is_same<decltype(swizzle(orig, "yayx")), Vector4>::value));
 }
 
 void SwizzleTest::defaultType() {
     Vector4 orig(1, 2, 3, 4);
     CORRADE_COMPARE(swizzle<'b'>(orig), Vector<1>(3));
+    CORRADE_COMPARE(swizzle(orig, "b"), Vector<1>(3));
     CORRADE_COMPARE((swizzle<'b', 'r', 'a', 'g', 'z', 'y', 'x'>(orig)), Vector<7>(3, 1, 4, 2, 3, 2, 1));
+    CORRADE_COMPARE(swizzle(orig, "bragzyx"), Vector<7>(3, 1, 4, 2, 3, 2, 1));
 }
 
 }}}
