@@ -91,7 +91,7 @@ template<class T> class Vector4: public Vector<4, T> {
         inline void setR(T value) { setX(value); }      /**< @brief Set R component */
         inline void setG(T value) { setY(value); }      /**< @brief Set G component */
         inline void setB(T value) { setZ(value); }      /**< @brief Set B component */
-        inline void setA(T value) { setA(value); }      /**< @brief Set A component */
+        inline void setA(T value) { setW(value); }      /**< @brief Set A component */
 
         /**
          * @brief RGB part of the vector

@@ -87,7 +87,7 @@ template<class T> class Vector3: public Vector<3, T> {
         inline constexpr Vector2<T> xy() const { return Vector2<T>::from(Vector<3, T>::data()); }
 
         inline constexpr T r() const { return x(); }        /**< @brief R component */
-        inline constexpr T g() const { return x(); }        /**< @brief G component */
+        inline constexpr T g() const { return y(); }        /**< @brief G component */
         inline constexpr T b() const { return z(); }        /**< @brief B component */
 
         inline void setR(T value) { setX(value); }          /**< @brief Set R component */
