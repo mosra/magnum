@@ -16,6 +16,7 @@
 */
 
 #include <cstddef>
+#include <cmath>
 #include <type_traits>
 #include <limits>
 
@@ -120,8 +121,8 @@ resulting `Integral` type (e.g. `double` to `int`, `long double` to `long long`)
 */
 template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value, Integral>::type denormalize(FloatingPoint value) {
     return             std::numeric_limits<Integral>::min() +
-        Integral(value*std::numeric_limits<Integral>::max()) -
-        Integral(value*std::numeric_limits<Integral>::min());
+        round(FloatingPoint(value*std::numeric_limits<Integral>::max()) -
+        FloatingPoint(value*std::numeric_limits<Integral>::min()));
 }
 
 /**
