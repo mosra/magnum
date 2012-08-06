@@ -42,6 +42,8 @@ VectorTest::VectorTest() {
              &VectorTest::normalized,
              &VectorTest::sum,
              &VectorTest::product,
+             &VectorTest::min,
+             &VectorTest::max,
              &VectorTest::angle,
              &VectorTest::negative,
              &VectorTest::debug);
@@ -128,6 +130,14 @@ void VectorTest::sum() {
 
 void VectorTest::product() {
     CORRADE_COMPARE(Vector3(1.0f, 2.0f, 3.0f).product(), 6.0f);
+}
+
+void VectorTest::min() {
+    CORRADE_COMPARE(Vector3(1.0f, -2.0f, 3.0f).min(), -2.0f);
+}
+
+void VectorTest::max() {
+    CORRADE_COMPARE(Vector3(1.0f, -2.0f, 3.0f).max(), 3.0f);
 }
 
 void VectorTest::angle() {

@@ -34,6 +34,8 @@ class VectorTest: public Corrade::TestSuite::Tester<VectorTest> {
         void normalized();
         void sum();
         void product();
+        void min();
+        void max();
         void angle();
         void negative();
 

@@ -294,6 +294,26 @@ template<size_t size, class T> class Vector {
             return out;
         }
 
+        /** @brief Minimal value in the vector */
+        T min() const {
+            T out((*this)[0]);
+
+            for(size_t i = 1; i != size; ++i)
+                out = std::min(out, (*this)[i]);
+
+            return out;
+        }
+
+        /** @brief Maximal value in the vector */
+        T max() const {
+            T out((*this)[0]);
+
+            for(size_t i = 1; i != size; ++i)
+                out = std::max(out, (*this)[i]);
+
+            return out;
+        }
+
     private:
         T _data[size];
 };
