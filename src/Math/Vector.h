@@ -90,7 +90,7 @@ template<size_t size, class T> class Vector {
          * @todo optimize - Assume the vectors are normalized?
          */
         inline static T angle(const Vector<size, T>& a, const Vector<size, T>& b) {
-            return acos(dot(a, b)/(a.length()*b.length()));
+            return std::acos(dot(a, b)/(a.length()*b.length()));
         }
 
         /** @brief Default constructor */
@@ -248,7 +248,7 @@ template<size_t size, class T> class Vector {
          * @see lengthSquared()
          */
         inline T length() const {
-            return sqrt(dot(*this, *this));
+            return std::sqrt(dot(*this, *this));
         }
 
         /**
