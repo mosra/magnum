@@ -29,8 +29,8 @@ class VectorTest: public Corrade::TestSuite::Tester<VectorTest> {
         void dot();
         void multiplyDivide();
         void addSubstract();
+        void dotSelf();
         void length();
-        void lengthSquared();
         void normalized();
         void sum();
         void product();

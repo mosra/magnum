@@ -52,7 +52,7 @@ class Distance {
          * values, because it doesn't compute the square root.
          */
         template<class T> static T linePointSquared(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
-            return Vector3<T>::cross(point - a, point - b).lengthSquared()/(b - a).lengthSquared();
+            return Vector3<T>::cross(point - a, point - b).dot()/(b - a).dot();
         }
 
         /**
@@ -97,9 +97,9 @@ class Distance {
         template<class T> static T lineSegmentPointSquared(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
             Vector3<T> pointMinusA = point - a;
             Vector3<T> pointMinusB = point - b;
-            T pointDistanceA = pointMinusA.lengthSquared();
-            T pointDistanceB = pointMinusB.lengthSquared();
-            T bDistanceA = (b - a).lengthSquared();
+            T pointDistanceA = pointMinusA.dot();
+            T pointDistanceB = pointMinusB.dot();
+            T bDistanceA = (b - a).dot();
 
             /* Point is before A */
             if(pointDistanceB > bDistanceA + pointDistanceA)
@@ -110,7 +110,7 @@ class Distance {
                 return pointDistanceB;
 
             /* Between A and B */
-            return Vector3<T>::cross(pointMinusA, pointMinusB).lengthSquared()/bDistanceA;
+            return Vector3<T>::cross(pointMinusA, pointMinusB).dot()/bDistanceA;
         }
 };
 

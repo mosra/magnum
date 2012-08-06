@@ -70,6 +70,7 @@ template<size_t size, class T> class Vector {
          * @f[
          * a \cdot b = \sum_{i=0}^{n-1} a_ib_i
          * @f]
+         * @see dot() const
          */
         static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
             T out(0);
@@ -243,24 +244,26 @@ template<size_t size, class T> class Vector {
         }
 
         /**
-         * @brief %Vector length
+         * @brief Dot product of the vector
          *
-         * @see lengthSquared()
-         */
-        inline T length() const {
-            return std::sqrt(dot(*this, *this));
-        }
-
-        /**
-         * @brief %Vector length squared
-         *
-         * More efficient than length() for comparing vector length with
+         * Should be used instead of length() for comparing vector length with
          * other values, because it doesn't compute the square root, just the
          * dot product: @f$ a \cdot a < length \cdot length @f$ is faster
          * than @f$ \sqrt{a \cdot a} < length @f$.
+         *
+         * @see dot(const Vector<size, T>&, const Vector<size, T>&)
          */
-        inline T lengthSquared() const {
+        inline T dot() const {
             return dot(*this, *this);
+        }
+
+        /**
+         * @brief %Vector length
+         *
+         * @see dot() const
+         */
+        inline T length() const {
+            return std::sqrt(dot());
         }
 
         /** @brief Normalized vector (of length 1) */

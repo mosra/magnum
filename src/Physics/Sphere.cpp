@@ -41,7 +41,7 @@ bool Sphere::collides(const AbstractShape* other) const {
 }
 
 bool Sphere::operator%(const Point& other) const {
-    return (other.transformedPosition()-transformedPosition()).lengthSquared() <
+    return (other.transformedPosition()-transformedPosition()).dot() <
         Math::pow<2>(transformedRadius());
 }
 
@@ -56,7 +56,7 @@ bool Sphere::operator%(const LineSegment& other) const {
 }
 
 bool Sphere::operator%(const Sphere& other) const {
-    return (other.transformedPosition()-transformedPosition()).lengthSquared() <
+    return (other.transformedPosition()-transformedPosition()).dot() <
         Math::pow<2>(transformedRadius()+other.transformedRadius());
 }
 

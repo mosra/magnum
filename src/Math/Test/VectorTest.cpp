@@ -37,8 +37,8 @@ VectorTest::VectorTest() {
              &VectorTest::dot,
              &VectorTest::multiplyDivide,
              &VectorTest::addSubstract,
+             &VectorTest::dotSelf,
              &VectorTest::length,
-             &VectorTest::lengthSquared,
              &VectorTest::normalized,
              &VectorTest::sum,
              &VectorTest::product,
@@ -110,12 +110,12 @@ void VectorTest::addSubstract() {
     CORRADE_COMPARE(expected - b, a);
 }
 
-void VectorTest::length() {
-    CORRADE_COMPARE(Vector4(1.0f, 2.0f, 3.0f, 4.0f).length(), 5.4772256f);
+void VectorTest::dotSelf() {
+    CORRADE_COMPARE(Vector4(1.0f, 2.0f, 3.0f, 4.0f).dot(), 30.0f);
 }
 
-void VectorTest::lengthSquared() {
-    CORRADE_COMPARE(Vector4(1.0f, 2.0f, 3.0f, 4.0f).lengthSquared(), 30.0f);
+void VectorTest::length() {
+    CORRADE_COMPARE(Vector4(1.0f, 2.0f, 3.0f, 4.0f).length(), 5.4772256f);
 }
 
 void VectorTest::normalized() {
