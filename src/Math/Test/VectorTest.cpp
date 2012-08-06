@@ -40,6 +40,7 @@ VectorTest::VectorTest() {
              &VectorTest::length,
              &VectorTest::lengthSquared,
              &VectorTest::normalized,
+             &VectorTest::sum,
              &VectorTest::product,
              &VectorTest::angle,
              &VectorTest::negative,
@@ -119,6 +120,10 @@ void VectorTest::lengthSquared() {
 
 void VectorTest::normalized() {
     CORRADE_COMPARE(Vector4(1.0f, 1.0f, 1.0f, 1.0f).normalized(), Vector4(0.5f, 0.5f, 0.5f, 0.5f));
+}
+
+void VectorTest::sum() {
+    CORRADE_COMPARE(Vector3(1.0f, 2.0f, 4.0f).sum(), 7.0f);
 }
 
 void VectorTest::product() {

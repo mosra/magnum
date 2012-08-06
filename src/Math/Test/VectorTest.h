@@ -32,6 +32,7 @@ class VectorTest: public Corrade::TestSuite::Tester<VectorTest> {
         void length();
         void lengthSquared();
         void normalized();
+        void sum();
         void product();
         void angle();
         void negative();

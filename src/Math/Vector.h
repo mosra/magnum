@@ -268,9 +268,19 @@ template<size_t size, class T> class Vector {
             return *this/length();
         }
 
+        /** @brief Sum of values in the vector */
+        T sum() const {
+            T out(0);
+
+            for(size_t i = 0; i != size; ++i)
+                out += (*this)[i];
+
+            return out;
+        }
+
         /** @brief Product of values in the vector */
         T product() const {
-            T out = 1;
+            T out(1);
 
             for(size_t i = 0; i != size; ++i)
                 out *= (*this)[i];
