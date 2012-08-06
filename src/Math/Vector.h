@@ -324,7 +324,7 @@ template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utili
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
     for(size_t i = 0; i != size; ++i) {
         if(i != 0) debug << ", ";
-        debug << value[i];
+        debug << typename MathTypeTraits<T>::NumericType(value[i]);
     }
     debug << ')';
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);

@@ -52,6 +52,22 @@ support given feature, thus forcing the compilation stop with an error.
 template<class T> struct MathTypeTraits {
     #ifdef DOXYGEN_GENERATING_OUTPUT
     /**
+     * @brief Corresponding numeric type large at least as `int`
+     *
+     * Usable e.g. to prevent conversion of `char` to characters when printing
+     * numeric types to output.
+     */
+    typedef U NumericType;
+
+    /**
+     * @brief Corresponding floating-point type for normalization
+     *
+     * If the type is not already floating-point, defines smallest larger
+     * floating-point type.
+     */
+    typedef U FloatingPointType;
+
+    /**
      * @brief Epsilon value for fuzzy compare
      *
      * Returns minimal difference between numbers to be considered
@@ -95,29 +111,70 @@ template<class T> struct MathTypeTraitsFloatingPoint {
     }
 };
 
+template<size_t> struct MathTypeTraitsLong {};
+
+template<> struct MathTypeTraitsLong<8> {
+    typedef unsigned int UnsignedType;
+    typedef int Type;
+};
+
+template<> struct MathTypeTraitsLong<16> {
+    typedef unsigned long long UnsignedType;
+    typedef long long Type;
+};
+
 }
 
-template<> struct MathTypeTraits<unsigned char>: public Implementation::MathTypeTraitsIntegral<unsigned char> {};
-template<> struct MathTypeTraits<char>: public Implementation::MathTypeTraitsIntegral<char> {};
+template<> struct MathTypeTraits<unsigned char>: public Implementation::MathTypeTraitsIntegral<unsigned char> {
+    typedef unsigned int NumericType;
+    typedef float FloatingPointType;
+};
+template<> struct MathTypeTraits<char>: public Implementation::MathTypeTraitsIntegral<char> {
+    typedef int NumericType;
+    typedef float FloatingPointType;
+};
 
-template<> struct MathTypeTraits<unsigned short>: public Implementation::MathTypeTraitsIntegral<unsigned short> {};
-template<> struct MathTypeTraits<short>: public Implementation::MathTypeTraitsIntegral<short> {};
+template<> struct MathTypeTraits<unsigned short>: public Implementation::MathTypeTraitsIntegral<unsigned short> {
+    typedef unsigned int NumericType;
+    typedef float FloatingPointType;
+};
+template<> struct MathTypeTraits<short>: public Implementation::MathTypeTraitsIntegral<short> {
+    typedef int NumericType;
+    typedef float FloatingPointType;
+};
 
-template<> struct MathTypeTraits<unsigned int>: public Implementation::MathTypeTraitsIntegral<unsigned int> {};
-template<> struct MathTypeTraits<int>: public Implementation::MathTypeTraitsIntegral<int> {};
+template<> struct MathTypeTraits<unsigned int>: public Implementation::MathTypeTraitsIntegral<unsigned int> {
+    typedef unsigned int NumericType;
+    typedef double FloatingPointType;
+};
+template<> struct MathTypeTraits<int>: public Implementation::MathTypeTraitsIntegral<int> {
+    typedef int NumericType;
+    typedef double FloatingPointType;
+};
 
-/* long is 32 bits somewhere and 64 bits elsewhere, so it cannot be mapped to
-   any of them */
-template<> struct MathTypeTraits<long unsigned int>: public Implementation::MathTypeTraitsIntegral<long unsigned int> {};
-template<> struct MathTypeTraits<long int>: public Implementation::MathTypeTraitsIntegral<long int> {};
+template<> struct MathTypeTraits<unsigned long long>: public Implementation::MathTypeTraitsIntegral<unsigned long long> {
+    typedef unsigned long long NumericType;
+    typedef long double FloatingPointType;
+};
+template<> struct MathTypeTraits<long long>: public Implementation::MathTypeTraitsIntegral<long long> {
+    typedef long long NumericType;
+    typedef long double FloatingPointType;
+};
 
-template<> struct MathTypeTraits<unsigned long long>: public Implementation::MathTypeTraitsIntegral<unsigned long long> {};
-template<> struct MathTypeTraits<long long>: public Implementation::MathTypeTraitsIntegral<long long> {};
+/* long is 32 bits somewhere and 64 bits elsewhere */
+template<> struct MathTypeTraits<long unsigned int>: public Implementation::MathTypeTraitsIntegral<typename Implementation::MathTypeTraitsLong<sizeof(long unsigned int)>::Type> {};
+template<> struct MathTypeTraits<long int>: public Implementation::MathTypeTraitsIntegral<typename Implementation::MathTypeTraitsLong<sizeof(long int)>::Type> {};
 
 template<> struct MathTypeTraits<float>: public Implementation::MathTypeTraitsFloatingPoint<float> {
+    typedef float NumericType;
+    typedef float FloatingPointType;
+
     inline constexpr static float epsilon() { return FLOAT_EQUALITY_PRECISION; }
 };
 template<> struct MathTypeTraits<double>: public Implementation::MathTypeTraitsFloatingPoint<double> {
+    typedef float NumericType;
+    typedef double FloatingPointType;
+
     inline constexpr static double epsilon() { return DOUBLE_EQUALITY_PRECISION; }
 };
 #endif

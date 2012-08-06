@@ -260,7 +260,7 @@ template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utili
         if(row != 0) debug << ",\n       ";
         for(size_t col = 0; col != size; ++col) {
             if(col != 0) debug << ", ";
-            debug << value[col][row];
+            debug << typename MathTypeTraits<T>::NumericType(value[col][row]);
         }
     }
     debug << ')';
