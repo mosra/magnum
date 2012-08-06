@@ -29,7 +29,7 @@ template<class T> class Vector4: public Vector<4, T> {
         /**
          * @copydoc Vector::Vector
          *
-         * W / A component is set to one.
+         * W component is set to one.
          */
         inline constexpr Vector4(): Vector<4, T>(T(0), T(0), T(0), T(1)) {}
 
@@ -41,17 +41,17 @@ template<class T> class Vector4: public Vector<4, T> {
 
         /**
          * @brief Constructor
-         * @param x     X / R value
-         * @param y     Y / G value
-         * @param z     Z / B value
-         * @param w     W / A value
+         * @param x     X value
+         * @param y     Y value
+         * @param z     Z value
+         * @param w     W value
          */
         inline constexpr Vector4(T x, T y, T z, T w = T(1)): Vector<4, T>(x, y, z, w) {}
 
         /**
          * @brief Constructor
          * @param other     Three component vector
-         * @param w         W / A value
+         * @param w         W value
          */
         /* Not marked as explicit, because conversion from Vector3 to Vector4
            is fairly common, nearly always with W set to 1 */
@@ -82,24 +82,6 @@ template<class T> class Vector4: public Vector<4, T> {
          * @see swizzle()
          */
         inline constexpr Vector2<T> xy() const { return Vector2<T>::from(Vector<4, T>::data()); }
-
-        inline constexpr T r() const { return x(); }    /**< @brief R component */
-        inline constexpr T g() const { return y(); }    /**< @brief G component */
-        inline constexpr T b() const { return z(); }    /**< @brief B component */
-        inline constexpr T a() const { return w(); }    /**< @brief A component */
-
-        inline void setR(T value) { setX(value); }      /**< @brief Set R component */
-        inline void setG(T value) { setY(value); }      /**< @brief Set G component */
-        inline void setB(T value) { setZ(value); }      /**< @brief Set B component */
-        inline void setA(T value) { setW(value); }      /**< @brief Set A component */
-
-        /**
-         * @brief RGB part of the vector
-         * @return First three components of the vector
-         *
-         * @see swizzle()
-         */
-        inline constexpr Vector3<T> rgb() const { return xyz(); }
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector4, 4)
 };

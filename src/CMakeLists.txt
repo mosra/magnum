@@ -40,6 +40,7 @@ set(Magnum_HEADERS
     BufferedTexture.h
     Buffer.h
     Camera.h
+    Color.h
     CubeMapTextureArray.h
     CubeMapTexture.h
     Framebuffer.h

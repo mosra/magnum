@@ -57,16 +57,16 @@ template<class T> class Vector3: public Vector<3, T> {
 
         /**
          * @brief Constructor
-         * @param x     X / R value
-         * @param y     Y / G value
-         * @param z     Z / B value
+         * @param x     X value
+         * @param y     Y value
+         * @param z     Z value
          */
         inline constexpr Vector3(T x, T y, T z): Vector<3, T>(x, y, z) {}
 
         /**
          * @brief Constructor
          * @param other     Two component vector
-         * @param z         Z / B value
+         * @param z         Z value
          */
         inline constexpr Vector3(const Vector<2, T>& other, T z): Vector<3, T>(other[0], other[1], z) {}
 
@@ -85,14 +85,6 @@ template<class T> class Vector3: public Vector<3, T> {
          * @see swizzle()
          */
         inline constexpr Vector2<T> xy() const { return Vector2<T>::from(Vector<3, T>::data()); }
-
-        inline constexpr T r() const { return x(); }        /**< @brief R component */
-        inline constexpr T g() const { return y(); }        /**< @brief G component */
-        inline constexpr T b() const { return z(); }        /**< @brief B component */
-
-        inline void setR(T value) { setX(value); }          /**< @brief Set R component */
-        inline void setG(T value) { setY(value); }          /**< @brief Set G component */
-        inline void setB(T value) { setZ(value); }          /**< @brief Set B component */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector3, 3)
 };

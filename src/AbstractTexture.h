@@ -20,6 +20,7 @@
  */
 
 #include "Magnum.h"
+#include "Color.h"
 
 namespace Magnum {
 
@@ -611,7 +612,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * to `ClampToBorder`.
          * @requires_gl
          */
-        inline void setBorderColor(const Vector4& color) {
+        inline void setBorderColor(const Color4& color) {
             bind();
             glTexParameterfv(_target, GL_TEXTURE_BORDER_COLOR, color.data());
         }
