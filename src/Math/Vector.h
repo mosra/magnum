@@ -42,6 +42,8 @@ namespace Implementation {
 
 /** @brief %Vector */
 template<size_t size, class T> class Vector {
+    static_assert(size != 0, "Vector cannot have zero elements");
+
     public:
         const static size_t Size = size;    /**< @brief %Vector size */
         typedef T Type;                     /**< @brief %Vector data type */

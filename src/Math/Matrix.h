@@ -36,6 +36,8 @@ namespace Implementation {
  * @todo first col, then row (cache adjacency)
  */
 template<size_t size, class T> class Matrix {
+    static_assert(size != 0, "Matrix cannot have zero elements");
+
     friend class Matrix<size+1, T>; /* for ij() */
 
     public:
