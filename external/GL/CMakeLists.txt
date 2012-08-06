@@ -1,0 +1,1 @@
+install(FILES glcorearb.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/external/GL)

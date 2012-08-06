@@ -1,0 +1,6 @@
+if(NOT TARGET_GLES)
+    add_subdirectory(GL)
+else()
+    add_subdirectory(GLES3)
+    add_subdirectory(KHR)
+endif()

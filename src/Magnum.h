@@ -23,8 +23,9 @@
 
 #ifndef MAGNUM_TARGET_GLES
 #include <GL/glew.h>
+#include <GL/glcorearb.h>
 #else
-#include <GLES2/gl2.h>
+#include <GLES3/gl3.h>
 #endif
 
 namespace Corrade {
