@@ -20,6 +20,7 @@
  */
 
 #include <cmath>
+#include <limits>
 #include <Utility/Debug.h>
 
 #include "MathTypeTraits.h"
@@ -82,16 +83,18 @@ template<size_t size, class T> class Vector {
         }
 
         /**
-         * @brief Angle between vectors
+         * @brief Angle between normalized vectors
          *
          * @f[
          * \phi = \frac{a \cdot b}{|a| \cdot |b|}
          * @f]
-         *
-         * @todo optimize - Assume the vectors are normalized?
+         * @attention If any of the parameters is not normalized (and
+         * assertions are enabled), returns NaN.
          */
         inline static T angle(const Vector<size, T>& a, const Vector<size, T>& b) {
-            return std::acos(dot(a, b)/(a.length()*b.length()));
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(a.dot(), T(1)) && MathTypeTraits<T>::equals(b.dot(), T(1)),
+                           "Math::Vector::angle(): vectors must be normalized!", std::numeric_limits<T>::quiet_NaN());
+            return std::acos(dot(a, b));
         }
 
         /** @brief Default constructor */
