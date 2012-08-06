@@ -50,12 +50,12 @@ template<class T> class Vector4: public Vector<4, T> {
 
         /**
          * @brief Constructor
-         * @param other     Three component vector
-         * @param w         W value
+         * @param xyz   Three component vector
+         * @param w     W value
          */
         /* Not marked as explicit, because conversion from Vector3 to Vector4
            is fairly common, nearly always with W set to 1 */
-        inline constexpr Vector4(const Vector<3, T>& other, T w = T(1)): Vector<4, T>(other[0], other[1], other[2], w) {}
+        inline constexpr Vector4(const Vector<3, T>& xyz, T w = T(1)): Vector<4, T>(xyz[0], xyz[1], xyz[2], w) {}
 
         inline constexpr T x() const { return (*this)[0]; } /**< @brief X component */
         inline constexpr T y() const { return (*this)[1]; } /**< @brief Y component */
