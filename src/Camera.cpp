@@ -103,7 +103,7 @@ void Camera::fixAspectRatio() {
 
 void Camera::draw() {
     Scene* s = scene();
-    CORRADE_ASSERT(s, "Camera: cannot draw without camera attached to scene", )
+    CORRADE_ASSERT(s, "Camera: cannot draw without camera attached to scene", );
 
     Framebuffer::clear();
 

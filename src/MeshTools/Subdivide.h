@@ -32,7 +32,7 @@ template<class Vertex, class Interpolator> class Subdivide {
         inline Subdivide(std::vector<unsigned int>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
 
         void operator()(Interpolator interpolator) {
-            CORRADE_ASSERT(!(indices.size()%3), "MeshTools::subdivide(): index count is not divisible by 3!", )
+            CORRADE_ASSERT(!(indices.size()%3), "MeshTools::subdivide(): index count is not divisible by 3!", );
 
             size_t indexCount = indices.size();
             indices.reserve(indices.size()*4);

@@ -41,7 +41,7 @@ void IndexedMesh::draw() {
 void IndexedMesh::finalize() {
     if(isFinalized()) return;
 
-    CORRADE_ASSERT(_indexCount, "IndexedMesh: the mesh has zero index count!", )
+    CORRADE_ASSERT(_indexCount, "IndexedMesh: the mesh has zero index count!", );
 
     /* Finalize attribute positions */
     Mesh::finalize();

@@ -39,14 +39,14 @@ bool AbstractShaderProgram::attachShader(Shader& shader) {
 }
 
 void AbstractShaderProgram::bindAttributeLocation(GLuint location, const string& name) {
-    CORRADE_ASSERT(state == Initialized, "AbstractShaderProgram: attribute cannot be bound after linking.", )
+    CORRADE_ASSERT(state == Initialized, "AbstractShaderProgram: attribute cannot be bound after linking.", );
 
     glBindAttribLocation(program, location, name.c_str());
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::bindFragmentDataLocation(GLuint location, const std::string& name) {
-    CORRADE_ASSERT(state == Initialized, "AbstractShaderProgram: fragment data location cannot be bound after linking.", )
+    CORRADE_ASSERT(state == Initialized, "AbstractShaderProgram: fragment data location cannot be bound after linking.", );
 
     glBindFragDataLocation(program, location, name.c_str());
 }
@@ -83,7 +83,7 @@ void AbstractShaderProgram::link() {
 
 GLint AbstractShaderProgram::uniformLocation(const std::string& name) {
     /** @todo What if linking just failed (not programmer error?) */
-    CORRADE_ASSERT(state == Linked, "AbstractShaderProgram: uniform location cannot be retrieved before linking.", -1)
+    CORRADE_ASSERT(state == Linked, "AbstractShaderProgram: uniform location cannot be retrieved before linking.", -1);
 
     GLint location = glGetUniformLocation(program, name.c_str());
     if(location == -1)

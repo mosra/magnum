@@ -57,7 +57,7 @@ class CombineIndexedArrays {
 
     private:
         template<class ...T> inline static size_t indexCount(const std::vector<unsigned int>& first, const std::vector<T>&... next) {
-            CORRADE_ASSERT(sizeof...(next) == 0 || indexCount(next...) == first.size(), "MeshTools::combineIndexedArrays(): index arrays don't have the same length, nothing done.", 0)
+            CORRADE_ASSERT(sizeof...(next) == 0 || indexCount(next...) == first.size(), "MeshTools::combineIndexedArrays(): index arrays don't have the same length, nothing done.", 0);
 
             return first.size();
         }

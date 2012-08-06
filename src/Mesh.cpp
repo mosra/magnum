@@ -78,7 +78,7 @@ void Mesh::finalize() {
     /* Already finalized */
     if(finalized) return;
 
-    CORRADE_ASSERT(_vertexCount, "Mesh: the mesh has zero vertex count!", )
+    CORRADE_ASSERT(_vertexCount, "Mesh: the mesh has zero vertex count!", );
 
     /* Finalize attribute positions for every buffer */
     for(auto& it: _buffers) {
