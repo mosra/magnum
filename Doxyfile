@@ -206,8 +206,12 @@ ALIASES                = \
     "requires_gl40=@xrefitem requires-gl40 \"Requires OpenGL 4.0\" \"Functionality requiring OpenGL 4.0\"" \
     "requires_gl41=@xrefitem requires-gl41 \"Requires OpenGL 4.1\" \"Functionality requiring OpenGL 4.1\"" \
     "requires_gl42=@xrefitem requires-gl42 \"Requires OpenGL 4.2\" \"Functionality requiring OpenGL 4.2\"" \
-    "requires_extension=@xrefitem requires-extension \"Requires extension\" \"Functionality requiring specific OpenGL extension\"" \
-    "extension{2}=<a href=\"http://www.opengl.org/registry/specs/\1/\2.txt\"><tt>\1_\2</tt></a>"
+    "requires_gl43=@xrefitem requires-gl43 \"Requires OpenGL 4.3\" \"Functionality requiring OpenGL 4.3\"" \
+    "requires_extension=@xrefitem requires-extension \"Requires OpenGL extension\" \"Functionality requiring specific OpenGL extension\"" \
+    "extension{2}=<a href=\"http://www.opengl.org/registry/specs/\1/\2.txt\"><tt>\1_\2</tt></a>" \
+    "requires_gles30=@xrefitem requires-gles30 \"Requires OpenGL ES 3.0\" \"Functionality requiring OpenGL ES 3.0\"" \
+    "requires_es_extension=@xrefitem requires-es-extension \"Requires OpenGL ES extension\" \"Functionality requiring specific OpenGL ES extension\"" \
+    "es_extension{2}=<a href=\"http://www.khronos.org/registry/gles/extensions/\1/\2.txt\"><tt>\1_\2</tt></a>"
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding

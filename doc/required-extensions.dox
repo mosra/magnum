@@ -20,7 +20,10 @@ supported on Intel GPUs even if they are capable of OpenGL 2.1 only).
 - @subpage requires-gl40
 - @subpage requires-gl41
 - @subpage requires-gl42
+- @subpage requires-gl43
 - @subpage requires-extension
+- @subpage requires-gles30
+- @subpage requires-es-extension
 
 @page requires-gl Functionality requiring desktop OpenGL (not available on OpenGL ES)
 @page requires-gl30 Functionality requiring OpenGL 3.0
@@ -30,6 +33,9 @@ supported on Intel GPUs even if they are capable of OpenGL 2.1 only).
 @page requires-gl40 Functionality requiring OpenGL 4.0
 @page requires-gl41 Functionality requiring OpenGL 4.1
 @page requires-gl42 Functionality requiring OpenGL 4.2
+@page requires-gl43 Functionality requiring OpenGL 4.3
 @page requires-extension Functionality requiring specific OpenGL extension
+@page requires-gles30 Functionality requiring OpenGL ES 3.0
+@page requires-es-extension Functionality requiring specific OpenGL ES extension
 
 */
