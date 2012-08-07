@@ -64,7 +64,7 @@ class MAGNUM_EXPORT AbstractQuery {
          * Note that this function is blocking until the result is available.
          * See resultAvailable().
          *
-         * @requires_gl33 Extension @extension{ARB,timer_query} (64bit integers)
+         * @requires_gl33 Extension @extension{ARB,timer_query} (result type `GLuint64` and `GLint64`)
          */
         template<class T> T result();
 
