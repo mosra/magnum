@@ -80,6 +80,8 @@ The preferred workflow is to specify attribute location for vertex shader
 input attributes and fragment shader output attributes explicitly in the
 shader code, e.g.:
 @code
+#version 330
+// or #extension GL_ARB_explicit_attrib_location: enable
 layout(location = 0) in vec4 vertex;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 textureCoords;
@@ -122,6 +124,8 @@ bindFragmentDataLocationIndexed(1, 1, "ambient");
 The preferred workflow is to specify texture layers directly in the shader
 code, e.g.:
 @code
+#version 420
+// or #extension GL_ARB_shading_language_420pack: enable
 layout(binding = 0) uniform sampler2D diffuseTexture;
 layout(binding = 1) uniform sampler2D specularTexture;
 @endcode
