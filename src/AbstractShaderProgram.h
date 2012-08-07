@@ -53,6 +53,14 @@ typedef Attribute<2, Vector2> TextureCoords;
 static const GLint DiffuseTextureLayer = 0;
 static const GLint SpecularTextureLayer = 1;
 @endcode
+ - **Uniform locations** for setting uniform data (see below) (private
+   constants), for example:
+@code
+static const GLint TransformationMatrixUniform = 0;
+static const GLint ProjectionMatrixUniform = 1;
+static const GLint DiffuseTextureUniform = 2;
+static const GLint SpecularTextureUniform = 3;
+@endcode
  - **Constructor**, which attaches particular shaders, links the program and
    gets uniform locations, for example:
 @code
@@ -63,21 +71,16 @@ MyShader() {
 
     // Link
     link();
-
-    // Get locations of uniforms
-    transformationMatrixUniform = uniformLocation("transformationMatrix");
-    projectionMatrixUniform = uniformLocation("projectionMatrix");
-    // more uniforms like light location, colors etc.
 }
 @endcode
  - **Uniform setting functions**, which will provide public interface for
    protected setUniform() functions. Example:
 @code
 void setTransformationMatrixUniform(const Matrix4& matrix) {
-    setUniform(transformationMatrixUniform, matrix);
+    setUniform(TransformationMatrixUniform, matrix);
 }
 void setProjectionMatrixUniform(const Matrix4& matrix) {
-    setUniform(projectionMatrixUniform, matrix);
+    setUniform(ProjectionMatrixUniform, matrix);
 }
 @endcode
 
@@ -126,6 +129,26 @@ bindFragmentDataLocationIndexed(1, 1, "ambient");
 // Link...
 @endcode
 
+@subsection AbstractShaderProgram-uniform-location Uniform locations
+The preferred workflow is to specify uniform locations directly in the shader
+code, e.g.:
+@code
+#version 430
+// or #extension GL_ARB_explicit_uniform_location: enable
+layout(location = 0) uniform mat4 transformationMatrix;
+layout(location = 1) uniform mat4 projectionMatrix;
+@endcode
+@requires_gl (for explicit uniform location instead of using uniformLocation())
+@requires_gl43 Extension @extension{ARB,explicit_uniform_location} (for
+    explicit uniform location instead of using uniformLocation())
+
+If you don't have the required extension, you can get uniform location using
+uniformLocation() after linking stage:
+@code
+GLint transformationMatrixUniform = uniformLocation("transformationMatrix");
+GLint projectionMatrixUniform = uniformLocation("projectionMatrix");
+@endcode
+
 @subsection AbstractShaderProgram-texture-layer Binding texture layer uniforms
 The preferred workflow is to specify texture layers directly in the shader
 code, e.g.:
@@ -144,8 +167,8 @@ If you don't have the required extension (or if you want to change the layer
 later), you can set the texture layer uniform using setUniform(GLint, GLint):
 @code
 use();
-setUniform(uniformLocation("diffuseTexture"), DiffuseTextureLayer);
-setUniform(uniformLocation("specularTexture"), SpecularTextureLayer);
+setUniform(DiffuseTextureUniform, DiffuseTextureLayer);
+setUniform(SpecularTextureUniform, SpecularTextureLayer);
 @endcode
 
 @section AbstractShaderProgram-rendering-workflow Rendering workflow
@@ -330,6 +353,10 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @param name          Uniform name
          *
          * @note This function should be called after link().
+         * @deprecated Preferred usage is to specify uniform location
+         *      explicitly in the shader instead of using this function. See
+         *      @ref AbstractShaderProgram-uniform-location "class documentation"
+         *      for more information.
          * @see @fn_gl{GetUniformLocation}
          */
         GLint uniformLocation(const std::string& name);
