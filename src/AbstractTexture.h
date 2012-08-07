@@ -319,29 +319,23 @@ class MAGNUM_EXPORT AbstractTexture {
              * Four-component RGBA, unsigned normalized, each component 4bit,
              * 16bit total.
              */
-            RGBA4 = GL_RGBA4
+            RGBA4 = GL_RGBA4,
 
             #ifndef MAGNUM_TARGET_GLES
-            ,
-
             /**
              * Three-component RGB, float, red and green 11bit, blue 10bit,
              * 32bit total.
              * @requires_gl
              * @requires_gl30 Extension @extension{EXT,packed_float}
              */
-            RG11B10Float = GL_R11F_G11F_B10F
+            RG11B10Float = GL_R11F_G11F_B10F,
             #endif
-
-            #if defined(GL_RGB565) || defined(DOXYGEN_GENERATING_OUTPUT)
-            ,
 
             /**
              * Three-component RGB, unsigned normalized, red and blue 5bit,
              * green 6bit, 16bit total.
              */
             RGB565 = GL_RGB565
-            #endif
 
             #ifndef MAGNUM_TARGET_GLES
             ,
@@ -408,7 +402,6 @@ class MAGNUM_EXPORT AbstractTexture {
              */
             CompressedRtgcSignedRedGreen = GL_COMPRESSED_SIGNED_RG_RGTC2,
 
-            #if defined(GL_COMPRESSED_RGBA_BPTC_UNORM) || defined(DOXYGEN_GENERATING_OUTPUT)
             /**
              * BPTC compressed RGBA, unsigned normalized.
              * @requires_gl
@@ -436,7 +429,6 @@ class MAGNUM_EXPORT AbstractTexture {
              * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
              */
             CompressedBptcRGBUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
-            #endif
 
             /**
              * Depth component, at least 16bit.

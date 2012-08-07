@@ -91,9 +91,7 @@ class Renderbuffer {
             RFloat11GFloat11BFloat10 = GL_R11F_G11F_B10F,
             #endif
 
-            #if defined(GL_RGB565) || defined(DOXYGEN_GENERATING_OUTPUT)
             RGB565 = GL_RGB565,
-            #endif
 
             #ifndef MAGNUM_TARGET_GLES
             /**
