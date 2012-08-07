@@ -26,7 +26,7 @@ Features:
 
 The engine is meant to be run on OpenGL 3 capable hardware, but most of the
 functionality is working on OpenGL 2.1 hardware too. The engine can be built
-also for OpenGL ES 2 with limited functionality. See also @ref required-extensions.
+also for OpenGL ES with limited functionality. See also @ref required-extensions.
 
 @section download-build Downloading and building Magnum
 

@@ -3,8 +3,8 @@
 
 The engine is meant to be run on OpenGL 3 capable hardware, but most of the
 functionality is working in OpenGL 2.1 hardware too (i.e. integrated Intel
-GPUs), unless stated otherwise. OpenGL ES 2 is also supported, see
-@ref building for guide how to build the engine for it.
+GPUs), unless stated otherwise. OpenGL ES is also supported, see @ref building
+for guide how to build the engine for it.
 
 Following are lists of functionality requiring specific OpenGL version. In
 most cases it is also specified which extension is required for given
@@ -22,7 +22,7 @@ supported on Intel GPUs even if they are capable of OpenGL 2.1 only).
 - @subpage requires-gl42
 - @subpage requires-extension
 
-@page requires-gl Functionality requiring desktop OpenGL (not available on OpenGL ES 2)
+@page requires-gl Functionality requiring desktop OpenGL (not available on OpenGL ES)
 @page requires-gl30 Functionality requiring OpenGL 3.0
 @page requires-gl31 Functionality requiring OpenGL 3.1
 @page requires-gl32 Functionality requiring OpenGL 3.2
