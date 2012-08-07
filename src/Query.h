@@ -182,6 +182,7 @@ q.beginConditionalRender(SampleQuery::ConditionalRenderMode::Wait);
 q.endConditionalRender();
 @endcode
 @requires_gl
+@requires_gl30 Extension @extension{NV,conditional_render}
 */
 class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
     public:
