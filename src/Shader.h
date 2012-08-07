@@ -65,6 +65,13 @@ class MAGNUM_EXPORT Shader {
              * @requires_gl32 Extension @extension{ARB,geometry_shader4}
              */
             Geometry = GL_GEOMETRY_SHADER,
+
+            /**
+             * Compute shader
+             * @requires_gl
+             * @requires_gl43 Extension @extension{ARB,compute_shader}
+             */
+            Compute = GL_COMPUTE_SHADER,
             #endif
 
             Fragment = GL_FRAGMENT_SHADER   /**< Fragment shader */
