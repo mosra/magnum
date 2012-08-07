@@ -439,12 +439,21 @@ class MAGNUM_EXPORT AbstractTexture {
             CompressedBptcRGBUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
             #endif
 
-            /** Depth component. */
+            /**
+             * Depth component, at least 16bit.
+             *
+             * Prefer to use the exactly specified version of this format, in
+             * this case e.g. `Format::Depth16`.
+             */
             Depth = GL_DEPTH_COMPONENT,
 
             #ifndef MAGNUM_TARGET_GLES
             /**
-             * Depth and stencil component.
+             * Depth and stencil component, at least 24bit depth and 8bit
+             * stencil.
+             *
+             * Prefer to use the exactly specified version of this format, in
+             * this case e.g. `Format::Depth24Stencil8`.
              * @requires_gl
              */
             DepthStencil = GL_DEPTH_STENCIL,
