@@ -104,14 +104,16 @@ layout(location = 1, index = 1) out vec4 ambient;
 @endcode
 @requires_gl (for explicit input attribute location instead of using
      bindAttributeLocation())
-@requires_gl (for explicit output attribute location or using
-    bindFragmentDataLocation() / bindFragmentDataLocationIndexed())
+@requires_gl (for using bindFragmentDataLocation() /
+    bindFragmentDataLocationIndexed())
 @requires_gl30 Extension @extension{EXT,gpu_shader4} (for using
     bindFragmentDataLocation())
 @requires_gl33 Extension @extension{ARB,blend_func_extended} (for using
     bindFragmentDataLocationIndexed())
 @requires_gl33 Extension @extension{ARB,explicit_attrib_location} (for
     explicit attribute location instead of using bindAttributeLocation())
+@requires_gles30 (no extension providing this functionality) (for explicit
+    input and output attribute location)
 
 If you don't have the required extension, you can use functions bindAttributeLocation()
 and bindFragmentDataLocation() / bindFragmentDataLocationIndexed() between
@@ -239,7 +241,6 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         bool use();
 
     protected:
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Allow retrieving program binary
          *
@@ -249,11 +250,13 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_BINARY_RETRIEVABLE_HINT}
          * @requires_gl
          * @requires_gl41 Extension @extension{ARB,get_program_binary}
+         * @requires_gles30 (no extension providing this functionality)
          */
         inline void setRetrievableBinary(bool enabled) {
             glProgramParameteri(program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, enabled ? GL_TRUE : GL_FALSE);
         }
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Allow the program to be bound to individual pipeline stages
          *
@@ -408,11 +411,10 @@ class MAGNUM_EXPORT AbstractShaderProgram {
             glUniform4iv(location, 1, value.data());
         }
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @copydoc setUniform(GLint, GLint)
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
+         * @requires_gles30 (no extension providing this functionality)
          */
         inline void setUniform(GLint location, GLuint value) {
             glUniform1ui(location, value);
@@ -420,8 +422,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLint)
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
+         * @requires_gles30 (no extension providing this functionality)
          */
         inline void setUniform(GLint location, const Math::Vector2<GLuint>& value) {
             glUniform2uiv(location, 1, value.data());
@@ -429,8 +431,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLint)
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
+         * @requires_gles30 (no extension providing this functionality)
          */
         inline void setUniform(GLint location, const Math::Vector3<GLuint>& value) {
             glUniform3uiv(location, 1, value.data());
@@ -438,13 +440,12 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLuint)
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
+         * @requires_gles30 (no extension providing this functionality)
          */
         inline void setUniform(GLint location, const Math::Vector4<GLuint>& value) {
             glUniform4uiv(location, 1, value.data());
         }
-        #endif
 
         /** @copydoc setUniform(GLint, GLint) */
         inline void setUniform(GLint location, const Matrix3& value) {
