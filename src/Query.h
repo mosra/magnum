@@ -109,6 +109,8 @@ class MAGNUM_EXPORT Query: public AbstractQuery {
             /**
              * Count of primitives generated from vertex shader or geometry
              * shader.
+             *
+             * @requires_gl31 (no extension providing this functionality)
              */
             PrimitivesGenerated = GL_PRIMITIVES_GENERATED,
 
