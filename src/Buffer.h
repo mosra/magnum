@@ -69,7 +69,10 @@ class Buffer {
              */
             PixelUnpack = GL_PIXEL_UNPACK_BUFFER,
 
-            /** Target for pixel pack operations. */
+            /**
+             * Target for pixel pack operations.
+             * @requires_gl
+             */
             PixelPack = GL_PIXEL_PACK_BUFFER,
 
             /**
