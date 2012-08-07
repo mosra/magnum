@@ -44,40 +44,36 @@ class Buffer {
             /** Used for storing vertex attributes. */
             Array = GL_ARRAY_BUFFER,
 
-            #ifndef MAGNUM_TARGET_GLES
             /**
              * Source for copies.
-             * @requires_gl
              * @requires_gl31 Extension @extension{ARB,copy_buffer}
+             * @requires_gles30 (no extension providing this functionality)
              */
             CopyRead = GL_COPY_READ_BUFFER,
 
             /**
              * Target for copies.
-             * @requires_gl
              * @requires_gl31 Extension @extension{ARB,copy_buffer}
+             * @requires_gles30 (no extension providing this functionality)
              */
             CopyWrite = GL_COPY_WRITE_BUFFER,
-            #endif
 
             /** Used for storing vertex indices. */
-            ElementArray = GL_ELEMENT_ARRAY_BUFFER
-
-            #ifndef MAGNUM_TARGET_GLES
-            ,
+            ElementArray = GL_ELEMENT_ARRAY_BUFFER,
 
             /**
              * Source for texture update operations.
-             * @requires_gl
+             * @requires_gles30 (no extension providing this functionality)
              */
             PixelUnpack = GL_PIXEL_UNPACK_BUFFER,
 
             /**
              * Target for pixel pack operations.
-             * @requires_gl
+             * @requires_gles30 (no extension providing this functionality)
              */
             PixelPack = GL_PIXEL_PACK_BUFFER,
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Source for texel fetches.
              *
@@ -86,20 +82,24 @@ class Buffer {
              * @requires_gl31 Extension @extension{ARB,texture_buffer_object}
              */
             Texture = GL_TEXTURE_BUFFER,
+            #endif
 
             /**
              * Target for transform feedback.
-             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,transform_feedback}
+             * @requires_gles30 (no extension providing this functionality)
              */
             TransformFeedback = GL_TRANSFORM_FEEDBACK_BUFFER,
 
             /**
              * Used for storing uniforms.
-             * @requires_gl
              * @requires_gl31 Extension @extension{ARB,uniform_buffer_object}
+             * @requires_gles30 (no extension providing this functionality)
              */
-            Uniform = GL_UNIFORM_BUFFER,
+            Uniform = GL_UNIFORM_BUFFER
+
+            #ifndef MAGNUM_TARGET_GLES
+            ,
 
             /**
              * Used for supplying arguments for instanced drawing.
@@ -117,66 +117,58 @@ class Buffer {
              */
             StreamDraw = GL_STREAM_DRAW,
 
-            #ifndef MAGNUM_TARGET_GLES
             /**
              * Set once as output from an OpenGL command and used infequently
              * for drawing.
-             * @requires_gl
+             * @requires_gles30 (no extension providing this functionality)
              */
             StreamRead = GL_STREAM_READ,
 
             /**
              * Set once as output from an OpenGL command and used infrequently
              * for drawing or copying to other buffers.
-             * @requires_gl
+             * @requires_gles30 (no extension providing this functionality)
              */
             StreamCopy = GL_STREAM_COPY,
-            #endif
 
             /**
              * Set once by the application and used frequently for drawing.
              */
             StaticDraw = GL_STATIC_DRAW,
 
-            #ifndef MAGNUM_TARGET_GLES
             /**
              * Set once as output from an OpenGL command and queried many
              * times by the application.
-             * @requires_gl
+             * @requires_gles30 (no extension providing this functionality)
              */
             StaticRead = GL_STATIC_READ,
 
             /**
              * Set once as output from an OpenGL command and used frequently
              * for drawing or copying to other buffers.
-             * @requires_gl
+             * @requires_gles30 (no extension providing this functionality)
              */
             StaticCopy = GL_STATIC_COPY,
-            #endif
 
             /**
              * Updated frequently by the application and used frequently
              * for drawing or copying to other images.
              */
-            DynamicDraw = GL_DYNAMIC_DRAW
-
-            #ifndef MAGNUM_TARGET_GLES
-            ,
+            DynamicDraw = GL_DYNAMIC_DRAW,
 
             /**
              * Updated frequently as output from OpenGL command and queried
              * many times from the application.
-             * @requires_gl
+             * @requires_gles30 (no extension providing this functionality)
              */
             DynamicRead = GL_DYNAMIC_READ,
 
             /**
              * Updated frequently as output from OpenGL command and used
              * frequently for drawing or copying to other images.
-             * @requires_gl
+             * @requires_gles30 (no extension providing this functionality)
              */
             DynamicCopy = GL_DYNAMIC_COPY
-            #endif
         };
 
         /**
