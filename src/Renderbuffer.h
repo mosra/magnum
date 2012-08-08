@@ -92,10 +92,8 @@ class Renderbuffer {
             RGB565 = GL_RGB565,
             #endif
 
-            Depth = GL_DEPTH_COMPONENT,
-
             #ifndef MAGNUM_TARGET_GLES
-            DepthStencil = GL_DEPTH_STENCIL,
+            Depth = GL_DEPTH_COMPONENT, DepthStencil = GL_DEPTH_STENCIL,
             #endif
 
             Depth16 = GL_DEPTH_COMPONENT16

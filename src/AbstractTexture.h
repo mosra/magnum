@@ -344,10 +344,12 @@ class MAGNUM_EXPORT AbstractTexture {
              * Three-component RGB, unsigned normalized, red and blue 5bit,
              * green 6bit, 16bit total.
              */
-            RGB565 = GL_RGB565,
+            RGB565 = GL_RGB565
             #endif
 
             #ifndef MAGNUM_TARGET_GLES
+            ,
+
             /**
              * Three-component RGB, unsigned with exponent, each component
              * 9bit, exponent 5bit, 32bit total.
@@ -407,7 +409,6 @@ class MAGNUM_EXPORT AbstractTexture {
              * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
              */
             CompressedRtgcSignedRedGreen = GL_COMPRESSED_SIGNED_RG_RGTC2,
-            #endif
 
             #if defined(GL_COMPRESSED_RGBA_BPTC_UNORM) || defined(DOXYGEN_GENERATING_OUTPUT)
             /**
@@ -444,10 +445,10 @@ class MAGNUM_EXPORT AbstractTexture {
              *
              * Prefer to use the exactly specified version of this format, in
              * this case e.g. `Format::Depth16`.
+             * @requires_gl
              */
             Depth = GL_DEPTH_COMPONENT,
 
-            #ifndef MAGNUM_TARGET_GLES
             /**
              * Depth and stencil component, at least 24bit depth and 8bit
              * stencil.
@@ -457,13 +458,12 @@ class MAGNUM_EXPORT AbstractTexture {
              * @requires_gl
              */
             DepthStencil = GL_DEPTH_STENCIL,
-            #endif
 
-            /** 16bit depth component. */
-            Depth16 = GL_DEPTH_COMPONENT16
-
-            #ifndef MAGNUM_TARGET_GLES
-            ,
+            /**
+             * 16bit depth component.
+             * @requires_gl
+             */
+            Depth16 = GL_DEPTH_COMPONENT16,
 
             /**
              * 24bit depth component.

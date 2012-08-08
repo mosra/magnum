@@ -72,9 +72,11 @@ class MAGNUM_EXPORT AbstractImage {
             #endif
 
             RGB = GL_RGB,                   /**< Three-component RGB */
-            RGBA = GL_RGBA,                 /**< Four-component RGBA */
+            RGBA = GL_RGBA                  /**< Four-component RGBA */
 
             #ifndef MAGNUM_TARGET_GLES
+            ,
+
             /**
              * Three-component BGR
              * @requires_gl
@@ -86,16 +88,19 @@ class MAGNUM_EXPORT AbstractImage {
              * @requires_gl
              */
             BGRA = GL_BGRA,
-            #endif
 
-            /** Depth component. For framebuffer reading only. */
+            /**
+             * Depth component. For framebuffer reading only.
+             * @requires_gl
+             */
             Depth = GL_DEPTH_COMPONENT,
 
-            /** Stencil index. For framebuffer reading only. */
-            StencilIndex = GL_STENCIL_INDEX
+            /**
+             * Stencil index. For framebuffer reading only.
+             * @requires_gl
+             */
+            StencilIndex = GL_STENCIL_INDEX,
 
-            #ifndef MAGNUM_TARGET_GLES
-            ,
             /**
              * Depth and stencil component. For framebuffer reading only.
              * @requires_gl
