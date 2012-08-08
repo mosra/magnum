@@ -50,7 +50,7 @@ GLfloat AbstractTexture::maxSupportedAnisotropy() {
 
 void AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE || mipmap == Mipmap::BaseLevel, "AbstractTexture: rectangle textures cannot have mipmaps", )
+    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE || mipmap == Mipmap::BaseLevel, "AbstractTexture: rectangle textures cannot have mipmaps", );
     #endif
 
     bind();
@@ -60,7 +60,7 @@ void AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
 
 void AbstractTexture::generateMipmap() {
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE, "AbstractTexture: rectangle textures cannot have mipmaps", )
+    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE, "AbstractTexture: rectangle textures cannot have mipmaps", );
     #endif
 
     bind();
@@ -110,7 +110,7 @@ AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components comp
 #ifndef DOXYGEN_GENERATING_OUTPUT
 void AbstractTexture::DataHelper<2>::setWrapping(GLenum target, const Math::Vector<2, Wrapping>& wrapping) {
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(target != GL_TEXTURE_RECTANGLE || ((wrapping[0] == Wrapping::ClampToEdge || wrapping[0] == Wrapping::ClampToBorder) && (wrapping[0] == Wrapping::ClampToEdge || wrapping[1] == Wrapping::ClampToEdge)), "AbstractTexture: rectangle texture wrapping must either clamp to border or to edge", )
+    CORRADE_ASSERT(target != GL_TEXTURE_RECTANGLE || ((wrapping[0] == Wrapping::ClampToEdge || wrapping[0] == Wrapping::ClampToBorder) && (wrapping[0] == Wrapping::ClampToEdge || wrapping[1] == Wrapping::ClampToEdge)), "AbstractTexture: rectangle texture wrapping must either clamp to border or to edge", );
     #endif
 
     glTexParameteri(target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
