@@ -69,7 +69,7 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
 
             /**
              * Three-dimensional texture
-             * @requires_gl
+             * @requires_gles30 (no extension providing this functionality)
              */
             Texture3D = GL_TEXTURE_3D,
 
@@ -82,8 +82,8 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
 
             /**
              * Two-dimensional texture array (i.e. three dimensions in total)
-             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,texture_array}
+             * @requires_gles30 (no extension providing this functionality)
              */
             Texture2DArray = GL_TEXTURE_2D_ARRAY,
 
@@ -186,14 +186,12 @@ typedef Texture<1> Texture1D;
 /** @brief Two-dimensional texture */
 typedef Texture<2> Texture2D;
 
-#ifndef MAGNUM_TARGET_GLES
 /**
 @brief Three-dimensional texture
 
-@requires_gl
+@requires_gles30 (no extension providing this functionality)
 */
 typedef Texture<3> Texture3D;
-#endif
 
 }
 

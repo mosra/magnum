@@ -42,12 +42,11 @@ class Renderbuffer {
     public:
         /** @{ @name Internal renderbuffer formats */
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @copybrief AbstractTexture::Components
          *
          * Like AbstractTexture::Components, without three-component RGB.
-         * @requires_gl
+         * @requires_gles30 (no extension providing this functionality)
          */
         enum class Components {
             Red, RedGreen, RGBA
@@ -58,13 +57,16 @@ class Renderbuffer {
          *
          * Like AbstractTexture::ComponentType, without normalized signed
          * types.
-         * @requires_gl
+         * @requires_gles30 (no extension providing this functionality)
          */
         enum class ComponentType {
             UnsignedByte, Byte, UnsignedShort, Short, UnsignedInt, Int, Half,
-            Float, NormalizedUnsignedByte, NormalizedUnsignedShort
+            Float, NormalizedUnsignedByte
+
+            #ifndef MAGNUM_TARGET_GLES
+            , NormalizedUnsignedShort
+            #endif
         };
-        #endif
 
         /**
          * @copybrief AbstractTexture::Format
@@ -74,23 +76,15 @@ class Renderbuffer {
          * compressed formats, but with added separate stencil index.
          */
         enum class Format: GLenum {
-            #ifndef MAGNUM_TARGET_GLES
-            Red = GL_RED, RedGreen = GL_RG,
-            #endif
-
-            RGBA = GL_RGBA,
+            Red = GL_RED, RedGreen = GL_RG, RGBA = GL_RGBA,
 
             #ifndef MAGNUM_TARGET_GLES
-            BGRA = GL_BGRA, SRGBA = GL_SRGB8_ALPHA8,
-            RGB10Alpha2 = GL_RGB10_A2, RGB10AlphaUnsigned2 = GL_RGB10_A2UI,
+            BGRA = GL_BGRA,
             #endif
 
-            RGB5Alpha1 = GL_RGB5_A1, RGBA4 = GL_RGBA4,
-
-            #ifndef MAGNUM_TARGET_GLES
-            RFloat11GFloat11BFloat10 = GL_R11F_G11F_B10F,
-            #endif
-
+            SRGBA = GL_SRGB8_ALPHA8, RGB10Alpha2 = GL_RGB10_A2,
+            RGB10AlphaUnsigned2 = GL_RGB10_A2UI, RGB5Alpha1 = GL_RGB5_A1,
+            RGBA4 = GL_RGBA4, RFloat11GFloat11BFloat10 = GL_R11F_G11F_B10F,
             RGB565 = GL_RGB565,
 
             #ifndef MAGNUM_TARGET_GLES
@@ -157,10 +151,8 @@ class Renderbuffer {
         /** @copydoc AbstractTexture::InternalFormat */
         class MAGNUM_EXPORT InternalFormat {
             public:
-                #ifndef MAGNUM_TARGET_GLES
                 /** @copydoc AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components, AbstractTexture::ComponentType) */
                 InternalFormat(Components components, ComponentType type);
-                #endif
 
                 /** @copydoc AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Format) */
                 inline constexpr InternalFormat(Format format): internalFormat(static_cast<GLenum>(format)) {}
@@ -226,11 +218,10 @@ class Renderbuffer {
         GLuint renderbuffer;
 };
 
-#ifndef MAGNUM_TARGET_GLES
 /** @relates Renderbuffer
 @brief Convertor of component count and data type to InternalFormat
 
-@requires_gl
+@requires_gles30 (no extension providing this functionality)
 */
 inline Renderbuffer::InternalFormat operator|(Renderbuffer::Components components, Renderbuffer::ComponentType type) {
     return Renderbuffer::InternalFormat(components, type);
@@ -241,7 +232,6 @@ inline Renderbuffer::InternalFormat operator|(Renderbuffer::Components component
 inline Renderbuffer::InternalFormat operator|(Renderbuffer::ComponentType type, Renderbuffer::Components components) {
     return Renderbuffer::InternalFormat(components, type);
 }
-#endif
 
 }
 

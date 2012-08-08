@@ -113,10 +113,10 @@ class MAGNUM_EXPORT AbstractTexture {
 
         /** @{ @name Internal texture formats */
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Color components
-         * @requires_gl
+         *
+         * @requires_gles30 (no extension providing this functionality)
          */
         enum class Components {
             /**
@@ -142,7 +142,7 @@ class MAGNUM_EXPORT AbstractTexture {
          *
          * `NormalizedUnsignedByte` and `NormalizedUnsignedShort` are the
          * main ones for general usage.
-         * @requires_gl
+         * @requires_gles30 (no extension providing this functionality)
          */
         enum class ComponentType {
             /**
@@ -206,20 +206,23 @@ class MAGNUM_EXPORT AbstractTexture {
              */
             NormalizedByte,
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Normalized unsigned short, i.e. values from range @f$ [0; 65536] @f$
              * are converted to range @f$ [0.0; 1.0] @f$.
+             * @requires_gl
              */
             NormalizedUnsignedShort,
 
             /**
              * Normalized signed short, i.e. values from range @f$ [-32768; 32767] @f$
              * are converted to range @f$ [-1.0; 1.0] @f$.
+             * @requires_gl
              * @requires_gl31 Extension @extension{EXT,texture_snorm}
              */
             NormalizedShort
+            #endif
         };
-        #endif
 
         /**
          * @brief Internal format
@@ -228,23 +231,21 @@ class MAGNUM_EXPORT AbstractTexture {
          * normalization see enums Components and ComponentType.
          */
         enum class Format: GLenum {
-            #ifndef MAGNUM_TARGET_GLES
             /**
              * One-component (red channel), unsigned normalized, probably
              * 8bit.
-             * @requires_gl
              * @requires_gl30 Extension @extension{ARB,texture_rg}
+             * @requires_gles30 (no extension providing this functionality)
              */
             Red = GL_RED,
 
             /**
              * Two-component (red and green channel), unsigned normalized,
              * each component probably 8bit, 16bit total.
-             * @requires_gl
              * @requires_gl30 Extension @extension{ARB,texture_rg}
+             * @requires_gles30 (no extension providing this functionality)
              */
             RedGreen = GL_RG,
-            #endif
 
             /**
              * Three-component RGB, unsigned normalized, each component
@@ -278,36 +279,36 @@ class MAGNUM_EXPORT AbstractTexture {
              * @requires_gl
              */
             BGRA = GL_BGRA,
+            #endif
 
             /**
              * Four-component sRGBA, unsigned normalized, each component
              * 8bit, 32bit total.
-             * @requires_gl
+             * @requires_gles30 (no extension providing this functionality)
              */
             SRGBA8 = GL_SRGB8_ALPHA8,
 
             /**
              * Three-component sRGB, unsigned normalized, each component
              * 8bit, 24bit total.
-             * @requires_gl
+             * @requires_gles30 (no extension providing this functionality)
              */
             SRGB8 = GL_SRGB8,
 
             /**
              * Four-component RGBA, unsigned normalized, each RGB component
              * 10bit, alpha 2bit, 32bit total.
-             * @requires_gl
+             * @requires_gles30 (no extension providing this functionality)
              */
             RGB10Alpha2 = GL_RGB10_A2,
 
             /**
              * Four-component RGBA, unsigned non-normalized, each RGB
              * component 10bit, alpha channel 2bit, 32bit total.
-             * @requires_gl
              * @requires_gl33 Extension @extension{ARB,texture_rgb10_a2ui}
+             * @requires_gles30 (no extension providing this functionality)
              */
             RGB10Alpha2Unsigned = GL_RGB10_A2UI,
-            #endif
 
             /**
              * Four-component RGBA, unsigned normalized, each RGB component
@@ -321,33 +322,29 @@ class MAGNUM_EXPORT AbstractTexture {
              */
             RGBA4 = GL_RGBA4,
 
-            #ifndef MAGNUM_TARGET_GLES
             /**
              * Three-component RGB, float, red and green 11bit, blue 10bit,
              * 32bit total.
-             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,packed_float}
+             * @requires_gles30 (no extension providing this functionality)
              */
             RG11B10Float = GL_R11F_G11F_B10F,
-            #endif
 
             /**
              * Three-component RGB, unsigned normalized, red and blue 5bit,
              * green 6bit, 16bit total.
              */
-            RGB565 = GL_RGB565
-
-            #ifndef MAGNUM_TARGET_GLES
-            ,
+            RGB565 = GL_RGB565,
 
             /**
              * Three-component RGB, unsigned with exponent, each component
              * 9bit, exponent 5bit, 32bit total.
-             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,texture_shared_exponent}
+             * @requires_gles30 (no extension providing this functionality)
              */
             RGB9Exponent5 = GL_RGB9_E5,
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Compressed red channel, unsigned normalized.
              * @requires_gl
@@ -448,40 +445,40 @@ class MAGNUM_EXPORT AbstractTexture {
              * @requires_gl
              */
             DepthStencil = GL_DEPTH_STENCIL,
+            #endif
 
             /**
              * 16bit depth component.
-             * @requires_gl
+             * @requires_gles30 (no extension providing this functionality)
              */
             Depth16 = GL_DEPTH_COMPONENT16,
 
             /**
              * 24bit depth component.
-             * @requires_gl
+             * @requires_gles30 (no extension providing this functionality)
              */
             Depth24 = GL_DEPTH_COMPONENT24,
 
             /**
              * 32bit float depth component.
-             * @requires_gl
              * @requires_gl30 Extension @extension{ARB,depth_buffer_float}
+             * @requires_gles30 (no extension providing this functionality)
              */
             Depth32Float = GL_DEPTH_COMPONENT32F,
 
             /**
              * 24bit depth and 8bit stencil component.
-             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,packed_depth_stencil}
+             * @requires_gles30 (no extension providing this functionality)
              */
             Depth24Stencil8 = GL_DEPTH24_STENCIL8,
 
             /**
              * 32bit float depth component and 8bit stencil component.
-             * @requires_gl
              * @requires_gl30 Extension @extension{ARB,depth_buffer_float}
+             * @requires_gles30 (no extension providing this functionality)
              */
             Depth32FloatStencil8 = GL_DEPTH32F_STENCIL8
-            #endif
         };
 
         /**
@@ -502,14 +499,12 @@ class MAGNUM_EXPORT AbstractTexture {
          */
         class MAGNUM_EXPORT InternalFormat {
             public:
-                #ifndef MAGNUM_TARGET_GLES
                 /**
                  * @brief Constructor from component count and data type per component
                  *
-                 * @requires_gl
+                 * @requires_gles30 (no extension providing this functionality)
                  */
                 InternalFormat(Components components, ComponentType type);
-                #endif
 
                 /** @brief Constructor from named internal format */
                 inline constexpr InternalFormat(Format format): internalFormat(static_cast<GLint>(format)) {}
@@ -536,6 +531,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @brief Max supported anisotropy
          *
          * @see setMaxAnisotropy(), @fn_gl{Get} with @def_gl{MAX_TEXTURE_MAX_ANISOTROPY_EXT}
+         * @requires_gl
          * @requires_extension @extension{EXT,texture_filter_anisotropic}
          */
         static GLfloat maxSupportedAnisotropy();
@@ -632,6 +628,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * Default value is `1.0`, which means no anisotropy. Set to value
          * greater than `1.0` for anisotropic filtering.
          * @see maxSupportedAnisotropy(), bind(), @fn_gl{TexParameter} with @def_gl{TEXTURE_MAX_ANISOTROPY_EXT}
+         * @requires_gl
          * @requires_extension @extension{EXT,texture_filter_anisotropic}
          */
         inline AbstractTexture* setMaxAnisotropy(GLfloat anisotropy) {
@@ -675,11 +672,10 @@ class MAGNUM_EXPORT AbstractTexture {
 
 inline AbstractTexture::~AbstractTexture() { glDeleteTextures(1, &texture); }
 
-#ifndef MAGNUM_TARGET_GLES
 /** @relates AbstractTexture
 @brief Convertor of component count and data type to InternalFormat
 
-@requires_gl
+@requires_gles30 (no extension providing this functionality)
 */
 inline AbstractTexture::InternalFormat operator|(AbstractTexture::Components components, AbstractTexture::ComponentType type) {
     return AbstractTexture::InternalFormat(components, type);
@@ -691,7 +687,6 @@ inline AbstractTexture::InternalFormat operator|(AbstractTexture::Components com
 inline AbstractTexture::InternalFormat operator|(AbstractTexture::ComponentType type, AbstractTexture::Components components) {
     return AbstractTexture::InternalFormat(components, type);
 }
-#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES
@@ -743,19 +738,14 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
 };
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     enum class Target: GLenum {
-        #ifndef MAGNUM_TARGET_GLES
         Texture3D = GL_TEXTURE_3D,
         Texture2DArray = GL_TEXTURE_2D_ARRAY
-        #endif
     };
 
-    #ifndef MAGNUM_TARGET_GLES
     inline constexpr static Target target() { return Target::Texture3D; }
-    #endif
 
     static void setWrapping(GLenum target, const Math::Vector<3, Wrapping>& wrapping);
 
-    #ifndef MAGNUM_TARGET_GLES
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 3, void>::type set(GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image) {
         glTexImage3D(target, mipLevel, internalFormat, image->dimensions()[0], image->dimensions()[1], image->dimensions()[2], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
@@ -767,7 +757,6 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type setSub(GLenum target, GLint mipLevel, const Math::Vector<3, GLint>& offset, Image* image) {
         glTexSubImage3D(target, mipLevel, offset[0], offset[1], offset[2], image->dimensions()[0], image->dimensions()[1], 1, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
-    #endif
 };
 #endif
 
