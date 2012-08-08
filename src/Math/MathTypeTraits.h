@@ -115,12 +115,12 @@ template<class T> struct MathTypeTraitsFloatingPoint {
 
 template<size_t> struct MathTypeTraitsLong {};
 
-template<> struct MathTypeTraitsLong<8> {
+template<> struct MathTypeTraitsLong<sizeof(int)> {
     typedef unsigned int UnsignedType;
     typedef int Type;
 };
 
-template<> struct MathTypeTraitsLong<16> {
+template<> struct MathTypeTraitsLong<sizeof(long long)> {
     typedef unsigned long long UnsignedType;
     typedef long long Type;
 };
