@@ -52,7 +52,9 @@ void SwizzleTest::rgba() {
 void SwizzleTest::fromSmall() {
     /* Force compile-time evaluation for both */
     constexpr Vector2 orig(1, 2);
+    #ifndef MAGNUM_GCC45_COMPATIBILITY
     CORRADE_VERIFY((integral_constant<bool, swizzle(orig, "gxr").x() == 2>::value));
+    #endif
     CORRADE_COMPARE((swizzle<'g', 'x', 'r'>(orig)), Vector3(2, 1, 1));
 }
 
