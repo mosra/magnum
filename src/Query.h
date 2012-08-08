@@ -25,13 +25,12 @@
 
 namespace Magnum {
 
-#ifndef MAGNUM_TARGET_GLES
 /**
 @brief Base class for queries
 
 See Query, SampleQuery, TimeQuery documentation for more information.
 @todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
-@requires_gl
+@requires_gles30 (no extension providing this functionality)
 */
 class MAGNUM_EXPORT AbstractQuery {
     public:
@@ -66,6 +65,7 @@ class MAGNUM_EXPORT AbstractQuery {
          * Note that this function is blocking until the result is available.
          * See resultAvailable().
          * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT}
+         * @requires_gl Result type `GLint`, `GLuint64`, `GLint64`
          * @requires_gl33 Extension @extension{ARB,timer_query} (result type `GLuint64` and `GLint64`)
          */
         template<class T> T result();
@@ -78,9 +78,11 @@ class MAGNUM_EXPORT AbstractQuery {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> bool MAGNUM_EXPORT AbstractQuery::result<bool>();
 template<> GLuint MAGNUM_EXPORT AbstractQuery::result<GLuint>();
+#ifndef MAGNUM_TARGET_GLES
 template<> GLint MAGNUM_EXPORT AbstractQuery::result<GLint>();
 template<> GLuint64 MAGNUM_EXPORT AbstractQuery::result<GLuint64>();
 template<> GLint64 MAGNUM_EXPORT AbstractQuery::result<GLint64>();
+#endif
 #endif
 
 /**
@@ -102,28 +104,35 @@ if(!q.resultAvailable()) {
 // ...or block until the result is available
 GLuint primitiveCount = q.result<GLuint>();
 @endcode
-@requires_gl
 @requires_gl30 Extension @extension{EXT,transform_feedback}
+@requires_gles30 (no extension providing this functionality)
 */
 class MAGNUM_EXPORT Query: public AbstractQuery {
     public:
         /** @brief %Query target */
         enum Target: GLenum {
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Count of primitives generated from vertex shader or geometry
              * shader.
+             * @requires_gl
              */
             PrimitivesGenerated = GL_PRIMITIVES_GENERATED,
+            #endif
 
             /** Count of primitives written to transform feedback buffer. */
-            TransformFeedbackPrimitivesWritten = GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN,
+            TransformFeedbackPrimitivesWritten = GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN
+
+            #ifndef MAGNUM_TARGET_GLES
+            ,
 
             /**
              * Elapsed time
-             *
+             * @requires_gl
              * @requires_gl33 Extension @extension{ARB,timer_query}
              */
             TimeElapsed = GL_TIME_ELAPSED
+            #endif
         };
 
         inline Query(): target(nullptr) {}
@@ -184,26 +193,41 @@ q.beginConditionalRender(SampleQuery::ConditionalRenderMode::Wait);
 // render full version of the object only if the query returns nonzero result
 q.endConditionalRender();
 @endcode
-@requires_gl
+@requires_gles30 (no extension providing this functionality)
 */
 class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
     public:
         /** @brief %Query target */
         enum Target: GLenum {
-            /** Count of samples passed from fragment shader */
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Count of samples passed from fragment shader
+             * @requires_gl
+             */
             SamplesPassed = GL_SAMPLES_PASSED,
+            #endif
 
             /**
              * Whether any samples passed from fragment shader
-             *
              * @requires_gl33 Extension @extension{ARB,occlusion_query2}
              */
-            AnySamplesPassed = GL_ANY_SAMPLES_PASSED
+            AnySamplesPassed = GL_ANY_SAMPLES_PASSED,
+
+            /**
+             * Whether any samples passed from fragment shader (conservative)
+             *
+             * An implementation may choose a less precise version of the
+             * test at the expense of some false positives.
+             * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+             */
+            AnySamplesPassedConservative = GL_ANY_SAMPLES_PASSED_CONSERVATIVE
         };
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Conditional render mode
          *
+         * @requires_gl
          * @requires_gl30 Extension @extension{NV,conditional_render}
          */
         enum class ConditionalRenderMode: GLenum {
@@ -231,6 +255,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
              */
             ByRegionNoWait = GL_QUERY_BY_REGION_NO_WAIT
         };
+        #endif
 
         inline SampleQuery(): target(nullptr) {}
 
@@ -242,6 +267,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
         /** @copydoc Query::end() */
         void end();
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Begin conditional rendering based on result value
          *
@@ -261,11 +287,13 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
         inline void endConditionalRender() {
             glEndConditionalRender();
         }
+        #endif
 
     private:
         Target* target;
 };
 
+#ifndef MAGNUM_TARGET_GLES
 /**
 @brief %Query for elapsed time
 
@@ -310,7 +338,6 @@ class TimeQuery: public AbstractQuery {
             glQueryCounter(query, GL_TIMESTAMP);
         }
 };
-
 #endif
 
 }

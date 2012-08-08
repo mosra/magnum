@@ -17,7 +17,6 @@
 
 namespace Magnum {
 
-#ifndef MAGNUM_TARGET_GLES
 bool AbstractQuery::resultAvailable() {
     GLuint result;
     glGetQueryObjectuiv(query, GL_QUERY_RESULT_AVAILABLE, &result);
@@ -36,6 +35,7 @@ template<> GLuint AbstractQuery::result<GLuint>() {
     return result;
 }
 
+#ifndef MAGNUM_TARGET_GLES
 template<> GLint AbstractQuery::result<GLint>() {
     GLint result;
     glGetQueryObjectiv(query, GL_QUERY_RESULT, &result);
@@ -53,6 +53,7 @@ template<> GLint64 AbstractQuery::result<GLint64>() {
     glGetQueryObjecti64v(query, GL_QUERY_RESULT, &result);
     return result;
 }
+#endif
 
 void Query::begin(Query::Target target) {
     glBeginQuery(static_cast<GLenum>(target), query);
@@ -79,6 +80,5 @@ void SampleQuery::end() {
     delete target;
     target = nullptr;
 }
-#endif
 
 }
