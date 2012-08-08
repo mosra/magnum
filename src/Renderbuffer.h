@@ -98,10 +98,10 @@ class Renderbuffer {
             DepthStencil = GL_DEPTH_STENCIL,
             #endif
 
-            #ifdef MAGNUM_TARGET_GLES
             Depth16 = GL_DEPTH_COMPONENT16
-            #else
-            Depth16 = GL_DEPTH_COMPONENT16,
+
+            #ifndef MAGNUM_TARGET_GLES
+            ,
 
             Depth24 = GL_DEPTH_COMPONENT24,
             DepthFloat = GL_DEPTH_COMPONENT32F,
