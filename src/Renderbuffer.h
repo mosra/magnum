@@ -41,7 +41,7 @@ class Renderbuffer {
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @copydoc AbstractTexture::Components
+         * @copybrief AbstractTexture::Components
          *
          * Like AbstractTexture::Components, without three-component RGB.
          * @requires_gl
@@ -51,7 +51,7 @@ class Renderbuffer {
         };
 
         /**
-         * @copydoc AbstractTexture::ComponentType
+         * @copybrief AbstractTexture::ComponentType
          *
          * Like AbstractTexture::ComponentType, without normalized signed
          * types.
@@ -64,7 +64,7 @@ class Renderbuffer {
         #endif
 
         /**
-         * @copydoc AbstractTexture::Format
+         * @copybrief AbstractTexture::Format
          *
          * Like AbstractTexture::Format without
          * AbstractTexture::Format::RGB9Intensity5, three-component and
