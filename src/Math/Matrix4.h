@@ -75,8 +75,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
         static Matrix4<T> rotation(T angle, const Vector3<T>& vec) {
             Vector3<T> vn = vec.normalized();
 
-            T sine = sin(angle);
-            T cosine = cos(angle);
+            T sine = std::sin(angle);
+            T cosine = std::cos(angle);
             T oneMinusCosine = T(1) - cosine;
 
             T xx = vn.x()*vn.x();

@@ -64,7 +64,7 @@ Matrix4 Object::absoluteTransformation(Camera* camera) {
         /* We got to the scene, multiply with camera matrix */
         if(p->parent() == p) {
             if(camera) {
-                CORRADE_ASSERT(camera->scene() == scene(), "Object::absoluteTransformation(): the camera is not part of the same scene as object!", t)
+                CORRADE_ASSERT(camera->scene() == scene(), "Object::absoluteTransformation(): the camera is not part of the same scene as object!", t);
                 t = camera->cameraMatrix()*t;
             }
 
@@ -74,7 +74,7 @@ Matrix4 Object::absoluteTransformation(Camera* camera) {
         p = p->parent();
     }
 
-    CORRADE_ASSERT(p != nullptr || camera == nullptr, "Object::absoluteTransformation(): the object is not part of camera scene!", t)
+    CORRADE_ASSERT(p != nullptr || camera == nullptr, "Object::absoluteTransformation(): the object is not part of camera scene!", t);
 
     return t;
 }

@@ -37,10 +37,13 @@ VectorTest::VectorTest() {
              &VectorTest::dot,
              &VectorTest::multiplyDivide,
              &VectorTest::addSubstract,
+             &VectorTest::dotSelf,
              &VectorTest::length,
-             &VectorTest::lengthSquared,
              &VectorTest::normalized,
+             &VectorTest::sum,
              &VectorTest::product,
+             &VectorTest::min,
+             &VectorTest::max,
              &VectorTest::angle,
              &VectorTest::negative,
              &VectorTest::debug);
@@ -109,24 +112,43 @@ void VectorTest::addSubstract() {
     CORRADE_COMPARE(expected - b, a);
 }
 
-void VectorTest::length() {
-    CORRADE_COMPARE(Vector4(1.0f, 2.0f, 3.0f, 4.0f).length(), 5.4772256f);
+void VectorTest::dotSelf() {
+    CORRADE_COMPARE(Vector4(1.0f, 2.0f, 3.0f, 4.0f).dot(), 30.0f);
 }
 
-void VectorTest::lengthSquared() {
-    CORRADE_COMPARE(Vector4(1.0f, 2.0f, 3.0f, 4.0f).lengthSquared(), 30.0f);
+void VectorTest::length() {
+    CORRADE_COMPARE(Vector4(1.0f, 2.0f, 3.0f, 4.0f).length(), 5.4772256f);
 }
 
 void VectorTest::normalized() {
     CORRADE_COMPARE(Vector4(1.0f, 1.0f, 1.0f, 1.0f).normalized(), Vector4(0.5f, 0.5f, 0.5f, 0.5f));
 }
 
+void VectorTest::sum() {
+    CORRADE_COMPARE(Vector3(1.0f, 2.0f, 4.0f).sum(), 7.0f);
+}
+
 void VectorTest::product() {
     CORRADE_COMPARE(Vector3(1.0f, 2.0f, 3.0f).product(), 6.0f);
 }
 
+void VectorTest::min() {
+    CORRADE_COMPARE(Vector3(1.0f, -2.0f, 3.0f).min(), -2.0f);
+}
+
+void VectorTest::max() {
+    CORRADE_COMPARE(Vector3(1.0f, -2.0f, 3.0f).max(), 3.0f);
+}
+
 void VectorTest::angle() {
-    CORRADE_COMPARE(Vector3::angle({2.0f, 3.0f, 4.0f}, {1.0f, -2.0f, 3.0f}), rad(1.162514f));
+    ostringstream o;
+    Error::setOutput(&o);
+    /* Both vectors must be normalized, otherwise NaN is returned */
+    CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f}), numeric_limits<Vector3::Type>::quiet_NaN());
+    CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized!\n");
+    CORRADE_COMPARE(Vector3::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized()), numeric_limits<Vector3::Type>::quiet_NaN());
+
+    CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), Vector3(1.0f, -2.0f, 3.0f).normalized()), rad(1.162514f));
 }
 
 void VectorTest::negative() {

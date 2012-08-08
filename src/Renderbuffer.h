@@ -41,7 +41,7 @@ class Renderbuffer {
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @copydoc AbstractTexture::Components
+         * @copybrief AbstractTexture::Components
          *
          * Like AbstractTexture::Components, without three-component RGB.
          * @requires_gl
@@ -51,7 +51,7 @@ class Renderbuffer {
         };
 
         /**
-         * @copydoc AbstractTexture::ComponentType
+         * @copybrief AbstractTexture::ComponentType
          *
          * Like AbstractTexture::ComponentType, without normalized signed
          * types.
@@ -64,11 +64,11 @@ class Renderbuffer {
         #endif
 
         /**
-         * @copydoc AbstractTexture::Format
+         * @copybrief AbstractTexture::Format
          *
          * Like AbstractTexture::Format without
          * AbstractTexture::Format::RGB9Intensity5, three-component and
-         * compressed formats.
+         * compressed formats, but with added separate stencil index.
          */
         enum class Format: GLenum {
             #ifndef MAGNUM_TARGET_GLES
@@ -92,24 +92,65 @@ class Renderbuffer {
             RGB565 = GL_RGB565,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Depth component, at least 16bit.
+             *
+             * Prefer to use the exactly specified version of this format, in
+             * this case e.g. `Format::%Depth16`.
+             * @requires_gl Use exactly specified format <tt>Format::%Depth16</tt> instead.
+             */
             Depth = GL_DEPTH_COMPONENT,
 
-            #ifndef MAGNUM_TARGET_GLES
             DepthStencil = GL_DEPTH_STENCIL,
             #endif
 
-            #ifdef MAGNUM_TARGET_GLES
-            Depth16 = GL_DEPTH_COMPONENT16
-            #else
             Depth16 = GL_DEPTH_COMPONENT16,
 
+            #ifndef MAGNUM_TARGET_GLES
             Depth24 = GL_DEPTH_COMPONENT24,
             DepthFloat = GL_DEPTH_COMPONENT32F,
+
+            /**
+             * Stencil index (unspecified size).
+             *
+             * Prefer to use the exactly specified version of this format, in
+             * this case e.g. `Format::%Stencil8`.
+             * @requires_gl Use exactly specified format <tt>Format::%Stencil8</tt> instead.
+             */
+            Stencil = GL_STENCIL_INDEX,
+
+            /**
+             * 1-bit stencil index.
+             *
+             * @requires_gl Use <tt>Format::%Stencil8</tt> instead.
+             */
+            Stencil1 = GL_STENCIL_INDEX1,
+
+            /**
+             * 4-bit stencil index.
+             *
+             * @requires_gl Use <tt>Format::%Stencil8</tt> instead.
+             */
+            Stencil4 = GL_STENCIL_INDEX4,
+            #endif
+
+            /** 8-bit stencil index. */
+            Stencil8 = GL_STENCIL_INDEX8
+
+            #ifndef MAGNUM_TARGET_GLES
+            ,
+
+            /**
+             * 16-bit stencil index.
+             *
+             * @requires_gl Use <tt>Format::%Stencil8</tt> instead.
+             */
+            Stencil16 = GL_STENCIL_INDEX1,
+
             Depth24Stencil8 = GL_DEPTH24_STENCIL8,
             DepthFloatStencil8 = GL_DEPTH32F_STENCIL8
             #endif
-
-            /** @todo GL_STENCIL_INDEX1 - GL_STENCIL_INDEX16 (renderbuffer only) */
         };
 
         /** @copydoc AbstractTexture::InternalFormat */

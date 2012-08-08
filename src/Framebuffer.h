@@ -23,6 +23,7 @@
 
 #include "BufferedImage.h"
 #include "CubeMapTexture.h"
+#include "Color.h"
 #include "Image.h"
 #include "Renderbuffer.h"
 
@@ -192,7 +193,7 @@ class MAGNUM_EXPORT Framebuffer {
          *
          * Initial value is `{0.0f, 0.0f, 0.0f, 1.0f}`.
          */
-        inline static void setClearColor(const Vector4& color) {
+        inline static void setClearColor(const Color4<GLfloat>& color) {
             glClearColor(color.r(), color.g(), color.b(), color.a());
         }
 

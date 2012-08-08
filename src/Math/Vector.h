@@ -20,6 +20,7 @@
  */
 
 #include <cmath>
+#include <limits>
 #include <Utility/Debug.h>
 
 #include "MathTypeTraits.h"
@@ -42,6 +43,8 @@ namespace Implementation {
 
 /** @brief %Vector */
 template<size_t size, class T> class Vector {
+    static_assert(size != 0, "Vector cannot have zero elements");
+
     public:
         const static size_t Size = size;    /**< @brief %Vector size */
         typedef T Type;                     /**< @brief %Vector data type */
@@ -68,6 +71,7 @@ template<size_t size, class T> class Vector {
          * @f[
          * a \cdot b = \sum_{i=0}^{n-1} a_ib_i
          * @f]
+         * @see dot() const
          */
         static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
             T out(0);
@@ -79,16 +83,18 @@ template<size_t size, class T> class Vector {
         }
 
         /**
-         * @brief Angle between vectors
+         * @brief Angle between normalized vectors
          *
          * @f[
          * \phi = \frac{a \cdot b}{|a| \cdot |b|}
          * @f]
-         *
-         * @todo optimize - Assume the vectors are normalized?
+         * @attention If any of the parameters is not normalized (and
+         * assertions are enabled), returns NaN.
          */
         inline static T angle(const Vector<size, T>& a, const Vector<size, T>& b) {
-            return acos(dot(a, b)/(a.length()*b.length()));
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(a.dot(), T(1)) && MathTypeTraits<T>::equals(b.dot(), T(1)),
+                           "Math::Vector::angle(): vectors must be normalized!", std::numeric_limits<T>::quiet_NaN());
+            return std::acos(dot(a, b));
         }
 
         /** @brief Default constructor */
@@ -241,24 +247,26 @@ template<size_t size, class T> class Vector {
         }
 
         /**
-         * @brief %Vector length
+         * @brief Dot product of the vector
          *
-         * @see lengthSquared()
-         */
-        inline T length() const {
-            return sqrt(dot(*this, *this));
-        }
-
-        /**
-         * @brief %Vector length squared
-         *
-         * More efficient than length() for comparing vector length with
+         * Should be used instead of length() for comparing vector length with
          * other values, because it doesn't compute the square root, just the
          * dot product: @f$ a \cdot a < length \cdot length @f$ is faster
          * than @f$ \sqrt{a \cdot a} < length @f$.
+         *
+         * @see dot(const Vector<size, T>&, const Vector<size, T>&)
          */
-        inline T lengthSquared() const {
+        inline T dot() const {
             return dot(*this, *this);
+        }
+
+        /**
+         * @brief %Vector length
+         *
+         * @see dot() const
+         */
+        inline T length() const {
+            return std::sqrt(dot());
         }
 
         /** @brief Normalized vector (of length 1) */
@@ -266,12 +274,42 @@ template<size_t size, class T> class Vector {
             return *this/length();
         }
 
+        /** @brief Sum of values in the vector */
+        T sum() const {
+            T out(0);
+
+            for(size_t i = 0; i != size; ++i)
+                out += (*this)[i];
+
+            return out;
+        }
+
         /** @brief Product of values in the vector */
         T product() const {
-            T out = 1;
+            T out(1);
 
             for(size_t i = 0; i != size; ++i)
                 out *= (*this)[i];
+
+            return out;
+        }
+
+        /** @brief Minimal value in the vector */
+        T min() const {
+            T out((*this)[0]);
+
+            for(size_t i = 1; i != size; ++i)
+                out = std::min(out, (*this)[i]);
+
+            return out;
+        }
+
+        /** @brief Maximal value in the vector */
+        T max() const {
+            T out((*this)[0]);
+
+            for(size_t i = 1; i != size; ++i)
+                out = std::max(out, (*this)[i]);
 
             return out;
         }
@@ -286,7 +324,7 @@ template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utili
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
     for(size_t i = 0; i != size; ++i) {
         if(i != 0) debug << ", ";
-        debug << value[i];
+        debug << typename MathTypeTraits<T>::NumericType(value[i]);
     }
     debug << ')';
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);

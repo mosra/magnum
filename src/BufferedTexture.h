@@ -49,18 +49,27 @@ class BufferedTexture {
     public:
         /** @{ @name Internal buffered texture formats */
 
-        /** @copydoc Renderbuffer::Components */
+        /**
+         * @copybrief AbstractTexture::Components
+         *
+         * Like AbstractTexture::Components, without three-component RGB.
+         */
         enum class Components {
             Red, RedGreen, RGBA
         };
 
-        /** @copydoc Renderbuffer::ComponentType */
+        /**
+         * @copybrief AbstractTexture::ComponentType
+         *
+         * Like AbstractTexture::ComponentType, without normalized signed
+         * types.
+         */
         enum class ComponentType {
             UnsignedByte, Byte, UnsignedShort, Short, UnsignedInt, Int, Half,
             Float, NormalizedUnsignedByte, NormalizedUnsignedShort
         };
 
-        /** @copydoc AbstractTexture::Format */
+        /** @copybrief AbstractTexture::Format */
         enum class Format: GLenum {
             /**
              * Three-component RGB, float, each component 32bit, 96bit total.
@@ -89,7 +98,7 @@ class BufferedTexture {
         /** @copydoc AbstractTexture::InternalFormat */
         class MAGNUM_EXPORT InternalFormat {
             public:
-                /** @copydoc AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components, AbstractTexture::ComponentType) */
+                /** @copybrief AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components, AbstractTexture::ComponentType) */
                 InternalFormat(Components components, ComponentType type);
 
                 /** @copydoc AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Format) */

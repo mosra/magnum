@@ -49,26 +49,29 @@ template<class T> class Vector3: public Vector<3, T> {
                               a[0]*b[1]-a[1]*b[0]);
         }
 
+        /** @copydoc Vector::Vector() */
+        inline constexpr Vector3() {}
+
         /** @copydoc Vector::Vector(T) */
-        inline constexpr explicit Vector3(T value = T()): Vector<3, T>(value, value, value) {}
+        inline constexpr explicit Vector3(T value): Vector<3, T>(value, value, value) {}
 
         /** @copydoc Vector::Vector(const Vector&) */
         inline constexpr Vector3(const Vector<3, T>& other): Vector<3, T>(other) {}
 
         /**
          * @brief Constructor
-         * @param x     X / R value
-         * @param y     Y / G value
-         * @param z     Z / B value
+         * @param x     X value
+         * @param y     Y value
+         * @param z     Z value
          */
         inline constexpr Vector3(T x, T y, T z): Vector<3, T>(x, y, z) {}
 
         /**
          * @brief Constructor
-         * @param other     Two component vector
-         * @param z         Z / B value
+         * @param xy    Two component vector
+         * @param z     Z value
          */
-        inline constexpr Vector3(const Vector<2, T>& other, T z): Vector<3, T>(other[0], other[1], z) {}
+        inline constexpr Vector3(const Vector<2, T>& xy, T z): Vector<3, T>(xy[0], xy[1], z) {}
 
         inline constexpr T x() const { return (*this)[0]; } /**< @brief X component */
         inline constexpr T y() const { return (*this)[1]; } /**< @brief Y component */
@@ -85,14 +88,6 @@ template<class T> class Vector3: public Vector<3, T> {
          * @see swizzle()
          */
         inline constexpr Vector2<T> xy() const { return Vector2<T>::from(Vector<3, T>::data()); }
-
-        inline constexpr T r() const { return x(); }        /**< @brief R component */
-        inline constexpr T g() const { return x(); }        /**< @brief G component */
-        inline constexpr T b() const { return z(); }        /**< @brief B component */
-
-        inline void setR(T value) { setX(value); }          /**< @brief Set R component */
-        inline void setG(T value) { setY(value); }          /**< @brief Set G component */
-        inline void setB(T value) { setZ(value); }          /**< @brief Set B component */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector3, 3)
 };

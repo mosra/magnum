@@ -1,5 +1,5 @@
-#ifndef Magnum_Math_Test_VectorTest_h
-#define Magnum_Math_Test_VectorTest_h
+#ifndef Magnum_Test_ColorTest_h
+#define Magnum_Test_ColorTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -17,31 +17,28 @@
 
 #include <TestSuite/Tester.h>
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Test {
 
-class VectorTest: public Corrade::TestSuite::Tester<VectorTest> {
+class ColorTest: public Corrade::TestSuite::Tester<ColorTest> {
     public:
-        VectorTest();
+        ColorTest();
 
-        void construct();
-        void data();
-        void copy();
-        void dot();
-        void multiplyDivide();
-        void addSubstract();
-        void dotSelf();
-        void length();
-        void normalized();
-        void sum();
-        void product();
-        void min();
-        void max();
-        void angle();
-        void negative();
+        void fromDenormalized();
+        void fromNormalized();
 
-        void debug();
+        void fromHue();
+        void fromSaturation();
+        void fromValue();
+
+        void hue();
+        void saturation();
+        void value();
+
+        void hsv();
+        void hsvOverflow();
+        void hsvAlpha();
 };
 
-}}}
+}}
 
 #endif

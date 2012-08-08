@@ -20,7 +20,7 @@ using namespace std;
 namespace Magnum { namespace Primitives {
 
 UVSphere::UVSphere(unsigned int rings, unsigned int segments, TextureCoords textureCoords): Capsule(segments, textureCoords) {
-    CORRADE_ASSERT(rings >= 2 && segments >= 3, "UVSphere must have at least two rings and three segments", )
+    CORRADE_ASSERT(rings >= 2 && segments >= 3, "UVSphere must have at least two rings and three segments", );
 
     GLfloat textureCoordsVIncrement = 1.0f/rings;
     GLfloat ringAngleIncrement = Math::Constants<GLfloat>::pi()/rings;

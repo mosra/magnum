@@ -28,7 +28,7 @@ namespace Magnum {
 /** @ingroup rendering
 @brief Base class for shaders
 
-@section AbstractShaderProgramSubclassing Subclassing workflow
+@section AbstractShaderProgram-subclassing Subclassing workflow
 
 This class is designed to be used via subclassing. Subclasses define these
 functions and properties:
@@ -73,7 +73,7 @@ void setProjectionMatrixUniform(const Matrix4& matrix) {
 }
 @endcode
 
-@subsection AbstractShaderProgramAttributeLocation Binding attribute location
+@subsection AbstractShaderProgram-attribute-location Binding attribute location
 The preferred workflow is to specify attribute location for vertex shader
 input attributes and fragment shader output attributes explicitly in the
 shader code, e.g.:
@@ -82,8 +82,12 @@ layout(location = 0) in vec4 vertex;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 textureCoords;
 @endcode
-@requires_gl (for explicit attribute location instead of using
-    bindAttributeLocation())
+@requires_gl (for explicit input attribute location instead of using
+     bindAttributeLocation())
+@requires_gl (for explicit output attribute location or using
+    bindFragmentDataLocation())
+@requires_gl30 Extension @extension{EXT,gpu_shader4} (for using
+    bindFragmentDataLocation())
 @requires_gl33 Extension @extension{ARB,explicit_attrib_location} (for
     explicit attribute location instead of using bindAttributeLocation())
 
@@ -100,7 +104,7 @@ bindAttributeLocation(TextureCoords::Location, "textureCoords");
 // Link...
 @endcode
 
-@subsection AbstractShaderProgramTextureLayer Binding texture layer uniforms
+@subsection AbstractShaderProgram-texture-layer Binding texture layer uniforms
 The preferred workflow is to specify texture layers directly in the shader
 code, e.g.:
 @code
@@ -120,7 +124,7 @@ setUniform(uniformLocation("diffuseTexture"), DiffuseTextureLayer);
 setUniform(uniformLocation("specularTexture"), SpecularTextureLayer);
 @endcode
 
-@section AbstractShaderProgramRenderingWorkflow Rendering workflow
+@section AbstractShaderProgram-rendering-workflow Rendering workflow
 
 Basic workflow with %AbstractShaderProgram subclasses is: instancing the class
 (once at the beginning), then in Object::draw() reimplementation calling
@@ -238,7 +242,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *      before link().
          * @deprecated Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
-         *      @ref AbstractShaderProgramAttributeLocation "class documentation"
+         *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
          */
         void bindAttributeLocation(GLuint location, const std::string& name);
@@ -253,7 +257,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *      before link().
          * @deprecated Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
-         *      @ref AbstractShaderProgramAttributeLocation "class documentation"
+         *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
          * @requires_gl
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}

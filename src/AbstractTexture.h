@@ -20,6 +20,7 @@
  */
 
 #include "Magnum.h"
+#include "Color.h"
 
 namespace Magnum {
 
@@ -233,8 +234,6 @@ class MAGNUM_EXPORT AbstractTexture {
          *
          * For more information about default values for unused components and
          * normalization see enums Components and ComponentType.
-         * @todo ES2 - GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_ALPHA? They are
-         *      deprecated everywhere else.
          */
         enum class Format: GLenum {
             #ifndef MAGNUM_TARGET_GLES
@@ -345,10 +344,12 @@ class MAGNUM_EXPORT AbstractTexture {
              * Three-component RGB, unsigned normalized, red and blue 5bit,
              * green 6bit, 16bit total.
              */
-            RGB565 = GL_RGB565,
+            RGB565 = GL_RGB565
             #endif
 
             #ifndef MAGNUM_TARGET_GLES
+            ,
+
             /**
              * Three-component RGB, unsigned with exponent, each component
              * 9bit, exponent 5bit, 32bit total.
@@ -408,7 +409,6 @@ class MAGNUM_EXPORT AbstractTexture {
              * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
              */
             CompressedRtgcSignedRedGreen = GL_COMPRESSED_SIGNED_RG_RGTC2,
-            #endif
 
             #if defined(GL_COMPRESSED_RGBA_BPTC_UNORM) || defined(DOXYGEN_GENERATING_OUTPUT)
             /**
@@ -440,22 +440,30 @@ class MAGNUM_EXPORT AbstractTexture {
             CompressedBptcRGBUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
             #endif
 
-            /** Depth component. */
+            /**
+             * Depth component, at least 16bit.
+             *
+             * Prefer to use the exactly specified version of this format, in
+             * this case e.g. `Format::Depth16`.
+             * @requires_gl
+             */
             Depth = GL_DEPTH_COMPONENT,
 
-            #ifndef MAGNUM_TARGET_GLES
             /**
-             * Depth and stencil component.
+             * Depth and stencil component, at least 24bit depth and 8bit
+             * stencil.
+             *
+             * Prefer to use the exactly specified version of this format, in
+             * this case e.g. `Format::Depth24Stencil8`.
              * @requires_gl
              */
             DepthStencil = GL_DEPTH_STENCIL,
-            #endif
 
-            /** 16bit depth component. */
-            Depth16 = GL_DEPTH_COMPONENT16
-
-            #ifndef MAGNUM_TARGET_GLES
-            ,
+            /**
+             * 16bit depth component.
+             * @requires_gl
+             */
+            Depth16 = GL_DEPTH_COMPONENT16,
 
             /**
              * 24bit depth component.
@@ -611,7 +619,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * to `ClampToBorder`.
          * @requires_gl
          */
-        inline void setBorderColor(const Vector4& color) {
+        inline void setBorderColor(const Color4& color) {
             bind();
             glTexParameterfv(_target, GL_TEXTURE_BORDER_COLOR, color.data());
         }

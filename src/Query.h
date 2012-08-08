@@ -64,7 +64,7 @@ class MAGNUM_EXPORT AbstractQuery {
          * Note that this function is blocking until the result is available.
          * See resultAvailable().
          *
-         * @requires_gl33 Extension @extension{ARB,timer_query} (64bit integers)
+         * @requires_gl33 Extension @extension{ARB,timer_query} (result type `GLuint64` and `GLint64`)
          */
         template<class T> T result();
 
@@ -101,6 +101,7 @@ if(!q.resultAvailable()) {
 GLuint primitiveCount = q.result<GLuint>();
 @endcode
 @requires_gl
+@requires_gl30 Extension @extension{EXT,transform_feedback}
 */
 class MAGNUM_EXPORT Query: public AbstractQuery {
     public:
@@ -196,7 +197,11 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
             AnySamplesPassed = GL_ANY_SAMPLES_PASSED
         };
 
-        /** @brief Conditional render mode */
+        /**
+         * @brief Conditional render mode
+         *
+         * @requires_gl30 Extension @extension{NV,conditional_render}
+         */
         enum class ConditionalRenderMode: GLenum {
             /**
              * If query result is not yet available, waits for it and
@@ -233,12 +238,20 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
         /** @copydoc Query::end() */
         void end();
 
-        /** @brief Begin conditional rendering based on result value */
+        /**
+         * @brief Begin conditional rendering based on result value
+         *
+         * @requires_gl30 Extension @extension{NV,conditional_render}
+         */
         inline void beginConditionalRender(ConditionalRenderMode mode) {
             glBeginConditionalRender(query, static_cast<GLenum>(mode));
         }
 
-        /** @brief End conditional render */
+        /**
+         * @brief End conditional render
+         *
+         * @requires_gl30 Extension @extension{NV,conditional_render}
+         */
         inline void endConditionalRender() {
             glEndConditionalRender();
         }

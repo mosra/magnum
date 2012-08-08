@@ -53,7 +53,7 @@ class Interleave {
         }
 
         template<class ...T> void operator()(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const T&... attributes) {
-            CORRADE_ASSERT(mesh->isInterleaved(buffer), "MeshTools::interleave(): the buffer is not interleaved, nothing done", )
+            CORRADE_ASSERT(mesh->isInterleaved(buffer), "MeshTools::interleave(): the buffer is not interleaved, nothing done", );
 
             operator()(attributes...);
 
@@ -64,7 +64,7 @@ class Interleave {
         }
 
         template<class T, class ...U> inline static size_t attributeCount(const T& first, const U&... next) {
-            CORRADE_ASSERT(sizeof...(next) == 0 || attributeCount(next...) == first.size(), "MeshTools::interleave(): attribute arrays don't have the same length, nothing done.", 0)
+            CORRADE_ASSERT(sizeof...(next) == 0 || attributeCount(next...) == first.size(), "MeshTools::interleave(): attribute arrays don't have the same length, nothing done.", 0);
 
             return first.size();
         }

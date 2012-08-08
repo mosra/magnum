@@ -36,6 +36,8 @@ namespace Implementation {
  * @todo first col, then row (cache adjacency)
  */
 template<size_t size, class T> class Matrix {
+    static_assert(size != 0, "Matrix cannot have zero elements");
+
     friend class Matrix<size+1, T>; /* for ij() */
 
     public:
@@ -264,7 +266,7 @@ template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utili
         if(row != 0) debug << ",\n       ";
         for(size_t col = 0; col != size; ++col) {
             if(col != 0) debug << ", ";
-            debug << value[col][row];
+            debug << typename MathTypeTraits<T>::NumericType(value[col][row]);
         }
     }
     debug << ')';

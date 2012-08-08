@@ -16,6 +16,9 @@
 */
 
 #include <cstddef>
+#include <cmath>
+#include <type_traits>
+#include <limits>
 
 #include "magnumCompatibility.h"
 #include "magnumVisibility.h"
@@ -85,6 +88,43 @@ template<size_t exponent, class T> inline constexpr T pow(T base) {
  * Returns integral logarithm of given number with given base.
  */
 size_t MAGNUM_EXPORT log(size_t base, size_t number);
+
+/**
+@brief Normalize floating-point value
+
+Converts integral value from full range of given (signed/unsigned) integral
+type to value in range @f$ [0, 1] @f$.
+
+@attention To ensure the integral type is correctly detected when using
+literals, this function should be called with both template parameters
+explicit, e.g.:
+@code
+// Even if this is char literal, integral type is `int`, thus a = 0.1f
+float a = normalize<float>('\127');
+
+// b = 1.0f
+float b = normalize<float, char>('\127');
+@endcode
+*/
+template<class FloatingPoint, class Integral> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value, FloatingPoint>::type normalize(Integral value) {
+    return (FloatingPoint(value)-FloatingPoint(std::numeric_limits<Integral>::min()))/
+        (FloatingPoint(std::numeric_limits<Integral>::max()) - FloatingPoint(std::numeric_limits<Integral>::min()));
+}
+
+/**
+@brief Denormalize floating-point value
+
+Converts floating-point value in range @f$ [0, 1] @f$ to full range of given
+integral type.
+
+@note For best precision, `FloatingPoint` type should be always larger that
+resulting `Integral` type (e.g. `double` to `int`, `long double` to `long long`).
+*/
+template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value, Integral>::type denormalize(FloatingPoint value) {
+    return             std::numeric_limits<Integral>::min() +
+        round(FloatingPoint(value*std::numeric_limits<Integral>::max()) -
+        FloatingPoint(value*std::numeric_limits<Integral>::min()));
+}
 
 /**
  * @brief Angle in degrees

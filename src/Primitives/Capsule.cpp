@@ -20,7 +20,7 @@ using namespace std;
 namespace Magnum { namespace Primitives {
 
 Capsule::Capsule(unsigned int rings, unsigned int segments, GLfloat length, TextureCoords textureCoords): MeshData("", Mesh::Primitive::Triangles, new vector<unsigned int>, {new vector<Vector4>()}, {new vector<Vector3>()}, textureCoords == TextureCoords::Generate ? vector<vector<Vector2>*>{new vector<Vector2>()} : vector<vector<Vector2>*>()), segments(segments), textureCoords(textureCoords) {
-    CORRADE_ASSERT(rings >= 1 && segments >= 3, "Capsule must have at least one ring and three segments", )
+    CORRADE_ASSERT(rings >= 1 && segments >= 3, "Capsule must have at least one ring and three segments", );
 
     GLfloat height = 2.0f+length;
     GLfloat textureCoordsVIncrement = 1.0f/(rings*height);
