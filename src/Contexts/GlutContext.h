@@ -123,11 +123,13 @@ class GlutContext: public AbstractContext {
 
     protected:
         /**
-         * @brief Key event
+         * @brief Key press event
+         * @param key       Key pressed
+         * @param position  Cursor position
          *
          * Called when an key is pressed. Default implementation does nothing.
          */
-        virtual void keyEvent(Key key, const Math::Vector2<int>& position);
+        virtual void keyPressEvent(Key key, const Math::Vector2<int>& position);
 
         /*@}*/
 
@@ -141,12 +143,6 @@ class GlutContext: public AbstractContext {
             Right = GLUT_RIGHT_BUTTON,      /**< Right button */
             WheelUp = 3,                    /**< Wheel up */
             WheelDown = 4                   /**< Wheel down */
-        };
-
-        /** @brief Mouse state */
-        enum class MouseState: int {
-            Up = GLUT_UP,                   /**< No button pressed */
-            Down = GLUT_DOWN                /**< Button pressed */
         };
 
         /** @brief Mouse cursor */
@@ -177,12 +173,20 @@ class GlutContext: public AbstractContext {
 
     protected:
         /**
-         * @brief Mouse event
+         * @brief Mouse press event
          *
-         * Called when mouse button is pressed or released. Default
-         * implementation does nothing.
+         * Called when mouse button is pressed. Default implementation does
+         * nothing.
          */
-        virtual void mouseEvent(MouseButton button, MouseState state, const Math::Vector2<int>& position);
+        virtual void mousePressEvent(MouseButton button, const Math::Vector2<int>& position);
+
+        /**
+         * @brief Mouse release event
+         *
+         * Called when mouse button is released. Default implementation does
+         * nothing.
+         */
+        virtual void mouseReleaseEvent(MouseButton button, const Math::Vector2<int>& position);
 
         /**
          * @brief Mouse motion event
@@ -202,11 +206,14 @@ class GlutContext: public AbstractContext {
         }
 
         inline static void staticKeyEvent(int key, int x, int y) {
-            instance->keyEvent(static_cast<Key>(key), {x, y});
+            instance->keyPressEvent(static_cast<Key>(key), {x, y});
         }
 
         inline static void staticMouseEvent(int button, int state, int x, int y) {
-            instance->mouseEvent(static_cast<MouseButton>(button), static_cast<MouseState>(state), {x, y});
+            if(state == GLUT_DOWN)
+                instance->mousePressEvent(static_cast<MouseButton>(button), {x, y});
+            else
+                instance->mouseReleaseEvent(static_cast<MouseButton>(button), {x, y});
         }
 
         inline static void staticMouseMotionEvent(int x, int y) {
@@ -224,8 +231,9 @@ class GlutContext: public AbstractContext {
 };
 
 /* Implementations for inline functions with unused parameters */
-inline void GlutContext::keyEvent(GlutContext::Key, const Math::Vector2<int>&) {}
-inline void GlutContext::mouseEvent(GlutContext::MouseButton, GlutContext::MouseState, const Math::Vector2<int>&) {}
+inline void GlutContext::keyPressEvent(GlutContext::Key, const Math::Vector2<int>&) {}
+inline void GlutContext::mousePressEvent(GlutContext::MouseButton, const Math::Vector2<int>&) {}
+inline void GlutContext::mouseReleaseEvent(GlutContext::MouseButton, const Math::Vector2<int>&) {}
 inline void GlutContext::mouseMotionEvent(const Math::Vector2<int>&) {}
 
 }}

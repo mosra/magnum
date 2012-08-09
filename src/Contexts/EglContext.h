@@ -74,6 +74,9 @@ class EglContext: public AbstractContext {
         /** @copydoc GlutContext::swapBuffers() */
         inline void swapBuffers() { eglSwapBuffers(display, surface); }
 
+        /** @todo implement */
+        inline void redraw() {}
+
         /*@}*/
 
         /** @{ @name Keyboard handling */
