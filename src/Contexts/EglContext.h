@@ -38,7 +38,7 @@ namespace Magnum { namespace Contexts {
 /**
 @brief X/EGL context
 
-Currently only barebone implementation with no event handling.
+Supports keyboard and mouse handling.
 */
 class EglContext: public AbstractContext {
     public:
@@ -73,6 +73,9 @@ class EglContext: public AbstractContext {
 
         /** @copydoc GlutContext::swapBuffers() */
         inline void swapBuffers() { eglSwapBuffers(display, surface); }
+
+        /** @todo implement */
+        inline void redraw() {}
 
         /*@}*/
 
@@ -172,6 +175,7 @@ class EglContext: public AbstractContext {
         /*@}*/
 
         /** @{ @name Mouse handling */
+
     public:
         /** @brief Mouse button */
         enum class MouseButton: unsigned int {
@@ -198,6 +202,8 @@ class EglContext: public AbstractContext {
          * nothing.
          */
         virtual void mouseReleaseEvent(MouseButton button, const Math::Vector2<int>& position);
+
+        /*@}*/
 
     private:
         Display* xDisplay;

@@ -327,19 +327,23 @@ class MAGNUM_EXPORT AbstractTexture {
              * Four-component RGBA, unsigned normalized, each component 4bit,
              * 16bit total.
              */
-            RGBA4 = GL_RGBA4,
+            RGBA4 = GL_RGBA4
 
             #ifndef MAGNUM_TARGET_GLES
+            ,
+
             /**
              * Three-component RGB, float, red and green 11bit, blue 10bit,
              * 32bit total.
              * @requires_gl
              * @requires_gl30 Extension @extension{EXT,packed_float}
              */
-            RG11B10Float = GL_R11F_G11F_B10F,
+            RG11B10Float = GL_R11F_G11F_B10F
             #endif
 
             #if defined(GL_RGB565) || defined(DOXYGEN_GENERATING_OUTPUT)
+            ,
+
             /**
              * Three-component RGB, unsigned normalized, red and blue 5bit,
              * green 6bit, 16bit total.
@@ -619,7 +623,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * to `ClampToBorder`.
          * @requires_gl
          */
-        inline void setBorderColor(const Color4& color) {
+        inline void setBorderColor(const Color4<GLfloat>& color) {
             bind();
             glTexParameterfv(_target, GL_TEXTURE_BORDER_COLOR, color.data());
         }
