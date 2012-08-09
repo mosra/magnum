@@ -20,10 +20,10 @@
  */
 
 #include "Magnum.h"
-#include <SDL.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_scancode.h>
 
 #include "AbstractContext.h"
-#include <SDL2/SDL_scancode.h>
 
 namespace Magnum { namespace Contexts {
 
