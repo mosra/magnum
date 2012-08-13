@@ -204,8 +204,8 @@ class MAGNUM_EXPORT Framebuffer {
          * @see setStencilFunction()
          */
         enum class StencilFunction: GLenum {
-            Never = GL_NEVER,           /**< Never pass stencil test. */
-            Always = GL_ALWAYS,         /**< Always pass stencil test. */
+            Never = GL_NEVER,           /**< Never pass the test. */
+            Always = GL_ALWAYS,         /**< Always pass the test. */
             Less = GL_LESS,             /**< Pass when reference value is less than buffer value. */
             LessOrEqual = GL_LEQUAL,    /**< Pass when reference value is less than or equal to buffer value. */
             Equal = GL_EQUAL,           /**< Pass when reference value is equal to buffer value. */
@@ -310,6 +310,27 @@ class MAGNUM_EXPORT Framebuffer {
          */
         inline static void setStencilOperation(StencilOperation stencilFail, StencilOperation depthFail, StencilOperation depthPass) {
             glStencilOp(static_cast<GLenum>(stencilFail), static_cast<GLenum>(depthFail), static_cast<GLenum>(depthPass));
+        }
+
+        /*@}*/
+
+        /** @{ @name Depth testing */
+
+        /**
+         * @brief Depth function
+         *
+         * @see setDepthFunction()
+         */
+        typedef StencilFunction DepthFunction;
+
+        /**
+         * @brief Set depth function
+         *
+         * Initial value is `DepthFunction::Less`.
+         * @attention You have to enable depth test with setFeature() first.
+         */
+        inline static void setDepthFunction(DepthFunction function) {
+            glDepthFunc(static_cast<GLenum>(function));
         }
 
         /*@}*/
