@@ -50,6 +50,11 @@ void AbstractShaderProgram::bindFragmentDataLocation(GLuint location, const std:
 
     glBindFragDataLocation(program, location, name.c_str());
 }
+void AbstractShaderProgram::bindFragmentDataLocationIndexed(GLuint location, GLuint index, const std::string& name) {
+    CORRADE_ASSERT(state == Initialized, "AbstractShaderProgram: fragment data location cannot be bound after linking.", );
+
+    glBindFragDataLocationIndexed(program, location, index, name.c_str());
+}
 #endif
 
 void AbstractShaderProgram::link() {
