@@ -104,6 +104,8 @@ float a = normalize<float>('\127');
 // b = 1.0f
 float b = normalize<float, char>('\127');
 @endcode
+
+@todo Signed normalization to [-1.0, 1.0] like in OpenGL?
 */
 template<class FloatingPoint, class Integral> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value, FloatingPoint>::type normalize(Integral value) {
     return (FloatingPoint(value)-FloatingPoint(std::numeric_limits<Integral>::min()))/
@@ -118,6 +120,8 @@ integral type.
 
 @note For best precision, `FloatingPoint` type should be always larger that
 resulting `Integral` type (e.g. `double` to `int`, `long double` to `long long`).
+
+@todo Signed normalization to [-1.0, 1.0] like in OpenGL?
 */
 template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value, Integral>::type denormalize(FloatingPoint value) {
     return             std::numeric_limits<Integral>::min() +

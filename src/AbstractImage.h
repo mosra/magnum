@@ -44,6 +44,7 @@ class MAGNUM_EXPORT AbstractImage {
          */
 
         /** @brief Color components */
+        /** @todo Support *_INTEGER types */
         enum class Components: GLenum {
             #ifndef MAGNUM_TARGET_GLES
             /**

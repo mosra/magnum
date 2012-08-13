@@ -140,6 +140,8 @@ is always in range in range @f$ [0.0, 360.0] @f$, saturation and value in
 range @f$ [0.0, 1.0] @f$.
 
 @see Color4
+
+@todo Signed normalization to [-1.0, 1.0] like in OpenGL?
 */
 template<class T> class Color3: public Math::Vector3<T> {
     public:
