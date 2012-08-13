@@ -111,6 +111,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @brief Clear specified buffers in framebuffer
          *
          * @see clear()
+         * @todo Clearing only given draw buffer
          */
         inline static void clear(ClearMask mask) { glClear(static_cast<GLbitfield>(mask)); }
 
