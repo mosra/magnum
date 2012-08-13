@@ -28,7 +28,7 @@ class VectorTest: public Corrade::TestSuite::Tester<VectorTest> {
         void copy();
         void dot();
         void multiplyDivide();
-        void addSubstract();
+        void addSubtract();
         void dotSelf();
         void length();
         void normalized();

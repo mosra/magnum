@@ -218,13 +218,13 @@ template<size_t size, class T> class Vector {
             return *this;
         }
 
-        /** @brief Substract two vectors */
+        /** @brief Subtract two vectors */
         inline Vector<size, T> operator-(const Vector<size, T>& other) const {
             return Vector<size, T>(*this)-=other;
         }
 
         /**
-         * @brief Substract and assign vector
+         * @brief Subtract and assign vector
          *
          * More efficient than operator-(), because it does the computation
          * in-place.

@@ -36,7 +36,7 @@ VectorTest::VectorTest() {
              &VectorTest::copy,
              &VectorTest::dot,
              &VectorTest::multiplyDivide,
-             &VectorTest::addSubstract,
+             &VectorTest::addSubtract,
              &VectorTest::dotSelf,
              &VectorTest::length,
              &VectorTest::normalized,
@@ -103,7 +103,7 @@ void VectorTest::multiplyDivide() {
     CORRADE_COMPARE(multipliedChar/-1.5f, vecChar);
 }
 
-void VectorTest::addSubstract() {
+void VectorTest::addSubtract() {
     Vector4 a(0.5f, -7.5f, 9.0f, -11.0f);
     Vector4 b(-0.5, 1.0f, 0.0f, 7.5f);
     Vector4 expected(0.0f, -6.5f, 9.0f, -3.5f);

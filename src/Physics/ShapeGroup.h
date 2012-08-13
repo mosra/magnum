@@ -31,7 +31,7 @@ namespace Magnum { namespace Physics {
 /**
 @brief Collider group with defined set operation
 
-Result of union, intersection, substraction or XOR of two collider objects.
+Result of union, intersection, subtraction or XOR of two collider objects.
 See @ref collision-detection for brief introduction.
 */
 class PHYSICS_EXPORT ShapeGroup: public AbstractShape {

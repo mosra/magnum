@@ -15,7 +15,7 @@ Minimal set of tools and libraries required for building is:
   which are tested to support everything needed: **GCC** >= 4.6 and **Clang**
   >= 3.1.
 - **CMake** >= 2.8.8 (needed for `OBJECT` library target)
-- **OpenGL** headers, on Linux most probably shipped with Mesa or
+- **OpenGL** headers, on Linux most probably shipped with Mesa, or
   **OpenGL ES 2** headers, if targeting OpenGL ES (see below).
 - **GLEW** - OpenGL extension wrangler
 - **Corrade** - Plugin management and utility library. You can get it at
