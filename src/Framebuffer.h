@@ -183,23 +183,144 @@ class MAGNUM_EXPORT Framebuffer {
 
         /*@}*/
 
-        /** @{ @name Masking writes */
+        /** @{ @name Stencil operations */
 
         /**
-         * @brief Affected face for stencil mask
+         * @brief Affected polygon facing for stencil operations and masks
          *
-         * @see setStencilMask(StencilMaskFace, GLuint)
+         * @see setStencilFunction(PolygonFacing, StencilFunction, GLint, GLuint),
+         *      setStencilOperation(PolygonFacing, StencilOperation, StencilOperation, StencilOperation),
+         *      setStencilMask(PolygonFacing, GLuint)
          */
-        enum class StencilMaskFace: GLenum {
+        enum class PolygonFacing: GLenum {
             Front = GL_FRONT,                   /**< Front-facing polygons */
             Back = GL_BACK,                     /**< Back-facing polygons */
             FrontAndBack = GL_FRONT_AND_BACK    /**< Front- and back-facing polygons */
         };
 
         /**
+         * @brief Stencil function
+         *
+         * @see setStencilFunction()
+         */
+        enum class StencilFunction: GLenum {
+            Never = GL_NEVER,           /**< Never pass stencil test. */
+            Always = GL_ALWAYS,         /**< Always pass stencil test. */
+            Less = GL_LESS,             /**< Pass when reference value is less than buffer value. */
+            LessOrEqual = GL_LEQUAL,    /**< Pass when reference value is less than or equal to buffer value. */
+            Equal = GL_EQUAL,           /**< Pass when reference value is equal to buffer value. */
+            NotEqual = GL_NOTEQUAL,     /**< Pass when reference value is not equal to buffer value. */
+            GreaterOrEqual = GL_GEQUAL, /**< Pass when reference value is greater than or equal to buffer value. */
+            Greater = GL_GREATER        /**< Pass when reference value is greater than buffer value. */
+        };
+
+        /**
+         * @brief Stencil operation
+         *
+         * @see setStencilOperation()
+         */
+        enum class StencilOperation: GLenum {
+            Keep = GL_KEEP, /**< Keep the current value. */
+            Zero = GL_ZERO, /**< Set the stencil buffer value to `0`. */
+
+            /**
+             * Set the stencil value to reference value specified by
+             * setStencilFunction().
+             */
+            Replace = GL_REPLACE,
+
+            /**
+             * Increment the current stencil buffer value, clamp to maximum
+             * possible value on overflow.
+             */
+            Increment = GL_INCR,
+
+            /**
+             * Increment the current stencil buffer value, wrap to zero on
+             * overflow.
+             */
+            IncrementWrap = GL_INCR_WRAP,
+
+            /**
+             * Increment the current stencil buffer value, clamp to minimum
+             * possible value on underflow.
+             */
+            Decrement = GL_DECR,
+
+            /**
+             * Decrement the current stencil buffer value, wrap to maximum
+             * possible value on underflow.
+             */
+            DecrementWrap = GL_DECR_WRAP,
+
+            /**
+             * Bitwise invert the current stencil buffer value.
+             */
+            Invert = GL_INVERT
+        };
+
+        /**
+         * @brief Set stencil function
+         * @param facing            Affected polygon facing
+         * @param function          Stencil function. Initial value is
+         *      `StencilFunction::Always`.
+         * @param referenceValue    Reference value. Initial value is `0`.
+         * @param mask              Mask for both reference and buffer value.
+         *      Initial value is all `1`s.
+         *
+         * @attention You have to enable stencil test with setFeature() first.
+         * @see setStencilFunction(StencilFunction, GLint, GLuint)
+         */
+        inline static void setStencilFunction(PolygonFacing facing, StencilFunction function, GLint referenceValue, GLuint mask) {
+            glStencilFuncSeparate(static_cast<GLenum>(facing), static_cast<GLenum>(function), referenceValue, mask);
+        }
+
+        /**
+         * @brief Set stencil function
+         *
+         * The same as setStencilFunction(PolygonFacing, StencilFunction, GLint, GLuint)
+         * with `facing` set to `PolygonFacing::FrontAndBack`.
+         */
+        inline static void setStencilFunction(StencilFunction function, GLint referenceValue, GLuint mask) {
+            glStencilFunc(static_cast<GLenum>(function), referenceValue, mask);
+        }
+
+        /**
+         * @brief Set stencil operation
+         * @param facing            Affected polygon facing
+         * @param stencilFail       Action when stencil test fails
+         * @param depthFail         Action when stencil test passes, but depth
+         *      test fails
+         * @param depthPass         Action when both stencil and depth test
+         *      pass
+         *
+         * Initial value for all fields is `StencilOperation::Keep`.
+         * @attention You have to enable stencil test with setFeature() first.
+         * @see setStencilOperation(StencilOperation, StencilOperation, StencilOperation)
+         */
+        inline static void setStencilOperation(PolygonFacing facing, StencilOperation stencilFail, StencilOperation depthFail, StencilOperation depthPass) {
+            glStencilOpSeparate(static_cast<GLenum>(facing), static_cast<GLenum>(stencilFail), static_cast<GLenum>(depthFail), static_cast<GLenum>(depthPass));
+        }
+
+        /**
+         * @brief Set stencil operation
+         *
+         * The same as setStencilOperation(PolygonFacing, StencilOperation, StencilOperation, StencilOperation)
+         * with `facing` set to `PolygonFacing::FrontAndBack`.
+         */
+        inline static void setStencilOperation(StencilOperation stencilFail, StencilOperation depthFail, StencilOperation depthPass) {
+            glStencilOp(static_cast<GLenum>(stencilFail), static_cast<GLenum>(depthFail), static_cast<GLenum>(depthPass));
+        }
+
+        /*@}*/
+
+        /** @{ @name Masking writes */
+
+        /**
          * @brief Mask color writes
          *
-         * Set to `false` to disallow writing to given color channel.
+         * Set to `false` to disallow writing to given color channel. Initial
+         * values are all `true`.
          * @todo Masking only given draw buffer
          */
         inline static void setColorMask(GLboolean allowRed, GLboolean allowGreen, GLboolean allowBlue, GLboolean allowAlpha) {
@@ -209,7 +330,8 @@ class MAGNUM_EXPORT Framebuffer {
         /**
          * @brief Mask depth writes
          *
-         * Set to `false` to disallow writing to depth buffer.
+         * Set to `false` to disallow writing to depth buffer. Initial value
+         * is `true`.
          */
         inline static void setDepthMask(GLboolean allow) {
             glDepthMask(allow);
@@ -218,22 +340,22 @@ class MAGNUM_EXPORT Framebuffer {
         /**
          * @brief Mask stencil writes
          *
-         * Set given bit to `0` to disallow writing stencil value to it.
-         * @see setStencilMask(StencilMaskFace, GLuint)
+         * Set given bit to `0` to disallow writing stencil value for given
+         * faces to it. Initial value is all `1`s.
+         * @see setStencilMask(GLuint)
          */
-        inline static void setStencilMask(GLuint allowBits) {
-            glStencilMask(allowBits);
+        inline static void setStencilMask(PolygonFacing facing, GLuint allowBits) {
+            glStencilMaskSeparate(static_cast<GLenum>(facing), allowBits);
         }
 
         /**
          * @brief Mask stencil writes
          *
-         * Set given bit to `0` to disallow writing stencil value for given
-         * faces to it.
-         * @see setStencilMask(GLuint)
+         * The same as setStencilMask(PolygonFacing, GLuint) with `facing` set
+         * to `PolygonFacing::FrontAndBack`.
          */
-        inline static void setStencilMask(StencilMaskFace face, GLuint allowBits) {
-            glStencilMaskSeparate(static_cast<GLenum>(face), allowBits);
+        inline static void setStencilMask(GLuint allowBits) {
+            glStencilMask(allowBits);
         }
 
         /*@}*/
