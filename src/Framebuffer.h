@@ -51,7 +51,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @see setFeature()
          */
         enum class Feature: GLenum {
-            AlphaBlending = GL_BLEND,       /**< Alpha blending */
+            Blending = GL_BLEND,            /**< Blending */
 
             #ifndef MAGNUM_TARGET_GLES
             /**
