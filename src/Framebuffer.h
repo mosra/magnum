@@ -30,10 +30,12 @@
 namespace Magnum {
 
 /** @ingroup textures
+@nosubgrouping
 @brief %Framebuffer
 
 Provides operations with framebuffers (configuring, clearing, blitting...) and
 creation and attaching of named framebuffers.
+@todo @extension{ARB,viewport_array}
 */
 class MAGNUM_EXPORT Framebuffer {
     Framebuffer(const Framebuffer& other) = delete;
@@ -66,6 +68,11 @@ class MAGNUM_EXPORT Framebuffer {
             DepthClamp = GL_DEPTH_CLAMP,
             #endif
 
+            /**
+             * Scissor test
+             * @see setScissor()
+             */
+            ScissorTest = GL_SCISSOR_TEST,
             DepthTest = GL_DEPTH_TEST,      /**< Depth test */
             StencilTest = GL_STENCIL_TEST,  /**< Stencil test */
             Dithering = GL_DITHER,          /**< Dithering (enabled by default) */
@@ -154,6 +161,22 @@ class MAGNUM_EXPORT Framebuffer {
 
         /*@}*/
 
+        /** @{ @name Scissor operations */
+
+        /**
+         * @brief Set scissor rectangle
+         * @param bottomLeft    Bottom left corner. Initial value is `(0, 0)`.
+         * @param size          Scissor rectangle size. Initial value is
+         *      size of the window when the context is first attached to a
+         *      window.
+         * @attention You have to enable scissoring with setFeature() first.
+         */
+        inline static void setScissor(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLsizei>& size) {
+            glScissor(bottomLeft.x(), bottomLeft.y(), size.x(), size.y());
+        }
+
+        /*@}*/
+
         /** @{ @name Masking writes */
 
         /**
@@ -210,6 +233,7 @@ class MAGNUM_EXPORT Framebuffer {
         /*@}*/
 
         /** @{ @name Blending
+         * You have to enable blending with setFeature() first.
          * @todo Blending for given draw buffer
          */
 
