@@ -122,12 +122,14 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * Red component only. Green and blue are set to `0`, alpha is set
              * to `1`.
+             * @requires_gl30 Extension @extension{ARB,texture_rg}
              */
             Red,
 
             /**
              * Red and green component. Blue is set to `0`, alpha is set to
              * `1`.
+             * @requires_gl30 Extension @extension{ARB,texture_rg}
              */
             RedGreen,
 
@@ -241,7 +243,7 @@ class MAGNUM_EXPORT AbstractTexture {
              * One-component (red channel), unsigned normalized, probably
              * 8bit.
              * @requires_gl
-             * @requires_gl30 (no extension providing this functionality)
+             * @requires_gl30 Extension @extension{ARB,texture_rg}
              */
             Red = GL_RED,
 
@@ -249,7 +251,7 @@ class MAGNUM_EXPORT AbstractTexture {
              * Two-component (red and green channel), unsigned normalized,
              * each component probably 8bit, 16bit total.
              * @requires_gl
-             * @requires_gl30 (no extension providing this functionality)
+             * @requires_gl30 Extension @extension{ARB,texture_rg}
              */
             RedGreen = GL_RG,
             #endif
@@ -365,12 +367,14 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * Compressed red channel, unsigned normalized.
              * @requires_gl
+             * @requires_gl30 Extension @extension{ARB,texture_rg}
              */
             CompressedRed = GL_COMPRESSED_RED,
 
             /**
              * Compressed red and green channel, unsigned normalized.
              * @requires_gl
+             * @requires_gl30 Extension @extension{ARB,texture_rg}
              */
             CompressedRedGreen = GL_COMPRESSED_RG,
 
