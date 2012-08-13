@@ -50,14 +50,14 @@ template<class T> struct Constants {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> struct Constants<double> {
-    static inline constexpr double pi() { return 3.14159265359; }
-    static inline constexpr double sqrt2() { return 1.41421356237; }
-    static inline constexpr double sqrt3() { return 1.73205080757; }
+    static inline constexpr double pi()    { return 3.141592653589793; }
+    static inline constexpr double sqrt2() { return 1.414213562373095; }
+    static inline constexpr double sqrt3() { return 1.732050807568877; }
 };
 template<> struct Constants<float> {
-    static inline constexpr float pi() { return 3.14159265359f; }
-    static inline constexpr float sqrt2() { return 1.41421356237f; }
-    static inline constexpr float sqrt3() { return 1.73205080757f; }
+    static inline constexpr float pi()    { return 3.141592654f; }
+    static inline constexpr float sqrt2() { return 1.414213562f; }
+    static inline constexpr float sqrt3() { return 1.732050808f; }
 };
 
 namespace Implementation {
