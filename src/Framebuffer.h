@@ -150,6 +150,59 @@ class MAGNUM_EXPORT Framebuffer {
 
         /*@}*/
 
+        /** @{ @name Masking writes */
+
+        /**
+         * @brief Affected face for stencil mask
+         *
+         * @see setStencilMask(StencilMaskFace, GLuint)
+         */
+        enum class StencilMaskFace: GLenum {
+            Front = GL_FRONT,                   /**< Front-facing polygons */
+            Back = GL_BACK,                     /**< Back-facing polygons */
+            FrontAndBack = GL_FRONT_AND_BACK    /**< Front- and back-facing polygons */
+        };
+
+        /**
+         * @brief Mask color writes
+         *
+         * Set to `false` to disallow writing to given color channel.
+         * @todo Masking only given draw buffer
+         */
+        inline static void setColorMask(GLboolean allowRed, GLboolean allowGreen, GLboolean allowBlue, GLboolean allowAlpha) {
+            glColorMask(allowRed, allowGreen, allowBlue, allowAlpha);
+        }
+
+        /**
+         * @brief Mask depth writes
+         *
+         * Set to `false` to disallow writing to depth buffer.
+         */
+        inline static void setDepthMask(GLboolean allow) {
+            glDepthMask(allow);
+        }
+
+        /**
+         * @brief Mask stencil writes
+         *
+         * Set given bit to `0` to disallow writing stencil value to it.
+         */
+        inline static void setStencilMask(GLuint allowBits) {
+            glStencilMask(allowBits);
+        }
+
+        /**
+         * @brief Mask stencil writes
+         *
+         * Set given bit to `0` to disallow writing stencil value for given
+         * faces to it.
+         */
+        inline static void setStencilMask(StencilMaskFace face, GLuint allowBits) {
+            glStencilMaskSeparate(static_cast<GLenum>(face), allowBits);
+        }
+
+        /*@}*/
+
         /** @{ @name Framebuffer creation and binding */
 
         /**
