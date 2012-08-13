@@ -59,6 +59,12 @@ class MAGNUM_EXPORT Framebuffer {
              */
             Blending = GL_BLEND,
 
+            /**
+             * Logical operation
+             * @see setLogicOperation()
+             */
+            LogicOperation = GL_COLOR_LOGIC_OP,
+
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Depth clamping. If enabled, ignores near and far clipping plane.
@@ -433,6 +439,43 @@ class MAGNUM_EXPORT Framebuffer {
          */
         inline static void setBlendColor(const Color4<GLfloat>& color) {
             glBlendColor(color.r(), color.g(), color.b(), color.a());
+        }
+
+        /*@}*/
+
+        /** @{ @name Logical operation */
+
+        /**
+         * @brief Logical operation
+         *
+         * @see setLogicOperation()
+         */
+        enum class LogicOperation: GLenum {
+            Clear = GL_CLEAR,               /**< `0` */
+            Set = GL_SET,                   /**< `1` */
+            Copy = GL_COPY,                 /**< `source` */
+            CopyInverted = GL_COPY_INVERTED,/**< `~source` */
+            Noop = GL_NOOP,                 /**< `destination` */
+            Invert = GL_INVERT,             /**< `~destination` */
+            And = GL_AND,                   /**< `source & destination` */
+            AndReverse = GL_AND_REVERSE,    /**< `source & ~destination` */
+            AndInverted = GL_AND_INVERTED,  /**< `~source & destination` */
+            Nand = GL_NAND,                 /**< `~(source & destination)` */
+            Or = GL_OR,                     /**< `source | destination` */
+            OrReverse = GL_OR_REVERSE,      /**< `source | ~destination` */
+            OrInverted = GL_OR_INVERTED,    /**< `~source | destination` */
+            Nor = GL_NOR,                   /**< `~(source | destination)` */
+            Xor = GL_XOR,                   /**< `source ^ destination` */
+            Equivalence = GL_EQUIV          /**< `~(source ^ destination)` */
+        };
+
+        /**
+         * @brief Set logical operation
+         *
+         * @attention You have to enable logical operation with setFeature() first.
+         */
+        inline static void setLogicOperation(LogicOperation operation) {
+            glLogicOp(static_cast<GLenum>(operation));
         }
 
         /*@}*/
