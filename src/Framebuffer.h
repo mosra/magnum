@@ -42,6 +42,8 @@ class MAGNUM_EXPORT Framebuffer {
     Framebuffer& operator=(Framebuffer&& other) = delete;
 
     public:
+        /** @{ @name Framebuffer features */
+
         /**
          * @brief Features
          *
@@ -66,6 +68,21 @@ class MAGNUM_EXPORT Framebuffer {
             FaceCulling = GL_CULL_FACE      /**< Back face culling */
         };
 
+        /** @brief Set feature */
+        static void setFeature(Feature feature, bool enabled);
+
+        /**
+         * @brief Set viewport size
+         *
+         * Call when window size changes.
+         * @see Camera::setViewport()
+         */
+        static void setViewport(const Math::Vector2<GLint>& position, const Math::Vector2<GLsizei>& size);
+
+        /*@}*/
+
+        /** @{ @name Clearing the framebuffer */
+
         /**
          * @brief Mask for clearing
          *
@@ -78,6 +95,61 @@ class MAGNUM_EXPORT Framebuffer {
         };
 
         typedef Corrade::Utility::Set<Clear, GLbitfield> ClearMask; /**< @brief Mask for clearing */
+
+        /**
+         * @brief Clear framebuffer
+         *
+         * Clears color buffer, depth and stencil buffer in currently active
+         * framebuffer. If depth or stencil test is not enabled, it doesn't
+         * clear these buffers.
+         *
+         * @see setFeature(), clear(ClearMask)
+         */
+        inline static void clear() { glClear(static_cast<GLbitfield>(clearMask)); }
+
+        /**
+         * @brief Clear specified buffers in framebuffer
+         *
+         * @see clear()
+         */
+        inline static void clear(ClearMask mask) { glClear(static_cast<GLbitfield>(mask)); }
+
+        /**
+         * @brief Set clear color
+         *
+         * Initial value is `{0.0f, 0.0f, 0.0f, 1.0f}`.
+         */
+        inline static void setClearColor(const Color4<GLfloat>& color) {
+            glClearColor(color.r(), color.g(), color.b(), color.a());
+        }
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Set clear depth
+         *
+         * Initial value is `1.0`.
+         * @requires_gl See setClearDepth(GLfloat), which is supported in OpenGL ES.
+         */
+        inline static void setClearDepth(GLdouble depth) { glClearDepth(depth); }
+        #endif
+
+        /**
+         * @overload
+         *
+         * @requires_gl41 Extension @extension{ARB,ES2_compatibility}
+         */
+        inline static void setClearDepth(GLfloat depth) { glClearDepthf(depth); }
+
+        /**
+         * @brief Set clear stencil
+         *
+         * Initial value is `0`.
+         */
+        inline static void setClearStencil(GLint stencil) { glClearStencil(stencil); }
+
+        /*@}*/
+
+        /** @{ @name Framebuffer creation and binding */
 
         /**
          * @brief %Framebuffer target
@@ -142,6 +214,109 @@ class MAGNUM_EXPORT Framebuffer {
         #endif
 
         /**
+         * @brief Constructor
+         *
+         * Generates new OpenGL framebuffer.
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         */
+        inline Framebuffer() { glGenFramebuffers(1, &framebuffer); }
+
+        /**
+         * @brief Destructor
+         *
+         * Deletes associated OpenGL framebuffer.
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         */
+        inline ~Framebuffer() { glDeleteFramebuffers(1, &framebuffer); }
+
+        /**
+         * @brief Bind default framebuffer to given target
+         * @param target     %Target
+         *
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         */
+        inline static void bindDefault(Target target) {
+            glBindFramebuffer(static_cast<GLenum>(target), 0);
+        }
+
+        /**
+         * @brief Bind framebuffer
+         *
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         */
+        inline void bind(Target target) {
+            glBindFramebuffer(static_cast<GLenum>(target), framebuffer);
+        }
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Map given attachments of default framebuffer for drawing
+         * @param attachments       Default attachments. If any value is
+         *      DefaultAttachment::None, given output is not used.
+         *
+         * If used for mapping output of fragment shader, the order must be as
+         * specified by the shader (see AbstractShaderProgram documentation).
+         * If used for blit(), the order is not important. Each used attachment
+         * should have either renderbuffer or texture attached for writing to
+         * work properly.
+         * @see mapForDraw(), mapDefaultForRead()
+         * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         */
+        static void mapDefaultForDraw(std::initializer_list<DefaultDrawAttachment> attachments);
+
+        /**
+         * @brief Map given color attachments of current framebuffer for drawing
+         * @param colorAttachments  Color attachment IDs. If any value is -1,
+         *      given output is not used.
+         *
+         * If used for mapping output of fragment shader, the order must be as
+         * specified by the shader (see AbstractShaderProgram documentation).
+         * If used for blit(), the order is not important. Each used attachment
+         * should have either renderbuffer or texture attached for writing to
+         * work properly.
+         * @see mapDefaultForDraw(), mapForRead()
+         * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         */
+        void mapForDraw(std::initializer_list<int> colorAttachments);
+
+        /**
+         * @brief Map given attachment of default framebuffer for reading
+         * @param attachment        Default attachment
+         *
+         * Each used attachment should have either renderbuffer or texture
+         * attached to work properly.
+         * @see mapForRead(), mapDefaultForDraw()
+         * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         */
+        inline static void mapDefaultForRead(DefaultReadAttachment attachment) {
+            bindDefault(Target::Read);
+            glReadBuffer(static_cast<GLenum>(attachment));
+        }
+
+        /**
+         * @brief Map given color attachment of current framebuffer for reading
+         * @param colorAttachment   Color attachment ID
+         *
+         * The color attachment should have either renderbuffer or texture
+         * attached for reading to work properly.
+         * @see mapDefaultForRead(), mapForDraw()
+         * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         */
+        inline void mapForRead(unsigned int colorAttachment) {
+            bind(Target::Read);
+            glReadBuffer(GL_COLOR_ATTACHMENT0 + colorAttachment);
+        }
+        #endif
+
+        /*@}*/
+
+        /** @{ @name Attaching textures and renderbuffers */
+
+        /**
          * @brief Attachment for depth/stencil part of fragment shader output
          *
          * @see attachRenderbuffer(Target, DepthStencilAttachment, Renderbuffer*),
@@ -164,261 +339,6 @@ class MAGNUM_EXPORT Framebuffer {
             DepthStencil = GL_DEPTH_STENCIL_ATTACHMENT
             #endif
         };
-
-        /**
-         * @brief Output mask for blitting
-         *
-         * Specifies which data are copied when performing blit operation
-         * using blit().
-         * @see BlitMask
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        enum class Blit: GLbitfield {
-            Color = GL_COLOR_BUFFER_BIT,    /**< Color */
-            Depth = GL_DEPTH_BUFFER_BIT,    /**< Depth value */
-            Stencil = GL_STENCIL_BUFFER_BIT /**< Stencil value */
-        };
-
-        /**
-         * @brief Output mask for blitting
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        typedef Corrade::Utility::Set<Blit, GLbitfield> BlitMask;
-
-        /** @brief Set feature */
-        static void setFeature(Feature feature, bool enabled);
-
-        /**
-         * @brief Set clear color
-         *
-         * Initial value is `{0.0f, 0.0f, 0.0f, 1.0f}`.
-         */
-        inline static void setClearColor(const Color4<GLfloat>& color) {
-            glClearColor(color.r(), color.g(), color.b(), color.a());
-        }
-
-        /**
-         * @brief Clear framebuffer
-         *
-         * Clears color buffer, depth and stencil buffer in currently active
-         * framebuffer. If depth or stencil test is not enabled, it doesn't
-         * clear these buffers.
-         *
-         * @see setFeature(), clear(ClearMask)
-         */
-        inline static void clear() { glClear(static_cast<GLbitfield>(clearMask)); }
-
-        /**
-         * @brief Clear specified buffers in framebuffer
-         *
-         * @see clear()
-         */
-        inline static void clear(ClearMask mask) { glClear(static_cast<GLbitfield>(mask)); }
-
-        #ifndef MAGNUM_TARGET_GLES
-        /**
-         * @brief Set clear depth
-         *
-         * Initial value is `1.0`.
-         * @requires_gl See setClearDepth(GLfloat), which is supported in OpenGL ES.
-         */
-        inline static void setClearDepth(GLdouble depth) { glClearDepth(depth); }
-        #endif
-
-        /**
-         * @overload
-         *
-         * @requires_gl41 Extension @extension{ARB,ES2_compatibility}
-         */
-        inline static void setClearDepth(GLfloat depth) { glClearDepthf(depth); }
-
-        /**
-         * @brief Set clear stencil
-         *
-         * Initial value is `0`.
-         */
-        inline static void setClearStencil(GLint stencil) { glClearStencil(stencil); }
-
-        /**
-         * @brief Set viewport size
-         *
-         * Call when window size changes.
-         * @see Camera::setViewport()
-         */
-        static void setViewport(const Math::Vector2<GLint>& position, const Math::Vector2<GLsizei>& size);
-
-        /**
-         * @brief Bind default framebuffer to given target
-         * @param target     %Target
-         *
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        inline static void bindDefault(Target target) {
-            glBindFramebuffer(static_cast<GLenum>(target), 0);
-        }
-
-        #ifndef MAGNUM_TARGET_GLES
-        /**
-         * @brief Map given attachments of default framebuffer for drawing
-         * @param attachments       Default attachments. If any value is
-         *      DefaultAttachment::None, given output is not used.
-         *
-         * If used for mapping output of fragment shader, the order must be as
-         * specified by the shader (see AbstractShaderProgram documentation).
-         * If used for blit(), the order is not important. Each used attachment
-         * should have either renderbuffer or texture attached for writing to
-         * work properly.
-         * @see mapForDraw(), mapDefaultForRead()
-         * @requires_gl
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        static void mapDefaultForDraw(std::initializer_list<DefaultDrawAttachment> attachments);
-
-        /**
-         * @brief Map given attachment of default framebuffer for reading
-         * @param attachment        Default attachment
-         *
-         * Each used attachment should have either renderbuffer or texture
-         * attached to work properly.
-         * @see mapForRead(), mapDefaultForDraw()
-         * @requires_gl
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        inline static void mapDefaultForRead(DefaultReadAttachment attachment) {
-            bindDefault(Target::Read);
-            glReadBuffer(static_cast<GLenum>(attachment));
-        }
-        #endif
-
-        #ifndef MAGNUM_TARGET_GLES
-        /**
-         * @brief Copy block of pixels from read to draw framebuffer
-         * @param bottomLeft        Bottom left coordinates of source rectangle
-         * @param topRight          Top right coordinates of source rectangle
-         * @param destinationBottomLeft Bottom left coordinates of destination rectangle
-         * @param destinationTopRight Top right coordinates of destination
-         *      rectangle
-         * @param blitMask          Blit mask
-         * @param filter            Interpolation applied if the image is
-         *      stretched
-         *
-         * See mapForRead() / mapDefaultForRead() and mapForDraw() /
-         * mapDefaultForDraw() for binding particular framebuffer for reading
-         * and drawing. If multiple attachments are specified in mapForDraw()
-         * / mapDefaultForDraw(), the data are written to each of them.
-         * @requires_gl
-         * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
-         */
-        inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, const Math::Vector2<GLint>& destinationBottomLeft, const Math::Vector2<GLint>& destinationTopRight, BlitMask blitMask, AbstractTexture::Filter filter) {
-            glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), destinationBottomLeft.x(), destinationBottomLeft.y(), destinationTopRight.x(), destinationTopRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(filter));
-        }
-
-        /**
-         * @brief Copy block of pixels from read to draw framebuffer
-         * @param bottomLeft        Bottom left coordinates of source and
-         *      destination rectangle
-         * @param topRight          Top right coordinates of source and
-         *      destination rectangle
-         * @param blitMask          Blit mask
-         *
-         * Convenience function when source rectangle is the same as
-         * destination rectangle. As the image is copied pixel-by-pixel,
-         * no interpolation is needed and thus
-         * AbstractTexture::Filter::NearestNeighbor filtering is used by
-         * default.
-         * @requires_gl
-         * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
-         */
-        inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, BlitMask blitMask) {
-            glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(AbstractTexture::Filter::NearestNeighbor));
-        }
-        #endif
-
-        /**
-         * @brief Read block of pixels from framebuffer to image
-         * @param offset            Offset in the framebuffer
-         * @param dimensions        Image dimensions
-         * @param components        Color components
-         * @param type              Data type
-         * @param image             %Image where to put the data
-         *
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& dimensions, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image);
-
-        #ifndef MAGNUM_TARGET_GLES
-        /**
-         * @brief Read block of pixels from framebuffer to buffered image
-         * @param offset            Offset in the framebuffer
-         * @param dimensions        Image dimensions
-         * @param components        Color components
-         * @param type              Data type
-         * @param image             Buffered image where to put the data
-         * @param usage             %Buffer usage
-         *
-         * @requires_gl
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& dimensions, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage);
-        #endif
-
-        /**
-         * @brief Constructor
-         *
-         * Generates new OpenGL framebuffer.
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        inline Framebuffer() { glGenFramebuffers(1, &framebuffer); }
-
-        /**
-         * @brief Destructor
-         *
-         * Deletes associated OpenGL framebuffer.
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        inline ~Framebuffer() { glDeleteFramebuffers(1, &framebuffer); }
-
-        /**
-         * @brief Bind framebuffer
-         *
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        inline void bind(Target target) {
-            glBindFramebuffer(static_cast<GLenum>(target), framebuffer);
-        }
-
-        #ifndef MAGNUM_TARGET_GLES
-        /**
-         * @brief Map given color attachments of current framebuffer for drawing
-         * @param colorAttachments  Color attachment IDs. If any value is -1,
-         *      given output is not used.
-         *
-         * If used for mapping output of fragment shader, the order must be as
-         * specified by the shader (see AbstractShaderProgram documentation).
-         * If used for blit(), the order is not important. Each used attachment
-         * should have either renderbuffer or texture attached for writing to
-         * work properly.
-         * @see mapDefaultForDraw(), mapForRead()
-         * @requires_gl
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        void mapForDraw(std::initializer_list<int> colorAttachments);
-
-        /**
-         * @brief Map given color attachment of current framebuffer for reading
-         * @param colorAttachment   Color attachment ID
-         *
-         * The color attachment should have either renderbuffer or texture
-         * attached for reading to work properly.
-         * @see mapDefaultForRead(), mapForDraw()
-         * @requires_gl
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        inline void mapForRead(unsigned int colorAttachment) {
-            bind(Target::Read);
-            glReadBuffer(GL_COLOR_ATTACHMENT0 + colorAttachment);
-        }
-        #endif
 
         /**
          * @brief Attach renderbuffer to given framebuffer depth/stencil attachment
@@ -591,6 +511,106 @@ class MAGNUM_EXPORT Framebuffer {
             glFramebufferTexture3D(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, static_cast<GLenum>(texture->target()), texture->id(), mipLevel, layer);
         }
         #endif
+
+        /*@}*/
+
+        /** @{ @name Framebuffer blitting and reading */
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Output mask for blitting
+         *
+         * Specifies which data are copied when performing blit operation
+         * using blit().
+         * @see BlitMask
+         * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         */
+        enum class Blit: GLbitfield {
+            Color = GL_COLOR_BUFFER_BIT,    /**< Color */
+            Depth = GL_DEPTH_BUFFER_BIT,    /**< Depth value */
+            Stencil = GL_STENCIL_BUFFER_BIT /**< Stencil value */
+        };
+
+        /**
+         * @brief Output mask for blitting
+         * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         */
+        typedef Corrade::Utility::Set<Blit, GLbitfield> BlitMask;
+
+        /**
+         * @brief Copy block of pixels from read to draw framebuffer
+         * @param bottomLeft        Bottom left coordinates of source rectangle
+         * @param topRight          Top right coordinates of source rectangle
+         * @param destinationBottomLeft Bottom left coordinates of destination rectangle
+         * @param destinationTopRight Top right coordinates of destination
+         *      rectangle
+         * @param blitMask          Blit mask
+         * @param filter            Interpolation applied if the image is
+         *      stretched
+         *
+         * See mapForRead() / mapDefaultForRead() and mapForDraw() /
+         * mapDefaultForDraw() for binding particular framebuffer for reading
+         * and drawing. If multiple attachments are specified in mapForDraw()
+         * / mapDefaultForDraw(), the data are written to each of them.
+         * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
+         */
+        inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, const Math::Vector2<GLint>& destinationBottomLeft, const Math::Vector2<GLint>& destinationTopRight, BlitMask blitMask, AbstractTexture::Filter filter) {
+            glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), destinationBottomLeft.x(), destinationBottomLeft.y(), destinationTopRight.x(), destinationTopRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(filter));
+        }
+
+        /**
+         * @brief Copy block of pixels from read to draw framebuffer
+         * @param bottomLeft        Bottom left coordinates of source and
+         *      destination rectangle
+         * @param topRight          Top right coordinates of source and
+         *      destination rectangle
+         * @param blitMask          Blit mask
+         *
+         * Convenience function when source rectangle is the same as
+         * destination rectangle. As the image is copied pixel-by-pixel,
+         * no interpolation is needed and thus
+         * AbstractTexture::Filter::NearestNeighbor filtering is used by
+         * default.
+         * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
+         */
+        inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, BlitMask blitMask) {
+            glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(AbstractTexture::Filter::NearestNeighbor));
+        }
+        #endif
+
+        /**
+         * @brief Read block of pixels from framebuffer to image
+         * @param offset            Offset in the framebuffer
+         * @param dimensions        Image dimensions
+         * @param components        Color components
+         * @param type              Data type
+         * @param image             %Image where to put the data
+         *
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         */
+        static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& dimensions, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image);
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Read block of pixels from framebuffer to buffered image
+         * @param offset            Offset in the framebuffer
+         * @param dimensions        Image dimensions
+         * @param components        Color components
+         * @param type              Data type
+         * @param image             Buffered image where to put the data
+         * @param usage             %Buffer usage
+         *
+         * @requires_gl
+         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         */
+        static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& dimensions, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage);
+        #endif
+
+        /*@}*/
 
     private:
         static ClearMask clearMask;
