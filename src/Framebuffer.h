@@ -51,7 +51,11 @@ class MAGNUM_EXPORT Framebuffer {
          * @see setFeature()
          */
         enum class Feature: GLenum {
-            Blending = GL_BLEND,            /**< Blending */
+            /**
+             * Blending
+             * @see setBlendEquation(), setBlendFunction(), setBlendColor()
+             */
+            Blending = GL_BLEND,
 
             #ifndef MAGNUM_TARGET_GLES
             /**
@@ -199,6 +203,210 @@ class MAGNUM_EXPORT Framebuffer {
          */
         inline static void setStencilMask(StencilMaskFace face, GLuint allowBits) {
             glStencilMaskSeparate(static_cast<GLenum>(face), allowBits);
+        }
+
+        /*@}*/
+
+        /** @{ @name Blending
+         * @todo Blending for given draw buffer
+         */
+
+        /**
+         * @brief Blend equation
+         *
+         * @see setBlendEquation()
+         */
+        enum class BlendEquation: GLenum {
+            Add = GL_FUNC_ADD,                          /**< `source + destination` */
+            Subtract = GL_FUNC_SUBTRACT,                /**< `source - destination` */
+            ReverseSubtract = GL_FUNC_REVERSE_SUBTRACT, /**< `destination - source` */
+            Min = GL_MIN,                               /**< `min(source, destination)` */
+            Max = GL_MAX                                /**< `max(source, destination)` */
+        };
+
+        /**
+         * @brief Blend function
+         *
+         * @see setBlendFunction()
+         */
+        enum class BlendFunction: GLenum {
+            /** Zero (@f$ RGB = (0.0, 0.0, 0.0); A = 0.0 @f$) */
+            Zero = GL_ZERO,
+
+            /** One (@f$ RGB = (1.0, 1.0, 1.0); A = 1.0 @f$) */
+            One = GL_ONE,
+
+            /**
+             * Constant color (@f$ RGB = (R_c, G_c, B_c); A = A_c @f$)
+             *
+             * @see setBlendColor()
+             */
+            ConstantColor = GL_CONSTANT_COLOR,
+
+            /**
+             * One minus constant color (@f$ RGB = (1.0 - R_c, 1.0 - G_c, 1.0 - B_c); A = 1.0 - A_c @f$)
+             *
+             * @see setBlendColor()
+             */
+            OneMinusConstantColor = GL_ONE_MINUS_CONSTANT_COLOR,
+
+            /**
+             * Constant alpha (@f$ RGB = (A_c, A_c, A_c); A = A_c @f$)
+             *
+             * @see setBlendColor()
+             */
+            ConstantAlpha = GL_CONSTANT_ALPHA,
+
+            /**
+             * One minus constant alpha (@f$ RGB = (1.0 - A_c, 1.0 - A_c, 1.0 - A_c); A = 1.0 - A_c @f$)
+             *
+             * @see setBlendColor()
+             */
+            OneMinusConstantAlpha = GL_ONE_MINUS_CONSTANT_ALPHA,
+
+            /** Source color (@f$ RGB = (R_{s0}, G_{s0}, B_{s0}); A = A_{s0} @f$) */
+            SourceColor = GL_SRC_COLOR,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Second source color (@f$ RGB = (R_{s1}, G_{s1}, B_{s1}); A = A_{s1} @f$)
+             *
+             * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
+             * @requires_gl
+             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+             */
+            SecondSourceColor = GL_SRC1_COLOR,
+            #endif
+
+            /**
+             * One minus source color (@f$ RGB = (1.0 - R_{s0}, 1.0 - G_{s0}, 1.0 - B_{s0}); A = 1.0 - A_{s0} @f$)
+             */
+            OneMinusSourceColor = GL_ONE_MINUS_SRC_COLOR,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * One minus second source color (@f$ RGB = (1.0 - R_{s1}, 1.0 - G_{s1}, 1.0 - B_{s1}); A = 1.0 - A_{s1} @f$)
+             *
+             * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
+             * @requires_gl
+             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+             */
+            OneMinusSecondSourceColor = GL_ONE_MINUS_SRC1_COLOR,
+            #endif
+
+            /** Source alpha (@f$ RGB = (A_{s0}, A_{s0}, A_{s0}); A = A_{s0} @f$) */
+            SourceAlpha = GL_SRC_ALPHA,
+
+            /**
+             * Saturate source alpha (@f$ RGB = (f, f, f); A = 1.0; f = min(A_s, 1.0 - A_d) @f$)
+             *
+             * Can be used only in source parameter of setBlendFunction().
+             */
+            SourceAlphaSaturate = GL_SRC_ALPHA_SATURATE,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Second source alpha (@f$ RGB = (A_{s1}, A_{s1}, A_{s1}); A = A_{s1} @f$)
+             *
+             * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
+             * @requires_gl
+             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+             */
+            SecondSourceAlpha = GL_SRC1_ALPHA,
+            #endif
+
+            /**
+             * One minus source alpha (@f$ RGB = (1.0 - A_{s0}, 1.0 - A_{s0}, 1.0 - A_{s0}); A = 1.0 - A_{s0} @f$)
+             */
+            OneMinusSourceAlpha = GL_ONE_MINUS_SRC_ALPHA,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * One minus second source alpha (@f$ RGB = (1.0 - A_{s1}, 1.0 - A_{s1}, 1.0 - A_{s1}); A = 1.0 - A_{s1} @f$)
+             *
+             * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
+             * @requires_gl
+             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+             */
+            OneMinusSecondSourceAlpha = GL_ONE_MINUS_SRC1_ALPHA,
+            #endif
+
+            /** Destination color (@f$ RGB = (R_d, G_d, B_d); A = A_d @f$) */
+            DestinationColor = GL_DST_COLOR,
+
+            /**
+             * One minus source color (@f$ RGB = (1.0 - R_d, 1.0 - G_d, 1.0 - B_d); A = 1.0 - A_d @f$)
+             */
+            OneMinusDestinationColor = GL_ONE_MINUS_DST_COLOR,
+
+            /** Destination alpha (@f$ RGB = (A_d, A_d, A_d); A = A_d @f$) */
+            DestinationAlpha = GL_DST_ALPHA,
+
+            /**
+             * One minus source alpha (@f$ RGB = (1.0 - A_d, 1.0 - A_d, 1.0 - A_d); A = 1.0 - A_d @f$)
+             */
+            OneMinusDestinationAlpha = GL_ONE_MINUS_DST_ALPHA
+        };
+
+        /**
+         * @brief Set blend equation
+         *
+         * How to combine source color (pixel value) with destination color
+         * (framebuffer). Initial value is `BlendEquation::Add`.
+         * @attention You have to enable blending with setFeature() first.
+         * @see setBlendEquation(BlendEquation, BlendEquation)
+         */
+        inline static void setBlendEquation(BlendEquation equation) {
+            glBlendEquation(static_cast<GLenum>(equation));
+        }
+
+        /**
+         * @brief Set blend equation separately for RGB and alpha components
+         *
+         * See setBlendEquation(BlendEquation) for more information.
+         * @attention You have to enable blending with setFeature() first.
+         */
+        inline static void setBlendEquation(BlendEquation rgb, BlendEquation alpha) {
+            glBlendEquationSeparate(static_cast<GLenum>(rgb), static_cast<GLenum>(alpha));
+        }
+
+        /**
+         * @brief Set blend function
+         * @param source        How the source blending factor is computed
+         *      from pixel value. Initial value is `BlendFunction::One`.
+         * @param destination   How the destination blending factor is
+         *      computed from framebuffer. Initial value is
+         *      `BlendFunction::Zero`.
+         *
+         * @attention You have to enable blending with setFeature() first.
+         * @see setBlendFunction(BlendFunction, BlendFunction, BlendFunction, BlendFunction)
+         */
+        inline static void setBlendFunction(BlendFunction source, BlendFunction destination) {
+            glBlendFunc(static_cast<GLenum>(source), static_cast<GLenum>(destination));
+        }
+
+        /**
+         * @brief Set blend function separately for RGB and alpha components
+         *
+         * See setBlendFunction(BlendFunction, BlendFunction) for more information.
+         * @attention You have to enable blending with setFeature() first.
+         */
+        inline static void setBlendFunction(BlendFunction sourceRgb, BlendFunction destinationRgb, BlendFunction sourceAlpha, BlendFunction destinationAlpha) {
+            glBlendFuncSeparate(static_cast<GLenum>(sourceRgb), static_cast<GLenum>(destinationRgb), static_cast<GLenum>(sourceAlpha), static_cast<GLenum>(destinationAlpha));
+        }
+
+        /**
+         * @brief Set blend color
+         *
+         * Sets constant color used in setBlendFunction() by
+         * `BlendFunction::ConstantColor`,
+         * `BlendFunction::OneMinusConstantColor`,
+         * `BlendFunction::ConstantAlpha` and
+         * `BlendFunction::OneMinusConstantAlpha`.
+         * @attention You have to enable blending with setFeature() first.
+         */
+        inline static void setBlendColor(const Color4<GLfloat>& color) {
+            glBlendColor(color.r(), color.g(), color.b(), color.a());
         }
 
         /*@}*/
