@@ -1,5 +1,5 @@
-#ifndef Magnum_Math_Test_SwizzleTest_h
-#define Magnum_Math_Test_SwizzleTest_h
+#ifndef Magnum_Test_SwizzleTest_h
+#define Magnum_Test_SwizzleTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -17,7 +17,7 @@
 
 #include <TestSuite/Tester.h>
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Test {
 
 class SwizzleTest: public Corrade::TestSuite::Tester<SwizzleTest> {
     public:
@@ -30,6 +30,6 @@ class SwizzleTest: public Corrade::TestSuite::Tester<SwizzleTest> {
         void defaultType();
 };
 
-}}}
+}}
 
 #endif

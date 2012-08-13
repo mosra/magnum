@@ -19,9 +19,9 @@
 
 using namespace std;
 
-CORRADE_TEST_MAIN(Magnum::Math::Test::SwizzleTest)
+CORRADE_TEST_MAIN(Magnum::Test::SwizzleTest)
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Test {
 
 typedef Math::Vector2<int> Vector2;
 typedef Math::Vector3<int> Vector3;
@@ -66,6 +66,17 @@ void SwizzleTest::type() {
     CORRADE_VERIFY((is_same<decltype(swizzle(orig, "yza")), Vector3>::value));
     CORRADE_VERIFY((is_same<decltype(swizzle<'y', 'a', 'y', 'x'>(orig)), Vector4>::value));
     CORRADE_VERIFY((is_same<decltype(swizzle(orig, "yayx")), Vector4>::value));
+
+    Color3<float> origColor3;
+    Color4<double> origColor4;
+    CORRADE_VERIFY((is_same<decltype(swizzle<'y', 'z', 'r'>(origColor3)), Color3<float>>::value));
+    CORRADE_VERIFY((is_same<decltype(swizzle<'y', 'z', 'a'>(origColor4)), Color3<double>>::value));
+    CORRADE_VERIFY((is_same<decltype(swizzle(origColor3, "yzr")), Color3<float>>::value));
+    CORRADE_VERIFY((is_same<decltype(swizzle(origColor4, "yza")), Color3<double>>::value));
+    CORRADE_VERIFY((is_same<decltype(swizzle<'y', 'z', 'y', 'x'>(origColor3)), Color4<float>>::value));
+    CORRADE_VERIFY((is_same<decltype(swizzle<'y', 'a', 'y', 'x'>(origColor4)), Color4<double>>::value));
+    CORRADE_VERIFY((is_same<decltype(swizzle(origColor3, "yzyx")), Color4<float>>::value));
+    CORRADE_VERIFY((is_same<decltype(swizzle(origColor4, "yayx")), Color4<double>>::value));
 }
 
 void SwizzleTest::defaultType() {
@@ -76,4 +87,4 @@ void SwizzleTest::defaultType() {
     CORRADE_COMPARE(swizzle(orig, "bragzyx"), Vector<7>(3, 1, 4, 2, 3, 2, 1));
 }
 
-}}}
+}}

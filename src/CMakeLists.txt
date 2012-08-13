@@ -56,6 +56,7 @@ set(Magnum_HEADERS
     Scene.h
     Shader.h
     SizeTraits.h
+    Swizzle.h
     Texture.h
     TypeTraits.h
 
