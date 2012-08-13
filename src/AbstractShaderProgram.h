@@ -250,8 +250,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @param location      Location
          * @param name          Attribute name
          *
-         * Binds attribute to location which is be used later for binding
-         * vertex buffers. Preferred usage is to
+         * Binds attribute to location which is used later for binding vertex
+         * buffers.
          * @note This function should be called after attachShader() calls and
          *      before link().
          * @deprecated Preferred usage is to specify attribute location

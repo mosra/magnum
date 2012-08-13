@@ -190,6 +190,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @brief Mask stencil writes
          *
          * Set given bit to `0` to disallow writing stencil value to it.
+         * @see setStencilMask(StencilMaskFace, GLuint)
          */
         inline static void setStencilMask(GLuint allowBits) {
             glStencilMask(allowBits);
@@ -200,6 +201,7 @@ class MAGNUM_EXPORT Framebuffer {
          *
          * Set given bit to `0` to disallow writing stencil value for given
          * faces to it.
+         * @see setStencilMask(GLuint)
          */
         inline static void setStencilMask(StencilMaskFace face, GLuint allowBits) {
             glStencilMaskSeparate(static_cast<GLenum>(face), allowBits);
@@ -847,7 +849,7 @@ class MAGNUM_EXPORT Framebuffer {
         /**
          * @brief Read block of pixels from framebuffer to image
          * @param offset            Offset in the framebuffer
-         * @param dimensions        Image dimensions
+         * @param dimensions        %Image dimensions
          * @param components        Color components
          * @param type              Data type
          * @param image             %Image where to put the data
@@ -860,7 +862,7 @@ class MAGNUM_EXPORT Framebuffer {
         /**
          * @brief Read block of pixels from framebuffer to buffered image
          * @param offset            Offset in the framebuffer
-         * @param dimensions        Image dimensions
+         * @param dimensions        %Image dimensions
          * @param components        Color components
          * @param type              Data type
          * @param image             Buffered image where to put the data
