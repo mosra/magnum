@@ -19,7 +19,7 @@
 
 using namespace std;
 
-namespace Magnum {
+namespace Magnum { namespace SceneGraph {
 
 Camera::Camera(Object* parent): Object(parent), _aspectRatioPolicy(AspectRatioPolicy::Extend) {}
 
@@ -122,4 +122,4 @@ void Camera::drawChildren(Object* object, const Matrix4& transformationMatrix) {
     }
 }
 
-}
+}}

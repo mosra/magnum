@@ -14,16 +14,16 @@
 */
 
 #include "ObjectTest.h"
-#include "Scene.h"
-#include "Camera.h"
+#include "SceneGraph/Camera.h"
+#include "SceneGraph/Scene.h"
 
 #include <sstream>
 
 using namespace std;
 
-CORRADE_TEST_MAIN(Magnum::Test::ObjectTest)
+CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::ObjectTest)
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace SceneGraph { namespace Test {
 
 ObjectTest::ObjectTest() {
     addTests(&ObjectTest::parenting,
@@ -195,4 +195,4 @@ void ObjectTest::dirty() {
     CORRADE_VERIFY(childThree->isDirty());
 }
 
-}}
+}}}

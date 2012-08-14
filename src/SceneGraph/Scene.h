@@ -1,5 +1,5 @@
-#ifndef Magnum_Scene_h
-#define Magnum_Scene_h
+#ifndef Magnum_SceneGraph_Scene_h
+#define Magnum_SceneGraph_Scene_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,17 +16,17 @@
 */
 
 /** @file
- * @brief Class Magnum::Scene
+ * @brief Class Magnum::SceneGraph::Scene
  */
 
 #include "Object.h"
 
-namespace Magnum {
+namespace Magnum { namespace SceneGraph {
 
 /** @ingroup scene
 @brief %Scene
 */
-class MAGNUM_EXPORT Scene: public Object {
+class SCENEGRAPH_EXPORT Scene: public Object {
     public:
         /** @brief Constructor */
         inline Scene() { _parent = this; }
@@ -42,6 +42,6 @@ class MAGNUM_EXPORT Scene: public Object {
         inline void draw(const Magnum::Matrix4&, Camera*) {}
 };
 
-}
+}}
 
 #endif

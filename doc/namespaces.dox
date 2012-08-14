@@ -7,8 +7,7 @@
 /** @namespace Magnum
 @brief Root namespace
 
-Contains classes needed for building meshes, setting up and rendering the
-scene.
+Contains classes for interacting with OpenGL.
 */
 
 /** @dir Contexts
@@ -56,6 +55,16 @@ Tools for generating, optimizing and cleaning meshes.
 @brief Primitive library
 
 Basic primitives for testing purposes.
+*/
+
+/** @dir SceneGraph
+ * @brief Namespace Magnum::SceneGraph
+ */
+/**
+@namespace Magnum::SceneGraph
+@brief %Scene graph library
+
+Setting up and rendering the scene.
 */
 
 /** @dir Shaders

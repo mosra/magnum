@@ -1,5 +1,5 @@
-#ifndef Magnum_Test_ObjectTest_h
-#define Magnum_Test_ObjectTest_h
+#ifndef Magnum_SceneGraph_Test_ObjectTest_h
+#define Magnum_SceneGraph_Test_ObjectTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -17,9 +17,9 @@
 
 #include <TestSuite/Tester.h>
 
-#include "Object.h"
+#include "SceneGraph/Object.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace SceneGraph { namespace Test {
 
 class ObjectTest: public Corrade::TestSuite::Tester<ObjectTest> {
     public:
@@ -46,6 +46,6 @@ class ObjectTest: public Corrade::TestSuite::Tester<ObjectTest> {
         };
 };
 
-}}
+}}}
 
 #endif

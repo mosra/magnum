@@ -18,6 +18,7 @@
 #  MeshTools     - MeshTools library
 #  Physics       - Physics library
 #  Primitives    - Library with stock geometric primitives (static)
+#  SceneGraph    - Scene graph library
 #  Shaders       - Library with stock shaders
 #  EglContext    - EGL context (depends on EGL and X11 libraries)
 #  GlutContext   - GLUT context (depends on GLUT library)
@@ -135,6 +136,11 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     # Primitives library
     if(${component} STREQUAL Primitives)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Cube.h)
+    endif()
+
+    # Scene graph library
+    if(${component} STREQUAL SceneGraph)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Scene.h)
     endif()
 
     # Shaders library

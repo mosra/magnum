@@ -15,11 +15,11 @@
 
 #include "SceneTest.h"
 
-#include "Scene.h"
+#include "SceneGraph/Scene.h"
 
-CORRADE_TEST_MAIN(Magnum::Test::SceneTest)
+CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::SceneTest)
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace SceneGraph { namespace Test {
 
 SceneTest::SceneTest() {
     addTests(&SceneTest::transformation,
@@ -48,4 +48,4 @@ void SceneTest::parent() {
     CORRADE_VERIFY(object.children().empty());
 }
 
-}}
+}}}

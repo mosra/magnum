@@ -1,5 +1,5 @@
-#ifndef Magnum_Test_SceneTest_h
-#define Magnum_Test_SceneTest_h
+#ifndef Magnum_SceneGraph_magnumSceneGraphVisibility_h
+#define Magnum_SceneGraph_magnumSceneGraphVisibility_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,18 +15,16 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <TestSuite/Tester.h>
-
-namespace Magnum { namespace Test {
-
-class SceneTest: public Corrade::TestSuite::Tester<SceneTest> {
-    public:
-        SceneTest();
-
-        void transformation();
-        void parent();
-};
-
-}}
+#ifdef _WIN32
+    #if defined(MagnumSceneGraph_EXPORTS) || defined(MagnumSceneGraphObjects_EXPORTS)
+        #define SCENEGRAPH_EXPORT __declspec(dllexport)
+    #else
+        #define SCENEGRAPH_EXPORT __declspec(dllimport)
+    #endif
+    #define SCENEGRAPH_LOCAL
+#else
+    #define SCENEGRAPH_EXPORT __attribute__ ((visibility ("default")))
+    #define SCENEGRAPH_LOCAL __attribute__ ((visibility ("hidden")))
+#endif
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef Magnum_Camera_h
-#define Magnum_Camera_h
+#ifndef Magnum_SceneGraph_Camera_h
+#define Magnum_SceneGraph_Camera_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Camera
+ * @brief Class Magnum::SceneGraph::Camera
  */
 
 #include "Object.h"
@@ -26,12 +26,12 @@
 #undef far
 #endif
 
-namespace Magnum {
+namespace Magnum { namespace SceneGraph {
 
 /** @ingroup scene
 @brief %Camera object
  */
-class MAGNUM_EXPORT Camera: public Object {
+class SCENEGRAPH_EXPORT Camera: public Object {
     public:
         /**
          * @brief Aspect ratio policy
@@ -148,9 +148,9 @@ class MAGNUM_EXPORT Camera: public Object {
         Math::Vector2<GLsizei> _viewport;
         AspectRatioPolicy _aspectRatioPolicy;
 
-        MAGNUM_LOCAL void fixAspectRatio();
+        SCENEGRAPH_LOCAL void fixAspectRatio();
 };
 
-}
+}}
 
 #endif

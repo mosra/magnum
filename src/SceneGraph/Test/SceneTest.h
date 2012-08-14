@@ -1,3 +1,5 @@
+#ifndef Magnum_SceneGraph_Test_SceneTest_h
+#define Magnum_SceneGraph_Test_SceneTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -13,14 +15,18 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Light.h"
+#include <TestSuite/Tester.h>
 
-namespace Magnum {
+namespace Magnum { namespace SceneGraph { namespace Test {
 
-void Light::clean(const Matrix4& absoluteTransformation) {
-    Object::clean(absoluteTransformation);
+class SceneTest: public Corrade::TestSuite::Tester<SceneTest> {
+    public:
+        SceneTest();
 
-    _position = absoluteTransformation[3];
-}
+        void transformation();
+        void parent();
+};
 
-}
+}}}
+
+#endif

@@ -15,12 +15,11 @@
 
 #include "CameraTest.h"
 
-#include "Camera.h"
-#include "Scene.h"
+#include "SceneGraph/Camera.h"
 
-CORRADE_TEST_MAIN(Magnum::Test::CameraTest)
+CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::CameraTest)
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace SceneGraph { namespace Test {
 
 CameraTest::CameraTest() {
     addTests(&CameraTest::orthographic,
@@ -51,4 +50,4 @@ void CameraTest::perspective() {
     CORRADE_COMPARE(camera.projectionMatrix(), a);
 }
 
-}}
+}}}

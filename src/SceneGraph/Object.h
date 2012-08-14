@@ -1,5 +1,5 @@
-#ifndef Magnum_Object_h
-#define Magnum_Object_h
+#ifndef Magnum_SceneGraph_Object_h
+#define Magnum_SceneGraph_Object_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,14 +16,16 @@
 */
 
 /** @file
- * @brief Class Magnum::Object
+ * @brief Class Magnum::SceneGraph::Object
  */
 
 #include <set>
 
 #include "Magnum.h"
 
-namespace Magnum {
+#include "magnumSceneGraphVisibility.h"
+
+namespace Magnum { namespace SceneGraph {
 
 class Scene;
 class Camera;
@@ -44,7 +46,7 @@ class Camera;
  * @todo Transform transformation when changing parent, so the object stays in
  * place.
  */
-class MAGNUM_EXPORT Object {
+class SCENEGRAPH_EXPORT Object {
     Object(const Object& other) = delete;
     Object(Object&& other) = delete;
     Object& operator=(const Object& other) = delete;
@@ -268,7 +270,6 @@ class MAGNUM_EXPORT Object {
 inline void Object::draw(const Matrix4&, Camera*) {}
 inline void Object::clean(const Matrix4&) { dirty = false; }
 
-
-}
+}}
 
 #endif

@@ -16,12 +16,13 @@
 #include "Object.h"
 
 #include <stack>
+
 #include "Scene.h"
 #include "Camera.h"
 
 using namespace std;
 
-namespace Magnum {
+namespace Magnum { namespace SceneGraph {
 
 Object* Object::setParent(Object* parent) {
     /* Skip if nothing to do or this is scene */
@@ -149,4 +150,4 @@ void Object::setClean() {
     }
 }
 
-}
+}}

@@ -6,8 +6,8 @@ Features:
 
 - Easy-to-use templated @ref Math "mathematical library" for matrix/vector
   calculations and @ref Math::Geometry "geometry".
-- Hierarchical @ref Object "scene graph" which supports transformation caching
-  for better performance, classes for convenient usage of
+- Hierarchical @ref SceneGraph "scene graph" which supports transformation
+  caching for better performance, classes for convenient usage of
   @ref AbstractShaderProgram "shaders", @ref Buffer "buffers" and
   @ref AbstractTexture "textures". Access to @ref Framebuffer "framebuffer"
   and @ref AbstractQuery "occlusion queries".

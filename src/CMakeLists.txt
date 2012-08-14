@@ -19,10 +19,8 @@ set(Magnum_SRCS
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
     BufferedTexture.cpp
-    Camera.cpp
     Framebuffer.cpp
     IndexedMesh.cpp
-    Light.cpp
     Mesh.cpp
     Query.cpp
     Renderbuffer.cpp
@@ -39,7 +37,6 @@ set(Magnum_HEADERS
     BufferedImage.h
     BufferedTexture.h
     Buffer.h
-    Camera.h
     Color.h
     CubeMapTextureArray.h
     CubeMapTexture.h
@@ -47,13 +44,10 @@ set(Magnum_HEADERS
     Image.h
     ImageWrapper.h
     IndexedMesh.h
-    Light.h
     Magnum.h
     Mesh.h
-    Object.h
     Query.h
     Renderbuffer.h
-    Scene.h
     Shader.h
     SizeTraits.h
     Swizzle.h
@@ -68,10 +62,6 @@ set(MagnumMath_SRCS
     Math/Math.cpp)
 add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
 
-# Files compiled with different flags for main library and unit test library
-set(Magnum_GracefulAssert_SRCS
-    Object.cpp)
-
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
 set_target_properties(MagnumObjects MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
@@ -79,8 +69,7 @@ set_target_properties(MagnumObjects MagnumMathObjects PROPERTIES COMPILE_FLAGS "
 # Main library
 add_library(Magnum SHARED
     $<TARGET_OBJECTS:MagnumObjects>
-    $<TARGET_OBJECTS:MagnumMathObjects>
-    ${Magnum_GracefulAssert_SRCS})
+    $<TARGET_OBJECTS:MagnumMathObjects>)
 target_link_libraries(Magnum ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY})
 if(NOT TARGET_GLES)
     target_link_libraries(Magnum ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY})
@@ -110,6 +99,10 @@ if(WITH_PRIMITIVES)
     add_subdirectory(Primitives)
 endif()
 
+if(WITH_SCENEGRAPH)
+    add_subdirectory(SceneGraph)
+endif()
+
 if(WITH_SHADERS)
     add_subdirectory(Shaders)
 endif()
@@ -119,8 +112,7 @@ if(BUILD_TESTS)
 
     # Library with graceful assert for testing
     add_library(MagnumTestLib SHARED
-        $<TARGET_OBJECTS:MagnumObjects>
-        ${Magnum_GracefulAssert_SRCS})
+        $<TARGET_OBJECTS:MagnumObjects>)
     set_target_properties(MagnumTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
     target_link_libraries(MagnumTestLib ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY})
     if(NOT TARGET_GLES)

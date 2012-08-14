@@ -1,5 +1,3 @@
-#ifndef Magnum_Test_CameraTest_h
-#define Magnum_Test_CameraTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,18 +13,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <TestSuite/Tester.h>
+#include "Light.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace SceneGraph {
 
-class CameraTest: public Corrade::TestSuite::Tester<CameraTest> {
-    public:
-        CameraTest();
+void Light::clean(const Matrix4& absoluteTransformation) {
+    Object::clean(absoluteTransformation);
 
-        void orthographic();
-        void perspective();
-};
+    _position = absoluteTransformation[3];
+}
 
 }}
-
-#endif
