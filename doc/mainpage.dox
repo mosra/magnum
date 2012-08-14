@@ -50,11 +50,6 @@ in step-by-step tutorial. Then you can dig deeper and try @ref example-index
 "other examples", read about fundamental principles in the documentation or
 start experimenting on your own!
 
-@subsection module-overview Module overview
-
-Classes in %Magnum are grouped into a few modules for a better orientation.
-Check the @ref modules "module index" for more information about all classes.
-
 @subsection getting-started-hacking Hacking Magnum
 
 If you want to hack on this engine, if you spotted a bug, need an feature or

@@ -30,7 +30,7 @@ namespace Magnum {
 
 class Buffer;
 
-/** @ingroup rendering mesh
+/**
 @brief Base class for managing non-indexed meshes
 
 VAOs are used for desktop OpenGL (not in OpenGL ES).

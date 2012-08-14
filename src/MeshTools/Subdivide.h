@@ -84,7 +84,7 @@ template<class Vertex, class Interpolator> class Subdivide {
 }
 #endif
 
-/** @ingroup mesh
+/**
 @brief %Subdivide the mesh
 @tparam Vertex          Vertex data type
 @tparam Interpolator    See `interpolator` function parameter

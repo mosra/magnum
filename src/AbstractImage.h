@@ -23,7 +23,7 @@
 
 namespace Magnum {
 
-/** @ingroup textures
+/**
 @brief Non-templated base for one-, two- or three-dimensional images
 
 See Image, BufferedImage, Trade::ImageData documentation for more information.

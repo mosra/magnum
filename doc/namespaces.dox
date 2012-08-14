@@ -40,8 +40,7 @@ Functions for computing intersections, distances, areas and volumes.
 /** @dir MeshTools
  * @brief Namespace Magnum::MeshTools
  */
-/** @ingroup mesh
-@namespace Magnum::MeshTools
+/** @namespace Magnum::MeshTools
 @brief %Mesh tools
 
 Tools for generating, optimizing and cleaning meshes.
@@ -50,8 +49,7 @@ Tools for generating, optimizing and cleaning meshes.
 /** @dir Primitives
  * @brief Namespace Magnum::Primitives
  */
-/** @ingroup mesh
-@namespace Magnum::Primitives
+/** @namespace Magnum::Primitives
 @brief Primitive library
 
 Basic primitives for testing purposes.
@@ -70,8 +68,7 @@ Setting up and rendering the scene.
 /** @dir Shaders
  * @brief Namespace Magnum::Shaders
  */
-/** @ingroup rendering
-@namespace Magnum::Shaders
+/** @namespace Magnum::Shaders
 @brief Sample shaders
 
 Collection of shaders for testing purposes.

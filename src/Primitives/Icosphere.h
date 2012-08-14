@@ -27,7 +27,7 @@ namespace Magnum { namespace Primitives {
 
 template<size_t subdivisions> class Icosphere;
 
-/** @ingroup mesh
+/**
 @brief %Icosphere primitive with zero subdivisions
 
 @todo Use own computed (and more precise) icosahedron data, not these stolen
@@ -39,7 +39,7 @@ template<> class Icosphere<0>: public Trade::MeshData {
         Icosphere();
 };
 
-/** @ingroup mesh
+/**
  * @brief %Icosphere primitive
  * @tparam subdivisions     Number of subdivisions
  */

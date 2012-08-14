@@ -23,9 +23,7 @@
 
 namespace Magnum { namespace SceneGraph {
 
-/** @ingroup scene
-@brief %Scene
-*/
+/** @brief %Scene */
 class SCENEGRAPH_EXPORT Scene: public Object {
     public:
         /** @brief Constructor */

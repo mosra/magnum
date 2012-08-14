@@ -23,10 +23,6 @@
 
 namespace Magnum {
 
-/** @addtogroup utility
- * @{
- */
-
 /**
 @brief Traits class providing suitable types for given data sizes
 @tparam byte    Highest byte needed (counting from zero)
@@ -174,8 +170,6 @@ template<size_t base> struct Log<base, 0> {
     enum { value = 0 };
 };
 #endif
-
-/*@}*/
 
 }
 

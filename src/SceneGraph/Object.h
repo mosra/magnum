@@ -40,7 +40,7 @@ class Camera;
   not needed)
 */
 
-/** @ingroup scene
+/**
  * @brief Base for all positioned objects
  *
  * @todo Transform transformation when changing parent, so the object stays in

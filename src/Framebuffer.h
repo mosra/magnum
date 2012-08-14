@@ -29,8 +29,7 @@
 
 namespace Magnum {
 
-/** @ingroup textures
-@nosubgrouping
+/** @nosubgrouping
 @brief %Framebuffer
 
 Provides operations with framebuffers (configuring, clearing, blitting...) and

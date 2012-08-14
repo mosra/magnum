@@ -25,7 +25,7 @@
 namespace Magnum {
 
 #ifndef MAGNUM_TARGET_GLES
-/** @ingroup textures
+/**
 @brief Buffered texture
 
 This texture is, unlike classic textures such as Texture or CubeMapTexture,

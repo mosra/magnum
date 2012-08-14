@@ -23,7 +23,7 @@
 
 namespace Magnum { namespace SceneGraph {
 
-/** @ingroup scene
+/**
  * @brief Basic light object
  *
  * Provides cached light position.
