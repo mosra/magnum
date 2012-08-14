@@ -797,7 +797,7 @@ class MAGNUM_EXPORT Framebuffer {
          *      attachTexture1D(Target, DepthStencilAttachment, Texture1D*, GLint),
          *      attachTexture2D(Target, DepthStencilAttachment, Texture2D*, GLint),
          *      attachCubeMapTexture(Target, DepthStencilAttachment, CubeMapTexture*, CubeMapTexture::Coordinate, GLint),
-         *      attachTexture3D(Target, DepthStencilAttachment, Texture3D*, GLint)
+         *      attachTexture3D(Target, DepthStencilAttachment, Texture3D*, GLint, GLint)
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         enum class DepthStencilAttachment: GLenum {
