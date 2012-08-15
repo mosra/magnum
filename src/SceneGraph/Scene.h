@@ -24,21 +24,26 @@
 namespace Magnum { namespace SceneGraph {
 
 /** @brief %Scene */
-class SCENEGRAPH_EXPORT Scene: public Object {
+template<class MatrixType, class VectorType, class ObjectType, class CameraType> class SCENEGRAPH_EXPORT Scene: public ObjectType {
     public:
         /** @brief Constructor */
-        inline Scene() { _parent = this; }
+        inline Scene() { this->_parent = this; }
 
-        void setParent(Object* parent) = delete;
-        void setTransformation(const Matrix4& transformation) = delete;
-        void multiplyTransformation(const Matrix4& transformation, Transformation type = Transformation::Global) = delete;
-        void translate(Vector3 vec, Transformation type = Transformation::Global) = delete;
-        void scale(Vector3 vec, Transformation type = Transformation::Global) = delete;
-        void rotate(GLfloat angle, Vector3 vec, Transformation type = Transformation::Global) = delete;
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        void setParent(ObjectType* parent) = delete;
+        void setTransformation(const MatrixType& transformation) = delete;
+        void multiplyTransformation(const MatrixType& transformation, typename ObjectType::Transformation type = ObjectType::Transformation::Global) = delete;
+        void translate(const VectorType& vec, typename ObjectType::Transformation type = ObjectType::Transformation::Global) = delete;
+        void scale(const VectorType& vec, typename ObjectType::Transformation type = ObjectType::Transformation::Global) = delete;
+        void rotate(GLfloat angle, const VectorType& vec, typename ObjectType::Transformation type = ObjectType::Transformation::Global) = delete;
+        #endif
 
     private:
-        inline void draw(const Magnum::Matrix4&, Camera*) {}
+        inline void draw(const MatrixType&, CameraType*) {}
 };
+
+/** @brief Three-dimensional scene */
+typedef Scene<Matrix4, Vector3, Object3D, Camera3D> Scene3D;
 
 }}
 

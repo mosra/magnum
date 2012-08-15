@@ -27,7 +27,7 @@ CameraTest::CameraTest() {
 }
 
 void CameraTest::orthographic() {
-    Camera camera;
+    Camera3D camera;
     camera.setOrthographic(5, 1, 9);
 
     Matrix4 a(0.4f,   0.0f,   0.0f,       0.0f,
@@ -39,7 +39,7 @@ void CameraTest::orthographic() {
 }
 
 void CameraTest::perspective() {
-    Camera camera;
+    Camera3D camera;
     camera.setPerspective(deg(27.0f), 32.0f, 100);
 
     Matrix4 a(4.1652994f, 0.0f,       0.0f,        0.0f,

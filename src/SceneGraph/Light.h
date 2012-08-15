@@ -28,13 +28,13 @@ namespace Magnum { namespace SceneGraph {
  *
  * Provides cached light position.
  */
-class SCENEGRAPH_EXPORT Light: public Object {
+class SCENEGRAPH_EXPORT Light: public Object3D {
     public:
         /**
          * @brief Constructor
          * @param parent        Parent object
          */
-        inline Light(Object* parent = nullptr): Object(parent) {}
+        inline Light(Object3D* parent = nullptr): Object3D(parent) {}
 
         /**
          * @brief Light position relative to root object (scene)

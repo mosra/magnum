@@ -27,8 +27,7 @@
 
 namespace Magnum { namespace SceneGraph {
 
-class Scene;
-class Camera;
+template<class MatrixType, class VectorType, class ObjectType, class CameraType> class Scene;
 
 /**
 @todo User-specified Object implementation:
@@ -46,13 +45,15 @@ class Camera;
  * @todo Transform transformation when changing parent, so the object stays in
  * place.
  */
-class SCENEGRAPH_EXPORT Object {
-    Object(const Object& other) = delete;
-    Object(Object&& other) = delete;
-    Object& operator=(const Object& other) = delete;
-    Object& operator=(Object&& other) = delete;
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> class SCENEGRAPH_EXPORT Object {
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    Object(const Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>& other) = delete;
+    Object(Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>&& other) = delete;
+    Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>& operator=(const Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>& other) = delete;
+    Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>& operator=(Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>&& other) = delete;
+    #endif
 
-    friend class Scene;
+    friend class Scene<MatrixType, VectorType, ObjectType, CameraType>;
 
     public:
         /**
@@ -61,7 +62,7 @@ class SCENEGRAPH_EXPORT Object {
          *
          * Sets all transformations to their default values.
          */
-        inline Object(Object* parent = nullptr): _parent(nullptr), dirty(true) {
+        inline Object(ObjectType* parent = nullptr): _parent(nullptr), dirty(true) {
             setParent(parent);
         }
 
@@ -79,16 +80,16 @@ class SCENEGRAPH_EXPORT Object {
          * @brief %Scene
          * @return If the object is not assigned to any scene, returns nullptr.
          */
-        Scene* scene();
+        SceneType* scene();
 
         /** @brief Parent object */
-        inline Object* parent() { return _parent; }
+        inline ObjectType* parent() { return _parent; }
 
         /** @brief Child objects */
-        inline const std::set<Object*>& children() { return _children; }
+        inline const std::set<ObjectType*>& children() { return _children; }
 
         /** @brief Set parent object */
-        Object* setParent(Object* parent);
+        ObjectType* setParent(ObjectType* parent);
 
         /*@}*/
 
@@ -108,7 +109,7 @@ class SCENEGRAPH_EXPORT Object {
         };
 
         /** @brief Transformation */
-        inline Matrix4 transformation() const {
+        inline MatrixType transformation() const {
             return _transformation;
         }
 
@@ -123,50 +124,20 @@ class SCENEGRAPH_EXPORT Object {
          * objects every time it is asked, unless this function is
          * reimplemented in a different way.
          */
-        virtual Matrix4 absoluteTransformation(Camera* camera = nullptr);
+        virtual MatrixType absoluteTransformation(CameraType* camera = nullptr);
 
         /** @brief Set transformation */
-        Object* setTransformation(const Matrix4& transformation);
+        ObjectType* setTransformation(const MatrixType& transformation);
 
         /**
          * @brief Multiply transformation
          * @param transformation    Transformation
          * @param type              Transformation type
          */
-        inline Object* multiplyTransformation(const Matrix4& transformation, Transformation type = Transformation::Global) {
+        inline ObjectType* multiplyTransformation(const MatrixType& transformation, Transformation type = Transformation::Global) {
             setTransformation(type == Transformation::Global ?
                 transformation*_transformation : _transformation*transformation);
-            return this;
-        }
-
-        /**
-         * @brief Translate object
-         *
-         * Same as calling multiplyTransformation() with Matrix4::translation().
-         */
-        inline Object* translate(Vector3 vec, Transformation type = Transformation::Global) {
-            multiplyTransformation(Matrix4::translation(vec), type);
-            return this;
-        }
-
-        /**
-         * @brief Scale object
-         *
-         * Same as calling multiplyTransformation() with Matrix4::scaling().
-         */
-        inline Object* scale(Vector3 vec, Transformation type = Transformation::Global) {
-            multiplyTransformation(Matrix4::scaling(vec), type);
-            return this;
-        }
-
-        /**
-         * @brief Rotate object
-         *
-         * Same as calling multiplyTransformation() with Matrix4::rotation().
-         */
-        inline Object* rotate(GLfloat angle, Vector3 vec, Transformation type = Transformation::Global) {
-            multiplyTransformation(Matrix4::rotation(angle, vec), type);
-            return this;
+            return static_cast<ObjectType*>(this);
         }
 
         /*@}*/
@@ -180,7 +151,7 @@ class SCENEGRAPH_EXPORT Object {
          *
          * Default implementation does nothing.
          */
-        virtual void draw(const Matrix4& transformationMatrix, Camera* camera);
+        virtual void draw(const MatrixType& transformationMatrix, CameraType* camera);
 
         /** @{ @name Caching helpers
          *
@@ -255,20 +226,66 @@ class SCENEGRAPH_EXPORT Object {
          * }
          * @endcode
          */
-        virtual void clean(const Matrix4& absoluteTransformation);
+        virtual void clean(const MatrixType& absoluteTransformation);
 
         /*@}*/
 
     private:
-        Object* _parent;
-        std::set<Object*> _children;
-        Matrix4 _transformation;
+        ObjectType* _parent;
+        std::set<ObjectType*> _children;
+        MatrixType _transformation;
         bool dirty;
 };
 
 /* Implementations for inline functions with unused parameters */
-inline void Object::draw(const Matrix4&, Camera*) {}
-inline void Object::clean(const Matrix4&) { dirty = false; }
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> inline void Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::draw(const MatrixType&, CameraType*) {}
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> inline void Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::clean(const MatrixType&) { dirty = false; }
+
+class Camera3D;
+class Object3D;
+typedef Scene<Matrix4, Vector3, Object3D, Camera3D> Scene3D;
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* These templates are instantiated in source file */
+extern template class SCENEGRAPH_EXPORT Object<Matrix4, Vector3, Object3D, Scene3D, Camera3D>;
+#endif
+
+/** @brief Three-dimensional object */
+class SCENEGRAPH_EXPORT Object3D: public Object<Matrix4, Vector3, Object3D, Scene3D, Camera3D> {
+    public:
+        /** @copydoc Object::Object */
+        inline Object3D(Object3D* parent = nullptr): Object(parent) {}
+
+        /**
+         * @brief Translate object
+         *
+         * Same as calling multiplyTransformation() with Matrix4::translation().
+         */
+        inline Object3D* translate(const Vector3& vec, Transformation type = Transformation::Global) {
+            multiplyTransformation(Matrix4::translation(vec), type);
+            return this;
+        }
+
+        /**
+         * @brief Scale object
+         *
+         * Same as calling multiplyTransformation() with Matrix4::scaling().
+         */
+        inline Object3D* scale(const Vector3& vec, Transformation type = Transformation::Global) {
+            multiplyTransformation(Matrix4::scaling(vec), type);
+            return this;
+        }
+
+        /**
+         * @brief Rotate object
+         *
+         * Same as calling multiplyTransformation() with Matrix4::rotation().
+         */
+        inline Object3D* rotate(GLfloat angle, const Vector3& vec, Transformation type = Transformation::Global) {
+            multiplyTransformation(Matrix4::rotation(angle, vec), type);
+            return this;
+        }
+};
 
 }}
 

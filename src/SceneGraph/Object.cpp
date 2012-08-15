@@ -21,44 +21,45 @@
 #include "Camera.h"
 
 using namespace std;
+using namespace Magnum::Math;
 
 namespace Magnum { namespace SceneGraph {
 
-Object* Object::setParent(Object* parent) {
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> ObjectType* Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setParent(ObjectType* parent) {
     /* Skip if nothing to do or this is scene */
-    if(_parent == parent || _parent == this) return this;
+    if(_parent == parent || _parent == this) return static_cast<ObjectType*>(this);
 
     /* Add the object to children list of new parent */
     if(parent != nullptr) {
 
         /* Only Fry can be his own grandfather */
-        Object* p = parent;
+        ObjectType* p = parent;
         while(p != nullptr && p->parent() != p) {
-            if(p == this) return this;
+            if(p == this) return static_cast<ObjectType*>(this);
             p = p->parent();
         }
 
-        parent->_children.insert(this);
+        parent->_children.insert(static_cast<ObjectType*>(this));
     }
 
     /* Remove the object from old parent children list */
     if(_parent != nullptr)
-        _parent->_children.erase(this);
+        _parent->_children.erase(static_cast<ObjectType*>(this));
 
     /* Set new parent */
     _parent = parent;
 
     setDirty();
-    return this;
+    return static_cast<ObjectType*>(this);
 }
 
-Matrix4 Object::absoluteTransformation(Camera* camera) {
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> MatrixType Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::absoluteTransformation(CameraType* camera) {
     /* Shortcut for absolute transformation of camera relative to itself */
-    if(camera == this) return Matrix4();
+    if(camera == this) return MatrixType();
 
-    Matrix4 t = _transformation;
+    MatrixType t = _transformation;
 
-    Object* p = parent();
+    ObjectType* p = parent();
     while(p != nullptr) {
         t = p->transformation()*t;
 
@@ -80,7 +81,7 @@ Matrix4 Object::absoluteTransformation(Camera* camera) {
     return t;
 }
 
-Object::~Object() {
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::~Object() {
     /* Remove the object from parent's children */
     setParent(nullptr);
 
@@ -89,44 +90,44 @@ Object::~Object() {
         delete *_children.begin();
 }
 
-Scene* Object::scene() {
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> SceneType* Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::scene() {
     /* Goes up the family tree until it finds object which is parent of itself
        (that's the scene) */
-    Object* p = parent();
+    ObjectType* p = parent();
     while(p != nullptr) {
-        if(p->parent() == p) return static_cast<Scene*>(p);
+        if(p->parent() == p) return static_cast<SceneType*>(p);
         p = p->parent();
     }
 
     return nullptr;
 }
 
-Object* Object::setTransformation(const Matrix4& transformation) {
-    if(_parent == this) return this;
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> ObjectType* Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setTransformation(const MatrixType& transformation) {
+    if(_parent == this) return static_cast<ObjectType*>(this);
 
     _transformation = transformation;
     setDirty();
-    return this;
+    return static_cast<ObjectType*>(this);
 }
 
-void Object::setDirty() {
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setDirty() {
     /* The object (and all its children) are already dirty, nothing to do */
     if(dirty) return;
 
     dirty = true;
 
     /* Make all children dirty */
-    for(set<Object*>::iterator it = _children.begin(); it != _children.end(); ++it)
+    for(typename set<ObjectType*>::iterator it = _children.begin(); it != _children.end(); ++it)
         (*it)->setDirty();
 }
 
-void Object::setClean() {
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setClean() {
     /* The object (and all its parents) are already clean, nothing to do */
     if(!dirty) return;
 
     /* Collect all parents */
-    stack<Object*> objects;
-    Object* p = this;
+    stack<ObjectType*> objects;
+    ObjectType* p = static_cast<ObjectType*>(this);
     for(;;) {
         objects.push(p);
 
@@ -138,9 +139,9 @@ void Object::setClean() {
     }
 
     /* Call setClean(const Matrix4&) for every parent and also this object */
-    Object* o = objects.top();
+    ObjectType* o = objects.top();
     objects.pop();
-    Matrix4 absoluteTransformation = o->absoluteTransformation();
+    MatrixType absoluteTransformation = o->absoluteTransformation();
     o->clean(absoluteTransformation);
     while(!objects.empty()) {
         o = objects.top();
@@ -149,5 +150,8 @@ void Object::setClean() {
         o->clean(absoluteTransformation);
     }
 }
+
+/* Explicitly instantiate the templates */
+template class Object<Matrix4, Vector3, Object3D, Scene3D, Camera3D>;
 
 }}

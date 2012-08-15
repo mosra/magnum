@@ -21,9 +21,72 @@ using namespace std;
 
 namespace Magnum { namespace SceneGraph {
 
-Camera::Camera(Object* parent): Object(parent), _aspectRatioPolicy(AspectRatioPolicy::Extend) {}
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
 
-void Camera::setOrthographic(GLfloat size, GLfloat near, GLfloat far) {
+Matrix4 Camera<3>::fixAspectRatio(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<GLsizei>& viewport) {
+    /* Don't divide by zero */
+    if(viewport.x() == 0 || viewport.y() == 0)
+        return Matrix4();
+
+    /* Extend on larger side = scale larger side down */
+    if(aspectRatioPolicy == AspectRatioPolicy::Extend)
+        return ((viewport.x() > viewport.y()) ?
+            Matrix4::scaling({GLfloat(viewport.y())/viewport.x(), 1, 1}) :
+            Matrix4::scaling({1, GLfloat(viewport.x())/viewport.y(), 1})
+        );
+
+    /* Clip on smaller side = scale smaller side up */
+    if(aspectRatioPolicy == AspectRatioPolicy::Clip)
+        return ((viewport.x() > viewport.y()) ?
+            Matrix4::scaling({1, GLfloat(viewport.x())/viewport.y(), 1}) :
+            Matrix4::scaling({GLfloat(viewport.y())/viewport.x(), 1, 1})
+        );
+
+    /* Don't preserve anything */
+    return Matrix4();
+}
+
+}
+#endif
+
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::Camera(ObjectType* parent): ObjectType(parent), _aspectRatioPolicy(AspectRatioPolicy::Extend) {}
+
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setViewport(const Math::Vector2<GLsizei>& size) {
+    Framebuffer::setViewport({0, 0}, size);
+
+    _viewport = size;
+    fixAspectRatio();
+}
+
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::clean(const MatrixType& absoluteTransformation) {
+    ObjectType::clean(absoluteTransformation);
+
+    _cameraMatrix = absoluteTransformation.inverted();
+}
+
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::draw() {
+    SceneType* s = this->scene();
+    CORRADE_ASSERT(s, "Camera: cannot draw without camera attached to scene", );
+
+    Framebuffer::clear();
+
+    /* Recursively draw child objects */
+    drawChildren(s, cameraMatrix());
+}
+
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::drawChildren(ObjectType* object, const MatrixType& transformationMatrix) {
+    for(typename set<ObjectType*>::const_iterator it = object->children().begin(); it != object->children().end(); ++it) {
+        /* Transformation matrix for the object */
+        MatrixType matrix = transformationMatrix*(*it)->transformation();
+
+        /* Draw the object and its children */
+        (*it)->draw(matrix, static_cast<CameraType*>(this));
+        drawChildren(*it, matrix);
+    }
+}
+
+void Camera3D::setOrthographic(GLfloat size, GLfloat near, GLfloat far) {
     _near = near;
     _far = far;
 
@@ -38,7 +101,7 @@ void Camera::setOrthographic(GLfloat size, GLfloat near, GLfloat far) {
     fixAspectRatio();
 }
 
-void Camera::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
+void Camera3D::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
     _near = near;
     _far = far;
 
@@ -63,63 +126,7 @@ void Camera::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
     fixAspectRatio();
 }
 
-void Camera::setViewport(const Math::Vector2<GLsizei>& size) {
-    Framebuffer::setViewport({0, 0}, size);
-
-    _viewport = size;
-    fixAspectRatio();
-}
-
-void Camera::clean(const Matrix4& absoluteTransformation) {
-    Object::clean(absoluteTransformation);
-
-    _cameraMatrix = absoluteTransformation.inverted();
-}
-
-void Camera::fixAspectRatio() {
-    /* Don't divide by zero */
-    if(_viewport.x() == 0 || _viewport.y() == 0) {
-        _projectionMatrix = rawProjectionMatrix;
-        return;
-    }
-
-    /* Extend on larger side = scale larger side down */
-    if(_aspectRatioPolicy == AspectRatioPolicy::Extend) {
-        _projectionMatrix = ((_viewport.x() > _viewport.y()) ?
-            Matrix4::scaling({GLfloat(_viewport.y())/_viewport.x(), 1, 1}) :
-            Matrix4::scaling({1, GLfloat(_viewport.x())/_viewport.y(), 1})
-        )*rawProjectionMatrix;
-
-    /* Clip on smaller side = scale smaller side up */
-    } else if(_aspectRatioPolicy == AspectRatioPolicy::Clip) {
-        _projectionMatrix = ((_viewport.x() > _viewport.y()) ?
-            Matrix4::scaling({1, GLfloat(_viewport.x())/_viewport.y(), 1}) :
-            Matrix4::scaling({GLfloat(_viewport.y())/_viewport.x(), 1, 1})
-        )*rawProjectionMatrix;
-
-    /* Don't preserve anything */
-    } else _projectionMatrix = rawProjectionMatrix;
-}
-
-void Camera::draw() {
-    Scene* s = scene();
-    CORRADE_ASSERT(s, "Camera: cannot draw without camera attached to scene", );
-
-    Framebuffer::clear();
-
-    /* Recursively draw child objects */
-    drawChildren(s, cameraMatrix());
-}
-
-void Camera::drawChildren(Object* object, const Matrix4& transformationMatrix) {
-    for(set<Object*>::const_iterator it = object->children().begin(); it != object->children().end(); ++it) {
-        /* Transformation matrix for the object */
-        Matrix4 matrix = transformationMatrix*(*it)->transformation();
-
-        /* Draw the object and its children */
-        (*it)->draw(matrix, this);
-        drawChildren(*it, matrix);
-    }
-}
+/* Explicitly instantiate the templates */
+template class Camera<Matrix4, Vector3, Object3D, Scene3D, Camera3D>;
 
 }}

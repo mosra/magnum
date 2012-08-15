@@ -33,12 +33,12 @@ class ObjectTest: public Corrade::TestSuite::Tester<ObjectTest> {
         void dirty();
 
     private:
-        class CleaningObject: public Object {
+        class CleaningObject: public Object3D {
             public:
-                CleaningObject(Object* parent = nullptr): Object(parent) {}
+                CleaningObject(Object3D* parent = nullptr): Object3D(parent) {}
 
                 inline void clean(const Matrix4& absoluteTransformation) {
-                    Object::clean(absoluteTransformation);
+                    Object3D::clean(absoluteTransformation);
 
                     cleanedAbsoluteTransformation = absoluteTransformation;
                 }

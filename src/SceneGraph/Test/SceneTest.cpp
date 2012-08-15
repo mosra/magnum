@@ -27,21 +27,21 @@ SceneTest::SceneTest() {
 }
 
 void SceneTest::transformation() {
-    Scene scene;
+    Scene3D scene;
 
-    Object* scenePointer = &scene;
+    Object3D* scenePointer = &scene;
     scenePointer->setTransformation(Matrix4::translation({1.0f, 1.0f, 1.0f}));
     CORRADE_COMPARE(scene.transformation(), Matrix4());
 }
 
 void SceneTest::parent() {
-    Scene scene;
+    Scene3D scene;
 
     CORRADE_VERIFY(scene.parent() == &scene);
 
     /* Scene parent cannot be changed */
-    Object* scenePointer = &scene;
-    Object object;
+    Object3D* scenePointer = &scene;
+    Object3D object;
     scenePointer->setParent(&object);
     CORRADE_VERIFY(scene.parent() == &scene);
     CORRADE_VERIFY(scene.children().empty());

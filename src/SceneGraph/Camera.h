@@ -28,31 +28,38 @@
 
 namespace Magnum { namespace SceneGraph {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
+    enum class AspectRatioPolicy {
+        NotPreserved, Extend, Clip
+    };
+
+    template<size_t dimensions> class Camera {};
+}
+#endif
+
 /**
 @brief %Camera object
  */
-class SCENEGRAPH_EXPORT Camera: public Object {
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> class SCENEGRAPH_EXPORT Camera: public ObjectType {
     public:
         /**
          * @brief Aspect ratio policy
          *
          * @see aspectRatioPolicy(), setAspectRatioPolicy()
          */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        typedef Implementation::AspectRatioPolicy AspectRatioPolicy;
+        #else
         enum class AspectRatioPolicy {
             NotPreserved,   /**< Don't preserve aspect ratio */
             Extend,         /**< Extend on larger side of view */
             Clip            /**< Clip on smaller side of view */
         };
+        #endif
 
-        /**
-         * @brief Constructor
-         * @param parent        Parent object
-         *
-         * Sets orthographic projection to the default OpenGL cube (range
-         * @f$ [-1; 1] @f$ in all directions).
-         * @see setOrthographic(), setPerspective()
-         */
-        Camera(Object* parent = nullptr);
+        /** @copydoc Object::Object */
+        Camera(ObjectType* parent = nullptr);
 
         /** @brief Aspect ratio policy */
         inline AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }
@@ -61,38 +68,13 @@ class SCENEGRAPH_EXPORT Camera: public Object {
         void setAspectRatioPolicy(AspectRatioPolicy policy) { _aspectRatioPolicy = policy; }
 
         /**
-         * @brief Set orthographic projection
-         * @param size      Size of (square) view
-         * @param near      Near clipping plane
-         * @param far       Far clipping plane
-         *
-         * The volume of given size will be scaled down to range
-         * @f$ [-1; 1] @f$ on all directions.
-         */
-        void setOrthographic(GLfloat size, GLfloat near, GLfloat far);
-
-        /**
-         * @brief Set perspective projection
-         * @param fov       Field of view angle
-         * @param near      Near clipping plane
-         * @param far       Far clipping plane
-         */
-        void setPerspective(GLfloat fov, GLfloat near, GLfloat far);
-
-        /** @brief Near clipping plane */
-        inline GLfloat near() const { return _near; }
-
-        /** @brief Far clipping plane */
-        inline GLfloat far() const { return _far; }
-
-        /**
          * @brief Camera matrix
          *
          * Camera matrix describes world position relative to the camera and is
          * applied as first.
          */
-        inline Matrix4 cameraMatrix() {
-            setClean();
+        inline MatrixType cameraMatrix() {
+            this->setClean();
             return _cameraMatrix;
         }
 
@@ -102,7 +84,7 @@ class SCENEGRAPH_EXPORT Camera: public Object {
          * Projection matrix handles e.g. perspective distortion and is applied
          * as last.
          */
-        inline Matrix4 projectionMatrix() const { return _projectionMatrix; }
+        inline MatrixType projectionMatrix() const { return _projectionMatrix; }
 
         /** @brief Viewport size */
         inline Math::Vector2<GLsizei> viewport() const { return _viewport; }
@@ -124,31 +106,88 @@ class SCENEGRAPH_EXPORT Camera: public Object {
          */
         virtual void draw();
 
-        using Object::draw; /* Don't hide Object's draw() */
+        using ObjectType::draw; /* Don't hide Object's draw() */
 
     protected:
         /**
          * Recalculates camera matrix.
          */
-        void clean(const Matrix4& absoluteTransformation);
+        void clean(const MatrixType& absoluteTransformation);
 
         /**
          * @brief Draw object children
          *
          * Recursively draws all children of the object.
          */
-        void drawChildren(Object* object, const Matrix4& transformationMatrix);
+        void drawChildren(ObjectType* object, const MatrixType& transformationMatrix);
+
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline void fixAspectRatio() {
+            _projectionMatrix = Implementation::Camera<VectorType::Size>::fixAspectRatio(_aspectRatioPolicy, _viewport)*rawProjectionMatrix;
+        }
+
+        MatrixType rawProjectionMatrix;
+        AspectRatioPolicy _aspectRatioPolicy;
+        #endif
 
     private:
-        Matrix4 rawProjectionMatrix;
-        Matrix4 _projectionMatrix;
-        Matrix4 _cameraMatrix;
-        GLfloat _near, _far;
+        MatrixType _projectionMatrix;
+        MatrixType _cameraMatrix;
 
         Math::Vector2<GLsizei> _viewport;
-        AspectRatioPolicy _aspectRatioPolicy;
+};
 
-        SCENEGRAPH_LOCAL void fixAspectRatio();
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* These templates are instantiated in source file */
+extern template class SCENEGRAPH_EXPORT Camera<Matrix4, Vector3, Object3D, Scene3D, Camera3D>;
+
+namespace Implementation {
+    template<> class Camera<3> {
+        public:
+            static Matrix4 fixAspectRatio(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<GLsizei>& viewport);
+    };
+}
+#endif
+
+/** @brief %Camera for three-dimensional scenes */
+class SCENEGRAPH_EXPORT Camera3D: public Camera<Matrix4, Vector3, Object3D, Scene3D, Camera3D> {
+    public:
+        /**
+         * @brief Constructor
+         * @param parent    Parent object
+         *
+         * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
+         * @see setOrthographic(), setPerspective()
+         */
+        inline Camera3D(Object3D* parent = nullptr): Camera(parent), _near(0.0), _far(0.0) {}
+
+        /**
+         * @brief Set orthographic projection
+         * @param size      Size of (square) view
+         * @param near      Near clipping plane
+         * @param far       Far clipping plane
+         *
+         * The volume of given size will be scaled down to range @f$ [-1; 1] @f$
+         * on all directions.
+         */
+        void setOrthographic(GLfloat size, GLfloat near, GLfloat far);
+
+        /**
+         * @brief Set perspective projection
+         * @param fov       Field of view angle
+         * @param near      Near clipping plane
+         * @param far       Far clipping plane
+         */
+        void setPerspective(GLfloat fov, GLfloat near, GLfloat far);
+
+        /** @brief Near clipping plane */
+        inline GLfloat near() const { return _near; }
+
+        /** @brief Far clipping plane */
+        inline GLfloat far() const { return _far; }
+
+    private:
+        GLfloat _near, _far;
 };
 
 }}
