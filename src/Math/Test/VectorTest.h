@@ -24,6 +24,7 @@ class VectorTest: public Corrade::TestSuite::Tester<VectorTest> {
         VectorTest();
 
         void construct();
+        void constructFrom();
         void data();
         void copy();
         void dot();

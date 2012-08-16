@@ -27,6 +27,8 @@
 
 namespace Magnum { namespace Math {
 
+template<size_t size, class T> class Vector;
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<size_t ...> struct Sequence {};
@@ -38,6 +40,11 @@ namespace Implementation {
     template<size_t ...sequence> struct GenerateSequence<0, sequence...> {
         typedef Sequence<sequence...> Type;
     };
+
+    /* Implementation for Vector<size, T>::from(const Vector<size, U>&) */
+    template<class T, class U, size_t ...sequence> inline constexpr Math::Vector<sizeof...(sequence), T> vectorFrom(Sequence<sequence...>, const Math::Vector<sizeof...(sequence), U>& vector) {
+        return {T(vector[sequence])...};
+    }
 }
 #endif
 
@@ -63,6 +70,21 @@ template<size_t size, class T> class Vector {
         /** @overload */
         inline constexpr static const Vector<size, T>& from(const T* data) {
             return *reinterpret_cast<const Vector<size, T>*>(data);
+        }
+
+        /**
+         * @brief %Vector from another of different type
+         *
+         * Performs only default casting on the values, no rounding or
+         * anything else. Example usage:
+         * @code
+         * Vector<4, float> floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
+         * Vector<4, int> integral(Vector<4, int>::from(floatingPoint));
+         * // integral == {1, 2, -15, 7}
+         * @endcode
+         */
+        template<class U> inline constexpr static Vector<size, T> from(const Vector<size, U>& other) {
+            return Implementation::vectorFrom<T, U>(typename Implementation::GenerateSequence<size>::Type(), other);
         }
 
         /**
@@ -338,6 +360,9 @@ template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utili
     }                                                                       \
     inline constexpr static const Type<T>& from(const T* data) {            \
         return *reinterpret_cast<const Type<T>*>(data);                     \
+    }                                                                       \
+    template<class U> inline constexpr static Type<T> from(const Vector<size, U>& other) { \
+        return Vector<size, T>::from(other);                                \
     }                                                                       \
                                                                             \
     inline Type<T>& operator=(const Type<T>& other) {                       \
