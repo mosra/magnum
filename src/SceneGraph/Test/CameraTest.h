@@ -23,6 +23,7 @@ class CameraTest: public Corrade::TestSuite::Tester<CameraTest> {
     public:
         CameraTest();
 
+        void fixAspectRatio();
         void orthographic();
         void perspective();
 };

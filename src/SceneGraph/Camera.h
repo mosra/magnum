@@ -137,12 +137,14 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         Math::Vector2<GLsizei> _viewport;
 };
 
+/** @todo Export implementation symbols only for tests */
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* These templates are instantiated in source file */
 extern template class SCENEGRAPH_EXPORT Camera<Matrix4, Vector3, Object3D, Scene3D, Camera3D>;
 
 namespace Implementation {
-    template<> class Camera<3> {
+    template<> class SCENEGRAPH_EXPORT Camera<3> {
         public:
             static Matrix4 fixAspectRatio(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<GLsizei>& viewport);
     };
