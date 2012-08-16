@@ -20,13 +20,36 @@ using namespace std;
 
 namespace Magnum {
 
-Mesh::~Mesh() {
+Mesh::Mesh(Mesh&& other):
+    #ifndef MAGNUM_TARGET_GLES
+    vao(other.vao),
+    #endif
+    _primitive(other._primitive), _vertexCount(other._vertexCount), finalized(other.finalized), _buffers(other._buffers), _attributes(other._attributes)
+{
+    other.vao = 0;
+}
+
+void Mesh::destroy() {
     for(auto& it: _buffers)
         delete it.first;
 
     #ifndef MAGNUM_TARGET_GLES
     glDeleteVertexArrays(1, &vao);
     #endif
+}
+
+Mesh& Mesh::operator=(Mesh&& other) {
+    destroy();
+
+    vao = other.vao;
+    _primitive = other._primitive;
+    _vertexCount = other._vertexCount;
+    finalized = other.finalized;
+    _buffers = other._buffers;
+    _attributes = other._attributes;
+    other.vao = 0;
+
+    return *this;
 }
 
 Buffer* Mesh::addBuffer(BufferType interleaved) {

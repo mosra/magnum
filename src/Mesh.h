@@ -48,9 +48,7 @@ VAOs are used for desktop OpenGL (not in OpenGL ES).
  */
 class MAGNUM_EXPORT Mesh {
     Mesh(const Mesh& other) = delete;
-    Mesh(Mesh&& other) = delete;
     Mesh& operator=(const Mesh& other) = delete;
-    Mesh& operator=(Mesh&& other) = delete;
 
     public:
         #ifndef MAGNUM_TARGET_GLES
@@ -208,12 +206,18 @@ class MAGNUM_EXPORT Mesh {
             #endif
         }
 
+        /** @brief Move constructor */
+        Mesh(Mesh&& other);
+
         /**
          * @brief Destructor
          *
          * Deletes all associated buffers.
          */
-        virtual ~Mesh();
+        inline virtual ~Mesh() { destroy(); }
+
+        /** @brief Move assignment */
+        Mesh& operator=(Mesh&& other);
 
         /**
          * @brief Whether the mesh is finalized
@@ -340,6 +344,8 @@ class MAGNUM_EXPORT Mesh {
         std::set<GLuint> _attributes;
 
         MAGNUM_EXPORT void bindAttribute(Buffer* buffer, GLuint attribute, GLint size, Type type);
+
+        void destroy();
 };
 
 }
