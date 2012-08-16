@@ -40,6 +40,7 @@ template<class MatrixType> MatrixType aspectRatioFix(AspectRatioPolicy aspectRat
 }
 
 /* Explicitly instantiate the templates */
+template Matrix3 aspectRatioFix<Matrix3>(AspectRatioPolicy, const Vector2&, const Math::Vector2<GLsizei>&);
 template Matrix4 aspectRatioFix<Matrix4>(AspectRatioPolicy, const Vector2&, const Math::Vector2<GLsizei>&);
 
 }
@@ -79,6 +80,14 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         (*it)->draw(matrix, static_cast<CameraType*>(this));
         drawChildren(*it, matrix);
     }
+}
+
+void Camera2D::setProjection(const Vector2& size) {
+    /* Scale the volume down so it fits in (-1, 1) in all directions */
+    rawProjectionMatrix = Matrix3::scaling(2.0f/size);
+
+    projectionAspectRatio = size;
+    fixAspectRatio();
 }
 
 void Camera3D::setOrthographic(const Vector2& size, GLfloat near, GLfloat far) {
@@ -123,6 +132,7 @@ void Camera3D::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
 }
 
 /* Explicitly instantiate the templates */
+template class Camera<Matrix3, Vector2, Object2D, Scene2D, Camera2D>;
 template class Camera<Matrix4, Vector3, Object3D, Scene3D, Camera3D>;
 
 }}

@@ -42,6 +42,9 @@ template<class MatrixType, class VectorType, class ObjectType, class CameraType>
         inline void draw(const MatrixType&, CameraType*) {}
 };
 
+/** @brief Two-dimensional scene */
+typedef Scene<Matrix3, Vector2, Object2D, Camera2D> Scene2D;
+
 /** @brief Three-dimensional scene */
 typedef Scene<Matrix4, Vector3, Object3D, Camera3D> Scene3D;
 

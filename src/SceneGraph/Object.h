@@ -241,14 +241,55 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
 template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> inline void Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::draw(const MatrixType&, CameraType*) {}
 template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> inline void Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::clean(const MatrixType&) { dirty = false; }
 
+class Camera2D;
 class Camera3D;
+class Object2D;
 class Object3D;
+typedef Scene<Matrix3, Vector2, Object2D, Camera2D> Scene2D;
 typedef Scene<Matrix4, Vector3, Object3D, Camera3D> Scene3D;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* These templates are instantiated in source file */
+extern template class SCENEGRAPH_EXPORT Object<Matrix3, Vector2, Object2D, Scene2D, Camera2D>;
 extern template class SCENEGRAPH_EXPORT Object<Matrix4, Vector3, Object3D, Scene3D, Camera3D>;
 #endif
+
+/** @brief Two-dimensional object */
+class SCENEGRAPH_EXPORT Object2D: public Object<Matrix3, Vector2, Object2D, Scene2D, Camera2D> {
+    public:
+        /** @copydoc Object::Object */
+        inline Object2D(Object2D* parent = nullptr): Object(parent) {}
+
+        /**
+         * @brief Translate object
+         *
+         * Same as calling multiplyTransformation() with Matrix3::translation().
+         */
+        inline Object2D* translate(const Vector2& vec, Transformation type = Transformation::Global) {
+            multiplyTransformation(Matrix3::translation(vec), type);
+            return this;
+        }
+
+        /**
+         * @brief Scale object
+         *
+         * Same as calling multiplyTransformation() with Matrix3::scaling().
+         */
+        inline Object2D* scale(const Vector2& vec, Transformation type = Transformation::Global) {
+            multiplyTransformation(Matrix3::scaling(vec), type);
+            return this;
+        }
+
+        /**
+         * @brief Rotate object
+         *
+         * Same as calling multiplyTransformation() with Matrix3::rotation().
+         */
+        inline Object2D* rotate(GLfloat angle, Transformation type = Transformation::Global) {
+            multiplyTransformation(Matrix3::rotation(angle), type);
+            return this;
+        }
+};
 
 /** @brief Three-dimensional object */
 class SCENEGRAPH_EXPORT Object3D: public Object<Matrix4, Vector3, Object3D, Scene3D, Camera3D> {

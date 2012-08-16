@@ -152,6 +152,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
 }
 
 /* Explicitly instantiate the templates */
+template class Object<Matrix3, Vector2, Object2D, Scene2D, Camera2D>;
 template class Object<Matrix4, Vector3, Object3D, Scene3D, Camera3D>;
 
 }}

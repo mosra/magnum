@@ -147,9 +147,16 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* These templates are instantiated in source file */
+extern template class SCENEGRAPH_EXPORT Camera<Matrix3, Vector2, Object2D, Scene2D, Camera2D>;
 extern template class SCENEGRAPH_EXPORT Camera<Matrix4, Vector3, Object3D, Scene3D, Camera3D>;
 
 namespace Implementation {
+    template<> class Camera<2> {
+        public:
+            inline constexpr static Matrix3 aspectRatioScale(const Vector2& scale) {
+                return Matrix3::scaling({scale.x(), scale.y()});
+            }
+    };
     template<> class Camera<3> {
         public:
             inline constexpr static Matrix4 aspectRatioScale(const Vector2& scale) {
@@ -158,6 +165,28 @@ namespace Implementation {
     };
 }
 #endif
+
+/** @brief %Camera for two-dimensional scenes */
+class SCENEGRAPH_EXPORT Camera2D: public Camera<Matrix3, Vector2, Object2D, Scene2D, Camera2D> {
+    public:
+        /**
+         * @brief Constructor
+         * @param parent    Parent object
+         *
+         * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
+         * @see setOrthographic()
+         */
+        inline Camera2D(Object2D* parent = nullptr): Camera(parent) {}
+
+        /**
+         * @brief Set projection
+         * @param size      Size of the view
+         *
+         * The area of given size will be scaled down to range @f$ [-1; 1] @f$
+         * on all directions.
+         */
+        void setProjection(const Vector2& size);
+};
 
 /** @brief %Camera for three-dimensional scenes */
 class SCENEGRAPH_EXPORT Camera3D: public Camera<Matrix4, Vector3, Object3D, Scene3D, Camera3D> {
