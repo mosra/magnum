@@ -41,6 +41,9 @@ template<size_t size, class T> class Matrix {
     friend class Matrix<size+1, T>; /* for ij() */
 
     public:
+        const static size_t Size = size;    /**< @brief %Matrix size */
+        typedef T Type;                     /**< @brief %Matrix data type */
+
         /**
          * @brief %Matrix from array
          * @return Reference to the data as if it was Matrix, thus doesn't
