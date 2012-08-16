@@ -28,6 +28,8 @@
 
 namespace Magnum { namespace SceneGraph {
 
+/** @todo Export implementation symbols only for tests */
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     enum class AspectRatioPolicy {
@@ -35,6 +37,11 @@ namespace Implementation {
     };
 
     template<size_t dimensions> class Camera {};
+
+    template<class MatrixType> MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<GLsizei>& viewport);
+
+    /* These templates are instantiated in source file */
+    extern template SCENEGRAPH_EXPORT Matrix4 aspectRatioFix<Matrix4>(AspectRatioPolicy, const Math::Vector2<GLsizei>&);
 }
 #endif
 
@@ -123,7 +130,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline void fixAspectRatio() {
-            _projectionMatrix = Implementation::Camera<VectorType::Size>::fixAspectRatio(_aspectRatioPolicy, _viewport)*rawProjectionMatrix;
+            _projectionMatrix = Implementation::aspectRatioFix<MatrixType>(_aspectRatioPolicy, _viewport)*rawProjectionMatrix;
         }
 
         MatrixType rawProjectionMatrix;
@@ -137,16 +144,16 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         Math::Vector2<GLsizei> _viewport;
 };
 
-/** @todo Export implementation symbols only for tests */
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* These templates are instantiated in source file */
 extern template class SCENEGRAPH_EXPORT Camera<Matrix4, Vector3, Object3D, Scene3D, Camera3D>;
 
 namespace Implementation {
-    template<> class SCENEGRAPH_EXPORT Camera<3> {
+    template<> class Camera<3> {
         public:
-            static Matrix4 fixAspectRatio(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<GLsizei>& viewport);
+            inline constexpr static Matrix4 aspectRatioScale(const Vector2& scale) {
+                return Matrix4::scaling({scale.x(), scale.y(), 1.0f});
+            }
     };
 }
 #endif

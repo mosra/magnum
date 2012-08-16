@@ -31,27 +31,27 @@ void CameraTest::fixAspectRatio() {
     /* Division by zero */
     Math::Vector2<GLsizei> sizeZeroY(400, 0);
     Math::Vector2<GLsizei> sizeZeroX(0, 300);
-    CORRADE_COMPARE(Implementation::Camera<3>::fixAspectRatio(Implementation::AspectRatioPolicy::Clip, sizeZeroY), Matrix4());
-    CORRADE_COMPARE(Implementation::Camera<3>::fixAspectRatio(Implementation::AspectRatioPolicy::Extend, sizeZeroX), Matrix4());
+    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::Clip, sizeZeroY), Matrix4());
+    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::Extend, sizeZeroX), Matrix4());
 
     Math::Vector2<GLsizei> size(400, 300);
 
     /* Not preserved */
-    CORRADE_COMPARE(Implementation::Camera<3>::fixAspectRatio(Implementation::AspectRatioPolicy::NotPreserved, size), Matrix4());
+    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::NotPreserved, size), Matrix4());
 
     /* Clip */
     Matrix4 expectedClip(1.0f, 0.0f,      0.0f, 0.0f,
                          0.0f, 4.0f/3.0f, 0.0f, 0.0f,
                          0.0f, 0.0f,      1.0f, 0.0f,
                          0.0f, 0.0f,      0.0f, 1.0f);
-    CORRADE_COMPARE(Implementation::Camera<3>::fixAspectRatio(Implementation::AspectRatioPolicy::Clip, size), expectedClip);
+    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::Clip, size), expectedClip);
 
     /* Extend */
     Matrix4 expectedExtend(3.0f/4.0f, 0.0f, 0.0f, 0.0f,
                            0.0f,      1.0f, 0.0f, 0.0f,
                            0.0f,      0.0f, 1.0f, 0.0f,
                            0.0f,      0.0f, 0.0f, 1.0f);
-    CORRADE_COMPARE(Implementation::Camera<3>::fixAspectRatio(Implementation::AspectRatioPolicy::Extend, size), expectedExtend);
+    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::Extend, size), expectedExtend);
 }
 
 void CameraTest::orthographic() {

@@ -24,28 +24,21 @@ namespace Magnum { namespace SceneGraph {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
-Matrix4 Camera<3>::fixAspectRatio(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<GLsizei>& viewport) {
-    /* Don't divide by zero */
-    if(viewport.x() == 0 || viewport.y() == 0)
-        return Matrix4();
+template<class MatrixType> MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<GLsizei>& viewport) {
+    /* Don't divide by zero / don't preserve anything */
+    if(viewport.x() == 0 || viewport.y() == 0 || aspectRatioPolicy == AspectRatioPolicy::NotPreserved)
+        return MatrixType();
 
-    /* Extend on larger side = scale larger side down */
-    if(aspectRatioPolicy == AspectRatioPolicy::Extend)
-        return ((viewport.x() > viewport.y()) ?
-            Matrix4::scaling({GLfloat(viewport.y())/viewport.x(), 1, 1}) :
-            Matrix4::scaling({1, GLfloat(viewport.x())/viewport.y(), 1})
-        );
-
-    /* Clip on smaller side = scale smaller side up */
-    if(aspectRatioPolicy == AspectRatioPolicy::Clip)
-        return ((viewport.x() > viewport.y()) ?
-            Matrix4::scaling({1, GLfloat(viewport.x())/viewport.y(), 1}) :
-            Matrix4::scaling({GLfloat(viewport.y())/viewport.x(), 1, 1})
-        );
-
-    /* Don't preserve anything */
-    return Matrix4();
+    /* Extend on larger side = scale larger side down
+       Clip on smaller side = scale smaller side up */
+    return Camera<MatrixType::Size-1>::aspectRatioScale(
+        (viewport.x() > viewport.y()) == (aspectRatioPolicy == AspectRatioPolicy::Extend) ?
+        Vector2(GLfloat(viewport.y())/viewport.x(), 1.0f) :
+        Vector2(1.0f, GLfloat(viewport.x())/viewport.y()));
 }
+
+/* Explicitly instantiate the templates */
+template Matrix4 aspectRatioFix<Matrix4>(AspectRatioPolicy, const Math::Vector2<GLsizei>&);
 
 }
 #endif
