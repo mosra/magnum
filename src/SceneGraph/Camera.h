@@ -59,7 +59,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         typedef Implementation::AspectRatioPolicy AspectRatioPolicy;
         #else
         enum class AspectRatioPolicy {
-            NotPreserved,   /**< Don't preserve aspect ratio */
+            NotPreserved,   /**< Don't preserve aspect ratio (default) */
             Extend,         /**< Extend on larger side of view */
             Clip            /**< Clip on smaller side of view */
         };
