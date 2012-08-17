@@ -49,6 +49,7 @@ namespace Implementation {
 #endif
 
 /** @brief %Vector */
+/** @todo Constexprize all for loops */
 template<size_t size, class T> class Vector {
     static_assert(size != 0, "Vector cannot have zero elements");
 
