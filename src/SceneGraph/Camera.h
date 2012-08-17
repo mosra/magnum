@@ -38,10 +38,10 @@ namespace Implementation {
 
     template<size_t dimensions> class Camera {};
 
-    template<class MatrixType> MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<GLsizei>& viewport);
+    template<class MatrixType> MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Vector2& projectionAspectRatio, const Math::Vector2<GLsizei>& viewport);
 
     /* These templates are instantiated in source file */
-    extern template SCENEGRAPH_EXPORT Matrix4 aspectRatioFix<Matrix4>(AspectRatioPolicy, const Math::Vector2<GLsizei>&);
+    extern template SCENEGRAPH_EXPORT Matrix4 aspectRatioFix<Matrix4>(AspectRatioPolicy, const Vector2&, const Math::Vector2<GLsizei>&);
 }
 #endif
 
@@ -130,9 +130,10 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline void fixAspectRatio() {
-            _projectionMatrix = Implementation::aspectRatioFix<MatrixType>(_aspectRatioPolicy, _viewport)*rawProjectionMatrix;
+            _projectionMatrix = Implementation::aspectRatioFix<MatrixType>(_aspectRatioPolicy, projectionAspectRatio, _viewport)*rawProjectionMatrix;
         }
 
+        Vector2 projectionAspectRatio;
         MatrixType rawProjectionMatrix;
         AspectRatioPolicy _aspectRatioPolicy;
         #endif
@@ -172,20 +173,22 @@ class SCENEGRAPH_EXPORT Camera3D: public Camera<Matrix4, Vector3, Object3D, Scen
 
         /**
          * @brief Set orthographic projection
-         * @param size      Size of (square) view
+         * @param size      Size of the view
          * @param near      Near clipping plane
          * @param far       Far clipping plane
          *
          * The volume of given size will be scaled down to range @f$ [-1; 1] @f$
          * on all directions.
          */
-        void setOrthographic(GLfloat size, GLfloat near, GLfloat far);
+        void setOrthographic(const Vector2& size, GLfloat near, GLfloat far);
 
         /**
          * @brief Set perspective projection
          * @param fov       Field of view angle
          * @param near      Near clipping plane
          * @param far       Far clipping plane
+         *
+         * @todo Aspect ratio
          */
         void setPerspective(GLfloat fov, GLfloat near, GLfloat far);
 

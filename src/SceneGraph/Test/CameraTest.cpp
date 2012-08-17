@@ -28,35 +28,50 @@ CameraTest::CameraTest() {
 }
 
 void CameraTest::fixAspectRatio() {
-    /* Division by zero */
-    Math::Vector2<GLsizei> sizeZeroY(400, 0);
-    Math::Vector2<GLsizei> sizeZeroX(0, 300);
-    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::Clip, sizeZeroY), Matrix4());
-    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::Extend, sizeZeroX), Matrix4());
-
+    Vector2 projectionSize(2, 3);
     Math::Vector2<GLsizei> size(400, 300);
 
+    /* Division by zero */
+    Vector2 projectionSizeZeroY(2, 0);
+    Vector2 projectionSizeZeroX(0, 2);
+    Math::Vector2<GLsizei> sizeZeroY(400, 0);
+    Math::Vector2<GLsizei> sizeZeroX(0, 300);
+    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::Clip, projectionSizeZeroX, size), Matrix4());
+    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::Clip, projectionSizeZeroY, size), Matrix4());
+    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::Clip, projectionSize, sizeZeroY), Matrix4());
+    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::Extend, projectionSize, sizeZeroX), Matrix4());
+
     /* Not preserved */
-    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::NotPreserved, size), Matrix4());
+    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::NotPreserved, projectionSize, size), Matrix4());
 
     /* Clip */
     Matrix4 expectedClip(1.0f, 0.0f,      0.0f, 0.0f,
                          0.0f, 4.0f/3.0f, 0.0f, 0.0f,
                          0.0f, 0.0f,      1.0f, 0.0f,
                          0.0f, 0.0f,      0.0f, 1.0f);
-    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::Clip, size), expectedClip);
+    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::Clip, Vector2(2.0f), size), expectedClip);
+    Matrix4 expectedClipRectangle(1.0f, 0.0f, 0.0f, 0.0f,
+                                  0.0f, 2.0f, 0.0f, 0.0f,
+                                  0.0f, 0.0f, 1.0f, 0.0f,
+                                  0.0f, 0.0f, 0.0f, 1.0f);
+    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::Clip, projectionSize, size), expectedClipRectangle);
 
     /* Extend */
     Matrix4 expectedExtend(3.0f/4.0f, 0.0f, 0.0f, 0.0f,
                            0.0f,      1.0f, 0.0f, 0.0f,
                            0.0f,      0.0f, 1.0f, 0.0f,
                            0.0f,      0.0f, 0.0f, 1.0f);
-    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::Extend, size), expectedExtend);
+    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::Extend, Vector2(2.0f), size), expectedExtend);
+    Matrix4 expectedExtendRectangle(0.5f, 0.0f, 0.0f, 0.0f,
+                                    0.0f, 1.0f, 0.0f, 0.0f,
+                                    0.0f, 0.0f, 1.0f, 0.0f,
+                                    0.0f, 0.0f, 0.0f, 1.0f);
+    CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::Extend, projectionSize, size), expectedExtendRectangle);
 }
 
 void CameraTest::orthographic() {
     Camera3D camera;
-    camera.setOrthographic(5, 1, 9);
+    camera.setOrthographic(Vector2(5), 1, 9);
 
     Matrix4 a(0.4f,   0.0f,   0.0f,       0.0f,
               0.0f,   0.4f,   0.0f,       0.0f,
@@ -64,6 +79,15 @@ void CameraTest::orthographic() {
               0.0f,   0.0f,   -1.25f,     1.0f);
 
     CORRADE_COMPARE(camera.projectionMatrix(), a);
+
+    camera.setOrthographic(Vector2(5.0f, 4.0f), 1, 9);
+
+    Matrix4 rectangle(0.4f,   0.0f,   0.0f,       0.0f,
+                      0.0f,   0.5f,   0.0f,       0.0f,
+                      0.0f,   0.0f,   -0.25f,     0.0f,
+                      0.0f,   0.0f,   -1.25f,     1.0f);
+
+    CORRADE_COMPARE(camera.projectionMatrix(), rectangle);
 }
 
 void CameraTest::perspective() {
