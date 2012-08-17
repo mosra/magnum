@@ -188,7 +188,11 @@ template<size_t size, class T> class Vector {
          * cause ambiguity in some cases.
          * @see operator*=(U)
          */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator*(U number) const {
+        #else
         template<class U> inline Vector<size, T> operator*(U number) const {
+        #endif
             return Vector<size, T>(*this)*=number;
         }
 
@@ -198,7 +202,11 @@ template<size_t size, class T> class Vector {
          * More efficient than operator*(U) const, because it does the
          * computation in-place.
          */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class U> typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>&>::type operator*=(U number) {
+        #else
         template<class U> Vector<size, T>& operator*=(U number) {
+        #endif
             for(size_t i = 0; i != size; ++i)
                 (*this)[i] *= number;
 
@@ -232,7 +240,11 @@ template<size_t size, class T> class Vector {
          *
          * @see operator/=(U)
          */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator/(U number) const {
+        #else
         template<class U> inline Vector<size, T> operator/(U number) const {
+        #endif
             return Vector<size, T>(*this)/=number;
         }
 
@@ -242,7 +254,11 @@ template<size_t size, class T> class Vector {
          * More efficient than operator/(U) const, because it does the
          * computation in-place.
          */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class U> typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>&>::type operator/=(U number) {
+        #else
         template<class U> Vector<size, T>& operator/=(U number) {
+        #endif
             for(size_t i = 0; i != size; ++i)
                 (*this)[i] /= number;
 
