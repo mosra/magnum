@@ -41,7 +41,10 @@ void ObjectTest::parenting() {
     Object3D* childTwo = new Object3D(&root);
 
     CORRADE_VERIFY(childOne->parent() == &root);
-    CORRADE_COMPARE(root.children().size(), 2);
+    CORRADE_VERIFY(childTwo->parent() == &root);
+    CORRADE_VERIFY(root.firstChild() == childOne);
+    CORRADE_VERIFY(root.lastChild() == childTwo);
+    CORRADE_VERIFY(root.firstChild()->nextSibling() == root.lastChild());
 
     /* A object cannot be parent of itself */
     childOne->setParent(childOne);
@@ -53,12 +56,12 @@ void ObjectTest::parenting() {
 
     /* Reparent to another */
     childTwo->setParent(childOne);
-    CORRADE_VERIFY(root.children().size() == 1 && *root.children().begin() == childOne);
-    CORRADE_VERIFY(childOne->children().size() == 1 && *childOne->children().begin() == childTwo);
+    CORRADE_VERIFY(root.firstChild() == childOne && root.firstChild()->nextSibling() == nullptr);
+    CORRADE_VERIFY(childOne->firstChild() == childTwo && childOne->firstChild()->nextSibling() == nullptr);
 
     /* Delete child */
     delete childTwo;
-    CORRADE_VERIFY(childOne->children().empty());
+    CORRADE_VERIFY(!childOne->hasChildren());
 }
 
 void ObjectTest::transformation() {

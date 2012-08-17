@@ -27,28 +27,23 @@ namespace Magnum { namespace SceneGraph {
 
 template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> ObjectType* Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setParent(ObjectType* parent) {
     /* Skip if nothing to do or this is scene */
-    if(_parent == parent || isScene()) return static_cast<ObjectType*>(this);
+    if(this->parent() == parent || isScene()) return static_cast<ObjectType*>(this);
 
-    /* Add the object to children list of new parent */
-    if(parent != nullptr) {
-
-        /* Only Fry can be his own grandfather */
-        ObjectType* p = parent;
-        while(p != nullptr) {
-            /** @todo Assert for this */
-            if(p == this) return static_cast<ObjectType*>(this);
-            p = p->parent();
-        }
-
-        parent->_children.insert(static_cast<ObjectType*>(this));
+    /* Only Fry can be his own grandfather */
+    ObjectType* p = parent;
+    while(p) {
+        /** @todo Assert for this */
+        if(p == this) return static_cast<ObjectType*>(this);
+        p = p->parent();
     }
 
     /* Remove the object from old parent children list */
-    if(_parent != nullptr)
-        _parent->_children.erase(static_cast<ObjectType*>(this));
+    if(this->parent())
+        this->parent()->cut(static_cast<ObjectType*>(this));
 
-    /* Set new parent */
-    _parent = parent;
+    /* Add the object to list of new parent */
+    if(parent)
+        parent->insert(static_cast<ObjectType*>(this));
 
     setDirty();
     return static_cast<ObjectType*>(this);
@@ -82,15 +77,6 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
     return t;
 }
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::~Object() {
-    /* Remove the object from parent's children */
-    setParent(nullptr);
-
-    /* Delete all children */
-    while(!_children.empty())
-        delete *_children.begin();
-}
-
 template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> SceneType* Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::scene() {
     /* Goes up the family tree until it finds object which is parent of itself
        (that's the scene) */
@@ -120,8 +106,8 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
     dirty = true;
 
     /* Make all children dirty */
-    for(typename set<ObjectType*>::iterator it = _children.begin(); it != _children.end(); ++it)
-        (*it)->setDirty();
+    for(ObjectType* i = firstChild(); i; i = i->nextSibling())
+        i->setDirty();
 }
 
 template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setClean() {

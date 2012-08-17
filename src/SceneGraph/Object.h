@@ -19,7 +19,7 @@
  * @brief Class Magnum::SceneGraph::Object
  */
 
-#include <set>
+#include <Containers/DoubleLinkedList.h>
 
 #include "Magnum.h"
 
@@ -43,7 +43,7 @@ namespace Magnum { namespace SceneGraph {
  * @todo Transform transformation when changing parent, so the object stays in
  * place.
  */
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> class SCENEGRAPH_EXPORT Object {
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> class SCENEGRAPH_EXPORT Object: public Corrade::Containers::DoubleLinkedList<ObjectType>, public Corrade::Containers::DoubleLinkedListItem<ObjectType, ObjectType> {
     #ifndef DOXYGEN_GENERATING_OUTPUT
     Object(const Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>& other) = delete;
     Object(Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>&& other) = delete;
@@ -58,7 +58,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
          *
          * Sets all transformations to their default values.
          */
-        inline Object(ObjectType* parent = nullptr): _parent(nullptr), dirty(true) {
+        inline Object(ObjectType* parent = nullptr): dirty(true) {
             setParent(parent);
         }
 
@@ -68,7 +68,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
          * Removes itself from parent's children list and destroys all own
          * children.
          */
-        virtual ~Object();
+        virtual inline ~Object() {}
 
         /** @{ @name Scene hierarchy */
 
@@ -81,11 +81,23 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
          */
         SceneType* scene();
 
-        /** @brief Parent object */
-        inline ObjectType* parent() { return _parent; }
+        /** @brief Parent object or `nullptr`, if this is root object */
+        inline ObjectType* parent() { return Corrade::Containers::DoubleLinkedListItem<ObjectType, ObjectType>::list(); }
 
-        /** @brief Child objects */
-        inline const std::set<ObjectType*>& children() { return _children; }
+        /** @brief Previous sibling object or `nullptr`, if this is first object */
+        inline ObjectType* previousSibling() { return Corrade::Containers::DoubleLinkedListItem<ObjectType, ObjectType>::previous(); }
+
+        /** @brief Next sibling object or `nullptr`, if this is last object */
+        inline ObjectType* nextSibling() { return Corrade::Containers::DoubleLinkedListItem<ObjectType, ObjectType>::next(); }
+
+        /** @brief Whether this object has children */
+        inline bool hasChildren() const { return !Corrade::Containers::DoubleLinkedList<ObjectType>::isEmpty(); }
+
+        /** @brief First child object or `nullptr`, if this object has no children */
+        inline ObjectType* firstChild() { return Corrade::Containers::DoubleLinkedList<ObjectType>::first(); }
+
+        /** @brief Last child object or `nullptr`, if this object has no children */
+        inline ObjectType* lastChild() { return Corrade::Containers::DoubleLinkedList<ObjectType>::last(); }
 
         /** @brief Set parent object */
         ObjectType* setParent(ObjectType* parent);
@@ -230,8 +242,6 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         /*@}*/
 
     private:
-        ObjectType* _parent;
-        std::set<ObjectType*> _children;
         MatrixType _transformation;
         bool dirty;
 };

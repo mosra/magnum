@@ -43,8 +43,8 @@ void SceneTest::parent() {
     Object3D object;
     scenePointer->setParent(&object);
     CORRADE_VERIFY(scene.parent() == nullptr);
-    CORRADE_VERIFY(scene.children().empty());
-    CORRADE_VERIFY(object.children().empty());
+    CORRADE_VERIFY(!scene.hasChildren());
+    CORRADE_VERIFY(!object.hasChildren());
 }
 
 }}}

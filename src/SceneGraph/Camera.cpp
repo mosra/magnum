@@ -72,13 +72,13 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
 }
 
 template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::drawChildren(ObjectType* object, const MatrixType& transformationMatrix) {
-    for(typename set<ObjectType*>::const_iterator it = object->children().begin(); it != object->children().end(); ++it) {
+    for(ObjectType* i = object->firstChild(); i; i = i->nextSibling()) {
         /* Transformation matrix for the object */
-        MatrixType matrix = transformationMatrix*(*it)->transformation();
+        MatrixType matrix = transformationMatrix*i->transformation();
 
         /* Draw the object and its children */
-        (*it)->draw(matrix, static_cast<CameraType*>(this));
-        drawChildren(*it, matrix);
+        i->draw(matrix, static_cast<CameraType*>(this));
+        drawChildren(i, matrix);
     }
 }
 
