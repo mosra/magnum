@@ -206,6 +206,28 @@ template<size_t size, class T> class Vector {
         }
 
         /**
+         * @brief Multiply vector component-wise
+         *
+         * @see operator*=(const Vector<size, T>&)
+         */
+        Vector<size, T> operator*(const Vector<size, T>& other) const {
+            return Vector<size, T>(*this)*=other;
+        }
+
+        /**
+         * @brief Multiply vector component-wise and assign
+         *
+         * More efficient than operator*(const Vector<size, T>&) const,
+         * because it does the computation in-place.
+         */
+        Vector<size, T>& operator*=(const Vector<size, T>& other) {
+            for(size_t i = 0; i != size; ++i)
+                (*this)[i] *= other[i];
+
+            return *this;
+        }
+
+        /**
          * @brief Divide vector
          *
          * @see operator/=(U)
@@ -223,6 +245,28 @@ template<size_t size, class T> class Vector {
         template<class U> Vector<size, T>& operator/=(U number) {
             for(size_t i = 0; i != size; ++i)
                 (*this)[i] /= number;
+
+            return *this;
+        }
+
+        /**
+         * @brief Divide vector component-wise
+         *
+         * @see operator/=(const Vector<size, T>&)
+         */
+        Vector<size, T> operator/(const Vector<size, T>& other) const {
+            return Vector<size, T>(*this)/=other;
+        }
+
+        /**
+         * @brief Divide vector component-wise and assign
+         *
+         * More efficient than operator/(const Vector<size, T>&) const,
+         * because it does the computation in-place.
+         */
+        Vector<size, T>& operator/=(const Vector<size, T>& other) {
+            for(size_t i = 0; i != size; ++i)
+                (*this)[i] /= other[i];
 
             return *this;
         }
@@ -382,11 +426,25 @@ template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utili
         Vector<size, T>::operator*=(number);                                \
         return *this;                                                       \
     }                                                                       \
+    inline Type<T> operator*(const Vector<size, T>& other) const {          \
+        return Vector<size, T>::operator*(other);                           \
+    }                                                                       \
+    inline Type<T>& operator*=(const Vector<size, T>& other) {              \
+        Vector<size, T>::operator*=(other);                                 \
+        return *this;                                                       \
+    }                                                                       \
     template<class U> inline Type<T> operator/(U number) const {            \
         return Vector<size, T>::operator/(number);                          \
     }                                                                       \
     template<class U> inline Type<T>& operator/=(U number) {                \
         Vector<size, T>::operator/=(number);                                \
+        return *this;                                                       \
+    }                                                                       \
+    inline Type<T> operator/(const Vector<size, T>& other) const {          \
+        return Vector<size, T>::operator/(other);                           \
+    }                                                                       \
+    inline Type<T>& operator/=(const Vector<size, T>& other) {              \
+        Vector<size, T>::operator/=(other);                                 \
         return *this;                                                       \
     }                                                                       \
                                                                             \

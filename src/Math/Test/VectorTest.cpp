@@ -38,6 +38,7 @@ VectorTest::VectorTest() {
              &VectorTest::copy,
              &VectorTest::dot,
              &VectorTest::multiplyDivide,
+             &VectorTest::multiplyDivideComponentWise,
              &VectorTest::addSubtract,
              &VectorTest::dotSelf,
              &VectorTest::length,
@@ -112,6 +113,15 @@ void VectorTest::multiplyDivide() {
     Math::Vector<1, char> multipliedChar(-48);
     CORRADE_COMPARE(vecChar*-1.5f, multipliedChar);
     CORRADE_COMPARE(multipliedChar/-1.5f, vecChar);
+}
+
+void VectorTest::multiplyDivideComponentWise() {
+    Vector4 vec(1.0f, 2.0f, 3.0f, 4.0f);
+    Vector4 multiplier(7.0f, -4.0f, -1.5f, 1.0f);
+    Vector4 multiplied(7.0f, -8.0f, -4.5f, 4.0f);
+
+    CORRADE_COMPARE(vec*multiplier, multiplied);
+    CORRADE_COMPARE(multiplied/multiplier, vec);
 }
 
 void VectorTest::addSubtract() {
