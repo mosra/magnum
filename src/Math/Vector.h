@@ -183,10 +183,7 @@ template<size_t size, class T> class Vector {
         /**
          * @brief Multiply vector
          *
-         * Note that corresponding operator with swapped type order
-         * (multiplying number with vector) is not available, because it would
-         * cause ambiguity in some cases.
-         * @see operator*=(U)
+         * @see operator*=(U), operator*(U, const Vector<size, T>&)
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator*(U number) const {
@@ -238,7 +235,7 @@ template<size_t size, class T> class Vector {
         /**
          * @brief Divide vector
          *
-         * @see operator/=(U)
+         * @see operator/=(U), operator/(U, const Vector<size, T>&)
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator/(U number) const {
@@ -405,6 +402,42 @@ template<size_t size, class T> class Vector {
         T _data[size];
 };
 
+/** @relates Vector
+@brief Multiply number with vector
+
+@see Vector::operator*(U) const
+*/
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator*(U number, const Vector<size, T>& vector) {
+#else
+template<size_t size, class T, class U> inline Vector<size, T> operator*(U number, const Vector<size, T>& vector) {
+#endif
+    return vector*number;
+}
+
+/** @relates Vector
+@brief Divide vector with number and invert
+
+Example:
+@code
+Vector<4, float> vec(1.0f, 2.0f, -4.0f, 8.0f);
+Vector<4, float> another = 1.0f/vec; // {1.0f, 0.5f, -0.25f, 0.128f}
+@endcode
+@see Vector::operator/(U) const
+*/
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<size_t size, class T, class U> typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator/(U number, const Vector<size, T>& vector) {
+#else
+template<size_t size, class T, class U> Vector<size, T> operator/(U number, const Vector<size, T>& vector) {
+#endif
+    Vector<size, T> out;
+
+    for(size_t i = 0; i != size; ++i)
+        out[i] = number/vector[i];
+
+    return out;
+}
+
 /** @debugoperator{Vector} */
 template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector<size, T>& value) {
     debug << "Vector(";
@@ -481,6 +514,14 @@ template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utili
                                                                             \
     inline Type<T> operator-() const { return Vector<size, T>::operator-(); } \
     inline Type<T> normalized() const { return Vector<size, T>::normalized(); }
+
+#define MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Type, size)          \
+    template<class T, class U> inline Type<T> operator*(U number, const Type<T>& vector) { \
+        return number*Vector<size, T>(vector);                              \
+    }                                                                       \
+    template<class T, class U> inline Type<T> operator/(U number, const Type<T>& vector) { \
+        return number/Vector<size, T>(vector);                              \
+    }
 #endif
 
 }}

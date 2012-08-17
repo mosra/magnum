@@ -107,12 +107,20 @@ void VectorTest::multiplyDivide() {
     Vector4 multiplied(-1.5f, -3.0f, -4.5f, -6.0f);
 
     CORRADE_COMPARE(vec*-1.5f, multiplied);
+    CORRADE_COMPARE(-1.5f*vec, multiplied);
     CORRADE_COMPARE(multiplied/-1.5f, vec);
 
     Math::Vector<1, char> vecChar(32);
     Math::Vector<1, char> multipliedChar(-48);
     CORRADE_COMPARE(vecChar*-1.5f, multipliedChar);
     CORRADE_COMPARE(multipliedChar/-1.5f, vecChar);
+    CORRADE_COMPARE(-1.5f*vecChar, multipliedChar);
+
+    /* Divide vector with number and inverse */
+    Vector4 divisor(1.0f, 2.0f, -4.0f, 8.0f);
+    Vector4 result(1.0f, 0.5f, -0.25f, 0.125f);
+    CORRADE_COMPARE(1.0f/divisor, result);
+    CORRADE_COMPARE(-1550.0f/multipliedChar, vecChar);
 }
 
 void VectorTest::multiplyDivideComponentWise() {
