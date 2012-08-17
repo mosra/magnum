@@ -35,6 +35,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         /* Only Fry can be his own grandfather */
         ObjectType* p = parent;
         while(p != nullptr) {
+            /** @todo Assert for this */
             if(p == this) return static_cast<ObjectType*>(this);
             p = p->parent();
         }
@@ -104,6 +105,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
 
 template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> ObjectType* Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setTransformation(const MatrixType& transformation) {
     /* Setting transformation is forbidden for the scene */
+    /** @todo Assert for this? */
     if(isScene()) return static_cast<ObjectType*>(this);
 
     _transformation = transformation;
