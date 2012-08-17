@@ -186,16 +186,17 @@ template<size_t size, class T> class Vector {
          * Note that corresponding operator with swapped type order
          * (multiplying number with vector) is not available, because it would
          * cause ambiguity in some cases.
+         * @see operator*=(U)
          */
         template<class U> inline Vector<size, T> operator*(U number) const {
             return Vector<size, T>(*this)*=number;
         }
 
         /**
-         * @brief Multiply and assign vector
+         * @brief Multiply vector and assign
          *
-         * More efficient than operator*(), because it does the computation
-         * in-place.
+         * More efficient than operator*(U) const, because it does the
+         * computation in-place.
          */
         template<class U> Vector<size, T>& operator*=(U number) {
             for(size_t i = 0; i != size; ++i)
@@ -204,16 +205,20 @@ template<size_t size, class T> class Vector {
             return *this;
         }
 
-        /** @brief Divide vector */
+        /**
+         * @brief Divide vector
+         *
+         * @see operator/=(U)
+         */
         template<class U> inline Vector<size, T> operator/(U number) const {
             return Vector<size, T>(*this)/=number;
         }
 
         /**
-         * @brief Divide and assign vector
+         * @brief Divide vector and assign
          *
-         * More efficient than operator/(), because it does the computation
-         * in-place.
+         * More efficient than operator/(U) const, because it does the
+         * computation in-place.
          */
         template<class U> Vector<size, T>& operator/=(U number) {
             for(size_t i = 0; i != size; ++i)
