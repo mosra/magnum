@@ -36,14 +36,13 @@ void SceneTest::transformation() {
 
 void SceneTest::parent() {
     Scene3D scene;
-
-    CORRADE_VERIFY(scene.parent() == &scene);
+    CORRADE_VERIFY(scene.isScene());
 
     /* Scene parent cannot be changed */
     Object3D* scenePointer = &scene;
     Object3D object;
     scenePointer->setParent(&object);
-    CORRADE_VERIFY(scene.parent() == &scene);
+    CORRADE_VERIFY(scene.parent() == nullptr);
     CORRADE_VERIFY(scene.children().empty());
     CORRADE_VERIFY(object.children().empty());
 }

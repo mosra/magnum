@@ -27,8 +27,6 @@
 
 namespace Magnum { namespace SceneGraph {
 
-template<class MatrixType, class VectorType, class ObjectType, class CameraType> class Scene;
-
 /**
 @todo User-specified Object implementation:
 - for front-to-back sorting, LoD changes etc.
@@ -53,8 +51,6 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
     Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>& operator=(Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>&& other) = delete;
     #endif
 
-    friend class Scene<MatrixType, VectorType, ObjectType, CameraType>;
-
     public:
         /**
          * @brief Constructor
@@ -75,6 +71,9 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         virtual ~Object();
 
         /** @{ @name Scene hierarchy */
+
+        /** @brief Whether this object is scene */
+        virtual inline bool isScene() const { return false; }
 
         /**
          * @brief %Scene
@@ -245,6 +244,7 @@ class Camera2D;
 class Camera3D;
 class Object2D;
 class Object3D;
+template<class MatrixType, class VectorType, class ObjectType, class CameraType> class Scene;
 typedef Scene<Matrix3, Vector2, Object2D, Camera2D> Scene2D;
 typedef Scene<Matrix4, Vector3, Object3D, Camera3D> Scene3D;
 

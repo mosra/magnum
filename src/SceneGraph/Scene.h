@@ -26,8 +26,7 @@ namespace Magnum { namespace SceneGraph {
 /** @brief %Scene */
 template<class MatrixType, class VectorType, class ObjectType, class CameraType> class SCENEGRAPH_EXPORT Scene: public ObjectType {
     public:
-        /** @brief Constructor */
-        inline Scene() { this->_parent = this; }
+        inline bool isScene() const { return true; }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         void setParent(ObjectType* parent) = delete;

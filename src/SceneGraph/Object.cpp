@@ -27,14 +27,14 @@ namespace Magnum { namespace SceneGraph {
 
 template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> ObjectType* Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setParent(ObjectType* parent) {
     /* Skip if nothing to do or this is scene */
-    if(_parent == parent || _parent == this) return static_cast<ObjectType*>(this);
+    if(_parent == parent || isScene()) return static_cast<ObjectType*>(this);
 
     /* Add the object to children list of new parent */
     if(parent != nullptr) {
 
         /* Only Fry can be his own grandfather */
         ObjectType* p = parent;
-        while(p != nullptr && p->parent() != p) {
+        while(p != nullptr) {
             if(p == this) return static_cast<ObjectType*>(this);
             p = p->parent();
         }
@@ -64,7 +64,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         t = p->transformation()*t;
 
         /* We got to the scene, multiply with camera matrix */
-        if(p->parent() == p) {
+        if(p->isScene()) {
             if(camera) {
                 CORRADE_ASSERT(camera->scene() == scene(), "Object::absoluteTransformation(): the camera is not part of the same scene as object!", t);
                 t = camera->cameraMatrix()*t;
@@ -95,7 +95,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
        (that's the scene) */
     ObjectType* p = parent();
     while(p != nullptr) {
-        if(p->parent() == p) return static_cast<SceneType*>(p);
+        if(p->isScene()) return static_cast<SceneType*>(p);
         p = p->parent();
     }
 
@@ -103,7 +103,8 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
 }
 
 template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> ObjectType* Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setTransformation(const MatrixType& transformation) {
-    if(_parent == this) return static_cast<ObjectType*>(this);
+    /* Setting transformation is forbidden for the scene */
+    if(isScene()) return static_cast<ObjectType*>(this);
 
     _transformation = transformation;
     setDirty();
@@ -131,8 +132,8 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
     for(;;) {
         objects.push(p);
 
-        /* Stop on root object / scene / clean object */
-        if(p->parent() == nullptr || p->parent() == p || !p->parent()->isDirty())
+        /* Stop on root object / clean object */
+        if(p->parent() == nullptr || !p->parent()->isDirty())
             break;
 
         p = p->parent();
