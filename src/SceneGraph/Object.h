@@ -299,6 +299,16 @@ class SCENEGRAPH_EXPORT Object2D: public Object<Matrix3, Vector2, Object2D, Scen
             multiplyTransformation(Matrix3::rotation(angle), type);
             return this;
         }
+
+        /**
+         * @brief Move object in stacking order
+         * @param under     Sibling object under which to move or `nullptr`,
+         *      if you want to move it above all.
+         */
+        inline Object2D* move(Object2D* under) {
+            list()->Corrade::Containers::DoubleLinkedList<Object2D>::move(this, under);
+            return this;
+        }
 };
 
 /** @brief Three-dimensional object */
