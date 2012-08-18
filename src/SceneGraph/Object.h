@@ -242,6 +242,19 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         /*@}*/
 
     private:
+        /* Hide base class members, as they are aliased to more meaningful names */
+        using Corrade::Containers::LinkedList<ObjectType>::first;
+        using Corrade::Containers::LinkedList<ObjectType>::last;
+        using Corrade::Containers::LinkedList<ObjectType>::isEmpty;
+        using Corrade::Containers::LinkedList<ObjectType>::insert;
+        using Corrade::Containers::LinkedList<ObjectType>::cut;
+        using Corrade::Containers::LinkedList<ObjectType>::move;
+        using Corrade::Containers::LinkedList<ObjectType>::erase;
+        using Corrade::Containers::LinkedList<ObjectType>::clear;
+        using Corrade::Containers::LinkedListItem<ObjectType, ObjectType>::list;
+        using Corrade::Containers::LinkedListItem<ObjectType, ObjectType>::previous;
+        using Corrade::Containers::LinkedListItem<ObjectType, ObjectType>::next;
+
         MatrixType _transformation;
         bool dirty;
 };
@@ -306,7 +319,7 @@ class SCENEGRAPH_EXPORT Object2D: public Object<Matrix3, Vector2, Object2D, Scen
          *      if you want to move it above all.
          */
         inline Object2D* move(Object2D* under) {
-            list()->Corrade::Containers::LinkedList<Object2D>::move(this, under);
+            parent()->Corrade::Containers::LinkedList<Object2D>::move(this, under);
             return this;
         }
 };
