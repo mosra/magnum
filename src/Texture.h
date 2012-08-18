@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Texture
+ * @brief Class Magnum::Texture, typedef Magnum::Texture1D, Magnum::Texture2D, Magnum::Texture3D
  */
 
 #include "AbstractTexture.h"

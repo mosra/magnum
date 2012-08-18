@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Function Magnum::Math::swizzle()
+ * @brief Functions Magnum::swizzle(const T&), Magnum::swizzle(const T&, const char(&)[])
  */
 
 #include "Color.h"
@@ -93,7 +93,7 @@ two, three or four-component, corresponding Vector2, Vector3 or Vector4
 specialization is returned.
 
 @attention This function is less convenient to write than
-swizzle(const Vector<size, T>&, const char(&)[newSize]), but the evaluation of
+swizzle(const T&, const char(&)[newSize]), but the evaluation of
 the swizzling operation is guaranteed to be always done at compile time
 instead of at runtime.
 
@@ -119,7 +119,7 @@ two, three or four-component, corresponding Vector2, Vector3 or Vector4
 specialization is returned.
 
 @attention This function is more convenient to write than
-swizzle(const Vector<size, T>&), but unless the result is marked with
+swizzle(const T&), but unless the result is marked with
 `constexpr`, the evaluation of the swizzling operation probably won't be
 evaluated at compile time, but at runtime.
 

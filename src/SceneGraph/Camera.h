@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::Camera
+ * @brief Class Magnum::SceneGraph::Camera, Magnum::SceneGraph::Camera2D, Magnum::SceneGraph::Camera3D
  */
 
 #include "Object.h"

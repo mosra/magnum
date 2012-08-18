@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Image
+ * @brief Class Magnum::Image, typedef Magnum::Image1D, Magnum::Image2D, Magnum::Image3D
  */
 
 #include "AbstractImage.h"

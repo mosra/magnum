@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::Object
+ * @brief Class Magnum::SceneGraph::Object, Magnum::SceneGraph::Object2D, Magnum::SceneGraph::Object3D
  */
 
 #include <Containers/LinkedList.h>

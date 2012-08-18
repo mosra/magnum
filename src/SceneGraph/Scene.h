@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::Scene
+ * @brief Class Magnum::SceneGraph::Scene, typedef Magnum::SceneGraph::Scene2D, Magnum::SceneGraph::Scene3D
  */
 
 #include "Object.h"
@@ -26,8 +26,10 @@ namespace Magnum { namespace SceneGraph {
 /** @brief %Scene */
 template<class MatrixType, class VectorType, class ObjectType, class CameraType> class SCENEGRAPH_EXPORT Scene: public ObjectType {
     public:
+        /** @copydoc Object::isScene() */
         inline bool isScene() const { return true; }
 
+        /** @todo Some deleted functions belong only to Scene2D, some only to Scene3D - what to do? */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         void setParent(ObjectType* parent) = delete;
         void setTransformation(const MatrixType& transformation) = delete;
