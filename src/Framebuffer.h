@@ -19,7 +19,7 @@
  * @brief Class Magnum::Framebuffer
  */
 
-#include <Containers/Set.h>
+#include <Containers/EnumSet.h>
 
 #include "BufferedImage.h"
 #include "CubeMapTexture.h"
@@ -110,7 +110,7 @@ class MAGNUM_EXPORT Framebuffer {
             Stencil = GL_STENCIL_BUFFER_BIT /**< Stencil value */
         };
 
-        typedef Corrade::Containers::Set<Clear, GLbitfield> ClearMask; /**< @brief Mask for clearing */
+        typedef Corrade::Containers::EnumSet<Clear, GLbitfield> ClearMask; /**< @brief Mask for clearing */
 
         /**
          * @brief Clear framebuffer
@@ -1010,7 +1010,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        typedef Corrade::Containers::Set<Blit, GLbitfield> BlitMask;
+        typedef Corrade::Containers::EnumSet<Blit, GLbitfield> BlitMask;
 
         /**
          * @brief Copy block of pixels from read to draw framebuffer

@@ -19,7 +19,7 @@
  * @brief Class Magnum::Trade::AbstractImporter
  */
 
-#include <Containers/Set.h>
+#include <Containers/EnumSet.h>
 #include <PluginManager/Plugin.h>
 
 #include "ImageData.h"
@@ -65,7 +65,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
         };
 
         /** @brief Set of features supported by this importer */
-        typedef Corrade::Containers::Set<Feature, int> Features;
+        typedef Corrade::Containers::EnumSet<Feature, int> Features;
 
         /** @brief Constructor */
         inline AbstractImporter(Corrade::PluginManager::AbstractPluginManager* manager = nullptr, const std::string& plugin = ""): Plugin(manager, plugin) {}

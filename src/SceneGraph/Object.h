@@ -19,7 +19,7 @@
  * @brief Class Magnum::SceneGraph::Object
  */
 
-#include <Containers/DoubleLinkedList.h>
+#include <Containers/LinkedList.h>
 
 #include "Magnum.h"
 
@@ -43,7 +43,7 @@ namespace Magnum { namespace SceneGraph {
  * @todo Transform transformation when changing parent, so the object stays in
  * place.
  */
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> class SCENEGRAPH_EXPORT Object: public Corrade::Containers::DoubleLinkedList<ObjectType>, public Corrade::Containers::DoubleLinkedListItem<ObjectType, ObjectType> {
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> class SCENEGRAPH_EXPORT Object: public Corrade::Containers::LinkedList<ObjectType>, public Corrade::Containers::LinkedListItem<ObjectType, ObjectType> {
     #ifndef DOXYGEN_GENERATING_OUTPUT
     Object(const Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>& other) = delete;
     Object(Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>&& other) = delete;
@@ -82,22 +82,22 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         SceneType* scene();
 
         /** @brief Parent object or `nullptr`, if this is root object */
-        inline ObjectType* parent() { return Corrade::Containers::DoubleLinkedListItem<ObjectType, ObjectType>::list(); }
+        inline ObjectType* parent() { return Corrade::Containers::LinkedListItem<ObjectType, ObjectType>::list(); }
 
         /** @brief Previous sibling object or `nullptr`, if this is first object */
-        inline ObjectType* previousSibling() { return Corrade::Containers::DoubleLinkedListItem<ObjectType, ObjectType>::previous(); }
+        inline ObjectType* previousSibling() { return Corrade::Containers::LinkedListItem<ObjectType, ObjectType>::previous(); }
 
         /** @brief Next sibling object or `nullptr`, if this is last object */
-        inline ObjectType* nextSibling() { return Corrade::Containers::DoubleLinkedListItem<ObjectType, ObjectType>::next(); }
+        inline ObjectType* nextSibling() { return Corrade::Containers::LinkedListItem<ObjectType, ObjectType>::next(); }
 
         /** @brief Whether this object has children */
-        inline bool hasChildren() const { return !Corrade::Containers::DoubleLinkedList<ObjectType>::isEmpty(); }
+        inline bool hasChildren() const { return !Corrade::Containers::LinkedList<ObjectType>::isEmpty(); }
 
         /** @brief First child object or `nullptr`, if this object has no children */
-        inline ObjectType* firstChild() { return Corrade::Containers::DoubleLinkedList<ObjectType>::first(); }
+        inline ObjectType* firstChild() { return Corrade::Containers::LinkedList<ObjectType>::first(); }
 
         /** @brief Last child object or `nullptr`, if this object has no children */
-        inline ObjectType* lastChild() { return Corrade::Containers::DoubleLinkedList<ObjectType>::last(); }
+        inline ObjectType* lastChild() { return Corrade::Containers::LinkedList<ObjectType>::last(); }
 
         /** @brief Set parent object */
         ObjectType* setParent(ObjectType* parent);
@@ -306,7 +306,7 @@ class SCENEGRAPH_EXPORT Object2D: public Object<Matrix3, Vector2, Object2D, Scen
          *      if you want to move it above all.
          */
         inline Object2D* move(Object2D* under) {
-            list()->Corrade::Containers::DoubleLinkedList<Object2D>::move(this, under);
+            list()->Corrade::Containers::LinkedList<Object2D>::move(this, under);
             return this;
         }
 };
