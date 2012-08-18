@@ -1,13 +1,19 @@
+# Extension wrangler
+add_library(MagnumContextsExtensionWrangler OBJECT ExtensionWrangler.cpp)
+
 set(MagnumContexts_HEADERS
     AbstractContext.h
-    AbstractGlInterface.h)
+    AbstractGlInterface.h
+    ExtensionWrangler.h)
 install(FILES ${MagnumContexts_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
 
 # GLUT context
 if(WITH_GLUTCONTEXT)
     find_package(GLUT)
     if(GLUT_FOUND)
-        add_library(MagnumGlutContext STATIC GlutContext.cpp)
+        add_library(MagnumGlutContext STATIC
+            GlutContext.cpp
+            $<TARGET_OBJECTS:MagnumContextsExtensionWrangler>)
         install(FILES GlutContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
         install(TARGETS MagnumGlutContext DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
     else()
@@ -20,7 +26,9 @@ if(WITH_SDL2CONTEXT)
     find_package(SDL2)
     if(SDL2_FOUND)
         include_directories(${SDL2_INCLUDE_DIR})
-        add_library(MagnumSdl2Context STATIC Sdl2Context.cpp)
+        add_library(MagnumSdl2Context STATIC
+            Sdl2Context.cpp
+            $<TARGET_OBJECTS:MagnumContextsExtensionWrangler>)
         install(FILES Sdl2Context.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
         install(TARGETS MagnumSdl2Context DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
     else()
@@ -32,7 +40,10 @@ endif()
 if(WITH_XEGLCONTEXT)
     set(NEED_ABSTRACTXCONTEXT 1)
     set(NEED_EGLINTERFACE 1)
-    add_library(MagnumXEglContext STATIC $<TARGET_OBJECTS:MagnumAbstractXContext> $<TARGET_OBJECTS:MagnumEglInterface>)
+    add_library(MagnumXEglContext STATIC
+        $<TARGET_OBJECTS:MagnumAbstractXContext>
+        $<TARGET_OBJECTS:MagnumEglInterface>
+        $<TARGET_OBJECTS:MagnumContextsExtensionWrangler>)
     install(FILES XEglContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
     install(TARGETS MagnumXEglContext DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()

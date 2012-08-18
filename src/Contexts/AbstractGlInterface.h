@@ -19,6 +19,8 @@
  * @brief Class Magnum::Contexts::AbstractGlInterface
  */
 
+#include "ExtensionWrangler.h"
+
 namespace Magnum { namespace Contexts {
 
 /** @brief Base for OpenGL interfaces */
@@ -40,6 +42,15 @@ template<class Display, class VisualId, class Window> class AbstractGlInterface 
 
         /** @brief Create context */
         virtual void createContext(Window nativeWindow) = 0;
+
+        /**
+         * @brief Whether to enable experimental extension wrangler features
+         *
+         * Default is to disable.
+         */
+        virtual inline ExtensionWrangler::ExperimentalFeatures experimentalExtensionWranglerFeatures() const {
+            return ExtensionWrangler::ExperimentalFeatures::Disable;
+        }
 
         /** @brief Make the context current */
         virtual void makeCurrent() = 0;

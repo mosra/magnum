@@ -15,6 +15,8 @@
 
 #include "GlutContext.h"
 
+#include "ExtensionWrangler.h"
+
 namespace Magnum { namespace Contexts {
 
 GlutContext* GlutContext::instance = nullptr;
@@ -35,12 +37,7 @@ GlutContext::GlutContext(int& argc, char** argv, const std::string& title, const
     glutMotionFunc(staticMouseMotionEvent);
     glutDisplayFunc(staticDrawEvent);
 
-    /* Init GLEW */
-    GLenum err = glewInit();
-    if(err != GLEW_OK) {
-        Error() << "GlutContext: cannot initialize GLEW:" << glewGetErrorString(err);
-        exit(1);
-    }
+    ExtensionWrangler::initialize();
 }
 
 }}

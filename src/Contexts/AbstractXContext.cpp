@@ -15,6 +15,8 @@
 
 #include "AbstractXContext.h"
 
+#include "ExtensionWrangler.h"
+
 #define None 0L // redef Xlib nonsense
 
 /* Mask for X events */
@@ -66,14 +68,8 @@ AbstractXContext::AbstractXContext(AbstractGlInterface<Display*, VisualID, Windo
     /* Set OpenGL context as current */
     glInterface->makeCurrent();
 
-    #ifndef MAGNUM_TARGET_GLES
-    /* Init GLEW */
-    GLenum err = glewInit();
-    if(err != GLEW_OK) {
-        Error() << "AbstractXContext: cannot initialize GLEW:" << glewGetErrorString(err);
-        exit(1);
-    }
-    #endif
+    /* Initialize extension wrangler */
+    ExtensionWrangler::initialize(glInterface->experimentalExtensionWranglerFeatures());
 }
 
 AbstractXContext::~AbstractXContext() {
