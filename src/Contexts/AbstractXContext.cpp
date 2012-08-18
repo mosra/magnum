@@ -13,7 +13,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "XEglContext.h"
+#include "AbstractXContext.h"
 
 #define None 0L // redef Xlib nonsense
 
@@ -24,117 +24,70 @@ using namespace std;
 
 namespace Magnum { namespace Contexts {
 
-XEglContext::XEglContext(int&, char**, const string& title, const Math::Vector2<GLsizei>& size): viewportSize(size) {
-    /* Get default X display and root window, init EGL */
-    xDisplay = XOpenDisplay(0);
-    display = eglGetDisplay(xDisplay);
-    eglInitialize(display, 0, 0);
-    #ifndef MAGNUM_TARGET_GLES
-    eglBindAPI(EGL_OPENGL_API);
-    #else
-    eglBindAPI(EGL_OPENGL_ES_API);
-    #endif
+AbstractXContext::AbstractXContext(AbstractGlInterface<Display*, VisualID, Window>* glInterface, int&, char**, const string& title, const Math::Vector2<GLsizei>& size): glInterface(glInterface), viewportSize(size) {
+    /* Get default X display */
+    display = XOpenDisplay(0);
 
-    /* Choose EGL config */
-    static const EGLint attribs[] = {
-        EGL_RED_SIZE, 1,
-        EGL_GREEN_SIZE, 1,
-        EGL_BLUE_SIZE, 1,
-        EGL_DEPTH_SIZE, 1,
-        #ifndef MAGNUM_TARGET_GLES
-        EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
-        #else
-        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-        #endif
-        EGL_NONE
-    };
-    EGLConfig config;
-    EGLint configCount;
-    if(!eglChooseConfig(display, attribs, &config, 1, &configCount)) {
-        Error() << "Cannot get EGL visual config";
-        exit(1);
-    }
+    /* Get visual ID */
+    VisualID visualId = glInterface->getVisualId(display);
 
-    /* Get X visual */
-    EGLint visualId;
-    if(!eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID, &visualId)) {
-        Error() << "Cannot get native visual ID";
-        exit(1);
-    }
+    /* Get visual info */
     XVisualInfo *visInfo, visTemplate;
     int visualCount;
     visTemplate.visualid = visualId;
-    visInfo = XGetVisualInfo(xDisplay, VisualIDMask, &visTemplate, &visualCount);
+    visInfo = XGetVisualInfo(display, VisualIDMask, &visTemplate, &visualCount);
     if(!visInfo) {
         Error() << "Cannot get X visual";
         exit(1);
     }
 
     /* Create X Window */
-    Window root = RootWindow(xDisplay, DefaultScreen(display));
+    Window root = RootWindow(display, DefaultScreen(display));
     XSetWindowAttributes attr;
     attr.background_pixel = 0;
     attr.border_pixel = 0;
-    attr.colormap = XCreateColormap(xDisplay, root, visInfo->visual, AllocNone);
+    attr.colormap = XCreateColormap(display, root, visInfo->visual, AllocNone);
     attr.event_mask = 0;
     unsigned long mask = CWBackPixel|CWBorderPixel|CWColormap|CWEventMask;
-    xWindow = XCreateWindow(xDisplay, root, 20, 20, size.x(), size.y(), 0, visInfo->depth, InputOutput, visInfo->visual, mask, &attr);
-    XSetStandardProperties(xDisplay, xWindow, title.c_str(), 0, None, 0, 0, 0);
+    window = XCreateWindow(display, root, 20, 20, size.x(), size.y(), 0, visInfo->depth, InputOutput, visInfo->visual, mask, &attr);
+    XSetStandardProperties(display, window, title.c_str(), 0, None, 0, 0, 0);
     XFree(visInfo);
 
     /* Be notified about closing the window */
-    deleteWindow = XInternAtom(xDisplay, "WM_DELETE_WINDOW", True);
-    XSetWMProtocols(xDisplay, xWindow, &deleteWindow, 1);
+    deleteWindow = XInternAtom(display, "WM_DELETE_WINDOW", True);
+    XSetWMProtocols(display, window, &deleteWindow, 1);
 
-    /* Create context and window surface */
-    static const EGLint contextAttributes[] = {
-        #ifdef MAGNUM_TARGET_GLES
-        EGL_CONTEXT_CLIENT_VERSION, 2,
-        #endif
-        EGL_NONE
-    };
-    context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttributes);
-    if(!context) {
-        Error() << "Cannot create EGL context";
-        exit(1);
-    }
-    surface = eglCreateWindowSurface(display, config, xWindow, NULL);
-    if(!surface) {
-        Error() << "Cannot create window surface";
-        exit(1);
-    }
+    /* Create context */
+    glInterface->createContext(window);
 
     /* Capture exposure, keyboard and mouse button events */
-    XSelectInput(xDisplay, xWindow, INPUT_MASK);
+    XSelectInput(display, window, INPUT_MASK);
 
     /* Set OpenGL context as current */
-    eglMakeCurrent(display, surface, surface, context);
+    glInterface->makeCurrent();
 
-    /** @bug Fixme: GLEW initialization fails (thinks that the context is not created) */
     #ifndef MAGNUM_TARGET_GLES
     /* Init GLEW */
     GLenum err = glewInit();
     if(err != GLEW_OK) {
-        Error() << "XEglContext: cannot initialize GLEW:" << glewGetErrorString(err);
+        Error() << "AbstractXContext: cannot initialize GLEW:" << glewGetErrorString(err);
         exit(1);
     }
     #endif
 }
 
-XEglContext::~XEglContext() {
-    /* Shut down EGL */
-    eglDestroyContext(display, context);
-    eglDestroySurface(display, surface);
-    eglTerminate(display);
+AbstractXContext::~AbstractXContext() {
+    /* Shut down the interface */
+    delete glInterface;
 
     /* Shut down X */
-    XDestroyWindow(xDisplay, xWindow);
-    XCloseDisplay(xDisplay);
+    XDestroyWindow(display, window);
+    XCloseDisplay(display);
 }
 
-int XEglContext::exec() {
+int AbstractXContext::exec() {
     /* Show window */
-    XMapWindow(xDisplay, xWindow);
+    XMapWindow(display, window);
 
     /* Call viewportEvent for the first time */
     viewportEvent(viewportSize);
@@ -143,12 +96,12 @@ int XEglContext::exec() {
         XEvent event;
 
         /* Closed window */
-        if(XCheckTypedWindowEvent(xDisplay, xWindow, ClientMessage, &event) &&
+        if(XCheckTypedWindowEvent(display, window, ClientMessage, &event) &&
            Atom(event.xclient.data.l[0]) == deleteWindow) {
             return 0;
         }
 
-        while(XCheckWindowEvent(xDisplay, xWindow, INPUT_MASK, &event)) {
+        while(XCheckWindowEvent(display, window, INPUT_MASK, &event)) {
             switch(event.type) {
                 /* Window resizing */
                 case ConfigureNotify: {

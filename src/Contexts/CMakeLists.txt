@@ -1,4 +1,7 @@
-install(FILES AbstractContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
+set(MagnumContexts_HEADERS
+    AbstractContext.h
+    AbstractGlInterface.h)
+install(FILES ${MagnumContexts_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
 
 # GLUT context
 if(WITH_GLUTCONTEXT)
@@ -27,15 +30,33 @@ endif()
 
 # X/EGL context
 if(WITH_XEGLCONTEXT)
-    find_package(EGL)
+    set(NEED_ABSTRACTXCONTEXT 1)
+    set(NEED_EGLINTERFACE 1)
+    add_library(MagnumXEglContext STATIC $<TARGET_OBJECTS:MagnumAbstractXContext> $<TARGET_OBJECTS:MagnumEglInterface>)
+    install(FILES XEglContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
+    install(TARGETS MagnumXEglContext DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+endif()
+
+# Abstract X context
+if(NEED_ABSTRACTXCONTEXT)
     find_package(X11)
-    if(EGL_FOUND AND X11_FOUND)
-        add_library(MagnumXEglContext STATIC XEglContext.cpp)
-        # X11 macros are a mess, disable warnings for C-style casts
-        set_target_properties(MagnumXEglContext PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
-        install(FILES XEglContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
-        install(TARGETS MagnumXEglContext DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-    else()
-        message(FATAL_ERROR "EGL or X11 libraries, required by XEglContext, were not found. Set WITH_XEGLCONTEXT to OFF to skip building it.")
+    if(NOT X11_FOUND)
+        message(FATAL_ERROR "X11 library, required by some contexts, was not found. Set WITH_*X*CONTEXT to OFF to skip building them.")
     endif()
+    add_library(MagnumAbstractXContext OBJECT AbstractXContext.cpp)
+    # X11 macros are a mess, disable warnings for C-style casts
+    set_target_properties(MagnumAbstractXContext PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
+    install(FILES AbstractXContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
+endif()
+
+# EGL interface
+if(NEED_EGLINTERFACE)
+    find_package(EGL)
+    if(NOT EGL_FOUND)
+        message(FATAL_ERROR "EGL library, required by some contexts, was not found. Set WITH_*EGL*CONTEXT to OFF to skip building them.")
+    endif()
+    add_library(MagnumEglInterface OBJECT EglInterface.cpp)
+    # X11 macros are a mess, disable warnings for C-style casts
+    set_target_properties(MagnumEglInterface PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
+    install(FILES EglInterface.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
 endif()
