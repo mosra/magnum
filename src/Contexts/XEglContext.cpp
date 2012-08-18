@@ -34,8 +34,6 @@ XEglContext::XEglContext(int&, char**, const string& title, const Math::Vector2<
     #else
     eglBindAPI(EGL_OPENGL_ES_API);
     #endif
-    int screenNumber = DefaultScreen(xDisplay);
-    Window root = RootWindow(xDisplay, screenNumber);
 
     /* Choose EGL config */
     static const EGLint attribs[] = {
@@ -73,6 +71,7 @@ XEglContext::XEglContext(int&, char**, const string& title, const Math::Vector2<
     }
 
     /* Create X Window */
+    Window root = RootWindow(xDisplay, DefaultScreen(display));
     XSetWindowAttributes attr;
     attr.background_pixel = 0;
     attr.border_pixel = 0;
