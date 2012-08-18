@@ -20,7 +20,7 @@
 #  Primitives    - Library with stock geometric primitives (static)
 #  SceneGraph    - Scene graph library
 #  Shaders       - Library with stock shaders
-#  EglContext    - EGL context (depends on EGL and X11 libraries)
+#  XEglContext   - X/EGL context (depends on EGL and X11 libraries)
 #  GlutContext   - GLUT context (depends on GLUT library)
 #  Sdl2Context   - SDL2 context (depends on SDL2 library)
 # Example usage with specifying additional components is:
@@ -112,7 +112,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         endif()
 
         # X/EGL context dependencies
-        if(${component} STREQUAL EglContext)
+        if(${component} STREQUAL XEglContext)
             find_package(EGL)
             find_package(X11)
             if(EGL_FOUND AND X11_FOUND)

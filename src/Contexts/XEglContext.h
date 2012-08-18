@@ -1,5 +1,5 @@
-#ifndef Magnum_Contexts_EglContext_h
-#define Magnum_Contexts_EglContext_h
+#ifndef Magnum_Contexts_XEglContext_h
+#define Magnum_Contexts_XEglContext_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Contexts::EglContext
+ * @brief Class Magnum::Contexts::XEglContext
  */
 
 #include "Magnum.h"
@@ -40,7 +40,7 @@ namespace Magnum { namespace Contexts {
 
 Supports keyboard and mouse handling.
 */
-class EglContext: public AbstractContext {
+class XEglContext: public AbstractContext {
     public:
         /**
          * @brief Constructor
@@ -51,14 +51,14 @@ class EglContext: public AbstractContext {
          *
          * Creates window with double-buffered OpenGL ES 2 context.
          */
-        EglContext(int& argc, char** argv, const std::string& title = "Magnum X/EGL context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
+        XEglContext(int& argc, char** argv, const std::string& title = "Magnum X/EGL context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
 
         /**
          * @brief Destructor
          *
          * Deletes context and destroys the window.
          */
-        ~EglContext();
+        ~XEglContext();
 
         int exec();
 
@@ -218,10 +218,10 @@ class EglContext: public AbstractContext {
         Math::Vector2<GLsizei> viewportSize;
 };
 
-inline void EglContext::keyPressEvent(EglContext::Key, const Math::Vector2<int>&) {}
-inline void EglContext::keyReleaseEvent(EglContext::Key, const Math::Vector2<int>&) {}
-inline void EglContext::mousePressEvent(EglContext::MouseButton, const Math::Vector2<int>&) {}
-inline void EglContext::mouseReleaseEvent(EglContext::MouseButton, const Math::Vector2<int>&) {}
+inline void XEglContext::keyPressEvent(XEglContext::Key, const Math::Vector2<int>&) {}
+inline void XEglContext::keyReleaseEvent(XEglContext::Key, const Math::Vector2<int>&) {}
+inline void XEglContext::mousePressEvent(XEglContext::MouseButton, const Math::Vector2<int>&) {}
+inline void XEglContext::mouseReleaseEvent(XEglContext::MouseButton, const Math::Vector2<int>&) {}
 
 
 }}

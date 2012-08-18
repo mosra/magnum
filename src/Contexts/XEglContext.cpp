@@ -13,7 +13,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "EglContext.h"
+#include "XEglContext.h"
 
 #define None 0L // redef Xlib nonsense
 
@@ -24,7 +24,7 @@ using namespace std;
 
 namespace Magnum { namespace Contexts {
 
-EglContext::EglContext(int&, char**, const string& title, const Math::Vector2<GLsizei>& size): viewportSize(size) {
+XEglContext::XEglContext(int&, char**, const string& title, const Math::Vector2<GLsizei>& size): viewportSize(size) {
     /* Get default X display and root window, init EGL */
     xDisplay = XOpenDisplay(0);
     display = eglGetDisplay(xDisplay);
@@ -116,13 +116,13 @@ EglContext::EglContext(int&, char**, const string& title, const Math::Vector2<GL
     /* Init GLEW */
     GLenum err = glewInit();
     if(err != GLEW_OK) {
-        Error() << "EglContext: cannot initialize GLEW:" << glewGetErrorString(err);
+        Error() << "XEglContext: cannot initialize GLEW:" << glewGetErrorString(err);
         exit(1);
     }
     #endif
 }
 
-EglContext::~EglContext() {
+XEglContext::~XEglContext() {
     /* Shut down EGL */
     eglDestroyContext(display, context);
     eglDestroySurface(display, surface);
@@ -133,7 +133,7 @@ EglContext::~EglContext() {
     XCloseDisplay(xDisplay);
 }
 
-int EglContext::exec() {
+int XEglContext::exec() {
     /* Show window */
     XMapWindow(xDisplay, xWindow);
 
