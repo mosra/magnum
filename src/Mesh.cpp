@@ -26,7 +26,9 @@ Mesh::Mesh(Mesh&& other):
     #endif
     _primitive(other._primitive), _vertexCount(other._vertexCount), finalized(other.finalized), _buffers(other._buffers), _attributes(other._attributes)
 {
+    #ifndef MAGNUM_TARGET_GLES
     other.vao = 0;
+    #endif
 }
 
 void Mesh::destroy() {
@@ -41,13 +43,18 @@ void Mesh::destroy() {
 Mesh& Mesh::operator=(Mesh&& other) {
     destroy();
 
+    #ifndef MAGNUM_TARGET_GLES
     vao = other.vao;
+    #endif
     _primitive = other._primitive;
     _vertexCount = other._vertexCount;
     finalized = other.finalized;
     _buffers = other._buffers;
     _attributes = other._attributes;
+
+    #ifndef MAGNUM_TARGET_GLES
     other.vao = 0;
+    #endif
 
     return *this;
 }

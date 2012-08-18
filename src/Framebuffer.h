@@ -58,13 +58,14 @@ class MAGNUM_EXPORT Framebuffer {
              */
             Blending = GL_BLEND,
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Logical operation
              * @see setLogicOperation()
+             * @requires_gl Logic operations on framebuffer are in desktop OpenGL only.
              */
             LogicOperation = GL_COLOR_LOGIC_OP,
 
-            #ifndef MAGNUM_TARGET_GLES
             /**
              * Depth clamping. If enabled, ignores near and far clipping plane.
              * @requires_gl
@@ -393,9 +394,24 @@ class MAGNUM_EXPORT Framebuffer {
         enum class BlendEquation: GLenum {
             Add = GL_FUNC_ADD,                          /**< `source + destination` */
             Subtract = GL_FUNC_SUBTRACT,                /**< `source - destination` */
-            ReverseSubtract = GL_FUNC_REVERSE_SUBTRACT, /**< `destination - source` */
-            Min = GL_MIN,                               /**< `min(source, destination)` */
-            Max = GL_MAX                                /**< `max(source, destination)` */
+            ReverseSubtract = GL_FUNC_REVERSE_SUBTRACT  /**< `destination - source` */
+
+            #ifndef MAGNUM_TARGET_GLES
+            /** @todo Enable for ES3 when the headers are available */
+            ,
+
+            /**
+             * `min(source, destination)`
+             * @requires_gles30 Extension @es_extension{EXT,blend_minmax}
+             */
+            Min = GL_MIN,
+
+            /**
+             * `max(source, destination)`
+             * @requires_gles30 Extension @es_extension{EXT,blend_minmax}
+             */
+            Max = GL_MAX
+            #endif
         };
 
         /**
@@ -585,12 +601,14 @@ class MAGNUM_EXPORT Framebuffer {
 
         /*@}*/
 
+        #ifndef MAGNUM_TARGET_GLES
         /** @{ @name Logical operation */
 
         /**
          * @brief Logical operation
          *
          * @see setLogicOperation()
+         * @requires_gl
          */
         enum class LogicOperation: GLenum {
             Clear = GL_CLEAR,               /**< `0` */
@@ -615,12 +633,14 @@ class MAGNUM_EXPORT Framebuffer {
          * @brief Set logical operation
          *
          * @attention You have to enable logical operation with setFeature() first.
+         * @requires_gl Logic operations on framebuffer are in desktop OpenGL only.
          */
         inline static void setLogicOperation(LogicOperation operation) {
             glLogicOp(static_cast<GLenum>(operation));
         }
 
         /*@}*/
+        #endif
 
         /** @{ @name Framebuffer creation and binding */
 
