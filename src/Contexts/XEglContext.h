@@ -22,9 +22,9 @@
 #include "Magnum.h"
 
 #include <X11/Xlib.h>
-#ifdef None // undef Xlib nonsense to avoid conflicts
+/* undef Xlib nonsense to avoid conflicts */
 #undef None
-#endif
+#undef Always
 
 #ifndef SUPPORT_X11
 #define SUPPORT_X11 // OpenGL ES on BeagleBoard needs this (?)
