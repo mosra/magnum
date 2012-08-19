@@ -94,12 +94,15 @@ void Camera3D::setOrthographic(const Vector2& size, GLfloat near, GLfloat far) {
     _near = near;
     _far = far;
 
-    /* Scale the volume down so it fits in (-1, 1) in all directions */
-    GLfloat zScale = 2/(far-near);
-    rawProjectionMatrix = Matrix4::scaling({2.0f/size, -zScale});
+    Vector2 xyScale = 2.0f/size;
+    GLfloat zScale = 2.0f/(near-far);
 
-    /* Move the volume on z into (-1, 1) range */
-    rawProjectionMatrix = Matrix4::translation(Vector3::zAxis(-1-near*zScale))*rawProjectionMatrix;
+    rawProjectionMatrix = Matrix4(
+        xyScale.x(),    0.0f,           0.0f,           0.0f,
+        0.0f,           xyScale.y(),    0.0f,           0.0f,
+        0.0f,           0.0f,           zScale,         0.0f,
+        0.0f,           0.0f,           near*zScale-1,  1.0f
+    );
 
     projectionAspectRatio = size;
     fixAspectRatio();
@@ -109,23 +112,15 @@ void Camera3D::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
     _near = near;
     _far = far;
 
-    /* First move the volume on z in (-1, 1) range */
-    rawProjectionMatrix = Matrix4::translation(Vector3::zAxis(2*far*near/(far+near)));
+    GLfloat xyScale = 1.0f/tan(fov/2);
+    GLfloat zScale = 1.0f/(near-far);
 
-    /* Then apply magic perspective matrix (with reversed Z) */
-    static const Matrix4 a(1.0f, 0.0f,  0.0f,  0.0f,
-                           0.0f, 1.0f,  0.0f,  0.0f,
-                           0.0f, 0.0f,  -1.0f,  -1.0f,
-                           0.0f, 0.0f,  0.0f,  0.0f);
-    rawProjectionMatrix = a*rawProjectionMatrix;
-
-    /* Then scale the volume down so it fits in (-1, 1) in all directions */
-    GLfloat xyScale = 1/tan(fov/2);
-    GLfloat zScale = 1+2*near/(far-near);
-    rawProjectionMatrix = Matrix4::scaling({xyScale, xyScale, zScale})*rawProjectionMatrix;
-
-    /* And... another magic */
-    rawProjectionMatrix[3][3] = 0;
+    rawProjectionMatrix = Matrix4(
+        xyScale,    0.0f,       0.0f,                   0.0f,
+        0.0f,       xyScale,    0.0f,                   0.0f,
+        0.0f,       0.0f,       (far+near)*zScale,     -1.0f,
+        0.0f,       0.0f,       (2*far*near)*zScale,    0.0f
+    );
 
     projectionAspectRatio = Vector2(xyScale);
     fixAspectRatio();

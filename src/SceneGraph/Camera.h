@@ -198,7 +198,7 @@ class SCENEGRAPH_EXPORT Camera3D: public Camera<Matrix4, Vector3, Object3D, Scen
          * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
          * @see setOrthographic(), setPerspective()
          */
-        inline Camera3D(Object3D* parent = nullptr): Camera(parent), _near(0.0), _far(0.0) {}
+        inline Camera3D(Object3D* parent = nullptr): Camera(parent), _near(0.0f), _far(0.0f) {}
 
         /**
          * @brief Set orthographic projection
