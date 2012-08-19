@@ -79,6 +79,7 @@ class Sdl2Context: public AbstractContext {
     public:
         /**
          * @brief Key
+         *
          * @see keyPressEvent(), keyReleaseEvent()
          */
         enum class Key: SDL_Keycode {
@@ -111,6 +112,7 @@ class Sdl2Context: public AbstractContext {
     public:
         /**
          * @brief Mouse button
+         *
          * @see mouseEvent()
          */
         enum class MouseButton: Uint8 {
@@ -121,6 +123,7 @@ class Sdl2Context: public AbstractContext {
 
         /**
          * @brief Mouse state
+         *
          * @see mouseEvent()
          */
         enum class MouseState: Uint8 {
@@ -169,9 +172,9 @@ class Sdl2Context: public AbstractContext {
 };
 
 /* Implementations for inline functions with unused parameters */
-inline void Sdl2Context::keyPressEvent(Sdl2Context::Key, Uint8) {}
-inline void Sdl2Context::keyReleaseEvent(Sdl2Context::Key) {}
-inline void Sdl2Context::mouseEvent(Sdl2Context::MouseButton, Sdl2Context::MouseState, const Math::Vector2<int>&) {}
+inline void Sdl2Context::keyPressEvent(Key, Uint8) {}
+inline void Sdl2Context::keyReleaseEvent(Key) {}
+inline void Sdl2Context::mouseEvent(MouseButton, MouseState, const Math::Vector2<int>&) {}
 inline void Sdl2Context::mouseWheelEvent(const Math::Vector2<int>&) {}
 inline void Sdl2Context::mouseMotionEvent(const Math::Vector2<int>&, const Math::Vector2<int>&) {}
 

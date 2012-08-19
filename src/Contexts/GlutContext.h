@@ -60,7 +60,8 @@ class GlutContext: public AbstractContext {
          * @brief Viewport event
          *
          * Called when viewport size changes. You should pass the new size to
-         * Camera::viewport() function of your camera.
+         * Framebuffer::setViewport() or SceneGraph::Camera::setViewport(),
+         * if using scene graph.
          */
         virtual void viewportEvent(const Math::Vector2<GLsizei>& size) = 0;
 
@@ -68,8 +69,9 @@ class GlutContext: public AbstractContext {
          * @brief Draw event
          *
          * Here implement your drawing functions, such as calling
-         * Camera::draw(). After drawing is finished, call swapBuffers(). If
-         * you want to draw immediately again, call also redraw().
+         * SceneGraph::Camera::draw(). After drawing is finished, call
+         * swapBuffers(). If you want to draw immediately again, call also
+         * redraw().
          */
         virtual void drawEvent() = 0;
 
@@ -97,7 +99,11 @@ class GlutContext: public AbstractContext {
         /** @{ @name Keyboard handling */
 
     public:
-        /** @brief Key */
+        /**
+         * @brief Key
+         *
+         * @see keyPressEvent()
+         */
         enum class Key: int {
             Up = GLUT_KEY_UP,               /**< Up arrow */
             Down = GLUT_KEY_DOWN,           /**< Down arrow */
@@ -136,7 +142,11 @@ class GlutContext: public AbstractContext {
         /** @{ @name Mouse handling */
 
     public:
-        /** @brief Mouse button */
+        /**
+         * @brief Mouse button
+         *
+         * @see mousePressEvent(), mouseReleaseEvent()
+         */
         enum class MouseButton: int {
             Left = GLUT_LEFT_BUTTON,        /**< Left button */
             Middle = GLUT_MIDDLE_BUTTON,    /**< Middle button */
@@ -145,7 +155,11 @@ class GlutContext: public AbstractContext {
             WheelDown = 4                   /**< Wheel down */
         };
 
-        /** @brief Mouse cursor */
+        /**
+         * @brief Mouse cursor
+         *
+         * @see setMouseCursor()
+         */
         enum class MouseCursor: int {
             Default = GLUT_CURSOR_INHERIT,  /**< Default cursor provided by parent window */
             None = GLUT_CURSOR_NONE         /**< No cursor */
@@ -231,9 +245,9 @@ class GlutContext: public AbstractContext {
 };
 
 /* Implementations for inline functions with unused parameters */
-inline void GlutContext::keyPressEvent(GlutContext::Key, const Math::Vector2<int>&) {}
-inline void GlutContext::mousePressEvent(GlutContext::MouseButton, const Math::Vector2<int>&) {}
-inline void GlutContext::mouseReleaseEvent(GlutContext::MouseButton, const Math::Vector2<int>&) {}
+inline void GlutContext::keyPressEvent(Key, const Math::Vector2<int>&) {}
+inline void GlutContext::mousePressEvent(MouseButton, const Math::Vector2<int>&) {}
+inline void GlutContext::mouseReleaseEvent(MouseButton, const Math::Vector2<int>&) {}
 inline void GlutContext::mouseMotionEvent(const Math::Vector2<int>&) {}
 
 }}

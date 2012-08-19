@@ -32,7 +32,7 @@
 
 namespace Magnum { namespace Contexts {
 
-/**
+/** @nosubgrouping
 @brief Base for X11-based contexts
 
 Supports keyboard and mouse handling.
@@ -82,7 +82,11 @@ class AbstractXContext: public AbstractContext {
         /** @{ @name Keyboard handling */
 
     public:
-        /** @brief Key */
+        /**
+         * @brief Key
+         *
+         * @see keyPressEvent(), keyReleaseEvent()
+         */
         enum class Key: KeySym {
             Up = XK_Up,                 /**< Up arrow */
             Down = XK_Down,             /**< Down arrow */
@@ -177,7 +181,11 @@ class AbstractXContext: public AbstractContext {
         /** @{ @name Mouse handling */
 
     public:
-        /** @brief Mouse button */
+        /**
+         * @brief Mouse button
+         *
+         * @see mousePressEvent(), mouseReleaseEvent()
+         */
         enum class MouseButton: unsigned int {
             Left = Button1,         /**< Left button */
             Middle = Button2,       /**< Middle button */
@@ -189,6 +197,8 @@ class AbstractXContext: public AbstractContext {
     protected:
         /**
          * @brief Mouse press event
+         * @param button    Button pressed
+         * @param position  Cursor position
          *
          * Called when mouse button is pressed. Default implementation does
          * nothing.
@@ -197,6 +207,8 @@ class AbstractXContext: public AbstractContext {
 
         /**
          * @brief Mouse release event
+         * @param button    Button released
+         * @param position  Cursor position
          *
          * Called when mouse button is released. Default implementation does
          * nothing.
@@ -218,11 +230,10 @@ class AbstractXContext: public AbstractContext {
         bool _redraw;
 };
 
-inline void AbstractXContext::keyPressEvent(AbstractXContext::Key, const Math::Vector2<int>&) {}
-inline void AbstractXContext::keyReleaseEvent(AbstractXContext::Key, const Math::Vector2<int>&) {}
-inline void AbstractXContext::mousePressEvent(AbstractXContext::MouseButton, const Math::Vector2<int>&) {}
-inline void AbstractXContext::mouseReleaseEvent(AbstractXContext::MouseButton, const Math::Vector2<int>&) {}
-
+inline void AbstractXContext::keyPressEvent(Key, const Math::Vector2<int>&) {}
+inline void AbstractXContext::keyReleaseEvent(Key, const Math::Vector2<int>&) {}
+inline void AbstractXContext::mousePressEvent(MouseButton, const Math::Vector2<int>&) {}
+inline void AbstractXContext::mouseReleaseEvent(MouseButton, const Math::Vector2<int>&) {}
 
 }}
 
