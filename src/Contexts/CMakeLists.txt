@@ -36,6 +36,18 @@ if(WITH_SDL2CONTEXT)
     endif()
 endif()
 
+# GLX context
+if(WITH_GLXCONTEXT)
+    set(NEED_ABSTRACTXCONTEXT 1)
+    set(NEED_GLXINTERFACE 1)
+    add_library(MagnumGlxContext STATIC
+        $<TARGET_OBJECTS:MagnumAbstractXContext>
+        $<TARGET_OBJECTS:MagnumGlxInterface>
+        $<TARGET_OBJECTS:MagnumContextsExtensionWrangler>)
+    install(FILES GlxContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
+    install(TARGETS MagnumGlxContext DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+endif()
+
 # X/EGL context
 if(WITH_XEGLCONTEXT)
     set(NEED_ABSTRACTXCONTEXT 1)
@@ -58,6 +70,14 @@ if(NEED_ABSTRACTXCONTEXT)
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumAbstractXContext PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
     install(FILES AbstractXContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
+endif()
+
+# GLX interface
+if(NEED_GLXINTERFACE)
+    add_library(MagnumGlxInterface OBJECT GlxInterface.cpp)
+    # X11 macros are a mess, disable warnings for C-style casts
+    set_target_properties(MagnumGlxInterface PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
+    install(FILES GlxInterface.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
 endif()
 
 # EGL interface
