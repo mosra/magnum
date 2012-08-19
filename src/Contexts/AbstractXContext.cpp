@@ -124,7 +124,6 @@ int AbstractXContext::exec() {
             }
         }
 
-        /** @todo Handle at least window closing and resizing */
         drawEvent();
     }
 
