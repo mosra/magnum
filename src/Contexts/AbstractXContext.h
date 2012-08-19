@@ -74,8 +74,8 @@ class AbstractXContext: public AbstractContext {
         /** @copydoc GlutContext::swapBuffers() */
         inline void swapBuffers() { glInterface->swapBuffers(); }
 
-        /** @todo implement */
-        inline void redraw() {}
+        /** @copydoc GlutContext::redraw() */
+        inline void redraw() { _redraw = true; }
 
         /*@}*/
 
@@ -214,6 +214,8 @@ class AbstractXContext: public AbstractContext {
 
         /** @todo Get this from the created window */
         Math::Vector2<GLsizei> viewportSize;
+
+        bool _redraw;
 };
 
 inline void AbstractXContext::keyPressEvent(AbstractXContext::Key, const Math::Vector2<int>&) {}

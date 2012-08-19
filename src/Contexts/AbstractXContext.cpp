@@ -26,7 +26,7 @@ using namespace std;
 
 namespace Magnum { namespace Contexts {
 
-AbstractXContext::AbstractXContext(AbstractGlInterface<Display*, VisualID, Window>* glInterface, int&, char**, const string& title, const Math::Vector2<GLsizei>& size): glInterface(glInterface), viewportSize(size) {
+AbstractXContext::AbstractXContext(AbstractGlInterface<Display*, VisualID, Window>* glInterface, int&, char**, const string& title, const Math::Vector2<GLsizei>& size): glInterface(glInterface), viewportSize(size), _redraw(true) {
     /* Get default X display */
     display = XOpenDisplay(0);
 
@@ -105,6 +105,7 @@ int AbstractXContext::exec() {
                     if(size != viewportSize) {
                         viewportSize = size;
                         viewportEvent(size);
+                        _redraw = true;
                     }
                 } break;
 
@@ -124,7 +125,10 @@ int AbstractXContext::exec() {
             }
         }
 
-        drawEvent();
+        if(_redraw) {
+            _redraw = false;
+            drawEvent();
+        } else Corrade::Utility::sleep(5);
     }
 
     return 0;
