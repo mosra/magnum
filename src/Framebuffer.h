@@ -1111,6 +1111,9 @@ class MAGNUM_EXPORT Framebuffer {
         GLuint framebuffer;
 };
 
+CORRADE_ENUMSET_OPERATORS(Framebuffer::ClearMask)
+CORRADE_ENUMSET_OPERATORS(Framebuffer::BlitMask)
+
 }
 
 #endif

@@ -257,6 +257,9 @@ class AbstractXContext: public AbstractContext {
         bool _redraw;
 };
 
+CORRADE_ENUMSET_OPERATORS(AbstractXContext::Modifiers)
+
+/* Implementations for inline functions with unused parameters */
 inline void AbstractXContext::keyPressEvent(Key, Modifiers, const Math::Vector2<int>&) {}
 inline void AbstractXContext::keyReleaseEvent(Key, Modifiers, const Math::Vector2<int>&) {}
 inline void AbstractXContext::mousePressEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}

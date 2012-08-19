@@ -310,7 +310,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
         /*@}*/
 };
 
-SET_OPERATORS(AbstractImporter::Features)
+CORRADE_ENUMSET_OPERATORS(AbstractImporter::Features)
 
 /* Implementations for inline functions with unused parameters */
 inline int AbstractImporter::sceneForName(const std::string&) { return -1; }
