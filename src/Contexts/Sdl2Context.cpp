@@ -101,8 +101,8 @@ int Sdl2Context::exec() {
         }
 
         if(_redraw) {
-            drawEvent();
             _redraw = false;
+            drawEvent();
         } else Corrade::Utility::sleep(5);
     }
 
