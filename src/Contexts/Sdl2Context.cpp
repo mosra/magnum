@@ -83,10 +83,10 @@ int Sdl2Context::exec() {
                     keyReleaseEvent(static_cast<Key>(event.key.keysym.sym));
                     break;
                 case SDL_MOUSEBUTTONDOWN:
+                    mousePressEvent(static_cast<MouseButton>(event.button.button), {event.button.x, event.button.y});
+                    break;
                 case SDL_MOUSEBUTTONUP:
-                    mouseEvent(static_cast<MouseButton>(event.button.button),
-                               static_cast<MouseState>(event.button.state),
-                               {event.button.x, event.button.y});
+                    mouseReleaseEvent(static_cast<MouseButton>(event.button.button), {event.button.x, event.button.y});
                     break;
                 case SDL_MOUSEWHEEL:
                     mouseWheelEvent({event.wheel.x, event.wheel.y});

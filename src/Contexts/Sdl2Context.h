@@ -133,15 +133,24 @@ class Sdl2Context: public AbstractContext {
 
     protected:
         /**
-         * @brief Mouse event
-         * @param button    Mouse button
-         * @param state     Mouse state
-         * @param position  Mouse position relative to the window
+         * @brief Mouse press event
+         * @param button    Button pressed
+         * @param position  Cursor position
          *
-         * Called when mouse button is pressed or released. Default
-         * implementation does nothing.
+         * Called when mouse button is pressed. Default implementation does
+         * nothing.
          */
-        virtual void mouseEvent(MouseButton button, MouseState state, const Math::Vector2<int>& position);
+        virtual void mousePressEvent(MouseButton button, const Math::Vector2<int>& position);
+
+        /**
+         * @brief Mouse release event
+         * @param button    Button released
+         * @param position  Cursor position
+         *
+         * Called when mouse button is released. Default implementation does
+         * nothing.
+         */
+        virtual void mouseReleaseEvent(MouseButton button, const Math::Vector2<int>& position);
 
         /**
          * @brief Mouse wheel event
@@ -174,7 +183,8 @@ class Sdl2Context: public AbstractContext {
 /* Implementations for inline functions with unused parameters */
 inline void Sdl2Context::keyPressEvent(Key, Uint8) {}
 inline void Sdl2Context::keyReleaseEvent(Key) {}
-inline void Sdl2Context::mouseEvent(MouseButton, MouseState, const Math::Vector2<int>&) {}
+inline void Sdl2Context::mousePressEvent(MouseButton, const Math::Vector2<int>&) {}
+inline void Sdl2Context::mouseReleaseEvent(MouseButton, const Math::Vector2<int>&) {}
 inline void Sdl2Context::mouseWheelEvent(const Math::Vector2<int>&) {}
 inline void Sdl2Context::mouseMotionEvent(const Math::Vector2<int>&, const Math::Vector2<int>&) {}
 
