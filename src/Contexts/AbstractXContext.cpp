@@ -111,16 +111,16 @@ int AbstractXContext::exec() {
 
                 /* Key/mouse events */
                 case KeyPress:
-                    keyPressEvent(static_cast<Key>(XLookupKeysym(&event.xkey, 0)), {event.xkey.x, event.xkey.y});
+                    keyPressEvent(static_cast<Key>(XLookupKeysym(&event.xkey, 0)), static_cast<Modifier>(event.xkey.state), {event.xkey.x, event.xkey.y});
                     break;
                 case KeyRelease:
-                    keyReleaseEvent(static_cast<Key>(XLookupKeysym(&event.xkey, 0)), {event.xkey.x, event.xkey.y});
+                    keyReleaseEvent(static_cast<Key>(XLookupKeysym(&event.xkey, 0)), static_cast<Modifier>(event.xkey.state), {event.xkey.x, event.xkey.y});
                     break;
                 case ButtonPress:
-                    mousePressEvent(static_cast<MouseButton>(event.xbutton.button), {event.xbutton.x, event.xbutton.y});
+                    mousePressEvent(static_cast<MouseButton>(event.xbutton.button), static_cast<Modifier>(event.xkey.state), {event.xbutton.x, event.xbutton.y});
                     break;
                 case ButtonRelease:
-                    mouseReleaseEvent(static_cast<MouseButton>(event.xbutton.button), {event.xbutton.x, event.xbutton.y});
+                    mouseReleaseEvent(static_cast<MouseButton>(event.xbutton.button), static_cast<Modifier>(event.xkey.state), {event.xbutton.x, event.xbutton.y});
                     break;
             }
         }

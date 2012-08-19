@@ -27,6 +27,8 @@
 #undef None
 #undef Always
 
+#include <Containers/EnumSet.h>
+
 #include "AbstractContext.h"
 #include "AbstractGlInterface.h"
 
@@ -82,6 +84,27 @@ class AbstractXContext: public AbstractContext {
         /** @{ @name Keyboard handling */
 
     public:
+        /**
+         * @brief %Modifier
+         *
+         * @see Modifiers, keyPressEvent(), keyReleaseEvent()
+         */
+        enum class Modifier: unsigned int {
+            Shift = ShiftMask,          /**< Shift */
+            CapsLock = LockMask,        /**< Caps lock */
+            Ctrl = ControlMask,         /**< Ctrl */
+            Alt = Mod1Mask,             /**< Alt */
+            NumLock = Mod2Mask,         /**< Num lock */
+            AltGr = Mod5Mask            /**< AltGr */
+        };
+
+        /**
+         * @brief Set of modifiers
+         *
+         * @see keyPressEvent(), keyReleaseEvent()
+         */
+        typedef Corrade::Containers::EnumSet<Modifier, unsigned int> Modifiers;
+
         /**
          * @brief Key
          *
@@ -161,20 +184,22 @@ class AbstractXContext: public AbstractContext {
         /**
          * @brief Key press event
          * @param key       Key pressed
+         * @param modifiers Active modifiers
          * @param position  Cursor position
          *
          * Called when an key is pressed. Default implementation does nothing.
          */
-        virtual void keyPressEvent(Key key, const Math::Vector2<int>& position);
+        virtual void keyPressEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
 
         /**
          * @brief Key press event
          * @param key       Key released
+         * @param modifiers Active modifiers
          * @param position  Cursor position
          *
          * Called when an key is released. Default implementation does nothing.
          */
-        virtual void keyReleaseEvent(Key key, const Math::Vector2<int>& position);
+        virtual void keyReleaseEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
 
         /*@}*/
 
@@ -198,22 +223,24 @@ class AbstractXContext: public AbstractContext {
         /**
          * @brief Mouse press event
          * @param button    Button pressed
+         * @param modifiers Active modifiers
          * @param position  Cursor position
          *
          * Called when mouse button is pressed. Default implementation does
          * nothing.
          */
-        virtual void mousePressEvent(MouseButton button, const Math::Vector2<int>& position);
+        virtual void mousePressEvent(MouseButton button, Modifiers modifiers, const Math::Vector2<int>& position);
 
         /**
          * @brief Mouse release event
          * @param button    Button released
+         * @param modifiers Active modifiers
          * @param position  Cursor position
          *
          * Called when mouse button is released. Default implementation does
          * nothing.
          */
-        virtual void mouseReleaseEvent(MouseButton button, const Math::Vector2<int>& position);
+        virtual void mouseReleaseEvent(MouseButton button, Modifiers modifiers, const Math::Vector2<int>& position);
 
         /*@}*/
 
@@ -230,10 +257,10 @@ class AbstractXContext: public AbstractContext {
         bool _redraw;
 };
 
-inline void AbstractXContext::keyPressEvent(Key, const Math::Vector2<int>&) {}
-inline void AbstractXContext::keyReleaseEvent(Key, const Math::Vector2<int>&) {}
-inline void AbstractXContext::mousePressEvent(MouseButton, const Math::Vector2<int>&) {}
-inline void AbstractXContext::mouseReleaseEvent(MouseButton, const Math::Vector2<int>&) {}
+inline void AbstractXContext::keyPressEvent(Key, Modifiers, const Math::Vector2<int>&) {}
+inline void AbstractXContext::keyReleaseEvent(Key, Modifiers, const Math::Vector2<int>&) {}
+inline void AbstractXContext::mousePressEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
+inline void AbstractXContext::mouseReleaseEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
 
 }}
 
