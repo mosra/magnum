@@ -101,7 +101,7 @@ int AbstractXContext::exec() {
             switch(event.type) {
                 /* Window resizing */
                 case ConfigureNotify: {
-                    Math::Vector2<int> size(event.xconfigure.width, event.xconfigure.height);
+                    Math::Vector2<GLsizei> size(event.xconfigure.width, event.xconfigure.height);
                     if(size != viewportSize) {
                         viewportSize = size;
                         viewportEvent(size);
