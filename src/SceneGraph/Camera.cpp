@@ -112,7 +112,7 @@ void Camera3D::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
     _near = near;
     _far = far;
 
-    GLfloat xyScale = 1.0f/tan(fov/2);
+    GLfloat xyScale = 1.0f/tan(fov/2); /* == near/size */
     GLfloat zScale = 1.0f/(near-far);
 
     rawProjectionMatrix = Matrix4(
