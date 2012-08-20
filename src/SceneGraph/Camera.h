@@ -41,6 +41,7 @@ namespace Implementation {
     template<class MatrixType> MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Vector2& projectionAspectRatio, const Math::Vector2<GLsizei>& viewport);
 
     /* These templates are instantiated in source file */
+    extern template SCENEGRAPH_EXPORT Matrix3 aspectRatioFix<Matrix3>(AspectRatioPolicy, const Vector2&, const Math::Vector2<GLsizei>&);
     extern template SCENEGRAPH_EXPORT Matrix4 aspectRatioFix<Matrix4>(AspectRatioPolicy, const Vector2&, const Math::Vector2<GLsizei>&);
 }
 #endif
