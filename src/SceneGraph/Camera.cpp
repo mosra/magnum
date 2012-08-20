@@ -24,12 +24,12 @@ namespace Magnum { namespace SceneGraph {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
-template<class MatrixType> MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Vector2& projectionAspectRatio, const Math::Vector2<GLsizei>& viewport) {
+template<class MatrixType> MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Vector2& projectionScale, const Math::Vector2<GLsizei>& viewport) {
     /* Don't divide by zero / don't preserve anything */
-    if(projectionAspectRatio.x() == 0 || projectionAspectRatio.y() == 0 || viewport.x() == 0 || viewport.y() == 0 || aspectRatioPolicy == AspectRatioPolicy::NotPreserved)
+    if(projectionScale.x() == 0 || projectionScale.y() == 0 || viewport.x() == 0 || viewport.y() == 0 || aspectRatioPolicy == AspectRatioPolicy::NotPreserved)
         return MatrixType();
 
-    Vector2 relativeAspectRatio = Vector2::from(viewport)/projectionAspectRatio;
+    Vector2 relativeAspectRatio = Vector2::from(viewport)*projectionScale;
 
     /* Extend on larger side = scale larger side down
        Clip on smaller side = scale smaller side up */
@@ -46,7 +46,7 @@ template Matrix4 aspectRatioFix<Matrix4>(AspectRatioPolicy, const Vector2&, cons
 }
 #endif
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::Camera(ObjectType* parent): ObjectType(parent), projectionAspectRatio(1.0f), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {}
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::Camera(ObjectType* parent): ObjectType(parent), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {}
 
 template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setViewport(const Math::Vector2<GLsizei>& size) {
     Framebuffer::setViewport({0, 0}, size);
@@ -86,7 +86,6 @@ void Camera2D::setProjection(const Vector2& size) {
     /* Scale the volume down so it fits in (-1, 1) in all directions */
     rawProjectionMatrix = Matrix3::scaling(2.0f/size);
 
-    projectionAspectRatio = size;
     fixAspectRatio();
 }
 
@@ -104,7 +103,6 @@ void Camera3D::setOrthographic(const Vector2& size, GLfloat near, GLfloat far) {
         0.0f,           0.0f,           near*zScale-1,  1.0f
     );
 
-    projectionAspectRatio = size;
     fixAspectRatio();
 }
 
@@ -122,7 +120,6 @@ void Camera3D::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
         0.0f,       0.0f,       (2*far*near)*zScale,    0.0f
     );
 
-    projectionAspectRatio = Vector2(xyScale);
     fixAspectRatio();
 }
 

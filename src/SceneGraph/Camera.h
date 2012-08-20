@@ -38,7 +38,7 @@ namespace Implementation {
 
     template<size_t dimensions> class Camera {};
 
-    template<class MatrixType> MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Vector2& projectionAspectRatio, const Math::Vector2<GLsizei>& viewport);
+    template<class MatrixType> MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Vector2& projectionScale, const Math::Vector2<GLsizei>& viewport);
 
     /* These templates are instantiated in source file */
     extern template SCENEGRAPH_EXPORT Matrix3 aspectRatioFix<Matrix3>(AspectRatioPolicy, const Vector2&, const Math::Vector2<GLsizei>&);
@@ -131,10 +131,9 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline void fixAspectRatio() {
-            _projectionMatrix = Implementation::aspectRatioFix<MatrixType>(_aspectRatioPolicy, projectionAspectRatio, _viewport)*rawProjectionMatrix;
+            _projectionMatrix = Implementation::aspectRatioFix<MatrixType>(_aspectRatioPolicy, {rawProjectionMatrix[0].x(), rawProjectionMatrix[1].y()}, _viewport)*rawProjectionMatrix;
         }
 
-        Vector2 projectionAspectRatio;
         MatrixType rawProjectionMatrix;
         AspectRatioPolicy _aspectRatioPolicy;
         #endif
