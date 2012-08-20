@@ -90,7 +90,8 @@ class AbstractXContext: public AbstractContext {
         /**
          * @brief %Modifier
          *
-         * @see Modifiers, keyPressEvent(), keyReleaseEvent()
+         * @see Modifiers, keyPressEvent(), keyReleaseEvent(),
+         *      mousePressEvent(), mouseReleaseEvent()
          */
         enum class Modifier: unsigned int {
             Shift = ShiftMask,          /**< Shift */
