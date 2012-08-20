@@ -38,7 +38,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D translation matrix
          * @param vec   Translation vector
          *
-         * @see Matrix3::translation()
+         * @see Matrix3::translation(), Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()
          */
         inline constexpr static Matrix4<T> translation(const Vector3<T>& vec) {
             return Matrix4<T>( /* Column-major! */
@@ -69,7 +69,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @param angle Rotation angle (counterclockwise, in radians)
          * @param vec   Rotation vector
          *
-         * @see Matrix3::rotation()
+         * @see Matrix3::rotation(), Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis(), deg(), rad()
          * @todo optimize - Assume the vectors are normalized?
          */
         static Matrix4<T> rotation(T angle, const Vector3<T>& vec) {

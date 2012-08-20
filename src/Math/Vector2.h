@@ -26,10 +26,22 @@ namespace Magnum { namespace Math {
 /** @brief Two-component vector */
 template<class T> class Vector2: public Vector<2, T> {
     public:
-        /** @brief %Vector in direction of X axis */
+        /**
+         * @brief %Vector in direction of X axis
+         *
+         * Usable for translation in given axis, for example:
+         * @code
+         * Matrix3::translation(Vector2::xAxis(5.0f)); // same as Matrix3::translation({5.0f, 0.0f});
+         * @endcode
+         * @see yAxis()
+         */
         inline constexpr static Vector2<T> xAxis(T length = T(1)) { return Vector2<T>(length, T()); }
 
-        /** @brief %Vector in direction of Y axis */
+        /**
+         * @brief %Vector in direction of Y axis
+         *
+         * See xAxis() for more information.
+         */
         inline constexpr static Vector2<T> yAxis(T length = T(1)) { return Vector2<T>(T(), length); }
 
         /** @copydoc Vector::Vector(T) */

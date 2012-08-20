@@ -26,13 +26,30 @@ namespace Magnum { namespace Math {
 /** @brief Three-component vector */
 template<class T> class Vector3: public Vector<3, T> {
     public:
-        /** @brief %Vector in direction of X axis */
+        /**
+         * @brief %Vector in direction of X axis
+         *
+         * Usable for translation or rotation along given axis, for example:
+         * @code
+         * Matrix4::translation(Vector3::xAxis(5.0f)); // same as Matrix4::translation({5.0f, 0.0f, 0.0f});
+         * Matrix4::rotation(deg(30.0f), Vector3::xAxis()); // same as Matrix::rotation(deg(30.0f), {1.0f, 0.0f, 0.0f});
+         * @endcode
+         * @see yAxis(), zAxis()
+         */
         inline constexpr static Vector3<T> xAxis(T length = T(1)) { return Vector3<T>(length, T(), T()); }
 
-        /** @brief %Vector in direction of Y axis */
+        /**
+         * @brief %Vector in direction of Y axis
+         *
+         * See xAxis() for more information.
+         */
         inline constexpr static Vector3<T> yAxis(T length = T(1)) { return Vector3<T>(T(), length, T()); }
 
-        /** @brief %Vector in direction of Z axis */
+        /**
+         * @brief %Vector in direction of Z axis
+         *
+         * See xAxis() for more information.
+         */
         inline constexpr static Vector3<T> zAxis(T length = T(1)) { return Vector3<T>(T(), T(), length); }
 
         /**

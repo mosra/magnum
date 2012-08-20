@@ -130,17 +130,23 @@ template<class Integral, class FloatingPoint> inline constexpr typename std::ena
 }
 
 /**
- * @brief Angle in degrees
- *
- * Function to make angle entering less error-prone. Converts the value to
- * radians at compile time. For example `deg(180.0f)` is converted to `3.14f`.
+@brief Angle in degrees
+
+Function to make angle entering less error-prone. Converts the value to
+radians at compile time. For example `deg(180.0f)` is converted to `3.14f`.
+
+Usable for entering e.g. rotation:
+@code
+Matrix4::rotation(deg(30.0f), Vector3::yAxis());
+@endcode
+@see rad()
  */
 template<class T> inline constexpr T deg(T value) { return value*Constants<T>::pi()/180; }
 
 /**
  * @brief Angle in radians
  *
- * See also deg().
+ * See deg() for more information.
  */
 template<class T> inline constexpr T rad(T value) { return value; }
 

@@ -36,7 +36,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief 2D translation matrix
          * @param vec   Translation vector
          *
-         * @see Matrix4::translation()
+         * @see Matrix4::translation(), Vector2::xAxis(), Vector2::yAxis()
          */
         inline constexpr static Matrix3<T> translation(const Vector2<T>& vec) {
             return Matrix3<T>( /* Column-major! */
@@ -64,7 +64,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief 3D rotation matrix
          * @param angle Rotation angle (counterclockwise, in radians)
          *
-         * @see Matrix4::rotation()
+         * @see Matrix4::rotation(), deg(), rad()
          */
         static Matrix3<T> rotation(T angle) {
             return Matrix3<T>( /* Column-major! */
