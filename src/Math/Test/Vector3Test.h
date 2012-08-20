@@ -25,7 +25,7 @@ class Vector3Test: public Corrade::TestSuite::Tester<Vector3Test> {
 
         void construct();
         void cross();
-        void axis();
+        void axes();
         void twoComponent();
 
         void debug();

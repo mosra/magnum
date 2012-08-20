@@ -26,6 +26,12 @@ namespace Magnum { namespace Math {
 /** @brief Two-component vector */
 template<class T> class Vector2: public Vector<2, T> {
     public:
+        /** @brief %Vector in direction of X axis */
+        inline constexpr static Vector2<T> xAxis(T length = T(1)) { return Vector2<T>(length, T()); }
+
+        /** @brief %Vector in direction of Y axis */
+        inline constexpr static Vector2<T> yAxis(T length = T(1)) { return Vector2<T>(T(), length); }
+
         /** @copydoc Vector::Vector(T) */
         inline constexpr explicit Vector2(T value = T()): Vector<2, T>(value, value) {}
 

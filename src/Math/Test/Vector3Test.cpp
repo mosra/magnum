@@ -32,7 +32,7 @@ typedef Math::Vector2<float> Vector2;
 Vector3Test::Vector3Test() {
     addTests(&Vector3Test::construct,
              &Vector3Test::cross,
-             &Vector3Test::axis,
+             &Vector3Test::axes,
              &Vector3Test::twoComponent,
              &Vector3Test::debug);
 }
@@ -49,7 +49,7 @@ void Vector3Test::cross() {
     CORRADE_COMPARE(Vector3::cross(a, b), Vector3(-10, -3, 7));
 }
 
-void Vector3Test::axis() {
+void Vector3Test::axes() {
     CORRADE_COMPARE(Vector3::xAxis(5.0f), Vector3(5.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(Vector3::yAxis(6.0f), Vector3(0.0f, 6.0f, 0.0f));
     CORRADE_COMPARE(Vector3::zAxis(7.0f), Vector3(0.0f, 0.0f, 7.0f));
