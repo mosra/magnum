@@ -26,7 +26,7 @@ using namespace std;
 
 namespace Magnum { namespace Contexts {
 
-AbstractXContext::AbstractXContext(AbstractGlInterface<Display*, VisualID, Window>* glInterface, int&, char**, const string& title, const Math::Vector2<GLsizei>& size): glInterface(glInterface), viewportSize(size), _redraw(true) {
+AbstractXContext::AbstractXContext(AbstractGlInterface<Display*, VisualID, Window>* glInterface, int&, char**, const string& title, const Math::Vector2<GLsizei>& size): glInterface(glInterface), viewportSize(size), flags(Flag::Redraw) {
     /* Get default X display */
     display = XOpenDisplay(0);
 
@@ -40,7 +40,7 @@ AbstractXContext::AbstractXContext(AbstractGlInterface<Display*, VisualID, Windo
     visInfo = XGetVisualInfo(display, VisualIDMask, &visTemplate, &visualCount);
     if(!visInfo) {
         Error() << "Cannot get X visual";
-        exit(1);
+        ::exit(1);
     }
 
     /* Create X Window */
@@ -88,7 +88,7 @@ int AbstractXContext::exec() {
     /* Call viewportEvent for the first time */
     viewportEvent(viewportSize);
 
-    while(true) {
+    while(!(flags & Flag::Exit)) {
         XEvent event;
 
         /* Closed window */
@@ -105,7 +105,7 @@ int AbstractXContext::exec() {
                     if(size != viewportSize) {
                         viewportSize = size;
                         viewportEvent(size);
-                        _redraw = true;
+                        flags |= Flag::Redraw;
                     }
                 } break;
 
@@ -125,8 +125,8 @@ int AbstractXContext::exec() {
             }
         }
 
-        if(_redraw) {
-            _redraw = false;
+        if(flags & Flag::Redraw) {
+            flags &= ~Flag::Redraw;
             drawEvent();
         } else Corrade::Utility::sleep(5);
     }

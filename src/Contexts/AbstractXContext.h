@@ -64,6 +64,9 @@ class AbstractXContext: public AbstractContext {
 
         int exec();
 
+        /** @brief Exit application main loop */
+        inline void exit() { flags |= Flag::Exit; }
+
         /** @{ @name Drawing functions */
 
     protected:
@@ -77,7 +80,7 @@ class AbstractXContext: public AbstractContext {
         inline void swapBuffers() { glInterface->swapBuffers(); }
 
         /** @copydoc GlutContext::redraw() */
-        inline void redraw() { _redraw = true; }
+        inline void redraw() { flags |= Flag::Redraw; }
 
         /*@}*/
 
@@ -111,6 +114,8 @@ class AbstractXContext: public AbstractContext {
          * @see keyPressEvent(), keyReleaseEvent()
          */
         enum class Key: KeySym {
+            Esc = XK_Escape,            /**< Escape */
+
             Up = XK_Up,                 /**< Up arrow */
             Down = XK_Down,             /**< Down arrow */
             Left = XK_Left,             /**< Left arrow */
@@ -245,6 +250,14 @@ class AbstractXContext: public AbstractContext {
         /*@}*/
 
     private:
+        enum class Flag: unsigned int {
+            Redraw = 1 << 0,
+            Exit = 1 << 1
+        };
+
+        typedef Corrade::Containers::EnumSet<Flag, unsigned int> Flags;
+        CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
+
         Display* display;
         Window window;
         Atom deleteWindow;
@@ -254,10 +267,11 @@ class AbstractXContext: public AbstractContext {
         /** @todo Get this from the created window */
         Math::Vector2<GLsizei> viewportSize;
 
-        bool _redraw;
+        Flags flags;
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractXContext::Modifiers)
+CORRADE_ENUMSET_OPERATORS(AbstractXContext::Flags)
 
 /* Implementations for inline functions with unused parameters */
 inline void AbstractXContext::keyPressEvent(Key, Modifiers, const Math::Vector2<int>&) {}
