@@ -125,13 +125,32 @@ template<size_t size, class T> class Matrix {
         inline T* data() { return _data; }
         inline constexpr const T* data() const { return _data; } /**< @overload */
 
-        /** @brief %Matrix column */
+        /**
+         * @brief %Matrix column
+         *
+         * For accessing individual elements prefer to use operator(), as it
+         * is guaranteed to not involve unnecessary conversions.
+         */
         inline Vector<size, T>& operator[](size_t col) {
             return Vector<size, T>::from(_data+col*size);
         }
         /** @overload */
         inline constexpr const Vector<size, T>& operator[](size_t col) const {
             return Vector<size, T>::from(_data+col*size);
+        }
+
+        /**
+         * @brief Element on given position
+         *
+         * Prefer this instead of using `[][]`.
+         * @see operator[]
+         */
+        inline T& operator()(size_t col, size_t row) {
+            return _data[col*size+row];
+        }
+        /** @overload */
+        inline constexpr const T& operator()(size_t col, size_t row) const {
+            return _data[col*size+row];
         }
 
         /** @brief Equality operator */
@@ -243,15 +262,6 @@ template<size_t size, class T> class Matrix {
             return Matrix<size, T>(first, next...);
         }
 
-        /* Used internally instead of [][], because GCC does some heavy
-           optimalization in release mode which breaks it */
-        inline T& operator()(size_t col, size_t row) {
-            return _data[col*size+row];
-        }
-        inline constexpr const T& operator()(size_t col, size_t row) const {
-            return _data[col*size+row];
-        }
-
         T _data[size*size];
 };
 
@@ -318,7 +328,7 @@ template<size_t size, class T> class MatrixDeterminant {
             T out(0);
 
             for(size_t col = 0; col != size; ++col)
-                out += ((col & 1) ? -1 : 1)*m[col][0]*m.ij(col, 0).determinant();
+                out += ((col & 1) ? -1 : 1)*m(col, 0)*m.ij(col, 0).determinant();
 
             return out;
         }
@@ -328,7 +338,7 @@ template<class T> class MatrixDeterminant<2, T> {
     public:
         /** @brief Functor */
         inline constexpr T operator()(const Matrix<2, T>& m) {
-            return m[0][0]*m[1][1] - m[1][0]*m[0][1];
+            return m(0, 0)*m(1, 1) - m(1, 0)*m(0, 1);
         }
 };
 
@@ -336,7 +346,7 @@ template<class T> class MatrixDeterminant<1, T> {
     public:
         /** @brief Functor */
         inline constexpr T operator()(const Matrix<1, T>& m) {
-            return m[0][0];
+            return m(0, 0);
         }
 };
 

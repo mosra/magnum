@@ -124,9 +124,10 @@ void MatrixTest::data() {
     m[3] = vector;
     m[2][1] = 1.0f;
 
-    m[1][2] = 1.5f;
+    m(1, 2) = 1.5f;
 
-    CORRADE_COMPARE(m[2][1], 1.0f);
+    CORRADE_COMPARE(m(2, 1), 1.0f);
+    CORRADE_COMPARE(m[1][2], 1.5f);
     CORRADE_COMPARE(m[3], vector);
 
     Matrix4 expected(
@@ -142,20 +143,20 @@ void MatrixTest::data() {
 void MatrixTest::copy() {
     Matrix4 m1(Matrix4::Zero);
 
-    m1[2][3] = 1.0f;
+    m1(2, 3) = 1.0f;
 
     /* Copy */
     Matrix4 m2(m1);
     Matrix4 m3;
-    m3[0][0] = 1.0f; /* this line is here so it's not optimized to Matrix4 m3(m1) */
+    m3(0, 0) = 1.0f; /* this line is here so it's not optimized to Matrix4 m3(m1) */
     m3 = m1;
 
     /* Change original */
-    m1[3][2] = 1.0f;
+    m1(3, 2) = 1.0f;
 
     /* Verify the copy is the same as original */
     Matrix4 original(Matrix4::Zero);
-    original[2][3] = 1.0f;
+    original(2, 3) = 1.0f;
 
     CORRADE_COMPARE(m2, original);
     CORRADE_COMPARE(m3, original);
