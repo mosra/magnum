@@ -23,6 +23,9 @@ namespace Magnum { namespace SceneGraph { namespace Test {
 
 CameraTest::CameraTest() {
     addTests(&CameraTest::fixAspectRatio,
+             &CameraTest::defaultProjection2D,
+             &CameraTest::defaultProjection3D,
+             &CameraTest::projection2D,
              &CameraTest::orthographic,
              &CameraTest::perspective);
 }
@@ -69,9 +72,32 @@ void CameraTest::fixAspectRatio() {
     CORRADE_COMPARE(Implementation::aspectRatioFix<Matrix4>(Implementation::AspectRatioPolicy::Extend, projectionSize, size), expectedExtendRectangle);
 }
 
-void CameraTest::orthographic() {
+void CameraTest::defaultProjection2D() {
+    Camera2D camera;
+    CORRADE_COMPARE(camera.projectionMatrix(), Matrix3());
+}
+
+void CameraTest::defaultProjection3D() {
     Camera3D camera;
-    camera.setOrthographic(Vector2(5), 1, 9);
+    CORRADE_COMPARE(camera.projectionMatrix(), Matrix4());
+}
+
+void CameraTest::projection2D() {
+    Vector2 projectionSize(4.0f, 3.0f);
+    Camera2D camera;
+    camera.setProjection(projectionSize);
+
+    Matrix3 a(2.0f/4.0f,    0.0f,       0.0f,
+              0.0f,         2.0f/3.0f,  0.0f,
+              0.0f,         0.0f,       1.0f);
+
+    CORRADE_COMPARE(camera.projectionMatrix(), a);
+}
+
+void CameraTest::orthographic() {
+    Vector2 projectionSize(5);
+    Camera3D camera;
+    camera.setOrthographic(projectionSize, 1, 9);
 
     Matrix4 a(0.4f,   0.0f,   0.0f,       0.0f,
               0.0f,   0.4f,   0.0f,       0.0f,
@@ -80,7 +106,8 @@ void CameraTest::orthographic() {
 
     CORRADE_COMPARE(camera.projectionMatrix(), a);
 
-    camera.setOrthographic(Vector2(5.0f, 4.0f), 1, 9);
+    Vector2 projectionSizeRectangle(5.0f, 4.0f);
+    camera.setOrthographic(projectionSizeRectangle, 1, 9);
 
     Matrix4 rectangle(0.4f,   0.0f,   0.0f,       0.0f,
                       0.0f,   0.5f,   0.0f,       0.0f,
