@@ -53,7 +53,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D scaling matrix
          * @param vec   Scaling vector
          *
-         * @see Matrix3::scaling()
+         * @see Matrix3::scaling(), Vector3::xScale(), Vector3::yScale(), Vector3::zScale()
          */
         inline constexpr static Matrix4<T> scaling(const Vector3<T>& vec) {
             return Matrix4<T>( /* Column-major! */

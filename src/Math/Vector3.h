@@ -34,7 +34,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * Matrix4::translation(Vector3::xAxis(5.0f)); // same as Matrix4::translation({5.0f, 0.0f, 0.0f});
          * Matrix4::rotation(deg(30.0f), Vector3::xAxis()); // same as Matrix::rotation(deg(30.0f), {1.0f, 0.0f, 0.0f});
          * @endcode
-         * @see yAxis(), zAxis()
+         * @see yAxis(), zAxis(), xScale()
          */
         inline constexpr static Vector3<T> xAxis(T length = T(1)) { return Vector3<T>(length, T(), T()); }
 
@@ -42,6 +42,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * @brief %Vector in direction of Y axis
          *
          * See xAxis() for more information.
+         * @see yScale()
          */
         inline constexpr static Vector3<T> yAxis(T length = T(1)) { return Vector3<T>(T(), length, T()); }
 
@@ -49,8 +50,36 @@ template<class T> class Vector3: public Vector<3, T> {
          * @brief %Vector in direction of Z axis
          *
          * See xAxis() for more information.
+         * @see zScale()
          */
         inline constexpr static Vector3<T> zAxis(T length = T(1)) { return Vector3<T>(T(), T(), length); }
+
+        /**
+         * @brief Scaling vector in direction of X axis
+         *
+         * Usable for scaling along given direction, for example:
+         * @code
+         * Matrix4::scaling(Vector3::xScale(-2.0f)); // same as Matrix4::scaling({-2.0f, 1.0f, 1.0f});
+         * @endcode
+         * @see yScale(), zScale(), xAxis()
+         */
+        inline constexpr static Vector3<T> xScale(T scale) { return Vector3<T>(scale, T(1), T(1)); }
+
+        /**
+         * @brief Scaling vector in direction of Y axis
+         *
+         * See xScale() for more information.
+         * @see yAxis()
+         */
+        inline constexpr static Vector3<T> yScale(T scale) { return Vector3<T>(T(1), scale, T(1)); }
+
+        /**
+         * @brief Scaling vector in direction of Z axis
+         *
+         * See xScale() for more information.
+         * @see zAxis()
+         */
+        inline constexpr static Vector3<T> zScale(T scale) { return Vector3<T>(T(1), T(1), scale); }
 
         /**
          * @brief Cross product

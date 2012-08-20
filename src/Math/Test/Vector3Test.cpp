@@ -33,6 +33,7 @@ Vector3Test::Vector3Test() {
     addTests(&Vector3Test::construct,
              &Vector3Test::cross,
              &Vector3Test::axes,
+             &Vector3Test::scales,
              &Vector3Test::twoComponent,
              &Vector3Test::debug);
 }
@@ -53,6 +54,12 @@ void Vector3Test::axes() {
     CORRADE_COMPARE(Vector3::xAxis(5.0f), Vector3(5.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(Vector3::yAxis(6.0f), Vector3(0.0f, 6.0f, 0.0f));
     CORRADE_COMPARE(Vector3::zAxis(7.0f), Vector3(0.0f, 0.0f, 7.0f));
+}
+
+void Vector3Test::scales() {
+    CORRADE_COMPARE(Vector3::xScale(-5.0f), Vector3(-5.0f, 1.0f, 1.0f));
+    CORRADE_COMPARE(Vector3::yScale(-0.2f), Vector3(1.0f, -0.2f, 1.0f));
+    CORRADE_COMPARE(Vector3::zScale(71.0f), Vector3(1.0f, 1.0f, 71.0f));
 }
 
 void Vector3Test::twoComponent() {
