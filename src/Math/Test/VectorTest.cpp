@@ -28,15 +28,18 @@ using namespace Corrade::Utility;
 namespace Magnum { namespace Math { namespace Test {
 
 typedef Vector<4, float> Vector4;
+typedef Vector<4, int> Vector4i;
 typedef Vector<3, float> Vector3;
 
 VectorTest::VectorTest() {
     addTests(&VectorTest::construct,
+             &VectorTest::constructFrom,
              &VectorTest::data,
              &VectorTest::copy,
              &VectorTest::dot,
              &VectorTest::multiplyDivide,
-             &VectorTest::addSubstract,
+             &VectorTest::multiplyDivideComponentWise,
+             &VectorTest::addSubtract,
              &VectorTest::dotSelf,
              &VectorTest::length,
              &VectorTest::normalized,
@@ -46,7 +49,8 @@ VectorTest::VectorTest() {
              &VectorTest::max,
              &VectorTest::angle,
              &VectorTest::negative,
-             &VectorTest::debug);
+             &VectorTest::debug,
+             &VectorTest::configuration);
 }
 
 void VectorTest::construct() {
@@ -54,6 +58,15 @@ void VectorTest::construct() {
 
     float data[] = { 1.0f, 2.0f, 3.0f, 4.0f };
     CORRADE_COMPARE(Vector4::from(data), Vector4(1.0f, 2.0f, 3.0f, 4.0f));
+}
+
+void VectorTest::constructFrom() {
+    Vector4 floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
+    Vector4 floatingPointRounded(1.0f, 2.0f, -15.0f, 7.0f);
+    Vector4i integral(1, 2, -15, 7);
+
+    CORRADE_COMPARE(Vector4i::from(floatingPoint), integral);
+    CORRADE_COMPARE(Vector4::from(integral), floatingPointRounded);
 }
 
 void VectorTest::data() {
@@ -95,15 +108,32 @@ void VectorTest::multiplyDivide() {
     Vector4 multiplied(-1.5f, -3.0f, -4.5f, -6.0f);
 
     CORRADE_COMPARE(vec*-1.5f, multiplied);
+    CORRADE_COMPARE(-1.5f*vec, multiplied);
     CORRADE_COMPARE(multiplied/-1.5f, vec);
 
     Math::Vector<1, char> vecChar(32);
     Math::Vector<1, char> multipliedChar(-48);
     CORRADE_COMPARE(vecChar*-1.5f, multipliedChar);
     CORRADE_COMPARE(multipliedChar/-1.5f, vecChar);
+    CORRADE_COMPARE(-1.5f*vecChar, multipliedChar);
+
+    /* Divide vector with number and inverse */
+    Vector4 divisor(1.0f, 2.0f, -4.0f, 8.0f);
+    Vector4 result(1.0f, 0.5f, -0.25f, 0.125f);
+    CORRADE_COMPARE(1.0f/divisor, result);
+    CORRADE_COMPARE(-1550.0f/multipliedChar, vecChar);
 }
 
-void VectorTest::addSubstract() {
+void VectorTest::multiplyDivideComponentWise() {
+    Vector4 vec(1.0f, 2.0f, 3.0f, 4.0f);
+    Vector4 multiplier(7.0f, -4.0f, -1.5f, 1.0f);
+    Vector4 multiplied(7.0f, -8.0f, -4.5f, 4.0f);
+
+    CORRADE_COMPARE(vec*multiplier, multiplied);
+    CORRADE_COMPARE(multiplied/multiplier, vec);
+}
+
+void VectorTest::addSubtract() {
     Vector4 a(0.5f, -7.5f, 9.0f, -11.0f);
     Vector4 b(-0.5, 1.0f, 0.0f, 7.5f);
     Vector4 expected(0.0f, -6.5f, 9.0f, -3.5f);
@@ -163,6 +193,13 @@ void VectorTest::debug() {
     o.str("");
     Debug(&o) << "a" << Vector4() << "b" << Vector4();
     CORRADE_COMPARE(o.str(), "a Vector(0, 0, 0, 0) b Vector(0, 0, 0, 0)\n");
+}
+
+void VectorTest::configuration() {
+    Vector4 vec(3.0f, 3.125f, 9.0f, 9.55f);
+    string value("3 3.125 9 9.55");
+    CORRADE_COMPARE(ConfigurationValue<Vector4>::toString(vec), value);
+    CORRADE_COMPARE(ConfigurationValue<Vector4>::fromString(value), vec);
 }
 
 }}}

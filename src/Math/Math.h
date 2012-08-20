@@ -51,14 +51,14 @@ template<class T> struct Constants {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> struct Constants<double> {
-    static inline constexpr double pi() { return 3.14159265359; }
-    static inline constexpr double sqrt2() { return 1.41421356237; }
-    static inline constexpr double sqrt3() { return 1.73205080757; }
+    static inline constexpr double pi()    { return 3.141592653589793; }
+    static inline constexpr double sqrt2() { return 1.414213562373095; }
+    static inline constexpr double sqrt3() { return 1.732050807568877; }
 };
 template<> struct Constants<float> {
-    static inline constexpr float pi() { return 3.14159265359f; }
-    static inline constexpr float sqrt2() { return 1.41421356237f; }
-    static inline constexpr float sqrt3() { return 1.73205080757f; }
+    static inline constexpr float pi()    { return 3.141592654f; }
+    static inline constexpr float sqrt2() { return 1.414213562f; }
+    static inline constexpr float sqrt3() { return 1.732050808f; }
 };
 
 namespace Implementation {
@@ -105,6 +105,8 @@ float a = normalize<float>('\127');
 // b = 1.0f
 float b = normalize<float, char>('\127');
 @endcode
+
+@todo Signed normalization to [-1.0, 1.0] like in OpenGL?
 */
 template<class FloatingPoint, class Integral> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value, FloatingPoint>::type normalize(Integral value) {
     return (FloatingPoint(value)-FloatingPoint(std::numeric_limits<Integral>::min()))/
@@ -119,6 +121,8 @@ integral type.
 
 @note For best precision, `FloatingPoint` type should be always larger that
 resulting `Integral` type (e.g. `double` to `int`, `long double` to `long long`).
+
+@todo Signed normalization to [-1.0, 1.0] like in OpenGL?
 */
 template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value, Integral>::type denormalize(FloatingPoint value) {
     return             std::numeric_limits<Integral>::min() +
@@ -127,17 +131,23 @@ template<class Integral, class FloatingPoint> inline constexpr typename std::ena
 }
 
 /**
- * @brief Angle in degrees
- *
- * Function to make angle entering less error-prone. Converts the value to
- * radians at compile time. For example `deg(180.0f)` is converted to `3.14f`.
+@brief Angle in degrees
+
+Function to make angle entering less error-prone. Converts the value to
+radians at compile time. For example `deg(180.0f)` is converted to `3.14f`.
+
+Usable for entering e.g. rotation:
+@code
+Matrix4::rotation(deg(30.0f), Vector3::yAxis());
+@endcode
+@see rad()
  */
 template<class T> inline constexpr T deg(T value) { return value*Constants<T>::pi()/180; }
 
 /**
  * @brief Angle in radians
  *
- * See also deg().
+ * See deg() for more information.
  */
 template<class T> inline constexpr T rad(T value) { return value; }
 

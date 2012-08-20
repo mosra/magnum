@@ -28,7 +28,9 @@ class Matrix3Test: public Corrade::TestSuite::Tester<Matrix3Test> {
         void translation();
         void scaling();
         void rotation();
+
         void debug();
+        void configuration();
 };
 
 }}}

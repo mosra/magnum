@@ -34,7 +34,8 @@ Matrix3Test::Matrix3Test() {
              &Matrix3Test::translation,
              &Matrix3Test::scaling,
              &Matrix3Test::rotation,
-             &Matrix3Test::debug);
+             &Matrix3Test::debug,
+             &Matrix3Test::configuration);
 }
 
 void Matrix3Test::constructIdentity() {
@@ -101,6 +102,17 @@ void Matrix3Test::debug() {
     CORRADE_COMPARE(o.str(), "Matrix(3, 4, 7,\n"
                              "       5, 4, -1,\n"
                              "       8, 7, 8)\n");
+}
+
+void Matrix3Test::configuration() {
+    Matrix3 m(
+        5.0f, 8.0f, 4.0f,
+        4.0f, 7.0f, 3.125f,
+        4.0f, 5.0f, 9.55f
+    );
+    string value("5 4 4 8 7 5 4 3.125 9.55");
+    CORRADE_COMPARE(ConfigurationValue<Matrix3>::toString(m), value);
+    CORRADE_COMPARE(ConfigurationValue<Matrix3>::fromString(value), m);
 }
 
 }}}

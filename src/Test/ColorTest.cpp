@@ -21,11 +21,14 @@ using namespace std;
 
 CORRADE_TEST_MAIN(Magnum::Test::ColorTest)
 
+using namespace Corrade::Utility;
+
 namespace Magnum { namespace Test {
 
 typedef Magnum::Color3<unsigned char> Color3;
 typedef Magnum::Color4<unsigned char> Color4;
 typedef Magnum::Color3<float> Color3f;
+typedef Magnum::Color4<float> Color4f;
 
 ColorTest::ColorTest() {
     addTests(&ColorTest::fromDenormalized,
@@ -41,7 +44,10 @@ ColorTest::ColorTest() {
 
              &ColorTest::hsv,
              &ColorTest::hsvOverflow,
-             &ColorTest::hsvAlpha);
+             &ColorTest::hsvAlpha,
+
+             &ColorTest::debug,
+             &ColorTest::configuration);
 }
 
 void ColorTest::fromDenormalized() {
@@ -116,6 +122,28 @@ void ColorTest::hsvOverflow() {
 void ColorTest::hsvAlpha() {
     CORRADE_COMPARE(Color4::fromHSV(make_tuple(230.0f, 0.749f, 0.427f), 23), Color4(27, 41, 109, 23));
     CORRADE_COMPARE(Color4::fromHSV(230.0f, 0.749f, 0.427f, 23), Color4(27, 41, 109, 23));
+}
+
+void ColorTest::debug() {
+    ostringstream o;
+    Debug(&o) << Color3f(0.5f, 0.75f, 1.0f);
+    CORRADE_COMPARE(o.str(), "Vector(0.5, 0.75, 1)\n");
+
+    o.str("");
+    Debug(&o) << Color4f(0.5f, 0.75f, 0.0f, 1.0f);
+    CORRADE_COMPARE(o.str(), "Vector(0.5, 0.75, 0, 1)\n");
+}
+
+void ColorTest::configuration() {
+    Color3f color3(0.5f, 0.75f, 1.0f);
+    string value3("0.5 0.75 1");
+    CORRADE_COMPARE(ConfigurationValue<Color3f>::toString(color3), value3);
+    CORRADE_COMPARE(ConfigurationValue<Color3f>::fromString(value3), color3);
+
+    Color4f color4(0.5f, 0.75f, 0.0f, 1.0f);
+    string value4("0.5 0.75 0 1");
+    CORRADE_COMPARE(ConfigurationValue<Color4f>::toString(color4), value4);
+    CORRADE_COMPARE(ConfigurationValue<Color4f>::fromString(value4), color4);
 }
 
 }}

@@ -29,6 +29,7 @@ namespace Magnum { namespace Math {
 
 Provides functions for transformations in 2D. See also Matrix4 for 3D
 transformations.
+@configurationvalueref{Magnum::Math::Matrix3}
 */
 template<class T> class Matrix3: public Matrix<3, T> {
     public:
@@ -36,7 +37,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief 2D translation matrix
          * @param vec   Translation vector
          *
-         * @see Matrix4::translation()
+         * @see Matrix4::translation(), Vector2::xAxis(), Vector2::yAxis()
          */
         inline constexpr static Matrix3<T> translation(const Vector2<T>& vec) {
             return Matrix3<T>( /* Column-major! */
@@ -50,7 +51,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief 2D scaling matrix
          * @param vec   Scaling vector
          *
-         * @see Matrix4::scaling()
+         * @see Matrix4::scaling(), Vector2::xScale(), Vector2::yScale()
          */
         inline constexpr static Matrix3<T> scaling(const Vector2<T>& vec) {
             return Matrix3<T>( /* Column-major! */
@@ -64,7 +65,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief 3D rotation matrix
          * @param angle Rotation angle (counterclockwise, in radians)
          *
-         * @see Matrix4::rotation()
+         * @see Matrix4::rotation(), deg(), rad()
          */
         static Matrix3<T> rotation(T angle) {
             return Matrix3<T>( /* Column-major! */
@@ -97,11 +98,16 @@ template<class T> class Matrix3: public Matrix<3, T> {
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix3, Vector3, 3)
 };
 
-/** @debugoperator{Matrix3} */
+/** @debugoperator{Magnum::Math::Matrix3} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix3<T>& value) {
     return debug << static_cast<const Magnum::Math::Matrix<3, T>&>(value);
 }
 
+}}
+
+namespace Corrade { namespace Utility {
+    /** @configurationvalue{Magnum::Math::Matrix3} */
+    template<class T> struct ConfigurationValue<Magnum::Math::Matrix3<T>>: public ConfigurationValue<Magnum::Math::Matrix<3, T>> {};
 }}
 
 #endif

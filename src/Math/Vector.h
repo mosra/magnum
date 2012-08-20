@@ -22,10 +22,13 @@
 #include <cmath>
 #include <limits>
 #include <Utility/Debug.h>
+#include <Utility/Configuration.h>
 
 #include "MathTypeTraits.h"
 
 namespace Magnum { namespace Math {
+
+template<size_t size, class T> class Vector;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
@@ -38,10 +41,20 @@ namespace Implementation {
     template<size_t ...sequence> struct GenerateSequence<0, sequence...> {
         typedef Sequence<sequence...> Type;
     };
+
+    /* Implementation for Vector<size, T>::from(const Vector<size, U>&) */
+    template<class T, class U, size_t ...sequence> inline constexpr Math::Vector<sizeof...(sequence), T> vectorFrom(Sequence<sequence...>, const Math::Vector<sizeof...(sequence), U>& vector) {
+        return {T(vector[sequence])...};
+    }
 }
 #endif
 
-/** @brief %Vector */
+/**
+@brief %Vector
+
+@configurationvalueref{Magnum::Math::Vector}
+@todo Constexprize all for loops
+*/
 template<size_t size, class T> class Vector {
     static_assert(size != 0, "Vector cannot have zero elements");
 
@@ -63,6 +76,21 @@ template<size_t size, class T> class Vector {
         /** @overload */
         inline constexpr static const Vector<size, T>& from(const T* data) {
             return *reinterpret_cast<const Vector<size, T>*>(data);
+        }
+
+        /**
+         * @brief %Vector from another of different type
+         *
+         * Performs only default casting on the values, no rounding or
+         * anything else. Example usage:
+         * @code
+         * Vector<4, float> floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
+         * Vector<4, int> integral(Vector<4, int>::from(floatingPoint));
+         * // integral == {1, 2, -15, 7}
+         * @endcode
+         */
+        template<class U> inline constexpr static Vector<size, T> from(const Vector<size, U>& other) {
+            return Implementation::vectorFrom<T, U>(typename Implementation::GenerateSequence<size>::Type(), other);
         }
 
         /**
@@ -161,41 +189,103 @@ template<size_t size, class T> class Vector {
         /**
          * @brief Multiply vector
          *
-         * Note that corresponding operator with swapped type order
-         * (multiplying number with vector) is not available, because it would
-         * cause ambiguity in some cases.
+         * @see operator*=(U), operator*(U, const Vector<size, T>&)
          */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator*(U number) const {
+        #else
         template<class U> inline Vector<size, T> operator*(U number) const {
+        #endif
             return Vector<size, T>(*this)*=number;
         }
 
         /**
-         * @brief Multiply and assign vector
+         * @brief Multiply vector and assign
          *
-         * More efficient than operator*(), because it does the computation
-         * in-place.
+         * More efficient than operator*(U) const, because it does the
+         * computation in-place.
          */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class U> typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>&>::type operator*=(U number) {
+        #else
         template<class U> Vector<size, T>& operator*=(U number) {
+        #endif
             for(size_t i = 0; i != size; ++i)
                 (*this)[i] *= number;
 
             return *this;
         }
 
-        /** @brief Divide vector */
+        /**
+         * @brief Multiply vector component-wise
+         *
+         * @see operator*=(const Vector<size, T>&)
+         */
+        Vector<size, T> operator*(const Vector<size, T>& other) const {
+            return Vector<size, T>(*this)*=other;
+        }
+
+        /**
+         * @brief Multiply vector component-wise and assign
+         *
+         * More efficient than operator*(const Vector<size, T>&) const,
+         * because it does the computation in-place.
+         */
+        Vector<size, T>& operator*=(const Vector<size, T>& other) {
+            for(size_t i = 0; i != size; ++i)
+                (*this)[i] *= other[i];
+
+            return *this;
+        }
+
+        /**
+         * @brief Divide vector
+         *
+         * @see operator/=(U), operator/(U, const Vector<size, T>&)
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator/(U number) const {
+        #else
         template<class U> inline Vector<size, T> operator/(U number) const {
+        #endif
             return Vector<size, T>(*this)/=number;
         }
 
         /**
-         * @brief Divide and assign vector
+         * @brief Divide vector and assign
          *
-         * More efficient than operator/(), because it does the computation
-         * in-place.
+         * More efficient than operator/(U) const, because it does the
+         * computation in-place.
          */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class U> typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>&>::type operator/=(U number) {
+        #else
         template<class U> Vector<size, T>& operator/=(U number) {
+        #endif
             for(size_t i = 0; i != size; ++i)
                 (*this)[i] /= number;
+
+            return *this;
+        }
+
+        /**
+         * @brief Divide vector component-wise
+         *
+         * @see operator/=(const Vector<size, T>&)
+         */
+        Vector<size, T> operator/(const Vector<size, T>& other) const {
+            return Vector<size, T>(*this)/=other;
+        }
+
+        /**
+         * @brief Divide vector component-wise and assign
+         *
+         * More efficient than operator/(const Vector<size, T>&) const,
+         * because it does the computation in-place.
+         */
+        Vector<size, T>& operator/=(const Vector<size, T>& other) {
+            for(size_t i = 0; i != size; ++i)
+                (*this)[i] /= other[i];
 
             return *this;
         }
@@ -218,13 +308,13 @@ template<size_t size, class T> class Vector {
             return *this;
         }
 
-        /** @brief Substract two vectors */
+        /** @brief Subtract two vectors */
         inline Vector<size, T> operator-(const Vector<size, T>& other) const {
             return Vector<size, T>(*this)-=other;
         }
 
         /**
-         * @brief Substract and assign vector
+         * @brief Subtract and assign vector
          *
          * More efficient than operator-(), because it does the computation
          * in-place.
@@ -318,8 +408,44 @@ template<size_t size, class T> class Vector {
         T _data[size];
 };
 
-/** @debugoperator{Vector} */
-template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector<size, T>& value) {
+/** @relates Vector
+@brief Multiply number with vector
+
+@see Vector::operator*(U) const
+*/
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator*(U number, const Vector<size, T>& vector) {
+#else
+template<size_t size, class T, class U> inline Vector<size, T> operator*(U number, const Vector<size, T>& vector) {
+#endif
+    return vector*number;
+}
+
+/** @relates Vector
+@brief Divide vector with number and invert
+
+Example:
+@code
+Vector<4, float> vec(1.0f, 2.0f, -4.0f, 8.0f);
+Vector<4, float> another = 1.0f/vec; // {1.0f, 0.5f, -0.25f, 0.128f}
+@endcode
+@see Vector::operator/(U) const
+*/
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<size_t size, class T, class U> typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator/(U number, const Vector<size, T>& vector) {
+#else
+template<size_t size, class T, class U> Vector<size, T> operator/(U number, const Vector<size, T>& vector) {
+#endif
+    Vector<size, T> out;
+
+    for(size_t i = 0; i != size; ++i)
+        out[i] = number/vector[i];
+
+    return out;
+}
+
+/** @debugoperator{Magnum::Math::Vector} */
+template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector<size, T>& value) {
     debug << "Vector(";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
     for(size_t i = 0; i != size; ++i) {
@@ -339,6 +465,9 @@ template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utili
     inline constexpr static const Type<T>& from(const T* data) {            \
         return *reinterpret_cast<const Type<T>*>(data);                     \
     }                                                                       \
+    template<class U> inline constexpr static Type<T> from(const Vector<size, U>& other) { \
+        return Vector<size, T>::from(other);                                \
+    }                                                                       \
                                                                             \
     inline Type<T>& operator=(const Type<T>& other) {                       \
         Vector<size, T>::operator=(other);                                  \
@@ -352,11 +481,25 @@ template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utili
         Vector<size, T>::operator*=(number);                                \
         return *this;                                                       \
     }                                                                       \
+    inline Type<T> operator*(const Vector<size, T>& other) const {          \
+        return Vector<size, T>::operator*(other);                           \
+    }                                                                       \
+    inline Type<T>& operator*=(const Vector<size, T>& other) {              \
+        Vector<size, T>::operator*=(other);                                 \
+        return *this;                                                       \
+    }                                                                       \
     template<class U> inline Type<T> operator/(U number) const {            \
         return Vector<size, T>::operator/(number);                          \
     }                                                                       \
     template<class U> inline Type<T>& operator/=(U number) {                \
         Vector<size, T>::operator/=(number);                                \
+        return *this;                                                       \
+    }                                                                       \
+    inline Type<T> operator/(const Vector<size, T>& other) const {          \
+        return Vector<size, T>::operator/(other);                           \
+    }                                                                       \
+    inline Type<T>& operator/=(const Vector<size, T>& other) {              \
+        Vector<size, T>::operator/=(other);                                 \
         return *this;                                                       \
     }                                                                       \
                                                                             \
@@ -377,7 +520,48 @@ template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utili
                                                                             \
     inline Type<T> operator-() const { return Vector<size, T>::operator-(); } \
     inline Type<T> normalized() const { return Vector<size, T>::normalized(); }
+
+#define MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Type, size)          \
+    template<class T, class U> inline Type<T> operator*(U number, const Type<T>& vector) { \
+        return number*Vector<size, T>(vector);                              \
+    }                                                                       \
+    template<class T, class U> inline Type<T> operator/(U number, const Type<T>& vector) { \
+        return number/Vector<size, T>(vector);                              \
+    }
 #endif
+
+}}
+
+namespace Corrade { namespace Utility {
+
+/** @configurationvalue{Magnum::Math::Vector} */
+template<size_t size, class T> struct ConfigurationValue<Magnum::Math::Vector<size, T>> {
+    /** @brief Writes elements separated with spaces */
+    static std::string toString(const Magnum::Math::Vector<size, T>& value, int flags = 0) {
+        std::string output;
+
+        for(size_t pos = 0; pos != size; ++pos) {
+            if(!output.empty()) output += ' ';
+            output += ConfigurationValue<T>::toString(value[pos], flags);
+        }
+
+        return output;
+    }
+
+    /** @brief Reads elements separated with whitespace */
+    static Magnum::Math::Vector<size, T> fromString(const std::string& stringValue, int flags = 0) {
+        Magnum::Math::Vector<size, T> result;
+        std::istringstream in(stringValue);
+
+        std::string num;
+        for(size_t pos = 0; pos != size; ++pos) {
+            in >> num;
+            result[pos] = ConfigurationValue<T>::fromString(num, flags);
+        }
+
+        return result;
+    }
+};
 
 }}
 

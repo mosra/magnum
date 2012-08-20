@@ -25,7 +25,7 @@
 
 namespace Magnum {
 
-/** @ingroup rendering
+/**
 @brief Base class for shaders
 
 @section AbstractShaderProgram-subclassing Subclassing workflow
@@ -39,6 +39,8 @@ typedef Attribute<0, Vector4> Vertex;
 typedef Attribute<1, Vector3> Normal;
 typedef Attribute<2, Vector2> TextureCoords;
 @endcode
+   @todoc Output attribute location (for bindFragmentDataLocationIndexed(),
+        referenced also from Framebuffer::mapDefaultForDraw() / Framebuffer::mapForDraw())
  - **Layers for texture uniforms** to which the textures will be bound before
    rendering, for example:
 @code
@@ -78,28 +80,42 @@ The preferred workflow is to specify attribute location for vertex shader
 input attributes and fragment shader output attributes explicitly in the
 shader code, e.g.:
 @code
+#version 330
+// or #extension GL_ARB_explicit_attrib_location: enable
 layout(location = 0) in vec4 vertex;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 textureCoords;
 @endcode
+Similarly for ouput attributes, you can also specify blend equation color
+index for them (see Framebuffer::BlendFunction for more information about
+using color input index):
+@code
+layout(location = 0, index = 0) out vec4 color;
+layout(location = 1, index = 1) out vec4 ambient;
+@endcode
 @requires_gl (for explicit input attribute location instead of using
      bindAttributeLocation())
 @requires_gl (for explicit output attribute location or using
-    bindFragmentDataLocation())
+    bindFragmentDataLocation() / bindFragmentDataLocationIndexed())
 @requires_gl30 Extension @extension{EXT,gpu_shader4} (for using
     bindFragmentDataLocation())
+@requires_gl33 Extension @extension{ARB,blend_func_extended} (for using
+    bindFragmentDataLocationIndexed())
 @requires_gl33 Extension @extension{ARB,explicit_attrib_location} (for
     explicit attribute location instead of using bindAttributeLocation())
 
 If you don't have the required extension, you can use functions bindAttributeLocation()
-and bindFragmentDataLocation() between attaching of shaders and linking the
-program:
+and bindFragmentDataLocation() / bindFragmentDataLocationIndexed() between
+attaching the shaders and linking the program:
 @code
 // Shaders attached...
 
 bindAttributeLocation(Vertex::Location, "vertex");
 bindAttributeLocation(Normal::Location, "normal");
 bindAttributeLocation(TextureCoords::Location, "textureCoords");
+
+bindFragmentDataLocationIndexed(0, 0, "color");
+bindFragmentDataLocationIndexed(1, 1, "ambient");
 
 // Link...
 @endcode
@@ -108,6 +124,8 @@ bindAttributeLocation(TextureCoords::Location, "textureCoords");
 The preferred workflow is to specify texture layers directly in the shader
 code, e.g.:
 @code
+#version 420
+// or #extension GL_ARB_shading_language_420pack: enable
 layout(binding = 0) uniform sampler2D diffuseTexture;
 layout(binding = 1) uniform sampler2D specularTexture;
 @endcode
@@ -236,8 +254,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @param location      Location
          * @param name          Attribute name
          *
-         * Binds attribute to location which is be used later for binding
-         * vertex buffers. Preferred usage is to
+         * Binds attribute to location which is used later for binding vertex
+         * buffers.
          * @note This function should be called after attachShader() calls and
          *      before link().
          * @deprecated Preferred usage is to specify attribute location
@@ -249,16 +267,32 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @brief Bind fragment data to given location
+         * @brief Bind fragment data to given location and color input index
          * @param location      Location
          * @param name          Fragment output variable name
+         * @param index         Blend equation color input index (`0` or `1`)
          *
+         * Binds fragment data to location which is used later for framebuffer
+         * operations. See also Framebuffer::BlendFunction for more
+         * information about using color input index.
+         * @requires_gl
+         * @requires_gl33 Extension @extension{ARB,blend_func_extended}
          * @note This function should be called after attachShader() calls and
          *      before link().
          * @deprecated Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
+         */
+        void bindFragmentDataLocationIndexed(GLuint location, GLuint index, const std::string& name);
+
+        /**
+         * @brief Bind fragment data to given location and first color input index
+         * @param location      Location
+         * @param name          Fragment output variable name
+         *
+         * The same as bindFragmentDataLocationIndexed(), but with `index` set
+         * to `0`.
          * @requires_gl
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          */

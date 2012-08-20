@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::BufferedImage
+ * @brief Class Magnum::BufferedImage, typedef Magnum::BufferedImage1D, Magnum::BufferedImage2D, Magnum::BufferedImage3D
  */
 
 #include "AbstractImage.h"
@@ -26,10 +26,6 @@
 namespace Magnum {
 
 #ifndef MAGNUM_TARGET_GLES
-/** @addtogroup textures
- * @{
- */
-
 /**
 @brief %Buffered image
 
@@ -116,8 +112,6 @@ typedef BufferedImage<2> BufferedImage2D;
 
 /** @brief Three-dimensional buffered image */
 typedef BufferedImage<3> BufferedImage3D;
-
-/*@}*/
 #endif
 
 }

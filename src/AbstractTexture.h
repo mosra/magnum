@@ -24,7 +24,7 @@
 
 namespace Magnum {
 
-/** @ingroup textures
+/**
 @brief Base for textures
 
 @attention Don't forget to call @ref Texture::setWrapping() "setWrapping()",
@@ -122,12 +122,14 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * Red component only. Green and blue are set to `0`, alpha is set
              * to `1`.
+             * @requires_gl30 Extension @extension{ARB,texture_rg}
              */
             Red,
 
             /**
              * Red and green component. Blue is set to `0`, alpha is set to
              * `1`.
+             * @requires_gl30 Extension @extension{ARB,texture_rg}
              */
             RedGreen,
 
@@ -145,85 +147,75 @@ class MAGNUM_EXPORT AbstractTexture {
         enum class ComponentType {
             /**
              * (Non-normalized) unsigned byte
-             *
              * @requires_gl30 Extension @extension{EXT,texture_integer}
              */
             UnsignedByte,
 
             /**
              * (Non-normalized) byte
-             *
              * @requires_gl30 Extension @extension{EXT,texture_integer}
              */
             Byte,
 
             /**
              * (Non-normalized) unsigned short
-             *
              * @requires_gl30 Extension @extension{EXT,texture_integer}
              */
             UnsignedShort,
 
             /**
              * (Non-normalized) short
-             *
              * @requires_gl30 Extension @extension{EXT,texture_integer}
              */
             Short,
 
             /**
              * (Non-normalized) unsigned integer
-             *
              * @requires_gl30 Extension @extension{EXT,texture_integer}
              */
             UnsignedInt,
 
             /**
              * (Non-normalized) integer
-             *
              * @requires_gl30 Extension @extension{EXT,texture_integer}
              */
             Int,
 
             /**
              * Half float (16 bit)
-             *
              * @requires_gl30 Extension @extension{ARB,texture_float}
              */
             Half,
 
             /**
              * Float (32 bit)
-             *
              * @requires_gl30 Extension @extension{ARB,texture_float}
              */
             Float,
 
             /**
-             * Normalized unsigned byte, i.e. values from range
-             * @f$ [0; 255] @f$ are converted to range @f$ [0.0; 1.0] @f$.
+             * Normalized unsigned byte, i.e. values from range @f$ [0; 255] @f$
+             * are converted to range @f$ [0.0; 1.0] @f$.
              */
             NormalizedUnsignedByte,
 
             /**
-             * Normalized byte, i.e. values from range
-             * @f$ [-128; 127] @f$ are converted to range @f$ [0.0; 1.0] @f$.
-             *
-             * @requires_gl31 (no extension providing this functionality)
+             * Normalized signed byte, i.e. values from range @f$ [-128; 127] @f$
+             * are converted to range @f$ [-1.0; 1.0] @f$.
+             * @requires_gl31 Extension @extension{EXT,texture_snorm}
              */
             NormalizedByte,
 
             /**
-             * Normalized unsigned short, i.e. values from range
-             * @f$ [0; 65536] @f$ are converted to range @f$ [0.0; 1.0] @f$.
+             * Normalized unsigned short, i.e. values from range @f$ [0; 65536] @f$
+             * are converted to range @f$ [0.0; 1.0] @f$.
              */
             NormalizedUnsignedShort,
 
             /**
-             * Normalized short, i.e. values from range
-             * @f$ [-32768; 32767] @f$ are converted to range @f$ [0.0; 1.0] @f$.
-             *
-             * @requires_gl31 (no extension providing this functionality)
+             * Normalized signed short, i.e. values from range @f$ [-32768; 32767] @f$
+             * are converted to range @f$ [-1.0; 1.0] @f$.
+             * @requires_gl31 Extension @extension{EXT,texture_snorm}
              */
             NormalizedShort
         };
@@ -241,7 +233,7 @@ class MAGNUM_EXPORT AbstractTexture {
              * One-component (red channel), unsigned normalized, probably
              * 8bit.
              * @requires_gl
-             * @requires_gl30 (no extension providing this functionality)
+             * @requires_gl30 Extension @extension{ARB,texture_rg}
              */
             Red = GL_RED,
 
@@ -249,7 +241,7 @@ class MAGNUM_EXPORT AbstractTexture {
              * Two-component (red and green channel), unsigned normalized,
              * each component probably 8bit, 16bit total.
              * @requires_gl
-             * @requires_gl30 (no extension providing this functionality)
+             * @requires_gl30 Extension @extension{ARB,texture_rg}
              */
             RedGreen = GL_RG,
             #endif
@@ -365,12 +357,14 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * Compressed red channel, unsigned normalized.
              * @requires_gl
+             * @requires_gl30 Extension @extension{ARB,texture_rg}
              */
             CompressedRed = GL_COMPRESSED_RED,
 
             /**
              * Compressed red and green channel, unsigned normalized.
              * @requires_gl
+             * @requires_gl30 Extension @extension{ARB,texture_rg}
              */
             CompressedRedGreen = GL_COMPRESSED_RG,
 

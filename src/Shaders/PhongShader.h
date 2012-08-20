@@ -24,7 +24,7 @@
 
 namespace Magnum { namespace Shaders {
 
-/** @ingroup rendering
+/**
 @brief Phong shader
 
 @requires_gl33 The shader is written in GLSL 3.3, although it should be trivial

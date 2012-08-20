@@ -24,11 +24,13 @@ class VectorTest: public Corrade::TestSuite::Tester<VectorTest> {
         VectorTest();
 
         void construct();
+        void constructFrom();
         void data();
         void copy();
         void dot();
         void multiplyDivide();
-        void addSubstract();
+        void multiplyDivideComponentWise();
+        void addSubtract();
         void dotSelf();
         void length();
         void normalized();
@@ -40,6 +42,7 @@ class VectorTest: public Corrade::TestSuite::Tester<VectorTest> {
         void negative();
 
         void debug();
+        void configuration();
 };
 
 }}}

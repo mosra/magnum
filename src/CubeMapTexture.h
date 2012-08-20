@@ -23,7 +23,7 @@
 
 namespace Magnum {
 
-/** @ingroup textures
+/**
 @brief Cube map texture
 
 %Texture used mainly for environemnt maps. See AbstractTexture documentation

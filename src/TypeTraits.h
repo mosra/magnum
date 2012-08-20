@@ -23,10 +23,6 @@
 
 namespace Magnum {
 
-/** @addtogroup utility
- * @{
- */
-
 /**
 @brief Traits class for plain OpenGL types
 
@@ -147,8 +143,6 @@ struct MAGNUM_EXPORT TypeInfo {
 
 /** @todo Other texture types, referenced in glTexImage2D function manual */
 /** @todo Using Vector3 for textures? */
-
-/*@}*/
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> struct TypeOf<Type::UnsignedByte> { typedef GLubyte Type; };

@@ -96,10 +96,6 @@ class Interleave {
 }
 #endif
 
-/** @addtogroup mesh
- * @{
- */
-
 /**
 @brief %Interleave vertex attributes
 @param attribute    First attribute array
@@ -156,8 +152,6 @@ given array buffer and updates vertex count in the mesh accordingly.
 template<class ...T> inline void interleave(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const T&... attributes) {
     return Implementation::Interleave()(mesh, buffer, usage, attributes...);
 }
-
-/*@}*/
 
 }}
 

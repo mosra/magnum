@@ -23,17 +23,67 @@
 
 namespace Magnum { namespace Math {
 
-/** @brief Three-component vector */
+/**
+@brief Three-component vector
+
+@configurationvalueref{Magnum::Math::Vector3}
+*/
 template<class T> class Vector3: public Vector<3, T> {
     public:
-        /** @brief %Vector in direction of X axis */
+        /**
+         * @brief %Vector in direction of X axis
+         *
+         * Usable for translation or rotation along given axis, for example:
+         * @code
+         * Matrix4::translation(Vector3::xAxis(5.0f)); // same as Matrix4::translation({5.0f, 0.0f, 0.0f});
+         * Matrix4::rotation(deg(30.0f), Vector3::xAxis()); // same as Matrix::rotation(deg(30.0f), {1.0f, 0.0f, 0.0f});
+         * @endcode
+         * @see yAxis(), zAxis(), xScale()
+         */
         inline constexpr static Vector3<T> xAxis(T length = T(1)) { return Vector3<T>(length, T(), T()); }
 
-        /** @brief %Vector in direction of Y axis */
+        /**
+         * @brief %Vector in direction of Y axis
+         *
+         * See xAxis() for more information.
+         * @see yScale()
+         */
         inline constexpr static Vector3<T> yAxis(T length = T(1)) { return Vector3<T>(T(), length, T()); }
 
-        /** @brief %Vector in direction of Z axis */
+        /**
+         * @brief %Vector in direction of Z axis
+         *
+         * See xAxis() for more information.
+         * @see zScale()
+         */
         inline constexpr static Vector3<T> zAxis(T length = T(1)) { return Vector3<T>(T(), T(), length); }
+
+        /**
+         * @brief Scaling vector in direction of X axis
+         *
+         * Usable for scaling along given direction, for example:
+         * @code
+         * Matrix4::scaling(Vector3::xScale(-2.0f)); // same as Matrix4::scaling({-2.0f, 1.0f, 1.0f});
+         * @endcode
+         * @see yScale(), zScale(), xAxis()
+         */
+        inline constexpr static Vector3<T> xScale(T scale) { return Vector3<T>(scale, T(1), T(1)); }
+
+        /**
+         * @brief Scaling vector in direction of Y axis
+         *
+         * See xScale() for more information.
+         * @see yAxis()
+         */
+        inline constexpr static Vector3<T> yScale(T scale) { return Vector3<T>(T(1), scale, T(1)); }
+
+        /**
+         * @brief Scaling vector in direction of Z axis
+         *
+         * See xScale() for more information.
+         * @see zAxis()
+         */
+        inline constexpr static Vector3<T> zScale(T scale) { return Vector3<T>(T(1), T(1), scale); }
 
         /**
          * @brief Cross product
@@ -92,11 +142,18 @@ template<class T> class Vector3: public Vector<3, T> {
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector3, 3)
 };
 
-/** @debugoperator{Vector3} */
+MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Vector3, 3)
+
+/** @debugoperator{Magnum::Math::Vector3} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector3<T>& value) {
     return debug << static_cast<const Magnum::Math::Vector<3, T>&>(value);
 }
 
+}}
+
+namespace Corrade { namespace Utility {
+    /** @configurationvalue{Magnum::Math::Vector3} */
+    template<class T> struct ConfigurationValue<Magnum::Math::Vector3<T>>: public ConfigurationValue<Magnum::Math::Vector<3, T>> {};
 }}
 
 #endif

@@ -24,10 +24,6 @@
 namespace Magnum {
 
 #ifndef MAGNUM_TARGET_GLES
-/** @addtogroup rendering
- * @{
- */
-
 /**
 @brief Base class for queries
 
@@ -301,7 +297,6 @@ class TimeQuery: public AbstractQuery {
         }
 };
 
-/*@}*/
 #endif
 
 }

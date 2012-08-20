@@ -23,9 +23,7 @@
 
 namespace Magnum { namespace Primitives {
 
-/** @ingroup mesh
-@brief UV Sphere primitive
-*/
+/** @brief UV Sphere primitive */
 class UVSphere: public Capsule {
     public:
         /**

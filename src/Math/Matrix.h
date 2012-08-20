@@ -30,10 +30,11 @@ namespace Implementation {
 #endif
 
 /**
- * @brief %Matrix
- *
- * @todo @c PERFORMANCE - loop unrolling for Matrix<3, T> and Matrix<4, T>
- * @todo first col, then row (cache adjacency)
+@brief %Matrix
+
+@configurationvalueref{Magnum::Math::Matrix}
+@todo @c PERFORMANCE - loop unrolling for Matrix<3, T> and Matrix<4, T>
+@todo first col, then row (cache adjacency)
  */
 template<size_t size, class T> class Matrix {
     static_assert(size != 0, "Matrix cannot have zero elements");
@@ -41,6 +42,9 @@ template<size_t size, class T> class Matrix {
     friend class Matrix<size+1, T>; /* for ij() */
 
     public:
+        const static size_t Size = size;    /**< @brief %Matrix size */
+        typedef T Type;                     /**< @brief %Matrix data type */
+
         /**
          * @brief %Matrix from array
          * @return Reference to the data as if it was Matrix, thus doesn't
@@ -122,13 +126,32 @@ template<size_t size, class T> class Matrix {
         inline T* data() { return _data; }
         inline constexpr const T* data() const { return _data; } /**< @overload */
 
-        /** @brief %Matrix column */
+        /**
+         * @brief %Matrix column
+         *
+         * For accessing individual elements prefer to use operator(), as it
+         * is guaranteed to not involve unnecessary conversions.
+         */
         inline Vector<size, T>& operator[](size_t col) {
             return Vector<size, T>::from(_data+col*size);
         }
         /** @overload */
         inline constexpr const Vector<size, T>& operator[](size_t col) const {
             return Vector<size, T>::from(_data+col*size);
+        }
+
+        /**
+         * @brief Element on given position
+         *
+         * Prefer this instead of using `[][]`.
+         * @see operator[]
+         */
+        inline T& operator()(size_t col, size_t row) {
+            return _data[col*size+row];
+        }
+        /** @overload */
+        inline constexpr const T& operator()(size_t col, size_t row) const {
+            return _data[col*size+row];
         }
 
         /** @brief Equality operator */
@@ -240,26 +263,11 @@ template<size_t size, class T> class Matrix {
             return Matrix<size, T>(first, next...);
         }
 
-    #ifdef MAGNUM_GCC45_COMPATIBILITY
-    protected:
-    #endif
-        /* Used internally instead of [][], because GCC does some heavy
-           optimalization in release mode which breaks it */
-        inline T& operator()(size_t col, size_t row) {
-            return _data[col*size+row];
-        }
-        inline constexpr const T& operator()(size_t col, size_t row) const {
-            return _data[col*size+row];
-        }
-
-    #ifdef MAGNUM_GCC45_COMPATIBILITY
-    private:
-    #endif
         T _data[size*size];
 };
 
-/** @debugoperator{Matrix} */
-template<class T, size_t size> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix<size, T>& value) {
+/** @debugoperator{Magnum::Math::Matrix} */
+template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix<size, T>& value) {
     debug << "Matrix(";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
     for(size_t row = 0; row != size; ++row) {
@@ -321,7 +329,7 @@ template<size_t size, class T> class MatrixDeterminant {
             T out(0);
 
             for(size_t col = 0; col != size; ++col)
-                out += ((col & 1) ? -1 : 1)*m[col][0]*m.ij(col, 0).determinant();
+                out += ((col & 1) ? -1 : 1)*m(col, 0)*m.ij(col, 0).determinant();
 
             return out;
         }
@@ -331,7 +339,7 @@ template<class T> class MatrixDeterminant<2, T> {
     public:
         /** @brief Functor */
         inline constexpr T operator()(const Matrix<2, T>& m) {
-            return m[0][0]*m[1][1] - m[1][0]*m[0][1];
+            return m(0, 0)*m(1, 1) - m(1, 0)*m(0, 1);
         }
 };
 
@@ -339,12 +347,49 @@ template<class T> class MatrixDeterminant<1, T> {
     public:
         /** @brief Functor */
         inline constexpr T operator()(const Matrix<1, T>& m) {
-            return m[0][0];
+            return m(0, 0);
         }
 };
 
 }
 #endif
+
+}}
+
+namespace Corrade { namespace Utility {
+
+/** @configurationvalue{Magnum::Math::Matrix} */
+template<size_t size, class T> struct ConfigurationValue<Magnum::Math::Matrix<size, T>> {
+    /** @brief Writes elements separated with spaces */
+    static std::string toString(const Magnum::Math::Matrix<size, T>& value, int flags = 0) {
+        std::string output;
+
+        for(size_t row = 0; row != size; ++row) {
+            for(size_t col = 0; col != size; ++col) {
+                if(!output.empty()) output += ' ';
+                output += ConfigurationValue<T>::toString(value(col, row), flags);
+            }
+        }
+
+        return output;
+    }
+
+    /** @brief Reads elements separated with whitespace */
+    static Magnum::Math::Matrix<size, T> fromString(const std::string& stringValue, int flags = 0) {
+        Magnum::Math::Matrix<size, T> result(Magnum::Math::Matrix<size, T>::Zero);
+        std::istringstream in(stringValue);
+
+        for(size_t row = 0; row != size; ++row) {
+            for(size_t col = 0; col != size; ++col) {
+                std::string num;
+                in >> num;
+                result(col, row) = ConfigurationValue<T>::fromString(num, flags);
+            }
+        }
+
+        return result;
+    }
+};
 
 }}
 

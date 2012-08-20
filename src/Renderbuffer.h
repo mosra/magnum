@@ -23,7 +23,7 @@
 
 namespace Magnum {
 
-/** @ingroup textures
+/**
 @brief %Renderbuffer
 
 Attachable to Framebuffer as render target.

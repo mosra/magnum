@@ -24,10 +24,6 @@
 
 namespace Magnum {
 
-/** @addtogroup textures
- * @{
- */
-
 /**
 @brief %Image wrapper
 
@@ -112,8 +108,6 @@ typedef ImageWrapper<2> ImageWrapper2D;
 
 /** @brief Three-dimensional image wrapper */
 typedef ImageWrapper<3> ImageWrapper3D;
-
-/*@}*/
 
 }
 

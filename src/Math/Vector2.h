@@ -23,9 +23,51 @@
 
 namespace Magnum { namespace Math {
 
-/** @brief Two-component vector */
+/**
+@brief Two-component vector
+
+@configurationvalueref{Magnum::Math::Vector2}
+*/
 template<class T> class Vector2: public Vector<2, T> {
     public:
+        /**
+         * @brief %Vector in direction of X axis
+         *
+         * Usable for translation in given axis, for example:
+         * @code
+         * Matrix3::translation(Vector2::xAxis(5.0f)); // same as Matrix3::translation({5.0f, 0.0f});
+         * @endcode
+         * @see yAxis(), xScale()
+         */
+        inline constexpr static Vector2<T> xAxis(T length = T(1)) { return Vector2<T>(length, T()); }
+
+        /**
+         * @brief %Vector in direction of Y axis
+         *
+         * See xAxis() for more information.
+         * @see yScale()
+         */
+        inline constexpr static Vector2<T> yAxis(T length = T(1)) { return Vector2<T>(T(), length); }
+
+        /**
+         * @brief Scaling vector in direction of X axis
+         *
+         * Usable for scaling along given direction, for example:
+         * @code
+         * Matrix3::scaling(Vector2::xScale(-2.0f)); // same as Matrix3::scaling({-2.0f, 1.0f});
+         * @endcode
+         * @see yScale(), xAxis()
+         */
+        inline constexpr static Vector2<T> xScale(T scale) { return Vector2<T>(scale, T(1)); }
+
+        /**
+         * @brief Scaling vector in direction of Y axis
+         *
+         * See xScale() for more information.
+         * @see yAxis()
+         */
+        inline constexpr static Vector2<T> yScale(T scale) { return Vector2<T>(T(1), scale); }
+
         /** @copydoc Vector::Vector(T) */
         inline constexpr explicit Vector2(T value = T()): Vector<2, T>(value, value) {}
 
@@ -48,11 +90,18 @@ template<class T> class Vector2: public Vector<2, T> {
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector2, 2)
 };
 
-/** @debugoperator{Vector2} */
+MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Vector2, 2)
+
+/** @debugoperator{Magnum::Math::Vector2} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector2<T>& value) {
     return debug << static_cast<const Magnum::Math::Vector<2, T>&>(value);
 }
 
+}}
+
+namespace Corrade { namespace Utility {
+    /** @configurationvalue{Magnum::Math::Vector2} */
+    template<class T> struct ConfigurationValue<Magnum::Math::Vector2<T>>: public ConfigurationValue<Magnum::Math::Vector<2, T>> {};
 }}
 
 #endif

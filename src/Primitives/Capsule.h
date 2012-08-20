@@ -23,7 +23,7 @@
 
 namespace Magnum { namespace Primitives {
 
-/** @ingroup mesh
+/**
 @brief %Capsule primitive
 
 Cylinder along Y axis with hemispheres instead of caps.

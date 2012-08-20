@@ -1,5 +1,5 @@
-#ifndef Magnum_Contexts_EglContext_h
-#define Magnum_Contexts_EglContext_h
+#ifndef Magnum_Contexts_AbstractXContext_h
+#define Magnum_Contexts_AbstractXContext_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,51 +16,56 @@
 */
 
 /** @file
- * @brief Class Magnum::Contexts::EglContext
+ * @brief Class Magnum::Contexts::AbstractXContext
  */
 
 #include "Magnum.h"
 
 #include <X11/Xlib.h>
-#ifdef None // undef Xlib nonsense to avoid conflicts
+#include <X11/Xutil.h>
+/* undef Xlib nonsense to avoid conflicts */
 #undef None
-#endif
+#undef Always
 
-#ifndef SUPPORT_X11
-#define SUPPORT_X11 // OpenGL ES on BeagleBoard needs this (?)
-#endif
-#include <EGL/egl.h>
+#include <Containers/EnumSet.h>
 
 #include "AbstractContext.h"
+#include "AbstractGlInterface.h"
 
 namespace Magnum { namespace Contexts {
 
-/**
-@brief X/EGL context
+/** @nosubgrouping
+@brief Base for X11-based contexts
 
 Supports keyboard and mouse handling.
+
+@note Not meant to be used directly, see subclasses.
 */
-class EglContext: public AbstractContext {
+class AbstractXContext: public AbstractContext {
     public:
         /**
          * @brief Constructor
-         * @param argc      Count of arguments of `main()` function
-         * @param argv      Arguments of `main()` function
-         * @param title     Window title
-         * @param size      Window size
+         * @param glInterface   Interface to OpenGL
+         * @param argc          Count of arguments of `main()` function
+         * @param argv          Arguments of `main()` function
+         * @param title         Window title
+         * @param size          Window size
          *
          * Creates window with double-buffered OpenGL ES 2 context.
          */
-        EglContext(int& argc, char** argv, const std::string& title = "Magnum X/EGL context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
+        AbstractXContext(AbstractGlInterface<Display*, VisualID, Window>* glInterface, int& argc, char** argv, const std::string& title = "Magnum X/EGL context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
 
         /**
          * @brief Destructor
          *
          * Deletes context and destroys the window.
          */
-        ~EglContext();
+        virtual ~AbstractXContext() = 0;
 
         int exec();
+
+        /** @brief Exit application main loop */
+        inline void exit() { flags |= Flag::Exit; }
 
         /** @{ @name Drawing functions */
 
@@ -72,18 +77,50 @@ class EglContext: public AbstractContext {
         virtual void drawEvent() = 0;
 
         /** @copydoc GlutContext::swapBuffers() */
-        inline void swapBuffers() { eglSwapBuffers(display, surface); }
+        inline void swapBuffers() { glInterface->swapBuffers(); }
 
-        /** @todo implement */
-        inline void redraw() {}
+        /** @copydoc GlutContext::redraw() */
+        inline void redraw() { flags |= Flag::Redraw; }
 
         /*@}*/
 
         /** @{ @name Keyboard handling */
 
     public:
-        /** @brief Key */
+        /**
+         * @brief %Modifier
+         *
+         * @see Modifiers, keyPressEvent(), keyReleaseEvent(),
+         *      mousePressEvent(), mouseReleaseEvent(), mouseMotionEvent()
+         */
+        enum class Modifier: unsigned int {
+            Shift = ShiftMask,          /**< Shift */
+            CapsLock = LockMask,        /**< Caps lock */
+            Ctrl = ControlMask,         /**< Ctrl */
+            Alt = Mod1Mask,             /**< Alt */
+            NumLock = Mod2Mask,         /**< Num lock */
+            AltGr = Mod5Mask,           /**< AltGr */
+
+            LeftButton = Button1Mask,   /**< Left mouse button */
+            MiddleButton = Button2Mask, /**< Middle mouse button */
+            RightButton = Button3Mask   /**< Right mouse button */
+        };
+
+        /**
+         * @brief Set of modifiers
+         *
+         * @see keyPressEvent(), keyReleaseEvent()
+         */
+        typedef Corrade::Containers::EnumSet<Modifier, unsigned int> Modifiers;
+
+        /**
+         * @brief Key
+         *
+         * @see keyPressEvent(), keyReleaseEvent()
+         */
         enum class Key: KeySym {
+            Esc = XK_Escape,            /**< Escape */
+
             Up = XK_Up,                 /**< Up arrow */
             Down = XK_Down,             /**< Down arrow */
             Left = XK_Left,             /**< Left arrow */
@@ -157,27 +194,33 @@ class EglContext: public AbstractContext {
         /**
          * @brief Key press event
          * @param key       Key pressed
+         * @param modifiers Active modifiers
          * @param position  Cursor position
          *
          * Called when an key is pressed. Default implementation does nothing.
          */
-        virtual void keyPressEvent(Key key, const Math::Vector2<int>& position);
+        virtual void keyPressEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
 
         /**
          * @brief Key press event
          * @param key       Key released
+         * @param modifiers Active modifiers
          * @param position  Cursor position
          *
          * Called when an key is released. Default implementation does nothing.
          */
-        virtual void keyReleaseEvent(Key key, const Math::Vector2<int>& position);
+        virtual void keyReleaseEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
 
         /*@}*/
 
         /** @{ @name Mouse handling */
 
     public:
-        /** @brief Mouse button */
+        /**
+         * @brief Mouse button
+         *
+         * @see mousePressEvent(), mouseReleaseEvent()
+         */
         enum class MouseButton: unsigned int {
             Left = Button1,         /**< Left button */
             Middle = Button2,       /**< Middle button */
@@ -189,40 +232,67 @@ class EglContext: public AbstractContext {
     protected:
         /**
          * @brief Mouse press event
+         * @param button    Button pressed
+         * @param modifiers Active modifiers
+         * @param position  Cursor position
          *
          * Called when mouse button is pressed. Default implementation does
          * nothing.
          */
-        virtual void mousePressEvent(MouseButton button, const Math::Vector2<int>& position);
+        virtual void mousePressEvent(MouseButton button, Modifiers modifiers, const Math::Vector2<int>& position);
 
         /**
          * @brief Mouse release event
+         * @param button    Button released
+         * @param modifiers Active modifiers
+         * @param position  Cursor position
          *
          * Called when mouse button is released. Default implementation does
          * nothing.
          */
-        virtual void mouseReleaseEvent(MouseButton button, const Math::Vector2<int>& position);
+        virtual void mouseReleaseEvent(MouseButton button, Modifiers modifiers, const Math::Vector2<int>& position);
+
+        /**
+         * @brief Mouse motion event
+         * @param modifiers Active modifiers
+         * @param position  Cursor position
+         *
+         * Called when mouse is moved.
+         */
+        virtual void mouseMotionEvent(Modifiers modifiers, const Math::Vector2<int>& position);
 
         /*@}*/
 
     private:
-        Display* xDisplay;
-        Window xWindow;
+        enum class Flag: unsigned int {
+            Redraw = 1 << 0,
+            Exit = 1 << 1
+        };
+
+        typedef Corrade::Containers::EnumSet<Flag, unsigned int> Flags;
+        CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
+
+        Display* display;
+        Window window;
         Atom deleteWindow;
 
-        EGLDisplay display;
-        EGLSurface surface;
-        EGLContext context;
+        AbstractGlInterface<Display*, VisualID, Window>* glInterface;
 
         /** @todo Get this from the created window */
         Math::Vector2<GLsizei> viewportSize;
+
+        Flags flags;
 };
 
-inline void EglContext::keyPressEvent(EglContext::Key, const Math::Vector2<int>&) {}
-inline void EglContext::keyReleaseEvent(EglContext::Key, const Math::Vector2<int>&) {}
-inline void EglContext::mousePressEvent(EglContext::MouseButton, const Math::Vector2<int>&) {}
-inline void EglContext::mouseReleaseEvent(EglContext::MouseButton, const Math::Vector2<int>&) {}
+CORRADE_ENUMSET_OPERATORS(AbstractXContext::Modifiers)
+CORRADE_ENUMSET_OPERATORS(AbstractXContext::Flags)
 
+/* Implementations for inline functions with unused parameters */
+inline void AbstractXContext::keyPressEvent(Key, Modifiers, const Math::Vector2<int>&) {}
+inline void AbstractXContext::keyReleaseEvent(Key, Modifiers, const Math::Vector2<int>&) {}
+inline void AbstractXContext::mousePressEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
+inline void AbstractXContext::mouseReleaseEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
+inline void AbstractXContext::mouseMotionEvent(Modifiers, const Math::Vector2<int>&) {}
 
 }}
 

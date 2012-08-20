@@ -1,5 +1,5 @@
-#ifndef Magnum_Test_SceneTest_h
-#define Magnum_Test_SceneTest_h
+#ifndef Magnum_Contexts_ExtensionWrangler_h
+#define Magnum_Contexts_ExtensionWrangler_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,16 +15,23 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <TestSuite/Tester.h>
+/** @file
+ * @brief Class Magnum::Contexts::ExtensionWrangler
+ */
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace Contexts {
 
-class SceneTest: public Corrade::TestSuite::Tester<SceneTest> {
+/** @brief Extension wrangler interface */
+class ExtensionWrangler {
     public:
-        SceneTest();
+        /** @brief Whether to enable or disable experimental features */
+        enum class ExperimentalFeatures {
+            Disable,
+            Enable
+        };
 
-        void transformation();
-        void parent();
+        /** @brief Initialize extension wrangler */
+        static void initialize(ExperimentalFeatures experimentalFeatures = ExperimentalFeatures::Disable);
 };
 
 }}

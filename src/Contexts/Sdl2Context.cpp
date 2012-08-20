@@ -14,6 +14,7 @@
 */
 
 #include "Sdl2Context.h"
+#include "ExtensionWrangler.h"
 
 namespace Magnum { namespace Contexts {
 
@@ -40,18 +41,9 @@ Sdl2Context::Sdl2Context(int, char**, const std::string& name, const Math::Vecto
 
     context = SDL_GL_CreateContext(window);
 
-    #ifndef MAGNUM_TARGET_GLES
     /* This must be enabled, otherwise (on my NVidia) it crashes when creating
        VAO. WTF. */
-    glewExperimental = true;
-
-    /* Init GLEW */
-    GLenum err = glewInit();
-    if(err != GLEW_OK) {
-        Error() << "Sdl2Context: cannot initialize GLEW:" << glewGetErrorString(err);
-        exit(1);
-    }
-    #endif
+    ExtensionWrangler::initialize(ExtensionWrangler::ExperimentalFeatures::Enable);
 
     /* Push resize event, so viewportEvent() is called at startup */
     SDL_Event* sizeEvent = new SDL_Event;
@@ -91,10 +83,10 @@ int Sdl2Context::exec() {
                     keyReleaseEvent(static_cast<Key>(event.key.keysym.sym));
                     break;
                 case SDL_MOUSEBUTTONDOWN:
+                    mousePressEvent(static_cast<MouseButton>(event.button.button), {event.button.x, event.button.y});
+                    break;
                 case SDL_MOUSEBUTTONUP:
-                    mouseEvent(static_cast<MouseButton>(event.button.button),
-                               static_cast<MouseState>(event.button.state),
-                               {event.button.x, event.button.y});
+                    mouseReleaseEvent(static_cast<MouseButton>(event.button.button), {event.button.x, event.button.y});
                     break;
                 case SDL_MOUSEWHEEL:
                     mouseWheelEvent({event.wheel.x, event.wheel.y});
@@ -109,8 +101,8 @@ int Sdl2Context::exec() {
         }
 
         if(_redraw) {
-            drawEvent();
             _redraw = false;
+            drawEvent();
         } else Corrade::Utility::sleep(5);
     }
 

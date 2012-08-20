@@ -29,6 +29,7 @@ namespace Magnum { namespace Math {
 
 Provides functions for transformations in 3D. See also Matrix3 for 2D
 transformations.
+@configurationvalueref{Magnum::Math::Matrix4}
 @todo Shearing
 @todo Reflection
  */
@@ -38,7 +39,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D translation matrix
          * @param vec   Translation vector
          *
-         * @see Matrix3::translation()
+         * @see Matrix3::translation(), Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()
          */
         inline constexpr static Matrix4<T> translation(const Vector3<T>& vec) {
             return Matrix4<T>( /* Column-major! */
@@ -53,7 +54,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D scaling matrix
          * @param vec   Scaling vector
          *
-         * @see Matrix3::scaling()
+         * @see Matrix3::scaling(), Vector3::xScale(), Vector3::yScale(), Vector3::zScale()
          */
         inline constexpr static Matrix4<T> scaling(const Vector3<T>& vec) {
             return Matrix4<T>( /* Column-major! */
@@ -69,7 +70,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @param angle Rotation angle (counterclockwise, in radians)
          * @param vec   Rotation vector
          *
-         * @see Matrix3::rotation()
+         * @see Matrix3::rotation(), Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis(), deg(), rad()
          * @todo optimize - Assume the vectors are normalized?
          */
         static Matrix4<T> rotation(T angle, const Vector3<T>& vec) {
@@ -159,11 +160,16 @@ template<class T> class Matrix4: public Matrix<4, T> {
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix4, Vector4, 4)
 };
 
-/** @debugoperator{Matrix4} */
+/** @debugoperator{Magnum::Math::Matrix4} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix4<T>& value) {
     return debug << static_cast<const Magnum::Math::Matrix<4, T>&>(value);
 }
 
+}}
+
+namespace Corrade { namespace Utility {
+    /** @configurationvalue{Magnum::Math::Matrix4} */
+    template<class T> struct ConfigurationValue<Magnum::Math::Matrix4<T>>: public ConfigurationValue<Magnum::Math::Matrix<4, T>> {};
 }}
 
 #endif

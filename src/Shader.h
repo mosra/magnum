@@ -26,7 +26,7 @@
 
 namespace Magnum {
 
-/** @ingroup rendering
+/**
  * @brief %Shader
  *
  * Allows loading and compiling the shader from file or directly from source

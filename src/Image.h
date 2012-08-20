@@ -16,17 +16,13 @@
 */
 
 /** @file
- * @brief Class Magnum::Image
+ * @brief Class Magnum::Image, typedef Magnum::Image1D, Magnum::Image2D, Magnum::Image3D
  */
 
 #include "AbstractImage.h"
 #include "TypeTraits.h"
 
 namespace Magnum {
-
-/** @addtogroup textures
- * @{
- */
 
 /**
 @brief %Image
@@ -127,8 +123,6 @@ typedef Image<2> Image2D;
 
 /** @brief Three-dimensional image */
 typedef Image<3> Image3D;
-
-/*@}*/
 
 }
 

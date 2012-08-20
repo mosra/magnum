@@ -140,6 +140,8 @@ is always in range in range @f$ [0.0, 360.0] @f$, saturation and value in
 range @f$ [0.0, 1.0] @f$.
 
 @see Color4
+
+@todo Signed normalization to [-1.0, 1.0] like in OpenGL?
 */
 template<class T> class Color3: public Math::Vector3<T> {
     public:
@@ -394,16 +396,24 @@ template<class T> class Color4: public Math::Vector4<T> {
         }
 };
 
-/** @debugoperator{Color3} */
+/** @debugoperator{Magnum::Color3} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Color3<T>& value) {
     return debug << static_cast<const Magnum::Math::Vector3<T>&>(value);
 }
 
-/** @debugoperator{Color4} */
+/** @debugoperator{Magnum::Color4} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Color4<T>& value) {
     return debug << static_cast<const Magnum::Math::Vector4<T>&>(value);
 }
 
 }
+
+namespace Corrade { namespace Utility {
+    /** @configurationvalue{Magnum::Color3} */
+    template<class T> struct ConfigurationValue<Magnum::Color3<T>>: public ConfigurationValue<Magnum::Math::Vector<3, T>> {};
+
+    /** @configurationvalue{Magnum::Color4} */
+    template<class T> struct ConfigurationValue<Magnum::Color4<T>>: public ConfigurationValue<Magnum::Math::Vector<4, T>> {};
+}}
 
 #endif

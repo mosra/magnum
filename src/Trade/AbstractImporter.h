@@ -19,7 +19,7 @@
  * @brief Class Magnum::Trade::AbstractImporter
  */
 
-#include <Utility/Set.h>
+#include <Containers/EnumSet.h>
 #include <PluginManager/Plugin.h>
 
 #include "ImageData.h"
@@ -65,7 +65,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
         };
 
         /** @brief Set of features supported by this importer */
-        typedef Corrade::Utility::Set<Feature, int> Features;
+        typedef Corrade::Containers::EnumSet<Feature, int> Features;
 
         /** @brief Constructor */
         inline AbstractImporter(Corrade::PluginManager::AbstractPluginManager* manager = nullptr, const std::string& plugin = ""): Plugin(manager, plugin) {}
@@ -310,7 +310,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
         /*@}*/
 };
 
-SET_OPERATORS(AbstractImporter::Features)
+CORRADE_ENUMSET_OPERATORS(AbstractImporter::Features)
 
 /* Implementations for inline functions with unused parameters */
 inline int AbstractImporter::sceneForName(const std::string&) { return -1; }

@@ -23,7 +23,7 @@
 
 namespace Magnum {
 
-/** @ingroup textures
+/**
 @brief Non-templated base for one-, two- or three-dimensional images
 
 See Image, BufferedImage, Trade::ImageData documentation for more information.
@@ -44,6 +44,7 @@ class MAGNUM_EXPORT AbstractImage {
          */
 
         /** @brief Color components */
+        /** @todo Support *_INTEGER types */
         enum class Components: GLenum {
             #ifndef MAGNUM_TARGET_GLES
             /**

@@ -33,8 +33,8 @@ removing redundant prefixes) is encouraged.
 
 @subsection documentation-commands Special documentation commands
 
-Additionally to @c \@todoc and @c \@debugoperator (same as in Corrade), these
-are defined:
+Additionally to @c \@todoc, @c \@debugoperator @c \@configurationvalue and
+@c \@configurationvalueref (same as in Corrade), these are defined:
 
 @subsubsection documentation-commands-collisionoperator Physics collision operators
 

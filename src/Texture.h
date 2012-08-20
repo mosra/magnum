@@ -16,16 +16,12 @@
 */
 
 /** @file
- * @brief Class Magnum::Texture
+ * @brief Class Magnum::Texture, typedef Magnum::Texture1D, Magnum::Texture2D, Magnum::Texture3D
  */
 
 #include "AbstractTexture.h"
 
 namespace Magnum {
-
-/** @addtogroup textures
- * @{
- */
 
 /**
 @brief %Texture
@@ -188,8 +184,6 @@ typedef Texture<2> Texture2D;
 */
 typedef Texture<3> Texture3D;
 #endif
-
-/*@}*/
 
 }
 

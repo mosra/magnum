@@ -14,16 +14,16 @@
 */
 
 #include "ObjectTest.h"
-#include "Scene.h"
-#include "Camera.h"
+#include "SceneGraph/Camera.h"
+#include "SceneGraph/Scene.h"
 
 #include <sstream>
 
 using namespace std;
 
-CORRADE_TEST_MAIN(Magnum::Test::ObjectTest)
+CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::ObjectTest)
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace SceneGraph { namespace Test {
 
 ObjectTest::ObjectTest() {
     addTests(&ObjectTest::parenting,
@@ -35,13 +35,16 @@ ObjectTest::ObjectTest() {
 }
 
 void ObjectTest::parenting() {
-    Object root;
+    Object3D root;
 
-    Object* childOne = new Object(&root);
-    Object* childTwo = new Object(&root);
+    Object3D* childOne = new Object3D(&root);
+    Object3D* childTwo = new Object3D(&root);
 
     CORRADE_VERIFY(childOne->parent() == &root);
-    CORRADE_COMPARE(root.children().size(), 2);
+    CORRADE_VERIFY(childTwo->parent() == &root);
+    CORRADE_VERIFY(root.firstChild() == childOne);
+    CORRADE_VERIFY(root.lastChild() == childTwo);
+    CORRADE_VERIFY(root.firstChild()->nextSibling() == root.lastChild());
 
     /* A object cannot be parent of itself */
     childOne->setParent(childOne);
@@ -53,17 +56,17 @@ void ObjectTest::parenting() {
 
     /* Reparent to another */
     childTwo->setParent(childOne);
-    CORRADE_VERIFY(root.children().size() == 1 && *root.children().begin() == childOne);
-    CORRADE_VERIFY(childOne->children().size() == 1 && *childOne->children().begin() == childTwo);
+    CORRADE_VERIFY(root.firstChild() == childOne && root.firstChild()->nextSibling() == nullptr);
+    CORRADE_VERIFY(childOne->firstChild() == childTwo && childOne->firstChild()->nextSibling() == nullptr);
 
     /* Delete child */
     delete childTwo;
-    CORRADE_VERIFY(childOne->children().empty());
+    CORRADE_VERIFY(!childOne->hasChildren());
 }
 
 void ObjectTest::transformation() {
-    Object o;
-    Object o2;
+    Object3D o;
+    Object3D o2;
 
     o.setTransformation(Matrix4::translation(Vector3::xAxis(1.0f)));
     o2.translate(Vector3::xAxis(1.0f));
@@ -74,8 +77,8 @@ void ObjectTest::transformation() {
         Matrix4::translation(Vector3::xAxis(1.0f)));
     CORRADE_COMPARE(o2.transformation(), o.transformation());
 
-    o.multiplyTransformation(Matrix4::scaling(Vector3(2.0f)), Object::Transformation::Local);
-    o2.scale(Vector3(2.0f), Object::Transformation::Local);
+    o.multiplyTransformation(Matrix4::scaling(Vector3(2.0f)), Object3D::Transformation::Local);
+    o2.scale(Vector3(2.0f), Object3D::Transformation::Local);
     CORRADE_COMPARE(o.transformation(), Matrix4::rotation(deg(35.0f), Vector3::zAxis())*
         Matrix4::translation(Vector3::xAxis(1.0f))*
         Matrix4::scaling(Vector3(2.0f)));
@@ -86,56 +89,56 @@ void ObjectTest::absoluteTransformationWrongCamera() {
     stringstream ss;
     Error::setOutput(&ss);
 
-    Scene s;
-    Object o(&s);
+    Scene3D s;
+    Object3D o(&s);
     o.translate(Vector3::yAxis());
-    Camera c;
+    Camera3D c;
     CORRADE_COMPARE(o.absoluteTransformation(&c), Matrix4::translation(Vector3::yAxis()));
     CORRADE_COMPARE(ss.str(), "Object::absoluteTransformation(): the camera is not part of the same scene as object!\n");
 
     ss.str("");
-    Object o2;
+    Object3D o2;
     o2.translate(Vector3::xAxis());
     CORRADE_COMPARE(o2.absoluteTransformation(&c), Matrix4::translation(Vector3::xAxis()));
     CORRADE_COMPARE(ss.str(), "Object::absoluteTransformation(): the object is not part of camera scene!\n");
 }
 
 void ObjectTest::absoluteTransformation() {
-    Scene s;
-    Camera c(&s);
+    Scene3D s;
+    Camera3D c(&s);
     c.translate(Vector3::zAxis(2.0f));
     CORRADE_COMPARE(s.absoluteTransformation(), Matrix4());
     CORRADE_COMPARE(c.absoluteTransformation(&c), Matrix4());
 
-    Object o(&s);
+    Object3D o(&s);
     o.scale(Vector3(2.0f));
-    Object o2(&o);
+    Object3D o2(&o);
     o.rotate(deg(90.0f), Vector3::yAxis());
     CORRADE_COMPARE(o2.absoluteTransformation(),
         Matrix4::scaling(Vector3(2.0f))*Matrix4::rotation(deg(90.0f), Vector3::yAxis()));
     CORRADE_COMPARE(o2.absoluteTransformation(&c),
         (Matrix4::translation(Vector3::zAxis(2.0f)).inverted())*Matrix4::scaling(Vector3(2.0f))*Matrix4::rotation(deg(90.0f), Vector3::yAxis()));
 
-    Object o3;
+    Object3D o3;
     o3.translate({1.0f, 2.0f, 3.0f});
     CORRADE_COMPARE(o3.absoluteTransformation(), Matrix4::translation({1.0f, 2.0f, 3.0f}));
 }
 
 void ObjectTest::scene() {
-    Scene scene;
+    Scene3D scene;
 
-    Object* childOne = new Object(&scene);
-    Object* childTwo = new Object(childOne);
+    Object3D* childOne = new Object3D(&scene);
+    Object3D* childTwo = new Object3D(childOne);
 
-    Object orphan;
-    Object* childOfOrphan = new Object(&orphan);
+    Object3D orphan;
+    Object3D* childOfOrphan = new Object3D(&orphan);
 
     CORRADE_VERIFY(childTwo->scene() == &scene);
     CORRADE_VERIFY(childOfOrphan->scene() == nullptr);
 }
 
 void ObjectTest::dirty() {
-    Scene scene;
+    Scene3D scene;
 
     CleaningObject* childOne = new CleaningObject(&scene);
     childOne->scale(Vector3(2.0f));
@@ -195,4 +198,4 @@ void ObjectTest::dirty() {
     CORRADE_VERIFY(childThree->isDirty());
 }
 
-}}
+}}}

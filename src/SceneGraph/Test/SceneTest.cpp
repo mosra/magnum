@@ -15,11 +15,11 @@
 
 #include "SceneTest.h"
 
-#include "Scene.h"
+#include "SceneGraph/Scene.h"
 
-CORRADE_TEST_MAIN(Magnum::Test::SceneTest)
+CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::SceneTest)
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace SceneGraph { namespace Test {
 
 SceneTest::SceneTest() {
     addTests(&SceneTest::transformation,
@@ -27,25 +27,24 @@ SceneTest::SceneTest() {
 }
 
 void SceneTest::transformation() {
-    Scene scene;
+    Scene3D scene;
 
-    Object* scenePointer = &scene;
+    Object3D* scenePointer = &scene;
     scenePointer->setTransformation(Matrix4::translation({1.0f, 1.0f, 1.0f}));
     CORRADE_COMPARE(scene.transformation(), Matrix4());
 }
 
 void SceneTest::parent() {
-    Scene scene;
-
-    CORRADE_VERIFY(scene.parent() == &scene);
+    Scene3D scene;
+    CORRADE_VERIFY(scene.isScene());
 
     /* Scene parent cannot be changed */
-    Object* scenePointer = &scene;
-    Object object;
+    Object3D* scenePointer = &scene;
+    Object3D object;
     scenePointer->setParent(&object);
-    CORRADE_VERIFY(scene.parent() == &scene);
-    CORRADE_VERIFY(scene.children().empty());
-    CORRADE_VERIFY(object.children().empty());
+    CORRADE_VERIFY(scene.parent() == nullptr);
+    CORRADE_VERIFY(!scene.hasChildren());
+    CORRADE_VERIFY(!object.hasChildren());
 }
 
-}}
+}}}

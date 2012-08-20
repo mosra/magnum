@@ -1,5 +1,5 @@
-#ifndef Magnum_Light_h
-#define Magnum_Light_h
+#ifndef Magnum_SceneGraph_Light_h
+#define Magnum_SceneGraph_Light_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,25 +16,25 @@
 */
 
 /** @file
- * @brief Class Magnum::Light
+ * @brief Class Magnum::SceneGraph::Light
  */
 
 #include "Object.h"
 
-namespace Magnum {
+namespace Magnum { namespace SceneGraph {
 
-/** @ingroup scene
+/**
  * @brief Basic light object
  *
  * Provides cached light position.
  */
-class MAGNUM_EXPORT Light: public Object {
+class SCENEGRAPH_EXPORT Light: public Object3D {
     public:
         /**
          * @brief Constructor
          * @param parent        Parent object
          */
-        inline Light(Object* parent = nullptr): Object(parent) {}
+        inline Light(Object3D* parent = nullptr): Object3D(parent) {}
 
         /**
          * @brief Light position relative to root object (scene)
@@ -54,6 +54,6 @@ class MAGNUM_EXPORT Light: public Object {
         Vector4 _position;
 };
 
-}
+}}
 
 #endif

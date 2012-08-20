@@ -37,6 +37,9 @@ class ColorTest: public Corrade::TestSuite::Tester<ColorTest> {
         void hsv();
         void hsvOverflow();
         void hsvAlpha();
+
+        void debug();
+        void configuration();
 };
 
 }}

@@ -1,5 +1,5 @@
-#ifndef Magnum_Math_Swizzle_h
-#define Magnum_Math_Swizzle_h
+#ifndef Magnum_Swizzle_h
+#define Magnum_Swizzle_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,15 +16,18 @@
 */
 
 /** @file
- * @brief Function Magnum::Math::swizzle()
+ * @brief Functions Magnum::swizzle(const T&), Magnum::swizzle(const T&, const char(&)[])
  */
 
-#include "Vector4.h"
+#include "Color.h"
 
-namespace Magnum { namespace Math {
+namespace Magnum {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
+    using Math::Implementation::Sequence;
+    using Math::Implementation::GenerateSequence;
+
     template<size_t size, size_t position> struct GetPosition {
         static_assert(size > position, "Swizzle parameter out of range of base vector");
 
@@ -42,12 +45,15 @@ namespace Implementation {
     template<size_t size> struct GetComponent<size, 'a'>: public GetPosition<size, 3> {};
 
     template<size_t size, class T> struct TypeForSize {
-        typedef Vector<size, T> Type;
+        typedef Math::Vector<size, typename T::Type> Type;
     };
-
-    template<class T> struct TypeForSize<2, T> { typedef Vector2<T> Type; };
-    template<class T> struct TypeForSize<3, T> { typedef Vector3<T> Type; };
-    template<class T> struct TypeForSize<4, T> { typedef Vector4<T> Type; };
+    template<class T> struct TypeForSize<2, T> { typedef Math::Vector2<typename T::Type> Type; };
+    template<class T> struct TypeForSize<3, T> { typedef Math::Vector3<typename T::Type> Type; };
+    template<class T> struct TypeForSize<4, T> { typedef Math::Vector4<typename T::Type> Type; };
+    template<class T> struct TypeForSize<3, Color3<T>> { typedef Color3<T> Type; };
+    template<class T> struct TypeForSize<3, Color4<T>> { typedef Color3<T> Type; };
+    template<class T> struct TypeForSize<4, Color3<T>> { typedef Color4<T> Type; };
+    template<class T> struct TypeForSize<4, Color4<T>> { typedef Color4<T> Type; };
 
     inline constexpr size_t getPosition(size_t size, size_t position) {
         return size > position ? position : throw;
@@ -65,7 +71,7 @@ namespace Implementation {
                throw;
     }
 
-    template<size_t size, class T, size_t ...sequence> inline constexpr Vector<sizeof...(sequence), T> swizzleFrom(Sequence<sequence...>, const Vector<size, T>& vector, const char(&components)[sizeof...(sequence)+1]) {
+    template<size_t size, class T, size_t ...sequence> inline constexpr Math::Vector<sizeof...(sequence), T> swizzleFrom(Sequence<sequence...>, const Math::Vector<size, T>& vector, const char(&components)[sizeof...(sequence)+1]) {
         return {vector[getComponent<size>(components[sequence])]...};
     }
 }
@@ -87,14 +93,14 @@ two, three or four-component, corresponding Vector2, Vector3 or Vector4
 specialization is returned.
 
 @attention This function is less convenient to write than
-swizzle(const Vector<size, T>&, const char(&)[newSize]), but the evaluation of
+swizzle(const T&, const char(&)[newSize]), but the evaluation of
 the swizzling operation is guaranteed to be always done at compile time
 instead of at runtime.
 
 @see Vector4::xyz(), Vector4::rgb(), Vector4::xy(), Vector3::xy()
 */
-template<char ...components, size_t size, class T> inline constexpr typename Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const Vector<size, T>& vector) {
-    return {vector[Implementation::GetComponent<size, components>::value()]...};
+template<char ...components, class T> inline constexpr typename Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector) {
+    return {vector[Implementation::GetComponent<T::Size, components>::value()]...};
 }
 
 /**
@@ -113,16 +119,16 @@ two, three or four-component, corresponding Vector2, Vector3 or Vector4
 specialization is returned.
 
 @attention This function is more convenient to write than
-swizzle(const Vector<size, T>&), but unless the result is marked with
+swizzle(const T&), but unless the result is marked with
 `constexpr`, the evaluation of the swizzling operation probably won't be
 evaluated at compile time, but at runtime.
 
 @see Vector4::xyz(), Vector4::rgb(), Vector4::xy(), Vector3::xy()
 */
-template<size_t size, class T, size_t newSize> inline constexpr typename Implementation::TypeForSize<newSize-1, T>::Type swizzle(const Vector<size, T>& vector, const char(&components)[newSize]) {
+template<class T, size_t newSize> inline constexpr typename Implementation::TypeForSize<newSize-1, T>::Type swizzle(const T& vector, const char(&components)[newSize]) {
     return Implementation::swizzleFrom(typename Implementation::GenerateSequence<newSize-1>::Type(), vector, components);
 }
 
-}}
+}
 
 #endif

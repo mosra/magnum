@@ -1,5 +1,5 @@
-#ifndef Magnum_Test_ObjectTest_h
-#define Magnum_Test_ObjectTest_h
+#ifndef Magnum_SceneGraph_Test_ObjectTest_h
+#define Magnum_SceneGraph_Test_ObjectTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -17,9 +17,9 @@
 
 #include <TestSuite/Tester.h>
 
-#include "Object.h"
+#include "SceneGraph/Object.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace SceneGraph { namespace Test {
 
 class ObjectTest: public Corrade::TestSuite::Tester<ObjectTest> {
     public:
@@ -33,12 +33,12 @@ class ObjectTest: public Corrade::TestSuite::Tester<ObjectTest> {
         void dirty();
 
     private:
-        class CleaningObject: public Object {
+        class CleaningObject: public Object3D {
             public:
-                CleaningObject(Object* parent = nullptr): Object(parent) {}
+                CleaningObject(Object3D* parent = nullptr): Object3D(parent) {}
 
                 inline void clean(const Matrix4& absoluteTransformation) {
-                    Object::clean(absoluteTransformation);
+                    Object3D::clean(absoluteTransformation);
 
                     cleanedAbsoluteTransformation = absoluteTransformation;
                 }
@@ -46,6 +46,6 @@ class ObjectTest: public Corrade::TestSuite::Tester<ObjectTest> {
         };
 };
 
-}}
+}}}
 
 #endif

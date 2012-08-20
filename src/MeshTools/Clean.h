@@ -121,7 +121,7 @@ template<class Vertex, size_t vertexSize = Vertex::Size> class Clean {
 }
 #endif
 
-/** @ingroup mesh
+/**
 @brief %Clean the mesh
 @tparam Vertex          Vertex data type
 @tparam vertexSize      How many initial vertex fields are important (for

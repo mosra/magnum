@@ -195,7 +195,9 @@ TAB_SIZE               = 8
 # You can put \n's in the value part of an alias to insert newlines.
 
 ALIASES                = \
-    "debugoperator{1}=@relates \1\n@brief Debug output operator" \
+    "debugoperator{1}=@relates \1\n@brief Debug output operator @xrefitem debugoperators \"Debug output operator\" \"Debug output operators for custom types\" Allows printing \1 with Corrade::Utility::Debug and friends." \
+    "configurationvalueref{1}=@see @ref configurationvalues \"Corrade::Utility::ConfigurationValue<\1>\"" \
+    "configurationvalue{1}=@brief %Configuration value parser and writer @xrefitem configurationvalues \"Configuration value parser and writer\" \"Configuration value parsers and writers for custom types\" Allows parsing and writing \1 from and to Corrade::Utility::Configuration." \
     "collisionoperator{2}=@relates \1\n@brief Collision of %\1 and %\2\n@see \2::operator%(const \1&) const" \
     "todoc=@xrefitem todoc \"Documentation todo\" \"Documentation-related todo list\"" \
     "requires_gl=@xrefitem requires-gl \"Requires desktop OpenGL\" \"Functionality requiring desktop OpenGL (not available on OpenGL ES)\" Not available on OpenGL ES." \
@@ -206,8 +208,12 @@ ALIASES                = \
     "requires_gl40=@xrefitem requires-gl40 \"Requires OpenGL 4.0\" \"Functionality requiring OpenGL 4.0\"" \
     "requires_gl41=@xrefitem requires-gl41 \"Requires OpenGL 4.1\" \"Functionality requiring OpenGL 4.1\"" \
     "requires_gl42=@xrefitem requires-gl42 \"Requires OpenGL 4.2\" \"Functionality requiring OpenGL 4.2\"" \
-    "requires_extension=@xrefitem requires-extension \"Requires extension\" \"Functionality requiring specific OpenGL extension\"" \
-    "extension{2}=<a href=\"http://www.opengl.org/registry/specs/\1/\2.txt\"><tt>\1_\2</tt></a>"
+    "requires_gl43=@xrefitem requires-gl43 \"Requires OpenGL 4.3\" \"Functionality requiring OpenGL 4.3\"" \
+    "requires_extension=@xrefitem requires-extension \"Requires OpenGL extension\" \"Functionality requiring specific OpenGL extension\"" \
+    "extension{2}=<a href=\"http://www.opengl.org/registry/specs/\1/\2.txt\"><tt>\1_\2</tt></a>" \
+    "requires_gles30=@xrefitem requires-gles30 \"Requires OpenGL ES 3.0\" \"Functionality requiring OpenGL ES 3.0\"" \
+    "requires_es_extension=@xrefitem requires-es-extension \"Requires OpenGL ES extension\" \"Functionality requiring specific OpenGL ES extension\"" \
+    "es_extension{2}=<a href=\"http://www.khronos.org/registry/gles/extensions/\1/\2.txt\"><tt>\1_\2</tt></a>"
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding

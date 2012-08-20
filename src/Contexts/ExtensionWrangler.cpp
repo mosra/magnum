@@ -1,5 +1,3 @@
-#ifndef Magnum_Math_Test_SwizzleTest_h
-#define Magnum_Math_Test_SwizzleTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,21 +13,25 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <TestSuite/Tester.h>
+#include "ExtensionWrangler.h"
 
-namespace Magnum { namespace Math { namespace Test {
+#include "Magnum.h"
 
-class SwizzleTest: public Corrade::TestSuite::Tester<SwizzleTest> {
-    public:
-        SwizzleTest();
+namespace Magnum { namespace Contexts {
 
-        void xyzw();
-        void rgba();
-        void fromSmall();
-        void type();
-        void defaultType();
-};
+void ExtensionWrangler::initialize(ExperimentalFeatures experimentalFeatures) {
+    #ifndef MAGNUM_TARGET_GLES
+    /* Enable experimental features */
+    if(experimentalFeatures == ExperimentalFeatures::Enable)
+        glewExperimental = true;
 
-}}}
+    /* Init GLEW */
+    GLenum err = glewInit();
+    if(err != GLEW_OK) {
+        Error() << "ExtensionWrangler: cannot initialize GLEW:" << glewGetErrorString(err);
+        exit(1);
+    }
+    #endif
+}
 
-#endif
+}}
