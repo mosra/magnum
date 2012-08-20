@@ -439,7 +439,7 @@ template<size_t size, class T, class U> Vector<size, T> operator/(U number, cons
     return out;
 }
 
-/** @debugoperator{Vector} */
+/** @debugoperator{Magnum::Math::Vector} */
 template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector<size, T>& value) {
     debug << "Vector(";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);

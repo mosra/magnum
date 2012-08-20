@@ -265,7 +265,7 @@ template<size_t size, class T> class Matrix {
         T _data[size*size];
 };
 
-/** @debugoperator{Matrix} */
+/** @debugoperator{Magnum::Math::Matrix} */
 template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix<size, T>& value) {
     debug << "Matrix(";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
