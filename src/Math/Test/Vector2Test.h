@@ -26,7 +26,9 @@ class Vector2Test: public Corrade::TestSuite::Tester<Vector2Test> {
         void construct();
         void axes();
         void scales();
+
         void debug();
+        void configuration();
 };
 
 }}}

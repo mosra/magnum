@@ -30,10 +30,11 @@ namespace Implementation {
 #endif
 
 /**
- * @brief %Matrix
- *
- * @todo @c PERFORMANCE - loop unrolling for Matrix<3, T> and Matrix<4, T>
- * @todo first col, then row (cache adjacency)
+@brief %Matrix
+
+@configurationvalueref{Magnum::Math::Matrix}
+@todo @c PERFORMANCE - loop unrolling for Matrix<3, T> and Matrix<4, T>
+@todo first col, then row (cache adjacency)
  */
 template<size_t size, class T> class Matrix {
     static_assert(size != 0, "Matrix cannot have zero elements");
@@ -352,6 +353,43 @@ template<class T> class MatrixDeterminant<1, T> {
 
 }
 #endif
+
+}}
+
+namespace Corrade { namespace Utility {
+
+/** @configurationvalue{Magnum::Math::Matrix} */
+template<size_t size, class T> struct ConfigurationValue<Magnum::Math::Matrix<size, T>> {
+    /** @brief Writes elements separated with spaces */
+    static std::string toString(const Magnum::Math::Matrix<size, T>& value, int flags = 0) {
+        std::string output;
+
+        for(size_t row = 0; row != size; ++row) {
+            for(size_t col = 0; col != size; ++col) {
+                if(!output.empty()) output += ' ';
+                output += ConfigurationValue<T>::toString(value(col, row), flags);
+            }
+        }
+
+        return output;
+    }
+
+    /** @brief Reads elements separated with whitespace */
+    static Magnum::Math::Matrix<size, T> fromString(const std::string& stringValue, int flags = 0) {
+        Magnum::Math::Matrix<size, T> result(Magnum::Math::Matrix<size, T>::Zero);
+        std::istringstream in(stringValue);
+
+        for(size_t row = 0; row != size; ++row) {
+            for(size_t col = 0; col != size; ++col) {
+                std::string num;
+                in >> num;
+                result(col, row) = ConfigurationValue<T>::fromString(num, flags);
+            }
+        }
+
+        return result;
+    }
+};
 
 }}
 

@@ -49,7 +49,8 @@ VectorTest::VectorTest() {
              &VectorTest::max,
              &VectorTest::angle,
              &VectorTest::negative,
-             &VectorTest::debug);
+             &VectorTest::debug,
+             &VectorTest::configuration);
 }
 
 void VectorTest::construct() {
@@ -192,6 +193,13 @@ void VectorTest::debug() {
     o.str("");
     Debug(&o) << "a" << Vector4() << "b" << Vector4();
     CORRADE_COMPARE(o.str(), "a Vector(0, 0, 0, 0) b Vector(0, 0, 0, 0)\n");
+}
+
+void VectorTest::configuration() {
+    Vector4 vec(3.0f, 3.125f, 9.0f, 9.55f);
+    string value("3 3.125 9 9.55");
+    CORRADE_COMPARE(ConfigurationValue<Vector4>::toString(vec), value);
+    CORRADE_COMPARE(ConfigurationValue<Vector4>::fromString(value), vec);
 }
 
 }}}

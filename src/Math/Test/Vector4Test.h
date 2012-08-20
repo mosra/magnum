@@ -28,6 +28,7 @@ class Vector4Test: public Corrade::TestSuite::Tester<Vector4Test> {
         void twoComponent();
 
         void debug();
+        void configuration();
 };
 
 }}}

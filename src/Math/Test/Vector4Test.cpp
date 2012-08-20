@@ -34,7 +34,8 @@ Vector4Test::Vector4Test() {
     addTests(&Vector4Test::construct,
              &Vector4Test::threeComponent,
              &Vector4Test::twoComponent,
-             &Vector4Test::debug);
+             &Vector4Test::debug,
+             &Vector4Test::configuration);
 }
 
 void Vector4Test::construct() {
@@ -55,6 +56,13 @@ void Vector4Test::debug() {
     ostringstream o;
     Debug(&o) << Vector4(0.5f, 15.0f, 1.0f, 1.0f);
     CORRADE_COMPARE(o.str(), "Vector(0.5, 15, 1, 1)\n");
+}
+
+void Vector4Test::configuration() {
+    Vector4 vec(3.0f, 3.125f, 9.0f, 9.55f);
+    string value("3 3.125 9 9.55");
+    CORRADE_COMPARE(ConfigurationValue<Vector4>::toString(vec), value);
+    CORRADE_COMPARE(ConfigurationValue<Vector4>::fromString(value), vec);
 }
 
 }}}

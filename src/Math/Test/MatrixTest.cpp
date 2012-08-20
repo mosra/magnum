@@ -44,7 +44,8 @@ MatrixTest::MatrixTest() {
              &MatrixTest::ij,
              &MatrixTest::determinant,
              &MatrixTest::inverted,
-             &MatrixTest::debug);
+             &MatrixTest::debug,
+             &MatrixTest::configuration);
 }
 
 void MatrixTest::construct() {
@@ -306,6 +307,18 @@ void MatrixTest::debug() {
                              "       0, 1, 0, 0,\n"
                              "       0, 0, 1, 0,\n"
                              "       0, 0, 0, 1)\n");
+}
+
+void MatrixTest::configuration() {
+    Matrix4 m(
+        3.0f, 5.0f, 8.0f, 4.0f,
+        4.0f, 4.0f, 7.0f, 3.125f,
+        7.0f, -1.0f, 8.0f, 0.0f,
+        9.0f, 4.0f, 5.0f, 9.55f
+    );
+    string value("3 4 7 9 5 4 -1 4 8 7 8 5 4 3.125 0 9.55");
+    CORRADE_COMPARE(ConfigurationValue<Matrix4>::toString(m), value);
+    CORRADE_COMPARE(ConfigurationValue<Matrix4>::fromString(value), m);
 }
 
 }}}

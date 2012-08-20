@@ -32,7 +32,8 @@ Vector2Test::Vector2Test() {
     addTests(&Vector2Test::construct,
              &Vector2Test::axes,
              &Vector2Test::scales,
-             &Vector2Test::debug);
+             &Vector2Test::debug,
+             &Vector2Test::configuration);
 }
 
 void Vector2Test::construct() {
@@ -53,6 +54,13 @@ void Vector2Test::debug() {
     ostringstream o;
     Debug(&o) << Vector2(0.5f, 15.0f);
     CORRADE_COMPARE(o.str(), "Vector(0.5, 15)\n");
+}
+
+void Vector2Test::configuration() {
+    Vector2 vec(3.125f, 9.0f);
+    string value("3.125 9");
+    CORRADE_COMPARE(ConfigurationValue<Vector2>::toString(vec), value);
+    CORRADE_COMPARE(ConfigurationValue<Vector2>::fromString(value), vec);
 }
 
 }}}

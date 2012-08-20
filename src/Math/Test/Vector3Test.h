@@ -30,6 +30,7 @@ class Vector3Test: public Corrade::TestSuite::Tester<Vector3Test> {
         void twoComponent();
 
         void debug();
+        void configuration();
 };
 
 }}}

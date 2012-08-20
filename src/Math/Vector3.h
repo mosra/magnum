@@ -23,7 +23,11 @@
 
 namespace Magnum { namespace Math {
 
-/** @brief Three-component vector */
+/**
+@brief Three-component vector
+
+@configurationvalueref{Magnum::Math::Vector3}
+*/
 template<class T> class Vector3: public Vector<3, T> {
     public:
         /**
@@ -145,6 +149,11 @@ template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug deb
     return debug << static_cast<const Magnum::Math::Vector<3, T>&>(value);
 }
 
+}}
+
+namespace Corrade { namespace Utility {
+    /** @configurationvalue{Magnum::Math::Vector3} */
+    template<class T> struct ConfigurationValue<Magnum::Math::Vector3<T>>: public ConfigurationValue<Magnum::Math::Vector<3, T>> {};
 }}
 
 #endif

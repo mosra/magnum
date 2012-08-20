@@ -42,6 +42,7 @@ class VectorTest: public Corrade::TestSuite::Tester<VectorTest> {
         void negative();
 
         void debug();
+        void configuration();
 };
 
 }}}

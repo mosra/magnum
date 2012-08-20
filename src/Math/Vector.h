@@ -22,6 +22,7 @@
 #include <cmath>
 #include <limits>
 #include <Utility/Debug.h>
+#include <Utility/Configuration.h>
 
 #include "MathTypeTraits.h"
 
@@ -48,8 +49,12 @@ namespace Implementation {
 }
 #endif
 
-/** @brief %Vector */
-/** @todo Constexprize all for loops */
+/**
+@brief %Vector
+
+@configurationvalueref{Magnum::Math::Vector}
+@todo Constexprize all for loops
+*/
 template<size_t size, class T> class Vector {
     static_assert(size != 0, "Vector cannot have zero elements");
 
@@ -524,6 +529,39 @@ template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utili
         return number/Vector<size, T>(vector);                              \
     }
 #endif
+
+}}
+
+namespace Corrade { namespace Utility {
+
+/** @configurationvalue{Magnum::Math::Vector} */
+template<size_t size, class T> struct ConfigurationValue<Magnum::Math::Vector<size, T>> {
+    /** @brief Writes elements separated with spaces */
+    static std::string toString(const Magnum::Math::Vector<size, T>& value, int flags = 0) {
+        std::string output;
+
+        for(size_t pos = 0; pos != size; ++pos) {
+            if(!output.empty()) output += ' ';
+            output += ConfigurationValue<T>::toString(value[pos], flags);
+        }
+
+        return output;
+    }
+
+    /** @brief Reads elements separated with whitespace */
+    static Magnum::Math::Vector<size, T> fromString(const std::string& stringValue, int flags = 0) {
+        Magnum::Math::Vector<size, T> result;
+        std::istringstream in(stringValue);
+
+        std::string num;
+        for(size_t pos = 0; pos != size; ++pos) {
+            in >> num;
+            result[pos] = ConfigurationValue<T>::fromString(num, flags);
+        }
+
+        return result;
+    }
+};
 
 }}
 

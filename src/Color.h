@@ -408,4 +408,12 @@ template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug deb
 
 }
 
+namespace Corrade { namespace Utility {
+    /** @configurationvalue{Magnum::Color3} */
+    template<class T> struct ConfigurationValue<Magnum::Color3<T>>: public ConfigurationValue<Magnum::Math::Vector<3, T>> {};
+
+    /** @configurationvalue{Magnum::Color4} */
+    template<class T> struct ConfigurationValue<Magnum::Color4<T>>: public ConfigurationValue<Magnum::Math::Vector<4, T>> {};
+}}
+
 #endif

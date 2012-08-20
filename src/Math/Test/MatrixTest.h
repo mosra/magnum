@@ -38,6 +38,7 @@ class MatrixTest: public Corrade::TestSuite::Tester<MatrixTest> {
         void inverted();
 
         void debug();
+        void configuration();
 };
 
 }}}

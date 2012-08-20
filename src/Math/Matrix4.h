@@ -29,6 +29,7 @@ namespace Magnum { namespace Math {
 
 Provides functions for transformations in 3D. See also Matrix3 for 2D
 transformations.
+@configurationvalueref{Magnum::Math::Matrix4}
 @todo Shearing
 @todo Reflection
  */
@@ -151,6 +152,11 @@ template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug deb
     return debug << static_cast<const Magnum::Math::Matrix<4, T>&>(value);
 }
 
+}}
+
+namespace Corrade { namespace Utility {
+    /** @configurationvalue{Magnum::Math::Matrix4} */
+    template<class T> struct ConfigurationValue<Magnum::Math::Matrix4<T>>: public ConfigurationValue<Magnum::Math::Matrix<4, T>> {};
 }}
 
 #endif
