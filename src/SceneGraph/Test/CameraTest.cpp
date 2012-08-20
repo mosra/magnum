@@ -75,11 +75,13 @@ void CameraTest::fixAspectRatio() {
 void CameraTest::defaultProjection2D() {
     Camera2D camera;
     CORRADE_COMPARE(camera.projectionMatrix(), Matrix3());
+    CORRADE_COMPARE(camera.projectionSize(), Vector2(2.0f));
 }
 
 void CameraTest::defaultProjection3D() {
     Camera3D camera;
     CORRADE_COMPARE(camera.projectionMatrix(), Matrix4());
+    CORRADE_COMPARE(camera.projectionSize(), Vector2(2.0f));
 }
 
 void CameraTest::projection2D() {
@@ -92,6 +94,7 @@ void CameraTest::projection2D() {
               0.0f,         0.0f,       1.0f);
 
     CORRADE_COMPARE(camera.projectionMatrix(), a);
+    CORRADE_COMPARE(camera.projectionSize(), projectionSize);
 }
 
 void CameraTest::orthographic() {
@@ -105,6 +108,7 @@ void CameraTest::orthographic() {
               0.0f,   0.0f,   -1.25f,     1.0f);
 
     CORRADE_COMPARE(camera.projectionMatrix(), a);
+    CORRADE_COMPARE(camera.projectionSize(), projectionSize);
 
     Vector2 projectionSizeRectangle(5.0f, 4.0f);
     camera.setOrthographic(projectionSizeRectangle, 1, 9);
@@ -115,6 +119,7 @@ void CameraTest::orthographic() {
                       0.0f,   0.0f,   -1.25f,     1.0f);
 
     CORRADE_COMPARE(camera.projectionMatrix(), rectangle);
+    CORRADE_COMPARE(camera.projectionSize(), projectionSizeRectangle);
 }
 
 void CameraTest::perspective() {
@@ -127,6 +132,7 @@ void CameraTest::perspective() {
               0.0f,       0.0f,      -94.1176452f, 0.0f);
 
     CORRADE_COMPARE(camera.projectionMatrix(), a);
+    CORRADE_COMPARE(camera.projectionSize(), Vector2(0.48015756f));
 }
 
 }}}

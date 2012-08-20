@@ -91,8 +91,19 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
          *
          * Projection matrix handles e.g. perspective distortion and is applied
          * as last.
+         * @see projectionSize()
          */
         inline MatrixType projectionMatrix() const { return _projectionMatrix; }
+
+        /**
+         * @brief Size of (near) XY plane in current projection
+         *
+         * Returns size of near XY plane computed from projection matrix.
+         * @see projectionMatrix()
+         */
+        inline Vector2 projectionSize() const {
+            return {2.0f/rawProjectionMatrix[0].x(), 2.0f/rawProjectionMatrix[1].y()};
+        }
 
         /** @brief Viewport size */
         inline Math::Vector2<GLsizei> viewport() const { return _viewport; }
