@@ -91,7 +91,7 @@ class AbstractXContext: public AbstractContext {
          * @brief %Modifier
          *
          * @see Modifiers, keyPressEvent(), keyReleaseEvent(),
-         *      mousePressEvent(), mouseReleaseEvent()
+         *      mousePressEvent(), mouseReleaseEvent(), mouseMotionEvent()
          */
         enum class Modifier: unsigned int {
             Shift = ShiftMask,          /**< Shift */
@@ -99,7 +99,11 @@ class AbstractXContext: public AbstractContext {
             Ctrl = ControlMask,         /**< Ctrl */
             Alt = Mod1Mask,             /**< Alt */
             NumLock = Mod2Mask,         /**< Num lock */
-            AltGr = Mod5Mask            /**< AltGr */
+            AltGr = Mod5Mask,           /**< AltGr */
+
+            LeftButton = Button1Mask,   /**< Left mouse button */
+            MiddleButton = Button2Mask, /**< Middle mouse button */
+            RightButton = Button3Mask   /**< Right mouse button */
         };
 
         /**
@@ -248,6 +252,15 @@ class AbstractXContext: public AbstractContext {
          */
         virtual void mouseReleaseEvent(MouseButton button, Modifiers modifiers, const Math::Vector2<int>& position);
 
+        /**
+         * @brief Mouse motion event
+         * @param modifiers Active modifiers
+         * @param position  Cursor position
+         *
+         * Called when mouse is moved.
+         */
+        virtual void mouseMotionEvent(Modifiers modifiers, const Math::Vector2<int>& position);
+
         /*@}*/
 
     private:
@@ -279,6 +292,7 @@ inline void AbstractXContext::keyPressEvent(Key, Modifiers, const Math::Vector2<
 inline void AbstractXContext::keyReleaseEvent(Key, Modifiers, const Math::Vector2<int>&) {}
 inline void AbstractXContext::mousePressEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
 inline void AbstractXContext::mouseReleaseEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
+inline void AbstractXContext::mouseMotionEvent(Modifiers, const Math::Vector2<int>&) {}
 
 }}
 

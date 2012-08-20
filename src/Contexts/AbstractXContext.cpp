@@ -20,7 +20,7 @@
 #define None 0L // redef Xlib nonsense
 
 /* Mask for X events */
-#define INPUT_MASK KeyPressMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|StructureNotifyMask
+#define INPUT_MASK KeyPressMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|PointerMotionMask|StructureNotifyMask
 
 using namespace std;
 
@@ -121,6 +121,11 @@ int AbstractXContext::exec() {
                     break;
                 case ButtonRelease:
                     mouseReleaseEvent(static_cast<MouseButton>(event.xbutton.button), static_cast<Modifier>(event.xkey.state), {event.xbutton.x, event.xbutton.y});
+                    break;
+
+                /* Mouse move events */
+                case MotionNotify:
+                    mouseMotionEvent(static_cast<Modifier>(event.xmotion.state), {event.xmotion.x, event.xmotion.y});
                     break;
             }
         }
