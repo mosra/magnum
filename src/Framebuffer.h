@@ -1112,7 +1112,9 @@ class MAGNUM_EXPORT Framebuffer {
 };
 
 CORRADE_ENUMSET_OPERATORS(Framebuffer::ClearMask)
+#ifndef MAGNUM_TARGET_GLES
 CORRADE_ENUMSET_OPERATORS(Framebuffer::BlitMask)
+#endif
 
 }
 
