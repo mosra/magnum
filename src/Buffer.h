@@ -239,6 +239,19 @@ class Buffer {
 
         /**
          * @brief Set buffer data
+         * @param data      Fixed-size array with data
+         * @param usage     %Buffer usage
+         *
+         * Sets buffer data with default target. More convenient for setting
+         * data from fixed-size arrays than
+         * setData(GLsizeiptr, const GLvoid*, Usage).
+         */
+        template<size_t size, class T> inline void setData(const T(&data)[size], Usage usage) {
+            setData(_defaultTarget, data, usage);
+        }
+
+        /**
+         * @brief Set buffer data
          * @param data      Vector with data
          * @param usage     %Buffer usage
          *
@@ -258,6 +271,19 @@ class Buffer {
         inline void setData(Target target, GLsizeiptr size, const GLvoid* data, Usage usage) {
             bind(target);
             glBufferData(static_cast<GLenum>(target), size, data, static_cast<GLenum>(usage));
+        }
+
+        /**
+         * @brief Set buffer data
+         * @param target    %Target
+         * @param data      Fixed-size array with data
+         * @param usage     %Buffer usage
+         *
+         * More convenient for setting data from fixed-size arrays than
+         * setData(Target, GLsizeiptr, const GLvoid*, Usage).
+         */
+        template<size_t size, class T> inline void setData(Target target, const T(&data)[size], Usage usage) {
+            setData(target, size*sizeof(T), data, usage);
         }
 
         /**
@@ -285,6 +311,19 @@ class Buffer {
         /**
          * @brief Set buffer subdata
          * @param offset    Offset
+         * @param data      Fixed-size array with data
+         *
+         * Sets buffer subdata with default target. More convenient for
+         * setting data from fixed-size arrays than
+         * setSubData(GLintptr, GLsizeiptr, const GLvoid*).
+         */
+        template<size_t size, class T> inline void setSubData(GLintptr offset, const T(&data)[size]) {
+            setSubData(_defaultTarget, offset, data);
+        }
+
+        /**
+         * @brief Set buffer subdata
+         * @param offset    Offset
          * @param data      Vector with data
          *
          * Sets buffer subdata with default target.
@@ -303,6 +342,19 @@ class Buffer {
         inline void setSubData(Target target, GLintptr offset, GLsizeiptr size, const GLvoid* data) {
             bind(target);
             glBufferSubData(static_cast<GLenum>(target), offset, size, data);
+        }
+
+        /**
+         * @brief Set buffer subdata
+         * @param target    %Target
+         * @param offset    Offset
+         * @param data      Fixed-size array with data
+         *
+         * More convenient for setting data from fixed-size arrays than
+         * setSubData(Target, GLintptr, GLsizeiptr, const GLvoid*).
+         */
+        template<size_t size, class T> inline void setSubData(Target target, GLintptr offset, const T(&data)[size]) {
+            setSubData(target, offset, size*sizeof(T), data);
         }
 
         /**
