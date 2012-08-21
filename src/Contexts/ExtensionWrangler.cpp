@@ -31,6 +31,8 @@ void ExtensionWrangler::initialize(ExperimentalFeatures experimentalFeatures) {
         Error() << "ExtensionWrangler: cannot initialize GLEW:" << glewGetErrorString(err);
         exit(1);
     }
+    #else
+    static_cast<void>(experimentalFeatures); /* Shut up about unused parameter */
     #endif
 }
 
