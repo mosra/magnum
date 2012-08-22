@@ -39,7 +39,7 @@ template<class Vertex, size_t vertexSize = Vertex::Size> class Clean {
 
             /* Get mesh bounds */
             Vertex min, max;
-            for(size_t i = 0; i != Vertex::Size; ++i) {
+            for(size_t i = 0; i != Vertex::size; ++i) {
                 min[i] = std::numeric_limits<typename Vertex::Type>::max();
                 max[i] = std::numeric_limits<typename Vertex::Type>::min();
             }
@@ -53,7 +53,7 @@ template<class Vertex, size_t vertexSize = Vertex::Size> class Clean {
             /* Make epsilon so large that size_t can index all vertices inside
                mesh bounds. */
             Vertex size = max-min;
-            for(size_t i = 0; i != Vertex::Size; ++i)
+            for(size_t i = 0; i != Vertex::size; ++i)
                 if(static_cast<typename Vertex::Type>(size[i]/std::numeric_limits<size_t>::max()) > epsilon)
                     epsilon = static_cast<typename Vertex::Type>(size[i]/std::numeric_limits<size_t>::max());
 
@@ -91,7 +91,7 @@ template<class Vertex, size_t vertexSize = Vertex::Size> class Clean {
                 std::swap(newVertices, vertices);
 
                 /* Move vertex coordinates by epsilon/2 in next direction */
-                if(moving != Vertex::Size) {
+                if(moving != Vertex::size) {
                     moved = Vertex();
                     moved[moving] = epsilon/2;
                 }
@@ -136,7 +136,7 @@ Removes duplicate vertices from the mesh.
 @todo Interpolate vertices, not collapse them to first in the cell
 @todo Ability to specify other attributes for interpolation
 */
-template<class Vertex, size_t vertexSize = Vertex::Size> inline void clean(std::vector<unsigned int>& indices, std::vector<Vertex>& vertices, typename Vertex::Type epsilon = TypeTraits<typename Vertex::Type>::epsilon()) {
+template<class Vertex, size_t vertexSize = Vertex::size> inline void clean(std::vector<unsigned int>& indices, std::vector<Vertex>& vertices, typename Vertex::Type epsilon = TypeTraits<typename Vertex::Type>::epsilon()) {
     Implementation::Clean<Vertex, vertexSize>(indices, vertices)(epsilon);
 }
 

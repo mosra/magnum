@@ -1,5 +1,5 @@
-#ifndef Magnum_Math_Test_VectorTest_h
-#define Magnum_Math_Test_VectorTest_h
+#ifndef Magnum_Math_Test_RectangularMatrixTest_h
+#define Magnum_Math_Test_RectangularMatrixTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -19,25 +19,16 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class VectorTest: public Corrade::TestSuite::Tester<VectorTest> {
+class RectangularMatrixTest: public Corrade::TestSuite::Tester<RectangularMatrixTest> {
     public:
-        VectorTest();
+        RectangularMatrixTest();
 
         void construct();
-        void constructFrom();
-        void dot();
-        void multiplyDivide();
-        void multiplyDivideComponentWise();
-        void addSubtract();
-        void dotSelf();
-        void length();
-        void normalized();
-        void sum();
-        void product();
-        void min();
-        void max();
-        void angle();
-        void negative();
+        void constructFromVectors();
+        void constructZero();
+        void data();
+        void multiply();
+        void transposed();
 
         void debug();
         void configuration();

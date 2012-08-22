@@ -19,12 +19,7 @@
  * @brief Class Magnum::Math::Vector
  */
 
-#include <cmath>
-#include <limits>
-#include <Utility/Debug.h>
-#include <Utility/Configuration.h>
-
-#include "MathTypeTraits.h"
+#include "RectangularMatrix.h"
 
 namespace Magnum { namespace Math {
 
@@ -32,16 +27,6 @@ template<size_t size, class T> class Vector;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    template<size_t ...> struct Sequence {};
-
-    /* E.g. GenerateSequence<3>::Type is Sequence<0, 1, 2> */
-    template<size_t N, size_t ...sequence> struct GenerateSequence:
-        GenerateSequence<N-1, N-1, sequence...> {};
-
-    template<size_t ...sequence> struct GenerateSequence<0, sequence...> {
-        typedef Sequence<sequence...> Type;
-    };
-
     /* Implementation for Vector<size, T>::from(const Vector<size, U>&) */
     template<class T, class U, size_t ...sequence> inline constexpr Math::Vector<sizeof...(sequence), T> vectorFrom(Sequence<sequence...>, const Math::Vector<sizeof...(sequence), U>& vector) {
         return {T(vector[sequence])...};
@@ -55,28 +40,9 @@ namespace Implementation {
 @configurationvalueref{Magnum::Math::Vector}
 @todo Constexprize all for loops
 */
-template<size_t size, class T> class Vector {
-    static_assert(size != 0, "Vector cannot have zero elements");
-
+template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
     public:
-        const static size_t Size = size;    /**< @brief %Vector size */
-        typedef T Type;                     /**< @brief %Vector data type */
-
-        /**
-         * @brief %Vector from array
-         * @return Reference to the data as if it was Vector, thus doesn't
-         *      perform any copying.
-         *
-         * @attention Use with caution, the function doesn't check whether the
-         *      array is long enough.
-         */
-        inline constexpr static Vector<size, T>& from(T* data) {
-            return *reinterpret_cast<Vector<size, T>*>(data);
-        }
-        /** @overload */
-        inline constexpr static const Vector<size, T>& from(const T* data) {
-            return *reinterpret_cast<const Vector<size, T>*>(data);
-        }
+        const static size_t size = s;    /**< @brief %Vector size */
 
         /**
          * @brief %Vector from another of different type
@@ -126,19 +92,15 @@ template<size_t size, class T> class Vector {
         }
 
         /** @brief Default constructor */
-        inline constexpr Vector(): _data() {}
+        inline constexpr Vector() {}
 
         /**
          * @brief Initializer-list constructor
          * @param first First value
          * @param next  Next values
-         *
-         * @todoc Remove workaround when Doxygen supports uniform initialization
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> inline constexpr Vector(T first, U... next): _data{first, next...} {
-            static_assert(sizeof...(next)+1 == size, "Improper number of arguments passed to Vector constructor");
-        }
+        template<class ...U> inline constexpr Vector(T first, U... next): RectangularMatrix<1, size, T>(first, next...) {}
         #else
         template<class ...U> inline constexpr Vector(T first, U... next);
         #endif
@@ -153,38 +115,15 @@ template<size_t size, class T> class Vector {
         inline explicit Vector(T value) {
         #endif
             for(size_t i = 0; i != size; ++i)
-                _data[i] = value;
+                (*this)[i] = value;
         }
 
         /** @brief Copy constructor */
-        inline constexpr Vector(const Vector<size, T>&) = default;
-
-        /** @brief Assignment operator */
-        inline Vector<size, T>& operator=(const Vector<size, T>&) = default;
-
-        /**
-         * @brief Raw data
-         * @return Array with the same size as the vector
-         */
-        inline T* data() { return _data; }
-        inline constexpr const T* data() const { return _data; } /**< @overload */
+        inline constexpr Vector(const RectangularMatrix<1, size, T>& other): RectangularMatrix<1, size, T>(other) {}
 
         /** @brief Value at given position */
-        inline T& operator[](size_t pos) { return _data[pos]; }
-        inline constexpr T operator[](size_t pos) const { return _data[pos]; } /**< @overload */
-
-        /** @brief Equality operator */
-        inline bool operator==(const Vector<size, T>& other) const {
-            for(size_t pos = 0; pos != size; ++pos)
-                if(!MathTypeTraits<T>::equals((*this)[pos], other[pos])) return false;
-
-            return true;
-        }
-
-        /** @brief Non-equality operator */
-        inline bool operator!=(const Vector<size, T>& other) const {
-            return !operator==(other);
-        }
+        inline T& operator[](size_t pos) { return RectangularMatrix<1, size, T>::_data[pos]; }
+        inline constexpr T operator[](size_t pos) const { return RectangularMatrix<1, size, T>::_data[pos]; } /**< @overload */
 
         /**
          * @brief Multiply vector
@@ -404,8 +343,14 @@ template<size_t size, class T> class Vector {
             return out;
         }
 
+        MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(1, size, Vector<size, T>)
+
     private:
-        T _data[size];
+        /* Hiding unused things from RectangularMatrix */
+        using RectangularMatrix<1, size, T>::cols;
+        using RectangularMatrix<1, size, T>::rows;
+        using RectangularMatrix<1, size, T>::operator[];
+        using RectangularMatrix<1, size, T>::operator();
 };
 
 /** @relates Vector

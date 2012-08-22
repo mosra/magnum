@@ -34,8 +34,6 @@ typedef Vector<3, float> Vector3;
 VectorTest::VectorTest() {
     addTests(&VectorTest::construct,
              &VectorTest::constructFrom,
-             &VectorTest::data,
-             &VectorTest::copy,
              &VectorTest::dot,
              &VectorTest::multiplyDivide,
              &VectorTest::multiplyDivideComponentWise,
@@ -67,36 +65,6 @@ void VectorTest::constructFrom() {
 
     CORRADE_COMPARE(Vector4i::from(floatingPoint), integral);
     CORRADE_COMPARE(Vector4::from(integral), floatingPointRounded);
-}
-
-void VectorTest::data() {
-    Vector4 v;
-    v[2] = 1.5f;
-
-    v[0] = 1.0f;
-
-    CORRADE_COMPARE(v, Vector4(1.0f, 0.0f, 1.5f, 0.0f));
-}
-
-void VectorTest::copy() {
-    Vector4 v1;
-
-    v1[3] = 1.0f;
-
-    Vector4 v2(v1);
-    Vector4 v3;
-    v3[0] = 0.0f; /* this line is here so it's not optimized to Vector4 v3(v1) */
-    v3 = v1;
-
-    /* Change original */
-    v1[2] = 1.0f;
-
-    /* Verify the copy is the same as original original */
-    Vector4 original;
-    original[3] = 1.0f;
-
-    CORRADE_COMPARE(v2, original);
-    CORRADE_COMPARE(v3, original);
 }
 
 void VectorTest::dot() {

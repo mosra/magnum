@@ -24,15 +24,8 @@ class MatrixTest: public Corrade::TestSuite::Tester<MatrixTest> {
         MatrixTest();
 
         void construct();
-        void constructFromVectors();
         void constructIdentity();
         void constructZero();
-        void data();
-        void copy();
-        void multiplyIdentity();
-        void multiply();
-        void multiplyVector();
-        void transposed();
         void ij();
         void determinant();
         void inverted();
