@@ -145,6 +145,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
         }
 
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix4, Vector4, 4)
+        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(4, 4, Matrix4<T>)
 };
 
 /** @debugoperator{Magnum::Math::Matrix4} */

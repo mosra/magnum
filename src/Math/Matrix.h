@@ -142,6 +142,7 @@ template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
         }
         #endif
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(size, size, Matrix<size, T>)
+        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(size, size, Matrix<size, T>)
 };
 
 /** @debugoperator{Magnum::Math::Matrix} */

@@ -88,6 +88,7 @@ template<class T> class Vector2: public Vector<2, T> {
         inline void setY(T value) { (*this)[1] = value; }   /**< @brief Set Y component */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector2, 2)
+        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 2, Vector2<T>)
 };
 
 MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Vector2, 2)

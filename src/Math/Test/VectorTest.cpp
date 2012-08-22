@@ -37,7 +37,6 @@ VectorTest::VectorTest() {
              &VectorTest::dot,
              &VectorTest::multiplyDivide,
              &VectorTest::multiplyDivideComponentWise,
-             &VectorTest::addSubtract,
              &VectorTest::dotSelf,
              &VectorTest::length,
              &VectorTest::normalized,
@@ -99,15 +98,6 @@ void VectorTest::multiplyDivideComponentWise() {
 
     CORRADE_COMPARE(vec*multiplier, multiplied);
     CORRADE_COMPARE(multiplied/multiplier, vec);
-}
-
-void VectorTest::addSubtract() {
-    Vector4 a(0.5f, -7.5f, 9.0f, -11.0f);
-    Vector4 b(-0.5, 1.0f, 0.0f, 7.5f);
-    Vector4 expected(0.0f, -6.5f, 9.0f, -3.5f);
-
-    CORRADE_COMPARE(a + b, expected);
-    CORRADE_COMPARE(expected - b, a);
 }
 
 void VectorTest::dotSelf() {

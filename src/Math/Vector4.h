@@ -88,6 +88,7 @@ template<class T> class Vector4: public Vector<4, T> {
         inline constexpr Vector2<T> xy() const { return Vector2<T>::from(Vector<4, T>::data()); }
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector4, 4)
+        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 3, Vector4<T>)
 };
 
 MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Vector4, 4)

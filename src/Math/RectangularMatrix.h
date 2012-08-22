@@ -161,6 +161,50 @@ template<size_t c, size_t r, class T> class RectangularMatrix {
             return !operator==(other);
         }
 
+        /**
+         * @brief Add matrix
+         *
+         * @see operator+=()
+         */
+        inline RectangularMatrix<cols, rows, T> operator+(const RectangularMatrix<cols, rows, T>& other) const {
+            return RectangularMatrix<cols, rows, T>(*this)+=other;
+        }
+
+        /**
+         * @brief Add and assign matrix
+         *
+         * More efficient than operator+(), because it does the computation
+         * in-place.
+         */
+        RectangularMatrix<cols, rows, T>& operator+=(const RectangularMatrix<cols, rows, T>& other) {
+            for(size_t i = 0; i != cols*rows; ++i)
+                _data[i] += other._data[i];
+
+            return *this;
+        }
+
+        /**
+         * @brief Subtract matrix
+         *
+         * @see operator-=()
+         */
+        inline RectangularMatrix<cols, rows, T> operator-(const RectangularMatrix<cols, rows, T>& other) const {
+            return RectangularMatrix<cols, rows, T>(*this)-=other;
+        }
+
+        /**
+         * @brief Subtract and assign matrix
+         *
+         * More efficient than operator-(), because it does the computation
+         * in-place.
+         */
+        RectangularMatrix<cols, rows, T>& operator-=(const RectangularMatrix<cols, rows, T>& other) {
+            for(size_t i = 0; i != cols*rows; ++i)
+                _data[i] -= other._data[i];
+
+            return *this;
+        }
+
         /** @brief Multiply matrix */
         template<size_t size> RectangularMatrix<size, rows, T> operator*(const RectangularMatrix<size, cols, T>& other) const {
             RectangularMatrix<size, rows, T> out;
@@ -235,6 +279,22 @@ template<size_t cols, size_t rows, class T> Corrade::Utility::Debug operator<<(C
                                                                             \
     inline __VA_ARGS__& operator=(const RectangularMatrix<cols, rows, T>& other) { \
         RectangularMatrix<cols, rows, T>::operator=(other);                 \
+        return *this;                                                       \
+    }
+
+#define MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(cols, rows, ...) \
+    inline __VA_ARGS__ operator+(const RectangularMatrix<cols, rows, T>& other) const { \
+        return RectangularMatrix<cols, rows, T>::operator+(other);          \
+    }                                                                       \
+    inline __VA_ARGS__& operator+=(const RectangularMatrix<cols, rows, T>& other) { \
+        RectangularMatrix<cols, rows, T>::operator+=(other);                \
+        return *this;                                                       \
+    }                                                                       \
+    inline __VA_ARGS__ operator-(const RectangularMatrix<cols, rows, T>& other) const { \
+        return RectangularMatrix<cols, rows, T>::operator-(other);          \
+    }                                                                       \
+    inline __VA_ARGS__& operator-=(const RectangularMatrix<cols, rows, T>& other) { \
+        RectangularMatrix<cols, rows, T>::operator-=(other);                \
         return *this;                                                       \
     }
 #endif

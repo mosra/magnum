@@ -27,7 +27,10 @@ class RectangularMatrixTest: public Corrade::TestSuite::Tester<RectangularMatrix
         void constructFromVectors();
         void constructZero();
         void data();
+
+        void addSubtract();
         void multiply();
+
         void transposed();
 
         void debug();

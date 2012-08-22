@@ -35,8 +35,12 @@ RectangularMatrixTest::RectangularMatrixTest() {
              &RectangularMatrixTest::constructFromVectors,
              &RectangularMatrixTest::constructZero,
              &RectangularMatrixTest::data,
+
+             &RectangularMatrixTest::addSubtract,
              &RectangularMatrixTest::multiply,
+
              &RectangularMatrixTest::transposed,
+
              &RectangularMatrixTest::debug,
              &RectangularMatrixTest::configuration);
 }
@@ -103,6 +107,24 @@ void RectangularMatrixTest::data() {
     );
 
     CORRADE_COMPARE(m, expected);
+}
+
+void RectangularMatrixTest::addSubtract() {
+    Matrix4x3 a(0.0f,   1.0f,   3.0f,
+                4.0f,   5.0f,   7.0f,
+                8.0f,   9.0f,   11.0f,
+                12.0f, 13.0f,  15.0f);
+    Matrix4x3 b(-4.0f,  0.5f,   9.0f,
+                -9.0f, 11.0f,  0.25f,
+                 0.0f, -8.0f,  19.0f,
+                -3.0f, -5.0f,   2.0f);
+    Matrix4x3 e(-4.0f,  1.5f,  12.0f,
+                -5.0f, 16.0f,  7.25f,
+                 8.0f,  1.0f,  30.0f,
+                 9.0f,  8.0f,  17.0f);
+
+    CORRADE_COMPARE(a + b, e);
+    CORRADE_COMPARE(e - b, a);
 }
 
 void RectangularMatrixTest::multiply() {

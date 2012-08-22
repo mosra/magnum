@@ -229,42 +229,6 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
             return *this;
         }
 
-        /** @brief Add two vectors */
-        inline Vector<size, T> operator+(const Vector<size, T>& other) const {
-            return Vector<size, T>(*this)+=other;
-        }
-
-        /**
-         * @brief Add and assign vector
-         *
-         * More efficient than operator+(), because it does the computation
-         * in-place.
-         */
-        Vector<size, T>& operator+=(const Vector<size, T>& other) {
-            for(size_t i = 0; i != size; ++i)
-                (*this)[i] += other[i];
-
-            return *this;
-        }
-
-        /** @brief Subtract two vectors */
-        inline Vector<size, T> operator-(const Vector<size, T>& other) const {
-            return Vector<size, T>(*this)-=other;
-        }
-
-        /**
-         * @brief Subtract and assign vector
-         *
-         * More efficient than operator-(), because it does the computation
-         * in-place.
-         */
-        Vector<size, T>& operator-=(const Vector<size, T>& other) {
-            for(size_t i = 0; i != size; ++i)
-                (*this)[i] -= other[i];
-
-            return *this;
-        }
-
         /** @brief Negative vector */
         Vector<size, T> operator-() const {
             Vector<size, T> out;
@@ -344,6 +308,7 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
         }
 
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(1, size, Vector<size, T>)
+        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, size, Vector<size, T>)
 
     private:
         /* Hiding unused things from RectangularMatrix */
@@ -445,21 +410,6 @@ template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utili
     }                                                                       \
     inline Type<T>& operator/=(const Vector<size, T>& other) {              \
         Vector<size, T>::operator/=(other);                                 \
-        return *this;                                                       \
-    }                                                                       \
-                                                                            \
-    inline Type<T> operator+(const Vector<size, T>& other) const {          \
-        return Vector<size, T>::operator+(other);                           \
-    }                                                                       \
-    inline Type<T>& operator+=(const Vector<size, T>& other) {              \
-        Vector<size, T>::operator+=(other);                                 \
-        return *this;                                                       \
-    }                                                                       \
-    inline Type<T> operator-(const Vector<size, T>& other) const {          \
-        return Vector<size, T>::operator-(other);                           \
-    }                                                                       \
-    inline Type<T>& operator-=(const Vector<size, T>& other) {              \
-        Vector<size, T>::operator-=(other);                                 \
         return *this;                                                       \
     }                                                                       \
                                                                             \
