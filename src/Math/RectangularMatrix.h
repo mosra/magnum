@@ -369,42 +369,42 @@ template<size_t cols, size_t rows, class T> Corrade::Utility::Debug operator<<(C
     inline constexpr static const __VA_ARGS__& from(const T* data) {        \
         return *reinterpret_cast<const __VA_ARGS__*>(data);                 \
     }                                                                       \
-    template<class ...U> inline constexpr static __VA_ARGS__ from(const Vector<rows, T>& first, const U&... next) { \
-        return RectangularMatrix<cols, rows, T>::from(first, next...);      \
+    template<class ...U> inline constexpr static __VA_ARGS__ from(const Math::Vector<rows, T>& first, const U&... next) { \
+        return Math::RectangularMatrix<cols, rows, T>::from(first, next...); \
     }                                                                       \
                                                                             \
-    inline __VA_ARGS__& operator=(const RectangularMatrix<cols, rows, T>& other) { \
-        RectangularMatrix<cols, rows, T>::operator=(other);                 \
+    inline __VA_ARGS__& operator=(const Math::RectangularMatrix<cols, rows, T>& other) { \
+        Math::RectangularMatrix<cols, rows, T>::operator=(other);           \
         return *this;                                                       \
     }
 
 #define MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(cols, rows, ...) \
-    inline __VA_ARGS__ operator+(const RectangularMatrix<cols, rows, T>& other) const { \
-        return RectangularMatrix<cols, rows, T>::operator+(other);          \
+    inline __VA_ARGS__ operator+(const Math::RectangularMatrix<cols, rows, T>& other) const { \
+        return Math::RectangularMatrix<cols, rows, T>::operator+(other);    \
     }                                                                       \
-    inline __VA_ARGS__& operator+=(const RectangularMatrix<cols, rows, T>& other) { \
-        RectangularMatrix<cols, rows, T>::operator+=(other);                \
+    inline __VA_ARGS__& operator+=(const Math::RectangularMatrix<cols, rows, T>& other) { \
+        Math::RectangularMatrix<cols, rows, T>::operator+=(other);          \
         return *this;                                                       \
     }                                                                       \
-    inline __VA_ARGS__ operator-(const RectangularMatrix<cols, rows, T>& other) const { \
-        return RectangularMatrix<cols, rows, T>::operator-(other);          \
+    inline __VA_ARGS__ operator-(const Math::RectangularMatrix<cols, rows, T>& other) const { \
+        return Math::RectangularMatrix<cols, rows, T>::operator-(other);    \
     }                                                                       \
-    inline __VA_ARGS__& operator-=(const RectangularMatrix<cols, rows, T>& other) { \
-        RectangularMatrix<cols, rows, T>::operator-=(other);                \
+    inline __VA_ARGS__& operator-=(const Math::RectangularMatrix<cols, rows, T>& other) { \
+        Math::RectangularMatrix<cols, rows, T>::operator-=(other);          \
         return *this;                                                       \
     }                                                                       \
     template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, __VA_ARGS__>::type operator*(U number) const { \
-        return RectangularMatrix<cols, rows, T>::operator*(number);         \
+        return Math::RectangularMatrix<cols, rows, T>::operator*(number);   \
     }                                                                       \
     template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, __VA_ARGS__&>::type operator*=(U number) { \
-        RectangularMatrix<cols, rows, T>::operator*=(number);               \
+        Math::RectangularMatrix<cols, rows, T>::operator*=(number);         \
         return *this;                                                       \
     }                                                                       \
     template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, __VA_ARGS__>::type operator/(U number) const { \
-        return RectangularMatrix<cols, rows, T>::operator/(number);         \
+        return Math::RectangularMatrix<cols, rows, T>::operator/(number);   \
     }                                                                       \
     template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, __VA_ARGS__&>::type operator/=(U number) { \
-        RectangularMatrix<cols, rows, T>::operator/=(number);               \
+        Math::RectangularMatrix<cols, rows, T>::operator/=(number);         \
         return *this;                                                       \
     }
 #endif

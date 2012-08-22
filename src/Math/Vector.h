@@ -288,39 +288,39 @@ template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utili
     inline constexpr static const Type<T>& from(const T* data) {            \
         return *reinterpret_cast<const Type<T>*>(data);                     \
     }                                                                       \
-    template<class U> inline constexpr static Type<T> from(const Vector<size, U>& other) { \
-        return Vector<size, T>::from(other);                                \
+    template<class U> inline constexpr static Type<T> from(const Math::Vector<size, U>& other) { \
+        return Math::Vector<size, T>::from(other);                          \
     }                                                                       \
                                                                             \
     inline Type<T>& operator=(const Type<T>& other) {                       \
-        Vector<size, T>::operator=(other);                                  \
+        Math::Vector<size, T>::operator=(other);                            \
         return *this;                                                       \
     }                                                                       \
                                                                             \
-    inline Type<T> operator*(const Vector<size, T>& other) const {          \
-        return Vector<size, T>::operator*(other);                           \
+    inline Type<T> operator*(const Math::Vector<size, T>& other) const {    \
+        return Math::Vector<size, T>::operator*(other);                     \
     }                                                                       \
-    inline Type<T>& operator*=(const Vector<size, T>& other) {              \
-        Vector<size, T>::operator*=(other);                                 \
+    inline Type<T>& operator*=(const Math::Vector<size, T>& other) {        \
+        Math::Vector<size, T>::operator*=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    inline Type<T> operator/(const Vector<size, T>& other) const {          \
-        return Vector<size, T>::operator/(other);                           \
+    inline Type<T> operator/(const Math::Vector<size, T>& other) const {    \
+        return Math::Vector<size, T>::operator/(other);                     \
     }                                                                       \
-    inline Type<T>& operator/=(const Vector<size, T>& other) {              \
-        Vector<size, T>::operator/=(other);                                 \
+    inline Type<T>& operator/=(const Math::Vector<size, T>& other) {        \
+        Math::Vector<size, T>::operator/=(other);                           \
         return *this;                                                       \
     }                                                                       \
                                                                             \
-    inline Type<T> operator-() const { return Vector<size, T>::operator-(); } \
-    inline Type<T> normalized() const { return Vector<size, T>::normalized(); }
+    inline Type<T> operator-() const { return Math::Vector<size, T>::operator-(); } \
+    inline Type<T> normalized() const { return Math::Vector<size, T>::normalized(); }
 
 #define MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Type, size)          \
     template<class T, class U> inline Type<T> operator*(U number, const Type<T>& vector) { \
-        return number*Vector<size, T>(vector);                              \
+        return number*Math::Vector<size, T>(vector);                        \
     }                                                                       \
     template<class T, class U> inline Type<T> operator/(U number, const Type<T>& vector) { \
-        return number/Vector<size, T>(vector);                              \
+        return number/Math::Vector<size, T>(vector);                        \
     }
 #endif
 
