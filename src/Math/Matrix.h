@@ -145,6 +145,15 @@ template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(size, size, Matrix<size, T>)
 };
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<size_t size, class T, class U> inline Matrix<size, T> operator*(U number, const Matrix<size, T>& matrix) {
+    return number*RectangularMatrix<size, size, T>(matrix);
+}
+template<size_t size, class T, class U> inline Matrix<size, T> operator/(U number, const Matrix<size, T>& matrix) {
+    return number/RectangularMatrix<size, size, T>(matrix);
+}
+#endif
+
 /** @debugoperator{Magnum::Math::Matrix} */
 template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix<size, T>& value) {
     return debug << static_cast<const Magnum::Math::RectangularMatrix<size, size, T>&>(value);
@@ -190,6 +199,14 @@ template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utili
                                                                             \
     inline Type<T> transposed() const { return Matrix<size, T>::transposed(); } \
     inline Type<T> inverted() const { return Matrix<size, T>::inverted(); }
+
+#define MAGNUM_MATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(Type, size)          \
+    template<class T, class U> inline Type<T> operator*(U number, const Type<T>& matrix) { \
+        return number*Matrix<size, T>(matrix);                              \
+    }                                                                       \
+    template<class T, class U> inline Type<T> operator/(U number, const Type<T>& matrix) { \
+        return number/Matrix<size, T>(matrix);                              \
+    }
 
 namespace Implementation {
 

@@ -26,7 +26,6 @@ class VectorTest: public Corrade::TestSuite::Tester<VectorTest> {
         void construct();
         void constructFrom();
         void dot();
-        void multiplyDivide();
         void multiplyDivideComponentWise();
         void dotSelf();
         void length();

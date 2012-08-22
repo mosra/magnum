@@ -28,6 +28,7 @@ namespace Magnum { namespace Math { namespace Test {
 
 typedef RectangularMatrix<4, 3, float> Matrix4x3;
 typedef RectangularMatrix<3, 4, float> Matrix3x4;
+typedef RectangularMatrix<2, 2, float> Matrix2;
 typedef Vector<4, float> Vector4;
 
 RectangularMatrixTest::RectangularMatrixTest() {
@@ -37,6 +38,7 @@ RectangularMatrixTest::RectangularMatrixTest() {
              &RectangularMatrixTest::data,
 
              &RectangularMatrixTest::addSubtract,
+             &RectangularMatrixTest::multiplyDivide,
              &RectangularMatrixTest::multiply,
 
              &RectangularMatrixTest::transposed,
@@ -125,6 +127,27 @@ void RectangularMatrixTest::addSubtract() {
 
     CORRADE_COMPARE(a + b, e);
     CORRADE_COMPARE(e - b, a);
+}
+
+void RectangularMatrixTest::multiplyDivide() {
+    Matrix2 vec(1.0f, 2.0f, 3.0f, 4.0f);
+    Matrix2 multiplied(-1.5f, -3.0f, -4.5f, -6.0f);
+
+    CORRADE_COMPARE(vec*-1.5f, multiplied);
+    CORRADE_COMPARE(-1.5f*vec, multiplied);
+    CORRADE_COMPARE(multiplied/-1.5f, vec);
+
+    Math::RectangularMatrix<1, 1, char> vecChar(32);
+    Math::RectangularMatrix<1, 1, char> multipliedChar(-48);
+    CORRADE_COMPARE(vecChar*-1.5f, multipliedChar);
+    CORRADE_COMPARE(multipliedChar/-1.5f, vecChar);
+    CORRADE_COMPARE(-1.5f*vecChar, multipliedChar);
+
+    /* Divide vector with number and inverse */
+    Matrix2 divisor(1.0f, 2.0f, -4.0f, 8.0f);
+    Matrix2 result(1.0f, 0.5f, -0.25f, 0.125f);
+    CORRADE_COMPARE(1.0f/divisor, result);
+    CORRADE_COMPARE(-1550.0f/multipliedChar, vecChar);
 }
 
 void RectangularMatrixTest::multiply() {

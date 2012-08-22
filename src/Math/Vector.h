@@ -126,36 +126,6 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
         inline constexpr T operator[](size_t pos) const { return RectangularMatrix<1, size, T>::_data[pos]; } /**< @overload */
 
         /**
-         * @brief Multiply vector
-         *
-         * @see operator*=(U), operator*(U, const Vector<size, T>&)
-         */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator*(U number) const {
-        #else
-        template<class U> inline Vector<size, T> operator*(U number) const {
-        #endif
-            return Vector<size, T>(*this)*=number;
-        }
-
-        /**
-         * @brief Multiply vector and assign
-         *
-         * More efficient than operator*(U) const, because it does the
-         * computation in-place.
-         */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class U> typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>&>::type operator*=(U number) {
-        #else
-        template<class U> Vector<size, T>& operator*=(U number) {
-        #endif
-            for(size_t i = 0; i != size; ++i)
-                (*this)[i] *= number;
-
-            return *this;
-        }
-
-        /**
          * @brief Multiply vector component-wise
          *
          * @see operator*=(const Vector<size, T>&)
@@ -173,36 +143,6 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
         Vector<size, T>& operator*=(const Vector<size, T>& other) {
             for(size_t i = 0; i != size; ++i)
                 (*this)[i] *= other[i];
-
-            return *this;
-        }
-
-        /**
-         * @brief Divide vector
-         *
-         * @see operator/=(U), operator/(U, const Vector<size, T>&)
-         */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator/(U number) const {
-        #else
-        template<class U> inline Vector<size, T> operator/(U number) const {
-        #endif
-            return Vector<size, T>(*this)/=number;
-        }
-
-        /**
-         * @brief Divide vector and assign
-         *
-         * More efficient than operator/(U) const, because it does the
-         * computation in-place.
-         */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class U> typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>&>::type operator/=(U number) {
-        #else
-        template<class U> Vector<size, T>& operator/=(U number) {
-        #endif
-            for(size_t i = 0; i != size; ++i)
-                (*this)[i] /= number;
 
             return *this;
         }
@@ -318,41 +258,14 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
         using RectangularMatrix<1, size, T>::operator();
 };
 
-/** @relates Vector
-@brief Multiply number with vector
-
-@see Vector::operator*(U) const
-*/
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator*(U number, const Vector<size, T>& vector) {
-#else
 template<size_t size, class T, class U> inline Vector<size, T> operator*(U number, const Vector<size, T>& vector) {
-#endif
-    return vector*number;
+    return number*RectangularMatrix<1, size, T>(vector);
 }
-
-/** @relates Vector
-@brief Divide vector with number and invert
-
-Example:
-@code
-Vector<4, float> vec(1.0f, 2.0f, -4.0f, 8.0f);
-Vector<4, float> another = 1.0f/vec; // {1.0f, 0.5f, -0.25f, 0.128f}
-@endcode
-@see Vector::operator/(U) const
-*/
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<size_t size, class T, class U> typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator/(U number, const Vector<size, T>& vector) {
-#else
-template<size_t size, class T, class U> Vector<size, T> operator/(U number, const Vector<size, T>& vector) {
-#endif
-    Vector<size, T> out;
-
-    for(size_t i = 0; i != size; ++i)
-        out[i] = number/vector[i];
-
-    return out;
+template<size_t size, class T, class U> inline Vector<size, T> operator/(U number, const Vector<size, T>& vector) {
+    return number/RectangularMatrix<1, size, T>(vector);
 }
+#endif
 
 /** @debugoperator{Magnum::Math::Vector} */
 template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector<size, T>& value) {
@@ -384,25 +297,11 @@ template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utili
         return *this;                                                       \
     }                                                                       \
                                                                             \
-    template<class U> inline Type<T> operator*(U number) const {            \
-        return Vector<size, T>::operator*(number);                          \
-    }                                                                       \
-    template<class U> inline Type<T>& operator*=(U number) {                \
-        Vector<size, T>::operator*=(number);                                \
-        return *this;                                                       \
-    }                                                                       \
     inline Type<T> operator*(const Vector<size, T>& other) const {          \
         return Vector<size, T>::operator*(other);                           \
     }                                                                       \
     inline Type<T>& operator*=(const Vector<size, T>& other) {              \
         Vector<size, T>::operator*=(other);                                 \
-        return *this;                                                       \
-    }                                                                       \
-    template<class U> inline Type<T> operator/(U number) const {            \
-        return Vector<size, T>::operator/(number);                          \
-    }                                                                       \
-    template<class U> inline Type<T>& operator/=(U number) {                \
-        Vector<size, T>::operator/=(number);                                \
         return *this;                                                       \
     }                                                                       \
     inline Type<T> operator/(const Vector<size, T>& other) const {          \

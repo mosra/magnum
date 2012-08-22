@@ -29,6 +29,7 @@ class RectangularMatrixTest: public Corrade::TestSuite::Tester<RectangularMatrix
         void data();
 
         void addSubtract();
+        void multiplyDivide();
         void multiply();
 
         void transposed();
