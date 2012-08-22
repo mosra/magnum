@@ -39,8 +39,6 @@ namespace Implementation {
 template<size_t size, class T> class Matrix {
     static_assert(size != 0, "Matrix cannot have zero elements");
 
-    friend class Matrix<size+1, T>; /* for ij() */
-
     public:
         const static size_t Size = size;    /**< @brief %Matrix size */
         typedef T Type;                     /**< @brief %Matrix data type */
