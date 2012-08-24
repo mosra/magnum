@@ -70,7 +70,8 @@ template<size_t imageDimensions> class ImageData: public AbstractImage {
         inline constexpr const Math::Vector<Dimensions, GLsizei>& dimensions() const { return _dimensions; }
 
         /** @brief Pointer to raw data */
-        inline constexpr const void* data() const { return _data; }
+        inline void* data() { return _data; }
+        inline constexpr const void* data() const { return _data; } /**< @overload */
 
     private:
         std::string _name;
