@@ -19,6 +19,7 @@
  * @brief Class Magnum::Math::MathTypeTraits
  */
 
+#include <cstddef>
 #include <cmath>
 
 /** @brief Precision when testing floats for equality */
