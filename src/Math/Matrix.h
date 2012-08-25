@@ -140,16 +140,16 @@ template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
         inline Vector<size, T> operator*(const Vector<size, T>& other) const {
             return RectangularMatrix<size, size, T>::operator*(other);
         }
-        #endif
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(size, size, Matrix<size, T>)
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(size, size, Matrix<size, T>)
+        #endif
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<size_t size, class T, class U> inline Matrix<size, T> operator*(U number, const Matrix<size, T>& matrix) {
+template<size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Matrix<size, T>>::type operator*(U number, const Matrix<size, T>& matrix) {
     return number*RectangularMatrix<size, size, T>(matrix);
 }
-template<size_t size, class T, class U> inline Matrix<size, T> operator/(U number, const Matrix<size, T>& matrix) {
+template<size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Matrix<size, T>>::type operator/(U number, const Matrix<size, T>& matrix) {
     return number/RectangularMatrix<size, size, T>(matrix);
 }
 #endif
@@ -190,7 +190,7 @@ template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utili
         Matrix<size, T>::operator*=(other);                                 \
         return *this;                                                       \
     }                                                                       \
-    template<size_t otherCols> inline RectangularMatrix<otherCols, size, T> operator*(const RectangularMatrix<otherCols, size, T>& other) const {                                                                 \
+    template<size_t otherCols> inline RectangularMatrix<otherCols, size, T> operator*(const RectangularMatrix<otherCols, size, T>& other) const { \
         return Matrix<size, T>::operator*(other);                           \
     }                                                                       \
     inline VectorType<T> operator*(const Vector<size, T>& other) const {    \
@@ -201,10 +201,10 @@ template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utili
     inline Type<T> inverted() const { return Matrix<size, T>::inverted(); }
 
 #define MAGNUM_MATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(Type, size)          \
-    template<class T, class U> inline Type<T> operator*(U number, const Type<T>& matrix) { \
+    template<class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Type<T>>::type operator*(U number, const Type<T>& matrix) { \
         return number*Matrix<size, T>(matrix);                              \
     }                                                                       \
-    template<class T, class U> inline Type<T> operator/(U number, const Type<T>& matrix) { \
+    template<class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Type<T>>::type operator/(U number, const Type<T>& matrix) { \
         return number/Matrix<size, T>(matrix);                              \
     }
 
