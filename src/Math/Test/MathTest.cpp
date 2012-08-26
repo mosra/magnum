@@ -28,6 +28,7 @@ MathTest::MathTest() {
              &MathTest::degrad,
              &MathTest::normalize,
              &MathTest::denormalize,
+             &MathTest::clamp,
              &MathTest::pow,
              &MathTest::log);
 }
@@ -94,6 +95,12 @@ void MathTest::denormalize() {
         CORRADE_COMPARE((Math::denormalize<long long, long double>(1.0)), numeric_limits<long long>::max());
         CORRADE_COMPARE((Math::denormalize<unsigned long long, long double>(1.0)), numeric_limits<unsigned long long>::max());
     }
+}
+
+void MathTest::clamp() {
+    CORRADE_COMPARE(Math::clamp(0.5f, -1.0f, 5.0f), 0.5f);
+    CORRADE_COMPARE(Math::clamp(-1.6f, -1.0f, 5.0f), -1.0f);
+    CORRADE_COMPARE(Math::clamp(9.5f, -1.0f, 5.0f), 5.0f);
 }
 
 void MathTest::pow() {

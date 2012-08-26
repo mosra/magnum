@@ -27,6 +27,7 @@ class MathTest: public Corrade::TestSuite::Tester<MathTest> {
         void degrad();
         void normalize();
         void denormalize();
+        void clamp();
         void pow();
         void log();
 };

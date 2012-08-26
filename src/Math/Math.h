@@ -19,6 +19,7 @@
 #include <cmath>
 #include <type_traits>
 #include <limits>
+#include <algorithm>
 
 #include "magnumVisibility.h"
 
@@ -127,6 +128,11 @@ template<class Integral, class FloatingPoint> inline constexpr typename std::ena
     return             std::numeric_limits<Integral>::min() +
         round(FloatingPoint(value*std::numeric_limits<Integral>::max()) -
         FloatingPoint(value*std::numeric_limits<Integral>::min()));
+}
+
+/** @brief Clamp value */
+template<class T> inline T clamp(T value, T min, T max) {
+    return std::min(std::max(value, min), max);
 }
 
 /**
