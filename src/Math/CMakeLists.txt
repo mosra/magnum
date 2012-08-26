@@ -13,6 +13,7 @@ set(MagnumMath_HEADERS
     Vector4.h)
 install(FILES ${MagnumMath_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Math)
 
+add_subdirectory(Algorithms)
 add_subdirectory(Geometry)
 
 if(BUILD_TESTS)

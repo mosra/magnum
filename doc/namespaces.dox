@@ -28,6 +28,15 @@ Base classes for creating OpenGL contexts with various toolkits.
 Template classes for matrix and vector calculations.
 */
 
+/** @dir Math/Algorithms
+ * @brief Namespace Magnum::Math::Algorithms
+ */
+/** @namespace Magnum::Math::Algorithms
+@brief %Algorithms
+
+Various matrix and vector algorithms.
+*/
+
 /** @dir Math/Geometry
  * @brief Namespace Magnum::Math::Geometry
  */
