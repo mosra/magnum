@@ -183,6 +183,16 @@ template<size_t c, size_t r, class T> class RectangularMatrix {
             return *this;
         }
 
+        /** @brief Negative matrix */
+        RectangularMatrix<cols, rows, T> operator-() const {
+            RectangularMatrix<cols, rows, T> out;
+
+            for(size_t i = 0; i != cols*rows; ++i)
+                out._data[i] = -_data[i];
+
+            return out;
+        }
+
         /**
          * @brief Subtract matrix
          *
@@ -379,6 +389,9 @@ template<size_t cols, size_t rows, class T> Corrade::Utility::Debug operator<<(C
     }
 
 #define MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(cols, rows, ...) \
+    inline __VA_ARGS__ operator-() const {                                  \
+        return Math::RectangularMatrix<cols, rows, T>::operator-();         \
+    }                                                                       \
     inline __VA_ARGS__ operator+(const Math::RectangularMatrix<cols, rows, T>& other) const { \
         return Math::RectangularMatrix<cols, rows, T>::operator+(other);    \
     }                                                                       \

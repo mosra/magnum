@@ -169,16 +169,6 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
             return *this;
         }
 
-        /** @brief Negative vector */
-        Vector<size, T> operator-() const {
-            Vector<size, T> out;
-
-            for(size_t i = 0; i != size; ++i)
-                out[i] = -(*this)[i];
-
-            return out;
-        }
-
         /**
          * @brief Dot product of the vector
          *
@@ -321,7 +311,6 @@ template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utili
         return *this;                                                       \
     }                                                                       \
                                                                             \
-    inline Type<T> operator-() const { return Math::Vector<size, T>::operator-(); } \
     inline Type<T> normalized() const { return Math::Vector<size, T>::normalized(); }
 
 #define MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Type, size)          \

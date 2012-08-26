@@ -37,6 +37,7 @@ RectangularMatrixTest::RectangularMatrixTest() {
              &RectangularMatrixTest::constructZero,
              &RectangularMatrixTest::data,
 
+             &RectangularMatrixTest::negative,
              &RectangularMatrixTest::addSubtract,
              &RectangularMatrixTest::multiplyDivide,
              &RectangularMatrixTest::multiply,
@@ -109,6 +110,10 @@ void RectangularMatrixTest::data() {
     );
 
     CORRADE_COMPARE(m, expected);
+}
+
+void RectangularMatrixTest::negative() {
+    CORRADE_COMPARE(-Matrix2(1.0f, -3.0f, 5.0f, -10.0f), Matrix2(-1.0f, 3.0f, -5.0f, 10.0f));
 }
 
 void RectangularMatrixTest::addSubtract() {

@@ -44,7 +44,6 @@ VectorTest::VectorTest() {
              &VectorTest::min,
              &VectorTest::max,
              &VectorTest::angle,
-             &VectorTest::negative,
              &VectorTest::debug,
              &VectorTest::configuration);
 }
@@ -115,10 +114,6 @@ void VectorTest::angle() {
     CORRADE_COMPARE(Vector3::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized()), numeric_limits<Vector3::Type>::quiet_NaN());
 
     CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), Vector3(1.0f, -2.0f, 3.0f).normalized()), rad(1.162514f));
-}
-
-void VectorTest::negative() {
-    CORRADE_COMPARE(-Vector4(1.0f, -3.0f, 5.0f, -10.0f), Vector4(-1.0f, 3.0f, -5.0f, 10.0f));
 }
 
 void VectorTest::debug() {

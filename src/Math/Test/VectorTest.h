@@ -35,7 +35,6 @@ class VectorTest: public Corrade::TestSuite::Tester<VectorTest> {
         void min();
         void max();
         void angle();
-        void negative();
 
         void debug();
         void configuration();
