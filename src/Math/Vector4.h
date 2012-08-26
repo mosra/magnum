@@ -40,8 +40,8 @@ template<class T> class Vector4: public Vector<4, T> {
         /** @copydoc Vector::Vector(T) */
         inline constexpr explicit Vector4(T value): Vector<4, T>(value, value, value, value) {}
 
-        /** @copydoc Vector::Vector(const Vector&) */
-        inline constexpr Vector4(const Vector<4, T>& other): Vector<4, T>(other) {}
+        /** @brief Copy constructor */
+        inline constexpr Vector4(const RectangularMatrix<1, 4, T>& other): Vector<4, T>(other) {}
 
         /**
          * @brief Constructor
@@ -88,6 +88,7 @@ template<class T> class Vector4: public Vector<4, T> {
         inline constexpr Vector2<T> xy() const { return Vector2<T>::from(Vector<4, T>::data()); }
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector4, 4)
+        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 3, Vector4<T>)
 };
 
 MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Vector4, 4)

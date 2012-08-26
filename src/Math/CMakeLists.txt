@@ -6,12 +6,14 @@ set(MagnumMath_HEADERS
     Matrix.h
     Matrix3.h
     Matrix4.h
+    RectangularMatrix.h
     Vector.h
     Vector2.h
     Vector3.h
     Vector4.h)
 install(FILES ${MagnumMath_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Math)
 
+add_subdirectory(Algorithms)
 add_subdirectory(Geometry)
 
 if(BUILD_TESTS)

@@ -92,10 +92,11 @@ template<class T> class Matrix3: public Matrix<3, T> {
         template<class ...U> inline constexpr Matrix3(T first, U... next) {}
         #endif
 
-        /** @copydoc Matrix::Matrix(const Matrix<size, T>&) */
-        inline constexpr Matrix3(const Matrix<3, T>& other): Matrix<3, T>(other) {}
+        /** @brief Copy constructor */
+        inline constexpr Matrix3(const RectangularMatrix<3, 3, T>& other): Matrix<3, T>(other) {}
 
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix3, Vector3, 3)
+        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(3, 3, Matrix3<T>)
 };
 
 /** @debugoperator{Magnum::Math::Matrix3} */

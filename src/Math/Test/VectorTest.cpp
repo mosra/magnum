@@ -34,12 +34,8 @@ typedef Vector<3, float> Vector3;
 VectorTest::VectorTest() {
     addTests(&VectorTest::construct,
              &VectorTest::constructFrom,
-             &VectorTest::data,
-             &VectorTest::copy,
              &VectorTest::dot,
-             &VectorTest::multiplyDivide,
              &VectorTest::multiplyDivideComponentWise,
-             &VectorTest::addSubtract,
              &VectorTest::dotSelf,
              &VectorTest::length,
              &VectorTest::normalized,
@@ -48,7 +44,6 @@ VectorTest::VectorTest() {
              &VectorTest::min,
              &VectorTest::max,
              &VectorTest::angle,
-             &VectorTest::negative,
              &VectorTest::debug,
              &VectorTest::configuration);
 }
@@ -69,59 +64,8 @@ void VectorTest::constructFrom() {
     CORRADE_COMPARE(Vector4::from(integral), floatingPointRounded);
 }
 
-void VectorTest::data() {
-    Vector4 v;
-    v[2] = 1.5f;
-
-    v[0] = 1.0f;
-
-    CORRADE_COMPARE(v, Vector4(1.0f, 0.0f, 1.5f, 0.0f));
-}
-
-void VectorTest::copy() {
-    Vector4 v1;
-
-    v1[3] = 1.0f;
-
-    Vector4 v2(v1);
-    Vector4 v3;
-    v3[0] = 0.0f; /* this line is here so it's not optimized to Vector4 v3(v1) */
-    v3 = v1;
-
-    /* Change original */
-    v1[2] = 1.0f;
-
-    /* Verify the copy is the same as original original */
-    Vector4 original;
-    original[3] = 1.0f;
-
-    CORRADE_COMPARE(v2, original);
-    CORRADE_COMPARE(v3, original);
-}
-
 void VectorTest::dot() {
     CORRADE_COMPARE(Vector4::dot({1.0f, 0.5f, 0.75f, 1.5f}, {2.0f, 4.0f, 1.0f, 7.0f}), 15.25f);
-}
-
-void VectorTest::multiplyDivide() {
-    Vector4 vec(1.0f, 2.0f, 3.0f, 4.0f);
-    Vector4 multiplied(-1.5f, -3.0f, -4.5f, -6.0f);
-
-    CORRADE_COMPARE(vec*-1.5f, multiplied);
-    CORRADE_COMPARE(-1.5f*vec, multiplied);
-    CORRADE_COMPARE(multiplied/-1.5f, vec);
-
-    Math::Vector<1, char> vecChar(32);
-    Math::Vector<1, char> multipliedChar(-48);
-    CORRADE_COMPARE(vecChar*-1.5f, multipliedChar);
-    CORRADE_COMPARE(multipliedChar/-1.5f, vecChar);
-    CORRADE_COMPARE(-1.5f*vecChar, multipliedChar);
-
-    /* Divide vector with number and inverse */
-    Vector4 divisor(1.0f, 2.0f, -4.0f, 8.0f);
-    Vector4 result(1.0f, 0.5f, -0.25f, 0.125f);
-    CORRADE_COMPARE(1.0f/divisor, result);
-    CORRADE_COMPARE(-1550.0f/multipliedChar, vecChar);
 }
 
 void VectorTest::multiplyDivideComponentWise() {
@@ -131,15 +75,6 @@ void VectorTest::multiplyDivideComponentWise() {
 
     CORRADE_COMPARE(vec*multiplier, multiplied);
     CORRADE_COMPARE(multiplied/multiplier, vec);
-}
-
-void VectorTest::addSubtract() {
-    Vector4 a(0.5f, -7.5f, 9.0f, -11.0f);
-    Vector4 b(-0.5, 1.0f, 0.0f, 7.5f);
-    Vector4 expected(0.0f, -6.5f, 9.0f, -3.5f);
-
-    CORRADE_COMPARE(a + b, expected);
-    CORRADE_COMPARE(expected - b, a);
 }
 
 void VectorTest::dotSelf() {
@@ -179,10 +114,6 @@ void VectorTest::angle() {
     CORRADE_COMPARE(Vector3::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized()), numeric_limits<Vector3::Type>::quiet_NaN());
 
     CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), Vector3(1.0f, -2.0f, 3.0f).normalized()), rad(1.162514f));
-}
-
-void VectorTest::negative() {
-    CORRADE_COMPARE(-Vector4(1.0f, -3.0f, 5.0f, -10.0f), Vector4(-1.0f, 3.0f, -5.0f, 10.0f));
 }
 
 void VectorTest::debug() {

@@ -100,7 +100,7 @@ instead of at runtime.
 @see Vector4::xyz(), Vector4::rgb(), Vector4::xy(), Vector3::xy()
 */
 template<char ...components, class T> inline constexpr typename Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector) {
-    return {vector[Implementation::GetComponent<T::Size, components>::value()]...};
+    return {vector[Implementation::GetComponent<T::size, components>::value()]...};
 }
 
 /**

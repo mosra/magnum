@@ -122,8 +122,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
         template<class ...U> inline constexpr Matrix4(T first, U... next) {}
         #endif
 
-        /** @copydoc Matrix::Matrix(const Matrix<size, T>&) */
-        inline constexpr Matrix4(const Matrix<4, T>& other): Matrix<4, T>(other) {}
+        /** @brief Copy constructor */
+        inline constexpr Matrix4(const RectangularMatrix<4, 4, T>& other): Matrix<4, T>(other) {}
 
         /** @copydoc Matrix::ij() */
         inline Matrix3<T> ij(size_t skipRow, size_t skipCol) const { return Matrix<4, T>::ij(skipRow, skipCol); }
@@ -158,6 +158,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
         }
 
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix4, Vector4, 4)
+        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(4, 4, Matrix4<T>)
 };
 
 /** @debugoperator{Magnum::Math::Matrix4} */

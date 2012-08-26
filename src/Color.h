@@ -213,8 +213,8 @@ template<class T> class Color3: public Math::Vector3<T> {
          */
         inline constexpr explicit Color3(T rgb): Math::Vector3<T>(rgb) {}
 
-        /** @copydoc Math::Vector::Vector(const Vector&) */
-        inline constexpr Color3(const Math::Vector<3, T>& other): Math::Vector3<T>(other) {}
+        /** @brief Copy constructor */
+        inline constexpr Color3(const Math::RectangularMatrix<1, 3, T>& other): Math::Vector3<T>(other) {}
 
         /**
          * @brief Constructor
@@ -276,7 +276,12 @@ template<class T> class Color3: public Math::Vector3<T> {
         inline constexpr FloatingPointType value() const {
             return Implementation::value<T>(*this);
         }
+
+        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Color3, 3)
+        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 3, Color3<T>)
 };
+
+MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Color3, 3)
 
 /**
 @brief Four-component (RGBA) color
@@ -335,8 +340,8 @@ template<class T> class Color4: public Math::Vector4<T> {
          */
         inline constexpr explicit Color4(T rgb, T alpha = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb, rgb, rgb, alpha) {}
 
-        /** @copydoc Math::Vector::Vector(const Vector&) */
-        inline constexpr Color4(const Math::Vector<4, T>& other): Math::Vector4<T>(other) {}
+        /** @brief Copy constructor */
+        inline constexpr Color4(const Math::RectangularMatrix<1, 4, T>& other): Math::Vector4<T>(other) {}
 
         /**
          * @brief Constructor
@@ -394,7 +399,12 @@ template<class T> class Color4: public Math::Vector4<T> {
         inline constexpr FloatingPointType value() const {
             return Implementation::value<T>(rgb());
         }
+
+        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Color4, 4)
+        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 4, Color4<T>)
 };
+
+MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Color4, 4)
 
 /** @debugoperator{Magnum::Color3} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Color3<T>& value) {

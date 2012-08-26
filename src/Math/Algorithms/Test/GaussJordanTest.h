@@ -1,5 +1,5 @@
-#ifndef Magnum_Math_Test_MathTest_h
-#define Magnum_Math_Test_MathTest_h
+#ifndef Magnum_Math_Algorithms_Test_GaussJordanTest_h
+#define Magnum_Math_Algorithms_Test_GaussJordanTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -17,21 +17,16 @@
 
 #include <TestSuite/Tester.h>
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
 
-class MathTest: public Corrade::TestSuite::Tester<MathTest> {
+class GaussJordanTest: public Corrade::TestSuite::Tester<GaussJordanTest> {
     public:
-        MathTest();
+        GaussJordanTest();
 
-        void constants();
-        void degrad();
-        void normalize();
-        void denormalize();
-        void clamp();
-        void pow();
-        void log();
+        void singular();
+        void invert();
 };
 
-}}}
+}}}}
 
 #endif

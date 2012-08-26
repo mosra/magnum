@@ -71,8 +71,8 @@ template<class T> class Vector2: public Vector<2, T> {
         /** @copydoc Vector::Vector(T) */
         inline constexpr explicit Vector2(T value = T()): Vector<2, T>(value, value) {}
 
-        /** @copydoc Vector::Vector(const Vector&) */
-        inline constexpr Vector2(const Vector<2, T>& other): Vector<2, T>(other) {}
+        /** @brief Copy constructor */
+        inline constexpr Vector2(const RectangularMatrix<1, 2, T>& other): Vector<2, T>(other) {}
 
         /**
          * @brief Constructor
@@ -88,6 +88,7 @@ template<class T> class Vector2: public Vector<2, T> {
         inline void setY(T value) { (*this)[1] = value; }   /**< @brief Set Y component */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector2, 2)
+        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 2, Vector2<T>)
 };
 
 MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Vector2, 2)

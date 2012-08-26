@@ -32,15 +32,9 @@ typedef Vector<4, float> Vector4;
 
 MatrixTest::MatrixTest() {
     addTests(&MatrixTest::construct,
-             &MatrixTest::constructFromVectors,
              &MatrixTest::constructIdentity,
              &MatrixTest::constructZero,
-             &MatrixTest::data,
-             &MatrixTest::copy,
-             &MatrixTest::multiplyIdentity,
-             &MatrixTest::multiply,
-             &MatrixTest::multiplyVector,
-             &MatrixTest::transposed,
+             &MatrixTest::trace,
              &MatrixTest::ij,
              &MatrixTest::determinant,
              &MatrixTest::inverted,
@@ -64,20 +58,6 @@ void MatrixTest::construct() {
     );
 
     CORRADE_COMPARE(Matrix4::from(m), expected);
-}
-
-void MatrixTest::constructFromVectors() {
-    Matrix4 actual = Matrix4::from(Vector4(1.0f, 2.0f, 3.0f, 4.0f),
-                                   Vector4(5.0f, 6.0f, 7.0f, 8.0f),
-                                   Vector4(9.0f, 10.0f, 11.0f, 12.0f),
-                                   Vector4(13.0f, 14.0f, 15.0f, 16.0f));
-
-    Matrix4 expected(1.0f, 2.0f, 3.0f, 4.0f,
-                     5.0f, 6.0f, 7.0f, 8.0f,
-                     9.0f, 10.0f, 11.0f, 12.0f,
-                     13.0f, 14.0f, 15.0f, 16.0f);
-
-    CORRADE_COMPARE(actual, expected);
 }
 
 void MatrixTest::constructIdentity() {
@@ -117,120 +97,16 @@ void MatrixTest::constructZero() {
     CORRADE_COMPARE(zero, zeroExpected);
 }
 
-void MatrixTest::data() {
-    Matrix4 m(Matrix4::Zero);
-
-    Vector4 vector(4.0f, 5.0f, 6.0f, 7.0f);
-
-    m[3] = vector;
-    m[2][1] = 1.0f;
-
-    m(1, 2) = 1.5f;
-
-    CORRADE_COMPARE(m(2, 1), 1.0f);
-    CORRADE_COMPARE(m[1][2], 1.5f);
-    CORRADE_COMPARE(m[3], vector);
-
-    Matrix4 expected(
-        0.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.5f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        4.0f, 5.0f, 6.0f, 7.0f
+void MatrixTest::trace() {
+    Matrix<5, int> m(
+        1, 2, 3, 0, 0,
+        2, 3, 2, 1, -2,
+        1, 1, -20, 1, 0,
+        2, 0, 0, 10, 2,
+        3, 1, 0, 1, -2
     );
 
-    CORRADE_COMPARE(m, expected);
-}
-
-void MatrixTest::copy() {
-    Matrix4 m1(Matrix4::Zero);
-
-    m1(2, 3) = 1.0f;
-
-    /* Copy */
-    Matrix4 m2(m1);
-    Matrix4 m3;
-    m3(0, 0) = 1.0f; /* this line is here so it's not optimized to Matrix4 m3(m1) */
-    m3 = m1;
-
-    /* Change original */
-    m1(3, 2) = 1.0f;
-
-    /* Verify the copy is the same as original */
-    Matrix4 original(Matrix4::Zero);
-    original(2, 3) = 1.0f;
-
-    CORRADE_COMPARE(m2, original);
-    CORRADE_COMPARE(m3, original);
-}
-
-void MatrixTest::multiplyIdentity() {
-    Matrix4 values(
-        0.0f,   1.0f,   2.0f,   3.0f,
-        4.0f,   5.0f,   6.0f,   7.0f,
-        8.0f,   9.0f,   10.0f,  11.0f,
-        12.0f,  13.0f,  14.0f,  15.0f
-    );
-
-    CORRADE_COMPARE(Matrix4()*values, values);
-    CORRADE_COMPARE(values*Matrix4(), values);
-}
-
-void MatrixTest::multiply() {
-    Matrix<5, int> left(
-         -3,  -3,  -1,   3,  -5,
-         -1,  -3,  -5,   2,   3,
-         -1,  -4,   3,  -1,  -2,
-         -5,  -5,  -1,  -4,  -1,
-          1,   3,  -3,  -4,  -1
-    );
-
-    Matrix<5, int> right(
-          0,   5,   3,   4,   4,
-          5,   5,   0,   0,  -2,
-          3,   2,  -4,  -3,   0,
-         -3,   0,  -1,   2,  -1,
-          0,  -1,  -4,   4,   3
-    );
-
-    Matrix<5, int> expected(
-        -24, -35, -32, -25,   1,
-        -22, -36, -24,  33,  -8,
-          8,  16, -22,  29,   2,
-         -1,   0,   1, -12,  16,
-        -12,   8, -20, -26,  -2
-    );
-
-    CORRADE_COMPARE((left *= right), expected);
-}
-
-void MatrixTest::multiplyVector() {
-    Matrix<5, int> matrix(
-         -3,  -3,  -1,   3,  -5,
-         -1,  -3,  -5,   2,   3,
-         -1,  -4,   3,  -1,  -2,
-         -5,  -5,  -1,  -4,  -1,
-          1,   3,  -3,  -4,  -1
-    );
-
-    CORRADE_COMPARE((matrix*Vector<5, int>(0, 5, 3, 4, 4)), (Vector<5, int>(-24, -35, -32, -25, 1)));
-}
-
-void MatrixTest::transposed() {
-    Matrix4 original(
-        0.0f,   1.0f,   2.0f,   3.0f,
-        4.0f,   5.0f,   6.0f,   7.0f,
-        8.0f,   9.0f,   10.0f,  11.0f,
-        12.0f,  13.0f,  14.0f,  15.0f
-    );
-
-    Matrix4 transposed(
-        0.0f,   4.0f,   8.0f,   12.0f,
-        1.0f,   5.0f,   9.0f,   13.0f,
-        2.0f,   6.0f,   10.0f,  14.0f,
-        3.0f,   7.0f,   11.0f,  15.0f
-    );
-
-    CORRADE_COMPARE(original.transposed(), transposed);
+    CORRADE_COMPARE(m.trace(), -8);
 }
 
 void MatrixTest::ij() {
