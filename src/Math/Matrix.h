@@ -81,6 +81,22 @@ template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
             return (*this = *this*other);
         }
 
+        /**
+         * @brief Trace of the matrix
+         *
+         * @f[
+         * tr(A) = \sum_{i=1}^n a_{i,i}
+         * @f]
+         */
+        T trace() const {
+            T out(0);
+
+            for(size_t i = 0; i != size; ++i)
+                out += (*this)(i, i);
+
+            return out;
+        }
+
         /** @brief %Matrix without given column and row */
         Matrix<size-1, T> ij(size_t skipCol, size_t skipRow) const {
             Matrix<size-1, T> out(Matrix<size-1, T>::Zero);

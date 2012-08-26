@@ -34,6 +34,7 @@ MatrixTest::MatrixTest() {
     addTests(&MatrixTest::construct,
              &MatrixTest::constructIdentity,
              &MatrixTest::constructZero,
+             &MatrixTest::trace,
              &MatrixTest::ij,
              &MatrixTest::determinant,
              &MatrixTest::inverted,
@@ -94,6 +95,18 @@ void MatrixTest::constructZero() {
     );
 
     CORRADE_COMPARE(zero, zeroExpected);
+}
+
+void MatrixTest::trace() {
+    Matrix<5, int> m(
+        1, 2, 3, 0, 0,
+        2, 3, 2, 1, -2,
+        1, 1, -20, 1, 0,
+        2, 0, 0, 10, 2,
+        3, 1, 0, 1, -2
+    );
+
+    CORRADE_COMPARE(m.trace(), -8);
 }
 
 void MatrixTest::ij() {

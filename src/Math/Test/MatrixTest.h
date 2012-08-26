@@ -26,6 +26,7 @@ class MatrixTest: public Corrade::TestSuite::Tester<MatrixTest> {
         void construct();
         void constructIdentity();
         void constructZero();
+        void trace();
         void ij();
         void determinant();
         void inverted();
