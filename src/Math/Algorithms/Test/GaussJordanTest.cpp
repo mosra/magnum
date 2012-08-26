@@ -16,12 +16,13 @@
 #include "GaussJordanTest.h"
 
 #include "Math/Algorithms/GaussJordan.h"
+#include "Math/Matrix.h"
 
 CORRADE_TEST_MAIN(Magnum::Math::Algorithms::Test::GaussJordanTest)
 
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
 
-typedef RectangularMatrix<4, 4, float> Matrix4;
+typedef Matrix<4, float> Matrix4;
 
 GaussJordanTest::GaussJordanTest() {
     addTests(&GaussJordanTest::singular,
@@ -50,7 +51,7 @@ void GaussJordanTest::invert() {
                             259/412.0f, -185/206.0f, 31/412.0f,  27/206.0f);
 
     Matrix4 a2(a);
-    Matrix4 inverse;
+    Matrix4 inverse(Matrix4::Identity);
     CORRADE_VERIFY(GaussJordan::inPlace(a2, inverse));
 
     CORRADE_COMPARE(inverse, expectedInverse);
