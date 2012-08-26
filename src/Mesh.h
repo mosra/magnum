@@ -162,7 +162,8 @@ class MAGNUM_EXPORT Mesh {
          * @brief Set point size
          *
          * @see setProgramPointSize()
-         * @requires_gl
+         * @requires_gl Set directly in vertex shader using @c gl_PointSize
+         *      builtin variable.
          */
         inline static void setPointSize(GLfloat size) {
             glPointSize(size);
@@ -174,7 +175,7 @@ class MAGNUM_EXPORT Mesh {
          * If enabled, the point size is taken from vertex/geometry shader
          * builtin `gl_PointSize`.
          * @see setPointSize()
-         * @requires_gl
+         * @requires_gl Always enabled.
          */
         inline static void setProgramPointSize(bool enabled) {
             enabled ? glEnable(GL_PROGRAM_POINT_SIZE) : glDisable(GL_PROGRAM_POINT_SIZE);
