@@ -38,7 +38,7 @@ class CompressIndices {
         CompressIndices(const std::vector<unsigned int>& indices): indices(indices) {}
 
         inline std::tuple<size_t, Type, char*> operator()() const {
-            #ifndef MAGNUM_GCC44_COMPATIBILITY
+            #ifndef CORRADE_GCC44_COMPATIBILITY
             return SizeBasedCall<Compressor>(*std::max_element(indices.begin(), indices.end()))(indices);
             #else
             return SizeBasedCall<std::tuple<size_t, Type, char*>, Compressor>(*std::max_element(indices.begin(), indices.end()))(indices);

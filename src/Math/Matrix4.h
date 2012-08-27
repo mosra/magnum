@@ -130,7 +130,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
 
         /** @brief Rotation and scaling part of the matrix */
         inline Matrix3<T> rotationScaling() const {
-            #ifndef MAGNUM_GCC45_COMPATIBILITY /* GCC 4.5 badly optimizes this */
+            #ifndef CORRADE_GCC45_COMPATIBILITY /* GCC 4.5 badly optimizes this */
             return Matrix3<T>::from(
                 (*this)[0].xyz(),
                 (*this)[1].xyz(),
@@ -146,7 +146,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
         /** @brief Rotation part of the matrix */
         inline Matrix3<T> rotation() const {
             return Matrix3<T>::from(
-                #ifndef MAGNUM_GCC45_COMPATIBILITY /* GCC 4.5 badly optimizes this */
+                #ifndef CORRADE_GCC45_COMPATIBILITY /* GCC 4.5 badly optimizes this */
                 (*this)[0].xyz().normalized(),
                 (*this)[1].xyz().normalized(),
                 (*this)[2].xyz().normalized());

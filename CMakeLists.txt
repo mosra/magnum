@@ -5,8 +5,6 @@ project(Magnum)
 include(CMakeDependentOption)
 
 option(TARGET_GLES "Build for OpenGL ES 2 instead of desktop OpenGL" OFF)
-option(GCC44_COMPATIBILITY "Enable compatibility mode for GCC 4.4 (might disable some features)" OFF)
-option(GCC45_COMPATIBILITY "Enable compatibility mode for GCC 4.5 (might disable some features)" OFF)
 
 # Parts of the library
 option(WITH_EVERYTHING "Build everything (doesn't include contexts)" ON)

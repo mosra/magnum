@@ -97,7 +97,7 @@ based on data size:
 bar = SizeBasedCall<Foo>(dataSize)(arg1, arg2, ...);
 @endcode
 */
-#ifndef MAGNUM_GCC44_COMPATIBILITY
+#ifndef CORRADE_GCC44_COMPATIBILITY
 template<class Base> struct SizeBasedCall: public Base {
 #else
 template<class Return, class Base> struct SizeBasedCall: public Base {
@@ -117,10 +117,10 @@ template<class Return, class Base> struct SizeBasedCall: public Base {
      * is no suitable type for indexing given data size, prints message to
      * error output and returns default-constructed value.
      */
-    #ifndef MAGNUM_GCC45_COMPATIBILITY
+    #ifndef CORRADE_GCC45_COMPATIBILITY
     template<typename ...Args> auto operator()(Args&&... arguments) -> decltype(Base::template run<GLubyte>(std::forward<Args>(arguments)...)) {
     #else
-    #ifdef MAGNUM_GCC44_COMPATIBILITY
+    #ifdef CORRADE_GCC44_COMPATIBILITY
     template<typename Args> Return operator()(Args&& arguments) {
     #else
     template<typename Args> auto operator()(Args&& arguments) -> decltype(Base::template run<GLubyte>(std::forward<Args>(arguments))) {
@@ -128,20 +128,20 @@ template<class Return, class Base> struct SizeBasedCall: public Base {
     #endif
         switch(Math::log(256, size)) {
             case 0:
-                #ifndef MAGNUM_GCC45_COMPATIBILITY
+                #ifndef CORRADE_GCC45_COMPATIBILITY
                 return Base::template run<GLubyte>(std::forward<Args>(arguments)...);
                 #else
                 return Base::template run<GLubyte>(std::forward<Args>(arguments));
                 #endif
             case 1:
-                #ifndef MAGNUM_GCC45_COMPATIBILITY
+                #ifndef CORRADE_GCC45_COMPATIBILITY
                 return Base::template run<GLushort>(std::forward<Args>(arguments)...);
                 #else
                 return Base::template run<GLushort>(std::forward<Args>(arguments));
                 #endif
             case 2:
             case 3:
-                #ifndef MAGNUM_GCC45_COMPATIBILITY
+                #ifndef CORRADE_GCC45_COMPATIBILITY
                 return Base::template run<GLuint>(std::forward<Args>(arguments)...);
                 #else
                 return Base::template run<GLuint>(std::forward<Args>(arguments));
@@ -149,10 +149,10 @@ template<class Return, class Base> struct SizeBasedCall: public Base {
         }
 
         Error() << "SizeBasedCall: no type able to index" << size << "elements.";
-        #ifndef MAGNUM_GCC45_COMPATIBILITY
+        #ifndef CORRADE_GCC45_COMPATIBILITY
         return decltype(Base::template run<GLubyte>(std::forward<Args>(arguments)...))();
         #else
-        #ifdef MAGNUM_GCC44_COMPATIBILITY
+        #ifdef CORRADE_GCC44_COMPATIBILITY
         return Return();
         #else
         return decltype(Base::template run<GLubyte>(std::forward<Args>(arguments)))();

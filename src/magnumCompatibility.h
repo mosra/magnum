@@ -17,7 +17,7 @@
 
 #include "magnumConfigure.h"
 
-#ifdef MAGNUM_GCC45_COMPATIBILITY
+#ifdef CORRADE_GCC45_COMPATIBILITY
 #define constexpr
 #define nullptr 0
 #endif

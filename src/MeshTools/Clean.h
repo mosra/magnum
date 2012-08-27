@@ -66,7 +66,7 @@ template<class Vertex, size_t vertexSize = Vertex::Size> class Clean {
                    and index of vertex in the face. */
                 std::unordered_map<Math::Vector<vertexSize, size_t>, HashedVertex, IndexHash> table;
 
-                #ifndef MAGNUM_GCC44_COMPATIBILITY
+                #ifndef CORRADE_GCC44_COMPATIBILITY
                 /* Reserve space for all vertices */
                 table.reserve(vertices.size());
                 #endif

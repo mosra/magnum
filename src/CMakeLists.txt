@@ -5,21 +5,10 @@ if(TARGET_GLES)
     set(MAGNUM_TARGET_GLES 1)
 endif()
 
-if(GCC44_COMPATIBILITY)
-    set(MAGNUM_GCC44_COMPATIBILITY 1)
-    set(GCC45_COMPATIBILITY 1)
-endif()
-
-if(GCC45_COMPATIBILITY)
-    set(MAGNUM_GCC45_COMPATIBILITY 1)
-endif()
-
 # -Wdouble-promotion is supported from GCC 4.6
 # TODO: do this with check_c_compiler_flags()
-if(NOT GCC45_COMPATIBILITY)
-    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion")
-    endif()
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.6.0")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion")
 endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/magnumConfigure.h.cmake
