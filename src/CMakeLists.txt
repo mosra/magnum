@@ -36,6 +36,7 @@ set(Magnum_SRCS
     Framebuffer.cpp
     IndexedMesh.cpp
     Mesh.cpp
+    Profiler.cpp
     Query.cpp
     Renderbuffer.cpp
     Shader.cpp
@@ -60,6 +61,7 @@ set(Magnum_HEADERS
     IndexedMesh.h
     Magnum.h
     Mesh.h
+    Profiler.h
     Query.h
     Renderbuffer.h
     Shader.h
