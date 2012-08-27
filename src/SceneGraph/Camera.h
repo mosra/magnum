@@ -102,7 +102,8 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
          * @see projectionMatrix()
          */
         inline Vector2 projectionSize() const {
-            return {2.0f/rawProjectionMatrix[0].x(), 2.0f/rawProjectionMatrix[1].y()};
+            /** @todo Test this properly with fixAspectRatio() when Camera is free from gl*() calls */
+            return {2.0f/_projectionMatrix[0].x(), 2.0f/_projectionMatrix[1].y()};
         }
 
         /** @brief Viewport size */
