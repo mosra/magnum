@@ -14,7 +14,6 @@
 */
 
 #include "Camera.h"
-#include "Framebuffer.h"
 #include "Scene.h"
 
 using namespace std;
@@ -49,7 +48,6 @@ template Matrix4 aspectRatioFix<Matrix4>(AspectRatioPolicy, const Vector2&, cons
 template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::Camera(ObjectType* parent): ObjectType(parent), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {}
 
 template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setViewport(const Math::Vector2<GLsizei>& size) {
-    Framebuffer::setViewport({0, 0}, size);
 
     _viewport = size;
     fixAspectRatio();
@@ -64,8 +62,6 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
 template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::draw() {
     SceneType* s = this->scene();
     CORRADE_ASSERT(s, "Camera: cannot draw without camera attached to scene", );
-
-    Framebuffer::clear();
 
     /* Recursively draw child objects */
     drawChildren(s, cameraMatrix());

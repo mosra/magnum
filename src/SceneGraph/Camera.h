@@ -112,17 +112,16 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         /**
          * @brief Set viewport size
          *
-         * Call when window size changes.
-         *
-         * Calls Framebuffer::setViewport() and stores viewport size
-         * internally.
+         * Stores viewport size internally and recalculates projection matrix
+         * according to aspect ratio policy.
+         * @see setAspectRatioPolicy()
          */
         virtual void setViewport(const Math::Vector2<GLsizei>& size);
 
         /**
          * @brief Draw the scene
          *
-         * Calls Framebuffer::clear() and draws the scene using drawChildren().
+         * Draws the scene using drawChildren().
          */
         virtual void draw();
 
