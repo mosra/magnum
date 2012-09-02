@@ -115,7 +115,9 @@ class MAGNUM_EXPORT Framebuffer {
             Stencil = GL_STENCIL_BUFFER_BIT /**< Stencil value */
         };
 
-        typedef Corrade::Containers::EnumSet<Clear, GLbitfield> ClearMask; /**< @brief Mask for clearing */
+        /** @brief Mask for clearing */
+        typedef Corrade::Containers::EnumSet<Clear, GLbitfield,
+            GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT> ClearMask;
 
         /**
          * @brief Clear specified buffers in framebuffer
@@ -1023,7 +1025,8 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        typedef Corrade::Containers::EnumSet<Blit, GLbitfield> BlitMask;
+        typedef Corrade::Containers::EnumSet<Blit, GLbitfield,
+            GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT> BlitMask;
 
         /**
          * @brief Copy block of pixels from read to draw framebuffer
