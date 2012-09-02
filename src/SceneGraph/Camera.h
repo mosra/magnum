@@ -73,7 +73,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         inline AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }
 
         /** @brief Set aspect ratio policy */
-        void setAspectRatioPolicy(AspectRatioPolicy policy) { _aspectRatioPolicy = policy; }
+        void setAspectRatioPolicy(AspectRatioPolicy policy);
 
         /**
          * @brief Camera matrix
@@ -102,7 +102,6 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
          * @see projectionMatrix()
          */
         inline Vector2 projectionSize() const {
-            /** @todo Test this properly with fixAspectRatio() when Camera is free from gl*() calls */
             return {2.0f/_projectionMatrix[0].x(), 2.0f/_projectionMatrix[1].y()};
         }
 

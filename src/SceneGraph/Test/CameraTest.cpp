@@ -27,7 +27,8 @@ CameraTest::CameraTest() {
              &CameraTest::defaultProjection3D,
              &CameraTest::projection2D,
              &CameraTest::orthographic,
-             &CameraTest::perspective);
+             &CameraTest::perspective,
+             &CameraTest::projectionSizeViewport);
 }
 
 void CameraTest::fixAspectRatio() {
@@ -133,6 +134,18 @@ void CameraTest::perspective() {
 
     CORRADE_COMPARE(camera.projectionMatrix(), a);
     CORRADE_COMPARE(camera.projectionSize(), Vector2(0.48015756f));
+}
+
+void CameraTest::projectionSizeViewport() {
+    Camera3D camera;
+    camera.setViewport({200, 300});
+    CORRADE_COMPARE(camera.projectionSize(), Vector2(2.0f, 2.0f));
+
+    camera.setAspectRatioPolicy(Camera3D::AspectRatioPolicy::Extend);
+    CORRADE_COMPARE(camera.projectionSize(), Vector2(2.0f, 3.0f));
+
+    camera.setAspectRatioPolicy(Camera3D::AspectRatioPolicy::Clip);
+    CORRADE_COMPARE(camera.projectionSize(), Vector2(4.0f/3.0f, 2.0f));
 }
 
 }}}

@@ -47,8 +47,12 @@ template Matrix4 aspectRatioFix<Matrix4>(AspectRatioPolicy, const Vector2&, cons
 
 template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::Camera(ObjectType* parent): ObjectType(parent), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {}
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setViewport(const Math::Vector2<GLsizei>& size) {
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setAspectRatioPolicy(AspectRatioPolicy policy) {
+    _aspectRatioPolicy = policy;
+    fixAspectRatio();
+}
 
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setViewport(const Math::Vector2<GLsizei>& size) {
     _viewport = size;
     fixAspectRatio();
 }
