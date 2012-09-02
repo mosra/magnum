@@ -94,7 +94,9 @@ class MAGNUM_EXPORT Framebuffer {
          * Call when window size changes.
          * @see Camera::setViewport()
          */
-        static void setViewport(const Math::Vector2<GLint>& position, const Math::Vector2<GLsizei>& size);
+        inline static void setViewport(const Math::Vector2<GLint>& position, const Math::Vector2<GLsizei>& size) {
+            glViewport(position.x(), position.y(), size.x(), size.y());
+        }
 
         /*@}*/
 

@@ -32,10 +32,6 @@ void Framebuffer::setFeature(Feature feature, bool enabled) {
     enabled ? clearMask |= clearMaskChange : clearMask &= ~clearMaskChange;
 }
 
-void Framebuffer::setViewport(const Math::Vector2<GLint>& position, const Math::Vector2<GLsizei>& size) {
-    glViewport(position.x(), position.y(), size.x(), size.y());
-}
-
 #ifndef MAGNUM_TARGET_GLES
 void Framebuffer::mapDefaultForDraw(std::initializer_list<DefaultDrawAttachment> attachments) {
     GLenum* _attachments = new GLenum[attachments.size()];
