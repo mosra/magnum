@@ -86,7 +86,9 @@ class MAGNUM_EXPORT Framebuffer {
         };
 
         /** @brief Set feature */
-        static void setFeature(Feature feature, bool enabled);
+        inline static void setFeature(Feature feature, bool enabled) {
+            enabled ? glEnable(static_cast<GLenum>(feature)) : glDisable(static_cast<GLenum>(feature));
+        }
 
         /**
          * @brief Set viewport size
@@ -116,20 +118,9 @@ class MAGNUM_EXPORT Framebuffer {
         typedef Corrade::Containers::EnumSet<Clear, GLbitfield> ClearMask; /**< @brief Mask for clearing */
 
         /**
-         * @brief Clear framebuffer
-         *
-         * Clears color buffer, depth and stencil buffer in currently active
-         * framebuffer. If depth or stencil test is not enabled, it doesn't
-         * clear these buffers.
-         *
-         * @see setFeature(), clear(ClearMask)
-         */
-        inline static void clear() { glClear(static_cast<GLbitfield>(clearMask)); }
-
-        /**
          * @brief Clear specified buffers in framebuffer
          *
-         * @see clear()
+         * @see clear(), setClearColor(), setClearDepth(), setClearStencil()
          * @todo Clearing only given draw buffer
          */
         inline static void clear(ClearMask mask) { glClear(static_cast<GLbitfield>(mask)); }
@@ -1108,8 +1099,6 @@ class MAGNUM_EXPORT Framebuffer {
         /*@}*/
 
     private:
-        static ClearMask clearMask;
-
         GLuint framebuffer;
 };
 
