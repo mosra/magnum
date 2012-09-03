@@ -28,12 +28,12 @@ CleanTest::CleanTest() {
 }
 
 void CleanTest::cleanMesh() {
-    vector<Vector1> vertices{1, 2, 1, 4};
+    vector<Vector1> positions{1, 2, 1, 4};
     vector<unsigned int> indices{0, 1, 2, 1, 2, 3};
-    MeshTools::clean(indices, vertices);
+    MeshTools::clean(indices, positions);
 
     /* Verify cleanup */
-    CORRADE_VERIFY(vertices == (vector<Vector1>{1, 2, 4}));
+    CORRADE_VERIFY(positions == (vector<Vector1>{1, 2, 4}));
     CORRADE_COMPARE(indices, (vector<unsigned int>{0, 1, 0, 1, 0, 2}));
 }
 

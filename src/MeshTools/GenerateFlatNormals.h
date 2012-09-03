@@ -29,18 +29,18 @@ namespace Magnum { namespace MeshTools {
 /**
 @brief Generate flat normals
 @param indices      Array of triangle face indexes
-@param vertices     Vertex array
+@param positions    Array of vertex positions
 @return Normal indices and vectors
 
 For each face generates one normal vector, removes duplicates before
 returning. Example usage:
 @code
 std::vector<unsigned int> vertexIndices;
-std::vector<Vector4> vertices;
+std::vector<Vector4> positions;
 
 std::vector<unsigned int> normalIndices;
 std::vector<Vector3> normals;
-std::tie(normalIndices, normals) = MeshTools::generateFlatNormals(vertexIndices, vertices);
+std::tie(normalIndices, normals) = MeshTools::generateFlatNormals(vertexIndices, positions);
 @endcode
 You can then use combineIndexedArrays() to combine normal and vertex array to
 use the same indices.
@@ -48,7 +48,7 @@ use the same indices.
 @attention Index count must be divisible by 3, otherwise zero length result
     is generated.
 */
-std::tuple<std::vector<unsigned int>, std::vector<Vector3>> MESHTOOLS_EXPORT generateFlatNormals(const std::vector<unsigned int>& indices, const std::vector<Vector4>& vertices);
+std::tuple<std::vector<unsigned int>, std::vector<Vector3>> MESHTOOLS_EXPORT generateFlatNormals(const std::vector<unsigned int>& indices, const std::vector<Vector4>& positions);
 
 }}
 

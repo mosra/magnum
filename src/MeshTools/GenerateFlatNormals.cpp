@@ -21,7 +21,7 @@ using namespace std;
 
 namespace Magnum { namespace MeshTools {
 
-tuple<vector<unsigned int>, vector<Vector3>> generateFlatNormals(const std::vector< unsigned int >& indices, const vector< Vector4 >& vertices) {
+tuple<vector<unsigned int>, vector<Vector3>> generateFlatNormals(const vector<unsigned int>& indices, const vector<Vector4>& positions) {
     CORRADE_ASSERT(!(indices.size()%3), "MeshTools::generateFlatNormals(): index count is not divisible by 3!", (tuple<vector<unsigned int>, vector<Vector3>>()));
 
     /* Create normal for every triangle (assuming counterclockwise winding) */
@@ -30,8 +30,8 @@ tuple<vector<unsigned int>, vector<Vector3>> generateFlatNormals(const std::vect
     vector<Vector3> normals;
     normals.reserve(indices.size()/3);
     for(size_t i = 0; i != indices.size(); i += 3) {
-        Vector3 normal = Vector3::cross(vertices[indices[i+2]].xyz()-vertices[indices[i+1]].xyz(),
-                                        vertices[indices[i]].xyz()-vertices[indices[i+1]].xyz()).normalized();
+        Vector3 normal = Vector3::cross(positions[indices[i+2]].xyz()-positions[indices[i+1]].xyz(),
+                                        positions[indices[i]].xyz()-positions[indices[i+1]].xyz()).normalized();
 
         /* Use the same normal for all three vertices of the face */
         normalIndices.push_back(normals.size());

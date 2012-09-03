@@ -42,13 +42,13 @@ class MAGNUM_EXPORT MeshData {
          * @param primitive         Primitive
          * @param indices           Array with indices or 0, if this is not
          *      indexed mesh
-         * @param vertices          Array with vertex arrays. At least one
-         *      vertex array should be present.
+         * @param positions         Array with vertex positions. At least one
+         *      position array should be present.
          * @param normals           Array with normal arrays or empty array
          * @param textureCoords2D   Array with two-dimensional texture
          *      coordinate arrays or empty array
          */
-        inline MeshData(const std::string& name, Mesh::Primitive primitive, std::vector<unsigned int>* indices, std::vector<std::vector<Vector4>*> vertices, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D): _name(name), _primitive(primitive), _indices(indices), _vertices(vertices), _normals(normals), _textureCoords2D(textureCoords2D) {}
+        inline MeshData(const std::string& name, Mesh::Primitive primitive, std::vector<unsigned int>* indices, std::vector<std::vector<Vector4>*> positions, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D): _name(name), _primitive(primitive), _indices(indices), _positions(positions), _normals(normals), _textureCoords2D(textureCoords2D) {}
 
         /** @brief Destructor */
         ~MeshData();
@@ -66,17 +66,17 @@ class MAGNUM_EXPORT MeshData {
         inline std::vector<unsigned int>* indices() { return _indices; }
         inline const std::vector<unsigned int>* indices() const { return _indices; } /**< @overload */
 
-        /** @brief Count of vertex arrays */
-        inline unsigned int vertexArrayCount() const { return _vertices.size(); }
+        /** @brief Count of vertex position arrays */
+        inline unsigned int positionArrayCount() const { return _positions.size(); }
 
         /**
-         * @brief Vertices
-         * @param id    ID of vertex data array
-         * @return Vertices or nullptr if there is no vertex array with given
+         * @brief Positions
+         * @param id    ID of position data array
+         * @return Positions or nullptr if there is no vertex array with given
          *      ID.
          */
-        inline std::vector<Vector4>* vertices(unsigned int id) { return _vertices[id]; }
-        inline const std::vector<Vector4>* vertices(unsigned int id) const { return _vertices[id]; } /**< @overload */
+        inline std::vector<Vector4>* positions(unsigned int id) { return _positions[id]; }
+        inline const std::vector<Vector4>* positions(unsigned int id) const { return _positions[id]; } /**< @overload */
 
         /** @brief Count of normal arrays */
         inline unsigned int normalArrayCount() const { return _normals.size(); }
@@ -106,7 +106,7 @@ class MAGNUM_EXPORT MeshData {
         std::string _name;
         Mesh::Primitive _primitive;
         std::vector<unsigned int>* _indices;
-        std::vector<std::vector<Vector4>*> _vertices;
+        std::vector<std::vector<Vector4>*> _positions;
         std::vector<std::vector<Vector3>*> _normals;
         std::vector<std::vector<Vector2>*> _textureCoords2D;
 };

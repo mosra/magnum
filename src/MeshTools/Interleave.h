@@ -108,12 +108,12 @@ so data for each attribute are in continuous place in memory. Size of the data
 buffer can be computed from attribute count and stride, as shown below. Example
 usage:
 @code
-std::vector<Vector4> vertices;
+std::vector<Vector4> positions;
 std::vector<Vector2> textureCoordinates;
 size_t attributeCount;
 size_t stride;
 char* data;
-std::tie(attributeCount, stride, data) = MeshTools::interleave(vertices, textureCoordinates);
+std::tie(attributeCount, stride, data) = MeshTools::interleave(positions, textureCoordinates);
 size_t dataSize = attributeCount*stride;
 // ...
 delete[] data;

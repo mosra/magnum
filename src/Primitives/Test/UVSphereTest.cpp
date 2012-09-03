@@ -31,7 +31,7 @@ UVSphereTest::UVSphereTest() {
 void UVSphereTest::withoutTextureCoords() {
     UVSphere sphere(3, 3);
 
-    CORRADE_COMPARE(*sphere.vertices(0), (vector<Vector4>{
+    CORRADE_COMPARE(*sphere.positions(0), (vector<Vector4>{
         Vector4(0.0f, -1.0f, 0.0f),
 
         Vector4(0.0f, -0.5f, 0.866025f),
@@ -69,7 +69,7 @@ void UVSphereTest::withoutTextureCoords() {
 void UVSphereTest::withTextureCoords() {
     UVSphere sphere(3, 3, UVSphere::TextureCoords::Generate);
 
-    CORRADE_COMPARE(*sphere.vertices(0), (vector<Vector4>{
+    CORRADE_COMPARE(*sphere.positions(0), (vector<Vector4>{
         Vector4(0.0f, -1.0f, 0.0f),
 
         Vector4(0.0f, -0.5f, 0.866025f),

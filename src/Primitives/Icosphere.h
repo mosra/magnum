@@ -57,7 +57,7 @@ template<size_t subdivisions> class Icosphere {
                 });
 
             MeshTools::clean(*indices(), *normals(0));
-            vertices(0)->assign(normals(0)->begin(), normals(0)->end());
+            positions(0)->assign(normals(0)->begin(), normals(0)->end());
         }
 };
 

@@ -42,7 +42,7 @@ Cube::Cube(): MeshData("", Mesh::Primitive::Triangles, new vector<unsigned int>{
     {-1.0f,  1.0f,  1.0f},
     { 1.0f,  1.0f,  1.0f}
 }}, {}) {
-    vertices(0)->assign(normals(0)->begin(), normals(0)->end());
+    positions(0)->assign(normals(0)->begin(), normals(0)->end());
 }
 
 }}

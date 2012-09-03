@@ -30,11 +30,11 @@ void SubdivideCleanBenchmark::subdivide() {
         Primitives::Icosphere<0> icosphere;
 
         /* Subdivide 5 times */
-        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
-        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
-        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
-        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
-        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
     }
 }
 
@@ -43,13 +43,13 @@ void SubdivideCleanBenchmark::subdivideAndCleanMeshAfter() {
         Primitives::Icosphere<0> icosphere;
 
         /* Subdivide 5 times */
-        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
-        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
-        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
-        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
-        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
 
-        MeshTools::clean(*icosphere.indices(), *icosphere.vertices(0));
+        MeshTools::clean(*icosphere.indices(), *icosphere.positions(0));
     }
 }
 
@@ -58,16 +58,16 @@ void SubdivideCleanBenchmark::subdivideAndCleanMeshBetween() {
         Primitives::Icosphere<0> icosphere;
 
         /* Subdivide 5 times */
-        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
-        MeshTools::clean(*icosphere.indices(), *icosphere.vertices(0));
-        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
-        MeshTools::clean(*icosphere.indices(), *icosphere.vertices(0));
-        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
-        MeshTools::clean(*icosphere.indices(), *icosphere.vertices(0));
-        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
-        MeshTools::clean(*icosphere.indices(), *icosphere.vertices(0));
-        MeshTools::subdivide(*icosphere.indices(), *icosphere.vertices(0), interpolator);
-        MeshTools::clean(*icosphere.indices(), *icosphere.vertices(0));
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
+        MeshTools::clean(*icosphere.indices(), *icosphere.positions(0));
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
+        MeshTools::clean(*icosphere.indices(), *icosphere.positions(0));
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
+        MeshTools::clean(*icosphere.indices(), *icosphere.positions(0));
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
+        MeshTools::clean(*icosphere.indices(), *icosphere.positions(0));
+        MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
+        MeshTools::clean(*icosphere.indices(), *icosphere.positions(0));
     }
 }
 

@@ -45,7 +45,7 @@ Capsule::Capsule(unsigned int rings, unsigned int segments, GLfloat length, Text
 }
 
 void Capsule::capVertex(GLfloat y, GLfloat normalY, GLfloat textureCoordsV) {
-    vertices(0)->push_back({0.0f, y, 0.0f});
+    positions(0)->push_back({0.0f, y, 0.0f});
     normals(0)->push_back({0.0f, normalY, 0.0f});
 
     if(textureCoords == TextureCoords::Generate)
@@ -62,7 +62,7 @@ void Capsule::vertexRings(unsigned int count, GLfloat centerY, GLfloat startRing
 
         for(unsigned int j = 0; j != segments; ++j) {
             GLfloat segmentAngle = j*segmentAngleIncrement;
-            vertices(0)->push_back({x*sin(segmentAngle), centerY+y, z*cos(segmentAngle)});
+            positions(0)->push_back({x*sin(segmentAngle), centerY+y, z*cos(segmentAngle)});
             normals(0)->push_back({x*sin(segmentAngle), y, z*cos(segmentAngle)});
 
             if(textureCoords == TextureCoords::Generate)
@@ -71,7 +71,7 @@ void Capsule::vertexRings(unsigned int count, GLfloat centerY, GLfloat startRing
 
         /* Duplicate first segment in the ring for additional vertex for texture coordinate */
         if(textureCoords == TextureCoords::Generate) {
-            vertices(0)->push_back((*vertices(0))[vertices(0)->size()-segments]);
+            positions(0)->push_back((*positions(0))[positions(0)->size()-segments]);
             normals(0)->push_back((*normals(0))[normals(0)->size()-segments]);
             textureCoords2D(0)->push_back({1.0f, startTextureCoordsV + i*textureCoordsVIncrement});
         }

@@ -54,7 +54,7 @@ Icosphere<0>::Icosphere(): MeshData("", Mesh::Primitive::Triangles, new vector<u
     Vector3(0, 0.525731f, -0.850651f),
     Vector3(0, 0.525731f, 0.850651f)
 }}, {}) {
-    vertices(0)->assign(normals(0)->begin(), normals(0)->end());
+    positions(0)->assign(normals(0)->begin(), normals(0)->end());
 }
 
 }}

@@ -35,7 +35,7 @@ functions and properties:
  - <strong>%Attribute location</strong> typedefs defining locations and types
    for attribute binding with Mesh::bindAttribute(), for example:
 @code
-typedef Attribute<0, Vector4> Vertex;
+typedef Attribute<0, Vector4> Position;
 typedef Attribute<1, Vector3> Normal;
 typedef Attribute<2, Vector2> TextureCoords;
 @endcode
@@ -82,7 +82,7 @@ shader code, e.g.:
 @code
 #version 330
 // or #extension GL_ARB_explicit_attrib_location: enable
-layout(location = 0) in vec4 vertex;
+layout(location = 0) in vec4 position;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 textureCoords;
 @endcode
@@ -110,7 +110,7 @@ attaching the shaders and linking the program:
 @code
 // Shaders attached...
 
-bindAttributeLocation(Vertex::Location, "vertex");
+bindAttributeLocation(Position::Location, "position");
 bindAttributeLocation(Normal::Location, "normal");
 bindAttributeLocation(TextureCoords::Location, "textureCoords");
 
