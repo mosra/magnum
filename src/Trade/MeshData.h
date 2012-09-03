@@ -84,7 +84,7 @@ class MAGNUM_EXPORT MeshData {
         /**
          * @brief Normals
          * @param id    ID of normal data array
-         * @return Vertices or nullptr if there is no normal array with given
+         * @return Normals or nullptr if there is no normal array with given
          *      ID.
          */
         inline std::vector<Vector3>* normals(unsigned int id) { return _normals[id]; }
