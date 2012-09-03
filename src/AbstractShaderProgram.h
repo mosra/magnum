@@ -52,8 +52,8 @@ static const GLint SpecularTextureLayer = 1;
 @code
 MyShader() {
     // Load shaders from file and attach them to the program
-    attachShader(Shader::fromFile(Shader::Vertex, "PhongShader.vert"));
-    attachShader(Shader::fromFile(Shader::Fragment, "PhongShader.frag"));
+    attachShader(Shader::fromFile(Shader::Type::Vertex, "PhongShader.vert"));
+    attachShader(Shader::fromFile(Shader::Type::Fragment, "PhongShader.frag"));
 
     // Link
     link();
