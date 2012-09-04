@@ -35,7 +35,7 @@ CapsuleTest::CapsuleTest() {
 }
 
 void CapsuleTest::withoutTextureCoords() {
-    Capsule capsule(2, 3, 1.0f);
+    Capsule capsule(2, 2, 3, 1.0f);
 
     CORRADE_COMPARE_AS(*capsule.positions(0), (vector<Vector4>{
         Vector4(0.0f, -1.5f, 0.0f),
@@ -47,6 +47,10 @@ void CapsuleTest::withoutTextureCoords() {
         Vector4(0.0f, -0.5f, 1.0f),
         Vector4(0.866025f, -0.5f, -0.5f),
         Vector4(-0.866025f, -0.5f, -0.5f),
+
+        Vector4(0.0f, 0.0f, 1.0f),
+        Vector4(0.866025f, 0.0f, -0.5f),
+        Vector4(-0.866025f, 0.0f, -0.5f),
 
         Vector4(0.0f, 0.5f, 1.0f),
         Vector4(0.866025f, 0.5f, -0.5f),
@@ -74,6 +78,10 @@ void CapsuleTest::withoutTextureCoords() {
         Vector3(0.866025f, 0.0f, -0.5f),
         Vector3(-0.866025f, 0.0f, -0.5f),
 
+        Vector3(0.0f, 0.0f, 1.0f),
+        Vector3(0.866025f, 0.0f, -0.5f),
+        Vector3(-0.866025f, 0.0f, -0.5f),
+
         Vector3(0.0f, 0.707107f, 0.707107f),
         Vector3(0.612372f, 0.707107f, -0.353553f),
         Vector3(-0.612372f, 0.707107f, -0.353553f),
@@ -86,12 +94,13 @@ void CapsuleTest::withoutTextureCoords() {
         1, 2, 5, 1, 5, 4, 2, 3, 6, 2, 6, 5, 3, 1, 4, 3, 4, 6,
         4, 5, 8, 4, 8, 7, 5, 6, 9, 5, 9, 8, 6, 4, 7, 6, 7, 9,
         7, 8, 11, 7, 11, 10, 8, 9, 12, 8, 12, 11, 9, 7, 10, 9, 10, 12,
-        10, 11, 13, 11, 12, 13, 12, 10, 13
+        10, 11, 14, 10, 14, 13, 11, 12, 15, 11, 15, 14, 12, 10, 13, 12, 13, 15,
+        13, 14, 16, 14, 15, 16, 15, 13, 16
     }), Container);
 }
 
 void CapsuleTest::withTextureCoords() {
-    Capsule capsule(2, 3, 1.0f, Capsule::TextureCoords::Generate);
+    Capsule capsule(2, 2, 3, 1.0f, Capsule::TextureCoords::Generate);
 
     CORRADE_COMPARE_AS(*capsule.positions(0), (vector<Vector4>{
         Vector4(0.0f, -1.5f, 0.0f),
@@ -105,6 +114,11 @@ void CapsuleTest::withTextureCoords() {
         Vector4(0.866025f, -0.5f, -0.5f),
         Vector4(-0.866025f, -0.5f, -0.5f),
         Vector4(0.0f, -0.5f, 1.0f),
+
+        Vector4(0.0f, 0.0f, 1.0f),
+        Vector4(0.866025f, 0.0f, -0.5f),
+        Vector4(-0.866025f, 0.0f, -0.5f),
+        Vector4(0.0f, 0.0f, 1.0f),
 
         Vector4(0.0f, 0.5f, 1.0f),
         Vector4(0.866025f, 0.5f, -0.5f),
@@ -132,6 +146,11 @@ void CapsuleTest::withTextureCoords() {
         Vector2(0.666667f, 0.333333f),
         Vector2(1.0f, 0.333333f),
 
+        Vector2(0.0f, 0.5f),
+        Vector2(0.333333f, 0.5f),
+        Vector2(0.666667f, 0.5f),
+        Vector2(1.0f, 0.5f),
+
         Vector2(0.0f, 0.666667f),
         Vector2(0.333333f, 0.666667f),
         Vector2(0.666667f, 0.666667f),
@@ -150,7 +169,8 @@ void CapsuleTest::withTextureCoords() {
         1, 2, 6, 1, 6, 5, 2, 3, 7, 2, 7, 6, 3, 4, 8, 3, 8, 7,
         5, 6, 10, 5, 10, 9, 6, 7, 11, 6, 11, 10, 7, 8, 12, 7, 12, 11,
         9, 10, 14, 9, 14, 13, 10, 11, 15, 10, 15, 14, 11, 12, 16, 11, 16, 15,
-        13, 14, 17, 14, 15, 17, 15, 16, 17
+        13, 14, 18, 13, 18, 17, 14, 15, 19, 14, 19, 18, 15, 16, 20, 15, 20, 19,
+        17, 18, 21, 18, 19, 21, 19, 20, 21
     }), Container);
 }
 

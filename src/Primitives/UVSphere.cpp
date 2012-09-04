@@ -29,7 +29,7 @@ UVSphere::UVSphere(unsigned int rings, unsigned int segments, TextureCoords text
     capVertex(-1.0f, -1.0f, 0.0f);
 
     /* Vertex rings */
-    vertexRings(rings-1, 0.0f, -Math::Constants<GLfloat>::pi()/2+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
+    hemisphereVertexRings(rings-1, 0.0f, -Math::Constants<GLfloat>::pi()/2+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
 
     /* Top cap vertex */
     capVertex(1.0f, 1.0f, 1.0f);

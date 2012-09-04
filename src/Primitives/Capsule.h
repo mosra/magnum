@@ -40,8 +40,10 @@ class Capsule: public Trade::MeshData {
 
         /**
          * @brief Constructor
-         * @param rings         Number of (face) rings for each hemisphere.
+         * @param hemisphereRings Number of (face) rings for each hemisphere.
          *      Must be larger or equal to 1.
+         * @param cylinderRings Number of (face) rings for cylinder. Must be
+         *      larger or equal to 1.
          * @param segments      Number of (face) segments. Must be larger or equal to 3.
          * @param length        Length of the capsule, excluding hemispheres.
          * @param textureCoords Whether to generate texture coordinates.
@@ -49,13 +51,14 @@ class Capsule: public Trade::MeshData {
          * If texture coordinates are generated, vertices of one segment are
          * duplicated for texture wrapping.
          */
-        Capsule(unsigned int rings, unsigned int segments, GLfloat length, TextureCoords textureCoords = TextureCoords::DontGenerate);
+        Capsule(unsigned int hemisphereRings, unsigned int cylinderRings, unsigned int segments, GLfloat length, TextureCoords textureCoords = TextureCoords::DontGenerate);
 
     private:
         inline Capsule(unsigned int segments, TextureCoords textureCoords): MeshData("", Mesh::Primitive::Triangles, new std::vector<unsigned int>, {new std::vector<Vector4>()}, {new std::vector<Vector3>()}, textureCoords == TextureCoords::Generate ? std::vector<std::vector<Vector2>*>{new std::vector<Vector2>()} : std::vector<std::vector<Vector2>*>()), segments(segments), textureCoords(textureCoords) {}
 
         void capVertex(GLfloat y, GLfloat normalY, GLfloat textureCoordsV);
-        void vertexRings(unsigned int count, GLfloat centerY, GLfloat startRingAngle, GLfloat ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);
+        void hemisphereVertexRings(unsigned int count, GLfloat centerY, GLfloat startRingAngle, GLfloat ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);
+        void cylinderVertexRings(unsigned int count, GLfloat startY, GLfloat yIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);
         void bottomFaceRing();
         void faceRings(unsigned int count);
         void topFaceRing();

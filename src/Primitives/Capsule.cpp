@@ -19,28 +19,31 @@ using namespace std;
 
 namespace Magnum { namespace Primitives {
 
-Capsule::Capsule(unsigned int rings, unsigned int segments, GLfloat length, TextureCoords textureCoords): MeshData("", Mesh::Primitive::Triangles, new vector<unsigned int>, {new vector<Vector4>()}, {new vector<Vector3>()}, textureCoords == TextureCoords::Generate ? vector<vector<Vector2>*>{new vector<Vector2>()} : vector<vector<Vector2>*>()), segments(segments), textureCoords(textureCoords) {
-    CORRADE_ASSERT(rings >= 1 && segments >= 3, "Capsule must have at least one ring and three segments", );
+Capsule::Capsule(unsigned int hemisphereRings, unsigned int cylinderRings, unsigned int segments, GLfloat length, TextureCoords textureCoords): MeshData("", Mesh::Primitive::Triangles, new vector<unsigned int>, {new vector<Vector4>()}, {new vector<Vector3>()}, textureCoords == TextureCoords::Generate ? vector<vector<Vector2>*>{new vector<Vector2>()} : vector<vector<Vector2>*>()), segments(segments), textureCoords(textureCoords) {
+    CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 3, "Capsule must have at least one hemisphere ring, one cylinder ring and three segments", );
 
     GLfloat height = 2.0f+length;
-    GLfloat textureCoordsVIncrement = 1.0f/(rings*height);
-    GLfloat ringAngleIncrement = Math::Constants<GLfloat>::pi()/(2*rings);
+    GLfloat hemisphereTextureCoordsVIncrement = 1.0f/(hemisphereRings*height);
+    GLfloat hemisphereRingAngleIncrement = Math::Constants<GLfloat>::pi()/(2*hemisphereRings);
 
     /* Bottom cap vertex */
     capVertex(-height/2, -1.0f, 0.0f);
 
     /* Rings of bottom hemisphere */
-    vertexRings(rings, -length/2, -Math::Constants<GLfloat>::pi()/2+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
+    hemisphereVertexRings(hemisphereRings-1, -length/2, -Math::Constants<GLfloat>::pi()/2+hemisphereRingAngleIncrement, hemisphereRingAngleIncrement, hemisphereTextureCoordsVIncrement, hemisphereTextureCoordsVIncrement);
+
+    /* Rings of cylinder */
+    cylinderVertexRings(cylinderRings+1, -length/2, length/cylinderRings, 1.0f/height, length/(cylinderRings*height));
 
     /* Rings of top hemisphere */
-    vertexRings(rings, length/2, 0.0f, ringAngleIncrement, (1.0f + length)/height, textureCoordsVIncrement);
+    hemisphereVertexRings(hemisphereRings-1, length/2, hemisphereRingAngleIncrement, hemisphereRingAngleIncrement, (1.0f + length)/height+hemisphereTextureCoordsVIncrement, hemisphereTextureCoordsVIncrement);
 
     /* Top cap vertex */
     capVertex(height/2, 1.0f, 1.0f);
 
     /* Faces */
     bottomFaceRing();
-    faceRings(rings*2-1);
+    faceRings(hemisphereRings*2-2+cylinderRings);
     topFaceRing();
 }
 
@@ -52,7 +55,7 @@ void Capsule::capVertex(GLfloat y, GLfloat normalY, GLfloat textureCoordsV) {
         textureCoords2D(0)->push_back({0.5, textureCoordsV});
 }
 
-void Capsule::vertexRings(unsigned int count, GLfloat centerY, GLfloat startRingAngle, GLfloat ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement) {
+void Capsule::hemisphereVertexRings(unsigned int count, GLfloat centerY, GLfloat startRingAngle, GLfloat ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement) {
     GLfloat segmentAngleIncrement = 2*Math::Constants<GLfloat>::pi()/segments;
     GLfloat x, y, z;
     for(unsigned int i = 0; i != count; ++i) {
@@ -75,6 +78,29 @@ void Capsule::vertexRings(unsigned int count, GLfloat centerY, GLfloat startRing
             normals(0)->push_back((*normals(0))[normals(0)->size()-segments]);
             textureCoords2D(0)->push_back({1.0f, startTextureCoordsV + i*textureCoordsVIncrement});
         }
+    }
+}
+
+void Capsule::cylinderVertexRings(unsigned int count, GLfloat startY, GLfloat yIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement) {
+    GLfloat segmentAngleIncrement = 2*Math::Constants<GLfloat>::pi()/segments;
+    for(unsigned int i = 0; i != count; ++i) {
+        for(unsigned int j = 0; j != segments; ++j) {
+            GLfloat segmentAngle = j*segmentAngleIncrement;
+            positions(0)->push_back({sin(segmentAngle), startY, cos(segmentAngle)});
+            normals(0)->push_back({sin(segmentAngle), 0.0f, cos(segmentAngle)});
+
+            if(textureCoords == TextureCoords::Generate)
+                textureCoords2D(0)->push_back({j*1.0f/segments, startTextureCoordsV + i*textureCoordsVIncrement});
+        }
+
+        /* Duplicate first segment in the ring for additional vertex for texture coordinate */
+        if(textureCoords == TextureCoords::Generate) {
+            positions(0)->push_back((*positions(0))[positions(0)->size()-segments]);
+            normals(0)->push_back((*normals(0))[normals(0)->size()-segments]);
+            textureCoords2D(0)->push_back({1.0f, startTextureCoordsV + i*textureCoordsVIncrement});
+        }
+
+        startY += yIncrement;
     }
 }
 
