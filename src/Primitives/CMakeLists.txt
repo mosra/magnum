@@ -1,12 +1,14 @@
 set(MagnumPrimitives_SRCS
     Capsule.cpp
     Cube.cpp
+    Cylinder.cpp
     Icosphere.cpp
     Plane.cpp
     UVSphere.cpp)
 set(MagnumPrimitives_HEADERS
     Capsule.h
     Cube.h
+    Cylinder.h
     Icosphere.h
     Plane.h
     UVSphere.h)

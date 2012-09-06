@@ -118,14 +118,14 @@ void Capsule::bottomFaceRing() {
     }
 }
 
-void Capsule::faceRings(unsigned int count) {
+void Capsule::faceRings(unsigned int count, unsigned int offset) {
     unsigned int vertexSegments = segments + (textureCoords == TextureCoords::Generate ? 1 : 0);
 
     for(unsigned int i = 0; i != count; ++i) {
         for(unsigned int j = 0; j != segments; ++j) {
-            unsigned int bottomLeft = i*vertexSegments+j+1;
+            unsigned int bottomLeft = i*vertexSegments+j+offset;
             unsigned int bottomRight = ((j != segments-1 || textureCoords == TextureCoords::Generate) ?
-                i*vertexSegments+j+2 : i*segments+1);
+                i*vertexSegments+j+1+offset : i*segments+offset);
             unsigned int topLeft = bottomLeft+vertexSegments;
             unsigned int topRight = bottomRight+vertexSegments;
 

@@ -30,6 +30,7 @@ Cylinder along Y axis with hemispheres instead of caps.
 */
 class Capsule: public Trade::MeshData {
     friend class UVSphere;
+    friend class Cylinder;
 
     public:
         /** @brief Whether to generate texture coordinates */
@@ -60,7 +61,7 @@ class Capsule: public Trade::MeshData {
         void hemisphereVertexRings(unsigned int count, GLfloat centerY, GLfloat startRingAngle, GLfloat ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);
         void cylinderVertexRings(unsigned int count, GLfloat startY, GLfloat yIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);
         void bottomFaceRing();
-        void faceRings(unsigned int count);
+        void faceRings(unsigned int count, unsigned int offset = 1);
         void topFaceRing();
 
         unsigned int segments;
