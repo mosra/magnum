@@ -1,5 +1,6 @@
 # Files shared between main library and unit test library
 set(MagnumMeshTools_SRCS
+    CompressIndices.cpp
     Tipsify.cpp)
 set(MagnumMeshTools_HEADERS
     Clean.h

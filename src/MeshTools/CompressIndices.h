@@ -19,52 +19,33 @@
  * @brief Function Magnum::MeshTools::compressIndices()
  */
 
-#include <cstring>
-#include <vector>
-#include <algorithm>
+#include <tuple>
 
+#include "Buffer.h"
 #include "TypeTraits.h"
-#include "SizeTraits.h"
-#include "IndexedMesh.h"
 
-namespace Magnum { namespace MeshTools {
+#include "magnumMeshToolsVisibility.h"
+
+namespace Magnum {
+
+class IndexedMesh;
+
+namespace MeshTools {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
-class CompressIndices {
+class MESHTOOLS_EXPORT CompressIndices {
     public:
         CompressIndices(const std::vector<unsigned int>& indices): indices(indices) {}
 
-        inline std::tuple<size_t, Type, char*> operator()() const {
-            return SizeBasedCall<Compressor>(*std::max_element(indices.begin(), indices.end()))(indices);
-        }
+        std::tuple<size_t, Type, char*> operator()() const;
 
-        void operator()(IndexedMesh* mesh, Buffer::Usage usage) const {
-            size_t indexCount;
-            Type indexType;
-            char* data;
-            std::tie(indexCount, indexType, data) = operator()();
-
-            mesh->setIndexType(indexType);
-            mesh->setIndexCount(indices.size());
-            mesh->indexBuffer()->setData(indexCount*TypeInfo::sizeOf(indexType), data, usage);
-
-            delete[] data;
-        }
+        void operator()(IndexedMesh* mesh, Buffer::Usage usage) const;
 
     private:
         struct Compressor {
-            template<class IndexType> static std::tuple<size_t, Type, char*> run(const std::vector<unsigned int>& indices) {
-                /* Create smallest possible version of index buffer */
-                char* buffer = new char[indices.size()*sizeof(IndexType)];
-                for(size_t i = 0; i != indices.size(); ++i) {
-                    IndexType index = indices[i];
-                    memcpy(buffer+i*sizeof(IndexType), reinterpret_cast<const char*>(&index), sizeof(IndexType));
-                }
-
-                return std::make_tuple(indices.size(), TypeTraits<IndexType>::indexType(), buffer);
-            }
+            template<class IndexType> static std::tuple<size_t, Type, char*> run(const std::vector<unsigned int>& indices);
         };
 
         const std::vector<unsigned int>& indices;

@@ -1,6 +1,6 @@
 corrade_add_test2(MeshToolsCleanTest CleanTest.cpp)
 corrade_add_test2(MeshToolsCombineIndexedArraysTest CombineIndexedArraysTest.cpp)
-corrade_add_test2(MeshToolsCompressIndicesTest CompressIndicesTest.cpp LIBRARIES Magnum)
+corrade_add_test2(MeshToolsCompressIndicesTest CompressIndicesTest.cpp LIBRARIES MagnumMeshTools)
 corrade_add_test2(MeshToolsFlipNormalsTest FlipNormalsTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test2(MeshToolsGenerateFlatNormalsTest GenerateFlatNormalsTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test2(MeshToolsInterleaveTest InterleaveTest.cpp)
