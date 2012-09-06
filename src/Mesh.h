@@ -51,6 +51,8 @@ class MAGNUM_EXPORT Mesh {
     Mesh& operator=(const Mesh& other) = delete;
 
     public:
+        /** @name Polygon drawing settings */
+
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Polygon mode
@@ -76,6 +78,54 @@ class MAGNUM_EXPORT Mesh {
             Point = GL_POINT
         };
         #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Set polygon drawing mode
+         *
+         * Initial value is PolygonMode::Fill.
+         * @requires_gl
+         */
+        inline static void setPolygonMode(PolygonMode mode) {
+            glPolygonMode(GL_FRONT_AND_BACK, static_cast<GLenum>(mode));
+        }
+        #endif
+
+        /**
+         * @brief Set line width
+         *
+         * Initial value is 1.
+         */
+        inline static void setLineWidth(GLfloat width) {
+            glLineWidth(width);
+        }
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Set point size
+         *
+         * @see setProgramPointSize()
+         * @requires_gl Set directly in vertex shader using @c gl_PointSize
+         *      builtin variable.
+         */
+        inline static void setPointSize(GLfloat size) {
+            glPointSize(size);
+        }
+
+        /**
+         * @brief Enable/disable programmable point size
+         *
+         * If enabled, the point size is taken from vertex/geometry shader
+         * builtin `gl_PointSize`.
+         * @see setPointSize()
+         * @requires_gl Always enabled.
+         */
+        inline static void setProgramPointSize(bool enabled) {
+            enabled ? glEnable(GL_PROGRAM_POINT_SIZE) : glDisable(GL_PROGRAM_POINT_SIZE);
+        }
+        #endif
+
+        /*@}*/
 
         /**
          * @brief Primitive type
@@ -135,52 +185,6 @@ class MAGNUM_EXPORT Mesh {
             Interleaved,    /**< Interleaved buffer */
             NonInterleaved  /**< Non-interleaved buffer */
         };
-
-        #ifndef MAGNUM_TARGET_GLES
-        /**
-         * @brief Set polygon drawing mode
-         *
-         * Initial value is PolygonMode::Fill.
-         * @requires_gl
-         */
-        inline static void setPolygonMode(PolygonMode mode) {
-            glPolygonMode(GL_FRONT_AND_BACK, static_cast<GLenum>(mode));
-        }
-        #endif
-
-        /**
-         * @brief Set line width
-         *
-         * Initial value is 1.
-         */
-        inline static void setLineWidth(GLfloat width) {
-            glLineWidth(width);
-        }
-
-        #ifndef MAGNUM_TARGET_GLES
-        /**
-         * @brief Set point size
-         *
-         * @see setProgramPointSize()
-         * @requires_gl Set directly in vertex shader using @c gl_PointSize
-         *      builtin variable.
-         */
-        inline static void setPointSize(GLfloat size) {
-            glPointSize(size);
-        }
-
-        /**
-         * @brief Enable/disable programmable point size
-         *
-         * If enabled, the point size is taken from vertex/geometry shader
-         * builtin `gl_PointSize`.
-         * @see setPointSize()
-         * @requires_gl Always enabled.
-         */
-        inline static void setProgramPointSize(bool enabled) {
-            enabled ? glEnable(GL_PROGRAM_POINT_SIZE) : glDisable(GL_PROGRAM_POINT_SIZE);
-        }
-        #endif
 
         /**
          * @brief Implicit constructor
