@@ -58,11 +58,13 @@ class MAGNUM_EXPORT Mesh {
          * @brief Polygon mode
          *
          * @see setPolygonMode()
-         * @requires_gl
+         * @requires_gl OpenGL ES behaves always like
+         *      <tt>PolygonMode::%Fill</tt>. See setPrimitive() for possible
+         *      workaround.
          */
         enum class PolygonMode: GLenum {
             /**
-             * Interior of the polygon is filled.
+             * Interior of the polygon is filled (default).
              */
             Fill = GL_FILL,
 
@@ -83,8 +85,9 @@ class MAGNUM_EXPORT Mesh {
         /**
          * @brief Set polygon drawing mode
          *
-         * Initial value is PolygonMode::Fill.
-         * @requires_gl
+         * Initial value is `PolygonMode::%Fill`.
+         * @requires_gl OpenGL ES behaves always like the default. See
+         *      setPrimitive() for possible workaround.
          */
         inline static void setPolygonMode(PolygonMode mode) {
             glPolygonMode(GL_FRONT_AND_BACK, static_cast<GLenum>(mode));
@@ -104,6 +107,7 @@ class MAGNUM_EXPORT Mesh {
         /**
          * @brief Set point size
          *
+         * Initial value is `1.0f`.
          * @see setProgramPointSize()
          * @requires_gl Set directly in vertex shader using @c gl_PointSize
          *      builtin variable.
@@ -116,9 +120,9 @@ class MAGNUM_EXPORT Mesh {
          * @brief Enable/disable programmable point size
          *
          * If enabled, the point size is taken from vertex/geometry shader
-         * builtin `gl_PointSize`.
+         * builtin `gl_PointSize`. Initially disabled on desktop OpenGL.
          * @see setPointSize()
-         * @requires_gl Always enabled.
+         * @requires_gl Always enabled on OpenGL ES.
          */
         inline static void setProgramPointSize(bool enabled) {
             enabled ? glEnable(GL_PROGRAM_POINT_SIZE) : glDisable(GL_PROGRAM_POINT_SIZE);
