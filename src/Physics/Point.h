@@ -24,14 +24,12 @@
 namespace Magnum { namespace Physics {
 
 /** @brief %Point */
-class Point: public AbstractShape {
+class PHYSICS_EXPORT Point: public AbstractShape {
     public:
         /** @brief Constructor */
         inline Point(const Vector3& position): _position(position), _transformedPosition(position) {}
 
-        inline void applyTransformation(const Matrix4& transformation) {
-            _transformedPosition = (transformation*Vector4(_position)).xyz();
-        }
+        void applyTransformation(const Matrix4& transformation);
 
         /** @brief Position */
         inline Vector3 position() const { return _position; }

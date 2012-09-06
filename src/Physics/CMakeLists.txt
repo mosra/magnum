@@ -4,6 +4,7 @@ set(MagnumPhysics_SRCS
     Capsule.cpp
     Line.cpp
     Plane.cpp
+    Point.cpp
     ShapeGroup.cpp
     Sphere.cpp)
 set(MagnumPhysics_HEADERS
