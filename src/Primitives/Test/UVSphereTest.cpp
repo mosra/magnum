@@ -36,31 +36,31 @@ void UVSphereTest::withoutTextureCoords() {
     UVSphere sphere(3, 3);
 
     CORRADE_COMPARE_AS(*sphere.positions(0), (vector<Vector4>{
-        Vector4(0.0f, -1.0f, 0.0f),
+        {0.0f, -1.0f, 0.0f},
 
-        Vector4(0.0f, -0.5f, 0.866025f),
-        Vector4(0.75f, -0.5f, -0.433013f),
-        Vector4(-0.75f, -0.5f, -0.433013f),
+        {0.0f, -0.5f, 0.866025f},
+        {0.75f, -0.5f, -0.433013f},
+        {-0.75f, -0.5f, -0.433013f},
 
-        Vector4(0, 0.5f, 0.866025f),
-        Vector4(0.75f, 0.5f, -0.433013f),
-        Vector4(-0.75f, 0.5f, -0.433013f),
+        {0, 0.5f, 0.866025f},
+        {0.75f, 0.5f, -0.433013f},
+        {-0.75f, 0.5f, -0.433013f},
 
-        Vector4(0.0f, 1.0f, 0.0f)
+        {0.0f, 1.0f, 0.0f}
     }), Container);
 
     CORRADE_COMPARE_AS(*sphere.normals(0), (vector<Vector3>{
-        Vector3(0.0f, -1.0f, 0.0f),
+        {0.0f, -1.0f, 0.0f},
 
-        Vector3(0.0f, -0.5f, 0.866025f),
-        Vector3(0.75f, -0.5f, -0.433013f),
-        Vector3(-0.75f, -0.5f, -0.433013f),
+        {0.0f, -0.5f, 0.866025f},
+        {0.75f, -0.5f, -0.433013f},
+        {-0.75f, -0.5f, -0.433013f},
 
-        Vector3(0, 0.5f, 0.866025f),
-        Vector3(0.75f, 0.5f, -0.433013f),
-        Vector3(-0.75f, 0.5f, -0.433013f),
+        {0, 0.5f, 0.866025f},
+        {0.75f, 0.5f, -0.433013f},
+        {-0.75f, 0.5f, -0.433013f},
 
-        Vector3(0.0f, 1.0f, 0.0f)
+        {0.0f, 1.0f, 0.0f}
     }), Container);
 
     CORRADE_COMPARE_AS(*sphere.indices(), (vector<unsigned int>{
@@ -74,35 +74,35 @@ void UVSphereTest::withTextureCoords() {
     UVSphere sphere(3, 3, UVSphere::TextureCoords::Generate);
 
     CORRADE_COMPARE_AS(*sphere.positions(0), (vector<Vector4>{
-        Vector4(0.0f, -1.0f, 0.0f),
+        {0.0f, -1.0f, 0.0f},
 
-        Vector4(0.0f, -0.5f, 0.866025f),
-        Vector4(0.75f, -0.5f, -0.433013f),
-        Vector4(-0.75f, -0.5f, -0.433013f),
-        Vector4(0.0f, -0.5f, 0.866025f),
+        {0.0f, -0.5f, 0.866025f},
+        {0.75f, -0.5f, -0.433013f},
+        {-0.75f, -0.5f, -0.433013f},
+        {0.0f, -0.5f, 0.866025f},
 
-        Vector4(0.0f, 0.5f, 0.866025f),
-        Vector4(0.75f, 0.5f, -0.433013f),
-        Vector4(-0.75f, 0.5f, -0.433013f),
-        Vector4(0.0f, 0.5f, 0.866025f),
+        {0.0f, 0.5f, 0.866025f},
+        {0.75f, 0.5f, -0.433013f},
+        {-0.75f, 0.5f, -0.433013f},
+        {0.0f, 0.5f, 0.866025f},
 
-        Vector4(0.0f, 1.0f, 0.0f)
+        {0.0f, 1.0f, 0.0f}
     }), Container);
 
     CORRADE_COMPARE_AS(*sphere.textureCoords2D(0), (vector<Vector2>{
-        Vector2(0.5f, 0.0f),
+        {0.5f, 0.0f},
 
-        Vector2(0.0f, 0.333333f),
-        Vector2(0.333333f, 0.333333f),
-        Vector2(0.666667f, 0.333333f),
-        Vector2(1.0f, 0.333333f),
+        {0.0f, 0.333333f},
+        {0.333333f, 0.333333f},
+        {0.666667f, 0.333333f},
+        {1.0f, 0.333333f},
 
-        Vector2(0.0f, 0.666667f),
-        Vector2(0.333333f, 0.666667f),
-        Vector2(0.666667f, 0.666667f),
-        Vector2(1.0f, 0.666667f),
+        {0.0f, 0.666667f},
+        {0.333333f, 0.666667f},
+        {0.666667f, 0.666667f},
+        {1.0f, 0.666667f},
 
-        Vector2(0.5f, 1.0f)
+        {0.5f, 1.0f}
     }), Container);
 
     CORRADE_COMPARE_AS(*sphere.indices(), (vector<unsigned int>{
