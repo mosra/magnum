@@ -47,9 +47,10 @@ template Matrix4 aspectRatioFix<Matrix4>(AspectRatioPolicy, const Vector2&, cons
 
 template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::Camera(ObjectType* parent): ObjectType(parent), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {}
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setAspectRatioPolicy(AspectRatioPolicy policy) {
+template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> CameraType* Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setAspectRatioPolicy(AspectRatioPolicy policy) {
     _aspectRatioPolicy = policy;
     fixAspectRatio();
+    return static_cast<CameraType*>(this);
 }
 
 template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setViewport(const Math::Vector2<GLsizei>& size) {
@@ -82,14 +83,15 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
     }
 }
 
-void Camera2D::setProjection(const Vector2& size) {
+Camera2D* Camera2D::setProjection(const Vector2& size) {
     /* Scale the volume down so it fits in (-1, 1) in all directions */
     rawProjectionMatrix = Matrix3::scaling(2.0f/size);
 
     fixAspectRatio();
+    return this;
 }
 
-void Camera3D::setOrthographic(const Vector2& size, GLfloat near, GLfloat far) {
+Camera3D* Camera3D::setOrthographic(const Vector2& size, GLfloat near, GLfloat far) {
     _near = near;
     _far = far;
 
@@ -104,9 +106,10 @@ void Camera3D::setOrthographic(const Vector2& size, GLfloat near, GLfloat far) {
     );
 
     fixAspectRatio();
+    return this;
 }
 
-void Camera3D::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
+Camera3D* Camera3D::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
     _near = near;
     _far = far;
 
@@ -121,6 +124,7 @@ void Camera3D::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
     );
 
     fixAspectRatio();
+    return this;
 }
 
 /* Explicitly instantiate the templates */

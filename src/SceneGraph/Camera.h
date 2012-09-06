@@ -72,8 +72,11 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         /** @brief Aspect ratio policy */
         inline AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }
 
-        /** @brief Set aspect ratio policy */
-        void setAspectRatioPolicy(AspectRatioPolicy policy);
+        /**
+         * @brief Set aspect ratio policy
+         * @return Pointer to self (for method chaining)
+         */
+        CameraType* setAspectRatioPolicy(AspectRatioPolicy policy);
 
         /**
          * @brief Camera matrix
@@ -191,11 +194,12 @@ class SCENEGRAPH_EXPORT Camera2D: public Camera<Matrix3, Vector2, Object2D, Scen
         /**
          * @brief Set projection
          * @param size      Size of the view
+         * @return Pointer to self (for method chaining)
          *
          * The area of given size will be scaled down to range @f$ [-1; 1] @f$
          * on all directions.
          */
-        void setProjection(const Vector2& size);
+        Camera2D* setProjection(const Vector2& size);
 };
 
 /** @brief %Camera for three-dimensional scenes */
@@ -215,21 +219,23 @@ class SCENEGRAPH_EXPORT Camera3D: public Camera<Matrix4, Vector3, Object3D, Scen
          * @param size      Size of the view
          * @param near      Near clipping plane
          * @param far       Far clipping plane
+         * @return Pointer to self (for method chaining)
          *
          * The volume of given size will be scaled down to range @f$ [-1; 1] @f$
          * on all directions.
          */
-        void setOrthographic(const Vector2& size, GLfloat near, GLfloat far);
+        Camera3D* setOrthographic(const Vector2& size, GLfloat near, GLfloat far);
 
         /**
          * @brief Set perspective projection
          * @param fov       Field of view angle
          * @param near      Near clipping plane
          * @param far       Far clipping plane
+         * @return Pointer to self (for method chaining)
          *
          * @todo Aspect ratio
          */
-        void setPerspective(GLfloat fov, GLfloat near, GLfloat far);
+        Camera3D* setPerspective(GLfloat fov, GLfloat near, GLfloat far);
 
         /** @brief Near clipping plane */
         inline GLfloat near() const { return _near; }

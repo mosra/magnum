@@ -286,6 +286,7 @@ class SCENEGRAPH_EXPORT Object2D: public Object<Matrix3, Vector2, Object2D, Scen
 
         /**
          * @brief Translate object
+         * @return Pointer to self (for method chaining)
          *
          * Same as calling multiplyTransformation() with Matrix3::translation().
          */
@@ -296,6 +297,7 @@ class SCENEGRAPH_EXPORT Object2D: public Object<Matrix3, Vector2, Object2D, Scen
 
         /**
          * @brief Scale object
+         * @return Pointer to self (for method chaining)
          *
          * Same as calling multiplyTransformation() with Matrix3::scaling().
          */
@@ -306,6 +308,7 @@ class SCENEGRAPH_EXPORT Object2D: public Object<Matrix3, Vector2, Object2D, Scen
 
         /**
          * @brief Rotate object
+         * @return Pointer to self (for method chaining)
          *
          * Same as calling multiplyTransformation() with Matrix3::rotation().
          */
@@ -318,6 +321,7 @@ class SCENEGRAPH_EXPORT Object2D: public Object<Matrix3, Vector2, Object2D, Scen
          * @brief Move object in stacking order
          * @param under     Sibling object under which to move or `nullptr`,
          *      if you want to move it above all.
+         * @return Pointer to self (for method chaining)
          */
         inline Object2D* move(Object2D* under) {
             parent()->Corrade::Containers::LinkedList<Object2D>::move(this, under);
@@ -333,6 +337,7 @@ class SCENEGRAPH_EXPORT Object3D: public Object<Matrix4, Vector3, Object3D, Scen
 
         /**
          * @brief Translate object
+         * @return Pointer to self (for method chaining)
          *
          * Same as calling multiplyTransformation() with Matrix4::translation().
          */
@@ -343,6 +348,7 @@ class SCENEGRAPH_EXPORT Object3D: public Object<Matrix4, Vector3, Object3D, Scen
 
         /**
          * @brief Scale object
+         * @return Pointer to self (for method chaining)
          *
          * Same as calling multiplyTransformation() with Matrix4::scaling().
          */
@@ -353,6 +359,7 @@ class SCENEGRAPH_EXPORT Object3D: public Object<Matrix4, Vector3, Object3D, Scen
 
         /**
          * @brief Rotate object
+         * @return Pointer to self (for method chaining)
          *
          * Same as calling multiplyTransformation() with Matrix4::rotation().
          */
