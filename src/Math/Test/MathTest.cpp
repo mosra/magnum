@@ -24,27 +24,11 @@ CORRADE_TEST_MAIN(Magnum::Math::Test::MathTest)
 namespace Magnum { namespace Math { namespace Test {
 
 MathTest::MathTest() {
-    addTests(&MathTest::constants,
-             &MathTest::degrad,
-             &MathTest::normalize,
+    addTests(&MathTest::normalize,
              &MathTest::denormalize,
              &MathTest::clamp,
              &MathTest::pow,
              &MathTest::log);
-}
-
-void MathTest::constants() {
-    CORRADE_COMPARE(Math::pow<2>(Constants<float>::sqrt2()), 2.0f);
-    CORRADE_COMPARE(Math::pow<2>(Constants<float>::sqrt3()), 3.0f);
-
-    CORRADE_COMPARE(Math::pow<2>(Constants<double>::sqrt2()), 2.0);
-    CORRADE_COMPARE(Math::pow<2>(Constants<double>::sqrt3()), 3.0);
-}
-
-void MathTest::degrad() {
-    CORRADE_COMPARE(deg(90.0), Constants<double>::pi()/2);
-    CORRADE_COMPARE(deg(90.0f), Constants<float>::pi()/2);
-    CORRADE_COMPARE(rad(Constants<double>::pi()/2), Constants<double>::pi()/2);
 }
 
 void MathTest::normalize() {

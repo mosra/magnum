@@ -1,3 +1,5 @@
+#ifndef Magnum_Math_Test_ConstantsTest_h
+#define Magnum_Math_Test_ConstantsTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -13,15 +15,18 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Line.h"
+#include <TestSuite/Tester.h>
 
-#include "Math/Matrix4.h"
+namespace Magnum { namespace Math { namespace Test {
 
-namespace Magnum { namespace Physics {
+class ConstantsTest: public Corrade::TestSuite::Tester<ConstantsTest> {
+    public:
+        ConstantsTest();
 
-void Line::applyTransformation(const Matrix4& transformation) {
-    _transformedA = (transformation*Vector4(_a)).xyz();
-    _transformedB = (transformation*Vector4(_b)).xyz();
-}
+        void constants();
+        void degrad();
+};
 
-}}
+}}}
+
+#endif

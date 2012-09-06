@@ -15,6 +15,7 @@
 
 #include "PointTest.h"
 
+#include "Math/Matrix4.h"
 #include "Physics/Point.h"
 
 CORRADE_TEST_MAIN(Magnum::Physics::Test::PointTest)

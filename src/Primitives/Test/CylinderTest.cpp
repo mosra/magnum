@@ -17,6 +17,7 @@
 
 #include <TestSuite/Compare/Container.h>
 
+#include "Math/Vector4.h"
 #include "Primitives/Cylinder.h"
 
 using namespace std;

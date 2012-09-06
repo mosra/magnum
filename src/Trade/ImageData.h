@@ -19,6 +19,7 @@
  * @brief Class Magnum::Trade::ImageData
  */
 
+#include "Math/Vector.h"
 #include "AbstractImage.h"
 #include "TypeTraits.h"
 

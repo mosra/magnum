@@ -15,6 +15,9 @@
 
 #include "PlaneTest.h"
 
+#include "Math/Constants.h"
+#include "Physics/LineSegment.h"
+#include "Physics/Point.h"
 #include "Physics/Plane.h"
 
 CORRADE_TEST_MAIN(Magnum::Physics::Test::PlaneTest)

@@ -19,9 +19,15 @@
  * @brief Enum Magnum::Type, class Magnum::TypeOf, Magnum::TypeInfo, Magnum::TypeTraits
  */
 
+#include "Math/MathTypeTraits.h"
 #include "AbstractImage.h"
 
 namespace Magnum {
+
+namespace Math {
+    template<size_t, class> class Vector;
+    template<size_t, class> class Matrix;
+}
 
 /**
 @brief Traits class for plain OpenGL types

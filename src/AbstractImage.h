@@ -21,6 +21,8 @@
 
 #include "Magnum.h"
 
+#include "magnumVisibility.h"
+
 namespace Magnum {
 
 /**

@@ -15,6 +15,9 @@
 
 #include "Framebuffer.h"
 
+#include "BufferedImage.h"
+#include "Image.h"
+
 namespace Magnum {
 
 #ifndef MAGNUM_TARGET_GLES

@@ -19,6 +19,7 @@
  * @brief Class Magnum::Physics::Line
  */
 
+#include "Math/Vector3.h"
 #include "AbstractShape.h"
 
 namespace Magnum { namespace Physics {

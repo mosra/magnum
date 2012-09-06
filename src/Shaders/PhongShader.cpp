@@ -17,6 +17,8 @@
 
 #include <Utility/Resource.h>
 
+#include "Shader.h"
+
 namespace Magnum { namespace Shaders {
 
 PhongShader::PhongShader() {

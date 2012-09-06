@@ -15,6 +15,8 @@
 
 #include "Cube.h"
 
+#include "Math/Vector4.h"
+
 using namespace std;
 
 namespace Magnum { namespace Primitives {

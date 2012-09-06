@@ -19,6 +19,7 @@
  * @brief Class Magnum::Trade::ObjectData
  */
 
+#include "Math/Matrix4.h"
 #include "Magnum.h"
 
 namespace Magnum { namespace Trade {

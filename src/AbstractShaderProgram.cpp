@@ -17,6 +17,8 @@
 
 #include <fstream>
 
+#include "Shader.h"
+
 #define LINKER_MESSAGE_MAX_LENGTH 1024
 
 using namespace std;

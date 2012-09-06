@@ -22,17 +22,22 @@
 #include <Containers/EnumSet.h>
 #include <PluginManager/Plugin.h>
 
-#include "ImageData.h"
+#include "magnumVisibility.h"
 
 namespace Magnum { namespace Trade {
 
 class AbstractMaterialData;
 class CameraData;
+template<size_t> class ImageData;
 class LightData;
 class MeshData;
 class ObjectData;
 class SceneData;
 class TextureData;
+
+typedef ImageData<1> ImageData1D;
+typedef ImageData<2> ImageData2D;
+typedef ImageData<3> ImageData3D;
 
 /**
 @brief Base class for importer plugins

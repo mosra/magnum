@@ -20,8 +20,10 @@
  */
 
 #include <tuple>
+#include <vector>
 
 #include "Magnum.h"
+
 #include "magnumMeshToolsVisibility.h"
 
 namespace Magnum { namespace MeshTools {

@@ -19,9 +19,10 @@
  * @brief Class Magnum::Primitives::Icosphere
  */
 
-#include "Trade/MeshData.h"
+#include "Math/Vector3.h"
 #include "MeshTools/Subdivide.h"
 #include "MeshTools/Clean.h"
+#include "Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives {
 

@@ -15,6 +15,8 @@
 
 #include "LineTest.h"
 
+#include "Math/Constants.h"
+#include "Math/Matrix4.h"
 #include "Physics/Line.h"
 
 CORRADE_TEST_MAIN(Magnum::Physics::Test::LineTest)

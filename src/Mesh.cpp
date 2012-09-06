@@ -14,6 +14,9 @@
 */
 
 #include "Mesh.h"
+
+#include <Utility/Debug.h>
+
 #include "Buffer.h"
 
 using namespace std;

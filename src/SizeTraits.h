@@ -19,6 +19,9 @@
  * @brief Class Magnum::SizeTraits, Magnum::SizeBasedCall, Magnum::Pow, Magnum::Log
  */
 
+#include <Utility/Debug.h>
+
+#include "Math/Math.h"
 #include "Magnum.h"
 
 namespace Magnum {

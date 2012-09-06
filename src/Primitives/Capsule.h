@@ -55,7 +55,7 @@ class Capsule: public Trade::MeshData {
         Capsule(unsigned int hemisphereRings, unsigned int cylinderRings, unsigned int segments, GLfloat length, TextureCoords textureCoords = TextureCoords::DontGenerate);
 
     private:
-        inline Capsule(unsigned int segments, TextureCoords textureCoords): MeshData("", Mesh::Primitive::Triangles, new std::vector<unsigned int>, {new std::vector<Vector4>()}, {new std::vector<Vector3>()}, textureCoords == TextureCoords::Generate ? std::vector<std::vector<Vector2>*>{new std::vector<Vector2>()} : std::vector<std::vector<Vector2>*>()), segments(segments), textureCoords(textureCoords) {}
+        Capsule(unsigned int segments, TextureCoords textureCoords);
 
         void capVertex(GLfloat y, GLfloat normalY, GLfloat textureCoordsV);
         void hemisphereVertexRings(unsigned int count, GLfloat centerY, GLfloat startRingAngle, GLfloat ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);

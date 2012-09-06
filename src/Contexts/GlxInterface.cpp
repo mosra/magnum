@@ -16,6 +16,7 @@
 #include "GlxInterface.h"
 
 #include <GL/glxext.h>
+#include <Utility/Debug.h>
 
 namespace Magnum { namespace Contexts {
 

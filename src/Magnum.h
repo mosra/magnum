@@ -27,11 +27,25 @@
 #include <GLES2/gl2.h>
 #endif
 
-#include "Math/Math.h"
-#include "Math/Matrix4.h"
-#include "Math/Vector2.h"
+namespace Corrade {
+    namespace Utility {
+        class Debug;
+        class Warning;
+        class Error;
+    }
+}
 
 namespace Magnum {
+    namespace Math {
+        template<class> class Vector2;
+        template<class> class Vector3;
+        template<class> class Vector4;
+        template<class> class Matrix3;
+        template<class> class Matrix4;
+
+        template<class T> constexpr T deg(T value);
+        template<class T> constexpr T rad(T value);
+    }
 
 /* Bring debugging facility from Corrade::Utility namespace */
 using Corrade::Utility::Debug;

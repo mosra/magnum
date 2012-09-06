@@ -19,12 +19,13 @@
  * @brief Class Magnum::Physics::Plane
  */
 
+#include "Math/Vector3.h"
 #include "AbstractShape.h"
 
-#include "Line.h"
-#include "LineSegment.h"
-
 namespace Magnum { namespace Physics {
+
+class Line;
+class LineSegment;
 
 /** @brief Infinite plane, defined by position and normal */
 class PHYSICS_EXPORT Plane: public AbstractShape {

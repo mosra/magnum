@@ -21,9 +21,15 @@
 
 #include <map>
 
-#include "Shader.h"
+#include "Math/Matrix4.h"
+#include "Math/Vector4.h"
+#include "Magnum.h"
+
+#include "magnumVisibility.h"
 
 namespace Magnum {
+
+class Shader;
 
 /**
 @brief Base class for shaders

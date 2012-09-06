@@ -15,6 +15,7 @@
 
 #include "ShapeGroupTest.h"
 
+#include "Math/Matrix4.h"
 #include "Physics/Point.h"
 #include "Physics/Sphere.h"
 #include "Physics/ShapeGroup.h"

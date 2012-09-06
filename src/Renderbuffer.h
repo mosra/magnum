@@ -19,7 +19,10 @@
  * @brief Class Magnum::Renderbuffer
  */
 
+#include "Math/Vector2.h"
 #include "Magnum.h"
+
+#include "magnumVisibility.h"
 
 namespace Magnum {
 

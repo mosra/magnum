@@ -15,6 +15,8 @@
 
 #include "ExtensionWrangler.h"
 
+#include <Utility/Debug.h>
+
 #include "Magnum.h"
 
 namespace Magnum { namespace Contexts {

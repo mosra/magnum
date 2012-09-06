@@ -19,7 +19,9 @@
  * @brief Class Magnum::Contexts::Sdl2Context
  */
 
+#include "Math/Vector2.h"
 #include "Magnum.h"
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_scancode.h>
 

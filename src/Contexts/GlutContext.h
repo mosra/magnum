@@ -19,7 +19,11 @@
  * @brief Class Magnum::Contexts::GlutContext
  */
 
+#include <string>
+
+#include "Math/Vector2.h"
 #include "Magnum.h"
+
 #include <GL/freeglut.h>
 
 #include "AbstractContext.h"

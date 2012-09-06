@@ -15,6 +15,7 @@
 
 #include "CameraTest.h"
 
+#include "Math/Constants.h"
 #include "SceneGraph/Camera.h"
 
 CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::CameraTest)

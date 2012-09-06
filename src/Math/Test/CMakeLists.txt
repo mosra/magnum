@@ -1,3 +1,5 @@
+corrade_add_test2(MathConstantsTest ConstantsTest.cpp)
+corrade_add_test2(MathTest MathTest.cpp $<TARGET_OBJECTS:MagnumMathObjects>)
 corrade_add_test2(MathMathTypeTraitsTest MathTypeTraitsTest.cpp)
 
 corrade_add_test2(MathRectangularMatrixTest RectangularMatrixTest.cpp)
@@ -11,5 +13,3 @@ corrade_add_test2(MathVector4Test Vector4Test.cpp)
 corrade_add_test2(MathMatrixTest MatrixTest.cpp)
 corrade_add_test2(MathMatrix3Test Matrix3Test.cpp)
 corrade_add_test2(MathMatrix4Test Matrix4Test.cpp)
-
-corrade_add_test2(MathTest MathTest.cpp $<TARGET_OBJECTS:MagnumMathObjects>)

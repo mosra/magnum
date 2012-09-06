@@ -19,6 +19,8 @@
  * @brief Class Magnum::Contexts::AbstractXContext
  */
 
+#include <Containers/EnumSet.h>
+
 #include "Magnum.h"
 
 #include <X11/Xlib.h>
@@ -27,8 +29,7 @@
 #undef None
 #undef Always
 
-#include <Containers/EnumSet.h>
-
+#include "Math/Vector2.h"
 #include "AbstractContext.h"
 #include "AbstractGlInterface.h"
 

@@ -15,6 +15,9 @@
 
 #include "SphereTest.h"
 
+#include "Math/Constants.h"
+#include "Physics/LineSegment.h"
+#include "Physics/Point.h"
 #include "Physics/Sphere.h"
 
 CORRADE_TEST_MAIN(Magnum::Physics::Test::SphereTest)

@@ -17,7 +17,7 @@
 
 #include <limits>
 
-#include "Math.h"
+#include "Constants.h"
 #include "Distance.h"
 
 CORRADE_TEST_MAIN(Magnum::Math::Geometry::Test::DistanceTest)

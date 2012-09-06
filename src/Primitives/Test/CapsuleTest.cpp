@@ -16,10 +16,11 @@
 /* Less precision */
 #define FLOAT_EQUALITY_PRECISION 1.0e-5
 
-#include <TestSuite/Compare/Container.h>
-
 #include "CapsuleTest.h"
 
+#include <TestSuite/Compare/Container.h>
+
+#include "Math/Vector4.h"
 #include "Primitives/Capsule.h"
 
 using namespace std;

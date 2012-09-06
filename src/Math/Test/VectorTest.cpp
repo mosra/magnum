@@ -17,8 +17,8 @@
 
 #include <sstream>
 
+#include "Constants.h"
 #include "Vector.h"
-#include "Math.h"
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::VectorTest)
 

@@ -23,6 +23,7 @@
 #include <limits>
 #include <Utility/MurmurHash2.h>
 
+#include "Math/Vector.h"
 #include "TypeTraits.h"
 
 namespace Magnum { namespace MeshTools {

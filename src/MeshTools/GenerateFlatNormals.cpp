@@ -15,6 +15,7 @@
 
 #include "GenerateFlatNormals.h"
 
+#include "Math/Vector4.h"
 #include "MeshTools/Clean.h"
 
 using namespace std;

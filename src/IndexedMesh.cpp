@@ -15,6 +15,8 @@
 
 #include "IndexedMesh.h"
 
+#include <Utility/Debug.h>
+
 namespace Magnum {
 
 void IndexedMesh::draw() {

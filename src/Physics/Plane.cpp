@@ -17,7 +17,9 @@
 
 #include <limits>
 
+#include "Math/Matrix4.h"
 #include "Math/Geometry/Intersection.h"
+#include "LineSegment.h"
 
 using namespace std;
 using namespace Magnum::Math::Geometry;

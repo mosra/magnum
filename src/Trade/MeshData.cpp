@@ -15,6 +15,8 @@
 
 #include "MeshData.h"
 
+#include "Math/Vector4.h"
+
 namespace Magnum { namespace Trade {
 
 MeshData::~MeshData() {

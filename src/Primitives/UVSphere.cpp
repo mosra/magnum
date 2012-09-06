@@ -15,6 +15,10 @@
 
 #include "UVSphere.h"
 
+#include <Utility/Debug.h>
+
+#include "Math/Constants.h"
+
 using namespace std;
 
 namespace Magnum { namespace Primitives {

@@ -19,6 +19,8 @@
  * @brief Class Magnum::Trade::MeshData
  */
 
+#include <string>
+
 #include "Mesh.h"
 
 namespace Magnum { namespace Trade {

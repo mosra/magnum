@@ -14,10 +14,12 @@
 */
 
 #include "ObjectTest.h"
-#include "SceneGraph/Camera.h"
-#include "SceneGraph/Scene.h"
 
 #include <sstream>
+
+#include "Math/Constants.h"
+#include "SceneGraph/Camera.h"
+#include "SceneGraph/Scene.h"
 
 using namespace std;
 

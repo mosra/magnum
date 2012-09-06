@@ -15,7 +15,12 @@
 
 #include "Capsule.h"
 
+#include "Math/Constants.h"
+#include "Math/Math.h"
+#include "Math/Matrix4.h"
 #include "Math/Geometry/Distance.h"
+#include "Point.h"
+#include "Sphere.h"
 
 using namespace Magnum::Math::Geometry;
 

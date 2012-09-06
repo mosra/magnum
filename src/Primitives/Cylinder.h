@@ -19,8 +19,9 @@
  * @brief Class Magnum::Primitives::UVSphere
  */
 
-#include "Primitives/Capsule.h"
 #include <Containers/EnumSet.h>
+
+#include "Primitives/Capsule.h"
 
 namespace Magnum { namespace Primitives {
 

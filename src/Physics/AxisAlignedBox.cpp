@@ -15,6 +15,8 @@
 
 #include "AxisAlignedBox.h"
 
+#include "Math/Matrix4.h"
+
 namespace Magnum { namespace Physics {
 
 void AxisAlignedBox::applyTransformation(const Matrix4& transformation) {

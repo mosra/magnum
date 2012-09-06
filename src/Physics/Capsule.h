@@ -19,11 +19,13 @@
  * @brief Class Magnum::Physics::Capsule
  */
 
+#include "Math/Vector3.h"
 #include "AbstractShape.h"
-#include "Point.h"
-#include "Sphere.h"
 
 namespace Magnum { namespace Physics {
+
+class Point;
+class Sphere;
 
 /**
 @brief %Capsule defined by cylinder start and end point and radius

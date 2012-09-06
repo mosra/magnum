@@ -21,13 +21,23 @@
 
 #include <Containers/EnumSet.h>
 
-#include "BufferedImage.h"
+#include "AbstractImage.h"
+#include "Buffer.h"
 #include "CubeMapTexture.h"
 #include "Color.h"
-#include "Image.h"
 #include "Renderbuffer.h"
 
 namespace Magnum {
+
+template<size_t> class BufferedImage;
+template<size_t> class Image;
+
+typedef BufferedImage<1> BufferedImage1D;
+typedef BufferedImage<2> BufferedImage2D;
+typedef BufferedImage<3> BufferedImage3D;
+typedef Image<1> Image1D;
+typedef Image<2> Image2D;
+typedef Image<3> Image3D;
 
 /** @nosubgrouping
 @brief %Framebuffer

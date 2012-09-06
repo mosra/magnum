@@ -17,6 +17,7 @@
 
 #include <sstream>
 
+#include "Math/Vector3.h"
 #include "MeshTools/FlipNormals.h"
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::FlipNormalsTest)

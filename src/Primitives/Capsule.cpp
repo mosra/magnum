@@ -15,6 +15,9 @@
 
 #include "Capsule.h"
 
+#include "Math/Constants.h"
+#include "Math/Vector4.h"
+
 using namespace std;
 
 namespace Magnum { namespace Primitives {
@@ -46,6 +49,8 @@ Capsule::Capsule(unsigned int hemisphereRings, unsigned int cylinderRings, unsig
     faceRings(hemisphereRings*2-2+cylinderRings);
     topFaceRing();
 }
+
+Capsule::Capsule(unsigned int segments, TextureCoords textureCoords): MeshData("", Mesh::Primitive::Triangles, new std::vector<unsigned int>, {new std::vector<Vector4>()}, {new std::vector<Vector3>()}, textureCoords == TextureCoords::Generate ? std::vector<std::vector<Vector2>*>{new std::vector<Vector2>()} : std::vector<std::vector<Vector2>*>()), segments(segments), textureCoords(textureCoords) {}
 
 void Capsule::capVertex(GLfloat y, GLfloat normalY, GLfloat textureCoordsV) {
     positions(0)->push_back({0.0f, y, 0.0f});

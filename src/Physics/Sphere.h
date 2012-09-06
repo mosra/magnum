@@ -19,12 +19,14 @@
  * @brief Class Magnum::Physics::Sphere
  */
 
+#include "Math/Vector3.h"
 #include "AbstractShape.h"
-#include "Point.h"
-#include "Line.h"
-#include "LineSegment.h"
 
 namespace Magnum { namespace Physics {
+
+class Line;
+class LineSegment;
+class Point;
 
 /**
 @brief %Sphere defined by position and radius

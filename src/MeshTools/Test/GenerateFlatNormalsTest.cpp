@@ -17,6 +17,7 @@
 
 #include <sstream>
 
+#include "Math/Vector4.h"
 #include "MeshTools/GenerateFlatNormals.h"
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::GenerateFlatNormalsTest)
@@ -57,7 +58,6 @@ void GenerateFlatNormalsTest::generate() {
         {0.0f, 1.0f, 0.0f},
         {1.0f, 0.0f, 0.0f}
     });
-
 
     CORRADE_COMPARE(indices, (vector<unsigned int>{
         0, 0, 0,

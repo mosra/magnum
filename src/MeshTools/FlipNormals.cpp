@@ -15,6 +15,8 @@
 
 #include "FlipNormals.h"
 
+#include "Math/Vector3.h"
+
 using namespace std;
 
 namespace Magnum { namespace MeshTools {

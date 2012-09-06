@@ -21,6 +21,9 @@
 
 #include "AbstractShape.h"
 
+#include <type_traits>
+#include <utility>
+
 namespace Magnum { namespace Physics {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

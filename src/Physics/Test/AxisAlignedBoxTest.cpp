@@ -15,6 +15,8 @@
 
 #include "AxisAlignedBoxTest.h"
 
+#include "Math/Constants.h"
+#include "Math/Matrix4.h"
 #include "Physics/AxisAlignedBox.h"
 
 CORRADE_TEST_MAIN(Magnum::Physics::Test::AxisAlignedBoxTest)

@@ -19,10 +19,12 @@
  * @brief Class Magnum::Shader
  */
 
-#include "Magnum.h"
-
 #include <vector>
 #include <string>
+
+#include "Magnum.h"
+
+#include "magnumVisibility.h"
 
 namespace Magnum {
 

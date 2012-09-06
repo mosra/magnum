@@ -17,8 +17,8 @@
 
 #include <sstream>
 
+#include "Constants.h"
 #include "Matrix4.h"
-#include "Math.h"
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::Matrix4Test)
 
