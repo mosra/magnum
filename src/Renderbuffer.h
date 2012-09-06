@@ -185,7 +185,7 @@ class Renderbuffer {
          *
          * Generates new OpenGL renderbuffer.
          */
-        Renderbuffer() {
+        inline Renderbuffer() {
             glGenRenderbuffers(1, &renderbuffer);
         }
 
@@ -194,7 +194,7 @@ class Renderbuffer {
          *
          * Deletes associated OpenGL renderbuffer.
          */
-        ~Renderbuffer() {
+        inline ~Renderbuffer() {
             glDeleteRenderbuffers(1, &renderbuffer);
         }
 

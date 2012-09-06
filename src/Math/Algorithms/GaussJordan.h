@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class GaussJordan
+ * @brief Class Magnum::Math::Algorithms::GaussJordan
  */
 
 #include "Math/RectangularMatrix.h"

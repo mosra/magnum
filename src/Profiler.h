@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Profiler
+ * @brief Class Magnum::Profiler
  */
 
 #include <chrono>

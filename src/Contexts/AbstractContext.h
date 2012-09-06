@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Contexts::GlutContext
+ * @brief Class Magnum::Contexts::AbstractContext
  */
 
 namespace Magnum { namespace Contexts {
