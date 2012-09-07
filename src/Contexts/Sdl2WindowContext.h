@@ -1,5 +1,5 @@
-#ifndef Magnum_Contexts_Sdl2Context_h
-#define Magnum_Contexts_Sdl2Context_h
+#ifndef Magnum_Contexts_Sdl2WindowContext_h
+#define Magnum_Contexts_Sdl2WindowContext_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Contexts::Sdl2Context
+ * @brief Class Magnum::Contexts::Sdl2WindowContext
  */
 
 #include "Math/Vector2.h"
@@ -25,7 +25,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_scancode.h>
 
-#include "AbstractContext.h"
+#include "AbstractWindowContext.h"
 
 namespace Magnum { namespace Contexts {
 
@@ -37,7 +37,7 @@ Supports keyboard and mouse handling.
 You need to implement at least drawEvent() and viewportEvent() to be able to
 draw on the screen.
 */
-class Sdl2Context: public AbstractContext {
+class Sdl2WindowContext: public AbstractWindowContext {
     public:
         /**
          * @brief Constructor
@@ -49,30 +49,30 @@ class Sdl2Context: public AbstractContext {
          * Creates centered non-resizable window with double-buffered
          * OpenGL 3.3 context with 24bit depth buffer.
          */
-        Sdl2Context(int argc, char** argv, const std::string& title = "Magnum SDL2 context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
+        Sdl2WindowContext(int argc, char** argv, const std::string& title = "Magnum SDL2 context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
 
         /**
          * @brief Destructor
          *
          * Deletes context and destroys the window.
          */
-        ~Sdl2Context();
+        ~Sdl2WindowContext();
 
         int exec();
 
         /** @{ @name Drawing functions */
 
     protected:
-        /** @copydoc GlutContext::viewportEvent() */
+        /** @copydoc GlutWindowContext::viewportEvent() */
         virtual void viewportEvent(const Math::Vector2<GLsizei>& size) = 0;
 
-        /** @copydoc GlutContext::drawEvent() */
+        /** @copydoc GlutWindowContext::drawEvent() */
         virtual void drawEvent() = 0;
 
-        /** @copydoc GlutContext::swapBuffers() */
+        /** @copydoc GlutWindowContext::swapBuffers() */
         inline void swapBuffers() { SDL_GL_SwapWindow(window); }
 
-        /** @copydoc GlutContext::redraw() */
+        /** @copydoc GlutWindowContext::redraw() */
         inline void redraw() { _redraw = true; }
 
         /*@}*/
@@ -183,12 +183,12 @@ class Sdl2Context: public AbstractContext {
 };
 
 /* Implementations for inline functions with unused parameters */
-inline void Sdl2Context::keyPressEvent(Key, Uint8) {}
-inline void Sdl2Context::keyReleaseEvent(Key) {}
-inline void Sdl2Context::mousePressEvent(MouseButton, const Math::Vector2<int>&) {}
-inline void Sdl2Context::mouseReleaseEvent(MouseButton, const Math::Vector2<int>&) {}
-inline void Sdl2Context::mouseWheelEvent(const Math::Vector2<int>&) {}
-inline void Sdl2Context::mouseMotionEvent(const Math::Vector2<int>&, const Math::Vector2<int>&) {}
+inline void Sdl2WindowContext::keyPressEvent(Key, Uint8) {}
+inline void Sdl2WindowContext::keyReleaseEvent(Key) {}
+inline void Sdl2WindowContext::mousePressEvent(MouseButton, const Math::Vector2<int>&) {}
+inline void Sdl2WindowContext::mouseReleaseEvent(MouseButton, const Math::Vector2<int>&) {}
+inline void Sdl2WindowContext::mouseWheelEvent(const Math::Vector2<int>&) {}
+inline void Sdl2WindowContext::mouseMotionEvent(const Math::Vector2<int>&, const Math::Vector2<int>&) {}
 
 }}
 

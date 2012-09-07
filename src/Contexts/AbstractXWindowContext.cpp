@@ -13,7 +13,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractXContext.h"
+#include "AbstractXWindowContext.h"
 
 #include "ExtensionWrangler.h"
 
@@ -26,7 +26,7 @@ using namespace std;
 
 namespace Magnum { namespace Contexts {
 
-AbstractXContext::AbstractXContext(AbstractGlInterface<Display*, VisualID, Window>* glInterface, int&, char**, const string& title, const Math::Vector2<GLsizei>& size): glInterface(glInterface), viewportSize(size), flags(Flag::Redraw) {
+AbstractXWindowContext::AbstractXWindowContext(AbstractContext<Display*, VisualID, Window>* glInterface, int&, char**, const string& title, const Math::Vector2<GLsizei>& size): glInterface(glInterface), viewportSize(size), flags(Flag::Redraw) {
     /* Get default X display */
     display = XOpenDisplay(0);
 
@@ -72,7 +72,7 @@ AbstractXContext::AbstractXContext(AbstractGlInterface<Display*, VisualID, Windo
     ExtensionWrangler::initialize(glInterface->experimentalExtensionWranglerFeatures());
 }
 
-AbstractXContext::~AbstractXContext() {
+AbstractXWindowContext::~AbstractXWindowContext() {
     /* Shut down the interface */
     delete glInterface;
 
@@ -81,7 +81,7 @@ AbstractXContext::~AbstractXContext() {
     XCloseDisplay(display);
 }
 
-int AbstractXContext::exec() {
+int AbstractXWindowContext::exec() {
     /* Show window */
     XMapWindow(display, window);
 

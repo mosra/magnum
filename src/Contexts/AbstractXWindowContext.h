@@ -1,5 +1,5 @@
-#ifndef Magnum_Contexts_AbstractXContext_h
-#define Magnum_Contexts_AbstractXContext_h
+#ifndef Magnum_Contexts_AbstractXWindowContext_h
+#define Magnum_Contexts_AbstractXWindowContext_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Contexts::AbstractXContext
+ * @brief Class Magnum::Contexts::AbstractXWindowContext
  */
 
 #include <Containers/EnumSet.h>
@@ -30,8 +30,8 @@
 #undef Always
 
 #include "Math/Vector2.h"
+#include "AbstractWindowContext.h"
 #include "AbstractContext.h"
-#include "AbstractGlInterface.h"
 
 namespace Magnum { namespace Contexts {
 
@@ -42,7 +42,7 @@ Supports keyboard and mouse handling.
 
 @note Not meant to be used directly, see subclasses.
 */
-class AbstractXContext: public AbstractContext {
+class AbstractXWindowContext: public AbstractWindowContext {
     public:
         /**
          * @brief Constructor
@@ -54,14 +54,14 @@ class AbstractXContext: public AbstractContext {
          *
          * Creates window with double-buffered OpenGL ES 2 context.
          */
-        AbstractXContext(AbstractGlInterface<Display*, VisualID, Window>* glInterface, int& argc, char** argv, const std::string& title = "Magnum X/EGL context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
+        AbstractXWindowContext(AbstractContext<Display*, VisualID, Window>* glInterface, int& argc, char** argv, const std::string& title = "Magnum X/EGL context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
 
         /**
          * @brief Destructor
          *
          * Deletes context and destroys the window.
          */
-        virtual ~AbstractXContext() = 0;
+        virtual ~AbstractXWindowContext() = 0;
 
         int exec();
 
@@ -71,16 +71,16 @@ class AbstractXContext: public AbstractContext {
         /** @{ @name Drawing functions */
 
     protected:
-        /** @copydoc GlutContext::viewportEvent() */
+        /** @copydoc GlutWindowContext::viewportEvent() */
         virtual void viewportEvent(const Math::Vector2<GLsizei>& size) = 0;
 
-        /** @copydoc GlutContext::drawEvent() */
+        /** @copydoc GlutWindowContext::drawEvent() */
         virtual void drawEvent() = 0;
 
-        /** @copydoc GlutContext::swapBuffers() */
+        /** @copydoc GlutWindowContext::swapBuffers() */
         inline void swapBuffers() { glInterface->swapBuffers(); }
 
-        /** @copydoc GlutContext::redraw() */
+        /** @copydoc GlutWindowContext::redraw() */
         inline void redraw() { flags |= Flag::Redraw; }
 
         /*@}*/
@@ -277,7 +277,7 @@ class AbstractXContext: public AbstractContext {
         Window window;
         Atom deleteWindow;
 
-        AbstractGlInterface<Display*, VisualID, Window>* glInterface;
+        AbstractContext<Display*, VisualID, Window>* glInterface;
 
         /** @todo Get this from the created window */
         Math::Vector2<GLsizei> viewportSize;
@@ -285,15 +285,15 @@ class AbstractXContext: public AbstractContext {
         Flags flags;
 };
 
-CORRADE_ENUMSET_OPERATORS(AbstractXContext::Modifiers)
-CORRADE_ENUMSET_OPERATORS(AbstractXContext::Flags)
+CORRADE_ENUMSET_OPERATORS(AbstractXWindowContext::Modifiers)
+CORRADE_ENUMSET_OPERATORS(AbstractXWindowContext::Flags)
 
 /* Implementations for inline functions with unused parameters */
-inline void AbstractXContext::keyPressEvent(Key, Modifiers, const Math::Vector2<int>&) {}
-inline void AbstractXContext::keyReleaseEvent(Key, Modifiers, const Math::Vector2<int>&) {}
-inline void AbstractXContext::mousePressEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
-inline void AbstractXContext::mouseReleaseEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
-inline void AbstractXContext::mouseMotionEvent(Modifiers, const Math::Vector2<int>&) {}
+inline void AbstractXWindowContext::keyPressEvent(Key, Modifiers, const Math::Vector2<int>&) {}
+inline void AbstractXWindowContext::keyReleaseEvent(Key, Modifiers, const Math::Vector2<int>&) {}
+inline void AbstractXWindowContext::mousePressEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
+inline void AbstractXWindowContext::mouseReleaseEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
+inline void AbstractXWindowContext::mouseMotionEvent(Modifiers, const Math::Vector2<int>&) {}
 
 }}
 

@@ -19,32 +19,44 @@
  * @brief Class Magnum::Contexts::AbstractContext
  */
 
+#include "ExtensionWrangler.h"
+
 namespace Magnum { namespace Contexts {
 
-/**
-@brief Base class for context creation
-
-See subclasses documentation for more information. Context classes subclasses
-are meant to be used directly in `main()`, for example:
-@code
-class MyContext: public Magnum::Contexts::GlutContext {
-    // implement required methods...
-};
-int main(int argc, char** argv) {
-    MyContext c(argc, argv);
-    return c.exec();
-}
-@endcode
-*/
-class AbstractContext {
+/** @brief Base for OpenGL contexts */
+template<class Display, class VisualId, class Window> class AbstractContext {
     public:
-        virtual inline ~AbstractContext() {}
+        /**
+         * @brief Get visual ID
+         *
+         * Initializes the interface on given display and returns visual ID.
+         */
+        virtual VisualId getVisualId(Display nativeDisplay) = 0;
 
         /**
-         * @brief Execute main loop
-         * @return Value for returning from `main()`.
+         * @brief Destructor
+         *
+         * Finalizes and closes the interface.
          */
-        virtual int exec() = 0;
+        virtual ~AbstractContext() {}
+
+        /** @brief Create context */
+        virtual void createContext(Window nativeWindow) = 0;
+
+        /**
+         * @brief Whether to enable experimental extension wrangler features
+         *
+         * Default is to disable.
+         */
+        virtual inline ExtensionWrangler::ExperimentalFeatures experimentalExtensionWranglerFeatures() const {
+            return ExtensionWrangler::ExperimentalFeatures::Disable;
+        }
+
+        /** @brief Make the context current */
+        virtual void makeCurrent() = 0;
+
+        /** @brief Swap buffers */
+        virtual void swapBuffers() = 0;
 };
 
 }}

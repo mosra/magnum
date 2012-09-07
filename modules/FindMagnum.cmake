@@ -86,13 +86,13 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
     set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX ${component})
 
-    # Contexts
-    if(${component} MATCHES .+Context)
+    # Window contexts
+    if(${component} MATCHES .+WindowContext)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Contexts)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES ${component}.h)
 
-        # GLUT context dependencies
-        if(${component} STREQUAL GlutContext)
+        # GLUT window context dependencies
+        if(${component} STREQUAL GlutWindowContext)
             find_package(GLUT)
             if(GLUT_FOUND)
                 set(_MAGNUM_${_COMPONENT}_LIBRARIES ${GLUT_LIBRARIES})
@@ -101,8 +101,8 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             endif()
         endif()
 
-        # SDL2 context dependencies
-        if(${component} STREQUAL Sdl2Context)
+        # SDL2 window context dependencies
+        if(${component} STREQUAL Sdl2WindowContext)
             find_package(SDL2)
             if(SDL2_FOUND)
                 set(_MAGNUM_${_COMPONENT}_LIBRARIES ${SDL2_LIBRARY})
@@ -112,8 +112,8 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             endif()
         endif()
 
-        # GLX context dependencies
-        if(${component} STREQUAL GlxContext)
+        # GLX window context dependencies
+        if(${component} STREQUAL GlxWindowContext)
             find_package(X11)
             if(X11_FOUND)
                 set(_MAGNUM_${_COMPONENT}_LIBRARIES ${X11_LIBRARIES})
@@ -122,8 +122,8 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             endif()
         endif()
 
-        # X/EGL context dependencies
-        if(${component} STREQUAL XEglContext)
+        # X/EGL window context dependencies
+        if(${component} STREQUAL XEglWindowContext)
             find_package(EGL)
             find_package(X11)
             if(EGL_FOUND AND X11_FOUND)

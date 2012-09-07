@@ -13,12 +13,12 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Sdl2Context.h"
+#include "Sdl2WindowContext.h"
 #include "ExtensionWrangler.h"
 
 namespace Magnum { namespace Contexts {
 
-Sdl2Context::Sdl2Context(int, char**, const std::string& name, const Math::Vector2<GLsizei>& size): _redraw(true) {
+Sdl2WindowContext::Sdl2WindowContext(int, char**, const std::string& name, const Math::Vector2<GLsizei>& size): _redraw(true) {
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         Error() << "Cannot initialize SDL.";
         exit(1);
@@ -54,13 +54,13 @@ Sdl2Context::Sdl2Context(int, char**, const std::string& name, const Math::Vecto
     SDL_PushEvent(sizeEvent);
 }
 
-Sdl2Context::~Sdl2Context() {
+Sdl2WindowContext::~Sdl2WindowContext() {
     SDL_GL_DeleteContext(context);
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
 
-int Sdl2Context::exec() {
+int Sdl2WindowContext::exec() {
     for(;;) {
         SDL_Event event;
 

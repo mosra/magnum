@@ -1,5 +1,5 @@
-#ifndef Magnum_Contexts_GlutContext_h
-#define Magnum_Contexts_GlutContext_h
+#ifndef Magnum_Contexts_GlutWindowContext_h
+#define Magnum_Contexts_GlutWindowContext_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Contexts::GlutContext
+ * @brief Class Magnum::Contexts::GlutWindowContext
  */
 
 #include <string>
@@ -26,7 +26,7 @@
 
 #include <GL/freeglut.h>
 
-#include "AbstractContext.h"
+#include "AbstractWindowContext.h"
 
 namespace Magnum { namespace Contexts {
 
@@ -39,7 +39,7 @@ support for changing cursor and mouse tracking and warping.
 You need to implement at least drawEvent() and viewportEvent() to be able to
 draw on the screen.
 */
-class GlutContext: public AbstractContext {
+class GlutWindowContext: public AbstractWindowContext {
     public:
         /**
          * @brief Constructor
@@ -50,7 +50,7 @@ class GlutContext: public AbstractContext {
          *
          * Creates double-buffered RGBA window with depth and stencil buffers.
          */
-        GlutContext(int& argc, char** argv, const std::string& title = "Magnum GLUT context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
+        GlutWindowContext(int& argc, char** argv, const std::string& title = "Magnum GLUT context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
 
         inline int exec() {
             glutMainLoop();
@@ -242,17 +242,17 @@ class GlutContext: public AbstractContext {
             instance->drawEvent();
         }
 
-        static GlutContext* instance;
+        static GlutWindowContext* instance;
 
         int& argc;
         char** argv;
 };
 
 /* Implementations for inline functions with unused parameters */
-inline void GlutContext::keyPressEvent(Key, const Math::Vector2<int>&) {}
-inline void GlutContext::mousePressEvent(MouseButton, const Math::Vector2<int>&) {}
-inline void GlutContext::mouseReleaseEvent(MouseButton, const Math::Vector2<int>&) {}
-inline void GlutContext::mouseMotionEvent(const Math::Vector2<int>&) {}
+inline void GlutWindowContext::keyPressEvent(Key, const Math::Vector2<int>&) {}
+inline void GlutWindowContext::mousePressEvent(MouseButton, const Math::Vector2<int>&) {}
+inline void GlutWindowContext::mouseReleaseEvent(MouseButton, const Math::Vector2<int>&) {}
+inline void GlutWindowContext::mouseMotionEvent(const Math::Vector2<int>&) {}
 
 }}
 

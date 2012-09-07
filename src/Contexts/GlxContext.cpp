@@ -13,21 +13,21 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "GlxInterface.h"
+#include "GlxContext.h"
 
 #include <GL/glxext.h>
 #include <Utility/Debug.h>
 
 namespace Magnum { namespace Contexts {
 
-VisualID GlxInterface::getVisualId(Display* nativeDisplay) {
+VisualID GlxContext::getVisualId(Display* nativeDisplay) {
     display = nativeDisplay;
 
     /* Check version */
     int major, minor;
     glXQueryVersion(nativeDisplay, &major, &minor);
     if(major == 1 && minor < 4) {
-        Error() << "GlxInterface: GLX version 1.4 or greater is required.";
+        Error() << "GlxContext: GLX version 1.4 or greater is required.";
         exit(1);
     }
 
@@ -45,7 +45,7 @@ VisualID GlxInterface::getVisualId(Display* nativeDisplay) {
     };
     configs = glXChooseFBConfig(nativeDisplay, DefaultScreen(nativeDisplay), attributes, &configCount);
     if(!configCount) {
-        Error() << "GlxInterface: no supported framebuffer configuration found.";
+        Error() << "GlxContext: no supported framebuffer configuration found.";
         exit(1);
     }
 
@@ -57,7 +57,7 @@ VisualID GlxInterface::getVisualId(Display* nativeDisplay) {
     return visualId;
 }
 
-void GlxInterface::createContext(Window nativeWindow) {
+void GlxContext::createContext(Window nativeWindow) {
     window = nativeWindow;
 
     GLint attributes[] = {
@@ -78,12 +78,12 @@ void GlxInterface::createContext(Window nativeWindow) {
     context = glXCreateContextAttribsARB(display, configs[0], 0, True, attributes);
     XFree(configs);
     if(!context) {
-        Error() << "GlxInterface: cannot create context.";
+        Error() << "GlxContext: cannot create context.";
         exit(1);
     }
 }
 
-GlxInterface::~GlxInterface() {
+GlxContext::~GlxContext() {
     glXMakeCurrent(display, None, nullptr);
     glXDestroyContext(display, context);
 }
