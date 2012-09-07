@@ -53,6 +53,20 @@ class MAGNUM_EXPORT Framebuffer {
     Framebuffer& operator=(Framebuffer&& other) = delete;
 
     public:
+        /**
+         * @brief Affected polygon facing for culling, stencil operations and masks
+         *
+         * @see setFaceCullingMode(),
+         *      setStencilFunction(PolygonFacing, StencilFunction, GLint, GLuint),
+         *      setStencilOperation(PolygonFacing, StencilOperation, StencilOperation, StencilOperation),
+         *      setStencilMask(PolygonFacing, GLuint)
+         */
+        enum class PolygonFacing: GLenum {
+            Front = GL_FRONT,                   /**< Front-facing polygons */
+            Back = GL_BACK,                     /**< Back-facing polygons */
+            FrontAndBack = GL_FRONT_AND_BACK    /**< Front- and back-facing polygons */
+        };
+
         /** @{ @name Framebuffer features */
 
         /**
@@ -98,6 +112,17 @@ class MAGNUM_EXPORT Framebuffer {
         /** @brief Set feature */
         inline static void setFeature(Feature feature, bool enabled) {
             enabled ? glEnable(static_cast<GLenum>(feature)) : glDisable(static_cast<GLenum>(feature));
+        }
+
+        /**
+         * @brief Which polygon facing to cull
+         *
+         * Initial value is `PolygonFacing::Back`. If set to both front and
+         * back, only points and lines are drawn.
+         * @attention You have to also enable face culling with setFeature().
+         */
+        inline static void setFaceCullingMode(PolygonFacing mode) {
+            glCullFace(static_cast<GLenum>(mode));
         }
 
         /**
@@ -189,19 +214,6 @@ class MAGNUM_EXPORT Framebuffer {
         /*@}*/
 
         /** @{ @name Stencil operations */
-
-        /**
-         * @brief Affected polygon facing for stencil operations and masks
-         *
-         * @see setStencilFunction(PolygonFacing, StencilFunction, GLint, GLuint),
-         *      setStencilOperation(PolygonFacing, StencilOperation, StencilOperation, StencilOperation),
-         *      setStencilMask(PolygonFacing, GLuint)
-         */
-        enum class PolygonFacing: GLenum {
-            Front = GL_FRONT,                   /**< Front-facing polygons */
-            Back = GL_BACK,                     /**< Back-facing polygons */
-            FrontAndBack = GL_FRONT_AND_BACK    /**< Front- and back-facing polygons */
-        };
 
         /**
          * @brief Stencil function
