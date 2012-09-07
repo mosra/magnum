@@ -39,7 +39,6 @@ VAOs are used for desktop OpenGL (not in OpenGL ES).
 
 @todo Support for normalized values (e.g. for color as char[4] passed to
      shader as floating-point vec4)
-@todo Support for provoking vertex (OpenGL 3.2, @extension{ARB,provoking_vertex})
 @todo Support for packed unsigned integer types for attributes (OpenGL 3.3, @extension{ARB,vertex_type_2_10_10_10_rev})
 @todo Support for fixed precision type for attributes (OpenGL 4.1, @extension{ARB,ES2_compatibility})
 @todo Support for double type for attributes (OpenGL 4.1, @extension{ARB,vertex_attrib_64bit})
@@ -52,6 +51,36 @@ class MAGNUM_EXPORT Mesh {
 
     public:
         /** @name Polygon drawing settings */
+
+        /**
+         * @brief Provoking vertex
+         *
+         * @see setProvokingVertex()
+         * @requires_gl OpenGL ES behaves always like
+         *      <tt>ProvokingMode::%LastVertexConvention</tt>.
+         * @requires_gl32 Extension @extension{ARB,provoking_vertex}. Older
+         *      versions behave always like
+         *      <tt>ProvokingMode::%LastVertexConvention</tt>.
+         */
+        enum class ProvokingVertex: GLenum {
+            /** @brief Use first vertex of each polygon. */
+            FirstVertexConvention = GL_FIRST_VERTEX_CONVENTION,
+
+            /** @brief Use last vertex of each polygon (default). */
+            LastVertexConvention = GL_LAST_VERTEX_CONVENTION
+        };
+
+        /**
+         * @brief Set provoking vertex
+         *
+         * Initial value is <tt>ProvokingMode::%LastVertexConvention</tt>.
+         * @requires_gl OpenGL ES behaves always like the default.
+         * @requires_gl32 Extension @extension{ARB,provoking_vertex}. Older
+         *      versions behave always like the default.
+         */
+        inline static void setProvokingVertex(ProvokingVertex mode) {
+            glProvokingVertex(static_cast<GLenum>(mode));
+        }
 
         #ifndef MAGNUM_TARGET_GLES
         /**
