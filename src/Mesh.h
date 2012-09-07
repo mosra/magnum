@@ -124,6 +124,50 @@ class MAGNUM_EXPORT Mesh {
         #endif
 
         /**
+         * @brief Mode affected by polygon offset
+         *
+         * @see setPolygonOffsetMode(), setPolygonOffset()
+         */
+        enum class PolygonOffsetMode: GLenum {
+            /** Offset filled polygons. */
+            Fill = GL_POLYGON_OFFSET_FILL,
+
+            /**
+             * Offset lines.
+             * @requires_gl Only <tt>PolygonOffset::%Fill</tt> is supported.
+             */
+            Line = GL_POLYGON_OFFSET_LINE,
+
+            /**
+             * Offset points.
+             * @requires_gl Only <tt>PolygonOffset::%Fill</tt> is supported.
+             */
+            Point = GL_POLYGON_OFFSET_POINT
+        };
+
+        /**
+         * @brief Enable/disable polygon offset for given mode
+         *
+         * Initially disabled for all modes.
+         * @see setPolygonOffset()
+         */
+        inline static void setPolygonOffsetMode(PolygonOffsetMode mode, bool enabled) {
+            enabled ? glEnable(static_cast<GLenum>(mode)) : glDisable(static_cast<GLenum>(mode));
+        }
+
+        /**
+         * @brief Set polygon offset
+         * @param factor    Scale factor
+         * @param units     Offset units
+         *
+         * @attention You have to call setPolygonOffsetMode() to enable
+         *      polygon offset for desired polygon modes.
+         */
+        inline static void setPolygonOffset(GLfloat factor, GLfloat units) {
+            glPolygonOffset(factor, units);
+        }
+
+        /**
          * @brief Set line width
          *
          * Initial value is 1.
