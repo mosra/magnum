@@ -184,6 +184,7 @@ class Renderbuffer {
          * @brief Constructor
          *
          * Generates new OpenGL renderbuffer.
+         * @see @fn_gl{GenRenderbuffers}
          */
         inline Renderbuffer() {
             glGenRenderbuffers(1, &renderbuffer);
@@ -193,6 +194,7 @@ class Renderbuffer {
          * @brief Destructor
          *
          * Deletes associated OpenGL renderbuffer.
+         * @see @fn_gl{DeleteRenderbuffers}
          */
         inline ~Renderbuffer() {
             glDeleteRenderbuffers(1, &renderbuffer);
@@ -201,7 +203,11 @@ class Renderbuffer {
         /** @brief OpenGL internal renderbuffer ID */
         inline GLuint id() const { return renderbuffer; }
 
-        /** @brief Bind renderbuffer */
+        /**
+         * @brief Bind renderbuffer
+         *
+         * @see @fn_gl{BindRenderbuffer}
+         */
         inline void bind() {
             glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
         }
@@ -210,6 +216,8 @@ class Renderbuffer {
          * @brief Set renderbuffer storage
          * @param internalFormat    Internal format
          * @param size              Renderbuffer size
+         *
+         * @see bind(), @fn_gl{RenderbufferStorage}
          */
         inline void setStorage(InternalFormat internalFormat, const Math::Vector2<GLsizei>& size) {
             bind();

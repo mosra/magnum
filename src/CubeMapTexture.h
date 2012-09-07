@@ -63,6 +63,7 @@ class CubeMapTexture: public AbstractTexture {
         /**
          * @brief Enable/disable seamless cube map textures
          *
+         * @see @fn_gl{Enable}/@fn_gl{Disable} with @def_gl{TEXTURE_CUBE_MAP_SEAMLESS}
          * @requires_gl
          * @requires_gl32 Extension @extension{ARB,seamless_cube_map}
          */
@@ -75,6 +76,7 @@ class CubeMapTexture: public AbstractTexture {
          * @brief Constructor
          *
          * Creates one cube map OpenGL texture.
+         * @see @def_gl{TEXTURE_CUBE_MAP}
          */
         inline CubeMapTexture(): AbstractTexture(GL_TEXTURE_CUBE_MAP) {}
 

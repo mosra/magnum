@@ -39,6 +39,7 @@ class MAGNUM_EXPORT AbstractQuery {
          * @brief Constructor
          *
          * Generates one OpenGL query.
+         * @see @fn_gl{GenQueries}
          */
         inline AbstractQuery() { glGenQueries(1, &query); }
 
@@ -46,11 +47,14 @@ class MAGNUM_EXPORT AbstractQuery {
          * @brief Destructor
          *
          * Deletes assigned OpenGL query.
+         * @see @fn_gl{DeleteQueries}
          */
         virtual inline ~AbstractQuery() { glDeleteQueries(1, &query); }
 
         /**
          * @brief Whether the result is available
+         *
+         * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT_AVAILABLE}
          */
         bool resultAvailable();
 
@@ -61,7 +65,7 @@ class MAGNUM_EXPORT AbstractQuery {
          *
          * Note that this function is blocking until the result is available.
          * See resultAvailable().
-         *
+         * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT}
          * @requires_gl33 Extension @extension{ARB,timer_query} (result type `GLuint64` and `GLint64`)
          */
         template<class T> T result();
@@ -130,6 +134,7 @@ class MAGNUM_EXPORT Query: public AbstractQuery {
          * @brief Begin query
          *
          * Begins counting of given @p target until end() is called.
+         * @see @fn_gl{BeginQuery}
          */
         void begin(Target target);
 
@@ -137,6 +142,7 @@ class MAGNUM_EXPORT Query: public AbstractQuery {
          * @brief End query
          *
          * The result can be then retrieved by calling result().
+         * @see @fn_gl{EndQuery}
          */
         void end();
 
@@ -239,6 +245,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
         /**
          * @brief Begin conditional rendering based on result value
          *
+         * @see @fn_gl{BeginConditionalRender}
          * @requires_gl30 Extension @extension{NV,conditional_render}
          */
         inline void beginConditionalRender(ConditionalRenderMode mode) {
@@ -248,6 +255,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
         /**
          * @brief End conditional render
          *
+         * @see @fn_gl{EndConditionalRender}
          * @requires_gl30 Extension @extension{NV,conditional_render}
          */
         inline void endConditionalRender() {
@@ -293,7 +301,11 @@ Using this query results in fewer OpenGL calls when doing more measures.
 */
 class TimeQuery: public AbstractQuery {
     public:
-        /** @brief Query timestamp */
+        /**
+         * @brief Query timestamp
+         *
+         * @see @fn_gl{QueryCounter} with @def_gl{TIMESTAMP}
+         */
         inline void timestamp() {
             glQueryCounter(query, GL_TIMESTAMP);
         }

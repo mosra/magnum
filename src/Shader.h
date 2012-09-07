@@ -122,7 +122,7 @@ class MAGNUM_EXPORT Shader {
          *
          * Creates empty OpenGL shader. Sources can be added with addSource()
          * or addFile().
-         * @see fromData(), fromFile()
+         * @see fromData(), fromFile(), @fn_gl{CreateShader}
          */
         inline Shader(Type type): _type(type), _state(State::Initialized), shader(0) {
             shader = glCreateShader(static_cast<GLenum>(_type));
@@ -132,6 +132,7 @@ class MAGNUM_EXPORT Shader {
          * @brief Destructor
          *
          * Deletes associated OpenGL shader.
+         * @see @fn_gl{DeleteShader}
          */
         inline ~Shader() { if(shader) glDeleteShader(shader); }
 
@@ -185,7 +186,9 @@ class MAGNUM_EXPORT Shader {
          * before, it tries to compile it. If compilation fails or no sources
          * are present, returns 0. If the shader was compiled already, returns
          * already existing shader.
-         * @see state()
+         * @see state(), @fn_gl{ShaderSource}, @fn_gl{CompileShader},
+         *      @fn_gl{GetShader} with @def_gl{COMPILE_STATUS},
+         *      @fn_gl{GetShaderInfoLog}
          */
         GLuint compile();
 

@@ -122,6 +122,8 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
          * @attention For rectangle textures only some modes are supported,
          * see @ref AbstractTexture::Wrapping "Wrapping" documentation for
          * more information.
+         * @see bind(), @fn_gl{TexParameter} with @def_gl{TEXTURE_WRAP_S},
+         *      @def_gl{TEXTURE_WRAP_T}, @def_gl{TEXTURE_WRAP_R}
          */
         inline Texture<Dimensions>* setWrapping(const Math::Vector<Dimensions, Wrapping>& wrapping) {
             bind();
@@ -139,6 +141,7 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
          *
          * Sets texture data from given image. The image is not deleted
          * afterwards.
+         * @see bind(), @fn_gl{TexImage1D}, @fn_gl{TexImage2D}, @fn_gl{TexImage3D}
          */
         template<class Image> inline Texture<Dimensions>* setData(GLint mipLevel, InternalFormat internalFormat, Image* image) {
             bind();
@@ -162,6 +165,7 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
          * taken as if it had the last dimension equal to 1. It can be used
          * for e.g. updating 3D texture with multiple 2D images or for filling
          * 1D texture array (which is two-dimensional) with 1D images.
+         * @see bind(), @fn_gl{TexSubImage1D}, @fn_gl{TexSubImage2D}, @fn_gl{TexSubImage3D}
          */
         template<class Image> inline Texture<Dimensions>* setSubData(GLint mipLevel, const Math::Vector<Dimensions, GLint>& offset, Image* image) {
             bind();

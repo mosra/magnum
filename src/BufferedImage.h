@@ -32,6 +32,7 @@ namespace Magnum {
 Class for storing image data in GPU memory. Can be replaced with Image, which
 stores image data in client memory, ImageWrapper, or for example with
 Trade::ImageData.
+@see Buffer
 @requires_gl
 */
 template<size_t imageDimensions> class BufferedImage: public AbstractImage {
@@ -57,6 +58,8 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
          * Binds the buffer to @ref Buffer::Target "pixel unpack
          * target" and returns nullptr, so it can be used for texture updating
          * functions the same way as Image::data().
+         *
+         * @see Buffer::bind(Target)
          */
         void* data() {
             _buffer.bind(Buffer::Target::PixelUnpack);
@@ -76,6 +79,8 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
          *
          * Updates the image buffer with given data. The data are not deleted
          * after filling the buffer.
+         *
+         * @see setData(const Math::Vector<Dimensions, GLsizei>&, Components, ComponentType, const GLvoid*, Buffer::Usage)
          */
         template<class T> inline void setData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, const T* data, Buffer::Usage usage) {
             setData(dimensions, components, TypeTraits<T>::imageType(), data, usage);
@@ -91,6 +96,8 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
          *
          * Updates the image buffer with given data. The data are not deleted
          * after filling the buffer.
+         *
+         * @see Buffer::setData()
          */
         void setData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage) {
             _components = components;

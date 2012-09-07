@@ -192,6 +192,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @brief Constructor
          *
          * Creates one OpenGL shader program.
+         * @see @fn_gl{CreateProgram}
          */
         inline AbstractShaderProgram(): state(Initialized) {
             program = glCreateProgram();
@@ -201,6 +202,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @brief Destructor
          *
          * Deletes associated OpenGL shader program.
+         * @see @fn_gl{DeleteProgram}
          */
         virtual ~AbstractShaderProgram() = 0;
 
@@ -208,6 +210,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @brief Use shader
          * @return False if the program wasn't successfully linked, true
          *      otherwise.
+         *
+         * @see @fn_gl{UseProgram}
          */
         bool use();
 
@@ -216,11 +220,12 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         /**
          * @brief Allow retrieving program binary
          *
-         * Disabled by default.
-         * @requires_gl
-         * @requires_gl41 Extension @extension{ARB,get_program_binary}
+         * Initially disabled.
          * @note This function should be called after attachShader() calls and
          *      before link().
+         * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_BINARY_RETRIEVABLE_HINT}
+         * @requires_gl
+         * @requires_gl41 Extension @extension{ARB,get_program_binary}
          */
         inline void setRetrievableBinary(bool enabled) {
             glProgramParameteri(program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, enabled ? GL_TRUE : GL_FALSE);
@@ -229,11 +234,12 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         /**
          * @brief Allow the program to be bound to individual pipeline stages
          *
-         * Disabled by default.
-         * @requires_gl
-         * @requires_gl41 Extension @extension{ARB,separate_shader_objects}
+         * Initially disabled.
          * @note This function should be called after attachShader() calls and
          *      before link().
+         * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_SEPARABLE}
+         * @requires_gl
+         * @requires_gl41 Extension @extension{ARB,separate_shader_objects}
          */
         inline void setSeparable(bool enabled) {
             glProgramParameteri(program, GL_PROGRAM_SEPARABLE, enabled ? GL_TRUE : GL_FALSE);
@@ -247,10 +253,11 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *
          * Compiles the shader, if it is not already, and prepares it for
          * linking.
+         * @see Shader::compile(), @fn_gl{AttachShader}
          */
         bool attachShader(Shader& shader);
 
-        /** @copydoc attachShader(Shader&) */
+        /** @overload */
         inline bool attachShader(Shader&& shader) {
             return attachShader(shader);
         }
@@ -268,6 +275,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
+         * @see @fn_gl{BindAttribLocation}
          */
         void bindAttributeLocation(GLuint location, const std::string& name);
 
@@ -281,14 +289,15 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * Binds fragment data to location which is used later for framebuffer
          * operations. See also Framebuffer::BlendFunction for more
          * information about using color input index.
-         * @requires_gl
-         * @requires_gl33 Extension @extension{ARB,blend_func_extended}
          * @note This function should be called after attachShader() calls and
          *      before link().
          * @deprecated Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
+         * @see @fn_gl{BindFragDataLocationIndexed}
+         * @requires_gl
+         * @requires_gl33 Extension @extension{ARB,blend_func_extended}
          */
         void bindFragmentDataLocationIndexed(GLuint location, GLuint index, const std::string& name);
 
@@ -299,6 +308,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *
          * The same as bindFragmentDataLocationIndexed(), but with `index` set
          * to `0`.
+         * @see @fn_gl{BindFragDataLocation}
          * @requires_gl
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          */
@@ -310,6 +320,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *
          * Binds previously specified attributes to given indexes and links the
          * shader program together.
+         * @see @fn_gl{LinkProgram}, @fn_gl{GetProgram} with
+         *      @def_gl{LINK_STATUS}, @fn_gl{GetProgramInfoLog}
          */
         void link();
 
@@ -318,6 +330,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @param name          Uniform name
          *
          * @note This function should be called after link().
+         * @see @fn_gl{GetUniformLocation}
          */
         GLint uniformLocation(const std::string& name);
 
@@ -327,6 +340,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @param value         Value
          *
          * @attention This function doesn't check whether this shader is in use!
+         * @see @fn_gl{Uniform}
          */
         inline void setUniform(GLint location, GLfloat value) {
             glUniform1f(location, value);

@@ -69,12 +69,22 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          */
         inline Buffer* indexBuffer() { return &_indexBuffer; }
 
+        /**
+         * @brief Draw the mesh
+         *
+         * Expects an active shader with all uniforms set.
+         * @see Buffer::bind(), bind(), unbind(), finalize(), @fn_gl{DrawElements}
+         * @todo Index buffer bound every time?!
+         */
         void draw();
 
     protected:
-        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /**
+         * @brief Finalize the mesh
+         *
+         * @see Mesh::finalize(), Buffer::bind()
+         */
         MAGNUM_LOCAL void finalize();
-        #endif
 
     private:
         Buffer _indexBuffer;

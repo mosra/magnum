@@ -121,17 +121,30 @@ class BufferedTexture {
          * @brief Constructor
          *
          * Creates one OpenGL texture.
+         * @see @fn_gl{GenTextures}
          */
         inline BufferedTexture() {
             glGenTextures(1, &texture);
         }
 
-        /** @copydoc AbstractTexture::~AbstractTexture() */
+        /**
+         * @brief Destructor
+         *
+         * Deletes assigned OpenGL texture.
+         * @see @fn_gl{DeleteTextures}
+         */
         inline virtual ~BufferedTexture() {
             glDeleteTextures(1, &texture);
         }
 
-        /** @copydoc AbstractTexture::bind(GLint) */
+        /**
+         * @brief Bind texture for rendering
+         *
+         * Sets current texture as active in given layer. The layer must be
+         * between 0 and maxSupportedLayerCount(). Note that only one texture
+         * can be bound to given layer.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
+         */
         inline void bind(GLint layer) {
             glActiveTexture(GL_TEXTURE0 + layer);
             bind();
@@ -145,6 +158,7 @@ class BufferedTexture {
          * Binds given buffer to this texture. The buffer itself can be then
          * filled with data of proper format at any time using Buffer own data
          * setting functions.
+         * @see @fn_gl{BindTexture}, @fn_gl{TexBuffer}
          */
         void setBuffer(InternalFormat internalFormat, Buffer* buffer) {
             bind();
@@ -154,7 +168,6 @@ class BufferedTexture {
     private:
         GLuint texture;
 
-        /** @copydoc AbstractTexture::bind() */
         inline void bind() {
             glBindTexture(GL_TEXTURE_BUFFER, texture);
         }

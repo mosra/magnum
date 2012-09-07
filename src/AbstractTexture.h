@@ -535,7 +535,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @brief Max supported layer count
          *
          * At least 48.
-         * @see bind(GLint)
+         * @see bind(GLint), @fn_gl{Get} with @def_gl{MAX_COMBINED_TEXTURE_IMAGE_UNITS}
          */
         static GLint maxSupportedLayerCount();
 
@@ -543,7 +543,7 @@ class MAGNUM_EXPORT AbstractTexture {
         /**
          * @brief Max supported anisotropy
          *
-         * @see setMaxAnisotropy()
+         * @see setMaxAnisotropy(), @fn_gl{Get} with @def_gl{MAX_TEXTURE_MAX_ANISOTROPY_EXT}
          * @requires_extension @extension{EXT,texture_filter_anisotropic}
          */
         static GLfloat maxSupportedAnisotropy();
@@ -554,6 +554,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @param target    Target, e.g. `GL_TEXTURE_2D`.
          *
          * Creates one OpenGL texture.
+         * @see @fn_gl{GenTextures}
          */
         inline AbstractTexture(GLenum target): _target(target) {
             glGenTextures(1, &texture);
@@ -563,6 +564,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @brief Destructor
          *
          * Deletes assigned OpenGL texture.
+         * @see @fn_gl{DeleteTextures}
          */
         virtual ~AbstractTexture() = 0;
 
@@ -575,6 +577,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * Sets current texture as active in given layer. The layer must be
          * between 0 and maxSupportedLayerCount(). Note that only one texture
          * can be bound to given layer.
+         * @see bind(), @fn_gl{ActiveTexture}
          */
         inline void bind(GLint layer) {
             glActiveTexture(GL_TEXTURE0 + layer);
@@ -595,6 +598,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * see @ref AbstractTexture::Filter "Filter" and
          * @ref AbstractTexture::Mipmap "Mipmap" documentation for more
          * information.
+         * @see bind(), @fn_gl{TexParameter} with @def_gl{TEXTURE_MIN_FILTER}
          */
         AbstractTexture* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::BaseLevel);
 
@@ -605,6 +609,7 @@ class MAGNUM_EXPORT AbstractTexture {
          *
          * Sets filter used when the object pixel size is larger than largest
          * texture size.
+         * @see bind(), @fn_gl{TexParameter} with @def_gl{TEXTURE_MAG_FILTER}
          */
         inline AbstractTexture* setMagnificationFilter(Filter filter) {
             bind();
@@ -619,6 +624,7 @@ class MAGNUM_EXPORT AbstractTexture {
          *
          * Border color when @ref AbstractTexture::Wrapping "wrapping" is set
          * to `ClampToBorder`.
+         * @see bind(), @fn_gl{TexParameter} with @def_gl{TEXTURE_BORDER_COLOR}
          * @requires_gl
          */
         inline AbstractTexture* setBorderColor(const Color4<GLfloat>& color) {
@@ -633,7 +639,7 @@ class MAGNUM_EXPORT AbstractTexture {
          *
          * Default value is `1.0`, which means no anisotropy. Set to value
          * greater than `1.0` for anisotropic filtering.
-         * @see maxSupportedAnisotropy()
+         * @see maxSupportedAnisotropy(), bind(), @fn_gl{TexParameter} with @def_gl{TEXTURE_MAX_ANISOTROPY_EXT}
          * @requires_extension @extension{EXT,texture_filter_anisotropic}
          */
         inline AbstractTexture* setMaxAnisotropy(GLfloat anisotropy) {
@@ -648,7 +654,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @return Pointer to self (for method chaining)
          *
          * Can not be used for rectangle textures.
-         * @see setMinificationFilter()
+         * @see setMinificationFilter(), @fn_gl{GenerateMipmap}
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         AbstractTexture* generateMipmap();
@@ -665,6 +671,7 @@ class MAGNUM_EXPORT AbstractTexture {
          *
          * Unlike bind(GLint) doesn't bind the texture to any particular
          * layer, thus unusable for binding for rendering.
+         * @see @fn_gl{BindTexture}
          */
         inline void bind() {
             glBindTexture(_target, texture);

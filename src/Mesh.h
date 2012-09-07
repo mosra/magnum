@@ -69,6 +69,7 @@ class MAGNUM_EXPORT Mesh {
          * @brief Set front-facing polygon winding
          *
          * Initial value is `FrontFace::%CounterClockWise`.
+         * @see @fn_gl{FrontFace}
          */
         void setFrontFace(FrontFace mode) {
             glFrontFace(static_cast<GLenum>(mode));
@@ -96,6 +97,7 @@ class MAGNUM_EXPORT Mesh {
          * @brief Set provoking vertex
          *
          * Initial value is <tt>ProvokingMode::%LastVertexConvention</tt>.
+         * @see @fn_gl{ProvokingVertex}
          * @requires_gl OpenGL ES behaves always like the default.
          * @requires_gl32 Extension @extension{ARB,provoking_vertex}. Older
          *      versions behave always like the default.
@@ -137,6 +139,7 @@ class MAGNUM_EXPORT Mesh {
          * @brief Set polygon drawing mode
          *
          * Initial value is `PolygonMode::%Fill`.
+         * @see @fn_gl{PolygonMode}
          * @requires_gl OpenGL ES behaves always like the default. See
          *      setPrimitive() for possible workaround.
          */
@@ -171,7 +174,7 @@ class MAGNUM_EXPORT Mesh {
          * @brief Enable/disable polygon offset for given mode
          *
          * Initially disabled for all modes.
-         * @see setPolygonOffset()
+         * @see setPolygonOffset(), @fn_gl{Enable}/@fn_gl{Disable}
          */
         inline static void setPolygonOffsetMode(PolygonOffsetMode mode, bool enabled) {
             enabled ? glEnable(static_cast<GLenum>(mode)) : glDisable(static_cast<GLenum>(mode));
@@ -184,6 +187,7 @@ class MAGNUM_EXPORT Mesh {
          *
          * @attention You have to call setPolygonOffsetMode() to enable
          *      polygon offset for desired polygon modes.
+         * @see @fn_gl{PolygonOffset}
          */
         inline static void setPolygonOffset(GLfloat factor, GLfloat units) {
             glPolygonOffset(factor, units);
@@ -192,7 +196,8 @@ class MAGNUM_EXPORT Mesh {
         /**
          * @brief Set line width
          *
-         * Initial value is 1.
+         * Initial value is `1.0f`.
+         * @see @fn_gl{LineWidth}
          */
         inline static void setLineWidth(GLfloat width) {
             glLineWidth(width);
@@ -203,7 +208,7 @@ class MAGNUM_EXPORT Mesh {
          * @brief Set point size
          *
          * Initial value is `1.0f`.
-         * @see setProgramPointSize()
+         * @see setProgramPointSize(), @fn_gl{PointSize}
          * @requires_gl Set directly in vertex shader using @c gl_PointSize
          *      builtin variable.
          */
@@ -216,7 +221,7 @@ class MAGNUM_EXPORT Mesh {
          *
          * If enabled, the point size is taken from vertex/geometry shader
          * builtin `gl_PointSize`. Initially disabled on desktop OpenGL.
-         * @see setPointSize()
+         * @see setPointSize(), @fn_gl{Enable}/@fn_gl{Disable} with @def_gl{PROGRAM_POINT_SIZE}
          * @requires_gl Always enabled on OpenGL ES.
          */
         inline static void setProgramPointSize(bool enabled) {
@@ -272,7 +277,7 @@ class MAGNUM_EXPORT Mesh {
         };
 
         /**
-         * @brief Buffer type
+         * @brief %Buffer type
          *
          * If storing more than one attribute data in the buffer, the data of
          * one attribute can be either kept together or interleaved with data
@@ -292,6 +297,7 @@ class MAGNUM_EXPORT Mesh {
          * Allows creating the object without knowing anything about mesh
          * data. Note that you have to call setVertexCount() manually for mesh
          * to draw properly.
+         * @see @fn_gl{GenVertexArrays}
          */
         inline Mesh(Primitive primitive = Primitive::Triangles): _primitive(primitive), _vertexCount(0), finalized(false) {
             #ifndef MAGNUM_TARGET_GLES
@@ -303,6 +309,8 @@ class MAGNUM_EXPORT Mesh {
          * @brief Constructor
          * @param primitive     Primitive type
          * @param vertexCount   Vertex count
+         *
+         * @see @fn_gl{GenVertexArrays}
          */
         inline Mesh(Primitive primitive, GLsizei vertexCount): _primitive(primitive), _vertexCount(vertexCount), finalized(false) {
             #ifndef MAGNUM_TARGET_GLES
@@ -317,6 +325,7 @@ class MAGNUM_EXPORT Mesh {
          * @brief Destructor
          *
          * Deletes all associated buffers.
+         * @see @fn_gl{DeleteVertexArrays}
          */
         inline virtual ~Mesh() { destroy(); }
 
@@ -391,18 +400,30 @@ class MAGNUM_EXPORT Mesh {
          * @brief Draw the mesh
          *
          * Expects an active shader with all uniforms set.
+         * @see bind(), unbind(), finalize(), @fn_gl{DrawArrays}
          */
         virtual void draw();
 
     protected:
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        /** @brief Bind all buffers */
+        /**
+         * @brief Bind all buffers
+         *
+         * @see @fn_gl{EnableVertexAttribArray}, @fn_gl{VertexAttribPointer}
+         */
         void bindBuffers();
 
-        /** @brief Bind vertex array or all buffers */
+        /**
+         * @brief Bind vertex array or all buffers
+         *
+         * @see @fn_gl{BindVertexArray} or bindBuffers()
+         */
         void bind();
 
-        /** @brief Unbind vertex array or all buffers */
+        /**
+         * @brief Unbind vertex array or all buffers
+         *
+         * @see @fn_gl{BindVertexArray} or @fn_gl{DisableVertexAttribArray}
+         */
         void unbind();
 
         /**
@@ -410,9 +431,9 @@ class MAGNUM_EXPORT Mesh {
          *
          * Computes location and stride of each attribute in its buffer. After
          * this function is called, no new attribute can be bound.
+         * @see bindBuffers()
          */
         MAGNUM_LOCAL void finalize();
-        #endif
 
     private:
         /** @brief Vertex attribute */
