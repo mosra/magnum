@@ -8,6 +8,9 @@ endif()
 if(TARGET_GLES)
     set(MAGNUM_TARGET_GLES 1)
 endif()
+if(TARGET_GLES2)
+    set(MAGNUM_TARGET_GLES2 1)
+endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/magnumConfigure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h)
 

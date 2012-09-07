@@ -25,6 +25,7 @@
 
 namespace Magnum {
 
+#ifndef MAGNUM_TARGET_GLES2
 /**
 @brief Base class for queries
 
@@ -338,6 +339,7 @@ class TimeQuery: public AbstractQuery {
             glQueryCounter(query, GL_TIMESTAMP);
         }
 };
+#endif
 #endif
 
 }

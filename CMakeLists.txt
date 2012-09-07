@@ -4,7 +4,8 @@ project(Magnum)
 
 include(CMakeDependentOption)
 
-option(TARGET_GLES "Build for OpenGL ES 2 instead of desktop OpenGL" OFF)
+option(TARGET_GLES "Build for OpenGL ES instead of desktop OpenGL" OFF)
+cmake_dependent_option(TARGET_GLES2 "Build for OpenGL ES 2" ON "TARGET_GLES" OFF)
 
 # Parts of the library
 option(WITH_EVERYTHING "Build everything (doesn't include contexts)" ON)
