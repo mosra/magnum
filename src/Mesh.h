@@ -53,6 +53,28 @@ class MAGNUM_EXPORT Mesh {
         /** @name Polygon drawing settings */
 
         /**
+         * @brief Front facing polygon winding
+         *
+         * @see setFrontFace()
+         */
+        enum FrontFace: GLenum {
+            /** @brief Counterclockwise polygons are front facing (default). */
+            CounterClockWise = GL_CCW,
+
+            /** @brief Clockwise polygons are front facing. */
+            ClockWise = GL_CW
+        };
+
+        /**
+         * @brief Set front-facing polygon winding
+         *
+         * Initial value is `FrontFace::%CounterClockWise`.
+         */
+        void setFrontFace(FrontFace mode) {
+            glFrontFace(static_cast<GLenum>(mode));
+        }
+
+        /**
          * @brief Provoking vertex
          *
          * @see setProvokingVertex()
