@@ -72,12 +72,18 @@ set_target_properties(MagnumObjects MagnumMathObjects PROPERTIES COMPILE_FLAGS "
 add_library(Magnum SHARED
     $<TARGET_OBJECTS:MagnumObjects>
     $<TARGET_OBJECTS:MagnumMathObjects>)
-target_link_libraries(Magnum ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY})
+set(Magnum_LIBS
+    ${CORRADE_UTILITY_LIBRARY}
+    ${CORRADE_PLUGINMANAGER_LIBRARY})
 if(NOT TARGET_GLES)
-    target_link_libraries(Magnum ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY})
+    set(Magnum_LIBS ${Magnum_LIBS}
+        ${OPENGL_gl_LIBRARY}
+        ${GLEW_LIBRARY})
 else()
-    target_link_libraries(Magnum ${OPENGLES2_LIBRARY})
+    set(Magnum_LIBS ${Magnum_LIBS}
+        ${OPENGLES2_LIBRARY})
 endif()
+target_link_libraries(Magnum ${Magnum_LIBS})
 
 install(TARGETS Magnum DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${Magnum_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
@@ -116,12 +122,7 @@ if(BUILD_TESTS)
     add_library(MagnumTestLib SHARED
         $<TARGET_OBJECTS:MagnumObjects>)
     set_target_properties(MagnumTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
-    target_link_libraries(MagnumTestLib ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY})
-    if(NOT TARGET_GLES)
-        target_link_libraries(MagnumTestLib ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY})
-    else()
-        target_link_libraries(MagnumTestLib ${OPENGLES2_LIBRARY})
-    endif()
+    target_link_libraries(MagnumTestLib ${Magnum_LIBS})
 
     add_subdirectory(Test)
 endif()
