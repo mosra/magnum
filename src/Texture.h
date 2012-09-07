@@ -114,6 +114,7 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
         /**
          * @brief Set wrapping
          * @param wrapping          Wrapping type for all texture dimensions
+         * @return Pointer to self (for method chaining)
          *
          * Sets wrapping type for coordinates out of range (0, 1) for normal
          * textures and (0, textureSizeInGivenDirection-1) for rectangle
@@ -122,9 +123,10 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
          * see @ref AbstractTexture::Wrapping "Wrapping" documentation for
          * more information.
          */
-        inline void setWrapping(const Math::Vector<Dimensions, Wrapping>& wrapping) {
+        inline Texture<Dimensions>* setWrapping(const Math::Vector<Dimensions, Wrapping>& wrapping) {
             bind();
             DataHelper<Dimensions>::setWrapping(_target, wrapping);
+            return this;
         }
 
         /**
@@ -133,13 +135,15 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
          * @param internalFormat    Internal texture format
          * @param image             Image, BufferedImage or for example
          *      Trade::ImageData of the same dimension count
+         * @return Pointer to self (for method chaining)
          *
          * Sets texture data from given image. The image is not deleted
          * afterwards.
          */
-        template<class Image> inline void setData(GLint mipLevel, InternalFormat internalFormat, Image* image) {
+        template<class Image> inline Texture<Dimensions>* setData(GLint mipLevel, InternalFormat internalFormat, Image* image) {
             bind();
             DataHelper<Dimensions>::set(_target, mipLevel, internalFormat, image);
+            return this;
         }
 
         /**
@@ -148,6 +152,7 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
          * @param offset            Offset where to put data in the texture
          * @param image             Image, BufferedImage or for example
          *      Trade::ImageData
+         * @return Pointer to self (for method chaining)
          *
          * Sets texture subdata from given image. The image is not deleted
          * afterwards. The image can have either the same dimension count or
@@ -158,9 +163,10 @@ template<size_t textureDimensions> class Texture: public AbstractTexture {
          * for e.g. updating 3D texture with multiple 2D images or for filling
          * 1D texture array (which is two-dimensional) with 1D images.
          */
-        template<class Image> inline void setSubData(GLint mipLevel, const Math::Vector<Dimensions, GLint>& offset, Image* image) {
+        template<class Image> inline Texture<Dimensions>* setSubData(GLint mipLevel, const Math::Vector<Dimensions, GLint>& offset, Image* image) {
             bind();
             DataHelper<Dimensions>::setSub(_target, mipLevel, offset, image);
+            return this;
         }
 };
 

@@ -48,23 +48,25 @@ GLfloat AbstractTexture::maxSupportedAnisotropy() {
 }
 #endif
 
-void AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
+AbstractTexture* AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE || mipmap == Mipmap::BaseLevel, "AbstractTexture: rectangle textures cannot have mipmaps", );
+    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE || mipmap == Mipmap::BaseLevel, "AbstractTexture: rectangle textures cannot have mipmaps", this);
     #endif
 
     bind();
     glTexParameteri(_target, GL_TEXTURE_MIN_FILTER,
         static_cast<GLint>(filter)|static_cast<GLint>(mipmap));
+    return this;
 }
 
-void AbstractTexture::generateMipmap() {
+AbstractTexture* AbstractTexture::generateMipmap() {
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE, "AbstractTexture: rectangle textures cannot have mipmaps", );
+    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE, "AbstractTexture: rectangle textures cannot have mipmaps", this);
     #endif
 
     bind();
     glGenerateMipmap(_target);
+    return this;
 }
 
 #ifndef MAGNUM_TARGET_GLES

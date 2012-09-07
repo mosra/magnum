@@ -587,6 +587,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @param mipmap        Mipmap filtering. If set to anything else than
          *      BaseMipLevel, make sure textures for all mip levels are set or
          *      call generateMipmap().
+         * @return Pointer to self (for method chaining)
          *
          * Sets filter used when the object pixel size is smaller than the
          * texture size.
@@ -595,55 +596,62 @@ class MAGNUM_EXPORT AbstractTexture {
          * @ref AbstractTexture::Mipmap "Mipmap" documentation for more
          * information.
          */
-        void setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::BaseLevel);
+        AbstractTexture* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::BaseLevel);
 
         /**
          * @brief Set magnification filter
          * @param filter        Filter
+         * @return Pointer to self (for method chaining)
          *
          * Sets filter used when the object pixel size is larger than largest
          * texture size.
          */
-        inline void setMagnificationFilter(Filter filter) {
+        inline AbstractTexture* setMagnificationFilter(Filter filter) {
             bind();
             glTexParameteri(_target, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(filter));
+            return this;
         }
 
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Set border color
+         * @return Pointer to self (for method chaining)
          *
          * Border color when @ref AbstractTexture::Wrapping "wrapping" is set
          * to `ClampToBorder`.
          * @requires_gl
          */
-        inline void setBorderColor(const Color4<GLfloat>& color) {
+        inline AbstractTexture* setBorderColor(const Color4<GLfloat>& color) {
             bind();
             glTexParameterfv(_target, GL_TEXTURE_BORDER_COLOR, color.data());
+            return this;
         }
 
         /**
          * @brief Set max anisotropy
+         * @return Pointer to self (for method chaining)
          *
          * Default value is `1.0`, which means no anisotropy. Set to value
          * greater than `1.0` for anisotropic filtering.
          * @see maxSupportedAnisotropy()
          * @requires_extension @extension{EXT,texture_filter_anisotropic}
          */
-        inline void setMaxAnisotropy(GLfloat anisotropy) {
+        inline AbstractTexture* setMaxAnisotropy(GLfloat anisotropy) {
             bind();
             glTexParameterf(_target, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
+            return this;
         }
         #endif
 
         /**
          * @brief Generate mipmap
+         * @return Pointer to self (for method chaining)
          *
          * Can not be used for rectangle textures.
          * @see setMinificationFilter()
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        void generateMipmap();
+        AbstractTexture* generateMipmap();
 
     protected:
         #ifndef DOXYGEN_GENERATING_OUTPUT
