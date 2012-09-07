@@ -19,6 +19,7 @@
  * @brief Class Magnum::Buffer
  */
 
+#include <cstddef>
 #include <vector>
 
 #include "Magnum.h"

@@ -19,6 +19,8 @@
  * @brief Class Magnum::AbstractImage
  */
 
+#include <cstddef>
+
 #include "Magnum.h"
 
 #include "magnumVisibility.h"

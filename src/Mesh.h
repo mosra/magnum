@@ -75,6 +75,7 @@ class MAGNUM_EXPORT Mesh {
             glFrontFace(static_cast<GLenum>(mode));
         }
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Provoking vertex
          *
@@ -105,6 +106,7 @@ class MAGNUM_EXPORT Mesh {
         inline static void setProvokingVertex(ProvokingVertex mode) {
             glProvokingVertex(static_cast<GLenum>(mode));
         }
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -155,7 +157,10 @@ class MAGNUM_EXPORT Mesh {
          */
         enum class PolygonOffsetMode: GLenum {
             /** Offset filled polygons. */
-            Fill = GL_POLYGON_OFFSET_FILL,
+            Fill = GL_POLYGON_OFFSET_FILL
+
+            #ifndef MAGNUM_TARGET_GLES
+            ,
 
             /**
              * Offset lines.
@@ -168,6 +173,7 @@ class MAGNUM_EXPORT Mesh {
              * @requires_gl Only <tt>PolygonOffset::%Fill</tt> is supported.
              */
             Point = GL_POLYGON_OFFSET_POINT
+            #endif
         };
 
         /**
