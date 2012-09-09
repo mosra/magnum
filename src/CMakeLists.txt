@@ -22,6 +22,7 @@ set(Magnum_SRCS
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
     BufferedTexture.cpp
+    Context.cpp
     Framebuffer.cpp
     IndexedMesh.cpp
     Mesh.cpp
@@ -42,8 +43,10 @@ set(Magnum_HEADERS
     BufferedTexture.h
     Buffer.h
     Color.h
+    Context.h
     CubeMapTextureArray.h
     CubeMapTexture.h
+    Extensions.h
     Framebuffer.h
     Image.h
     ImageWrapper.h
