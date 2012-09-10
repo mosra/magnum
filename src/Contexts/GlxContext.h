@@ -21,6 +21,9 @@
 
 #include "Magnum.h"
 #include <GL/glx.h>
+/* undef Xlib nonsense to avoid conflicts */
+#undef None
+#undef Always
 
 #include "AbstractContext.h"
 

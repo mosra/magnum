@@ -18,6 +18,8 @@
 #include <GL/glxext.h>
 #include <Utility/Debug.h>
 
+#define None 0L // redef Xlib nonsense
+
 namespace Magnum { namespace Contexts {
 
 VisualID GlxContext::getVisualId(Display* nativeDisplay) {
