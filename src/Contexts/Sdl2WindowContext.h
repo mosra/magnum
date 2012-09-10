@@ -27,7 +27,11 @@
 
 #include "AbstractWindowContext.h"
 
-namespace Magnum { namespace Contexts {
+namespace Magnum {
+
+class Context;
+
+namespace Contexts {
 
 /** @nosubgrouping
 @brief SDL2 context
@@ -178,6 +182,8 @@ class Sdl2WindowContext: public AbstractWindowContext {
     private:
         SDL_Window* window;
         SDL_GLContext context;
+
+        Context* c;
 
         bool _redraw;
 };

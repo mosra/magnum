@@ -28,7 +28,11 @@
 
 #include "AbstractWindowContext.h"
 
-namespace Magnum { namespace Contexts {
+namespace Magnum {
+
+class Context;
+
+namespace Contexts {
 
 /** @nosubgrouping
 @brief GLUT context
@@ -51,6 +55,8 @@ class GlutWindowContext: public AbstractWindowContext {
          * Creates double-buffered RGBA window with depth and stencil buffers.
          */
         GlutWindowContext(int& argc, char** argv, const std::string& title = "Magnum GLUT context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
+
+        ~GlutWindowContext();
 
         inline int exec() {
             glutMainLoop();
@@ -246,6 +252,8 @@ class GlutWindowContext: public AbstractWindowContext {
 
         int& argc;
         char** argv;
+
+        Context* c;
 };
 
 /* Implementations for inline functions with unused parameters */

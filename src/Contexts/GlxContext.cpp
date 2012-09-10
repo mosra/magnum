@@ -18,6 +18,8 @@
 #include <GL/glxext.h>
 #include <Utility/Debug.h>
 
+#include "Context.h"
+
 #define None 0L // redef Xlib nonsense
 
 namespace Magnum { namespace Contexts {
@@ -83,9 +85,13 @@ void GlxContext::createContext(Window nativeWindow) {
         Error() << "GlxContext: cannot create context.";
         exit(1);
     }
+
+    c = new Context;
 }
 
 GlxContext::~GlxContext() {
+    delete c;
+
     glXMakeCurrent(display, None, nullptr);
     glXDestroyContext(display, context);
 }

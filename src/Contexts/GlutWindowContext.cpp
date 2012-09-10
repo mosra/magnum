@@ -15,6 +15,7 @@
 
 #include "GlutWindowContext.h"
 
+#include "Context.h"
 #include "ExtensionWrangler.h"
 
 namespace Magnum { namespace Contexts {
@@ -38,6 +39,12 @@ GlutWindowContext::GlutWindowContext(int& argc, char** argv, const std::string& 
     glutDisplayFunc(staticDrawEvent);
 
     ExtensionWrangler::initialize();
+
+    c = new Context;
+}
+
+GlutWindowContext::~GlutWindowContext() {
+    delete c;
 }
 
 }}

@@ -14,6 +14,8 @@
 */
 
 #include "Sdl2WindowContext.h"
+
+#include "Context.h"
 #include "ExtensionWrangler.h"
 
 namespace Magnum { namespace Contexts {
@@ -52,9 +54,13 @@ Sdl2WindowContext::Sdl2WindowContext(int, char**, const std::string& name, const
     sizeEvent->window.data1 = size.x();
     sizeEvent->window.data2 = size.y();
     SDL_PushEvent(sizeEvent);
+
+    c = new Context;
 }
 
 Sdl2WindowContext::~Sdl2WindowContext() {
+    delete c;
+
     SDL_GL_DeleteContext(context);
     SDL_DestroyWindow(window);
     SDL_Quit();
