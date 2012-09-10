@@ -66,8 +66,8 @@ static const GLint SpecularTextureUniform = 3;
 @code
 MyShader() {
     // Load shaders from file and attach them to the program
-    attachShader(Shader::fromFile(Shader::Type::Vertex, "PhongShader.vert"));
-    attachShader(Shader::fromFile(Shader::Type::Fragment, "PhongShader.frag"));
+    attachShader(Shader::fromFile(Version::430, Shader::Type::Vertex, "PhongShader.vert"));
+    attachShader(Shader::fromFile(Version::430, Shader::Type::Fragment, "PhongShader.frag"));
 
     // Link
     link();

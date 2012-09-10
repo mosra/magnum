@@ -23,6 +23,7 @@
 #include <string>
 
 #include "Magnum.h"
+#include "Context.h"
 
 #include "magnumVisibility.h"
 
@@ -86,54 +87,56 @@ class MAGNUM_EXPORT Shader {
 
         /**
          * @brief Load shader from source
+         * @param version   Target version
          * @param type      %Shader type
          * @param source    %Shader source
          * @return Shader instance
          *
          * Loads the shader from one source. Shorthand for
          * @code
-         * Shader s(type);
+         * Shader s(version, type);
          * s.addData(data);
          * @endcode
          * Note that it is also possible to create shader from more than one
          * source.
          */
-        inline static Shader fromData(Type type, const std::string& source) {
-            Shader s(type);
+        inline static Shader fromData(Version version, Type type, const std::string& source) {
+            Shader s(version, type);
             s.addSource(source);
             return s;
         }
 
         /**
          * @brief Load shader from file
+         * @param version   Target version
          * @param type      %Shader type
-         * @param filename  %Source filename
+         * @param filename  Source filename
          * @return Shader instance
          *
          * Loads the shader from from one file. Shorthand for
          * @code
-         * Shader s(type);
+         * Shader s(version, type);
          * s.addFile(filename);
          * @endcode
          * Note that it is also possible to create shader from more than one
          * source.
          */
-        inline static Shader fromFile(Type type, const char* filename) {
-            Shader s(type);
+        inline static Shader fromFile(Version version, Type type, const char* filename) {
+            Shader s(version, type);
             s.addFile(filename);
             return s;
         }
 
         /**
          * @brief Constructor
+         * @param version   Target version
+         * @param type      %Shader type
          *
-         * Creates empty OpenGL shader. Sources can be added with addSource()
-         * or addFile().
+         * Creates empty OpenGL shader and adds @c \#version directive at the
+         * beginning. Sources can be added with addSource() or addFile().
          * @see fromData(), fromFile(), @fn_gl{CreateShader}
          */
-        inline Shader(Type type): _type(type), _state(State::Initialized), shader(0) {
-            shader = glCreateShader(static_cast<GLenum>(_type));
-        }
+        Shader(Version version, Type type);
 
         /**
          * @brief Destructor

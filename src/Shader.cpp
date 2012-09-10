@@ -29,6 +29,29 @@ using namespace std;
 
 namespace Magnum {
 
+Shader::Shader(Version version, Type type): _type(type), _state(State::Initialized), shader(0) {
+    shader = glCreateShader(static_cast<GLenum>(_type));
+
+    switch(version) {
+        #ifndef MAGNUM_TARGET_GLES
+        case Version::GL210: addSource("#version 120\n"); break;
+        case Version::GL300: addSource("#version 130\n"); break;
+        case Version::GL310: addSource("#version 140\n"); break;
+        case Version::GL320: addSource("#version 150\n"); break;
+        case Version::GL330: addSource("#version 330\n"); break;
+        case Version::GL400: addSource("#version 400\n"); break;
+        case Version::GL410: addSource("#version 410\n"); break;
+        case Version::GL420: addSource("#version 420\n"); break;
+        case Version::GL430: addSource("#version 430\n"); break;
+        #else
+        case Version::GLES200: addSource("#version 100\n"); break;
+        case Version::GLES300: addSource("#version 300\n"); break;
+        #endif
+
+        default: break;
+    }
+}
+
 Shader::Shader(Shader&& other): _type(other._type), _state(other._state), sources(other.sources), shader(other.shader) {
     other.shader = 0;
 }

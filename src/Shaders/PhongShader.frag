@@ -1,5 +1,3 @@
-#version 330
-
 uniform vec3 ambientColor = vec3(0.0, 0.0, 0.0);
 uniform vec3 diffuseColor;
 uniform vec3 specularColor = vec3(1.0, 1.0, 1.0);

@@ -1,5 +1,3 @@
-#version 330
-
 uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 uniform vec3 light;
