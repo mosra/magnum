@@ -73,12 +73,8 @@ void MathTest::denormalize() {
 
     CORRADE_COMPARE(Math::denormalize<int>(1.0), numeric_limits<int>::max());
     CORRADE_COMPARE(Math::denormalize<unsigned int>(1.0), numeric_limits<unsigned int>::max());
-
-    {
-        CORRADE_EXPECT_FAIL("Denormalize doesn't work for large types well");
-        CORRADE_COMPARE((Math::denormalize<long long, long double>(1.0)), numeric_limits<long long>::max());
-        CORRADE_COMPARE((Math::denormalize<unsigned long long, long double>(1.0)), numeric_limits<unsigned long long>::max());
-    }
+    CORRADE_COMPARE((Math::denormalize<long long, long double>(1.0)), numeric_limits<long long>::max());
+    CORRADE_COMPARE((Math::denormalize<unsigned long long, long double>(1.0)), numeric_limits<unsigned long long>::max());
 }
 
 void MathTest::clamp() {
