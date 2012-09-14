@@ -32,7 +32,7 @@ namespace Magnum { namespace Contexts {
 /**
 @brief GLX interface
 
-Creates OpenGL 3.3 core context or OpenGL ES 2.0 context, if targetting
+Creates OpenGL 3.2 core context or OpenGL ES 2.0 context, if targetting
 OpenGL ES.
 
 Used in GlxWindowContext.

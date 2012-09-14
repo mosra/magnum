@@ -67,7 +67,7 @@ void GlxContextHandler::createContext(Window nativeWindow) {
     GLint attributes[] = {
         #ifndef MAGNUM_TARGET_GLES
         GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
-        GLX_CONTEXT_MINOR_VERSION_ARB, 3,
+        GLX_CONTEXT_MINOR_VERSION_ARB, 2,
         GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
         #else
         GLX_CONTEXT_MAJOR_VERSION_ARB, 2,

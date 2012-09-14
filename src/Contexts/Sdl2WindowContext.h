@@ -52,7 +52,7 @@ class Sdl2WindowContext: public AbstractWindowContext {
          * @param size      Window size
          *
          * Creates centered non-resizable window with double-buffered
-         * OpenGL 3.3 context with 24bit depth buffer.
+         * OpenGL 3.2 context with 24bit depth buffer.
          */
         Sdl2WindowContext(int argc, char** argv, const std::string& title = "Magnum SDL2 window context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
 
