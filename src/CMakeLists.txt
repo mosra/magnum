@@ -31,6 +31,7 @@ set(Magnum_SRCS
     Renderbuffer.cpp
     Shader.cpp
     SizeTraits.cpp
+    Timeline.cpp
     TypeTraits.cpp
 
     Trade/AbstractImporter.cpp
@@ -60,6 +61,7 @@ set(Magnum_HEADERS
     SizeTraits.h
     Swizzle.h
     Texture.h
+    Timeline.h
     TypeTraits.h
 
     magnumVisibility.h)
