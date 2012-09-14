@@ -27,8 +27,6 @@ typedef Math::Vector2<int> Vector2;
 typedef Math::Vector3<int> Vector3;
 typedef Math::Vector4<int> Vector4;
 
-template<size_t size> using Vector = Math::Vector<size, int>;
-
 SwizzleTest::SwizzleTest() {
     addTests(&SwizzleTest::xyzw,
              &SwizzleTest::rgba,
@@ -81,10 +79,10 @@ void SwizzleTest::type() {
 
 void SwizzleTest::defaultType() {
     Vector4 orig(1, 2, 3, 4);
-    CORRADE_COMPARE(swizzle<'b'>(orig), Vector<1>(3));
-    CORRADE_COMPARE(swizzle(orig, "b"), Vector<1>(3));
-    CORRADE_COMPARE((swizzle<'b', 'r', 'a', 'g', 'z', 'y', 'x'>(orig)), Vector<7>(3, 1, 4, 2, 3, 2, 1));
-    CORRADE_COMPARE(swizzle(orig, "bragzyx"), Vector<7>(3, 1, 4, 2, 3, 2, 1));
+    CORRADE_COMPARE(swizzle<'b'>(orig), (Math::Vector<1, int>(3)));
+    CORRADE_COMPARE(swizzle(orig, "b"), (Math::Vector<1, int>(3)));
+    CORRADE_COMPARE((swizzle<'b', 'r', 'a', 'g', 'z', 'y', 'x'>(orig)), (Math::Vector<7, int>(3, 1, 4, 2, 3, 2, 1)));
+    CORRADE_COMPARE(swizzle(orig, "bragzyx"), (Math::Vector<7, int>(3, 1, 4, 2, 3, 2, 1)));
 }
 
 }}
