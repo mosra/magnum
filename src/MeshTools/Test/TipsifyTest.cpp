@@ -15,8 +15,6 @@
 
 #include "TipsifyTest.h"
 
-#include <QtTest/QTest>
-
 #include "MeshTools/Tipsify.h"
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::TipsifyTest)
