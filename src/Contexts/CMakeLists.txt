@@ -7,8 +7,8 @@ set(MagnumContexts_HEADERS
     ExtensionWrangler.h)
 install(FILES ${MagnumContexts_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
 
-# GLUT context
-if(WITH_GLUTCONTEXT)
+# GLUT window context
+if(WITH_GLUTWINDOWCONTEXT)
     find_package(GLUT)
     if(GLUT_FOUND)
         add_library(MagnumGlutWindowContext STATIC
@@ -17,12 +17,12 @@ if(WITH_GLUTCONTEXT)
         install(FILES GlutWindowContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
         install(TARGETS MagnumGlutWindowContext DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
     else()
-        message(FATAL_ERROR "GLUT library, required by GlutWindowContext, was not found. Set WITH_GLUTCONTEXT to OFF to skip building it.")
+        message(FATAL_ERROR "GLUT library, required by GlutWindowContext, was not found. Set WITH_GLUTWINDOWCONTEXT to OFF to skip building it.")
     endif()
 endif()
 
-# SDL2 context
-if(WITH_SDL2CONTEXT)
+# SDL2 window context
+if(WITH_SDL2WINDOWCONTEXT)
     find_package(SDL2)
     if(SDL2_FOUND)
         include_directories(${SDL2_INCLUDE_DIR})
@@ -32,14 +32,14 @@ if(WITH_SDL2CONTEXT)
         install(FILES Sdl2WindowContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
         install(TARGETS MagnumSdl2WindowContext DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
     else()
-        message(FATAL_ERROR "SDL2 library, required by Sdl2WindowContext, was not found. Set WITH_SDL2CONTEXT to OFF to skip building it.")
+        message(FATAL_ERROR "SDL2 library, required by Sdl2WindowContext, was not found. Set WITH_SDL2WINDOWCONTEXT to OFF to skip building it.")
     endif()
 endif()
 
-# GLX context
-if(WITH_GLXCONTEXT)
-    set(NEED_ABSTRACTXCONTEXT 1)
-    set(NEED_GLXINTERFACE 1)
+# GLX window context
+if(WITH_GLXWINDOWCONTEXT)
+    set(NEED_ABSTRACTXWINDOWCONTEXT 1)
+    set(NEED_GLXCONTEXT 1)
     add_library(MagnumGlxWindowContext STATIC
         $<TARGET_OBJECTS:MagnumAbstractXWindowContext>
         $<TARGET_OBJECTS:MagnumGlxContext>
@@ -48,10 +48,10 @@ if(WITH_GLXCONTEXT)
     install(TARGETS MagnumGlxWindowContext DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
-# X/EGL context
-if(WITH_XEGLCONTEXT)
-    set(NEED_ABSTRACTXCONTEXT 1)
-    set(NEED_EGLINTERFACE 1)
+# X/EGL window context
+if(WITH_XEGLWINDOWCONTEXT)
+    set(NEED_ABSTRACTXWINDOWCONTEXT 1)
+    set(NEED_EGLCONTEXT 1)
     add_library(MagnumXEglWindowContext STATIC
         $<TARGET_OBJECTS:MagnumAbstractXWindowContext>
         $<TARGET_OBJECTS:MagnumEglContext>
@@ -60,11 +60,11 @@ if(WITH_XEGLCONTEXT)
     install(TARGETS MagnumXEglWindowContext DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
-# Abstract X context
-if(NEED_ABSTRACTXCONTEXT)
+# Abstract X window context
+if(NEED_ABSTRACTXWINDOWCONTEXT)
     find_package(X11)
     if(NOT X11_FOUND)
-        message(FATAL_ERROR "X11 library, required by some contexts, was not found. Set WITH_*X*CONTEXT to OFF to skip building them.")
+        message(FATAL_ERROR "X11 library, required by some contexts, was not found. Set WITH_*X*WINDOWCONTEXT to OFF to skip building them.")
     endif()
     add_library(MagnumAbstractXWindowContext OBJECT AbstractXWindowContext.cpp)
     # X11 macros are a mess, disable warnings for C-style casts
@@ -72,19 +72,19 @@ if(NEED_ABSTRACTXCONTEXT)
     install(FILES AbstractXWindowContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
 endif()
 
-# GLX interface
-if(NEED_GLXINTERFACE)
+# GLX window context
+if(NEED_GLXCONTEXT)
     add_library(MagnumGlxContext OBJECT GlxContext.cpp)
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumGlxContext PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
     install(FILES GlxContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
 endif()
 
-# EGL interface
-if(NEED_EGLINTERFACE)
+# EGL context
+if(NEED_EGLCONTEXT)
     find_package(EGL)
     if(NOT EGL_FOUND)
-        message(FATAL_ERROR "EGL library, required by some contexts, was not found. Set WITH_*EGL*CONTEXT to OFF to skip building them.")
+        message(FATAL_ERROR "EGL library, required by some window contexts, was not found. Set WITH_*EGL*WINDOWCONTEXT to OFF to skip building them.")
     endif()
     add_library(MagnumEglContext OBJECT EglContext.cpp)
     # X11 macros are a mess, disable warnings for C-style casts

@@ -15,10 +15,10 @@ option(WITH_PRIMITIVES "Builf Primitives library" OFF)
 option(WITH_SCENEGRAPH "Build SceneGraph library" OFF)
 option(WITH_SHADERS "Build Shaders library" OFF)
 
-option(WITH_GLXCONTEXT "Build GlxContext library" OFF)
-cmake_dependent_option(WITH_XEGLCONTEXT "Build XEglContext library" OFF "TARGET_GLES" OFF)
-cmake_dependent_option(WITH_GLUTCONTEXT "Build GlutContext library" OFF "NOT TARGET_GLES" OFF)
-option(WITH_SDL2CONTEXT "Build Sdl2Context library" OFF)
+option(WITH_GLXWINDOWCONTEXT "Build GlxWindowContext library" OFF)
+cmake_dependent_option(WITH_XEGLWINDOWCONTEXT "Build XEglWindowContext library" OFF "TARGET_GLES" OFF)
+cmake_dependent_option(WITH_GLUTWINDOWCONTEXT "Build GlutWindowContext library" OFF "NOT TARGET_GLES" OFF)
+option(WITH_SDL2WINDOWCONTEXT "Build Sdl2WindowContext library" OFF)
 
 option(BUILD_TESTS "Build unit tests." OFF)
 
