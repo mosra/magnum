@@ -58,7 +58,7 @@ class AbstractXWindowContext: public AbstractWindowContext {
          *
          * Creates window with double-buffered OpenGL ES 2 context.
          */
-        AbstractXWindowContext(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int& argc, char** argv, const std::string& title = "Magnum X/EGL context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
+        AbstractXWindowContext(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int& argc, char** argv, const std::string& title = "Magnum X window context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
 
         /**
          * @brief Destructor

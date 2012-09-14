@@ -54,7 +54,7 @@ class GlutWindowContext: public AbstractWindowContext {
          *
          * Creates double-buffered RGBA window with depth and stencil buffers.
          */
-        GlutWindowContext(int& argc, char** argv, const std::string& title = "Magnum GLUT context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
+        GlutWindowContext(int& argc, char** argv, const std::string& title = "Magnum GLUT window context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
 
         ~GlutWindowContext();
 

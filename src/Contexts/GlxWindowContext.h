@@ -41,7 +41,7 @@ class GlxWindowContext: public AbstractXWindowContext {
          * Creates window with double-buffered OpenGL 3.3 core context or
          * OpenGL ES 2.0 context, if targetting OpenGL ES.
          */
-        inline GlxWindowContext(int& argc, char** argv, const std::string& title = "Magnum GLX context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600)): AbstractXWindowContext(new GlxContextHandler, argc, argv, title, size) {}
+        inline GlxWindowContext(int& argc, char** argv, const std::string& title = "Magnum GLX window context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600)): AbstractXWindowContext(new GlxContextHandler, argc, argv, title, size) {}
 };
 
 }}
