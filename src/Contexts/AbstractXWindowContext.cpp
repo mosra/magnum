@@ -27,12 +27,12 @@ using namespace std;
 
 namespace Magnum { namespace Contexts {
 
-AbstractXWindowContext::AbstractXWindowContext(AbstractContext<Display*, VisualID, Window>* glInterface, int&, char**, const string& title, const Math::Vector2<GLsizei>& size): glInterface(glInterface), viewportSize(size), flags(Flag::Redraw) {
+AbstractXWindowContext::AbstractXWindowContext(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int&, char**, const string& title, const Math::Vector2<GLsizei>& size): contextHandler(contextHandler), viewportSize(size), flags(Flag::Redraw) {
     /* Get default X display */
     display = XOpenDisplay(0);
 
     /* Get visual ID */
-    VisualID visualId = glInterface->getVisualId(display);
+    VisualID visualId = contextHandler->getVisualId(display);
 
     /* Get visual info */
     XVisualInfo *visInfo, visTemplate;
@@ -61,16 +61,16 @@ AbstractXWindowContext::AbstractXWindowContext(AbstractContext<Display*, VisualI
     XSetWMProtocols(display, window, &deleteWindow, 1);
 
     /* Create context */
-    glInterface->createContext(window);
+    contextHandler->createContext(window);
 
     /* Capture exposure, keyboard and mouse button events */
     XSelectInput(display, window, INPUT_MASK);
 
     /* Set OpenGL context as current */
-    glInterface->makeCurrent();
+    contextHandler->makeCurrent();
 
     /* Initialize extension wrangler */
-    ExtensionWrangler::initialize(glInterface->experimentalExtensionWranglerFeatures());
+    ExtensionWrangler::initialize(contextHandler->experimentalExtensionWranglerFeatures());
 
     c = new Context;
 }
@@ -78,8 +78,8 @@ AbstractXWindowContext::AbstractXWindowContext(AbstractContext<Display*, VisualI
 AbstractXWindowContext::~AbstractXWindowContext() {
     delete c;
 
-    /* Shut down the interface */
-    delete glInterface;
+    /* Shut down context handler */
+    delete contextHandler;
 
     /* Shut down X */
     XDestroyWindow(display, window);

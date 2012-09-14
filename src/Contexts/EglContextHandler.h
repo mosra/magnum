@@ -1,5 +1,5 @@
-#ifndef Magnum_Contexts_EglContext_h
-#define Magnum_Contexts_EglContext_h
+#ifndef Magnum_Contexts_EglContextHandler_h
+#define Magnum_Contexts_EglContextHandler_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Contexts::EglContext
+ * @brief Class Magnum::Contexts::EglContextHandler
  */
 
 #include "Magnum.h"
@@ -26,7 +26,7 @@
 #endif
 #include <EGL/egl.h>
 
-#include "AbstractContext.h"
+#include "AbstractContextHandler.h"
 
 namespace Magnum { namespace Contexts {
 
@@ -44,9 +44,9 @@ typedef EGLInt VisualId;
 
 Used in XEglWindowContext.
 */
-class EglContext: public AbstractContext<EGLNativeDisplayType, VisualId, EGLNativeWindowType> {
+class EglContextHandler: public AbstractContextHandler<EGLNativeDisplayType, VisualId, EGLNativeWindowType> {
     public:
-        ~EglContext();
+        ~EglContextHandler();
 
         VisualId getVisualId(EGLNativeDisplayType nativeDisplay);
         void createContext(EGLNativeWindowType nativeWindow);

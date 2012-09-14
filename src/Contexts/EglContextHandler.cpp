@@ -13,19 +13,19 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "EglContext.h"
+#include "EglContextHandler.h"
 
 #include "Context.h"
 
 namespace Magnum { namespace Contexts {
 
-EglContext::~EglContext() {
+EglContextHandler::~EglContextHandler() {
     eglDestroyContext(display, context);
     eglDestroySurface(display, surface);
     eglTerminate(display);
 }
 
-VisualId EglContext::getVisualId(EGLNativeDisplayType nativeDisplay) {
+VisualId EglContextHandler::getVisualId(EGLNativeDisplayType nativeDisplay) {
     /* Initialize */
     display = eglGetDisplay(nativeDisplay);
     eglInitialize(display, 0, 0);
@@ -64,7 +64,7 @@ VisualId EglContext::getVisualId(EGLNativeDisplayType nativeDisplay) {
     return visualId;
 }
 
-void EglContext::createContext(EGLNativeWindowType window) {
+void EglContextHandler::createContext(EGLNativeWindowType window) {
     static const EGLint contextAttributes[] = {
         #ifdef MAGNUM_TARGET_GLES
         EGL_CONTEXT_CLIENT_VERSION, 2,

@@ -31,7 +31,7 @@
 
 #include "Math/Vector2.h"
 #include "AbstractWindowContext.h"
-#include "AbstractContext.h"
+#include "AbstractContextHandler.h"
 
 namespace Magnum {
 
@@ -50,7 +50,7 @@ class AbstractXWindowContext: public AbstractWindowContext {
     public:
         /**
          * @brief Constructor
-         * @param glInterface   Interface to OpenGL
+         * @param contextHandler OpenGL context handler
          * @param argc          Count of arguments of `main()` function
          * @param argv          Arguments of `main()` function
          * @param title         Window title
@@ -58,7 +58,7 @@ class AbstractXWindowContext: public AbstractWindowContext {
          *
          * Creates window with double-buffered OpenGL ES 2 context.
          */
-        AbstractXWindowContext(AbstractContext<Display*, VisualID, Window>* glInterface, int& argc, char** argv, const std::string& title = "Magnum X/EGL context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
+        AbstractXWindowContext(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int& argc, char** argv, const std::string& title = "Magnum X/EGL context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
 
         /**
          * @brief Destructor
@@ -82,7 +82,7 @@ class AbstractXWindowContext: public AbstractWindowContext {
         virtual void drawEvent() = 0;
 
         /** @copydoc GlutWindowContext::swapBuffers() */
-        inline void swapBuffers() { glInterface->swapBuffers(); }
+        inline void swapBuffers() { contextHandler->swapBuffers(); }
 
         /** @copydoc GlutWindowContext::redraw() */
         inline void redraw() { flags |= Flag::Redraw; }
@@ -281,7 +281,7 @@ class AbstractXWindowContext: public AbstractWindowContext {
         Window window;
         Atom deleteWindow;
 
-        AbstractContext<Display*, VisualID, Window>* glInterface;
+        AbstractContextHandler<Display*, VisualID, Window>* contextHandler;
 
         Context* c;
 

@@ -1,5 +1,5 @@
-#ifndef Magnum_Contexts_GlxContext_h
-#define Magnum_Contexts_GlxContext_h
+#ifndef Magnum_Contexts_GlxContextHandler_h
+#define Magnum_Contexts_GlxContextHandler_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Contexts::GlxContext
+ * @brief Class Magnum::Contexts::GlxContextHandler
  */
 
 #include "Magnum.h"
@@ -25,7 +25,7 @@
 #undef None
 #undef Always
 
-#include "AbstractContext.h"
+#include "AbstractContextHandler.h"
 
 namespace Magnum { namespace Contexts {
 
@@ -37,9 +37,9 @@ OpenGL ES.
 
 Used in GlxWindowContext.
 */
-class GlxContext: public AbstractContext<Display*, VisualID, Window> {
+class GlxContextHandler: public AbstractContextHandler<Display*, VisualID, Window> {
     public:
-        ~GlxContext();
+        ~GlxContextHandler();
 
         VisualID getVisualId(Display* nativeDisplay);
         void createContext(Window nativeWindow);

@@ -2,7 +2,7 @@
 add_library(MagnumContextsExtensionWrangler OBJECT ExtensionWrangler.cpp)
 
 set(MagnumContexts_HEADERS
-    AbstractContext.h
+    AbstractContextHandler.h
     AbstractWindowContext.h
     ExtensionWrangler.h)
 install(FILES ${MagnumContexts_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
@@ -42,7 +42,7 @@ if(WITH_GLXWINDOWCONTEXT)
     set(NEED_GLXCONTEXT 1)
     add_library(MagnumGlxWindowContext STATIC
         $<TARGET_OBJECTS:MagnumAbstractXWindowContext>
-        $<TARGET_OBJECTS:MagnumGlxContext>
+        $<TARGET_OBJECTS:MagnumGlxContextHandler>
         $<TARGET_OBJECTS:MagnumContextsExtensionWrangler>)
     install(FILES GlxWindowContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
     install(TARGETS MagnumGlxWindowContext DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
@@ -54,7 +54,7 @@ if(WITH_XEGLWINDOWCONTEXT)
     set(NEED_EGLCONTEXT 1)
     add_library(MagnumXEglWindowContext STATIC
         $<TARGET_OBJECTS:MagnumAbstractXWindowContext>
-        $<TARGET_OBJECTS:MagnumEglContext>
+        $<TARGET_OBJECTS:MagnumEglContextHandler>
         $<TARGET_OBJECTS:MagnumContextsExtensionWrangler>)
     install(FILES XEglWindowContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
     install(TARGETS MagnumXEglWindowContext DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
@@ -74,10 +74,10 @@ endif()
 
 # GLX window context
 if(NEED_GLXCONTEXT)
-    add_library(MagnumGlxContext OBJECT GlxContext.cpp)
+    add_library(MagnumGlxContextHandler OBJECT GlxContextHandler.cpp)
     # X11 macros are a mess, disable warnings for C-style casts
-    set_target_properties(MagnumGlxContext PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
-    install(FILES GlxContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
+    set_target_properties(MagnumGlxContextHandler PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
+    install(FILES GlxContextHandler.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
 endif()
 
 # EGL context
@@ -86,8 +86,8 @@ if(NEED_EGLCONTEXT)
     if(NOT EGL_FOUND)
         message(FATAL_ERROR "EGL library, required by some window contexts, was not found. Set WITH_*EGL*WINDOWCONTEXT to OFF to skip building them.")
     endif()
-    add_library(MagnumEglContext OBJECT EglContext.cpp)
+    add_library(MagnumEglContextHandler OBJECT EglContextHandler.cpp)
     # X11 macros are a mess, disable warnings for C-style casts
-    set_target_properties(MagnumEglContext PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
-    install(FILES EglContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
+    set_target_properties(MagnumEglContextHandler PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
+    install(FILES EglContextHandler.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
 endif()

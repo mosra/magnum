@@ -1,5 +1,5 @@
-#ifndef Magnum_Contexts_AbstractContext_h
-#define Magnum_Contexts_AbstractContext_h
+#ifndef Magnum_Contexts_AbstractContextHandler_h
+#define Magnum_Contexts_AbstractContextHandler_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,29 +16,29 @@
 */
 
 /** @file
- * @brief Class Magnum::Contexts::AbstractContext
+ * @brief Class Magnum::Contexts::AbstractContextHandler
  */
 
 #include "ExtensionWrangler.h"
 
 namespace Magnum { namespace Contexts {
 
-/** @brief Base for OpenGL contexts */
-template<class Display, class VisualId, class Window> class AbstractContext {
+/** @brief Base for OpenGL context handlers */
+template<class Display, class VisualId, class Window> class AbstractContextHandler {
     public:
         /**
          * @brief Get visual ID
          *
-         * Initializes the interface on given display and returns visual ID.
+         * Initializes the handler on given display and returns visual ID.
          */
         virtual VisualId getVisualId(Display nativeDisplay) = 0;
 
         /**
          * @brief Destructor
          *
-         * Finalizes and closes the interface.
+         * Finalizes and closes the handler.
          */
-        virtual ~AbstractContext() {}
+        virtual ~AbstractContextHandler() {}
 
         /** @brief Create context */
         virtual void createContext(Window nativeWindow) = 0;
