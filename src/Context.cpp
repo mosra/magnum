@@ -165,13 +165,26 @@ Context::Context() {
             futureExtensions.insert(make_pair(extension._string, extension));
 
     /* Check for presence of extensions in future versions */
-    GLuint index = 0;
-    const char* extension;
-    while((extension = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, index++)))) {
-        auto found = futureExtensions.find(extension);
-        if(found != futureExtensions.end()) {
-            _supportedExtensions.push_back(found->second);
-            extensionStatus.set(found->second._index);
+    if(isVersionSupported(Version::GL300)) {
+        GLuint index = 0;
+        const char* extension;
+        while((extension = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, index++)))) {
+            auto found = futureExtensions.find(extension);
+            if(found != futureExtensions.end()) {
+                _supportedExtensions.push_back(found->second);
+                extensionStatus.set(found->second._index);
+            }
+        }
+
+    /* OpenGL 2.1 doesn't have glGetStringi() */
+    } else {
+        vector<string> extensions = Corrade::Utility::split(reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS)), ' ');
+        for(const string& extension: extensions) {
+            auto found = futureExtensions.find(extension);
+            if(found != futureExtensions.end()) {
+                _supportedExtensions.push_back(found->second);
+                extensionStatus.set(found->second._index);
+            }
         }
     }
 
