@@ -24,6 +24,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_scancode.h>
+#include <Corrade/Containers/EnumSet.h>
 
 #include "AbstractWindowContext.h"
 
@@ -84,6 +85,21 @@ class Sdl2WindowContext: public AbstractWindowContext {
         /** @{ @name Keyboard handling */
     public:
         /**
+         * @brief %Modifier
+         *
+         * @see Modifiers, keyPressEvent(), keyReleaseEvent(),
+         *      mousePressEvent(), mouseReleaseEvent(), mouseMotionEvent()
+         */
+        enum class Modifier: unsigned int {};
+
+        /**
+         * @brief Set of modifiers
+         *
+         * @see keyPressEvent(), keyReleaseEvent()
+         */
+        typedef Corrade::Containers::EnumSet<Modifier, unsigned int> Modifiers;
+
+        /**
          * @brief Key
          *
          * @see keyPressEvent(), keyReleaseEvent()
@@ -101,15 +117,18 @@ class Sdl2WindowContext: public AbstractWindowContext {
         /**
          * @brief Key press event
          * @param key       Key pressed
-         * @param repeat    Non-zero if this is a key repeat
+         * @param modifiers Active modifiers (not yet implemented)
+         * @param position  Cursor position (not yet implemented)
          */
-        virtual void keyPressEvent(Key key, Uint8 repeat);
+        virtual void keyPressEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
 
         /**
          * @brief Key release event
          * @param key       Key released
+         * @param modifiers Active modifiers (not yet implemented)
+         * @param position  Cursor position (not yet implemented)
          */
-        virtual void keyReleaseEvent(Key key);
+        virtual void keyReleaseEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
 
         /*@}*/
 
@@ -124,7 +143,9 @@ class Sdl2WindowContext: public AbstractWindowContext {
         enum class MouseButton: Uint8 {
             Left = SDL_BUTTON_LEFT,         /**< Left button */
             Middle = SDL_BUTTON_MIDDLE,     /**< Middle button */
-            Right = SDL_BUTTON_RIGHT        /**< Right button */
+            Right = SDL_BUTTON_RIGHT,       /**< Right button */
+            WheelUp = 4,                    /**< Wheel up */
+            WheelDown = 5                   /**< Wheel down */
         };
 
         /**
@@ -141,41 +162,33 @@ class Sdl2WindowContext: public AbstractWindowContext {
         /**
          * @brief Mouse press event
          * @param button    Button pressed
+         * @param modifiers Active modifiers (not yet implemented)
          * @param position  Cursor position
          *
          * Called when mouse button is pressed. Default implementation does
          * nothing.
          */
-        virtual void mousePressEvent(MouseButton button, const Math::Vector2<int>& position);
+        virtual void mousePressEvent(MouseButton button, Modifiers modifiers, const Math::Vector2<int>& position);
 
         /**
          * @brief Mouse release event
          * @param button    Button released
+         * @param modifiers Active modifiers (not yet implemented)
          * @param position  Cursor position
          *
          * Called when mouse button is released. Default implementation does
          * nothing.
          */
-        virtual void mouseReleaseEvent(MouseButton button, const Math::Vector2<int>& position);
-
-        /**
-         * @brief Mouse wheel event
-         * @param direction Wheel rotation direction. Negative Y is up and
-         *      positive X is right.
-         *
-         * Called when mouse wheel is rotated. Default implementation does
-         * nothing.
-         */
-        virtual void mouseWheelEvent(const Math::Vector2<int>& direction);
+        virtual void mouseReleaseEvent(MouseButton button, Modifiers modifiers, const Math::Vector2<int>& position);
 
         /**
          * @brief Mouse motion event
+         * @param modifiers Active modifiers (not yet implemented)
          * @param position  Mouse position relative to the window
-         * @param delta     Mouse position relative to last motion event
          *
          * Called when mouse is moved. Default implementation does nothing.
          */
-        virtual void mouseMotionEvent(const Math::Vector2<int>& position, const Math::Vector2<int>& delta);
+        virtual void mouseMotionEvent(Modifiers modifiers, const Math::Vector2<int>& position);
 
         /*@}*/
 
@@ -188,13 +201,14 @@ class Sdl2WindowContext: public AbstractWindowContext {
         bool _redraw;
 };
 
+CORRADE_ENUMSET_OPERATORS(Sdl2WindowContext::Modifiers)
+
 /* Implementations for inline functions with unused parameters */
-inline void Sdl2WindowContext::keyPressEvent(Key, Uint8) {}
-inline void Sdl2WindowContext::keyReleaseEvent(Key) {}
-inline void Sdl2WindowContext::mousePressEvent(MouseButton, const Math::Vector2<int>&) {}
-inline void Sdl2WindowContext::mouseReleaseEvent(MouseButton, const Math::Vector2<int>&) {}
-inline void Sdl2WindowContext::mouseWheelEvent(const Math::Vector2<int>&) {}
-inline void Sdl2WindowContext::mouseMotionEvent(const Math::Vector2<int>&, const Math::Vector2<int>&) {}
+inline void Sdl2WindowContext::keyPressEvent(Key, Modifiers, const Math::Vector2<int>&) {}
+inline void Sdl2WindowContext::keyReleaseEvent(Key, Modifiers, const Math::Vector2<int>&) {}
+inline void Sdl2WindowContext::mousePressEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
+inline void Sdl2WindowContext::mouseReleaseEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
+inline void Sdl2WindowContext::mouseMotionEvent(Modifiers, const Math::Vector2<int>&) {}
 
 }}
 

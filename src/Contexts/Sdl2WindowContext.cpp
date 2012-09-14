@@ -83,23 +83,23 @@ int Sdl2WindowContext::exec() {
                             break;
                     } break;
                 case SDL_KEYDOWN:
-                    keyPressEvent(static_cast<Key>(event.key.keysym.sym), event.key.repeat);
+                    keyPressEvent(static_cast<Key>(event.key.keysym.sym), Modifiers(), {});
                     break;
                 case SDL_KEYUP:
-                    keyReleaseEvent(static_cast<Key>(event.key.keysym.sym));
+                    keyReleaseEvent(static_cast<Key>(event.key.keysym.sym), Modifiers(), {});
                     break;
                 case SDL_MOUSEBUTTONDOWN:
-                    mousePressEvent(static_cast<MouseButton>(event.button.button), {event.button.x, event.button.y});
+                    mousePressEvent(static_cast<MouseButton>(event.button.button), Modifiers(), {event.button.x, event.button.y});
                     break;
                 case SDL_MOUSEBUTTONUP:
-                    mouseReleaseEvent(static_cast<MouseButton>(event.button.button), {event.button.x, event.button.y});
+                    mouseReleaseEvent(static_cast<MouseButton>(event.button.button), Modifiers(), {event.button.x, event.button.y});
                     break;
                 case SDL_MOUSEWHEEL:
-                    mouseWheelEvent({event.wheel.x, event.wheel.y});
+                    if(event.wheel.y != 0)
+                        mousePressEvent(event.wheel.y < 0 ? MouseButton::WheelUp : MouseButton::WheelDown, Modifiers(), {event.wheel.x, event.wheel.y});
                     break;
                 case SDL_MOUSEMOTION:
-                    mouseMotionEvent({event.motion.x, event.motion.y},
-                                     {event.motion.xrel, event.motion.yrel});
+                    mouseMotionEvent(Modifiers(), {event.motion.x, event.motion.y});
                     break;
                 case SDL_QUIT:
                     return 0;
