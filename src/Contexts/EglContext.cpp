@@ -20,8 +20,6 @@
 namespace Magnum { namespace Contexts {
 
 EglContext::~EglContext() {
-    delete c;
-
     eglDestroyContext(display, context);
     eglDestroySurface(display, surface);
     eglTerminate(display);
@@ -85,8 +83,6 @@ void EglContext::createContext(EGLNativeWindowType window) {
     }
 
     /** @bug Fixme: On desktop OpenGL and Mesa EGL implementation OpenGL version is 1.0, which is wrong */
-
-    context = new Context;
 }
 
 }}

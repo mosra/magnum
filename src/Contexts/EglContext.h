@@ -28,11 +28,7 @@
 
 #include "AbstractContext.h"
 
-namespace Magnum {
-
-class Context;
-
-namespace Contexts {
+namespace Magnum { namespace Contexts {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* EGL returns visual ID as int, but Xorg expects long unsigned int */
@@ -68,8 +64,6 @@ class EglContext: public AbstractContext<EGLNativeDisplayType, VisualId, EGLNati
         EGLConfig config;
         EGLSurface surface;
         EGLContext context;
-
-        Context* c;
 };
 
 }}

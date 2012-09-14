@@ -33,7 +33,11 @@
 #include "AbstractWindowContext.h"
 #include "AbstractContext.h"
 
-namespace Magnum { namespace Contexts {
+namespace Magnum {
+
+class Context;
+
+namespace Contexts {
 
 /** @nosubgrouping
 @brief Base for X11-based contexts
@@ -278,6 +282,8 @@ class AbstractXWindowContext: public AbstractWindowContext {
         Atom deleteWindow;
 
         AbstractContext<Display*, VisualID, Window>* glInterface;
+
+        Context* c;
 
         /** @todo Get this from the created window */
         Math::Vector2<GLsizei> viewportSize;

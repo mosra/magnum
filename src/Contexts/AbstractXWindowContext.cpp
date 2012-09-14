@@ -15,6 +15,7 @@
 
 #include "AbstractXWindowContext.h"
 
+#include "Context.h"
 #include "ExtensionWrangler.h"
 
 #define None 0L // redef Xlib nonsense
@@ -70,9 +71,13 @@ AbstractXWindowContext::AbstractXWindowContext(AbstractContext<Display*, VisualI
 
     /* Initialize extension wrangler */
     ExtensionWrangler::initialize(glInterface->experimentalExtensionWranglerFeatures());
+
+    c = new Context;
 }
 
 AbstractXWindowContext::~AbstractXWindowContext() {
+    delete c;
+
     /* Shut down the interface */
     delete glInterface;
 

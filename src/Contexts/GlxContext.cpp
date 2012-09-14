@@ -85,13 +85,9 @@ void GlxContext::createContext(Window nativeWindow) {
         Error() << "GlxContext: cannot create context.";
         exit(1);
     }
-
-    c = new Context;
 }
 
 GlxContext::~GlxContext() {
-    delete c;
-
     glXMakeCurrent(display, None, nullptr);
     glXDestroyContext(display, context);
 }

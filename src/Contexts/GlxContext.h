@@ -27,11 +27,7 @@
 
 #include "AbstractContext.h"
 
-namespace Magnum {
-
-class Context;
-
-namespace Contexts {
+namespace Magnum { namespace Contexts {
 
 /**
 @brief GLX interface
@@ -66,8 +62,6 @@ class GlxContext: public AbstractContext<Display*, VisualID, Window> {
         Window window;
         GLXFBConfig* configs;
         GLXContext context;
-
-        Context* c;
 };
 
 }}
