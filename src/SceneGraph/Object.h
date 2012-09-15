@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::Object, Magnum::SceneGraph::Object2D, Magnum::SceneGraph::Object3D
+ * @brief Class Magnum::SceneGraph::AbstractObject, Magnum::SceneGraph::Object2D, Magnum::SceneGraph::Object3D
  */
 
 #include <Containers/LinkedList.h>
@@ -76,12 +76,12 @@ namespace Implementation {
  * @todo Transform transformation when changing parent, so the object stays in
  * place.
  */
-template<size_t dimensions> class SCENEGRAPH_EXPORT Object: public Corrade::Containers::LinkedList<typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType>, public Corrade::Containers::LinkedListItem<typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType, typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType> {
+template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractObject: public Corrade::Containers::LinkedList<typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType>, public Corrade::Containers::LinkedListItem<typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType, typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType> {
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Object(const Object<dimensions>& other) = delete;
-    Object(Object<dimensions>&& other) = delete;
-    Object<dimensions>& operator=(const Object<dimensions>& other) = delete;
-    Object<dimensions>& operator=(Object<dimensions>&& other) = delete;
+    AbstractObject(const AbstractObject<dimensions>& other) = delete;
+    AbstractObject(AbstractObject<dimensions>&& other) = delete;
+    AbstractObject<dimensions>& operator=(const AbstractObject<dimensions>& other) = delete;
+    AbstractObject<dimensions>& operator=(AbstractObject<dimensions>&& other) = delete;
     #endif
 
     public:
@@ -108,7 +108,7 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT Object: public Corrade::Cont
          *
          * Sets all transformations to their default values.
          */
-        inline Object(ObjectType* parent = nullptr): dirty(true) {
+        inline AbstractObject(ObjectType* parent = nullptr): dirty(true) {
             setParent(parent);
         }
 
@@ -118,7 +118,7 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT Object: public Corrade::Cont
          * Removes itself from parent's children list and destroys all own
          * children.
          */
-        virtual inline ~Object() {}
+        virtual ~AbstractObject() = 0;
 
         /** @{ @name Scene hierarchy */
 
@@ -309,21 +309,23 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT Object: public Corrade::Cont
         bool dirty;
 };
 
+template<size_t dimensions> inline AbstractObject<dimensions>::~AbstractObject() {}
+
 /* Implementations for inline functions with unused parameters */
-template<size_t dimensions> inline void Object<dimensions>::draw(const MatrixType&, CameraType*) {}
-template<size_t dimensions> inline void Object<dimensions>::clean(const MatrixType&) { dirty = false; }
+template<size_t dimensions> inline void AbstractObject<dimensions>::draw(const MatrixType&, CameraType*) {}
+template<size_t dimensions> inline void AbstractObject<dimensions>::clean(const MatrixType&) { dirty = false; }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* These templates are instantiated in source file */
-extern template class SCENEGRAPH_EXPORT Object<2>;
-extern template class SCENEGRAPH_EXPORT Object<3>;
+extern template class SCENEGRAPH_EXPORT AbstractObject<2>;
+extern template class SCENEGRAPH_EXPORT AbstractObject<3>;
 #endif
 
 /** @brief Two-dimensional object */
-class SCENEGRAPH_EXPORT Object2D: public Object<2> {
+class SCENEGRAPH_EXPORT Object2D: public AbstractObject<2> {
     public:
-        /** @copydoc Object::Object */
-        inline Object2D(Object2D* parent = nullptr): Object(parent) {}
+        /** @copydoc AbstractObject::AbstractObject() */
+        inline Object2D(Object2D* parent = nullptr): AbstractObject(parent) {}
 
         /**
          * @brief Translate object
@@ -371,10 +373,10 @@ class SCENEGRAPH_EXPORT Object2D: public Object<2> {
 };
 
 /** @brief Three-dimensional object */
-class SCENEGRAPH_EXPORT Object3D: public Object<3> {
+class SCENEGRAPH_EXPORT Object3D: public AbstractObject<3> {
     public:
-        /** @copydoc Object::Object */
-        inline Object3D(Object3D* parent = nullptr): Object(parent) {}
+        /** @copydoc AbstractObject::AbstractObject() */
+        inline Object3D(Object3D* parent = nullptr): AbstractObject(parent) {}
 
         /**
          * @brief Translate object

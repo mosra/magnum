@@ -25,7 +25,7 @@ using namespace Magnum::Math;
 
 namespace Magnum { namespace SceneGraph {
 
-template<size_t dimensions> typename Object<dimensions>::ObjectType* Object<dimensions>::setParent(ObjectType* parent) {
+template<size_t dimensions> typename AbstractObject<dimensions>::ObjectType* AbstractObject<dimensions>::setParent(ObjectType* parent) {
     /* Skip if nothing to do or this is scene */
     if(this->parent() == parent || isScene()) return static_cast<ObjectType*>(this);
 
@@ -49,7 +49,7 @@ template<size_t dimensions> typename Object<dimensions>::ObjectType* Object<dime
     return static_cast<ObjectType*>(this);
 }
 
-template<size_t dimensions> typename Object<dimensions>::MatrixType Object<dimensions>::absoluteTransformation(CameraType* camera) {
+template<size_t dimensions> typename AbstractObject<dimensions>::MatrixType AbstractObject<dimensions>::absoluteTransformation(CameraType* camera) {
     /* Shortcut for absolute transformation of camera relative to itself */
     if(camera == this) return MatrixType();
 
@@ -77,7 +77,7 @@ template<size_t dimensions> typename Object<dimensions>::MatrixType Object<dimen
     return t;
 }
 
-template<size_t dimensions> typename Object<dimensions>::SceneType* Object<dimensions>::scene() {
+template<size_t dimensions> typename AbstractObject<dimensions>::SceneType* AbstractObject<dimensions>::scene() {
     /* Goes up the family tree until it finds object which is parent of itself
        (that's the scene) */
     ObjectType* p = parent();
@@ -89,7 +89,7 @@ template<size_t dimensions> typename Object<dimensions>::SceneType* Object<dimen
     return nullptr;
 }
 
-template<size_t dimensions> typename Object<dimensions>::ObjectType* Object<dimensions>::setTransformation(const MatrixType& transformation) {
+template<size_t dimensions> typename AbstractObject<dimensions>::ObjectType* AbstractObject<dimensions>::setTransformation(const MatrixType& transformation) {
     /* Setting transformation is forbidden for the scene */
     /** @todo Assert for this? */
     if(isScene()) return static_cast<ObjectType*>(this);
@@ -99,7 +99,7 @@ template<size_t dimensions> typename Object<dimensions>::ObjectType* Object<dime
     return static_cast<ObjectType*>(this);
 }
 
-template<size_t dimensions> void Object<dimensions>::setDirty() {
+template<size_t dimensions> void AbstractObject<dimensions>::setDirty() {
     /* The object (and all its children) are already dirty, nothing to do */
     if(dirty) return;
 
@@ -110,7 +110,7 @@ template<size_t dimensions> void Object<dimensions>::setDirty() {
         i->setDirty();
 }
 
-template<size_t dimensions> void Object<dimensions>::setClean() {
+template<size_t dimensions> void AbstractObject<dimensions>::setClean() {
     /* The object (and all its parents) are already clean, nothing to do */
     if(!dirty) return;
 
@@ -141,7 +141,7 @@ template<size_t dimensions> void Object<dimensions>::setClean() {
 }
 
 /* Explicitly instantiate the templates */
-template class Object<2>;
-template class Object<3>;
+template class AbstractObject<2>;
+template class AbstractObject<3>;
 
 }}

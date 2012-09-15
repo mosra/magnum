@@ -18,7 +18,7 @@
 namespace Magnum { namespace SceneGraph {
 
 void Light::clean(const Matrix4& absoluteTransformation) {
-    Object::clean(absoluteTransformation);
+    Object3D::clean(absoluteTransformation);
 
     _position = absoluteTransformation[3];
 }
