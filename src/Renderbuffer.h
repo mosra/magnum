@@ -85,7 +85,12 @@ class Renderbuffer {
             SRGBA = GL_SRGB8_ALPHA8, RGB10Alpha2 = GL_RGB10_A2,
             RGB10AlphaUnsigned2 = GL_RGB10_A2UI, RGB5Alpha1 = GL_RGB5_A1,
             RGBA4 = GL_RGBA4, RFloat11GFloat11BFloat10 = GL_R11F_G11F_B10F,
+
+            /* 1.5.6 <= GLEW < 1.8.0 doesn't have this, even if there is
+               GL_ARB_ES2_compatibility */
+            #if defined(GL_RGB565) || defined(DOXYGEN_GENERATING_OUTPUT)
             RGB565 = GL_RGB565,
+            #endif
 
             #ifndef MAGNUM_TARGET_GLES
             /**

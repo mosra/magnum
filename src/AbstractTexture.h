@@ -330,11 +330,15 @@ class MAGNUM_EXPORT AbstractTexture {
              */
             RG11B10Float = GL_R11F_G11F_B10F,
 
+            /* 1.5.6 <= GLEW < 1.8.0 doesn't have this, even if there is
+               GL_ARB_ES2_compatibility */
+            #if defined(GL_RGB565) || defined(DOXYGEN_GENERATING_OUTPUT)
             /**
              * Three-component RGB, unsigned normalized, red and blue 5bit,
              * green 6bit, 16bit total.
              */
             RGB565 = GL_RGB565,
+            #endif
 
             /**
              * Three-component RGB, unsigned with exponent, each component
@@ -399,33 +403,39 @@ class MAGNUM_EXPORT AbstractTexture {
              */
             CompressedRtgcSignedRedGreen = GL_COMPRESSED_SIGNED_RG_RGTC2,
 
+            /* These are named with _ARB suffix, because glcorearb.h doesn't
+               have suffixless version (?!) and GLEW has it without suffix as
+               late as of 1.8.0 { */
+
             /**
              * BPTC compressed RGBA, unsigned normalized.
              * @requires_gl
              * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
              */
-            CompressedBptcRGBA = GL_COMPRESSED_RGBA_BPTC_UNORM,
+            CompressedBptcRGBA = GL_COMPRESSED_RGBA_BPTC_UNORM_ARB,
 
             /**
              * BPTC compressed sRGBA, unsigned normalized.
              * @requires_gl
              * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
              */
-            CompressedBptcSRGBA = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM,
+            CompressedBptcSRGBA = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM_ARB,
 
             /**
              * BPTC compressed RGB, signed float.
              * @requires_gl
              * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
              */
-            CompressedBptcRGBSignedFloat = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT,
+            CompressedBptcRGBSignedFloat = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_ARB,
 
             /**
              * BPTC compressed RGB, unsigned float.
              * @requires_gl
              * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
              */
-            CompressedBptcRGBUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
+            CompressedBptcRGBUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_ARB,
+
+            /*}*/
 
             /**
              * Depth component, at least 16bit.
