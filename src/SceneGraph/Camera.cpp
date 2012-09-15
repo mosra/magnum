@@ -45,40 +45,40 @@ template Matrix4 aspectRatioFix<Matrix4>(AspectRatioPolicy, const Vector2&, cons
 }
 #endif
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::Camera(ObjectType* parent): ObjectType(parent), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {}
+template<size_t dimensions> Camera<dimensions>::Camera(typename Object<dimensions>::ObjectType* parent): Object<dimensions>::ObjectType(parent), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {}
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> CameraType* Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setAspectRatioPolicy(AspectRatioPolicy policy) {
+template<size_t dimensions> typename Object<dimensions>::CameraType* Camera<dimensions>::setAspectRatioPolicy(AspectRatioPolicy policy) {
     _aspectRatioPolicy = policy;
     fixAspectRatio();
-    return static_cast<CameraType*>(this);
+    return static_cast<typename Object<dimensions>::CameraType*>(this);
 }
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setViewport(const Math::Vector2<GLsizei>& size) {
+template<size_t dimensions> void Camera<dimensions>::setViewport(const Math::Vector2<GLsizei>& size) {
     _viewport = size;
     fixAspectRatio();
 }
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::clean(const MatrixType& absoluteTransformation) {
-    ObjectType::clean(absoluteTransformation);
+template<size_t dimensions> void Camera<dimensions>::clean(const typename Object<dimensions>::MatrixType& absoluteTransformation) {
+    Object<dimensions>::ObjectType::clean(absoluteTransformation);
 
     _cameraMatrix = absoluteTransformation.inverted();
 }
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::draw() {
-    SceneType* s = this->scene();
+template<size_t dimensions> void Camera<dimensions>::draw() {
+    typename Object<dimensions>::SceneType* s = this->scene();
     CORRADE_ASSERT(s, "Camera: cannot draw without camera attached to scene", );
 
     /* Recursively draw child objects */
     drawChildren(s, cameraMatrix());
 }
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Camera<MatrixType, VectorType, ObjectType, SceneType, CameraType>::drawChildren(ObjectType* object, const MatrixType& transformationMatrix) {
-    for(ObjectType* i = object->firstChild(); i; i = i->nextSibling()) {
+template<size_t dimensions> void Camera<dimensions>::drawChildren(typename Object<dimensions>::ObjectType* object, const typename Object<dimensions>::MatrixType& transformationMatrix) {
+    for(typename Object<dimensions>::ObjectType* i = object->firstChild(); i; i = i->nextSibling()) {
         /* Transformation matrix for the object */
-        MatrixType matrix = transformationMatrix*i->transformation();
+        typename Object<dimensions>::MatrixType matrix = transformationMatrix*i->transformation();
 
         /* Draw the object and its children */
-        i->draw(matrix, static_cast<CameraType*>(this));
+        i->draw(matrix, static_cast<typename Object<dimensions>::CameraType*>(this));
         drawChildren(i, matrix);
     }
 }
@@ -128,7 +128,7 @@ Camera3D* Camera3D::setPerspective(GLfloat fov, GLfloat near, GLfloat far) {
 }
 
 /* Explicitly instantiate the templates */
-template class Camera<Matrix3, Vector2, Object2D, Scene2D, Camera2D>;
-template class Camera<Matrix4, Vector3, Object3D, Scene3D, Camera3D>;
+template class Camera<2>;
+template class Camera<3>;
 
 }}

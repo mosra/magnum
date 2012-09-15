@@ -49,7 +49,7 @@ namespace Implementation {
 /**
 @brief %Camera object
  */
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> class SCENEGRAPH_EXPORT Camera: public ObjectType {
+template<size_t dimensions> class SCENEGRAPH_EXPORT Camera: public Object<dimensions>::ObjectType {
     public:
         /**
          * @brief Aspect ratio policy
@@ -67,7 +67,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         #endif
 
         /** @copydoc Object::Object */
-        Camera(ObjectType* parent = nullptr);
+        Camera(typename Object<dimensions>::ObjectType* parent = nullptr);
 
         /** @brief Aspect ratio policy */
         inline AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }
@@ -76,7 +76,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
          * @brief Set aspect ratio policy
          * @return Pointer to self (for method chaining)
          */
-        CameraType* setAspectRatioPolicy(AspectRatioPolicy policy);
+        typename Object<dimensions>::CameraType* setAspectRatioPolicy(AspectRatioPolicy policy);
 
         /**
          * @brief Camera matrix
@@ -84,7 +84,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
          * Camera matrix describes world position relative to the camera and is
          * applied as first.
          */
-        inline MatrixType cameraMatrix() {
+        inline typename Object<dimensions>::MatrixType cameraMatrix() {
             this->setClean();
             return _cameraMatrix;
         }
@@ -96,7 +96,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
          * as last.
          * @see projectionSize()
          */
-        inline MatrixType projectionMatrix() const { return _projectionMatrix; }
+        inline typename Object<dimensions>::MatrixType projectionMatrix() const { return _projectionMatrix; }
 
         /**
          * @brief Size of (near) XY plane in current projection
@@ -127,41 +127,41 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
          */
         virtual void draw();
 
-        using ObjectType::draw; /* Don't hide Object's draw() */
+        using Object<dimensions>::ObjectType::draw; /* Don't hide Object's draw() */
 
     protected:
         /**
          * Recalculates camera matrix.
          */
-        void clean(const MatrixType& absoluteTransformation);
+        void clean(const typename Object<dimensions>::MatrixType& absoluteTransformation);
 
         /**
          * @brief Draw object children
          *
          * Recursively draws all children of the object.
          */
-        void drawChildren(ObjectType* object, const MatrixType& transformationMatrix);
+        void drawChildren(typename Object<dimensions>::ObjectType* object, const typename Object<dimensions>::MatrixType& transformationMatrix);
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline void fixAspectRatio() {
-            _projectionMatrix = Implementation::aspectRatioFix<MatrixType>(_aspectRatioPolicy, {rawProjectionMatrix[0].x(), rawProjectionMatrix[1].y()}, _viewport)*rawProjectionMatrix;
+            _projectionMatrix = Implementation::aspectRatioFix<typename Object<dimensions>::MatrixType>(_aspectRatioPolicy, {rawProjectionMatrix[0].x(), rawProjectionMatrix[1].y()}, _viewport)*rawProjectionMatrix;
         }
 
-        MatrixType rawProjectionMatrix;
+        typename Object<dimensions>::MatrixType rawProjectionMatrix;
         AspectRatioPolicy _aspectRatioPolicy;
         #endif
 
     private:
-        MatrixType _projectionMatrix;
-        MatrixType _cameraMatrix;
+        typename Object<dimensions>::MatrixType _projectionMatrix;
+        typename Object<dimensions>::MatrixType _cameraMatrix;
 
         Math::Vector2<GLsizei> _viewport;
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* These templates are instantiated in source file */
-extern template class SCENEGRAPH_EXPORT Camera<Matrix3, Vector2, Object2D, Scene2D, Camera2D>;
-extern template class SCENEGRAPH_EXPORT Camera<Matrix4, Vector3, Object3D, Scene3D, Camera3D>;
+extern template class SCENEGRAPH_EXPORT Camera<2>;
+extern template class SCENEGRAPH_EXPORT Camera<3>;
 
 namespace Implementation {
     template<> class Camera<2> {
@@ -180,7 +180,7 @@ namespace Implementation {
 #endif
 
 /** @brief %Camera for two-dimensional scenes */
-class SCENEGRAPH_EXPORT Camera2D: public Camera<Matrix3, Vector2, Object2D, Scene2D, Camera2D> {
+class SCENEGRAPH_EXPORT Camera2D: public Camera<2> {
     public:
         /**
          * @brief Constructor
@@ -203,7 +203,7 @@ class SCENEGRAPH_EXPORT Camera2D: public Camera<Matrix3, Vector2, Object2D, Scen
 };
 
 /** @brief %Camera for three-dimensional scenes */
-class SCENEGRAPH_EXPORT Camera3D: public Camera<Matrix4, Vector3, Object3D, Scene3D, Camera3D> {
+class SCENEGRAPH_EXPORT Camera3D: public Camera<3> {
     public:
         /**
          * @brief Constructor

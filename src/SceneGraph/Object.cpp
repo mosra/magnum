@@ -25,7 +25,7 @@ using namespace Magnum::Math;
 
 namespace Magnum { namespace SceneGraph {
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> ObjectType* Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setParent(ObjectType* parent) {
+template<size_t dimensions> typename Object<dimensions>::ObjectType* Object<dimensions>::setParent(ObjectType* parent) {
     /* Skip if nothing to do or this is scene */
     if(this->parent() == parent || isScene()) return static_cast<ObjectType*>(this);
 
@@ -49,7 +49,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
     return static_cast<ObjectType*>(this);
 }
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> MatrixType Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::absoluteTransformation(CameraType* camera) {
+template<size_t dimensions> typename Object<dimensions>::MatrixType Object<dimensions>::absoluteTransformation(CameraType* camera) {
     /* Shortcut for absolute transformation of camera relative to itself */
     if(camera == this) return MatrixType();
 
@@ -77,7 +77,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
     return t;
 }
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> SceneType* Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::scene() {
+template<size_t dimensions> typename Object<dimensions>::SceneType* Object<dimensions>::scene() {
     /* Goes up the family tree until it finds object which is parent of itself
        (that's the scene) */
     ObjectType* p = parent();
@@ -89,7 +89,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
     return nullptr;
 }
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> ObjectType* Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setTransformation(const MatrixType& transformation) {
+template<size_t dimensions> typename Object<dimensions>::ObjectType* Object<dimensions>::setTransformation(const MatrixType& transformation) {
     /* Setting transformation is forbidden for the scene */
     /** @todo Assert for this? */
     if(isScene()) return static_cast<ObjectType*>(this);
@@ -99,7 +99,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
     return static_cast<ObjectType*>(this);
 }
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setDirty() {
+template<size_t dimensions> void Object<dimensions>::setDirty() {
     /* The object (and all its children) are already dirty, nothing to do */
     if(dirty) return;
 
@@ -110,7 +110,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         i->setDirty();
 }
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setClean() {
+template<size_t dimensions> void Object<dimensions>::setClean() {
     /* The object (and all its parents) are already clean, nothing to do */
     if(!dirty) return;
 
@@ -141,7 +141,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
 }
 
 /* Explicitly instantiate the templates */
-template class Object<Matrix3, Vector2, Object2D, Scene2D, Camera2D>;
-template class Object<Matrix4, Vector3, Object3D, Scene3D, Camera3D>;
+template class Object<2>;
+template class Object<3>;
 
 }}

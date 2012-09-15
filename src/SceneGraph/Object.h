@@ -28,6 +28,38 @@
 
 namespace Magnum { namespace SceneGraph {
 
+class Camera2D;
+class Camera3D;
+class Object2D;
+class Object3D;
+template<size_t dimensions> class Scene;
+typedef Scene<2> Scene2D;
+typedef Scene<3> Scene3D;
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
+    template<size_t dimensions> struct ObjectDimensionTraits {};
+
+    template<> struct ObjectDimensionTraits<2> {
+        static const size_t Dimensions = 2;
+        typedef Vector2 VectorType;
+        typedef Matrix3 MatrixType;
+        typedef Object2D ObjectType;
+        typedef Camera2D CameraType;
+        typedef Scene2D SceneType;
+    };
+
+    template<> struct ObjectDimensionTraits<3> {
+        static const size_t Dimensions = 3;
+        typedef Vector3 VectorType;
+        typedef Matrix4 MatrixType;
+        typedef Object3D ObjectType;
+        typedef Camera3D CameraType;
+        typedef Scene3D SceneType;
+    };
+}
+#endif
+
 /**
 @todo User-specified Object implementation:
 - for front-to-back sorting, LoD changes etc.
@@ -44,15 +76,32 @@ namespace Magnum { namespace SceneGraph {
  * @todo Transform transformation when changing parent, so the object stays in
  * place.
  */
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> class SCENEGRAPH_EXPORT Object: public Corrade::Containers::LinkedList<ObjectType>, public Corrade::Containers::LinkedListItem<ObjectType, ObjectType> {
+template<size_t dimensions> class SCENEGRAPH_EXPORT Object: public Corrade::Containers::LinkedList<typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType>, public Corrade::Containers::LinkedListItem<typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType, typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType> {
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Object(const Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>& other) = delete;
-    Object(Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>&& other) = delete;
-    Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>& operator=(const Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>& other) = delete;
-    Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>& operator=(Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>&& other) = delete;
+    Object(const Object<dimensions>& other) = delete;
+    Object(Object<dimensions>&& other) = delete;
+    Object<dimensions>& operator=(const Object<dimensions>& other) = delete;
+    Object<dimensions>& operator=(Object<dimensions>&& other) = delete;
     #endif
 
     public:
+        static const size_t Dimensions = dimensions; /**< @brief %Object dimension count */
+
+        /** @brief %Vector type for given dimension count */
+        typedef typename Implementation::ObjectDimensionTraits<Dimensions>::VectorType VectorType;
+
+        /** @brief %Matrix type for given dimension count */
+        typedef typename Implementation::ObjectDimensionTraits<Dimensions>::MatrixType MatrixType;
+
+        /** @brief %Object type for given dimension count */
+        typedef typename Implementation::ObjectDimensionTraits<Dimensions>::ObjectType ObjectType;
+
+        /** @brief %Camera type for given dimension count */
+        typedef typename Implementation::ObjectDimensionTraits<Dimensions>::CameraType CameraType;
+
+        /** @brief %Scene type for given dimension count */
+        typedef typename Implementation::ObjectDimensionTraits<Dimensions>::SceneType SceneType;
+
         /**
          * @brief Constructor
          * @param parent    Parent object
@@ -261,25 +310,17 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
 };
 
 /* Implementations for inline functions with unused parameters */
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> inline void Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::draw(const MatrixType&, CameraType*) {}
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> inline void Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::clean(const MatrixType&) { dirty = false; }
-
-class Camera2D;
-class Camera3D;
-class Object2D;
-class Object3D;
-template<class MatrixType, class VectorType, class ObjectType, class CameraType> class Scene;
-typedef Scene<Matrix3, Vector2, Object2D, Camera2D> Scene2D;
-typedef Scene<Matrix4, Vector3, Object3D, Camera3D> Scene3D;
+template<size_t dimensions> inline void Object<dimensions>::draw(const MatrixType&, CameraType*) {}
+template<size_t dimensions> inline void Object<dimensions>::clean(const MatrixType&) { dirty = false; }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* These templates are instantiated in source file */
-extern template class SCENEGRAPH_EXPORT Object<Matrix3, Vector2, Object2D, Scene2D, Camera2D>;
-extern template class SCENEGRAPH_EXPORT Object<Matrix4, Vector3, Object3D, Scene3D, Camera3D>;
+extern template class SCENEGRAPH_EXPORT Object<2>;
+extern template class SCENEGRAPH_EXPORT Object<3>;
 #endif
 
 /** @brief Two-dimensional object */
-class SCENEGRAPH_EXPORT Object2D: public Object<Matrix3, Vector2, Object2D, Scene2D, Camera2D> {
+class SCENEGRAPH_EXPORT Object2D: public Object<2> {
     public:
         /** @copydoc Object::Object */
         inline Object2D(Object2D* parent = nullptr): Object(parent) {}
@@ -330,7 +371,7 @@ class SCENEGRAPH_EXPORT Object2D: public Object<Matrix3, Vector2, Object2D, Scen
 };
 
 /** @brief Three-dimensional object */
-class SCENEGRAPH_EXPORT Object3D: public Object<Matrix4, Vector3, Object3D, Scene3D, Camera3D> {
+class SCENEGRAPH_EXPORT Object3D: public Object<3> {
     public:
         /** @copydoc Object::Object */
         inline Object3D(Object3D* parent = nullptr): Object(parent) {}
