@@ -19,7 +19,7 @@ Features:
    development. All code which doesn't directly interact with OpenGL is
    covered with unit tests.
  * Actively maintained Doxygen documentation. Occasionally updated snapshot is
-   also available online at http://mosra.cz/blog/magnum-doc .
+   also available online at http://mosra.cz/blog/magnum-doc/ .
 
 INSTALLATION
 ============
