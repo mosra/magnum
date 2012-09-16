@@ -59,7 +59,7 @@ If you want to build also unit tests (which are not built by default), pass
 `-DBUILD_TESTS=True` to CMake. Unit tests use Corrade's TestSuite framework
 and can be run using
 
-    ctest -V
+    ctest --output-on-failure
 
 in build directory. Everything should pass ;-)
 
