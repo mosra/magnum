@@ -34,7 +34,6 @@ template<class T> class Vector4: public Vector<4, T> {
     public:
         /**
          * @copydoc Vector::Vector
-         *
          * W component is set to one.
          */
         inline constexpr Vector4(): Vector<4, T>(T(0), T(0), T(0), T(1)) {}

@@ -69,7 +69,7 @@ template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
                 (*this)(i, i) = value;
         }
 
-        /** @copydoc RectangularMatrix::RectangularMatrix(T, U...) */
+        /** @copydoc RectangularMatrix::RectangularMatrix */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> inline constexpr Matrix(T first, U... next): RectangularMatrix<size, size, T>(first, next...) {}
         #else
@@ -115,15 +115,12 @@ template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
         /**
          * @brief Determinant
          *
-         * Computed recursively using Laplace's formula:
-         * @f[
-         * \det(A) = \sum_{j=1}^n (-1)^{i+j} a_{i,j} \det(A^{i,j})
-         * @f]
-         * @f$ A^{i, j} @f$ is matrix without i-th row and j-th column, see
+         * Computed recursively using Laplace's formula: @f[
+         *      \det(A) = \sum_{j=1}^n (-1)^{i+j} a_{i,j} \det(A^{i,j})
+         * @f] @f$ A^{i, j} @f$ is matrix without i-th row and j-th column, see
          * ij(). The formula is expanded down to 2x2 matrix, where the
-         * determinant is computed directly:
-         * @f[
-         * \det(A) = a_{0, 0} a_{1, 1} - a_{1, 0} a_{0, 1}
+         * determinant is computed directly: @f[
+         *      \det(A) = a_{0, 0} a_{1, 1} - a_{1, 0} a_{0, 1}
          * @f]
          */
         inline T determinant() const { return Implementation::MatrixDeterminant<size, T>()(*this); }
@@ -131,9 +128,8 @@ template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
         /**
          * @brief Inverted matrix
          *
-         * Computed using Cramer's rule:
-         * @f[
-         * A^{-1} = \frac{1}{\det(A)} Adj(A)
+         * Computed using Cramer's rule: @f[
+         *      A^{-1} = \frac{1}{\det(A)} Adj(A)
          * @f]
          */
         Matrix<size, T> inverted() const {

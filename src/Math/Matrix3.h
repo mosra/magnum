@@ -86,7 +86,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
             T(0), T(0), value
         ) {}
 
-        /** @copydoc Matrix::Matrix(T, U...) */
+        /** @copydoc Matrix::Matrix */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> inline constexpr Matrix3(T first, U... next): Matrix<3, T>(first, next...) {}
         #else

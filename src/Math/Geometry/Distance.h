@@ -33,8 +33,7 @@ class Distance {
          * @param point     Point
          *
          * The distance *d* is computed from point **p** and line defined by **a**
-         * and **b** using @ref Vector3::cross() "cross product":
-         * @f[
+         * and **b** using @ref Vector3::cross() "cross product": @f[
          *      d = \frac{|(\boldsymbol p - \boldsymbol a) \times (\boldsymbol p - \boldsymbol b)|}
          *      {|\boldsymbol b - \boldsymbol a|}
          * @f]
@@ -66,19 +65,16 @@ class Distance {
          *
          * Determining whether the point lies next to line segment or outside
          * is done using Pythagorean theorem. If the following equation
-         * applies, the point **p** lies outside line segment closer to **a**:
-         * @f[
+         * applies, the point **p** lies outside line segment closer to **a**: @f[
          *      |\boldsymbol p - \boldsymbol b|^2 > |\boldsymbol b - \boldsymbol a|^2 + |\boldsymbol p - \boldsymbol a|^2
          * @f]
          * On the other hand, if the following equation applies, the point
-         * lies outside line segment closer to **b**:
-         * @f[
+         * lies outside line segment closer to **b**: @f[
          *      |\boldsymbol p - \boldsymbol a|^2 > |\boldsymbol b - \boldsymbol a|^2 + |\boldsymbol p - \boldsymbol b|^2
          * @f]
          * The last alternative is when the following equation applies. The
          * point then lies between **a** and **b** and the distance is
-         * computed the same way as in linePoint().
-         * @f[
+         * computed the same way as in linePoint(). @f[
          *      |\boldsymbol b - \boldsymbol a|^2 > |\boldsymbol p - \boldsymbol a|^2 + |\boldsymbol p - \boldsymbol b|^2
          * @f]
          *
