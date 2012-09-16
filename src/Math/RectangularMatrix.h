@@ -48,8 +48,10 @@ template<size_t size, class T> class Vector;
 @brief Rectangular matrix
 @tparam c   Column count
 @tparam r   Row count
+@tparam T   Data type
 
-See also Matrix (square) and Vector.
+See @ref matrix-vector for brief introduction. See also Matrix (square) and
+Vector.
 */
 template<size_t c, size_t r, class T> class RectangularMatrix {
     static_assert(c != 0 && r != 0, "Matrix cannot have zero elements");

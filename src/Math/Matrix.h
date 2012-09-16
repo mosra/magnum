@@ -32,6 +32,9 @@ namespace Implementation {
 /**
 @brief Square matrix
 @tparam s   %Matrix size
+@tparam T   Data type
+
+See @ref matrix-vector for brief introduction.
 
 @configurationvalueref{Magnum::Math::Matrix}
 @todo @c PERFORMANCE - loop unrolling for Matrix<3, T> and Matrix<4, T>
@@ -228,7 +231,6 @@ namespace Implementation {
 
 template<size_t size, class T> class MatrixDeterminant {
     public:
-        /** @brief Functor */
         T operator()(const Matrix<size, T>& m) {
             T out(0);
 
@@ -241,7 +243,6 @@ template<size_t size, class T> class MatrixDeterminant {
 
 template<class T> class MatrixDeterminant<2, T> {
     public:
-        /** @brief Functor */
         inline constexpr T operator()(const Matrix<2, T>& m) {
             return m(0, 0)*m(1, 1) - m(1, 0)*m(0, 1);
         }
@@ -249,7 +250,6 @@ template<class T> class MatrixDeterminant<2, T> {
 
 template<class T> class MatrixDeterminant<1, T> {
     public:
-        /** @brief Functor */
         inline constexpr T operator()(const Matrix<1, T>& m) {
             return m(0, 0);
         }

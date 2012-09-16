@@ -97,7 +97,8 @@ swizzle(const T&, const char(&)[newSize]), but the evaluation of
 the swizzling operation is guaranteed to be always done at compile time
 instead of at runtime.
 
-@see Vector4::xyz(), Vector4::rgb(), Vector4::xy(), Vector3::xy()
+@see @ref matrix-vector-component-access, Vector4::xyz(), Color4::rgb(),
+    Vector4::xy(), Vector3::xy()
 */
 template<char ...components, class T> inline constexpr typename Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector) {
     return {vector[Implementation::GetComponent<T::size, components>::value()]...};
@@ -123,7 +124,8 @@ swizzle(const T&), but unless the result is marked with
 `constexpr`, the evaluation of the swizzling operation probably won't be
 evaluated at compile time, but at runtime.
 
-@see Vector4::xyz(), Vector4::rgb(), Vector4::xy(), Vector3::xy()
+@see @ref matrix-vector-component-access, Vector4::xyz(), Color4::rgb(),
+    Vector4::xy(), Vector3::xy()
 */
 template<class T, size_t newSize> inline constexpr typename Implementation::TypeForSize<newSize-1, T>::Type swizzle(const T& vector, const char(&components)[newSize]) {
     return Implementation::swizzleFrom(typename Implementation::GenerateSequence<newSize-1>::Type(), vector, components);

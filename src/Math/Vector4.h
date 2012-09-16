@@ -25,7 +25,9 @@ namespace Magnum { namespace Math {
 
 /**
 @brief Four-component vector
+@tparam T   Data type
 
+See @ref matrix-vector for brief introduction.
 @configurationvalueref{Magnum::Math::Vector4}
 */
 template<class T> class Vector4: public Vector<4, T> {

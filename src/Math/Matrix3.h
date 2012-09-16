@@ -26,9 +26,10 @@ namespace Magnum { namespace Math {
 
 /**
 @brief 3x3 matrix
+@tparam T   Data type
 
-Provides functions for transformations in 2D. See also Matrix4 for 3D
-transformations.
+Provides functions for transformations in 2D. See Matrix4 for 3D
+transformations. See also @ref matrix-vector for brief introduction.
 @configurationvalueref{Magnum::Math::Matrix3}
 */
 template<class T> class Matrix3: public Matrix<3, T> {

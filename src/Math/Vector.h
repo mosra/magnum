@@ -36,7 +36,10 @@ namespace Implementation {
 
 /**
 @brief %Vector
+@tparam s   %Vector size
+@tparam T   Data type
 
+See @ref matrix-vector for brief introduction.
 @configurationvalueref{Magnum::Math::Vector}
 @todo Constexprize all for loops
 */
