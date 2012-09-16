@@ -61,15 +61,14 @@ template<class T> class Vector4: public Vector<4, T> {
            is fairly common, nearly always with W set to 1 */
         inline constexpr Vector4(const Vector<3, T>& xyz, T w = T(1)): Vector<4, T>(xyz[0], xyz[1], xyz[2], w) {}
 
-        inline constexpr T x() const { return (*this)[0]; } /**< @brief X component */
-        inline constexpr T y() const { return (*this)[1]; } /**< @brief Y component */
-        inline constexpr T z() const { return (*this)[2]; } /**< @brief Z component */
-        inline constexpr T w() const { return (*this)[3]; } /**< @brief W component */
-
-        inline void setX(T value) { (*this)[0] = value; }   /**< @brief Set X component */
-        inline void setY(T value) { (*this)[1] = value; }   /**< @brief Set Y component */
-        inline void setZ(T value) { (*this)[2] = value; }   /**< @brief Set Z component */
-        inline void setW(T value) { (*this)[3] = value; }   /**< @brief Set W component */
+        inline T& x() { return (*this)[0]; }                /**< @brief X component */
+        inline constexpr T x() const { return (*this)[0]; } /**< @overload */
+        inline T& y() { return (*this)[1]; }                /**< @brief Y component */
+        inline constexpr T y() const { return (*this)[1]; } /**< @overload */
+        inline T& z() { return (*this)[2]; }                /**< @brief Z component */
+        inline constexpr T z() const { return (*this)[2]; } /**< @overload */
+        inline T& w() { return (*this)[3]; }                /**< @brief W component */
+        inline constexpr T w() const { return (*this)[3]; } /**< @overload */
 
         /**
          * @brief XYZ part of the vector
@@ -77,7 +76,8 @@ template<class T> class Vector4: public Vector<4, T> {
          *
          * @see swizzle()
          */
-        inline constexpr Vector3<T> xyz() const { return Vector3<T>::from(Vector<4, T>::data()); }
+        inline Vector3<T>& xyz() { return Vector3<T>::from(Vector<4, T>::data()); }
+        inline constexpr Vector3<T> xyz() const { return Vector3<T>::from(Vector<4, T>::data()); } /**< @overload */
 
         /**
          * @brief XY part of the vector
@@ -85,7 +85,8 @@ template<class T> class Vector4: public Vector<4, T> {
          *
          * @see swizzle()
          */
-        inline constexpr Vector2<T> xy() const { return Vector2<T>::from(Vector<4, T>::data()); }
+        inline Vector2<T>& xy() { return Vector2<T>::from(Vector<4, T>::data()); }
+        inline constexpr Vector2<T> xy() const { return Vector2<T>::from(Vector<4, T>::data()); } /**< @overload */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector4, 4)
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 3, Vector4<T>)

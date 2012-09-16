@@ -81,11 +81,10 @@ template<class T> class Vector2: public Vector<2, T> {
          */
         inline constexpr Vector2(T x, T y): Vector<2, T>(x, y) {}
 
-        inline constexpr T x() const { return (*this)[0]; } /**< @brief X component */
-        inline constexpr T y() const { return (*this)[1]; } /**< @brief Y component */
-
-        inline void setX(T value) { (*this)[0] = value; }   /**< @brief Set X component */
-        inline void setY(T value) { (*this)[1] = value; }   /**< @brief Set Y component */
+        inline T& x() { return (*this)[0]; }                /**< @brief X component */
+        inline constexpr T x() const { return (*this)[0]; } /**< @overload */
+        inline T& y() { return (*this)[1]; }                /**< @brief Y component */
+        inline constexpr T y() const { return (*this)[1]; } /**< @overload */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector2, 2)
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 2, Vector2<T>)

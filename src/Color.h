@@ -224,13 +224,12 @@ template<class T> class Color3: public Math::Vector3<T> {
          */
         inline constexpr Color3(T r, T g, T b): Math::Vector3<T>(r, g, b) {}
 
-        inline constexpr T r() const { return Math::Vector3<T>::x(); }  /**< @brief R component */
-        inline constexpr T g() const { return Math::Vector3<T>::y(); }  /**< @brief G component */
-        inline constexpr T b() const { return Math::Vector3<T>::z(); }  /**< @brief B component */
-
-        inline void setR(T value) { Math::Vector3<T>::setX(value); }    /**< @brief Set R component */
-        inline void setG(T value) { Math::Vector3<T>::setY(value); }    /**< @brief Set G component */
-        inline void setB(T value) { Math::Vector3<T>::setZ(value); }    /**< @brief Set B component */
+        inline T& r() { return Math::Vector3<T>::x(); }                 /**< @brief R component */
+        inline constexpr T r() const { return Math::Vector3<T>::x(); }  /**< @overload */
+        inline T& g() { return Math::Vector3<T>::y(); }                 /**< @brief G component */
+        inline constexpr T g() const { return Math::Vector3<T>::y(); }  /**< @overload */
+        inline T& b() { return Math::Vector3<T>::z(); }                 /**< @brief B component */
+        inline constexpr T b() const { return Math::Vector3<T>::z(); }  /**< @overload */
 
         /**
          * @brief Convert to HSV
@@ -362,15 +361,14 @@ template<class T> class Color4: public Math::Vector4<T> {
            is fairly common, nearly always with A set to 1 */
         inline constexpr Color4(const Math::Vector<3, T>& rgb, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
 
-        inline constexpr T r() const { return Math::Vector4<T>::x(); }  /**< @brief R component */
-        inline constexpr T g() const { return Math::Vector4<T>::y(); }  /**< @brief G component */
-        inline constexpr T b() const { return Math::Vector4<T>::z(); }  /**< @brief B component */
-        inline constexpr T a() const { return Math::Vector4<T>::w(); }  /**< @brief A component */
-
-        inline void setR(T value) { Math::Vector4<T>::setX(value); }    /**< @brief Set R component */
-        inline void setG(T value) { Math::Vector4<T>::setY(value); }    /**< @brief Set G component */
-        inline void setB(T value) { Math::Vector4<T>::setZ(value); }    /**< @brief Set B component */
-        inline void setA(T value) { Math::Vector4<T>::setW(value); }    /**< @brief Set A component */
+        inline T& r() { return Math::Vector4<T>::x(); }                 /**< @brief R component */
+        inline constexpr T r() const { return Math::Vector4<T>::x(); }  /**< @overload */
+        inline T& g() { return Math::Vector4<T>::y(); }                 /**< @brief G component */
+        inline constexpr T g() const { return Math::Vector4<T>::y(); }  /**< @overload */
+        inline T& b() { return Math::Vector4<T>::z(); }                 /**< @brief B component */
+        inline constexpr T b() const { return Math::Vector4<T>::z(); }  /**< @overload */
+        inline T& a() { return Math::Vector4<T>::w(); }                 /**< @brief A component */
+        inline constexpr T a() const { return Math::Vector4<T>::w(); }  /**< @overload */
 
         /**
          * @brief RGB part of the vector
@@ -378,7 +376,8 @@ template<class T> class Color4: public Math::Vector4<T> {
          *
          * @see swizzle()
          */
-        inline constexpr Color3<T> rgb() const { return Math::Vector4<T>::xyz(); }
+        inline Color3<T>& rgb() { return Math::Vector4<T>::xyz(); }
+        inline constexpr Color3<T> rgb() const { return Math::Vector4<T>::xyz(); } /**< @overload */
 
         /** @copydoc Color3::toHSV() */
         inline constexpr HSV toHSV() const {

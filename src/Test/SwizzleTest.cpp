@@ -52,7 +52,8 @@ void SwizzleTest::rgba() {
 void SwizzleTest::fromSmall() {
     /* Force compile-time evaluation for both */
     constexpr Vector2 orig(1, 2);
-    CORRADE_VERIFY((integral_constant<bool, swizzle(orig, "gxr").x() == 2>::value));
+    constexpr Vector3 swizzled(swizzle(orig, "gxr"));
+    CORRADE_VERIFY((integral_constant<bool, swizzled.x() == 2>::value));
     CORRADE_COMPARE((swizzle<'g', 'x', 'r'>(orig)), Vector3(2, 1, 1));
 }
 
