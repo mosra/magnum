@@ -40,13 +40,13 @@ Minimal dependencies
    **OpenGL ES 2** headers, if targeting OpenGL ES.
  * **GLEW** - OpenGL extension wrangler
  * **Corrade** - Plugin management and utility library. You can get it at
-   http://mosra.cz/blog/corrade.php
+   http://github.com/mosra/corrade or at http://mosra.cz/blog/corrade.php.
 
 Compilation, installation
 -------------------------
 
-The library (for example with GLUT context) can be built and installed using
-these four commands:
+The library (for example with GLUT window context) can be built and installed
+using these four commands:
 
     mkdir -p build && cd build
     cmake .. \
