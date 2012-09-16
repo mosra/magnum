@@ -48,7 +48,7 @@ these four commands:
     mkdir -p build && cd build
     cmake .. \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DWITH_GLUTCONTEXT=ON
+        -DWITH_GLUTWINDOWCONTEXT=ON
     make
     make install
 
