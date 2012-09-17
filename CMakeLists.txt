@@ -9,11 +9,11 @@ cmake_dependent_option(TARGET_GLES2 "Build for OpenGL ES 2" ON "TARGET_GLES" OFF
 
 # Parts of the library
 option(WITH_EVERYTHING "Build everything (doesn't include contexts)" ON)
-option(WITH_MESHTOOLS "Build MeshTools library" OFF)
-option(WITH_PHYSICS "Build Physics library" OFF)
-option(WITH_PRIMITIVES "Builf Primitives library" OFF)
-option(WITH_SCENEGRAPH "Build SceneGraph library" OFF)
-option(WITH_SHADERS "Build Shaders library" OFF)
+cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" OFF "NOT WITH_EVERYTHING" ON)
+cmake_dependent_option(WITH_PHYSICS "Build Physics library" OFF "NOT WITH_EVERYTHING" ON)
+cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" OFF "NOT WITH_EVERYTHING" ON)
+cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" OFF "NOT WITH_EVERYTHING" ON)
+cmake_dependent_option(WITH_SHADERS "Build Shaders library" OFF "NOT WITH_EVERYTHING" ON)
 
 option(WITH_GLXWINDOWCONTEXT "Build GlxWindowContext library" OFF)
 cmake_dependent_option(WITH_XEGLWINDOWCONTEXT "Build XEglWindowContext library" OFF "TARGET_GLES" OFF)
@@ -21,14 +21,6 @@ cmake_dependent_option(WITH_GLUTWINDOWCONTEXT "Build GlutWindowContext library" 
 option(WITH_SDL2WINDOWCONTEXT "Build Sdl2WindowContext library" OFF)
 
 option(BUILD_TESTS "Build unit tests." OFF)
-
-if(WITH_EVERYTHING)
-    set(WITH_MESHTOOLS ON)
-    set(WITH_PHYSICS ON)
-    set(WITH_PRIMITIVES ON)
-    set(WITH_SCENEGRAPH ON)
-    set(WITH_SHADERS ON)
-endif()
 
 if(BUILD_TESTS)
     enable_testing()
