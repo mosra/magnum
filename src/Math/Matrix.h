@@ -38,7 +38,6 @@ See @ref matrix-vector for brief introduction.
 
 @configurationvalueref{Magnum::Math::Matrix}
 @todo @c PERFORMANCE - loop unrolling for Matrix<3, T> and Matrix<4, T>
-@todo first col, then row (cache adjacency)
  */
 template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
     public:
@@ -104,8 +103,8 @@ template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
         Matrix<size-1, T> ij(size_t skipCol, size_t skipRow) const {
             Matrix<size-1, T> out(Matrix<size-1, T>::Zero);
 
-            for(size_t row = 0; row != size-1; ++row)
-                for(size_t col = 0; col != size-1; ++col)
+            for(size_t col = 0; col != size-1; ++col)
+                for(size_t row = 0; row != size-1; ++row)
                     out(col, row) = (*this)(col + (col >= skipCol),
                                             row + (row >= skipRow));
 
@@ -137,8 +136,8 @@ template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
 
             T _determinant = determinant();
 
-            for(size_t row = 0; row != size; ++row)
-                for(size_t col = 0; col != size; ++col)
+            for(size_t col = 0; col != size; ++col)
+                for(size_t row = 0; row != size; ++row)
                     out(col, row) = (((row+col) & 1) ? -1 : 1)*ij(row, col).determinant()/_determinant;
 
             return out;

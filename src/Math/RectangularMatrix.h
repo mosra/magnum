@@ -281,8 +281,8 @@ template<size_t c, size_t r, class T> class RectangularMatrix {
         template<size_t size> RectangularMatrix<size, rows, T> operator*(const RectangularMatrix<size, cols, T>& other) const {
             RectangularMatrix<size, rows, T> out;
 
-            for(size_t row = 0; row != rows; ++row)
-                for(size_t col = 0; col != size; ++col) /** @todo swap */
+            for(size_t col = 0; col != size; ++col)
+                for(size_t row = 0; row != rows; ++row)
                     for(size_t pos = 0; pos != cols; ++pos)
                         out(col, row) += (*this)(pos, row)*other(col, pos);
 
