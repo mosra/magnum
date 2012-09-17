@@ -106,18 +106,18 @@ of some STL functions like shown below. Also if one index array is shader by
 more than one attribute array, just pass the index array more times. Example:
 @code
 std::vector<unsigned int> vertexIndices;
-std::vector<Vector4> vertices;
+std::vector<Vector4> positions;
 std::vector<unsigned int> normalTextureIndices;
 std::vector<Vector3> normals;
 std::vector<Vector2> textureCoordinates;
 
 std::vector<unsigned int> indices = MeshTools::combineIndexedArrays(
-    std::make_tuple(std::cref(vertexIndices), std::ref(vertices)),
+    std::make_tuple(std::cref(vertexIndices), std::ref(positions)),
     std::make_tuple(std::cref(normalTextureIndices), std::ref(normals)),
     std::make_tuple(std::cref(normalTextureIndices), std::ref(textureCoordinates))
 );
 @endcode
-`vertices`, `normals` and `textureCoordinates` will then contain combined
+`positions`, `normals` and `textureCoordinates` will then contain combined
 attributes indexed with `indices`.
 
 @attention All index arrays should have the same size, otherwise zero-length
