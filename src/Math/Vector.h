@@ -23,17 +23,6 @@
 
 namespace Magnum { namespace Math {
 
-template<size_t size, class T> class Vector;
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-namespace Implementation {
-    /* Implementation for Vector<size, T>::from(const Vector<size, U>&) */
-    template<class T, class U, size_t ...sequence> inline constexpr Math::Vector<sizeof...(sequence), T> vectorFrom(Sequence<sequence...>, const Math::Vector<sizeof...(sequence), U>& vector) {
-        return {T(vector[sequence])...};
-    }
-}
-#endif
-
 /**
 @brief %Vector
 @tparam s   %Vector size
@@ -45,21 +34,6 @@ See @ref matrix-vector for brief introduction.
 template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
     public:
         const static size_t size = s;    /**< @brief %Vector size */
-
-        /**
-         * @brief %Vector from another of different type
-         *
-         * Performs only default casting on the values, no rounding or
-         * anything else. Example usage:
-         * @code
-         * Vector<4, float> floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
-         * Vector<4, int> integral(Vector<4, int>::from(floatingPoint));
-         * // integral == {1, 2, -15, 7}
-         * @endcode
-         */
-        template<class U> inline constexpr static Vector<size, T> from(const Vector<size, U>& other) {
-            return Implementation::vectorFrom<T, U>(typename Implementation::GenerateSequence<size>::Type(), other);
-        }
 
         /**
          * @brief Dot product

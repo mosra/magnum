@@ -25,6 +25,7 @@ class RectangularMatrixTest: public Corrade::TestSuite::Tester<RectangularMatrix
 
         void construct();
         void constructFromVectors();
+        void constructFrom();
         void constructZero();
         void data();
 

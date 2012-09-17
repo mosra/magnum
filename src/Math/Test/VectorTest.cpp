@@ -28,12 +28,10 @@ using namespace Corrade::Utility;
 namespace Magnum { namespace Math { namespace Test {
 
 typedef Vector<4, float> Vector4;
-typedef Vector<4, int> Vector4i;
 typedef Vector<3, float> Vector3;
 
 VectorTest::VectorTest() {
     addTests(&VectorTest::construct,
-             &VectorTest::constructFrom,
              &VectorTest::dot,
              &VectorTest::multiplyDivideComponentWise,
              &VectorTest::dotSelf,
@@ -53,15 +51,6 @@ void VectorTest::construct() {
 
     float data[] = { 1.0f, 2.0f, 3.0f, 4.0f };
     CORRADE_COMPARE(Vector4::from(data), Vector4(1.0f, 2.0f, 3.0f, 4.0f));
-}
-
-void VectorTest::constructFrom() {
-    Vector4 floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
-    Vector4 floatingPointRounded(1.0f, 2.0f, -15.0f, 7.0f);
-    Vector4i integral(1, 2, -15, 7);
-
-    CORRADE_COMPARE(Vector4i::from(floatingPoint), integral);
-    CORRADE_COMPARE(Vector4::from(integral), floatingPointRounded);
 }
 
 void VectorTest::dot() {

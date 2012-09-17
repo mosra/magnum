@@ -29,11 +29,13 @@ namespace Magnum { namespace Math { namespace Test {
 typedef RectangularMatrix<4, 3, float> Matrix4x3;
 typedef RectangularMatrix<3, 4, float> Matrix3x4;
 typedef RectangularMatrix<2, 2, float> Matrix2;
+typedef RectangularMatrix<2, 2, int> Matrix2i;
 typedef Vector<4, float> Vector4;
 
 RectangularMatrixTest::RectangularMatrixTest() {
     addTests(&RectangularMatrixTest::construct,
              &RectangularMatrixTest::constructFromVectors,
+             &RectangularMatrixTest::constructFrom,
              &RectangularMatrixTest::constructZero,
              &RectangularMatrixTest::data,
 
@@ -74,6 +76,16 @@ void RectangularMatrixTest::constructFromVectors() {
                        9.0f, 10.0f, 11.0f, 12.0f);
 
     CORRADE_COMPARE(actual, expected);
+}
+
+
+void RectangularMatrixTest::constructFrom() {
+    Matrix2 floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
+    Matrix2 floatingPointRounded(1.0f, 2.0f, -15.0f, 7.0f);
+    Matrix2i integral(1, 2, -15, 7);
+
+    CORRADE_COMPARE(Matrix2i::from(floatingPoint), integral);
+    CORRADE_COMPARE(Matrix2::from(integral), floatingPointRounded);
 }
 
 void RectangularMatrixTest::constructZero() {

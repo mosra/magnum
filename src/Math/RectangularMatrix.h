@@ -28,6 +28,8 @@
 
 namespace Magnum { namespace Math {
 
+template<size_t, size_t, class> class RectangularMatrix;
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<size_t ...> struct Sequence {};
@@ -39,6 +41,11 @@ namespace Implementation {
     template<size_t ...sequence> struct GenerateSequence<0, sequence...> {
         typedef Sequence<sequence...> Type;
     };
+
+    /* Implementation for RectangularMatrix<cols, rows, T>::from(const RectangularMatrix<cols, rows, U>&) */
+    template<class T, class U, size_t c, size_t ...sequence> inline constexpr Math::RectangularMatrix<c, sizeof...(sequence)/c, T> rectangularMatrixFrom(Sequence<sequence...>, const Math::RectangularMatrix<c, sizeof...(sequence)/c, U>& matrix) {
+        return {T(matrix.data()[sequence])...};
+    }
 }
 #endif
 
@@ -87,6 +94,21 @@ template<size_t c, size_t r, class T> class RectangularMatrix {
         template<class ...U> inline constexpr static RectangularMatrix<cols, rows, T> from(const Vector<rows, T>& first, const U&... next) {
             static_assert(sizeof...(next)+1 == cols, "Improper number of arguments passed to Matrix from Vector constructor");
             return from(typename Implementation::GenerateSequence<rows>::Type(), first, next...);
+        }
+
+        /**
+         * @brief %Matrix from another of different type
+         *
+         * Performs only default casting on the values, no rounding or
+         * anything else. Example usage:
+         * @code
+         * RectangularMatrix<4, 1, float> floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
+         * RectangularMatrix<4, 1, int> integral(RectangularMatrix<4, 1, int>::from(floatingPoint));
+         * // integral == {1, 2, -15, 7}
+         * @endcode
+         */
+        template<class U> inline constexpr static RectangularMatrix<cols, rows, T> from(const RectangularMatrix<cols, rows, U>& other) {
+            return Implementation::rectangularMatrixFrom<T, U>(typename Implementation::GenerateSequence<cols*rows>::Type(), other);
         }
 
         /** @brief Zero-filled matrix constructor */
@@ -383,6 +405,9 @@ template<size_t cols, size_t rows, class T> Corrade::Utility::Debug operator<<(C
     }                                                                       \
     template<class ...U> inline constexpr static __VA_ARGS__ from(const Math::Vector<rows, T>& first, const U&... next) { \
         return Math::RectangularMatrix<cols, rows, T>::from(first, next...); \
+    }                                                                       \
+    template<class U> inline constexpr static RectangularMatrix<cols, rows, T> from(const Math::RectangularMatrix<cols, rows, U>& other) { \
+        return Math::RectangularMatrix<cols, rows, T>::from(other);         \
     }                                                                       \
                                                                             \
     inline __VA_ARGS__& operator=(const Math::RectangularMatrix<cols, rows, T>& other) { \
