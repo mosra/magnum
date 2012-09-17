@@ -71,9 +71,9 @@ class TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         /** @brief TGA file header */
         /** @todoc Enable @c INLINE_SIMPLE_STRUCTS again when unclosed &lt;component&gt; in tagfile is fixed*/
         struct TGAIMPORTER_LOCAL Header {
-            GLbyte  identsize;              /**< @brief Size of ID field that follows header (0) */
-            GLbyte  colorMapType;           /**< @brief 0 = None, 1 = paletted */
-            GLbyte  imageType;              /**< @brief 0 = none, 1 = indexed, 2 = rgb, 3 = grey, +8=rle */
+            char  identsize;                /**< @brief Size of ID field that follows header (0) */
+            char  colorMapType;             /**< @brief 0 = None, 1 = paletted */
+            char  imageType;                /**< @brief 0 = none, 1 = indexed, 2 = rgb, 3 = grey, +8=rle */
             unsigned short  colorMapStart;  /**< @brief First color map entry */
             unsigned short  colorMapLength; /**< @brief Number of colors */
             unsigned char   colorMapBpp;    /**< @brief Bits per palette entry */
@@ -81,8 +81,8 @@ class TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
             unsigned short  beginY;         /**< @brief %Image y origin */
             unsigned short  width;          /**< @brief %Image width */
             unsigned short  height;         /**< @brief %Image height */
-            GLbyte  bpp;                    /**< @brief Bits per pixel (8, 16, 24, 32) */
-            GLbyte  descriptor;             /**< @brief %Image descriptor */
+            char  bpp;                      /**< @brief Bits per pixel (8, 16, 24, 32) */
+            char  descriptor;               /**< @brief %Image descriptor */
         };
         #pragma pack(8)
 

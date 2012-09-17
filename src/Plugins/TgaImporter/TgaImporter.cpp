@@ -19,7 +19,7 @@
 #include <Utility/Endianness.h>
 
 #include "Math/Vector2.h"
-#include "Math/Swizzle.h"
+#include <Swizzle.h>
 #include "Trade/ImageData.h"
 
 using namespace std;
@@ -106,11 +106,11 @@ bool TgaImporter::open(istream& in, const string& name) {
     if(components == AbstractImage::Components::RGB) {
         Math::Vector3<GLubyte>* data = reinterpret_cast<Math::Vector3<GLubyte>*>(buffer);
         std::transform(data, data + dimensions.product(), data,
-            [](Math::Vector3<GLubyte> pixel) { return Math::swizzle<'b', 'g', 'r'>(pixel); });
+            [](Math::Vector3<GLubyte> pixel) { return swizzle<'b', 'g', 'r'>(pixel); });
     } else /* RGBA */ {
         Math::Vector4<GLubyte>* data = reinterpret_cast<Math::Vector4<GLubyte>*>(buffer);
         std::transform(data, data + dimensions.product(), data,
-            [](Math::Vector4<GLubyte> pixel) { return Math::swizzle<'b', 'g', 'r', 'a'>(pixel); });
+            [](Math::Vector4<GLubyte> pixel) { return swizzle<'b', 'g', 'r', 'a'>(pixel); });
     }
     #endif
 

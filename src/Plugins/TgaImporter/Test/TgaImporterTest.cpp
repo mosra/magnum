@@ -15,9 +15,14 @@
 
 #include "TgaImporterTest.h"
 
+#include <Utility/Debug.h>
+#include <Math/Vector2.h>
+#include <Trade/ImageData.h>
+
 #include "../TgaImporter.h"
 
 using namespace std;
+using namespace Corrade::Utility;
 
 CORRADE_TEST_MAIN(Magnum::Trade::TgaImporter::Test::TgaImporterTest)
 
