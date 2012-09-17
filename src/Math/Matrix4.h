@@ -69,36 +69,39 @@ template<class T> class Matrix4: public Matrix<4, T> {
         /**
          * @brief 3D rotation matrix
          * @param angle Rotation angle (counterclockwise, in radians)
-         * @param vec   Rotation vector
+         * @param vec   Normalized rotation vector
          *
-         * @see Matrix3::rotation(), Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis(), deg(), rad()
-         * @todo optimize - Assume the vectors are normalized?
+         * @see Matrix3::rotation(), Vector3::xAxis(), Vector3::yAxis(),
+         *      Vector3::zAxis(), deg(), rad()
+         * @attention Assertion fails on non-normalized rotation vector and
+         *      identity matrix is returned.
          */
         static Matrix4<T> rotation(T angle, const Vector3<T>& vec) {
-            Vector3<T> vn = vec.normalized();
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(vec.dot(), T(1)),
+                           "Math::Matrix4::rotation(): vector must be normalized", {});
 
             T sine = std::sin(angle);
             T cosine = std::cos(angle);
             T oneMinusCosine = T(1) - cosine;
 
-            T xx = vn.x()*vn.x();
-            T xy = vn.x()*vn.y();
-            T xz = vn.x()*vn.z();
-            T yy = vn.y()*vn.y();
-            T yz = vn.y()*vn.z();
-            T zz = vn.z()*vn.z();
+            T xx = vec.x()*vec.x();
+            T xy = vec.x()*vec.y();
+            T xz = vec.x()*vec.z();
+            T yy = vec.y()*vec.y();
+            T yz = vec.y()*vec.z();
+            T zz = vec.z()*vec.z();
 
             return Matrix4<T>( /* Column-major! */
                 cosine + xx*oneMinusCosine,
-                    xy*oneMinusCosine + vn.z()*sine,
-                        xz*oneMinusCosine - vn.y()*sine,
+                    xy*oneMinusCosine + vec.z()*sine,
+                        xz*oneMinusCosine - vec.y()*sine,
                            T(0),
-                xy*oneMinusCosine - vn.z()*sine,
+                xy*oneMinusCosine - vec.z()*sine,
                     cosine + yy*oneMinusCosine,
-                        yz*oneMinusCosine + vn.x()*sine,
+                        yz*oneMinusCosine + vec.x()*sine,
                            T(0),
-                xz*oneMinusCosine + vn.y()*sine,
-                    yz*oneMinusCosine - vn.x()*sine,
+                xz*oneMinusCosine + vec.y()*sine,
+                    yz*oneMinusCosine - vec.x()*sine,
                         cosine + zz*oneMinusCosine,
                            T(0),
                 T(0), T(0), T(0), T(1)

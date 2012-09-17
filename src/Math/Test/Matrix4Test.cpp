@@ -29,6 +29,7 @@ namespace Magnum { namespace Math { namespace Test {
 
 typedef Math::Matrix4<float> Matrix4;
 typedef Math::Matrix3<float> Matrix3;
+typedef Math::Vector3<float> Vector3;
 
 Matrix4Test::Matrix4Test() {
     addTests(&Matrix4Test::constructIdentity,
@@ -88,14 +89,19 @@ void Matrix4Test::scaling() {
 }
 
 void Matrix4Test::rotation() {
-    Matrix4 matrix(
-        0.35612214f,  -0.80181062f, 0.47987163f,  0.0f,
-        0.47987163f,  0.59757638f,  0.6423595f,  0.0f,
-        -0.80181062f, 0.0015183985f, 0.59757638f,  0.0f,
-        0.0f,       0.0f,       0.0f,       1.0f
-    );
+    ostringstream o;
+    Error::setOutput(&o);
 
-    CORRADE_COMPARE(Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f}), matrix);
+    CORRADE_COMPARE(Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f}), Matrix4());
+    CORRADE_COMPARE(o.str(), "Math::Matrix4::rotation(): vector must be normalized\n");
+
+    Matrix4 matrix(
+         0.35612214f, -0.80181062f,   0.47987163f, 0.0f,
+         0.47987163f,  0.59757638f,   0.6423595f,  0.0f,
+        -0.80181062f,  0.0015183985f, 0.59757638f, 0.0f,
+         0.0f,         0.0f,          0.0f,        1.0f
+    );
+    CORRADE_COMPARE(Matrix4::rotation(deg(-74.0f), Vector3(-1.0f, 2.0f, 2.0f).normalized()), matrix);
 }
 
 void Matrix4Test::rotationScalingPart() {
@@ -122,10 +128,10 @@ void Matrix4Test::rotationPart() {
         -0.80181062f, 0.0015183985f, 0.59757638f
     );
 
-    Matrix4 rotation = Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f});
+    Matrix4 rotation = Matrix4::rotation(deg(-74.0f), Vector3(-1.0f, 2.0f, 2.0f).normalized());
     CORRADE_COMPARE(rotation.rotation(), expectedRotationPart);
 
-    Matrix4 rotationTransformed = Matrix4::translation({2.0f, 5.0f, -3.0f})*rotation*Matrix4::scaling(Vector3<float>(9.0f));
+    Matrix4 rotationTransformed = Matrix4::translation({2.0f, 5.0f, -3.0f})*rotation*Matrix4::scaling(Vector3(9.0f));
     CORRADE_COMPARE(rotationTransformed.rotation(), expectedRotationPart);
 }
 
