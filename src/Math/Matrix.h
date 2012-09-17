@@ -37,7 +37,6 @@ namespace Implementation {
 See @ref matrix-vector for brief introduction.
 
 @configurationvalueref{Magnum::Math::Matrix}
-@todo @c PERFORMANCE - loop unrolling for Matrix<3, T> and Matrix<4, T>
  */
 template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
     public:

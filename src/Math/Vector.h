@@ -41,7 +41,6 @@ namespace Implementation {
 
 See @ref matrix-vector for brief introduction.
 @configurationvalueref{Magnum::Math::Vector}
-@todo Constexprize all for loops
 */
 template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
     public:
