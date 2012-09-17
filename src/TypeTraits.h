@@ -29,6 +29,9 @@ namespace Math {
     template<size_t, class> class Matrix;
 }
 
+template<class> class Color3;
+template<class> class Color4;
+
 /**
 @brief Traits class for plain OpenGL types
 
@@ -239,6 +242,8 @@ template<class T, size_t vectorSize> struct TypeTraits<Math::Vector<vectorSize, 
 template<class T> struct TypeTraits<Math::Vector2<T>>: public TypeTraits<Math::Vector<2, T>> {};
 template<class T> struct TypeTraits<Math::Vector3<T>>: public TypeTraits<Math::Vector<3, T>> {};
 template<class T> struct TypeTraits<Math::Vector4<T>>: public TypeTraits<Math::Vector<4, T>> {};
+template<class T> struct TypeTraits<Color3<T>>: public TypeTraits<Math::Vector<3, T>> {};
+template<class T> struct TypeTraits<Color4<T>>: public TypeTraits<Math::Vector<4, T>> {};
 
 template<class T, size_t matrixSize> struct TypeTraits<Math::Matrix<matrixSize, T>> {
     inline constexpr static Type type() { return TypeTraits<T>::type(); }
