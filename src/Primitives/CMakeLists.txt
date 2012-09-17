@@ -4,6 +4,7 @@ set(MagnumPrimitives_SRCS
     Cylinder.cpp
     Icosphere.cpp
     Plane.cpp
+    Square.cpp
     UVSphere.cpp)
 set(MagnumPrimitives_HEADERS
     Capsule.h
@@ -11,6 +12,7 @@ set(MagnumPrimitives_HEADERS
     Cylinder.h
     Icosphere.h
     Plane.h
+    Square.h
     UVSphere.h)
 
 add_library(MagnumPrimitives STATIC ${MagnumPrimitives_SRCS})
