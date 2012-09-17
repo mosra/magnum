@@ -16,11 +16,12 @@
 #include "Point.h"
 
 #include "Math/Matrix4.h"
+#include "Math/Point3D.h"
 
 namespace Magnum { namespace Physics {
 
 void Point::applyTransformation(const Matrix4& transformation) {
-    _transformedPosition = (transformation*Vector4(_position)).xyz();
+    _transformedPosition = (transformation*Point3D(_position)).xyz();
 }
 
 }}

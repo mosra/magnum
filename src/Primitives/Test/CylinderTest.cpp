@@ -17,7 +17,7 @@
 
 #include <TestSuite/Compare/Container.h>
 
-#include "Math/Vector4.h"
+#include "Math/Point3D.h"
 #include "Primitives/Cylinder.h"
 
 using namespace std;
@@ -35,7 +35,7 @@ CylinderTest::CylinderTest() {
 void CylinderTest::withoutAnything() {
     Cylinder cylinder(2, 3, 3.0f);
 
-    CORRADE_COMPARE_AS(*cylinder.positions(0), (vector<Vector4>{
+    CORRADE_COMPARE_AS(*cylinder.positions(0), (vector<Point3D>{
         {0.0f, -1.5f, 1.0f},
         {0.866025f, -1.5f, -0.5f},
         {-0.866025f, -1.5f, -0.5f},
@@ -72,7 +72,7 @@ void CylinderTest::withoutAnything() {
 void CylinderTest::withTextureCoordsAndCaps() {
     Cylinder cylinder(2, 3, 3.0f, Cylinder::Flag::GenerateTextureCoords|Cylinder::Flag::CapEnds);
 
-    CORRADE_COMPARE_AS(*cylinder.positions(0), (vector<Vector4>{
+    CORRADE_COMPARE_AS(*cylinder.positions(0), (vector<Point3D>{
         {0.0f, -1.5f, 0.0f},
 
         {0.0f, -1.5f, 1.0f},

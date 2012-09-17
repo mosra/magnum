@@ -16,12 +16,13 @@
 #include "Line.h"
 
 #include "Math/Matrix4.h"
+#include "Math/Point3D.h"
 
 namespace Magnum { namespace Physics {
 
 void Line::applyTransformation(const Matrix4& transformation) {
-    _transformedA = (transformation*Vector4(_a)).xyz();
-    _transformedB = (transformation*Vector4(_b)).xyz();
+    _transformedA = (transformation*Point3D(_a)).xyz();
+    _transformedB = (transformation*Point3D(_b)).xyz();
 }
 
 }}

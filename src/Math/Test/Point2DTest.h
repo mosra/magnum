@@ -1,3 +1,5 @@
+#ifndef Magnum_Math_Test_Point2DTest_h
+#define Magnum_Math_Test_Point2DTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -13,16 +15,19 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AxisAlignedBox.h"
+#include <TestSuite/Tester.h>
 
-#include "Math/Matrix4.h"
-#include "Math/Point3D.h"
+namespace Magnum { namespace Math { namespace Test {
 
-namespace Magnum { namespace Physics {
+class Point2DTest: public Corrade::TestSuite::Tester<Point2DTest> {
+    public:
+        Point2DTest();
 
-void AxisAlignedBox::applyTransformation(const Matrix4& transformation) {
-    _transformedPosition = (transformation*Point3D(_position)).xyz();
-    _transformedSize = transformation.rotationScaling()*_size;
-}
+        void construct();
+        void debug();
+        void configuration();
+};
 
-}}
+}}}
+
+#endif

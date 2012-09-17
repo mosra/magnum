@@ -33,7 +33,7 @@ namespace Magnum { namespace Shaders {
 */
 class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
     public:
-        typedef Attribute<0, Vector4> Position; /**< @brief Vertex position */
+        typedef Attribute<0, Point3D> Position; /**< @brief Vertex position */
         typedef Attribute<1, Vector3> Normal;   /**< @brief Normal direction */
 
         /** @brief Constructor */

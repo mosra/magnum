@@ -10,6 +10,9 @@ corrade_add_test2(MathVector2Test Vector2Test.cpp)
 corrade_add_test2(MathVector3Test Vector3Test.cpp)
 corrade_add_test2(MathVector4Test Vector4Test.cpp)
 
+corrade_add_test2(MathPoint2DTest Point2DTest.cpp)
+corrade_add_test2(MathPoint3DTest Point3DTest.cpp)
+
 corrade_add_test2(MathMatrixTest MatrixTest.cpp)
 corrade_add_test2(MathMatrix3Test Matrix3Test.cpp)
 corrade_add_test2(MathMatrix4Test Matrix4Test.cpp)

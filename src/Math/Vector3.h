@@ -27,7 +27,8 @@ namespace Magnum { namespace Math {
 @brief Three-component vector
 @tparam T   Data type
 
-See @ref matrix-vector for brief introduction.
+See @ref matrix-vector for brief introduction. See also Point2D for
+homogeneous two-dimensional coordinates.
 @configurationvalueref{Magnum::Math::Vector3}
 */
 template<class T> class Vector3: public Vector<3, T> {

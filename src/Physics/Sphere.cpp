@@ -18,6 +18,7 @@
 #include "Math/Constants.h"
 #include "Math/Math.h"
 #include "Math/Matrix4.h"
+#include "Math/Point3D.h"
 #include "Math/Geometry/Distance.h"
 #include "LineSegment.h"
 #include "Point.h"
@@ -27,7 +28,7 @@ using namespace Magnum::Math::Geometry;
 namespace Magnum { namespace Physics {
 
 void Sphere::applyTransformation(const Matrix4& transformation) {
-    _transformedPosition = (transformation*Vector4(_position)).xyz();
+    _transformedPosition = (transformation*Point3D(_position)).xyz();
     float scaling = (transformation.rotationScaling()*Vector3(1/Math::Constants<float>::sqrt3())).length();
     _transformedRadius = scaling*_radius;
 }

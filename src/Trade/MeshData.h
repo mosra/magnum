@@ -21,6 +21,7 @@
 
 #include <string>
 
+#include "Math/Point3D.h"
 #include "Mesh.h"
 
 namespace Magnum { namespace Trade {
@@ -50,7 +51,7 @@ class MAGNUM_EXPORT MeshData {
          * @param textureCoords2D   Array with two-dimensional texture
          *      coordinate arrays or empty array
          */
-        inline MeshData(const std::string& name, Mesh::Primitive primitive, std::vector<unsigned int>* indices, std::vector<std::vector<Vector4>*> positions, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D): _name(name), _primitive(primitive), _indices(indices), _positions(positions), _normals(normals), _textureCoords2D(textureCoords2D) {}
+        inline MeshData(const std::string& name, Mesh::Primitive primitive, std::vector<unsigned int>* indices, std::vector<std::vector<Point3D>*> positions, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D): _name(name), _primitive(primitive), _indices(indices), _positions(positions), _normals(normals), _textureCoords2D(textureCoords2D) {}
 
         /** @brief Destructor */
         ~MeshData();
@@ -77,8 +78,8 @@ class MAGNUM_EXPORT MeshData {
          * @return Positions or nullptr if there is no vertex array with given
          *      ID.
          */
-        inline std::vector<Vector4>* positions(unsigned int id) { return _positions[id]; }
-        inline const std::vector<Vector4>* positions(unsigned int id) const { return _positions[id]; } /**< @overload */
+        inline std::vector<Point3D>* positions(unsigned int id) { return _positions[id]; }
+        inline const std::vector<Point3D>* positions(unsigned int id) const { return _positions[id]; } /**< @overload */
 
         /** @brief Count of normal arrays */
         inline unsigned int normalArrayCount() const { return _normals.size(); }
@@ -108,7 +109,7 @@ class MAGNUM_EXPORT MeshData {
         std::string _name;
         Mesh::Primitive _primitive;
         std::vector<unsigned int>* _indices;
-        std::vector<std::vector<Vector4>*> _positions;
+        std::vector<std::vector<Point3D>*> _positions;
         std::vector<std::vector<Vector3>*> _normals;
         std::vector<std::vector<Vector2>*> _textureCoords2D;
 };

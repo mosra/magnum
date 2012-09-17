@@ -242,6 +242,8 @@ template<class T, size_t vectorSize> struct TypeTraits<Math::Vector<vectorSize, 
 template<class T> struct TypeTraits<Math::Vector2<T>>: public TypeTraits<Math::Vector<2, T>> {};
 template<class T> struct TypeTraits<Math::Vector3<T>>: public TypeTraits<Math::Vector<3, T>> {};
 template<class T> struct TypeTraits<Math::Vector4<T>>: public TypeTraits<Math::Vector<4, T>> {};
+template<class T> struct TypeTraits<Math::Point2D<T>>: public TypeTraits<Math::Vector<3, T>> {};
+template<class T> struct TypeTraits<Math::Point3D<T>>: public TypeTraits<Math::Vector<4, T>> {};
 template<class T> struct TypeTraits<Color3<T>>: public TypeTraits<Math::Vector<3, T>> {};
 template<class T> struct TypeTraits<Color4<T>>: public TypeTraits<Math::Vector<4, T>> {};
 

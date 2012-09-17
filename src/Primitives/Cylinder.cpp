@@ -16,7 +16,6 @@
 #include "Cylinder.h"
 
 #include "Math/Constants.h"
-#include "Math/Vector4.h"
 
 using namespace std;
 

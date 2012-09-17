@@ -18,6 +18,7 @@
 #include <limits>
 
 #include "Math/Matrix4.h"
+#include "Math/Point3D.h"
 #include "Math/Geometry/Intersection.h"
 #include "LineSegment.h"
 
@@ -27,7 +28,7 @@ using namespace Magnum::Math::Geometry;
 namespace Magnum { namespace Physics {
 
 void Plane::applyTransformation(const Matrix4& transformation) {
-    _transformedPosition = (transformation*Vector4(_position)).xyz();
+    _transformedPosition = (transformation*Point3D(_position)).xyz();
     _transformedNormal = transformation.rotation()*_normal;
 }
 

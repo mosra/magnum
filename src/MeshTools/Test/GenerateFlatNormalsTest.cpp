@@ -17,7 +17,7 @@
 
 #include <sstream>
 
-#include "Math/Vector4.h"
+#include "Math/Point3D.h"
 #include "MeshTools/GenerateFlatNormals.h"
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::GenerateFlatNormalsTest)

@@ -42,7 +42,7 @@ Icosphere<0>::Icosphere(): MeshData("", Mesh::Primitive::Triangles, new vector<u
     7, 1, 0,
     3, 9, 8,
     4, 8, 0
-}, {new vector<Vector4>}, {new vector<Vector3>{
+}, {new vector<Point3D>}, {new vector<Vector3>{
     Vector3(0, -0.525731f, 0.850651f),
     Vector3(0.850651f, 0, 0.525731f),
     Vector3(0.850651f, 0, -0.525731f),

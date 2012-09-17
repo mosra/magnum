@@ -19,6 +19,7 @@
  * @brief Class Magnum::SceneGraph::Light
  */
 
+#include "Math/Point3D.h"
 #include "Object.h"
 
 namespace Magnum { namespace SceneGraph {
@@ -39,7 +40,7 @@ class SCENEGRAPH_EXPORT Light: public Object3D {
         /**
          * @brief Light position relative to root object (scene)
          */
-        inline Vector4 position() {
+        inline Point3D position() {
             setClean();
             return _position;
         }
@@ -51,7 +52,7 @@ class SCENEGRAPH_EXPORT Light: public Object3D {
         void clean(const Matrix4& absoluteTransformation);
 
     private:
-        Vector4 _position;
+        Point3D _position;
 };
 
 }}

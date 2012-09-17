@@ -106,7 +106,7 @@ of some STL functions like shown below. Also if one index array is shader by
 more than one attribute array, just pass the index array more times. Example:
 @code
 std::vector<unsigned int> vertexIndices;
-std::vector<Vector4> positions;
+std::vector<Point3D> positions;
 std::vector<unsigned int> normalTextureIndices;
 std::vector<Vector3> normals;
 std::vector<Vector2> textureCoordinates;

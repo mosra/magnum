@@ -41,6 +41,8 @@ namespace Magnum {
         template<class> class Vector2;
         template<class> class Vector3;
         template<class> class Vector4;
+        template<class> class Point2D;
+        template<class> class Point3D;
         template<class> class Matrix3;
         template<class> class Matrix4;
 
@@ -61,6 +63,12 @@ typedef Math::Vector3<GLfloat> Vector3;
 
 /** @brief Four-component floating-point vector */
 typedef Math::Vector4<GLfloat> Vector4;
+
+/** @brief Two-dimensional floating-point homogeneous coordinates */
+typedef Math::Point2D<GLfloat> Point2D;
+
+/** @brief Three-dimensional floating-point homogeneous coordinates */
+typedef Math::Point3D<GLfloat> Point3D;
 
 /** @brief 3x3 floating-point matrix */
 typedef Math::Matrix3<GLfloat> Matrix3;

@@ -15,7 +15,7 @@
 
 #include "Cube.h"
 
-#include "Math/Vector4.h"
+#include "Math/Point3D.h"
 
 using namespace std;
 
@@ -34,7 +34,7 @@ Cube::Cube(): MeshData("", Mesh::Primitive::Triangles, new vector<unsigned int>{
     2, 6, 7,
     4, 1, 5,
     4, 0, 1
-}, {new vector<Vector4>}, {new vector<Vector3>{
+}, {new vector<Point3D>}, {new vector<Vector3>{
     {-1.0f, -1.0f, -1.0f},
     { 1.0f, -1.0f, -1.0f},
     {-1.0f,  1.0f, -1.0f},

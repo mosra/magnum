@@ -41,7 +41,7 @@ functions and properties:
  - <strong>%Attribute location</strong> typedefs defining locations and types
    for attribute binding with Mesh::bindAttribute(), for example:
 @code
-typedef Attribute<0, Vector4> Position;
+typedef Attribute<0, Point3D> Position;
 typedef Attribute<1, Vector3> Normal;
 typedef Attribute<2, Vector2> TextureCoords;
 @endcode

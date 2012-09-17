@@ -15,14 +15,14 @@
 
 #include "GenerateFlatNormals.h"
 
-#include "Math/Vector4.h"
+#include "Math/Point3D.h"
 #include "MeshTools/Clean.h"
 
 using namespace std;
 
 namespace Magnum { namespace MeshTools {
 
-tuple<vector<unsigned int>, vector<Vector3>> generateFlatNormals(const vector<unsigned int>& indices, const vector<Vector4>& positions) {
+tuple<vector<unsigned int>, vector<Vector3>> generateFlatNormals(const vector<unsigned int>& indices, const vector<Point3D>& positions) {
     CORRADE_ASSERT(!(indices.size()%3), "MeshTools::generateFlatNormals(): index count is not divisible by 3!", (tuple<vector<unsigned int>, vector<Vector3>>()));
 
     /* Create normal for every triangle (assuming counterclockwise winding) */

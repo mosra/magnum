@@ -27,16 +27,14 @@ namespace Magnum { namespace Math {
 @brief Four-component vector
 @tparam T   Data type
 
-See @ref matrix-vector for brief introduction.
+See @ref matrix-vector for brief introduction. See also Point3D for
+homogeneous three-dimensional coordinates.
 @configurationvalueref{Magnum::Math::Vector4}
 */
 template<class T> class Vector4: public Vector<4, T> {
     public:
-        /**
-         * @copydoc Vector::Vector
-         * W component is set to one.
-         */
-        inline constexpr Vector4(): Vector<4, T>(T(0), T(0), T(0), T(1)) {}
+        /** @copydoc Vector::Vector() */
+        inline constexpr Vector4() {}
 
         /** @copydoc Vector::Vector(T) */
         inline constexpr explicit Vector4(T value): Vector<4, T>(value, value, value, value) {}
@@ -51,16 +49,14 @@ template<class T> class Vector4: public Vector<4, T> {
          * @param z     Z component
          * @param w     W component
          */
-        inline constexpr Vector4(T x, T y, T z, T w = T(1)): Vector<4, T>(x, y, z, w) {}
+        inline constexpr Vector4(T x, T y, T z, T w): Vector<4, T>(x, y, z, w) {}
 
         /**
          * @brief Constructor
          * @param xyz   Three-component vector
          * @param w     W component
          */
-        /* Not marked as explicit, because conversion from Vector3 to Vector4
-           is fairly common, nearly always with W set to 1 */
-        inline constexpr Vector4(const Vector<3, T>& xyz, T w = T(1)): Vector<4, T>(xyz[0], xyz[1], xyz[2], w) {}
+        inline constexpr Vector4(const Vector<3, T>& xyz, T w): Vector<4, T>(xyz[0], xyz[1], xyz[2], w) {}
 
         inline T& x() { return (*this)[0]; }                /**< @brief X component */
         inline constexpr T x() const { return (*this)[0]; } /**< @overload */
