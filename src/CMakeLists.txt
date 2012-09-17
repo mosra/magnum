@@ -35,7 +35,8 @@ set(Magnum_SRCS
     TypeTraits.cpp
 
     Trade/AbstractImporter.cpp
-    Trade/MeshData.cpp)
+    Trade/MeshData2D.cpp
+    Trade/MeshData3D.cpp)
 set(Magnum_HEADERS
     AbstractImage.h
     AbstractShaderProgram.h

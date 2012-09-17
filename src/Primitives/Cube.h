@@ -19,12 +19,12 @@
  * @brief Class Magnum::Primitives::Cube
  */
 
-#include "Trade/MeshData.h"
+#include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
 
 /** @brief %Cube primitive */
-class Cube: public Trade::MeshData {
+class Cube: public Trade::MeshData3D {
     public:
         /** @brief Constructor */
         Cube();

@@ -30,8 +30,10 @@ class AbstractMaterialData;
 class CameraData;
 template<size_t> class ImageData;
 class LightData;
-class MeshData;
-class ObjectData;
+class MeshData2D;
+class MeshData3D;
+class ObjectData2D;
+class ObjectData3D;
 class SceneData;
 class TextureData;
 
@@ -176,44 +178,83 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          */
         virtual CameraData* camera(unsigned int id);
 
-        /** @brief %Object count */
-        virtual inline unsigned int objectCount() const { return 0; }
+        /** @brief Two-dimensional object count */
+        virtual inline unsigned int object2DCount() const { return 0; }
 
         /**
-         * @brief %Object ID for given name
+         * @brief Two-dimensional object ID for given name
          *
          * If no scene for given name exists, returns -1.
-         * @see ObjectData::name()
+         * @see ObjectData2D::name()
          */
-        virtual int objectForName(const std::string& name);
+        virtual int object2DForName(const std::string& name);
 
         /**
-         * @brief %Object
-         * @param id        %Object ID, from range [0, objectCount()).
+         * @brief Two-dimensional object
+         * @param id        %Object ID, from range [0, object2DCount()).
          *
          * Returns pointer to given object or nullptr, if no such object
          * exists.
          */
-        virtual ObjectData* object(unsigned int id);
+        virtual ObjectData2D* object2D(unsigned int id);
 
-        /** @brief %Mesh count */
-        virtual inline unsigned int meshCount() const { return 0; }
+        /** @brief Three-dimensional object count */
+        virtual inline unsigned int object3DCount() const { return 0; }
 
         /**
-         * @brief %Mesh ID for given name
+         * @brief Three-dimensional object ID for given name
+         *
+         * If no scene for given name exists, returns -1.
+         * @see ObjectData3D::name()
+         */
+        virtual int object3DForName(const std::string& name);
+
+        /**
+         * @brief Three-dimensional object
+         * @param id        %Object ID, from range [0, object3DCount()).
+         *
+         * Returns pointer to given object or nullptr, if no such object
+         * exists.
+         */
+        virtual ObjectData3D* object3D(unsigned int id);
+
+        /** @brief Two-dimensional mesh count */
+        virtual inline unsigned int mesh2DCount() const { return 0; }
+
+        /**
+         * @brief Two-dimensional mesh ID for given name
          *
          * If no mesh for given name exists, returns -1.
-         * @see MeshData::name()
+         * @see MeshData2D::name()
          */
-        virtual int meshForName(const std::string& name);
+        virtual int mesh2DForName(const std::string& name);
 
         /**
-         * @brief %Mesh
+         * @brief Two-dimensional mesh
          * @param id        %Mesh ID, from range [0, meshCount()).
          *
          * Returns pointer to given mesh or nullptr, if no such mesh exists.
          */
-        virtual MeshData* mesh(unsigned int id);
+        virtual MeshData2D* mesh2D(unsigned int id);
+
+        /** @brief Three-dimensional mesh count */
+        virtual inline unsigned int mesh3DCount() const { return 0; }
+
+        /**
+         * @brief Three-dimensional mesh ID for given name
+         *
+         * If no mesh for given name exists, returns -1.
+         * @see MeshData3D::name()
+         */
+        virtual int mesh3DForName(const std::string& name);
+
+        /**
+         * @brief Three-dimensional mesh
+         * @param id        %Mesh ID, from range [0, meshCount()).
+         *
+         * Returns pointer to given mesh or nullptr, if no such mesh exists.
+         */
+        virtual MeshData3D* mesh3D(unsigned int id);
 
         /** @brief Material count */
         virtual inline unsigned int materialCount() const { return 0; }
@@ -324,10 +365,14 @@ inline int AbstractImporter::lightForName(const std::string&) { return -1; }
 inline LightData* AbstractImporter::light(unsigned int) { return nullptr; }
 inline int AbstractImporter::cameraForName(const std::string&) { return -1; }
 inline CameraData* AbstractImporter::camera(unsigned int) { return nullptr; }
-inline int AbstractImporter::objectForName(const std::string&) { return -1; }
-inline ObjectData* AbstractImporter::object(unsigned int) { return nullptr; }
-inline int AbstractImporter::meshForName(const std::string&) { return -1; }
-inline MeshData* AbstractImporter::mesh(unsigned int) { return nullptr; }
+inline int AbstractImporter::object2DForName(const std::string&) { return -1; }
+inline ObjectData2D* AbstractImporter::object2D(unsigned int) { return nullptr; }
+inline int AbstractImporter::object3DForName(const std::string&) { return -1; }
+inline ObjectData3D* AbstractImporter::object3D(unsigned int) { return nullptr; }
+inline int AbstractImporter::mesh2DForName(const std::string&) { return -1; }
+inline MeshData2D* AbstractImporter::mesh2D(unsigned int) { return nullptr; }
+inline int AbstractImporter::mesh3DForName(const std::string&) { return -1; }
+inline MeshData3D* AbstractImporter::mesh3D(unsigned int) { return nullptr; }
 inline int AbstractImporter::materialForName(const std::string&) { return -1; }
 inline AbstractMaterialData* AbstractImporter::material(unsigned int) { return nullptr; }
 inline int AbstractImporter::textureForName(const std::string&) { return -1; }

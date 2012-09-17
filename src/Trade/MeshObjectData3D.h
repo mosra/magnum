@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_MeshObjectData_h
-#define Magnum_Trade_MeshObjectData_h
+#ifndef Magnum_Trade_MeshObjectData3D_h
+#define Magnum_Trade_MeshObjectData3D_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,23 +16,23 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::MeshObjectData
+ * @brief Class Magnum::Trade::MeshObjectData3D
  */
 
-#include "ObjectData.h"
+#include "ObjectData3D.h"
 
 namespace Magnum { namespace Trade {
 
 /**
-@brief %Mesh object data
+@brief Three-dimensional mesh object data
 
 Provides access to material information for given mesh instance.
 */
-class MeshObjectData: public ObjectData {
-    MeshObjectData(const MeshObjectData& other) = delete;
-    MeshObjectData(MeshObjectData&& other) = delete;
-    MeshObjectData& operator=(const MeshObjectData& other) = delete;
-    MeshObjectData& operator=(MeshObjectData&& other) = delete;
+class MeshObjectData3D: public ObjectData3D {
+    MeshObjectData3D(const MeshObjectData3D& other) = delete;
+    MeshObjectData3D(MeshObjectData3D&& other) = delete;
+    MeshObjectData3D& operator=(const MeshObjectData3D& other) = delete;
+    MeshObjectData3D& operator=(MeshObjectData3D&& other) = delete;
 
     public:
         /**
@@ -45,7 +45,7 @@ class MeshObjectData: public ObjectData {
          *
          * Creates object with mesh instance type.
          */
-        inline MeshObjectData(const std::string& name, const std::vector<unsigned int>& children, const Matrix4& transformation, unsigned int instance, unsigned int material): ObjectData(name, children, transformation, InstanceType::Mesh, instance), _material(material) {}
+        inline MeshObjectData3D(const std::string& name, const std::vector<unsigned int>& children, const Matrix4& transformation, unsigned int instance, unsigned int material): ObjectData3D(name, children, transformation, InstanceType::Mesh, instance), _material(material) {}
 
         /** @brief Material ID */
         inline unsigned int material() const { return _material; }

@@ -4,9 +4,12 @@ set(MagnumTrade_HEADERS
     CameraData.h
     ImageData.h
     LightData.h
-    MeshData.h
-    MeshObjectData.h
-    ObjectData.h
+    MeshData2D.h
+    MeshData3D.h
+    MeshObjectData2D.h
+    MeshObjectData3D.h
+    ObjectData2D.h
+    ObjectData3D.h
     PhongMaterialData.h
     SceneData.h
     TextureData.h)

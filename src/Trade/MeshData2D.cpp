@@ -1,5 +1,3 @@
-#ifndef Magnum_Primitives_Plane_h
-#define Magnum_Primitives_Plane_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,25 +13,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-/** @file
- * @brief Class Magnum::Primitives::Plane
- */
+#include "MeshData2D.h"
 
-#include "Trade/MeshData3D.h"
+namespace Magnum { namespace Trade {
 
-namespace Magnum { namespace Primitives {
-
-/**
-@brief %Plane primitive
-
-2x2 plane with normals in positive Z direction.
-*/
-class Plane: public Trade::MeshData3D {
-    public:
-        /** @brief Constructor */
-        Plane();
-};
+MeshData2D::~MeshData2D() {
+    delete _indices;
+    for(auto i: _positions) delete i;
+    for(auto i: _textureCoords2D) delete i;
+}
 
 }}
-
-#endif

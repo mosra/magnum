@@ -21,7 +21,7 @@ using namespace std;
 
 namespace Magnum { namespace Primitives {
 
-Cube::Cube(): MeshData("", Mesh::Primitive::Triangles, new vector<unsigned int>{
+Cube::Cube(): MeshData3D("", Mesh::Primitive::Triangles, new vector<unsigned int>{
     0, 2, 1,
     2, 3, 1,
     1, 3, 5,

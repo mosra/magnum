@@ -13,13 +13,11 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "MeshData.h"
-
-#include "Math/Vector4.h"
+#include "MeshData3D.h"
 
 namespace Magnum { namespace Trade {
 
-MeshData::~MeshData() {
+MeshData3D::~MeshData3D() {
     delete _indices;
     for(auto i: _positions) delete i;
     for(auto i: _normals) delete i;

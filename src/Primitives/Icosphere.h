@@ -22,7 +22,7 @@
 #include "Math/Vector3.h"
 #include "MeshTools/Subdivide.h"
 #include "MeshTools/Clean.h"
-#include "Trade/MeshData.h"
+#include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
 
@@ -34,7 +34,7 @@ template<size_t subdivisions> class Icosphere;
 @todo Use own computed (and more precise) icosahedron data, not these stolen
 from Blender.
 */
-template<> class Icosphere<0>: public Trade::MeshData {
+template<> class Icosphere<0>: public Trade::MeshData3D {
     public:
         /** @brief Constructor */
         Icosphere();

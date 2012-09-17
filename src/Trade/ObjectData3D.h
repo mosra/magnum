@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_ObjectData_h
-#define Magnum_Trade_ObjectData_h
+#ifndef Magnum_Trade_ObjectData3D_h
+#define Magnum_Trade_ObjectData3D_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::ObjectData
+ * @brief Class Magnum::Trade::ObjectData3D
  */
 
 #include "Math/Matrix4.h"
@@ -25,23 +25,23 @@
 namespace Magnum { namespace Trade {
 
 /**
-@brief %Object data
+@brief Three-dimensional object data
 
 Provides access to object transformation and hierarchy. See also
-MeshObjectData, which is specialized for objects with mesh instance type.
+MeshObjectData3D, which is specialized for objects with mesh instance type.
 */
-class ObjectData {
-    ObjectData(const ObjectData& other) = delete;
-    ObjectData(ObjectData&& other) = delete;
-    ObjectData& operator=(const ObjectData& other) = delete;
-    ObjectData& operator=(ObjectData&& other) = delete;
+class ObjectData3D {
+    ObjectData3D(const ObjectData3D& other) = delete;
+    ObjectData3D(ObjectData3D&& other) = delete;
+    ObjectData3D& operator=(const ObjectData3D& other) = delete;
+    ObjectData3D& operator=(ObjectData3D&& other) = delete;
 
     public:
         /** @brief Instance type */
         enum class InstanceType {
             Camera,     /**< Camera instance (see CameraData) */
             Light,      /**< Light instance (see LightData) */
-            Mesh,       /**< Mesh instance (see MeshData) */
+            Mesh,       /**< Three-dimensional mesh instance (see MeshData3D) */
             Empty       /**< Empty */
         };
 
@@ -53,7 +53,7 @@ class ObjectData {
          * @param instanceType      Instance type
          * @param instanceId        Instance ID
          */
-        inline ObjectData(const std::string& name, const std::vector<unsigned int>& children, const Matrix4& transformation, InstanceType instanceType, unsigned int instanceId): _name(name), _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
+        inline ObjectData3D(const std::string& name, const std::vector<unsigned int>& children, const Matrix4& transformation, InstanceType instanceType, unsigned int instanceId): _name(name), _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
 
         /**
          * @brief Constructor for empty instance
@@ -61,10 +61,10 @@ class ObjectData {
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          */
-        inline ObjectData(const std::string& name, const std::vector<unsigned int>& children, const Matrix4& transformation): _name(name), _children(children), _transformation(transformation), _instanceType(InstanceType::Empty), _instanceId(-1) {}
+        inline ObjectData3D(const std::string& name, const std::vector<unsigned int>& children, const Matrix4& transformation): _name(name), _children(children), _transformation(transformation), _instanceType(InstanceType::Empty), _instanceId(-1) {}
 
         /** @brief Destructor */
-        inline virtual ~ObjectData() {}
+        inline virtual ~ObjectData3D() {}
 
         /** @brief %Object name */
         inline std::string name() const { return _name; }
@@ -80,7 +80,7 @@ class ObjectData {
          * @return Type of instance held by this object
          *
          * If the instance is of type InstanceType::Mesh, the instance can be
-         * casted to MeshObjectData and provide more information.
+         * casted to MeshObjectData3D and provide more information.
          */
         inline InstanceType instanceType() const { return _instanceType; }
 

@@ -19,7 +19,7 @@
  * @brief Class Magnum::Primitives::Capsule
  */
 
-#include "Trade/MeshData.h"
+#include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
 
@@ -28,7 +28,7 @@ namespace Magnum { namespace Primitives {
 
 Cylinder along Y axis with hemispheres instead of caps.
 */
-class Capsule: public Trade::MeshData {
+class Capsule: public Trade::MeshData3D {
     friend class UVSphere;
     friend class Cylinder;
 

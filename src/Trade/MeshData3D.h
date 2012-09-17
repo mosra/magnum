@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_MeshData_h
-#define Magnum_Trade_MeshData_h
+#ifndef Magnum_Trade_MeshData3D_h
+#define Magnum_Trade_MeshData3D_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::MeshData
+ * @brief Class Magnum::Trade::MeshData3D
  */
 
 #include <string>
@@ -27,16 +27,16 @@
 namespace Magnum { namespace Trade {
 
 /**
-@brief %Mesh data
+@brief Three-dimensional mesh data
 
 Provides access to mesh data and additional information, such as primitive
 type.
 */
-class MAGNUM_EXPORT MeshData {
-    MeshData(const MeshData& other) = delete;
-    MeshData(MeshData&& other) = delete;
-    MeshData& operator=(const MeshData& other) = delete;
-    MeshData& operator=(MeshData&& other) = delete;
+class MAGNUM_EXPORT MeshData3D {
+    MeshData3D(const MeshData3D& other) = delete;
+    MeshData3D(MeshData3D&& other) = delete;
+    MeshData3D& operator=(const MeshData3D& other) = delete;
+    MeshData3D& operator=(MeshData3D&& other) = delete;
 
     public:
         /**
@@ -51,10 +51,10 @@ class MAGNUM_EXPORT MeshData {
          * @param textureCoords2D   Array with two-dimensional texture
          *      coordinate arrays or empty array
          */
-        inline MeshData(const std::string& name, Mesh::Primitive primitive, std::vector<unsigned int>* indices, std::vector<std::vector<Point3D>*> positions, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D): _name(name), _primitive(primitive), _indices(indices), _positions(positions), _normals(normals), _textureCoords2D(textureCoords2D) {}
+        inline MeshData3D(const std::string& name, Mesh::Primitive primitive, std::vector<unsigned int>* indices, std::vector<std::vector<Point3D>*> positions, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D): _name(name), _primitive(primitive), _indices(indices), _positions(positions), _normals(normals), _textureCoords2D(textureCoords2D) {}
 
         /** @brief Destructor */
-        ~MeshData();
+        ~MeshData3D();
 
         /** @brief %Mesh name */
         inline std::string name() const { return _name; }
