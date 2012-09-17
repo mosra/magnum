@@ -110,7 +110,7 @@ void VectorTest::angle() {
     Error::setOutput(&o);
     /* Both vectors must be normalized, otherwise NaN is returned */
     CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f}), numeric_limits<Vector3::Type>::quiet_NaN());
-    CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized!\n");
+    CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized\n");
     CORRADE_COMPARE(Vector3::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized()), numeric_limits<Vector3::Type>::quiet_NaN());
 
     CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), Vector3(1.0f, -2.0f, 3.0f).normalized()), rad(1.162514f));

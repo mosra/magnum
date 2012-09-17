@@ -85,12 +85,12 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
          * @f[
          * \phi = \frac{a \cdot b}{|a| \cdot |b|}
          * @f]
-         * @attention If any of the parameters is not normalized (and
-         * assertions are enabled), returns NaN.
+         * @attention Assertion fails on non-normalized vectors and NaN is
+         *      returned.
          */
         inline static T angle(const Vector<size, T>& a, const Vector<size, T>& b) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(a.dot(), T(1)) && MathTypeTraits<T>::equals(b.dot(), T(1)),
-                           "Math::Vector::angle(): vectors must be normalized!", std::numeric_limits<T>::quiet_NaN());
+                           "Math::Vector::angle(): vectors must be normalized", std::numeric_limits<T>::quiet_NaN());
             return std::acos(dot(a, b));
         }
 
