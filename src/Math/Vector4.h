@@ -46,17 +46,17 @@ template<class T> class Vector4: public Vector<4, T> {
 
         /**
          * @brief Constructor
-         * @param x     X value
-         * @param y     Y value
-         * @param z     Z value
-         * @param w     W value
+         * @param x     X component
+         * @param y     Y component
+         * @param z     Z component
+         * @param w     W component
          */
         inline constexpr Vector4(T x, T y, T z, T w = T(1)): Vector<4, T>(x, y, z, w) {}
 
         /**
          * @brief Constructor
-         * @param xyz   Three component vector
-         * @param w     W value
+         * @param xyz   Three-component vector
+         * @param w     W component
          */
         /* Not marked as explicit, because conversion from Vector3 to Vector4
            is fairly common, nearly always with W set to 1 */

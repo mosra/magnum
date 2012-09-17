@@ -112,16 +112,16 @@ template<class T> class Vector3: public Vector<3, T> {
 
         /**
          * @brief Constructor
-         * @param x     X value
-         * @param y     Y value
-         * @param z     Z value
+         * @param x     X component
+         * @param y     Y component
+         * @param z     Z component
          */
         inline constexpr Vector3(T x, T y, T z): Vector<3, T>(x, y, z) {}
 
         /**
          * @brief Constructor
-         * @param xy    Two component vector
-         * @param z     Z value
+         * @param xy    Two-component vector
+         * @param z     Z component
          */
         inline constexpr Vector3(const Vector<2, T>& xy, T z): Vector<3, T>(xy[0], xy[1], z) {}
 
