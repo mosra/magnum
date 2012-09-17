@@ -98,6 +98,8 @@ integral type.
 resulting `Integral` type (e.g. `double` to `int`, `long double` to `long long`).
 
 @todo Signed normalization to [-1.0, 1.0] like in OpenGL?
+@todo Stable behavior (working/broken) for long double and long long
+    (currently fails in Debug builds, but passes in Release on GCC 4.7)
 */
 template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value, Integral>::type denormalize(FloatingPoint value) {
     return             std::numeric_limits<Integral>::min() +
