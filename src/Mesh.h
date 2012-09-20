@@ -348,20 +348,28 @@ class MAGNUM_EXPORT Mesh {
         /** @brief Primitive type */
         inline Primitive primitive() const { return _primitive; }
 
-        /** @brief Set primitive type */
-        inline void setPrimitive(Primitive primitive) { _primitive = primitive; }
+        /**
+         * @brief Set primitive type
+         * @return Pointer to self (for method chaining)
+         */
+        inline Mesh* setPrimitive(Primitive primitive) {
+            _primitive = primitive;
+            return this;
+        }
 
         /** @brief Vertex count */
         inline GLsizei vertexCount() const { return _vertexCount; }
 
         /**
          * @brief Set vertex count
+         * @return Pointer to self (for method chaining)
          *
          * This forces recalculation of attribute positions upon next drawing.
          */
-        inline void setVertexCount(GLsizei vertexCount) {
+        inline Mesh* setVertexCount(GLsizei vertexCount) {
             _vertexCount = vertexCount;
             finalized = false;
+            return this;
         }
 
         /**
@@ -392,14 +400,16 @@ class MAGNUM_EXPORT Mesh {
          * @tparam attribute    Attribute, defined in the shader
          * @param buffer        Buffer where bind the attribute to (pointer
          *      returned by addBuffer())
+         * @return Pointer to self (for method chaining)
          *
          * Binds attribute of given type with given buffer. If the attribute is
          * already bound, given buffer isn't managed with this mesh (wasn't
          * initialized with addBuffer) or the mesh was already drawn, the
          * function does nothing.
          */
-        template<class Attribute> inline void bindAttribute(Buffer* buffer) {
+        template<class Attribute> inline Mesh* bindAttribute(Buffer* buffer) {
             bindAttribute(buffer, Attribute::Location, TypeTraits<typename Attribute::Type>::count(), TypeTraits<typename Attribute::Type>::type());
+            return this;
         }
 
         /**

@@ -51,15 +51,28 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
         /** @brief Index count */
         inline GLsizei indexCount() const { return _indexCount; }
 
-        /** @brief Set index count */
-        /** @todo definalize after that? */
-        inline void setIndexCount(GLsizei count) { _indexCount = count; }
+        /**
+         * @brief Set index count
+         * @return Pointer to self (for method chaining)
+         *
+         * @todo definalize after that?
+         */
+        inline IndexedMesh* setIndexCount(GLsizei count) {
+            _indexCount = count;
+            return this;
+        }
 
         /** @brief Index type */
         inline Type indexType() const { return _indexType; }
 
-        /** @brief Set index type */
-        inline void setIndexType(Type type) { _indexType = type; }
+        /**
+         * @brief Set index type
+         * @return Pointer to self (for method chaining)
+         */
+        inline IndexedMesh* setIndexType(Type type) {
+            _indexType = type;
+            return this;
+        }
 
         /**
          * @brief Index buffer
