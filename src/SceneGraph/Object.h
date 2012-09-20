@@ -127,7 +127,7 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractObject: public Corra
 
         /**
          * @brief %Scene
-         * @return If the object is not assigned to any scene, returns nullptr.
+         * @return %Scene or `nullptr`, if the object is not part of any scene.
          */
         SceneType* scene();
 
@@ -149,7 +149,10 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractObject: public Corra
         /** @brief Last child object or `nullptr`, if this object has no children */
         inline ObjectType* lastChild() { return Corrade::Containers::LinkedList<ObjectType>::last(); }
 
-        /** @brief Set parent object */
+        /**
+         * @brief Set parent object
+         * @return Pointer to self (for method chaining)
+         */
         ObjectType* setParent(ObjectType* parent);
 
         /*@}*/
@@ -187,13 +190,17 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractObject: public Corra
          */
         virtual MatrixType absoluteTransformation(CameraType* camera = nullptr);
 
-        /** @brief Set transformation */
+        /**
+         * @brief Set transformation
+         * @return Pointer to self (for method chaining)
+         */
         ObjectType* setTransformation(const MatrixType& transformation);
 
         /**
          * @brief Multiply transformation
          * @param transformation    Transformation
          * @param type              Transformation type
+         * @return Pointer to self (for method chaining)
          */
         inline ObjectType* multiplyTransformation(const MatrixType& transformation, Transformation type = Transformation::Global) {
             setTransformation(type == Transformation::Global ?
