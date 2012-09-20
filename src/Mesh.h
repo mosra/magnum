@@ -71,7 +71,7 @@ class MAGNUM_EXPORT Mesh {
          * Initial value is `FrontFace::%CounterClockWise`.
          * @see @fn_gl{FrontFace}
          */
-        void setFrontFace(FrontFace mode) {
+        inline static void setFrontFace(FrontFace mode) {
             glFrontFace(static_cast<GLenum>(mode));
         }
 
