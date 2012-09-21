@@ -58,6 +58,7 @@ set(Magnum_HEADERS
     Profiler.h
     Query.h
     Renderbuffer.h
+    ResourceManager.h
     Shader.h
     SizeTraits.h
     Swizzle.h
