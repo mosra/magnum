@@ -63,6 +63,12 @@ class Interleave {
             delete[] _data;
         }
 
+        /* Specialization for only one attribute array */
+        template<class T> void operator()(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const T& attribute) {
+            mesh->setVertexCount(attribute.size());
+            buffer->setData(attribute, usage);
+        }
+
         template<class T, class ...U> inline static size_t attributeCount(const T& first, const U&... next) {
             CORRADE_ASSERT(sizeof...(next) == 0 || attributeCount(next...) == first.size(), "MeshTools::interleave(): attribute arrays don't have the same length, nothing done.", 0);
 
@@ -124,7 +130,7 @@ The only requirements to attribute array type is that it must have typedef
 function `size()` returning count of elements. In most cases it will be
 `std::vector` or `std::array`.
 
-See also interleave(Mesh*, Buffer*, Buffer::Usage, const std::vector<T>&...),
+See also interleave(Mesh*, Buffer*, Buffer::Usage, const T&...),
 which writes the interleaved array directly into buffer of given mesh.
 
 @attention Each passed array should have the same size, if not, resulting
@@ -142,12 +148,20 @@ template<class T, class ...U> inline typename std::enable_if<!std::is_convertibl
 @param buffer       Output array buffer
 @param usage        Array buffer usage
 
-The same as interleave(const T&...), but this function writes the output to
-given array buffer and updates vertex count in the mesh accordingly.
+The same as interleave(const T&, const U&...), but this function writes the
+output to given array buffer and updates vertex count in the mesh accordingly.
+Binding the attributes to shader is left to user.
 
-@attention The buffer must be set as interleaved (see Mesh::addBuffer()),
-    otherwise this function does nothing. Binding the attributes to shader is
-    left to user.
+For only one attribute array this function is convenient equivalent to the
+following, without any performance loss:
+@code
+buffer->setData(attribute, usage);
+mesh->setVertexCount(attribute.size());
+@endcode
+
+@attention If there is more than one attribute array, the buffer must be set
+    as interleaved (see Mesh::addBuffer()), otherwise this function does
+    nothing.
 */
 template<class ...T> inline void interleave(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const T&... attributes) {
     return Implementation::Interleave()(mesh, buffer, usage, attributes...);
