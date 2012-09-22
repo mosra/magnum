@@ -52,7 +52,8 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief 2D scaling matrix
          * @param vec   Scaling vector
          *
-         * @see Matrix4::scaling(), Vector2::xScale(), Vector2::yScale()
+         * @see rotationScaling() const, Matrix4::scaling(const Vector3&),
+         *      Vector2::xScale(), Vector2::yScale()
          */
         inline constexpr static Matrix3<T> scaling(const Vector2<T>& vec) {
             return Matrix3<T>( /* Column-major! */
@@ -66,7 +67,8 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief 3D rotation matrix
          * @param angle Rotation angle (counterclockwise, in radians)
          *
-         * @see Matrix4::rotation(), deg(), rad()
+         * @see rotation() const, Matrix4::rotation(T, const Vector3&), deg(),
+         *      rad()
          */
         static Matrix3<T> rotation(T angle) {
             return Matrix3<T>( /* Column-major! */
@@ -95,6 +97,30 @@ template<class T> class Matrix3: public Matrix<3, T> {
 
         /** @brief Copy constructor */
         inline constexpr Matrix3(const RectangularMatrix<3, 3, T>& other): Matrix<3, T>(other) {}
+
+        /**
+         * @brief 2D rotation and scaling part of the matrix
+         *
+         * Upper-left 2x2 part of the matrix.
+         * @see rotation() const, rotation(T), Matrix4::rotationScaling() const
+         */
+        inline Matrix<2, T> rotationScaling() const {
+            return Matrix<2, T>::from(
+                (*this)[0].xy(),
+                (*this)[1].xy());
+        }
+
+        /**
+         * @brief 2D rotation part of the matrix
+         *
+         * Normalized upper-left 2x2 part of the matrix.
+         * @see rotationScaling() const, rotation(T), Matrix4::rotation() const
+         */
+        inline Matrix<2, T> rotation() const {
+            return Matrix<2, T>::from(
+                (*this)[0].xy().normalized(),
+                (*this)[1].xy().normalized());
+        }
 
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix3, Vector3, 3)
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(3, 3, Matrix3<T>)

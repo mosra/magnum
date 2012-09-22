@@ -55,7 +55,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D scaling matrix
          * @param vec   Scaling vector
          *
-         * @see Matrix3::scaling(), Vector3::xScale(), Vector3::yScale(), Vector3::zScale()
+         * @see rotationScaling() const, Matrix3::scaling(const Vector2&),
+         *      Vector3::xScale(), Vector3::yScale(), Vector3::zScale()
          */
         inline constexpr static Matrix4<T> scaling(const Vector3<T>& vec) {
             return Matrix4<T>( /* Column-major! */
@@ -71,8 +72,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @param angle Rotation angle (counterclockwise, in radians)
          * @param vec   Normalized rotation vector
          *
-         * @see Matrix3::rotation(), Vector3::xAxis(), Vector3::yAxis(),
-         *      Vector3::zAxis(), deg(), rad()
+         * @see rotation() const, Matrix3::rotation(T), Vector3::xAxis(),
+         *      Vector3::yAxis(), Vector3::zAxis(), deg(), rad()
          * @attention Assertion fails on non-normalized rotation vector and
          *      identity matrix is returned.
          */
@@ -132,7 +133,13 @@ template<class T> class Matrix4: public Matrix<4, T> {
         /** @copydoc Matrix::ij() */
         inline Matrix3<T> ij(size_t skipRow, size_t skipCol) const { return Matrix<4, T>::ij(skipRow, skipCol); }
 
-        /** @brief Rotation and scaling part of the matrix */
+        /**
+         * @brief 3D rotation and scaling part of the matrix
+         *
+         * Upper-left 3x3 part of the matrix.
+         * @see rotation() const, rotation(T, const Vector3&),
+         *      Matrix3::rotationScaling() const
+         */
         inline Matrix3<T> rotationScaling() const {
             return Matrix3<T>::from(
                 (*this)[0].xyz(),
@@ -140,7 +147,13 @@ template<class T> class Matrix4: public Matrix<4, T> {
                 (*this)[2].xyz());
         }
 
-        /** @brief Rotation part of the matrix */
+        /**
+         * @brief 3D rotation part of the matrix
+         *
+         * Normalized upper-left 3x3 part of the matrix.
+         * @see rotationScaling() const, rotation(T, const Vector3&),
+         *      Matrix3::rotation() const
+         */
         inline Matrix3<T> rotation() const {
             return Matrix3<T>::from(
                 (*this)[0].xyz().normalized(),
