@@ -38,6 +38,7 @@ Matrix4Test::Matrix4Test() {
              &Matrix4Test::rotation,
              &Matrix4Test::rotationScalingPart,
              &Matrix4Test::rotationPart,
+             &Matrix4Test::translationPart,
              &Matrix4Test::debug,
              &Matrix4Test::configuration);
 }
@@ -133,6 +134,15 @@ void Matrix4Test::rotationPart() {
 
     Matrix4 rotationTransformed = Matrix4::translation({2.0f, 5.0f, -3.0f})*rotation*Matrix4::scaling(Vector3(9.0f));
     CORRADE_COMPARE(rotationTransformed.rotation(), expectedRotationPart);
+}
+
+void Matrix4Test::translationPart() {
+    Matrix4 m(1.0f, 0.0f, 0.0f, 0.0f,
+              0.0f, 1.0f, 0.0f, 0.0f,
+              0.0f, 0.0f, 1.0f, 0.0f,
+              -5.0f, 12.0f, 0.5f, 1.0f);
+    Vector3 expected(-5.0f, 12.0f, 0.5f);
+    CORRADE_COMPARE(m.translation(), expected);
 }
 
 void Matrix4Test::debug() {

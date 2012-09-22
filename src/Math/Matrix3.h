@@ -38,7 +38,8 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief 2D translation matrix
          * @param vec   Translation vector
          *
-         * @see Matrix4::translation(), Vector2::xAxis(), Vector2::yAxis()
+         * @see translation(), Matrix4::translation(const Vector3&),
+         *      Vector2::xAxis(), Vector2::yAxis()
          */
         inline constexpr static Matrix3<T> translation(const Vector2<T>& vec) {
             return Matrix3<T>( /* Column-major! */
@@ -120,6 +121,21 @@ template<class T> class Matrix3: public Matrix<3, T> {
             return Matrix<2, T>::from(
                 (*this)[0].xy().normalized(),
                 (*this)[1].xy().normalized());
+        }
+
+        /**
+         * @brief 2D translation part of the matrix
+         *
+         * First two elements of last column.
+         * @see translation(const Vector2&), Matrix4::translation()
+         */
+        inline Vector2<T>& translation() {
+            return (*this)[2].xy();
+        }
+
+        /** @overload */
+        inline constexpr Vector3<T> translation() const {
+            return (*this)[2].xy();
         }
 
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix3, Vector3, 3)

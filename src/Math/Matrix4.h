@@ -40,7 +40,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D translation matrix
          * @param vec   Translation vector
          *
-         * @see Matrix3::translation(), Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()
+         * @see translation(), Matrix3::translation(const Vector2&),
+         *      Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()
          */
         inline constexpr static Matrix4<T> translation(const Vector3<T>& vec) {
             return Matrix4<T>( /* Column-major! */
@@ -159,6 +160,21 @@ template<class T> class Matrix4: public Matrix<4, T> {
                 (*this)[0].xyz().normalized(),
                 (*this)[1].xyz().normalized(),
                 (*this)[2].xyz().normalized());
+        }
+
+        /**
+         * @brief 3D translation part of the matrix
+         *
+         * First three elements of last column.
+         * @see translation(const Vector3&), Matrix3::translation()
+         */
+        inline Vector3<T>& translation() {
+            return (*this)[3].xyz();
+        }
+
+        /** @overload */
+        inline constexpr Vector3<T> translation() const {
+            return (*this)[3].xyz();
         }
 
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix4, Vector4, 4)
