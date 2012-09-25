@@ -11,6 +11,7 @@ set(MagnumMeshTools_HEADERS
     Interleave.h
     Subdivide.h
     Tipsify.h
+    Transform.h
 
     magnumMeshToolsVisibility.h)
 add_library(MagnumMeshToolsObjects OBJECT ${MagnumMeshTools_SRCS})
