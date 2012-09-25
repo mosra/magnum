@@ -47,6 +47,7 @@ typedef Attribute<2, Vector2> TextureCoords;
 @endcode
    @todoc Output attribute location (for bindFragmentDataLocationIndexed(),
         referenced also from Framebuffer::mapDefaultForDraw() / Framebuffer::mapForDraw())
+
  - **Layers for texture uniforms** to which the textures will be bound before
    rendering, for example:
 @code

@@ -90,7 +90,7 @@ Collection of shaders for testing purposes.
 /** @namespace Magnum::Physics
 @brief %Physics library
 
-Collision detection system and rigid body objects. See @ref physics
+Collision detection system and rigid body objects. See @ref collision-detection
 for introduction.
 */
 

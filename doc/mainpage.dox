@@ -48,10 +48,10 @@ help you with object hierarchy, transformations and resource management.
 
 @subsection getting-started-examples Tutorials and examples
 
-The best way to get started is to @ref examples-triangle "render your first triangle"
-in step-by-step tutorial. Then you can dig deeper and try @ref example-index
-"other examples", read about fundamental principles in the documentation or
-start experimenting on your own!
+The best way to get started is to render your first triangle in
+@ref example-index "step-by-step tutorial". Then you can dig deeper and try
+other examples, read about @ref features "fundamental principles" in the
+documentation or start experimenting on your own!
 
 @subsection getting-started-hacking Hacking Magnum
 
