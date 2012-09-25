@@ -32,16 +32,19 @@ namespace Magnum { namespace Physics {
 #endif
 
 /**
-@brief Collider group with defined set operation
+@brief Shape group
 
-Result of union, intersection, subtraction or XOR of two collider objects.
+Result of logical operations on shapes.
 See @ref collision-detection for brief introduction.
 */
 class PHYSICS_EXPORT ShapeGroup: public AbstractShape {
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    template<class T> friend constexpr enableIfIsBaseType operator~(const T& a);
-    template<class T> friend constexpr enableIfIsBaseType operator~(T&& a);
-    template<class T> friend constexpr enableIfIsBaseType operator~(T& a);
+//     template<class T> friend constexpr enableIfIsBaseType operator~(const T& a);
+//     template<class T> friend constexpr enableIfIsBaseType operator~(T&& a);
+//     template<class T> friend constexpr enableIfIsBaseType operator~(T& a);
+    template<class T> friend constexpr enableIfIsBaseType operator!(const T& a);
+    template<class T> friend constexpr enableIfIsBaseType operator!(T&& a);
+    template<class T> friend constexpr enableIfIsBaseType operator!(T& a);
 
     #define friendOp(char) \
         template<class T, class U> friend constexpr enableIfAreBaseType operator char(const T& a, const U& b); \
@@ -53,10 +56,12 @@ class PHYSICS_EXPORT ShapeGroup: public AbstractShape {
         template<class T, class U> friend constexpr enableIfAreBaseType operator char(std::reference_wrapper<T> a, const U& b); \
         template<class T, class U> friend constexpr enableIfAreBaseType operator char(std::reference_wrapper<T> a, U&& b); \
         template<class T, class U> friend constexpr enableIfAreBaseType operator char(std::reference_wrapper<T> a, std::reference_wrapper<U> b);
-    friendOp(|)
-    friendOp(&)
-    friendOp(-)
-    friendOp(^)
+//     friendOp(|)
+//     friendOp(&)
+//     friendOp(-)
+//     friendOp(^)
+    friendOp(&&)
+    friendOp(||)
     #undef friendOp
     #endif
 
@@ -68,13 +73,16 @@ class PHYSICS_EXPORT ShapeGroup: public AbstractShape {
             RefA = 0x01,
             RefB = 0x02,
             RefAB = 0x03,
-            Complement = 1 << 2,
-            Union = 2 << 2,
-            Intersection = 3 << 2,
-            Difference = 4 << 2,
-            Xor = 5 << 2,
-            FirstObjectOnly = 6 << 2,
-            AlwaysFalse = 7 << 2
+//             Complement = 1 << 2,
+//             Union = 2 << 2,
+//             Intersection = 3 << 2,
+//             Difference = 4 << 2,
+//             Xor = 5 << 2,
+            And = 6 << 2,
+            Or = 7 << 2,
+            Not = 8 << 2,
+            FirstObjectOnly = 9 << 2,
+            AlwaysFalse = 10 << 2
         };
 
     public:
@@ -105,37 +113,64 @@ class PHYSICS_EXPORT ShapeGroup: public AbstractShape {
         AbstractShape* b;
 };
 
-/** @brief Complement of shape */
-template<class T> inline constexpr enableIfIsBaseType operator~(const T& a) {
-    return ShapeGroup(ShapeGroup::Complement, new T(a), nullptr);
+// /* @brief Complement of shape */
+// template<class T> inline constexpr enableIfIsBaseType operator~(const T& a) {
+//     return ShapeGroup(ShapeGroup::Complement, new T(a), nullptr);
+// }
+// #ifndef DOXYGEN_GENERATING_OUTPUT
+// template<class T> inline constexpr enableIfIsBaseType operator~(T&& a) {
+//     return ShapeGroup(ShapeGroup::Complement, new T(std::forward<T>(a)), nullptr);
+// }
+// template<class T> inline constexpr enableIfIsBaseType operator~(T& a) {
+//     return ShapeGroup(ShapeGroup::Complement|ShapeGroup::RefA, &a.get(), nullptr);
+// }
+// #endif
+
+/** @relates ShapeGroup
+@brief Logical NOT of shape
+*/
+template<class T> inline constexpr enableIfIsBaseType operator!(const T& a) {
+    return ShapeGroup(ShapeGroup::Not, new T(a), nullptr);
 }
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T> inline constexpr enableIfIsBaseType operator~(T&& a) {
-    return ShapeGroup(ShapeGroup::Complement, new T(std::forward<T>(a)), nullptr);
+template<class T> inline constexpr enableIfIsBaseType operator!(T&& a) {
+    return ShapeGroup(ShapeGroup::Not, new T(std::forward<T>(a)), nullptr);
 }
-template<class T> inline constexpr enableIfIsBaseType operator~(T& a) {
-    return ShapeGroup(ShapeGroup::Complement|ShapeGroup::RefA, &a.get(), nullptr);
+template<class T> inline constexpr enableIfIsBaseType operator!(T& a) {
+    return ShapeGroup(ShapeGroup::Not|ShapeGroup::RefA, &a.get(), nullptr);
 }
 #endif
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
-/** @brief Union of two shapes */
-template<class T, class U> inline constexpr ShapeGroup operator&(T a, U b);
+// /* @brief Union of two shapes */
+// template<class T, class U> inline constexpr ShapeGroup operator&(T a, U b);
+//
+// /* @brief Intersection of two shapes */
+// template<class T, class U> inline constexpr ShapeGroup operator&(T a, U b);
+//
+// /* @brief Difference of two shapes */
+// template<class T, class U> inline constexpr ShapeGroup operator-(T a, U b);
+//
+// /* @brief XOR of two shapes */
+// template<class T, class U> inline constexpr ShapeGroup operator^(T a, U b);
+/** @relates ShapeGroup
+@brief Logical AND of two shapes
 
-/**
-@brief Intersection of two shapes
-
-Collision with @p a is computed first, so this operation can be also used for
-providing simplified version for shape @p b. See @ref CollisionDetectionShapeGroups
-for an example.
+[Short-circuit evaluation](http://en.wikipedia.org/wiki/Short-circuit_evaluation)
+is used here, so this operation can be used for providing simplified shape
+version, because collision with @p b is computed only if @p a collides.
+See @ref collision-detection-shape-simplification for an example.
 */
-template<class T, class U> inline constexpr ShapeGroup operator&(T a, U b);
+template<class T, class U> inline constexpr ShapeGroup operator&&(T a, U b);
 
-/** @brief Difference of two shapes */
-template<class T, class U> inline constexpr ShapeGroup operator-(T a, U b);
+/** @relates ShapeGroup
+@brief Logical OR of two shapes
 
-/** @brief XOR of two shapes */
-template<class T, class U> inline constexpr ShapeGroup operator^(T a, U b);
+[Short-circuit evaluation](http://en.wikipedia.org/wiki/Short-circuit_evaluation)
+is used, so if collision with @p a is detected, collision with @p b is not
+computed.
+*/
+template<class T, class U> inline constexpr ShapeGroup operator||(T a, U b);
 #else
 #define op(type, char)                                                      \
 template<class T, class U> inline constexpr enableIfAreBaseType operator char(const T& a, const U& b) { \
@@ -165,10 +200,12 @@ template<class T, class U> inline constexpr enableIfAreBaseType operator char(st
 template<class T, class U> inline constexpr enableIfAreBaseType operator char(std::reference_wrapper<T> a, std::reference_wrapper<U> b) { \
     return ShapeGroup(ShapeGroup::type|ShapeGroup::RefAB, &a.get(), &b.get()); \
 }
-op(Union, |)
-op(Intersection, &)
-op(Difference, -)
-op(Xor, ^)
+// op(Union, |)
+// op(Intersection, &)
+// op(Difference, -)
+// op(Xor, ^)
+op(And, &&)
+op(Or, ||)
 #undef op
 #endif
 

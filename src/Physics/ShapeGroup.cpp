@@ -50,11 +50,9 @@ void ShapeGroup::applyTransformation(const Matrix4& transformation) {
 
 bool ShapeGroup::collides(const AbstractShape* other) const {
     switch(operation & ~RefAB) {
-        case Complement: return !a->collides(other);
-        case Union: return a->collides(other) || b->collides(other);
-        case Intersection: return a->collides(other) && b->collides(other);
-        case Difference: return a->collides(other) && !b->collides(other);
-        case Xor: return a->collides(other) != b->collides(other);
+        case And: return a->collides(other) && b->collides(other);
+        case Or: return a->collides(other) || b->collides(other);
+        case Not: return !a->collides(other);
         case FirstObjectOnly: return a->collides(other);
 
         default:
