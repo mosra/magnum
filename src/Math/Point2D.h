@@ -57,7 +57,12 @@ template<class T> class Point2D: public Vector3<T> {
          * @param z     Z component
          */
         inline constexpr Point2D(const Vector<2, T>& xy, T z = T(1)): Vector3<T>(xy, z) {}
+
+        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Point2D, 3)
+        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 3, Point2D<T>)
 };
+
+MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Point2D, 3)
 
 /** @debugoperator{Magnum::Math::Point2D} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Point2D<T>& value) {
