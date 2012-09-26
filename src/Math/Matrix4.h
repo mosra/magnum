@@ -131,9 +131,6 @@ template<class T> class Matrix4: public Matrix<4, T> {
         /** @brief Copy constructor */
         inline constexpr Matrix4(const RectangularMatrix<4, 4, T>& other): Matrix<4, T>(other) {}
 
-        /** @copydoc Matrix::ij() */
-        inline Matrix3<T> ij(size_t skipRow, size_t skipCol) const { return Matrix<4, T>::ij(skipRow, skipCol); }
-
         /**
          * @brief 3D rotation and scaling part of the matrix
          *
@@ -176,6 +173,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
         inline constexpr Vector3<T> translation() const {
             return (*this)[3].xyz();
         }
+
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline Matrix3<T> ij(size_t skipRow, size_t skipCol) const { return Matrix<4, T>::ij(skipRow, skipCol); }
+        #endif
 
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix4, Vector4, 4)
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(4, 4, Matrix4<T>)
