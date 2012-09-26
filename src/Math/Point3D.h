@@ -59,6 +59,15 @@ template<class T> class Point3D: public Vector4<T> {
          */
         inline constexpr Point3D(const Vector<3, T>& xyz, T w = T(1)): Vector4<T>(xyz, w) {}
 
+        /**
+         * @brief Vector part of the point
+         *
+         * Equivalent to calling xyz(). Useful for seamless 2D/3D integration.
+         * @see Point2D::vector()
+         */
+        inline Vector3<T>& vector() { return Vector4<T>::xyz(); }
+        inline constexpr Vector3<T> vector() const { return Vector4<T>::xyz(); } /**< @overload */
+
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Point3D, 4)
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 4, Point3D<T>)
 };
