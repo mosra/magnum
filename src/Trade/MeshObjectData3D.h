@@ -27,6 +27,7 @@ namespace Magnum { namespace Trade {
 @brief Three-dimensional mesh object data
 
 Provides access to material information for given mesh instance.
+@see MeshObjectData2D
 */
 class MeshObjectData3D: public ObjectData3D {
     MeshObjectData3D(const MeshObjectData3D& other) = delete;

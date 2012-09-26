@@ -71,10 +71,10 @@ namespace Implementation {
 */
 
 /**
- * @brief Base for all positioned objects
- *
- * @todo Transform transformation when changing parent, so the object stays in
- * place.
+@brief Base for all positioned objects
+
+@todo Transform transformation when changing parent, so the object stays in
+place.
  */
 template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractObject: public Corrade::Containers::LinkedList<typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType>, public Corrade::Containers::LinkedListItem<typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType, typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType> {
     #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -328,7 +328,11 @@ extern template class SCENEGRAPH_EXPORT AbstractObject<2>;
 extern template class SCENEGRAPH_EXPORT AbstractObject<3>;
 #endif
 
-/** @brief Two-dimensional object */
+/**
+@brief Two-dimensional object
+
+@see Object3D
+*/
 class SCENEGRAPH_EXPORT Object2D: public AbstractObject<2> {
     public:
         /** @copydoc AbstractObject::AbstractObject() */
@@ -379,7 +383,11 @@ class SCENEGRAPH_EXPORT Object2D: public AbstractObject<2> {
         }
 };
 
-/** @brief Three-dimensional object */
+/**
+@brief Three-dimensional object
+
+@see Object2D
+*/
 class SCENEGRAPH_EXPORT Object3D: public AbstractObject<3> {
     public:
         /** @copydoc AbstractObject::AbstractObject() */

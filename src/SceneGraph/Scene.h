@@ -23,7 +23,11 @@
 
 namespace Magnum { namespace SceneGraph {
 
-/** @brief %Scene */
+/**
+@brief %Scene
+
+@see Scene2D, Scene3D
+*/
 template<size_t dimensions> class SCENEGRAPH_EXPORT Scene: public AbstractObject<dimensions>::ObjectType {
     public:
         /** @copydoc AbstractObject::isScene() */

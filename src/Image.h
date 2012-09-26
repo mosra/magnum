@@ -30,6 +30,7 @@ namespace Magnum {
 Class for storing image data on client memory. Can be replaced with
 ImageWrapper, BufferedImage, which stores image data in GPU memory, or for
 example with Trade::ImageData.
+@see Image1D, Image2D, Image3D
 */
 template<size_t imageDimensions> class Image: public AbstractImage {
     public:

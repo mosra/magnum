@@ -29,6 +29,7 @@ namespace Magnum { namespace Math {
 
 Same as Vector4, except that constructors have default value for W component
 set to one. See also @ref matrix-vector for brief introduction.
+@see Point2D
 @configurationvalueref{Magnum::Math::Point3D}
 */
 template<class T> class Point3D: public Vector4<T> {

@@ -31,7 +31,7 @@ namespace Magnum {
 Class for storing image data in GPU memory. Can be replaced with Image, which
 stores image data in client memory, ImageWrapper, or for example with
 Trade::ImageData.
-@see Buffer
+@see BufferedImage1D, BufferedImage2D, BufferedImage3D, Buffer
 @requires_gles30 (no extension providing this functionality)
 */
 template<size_t imageDimensions> class BufferedImage: public AbstractImage {

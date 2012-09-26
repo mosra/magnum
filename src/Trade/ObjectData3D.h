@@ -29,6 +29,7 @@ namespace Magnum { namespace Trade {
 
 Provides access to object transformation and hierarchy. See also
 MeshObjectData3D, which is specialized for objects with mesh instance type.
+@see ObjectData2D
 */
 class ObjectData3D {
     ObjectData3D(const ObjectData3D& other) = delete;

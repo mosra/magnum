@@ -183,7 +183,11 @@ namespace Implementation {
 }
 #endif
 
-/** @brief %Camera for two-dimensional scenes */
+/**
+@brief %Camera for two-dimensional scenes
+
+@see Camera3D
+*/
 class SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2> {
     public:
         /**
@@ -206,7 +210,11 @@ class SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2> {
         Camera2D* setProjection(const Vector2& size);
 };
 
-/** @brief %Camera for three-dimensional scenes */
+/**
+@brief %Camera for three-dimensional scenes
+
+@see Camera2D
+*/
 class SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3> {
     public:
         /**

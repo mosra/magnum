@@ -31,6 +31,7 @@ namespace Magnum { namespace Trade {
 
 Provides access to mesh data and additional information, such as primitive
 type.
+@see MeshData2D
 */
 class MAGNUM_EXPORT MeshData3D {
     MeshData3D(const MeshData3D& other) = delete;

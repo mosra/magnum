@@ -46,7 +46,7 @@ for more information.
 @requires_gl (rectangle textures)
 @requires_gl31 Extension @extension{ARB,texture_rectangle} (rectangle textures)
 
-@see CubeMapTexture, CubeMapTextureArray
+@see Texture1D, Texture2D, Texture3D, CubeMapTexture, CubeMapTextureArray
  */
 template<size_t textureDimensions> class Texture: public AbstractTexture {
     public:
