@@ -1,6 +1,7 @@
 set(MagnumPhysics_SRCS
     AbstractShape.cpp
     AxisAlignedBox.cpp
+    Box.cpp
     Capsule.cpp
     Line.cpp
     Plane.cpp

@@ -19,30 +19,29 @@
  * @brief Class Magnum::Physics::Box
  */
 
+#include "Math/Matrix4.h"
 #include "AbstractShape.h"
 
 namespace Magnum { namespace Physics {
 
 /** @brief Unit size box with assigned transformation matrix */
-class Box: public AbstractShape {
+class PHYSICS_EXPORT Box: public AbstractShape {
     public:
         /** @brief Constructor */
         inline Box(const Matrix4& transformation): _transformation(transformation), _transformedTransformation(transformation) {}
 
-        inline void applyTransformation(const Matrix4& transformation) {
-            _transformedTransformation = transformation*_transformation;
-        }
+        void applyTransformation(const Matrix4& transformation);
 
         /** @brief Transformation */
-        inline constexpr Matrix4 transformation() const { return _transformation; }
+        inline Matrix4 transformation() const { return _transformation; }
 
         /** @brief Set transformation */
-        inline Vector3 setTransformation(const Matrix4& transformation) {
+        inline void setTransformation(const Matrix4& transformation) {
             _transformation = transformation;
         }
 
         /** @brief Transformed transformation */
-        inline constexpr Vector3 transformedTransformation() const {
+        inline Matrix4 transformedTransformation() const {
             return _transformedTransformation;
         }
 
@@ -50,7 +49,7 @@ class Box: public AbstractShape {
         inline Type type() const { return Type::Box; }
 
     private:
-        Vector3 _transformation, _transformedTransformation;
+        Matrix4 _transformation, _transformedTransformation;
 };
 
 }}
