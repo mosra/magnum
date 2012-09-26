@@ -20,7 +20,7 @@
  */
 
 #include "Matrix3.h"
-#include "Vector4.h"
+#include "Point3D.h"
 
 namespace Magnum { namespace Math {
 
@@ -176,6 +176,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline Matrix3<T> ij(size_t skipRow, size_t skipCol) const { return Matrix<4, T>::ij(skipRow, skipCol); }
+
+        inline Point3D<T> operator*(const Point3D<T>& other) const {
+            return Matrix<4, T>::operator*(other);
+        }
         #endif
 
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix4, Vector4, 4)
