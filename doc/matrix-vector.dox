@@ -138,9 +138,9 @@ For more involved operations with components there are two swizzle() functions,
 they have the same features, but one is guaranteed to do most of the work at
 compile-time, while the second has more convenient syntax:
 @code
-Vector4<int> original(1, 2, 3, 4);
-Vector4<int> bgra = swizzle<'b', 'g', 'r', 'a'>(original); // { 3, 2, 1, 4 }
-Vector<6, int> a10rgb = swizzle(original, "a10rgb"); // { 4, 1, 0, 1, 2, 3 }
+Vector4<int> original(-1, 2, 3, 4);
+Vector4<int> bgra = swizzle<'b', 'g', 'r', 'a'>(original); // { 3, 2, -1, 4 }
+Vector<6, int> a10rgb = swizzle(original, "a10rgb"); // { 4, 1, 0, -1, 2, 3 }
 @endcode
 
 @section matrix-vector-column-major Matrices are column-major and vectors are columns

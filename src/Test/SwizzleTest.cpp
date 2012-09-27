@@ -30,6 +30,7 @@ typedef Math::Vector4<int> Vector4;
 SwizzleTest::SwizzleTest() {
     addTests(&SwizzleTest::xyzw,
              &SwizzleTest::rgba,
+             &SwizzleTest::constants,
              &SwizzleTest::fromSmall,
              &SwizzleTest::type,
              &SwizzleTest::defaultType);
@@ -47,6 +48,13 @@ void SwizzleTest::rgba() {
     Vector4 swizzled(5, 2, 7, 4);
     CORRADE_COMPARE(swizzle(orig, "brag"), swizzled);
     CORRADE_COMPARE((swizzle<'b', 'r', 'a', 'g'>(orig)), swizzled);
+}
+
+void SwizzleTest::constants() {
+    Vector4 orig(2, 4, 5, 7);
+    Vector4 swizzled(1, 7, 0, 4);
+    CORRADE_COMPARE(swizzle(orig, "1w0g"), swizzled);
+    CORRADE_COMPARE((swizzle<'1', 'w', '0', 'g'>(orig)), swizzled);
 }
 
 void SwizzleTest::fromSmall() {
