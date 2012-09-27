@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::Box
+ * @brief Class Magnum::Physics::Box, typedef Magnum::Physics::Box2D, Magnum::Physics::Box3D
  */
 
 #include "Math/Matrix4.h"
@@ -24,33 +24,57 @@
 
 namespace Magnum { namespace Physics {
 
-/** @brief Unit size box with assigned transformation matrix */
-class PHYSICS_EXPORT Box: public AbstractShape {
+/**
+@brief Unit-size box with assigned transformation matrix
+
+@see Box2D, Box3D
+*/
+template<size_t dimensions> class PHYSICS_EXPORT Box: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Box(const Matrix4& transformation): _transformation(transformation), _transformedTransformation(transformation) {}
+        inline Box(const typename AbstractShape<dimensions>::MatrixType& transformation): _transformation(transformation), _transformedTransformation(transformation) {}
 
-        void applyTransformation(const Matrix4& transformation);
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        void applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation);
+        #else
+        void applyTransformation(const MatrixType& transformation);
+        #endif
 
         /** @brief Transformation */
-        inline Matrix4 transformation() const { return _transformation; }
+        inline typename AbstractShape<dimensions>::MatrixType transformation() const {
+            return _transformation;
+        }
 
         /** @brief Set transformation */
-        inline void setTransformation(const Matrix4& transformation) {
+        inline void setTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation) {
             _transformation = transformation;
         }
 
         /** @brief Transformed transformation */
-        inline Matrix4 transformedTransformation() const {
+        inline typename AbstractShape<dimensions>::MatrixType transformedTransformation() const {
             return _transformedTransformation;
         }
 
     protected:
-        inline Type type() const { return Type::Box; }
+        inline typename AbstractShape<dimensions>::Type type() const {
+            return AbstractShape<dimensions>::Type::Box;
+        }
 
     private:
-        Matrix4 _transformation, _transformedTransformation;
+        typename AbstractShape<dimensions>::MatrixType _transformation,
+            _transformedTransformation;
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+extern template class PHYSICS_EXPORT Box<2>;
+extern template class PHYSICS_EXPORT Box<3>;
+#endif
+
+/** @brief Two-dimensional box */
+typedef Box<2> Box2D;
+
+/** @brief Three-dimensional box */
+typedef Box<3> Box3D;
 
 }}
 

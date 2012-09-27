@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::Sphere
+ * @brief Class Magnum::Physics::Sphere, typedef Magnum::Physics::Sphere2D, Magnum::Physics::Sphere3D
  */
 
 #include "Math/Vector3.h"
@@ -24,30 +24,39 @@
 
 namespace Magnum { namespace Physics {
 
-class Line;
-class LineSegment;
-class Point;
+template<size_t> class Line;
+template<size_t> class LineSegment;
+template<size_t> class Point;
 
 /**
 @brief %Sphere defined by position and radius
 
 Unlike other elements the sphere doesn't support asymmetric scaling. When
 applying transformation, the scale factor is averaged from all axes.
+@see Sphere2D, Sphere3D
 */
-class PHYSICS_EXPORT Sphere: public AbstractShape {
+template<size_t dimensions> class PHYSICS_EXPORT Sphere: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Sphere(const Vector3& position, float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
+        inline Sphere(const typename AbstractShape<dimensions>::VectorType& position, float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
 
-        void applyTransformation(const Matrix4& transformation);
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        void applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation);
+        #else
+        void applyTransformation(const MatrixType& transformation);
+        #endif
 
-        bool collides(const AbstractShape* other) const;
+        bool collides(const AbstractShape<dimensions>* other) const;
 
         /** @brief Position */
-        inline Vector3 position() const { return _position; }
+        inline typename AbstractShape<dimensions>::VectorType position() const {
+            return _position;
+        }
 
         /** @brief Set position */
-        inline void setPosition(const Vector3& position) { _position = position; }
+        inline void setPosition(const typename AbstractShape<dimensions>::VectorType& position) {
+            _position = position;
+        }
 
         /** @brief Radius */
         inline float radius() const { return _radius; }
@@ -56,7 +65,7 @@ class PHYSICS_EXPORT Sphere: public AbstractShape {
         inline void setRadius(float radius) { _radius = radius; }
 
         /** @brief Transformed position */
-        inline Vector3 transformedPosition() const {
+        inline typename AbstractShape<dimensions>::VectorType transformedPosition() const {
             return _transformedPosition;
         }
 
@@ -66,33 +75,47 @@ class PHYSICS_EXPORT Sphere: public AbstractShape {
         }
 
         /** @brief Collision with point */
-        bool operator%(const Point& other) const;
+        bool operator%(const Point<dimensions>& other) const;
 
         /** @brief Collision with line */
-        bool operator%(const Line& other) const;
+        bool operator%(const Line<dimensions>& other) const;
 
         /** @brief Collision with line segment */
-        bool operator%(const LineSegment& other) const;
+        bool operator%(const LineSegment<dimensions>& other) const;
 
         /** @brief Collision with sphere */
-        bool operator%(const Sphere& other) const;
+        bool operator%(const Sphere<dimensions>& other) const;
 
     protected:
-        inline Type type() const { return Type::Sphere; }
+        inline typename AbstractShape<dimensions>::Type type() const {
+            return AbstractShape<dimensions>::Type::Sphere;
+        }
 
     private:
-        Vector3 _position, _transformedPosition;
+        typename AbstractShape<dimensions>::VectorType _position,
+            _transformedPosition;
         float _radius, _transformedRadius;
 };
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+extern template class PHYSICS_EXPORT Sphere<2>;
+extern template class PHYSICS_EXPORT Sphere<3>;
+#endif
+
+/** @brief Two-dimensional sphere */
+typedef Sphere<2> Sphere2D;
+
+/** @brief Three-dimensional sphere */
+typedef Sphere<3> Sphere3D;
+
 /** @collisionoperator{Point,Sphere} */
-inline bool operator%(const Point& a, const Sphere& b) { return b % a; }
+template<size_t dimensions> inline bool operator%(const Point<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
 
 /** @collisionoperator{Line,Sphere} */
-inline bool operator%(const Line& a, const Sphere& b) { return b % a; }
+template<size_t dimensions> inline bool operator%(const Line<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
 
 /** @collisionoperator{LineSegment,Sphere} */
-inline bool operator%(const LineSegment& a, const Sphere& b) { return b % a; }
+template<size_t dimensions> inline bool operator%(const LineSegment<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
 
 }}
 

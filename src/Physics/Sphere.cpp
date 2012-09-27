@@ -27,43 +27,58 @@ using namespace Magnum::Math::Geometry;
 
 namespace Magnum { namespace Physics {
 
-void Sphere::applyTransformation(const Matrix4& transformation) {
-    _transformedPosition = (transformation*Point3D(_position)).xyz();
-    float scaling = (transformation.rotationScaling()*Vector3(1/Math::Constants<float>::sqrt3())).length();
+namespace {
+    template<size_t dimensions> static typename AbstractShape<dimensions>::VectorType unitVector();
+
+    template<> inline Vector2 unitVector<2>() {
+        return Vector2(1/Math::Constants<float>::sqrt2());
+    }
+
+    template<> inline Vector3 unitVector<3>() {
+        return Vector3(1/Math::Constants<float>::sqrt3());
+    }
+}
+
+template<size_t dimensions> void Sphere<dimensions>::applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation) {
+    _transformedPosition = (transformation*typename AbstractShape<dimensions>::PointType(_position)).vector();
+    float scaling = (transformation.rotationScaling()*unitVector<dimensions>()).length();
     _transformedRadius = scaling*_radius;
 }
 
-bool Sphere::collides(const AbstractShape* other) const {
-    if(other->type() == Type::Point)
-        return *this % *static_cast<const Point*>(other);
-    if(other->type() == Type::Line)
-        return *this % *static_cast<const Line*>(other);
-    if(other->type() == Type::LineSegment)
-        return *this % *static_cast<const LineSegment*>(other);
-    if(other->type() == Type::Sphere)
-        return *this % *static_cast<const Sphere*>(other);
+template<size_t dimensions> bool Sphere<dimensions>::collides(const AbstractShape<dimensions>* other) const {
+    if(other->type() == AbstractShape<dimensions>::Type::Point)
+        return *this % *static_cast<const Point<dimensions>*>(other);
+    if(other->type() == AbstractShape<dimensions>::Type::Line)
+        return *this % *static_cast<const Line<dimensions>*>(other);
+    if(other->type() == AbstractShape<dimensions>::Type::LineSegment)
+        return *this % *static_cast<const LineSegment<dimensions>*>(other);
+    if(other->type() == AbstractShape<dimensions>::Type::Sphere)
+        return *this % *static_cast<const Sphere<dimensions>*>(other);
 
-    return AbstractShape::collides(other);
+    return AbstractShape<dimensions>::collides(other);
 }
 
-bool Sphere::operator%(const Point& other) const {
+template<size_t dimensions> bool Sphere<dimensions>::operator%(const Point<dimensions>& other) const {
     return (other.transformedPosition()-transformedPosition()).dot() <
         Math::pow<2>(transformedRadius());
 }
 
-bool Sphere::operator%(const Line& other) const {
+template<size_t dimensions> bool Sphere<dimensions>::operator%(const Line<dimensions>& other) const {
     return Distance::linePointSquared(other.transformedA(), other.transformedB(), transformedPosition()) <
         Math::pow<2>(transformedRadius());
 }
 
-bool Sphere::operator%(const LineSegment& other) const {
+template<size_t dimensions> bool Sphere<dimensions>::operator%(const LineSegment<dimensions>& other) const {
     return Distance::lineSegmentPointSquared(other.transformedA(), other.transformedB(), transformedPosition()) <
         Math::pow<2>(transformedRadius());
 }
 
-bool Sphere::operator%(const Sphere& other) const {
+template<size_t dimensions> bool Sphere<dimensions>::operator%(const Sphere<dimensions>& other) const {
     return (other.transformedPosition()-transformedPosition()).dot() <
         Math::pow<2>(transformedRadius()+other.transformedRadius());
 }
+
+template class Sphere<2>;
+template class Sphere<3>;
 
 }}

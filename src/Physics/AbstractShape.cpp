@@ -17,12 +17,15 @@
 
 namespace Magnum { namespace Physics {
 
-bool AbstractShape::collides(const AbstractShape* other) const {
+template<size_t dimensions> bool AbstractShape<dimensions>::collides(const AbstractShape* other) const {
     /* Operate only with simpler types than this */
     if(static_cast<int>(other->type()) > static_cast<int>(type()))
         return other->collides(this);
 
     return false;
 }
+
+template class AbstractShape<2>;
+template class AbstractShape<3>;
 
 }}

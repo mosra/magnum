@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::Capsule
+ * @brief Class Magnum::Physics::Capsule, typedef Magnum::Physics::Capsule2D, Magnum::Physics::Capsule3D
  */
 
 #include "Math/Vector3.h"
@@ -24,29 +24,48 @@
 
 namespace Magnum { namespace Physics {
 
-class Point;
-class Sphere;
+template<size_t> class Point;
+template<size_t> class Sphere;
 
 /**
 @brief %Capsule defined by cylinder start and end point and radius
 
 Unlike other elements the capsule doesn't support asymmetric scaling. When
 applying transformation, the scale factor is averaged from all axes.
+@see Capsule2D, Capsule3D
 */
-class PHYSICS_EXPORT Capsule: public AbstractShape {
+template<size_t dimensions> class PHYSICS_EXPORT Capsule: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Capsule(const Vector3& a, const Vector3& b, float radius): _a(a), _transformedA(a), _b(b), _transformedB(b), _radius(radius), _transformedRadius(radius) {}
+        inline Capsule(const typename AbstractShape<dimensions>::VectorType& a, const typename AbstractShape<dimensions>::VectorType& b, float radius): _a(a), _transformedA(a), _b(b), _transformedB(b), _radius(radius), _transformedRadius(radius) {}
 
-        void applyTransformation(const Matrix4& transformation);
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        void applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation);
+        #else
+        void applyTransformation(const MatrixType& transformation);
+        #endif
 
-        bool collides(const AbstractShape* other) const;
+        bool collides(const AbstractShape<dimensions>* other) const;
 
-        inline Vector3 a() const { return _a; }         /**< @brief Start point */
-        inline Vector3 b() const { return _a; }         /**< @brief End point */
+        /** @brief Start point */
+        inline typename AbstractShape<dimensions>::VectorType a() const {
+            return _a;
+        }
 
-        inline void setA(const Vector3& a) { _a = a; }  /**< @brief Set start point */
-        inline void setB(const Vector3& b) { _b = b; }  /**< @brief Set end point */
+        /** @brief End point */
+        inline typename AbstractShape<dimensions>::VectorType b() const {
+            return _a;
+        }
+
+        /** @brief Set start point */
+        inline void setA(const typename AbstractShape<dimensions>::VectorType& a) {
+            _a = a;
+        }
+
+        /** @brief Set end point */
+        inline void setB(const typename AbstractShape<dimensions>::VectorType& b) {
+            _b = b;
+        }
 
         /** @brief Radius */
         inline float radius() const { return _radius; }
@@ -55,10 +74,14 @@ class PHYSICS_EXPORT Capsule: public AbstractShape {
         inline void setRadius(float radius) { _radius = radius; }
 
         /** @brief Transformed first point */
-        inline Vector3 transformedA() const { return _transformedA; }
+        inline typename AbstractShape<dimensions>::VectorType transformedA() const {
+            return _transformedA;
+        }
 
         /** @brief Transformed second point */
-        inline Vector3 transformedB() const { return _transformedB; }
+        inline typename AbstractShape<dimensions>::VectorType transformedB() const {
+            return _transformedB;
+        }
 
         /** @brief Transformed radius */
         inline float transformedRadius() const {
@@ -66,25 +89,38 @@ class PHYSICS_EXPORT Capsule: public AbstractShape {
         }
 
         /** @brief Collision with point */
-        bool operator%(const Point& other) const;
+        bool operator%(const Point<dimensions>& other) const;
 
         /** @brief Collision with sphere */
-        bool operator%(const Sphere& other) const;
+        bool operator%(const Sphere<dimensions>& other) const;
 
     protected:
-        inline Type type() const { return Type::Capsule; }
+        inline typename AbstractShape<dimensions>::Type type() const {
+            return AbstractShape<dimensions>::Type::Capsule;
+        }
 
     private:
-        Vector3 _a, _transformedA,
+        typename AbstractShape<dimensions>::VectorType _a, _transformedA,
             _b, _transformedB;
         float _radius, _transformedRadius;
 };
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+extern template class PHYSICS_EXPORT Capsule<2>;
+extern template class PHYSICS_EXPORT Capsule<3>;
+#endif
+
+/** @brief Two-dimensional capsule */
+typedef Capsule<2> Capsule2D;
+
+/** @brief Three-dimensional capsule */
+typedef Capsule<3> Capsule3D;
+
 /** @collisionoperator{Point,Capsule} */
-inline bool operator%(const Point& a, const Capsule& b) { return b % a; }
+template<size_t dimensions> inline bool operator%(const Point<dimensions>& a, const Capsule<dimensions>& b) { return b % a; }
 
 /** @collisionoperator{Sphere,Capsule} */
-inline bool operator%(const Sphere& a, const Capsule& b) { return b % a; }
+template<size_t dimensions> inline bool operator%(const Sphere<dimensions>& a, const Capsule<dimensions>& b) { return b % a; }
 
 }}
 

@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::AxisAlignedBox
+ * @brief Class Magnum::Physics::AxisAlignedBox, typedef Magnum::Physics::AxisAlignedBox2D, Magnum::Physics.:AxisAlignedBox3D
  */
 
 #include "Math/Vector3.h"
@@ -24,47 +24,70 @@
 
 namespace Magnum { namespace Physics {
 
-/** @brief Axis aligned box */
-class PHYSICS_EXPORT AxisAlignedBox: public AbstractShape {
+/**
+@brief Axis-aligned box
+
+@see AxisAlignedBox2D, AxisAlignedBox3D
+*/
+template<size_t dimensions> class PHYSICS_EXPORT AxisAlignedBox: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline AxisAlignedBox(const Vector3& position, const Vector3& size): _position(position), _transformedPosition(position), _size(size), _transformedSize(size) {}
+        inline AxisAlignedBox(const typename AbstractShape<dimensions>::VectorType& position, const typename AbstractShape<dimensions>::VectorType& size): _position(position), _transformedPosition(position), _size(size), _transformedSize(size) {}
 
-        void applyTransformation(const Matrix4& transformation);
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        void applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation);
+        #else
+        void applyTransformation(const MatrixType& transformation);
+        #endif
 
         /** @brief Position */
-        inline Vector3 position() const { return _position; }
+        inline typename AbstractShape<dimensions>::VectorType position() const {
+            return _position;
+        }
 
         /** @brief Set position */
-        inline void setPosition(const Vector3& position) {
+        inline void setPosition(const typename AbstractShape<dimensions>::VectorType& position) {
             _position = position;
         }
 
         /** @brief Size */
-        inline Vector3 size() const { return _size; }
+        inline typename AbstractShape<dimensions>::VectorType size() const { return _size; }
 
         /** @brief Set size */
-        inline void setSize(const Vector3& size) {
+        inline void setSize(const typename AbstractShape<dimensions>::VectorType& size) {
             _size = size;
         }
 
         /** @brief Transformed position */
-        inline Vector3 transformedPosition() const {
+        inline typename AbstractShape<dimensions>::VectorType transformedPosition() const {
             return _transformedPosition;
         }
 
         /** @brief Transformed size */
-        inline Vector3 transformedSize() const {
+        inline typename AbstractShape<dimensions>::VectorType transformedSize() const {
             return _transformedSize;
         }
 
     protected:
-        inline Type type() const { return Type::AxisAlignedBox; }
+        inline typename AbstractShape<dimensions>::Type type() const {
+            return AbstractShape<dimensions>::Type::AxisAlignedBox;
+        }
 
     private:
-        Vector3 _position, _transformedPosition,
+        typename AbstractShape<dimensions>::VectorType _position, _transformedPosition,
             _size, _transformedSize;
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+extern template class PHYSICS_EXPORT AxisAlignedBox<2>;
+extern template class PHYSICS_EXPORT AxisAlignedBox<3>;
+#endif
+
+/** @brief Two-dimensional axis-aligned box */
+typedef AxisAlignedBox<2> AxisAlignedBox2D;
+
+/** @brief Three-dimensional axis-aligned box */
+typedef AxisAlignedBox<3> AxisAlignedBox3D;
 
 }}
 

@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::Line
+ * @brief Class Magnum::Physics::Line, typedef Magnum::Physics::Line2D, Magnum::Physics::Line3D
  */
 
 #include "Math/Vector3.h"
@@ -24,33 +24,73 @@
 
 namespace Magnum { namespace Physics {
 
-/** @brief Infinite line, defined by two points */
-class PHYSICS_EXPORT Line: public AbstractShape {
+/**
+@brief Infinite line, defined by two points
+
+@see Line2D, Line3D
+@todo collision detection of two Line2D
+*/
+template<size_t dimensions> class PHYSICS_EXPORT Line: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Line(const Vector3& a, const Vector3& b): _a(a), _transformedA(a), _b(b), _transformedB(b) {}
+        inline Line(const typename AbstractShape<dimensions>::VectorType& a, const typename AbstractShape<dimensions>::VectorType& b): _a(a), _transformedA(a), _b(b), _transformedB(b) {}
 
-        void applyTransformation(const Matrix4& transformation);
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        void applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation);
+        #else
+        void applyTransformation(const MatrixType& transformation);
+        #endif
 
-        inline Vector3 a() const { return _a; }         /**< @brief First point */
-        inline Vector3 b() const { return _a; }         /**< @brief Second point */
+        /** @brief First point */
+        inline typename AbstractShape<dimensions>::VectorType a() const {
+            return _a;
+        }
 
-        inline void setA(const Vector3& a) { _a = a; }  /**< @brief Set first point */
-        inline void setB(const Vector3& b) { _b = b; }  /**< @brief Set second point */
+        /** @brief Second point */
+        inline typename AbstractShape<dimensions>::VectorType b() const {
+            return _a;
+        }
+
+        /** @brief Set first point */
+        inline void setA(const typename AbstractShape<dimensions>::VectorType& a) {
+            _a = a;
+        }
+
+        /** @brief Set second point */
+        inline void setB(const typename AbstractShape<dimensions>::VectorType& b) {
+            _b = b;
+        }
 
         /** @brief Transformed first point */
-        inline Vector3 transformedA() const { return _transformedA; }
+        inline typename AbstractShape<dimensions>::VectorType transformedA() const {
+            return _transformedA;
+        }
 
         /** @brief Transformed second point */
-        inline Vector3 transformedB() const { return _transformedB; }
+        inline typename AbstractShape<dimensions>::VectorType transformedB() const {
+            return _transformedB;
+        }
 
     protected:
-        inline Type type() const { return Type::Line; }
+        inline typename AbstractShape<dimensions>::Type type() const {
+            return AbstractShape<dimensions>::Type::Line;
+        }
 
     private:
-        Vector3 _a, _transformedA,
+        typename AbstractShape<dimensions>::VectorType _a, _transformedA,
             _b, _transformedB;
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+extern template class PHYSICS_EXPORT Line<2>;
+extern template class PHYSICS_EXPORT Line<3>;
+#endif
+
+/** @brief Infinite two-dimensional line */
+typedef Line<2> Line2D;
+
+/** @brief Infinite three-dimensional line */
+typedef Line<3> Line3D;
 
 }}
 

@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::Point
+ * @brief Class Magnum::Physics::Point, typedef Magnum::Physics::Point2D, Magnum::Physics::Point3D
  */
 
 #include "Math/Vector3.h"
@@ -24,33 +24,54 @@
 
 namespace Magnum { namespace Physics {
 
-/** @brief %Point */
-class PHYSICS_EXPORT Point: public AbstractShape {
+/**
+@brief %Point
+
+@see Point2D, Point3D
+*/
+template<size_t dimensions> class PHYSICS_EXPORT Point: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Point(const Vector3& position): _position(position), _transformedPosition(position) {}
+        inline Point(const typename AbstractShape<dimensions>::VectorType& position): _position(position), _transformedPosition(position) {}
 
-        void applyTransformation(const Matrix4& transformation);
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        void applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation);
+        #else
+        void applyTransformation(const MatrixType& transformation);
+        #endif
 
         /** @brief Position */
-        inline Vector3 position() const { return _position; }
+        inline typename AbstractShape<dimensions>::VectorType position() const {
+            return _position;
+        }
 
         /** @brief Set position */
-        inline void setPosition(const Vector3& position) {
+        inline void setPosition(const typename AbstractShape<dimensions>::VectorType& position) {
             _position = position;
         }
 
         /** @brief Transformed position */
-        inline Vector3 transformedPosition() const {
+        inline typename AbstractShape<dimensions>::VectorType transformedPosition() const {
             return _transformedPosition;
         }
 
     protected:
-        inline Type type() const { return Type::Point; }
+        inline typename AbstractShape<dimensions>::Type type() const { return AbstractShape<dimensions>::Type::Point; }
 
     private:
-        Vector3 _position, _transformedPosition;
+        typename AbstractShape<dimensions>::VectorType _position, _transformedPosition;
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+extern template class PHYSICS_EXPORT Point<2>;
+extern template class PHYSICS_EXPORT Point<3>;
+#endif
+
+/** @brief Two-dimensional point */
+typedef Point<2> Point2D;
+
+/** @brief Three-dimensional point */
+typedef Point<3> Point3D;
 
 }}
 

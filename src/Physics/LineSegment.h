@@ -16,22 +16,32 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::LineSegment
+ * @brief Class Magnum::Physics::LineSegment, typedef Magnum::Physics::LineSegment2D, Magnum::Physics::LineSegment3D
  */
 
 #include "Line.h"
 
 namespace Magnum { namespace Physics {
 
-/** @brief %Line segment, defined by starting and ending point */
-class LineSegment: public Line {
+/**
+@brief %Line segment, defined by starting and ending point
+
+@see LineSegment2D, LineSegment3D
+*/
+template<size_t dimensions> class LineSegment: public Line<dimensions> {
     public:
         /** @brief Constructor */
-        inline LineSegment(const Vector3& a, const Vector3& b): Line(a, b) {}
+        inline LineSegment(const typename AbstractShape<dimensions>::VectorType& a, const typename AbstractShape<dimensions>::VectorType& b): Line<dimensions>(a, b) {}
 
     protected:
-        inline Type type() const { return Type::LineSegment; }
+        inline typename AbstractShape<dimensions>::Type type() const { return AbstractShape<dimensions>::Type::LineSegment; }
 };
+
+/** @brief Two-dimensional line segment */
+typedef LineSegment<2> LineSegment2D;
+
+/** @brief Three-dimensional line segment */
+typedef LineSegment<3> LineSegment3D;
 
 }}
 

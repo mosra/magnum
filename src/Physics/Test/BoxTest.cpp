@@ -27,7 +27,7 @@ BoxTest::BoxTest() {
 }
 
 void BoxTest::applyTransformation() {
-    Physics::Box box(Matrix4::translation({1.0f, 2.0f, -3.0f}));
+    Physics::Box3D box(Matrix4::translation({1.0f, 2.0f, -3.0f}));
 
     box.applyTransformation(Matrix4::scaling({2.0f, -1.0f, 1.5f}));
     CORRADE_COMPARE(box.transformedTransformation(), Matrix4::scaling({2.0f, -1.0f, 1.5f})*Matrix4::translation({1.0f, 2.0f, -3.0f}));

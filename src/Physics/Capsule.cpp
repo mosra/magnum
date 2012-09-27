@@ -27,30 +27,33 @@ using namespace Magnum::Math::Geometry;
 
 namespace Magnum { namespace Physics {
 
-void Capsule::applyTransformation(const Matrix4& transformation) {
-    _transformedA = (transformation*Point3D(_a)).xyz();
-    _transformedB = (transformation*Point3D(_b)).xyz();
-    float scaling = (transformation.rotationScaling()*Vector3(1/Math::Constants<float>::sqrt3())).length();
+template<size_t dimensions> void Capsule<dimensions>::applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation) {
+    _transformedA = (transformation*typename AbstractShape<dimensions>::PointType(_a)).vector();
+    _transformedB = (transformation*typename AbstractShape<dimensions>::PointType(_b)).vector();
+    float scaling = (transformation.rotationScaling()*typename AbstractShape<dimensions>::VectorType(1/Math::Constants<float>::sqrt3())).length();
     _transformedRadius = scaling*_radius;
 }
 
-bool Capsule::collides(const AbstractShape* other) const {
-    if(other->type() == Type::Point)
-        return *this % *static_cast<const Point*>(other);
-    if(other->type() == Type::Sphere)
-        return *this % *static_cast<const Sphere*>(other);
+template<size_t dimensions> bool Capsule<dimensions>::collides(const AbstractShape<dimensions>* other) const {
+    if(other->type() == AbstractShape<dimensions>::Type::Point)
+        return *this % *static_cast<const Point<dimensions>*>(other);
+    if(other->type() == AbstractShape<dimensions>::Type::Sphere)
+        return *this % *static_cast<const Sphere<dimensions>*>(other);
 
-    return AbstractShape::collides(other);
+    return AbstractShape<dimensions>::collides(other);
 }
 
-bool Capsule::operator%(const Point& other) const {
+template<size_t dimensions> bool Capsule<dimensions>::operator%(const Point<dimensions>& other) const {
     return Distance::lineSegmentPointSquared(transformedA(), transformedB(), other.transformedPosition()) <
         Math::pow<2>(transformedRadius());
 }
 
-bool Capsule::operator%(const Sphere& other) const {
+template<size_t dimensions> bool Capsule<dimensions>::operator%(const Sphere<dimensions>& other) const {
     return Distance::lineSegmentPointSquared(transformedA(), transformedB(), other.transformedPosition()) <
         Math::pow<2>(transformedRadius()+other.transformedRadius());
 }
+
+template class Capsule<2>;
+template class Capsule<3>;
 
 }}

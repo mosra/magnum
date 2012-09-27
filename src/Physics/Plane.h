@@ -24,18 +24,24 @@
 
 namespace Magnum { namespace Physics {
 
-class Line;
-class LineSegment;
+template<size_t> class Line;
+typedef Line<3> Line3D;
+template<size_t> class LineSegment;
+typedef LineSegment<3> LineSegment3D;
 
-/** @brief Infinite plane, defined by position and normal */
-class PHYSICS_EXPORT Plane: public AbstractShape {
+/** @brief Infinite plane, defined by position and normal (3D only) */
+class PHYSICS_EXPORT Plane: public AbstractShape<3> {
     public:
         /** @brief Constructor */
         inline Plane(const Vector3& position, const Vector3& normal): _position(position), _transformedPosition(position), _normal(normal), _transformedNormal(normal) {}
 
+        #ifndef DOXYGEN_GENERATING_OUTPUT
         void applyTransformation(const Matrix4& transformation);
-
+        bool collides(const AbstractShape<3>* other) const;
+        #else
+        void applyTransformation(const MatrixType& transformation);
         bool collides(const AbstractShape* other) const;
+        #endif
 
         /** @brief Position */
         inline Vector3 position() const { return _position; }
@@ -64,10 +70,10 @@ class PHYSICS_EXPORT Plane: public AbstractShape {
         }
 
         /** @brief Collision with line */
-        bool operator%(const Line& other) const;
+        bool operator%(const Line3D& other) const;
 
         /** @brief Collision with line segment */
-        bool operator%(const LineSegment& other) const;
+        bool operator%(const LineSegment3D& other) const;
 
     protected:
         inline Type type() const { return Type::Plane; }
@@ -78,10 +84,10 @@ class PHYSICS_EXPORT Plane: public AbstractShape {
 };
 
 /** @collisionoperator{Line,Plane} */
-inline bool operator%(const Line& a, const Plane& b) { return b % a; }
+inline bool operator%(const Line3D& a, const Plane& b) { return b % a; }
 
 /** @collisionoperator{LineSegment,Plane} */
-inline bool operator%(const LineSegment& a, const Plane& b) { return b % a; }
+inline bool operator%(const LineSegment3D& a, const Plane& b) { return b % a; }
 
 
 }}

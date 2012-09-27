@@ -32,10 +32,10 @@ ShapeGroupTest::ShapeGroupTest() {
 }
 
 void ShapeGroupTest::copy() {
-    ShapeGroup group;
+    ShapeGroup3D group;
     {
-        Physics::Point point({1.0f, 2.0f, 3.0f});
-        Physics::LineSegment segment({2.0f, 1.0f, 30.0f}, {1.0f, -20.0f, 3.0f});
+        Physics::Point3D point({1.0f, 2.0f, 3.0f});
+        Physics::LineSegment3D segment({2.0f, 1.0f, 30.0f}, {1.0f, -20.0f, 3.0f});
 
         group = !(point || segment);
     }
@@ -47,10 +47,10 @@ void ShapeGroupTest::copy() {
 }
 
 void ShapeGroupTest::reference() {
-    Physics::Point point({1.0f, 2.0f, 3.0f});
-    Physics::LineSegment segment({2.0f, 1.0f, 30.0f}, {1.0f, -20.0f, 3.0f});
+    Physics::Point3D point({1.0f, 2.0f, 3.0f});
+    Physics::LineSegment3D segment({2.0f, 1.0f, 30.0f}, {1.0f, -20.0f, 3.0f});
 
-    ShapeGroup group = !(ref(point) || ref(segment));
+    ShapeGroup3D group = !(ref(point) || ref(segment));
 
     group.applyTransformation(Matrix4::translation(Vector3(1.0f)));
 

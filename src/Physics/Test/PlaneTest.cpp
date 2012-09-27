@@ -45,9 +45,9 @@ void PlaneTest::applyTransformation() {
 
 void PlaneTest::collisionLine() {
     Physics::Plane plane(Vector3(), Vector3::yAxis());
-    Physics::Line line({0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f});
-    Physics::Line line2({0.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 0.0f});
-    Physics::Line line3({0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 0.0f});
+    Physics::Line3D line({0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f});
+    Physics::Line3D line2({0.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 0.0f});
+    Physics::Line3D line3({0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 0.0f});
 
     randomTransformation(plane);
     randomTransformation(line);
@@ -61,9 +61,9 @@ void PlaneTest::collisionLine() {
 
 void PlaneTest::collisionLineSegment() {
     Physics::Plane plane(Vector3(), Vector3::yAxis());
-    Physics::LineSegment line({0.0f, -0.1f, 0.0f}, {0.0f, 7.0f, 0.0f});
-    Physics::LineSegment line2({0.0f, 0.1f, 0.0f}, {0.0f, 7.0f, 0.0f});
-    Physics::LineSegment line3({0.0f, -7.0f, 0.0f}, {0.0f, -0.1f, 0.0f});
+    Physics::LineSegment3D line({0.0f, -0.1f, 0.0f}, {0.0f, 7.0f, 0.0f});
+    Physics::LineSegment3D line2({0.0f, 0.1f, 0.0f}, {0.0f, 7.0f, 0.0f});
+    Physics::LineSegment3D line3({0.0f, -7.0f, 0.0f}, {0.0f, -0.1f, 0.0f});
 
     randomTransformation(plane);
     randomTransformation(line);

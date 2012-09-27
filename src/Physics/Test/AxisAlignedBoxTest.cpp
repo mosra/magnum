@@ -28,7 +28,7 @@ AxisAlignedBoxTest::AxisAlignedBoxTest() {
 }
 
 void AxisAlignedBoxTest::applyTransformation() {
-    Physics::AxisAlignedBox box({-1.0f, -2.0f, -3.0f}, {1.0f, 2.0f, 3.0f});
+    Physics::AxisAlignedBox3D box({-1.0f, -2.0f, -3.0f}, {1.0f, 2.0f, 3.0f});
 
     box.applyTransformation(Matrix4::scaling({2.0f, -1.0f, 1.5f}));
     CORRADE_COMPARE(box.transformedPosition(), Vector3(-2.0f, 2.0f, -4.5f));

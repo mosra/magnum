@@ -30,7 +30,7 @@ CapsuleTest::CapsuleTest() {
 }
 
 void CapsuleTest::applyTransformation() {
-    Physics::Capsule capsule({1.0f, 2.0f, 3.0f}, {-1.0f, -2.0f, -3.0f}, 7.0f);
+    Physics::Capsule3D capsule({1.0f, 2.0f, 3.0f}, {-1.0f, -2.0f, -3.0f}, 7.0f);
 
     capsule.applyTransformation(Matrix4::rotation(deg(90.0f), Vector3::zAxis()));
     CORRADE_COMPARE(capsule.transformedA(), Vector3(-2.0f, 1.0f, 3.0f));
@@ -43,10 +43,10 @@ void CapsuleTest::applyTransformation() {
 }
 
 void CapsuleTest::collisionPoint() {
-    Physics::Capsule capsule({-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}, 2.0f);
-    Physics::Point point({2.0f, 0.0f, 0.0f});
-    Physics::Point point1({2.9f, 1.0f, 0.0f});
-    Physics::Point point2({1.0f, 3.1f, 0.0f});
+    Physics::Capsule3D capsule({-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}, 2.0f);
+    Physics::Point3D point({2.0f, 0.0f, 0.0f});
+    Physics::Point3D point1({2.9f, 1.0f, 0.0f});
+    Physics::Point3D point2({1.0f, 3.1f, 0.0f});
 
     randomTransformation(capsule);
     randomTransformation(point);
@@ -59,10 +59,10 @@ void CapsuleTest::collisionPoint() {
 }
 
 void CapsuleTest::collisionSphere() {
-    Physics::Capsule capsule({-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}, 2.0f);
-    Physics::Sphere sphere({3.0f, 0.0f, 0.0f}, 0.9f);
-    Physics::Sphere sphere1({3.5f, 1.0f, 0.0f}, 0.6f);
-    Physics::Sphere sphere2({1.0f, 4.1f, 0.0f}, 1.0f);
+    Physics::Capsule3D capsule({-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}, 2.0f);
+    Physics::Sphere3D sphere({3.0f, 0.0f, 0.0f}, 0.9f);
+    Physics::Sphere3D sphere1({3.5f, 1.0f, 0.0f}, 0.6f);
+    Physics::Sphere3D sphere2({1.0f, 4.1f, 0.0f}, 1.0f);
 
     randomTransformation(capsule);
     randomTransformation(sphere);
