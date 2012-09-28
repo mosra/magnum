@@ -21,6 +21,7 @@
 
 #include <map>
 
+#include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Math/Vector4.h"
 #include "Magnum.h"

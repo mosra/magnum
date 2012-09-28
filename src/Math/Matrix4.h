@@ -19,7 +19,7 @@
  * @brief Class Magnum::Math::Matrix4
  */
 
-#include "Matrix3.h"
+#include "Matrix.h"
 #include "Point3D.h"
 
 namespace Magnum { namespace Math {

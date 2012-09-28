@@ -19,6 +19,7 @@
  * @brief Class Magnum::Physics::Box, typedef Magnum::Physics::Box2D, Magnum::Physics::Box3D
  */
 
+#include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "AbstractShape.h"
 

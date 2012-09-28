@@ -21,6 +21,7 @@
 
 #include <Containers/LinkedList.h>
 
+#include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Magnum.h"
 

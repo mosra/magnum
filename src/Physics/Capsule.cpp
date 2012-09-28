@@ -17,8 +17,8 @@
 
 #include "Math/Constants.h"
 #include "Math/Math.h"
+#include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
-#include "Math/Point3D.h"
 #include "Math/Geometry/Distance.h"
 #include "Point.h"
 #include "Sphere.h"
