@@ -447,6 +447,44 @@ class MAGNUM_EXPORT AbstractShaderProgram {
             glUniform4uiv(location, 1, value.data());
         }
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @copydoc setUniform(GLint, GLfloat)
+         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl Only floats are available in OpenGL ES.
+         */
+        inline void setUniform(GLint location, GLdouble value) {
+            glUniform1d(location, value);
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLfloat)
+         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl Only floats are available in OpenGL ES.
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 2, GLdouble>& value) {
+            glUniform2dv(location, 1, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLfloat)
+         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl Only floats are available in OpenGL ES.
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 3, GLdouble>& value) {
+            glUniform3dv(location, 1, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLfloat)
+         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl Only floats are available in OpenGL ES.
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 4, GLdouble>& value) {
+            glUniform4dv(location, 1, value.data());
+        }
+        #endif
+
         /** @copydoc setUniform(GLint, GLfloat) */
         inline void setUniform(GLint location, const Math::RectangularMatrix<2, 2, GLfloat>& value) {
             glUniformMatrix2fv(location, 1, GL_FALSE, value.data());
@@ -509,6 +547,89 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         inline void setUniform(GLint location, const Math::RectangularMatrix<4, 3, GLfloat>& value) {
             glUniformMatrix4x3fv(location, 1, GL_FALSE, value.data());
         }
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @copydoc setUniform(GLint, GLfloat)
+         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl Only floats are available in OpenGL ES.
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<2, 2, GLdouble>& value) {
+            glUniformMatrix2dv(location, 1, GL_FALSE, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLfloat)
+         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl Only floats are available in OpenGL ES.
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<3, 3, GLdouble>& value) {
+            glUniformMatrix3dv(location, 1, GL_FALSE, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLfloat)
+         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl Only floats are available in OpenGL ES.
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<4, 4, GLdouble>& value) {
+            glUniformMatrix4dv(location, 1, GL_FALSE, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLfloat)
+         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl Only floats are available in OpenGL ES.
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<2, 3, GLdouble>& value) {
+            glUniformMatrix2x3dv(location, 1, GL_FALSE, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLfloat)
+         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl Only floats are available in OpenGL ES.
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<3, 2, GLdouble>& value) {
+            glUniformMatrix3x2dv(location, 1, GL_FALSE, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLfloat)
+         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl Only floats are available in OpenGL ES.
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<2, 4, GLdouble>& value) {
+            glUniformMatrix2x4dv(location, 1, GL_FALSE, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLfloat)
+         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl Only floats are available in OpenGL ES.
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<4, 2, GLdouble>& value) {
+            glUniformMatrix4x2dv(location, 1, GL_FALSE, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLfloat)
+         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl Only floats are available in OpenGL ES.
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<3, 4, GLdouble>& value) {
+            glUniformMatrix3x4dv(location, 1, GL_FALSE, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLfloat)
+         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl Only floats are available in OpenGL ES.
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<4, 3, GLdouble>& value) {
+            glUniformMatrix4x3dv(location, 1, GL_FALSE, value.data());
+        }
+        #endif
 
     private:
         enum State {
