@@ -21,9 +21,7 @@
 
 #include <map>
 
-#include "Math/Matrix3.h"
-#include "Math/Matrix4.h"
-#include "Math/Vector4.h"
+#include "Math/RectangularMatrix.h"
 #include "Magnum.h"
 
 #include "magnumVisibility.h"
@@ -379,17 +377,17 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         }
 
         /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Vector2& value) {
+        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 2, GLfloat>& value) {
             glUniform2fv(location, 1, value.data());
         }
 
         /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Vector3& value) {
+        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 3, GLfloat>& value) {
             glUniform3fv(location, 1, value.data());
         }
 
         /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Vector4& value) {
+        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 4, GLfloat>& value) {
             glUniform4fv(location, 1, value.data());
         }
 
@@ -399,17 +397,17 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         }
 
         /** @copydoc setUniform(GLint, GLint) */
-        inline void setUniform(GLint location, const Math::Vector2<GLint>& value) {
+        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 2, GLint>& value) {
             glUniform2iv(location, 1, value.data());
         }
 
         /** @copydoc setUniform(GLint, GLint) */
-        inline void setUniform(GLint location, const Math::Vector3<GLint>& value) {
+        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 3, GLint>& value) {
             glUniform3iv(location, 1, value.data());
         }
 
         /** @copydoc setUniform(GLint, GLint) */
-        inline void setUniform(GLint location, const Math::Vector4<GLint>& value) {
+        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 4, GLint>& value) {
             glUniform4iv(location, 1, value.data());
         }
 
@@ -427,7 +425,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 (no extension providing this functionality)
          */
-        inline void setUniform(GLint location, const Math::Vector2<GLuint>& value) {
+        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 2, GLuint>& value) {
             glUniform2uiv(location, 1, value.data());
         }
 
@@ -436,7 +434,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 (no extension providing this functionality)
          */
-        inline void setUniform(GLint location, const Math::Vector3<GLuint>& value) {
+        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 3, GLuint>& value) {
             glUniform3uiv(location, 1, value.data());
         }
 
@@ -445,18 +443,71 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 (no extension providing this functionality)
          */
-        inline void setUniform(GLint location, const Math::Vector4<GLuint>& value) {
+        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 4, GLuint>& value) {
             glUniform4uiv(location, 1, value.data());
         }
 
         /** @copydoc setUniform(GLint, GLint) */
-        inline void setUniform(GLint location, const Matrix3& value) {
+        inline void setUniform(GLint location, const Math::RectangularMatrix<2, 2, GLfloat>& value) {
+            glUniformMatrix2fv(location, 1, GL_FALSE, value.data());
+        }
+
+        /** @copydoc setUniform(GLint, GLint) */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<3, 3, GLfloat>& value) {
             glUniformMatrix3fv(location, 1, GL_FALSE, value.data());
         }
 
         /** @copydoc setUniform(GLint, GLint) */
-        inline void setUniform(GLint location, const Matrix4& value) {
+        inline void setUniform(GLint location, const Math::RectangularMatrix<4, 4, GLfloat>& value) {
             glUniformMatrix4fv(location, 1, GL_FALSE, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLint)
+         * @requires_gles30 (no extension providing this functionality)
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<2, 3, GLfloat>& value) {
+            glUniformMatrix2x3fv(location, 1, GL_FALSE, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLint)
+         * @requires_gles30 (no extension providing this functionality)
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<3, 2, GLfloat>& value) {
+            glUniformMatrix3x2fv(location, 1, GL_FALSE, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLint)
+         * @requires_gles30 (no extension providing this functionality)
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<2, 4, GLfloat>& value) {
+            glUniformMatrix2x4fv(location, 1, GL_FALSE, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLint)
+         * @requires_gles30 (no extension providing this functionality)
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<4, 2, GLfloat>& value) {
+            glUniformMatrix4x2fv(location, 1, GL_FALSE, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLint)
+         * @requires_gles30 (no extension providing this functionality)
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<3, 4, GLfloat>& value) {
+            glUniformMatrix3x4fv(location, 1, GL_FALSE, value.data());
+        }
+
+        /**
+         * @copydoc setUniform(GLint, GLint)
+         * @requires_gles30 (no extension providing this functionality)
+         */
+        inline void setUniform(GLint location, const Math::RectangularMatrix<4, 3, GLfloat>& value) {
+            glUniformMatrix4x3fv(location, 1, GL_FALSE, value.data());
         }
 
     private:

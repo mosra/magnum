@@ -19,7 +19,9 @@
  * @brief Class Magnum::Shaders::PhongShader
  */
 
+#include "Math/Matrix4.h"
 #include "AbstractShaderProgram.h"
+#include "Color.h"
 
 #include "magnumShadersVisibility.h"
 
@@ -44,12 +46,12 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
          *
          * If not set, default value is `(0.0f, 0.0f, 0.0f)`.
          */
-        inline void setAmbientColorUniform(const Vector3& color) {
+        inline void setAmbientColorUniform(const Color3<GLfloat>& color) {
             setUniform(ambientColorUniform, color);
         }
 
         /** @brief Diffuse color */
-        inline void setDiffuseColorUniform(const Vector3& color) {
+        inline void setDiffuseColorUniform(const Color3<GLfloat>& color) {
             setUniform(diffuseColorUniform, color);
         }
 
@@ -58,7 +60,7 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
          */
-        inline void setSpecularColorUniform(const Vector3& color) {
+        inline void setSpecularColorUniform(const Color3<GLfloat>& color) {
             setUniform(specularColorUniform, color);
         }
 
@@ -92,7 +94,7 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
          */
-        inline void setLightColorUniform(const Vector3& color) {
+        inline void setLightColorUniform(const Color3<GLfloat>& color) {
             setUniform(lightColorUniform, color);
         }
 
