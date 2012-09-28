@@ -55,6 +55,7 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          * @brief Set index count
          * @return Pointer to self (for method chaining)
          *
+         * @see MeshTools::compressIndices()
          * @todo definalize after that?
          */
         inline IndexedMesh* setIndexCount(GLsizei count) {

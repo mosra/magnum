@@ -365,6 +365,7 @@ class MAGNUM_EXPORT Mesh {
          * @return Pointer to self (for method chaining)
          *
          * This forces recalculation of attribute positions upon next drawing.
+         * @see MeshTools::interleave()
          */
         inline Mesh* setVertexCount(GLsizei vertexCount) {
             _vertexCount = vertexCount;

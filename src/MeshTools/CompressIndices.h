@@ -90,7 +90,10 @@ inline std::tuple<size_t, Type, char*> compressIndices(const std::vector<unsigne
 
 The same as compressIndices(const std::vector<unsigned int>&), but this
 function writes the output to mesh's index buffer and updates index count and
-type in the mesh accordingly.
+type in the mesh accordingly, so you don't have to call Mesh::setIndexCount()
+and Mesh::setIndexType() on your own.
+
+@see MeshTools::interleave()
 */
 inline void compressIndices(IndexedMesh* mesh, Buffer::Usage usage, const std::vector<unsigned int>& indices) {
     return Implementation::CompressIndices{indices}(mesh, usage);

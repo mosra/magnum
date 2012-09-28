@@ -149,8 +149,11 @@ template<class T, class ...U> inline typename std::enable_if<!std::is_convertibl
 @param usage        Array buffer usage
 
 The same as interleave(const T&, const U&...), but this function writes the
-output to given array buffer and updates vertex count in the mesh accordingly.
-Binding the attributes to shader is left to user.
+output to given array buffer and updates vertex count in the mesh accordingly,
+so you don't have to call Mesh::setVertexCount() on your own.
+
+@attention Setting primitive type and binding the attributes to shader is left
+    to user - see Mesh::setPrimitive() and Mesh::bindAttribute().
 
 For only one attribute array this function is convenient equivalent to the
 following, without any performance loss:
@@ -162,6 +165,8 @@ mesh->setVertexCount(attribute.size());
 @attention If there is more than one attribute array, the buffer must be set
     as interleaved (see Mesh::addBuffer()), otherwise this function does
     nothing.
+
+@see MeshTools::compressIndices()
 */
 template<class ...T> inline void interleave(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const T&... attributes) {
     return Implementation::Interleave()(mesh, buffer, usage, attributes...);
