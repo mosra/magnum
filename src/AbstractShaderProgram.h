@@ -396,23 +396,23 @@ class MAGNUM_EXPORT AbstractShaderProgram {
             glUniform1i(location, value);
         }
 
-        /** @copydoc setUniform(GLint, GLint) */
+        /** @copydoc setUniform(GLint, GLfloat) */
         inline void setUniform(GLint location, const Math::RectangularMatrix<1, 2, GLint>& value) {
             glUniform2iv(location, 1, value.data());
         }
 
-        /** @copydoc setUniform(GLint, GLint) */
+        /** @copydoc setUniform(GLint, GLfloat) */
         inline void setUniform(GLint location, const Math::RectangularMatrix<1, 3, GLint>& value) {
             glUniform3iv(location, 1, value.data());
         }
 
-        /** @copydoc setUniform(GLint, GLint) */
+        /** @copydoc setUniform(GLint, GLfloat) */
         inline void setUniform(GLint location, const Math::RectangularMatrix<1, 4, GLint>& value) {
             glUniform4iv(location, 1, value.data());
         }
 
         /**
-         * @copydoc setUniform(GLint, GLint)
+         * @copydoc setUniform(GLint, GLfloat)
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 (no extension providing this functionality)
          */
@@ -421,7 +421,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         }
 
         /**
-         * @copydoc setUniform(GLint, GLint)
+         * @copydoc setUniform(GLint, GLfloat)
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 (no extension providing this functionality)
          */
@@ -430,7 +430,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         }
 
         /**
-         * @copydoc setUniform(GLint, GLint)
+         * @copydoc setUniform(GLint, GLfloat)
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 (no extension providing this functionality)
          */
@@ -439,7 +439,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         }
 
         /**
-         * @copydoc setUniform(GLint, GLuint)
+         * @copydoc setUniform(GLint, GLfloat)
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 (no extension providing this functionality)
          */
@@ -447,23 +447,23 @@ class MAGNUM_EXPORT AbstractShaderProgram {
             glUniform4uiv(location, 1, value.data());
         }
 
-        /** @copydoc setUniform(GLint, GLint) */
+        /** @copydoc setUniform(GLint, GLfloat) */
         inline void setUniform(GLint location, const Math::RectangularMatrix<2, 2, GLfloat>& value) {
             glUniformMatrix2fv(location, 1, GL_FALSE, value.data());
         }
 
-        /** @copydoc setUniform(GLint, GLint) */
+        /** @copydoc setUniform(GLint, GLfloat) */
         inline void setUniform(GLint location, const Math::RectangularMatrix<3, 3, GLfloat>& value) {
             glUniformMatrix3fv(location, 1, GL_FALSE, value.data());
         }
 
-        /** @copydoc setUniform(GLint, GLint) */
+        /** @copydoc setUniform(GLint, GLfloat) */
         inline void setUniform(GLint location, const Math::RectangularMatrix<4, 4, GLfloat>& value) {
             glUniformMatrix4fv(location, 1, GL_FALSE, value.data());
         }
 
         /**
-         * @copydoc setUniform(GLint, GLint)
+         * @copydoc setUniform(GLint, GLfloat)
          * @requires_gles30 (no extension providing this functionality)
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<2, 3, GLfloat>& value) {
@@ -471,7 +471,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         }
 
         /**
-         * @copydoc setUniform(GLint, GLint)
+         * @copydoc setUniform(GLint, GLfloat)
          * @requires_gles30 (no extension providing this functionality)
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<3, 2, GLfloat>& value) {
@@ -479,7 +479,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         }
 
         /**
-         * @copydoc setUniform(GLint, GLint)
+         * @copydoc setUniform(GLint, GLfloat)
          * @requires_gles30 (no extension providing this functionality)
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<2, 4, GLfloat>& value) {
@@ -487,7 +487,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         }
 
         /**
-         * @copydoc setUniform(GLint, GLint)
+         * @copydoc setUniform(GLint, GLfloat)
          * @requires_gles30 (no extension providing this functionality)
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<4, 2, GLfloat>& value) {
@@ -495,7 +495,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         }
 
         /**
-         * @copydoc setUniform(GLint, GLint)
+         * @copydoc setUniform(GLint, GLfloat)
          * @requires_gles30 (no extension providing this functionality)
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<3, 4, GLfloat>& value) {
@@ -503,7 +503,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         }
 
         /**
-         * @copydoc setUniform(GLint, GLint)
+         * @copydoc setUniform(GLint, GLfloat)
          * @requires_gles30 (no extension providing this functionality)
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<4, 3, GLfloat>& value) {
