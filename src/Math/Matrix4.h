@@ -25,7 +25,7 @@
 namespace Magnum { namespace Math {
 
 /**
-@brief 4x4 matrix
+@brief 4x4 matrix for affine transformations in 3D
 @tparam T   Data type
 
 Provides functions for transformations in 3D. See Matrix3 for 2D
@@ -138,8 +138,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @see rotation() const, rotation(T, const Vector3&),
          *      Matrix3::rotationScaling() const
          */
-        inline Matrix3<T> rotationScaling() const {
-            return Matrix3<T>::from(
+        inline Matrix<3, T> rotationScaling() const {
+            /* Not Matrix3, because it is for affine 2D transformations */
+            return Matrix<3, T>::from(
                 (*this)[0].xyz(),
                 (*this)[1].xyz(),
                 (*this)[2].xyz());
@@ -152,8 +153,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @see rotationScaling() const, rotation(T, const Vector3&),
          *      Matrix3::rotation() const
          */
-        inline Matrix3<T> rotation() const {
-            return Matrix3<T>::from(
+        inline Matrix<3, T> rotation() const {
+            /* Not Matrix3, because it is for affine 2D transformations */
+            return Matrix<3, T>::from(
                 (*this)[0].xyz().normalized(),
                 (*this)[1].xyz().normalized(),
                 (*this)[2].xyz().normalized());
@@ -175,8 +177,6 @@ template<class T> class Matrix4: public Matrix<4, T> {
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline Matrix3<T> ij(size_t skipRow, size_t skipCol) const { return Matrix<4, T>::ij(skipRow, skipCol); }
-
         inline Point3D<T> operator*(const Point3D<T>& other) const {
             return Matrix<4, T>::operator*(other);
         }

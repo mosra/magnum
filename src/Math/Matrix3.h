@@ -25,7 +25,7 @@
 namespace Magnum { namespace Math {
 
 /**
-@brief 3x3 matrix
+@brief 3x3 matrix for affine transformations in 2D
 @tparam T   Data type
 
 Provides functions for transformations in 2D. See Matrix4 for 3D
