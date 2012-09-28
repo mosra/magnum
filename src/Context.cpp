@@ -28,10 +28,10 @@ namespace Magnum {
 const std::vector<Extension>& Extension::extensions(Version version) {
     #define _extension(prefix, vendor, extension)                           \
         {Extensions::prefix::vendor::extension::Index, Extensions::prefix::vendor::extension::requiredVersion(), Extensions::prefix::vendor::extension::coreVersion(), Extensions::prefix::vendor::extension::string()}
-    static std::vector<Extension> empty;
-    static std::vector<Extension> extensions{
+    static const std::vector<Extension> empty;
+    static const std::vector<Extension> extensions{
         _extension(GL,EXT,texture_filter_anisotropic)};
-    static std::vector<Extension> extensions300{
+    static const std::vector<Extension> extensions300{
         _extension(GL,APPLE,flush_buffer_range),
         _extension(GL,APPLE,vertex_array_object),
         _extension(GL,ARB,color_buffer_float),
@@ -55,7 +55,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,NV,half_float),
         _extension(GL,NV,depth_buffer_float),
         _extension(GL,NV,conditional_render)};
-    static std::vector<Extension> extensions310{
+    static const std::vector<Extension> extensions310{
         _extension(GL,ARB,texture_rectangle),
         _extension(GL,ARB,draw_instanced),
         _extension(GL,ARB,texture_buffer_object),
@@ -63,7 +63,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,copy_buffer),
         _extension(GL,EXT,texture_snorm),
         _extension(GL,NV,primitive_restart)};
-    static std::vector<Extension> extensions320{
+    static const std::vector<Extension> extensions320{
         _extension(GL,ARB,geometry_shader4),
         _extension(GL,ARB,depth_clamp),
         _extension(GL,ARB,draw_elements_base_vertex),
@@ -73,7 +73,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,sync),
         _extension(GL,ARB,texture_multisample),
         _extension(GL,ARB,vertex_array_bgra)};
-    static std::vector<Extension> extensions330{
+    static const std::vector<Extension> extensions330{
         _extension(GL,ARB,instanced_arrays),
         _extension(GL,ARB,blend_func_extended),
         _extension(GL,ARB,explicit_attrib_location),
@@ -84,7 +84,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,texture_swizzle),
         _extension(GL,ARB,timer_query),
         _extension(GL,ARB,vertex_type_2_10_10_10_rev)};
-    static std::vector<Extension> extensions400{
+    static const std::vector<Extension> extensions400{
         _extension(GL,ARB,draw_buffers_blend),
         _extension(GL,ARB,sample_shading),
         _extension(GL,ARB,texture_cube_map_array),
@@ -98,14 +98,14 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,texture_buffer_object_rgb32),
         _extension(GL,ARB,transform_feedback2),
         _extension(GL,ARB,transform_feedback3)};
-    static std::vector<Extension> extensions410{
+    static const std::vector<Extension> extensions410{
         _extension(GL,ARB,ES2_compatibility),
         _extension(GL,ARB,get_program_binary),
         _extension(GL,ARB,separate_shader_objects),
         _extension(GL,ARB,shader_precision),
         _extension(GL,ARB,vertex_attrib_64bit),
         _extension(GL,ARB,viewport_array)};
-    static std::vector<Extension> extensions420{
+    static const std::vector<Extension> extensions420{
         _extension(GL,ARB,texture_compression_bptc),
         _extension(GL,ARB,base_instance),
         _extension(GL,ARB,shading_language_420pack),
@@ -117,7 +117,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,shader_atomic_counters),
         _extension(GL,ARB,shader_image_load_store),
         _extension(GL,ARB,texture_storage)};
-    static std::vector<Extension> extensions430;
+    static const std::vector<Extension> extensions430;
     #undef _extension
 
     switch(version) {
