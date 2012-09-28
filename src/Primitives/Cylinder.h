@@ -25,7 +25,12 @@
 
 namespace Magnum { namespace Primitives {
 
-/** @brief Cylinder primitive */
+/**
+@brief 3D cylinder primitive
+
+Indexed with normals, optional 2D texture coordinates and optional capped
+ends.
+*/
 class Cylinder: public Capsule {
     public:
         /**

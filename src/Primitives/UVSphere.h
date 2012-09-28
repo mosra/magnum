@@ -23,7 +23,11 @@
 
 namespace Magnum { namespace Primitives {
 
-/** @brief UV Sphere primitive */
+/**
+@brief 3D UV sphere primitive
+
+Indexed with normals and optional 2D texture coordinates.
+*/
 class UVSphere: public Capsule {
     public:
         /**

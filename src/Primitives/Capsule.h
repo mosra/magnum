@@ -24,9 +24,10 @@
 namespace Magnum { namespace Primitives {
 
 /**
-@brief %Capsule primitive
+@brief 3D capsule primitive
 
-Cylinder along Y axis with hemispheres instead of caps.
+Cylinder along Y axis with hemispheres instead of caps. Indexed with normals
+and optional 2D texture coordinates.
 */
 class Capsule: public Trade::MeshData3D {
     friend class UVSphere;

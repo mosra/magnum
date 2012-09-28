@@ -24,9 +24,9 @@
 namespace Magnum { namespace Primitives {
 
 /**
-@brief %Square primitive
+@brief 2D square primitive
 
-2x2 square.
+2x2 square, non-indexed.
 */
 class Square: public Trade::MeshData2D {
     public:

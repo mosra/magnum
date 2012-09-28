@@ -29,8 +29,9 @@ namespace Magnum { namespace Primitives {
 template<size_t subdivisions> class Icosphere;
 
 /**
-@brief %Icosphere primitive with zero subdivisions
+@brief 3D icosphere primitive with zero subdivisions
 
+Indexed with normals.
 @todo Use own computed (and more precise) icosahedron data, not these stolen
 from Blender.
 */
@@ -41,9 +42,11 @@ template<> class Icosphere<0>: public Trade::MeshData3D {
 };
 
 /**
- * @brief %Icosphere primitive
- * @tparam subdivisions     Number of subdivisions
- */
+@brief 3D icosphere primitive
+@tparam subdivisions     Number of subdivisions
+
+Indexed with normals.
+*/
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<size_t subdivisions> class Icosphere: public Icosphere<0> {
 #else
