@@ -6,3 +6,5 @@ corrade_add_test2(PhysicsPlaneTest PlaneTest.cpp LIBRARIES MagnumPhysics)
 corrade_add_test2(PhysicsPointTest PointTest.cpp LIBRARIES MagnumPhysics)
 corrade_add_test2(PhysicsShapeGroupTest ShapeGroupTest.cpp LIBRARIES MagnumPhysics)
 corrade_add_test2(PhysicsSphereTest SphereTest.cpp LIBRARIES MagnumPhysics)
+
+corrade_add_test2(PhysicsShapedObjectTest ShapedObjectTest.cpp LIBRARIES MagnumPhysics)

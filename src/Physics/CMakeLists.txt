@@ -6,6 +6,8 @@ set(MagnumPhysics_SRCS
     Line.cpp
     Plane.cpp
     Point.cpp
+    ShapedObject.cpp
+    ShapedObjectGroup.cpp
     ShapeGroup.cpp
     Sphere.cpp)
 set(MagnumPhysics_HEADERS
@@ -17,6 +19,8 @@ set(MagnumPhysics_HEADERS
     LineSegment.h
     Plane.h
     Point.h
+    ShapedObject.h
+    ShapedObjectGroup.h
     ShapeGroup.h
     Sphere.h
 
@@ -24,7 +28,7 @@ set(MagnumPhysics_HEADERS
 
 add_library(MagnumPhysics SHARED ${MagnumPhysics_SRCS})
 
-target_link_libraries(MagnumPhysics Magnum)
+target_link_libraries(MagnumPhysics Magnum MagnumSceneGraph)
 
 install(TARGETS MagnumPhysics DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumPhysics_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Physics)

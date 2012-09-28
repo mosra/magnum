@@ -12,7 +12,7 @@ option(WITH_EVERYTHING "Build everything (doesn't include contexts)" ON)
 cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" OFF "NOT WITH_EVERYTHING" ON)
 cmake_dependent_option(WITH_PHYSICS "Build Physics library" OFF "NOT WITH_EVERYTHING" ON)
 cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" OFF "NOT WITH_EVERYTHING" ON)
-cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" OFF "NOT WITH_EVERYTHING" ON)
+cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" OFF "NOT WITH_EVERYTHING;NOT WITH_PHYSICS" ON)
 cmake_dependent_option(WITH_SHADERS "Build Shaders library" OFF "NOT WITH_EVERYTHING" ON)
 
 option(WITH_GLXWINDOWCONTEXT "Build GlxWindowContext library" OFF)
