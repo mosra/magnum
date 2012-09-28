@@ -56,7 +56,7 @@ template<class T> class Vector4: public Vector<4, T> {
          * @param xyz   Three-component vector
          * @param w     W component
          */
-        inline constexpr Vector4(const Vector<3, T>& xyz, T w): Vector<4, T>(xyz[0], xyz[1], xyz[2], w) {}
+        inline constexpr Vector4(const Vector3<T>& xyz, T w): Vector<4, T>(xyz[0], xyz[1], xyz[2], w) {}
 
         inline T& x() { return (*this)[0]; }                /**< @brief X component */
         inline constexpr T x() const { return (*this)[0]; } /**< @overload */

@@ -57,7 +57,7 @@ template<class T> class Point2D: public Vector3<T> {
          * @param xy    Two-component vector
          * @param z     Z component
          */
-        inline constexpr Point2D(const Vector<2, T>& xy, T z = T(1)): Vector3<T>(xy, z) {}
+        inline constexpr Point2D(const Vector2<T>& xy, T z = T(1)): Vector3<T>(xy, z) {}
 
         /**
          * @brief Vector part of the point

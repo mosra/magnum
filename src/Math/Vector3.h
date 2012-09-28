@@ -124,7 +124,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * @param xy    Two-component vector
          * @param z     Z component
          */
-        inline constexpr Vector3(const Vector<2, T>& xy, T z): Vector<3, T>(xy[0], xy[1], z) {}
+        inline constexpr Vector3(const Vector2<T>& xy, T z): Vector<3, T>(xy[0], xy[1], z) {}
 
         inline T& x() { return (*this)[0]; }                /**< @brief X component */
         inline constexpr T x() const { return (*this)[0]; } /**< @overload */

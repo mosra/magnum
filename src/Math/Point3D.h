@@ -58,7 +58,7 @@ template<class T> class Point3D: public Vector4<T> {
          * @param xyz   Three-component vector
          * @param w     W component
          */
-        inline constexpr Point3D(const Vector<3, T>& xyz, T w = T(1)): Vector4<T>(xyz, w) {}
+        inline constexpr Point3D(const Vector3<T>& xyz, T w = T(1)): Vector4<T>(xyz, w) {}
 
         /**
          * @brief Vector part of the point

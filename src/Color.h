@@ -359,7 +359,7 @@ template<class T> class Color4: public Math::Vector4<T> {
          */
         /* Not marked as explicit, because conversion from Color3 to Color4
            is fairly common, nearly always with A set to 1 */
-        inline constexpr Color4(const Math::Vector<3, T>& rgb, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
+        inline constexpr Color4(const Math::Vector3<T>& rgb, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
 
         inline T& r() { return Math::Vector4<T>::x(); }                 /**< @brief R component */
         inline constexpr T r() const { return Math::Vector4<T>::x(); }  /**< @overload */
