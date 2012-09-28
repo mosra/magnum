@@ -28,8 +28,8 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 3D cylinder primitive
 
-Indexed with normals, optional 2D texture coordinates and optional capped
-ends.
+Indexed triangle mesh with normals, optional 2D texture coordinates and
+optional capped ends.
 */
 class Cylinder: public Capsule {
     public:

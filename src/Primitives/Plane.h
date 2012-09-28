@@ -26,7 +26,7 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 3D plane primitive
 
-2x2 plane, non-indexed with normals in positive Z direction.
+2x2 plane as triangle strip, non-indexed with normals in positive Z direction.
 */
 class Plane: public Trade::MeshData3D {
     public:

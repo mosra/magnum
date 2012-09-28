@@ -31,7 +31,7 @@ template<size_t subdivisions> class Icosphere;
 /**
 @brief 3D icosphere primitive with zero subdivisions
 
-Indexed with normals.
+Indexed triangle mesh with normals.
 @todo Use own computed (and more precise) icosahedron data, not these stolen
 from Blender.
 */
@@ -45,7 +45,7 @@ template<> class Icosphere<0>: public Trade::MeshData3D {
 @brief 3D icosphere primitive
 @tparam subdivisions     Number of subdivisions
 
-Indexed with normals.
+Indexed triangle mesh with normals.
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<size_t subdivisions> class Icosphere: public Icosphere<0> {

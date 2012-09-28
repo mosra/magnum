@@ -26,7 +26,7 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 3D cube primitive
 
-Indexed with smooth normals.
+Indexed triangle mesh with smooth normals.
 @todo Does anyone EVER want smooth normals on a cube?!
 */
 class Cube: public Trade::MeshData3D {
