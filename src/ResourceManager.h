@@ -400,8 +400,8 @@ Resource<Texture2D> texture(manager->get<Texture2D>("texture"));
 Resource<AbstractShaderProgram, MyShader> shader(manager->get<AbstractShaderProgram, MyShader>("shader"));
 Resource<Mesh> cube(manager->get<Mesh>("cube"));
 
-// The manager doesn't have data for the mesh yet, add them
-if(!mesh) {
+// The manager doesn't have data for the cube yet, add them
+if(!cube) {
     Mesh* mesh = new Mesh;
     // ...
     manager->set("cube", mesh, ResourceDataState::Final, ResourcePolicy::Resident);
