@@ -36,6 +36,9 @@ Matrix4Test::Matrix4Test() {
              &Matrix4Test::translation,
              &Matrix4Test::scaling,
              &Matrix4Test::rotation,
+             &Matrix4Test::xRotation,
+             &Matrix4Test::yRotation,
+             &Matrix4Test::zRotation,
              &Matrix4Test::rotationScalingPart,
              &Matrix4Test::rotationPart,
              &Matrix4Test::translationPart,
@@ -103,6 +106,33 @@ void Matrix4Test::rotation() {
          0.0f,         0.0f,          0.0f,        1.0f
     );
     CORRADE_COMPARE(Matrix4::rotation(deg(-74.0f), Vector3(-1.0f, 2.0f, 2.0f).normalized()), matrix);
+}
+
+void Matrix4Test::xRotation() {
+    Matrix4 matrix(1.0f,  0.0f,        0.0f,        0.0f,
+                   0.0f,  0.90096887f, 0.43388374f, 0.0f,
+                   0.0f, -0.43388374f, 0.90096887f, 0.0f,
+                   0.0f,  0.0f,        0.0f,        1.0f);
+    CORRADE_COMPARE(Matrix4::rotation(rad(Math::Constants<float>::pi()/7), Vector3::xAxis()), matrix);
+    CORRADE_COMPARE(Matrix4::xRotation(rad(Math::Constants<float>::pi()/7)), matrix);
+}
+
+void Matrix4Test::yRotation() {
+    Matrix4 matrix(0.90096887f, 0.0f, -0.43388374f, 0.0f,
+                   0.0f,        1.0f,  0.0f,        0.0f,
+                   0.43388374f, 0.0f,  0.90096887f, 0.0f,
+                   0.0f,        0.0f,  0.0f,        1.0f);
+    CORRADE_COMPARE(Matrix4::rotation(rad(Math::Constants<float>::pi()/7), Vector3::yAxis()), matrix);
+    CORRADE_COMPARE(Matrix4::yRotation(rad(Math::Constants<float>::pi()/7)), matrix);
+}
+
+void Matrix4Test::zRotation() {
+    Matrix4 matrix( 0.90096887f, 0.43388374f, 0.0f, 0.0f,
+                   -0.43388374f, 0.90096887f, 0.0f, 0.0f,
+                    0.0f,        0.0f,        1.0f, 0.0f,
+                    0.0f,        0.0f,        0.0f, 1.0f);
+    CORRADE_COMPARE(Matrix4::rotation(rad(Math::Constants<float>::pi()/7), Vector3::zAxis()), matrix);
+    CORRADE_COMPARE(Matrix4::zRotation(rad(Math::Constants<float>::pi()/7)), matrix);
 }
 
 void Matrix4Test::rotationScalingPart() {

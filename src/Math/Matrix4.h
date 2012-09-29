@@ -73,6 +73,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @param angle Rotation angle (counterclockwise, in radians)
          * @param vec   Normalized rotation axis
          *
+         * If possible, use faster alternatives like xRotation(), yRotation()
+         * or zRotation().
          * @see rotation() const, Matrix3::rotation(T), Vector3::xAxis(),
          *      Vector3::yAxis(), Vector3::zAxis(), deg(), rad()
          * @attention Assertion fails on non-normalized rotation vector and
@@ -106,6 +108,66 @@ template<class T> class Matrix4: public Matrix<4, T> {
                     yz*oneMinusCosine - vec.x()*sine,
                         cosine + zz*oneMinusCosine,
                            T(0),
+                T(0), T(0), T(0), T(1)
+            );
+        }
+
+        /**
+         * @brief 3D rotation around X axis
+         * @param angle Rotation angle (counterclockwise, in radians)
+         *
+         * Faster than calling `Matrix4::rotation(angle, Vector3::xAxis())`.
+         * @see rotation(T, const Vector3&), yRotation(), zRotation(),
+         *      rotation() const, Matrix3::rotation(T), deg(), rad()
+         */
+        static Matrix4<T> xRotation(T angle) {
+            T sine = std::sin(angle);
+            T cosine = std::cos(angle);
+
+            return Matrix4<T>( /* Column-major! */
+                T(1), T(0), T(0), T(0),
+                T(0), cosine, sine, T(0),
+                T(0), -sine, cosine, T(0),
+                T(0), T(0), T(0), T(1)
+            );
+        }
+
+        /**
+         * @brief 3D rotation around Y axis
+         * @param angle Rotation angle (counterclockwise, in radians)
+         *
+         * Faster than calling `Matrix4::rotation(angle, Vector3::yAxis())`.
+         * @see rotation(T, const Vector3&), xRotation(), zRotation(),
+         *      rotation() const, Matrix3::rotation(T), deg(), rad()
+         */
+        static Matrix4<T> yRotation(T angle) {
+            T sine = std::sin(angle);
+            T cosine = std::cos(angle);
+
+            return Matrix4<T>( /* Column-major! */
+                cosine, T(0), -sine, T(0),
+                T(0), T(1), T(0), T(0),
+                sine, T(0), cosine, T(0),
+                T(0), T(0), T(0), T(1)
+            );
+        }
+
+        /**
+         * @brief 3D rotation matrix around Z axis
+         * @param angle Rotation angle (counterclockwise, in radians)
+         *
+         * Faster than calling `Matrix4::rotation(angle, Vector3::zAxis())`.
+         * @see rotation(T, const Vector3&), xRotation(), yRotation(),
+         *      rotation() const, Matrix3::rotation(T), deg(), rad()
+         */
+        static Matrix4<T> zRotation(T angle) {
+            T sine = std::sin(angle);
+            T cosine = std::cos(angle);
+
+            return Matrix4<T>( /* Column-major! */
+                cosine, sine, T(0), T(0),
+                -sine, cosine, T(0), T(0),
+                T(0), T(0), T(1), T(0),
                 T(0), T(0), T(0), T(1)
             );
         }
