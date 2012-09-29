@@ -37,7 +37,7 @@ transformations. See also @ref matrix-vector for brief introduction.
 template<class T> class Matrix4: public Matrix<4, T> {
     public:
         /**
-         * @brief 3D translation matrix
+         * @brief 3D translation
          * @param vec   Translation vector
          *
          * @see translation(), Matrix3::translation(const Vector2&),
@@ -53,7 +53,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
         }
 
         /**
-         * @brief 3D scaling matrix
+         * @brief 3D scaling
          * @param vec   Scaling vector
          *
          * @see rotationScaling() const, Matrix3::scaling(const Vector2&),
@@ -69,9 +69,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
         }
 
         /**
-         * @brief 3D rotation matrix
+         * @brief 3D rotation around arbitrary axis
          * @param angle Rotation angle (counterclockwise, in radians)
-         * @param vec   Normalized rotation vector
+         * @param vec   Normalized rotation axis
          *
          * @see rotation() const, Matrix3::rotation(T), Vector3::xAxis(),
          *      Vector3::yAxis(), Vector3::zAxis(), deg(), rad()
