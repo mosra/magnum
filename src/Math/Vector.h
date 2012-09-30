@@ -254,6 +254,24 @@ template<std::size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::
     return debug;
 }
 
+/* Explicit instantiation for types used in OpenGL */
+#ifndef DOXYGEN_GENERATING_OUTPUT
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, unsigned int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, unsigned int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, unsigned int>&);
+#ifndef MAGNUM_TARGET_GLES
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, double>&);
+#endif
+#endif
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Type, size)                   \
     inline constexpr static Type<T>& from(T* data) {                        \

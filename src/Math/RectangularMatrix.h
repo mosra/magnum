@@ -26,6 +26,8 @@
 
 #include "MathTypeTraits.h"
 
+#include "magnumVisibility.h"
+
 namespace Magnum { namespace Math {
 
 /** @todo Properly test all constexpr */
@@ -400,6 +402,51 @@ template<std::size_t cols, std::size_t rows, class T> Corrade::Utility::Debug op
     return debug;
 }
 
+/* Explicit instantiation for types used in OpenGL */
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* Vectors */
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<1, 2, float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<1, 3, float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<1, 4, float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<1, 2, int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<1, 3, int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<1, 4, int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<1, 2, unsigned int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<1, 3, unsigned int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<1, 4, unsigned int>&);
+#ifndef MAGNUM_TARGET_GLES
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<1, 2, double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<1, 3, double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<1, 4, double>&);
+#endif
+
+/* Square matrices */
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<2, 2, float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<3, 3, float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<4, 4, float>&);
+#ifndef MAGNUM_TARGET_GLES
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<2, 2, double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<3, 3, double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<4, 4, double>&);
+#endif
+
+/* Rectangular matrices */
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<2, 3, float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<3, 2, float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<2, 4, float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<4, 2, float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<3, 4, float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<4, 3, float>&);
+#ifndef MAGNUM_TARGET_GLES
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<2, 3, double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<3, 2, double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<2, 4, double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<4, 2, double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<3, 4, double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const RectangularMatrix<4, 3, double>&);
+#endif
+#endif
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(cols, rows, ...)   \
     inline constexpr static __VA_ARGS__& from(T* data) {                    \
@@ -490,6 +537,50 @@ template<std::size_t cols, std::size_t rows, class T> struct ConfigurationValue<
         return result;
     }
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* Vectors */
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<1, 2, float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<1, 3, float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<1, 4, float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<1, 2, int>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<1, 3, int>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<1, 4, int>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<1, 2, unsigned int>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<1, 3, unsigned int>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<1, 4, unsigned int>>;
+#ifndef MAGNUM_TARGET_GLES
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<1, 2, double>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<1, 3, double>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<1, 4, double>>;
+#endif
+
+/* Square matrices */
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<2, 2, float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<3, 3, float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<4, 4, float>>;
+#ifndef MAGNUM_TARGET_GLES
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<2, 2, double>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<3, 3, double>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<4, 4, double>>;
+#endif
+
+/* Rectangular matrices */
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<2, 3, float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<3, 2, float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<2, 4, float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<4, 2, float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<3, 4, float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<4, 3, float>>;
+#ifndef MAGNUM_TARGET_GLES
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<2, 3, double>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<3, 2, double>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<2, 4, double>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<4, 2, double>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<3, 4, double>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<4, 3, double>>;
+#endif
+#endif
 
 }}
 

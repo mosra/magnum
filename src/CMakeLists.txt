@@ -94,7 +94,9 @@ add_library(MagnumObjects OBJECT ${Magnum_SRCS})
 
 # Files shared between main library and math unit test library
 set(MagnumMath_SRCS
-    Math/Math.cpp)
+    Math/Math.cpp
+    Math/RectangularMatrix.cpp
+    Math/Vector.cpp)
 add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
 
 # Set shared library flags for the objects, as they will be part of shared lib
@@ -152,8 +154,13 @@ if(BUILD_TESTS)
     enable_testing()
 
     # Library with graceful assert for testing
+    add_library(MagnumMathTestLib SHARED
+        $<TARGET_OBJECTS:MagnumMathObjects>)
+    set_target_properties(MagnumMathTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
+
     add_library(MagnumTestLib SHARED
-        $<TARGET_OBJECTS:MagnumObjects>)
+        $<TARGET_OBJECTS:MagnumObjects>
+        $<TARGET_OBJECTS:MagnumMathObjects>)
     set_target_properties(MagnumTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
     target_link_libraries(MagnumTestLib ${Magnum_LIBS})
 
