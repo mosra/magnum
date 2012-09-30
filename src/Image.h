@@ -105,18 +105,18 @@ template<size_t imageDimensions> class Image: public AbstractImage {
          * Deletes previous data and replaces them with new. Note that the
          * data are not copied, but they are deleted on destruction.
          */
-        void setData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, GLvoid* data) {
-            delete[] _data;
-            _components = components;
-            _type = type;
-            _dimensions = dimensions;
-            _data = reinterpret_cast<char*>(data);
-        }
+        void setData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, GLvoid* data);
 
     protected:
         Math::Vector<Dimensions, GLsizei> _dimensions;  /**< @brief %Image dimensions */
         char* _data;                                    /**< @brief %Image data */
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+extern template class Image<1>;
+extern template class Image<2>;
+extern template class Image<3>;
+#endif
 
 /** @brief One-dimensional image */
 typedef Image<1> Image1D;

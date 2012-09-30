@@ -99,17 +99,18 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
          *
          * @see Buffer::setData()
          */
-        void setData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage) {
-            _components = components;
-            _type = type;
-            _dimensions = dimensions;
-            _buffer.setData(Buffer::Target::PixelPack, pixelSize(_components, _type)*dimensions.product(), data, usage);
-        }
+        void setData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage);
 
     protected:
         Math::Vector<Dimensions, GLsizei> _dimensions;  /**< @brief %Image dimensions */
         Buffer _buffer;                                 /**< @brief %Image buffer */
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+extern template class BufferedImage<1>;
+extern template class BufferedImage<2>;
+extern template class BufferedImage<3>;
+#endif
 
 /** @brief One-dimensional buffered image */
 typedef BufferedImage<1> BufferedImage1D;

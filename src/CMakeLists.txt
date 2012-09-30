@@ -21,9 +21,11 @@ set(Magnum_SRCS
     AbstractImage.cpp
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
+    BufferedImage.cpp
     BufferedTexture.cpp
     Context.cpp
     Framebuffer.cpp
+    Image.cpp
     IndexedMesh.cpp
     Mesh.cpp
     Profiler.cpp
