@@ -47,7 +47,7 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
          * Dimensions and buffer are empty, call setData() to fill the image
          * with data.
          */
-        BufferedImage(Components components, ComponentType type): AbstractImage(components, type), _buffer(Buffer::Target::PixelPack) {}
+        inline BufferedImage(Components components, ComponentType type): AbstractImage(components, type), _buffer(Buffer::Target::PixelPack) {}
 
         /** @brief %Image dimensions */
         inline constexpr Math::Vector<Dimensions, GLsizei> dimensions() const { return _dimensions; }
@@ -61,7 +61,7 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
          *
          * @see Buffer::bind(Target)
          */
-        void* data() {
+        inline void* data() {
             _buffer.bind(Buffer::Target::PixelUnpack);
             return nullptr;
         }

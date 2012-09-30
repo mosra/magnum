@@ -75,7 +75,7 @@ template<class T> class Point2D: public Vector3<T> {
 MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Point2D, 3)
 
 /** @debugoperator{Magnum::Math::Point2D} */
-template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Point2D<T>& value) {
+template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Point2D<T>& value) {
     return debug << static_cast<const Magnum::Math::Vector<3, T>&>(value);
 }
 

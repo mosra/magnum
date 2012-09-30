@@ -406,12 +406,12 @@ template<class T> class Color4: public Math::Vector4<T> {
 MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Color4, 4)
 
 /** @debugoperator{Magnum::Color3} */
-template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Color3<T>& value) {
+template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Color3<T>& value) {
     return debug << static_cast<const Magnum::Math::Vector3<T>&>(value);
 }
 
 /** @debugoperator{Magnum::Color4} */
-template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Color4<T>& value) {
+template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Color4<T>& value) {
     return debug << static_cast<const Magnum::Math::Vector4<T>&>(value);
 }
 

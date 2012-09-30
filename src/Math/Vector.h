@@ -106,7 +106,7 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
          *
          * @see operator*=(const Vector<size, T>&)
          */
-        Vector<size, T> operator*(const Vector<size, T>& other) const {
+        inline Vector<size, T> operator*(const Vector<size, T>& other) const {
             return Vector<size, T>(*this)*=other;
         }
 
@@ -128,7 +128,7 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
          *
          * @see operator/=(const Vector<size, T>&)
          */
-        Vector<size, T> operator/(const Vector<size, T>& other) const {
+        inline Vector<size, T> operator/(const Vector<size, T>& other) const {
             return Vector<size, T>(*this)/=other;
         }
 

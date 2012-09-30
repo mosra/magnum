@@ -93,7 +93,7 @@ template<size_t imageDimensions> class ImageWrapper: public AbstractImage {
          * passed in constructor. The data are not copied nor deleted on
          * destruction.
          */
-        void setData(GLvoid* data) {
+        inline void setData(GLvoid* data) {
             _data = reinterpret_cast<char*>(data);
         }
 
