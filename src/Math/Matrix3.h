@@ -65,7 +65,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
         }
 
         /**
-         * @brief 3D rotation matrix
+         * @brief 2D rotation matrix
          * @param angle Rotation angle (counterclockwise, in radians)
          *
          * @see rotation() const, Matrix4::rotation(T, const Vector3&), deg(),
