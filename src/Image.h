@@ -19,6 +19,7 @@
  * @brief Class Magnum::Image, typedef Magnum::Image1D, Magnum::Image2D, Magnum::Image3D
  */
 
+#include "Math/Vector.h"
 #include "AbstractImage.h"
 #include "TypeTraits.h"
 

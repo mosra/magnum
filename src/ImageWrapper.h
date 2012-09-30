@@ -19,6 +19,7 @@
  * @brief Class Magnum::ImageWrapper
  */
 
+#include "Math/Vector.h"
 #include "AbstractImage.h"
 #include "TypeTraits.h"
 

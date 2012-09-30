@@ -19,6 +19,7 @@
  * @brief Class Magnum::BufferedImage, typedef Magnum::BufferedImage1D, Magnum::BufferedImage2D, Magnum::BufferedImage3D
  */
 
+#include "Math/Vector.h"
 #include "AbstractImage.h"
 #include "Buffer.h"
 #include "TypeTraits.h"
