@@ -168,8 +168,8 @@ template<size_t size, class T, class U> inline typename std::enable_if<std::is_a
 #endif
 
 /** @debugoperator{Magnum::Math::Matrix} */
-template<size_t size, class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix<size, T>& value) {
-    return debug << static_cast<const Magnum::Math::RectangularMatrix<size, size, T>&>(value);
+template<size_t size, class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Matrix<size, T>& value) {
+    return debug << static_cast<const RectangularMatrix<size, size, T>&>(value);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

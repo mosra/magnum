@@ -240,7 +240,7 @@ template<size_t size, class T, class U> inline typename std::enable_if<std::is_a
 #endif
 
 /** @debugoperator{Magnum::Math::Vector} */
-template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector<size, T>& value) {
+template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Vector<size, T>& value) {
     debug << "Vector(";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
     for(size_t i = 0; i != size; ++i) {

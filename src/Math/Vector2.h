@@ -95,8 +95,8 @@ template<class T> class Vector2: public Vector<2, T> {
 MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Vector2, 2)
 
 /** @debugoperator{Magnum::Math::Vector2} */
-template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector2<T>& value) {
-    return debug << static_cast<const Magnum::Math::Vector<2, T>&>(value);
+template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Vector2<T>& value) {
+    return debug << static_cast<const Vector<2, T>&>(value);
 }
 
 }}

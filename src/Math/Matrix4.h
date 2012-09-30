@@ -249,8 +249,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
 };
 
 /** @debugoperator{Magnum::Math::Matrix4} */
-template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix4<T>& value) {
-    return debug << static_cast<const Magnum::Math::Matrix<4, T>&>(value);
+template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Matrix4<T>& value) {
+    return debug << static_cast<const Matrix<4, T>&>(value);
 }
 
 }}
