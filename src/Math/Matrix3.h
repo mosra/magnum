@@ -72,9 +72,12 @@ template<class T> class Matrix3: public Matrix<3, T> {
          *      rad()
          */
         static Matrix3<T> rotation(T angle) {
+            T sine = std::sin(angle);
+            T cosine = std::cos(angle);
+
             return Matrix3<T>( /* Column-major! */
-                T(cos(angle)), T(sin(angle)), T(0),
-                -T(sin(angle)), T(cos(angle)), T(0),
+                cosine, sine, T(0),
+                -sine, cosine, T(0),
                 T(0), T(0), T(1)
             );
         }
