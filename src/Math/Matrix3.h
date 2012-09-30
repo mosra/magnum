@@ -137,7 +137,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
         }
 
         /** @overload */
-        inline constexpr Vector3<T> translation() const {
+        inline constexpr Vector2<T> translation() const {
             return (*this)[2].xy();
         }
 
