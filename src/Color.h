@@ -376,8 +376,8 @@ template<class T> class Color4: public Math::Vector4<T> {
          *
          * @see swizzle()
          */
-        inline Color3<T>& rgb() { return Math::Vector4<T>::xyz(); }
-        inline constexpr Color3<T> rgb() const { return Math::Vector4<T>::xyz(); } /**< @overload */
+        inline Color3<T>& rgb() { return Color3<T>::from(Math::Vector4<T>::data()); }
+        inline constexpr Color3<T> rgb() const { return Color3<T>::from(Math::Vector4<T>::data()); } /**< @overload */
 
         /** @copydoc Color3::toHSV() */
         inline constexpr HSV toHSV() const {
