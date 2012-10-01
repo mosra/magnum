@@ -250,9 +250,6 @@ class GlutWindowContext: public AbstractWindowContext {
 
         static GlutWindowContext* instance;
 
-        int& argc;
-        char** argv;
-
         Context* c;
 };
 

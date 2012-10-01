@@ -22,7 +22,7 @@ namespace Magnum { namespace Contexts {
 
 GlutWindowContext* GlutWindowContext::instance = nullptr;
 
-GlutWindowContext::GlutWindowContext(int& argc, char** argv, const std::string& title, const Math::Vector2<GLsizei>& size): argc(argc), argv(argv) {
+GlutWindowContext::GlutWindowContext(int& argc, char** argv, const std::string& title, const Math::Vector2<GLsizei>& size) {
     /* Save global instance */
     instance = this;
 
