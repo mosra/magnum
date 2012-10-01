@@ -55,14 +55,14 @@ enum class ResourceDataState {
      * the data are accessed, but allows changing the data for e.g. debugging
      * purposes.
      */
-    Mutable = ResourceState::Mutable,
+    Mutable = int(ResourceState::Mutable),
 
     /**
      * The resource cannot be changed by the manager in the future. This is
      * faster, as Resource instances will ask for the data only one time, thus
      * suitable for production code.
      */
-    Final = ResourceState::Final
+    Final = int(ResourceState::Final)
 };
 
 /**
