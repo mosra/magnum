@@ -31,16 +31,16 @@ namespace Implementation {
 
 /**
 @brief Square matrix
-@tparam s   %Matrix size
-@tparam T   Data type
+@tparam size    %Matrix size
+@tparam T       Data type
 
 See @ref matrix-vector for brief introduction.
 
 @configurationvalueref{Magnum::Math::Matrix}
  */
-template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
+template<size_t size, class T> class Matrix: public RectangularMatrix<size, size, T> {
     public:
-        const static size_t size = s;    /**< @brief %Matrix size */
+        const static size_t Size = size;    /**< @brief %Matrix size */
 
         /** @brief Pass to constructor to create zero-filled matrix */
         enum ZeroType { Zero };

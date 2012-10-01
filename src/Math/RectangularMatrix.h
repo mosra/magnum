@@ -53,20 +53,20 @@ template<size_t size, class T> class Vector;
 
 /**
 @brief Rectangular matrix
-@tparam c   Column count
-@tparam r   Row count
-@tparam T   Data type
+@tparam cols    Column count
+@tparam rows    Row count
+@tparam T       Data type
 
 See @ref matrix-vector for brief introduction. See also Matrix (square) and
 Vector.
 */
-template<size_t c, size_t r, class T> class RectangularMatrix {
-    static_assert(c != 0 && r != 0, "Matrix cannot have zero elements");
+template<size_t cols, size_t rows, class T> class RectangularMatrix {
+    static_assert(cols != 0 && rows != 0, "Matrix cannot have zero elements");
 
     public:
-        typedef T Type;                 /**< @brief Data type */
-        const static size_t cols = c;   /**< @brief %Matrix column count */
-        const static size_t rows = r;   /**< @brief %Matrix row count */
+        typedef T Type;                     /**< @brief Data type */
+        const static size_t Cols = cols;    /**< @brief %Matrix column count */
+        const static size_t Rows = rows;    /**< @brief %Matrix row count */
 
         /**
          * @brief %Matrix from array
@@ -129,10 +129,10 @@ template<size_t c, size_t r, class T> class RectangularMatrix {
         #endif
 
         /** @brief Copy constructor */
-        inline constexpr RectangularMatrix(const RectangularMatrix<c, r, T>&) = default;
+        inline constexpr RectangularMatrix(const RectangularMatrix<cols, rows, T>&) = default;
 
         /** @brief Assignment operator */
-        inline RectangularMatrix<c, r, T>& operator=(const RectangularMatrix<c, r, T>&) = default;
+        inline RectangularMatrix<cols, rows, T>& operator=(const RectangularMatrix<cols, rows, T>&) = default;
 
         /**
          * @brief Raw data

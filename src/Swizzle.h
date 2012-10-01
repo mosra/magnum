@@ -110,7 +110,7 @@ instead of at runtime.
     Vector4::xy(), Vector3::xy()
 */
 template<char ...components, class T> inline constexpr typename Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector) {
-    return {Implementation::Component<T::size, components>::value(vector)...};
+    return {Implementation::Component<T::Size, components>::value(vector)...};
 }
 
 /**

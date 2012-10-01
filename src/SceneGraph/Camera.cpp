@@ -32,7 +32,7 @@ template<class MatrixType> MatrixType aspectRatioFix(AspectRatioPolicy aspectRat
 
     /* Extend on larger side = scale larger side down
        Clip on smaller side = scale smaller side up */
-    return Camera<MatrixType::size-1>::aspectRatioScale(
+    return Camera<MatrixType::Size-1>::aspectRatioScale(
         (relativeAspectRatio.x() > relativeAspectRatio.y()) == (aspectRatioPolicy == AspectRatioPolicy::Extend) ?
         Vector2(relativeAspectRatio.y()/relativeAspectRatio.x(), 1.0f) :
         Vector2(1.0f, relativeAspectRatio.x()/relativeAspectRatio.y()));

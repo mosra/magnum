@@ -29,7 +29,7 @@ class SubdivideTest: public Corrade::TestSuite::Tester<SubdivideTest> {
     private:
         class Vector1 {
             public:
-                static const size_t size = 1;
+                static const size_t Size = 1;
                 typedef int Type;
 
                 Vector1(): data(0) {}

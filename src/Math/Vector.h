@@ -25,15 +25,15 @@ namespace Magnum { namespace Math {
 
 /**
 @brief %Vector
-@tparam s   %Vector size
-@tparam T   Data type
+@tparam size    %Vector size
+@tparam T       Data type
 
 See @ref matrix-vector for brief introduction.
 @configurationvalueref{Magnum::Math::Vector}
 */
-template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
+template<size_t size, class T> class Vector: public RectangularMatrix<1, size, T> {
     public:
-        const static size_t size = s;    /**< @brief %Vector size */
+        const static size_t Size = size;    /**< @brief %Vector size */
 
         /**
          * @brief Dot product
@@ -224,8 +224,8 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
 
     private:
         /* Hiding unused things from RectangularMatrix */
-        using RectangularMatrix<1, size, T>::cols;
-        using RectangularMatrix<1, size, T>::rows;
+        using RectangularMatrix<1, size, T>::Cols;
+        using RectangularMatrix<1, size, T>::Rows;
         using RectangularMatrix<1, size, T>::operator[];
         using RectangularMatrix<1, size, T>::operator();
 };
