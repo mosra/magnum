@@ -70,8 +70,11 @@ template<class T> class Vector2: public Vector<2, T> {
          */
         inline constexpr static Vector2<T> yScale(T scale) { return Vector2<T>(T(1), scale); }
 
+        /** @copydoc Vector::Vector() */
+        inline constexpr Vector2() {}
+
         /** @copydoc Vector::Vector(T) */
-        inline constexpr explicit Vector2(T value = T()): Vector<2, T>(value, value) {}
+        inline constexpr explicit Vector2(T value): Vector<2, T>(value, value) {}
 
         /** @brief Copy constructor */
         inline constexpr Vector2(const RectangularMatrix<1, 2, T>& other): Vector<2, T>(other) {}
