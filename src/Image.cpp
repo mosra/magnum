@@ -17,11 +17,11 @@
 
 namespace Magnum {
 
-template<size_t imageDimensions> void Image<imageDimensions>::setData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, GLvoid* data) {
+template<size_t dimensions> void Image<dimensions>::setData(const Math::Vector<Dimensions, GLsizei>& size, Components components, ComponentType type, GLvoid* data) {
     delete[] _data;
     _components = components;
     _type = type;
-    _dimensions = dimensions;
+    _size = size;
     _data = reinterpret_cast<char*>(data);
 }
 

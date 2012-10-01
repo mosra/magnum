@@ -1134,7 +1134,7 @@ class MAGNUM_EXPORT Framebuffer {
         /**
          * @brief Read block of pixels from framebuffer to image
          * @param offset            Offset in the framebuffer
-         * @param dimensions        %Image dimensions
+         * @param size              %Image size
          * @param components        Color components
          * @param type              Data type
          * @param image             %Image where to put the data
@@ -1142,13 +1142,13 @@ class MAGNUM_EXPORT Framebuffer {
          * @see @fn_gl{ReadPixels}
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& dimensions, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image);
+        static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image);
 
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Read block of pixels from framebuffer to buffered image
          * @param offset            Offset in the framebuffer
-         * @param dimensions        %Image dimensions
+         * @param size              %Image size
          * @param components        Color components
          * @param type              Data type
          * @param image             Buffered image where to put the data
@@ -1158,7 +1158,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& dimensions, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage);
+        static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage);
         #endif
 
         /*@}*/

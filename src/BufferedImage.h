@@ -35,9 +35,9 @@ Trade::ImageData.
 @see BufferedImage1D, BufferedImage2D, BufferedImage3D, Buffer
 @requires_gles30 (no extension providing this functionality)
 */
-template<size_t imageDimensions> class BufferedImage: public AbstractImage {
+template<size_t dimensions> class BufferedImage: public AbstractImage {
     public:
-        const static size_t Dimensions = imageDimensions;   /**< @brief Image dimension count */
+        const static size_t Dimensions = dimensions;   /**< @brief Image dimension count */
 
         /**
          * @brief Constructor
@@ -49,8 +49,8 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
          */
         inline BufferedImage(Components components, ComponentType type): AbstractImage(components, type), _buffer(Buffer::Target::PixelPack) {}
 
-        /** @brief %Image dimensions */
-        inline constexpr Math::Vector<Dimensions, GLsizei> dimensions() const { return _dimensions; }
+        /** @brief %Image size */
+        inline constexpr Math::Vector<Dimensions, GLsizei> size() const { return _size; }
 
         /**
          * @brief Data
@@ -71,7 +71,7 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
 
         /**
          * @brief Set image data
-         * @param dimensions        %Image dimensions
+         * @param size              %Image size
          * @param components        Color components. Data type is detected
          *      from passed data array.
          * @param data              %Image data
@@ -82,13 +82,13 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
          *
          * @see setData(const Math::Vector<Dimensions, GLsizei>&, Components, ComponentType, const GLvoid*, Buffer::Usage)
          */
-        template<class T> inline void setData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, const T* data, Buffer::Usage usage) {
-            setData(dimensions, components, TypeTraits<T>::imageType(), data, usage);
+        template<class T> inline void setData(const Math::Vector<Dimensions, GLsizei>& size, Components components, const T* data, Buffer::Usage usage) {
+            setData(size, components, TypeTraits<T>::imageType(), data, usage);
         }
 
         /**
          * @brief Set image data
-         * @param dimensions        %Image dimensions
+         * @param size              %Image size
          * @param components        Color components
          * @param type              Data type
          * @param data              %Image data
@@ -99,11 +99,11 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
          *
          * @see Buffer::setData()
          */
-        void setData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage);
+        void setData(const Math::Vector<Dimensions, GLsizei>& size, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage);
 
     protected:
-        Math::Vector<Dimensions, GLsizei> _dimensions;  /**< @brief %Image dimensions */
-        Buffer _buffer;                                 /**< @brief %Image buffer */
+        Math::Vector<Dimensions, GLsizei> _size;    /**< @brief %Image size */
+        Buffer _buffer;                             /**< @brief %Image buffer */
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

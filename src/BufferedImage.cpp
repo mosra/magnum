@@ -17,11 +17,11 @@
 
 namespace Magnum {
 
-template<size_t imageDimensions> void BufferedImage<imageDimensions>::setData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage) {
+template<size_t dimensions> void BufferedImage<dimensions>::setData(const Math::Vector<Dimensions, GLsizei>& size, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage) {
     _components = components;
     _type = type;
-    _dimensions = dimensions;
-    _buffer.setData(Buffer::Target::PixelPack, pixelSize(_components, _type)*dimensions.product(), data, usage);
+    _size = size;
+    _buffer.setData(Buffer::Target::PixelPack, pixelSize(_components, _type)*size.product(), data, usage);
 }
 
 template class BufferedImage<1>;

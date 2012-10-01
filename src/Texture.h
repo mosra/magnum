@@ -48,9 +48,9 @@ for more information.
 
 @see Texture1D, Texture2D, Texture3D, CubeMapTexture, CubeMapTextureArray
  */
-template<size_t textureDimensions> class Texture: public AbstractTexture {
+template<size_t dimensions> class Texture: public AbstractTexture {
     public:
-        static const size_t Dimensions = textureDimensions; /**< @brief %Texture dimension count */
+        static const size_t Dimensions = dimensions; /**< @brief %Texture dimension count */
 
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
