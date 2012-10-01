@@ -63,8 +63,6 @@ Vector.
 template<size_t c, size_t r, class T> class RectangularMatrix {
     static_assert(c != 0 && r != 0, "Matrix cannot have zero elements");
 
-    friend class Vector<r, T>;
-
     public:
         typedef T Type;                 /**< @brief Data type */
         const static size_t cols = c;   /**< @brief %Matrix column count */
@@ -332,6 +330,11 @@ template<size_t c, size_t r, class T> class RectangularMatrix {
             return out;
         }
 
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    protected:
+        T _data[rows*cols];
+    #endif
+
     private:
         template<size_t ...sequence, class ...U> inline constexpr static RectangularMatrix<cols, rows, T> from(Implementation::Sequence<sequence...> s, const Vector<rows, T>& first, U... next) {
             return from(s, next..., first[sequence]...);
@@ -339,8 +342,6 @@ template<size_t c, size_t r, class T> class RectangularMatrix {
         template<size_t ...sequence, class ...U> inline constexpr static RectangularMatrix<cols, rows, T> from(Implementation::Sequence<sequence...>, T first, U... next) {
             return RectangularMatrix<cols, rows, T>(first, next...);
         }
-
-        T _data[rows*cols];
 };
 
 /** @relates RectangularMatrix
