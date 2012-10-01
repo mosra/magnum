@@ -270,6 +270,11 @@ template<class T, class U = T> class Resource {
             if(manager) manager->incrementReferenceCount(key);
         }
 
+        /** @brief Move constructor */
+        inline Resource(Resource<T, U>&& other): manager(other.manager), key(other.key), lastCheck(other.lastCheck), _state(other._state), data(other.data) {
+            other.manager = nullptr;
+        }
+
         /** @brief Destructor */
         inline ~Resource() {
             if(manager) manager->decrementReferenceCount(key);
@@ -286,6 +291,20 @@ template<class T, class U = T> class Resource {
             data = other.data;
 
             if(manager) manager->incrementReferenceCount(key);
+            return *this;
+        }
+
+        /** @brief Assignment move operator */
+        Resource<T, U>& operator=(Resource<T, U>&& other) {
+            if(manager) manager->decrementReferenceCount(key);
+
+            manager = other.manager;
+            key = other.key;
+            lastCheck = other.lastCheck;
+            _state = other._state;
+            data = other.data;
+
+            other.manager = nullptr;
             return *this;
         }
 
