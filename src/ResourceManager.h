@@ -324,7 +324,7 @@ template<class T, class U = T> class Resource {
         }
 
     private:
-        inline Resource(Implementation::ResourceManagerData<T>* manager, ResourceKey key): manager(manager), key(key), lastCheck(0) {
+        inline Resource(Implementation::ResourceManagerData<T>* manager, ResourceKey key): manager(manager), key(key), lastCheck(0), _state(ResourceState::NotLoaded), data(nullptr) {
             manager->incrementReferenceCount(key);
         }
 
