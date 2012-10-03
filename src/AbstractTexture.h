@@ -712,11 +712,11 @@ template<> struct AbstractTexture::DataHelper<1> {
     }
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type set(GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image) {
-        glTexImage1D(target, mipLevel, internalFormat, image->dimensions()[0], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        glTexImage1D(target, mipLevel, internalFormat, image->size()[0], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type setSub(GLenum target, GLint mipLevel, const Math::Vector<1, GLint>& offset, Image* image) {
-        glTexSubImage1D(target, mipLevel, offset[0], image->dimensions()[0], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        glTexSubImage1D(target, mipLevel, offset[0], image->size()[0], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 };
 #endif
@@ -735,15 +735,15 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
     static void setWrapping(GLenum target, const Math::Vector<2, Wrapping>& wrapping);
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type set(GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image) {
-        glTexImage2D(target, mipLevel, internalFormat, image->dimensions()[0], image->dimensions()[1], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        glTexImage2D(target, mipLevel, internalFormat, image->size()[0], image->size()[1], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type setSub(GLenum target, GLint mipLevel, const Math::Vector<2, GLint>& offset, Image* image) {
-        glTexSubImage2D(target, mipLevel, offset[0], offset[1], image->dimensions()[0], image->dimensions()[1], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        glTexSubImage2D(target, mipLevel, offset[0], offset[1], image->size()[0], image->size()[1], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type setSub(GLenum target, GLint mipLevel, const Math::Vector<2, GLint>& offset, Image* image) {
-        glTexSubImage2D(target, mipLevel, offset[0], offset[1], image->dimensions()[0], 1, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        glTexSubImage2D(target, mipLevel, offset[0], offset[1], image->size()[0], 1, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 };
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
@@ -757,15 +757,15 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     static void setWrapping(GLenum target, const Math::Vector<3, Wrapping>& wrapping);
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 3, void>::type set(GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image) {
-        glTexImage3D(target, mipLevel, internalFormat, image->dimensions()[0], image->dimensions()[1], image->dimensions()[2], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        glTexImage3D(target, mipLevel, internalFormat, image->size()[0], image->size()[1], image->size()[2], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 3, void>::type setSub(GLenum target, GLint mipLevel, const Math::Vector<3, GLint>& offset, Image* image) {
-        glTexSubImage3D(target, mipLevel, offset[0], offset[1], offset[2], image->dimensions()[0], image->dimensions()[1], image->dimensions()[2], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        glTexSubImage3D(target, mipLevel, offset[0], offset[1], offset[2], image->size()[0], image->size()[1], image->size()[2], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type setSub(GLenum target, GLint mipLevel, const Math::Vector<3, GLint>& offset, Image* image) {
-        glTexSubImage3D(target, mipLevel, offset[0], offset[1], offset[2], image->dimensions()[0], image->dimensions()[1], 1, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        glTexSubImage3D(target, mipLevel, offset[0], offset[1], offset[2], image->size()[0], image->size()[1], 1, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
     }
 };
 #endif
