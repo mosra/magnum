@@ -107,9 +107,9 @@ template<size_t dimensions> class BufferedImage: public AbstractImage {
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-extern template class BufferedImage<1>;
-extern template class BufferedImage<2>;
-extern template class BufferedImage<3>;
+extern template class MAGNUM_EXPORT BufferedImage<1>;
+extern template class MAGNUM_EXPORT BufferedImage<2>;
+extern template class MAGNUM_EXPORT BufferedImage<3>;
 #endif
 
 /** @brief One-dimensional buffered image */

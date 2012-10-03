@@ -113,9 +113,9 @@ template<size_t dimensions> class Image: public AbstractImage {
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-extern template class Image<1>;
-extern template class Image<2>;
-extern template class Image<3>;
+extern template class MAGNUM_EXPORT Image<1>;
+extern template class MAGNUM_EXPORT Image<2>;
+extern template class MAGNUM_EXPORT Image<3>;
 #endif
 
 /** @brief One-dimensional image */
