@@ -51,7 +51,7 @@ class MAGNUM_EXPORT MeshData2D {
          * @param textureCoords2D   Array with two-dimensional texture
          *      coordinate arrays or empty array
          */
-        inline MeshData2D(const std::string& name, Mesh::Primitive primitive, std::vector<unsigned int>* indices, std::vector<std::vector<Point2D>*> positions, std::vector<std::vector<Vector2>*> textureCoords2D): _name(name), _primitive(primitive), _indices(indices), _positions(positions), _textureCoords2D(textureCoords2D) {}
+        inline MeshData2D(const std::string& name, Mesh::Primitive primitive, std::vector<std::uint32_t>* indices, std::vector<std::vector<Point2D>*> positions, std::vector<std::vector<Vector2>*> textureCoords2D): _name(name), _primitive(primitive), _indices(indices), _positions(positions), _textureCoords2D(textureCoords2D) {}
 
         /** @brief Destructor */
         ~MeshData2D();
@@ -66,8 +66,8 @@ class MAGNUM_EXPORT MeshData2D {
          * @brief Indices
          * @return Indices or nullptr if the mesh is not indexed.
          */
-        inline std::vector<unsigned int>* indices() { return _indices; }
-        inline const std::vector<unsigned int>* indices() const { return _indices; } /**< @overload */
+        inline std::vector<std::uint32_t>* indices() { return _indices; }
+        inline const std::vector<std::uint32_t>* indices() const { return _indices; } /**< @overload */
 
         /** @brief Count of vertex position arrays */
         inline unsigned int positionArrayCount() const { return _positions.size(); }
@@ -96,7 +96,7 @@ class MAGNUM_EXPORT MeshData2D {
     private:
         std::string _name;
         Mesh::Primitive _primitive;
-        std::vector<unsigned int>* _indices;
+        std::vector<std::uint32_t>* _indices;
         std::vector<std::vector<Point2D>*> _positions;
         std::vector<std::vector<Vector2>*> _textureCoords2D;
 };

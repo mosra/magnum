@@ -19,6 +19,7 @@
  * @brief Function Magnum::MeshTools::generateFlatNormals()
  */
 
+#include <cstdint>
 #include <tuple>
 #include <vector>
 
@@ -37,10 +38,10 @@ namespace Magnum { namespace MeshTools {
 For each face generates one normal vector, removes duplicates before
 returning. Example usage:
 @code
-std::vector<unsigned int> vertexIndices;
+std::vector<std::uint32_t> vertexIndices;
 std::vector<Point3D> positions;
 
-std::vector<unsigned int> normalIndices;
+std::vector<std::uint32_t> normalIndices;
 std::vector<Vector3> normals;
 std::tie(normalIndices, normals) = MeshTools::generateFlatNormals(vertexIndices, positions);
 @endcode
@@ -50,7 +51,7 @@ use the same indices.
 @attention Index count must be divisible by 3, otherwise zero length result
     is generated.
 */
-std::tuple<std::vector<unsigned int>, std::vector<Vector3>> MESHTOOLS_EXPORT generateFlatNormals(const std::vector<unsigned int>& indices, const std::vector<Point3D>& positions);
+std::tuple<std::vector<std::uint32_t>, std::vector<Vector3>> MESHTOOLS_EXPORT generateFlatNormals(const std::vector<std::uint32_t>& indices, const std::vector<Point3D>& positions);
 
 }}
 

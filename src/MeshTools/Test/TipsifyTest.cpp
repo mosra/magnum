@@ -114,7 +114,7 @@ void TipsifyTest::buildAdjacency() {
 void TipsifyTest::tipsify() {
     MeshTools::tipsify(indices, vertexCount, 3);
 
-    CORRADE_COMPARE(indices, (vector<unsigned int>{
+    CORRADE_COMPARE(indices, (vector<uint32_t>{
         4, 1, 0,
         9, 5, 4,
         1, 4, 5,

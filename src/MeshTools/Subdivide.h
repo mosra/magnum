@@ -29,7 +29,7 @@ namespace Implementation {
 
 template<class Vertex, class Interpolator> class Subdivide {
     public:
-        inline Subdivide(std::vector<unsigned int>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
+        inline Subdivide(std::vector<std::uint32_t>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
 
         void operator()(Interpolator interpolator) {
             CORRADE_ASSERT(!(indices.size()%3), "MeshTools::subdivide(): index count is not divisible by 3!", );
@@ -40,7 +40,7 @@ template<class Vertex, class Interpolator> class Subdivide {
             /* Subdivide each face to four new */
             for(std::size_t i = 0; i != indexCount; i += 3) {
                 /* Interpolate each side */
-                unsigned int newVertices[3];
+                std::uint32_t newVertices[3];
                 for(int j = 0; j != 3; ++j)
                     newVertices[j] = addVertex(interpolator(vertices[indices[i+j]], vertices[indices[i+(j+1)%3]]));
 
@@ -66,15 +66,15 @@ template<class Vertex, class Interpolator> class Subdivide {
         }
 
     private:
-        std::vector<unsigned int>& indices;
+        std::vector<std::uint32_t>& indices;
         std::vector<Vertex>& vertices;
 
-        unsigned int addVertex(const Vertex& v) {
+        std::uint32_t addVertex(const Vertex& v) {
             vertices.push_back(v);
             return vertices.size()-1;
         }
 
-        void addFace(unsigned int first, unsigned int second, unsigned int third) {
+        void addFace(std::uint32_t first, std::uint32_t second, std::uint32_t third) {
             indices.push_back(first);
             indices.push_back(second);
             indices.push_back(third);
@@ -96,7 +96,7 @@ template<class Vertex, class Interpolator> class Subdivide {
 Goes through all triangle faces and subdivides them into four new. Cleaning
 duplicate vertices in the mesh is up to user.
 */
-template<class Vertex, class Interpolator> inline void subdivide(std::vector<unsigned int>& indices, std::vector<Vertex>& vertices, Interpolator interpolator) {
+template<class Vertex, class Interpolator> inline void subdivide(std::vector<std::uint32_t>& indices, std::vector<Vertex>& vertices, Interpolator interpolator) {
     Implementation::Subdivide<Vertex, Interpolator>(indices, vertices)(interpolator);
 }
 

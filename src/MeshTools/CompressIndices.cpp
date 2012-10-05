@@ -46,7 +46,7 @@ void CompressIndices::operator()(IndexedMesh* mesh, Buffer::Usage usage) const {
     delete[] data;
 }
 
-template<class IndexType> std::tuple<size_t, Type, char*> CompressIndices::Compressor::run(const std::vector<unsigned int>& indices) {
+template<class IndexType> std::tuple<size_t, Type, char*> CompressIndices::Compressor::run(const std::vector<uint32_t>& indices) {
     /* Create smallest possible version of index buffer */
     char* buffer = new char[indices.size()*sizeof(IndexType)];
     for(size_t i = 0; i != indices.size(); ++i) {

@@ -33,7 +33,7 @@ namespace Implementation {
 
 template<class Vertex, std::size_t vertexSize = Vertex::Size> class Clean {
     public:
-        inline Clean(std::vector<unsigned int>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
+        inline Clean(std::vector<std::uint32_t>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
 
         void operator()(typename Vertex::Type epsilon = TypeTraits<typename Vertex::Type>::epsilon()) {
             if(indices.empty()) return;
@@ -108,12 +108,12 @@ template<class Vertex, std::size_t vertexSize = Vertex::Size> class Clean {
         };
 
         struct HashedVertex {
-            unsigned int oldIndex, newIndex;
+            std::uint32_t oldIndex, newIndex;
 
-            HashedVertex(unsigned int oldIndex, unsigned int newIndex): oldIndex(oldIndex), newIndex(newIndex) {}
+            HashedVertex(std::uint32_t oldIndex, std::uint32_t newIndex): oldIndex(oldIndex), newIndex(newIndex) {}
         };
 
-        std::vector<unsigned int>& indices;
+        std::vector<std::uint32_t>& indices;
         std::vector<Vertex>& vertices;
 };
 
@@ -137,7 +137,7 @@ Removes duplicate vertices from the mesh.
 @todo Interpolate vertices, not collapse them to first in the cell
 @todo Ability to specify other attributes for interpolation
 */
-template<class Vertex, std::size_t vertexSize = Vertex::Size> inline void clean(std::vector<unsigned int>& indices, std::vector<Vertex>& vertices, typename Vertex::Type epsilon = TypeTraits<typename Vertex::Type>::epsilon()) {
+template<class Vertex, std::size_t vertexSize = Vertex::Size> inline void clean(std::vector<std::uint32_t>& indices, std::vector<Vertex>& vertices, typename Vertex::Type epsilon = TypeTraits<typename Vertex::Type>::epsilon()) {
     Implementation::Clean<Vertex, vertexSize>(indices, vertices)(epsilon);
 }
 

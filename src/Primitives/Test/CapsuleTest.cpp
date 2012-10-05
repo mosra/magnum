@@ -90,7 +90,7 @@ void CapsuleTest::withoutTextureCoords() {
         {0.0f, 1.0f, 0.0f}
     }), Container);
 
-    CORRADE_COMPARE_AS(*capsule.indices(), (vector<unsigned int>{
+    CORRADE_COMPARE_AS(*capsule.indices(), (vector<uint32_t>{
         0, 2, 1, 0, 3, 2, 0, 1, 3,
         1, 2, 5, 1, 5, 4, 2, 3, 6, 2, 6, 5, 3, 1, 4, 3, 4, 6,
         4, 5, 8, 4, 8, 7, 5, 6, 9, 5, 9, 8, 6, 4, 7, 6, 7, 9,
@@ -165,7 +165,7 @@ void CapsuleTest::withTextureCoords() {
         {0.5f, 1.0f}
     }), Container);
 
-    CORRADE_COMPARE_AS(*capsule.indices(), (vector<unsigned int>{
+    CORRADE_COMPARE_AS(*capsule.indices(), (vector<uint32_t>{
         0, 2, 1, 0, 3, 2, 0, 4, 3,
         1, 2, 6, 1, 6, 5, 2, 3, 7, 2, 7, 6, 3, 4, 8, 3, 8, 7,
         5, 6, 10, 5, 10, 9, 6, 7, 11, 6, 11, 10, 7, 8, 12, 7, 12, 11,

@@ -21,7 +21,7 @@ using namespace std;
 
 namespace Magnum { namespace MeshTools {
 
-void flipFaceWinding(vector<unsigned int>& indices) {
+void flipFaceWinding(vector<uint32_t>& indices) {
     CORRADE_ASSERT(!(indices.size()%3), "MeshTools::flipNormals(): index count is not divisible by 3!", );
 
     for(size_t i = 0; i != indices.size(); i += 3)

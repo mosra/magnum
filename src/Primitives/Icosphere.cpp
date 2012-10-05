@@ -21,7 +21,7 @@ using namespace std;
 
 namespace Magnum { namespace Primitives {
 
-Icosphere<0>::Icosphere(): MeshData3D("", Mesh::Primitive::Triangles, new vector<unsigned int>{
+Icosphere<0>::Icosphere(): MeshData3D("", Mesh::Primitive::Triangles, new vector<uint32_t>{
     1, 2, 6,
     1, 7, 2,
     3, 4, 5,
