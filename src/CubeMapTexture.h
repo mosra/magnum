@@ -103,7 +103,7 @@ class CubeMapTexture: public AbstractTexture {
         }
 
         /**
-         * @copydoc Texture::setSubData(GLint, const Math::Vector<Dimensions, GLint>&, Image*)
+         * @copydoc Texture::setSubData(GLint, const typename DimensionTraits<Dimensions, GLint>::VectorType&, Image*)
          * @param coordinate    Coordinate
          * @return Pointer to self (for method chaining)
          */

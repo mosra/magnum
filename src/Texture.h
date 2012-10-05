@@ -20,6 +20,7 @@
  */
 
 #include "AbstractTexture.h"
+#include "DimensionTraits.h"
 
 namespace Magnum {
 
@@ -167,7 +168,7 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          * 1D texture array (which is two-dimensional) with 1D images.
          * @see bind(), @fn_gl{TexSubImage1D}, @fn_gl{TexSubImage2D}, @fn_gl{TexSubImage3D}
          */
-        template<class Image> inline Texture<Dimensions>* setSubData(GLint mipLevel, const Math::Vector<Dimensions, GLint>& offset, Image* image) {
+        template<class Image> inline Texture<Dimensions>* setSubData(GLint mipLevel, const typename DimensionTraits<Dimensions, GLint>::VectorType& offset, Image* image) {
             bind();
             DataHelper<Dimensions>::setSub(_target, mipLevel, offset, image);
             return this;

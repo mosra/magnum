@@ -19,8 +19,9 @@
  * @brief Class Magnum::Trade::ImageData
  */
 
-#include "Math/Vector.h"
+#include "Math/Vector3.h"
 #include "AbstractImage.h"
+#include "DimensionTraits.h"
 #include "TypeTraits.h"
 
 namespace Magnum { namespace Trade {
@@ -46,7 +47,7 @@ template<size_t dimensions> class ImageData: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        template<class T> inline ImageData(const std::string& name, const Math::Vector<Dimensions, GLsizei>& size, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _name(name), _size(size), _data(reinterpret_cast<char*>(data)) {}
+        template<class T> inline ImageData(const std::string& name, const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _name(name), _size(size), _data(reinterpret_cast<char*>(data)) {}
 
         /**
          * @brief Constructor
@@ -59,7 +60,7 @@ template<size_t dimensions> class ImageData: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        inline ImageData(const std::string& name, const Math::Vector<Dimensions, GLsizei>& size, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _name(name), _size(size), _data(reinterpret_cast<char*>(data)) {}
+        inline ImageData(const std::string& name, const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _name(name), _size(size), _data(reinterpret_cast<char*>(data)) {}
 
         /** @brief Destructor */
         inline ~ImageData() { delete[] _data; }
@@ -68,7 +69,7 @@ template<size_t dimensions> class ImageData: public AbstractImage {
         inline std::string name() const { return _name; }
 
         /** @brief %Image size */
-        inline constexpr const Math::Vector<Dimensions, GLsizei>& size() const { return _size; }
+        inline constexpr typename DimensionTraits<Dimensions, GLsizei>::VectorType& size() const { return _size; }
 
         /** @brief Pointer to raw data */
         inline void* data() { return _data; }

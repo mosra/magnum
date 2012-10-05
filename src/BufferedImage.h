@@ -19,9 +19,10 @@
  * @brief Class Magnum::BufferedImage, typedef Magnum::BufferedImage1D, Magnum::BufferedImage2D, Magnum::BufferedImage3D
  */
 
-#include "Math/Vector.h"
+#include "Math/Vector3.h"
 #include "AbstractImage.h"
 #include "Buffer.h"
+#include "DimensionTraits.h"
 #include "TypeTraits.h"
 
 namespace Magnum {
@@ -50,7 +51,7 @@ template<size_t dimensions> class BufferedImage: public AbstractImage {
         inline BufferedImage(Components components, ComponentType type): AbstractImage(components, type), _buffer(Buffer::Target::PixelPack) {}
 
         /** @brief %Image size */
-        inline constexpr Math::Vector<Dimensions, GLsizei> size() const { return _size; }
+        inline constexpr typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
 
         /**
          * @brief Data
@@ -82,7 +83,7 @@ template<size_t dimensions> class BufferedImage: public AbstractImage {
          *
          * @see setData(const Math::Vector<Dimensions, GLsizei>&, Components, ComponentType, const GLvoid*, Buffer::Usage)
          */
-        template<class T> inline void setData(const Math::Vector<Dimensions, GLsizei>& size, Components components, const T* data, Buffer::Usage usage) {
+        template<class T> inline void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, const T* data, Buffer::Usage usage) {
             setData(size, components, TypeTraits<T>::imageType(), data, usage);
         }
 
@@ -99,7 +100,7 @@ template<size_t dimensions> class BufferedImage: public AbstractImage {
          *
          * @see Buffer::setData()
          */
-        void setData(const Math::Vector<Dimensions, GLsizei>& size, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage);
+        void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage);
 
     protected:
         Math::Vector<Dimensions, GLsizei> _size;    /**< @brief %Image size */

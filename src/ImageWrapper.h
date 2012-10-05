@@ -19,8 +19,9 @@
  * @brief Class Magnum::ImageWrapper
  */
 
-#include "Math/Vector.h"
+#include "Math/Vector3.h"
 #include "AbstractImage.h"
+#include "DimensionTraits.h"
 #include "TypeTraits.h"
 
 namespace Magnum {
@@ -53,7 +54,7 @@ template<size_t dimensions> class ImageWrapper: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        template<class T> inline ImageWrapper(const Math::Vector<Dimensions, GLsizei>& size, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _size(size), _data(data) {}
+        template<class T> inline ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _size(size), _data(data) {}
 
         /**
          * @brief Constructor
@@ -65,7 +66,7 @@ template<size_t dimensions> class ImageWrapper: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        inline ImageWrapper(const Math::Vector<Dimensions, GLsizei>& size, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
+        inline ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
 
         /**
          * @brief Constructor
@@ -76,10 +77,10 @@ template<size_t dimensions> class ImageWrapper: public AbstractImage {
          * Dimensions and data pointer are set to zero, call setData() to fill
          * the image with data.
          */
-        inline ImageWrapper(const Math::Vector<Dimensions, GLsizei>& size, Components components, ComponentType type): AbstractImage(components, type), _size(size), _data(nullptr) {}
+        inline ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type): AbstractImage(components, type), _size(size), _data(nullptr) {}
 
         /** @brief %Image size */
-        inline constexpr const Math::Vector<Dimensions, GLsizei>& size() const { return _size; }
+        inline constexpr typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
 
         /** @brief Pointer to raw data */
         inline void* data() { return _data; }

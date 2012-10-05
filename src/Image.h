@@ -19,8 +19,9 @@
  * @brief Class Magnum::Image, typedef Magnum::Image1D, Magnum::Image2D, Magnum::Image3D
  */
 
-#include "Math/Vector.h"
+#include "Math/Vector3.h"
 #include "AbstractImage.h"
+#include "DimensionTraits.h"
 #include "TypeTraits.h"
 
 namespace Magnum {
@@ -47,7 +48,7 @@ template<size_t dimensions> class Image: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        template<class T> inline Image(const Math::Vector<Dimensions, GLsizei>& size, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _size(size), _data(data) {}
+        template<class T> inline Image(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _size(size), _data(data) {}
 
         /**
          * @brief Constructor
@@ -59,7 +60,7 @@ template<size_t dimensions> class Image: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        inline Image(const Math::Vector<Dimensions, GLsizei>& size, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
+        inline Image(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
 
         /**
          * @brief Constructor
@@ -75,7 +76,7 @@ template<size_t dimensions> class Image: public AbstractImage {
         inline ~Image() { delete[] _data; }
 
         /** @brief %Image size */
-        inline constexpr const Math::Vector<Dimensions, GLsizei>& size() const { return _size; }
+        inline constexpr typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
 
         /** @brief Pointer to raw data */
         inline void* data() { return _data; }
@@ -91,7 +92,7 @@ template<size_t dimensions> class Image: public AbstractImage {
          * Deletes previous data and replaces them with new. Note that the
          * data are not copied, but they are deleted on destruction.
          */
-        template<class T> inline void setData(const Math::Vector<Dimensions, GLsizei>& size, Components components, T* data) {
+        template<class T> inline void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, T* data) {
             setData(size, components, TypeTraits<T>::imageType(), data);
         }
 
@@ -105,7 +106,7 @@ template<size_t dimensions> class Image: public AbstractImage {
          * Deletes previous data and replaces them with new. Note that the
          * data are not copied, but they are deleted on destruction.
          */
-        void setData(const Math::Vector<Dimensions, GLsizei>& size, Components components, ComponentType type, GLvoid* data);
+        void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, GLvoid* data);
 
     protected:
         Math::Vector<Dimensions, GLsizei> _size;    /**< @brief %Image size */
