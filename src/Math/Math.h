@@ -37,7 +37,7 @@ namespace Magnum { namespace Math {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    template<size_t exponent> struct Pow {
+    template<std::uint32_t exponent> struct Pow {
         template<class T> inline constexpr T operator()(T base) const {
             return base*Pow<exponent-1>()(base);
         }
@@ -53,7 +53,7 @@ namespace Implementation {
  *
  * Returns integral power of base to the exponent.
  */
-template<size_t exponent, class T> inline constexpr T pow(T base) {
+template<std::uint32_t exponent, class T> inline constexpr T pow(T base) {
     return Implementation::Pow<exponent>()(base);
 }
 
@@ -62,7 +62,7 @@ template<size_t exponent, class T> inline constexpr T pow(T base) {
  *
  * Returns integral logarithm of given number with given base.
  */
-size_t MAGNUM_EXPORT log(size_t base, size_t number);
+std::uint32_t MAGNUM_EXPORT log(std::uint32_t base, std::uint32_t number);
 
 /**
 @brief Normalize floating-point value

@@ -143,14 +143,14 @@ template<class Base> struct SizeBasedCall: public Base {
 Useful mainly for computing template parameter value, e.g. in conjunction with
 SizeTraits class.
 */
-template<size_t base, size_t exponent> struct Pow {
+template<std::uint32_t base, std::uint32_t exponent> struct Pow {
     /** @brief Value of the power */
-    enum { value = base*Pow<base, exponent-1>::value };
+    enum: std::uint32_t { value = base*Pow<base, exponent-1>::value };
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<size_t base> struct Pow<base, 0> {
-    enum { value = 1 };
+template<std::uint32_t base> struct Pow<base, 0> {
+    enum: std::uint32_t { value = 1 };
 };
 #endif
 
@@ -162,15 +162,15 @@ template<size_t base> struct Pow<base, 0> {
 Useful mainly for computing template parameter value, e.g. in conjunction with
 SizeTraits class.
 */
-template<size_t base, size_t number> struct Log {
+template<std::uint32_t base, std::uint32_t number> struct Log {
     /** @brief Value of the logarithm */
-    enum { value = 1+Log<base, number/base>::value };
+    enum: std::uint32_t { value = 1+Log<base, number/base>::value };
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<size_t base> struct Log<base, 1>: public Log<base, 0> {};
-template<size_t base> struct Log<base, 0> {
-    enum { value = 0 };
+template<std::uint32_t base> struct Log<base, 1>: public Log<base, 0> {};
+template<std::uint32_t base> struct Log<base, 0> {
+    enum: std::uint32_t { value = 0 };
 };
 #endif
 
