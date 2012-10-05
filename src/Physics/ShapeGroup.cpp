@@ -17,18 +17,18 @@
 
 namespace Magnum { namespace Physics {
 
-template<size_t dimensions> ShapeGroup<dimensions>::ShapeGroup(ShapeGroup<dimensions>&& other): operation(other.operation), a(other.a), b(other.b) {
+template<std::uint8_t dimensions> ShapeGroup<dimensions>::ShapeGroup(ShapeGroup<dimensions>&& other): operation(other.operation), a(other.a), b(other.b) {
     other.operation = Implementation::GroupOperation::AlwaysFalse;
     other.a = nullptr;
     other.b = nullptr;
 }
 
-template<size_t dimensions> ShapeGroup<dimensions>::~ShapeGroup() {
+template<std::uint8_t dimensions> ShapeGroup<dimensions>::~ShapeGroup() {
     if(!(operation & Implementation::GroupOperation::RefA)) delete a;
     if(!(operation & Implementation::GroupOperation::RefB)) delete b;
 }
 
-template<size_t dimensions> ShapeGroup<dimensions>& ShapeGroup<dimensions>::operator=(ShapeGroup<dimensions>&& other) {
+template<std::uint8_t dimensions> ShapeGroup<dimensions>& ShapeGroup<dimensions>::operator=(ShapeGroup<dimensions>&& other) {
     if(!(operation & Implementation::GroupOperation::RefA)) delete a;
     if(!(operation & Implementation::GroupOperation::RefB)) delete b;
 
@@ -43,12 +43,12 @@ template<size_t dimensions> ShapeGroup<dimensions>& ShapeGroup<dimensions>::oper
     return *this;
 }
 
-template<size_t dimensions> void ShapeGroup<dimensions>::applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
+template<std::uint8_t dimensions> void ShapeGroup<dimensions>::applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
     if(a) a->applyTransformation(transformation);
     if(b) b->applyTransformation(transformation);
 }
 
-template<size_t dimensions> bool ShapeGroup<dimensions>::collides(const AbstractShape<dimensions>* other) const {
+template<std::uint8_t dimensions> bool ShapeGroup<dimensions>::collides(const AbstractShape<dimensions>* other) const {
     switch(operation & ~Implementation::GroupOperation::RefAB) {
         case Implementation::GroupOperation::And: return a->collides(other) && b->collides(other);
         case Implementation::GroupOperation::Or: return a->collides(other) || b->collides(other);

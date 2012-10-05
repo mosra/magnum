@@ -28,7 +28,7 @@ using namespace Magnum::Math::Geometry;
 namespace Magnum { namespace Physics {
 
 namespace {
-    template<size_t dimensions> static typename DimensionTraits<dimensions, GLfloat>::VectorType unitVector();
+    template<std::uint8_t dimensions> static typename DimensionTraits<dimensions, GLfloat>::VectorType unitVector();
 
     template<> inline Vector2 unitVector<2>() {
         return Vector2(1/Math::Constants<float>::sqrt2());
@@ -39,13 +39,13 @@ namespace {
     }
 }
 
-template<size_t dimensions> void Sphere<dimensions>::applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
+template<std::uint8_t dimensions> void Sphere<dimensions>::applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
     _transformedPosition = (transformation*typename DimensionTraits<dimensions, GLfloat>::PointType(_position)).vector();
     float scaling = (transformation.rotationScaling()*unitVector<dimensions>()).length();
     _transformedRadius = scaling*_radius;
 }
 
-template<size_t dimensions> bool Sphere<dimensions>::collides(const AbstractShape<dimensions>* other) const {
+template<std::uint8_t dimensions> bool Sphere<dimensions>::collides(const AbstractShape<dimensions>* other) const {
     if(other->type() == AbstractShape<dimensions>::Type::Point)
         return *this % *static_cast<const Point<dimensions>*>(other);
     if(other->type() == AbstractShape<dimensions>::Type::Line)
@@ -58,22 +58,22 @@ template<size_t dimensions> bool Sphere<dimensions>::collides(const AbstractShap
     return AbstractShape<dimensions>::collides(other);
 }
 
-template<size_t dimensions> bool Sphere<dimensions>::operator%(const Point<dimensions>& other) const {
+template<std::uint8_t dimensions> bool Sphere<dimensions>::operator%(const Point<dimensions>& other) const {
     return (other.transformedPosition()-transformedPosition()).dot() <
         Math::pow<2>(transformedRadius());
 }
 
-template<size_t dimensions> bool Sphere<dimensions>::operator%(const Line<dimensions>& other) const {
+template<std::uint8_t dimensions> bool Sphere<dimensions>::operator%(const Line<dimensions>& other) const {
     return Distance::linePointSquared(other.transformedA(), other.transformedB(), transformedPosition()) <
         Math::pow<2>(transformedRadius());
 }
 
-template<size_t dimensions> bool Sphere<dimensions>::operator%(const LineSegment<dimensions>& other) const {
+template<std::uint8_t dimensions> bool Sphere<dimensions>::operator%(const LineSegment<dimensions>& other) const {
     return Distance::lineSegmentPointSquared(other.transformedA(), other.transformedB(), transformedPosition()) <
         Math::pow<2>(transformedRadius());
 }
 
-template<size_t dimensions> bool Sphere<dimensions>::operator%(const Sphere<dimensions>& other) const {
+template<std::uint8_t dimensions> bool Sphere<dimensions>::operator%(const Sphere<dimensions>& other) const {
     return (other.transformedPosition()-transformedPosition()).dot() <
         Math::pow<2>(transformedRadius()+other.transformedRadius());
 }

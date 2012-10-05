@@ -29,7 +29,7 @@ namespace Magnum { namespace Physics {
 
 @see Point2D, Point3D
 */
-template<size_t dimensions> class PHYSICS_EXPORT Point: public AbstractShape<dimensions> {
+template<std::uint8_t dimensions> class PHYSICS_EXPORT Point: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
         inline Point(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position): _position(position), _transformedPosition(position) {}

@@ -28,7 +28,7 @@ namespace Magnum { namespace SceneGraph {
 
 @see Scene2D, Scene3D
 */
-template<size_t dimensions> class SCENEGRAPH_EXPORT Scene: public AbstractObject<dimensions>::ObjectType {
+template<std::uint8_t dimensions> class SCENEGRAPH_EXPORT Scene: public AbstractObject<dimensions>::ObjectType {
     public:
         /** @copydoc AbstractObject::isScene() */
         inline bool isScene() const { return true; }

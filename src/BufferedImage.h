@@ -36,9 +36,9 @@ Trade::ImageData.
 @see BufferedImage1D, BufferedImage2D, BufferedImage3D, Buffer
 @requires_gles30 (no extension providing this functionality)
 */
-template<size_t dimensions> class BufferedImage: public AbstractImage {
+template<std::uint8_t dimensions> class BufferedImage: public AbstractImage {
     public:
-        const static size_t Dimensions = dimensions;   /**< @brief Image dimension count */
+        const static std::uint8_t Dimensions = dimensions; /**< @brief %Image dimension count */
 
         /**
          * @brief Constructor

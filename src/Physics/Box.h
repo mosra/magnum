@@ -30,7 +30,7 @@ namespace Magnum { namespace Physics {
 
 @see Box2D, Box3D
 */
-template<size_t dimensions> class PHYSICS_EXPORT Box: public AbstractShape<dimensions> {
+template<std::uint8_t dimensions> class PHYSICS_EXPORT Box: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
         inline Box(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation): _transformation(transformation), _transformedTransformation(transformation) {}

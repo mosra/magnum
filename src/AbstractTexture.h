@@ -19,6 +19,8 @@
  * @brief Class Magnum::AbstractTexture
  */
 
+#include <cstdint>
+
 #include "Magnum.h"
 #include "Color.h"
 
@@ -660,7 +662,7 @@ class MAGNUM_EXPORT AbstractTexture {
 
     protected:
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<size_t textureDimensions> struct DataHelper {};
+        template<std::uint8_t textureDimensions> struct DataHelper {};
         #endif
 
         const GLenum _target;       /**< @brief Target */

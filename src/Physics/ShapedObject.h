@@ -25,15 +25,15 @@
 
 namespace Magnum { namespace Physics {
 
-template<size_t> class ShapedObjectGroup;
-template<size_t> class AbstractShape;
+template<std::uint8_t> class ShapedObjectGroup;
+template<std::uint8_t> class AbstractShape;
 
 /**
 @brief Object with assigned shape
 
 @see ShapedObject2D, ShapedObject3D
 */
-template<size_t dimensions> class PHYSICS_EXPORT ShapedObject: public SceneGraph::AbstractObject<dimensions>::ObjectType {
+template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapedObject: public SceneGraph::AbstractObject<dimensions>::ObjectType {
     public:
         /**
          * @brief Constructor

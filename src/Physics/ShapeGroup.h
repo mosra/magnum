@@ -55,7 +55,7 @@ Result of logical operations on shapes.
 See @ref collision-detection for brief introduction.
 @see ShapeGroup2D, ShapeGroup3D
 */
-template<size_t dimensions> class PHYSICS_EXPORT ShapeGroup: public AbstractShape<dimensions> {
+template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapeGroup: public AbstractShape<dimensions> {
     #ifndef DOXYGEN_GENERATING_OUTPUT
 //     template<class T> friend constexpr operator~(const T& a) -> enableIfIsBaseType;
 //     template<class T> friend constexpr operator~(T&& a) -> enableIfIsBaseType;
@@ -173,7 +173,7 @@ is used here, so this operation can be used for providing simplified shape
 version, because collision with @p b is computed only if @p a collides.
 See @ref collision-detection-shape-simplification for an example.
 */
-template<size_t dimensions, class T, class U> inline constexpr ShapeGroup<dimensions> operator&&(T a, U b);
+template<std::uint8_t dimensions, class T, class U> inline constexpr ShapeGroup<dimensions> operator&&(T a, U b);
 
 /** @relates ShapeGroup
 @brief Logical OR of two shapes
@@ -182,7 +182,7 @@ template<size_t dimensions, class T, class U> inline constexpr ShapeGroup<dimens
 is used, so if collision with @p a is detected, collision with @p b is not
 computed.
 */
-template<size_t dimensions, class T, class U> inline constexpr ShapeGroup<dimensions> operator||(T a, U b);
+template<std::uint8_t dimensions, class T, class U> inline constexpr ShapeGroup<dimensions> operator||(T a, U b);
 #else
 #define op(type, char)                                                      \
 template<class T, class U> inline constexpr auto operator char(const T& a, const U& b) -> enableIfAreBaseType { \

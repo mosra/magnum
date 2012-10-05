@@ -36,8 +36,6 @@ namespace Implementation {
         NotPreserved, Extend, Clip
     };
 
-    template<size_t dimensions> class Camera {};
-
     template<class MatrixType> MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Vector2& projectionScale, const Math::Vector2<GLsizei>& viewport);
 
     /* These templates are instantiated in source file */
@@ -49,7 +47,7 @@ namespace Implementation {
 /**
 @brief %Camera object
  */
-template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractCamera: public AbstractObject<dimensions>::ObjectType {
+template<std::uint8_t dimensions> class SCENEGRAPH_EXPORT AbstractCamera: public AbstractObject<dimensions>::ObjectType {
     public:
         /**
          * @brief Aspect ratio policy
@@ -160,7 +158,7 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractCamera: public Abstr
         Math::Vector2<GLsizei> _viewport;
 };
 
-template<size_t dimensions> inline AbstractCamera<dimensions>::~AbstractCamera() {}
+template<std::uint8_t dimensions> inline AbstractCamera<dimensions>::~AbstractCamera() {}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* These templates are instantiated in source file */
@@ -168,6 +166,8 @@ extern template class SCENEGRAPH_EXPORT AbstractCamera<2>;
 extern template class SCENEGRAPH_EXPORT AbstractCamera<3>;
 
 namespace Implementation {
+    template<std::uint8_t dimensions> class Camera {};
+
     template<> class Camera<2> {
         public:
             inline constexpr static Matrix3 aspectRatioScale(const Vector2& scale) {

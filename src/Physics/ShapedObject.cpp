@@ -27,22 +27,22 @@ using namespace std;
 
 namespace Magnum { namespace Physics {
 
-template<size_t dimensions> ShapedObject<dimensions>::ShapedObject(ShapedObjectGroup<dimensions>* group, typename SceneGraph::AbstractObject<dimensions>::ObjectType* parent): SceneGraph::AbstractObject<dimensions>::ObjectType(parent), group(group), _shape(nullptr) {
+template<uint8_t dimensions> ShapedObject<dimensions>::ShapedObject(ShapedObjectGroup<dimensions>* group, typename SceneGraph::AbstractObject<dimensions>::ObjectType* parent): SceneGraph::AbstractObject<dimensions>::ObjectType(parent), group(group), _shape(nullptr) {
     group->objects.push_back(this);
 }
 
-template<size_t dimensions> ShapedObject<dimensions>::~ShapedObject() {
+template<uint8_t dimensions> ShapedObject<dimensions>::~ShapedObject() {
     group->objects.erase(find(group->objects.begin(), group->objects.end(), this));
     delete _shape;
 }
 
-template<size_t dimensions> void ShapedObject<dimensions>::setDirty() {
+template<uint8_t dimensions> void ShapedObject<dimensions>::setDirty() {
     SceneGraph::AbstractObject<dimensions>::ObjectType::setDirty();
 
     group->setDirty();
 }
 
-template<size_t dimensions> void ShapedObject<dimensions>::clean(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& absoluteTransformation) {
+template<uint8_t dimensions> void ShapedObject<dimensions>::clean(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& absoluteTransformation) {
     SceneGraph::AbstractObject<dimensions>::ObjectType::clean(absoluteTransformation);
 
     if(_shape) _shape->applyTransformation(absoluteTransformation);

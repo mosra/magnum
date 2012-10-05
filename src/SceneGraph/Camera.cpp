@@ -45,26 +45,26 @@ template Matrix4 aspectRatioFix<Matrix4>(AspectRatioPolicy, const Vector2&, cons
 }
 #endif
 
-template<size_t dimensions> AbstractCamera<dimensions>::AbstractCamera(typename AbstractObject<dimensions>::ObjectType* parent): AbstractObject<dimensions>::ObjectType(parent), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {}
+template<std::uint8_t dimensions> AbstractCamera<dimensions>::AbstractCamera(typename AbstractObject<dimensions>::ObjectType* parent): AbstractObject<dimensions>::ObjectType(parent), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {}
 
-template<size_t dimensions> typename AbstractObject<dimensions>::CameraType* AbstractCamera<dimensions>::setAspectRatioPolicy(AspectRatioPolicy policy) {
+template<std::uint8_t dimensions> typename AbstractObject<dimensions>::CameraType* AbstractCamera<dimensions>::setAspectRatioPolicy(AspectRatioPolicy policy) {
     _aspectRatioPolicy = policy;
     fixAspectRatio();
     return static_cast<typename AbstractObject<dimensions>::CameraType*>(this);
 }
 
-template<size_t dimensions> void AbstractCamera<dimensions>::setViewport(const Math::Vector2<GLsizei>& size) {
+template<std::uint8_t dimensions> void AbstractCamera<dimensions>::setViewport(const Math::Vector2<GLsizei>& size) {
     _viewport = size;
     fixAspectRatio();
 }
 
-template<size_t dimensions> void AbstractCamera<dimensions>::clean(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& absoluteTransformation) {
+template<std::uint8_t dimensions> void AbstractCamera<dimensions>::clean(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& absoluteTransformation) {
     AbstractObject<dimensions>::ObjectType::clean(absoluteTransformation);
 
     _cameraMatrix = absoluteTransformation.inverted();
 }
 
-template<size_t dimensions> void AbstractCamera<dimensions>::draw() {
+template<std::uint8_t dimensions> void AbstractCamera<dimensions>::draw() {
     typename AbstractObject<dimensions>::SceneType* s = this->scene();
     CORRADE_ASSERT(s, "Camera: cannot draw without camera attached to scene", );
 
@@ -72,7 +72,7 @@ template<size_t dimensions> void AbstractCamera<dimensions>::draw() {
     drawChildren(s, cameraMatrix());
 }
 
-template<size_t dimensions> void AbstractCamera<dimensions>::drawChildren(typename AbstractObject<dimensions>::ObjectType* object, const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformationMatrix) {
+template<std::uint8_t dimensions> void AbstractCamera<dimensions>::drawChildren(typename AbstractObject<dimensions>::ObjectType* object, const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformationMatrix) {
     for(typename AbstractObject<dimensions>::ObjectType* i = object->firstChild(); i; i = i->nextSibling()) {
         /* Transformation matrix for the object */
         typename DimensionTraits<dimensions, GLfloat>::MatrixType matrix = transformationMatrix*i->transformation();

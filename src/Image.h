@@ -34,9 +34,9 @@ ImageWrapper, BufferedImage, which stores image data in GPU memory, or for
 example with Trade::ImageData.
 @see Image1D, Image2D, Image3D
 */
-template<size_t dimensions> class Image: public AbstractImage {
+template<std::uint8_t dimensions> class Image: public AbstractImage {
     public:
-        const static size_t Dimensions = dimensions;   /**< @brief Image dimension count */
+        const static std::uint8_t Dimensions = dimensions; /**< @brief %Image dimension count */
 
         /**
          * @brief Constructor

@@ -25,7 +25,7 @@ using namespace Magnum::Math;
 
 namespace Magnum { namespace SceneGraph {
 
-template<size_t dimensions> typename AbstractObject<dimensions>::ObjectType* AbstractObject<dimensions>::setParent(ObjectType* parent) {
+template<std::uint8_t dimensions> typename AbstractObject<dimensions>::ObjectType* AbstractObject<dimensions>::setParent(ObjectType* parent) {
     /* Skip if nothing to do or this is scene */
     if(this->parent() == parent || isScene()) return static_cast<ObjectType*>(this);
 
@@ -49,7 +49,7 @@ template<size_t dimensions> typename AbstractObject<dimensions>::ObjectType* Abs
     return static_cast<ObjectType*>(this);
 }
 
-template<size_t dimensions> typename DimensionTraits<dimensions, GLfloat>::MatrixType AbstractObject<dimensions>::absoluteTransformation(CameraType* camera) {
+template<std::uint8_t dimensions> typename DimensionTraits<dimensions, GLfloat>::MatrixType AbstractObject<dimensions>::absoluteTransformation(CameraType* camera) {
     /* Shortcut for absolute transformation of camera relative to itself */
     if(camera == this) return typename DimensionTraits<dimensions, GLfloat>::MatrixType();
 
@@ -77,7 +77,7 @@ template<size_t dimensions> typename DimensionTraits<dimensions, GLfloat>::Matri
     return t;
 }
 
-template<size_t dimensions> typename AbstractObject<dimensions>::SceneType* AbstractObject<dimensions>::scene() {
+template<std::uint8_t dimensions> typename AbstractObject<dimensions>::SceneType* AbstractObject<dimensions>::scene() {
     /* Goes up the family tree until it finds object which is parent of itself
        (that's the scene) */
     ObjectType* p = parent();
@@ -89,7 +89,7 @@ template<size_t dimensions> typename AbstractObject<dimensions>::SceneType* Abst
     return nullptr;
 }
 
-template<size_t dimensions> typename AbstractObject<dimensions>::ObjectType* AbstractObject<dimensions>::setTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
+template<std::uint8_t dimensions> typename AbstractObject<dimensions>::ObjectType* AbstractObject<dimensions>::setTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
     /* Setting transformation is forbidden for the scene */
     /** @todo Assert for this? */
     if(isScene()) return static_cast<ObjectType*>(this);
@@ -99,7 +99,7 @@ template<size_t dimensions> typename AbstractObject<dimensions>::ObjectType* Abs
     return static_cast<ObjectType*>(this);
 }
 
-template<size_t dimensions> void AbstractObject<dimensions>::setDirty() {
+template<std::uint8_t dimensions> void AbstractObject<dimensions>::setDirty() {
     /* The object (and all its children) are already dirty, nothing to do */
     if(dirty) return;
 
@@ -110,7 +110,7 @@ template<size_t dimensions> void AbstractObject<dimensions>::setDirty() {
         i->setDirty();
 }
 
-template<size_t dimensions> void AbstractObject<dimensions>::setClean() {
+template<std::uint8_t dimensions> void AbstractObject<dimensions>::setClean() {
     /* The object (and all its parents) are already clean, nothing to do */
     if(!dirty) return;
 

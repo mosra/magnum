@@ -17,7 +17,7 @@
 
 namespace Magnum {
 
-template<size_t dimensions> void BufferedImage<dimensions>::setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage) {
+template<std::uint8_t dimensions> void BufferedImage<dimensions>::setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage) {
     _components = components;
     _type = type;
     _size = size;

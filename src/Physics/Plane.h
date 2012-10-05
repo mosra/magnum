@@ -24,9 +24,9 @@
 
 namespace Magnum { namespace Physics {
 
-template<size_t> class Line;
+template<std::uint8_t> class Line;
 typedef Line<3> Line3D;
-template<size_t> class LineSegment;
+template<std::uint8_t> class LineSegment;
 typedef LineSegment<3> LineSegment3D;
 
 /** @brief Infinite plane, defined by position and normal (3D only) */

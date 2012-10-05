@@ -32,9 +32,9 @@ namespace Magnum { namespace Trade {
 Provides access to image data and additional information about data type and
 dimensions. Can be used in the same situations as Image and BufferedImage.
 */
-template<size_t dimensions> class ImageData: public AbstractImage {
+template<std::uint8_t dimensions> class ImageData: public AbstractImage {
     public:
-        const static size_t Dimensions = dimensions;   /**< @brief %Image dimension count */
+        const static std::uint8_t Dimensions = dimensions; /**< @brief %Image dimension count */
 
         /**
          * @brief Constructor

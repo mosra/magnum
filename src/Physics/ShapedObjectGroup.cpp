@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Physics {
 
-template<size_t dimensions> void ShapedObjectGroup<dimensions>::setClean() {
+template<std::uint8_t dimensions> void ShapedObjectGroup<dimensions>::setClean() {
     for(ShapedObject<dimensions>* object: objects)
         if(object->isDirty()) object->setClean();
 

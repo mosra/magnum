@@ -28,7 +28,7 @@ namespace Magnum { namespace Physics {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    template<size_t dimensions> struct ShapeDimensionTraits {};
+    template<std::uint8_t dimensions> struct ShapeDimensionTraits {};
 
     template<> struct ShapeDimensionTraits<2> {
         enum class Type {
@@ -65,10 +65,10 @@ namespace Implementation {
 See @ref collision-detection for brief introduction.
 @see AbstractShape2D, AbstractShape3D
 */
-template<size_t dimensions> class PHYSICS_EXPORT AbstractShape {
+template<std::uint8_t dimensions> class PHYSICS_EXPORT AbstractShape {
     public:
         /** @brief Dimension count */
-        static const size_t Dimensions = dimensions;
+        static const std::uint8_t Dimensions = dimensions;
 
         /**
          * @brief Shape type

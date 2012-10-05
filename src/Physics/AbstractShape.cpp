@@ -17,7 +17,7 @@
 
 namespace Magnum { namespace Physics {
 
-template<size_t dimensions> bool AbstractShape<dimensions>::collides(const AbstractShape* other) const {
+template<std::uint8_t dimensions> bool AbstractShape<dimensions>::collides(const AbstractShape* other) const {
     /* Operate only with simpler types than this */
     if(static_cast<int>(other->type()) > static_cast<int>(type()))
         return other->collides(this);

@@ -34,13 +34,13 @@ class Camera2D;
 class Camera3D;
 class Object2D;
 class Object3D;
-template<size_t dimensions> class Scene;
+template<std::uint8_t dimensions> class Scene;
 typedef Scene<2> Scene2D;
 typedef Scene<3> Scene3D;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    template<size_t dimensions> struct ObjectDimensionTraits {};
+    template<std::uint8_t dimensions> struct ObjectDimensionTraits {};
 
     template<> struct ObjectDimensionTraits<2> {
         typedef Object2D ObjectType;
@@ -72,7 +72,7 @@ namespace Implementation {
 @todo Transform transformation when changing parent, so the object stays in
 place.
  */
-template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractObject: public Corrade::Containers::LinkedList<typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType>, public Corrade::Containers::LinkedListItem<typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType, typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType> {
+template<std::uint8_t dimensions> class SCENEGRAPH_EXPORT AbstractObject: public Corrade::Containers::LinkedList<typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType>, public Corrade::Containers::LinkedListItem<typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType, typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType> {
     #ifndef DOXYGEN_GENERATING_OUTPUT
     AbstractObject(const AbstractObject<dimensions>& other) = delete;
     AbstractObject(AbstractObject<dimensions>&& other) = delete;
@@ -81,7 +81,7 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractObject: public Corra
     #endif
 
     public:
-        static const size_t Dimensions = dimensions; /**< @brief %Object dimension count */
+        static const std::uint8_t Dimensions = dimensions; /**< @brief %Object dimension count */
 
         /** @brief %Object type for given dimension count */
         typedef typename Implementation::ObjectDimensionTraits<Dimensions>::ObjectType ObjectType;
@@ -306,11 +306,11 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractObject: public Corra
         bool dirty;
 };
 
-template<size_t dimensions> inline AbstractObject<dimensions>::~AbstractObject() {}
+template<std::uint8_t dimensions> inline AbstractObject<dimensions>::~AbstractObject() {}
 
 /* Implementations for inline functions with unused parameters */
-template<size_t dimensions> inline void AbstractObject<dimensions>::draw(const typename DimensionTraits<dimensions, GLfloat>::MatrixType&, CameraType*) {}
-template<size_t dimensions> inline void AbstractObject<dimensions>::clean(const typename DimensionTraits<dimensions, GLfloat>::MatrixType&) { dirty = false; }
+template<std::uint8_t dimensions> inline void AbstractObject<dimensions>::draw(const typename DimensionTraits<dimensions, GLfloat>::MatrixType&, CameraType*) {}
+template<std::uint8_t dimensions> inline void AbstractObject<dimensions>::clean(const typename DimensionTraits<dimensions, GLfloat>::MatrixType&) { dirty = false; }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* These templates are instantiated in source file */

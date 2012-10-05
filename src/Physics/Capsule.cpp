@@ -27,14 +27,14 @@ using namespace Magnum::Math::Geometry;
 
 namespace Magnum { namespace Physics {
 
-template<size_t dimensions> void Capsule<dimensions>::applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
+template<std::uint8_t dimensions> void Capsule<dimensions>::applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
     _transformedA = (transformation*typename DimensionTraits<dimensions, GLfloat>::PointType(_a)).vector();
     _transformedB = (transformation*typename DimensionTraits<dimensions, GLfloat>::PointType(_b)).vector();
     float scaling = (transformation.rotationScaling()*typename DimensionTraits<dimensions, GLfloat>::VectorType(1/Math::Constants<float>::sqrt3())).length();
     _transformedRadius = scaling*_radius;
 }
 
-template<size_t dimensions> bool Capsule<dimensions>::collides(const AbstractShape<dimensions>* other) const {
+template<std::uint8_t dimensions> bool Capsule<dimensions>::collides(const AbstractShape<dimensions>* other) const {
     if(other->type() == AbstractShape<dimensions>::Type::Point)
         return *this % *static_cast<const Point<dimensions>*>(other);
     if(other->type() == AbstractShape<dimensions>::Type::Sphere)
@@ -43,12 +43,12 @@ template<size_t dimensions> bool Capsule<dimensions>::collides(const AbstractSha
     return AbstractShape<dimensions>::collides(other);
 }
 
-template<size_t dimensions> bool Capsule<dimensions>::operator%(const Point<dimensions>& other) const {
+template<std::uint8_t dimensions> bool Capsule<dimensions>::operator%(const Point<dimensions>& other) const {
     return Distance::lineSegmentPointSquared(transformedA(), transformedB(), other.transformedPosition()) <
         Math::pow<2>(transformedRadius());
 }
 
-template<size_t dimensions> bool Capsule<dimensions>::operator%(const Sphere<dimensions>& other) const {
+template<std::uint8_t dimensions> bool Capsule<dimensions>::operator%(const Sphere<dimensions>& other) const {
     return Distance::lineSegmentPointSquared(transformedA(), transformedB(), other.transformedPosition()) <
         Math::pow<2>(transformedRadius()+other.transformedRadius());
 }

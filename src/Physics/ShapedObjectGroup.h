@@ -20,6 +20,7 @@
  */
 
 #include <cstddef>
+#include <cstdint>
 #include <vector>
 
 #include "magnumPhysicsVisibility.h"
@@ -31,7 +32,7 @@ template<class T, class U> class Resource;
 
 namespace Physics {
 
-template<size_t> class ShapedObject;
+template<std::uint8_t> class ShapedObject;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
@@ -51,7 +52,7 @@ specifying it in the constructor. When the group is deleted, all objects
 belogning to it are deleted too.
 @see ShapedObjectGroup2D, ShapedObjectGroup3D
 */
-template<size_t dimensions> class PHYSICS_EXPORT ShapedObjectGroup {
+template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapedObjectGroup {
     friend class ShapedObject<dimensions>;
 
     public:

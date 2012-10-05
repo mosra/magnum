@@ -29,8 +29,8 @@
 
 namespace Magnum {
 
-template<size_t> class BufferedImage;
-template<size_t> class Image;
+template<std::uint8_t> class BufferedImage;
+template<std::uint8_t> class Image;
 
 typedef BufferedImage<1> BufferedImage1D;
 typedef BufferedImage<2> BufferedImage2D;

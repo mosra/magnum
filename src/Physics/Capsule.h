@@ -24,8 +24,8 @@
 
 namespace Magnum { namespace Physics {
 
-template<size_t> class Point;
-template<size_t> class Sphere;
+template<std::uint8_t> class Point;
+template<std::uint8_t> class Sphere;
 
 /**
 @brief %Capsule defined by cylinder start and end point and radius
@@ -34,7 +34,7 @@ Unlike other elements the capsule doesn't support asymmetric scaling. When
 applying transformation, the scale factor is averaged from all axes.
 @see Capsule2D, Capsule3D
 */
-template<size_t dimensions> class PHYSICS_EXPORT Capsule: public AbstractShape<dimensions> {
+template<std::uint8_t dimensions> class PHYSICS_EXPORT Capsule: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
         inline Capsule(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a, const typename DimensionTraits<dimensions, GLfloat>::VectorType& b, float radius): _a(a), _transformedA(a), _b(b), _transformedB(b), _radius(radius), _transformedRadius(radius) {}
@@ -113,10 +113,10 @@ typedef Capsule<2> Capsule2D;
 typedef Capsule<3> Capsule3D;
 
 /** @collisionoperator{Point,Capsule} */
-template<size_t dimensions> inline bool operator%(const Point<dimensions>& a, const Capsule<dimensions>& b) { return b % a; }
+template<std::uint8_t dimensions> inline bool operator%(const Point<dimensions>& a, const Capsule<dimensions>& b) { return b % a; }
 
 /** @collisionoperator{Sphere,Capsule} */
-template<size_t dimensions> inline bool operator%(const Sphere<dimensions>& a, const Capsule<dimensions>& b) { return b % a; }
+template<std::uint8_t dimensions> inline bool operator%(const Sphere<dimensions>& a, const Capsule<dimensions>& b) { return b % a; }
 
 }}
 

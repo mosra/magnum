@@ -50,9 +50,9 @@ for more information.
 @see Texture1D, Texture2D, Texture3D, CubeMapTexture, CubeMapTextureArray
 @todo @extension{AMD,sparse_texture}
  */
-template<size_t dimensions> class Texture: public AbstractTexture {
+template<std::uint8_t dimensions> class Texture: public AbstractTexture {
     public:
-        static const size_t Dimensions = dimensions; /**< @brief %Texture dimension count */
+        static const std::uint8_t Dimensions = dimensions; /**< @brief %Texture dimension count */
 
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**

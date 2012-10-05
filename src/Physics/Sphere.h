@@ -24,9 +24,9 @@
 
 namespace Magnum { namespace Physics {
 
-template<size_t> class Line;
-template<size_t> class LineSegment;
-template<size_t> class Point;
+template<std::uint8_t> class Line;
+template<std::uint8_t> class LineSegment;
+template<std::uint8_t> class Point;
 
 /**
 @brief %Sphere defined by position and radius
@@ -35,7 +35,7 @@ Unlike other elements the sphere doesn't support asymmetric scaling. When
 applying transformation, the scale factor is averaged from all axes.
 @see Sphere2D, Sphere3D
 */
-template<size_t dimensions> class PHYSICS_EXPORT Sphere: public AbstractShape<dimensions> {
+template<std::uint8_t dimensions> class PHYSICS_EXPORT Sphere: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
         inline Sphere(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position, float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
@@ -105,13 +105,13 @@ typedef Sphere<2> Sphere2D;
 typedef Sphere<3> Sphere3D;
 
 /** @collisionoperator{Point,Sphere} */
-template<size_t dimensions> inline bool operator%(const Point<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
+template<std::uint8_t dimensions> inline bool operator%(const Point<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
 
 /** @collisionoperator{Line,Sphere} */
-template<size_t dimensions> inline bool operator%(const Line<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
+template<std::uint8_t dimensions> inline bool operator%(const Line<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
 
 /** @collisionoperator{LineSegment,Sphere} */
-template<size_t dimensions> inline bool operator%(const LineSegment<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
+template<std::uint8_t dimensions> inline bool operator%(const LineSegment<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
 
 }}
 
