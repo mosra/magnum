@@ -48,6 +48,7 @@ for more information.
 @requires_gl31 Extension @extension{ARB,texture_rectangle} (rectangle textures)
 
 @see Texture1D, Texture2D, Texture3D, CubeMapTexture, CubeMapTextureArray
+@todo @extension{AMD,sparse_texture}
  */
 template<size_t dimensions> class Texture: public AbstractTexture {
     public:
@@ -125,6 +126,8 @@ template<size_t dimensions> class Texture: public AbstractTexture {
          * more information.
          * @see bind(), @fn_gl{TexParameter} with @def_gl{TEXTURE_WRAP_S},
          *      @def_gl{TEXTURE_WRAP_T}, @def_gl{TEXTURE_WRAP_R}
+         * @todo Use something better for this than Vector (mainly something
+         *      that can easily create all values the same)
          */
         inline Texture<Dimensions>* setWrapping(const Math::Vector<Dimensions, Wrapping>& wrapping) {
             bind();
