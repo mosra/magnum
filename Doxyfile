@@ -731,6 +731,7 @@ EXCLUDE_SYMLINKS       = NO
 # for example use the pattern */test/*
 
 EXCLUDE_PATTERNS       = */Test/* \
+                         */Implementation/* \
                          *Visibility.h
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
