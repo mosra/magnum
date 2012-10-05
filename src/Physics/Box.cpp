@@ -20,7 +20,7 @@
 
 namespace Magnum { namespace Physics {
 
-template<size_t dimensions> void Box<dimensions>::applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation) {
+template<size_t dimensions> void Box<dimensions>::applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
     _transformedTransformation = (transformation*_transformation);
 }
 

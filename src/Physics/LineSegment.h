@@ -31,7 +31,7 @@ namespace Magnum { namespace Physics {
 template<size_t dimensions> class LineSegment: public Line<dimensions> {
     public:
         /** @brief Constructor */
-        inline LineSegment(const typename AbstractShape<dimensions>::VectorType& a, const typename AbstractShape<dimensions>::VectorType& b): Line<dimensions>(a, b) {}
+        inline LineSegment(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a, const typename DimensionTraits<dimensions, GLfloat>::VectorType& b): Line<dimensions>(a, b) {}
 
     protected:
         inline typename AbstractShape<dimensions>::Type type() const { return AbstractShape<dimensions>::Type::LineSegment; }

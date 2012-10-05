@@ -20,8 +20,8 @@
 
 namespace Magnum { namespace Physics {
 
-template<size_t dimensions> void AxisAlignedBox<dimensions>::applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation) {
-    _transformedPosition = (transformation*typename AxisAlignedBox<dimensions>::PointType(_position)).vector();
+template<size_t dimensions> void AxisAlignedBox<dimensions>::applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
+    _transformedPosition = (transformation*typename DimensionTraits<dimensions, GLfloat>::PointType(_position)).vector();
     _transformedSize = transformation.rotationScaling()*_size;
 }
 

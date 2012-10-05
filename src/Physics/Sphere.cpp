@@ -28,7 +28,7 @@ using namespace Magnum::Math::Geometry;
 namespace Magnum { namespace Physics {
 
 namespace {
-    template<size_t dimensions> static typename AbstractShape<dimensions>::VectorType unitVector();
+    template<size_t dimensions> static typename DimensionTraits<dimensions, GLfloat>::VectorType unitVector();
 
     template<> inline Vector2 unitVector<2>() {
         return Vector2(1/Math::Constants<float>::sqrt2());
@@ -39,8 +39,8 @@ namespace {
     }
 }
 
-template<size_t dimensions> void Sphere<dimensions>::applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation) {
-    _transformedPosition = (transformation*typename AbstractShape<dimensions>::PointType(_position)).vector();
+template<size_t dimensions> void Sphere<dimensions>::applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
+    _transformedPosition = (transformation*typename DimensionTraits<dimensions, GLfloat>::PointType(_position)).vector();
     float scaling = (transformation.rotationScaling()*unitVector<dimensions>()).length();
     _transformedRadius = scaling*_radius;
 }

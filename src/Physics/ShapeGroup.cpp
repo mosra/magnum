@@ -43,7 +43,7 @@ template<size_t dimensions> ShapeGroup<dimensions>& ShapeGroup<dimensions>::oper
     return *this;
 }
 
-template<size_t dimensions> void ShapeGroup<dimensions>::applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation) {
+template<size_t dimensions> void ShapeGroup<dimensions>::applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
     if(a) a->applyTransformation(transformation);
     if(b) b->applyTransformation(transformation);
 }

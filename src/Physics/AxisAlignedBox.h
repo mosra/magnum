@@ -32,39 +32,35 @@ namespace Magnum { namespace Physics {
 template<size_t dimensions> class PHYSICS_EXPORT AxisAlignedBox: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline AxisAlignedBox(const typename AbstractShape<dimensions>::VectorType& position, const typename AbstractShape<dimensions>::VectorType& size): _position(position), _transformedPosition(position), _size(size), _transformedSize(size) {}
+        inline AxisAlignedBox(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position, const typename DimensionTraits<dimensions, GLfloat>::VectorType& size): _position(position), _transformedPosition(position), _size(size), _transformedSize(size) {}
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        void applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation);
-        #else
-        void applyTransformation(const MatrixType& transformation);
-        #endif
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
 
         /** @brief Position */
-        inline typename AbstractShape<dimensions>::VectorType position() const {
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType position() const {
             return _position;
         }
 
         /** @brief Set position */
-        inline void setPosition(const typename AbstractShape<dimensions>::VectorType& position) {
+        inline void setPosition(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position) {
             _position = position;
         }
 
         /** @brief Size */
-        inline typename AbstractShape<dimensions>::VectorType size() const { return _size; }
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType size() const { return _size; }
 
         /** @brief Set size */
-        inline void setSize(const typename AbstractShape<dimensions>::VectorType& size) {
+        inline void setSize(const typename DimensionTraits<dimensions, GLfloat>::VectorType& size) {
             _size = size;
         }
 
         /** @brief Transformed position */
-        inline typename AbstractShape<dimensions>::VectorType transformedPosition() const {
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedPosition() const {
             return _transformedPosition;
         }
 
         /** @brief Transformed size */
-        inline typename AbstractShape<dimensions>::VectorType transformedSize() const {
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedSize() const {
             return _transformedSize;
         }
 
@@ -74,7 +70,7 @@ template<size_t dimensions> class PHYSICS_EXPORT AxisAlignedBox: public Abstract
         }
 
     private:
-        typename AbstractShape<dimensions>::VectorType _position, _transformedPosition,
+        Math::Vector<dimensions, GLfloat> _position, _transformedPosition,
             _size, _transformedSize;
 };
 

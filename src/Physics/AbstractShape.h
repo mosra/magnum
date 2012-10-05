@@ -20,6 +20,7 @@
  */
 
 #include "Magnum.h"
+#include "DimensionTraits.h"
 
 #include "magnumPhysicsVisibility.h"
 
@@ -30,10 +31,6 @@ namespace Implementation {
     template<size_t dimensions> struct ShapeDimensionTraits {};
 
     template<> struct ShapeDimensionTraits<2> {
-        typedef Vector2 VectorType;
-        typedef Point2D PointType;
-        typedef Matrix3 MatrixType;
-
         enum class Type {
             Point,
             Line,
@@ -47,10 +44,6 @@ namespace Implementation {
     };
 
     template<> struct ShapeDimensionTraits<3> {
-        typedef Vector3 VectorType;
-        typedef Point3D PointType;
-        typedef Matrix4 MatrixType;
-
         enum class Type {
             Point,
             Line,
@@ -74,15 +67,6 @@ See @ref collision-detection for brief introduction.
 */
 template<size_t dimensions> class PHYSICS_EXPORT AbstractShape {
     public:
-        /** @brief %Vector type for given dimension count */
-        typedef typename Implementation::ShapeDimensionTraits<dimensions>::VectorType VectorType;
-
-        /** @brief %Point type for given dimension count */
-        typedef typename Implementation::ShapeDimensionTraits<dimensions>::PointType PointType;
-
-        /** @brief %Matrix type for given dimension count */
-        typedef typename Implementation::ShapeDimensionTraits<dimensions>::MatrixType MatrixType;
-
         /** @brief Dimension count */
         static const size_t Dimensions = dimensions;
 
@@ -121,7 +105,7 @@ template<size_t dimensions> class PHYSICS_EXPORT AbstractShape {
          * Applies transformation to user-defined shape properties and caches
          * them for later usage in collision detection.
          */
-        virtual void applyTransformation(const MatrixType& transformation) = 0;
+        virtual void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) = 0;
 
         /**
          * @brief Detect collision with other shape

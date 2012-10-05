@@ -38,23 +38,19 @@ applying transformation, the scale factor is averaged from all axes.
 template<size_t dimensions> class PHYSICS_EXPORT Sphere: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Sphere(const typename AbstractShape<dimensions>::VectorType& position, float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
+        inline Sphere(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position, float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        void applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation);
-        #else
-        void applyTransformation(const MatrixType& transformation);
-        #endif
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
 
         bool collides(const AbstractShape<dimensions>* other) const;
 
         /** @brief Position */
-        inline typename AbstractShape<dimensions>::VectorType position() const {
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType position() const {
             return _position;
         }
 
         /** @brief Set position */
-        inline void setPosition(const typename AbstractShape<dimensions>::VectorType& position) {
+        inline void setPosition(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position) {
             _position = position;
         }
 
@@ -65,7 +61,7 @@ template<size_t dimensions> class PHYSICS_EXPORT Sphere: public AbstractShape<di
         inline void setRadius(float radius) { _radius = radius; }
 
         /** @brief Transformed position */
-        inline typename AbstractShape<dimensions>::VectorType transformedPosition() const {
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedPosition() const {
             return _transformedPosition;
         }
 
@@ -92,7 +88,7 @@ template<size_t dimensions> class PHYSICS_EXPORT Sphere: public AbstractShape<di
         }
 
     private:
-        typename AbstractShape<dimensions>::VectorType _position,
+        Math::Vector<dimensions, GLfloat> _position,
             _transformedPosition;
         float _radius, _transformedRadius;
 };

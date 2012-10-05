@@ -37,33 +37,29 @@ applying transformation, the scale factor is averaged from all axes.
 template<size_t dimensions> class PHYSICS_EXPORT Capsule: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Capsule(const typename AbstractShape<dimensions>::VectorType& a, const typename AbstractShape<dimensions>::VectorType& b, float radius): _a(a), _transformedA(a), _b(b), _transformedB(b), _radius(radius), _transformedRadius(radius) {}
+        inline Capsule(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a, const typename DimensionTraits<dimensions, GLfloat>::VectorType& b, float radius): _a(a), _transformedA(a), _b(b), _transformedB(b), _radius(radius), _transformedRadius(radius) {}
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        void applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation);
-        #else
-        void applyTransformation(const MatrixType& transformation);
-        #endif
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
 
         bool collides(const AbstractShape<dimensions>* other) const;
 
         /** @brief Start point */
-        inline typename AbstractShape<dimensions>::VectorType a() const {
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType a() const {
             return _a;
         }
 
         /** @brief End point */
-        inline typename AbstractShape<dimensions>::VectorType b() const {
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType b() const {
             return _a;
         }
 
         /** @brief Set start point */
-        inline void setA(const typename AbstractShape<dimensions>::VectorType& a) {
+        inline void setA(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a) {
             _a = a;
         }
 
         /** @brief Set end point */
-        inline void setB(const typename AbstractShape<dimensions>::VectorType& b) {
+        inline void setB(const typename DimensionTraits<dimensions, GLfloat>::VectorType& b) {
             _b = b;
         }
 
@@ -74,12 +70,12 @@ template<size_t dimensions> class PHYSICS_EXPORT Capsule: public AbstractShape<d
         inline void setRadius(float radius) { _radius = radius; }
 
         /** @brief Transformed first point */
-        inline typename AbstractShape<dimensions>::VectorType transformedA() const {
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedA() const {
             return _transformedA;
         }
 
         /** @brief Transformed second point */
-        inline typename AbstractShape<dimensions>::VectorType transformedB() const {
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedB() const {
             return _transformedB;
         }
 
@@ -100,7 +96,7 @@ template<size_t dimensions> class PHYSICS_EXPORT Capsule: public AbstractShape<d
         }
 
     private:
-        typename AbstractShape<dimensions>::VectorType _a, _transformedA,
+        Math::Vector<dimensions, GLfloat> _a, _transformedA,
             _b, _transformedB;
         float _radius, _transformedRadius;
 };

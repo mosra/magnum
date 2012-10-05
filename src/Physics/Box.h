@@ -33,26 +33,22 @@ namespace Magnum { namespace Physics {
 template<size_t dimensions> class PHYSICS_EXPORT Box: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Box(const typename AbstractShape<dimensions>::MatrixType& transformation): _transformation(transformation), _transformedTransformation(transformation) {}
+        inline Box(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation): _transformation(transformation), _transformedTransformation(transformation) {}
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        void applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation);
-        #else
-        void applyTransformation(const MatrixType& transformation);
-        #endif
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
 
         /** @brief Transformation */
-        inline typename AbstractShape<dimensions>::MatrixType transformation() const {
+        inline typename DimensionTraits<dimensions, GLfloat>::MatrixType transformation() const {
             return _transformation;
         }
 
         /** @brief Set transformation */
-        inline void setTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation) {
+        inline void setTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
             _transformation = transformation;
         }
 
         /** @brief Transformed transformation */
-        inline typename AbstractShape<dimensions>::MatrixType transformedTransformation() const {
+        inline typename DimensionTraits<dimensions, GLfloat>::MatrixType transformedTransformation() const {
             return _transformedTransformation;
         }
 
@@ -62,7 +58,7 @@ template<size_t dimensions> class PHYSICS_EXPORT Box: public AbstractShape<dimen
         }
 
     private:
-        typename AbstractShape<dimensions>::MatrixType _transformation,
+        Math::Matrix<dimensions+1, GLfloat> _transformation,
             _transformedTransformation;
 };
 

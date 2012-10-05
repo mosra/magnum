@@ -27,10 +27,10 @@ using namespace Magnum::Math::Geometry;
 
 namespace Magnum { namespace Physics {
 
-template<size_t dimensions> void Capsule<dimensions>::applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation) {
-    _transformedA = (transformation*typename AbstractShape<dimensions>::PointType(_a)).vector();
-    _transformedB = (transformation*typename AbstractShape<dimensions>::PointType(_b)).vector();
-    float scaling = (transformation.rotationScaling()*typename AbstractShape<dimensions>::VectorType(1/Math::Constants<float>::sqrt3())).length();
+template<size_t dimensions> void Capsule<dimensions>::applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
+    _transformedA = (transformation*typename DimensionTraits<dimensions, GLfloat>::PointType(_a)).vector();
+    _transformedB = (transformation*typename DimensionTraits<dimensions, GLfloat>::PointType(_b)).vector();
+    float scaling = (transformation.rotationScaling()*typename DimensionTraits<dimensions, GLfloat>::VectorType(1/Math::Constants<float>::sqrt3())).length();
     _transformedRadius = scaling*_radius;
 }
 

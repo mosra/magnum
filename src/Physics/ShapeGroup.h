@@ -99,11 +99,7 @@ template<size_t dimensions> class PHYSICS_EXPORT ShapeGroup: public AbstractShap
         /** @brief Move assignment */
         ShapeGroup& operator=(ShapeGroup&& other);
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        void applyTransformation(const typename AbstractShape<dimensions>::MatrixType& transformation);
-        #else
-        void applyTransformation(const MatrixType& transformation);
-        #endif
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
 
         bool collides(const AbstractShape<dimensions>* other) const;
 
