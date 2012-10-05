@@ -46,13 +46,13 @@ class MeshObjectData3D: public ObjectData3D {
          *
          * Creates object with mesh instance type.
          */
-        inline MeshObjectData3D(const std::string& name, const std::vector<unsigned int>& children, const Matrix4& transformation, unsigned int instance, unsigned int material): ObjectData3D(name, children, transformation, InstanceType::Mesh, instance), _material(material) {}
+        inline MeshObjectData3D(const std::string& name, const std::vector<std::uint32_t>& children, const Matrix4& transformation, std::uint32_t instance, std::uint32_t material): ObjectData3D(name, children, transformation, InstanceType::Mesh, instance), _material(material) {}
 
         /** @brief Material ID */
-        inline unsigned int material() const { return _material; }
+        inline std::uint32_t material() const { return _material; }
 
     private:
-        unsigned int _material;
+        std::uint32_t _material;
 };
 
 }}

@@ -54,7 +54,7 @@ class ObjectData3D {
          * @param instanceType      Instance type
          * @param instanceId        Instance ID
          */
-        inline ObjectData3D(const std::string& name, const std::vector<unsigned int>& children, const Matrix4& transformation, InstanceType instanceType, unsigned int instanceId): _name(name), _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
+        inline ObjectData3D(const std::string& name, const std::vector<std::uint32_t>& children, const Matrix4& transformation, InstanceType instanceType, std::uint32_t instanceId): _name(name), _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
 
         /**
          * @brief Constructor for empty instance
@@ -62,7 +62,7 @@ class ObjectData3D {
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          */
-        inline ObjectData3D(const std::string& name, const std::vector<unsigned int>& children, const Matrix4& transformation): _name(name), _children(children), _transformation(transformation), _instanceType(InstanceType::Empty), _instanceId(-1) {}
+        inline ObjectData3D(const std::string& name, const std::vector<std::uint32_t>& children, const Matrix4& transformation): _name(name), _children(children), _transformation(transformation), _instanceType(InstanceType::Empty), _instanceId(-1) {}
 
         /** @brief Destructor */
         inline virtual ~ObjectData3D() {}
@@ -71,7 +71,7 @@ class ObjectData3D {
         inline std::string name() const { return _name; }
 
         /** @brief Child objects */
-        inline std::vector<unsigned int>& children() { return _children; }
+        inline std::vector<std::uint32_t>& children() { return _children; }
 
         /** @brief Transformation (relative to parent) */
         inline Matrix4 transformation() const { return _transformation; }
@@ -90,14 +90,14 @@ class ObjectData3D {
          * @return ID of given camera / light / mesh etc., specified by
          *      instanceType()
          */
-        inline int instanceId() const { return _instanceId; }
+        inline std::int32_t instanceId() const { return _instanceId; }
 
     private:
         std::string _name;
-        std::vector<unsigned int> _children;
+        std::vector<std::uint32_t> _children;
         Matrix4 _transformation;
         InstanceType _instanceType;
-        int _instanceId;
+        std::int32_t _instanceId;
 };
 
 }}

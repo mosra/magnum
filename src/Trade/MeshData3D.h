@@ -71,7 +71,7 @@ class MAGNUM_EXPORT MeshData3D {
         inline const std::vector<std::uint32_t>* indices() const { return _indices; } /**< @overload */
 
         /** @brief Count of vertex position arrays */
-        inline unsigned int positionArrayCount() const { return _positions.size(); }
+        inline std::uint32_t positionArrayCount() const { return _positions.size(); }
 
         /**
          * @brief Positions
@@ -79,11 +79,11 @@ class MAGNUM_EXPORT MeshData3D {
          * @return Positions or nullptr if there is no vertex array with given
          *      ID.
          */
-        inline std::vector<Point3D>* positions(unsigned int id) { return _positions[id]; }
-        inline const std::vector<Point3D>* positions(unsigned int id) const { return _positions[id]; } /**< @overload */
+        inline std::vector<Point3D>* positions(std::uint32_t id) { return _positions[id]; }
+        inline const std::vector<Point3D>* positions(std::uint32_t id) const { return _positions[id]; } /**< @overload */
 
         /** @brief Count of normal arrays */
-        inline unsigned int normalArrayCount() const { return _normals.size(); }
+        inline std::uint32_t normalArrayCount() const { return _normals.size(); }
 
         /**
          * @brief Normals
@@ -91,11 +91,11 @@ class MAGNUM_EXPORT MeshData3D {
          * @return Normals or nullptr if there is no normal array with given
          *      ID.
          */
-        inline std::vector<Vector3>* normals(unsigned int id) { return _normals[id]; }
-        inline const std::vector<Vector3>* normals(unsigned int id) const { return _normals[id]; } /**< @overload */
+        inline std::vector<Vector3>* normals(std::uint32_t id) { return _normals[id]; }
+        inline const std::vector<Vector3>* normals(std::uint32_t id) const { return _normals[id]; } /**< @overload */
 
         /** @brief Count of 2D texture coordinate arrays */
-        inline unsigned int textureCoords2DArrayCount() const { return _textureCoords2D.size(); }
+        inline std::uint32_t textureCoords2DArrayCount() const { return _textureCoords2D.size(); }
 
         /**
          * @brief 2D texture coordinates
@@ -103,8 +103,8 @@ class MAGNUM_EXPORT MeshData3D {
          * @return %Texture coordinates or nullptr if there is no texture
          *      coordinates array with given ID.
          */
-        inline std::vector<Vector2>* textureCoords2D(unsigned int id) { return _textureCoords2D[id]; }
-        inline const std::vector<Vector2>* textureCoords2D(unsigned int id) const { return _textureCoords2D[id]; } /**< @overload */
+        inline std::vector<Vector2>* textureCoords2D(std::uint32_t id) { return _textureCoords2D[id]; }
+        inline const std::vector<Vector2>* textureCoords2D(std::uint32_t id) const { return _textureCoords2D[id]; } /**< @overload */
 
     private:
         std::string _name;
