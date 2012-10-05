@@ -86,7 +86,7 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractCamera: public Abstr
          * Camera matrix describes world position relative to the camera and is
          * applied as first.
          */
-        inline typename AbstractObject<dimensions>::MatrixType cameraMatrix() {
+        inline typename DimensionTraits<dimensions, GLfloat>::MatrixType cameraMatrix() {
             this->setClean();
             return _cameraMatrix;
         }
@@ -98,7 +98,7 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractCamera: public Abstr
          * as last.
          * @see projectionSize()
          */
-        inline typename AbstractObject<dimensions>::MatrixType projectionMatrix() const { return _projectionMatrix; }
+        inline typename DimensionTraits<dimensions, GLfloat>::MatrixType projectionMatrix() const { return _projectionMatrix; }
 
         /**
          * @brief Size of (near) XY plane in current projection
@@ -135,27 +135,27 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractCamera: public Abstr
         /**
          * Recalculates camera matrix.
          */
-        void clean(const typename AbstractObject<dimensions>::MatrixType& absoluteTransformation);
+        void clean(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& absoluteTransformation);
 
         /**
          * @brief Draw object children
          *
          * Recursively draws all children of the object.
          */
-        void drawChildren(typename AbstractObject<dimensions>::ObjectType* object, const typename AbstractObject<dimensions>::MatrixType& transformationMatrix);
+        void drawChildren(typename AbstractObject<dimensions>::ObjectType* object, const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformationMatrix);
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline void fixAspectRatio() {
-            _projectionMatrix = Implementation::aspectRatioFix<typename AbstractObject<dimensions>::MatrixType>(_aspectRatioPolicy, {rawProjectionMatrix[0].x(), rawProjectionMatrix[1].y()}, _viewport)*rawProjectionMatrix;
+            _projectionMatrix = Implementation::aspectRatioFix<typename DimensionTraits<dimensions, GLfloat>::MatrixType>(_aspectRatioPolicy, {rawProjectionMatrix[0].x(), rawProjectionMatrix[1].y()}, _viewport)*rawProjectionMatrix;
         }
 
-        typename AbstractObject<dimensions>::MatrixType rawProjectionMatrix;
+        typename DimensionTraits<dimensions, GLfloat>::MatrixType rawProjectionMatrix;
         AspectRatioPolicy _aspectRatioPolicy;
         #endif
 
     private:
-        typename AbstractObject<dimensions>::MatrixType _projectionMatrix;
-        typename AbstractObject<dimensions>::MatrixType _cameraMatrix;
+        typename DimensionTraits<dimensions, GLfloat>::MatrixType _projectionMatrix;
+        typename DimensionTraits<dimensions, GLfloat>::MatrixType _cameraMatrix;
 
         Math::Vector2<GLsizei> _viewport;
 };

@@ -42,7 +42,7 @@ template<size_t dimensions> void ShapedObject<dimensions>::setDirty() {
     group->setDirty();
 }
 
-template<size_t dimensions> void ShapedObject<dimensions>::clean(const typename SceneGraph::AbstractObject<dimensions>::MatrixType& absoluteTransformation) {
+template<size_t dimensions> void ShapedObject<dimensions>::clean(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& absoluteTransformation) {
     SceneGraph::AbstractObject<dimensions>::ObjectType::clean(absoluteTransformation);
 
     if(_shape) _shape->applyTransformation(absoluteTransformation);

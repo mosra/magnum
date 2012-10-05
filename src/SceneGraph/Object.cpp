@@ -49,11 +49,11 @@ template<size_t dimensions> typename AbstractObject<dimensions>::ObjectType* Abs
     return static_cast<ObjectType*>(this);
 }
 
-template<size_t dimensions> typename AbstractObject<dimensions>::MatrixType AbstractObject<dimensions>::absoluteTransformation(CameraType* camera) {
+template<size_t dimensions> typename DimensionTraits<dimensions, GLfloat>::MatrixType AbstractObject<dimensions>::absoluteTransformation(CameraType* camera) {
     /* Shortcut for absolute transformation of camera relative to itself */
-    if(camera == this) return MatrixType();
+    if(camera == this) return typename DimensionTraits<dimensions, GLfloat>::MatrixType();
 
-    MatrixType t = _transformation;
+    typename DimensionTraits<dimensions, GLfloat>::MatrixType t = _transformation;
 
     ObjectType* p = parent();
     while(p != nullptr) {
@@ -89,7 +89,7 @@ template<size_t dimensions> typename AbstractObject<dimensions>::SceneType* Abst
     return nullptr;
 }
 
-template<size_t dimensions> typename AbstractObject<dimensions>::ObjectType* AbstractObject<dimensions>::setTransformation(const MatrixType& transformation) {
+template<size_t dimensions> typename AbstractObject<dimensions>::ObjectType* AbstractObject<dimensions>::setTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
     /* Setting transformation is forbidden for the scene */
     /** @todo Assert for this? */
     if(isScene()) return static_cast<ObjectType*>(this);
@@ -130,7 +130,7 @@ template<size_t dimensions> void AbstractObject<dimensions>::setClean() {
     /* Call setClean(const Matrix4&) for every parent and also this object */
     ObjectType* o = objects.top();
     objects.pop();
-    MatrixType absoluteTransformation = o->absoluteTransformation();
+    typename DimensionTraits<dimensions, GLfloat>::MatrixType absoluteTransformation = o->absoluteTransformation();
     o->clean(absoluteTransformation);
     while(!objects.empty()) {
         o = objects.top();

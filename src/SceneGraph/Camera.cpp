@@ -58,7 +58,7 @@ template<size_t dimensions> void AbstractCamera<dimensions>::setViewport(const M
     fixAspectRatio();
 }
 
-template<size_t dimensions> void AbstractCamera<dimensions>::clean(const typename AbstractObject<dimensions>::MatrixType& absoluteTransformation) {
+template<size_t dimensions> void AbstractCamera<dimensions>::clean(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& absoluteTransformation) {
     AbstractObject<dimensions>::ObjectType::clean(absoluteTransformation);
 
     _cameraMatrix = absoluteTransformation.inverted();
@@ -72,10 +72,10 @@ template<size_t dimensions> void AbstractCamera<dimensions>::draw() {
     drawChildren(s, cameraMatrix());
 }
 
-template<size_t dimensions> void AbstractCamera<dimensions>::drawChildren(typename AbstractObject<dimensions>::ObjectType* object, const typename AbstractObject<dimensions>::MatrixType& transformationMatrix) {
+template<size_t dimensions> void AbstractCamera<dimensions>::drawChildren(typename AbstractObject<dimensions>::ObjectType* object, const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformationMatrix) {
     for(typename AbstractObject<dimensions>::ObjectType* i = object->firstChild(); i; i = i->nextSibling()) {
         /* Transformation matrix for the object */
-        typename AbstractObject<dimensions>::MatrixType matrix = transformationMatrix*i->transformation();
+        typename DimensionTraits<dimensions, GLfloat>::MatrixType matrix = transformationMatrix*i->transformation();
 
         /* Draw the object and its children */
         i->draw(matrix, static_cast<typename AbstractObject<dimensions>::CameraType*>(this));

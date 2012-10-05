@@ -24,6 +24,7 @@
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Magnum.h"
+#include "DimensionTraits.h"
 
 #include "magnumSceneGraphVisibility.h"
 
@@ -42,18 +43,12 @@ namespace Implementation {
     template<size_t dimensions> struct ObjectDimensionTraits {};
 
     template<> struct ObjectDimensionTraits<2> {
-        static const size_t Dimensions = 2;
-        typedef Vector2 VectorType;
-        typedef Matrix3 MatrixType;
         typedef Object2D ObjectType;
         typedef Camera2D CameraType;
         typedef Scene2D SceneType;
     };
 
     template<> struct ObjectDimensionTraits<3> {
-        static const size_t Dimensions = 3;
-        typedef Vector3 VectorType;
-        typedef Matrix4 MatrixType;
         typedef Object3D ObjectType;
         typedef Camera3D CameraType;
         typedef Scene3D SceneType;
@@ -87,12 +82,6 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractObject: public Corra
 
     public:
         static const size_t Dimensions = dimensions; /**< @brief %Object dimension count */
-
-        /** @brief %Vector type for given dimension count */
-        typedef typename Implementation::ObjectDimensionTraits<Dimensions>::VectorType VectorType;
-
-        /** @brief %Matrix type for given dimension count */
-        typedef typename Implementation::ObjectDimensionTraits<Dimensions>::MatrixType MatrixType;
 
         /** @brief %Object type for given dimension count */
         typedef typename Implementation::ObjectDimensionTraits<Dimensions>::ObjectType ObjectType;
@@ -174,7 +163,7 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractObject: public Corra
         };
 
         /** @brief Transformation */
-        inline MatrixType transformation() const {
+        inline typename DimensionTraits<dimensions, GLfloat>::MatrixType transformation() const {
             return _transformation;
         }
 
@@ -189,13 +178,13 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractObject: public Corra
          * objects every time it is asked, unless this function is
          * reimplemented in a different way.
          */
-        virtual MatrixType absoluteTransformation(CameraType* camera = nullptr);
+        virtual typename DimensionTraits<dimensions, GLfloat>::MatrixType absoluteTransformation(CameraType* camera = nullptr);
 
         /**
          * @brief Set transformation
          * @return Pointer to self (for method chaining)
          */
-        ObjectType* setTransformation(const MatrixType& transformation);
+        ObjectType* setTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
 
         /**
          * @brief Multiply transformation
@@ -203,7 +192,7 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractObject: public Corra
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          */
-        inline ObjectType* multiplyTransformation(const MatrixType& transformation, Transformation type = Transformation::Global) {
+        inline ObjectType* multiplyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation, Transformation type = Transformation::Global) {
             setTransformation(type == Transformation::Global ?
                 transformation*_transformation : _transformation*transformation);
             return static_cast<ObjectType*>(this);
@@ -220,7 +209,7 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractObject: public Corra
          *
          * Default implementation does nothing.
          */
-        virtual void draw(const MatrixType& transformationMatrix, CameraType* camera);
+        virtual void draw(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformationMatrix, CameraType* camera);
 
         /** @{ @name Caching helpers
          *
@@ -295,7 +284,7 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractObject: public Corra
          * }
          * @endcode
          */
-        virtual void clean(const MatrixType& absoluteTransformation);
+        virtual void clean(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& absoluteTransformation);
 
         /*@}*/
 
@@ -313,15 +302,15 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT AbstractObject: public Corra
         using Corrade::Containers::LinkedListItem<ObjectType, ObjectType>::previous;
         using Corrade::Containers::LinkedListItem<ObjectType, ObjectType>::next;
 
-        MatrixType _transformation;
+        typename DimensionTraits<dimensions, GLfloat>::MatrixType _transformation;
         bool dirty;
 };
 
 template<size_t dimensions> inline AbstractObject<dimensions>::~AbstractObject() {}
 
 /* Implementations for inline functions with unused parameters */
-template<size_t dimensions> inline void AbstractObject<dimensions>::draw(const MatrixType&, CameraType*) {}
-template<size_t dimensions> inline void AbstractObject<dimensions>::clean(const MatrixType&) { dirty = false; }
+template<size_t dimensions> inline void AbstractObject<dimensions>::draw(const typename DimensionTraits<dimensions, GLfloat>::MatrixType&, CameraType*) {}
+template<size_t dimensions> inline void AbstractObject<dimensions>::clean(const typename DimensionTraits<dimensions, GLfloat>::MatrixType&) { dirty = false; }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* These templates are instantiated in source file */

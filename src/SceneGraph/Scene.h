@@ -36,15 +36,15 @@ template<size_t dimensions> class SCENEGRAPH_EXPORT Scene: public AbstractObject
         /** @todo Some deleted functions belong only to Scene2D, some only to Scene3D - what to do? */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         void setParent(typename AbstractObject<dimensions>::ObjectType* parent) = delete;
-        void setTransformation(const typename AbstractObject<dimensions>::MatrixType& transformation) = delete;
-        void multiplyTransformation(const typename AbstractObject<dimensions>::MatrixType& transformation, typename AbstractObject<dimensions>::Transformation type = AbstractObject<dimensions>::Transformation::Global) = delete;
-        void translate(const typename AbstractObject<dimensions>::VectorType& vec, typename AbstractObject<dimensions>::Transformation type = AbstractObject<dimensions>::Transformation::Global) = delete;
-        void scale(const typename AbstractObject<dimensions>::VectorType& vec, typename AbstractObject<dimensions>::Transformation type = AbstractObject<dimensions>::Transformation::Global) = delete;
-        void rotate(GLfloat angle, const typename AbstractObject<dimensions>::VectorType& vec, typename AbstractObject<dimensions>::Transformation type = AbstractObject<dimensions>::Transformation::Global) = delete;
+        void setTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) = delete;
+        void multiplyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation, typename AbstractObject<dimensions>::Transformation type = DimensionTraits<dimensions, GLfloat>::Transformation::Global) = delete;
+        void translate(const typename DimensionTraits<dimensions, GLfloat>::VectorType& vec, typename AbstractObject<dimensions>::Transformation type = AbstractObject<dimensions>::Transformation::Global) = delete;
+        void scale(const typename DimensionTraits<dimensions, GLfloat>::VectorType& vec, typename AbstractObject<dimensions>::Transformation type = AbstractObject<dimensions>::Transformation::Global) = delete;
+        void rotate(GLfloat angle, const typename DimensionTraits<dimensions, GLfloat>::VectorType& vec, typename AbstractObject<dimensions>::Transformation type = AbstractObject<dimensions>::Transformation::Global) = delete;
         #endif
 
     private:
-        inline void draw(const typename AbstractObject<dimensions>::MatrixType&, typename AbstractObject<dimensions>::CameraType*) {}
+        inline void draw(const typename DimensionTraits<dimensions, GLfloat>::MatrixType&, typename AbstractObject<dimensions>::CameraType*) {}
 };
 
 /** @brief Two-dimensional scene */
