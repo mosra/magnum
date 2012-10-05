@@ -39,13 +39,13 @@ class MESHTOOLS_EXPORT CompressIndices {
     public:
         CompressIndices(const std::vector<unsigned int>& indices): indices(indices) {}
 
-        std::tuple<size_t, Type, char*> operator()() const;
+        std::tuple<std::size_t, Type, char*> operator()() const;
 
         void operator()(IndexedMesh* mesh, Buffer::Usage usage) const;
 
     private:
         struct Compressor {
-            template<class IndexType> static std::tuple<size_t, Type, char*> run(const std::vector<unsigned int>& indices);
+            template<class IndexType> static std::tuple<std::size_t, Type, char*> run(const std::vector<unsigned int>& indices);
         };
 
         const std::vector<unsigned int>& indices;
@@ -66,11 +66,11 @@ wasteful to store them in array of `unsigned int`s, array of `unsigned short`s
 is sufficient. Size of the buffer can be computed from index count and type,
 as shown below. Example usage:
 @code
-size_t indexCount;
+std::size_t indexCount;
 Type indexType;
 char* data;
 std::tie(indexCount, indexType, data) = MeshTools::compressIndices(indices);
-size_t dataSize = indexCount*TypeInfo::sizeOf(indexType);
+std::size_t dataSize = indexCount*TypeInfo::sizeOf(indexType);
 // ...
 delete[] data;
 @endcode
@@ -78,7 +78,7 @@ delete[] data;
 See also compressIndices(IndexedMesh*, Buffer::Usage, const std::vector<unsigned int>&),
 which writes the compressed data directly into index buffer of given mesh.
 */
-inline std::tuple<size_t, Type, char*> compressIndices(const std::vector<unsigned int>& indices) {
+inline std::tuple<std::size_t, Type, char*> compressIndices(const std::vector<std::unsigned int>& indices) {
     return Implementation::CompressIndices{indices}();
 }
 

@@ -34,11 +34,11 @@ template<class Vertex, class Interpolator> class Subdivide {
         void operator()(Interpolator interpolator) {
             CORRADE_ASSERT(!(indices.size()%3), "MeshTools::subdivide(): index count is not divisible by 3!", );
 
-            size_t indexCount = indices.size();
+            std::size_t indexCount = indices.size();
             indices.reserve(indices.size()*4);
 
             /* Subdivide each face to four new */
-            for(size_t i = 0; i != indexCount; i += 3) {
+            for(std::size_t i = 0; i != indexCount; i += 3) {
                 /* Interpolate each side */
                 unsigned int newVertices[3];
                 for(int j = 0; j != 3; ++j)
@@ -60,7 +60,7 @@ template<class Vertex, class Interpolator> class Subdivide {
                 addFace(indices[i], newVertices[0], newVertices[2]);
                 addFace(newVertices[0], indices[i+1], newVertices[1]);
                 addFace(newVertices[2], newVertices[1], indices[i+2]);
-                for(size_t j = 0; j != 3; ++j)
+                for(std::size_t j = 0; j != 3; ++j)
                     indices[i+j] = newVertices[j];
             }
         }

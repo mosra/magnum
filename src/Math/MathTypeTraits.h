@@ -112,7 +112,7 @@ template<class T> struct MathTypeTraitsFloatingPoint {
     }
 };
 
-template<size_t> struct MathTypeTraitsLong {};
+template<std::size_t> struct MathTypeTraitsLong {};
 
 template<> struct MathTypeTraitsLong<sizeof(int)> {
     typedef unsigned int UnsignedType;

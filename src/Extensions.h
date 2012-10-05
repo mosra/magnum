@@ -38,7 +38,7 @@ namespace Extensions {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define _extension(prefix, vendor, extension, _requiredVersion, _coreVersion) \
     struct extension {                                                      \
-        enum: size_t { Index = __LINE__-1 };                                \
+        enum: std::size_t { Index = __LINE__-1 };                                \
         constexpr static Version requiredVersion() { return Version::_requiredVersion; } \
         constexpr static Version coreVersion() { return Version::_coreVersion; } \
         constexpr static const char* string() { return #prefix "_" #vendor "_" #extension; } \

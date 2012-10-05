@@ -35,7 +35,7 @@ class CombineIndexedArrays {
     public:
         template<class ...T> std::vector<unsigned int> operator()(const std::tuple<const std::vector<unsigned int>&, std::vector<T>&>&... indexedArrays) {
             /* Compute index count */
-            size_t _indexCount = indexCount(std::get<0>(indexedArrays)...);
+            std::size_t _indexCount = indexCount(std::get<0>(indexedArrays)...);
 
             /* Resulting index array */
             std::vector<unsigned int> result;
@@ -56,24 +56,24 @@ class CombineIndexedArrays {
         }
 
     private:
-        template<class ...T> inline static size_t indexCount(const std::vector<unsigned int>& first, const std::vector<T>&... next) {
+        template<class ...T> inline static std::size_t indexCount(const std::vector<unsigned int>& first, const std::vector<T>&... next) {
             CORRADE_ASSERT(sizeof...(next) == 0 || indexCount(next...) == first.size(), "MeshTools::combineIndexedArrays(): index arrays don't have the same length, nothing done.", 0);
 
             return first.size();
         }
 
-        template<size_t size, class ...T> static void writeCombinedIndices(std::vector<Math::Vector<size, unsigned int>>& output, const std::vector<unsigned int>& first, const std::vector<T>&... next) {
+        template<std::size_t size, class ...T> static void writeCombinedIndices(std::vector<Math::Vector<size, unsigned int>>& output, const std::vector<unsigned int>& first, const std::vector<T>&... next) {
             /* Copy the data to output */
-            for(size_t i = 0; i != output.size(); ++i)
+            for(std::size_t i = 0; i != output.size(); ++i)
                 output[i][size-sizeof...(next)-1] = first[i];
 
             writeCombinedIndices(output, next...);
         }
 
-        template<size_t size, class T, class ...U> static void writeCombinedArrays(const std::vector<Math::Vector<size, unsigned int>>& combinedIndices, std::vector<T>& first, std::vector<U>&... next) {
+        template<std::size_t size, class T, class ...U> static void writeCombinedArrays(const std::vector<Math::Vector<size, unsigned int>>& combinedIndices, std::vector<T>& first, std::vector<U>&... next) {
             /* Rewrite output array */
             std::vector<T> output;
-            for(size_t i = 0; i != combinedIndices.size(); ++i)
+            for(std::size_t i = 0; i != combinedIndices.size(); ++i)
                 output.push_back(first[combinedIndices[i][size-sizeof...(next)-1]]);
             std::swap(output, first);
 
@@ -81,9 +81,9 @@ class CombineIndexedArrays {
         }
 
         /* Terminator functions for recursive calls */
-        inline static size_t indexCount() { return 0; }
-        template<size_t size> inline static void writeCombinedIndices(std::vector<Math::Vector<size, unsigned int>>&) {}
-        template<size_t size> inline static void writeCombinedArrays(const std::vector<Math::Vector<size, unsigned int>>&) {}
+        inline static std::size_t indexCount() { return 0; }
+        template<std::size_t size> inline static void writeCombinedIndices(std::vector<Math::Vector<size, unsigned int>>&) {}
+        template<std::size_t size> inline static void writeCombinedArrays(const std::vector<Math::Vector<size, unsigned int>>&) {}
 };
 
 }

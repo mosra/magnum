@@ -39,7 +39,7 @@ to compute logarithms at compile time, e.g.
 `SizeTraits<Log<256, 289>::%value>::%SizeType`.
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<size_t byte> struct SizeTraits {
+template<std::size_t byte> struct SizeTraits {
     /**
      * @brief (Unsigned) type able to index the data
      *
@@ -49,7 +49,7 @@ template<size_t byte> struct SizeTraits {
     typedef T SizeType;
 };
 #else
-template<size_t byte> struct SizeTraits: public SizeTraits<byte - 1> {};
+template<std::size_t byte> struct SizeTraits: public SizeTraits<byte - 1> {};
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -75,7 +75,7 @@ template<> struct SizeTraits<4> {
 If you have templated function which you want to call with type suitable for
 indexing data of some size, you will probably use cascade of IFs, like this:
 @code
-size_t dataSize;
+std::size_t dataSize;
 template<class IndexType> Bar foo(Arg1 arg1, Arg2 arg2, ...);
 
 Bar bar;
@@ -105,7 +105,7 @@ template<class Base> struct SizeBasedCall: public Base {
      * @brief Constructor
      * @param size          Data size
      */
-    SizeBasedCall(size_t size): size(size) {}
+    SizeBasedCall(std::size_t size): size(size) {}
 
     /**
      * @brief Functor
@@ -132,7 +132,7 @@ template<class Base> struct SizeBasedCall: public Base {
     }
 
     private:
-        size_t size;
+        std::size_t size;
 };
 
 /**

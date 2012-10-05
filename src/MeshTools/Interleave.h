@@ -36,7 +36,7 @@ class Interleave {
     public:
         inline Interleave(): _attributeCount(0), _stride(0), _data(nullptr) {}
 
-        template<class ...T> std::tuple<size_t, size_t, char*> operator()(const T&... attributes) {
+        template<class ...T> std::tuple<std::size_t, std::size_t, char*> operator()(const T&... attributes) {
             /* Compute buffer size and stride */
             _attributeCount = attributeCount(attributes...);
             if(_attributeCount) {
@@ -69,13 +69,13 @@ class Interleave {
             buffer->setData(attribute, usage);
         }
 
-        template<class T, class ...U> inline static size_t attributeCount(const T& first, const U&... next) {
+        template<class T, class ...U> inline static std::size_t attributeCount(const T& first, const U&... next) {
             CORRADE_ASSERT(sizeof...(next) == 0 || attributeCount(next...) == first.size(), "MeshTools::interleave(): attribute arrays don't have the same length, nothing done.", 0);
 
             return first.size();
         }
 
-        template<class T, class ...U> inline static size_t stride(const T&, const U&... next) {
+        template<class T, class ...U> inline static std::size_t stride(const T&, const U&... next) {
             return sizeof(typename T::value_type) + stride(next...);
         }
 
@@ -83,19 +83,19 @@ class Interleave {
         template<class T, class ...U> void write(char* startingOffset, const T& first, const U&... next) {
             /* Copy the data to the buffer */
             auto it = first.begin();
-            for(size_t i = 0; i != _attributeCount; ++i, ++it)
+            for(std::size_t i = 0; i != _attributeCount; ++i, ++it)
                 memcpy(startingOffset+i*_stride, reinterpret_cast<const char*>(&*it), sizeof(typename T::value_type));
 
             write(startingOffset+sizeof(typename T::value_type), next...);
         }
 
         /* Terminator functions for recursive calls */
-        inline static size_t attributeCount() { return 0; }
-        inline static size_t stride() { return 0; }
+        inline static std::size_t attributeCount() { return 0; }
+        inline static std::size_t stride() { return 0; }
         inline void write(char*) {}
 
-        size_t _attributeCount;
-        size_t _stride;
+        std::size_t _attributeCount;
+        std::size_t _stride;
         char* _data;
 };
 
@@ -116,11 +116,11 @@ usage:
 @code
 std::vector<Vector4> positions;
 std::vector<Vector2> textureCoordinates;
-size_t attributeCount;
-size_t stride;
+std::size_t attributeCount;
+std::size_t stride;
 char* data;
 std::tie(attributeCount, stride, data) = MeshTools::interleave(positions, textureCoordinates);
-size_t dataSize = attributeCount*stride;
+std::size_t dataSize = attributeCount*stride;
 // ...
 delete[] data;
 @endcode
@@ -137,7 +137,7 @@ which writes the interleaved array directly into buffer of given mesh.
     array has zero length.
 */
 /* enable_if to avoid clash with overloaded function below */
-template<class T, class ...U> inline typename std::enable_if<!std::is_convertible<T, Mesh*>::value, std::tuple<size_t, size_t, char*>>::type interleave(const T& attribute, const U&... attributes) {
+template<class T, class ...U> inline typename std::enable_if<!std::is_convertible<T, Mesh*>::value, std::tuple<std::size_t, std::size_t, char*>>::type interleave(const T& attribute, const U&... attributes) {
     return Implementation::Interleave()(attribute, attributes...);
 }
 

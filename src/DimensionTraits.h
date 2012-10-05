@@ -24,7 +24,7 @@
 namespace Magnum {
 
 namespace Math {
-    template<size_t, class> class Vector;
+    template<std::size_t, class> class Vector;
     template<class> class Vector2;
     template<class> class Vector3;
 

@@ -250,7 +250,7 @@ class Buffer {
          * setData(GLsizeiptr, const GLvoid*, Usage).
          * @see setData(Target, GLsizeiptr, const GLvoid*, Usage)
          */
-        template<size_t size, class T> inline void setData(const T(&data)[size], Usage usage) {
+        template<std::size_t size, class T> inline void setData(const T(&data)[size], Usage usage) {
             setData(_defaultTarget, data, usage);
         }
 
@@ -291,7 +291,7 @@ class Buffer {
          *
          * @see setData(Target, GLsizeiptr, const GLvoid*, Usage)
          */
-        template<size_t size, class T> inline void setData(Target target, const T(&data)[size], Usage usage) {
+        template<std::size_t size, class T> inline void setData(Target target, const T(&data)[size], Usage usage) {
             setData(target, size*sizeof(T), data, usage);
         }
 
@@ -330,7 +330,7 @@ class Buffer {
          * setSubData(GLintptr, GLsizeiptr, const GLvoid*).
          * @see setSubData(Target, GLintptr, GLsizeiptr, const GLvoid*)
          */
-        template<size_t size, class T> inline void setSubData(GLintptr offset, const T(&data)[size]) {
+        template<std::size_t size, class T> inline void setSubData(GLintptr offset, const T(&data)[size]) {
             setSubData(_defaultTarget, offset, data);
         }
 
@@ -370,7 +370,7 @@ class Buffer {
          * setSubData(Target, GLintptr, GLsizeiptr, const GLvoid*).
          * @see setSubData(Target, GLintptr, GLsizeiptr, const GLvoid*)
          */
-        template<size_t size, class T> inline void setSubData(Target target, GLintptr offset, const T(&data)[size]) {
+        template<std::size_t size, class T> inline void setSubData(Target target, GLintptr offset, const T(&data)[size]) {
             setSubData(target, offset, size*sizeof(T), data);
         }
 

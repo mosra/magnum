@@ -115,7 +115,7 @@ class MAGNUM_EXPORT Profiler {
          * is 60.
          * @attention This function cannot be called if profiling is enabled.
          */
-        void setMeasureDuration(size_t frames);
+        void setMeasureDuration(std::size_t frames);
 
         /**
          * @brief Add named section
@@ -193,7 +193,7 @@ class MAGNUM_EXPORT Profiler {
         void save();
 
         bool enabled;
-        size_t measureDuration, currentFrame, frameCount;
+        std::size_t measureDuration, currentFrame, frameCount;
         std::vector<std::string> sections;
         std::vector<std::chrono::high_resolution_clock::duration> frameData;
         std::vector<std::chrono::high_resolution_clock::duration> totalData;

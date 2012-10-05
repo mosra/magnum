@@ -33,7 +33,7 @@ class MESHTOOLS_EXPORT Tipsify {
     public:
         inline Tipsify(std::vector<unsigned int>& indices, unsigned int vertexCount): indices(indices), vertexCount(vertexCount) {}
 
-        void operator()(size_t cacheSize);
+        void operator()(std::size_t cacheSize);
 
         /**
          * @brief Build vertex-triangle adjacency
@@ -63,7 +63,7 @@ array for beter usage of post-transform vertex cache. Algorithm used:
 for Vertex Locality and Reduced Overdraw, SIGGRAPH 2007,
 http://gfx.cs.princeton.edu/pubs/Sander_2007_%3ETR/index.php*.
 */
-inline void tipsify(std::vector<unsigned int>& indices, unsigned int vertexCount, size_t cacheSize) {
+inline void tipsify(std::vector<unsigned int>& indices, unsigned int vertexCount, std::size_t cacheSize) {
     Implementation::Tipsify(indices, vertexCount)(cacheSize);
 }
 

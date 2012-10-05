@@ -268,7 +268,7 @@ class MAGNUM_EXPORT AbstractImage {
          * @param components        Color components
          * @param type              Data type
          */
-        static size_t pixelSize(Components components, ComponentType type);
+        static std::size_t pixelSize(Components components, ComponentType type);
 
         /**
          * @brief Constructor

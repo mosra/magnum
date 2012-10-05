@@ -106,7 +106,7 @@ class ResourceKey: public Corrade::Utility::MurmurHash2::Digest {
          * @brief Constructor
          * @todo constexpr
          */
-        template<size_t size> inline constexpr ResourceKey(const char(&key)[size]): Corrade::Utility::MurmurHash2::Digest(Corrade::Utility::MurmurHash2()(key)) {}
+        template<std::size_t size> inline constexpr ResourceKey(const char(&key)[size]): Corrade::Utility::MurmurHash2::Digest(Corrade::Utility::MurmurHash2()(key)) {}
 };
 
 template<class T, class U> class Resource;
@@ -114,8 +114,8 @@ template<class T, class U> class Resource;
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     struct ResourceKeyHash {
-        inline size_t operator()(ResourceKey key) const {
-            return *reinterpret_cast<const size_t*>(key.byteArray());
+        inline std::size_t operator()(ResourceKey key) const {
+            return *reinterpret_cast<const std::size_t*>(key.byteArray());
         }
     };
 
@@ -146,18 +146,18 @@ namespace Implementation {
                 T* data;
                 ResourceDataState state;
                 ResourcePolicy policy;
-                size_t referenceCount;
+                std::size_t referenceCount;
             };
 
             inline virtual ~ResourceManagerData() {
                 delete _fallback;
             }
 
-            inline size_t lastChange() const { return _lastChange; }
+            inline std::size_t lastChange() const { return _lastChange; }
 
-            inline size_t count() const { return _data.size(); }
+            inline std::size_t count() const { return _data.size(); }
 
-            size_t referenceCount(ResourceKey key) const {
+            std::size_t referenceCount(ResourceKey key) const {
                 auto it = _data.find(key);
                 if(it == _data.end()) return 0;
                 return it->second.referenceCount;
@@ -243,7 +243,7 @@ namespace Implementation {
         private:
             std::unordered_map<ResourceKey, Data, ResourceKeyHash> _data;
             T* _fallback;
-            size_t _lastChange;
+            std::size_t _lastChange;
     };
 }
 #endif
@@ -372,7 +372,7 @@ template<class T, class U = T> class Resource {
 
         Implementation::ResourceManagerData<T>* manager;
         ResourceKey _key;
-        size_t lastCheck;
+        std::size_t lastCheck;
         ResourceState _state;
         T* data;
 };
@@ -465,7 +465,7 @@ template<class... Types> class ResourceManager: protected Implementation::Resour
         inline ~ResourceManager() { _instance = nullptr; }
 
         /** @brief Count of resources of given type */
-        template<class T> inline size_t count() {
+        template<class T> inline std::size_t count() {
             return this->Implementation::ResourceManagerData<T>::count();
         }
 
@@ -490,7 +490,7 @@ template<class... Types> class ResourceManager: protected Implementation::Resour
          *
          * @see set()
          */
-        template<class T> inline size_t referenceCount(ResourceKey key) const {
+        template<class T> inline std::size_t referenceCount(ResourceKey key) const {
             return this->Implementation::ResourceManagerData<T>::referenceCount(key);
         }
 
@@ -552,7 +552,7 @@ template<class... Types> class ResourceManager: protected Implementation::Resour
 
 /** @debugoperator{Magnum::ResourceKey} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const ResourceKey& value) {
-    return debug << static_cast<const Corrade::Utility::HashDigest<sizeof(size_t)>&>(value);
+    return debug << static_cast<const Corrade::Utility::HashDigest<sizeof(std::size_t)>&>(value);
 }
 
 template<class ...Types> ResourceManager<Types...>* ResourceManager<Types...>::_instance(nullptr);

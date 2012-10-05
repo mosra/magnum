@@ -25,7 +25,7 @@ namespace Test {
 
 class Data {
     public:
-        static size_t count;
+        static std::size_t count;
 
         inline Data() { ++count; }
         inline ~Data() { --count; }

@@ -26,7 +26,7 @@
 
 namespace Magnum { namespace Primitives {
 
-template<size_t subdivisions> class Icosphere;
+template<std::size_t subdivisions> class Icosphere;
 
 /**
 @brief 3D icosphere primitive with zero subdivisions
@@ -48,14 +48,14 @@ template<> class Icosphere<0>: public Trade::MeshData3D {
 Indexed triangle mesh with normals.
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<size_t subdivisions> class Icosphere: public Icosphere<0> {
+template<std::size_t subdivisions> class Icosphere: public Icosphere<0> {
 #else
-template<size_t subdivisions> class Icosphere {
+template<std::size_t subdivisions> class Icosphere {
 #endif
     public:
         /** @brief Constructor */
         Icosphere() {
-            for(size_t i = 0; i != subdivisions; ++i)
+            for(std::size_t i = 0; i != subdivisions; ++i)
                 MeshTools::subdivide(*indices(), *normals(0), [](const Vector3& a, const Vector3& b) {
                     return (a+b).normalized();
                 });

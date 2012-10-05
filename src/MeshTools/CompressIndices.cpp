@@ -22,6 +22,8 @@
 #include "IndexedMesh.h"
 #include "SizeTraits.h"
 
+using namespace std;
+
 namespace Magnum { namespace MeshTools {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

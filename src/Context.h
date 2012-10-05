@@ -76,12 +76,12 @@ class MAGNUM_EXPORT Extension {
     private:
         /* GCC 4.6 doesn't like const members, as std::vector doesn't have
            proper move semantic yet */
-        size_t _index;
+        std::size_t _index;
         Version _requiredVersion;
         Version _coreVersion;
         const char* _string;
 
-        inline constexpr Extension(size_t index, Version requiredVersion, Version coreVersion, const char* string): _index(index), _requiredVersion(requiredVersion), _coreVersion(coreVersion), _string(string) {}
+        inline constexpr Extension(std::size_t index, Version requiredVersion, Version coreVersion, const char* string): _index(index), _requiredVersion(requiredVersion), _coreVersion(coreVersion), _string(string) {}
 };
 
 /**

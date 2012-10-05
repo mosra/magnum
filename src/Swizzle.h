@@ -28,29 +28,29 @@ namespace Implementation {
     using Math::Implementation::Sequence;
     using Math::Implementation::GenerateSequence;
 
-    template<size_t size, size_t position> struct ComponentAtPosition {
+    template<std::size_t size, std::size_t position> struct ComponentAtPosition {
         static_assert(size > position, "Swizzle parameter out of range of base vector");
 
         template<class T> inline constexpr static T value(const Math::Vector<size, T>& vector) { return vector[position]; }
     };
 
-    template<size_t size, char component> struct Component {};
-    template<size_t size> struct Component<size, 'x'>: public ComponentAtPosition<size, 0> {};
-    template<size_t size> struct Component<size, 'y'>: public ComponentAtPosition<size, 1> {};
-    template<size_t size> struct Component<size, 'z'>: public ComponentAtPosition<size, 2> {};
-    template<size_t size> struct Component<size, 'w'>: public ComponentAtPosition<size, 3> {};
-    template<size_t size> struct Component<size, 'r'>: public ComponentAtPosition<size, 0> {};
-    template<size_t size> struct Component<size, 'g'>: public ComponentAtPosition<size, 1> {};
-    template<size_t size> struct Component<size, 'b'>: public ComponentAtPosition<size, 2> {};
-    template<size_t size> struct Component<size, 'a'>: public ComponentAtPosition<size, 3> {};
-    template<size_t size> struct Component<size, '0'> {
+    template<std::size_t size, char component> struct Component {};
+    template<std::size_t size> struct Component<size, 'x'>: public ComponentAtPosition<size, 0> {};
+    template<std::size_t size> struct Component<size, 'y'>: public ComponentAtPosition<size, 1> {};
+    template<std::size_t size> struct Component<size, 'z'>: public ComponentAtPosition<size, 2> {};
+    template<std::size_t size> struct Component<size, 'w'>: public ComponentAtPosition<size, 3> {};
+    template<std::size_t size> struct Component<size, 'r'>: public ComponentAtPosition<size, 0> {};
+    template<std::size_t size> struct Component<size, 'g'>: public ComponentAtPosition<size, 1> {};
+    template<std::size_t size> struct Component<size, 'b'>: public ComponentAtPosition<size, 2> {};
+    template<std::size_t size> struct Component<size, 'a'>: public ComponentAtPosition<size, 3> {};
+    template<std::size_t size> struct Component<size, '0'> {
         template<class T> inline constexpr static T value(const Math::Vector<size, T>&) { return T(0); }
     };
-    template<size_t size> struct Component<size, '1'> {
+    template<std::size_t size> struct Component<size, '1'> {
         template<class T> inline constexpr static T value(const Math::Vector<size, T>&) { return T(1); }
     };
 
-    template<size_t size, class T> struct TypeForSize {
+    template<std::size_t size, class T> struct TypeForSize {
         typedef Math::Vector<size, typename T::Type> Type;
     };
     template<class T> struct TypeForSize<2, T> { typedef Math::Vector2<typename T::Type> Type; };
@@ -61,11 +61,11 @@ namespace Implementation {
     template<class T> struct TypeForSize<4, Color3<T>> { typedef Color4<T> Type; };
     template<class T> struct TypeForSize<4, Color4<T>> { typedef Color4<T> Type; };
 
-    template<size_t size, class T> inline constexpr T componentAtPosition(const Math::Vector<size, T>& vector, size_t position) {
+    template<std::size_t size, class T> inline constexpr T componentAtPosition(const Math::Vector<size, T>& vector, std::size_t position) {
         return size > position ? vector[position] : throw;
     }
 
-    template<size_t size, class T> inline constexpr T component(const Math::Vector<size, T>& vector, char component) {
+    template<std::size_t size, class T> inline constexpr T component(const Math::Vector<size, T>& vector, char component) {
         return component == 'x' ? componentAtPosition(vector, 0) :
                component == 'y' ? componentAtPosition(vector, 1) :
                component == 'z' ? componentAtPosition(vector, 2) :
@@ -79,7 +79,7 @@ namespace Implementation {
                throw;
     }
 
-    template<size_t size, class T, size_t ...sequence> inline constexpr Math::Vector<sizeof...(sequence), T> swizzleFrom(Sequence<sequence...>, const Math::Vector<size, T>& vector, const char(&components)[sizeof...(sequence)+1]) {
+    template<std::size_t size, class T, std::size_t ...sequence> inline constexpr Math::Vector<sizeof...(sequence), T> swizzleFrom(Sequence<sequence...>, const Math::Vector<size, T>& vector, const char(&components)[sizeof...(sequence)+1]) {
         return {component<size>(vector, components[sequence])...};
     }
 }
@@ -137,7 +137,7 @@ evaluated at compile time, but at runtime.
 @see @ref matrix-vector-component-access, Vector4::xyz(), Color4::rgb(),
     Vector4::xy(), Vector3::xy()
 */
-template<class T, size_t newSize> inline constexpr typename Implementation::TypeForSize<newSize-1, T>::Type swizzle(const T& vector, const char(&components)[newSize]) {
+template<class T, std::size_t newSize> inline constexpr typename Implementation::TypeForSize<newSize-1, T>::Type swizzle(const T& vector, const char(&components)[newSize]) {
     return Implementation::swizzleFrom(typename Implementation::GenerateSequence<newSize-1>::Type(), vector, components);
 }
 

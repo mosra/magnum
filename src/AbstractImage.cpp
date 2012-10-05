@@ -16,6 +16,8 @@
 #include "AbstractImage.h"
 #include "TypeTraits.h"
 
+using namespace std;
+
 namespace Magnum {
 
 size_t AbstractImage::pixelSize(Components format, ComponentType type) {

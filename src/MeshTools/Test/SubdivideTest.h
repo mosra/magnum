@@ -29,13 +29,13 @@ class SubdivideTest: public Corrade::TestSuite::Tester<SubdivideTest> {
     private:
         class Vector1 {
             public:
-                static const size_t Size = 1;
+                static const std::size_t Size = 1;
                 typedef int Type;
 
                 Vector1(): data(0) {}
                 Vector1(int i): data(i) {}
-                int operator[](size_t) const { return data; }
-                int& operator[](size_t) { return data; }
+                int operator[](std::size_t) const { return data; }
+                int& operator[](std::size_t) { return data; }
                 bool operator==(Vector1 i) const { return i.data == data; }
                 Vector1 operator-(Vector1 i) const { return data-i.data; }
 
