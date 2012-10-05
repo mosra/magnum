@@ -266,40 +266,40 @@ template<class T, class U = T> class Resource {
         inline Resource(): manager(nullptr), lastCheck(0), _state(ResourceState::Final), data(nullptr) {}
 
         /** @brief Copy constructor */
-        inline Resource(const Resource<T, U>& other): manager(other.manager), key(other.key), lastCheck(other.lastCheck), _state(other._state), data(other.data) {
-            if(manager) manager->incrementReferenceCount(key);
+        inline Resource(const Resource<T, U>& other): manager(other.manager), _key(other._key), lastCheck(other.lastCheck), _state(other._state), data(other.data) {
+            if(manager) manager->incrementReferenceCount(_key);
         }
 
         /** @brief Move constructor */
-        inline Resource(Resource<T, U>&& other): manager(other.manager), key(other.key), lastCheck(other.lastCheck), _state(other._state), data(other.data) {
+        inline Resource(Resource<T, U>&& other): manager(other.manager), _key(other._key), lastCheck(other.lastCheck), _state(other._state), data(other.data) {
             other.manager = nullptr;
         }
 
         /** @brief Destructor */
         inline ~Resource() {
-            if(manager) manager->decrementReferenceCount(key);
+            if(manager) manager->decrementReferenceCount(_key);
         }
 
         /** @brief Assignment operator */
         Resource<T, U>& operator=(const Resource<T, U>& other) {
-            if(manager) manager->decrementReferenceCount(key);
+            if(manager) manager->decrementReferenceCount(_key);
 
             manager = other.manager;
-            key = other.key;
+            _key = other._key;
             lastCheck = other.lastCheck;
             _state = other._state;
             data = other.data;
 
-            if(manager) manager->incrementReferenceCount(key);
+            if(manager) manager->incrementReferenceCount(_key);
             return *this;
         }
 
         /** @brief Assignment move operator */
         Resource<T, U>& operator=(Resource<T, U>&& other) {
-            if(manager) manager->decrementReferenceCount(key);
+            if(manager) manager->decrementReferenceCount(_key);
 
             manager = other.manager;
-            key = other.key;
+            _key = other._key;
             lastCheck = other.lastCheck;
             _state = other._state;
             data = other.data;
@@ -307,6 +307,9 @@ template<class T, class U = T> class Resource {
             other.manager = nullptr;
             return *this;
         }
+
+        /** @brief Resource key */
+        inline ResourceKey key() const { return _key; }
 
         /**
          * @brief %Resource state
@@ -343,7 +346,7 @@ template<class T, class U = T> class Resource {
         }
 
     private:
-        inline Resource(Implementation::ResourceManagerData<T>* manager, ResourceKey key): manager(manager), key(key), lastCheck(0), _state(ResourceState::NotLoaded), data(nullptr) {
+        inline Resource(Implementation::ResourceManagerData<T>* manager, ResourceKey key): manager(manager), _key(key), lastCheck(0), _state(ResourceState::NotLoaded), data(nullptr) {
             manager->incrementReferenceCount(key);
         }
 
@@ -355,7 +358,7 @@ template<class T, class U = T> class Resource {
             if(manager->lastChange() < lastCheck) return;
 
             /* Acquire new data and save last check time */
-            const typename Implementation::ResourceManagerData<T>::Data& d = manager->data(key);
+            const typename Implementation::ResourceManagerData<T>::Data& d = manager->data(_key);
             lastCheck = manager->lastChange();
 
             /* Try to get the data */
@@ -368,7 +371,7 @@ template<class T, class U = T> class Resource {
         }
 
         Implementation::ResourceManagerData<T>* manager;
-        ResourceKey key;
+        ResourceKey _key;
         size_t lastCheck;
         ResourceState _state;
         T* data;
@@ -423,7 +426,7 @@ Resource<Mesh> cube(manager->get<Mesh>("cube"));
 if(!cube) {
     Mesh* mesh = new Mesh;
     // ...
-    manager->set("cube", mesh, ResourceDataState::Final, ResourcePolicy::Resident);
+    manager->set(cube.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
 }
 @endcode
 - Using the resource data.
