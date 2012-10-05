@@ -98,7 +98,7 @@ void MatrixTest::constructZero() {
 }
 
 void MatrixTest::trace() {
-    Matrix<5, int> m(
+    Matrix<5, int32_t> m(
         1, 2, 3, 0, 0,
         2, 3, 2, 1, -2,
         1, 1, -20, 1, 0,
@@ -127,7 +127,7 @@ void MatrixTest::ij() {
 }
 
 void MatrixTest::determinant() {
-    Matrix<5, int> m(
+    Matrix<5, int32_t> m(
         1, 2, 2, 1, 0,
         2, 3, 2, 1, -2,
         1, 1, 1, 1, 0,

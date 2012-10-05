@@ -31,7 +31,7 @@ class Data {
         inline ~Data() { --count; }
 };
 
-typedef Magnum::ResourceManager<int, Data> ResourceManager;
+typedef Magnum::ResourceManager<int32_t, Data> ResourceManager;
 
 class ResourceManagerTest: public Corrade::TestSuite::Tester<ResourceManagerTest> {
     public:

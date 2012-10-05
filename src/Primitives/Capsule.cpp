@@ -22,7 +22,7 @@ using namespace std;
 
 namespace Magnum { namespace Primitives {
 
-Capsule::Capsule(unsigned int hemisphereRings, unsigned int cylinderRings, unsigned int segments, GLfloat length, TextureCoords textureCoords): MeshData3D("", Mesh::Primitive::Triangles, new vector<uint32_t>, {new vector<Point3D>()}, {new vector<Vector3>()}, textureCoords == TextureCoords::Generate ? vector<vector<Vector2>*>{new vector<Vector2>()} : vector<vector<Vector2>*>()), segments(segments), textureCoords(textureCoords) {
+Capsule::Capsule(uint32_t hemisphereRings, uint32_t cylinderRings, uint32_t segments, GLfloat length, TextureCoords textureCoords): MeshData3D("", Mesh::Primitive::Triangles, new vector<uint32_t>, {new vector<Point3D>()}, {new vector<Vector3>()}, textureCoords == TextureCoords::Generate ? vector<vector<Vector2>*>{new vector<Vector2>()} : vector<vector<Vector2>*>()), segments(segments), textureCoords(textureCoords) {
     CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 3, "Capsule must have at least one hemisphere ring, one cylinder ring and three segments", );
 
     GLfloat height = 2.0f+length;
@@ -50,7 +50,7 @@ Capsule::Capsule(unsigned int hemisphereRings, unsigned int cylinderRings, unsig
     topFaceRing();
 }
 
-Capsule::Capsule(unsigned int segments, TextureCoords textureCoords): MeshData3D("", Mesh::Primitive::Triangles, new std::vector<std::uint32_t>, {new std::vector<Point3D>()}, {new std::vector<Vector3>()}, textureCoords == TextureCoords::Generate ? std::vector<std::vector<Vector2>*>{new std::vector<Vector2>()} : std::vector<std::vector<Vector2>*>()), segments(segments), textureCoords(textureCoords) {}
+Capsule::Capsule(uint32_t segments, TextureCoords textureCoords): MeshData3D("", Mesh::Primitive::Triangles, new std::vector<uint32_t>, {new std::vector<Point3D>()}, {new std::vector<Vector3>()}, textureCoords == TextureCoords::Generate ? std::vector<std::vector<Vector2>*>{new std::vector<Vector2>()} : std::vector<std::vector<Vector2>*>()), segments(segments), textureCoords(textureCoords) {}
 
 void Capsule::capVertex(GLfloat y, GLfloat normalY, GLfloat textureCoordsV) {
     positions(0)->push_back({0.0f, y, 0.0f});
@@ -60,15 +60,15 @@ void Capsule::capVertex(GLfloat y, GLfloat normalY, GLfloat textureCoordsV) {
         textureCoords2D(0)->push_back({0.5, textureCoordsV});
 }
 
-void Capsule::hemisphereVertexRings(unsigned int count, GLfloat centerY, GLfloat startRingAngle, GLfloat ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement) {
+void Capsule::hemisphereVertexRings(uint32_t count, GLfloat centerY, GLfloat startRingAngle, GLfloat ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement) {
     GLfloat segmentAngleIncrement = 2*Math::Constants<GLfloat>::pi()/segments;
     GLfloat x, y, z;
-    for(unsigned int i = 0; i != count; ++i) {
+    for(uint32_t i = 0; i != count; ++i) {
         GLfloat ringAngle = startRingAngle + i*ringAngleIncrement;
         x = z = cos(ringAngle);
         y = sin(ringAngle);
 
-        for(unsigned int j = 0; j != segments; ++j) {
+        for(uint32_t j = 0; j != segments; ++j) {
             GLfloat segmentAngle = j*segmentAngleIncrement;
             positions(0)->push_back({x*sin(segmentAngle), centerY+y, z*cos(segmentAngle)});
             normals(0)->push_back({x*sin(segmentAngle), y, z*cos(segmentAngle)});
@@ -86,10 +86,10 @@ void Capsule::hemisphereVertexRings(unsigned int count, GLfloat centerY, GLfloat
     }
 }
 
-void Capsule::cylinderVertexRings(unsigned int count, GLfloat startY, GLfloat yIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement) {
+void Capsule::cylinderVertexRings(uint32_t count, GLfloat startY, GLfloat yIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement) {
     GLfloat segmentAngleIncrement = 2*Math::Constants<GLfloat>::pi()/segments;
-    for(unsigned int i = 0; i != count; ++i) {
-        for(unsigned int j = 0; j != segments; ++j) {
+    for(uint32_t i = 0; i != count; ++i) {
+        for(uint32_t j = 0; j != segments; ++j) {
             GLfloat segmentAngle = j*segmentAngleIncrement;
             positions(0)->push_back({sin(segmentAngle), startY, cos(segmentAngle)});
             normals(0)->push_back({sin(segmentAngle), 0.0f, cos(segmentAngle)});
@@ -110,7 +110,7 @@ void Capsule::cylinderVertexRings(unsigned int count, GLfloat startY, GLfloat yI
 }
 
 void Capsule::bottomFaceRing() {
-    for(unsigned int j = 0; j != segments; ++j) {
+    for(uint32_t j = 0; j != segments; ++j) {
         /* Bottom vertex */
         indices()->push_back(0);
 
@@ -123,11 +123,11 @@ void Capsule::bottomFaceRing() {
     }
 }
 
-void Capsule::faceRings(unsigned int count, unsigned int offset) {
-    unsigned int vertexSegments = segments + (textureCoords == TextureCoords::Generate ? 1 : 0);
+void Capsule::faceRings(uint32_t count, uint32_t offset) {
+    uint32_t vertexSegments = segments + (textureCoords == TextureCoords::Generate ? 1 : 0);
 
-    for(unsigned int i = 0; i != count; ++i) {
-        for(unsigned int j = 0; j != segments; ++j) {
+    for(uint32_t i = 0; i != count; ++i) {
+        for(uint32_t j = 0; j != segments; ++j) {
             uint32_t bottomLeft = i*vertexSegments+j+offset;
             uint32_t bottomRight = ((j != segments-1 || textureCoords == TextureCoords::Generate) ?
                 i*vertexSegments+j+1+offset : i*segments+offset);
@@ -145,9 +145,9 @@ void Capsule::faceRings(unsigned int count, unsigned int offset) {
 }
 
 void Capsule::topFaceRing() {
-    unsigned int vertexSegments = segments + (textureCoords == TextureCoords::Generate ? 1 : 0);
+    uint32_t vertexSegments = segments + (textureCoords == TextureCoords::Generate ? 1 : 0);
 
-    for(unsigned int j = 0; j != segments; ++j) {
+    for(uint32_t j = 0; j != segments; ++j) {
         /* Bottom left vertex */
         indices()->push_back(normals(0)->size()-vertexSegments+j-1);
 

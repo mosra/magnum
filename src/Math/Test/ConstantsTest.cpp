@@ -18,8 +18,6 @@
 #include "Constants.h"
 #include "Math.h"
 
-using namespace std;
-
 CORRADE_TEST_MAIN(Magnum::Math::Test::ConstantsTest)
 
 namespace Magnum { namespace Math { namespace Test {

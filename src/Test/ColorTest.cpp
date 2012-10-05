@@ -25,8 +25,8 @@ using namespace Corrade::Utility;
 
 namespace Magnum { namespace Test {
 
-typedef Magnum::Color3<unsigned char> Color3;
-typedef Magnum::Color4<unsigned char> Color4;
+typedef Magnum::Color3<uint8_t> Color3;
+typedef Magnum::Color4<uint8_t> Color4;
 typedef Magnum::Color3<float> Color3f;
 typedef Magnum::Color4<float> Color4f;
 

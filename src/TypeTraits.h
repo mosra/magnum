@@ -165,7 +165,7 @@ template<> struct TypeOf<Type::Float> { typedef GLfloat Type; };
 template<> struct TypeOf<Type::Double> { typedef GLdouble Type; };
 #endif
 
-template<> struct TypeTraits<GLubyte>: public Math::MathTypeTraits<unsigned char> {
+template<> struct TypeTraits<GLubyte>: public Math::MathTypeTraits<std::uint8_t> {
     inline constexpr static Type type() { return Type::UnsignedByte; }
     inline constexpr static Type indexType() { return Type::UnsignedByte; }
     inline constexpr static AbstractImage::ComponentType imageType() { return AbstractImage::ComponentType::UnsignedByte; }
@@ -173,7 +173,7 @@ template<> struct TypeTraits<GLubyte>: public Math::MathTypeTraits<unsigned char
     inline constexpr static std::size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLbyte>: public Math::MathTypeTraits<char> {
+template<> struct TypeTraits<GLbyte>: public Math::MathTypeTraits<std::int8_t> {
     inline constexpr static Type type() { return Type::Byte; }
     /* Can not be used for indices */
     inline constexpr static AbstractImage::ComponentType imageType() { return AbstractImage::ComponentType::Byte; }
@@ -181,7 +181,7 @@ template<> struct TypeTraits<GLbyte>: public Math::MathTypeTraits<char> {
     inline constexpr static std::size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLushort>: public Math::MathTypeTraits<unsigned short> {
+template<> struct TypeTraits<GLushort>: public Math::MathTypeTraits<std::uint16_t> {
     inline constexpr static Type type() { return Type::UnsignedShort; }
     inline constexpr static Type indexType() { return Type::UnsignedShort; }
     inline constexpr static AbstractImage::ComponentType imageType() { return AbstractImage::ComponentType::UnsignedShort; }
@@ -189,7 +189,7 @@ template<> struct TypeTraits<GLushort>: public Math::MathTypeTraits<unsigned sho
     inline constexpr static std::size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLshort>: public Math::MathTypeTraits<short> {
+template<> struct TypeTraits<GLshort>: public Math::MathTypeTraits<std::int16_t> {
     inline constexpr static Type type() { return Type::Short; }
     /* Can not be used for indices */
     inline constexpr static AbstractImage::ComponentType imageType() { return AbstractImage::ComponentType::Short; }
@@ -197,7 +197,7 @@ template<> struct TypeTraits<GLshort>: public Math::MathTypeTraits<short> {
     inline constexpr static std::size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLuint>: public Math::MathTypeTraits<unsigned int> {
+template<> struct TypeTraits<GLuint>: public Math::MathTypeTraits<std::uint16_t> {
     inline constexpr static Type type() { return Type::UnsignedInt; }
     inline constexpr static Type indexType() { return Type::UnsignedInt; }
     inline constexpr static AbstractImage::ComponentType imageType() { return AbstractImage::ComponentType::UnsignedInt; }
@@ -205,7 +205,7 @@ template<> struct TypeTraits<GLuint>: public Math::MathTypeTraits<unsigned int> 
     inline constexpr static std::size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLint>: public Math::MathTypeTraits<int> {
+template<> struct TypeTraits<GLint>: public Math::MathTypeTraits<std::int16_t> {
     inline constexpr static Type type() { return Type::Int; }
     /* Can not be used for indices */
     inline constexpr static AbstractImage::ComponentType imageType() { return AbstractImage::ComponentType::Int; }

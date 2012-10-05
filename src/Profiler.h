@@ -95,7 +95,7 @@ class MAGNUM_EXPORT Profiler {
          *
          * @see otherSection, addSection(), start(Section)
          */
-        typedef unsigned int Section;
+        typedef std::uint32_t Section;
 
         /**
          * @brief Default section

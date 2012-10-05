@@ -37,7 +37,7 @@ void Timeline::nextFrame() {
     if(!running) return;
 
     auto now = high_resolution_clock::now();
-    unsigned int duration = duration_cast<microseconds>(now-previousFrameTime).count();
+    std::uint32_t duration = duration_cast<microseconds>(now-previousFrameTime).count();
     _previousFrameDuration = duration/1e6f;
 
     if(_previousFrameDuration < _minimalFrameTime) {

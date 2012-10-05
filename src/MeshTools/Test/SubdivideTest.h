@@ -30,17 +30,17 @@ class SubdivideTest: public Corrade::TestSuite::Tester<SubdivideTest> {
         class Vector1 {
             public:
                 static const std::size_t Size = 1;
-                typedef int Type;
+                typedef std::int32_t Type;
 
                 Vector1(): data(0) {}
-                Vector1(int i): data(i) {}
-                int operator[](std::size_t) const { return data; }
-                int& operator[](std::size_t) { return data; }
+                Vector1(Type i): data(i) {}
+                Type operator[](std::size_t) const { return data; }
+                Type& operator[](std::size_t) { return data; }
                 bool operator==(Vector1 i) const { return i.data == data; }
                 Vector1 operator-(Vector1 i) const { return data-i.data; }
 
             private:
-                int data;
+                Type data;
         };
 
         inline static Vector1 interpolator(Vector1 a, Vector1 b) { return (a[0]+b[0])/2; }

@@ -39,29 +39,29 @@ ResourceManagerTest::ResourceManagerTest() {
 
 void ResourceManagerTest::state() {
     ResourceKey questionKey("the-question");
-    rm->set(questionKey, new int(10), ResourceDataState::Mutable, ResourcePolicy::Resident);
-    Resource<int> theQuestion = rm->get<int>(questionKey);
+    rm->set(questionKey, new int32_t(10), ResourceDataState::Mutable, ResourcePolicy::Resident);
+    Resource<int32_t> theQuestion = rm->get<int32_t>(questionKey);
     CORRADE_VERIFY(theQuestion.state() == ResourceState::Mutable);
     CORRADE_COMPARE(*theQuestion, 10);
 
     /* Check that hash function is working properly */
     ResourceKey answerKey("the-answer");
-    rm->set(answerKey, new int(42), ResourceDataState::Final, ResourcePolicy::Resident);
-    Resource<int> theAnswer = rm->get<int>(answerKey);
+    rm->set(answerKey, new int32_t(42), ResourceDataState::Final, ResourcePolicy::Resident);
+    Resource<int32_t> theAnswer = rm->get<int32_t>(answerKey);
     CORRADE_VERIFY(theAnswer.state() == ResourceState::Final);
     CORRADE_COMPARE(*theAnswer, 42);
 
-    CORRADE_COMPARE(rm->count<int>(), 2);
+    CORRADE_COMPARE(rm->count<int32_t>(), 2);
 
     /* Cannot change already final resource */
     stringstream out;
     Error::setOutput(&out);
-    rm->set(answerKey, new int(43), ResourceDataState::Mutable, ResourcePolicy::Resident);
+    rm->set(answerKey, new int32_t(43), ResourceDataState::Mutable, ResourcePolicy::Resident);
     CORRADE_COMPARE(*theAnswer, 42);
     CORRADE_COMPARE(out.str(), "ResourceManager: cannot change already final resource\n");
 
     /* Check non-final resource changes */
-    rm->set(questionKey, new int(20), ResourceDataState::Final, ResourcePolicy::Resident);
+    rm->set(questionKey, new int32_t(20), ResourceDataState::Final, ResourcePolicy::Resident);
     CORRADE_VERIFY(theQuestion.state() == ResourceState::Final);
     CORRADE_COMPARE(*theQuestion, 20);
 }

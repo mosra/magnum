@@ -21,7 +21,7 @@ using namespace std;
 
 namespace Magnum { namespace Primitives {
 
-Cylinder::Cylinder(unsigned int rings, unsigned int segments, GLfloat length, Flags flags): Capsule(segments, flags & Flag::GenerateTextureCoords ? TextureCoords::Generate : TextureCoords::DontGenerate) {
+Cylinder::Cylinder(uint32_t rings, uint32_t segments, GLfloat length, Flags flags): Capsule(segments, flags & Flag::GenerateTextureCoords ? TextureCoords::Generate : TextureCoords::DontGenerate) {
     CORRADE_ASSERT(rings >= 1 && segments >= 3, "Cylinder must have at least one ring and three segments", );
 
     GLfloat y = length*0.5f;
@@ -51,7 +51,7 @@ Cylinder::Cylinder(unsigned int rings, unsigned int segments, GLfloat length, Fl
 void Cylinder::capVertexRing(GLfloat y, GLfloat textureCoordsV, const Vector3& normal) {
     GLfloat segmentAngleIncrement = 2*Math::Constants<GLfloat>::pi()/segments;
 
-    for(unsigned int i = 0; i != segments; ++i) {
+    for(uint32_t i = 0; i != segments; ++i) {
         GLfloat segmentAngle = i*segmentAngleIncrement;
         positions(0)->push_back({sin(segmentAngle), y, cos(segmentAngle)});
         normals(0)->push_back(normal);

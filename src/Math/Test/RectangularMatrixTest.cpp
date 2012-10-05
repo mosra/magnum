@@ -29,7 +29,7 @@ namespace Magnum { namespace Math { namespace Test {
 typedef RectangularMatrix<4, 3, float> Matrix4x3;
 typedef RectangularMatrix<3, 4, float> Matrix3x4;
 typedef RectangularMatrix<2, 2, float> Matrix2;
-typedef RectangularMatrix<2, 2, int> Matrix2i;
+typedef RectangularMatrix<2, 2, int32_t> Matrix2i;
 typedef Vector<4, float> Vector4;
 
 RectangularMatrixTest::RectangularMatrixTest() {
@@ -154,8 +154,8 @@ void RectangularMatrixTest::multiplyDivide() {
     CORRADE_COMPARE(-1.5f*vec, multiplied);
     CORRADE_COMPARE(multiplied/-1.5f, vec);
 
-    Math::RectangularMatrix<1, 1, char> vecChar(32);
-    Math::RectangularMatrix<1, 1, char> multipliedChar(-48);
+    Math::RectangularMatrix<1, 1, int8_t> vecChar(32);
+    Math::RectangularMatrix<1, 1, int8_t> multipliedChar(-48);
     CORRADE_COMPARE(vecChar*-1.5f, multipliedChar);
     CORRADE_COMPARE(multipliedChar/-1.5f, vecChar);
     CORRADE_COMPARE(-1.5f*vecChar, multipliedChar);
@@ -168,14 +168,14 @@ void RectangularMatrixTest::multiplyDivide() {
 }
 
 void RectangularMatrixTest::multiply() {
-    RectangularMatrix<4, 6, int> left(
+    RectangularMatrix<4, 6, int32_t> left(
         -5,     27,     10,     33,     0,     -15,
          7,     56,     66,      1,     0,     -24,
          4,     41,      4,      0,     1,      -4,
          9,   -100,     19,    -49,     1,       9
     );
 
-    RectangularMatrix<5, 4, int> right(
+    RectangularMatrix<5, 4, int32_t> right(
          1,     -7,      0,    158,
          2,     24,     -3,     40,
          3,    -15,     -2,    -50,
@@ -183,7 +183,7 @@ void RectangularMatrixTest::multiply() {
          5,     30,      4,     18
     );
 
-    RectangularMatrix<5, 6, int> expected(
+    RectangularMatrix<5, 6, int32_t> expected(
         1368, -16165,   2550,  -7716,    158,   1575,
          506,  -2725,   2352,  -1870,     37,   -234,
         -578,   4159,  -1918,   2534,    -52,   -127,
@@ -226,7 +226,7 @@ void RectangularMatrixTest::debug() {
                              "       4, 3, 0)\n");
 
     o.str("");
-    Debug(&o) << "a" << Matrix3x4() << "b" << RectangularMatrix<4, 3, char>();
+    Debug(&o) << "a" << Matrix3x4() << "b" << RectangularMatrix<4, 3, int8_t>();
     CORRADE_COMPARE(o.str(), "a Matrix(0, 0, 0,\n"
                              "       0, 0, 0,\n"
                              "       0, 0, 0,\n"

@@ -53,19 +53,19 @@ class Capsule: public Trade::MeshData3D {
          * If texture coordinates are generated, vertices of one segment are
          * duplicated for texture wrapping.
          */
-        Capsule(unsigned int hemisphereRings, unsigned int cylinderRings, unsigned int segments, GLfloat length, TextureCoords textureCoords = TextureCoords::DontGenerate);
+        Capsule(std::uint32_t hemisphereRings, std::uint32_t cylinderRings, std::uint32_t segments, GLfloat length, TextureCoords textureCoords = TextureCoords::DontGenerate);
 
     private:
-        Capsule(unsigned int segments, TextureCoords textureCoords);
+        Capsule(std::uint32_t segments, TextureCoords textureCoords);
 
         void capVertex(GLfloat y, GLfloat normalY, GLfloat textureCoordsV);
-        void hemisphereVertexRings(unsigned int count, GLfloat centerY, GLfloat startRingAngle, GLfloat ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);
-        void cylinderVertexRings(unsigned int count, GLfloat startY, GLfloat yIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);
+        void hemisphereVertexRings(std::uint32_t count, GLfloat centerY, GLfloat startRingAngle, GLfloat ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);
+        void cylinderVertexRings(std::uint32_t count, GLfloat startY, GLfloat yIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);
         void bottomFaceRing();
-        void faceRings(unsigned int count, unsigned int offset = 1);
+        void faceRings(std::uint32_t count, std::uint32_t offset = 1);
         void topFaceRing();
 
-        unsigned int segments;
+        std::uint32_t segments;
         TextureCoords textureCoords;
 };
 

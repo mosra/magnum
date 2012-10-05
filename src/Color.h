@@ -160,7 +160,7 @@ template<class T> class Color3: public Math::Vector3<T> {
          * @brief Create integral color from floating-point color
          *
          * E.g. `{0.294118, 0.45098, 0.878431}` is converted to
-         * `{75, 115, 224}`, if resulting type is `unsigned char`.
+         * `{75, 115, 224}`, if resulting type is `uint8_t`.
          *
          * @note This function is enabled only if source type is floating-point
          *      and destination type is integral.
@@ -175,7 +175,7 @@ template<class T> class Color3: public Math::Vector3<T> {
          * @brief Create floating-point color from integral color
          *
          * E.g. `{75, 115, 224}` is converted to
-         * `{0.294118, 0.45098, 0.878431}`, if source type is `unsigned char`.
+         * `{0.294118, 0.45098, 0.878431}`, if source type is `uint8_t`.
          *
          * @note This function is enabled only if source type is integral
          *      and destination type is floating-point.

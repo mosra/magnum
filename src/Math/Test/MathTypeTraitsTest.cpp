@@ -21,6 +21,8 @@
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::MathTypeTraitsTest)
 
+using namespace std;
+
 namespace Magnum { namespace Math { namespace Test {
 
 MathTypeTraitsTest::MathTypeTraitsTest() {
@@ -29,16 +31,14 @@ MathTypeTraitsTest::MathTypeTraitsTest() {
 }
 
 void MathTypeTraitsTest::equalsIntegral() {
-    _equalsIntegral<unsigned char>();
-    _equalsIntegral<char>();
-    _equalsIntegral<unsigned short>();
-    _equalsIntegral<short>();
-    _equalsIntegral<unsigned int>();
-    _equalsIntegral<int>();
-    _equalsIntegral<unsigned long int>();
-    _equalsIntegral<long int>();
-    _equalsIntegral<unsigned long long>();
-    _equalsIntegral<long long>();
+    _equalsIntegral<uint8_t>();
+    _equalsIntegral<int8_t>();
+    _equalsIntegral<uint16_t>();
+    _equalsIntegral<int16_t>();
+    _equalsIntegral<uint32_t>();
+    _equalsIntegral<int32_t>();
+    _equalsIntegral<uint64_t>();
+    _equalsIntegral<int64_t>();
 }
 
 void MathTypeTraitsTest::equalsFloatingPoint() {

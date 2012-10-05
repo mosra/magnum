@@ -74,11 +74,11 @@ type to value in range @f$ [0, 1] @f$.
 literals, this function should be called with both template parameters
 explicit, e.g.:
 @code
-// Even if this is char literal, integral type is `int`, thus a = 0.1f
+// Even if this is character literal, integral type is 32bit, thus a != 1.0f
 float a = normalize<float>('\127');
 
 // b = 1.0f
-float b = normalize<float, char>('\127');
+float b = normalize<float, int8_t>('\127');
 @endcode
 
 @todo Signed normalization to [-1.0, 1.0] like in OpenGL?
@@ -95,7 +95,8 @@ Converts floating-point value in range @f$ [0, 1] @f$ to full range of given
 integral type.
 
 @note For best precision, `FloatingPoint` type should be always larger that
-resulting `Integral` type (e.g. `double` to `int`, `long double` to `long long`).
+resulting `Integral` type (e.g. `double` to `std::int32_t`, `long double` to
+`std::int64_t`).
 
 @todo Signed normalization to [-1.0, 1.0] like in OpenGL?
 @todo Stable behavior (working/broken) for long double and long long

@@ -101,7 +101,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * anything else. Example usage:
          * @code
          * RectangularMatrix<4, 1, float> floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
-         * RectangularMatrix<4, 1, int> integral(RectangularMatrix<4, 1, int>::from(floatingPoint));
+         * RectangularMatrix<4, 1, std::int8_t> integral(RectangularMatrix<4, 1, std::int8_t>::from(floatingPoint));
          * // integral == {1, 2, -15, 7}
          * @endcode
          */
