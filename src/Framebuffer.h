@@ -819,7 +819,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        void mapForDraw(std::initializer_list<int> colorAttachments);
+        void mapForDraw(std::initializer_list<std::int8_t> colorAttachments);
 
         /**
          * @brief Map given attachment of default framebuffer for reading
@@ -846,7 +846,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        inline void mapForRead(unsigned int colorAttachment) {
+        inline void mapForRead(std::uint8_t colorAttachment) {
             bind(Target::Read);
             glReadBuffer(GL_COLOR_ATTACHMENT0 + colorAttachment);
         }
@@ -904,7 +904,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @see bind(), @fn_gl{FramebufferRenderbuffer}
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        inline void attachRenderbuffer(Target target, unsigned int colorAttachment, Renderbuffer* renderbuffer) {
+        inline void attachRenderbuffer(Target target, std::uint8_t colorAttachment, Renderbuffer* renderbuffer) {
             /** @todo Check for internal format compatibility */
             bind(target);
             glFramebufferRenderbuffer(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, GL_RENDERBUFFER, renderbuffer->id());
@@ -940,7 +940,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        inline void attachTexture1D(Target target, unsigned int colorAttachment, Texture1D* texture, GLint mipLevel) {
+        inline void attachTexture1D(Target target, std::uint8_t colorAttachment, Texture1D* texture, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
             /** @todo Check for texture target compatibility */
             bind(target);
@@ -977,7 +977,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @see attachCubeMapTexture(), bind(), @fn_gl{FramebufferTexture}
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        inline void attachTexture2D(Target target, unsigned int colorAttachment, Texture2D* texture, GLint mipLevel) {
+        inline void attachTexture2D(Target target, std::uint8_t colorAttachment, Texture2D* texture, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
             /** @todo Check for texture target compatibility */
             bind(target);
@@ -1012,7 +1012,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @see attachTexture2D(), bind(), @fn_gl{FramebufferTexture}
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        inline void attachCubeMapTexture(Target target, unsigned int colorAttachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, GLint mipLevel) {
+        inline void attachCubeMapTexture(Target target, std::uint8_t colorAttachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
             bind(target);
             glFramebufferTexture2D(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, static_cast<GLenum>(coordinate), texture->id(), mipLevel);
@@ -1050,7 +1050,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        inline void attachTexture3D(Target target, unsigned int colorAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {
+        inline void attachTexture3D(Target target, std::uint8_t colorAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {
             /** @todo Check for internal format compatibility */
             /** @todo Check for texture target compatibility */
             bind(target);

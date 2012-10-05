@@ -31,7 +31,7 @@ void Framebuffer::mapDefaultForDraw(std::initializer_list<DefaultDrawAttachment>
     delete[] _attachments;
 }
 
-void Framebuffer::mapForDraw(std::initializer_list<int> colorAttachments) {
+void Framebuffer::mapForDraw(std::initializer_list<std::int8_t> colorAttachments) {
     GLenum* attachments = new GLenum[colorAttachments.size()];
     for(auto it = colorAttachments.begin(); it != colorAttachments.end(); ++it)
         attachments[it-colorAttachments.begin()] = *it + GL_COLOR_ATTACHMENT0;

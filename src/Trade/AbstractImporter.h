@@ -28,7 +28,7 @@ namespace Magnum { namespace Trade {
 
 class AbstractMaterialData;
 class CameraData;
-template<size_t> class ImageData;
+template<std::uint8_t> class ImageData;
 class LightData;
 class MeshData2D;
 class MeshData3D;

@@ -19,7 +19,6 @@
  * @brief Class Magnum::Physics::ShapedObjectGroup
  */
 
-#include <cstddef>
 #include <cstdint>
 #include <vector>
 
