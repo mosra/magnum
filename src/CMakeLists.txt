@@ -50,6 +50,7 @@ set(Magnum_HEADERS
     Context.h
     CubeMapTextureArray.h
     CubeMapTexture.h
+    DimensionTraits.h
     Extensions.h
     Framebuffer.h
     Image.h
