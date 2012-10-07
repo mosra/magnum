@@ -37,6 +37,8 @@ set(Magnum_SRCS
     Timeline.cpp
     TypeTraits.cpp
 
+    Implementation/State.cpp
+
     Trade/AbstractImporter.cpp
     Trade/MeshData2D.cpp
     Trade/MeshData3D.cpp)

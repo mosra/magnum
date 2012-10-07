@@ -21,6 +21,7 @@
 
 #include "Buffer.h"
 #include "Extensions.h"
+#include "Implementation/State.h"
 
 using namespace std;
 
@@ -193,12 +194,16 @@ Context::Context() {
     CORRADE_ASSERT(!_current, "Context: Another context currently active", );
     _current = this;
 
+    /* Initialize state tracker */
+    _state = new Implementation::State;
+
     /* Initialize functionality based on current OpenGL version and extensions */
     Buffer::initializeContextBasedFunctionality(this);
 }
 
 Context::~Context() {
     CORRADE_ASSERT(_current == this, "Context: Cannot destroy context which is not currently active", );
+    delete _state;
     _current = nullptr;
 }
 

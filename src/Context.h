@@ -28,6 +28,12 @@
 
 namespace Magnum {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
+    class State;
+}
+#endif
+
 /** @brief OpenGL version */
 enum class Version: GLint {
     None = 0,                       /**< @brief Unspecified */
@@ -202,6 +208,10 @@ class MAGNUM_EXPORT Context {
             return _version >= extension._coreVersion || (_version >= extension._requiredVersion && extensionStatus[extension._index]);
         }
 
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline Implementation::State* state() { return _state; }
+        #endif
+
     private:
         static Context* _current;
 
@@ -211,6 +221,8 @@ class MAGNUM_EXPORT Context {
 
         std::bitset<128> extensionStatus;
         std::vector<Extension> _supportedExtensions;
+
+        Implementation::State* _state;
 };
 
 }
