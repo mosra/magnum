@@ -88,7 +88,6 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          *
          * Expects an active shader with all uniforms set.
          * @see Buffer::bind(), bind(), unbind(), finalize(), @fn_gl{DrawElements}
-         * @todo Index buffer bound every time?!
          */
         void draw();
 
