@@ -19,6 +19,8 @@
 
 #include "Context.h"
 #include "Extensions.h"
+#include "Implementation/State.h"
+#include "Implementation/BufferState.h"
 
 namespace Magnum {
 
@@ -36,10 +38,46 @@ void Buffer::initializeContextBasedFunctionality(Context* context) {
     }
 }
 
+Buffer::~Buffer() {
+    GLuint* bindings = Context::current()->state()->buffer->bindings;
+
+    /* Remove all current bindings from the state */
+    for(std::size_t i = 1; i != Implementation::BufferState::TargetCount; ++i)
+        if(bindings[i] == _id) bindings[i] = 0;
+
+    glDeleteBuffers(1, &_id);
+}
+
+void Buffer::bind(Target target, GLuint id) {
+    GLuint& bound = Context::current()->state()->buffer->bindings[Implementation::BufferState::indexForTarget(target)];
+
+    /* Already bound, nothing to do */
+    if(bound == id) return;
+
+    /* Bind the buffer otherwise */
+    bound = id;
+    glBindBuffer(static_cast<GLenum>(target), id);
+}
+
+Buffer::Target Buffer::bindInternal(Target hint) {
+    GLuint* bindings = Context::current()->state()->buffer->bindings;
+    GLuint& hintBinding = bindings[Implementation::BufferState::indexForTarget(hint)];
+
+    /* Shortcut - if already bound to hint, return */
+    if(hintBinding == _id) return hint;
+
+    /* Return first target in which the buffer is bound */
+    for(std::size_t i = 1; i != Implementation::BufferState::TargetCount; ++i)
+        if(bindings[i] == _id) return Implementation::BufferState::targetForIndex[i];
+
+    /* Bind the buffer to hint target otherwise */
+    hintBinding = _id;
+    glBindBuffer(static_cast<GLenum>(hint), _id);
+    return hint;
+}
+
 void Buffer::copyImplementationDefault(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
-    read->bind(Target::CopyRead);
-    write->bind(Target::CopyWrite);
-    glCopyBufferSubData(static_cast<GLenum>(Target::CopyRead), static_cast<GLenum>(Target::CopyWrite), readOffset, writeOffset, size);
+    glCopyBufferSubData(static_cast<GLenum>(read->bindInternal(Target::CopyRead)), static_cast<GLenum>(write->bindInternal(Target::CopyWrite)), readOffset, writeOffset, size);
 }
 
 void Buffer::copyImplementationDSA(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
@@ -47,8 +85,7 @@ void Buffer::copyImplementationDSA(Buffer* read, Buffer* write, GLintptr readOff
 }
 
 void Buffer::setDataImplementationDefault(GLsizeiptr size, const GLvoid* data, Buffer::Usage usage) {
-    bind();
-    glBufferData(static_cast<GLenum>(_defaultTarget), size, data, static_cast<GLenum>(usage));
+    glBufferData(static_cast<GLenum>(bindInternal(_defaultTarget)), size, data, static_cast<GLenum>(usage));
 }
 
 void Buffer::setDataImplementationDSA(GLsizeiptr size, const GLvoid* data, Buffer::Usage usage) {
@@ -56,8 +93,7 @@ void Buffer::setDataImplementationDSA(GLsizeiptr size, const GLvoid* data, Buffe
 }
 
 void Buffer::setSubDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
-    bind();
-    glBufferSubData(static_cast<GLenum>(_defaultTarget), offset, size, data);
+    glBufferSubData(static_cast<GLenum>(bindInternal(_defaultTarget)), offset, size, data);
 }
 
 void Buffer::setSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data) {

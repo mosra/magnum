@@ -37,6 +37,7 @@ set(Magnum_SRCS
     Timeline.cpp
     TypeTraits.cpp
 
+    Implementation/BufferState.cpp
     Implementation/State.cpp
 
     Trade/AbstractImporter.cpp

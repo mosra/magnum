@@ -1,5 +1,5 @@
-#ifndef Magnum_Implementation_State_h
-#define Magnum_Implementation_State_h
+#ifndef Magnum_Implementation_BufferState_h
+#define Magnum_Implementation_BufferState_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -17,15 +17,25 @@
 
 #include "Magnum.h"
 
+#include "Buffer.h"
+
 namespace Magnum { namespace Implementation {
 
-struct BufferState;
+struct BufferState {
+    #ifndef MAGNUM_TARGET_GLES
+    static const std::size_t TargetCount = 13+1;
+    #else
+    static const std::size_t TargetCount = 8+1;
+    #endif
 
-struct State {
-    State();
-    ~State();
+    /* Target <-> index mapping */
+    static std::size_t indexForTarget(Buffer::Target target);
+    static const Buffer::Target targetForIndex[TargetCount-1];
 
-    BufferState* const buffer;
+    inline constexpr BufferState(): bindings() {}
+
+    /* Currently bound buffer for all targets */
+    GLuint bindings[TargetCount];
 };
 
 }}

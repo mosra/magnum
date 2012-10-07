@@ -15,11 +15,14 @@
 
 #include "State.h"
 
+#include "BufferState.h"
+
 namespace Magnum { namespace Implementation {
 
-State::State() {}
+State::State(): buffer(new BufferState) {}
 
 State::~State() {
+    delete buffer;
 }
 
 }}

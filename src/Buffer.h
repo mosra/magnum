@@ -236,9 +236,7 @@ class MAGNUM_EXPORT Buffer {
          *
          * @see @fn_gl{BindBuffer}
          */
-        inline static void unbind(Target target) {
-            glBindBuffer(static_cast<GLenum>(target), 0);
-        }
+        inline static void unbind(Target target) { bind(target, 0); }
 
         /**
          * @brief Copy one buffer to another
@@ -277,9 +275,7 @@ class MAGNUM_EXPORT Buffer {
          * Deletes associated OpenGL buffer.
          * @see @fn_gl{DeleteBuffers}
          */
-        inline virtual ~Buffer() {
-            glDeleteBuffers(1, &_id);
-        }
+        virtual ~Buffer();
 
         /** @brief Default bind type */
         inline Target defaultTarget() const { return _defaultTarget; }
@@ -301,9 +297,7 @@ class MAGNUM_EXPORT Buffer {
          *
          * @see @fn_gl{BindBuffer}
          */
-        inline void bind(Target target) {
-            glBindBuffer(static_cast<GLenum>(target), _id);
-        }
+        inline void bind(Target target) { bind(target, _id); }
 
         /**
          * @brief Set buffer data
@@ -389,6 +383,9 @@ class MAGNUM_EXPORT Buffer {
 
     private:
         static void initializeContextBasedFunctionality(Context* context);
+
+        static void bind(Target hint, GLuint id);
+        Target bindInternal(Target hint);
 
         typedef void(*CopyImplementation)(Buffer*, Buffer*, GLintptr, GLintptr, GLsizeiptr);
         static void MAGNUM_LOCAL copyImplementationDefault(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
