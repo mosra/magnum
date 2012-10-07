@@ -22,7 +22,7 @@ using namespace std;
 
 namespace Magnum { namespace Primitives {
 
-Capsule::Capsule(uint32_t hemisphereRings, uint32_t cylinderRings, uint32_t segments, GLfloat length, TextureCoords textureCoords): MeshData3D("", Mesh::Primitive::Triangles, new vector<uint32_t>, {new vector<Point3D>()}, {new vector<Vector3>()}, textureCoords == TextureCoords::Generate ? vector<vector<Vector2>*>{new vector<Vector2>()} : vector<vector<Vector2>*>()), segments(segments), textureCoords(textureCoords) {
+Capsule::Capsule(std::uint32_t hemisphereRings, std::uint32_t cylinderRings, std::uint32_t segments, GLfloat length, TextureCoords textureCoords): MeshData3D("", Mesh::Primitive::Triangles, new vector<uint32_t>, {new vector<Point3D>()}, {new vector<Vector3>()}, textureCoords == TextureCoords::Generate ? vector<vector<Vector2>*>{new vector<Vector2>()} : vector<vector<Vector2>*>()), segments(segments), textureCoords(textureCoords) {
     CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 3, "Capsule must have at least one hemisphere ring, one cylinder ring and three segments", );
 
     GLfloat height = 2.0f+length;
