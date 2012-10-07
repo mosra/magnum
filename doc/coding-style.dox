@@ -49,6 +49,16 @@ the operator is implemented (not of class in which the operator is
 implemented), thus efficiently connecting the two classes together in the
 documentation.
 
+@subsubsection documentation-commands-extension Links to OpenGL extensions
+
+If an OpenGL extension is referenced in the documentation, it should be done
+with @c \@extension command:
+@code
+@extension{ARB,timer_query}
+@endcode
+It produces link to the specification of the extension in OpenGL registry,
+e.g. @extension{ARB,timer_query}.
+
 @subsubsection documentation-commands-ref_gl Links to related OpenGL functions and definitions
 
 If an function touches OpenGL, related OpenGL functions should be documented
@@ -64,15 +74,15 @@ inline static void setSeamless(bool enabled) {
 It produces link to the online manual, in this case @fn_gl{Enable}/@fn_gl{Disable}
 with @def_gl{TEXTURE_CUBE_MAP_SEAMLESS}.
 
-@subsubsection documentation-commands-extension Links to OpenGL extensions
-
-If an OpenGL extension is referenced in the documentation, it should be done
-with @c \@extension command:
+For functions which are not part of OpenGL core specification, but only as
+extensions, use @c \@fn_gl_extension command, e.g.
 @code
-@extension{ARB,timer_query}
+@fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}
 @endcode
-It produces link to the specification of the extension in OpenGL registry,
-e.g. @extension{ARB,timer_query}.
+First parameter is function name without the suffix, the second two parameters
+are the same as in @c \@extension command. It produced link to extension
+specification, with function name as link text, in this case
+@fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}.
 
 @subsubsection documentation-commands-requires Classes and functions requiring specific OpenGL version or extensions
 
