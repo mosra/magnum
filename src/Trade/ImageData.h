@@ -69,7 +69,7 @@ template<std::uint8_t dimensions> class ImageData: public AbstractImage {
         inline std::string name() const { return _name; }
 
         /** @brief %Image size */
-        inline constexpr typename DimensionTraits<Dimensions, GLsizei>::VectorType& size() const { return _size; }
+        inline constexpr typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
 
         /** @brief Pointer to raw data */
         inline void* data() { return _data; }
