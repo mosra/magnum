@@ -28,7 +28,33 @@
 namespace Magnum {
 
 /**
-@brief Class for managing buffers
+@brief %Buffer
+
+Encapsulates one OpenGL buffer object and provides functions for convenient
+data updates.
+
+@section Buffer-data Data updating
+Default way to set or update buffer data with setData() or setSubData() is to
+explicitly specify data size and pass the pointer to it:
+@code
+Vector3* data = new Vector3[200];
+buffer.setData(200*sizeof(Vector3), data, Buffer::Usage::StaticDraw);
+@endcode
+Howewer, in some cases, you have the data in fixed-size array with size known
+at compile time. There is an convenient overload which detects the size of
+passed array, so you don't have to repeat it:
+@code
+Vector3 data[] = {
+    // ...
+};
+buffer.setData(data, Buffer::Usage::StaticDraw);
+@endcode
+There is also overload for array-like containers from STL, such as `std::vector` or
+`std::array`:
+@code
+std::vector<Vector3> data;
+buffer.setData(data, Buffer::Usage::StaticDraw);
+@endcode
 
 @todo Support for buffer copying (OpenGL 3.1, @extension{ARB,copy_buffer})
 @todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
@@ -40,7 +66,13 @@ class Buffer {
     Buffer& operator=(Buffer&& other) = delete;
 
     public:
-        /** @brief %Buffer target */
+        /**
+         * @brief %Buffer target
+         *
+         * @see bind(Target), unbind(Target),
+         *      setData(Target, GLsizeiptr, const GLvoid*, Usage),
+         *      setSubData(Target, GLintptr, GLsizeiptr, const GLvoid*)
+         */
         enum class Target: GLenum {
             /** Used for storing vertex attributes. */
             Array = GL_ARRAY_BUFFER,
@@ -59,14 +91,17 @@ class Buffer {
              */
             CopyWrite = GL_COPY_WRITE_BUFFER,
 
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Used for supplying arguments for instanced drawing.
+             * @requires_gl
+             * @requires_gl40 Extension @extension{ARB,draw_indirect}
+             */
+            DrawIndirect = GL_DRAW_INDIRECT_BUFFER,
+            #endif
+
             /** Used for storing vertex indices. */
             ElementArray = GL_ELEMENT_ARRAY_BUFFER,
-
-            /**
-             * Source for texture update operations.
-             * @requires_gles30 (no extension providing this functionality)
-             */
-            PixelUnpack = GL_PIXEL_UNPACK_BUFFER,
 
             /**
              * Target for pixel pack operations.
@@ -74,11 +109,15 @@ class Buffer {
              */
             PixelPack = GL_PIXEL_PACK_BUFFER,
 
+            /**
+             * Source for texture update operations.
+             * @requires_gles30 (no extension providing this functionality)
+             */
+            PixelUnpack = GL_PIXEL_UNPACK_BUFFER,
+
             #ifndef MAGNUM_TARGET_GLES
             /**
-             * Source for texel fetches.
-             *
-             * @see BufferedTexture
+             * Source for texel fetches. See BufferedTexture.
              * @requires_gl
              * @requires_gl31 Extension @extension{ARB,texture_buffer_object}
              */
@@ -98,20 +137,13 @@ class Buffer {
              * @requires_gles30 (no extension providing this functionality)
              */
             Uniform = GL_UNIFORM_BUFFER
-
-            #ifndef MAGNUM_TARGET_GLES
-            ,
-
-            /**
-             * Used for supplying arguments for instanced drawing.
-             * @requires_gl
-             * @requires_gl40 Extension @extension{ARB,draw_indirect}
-             */
-            DrawIndirect = GL_DRAW_INDIRECT_BUFFER
-            #endif
         };
 
-        /** @brief %Buffer usage */
+        /**
+         * @brief %Buffer usage
+         *
+         * @see setData(Target, GLsizeiptr, const GLvoid*, Usage)
+         */
         enum class Usage: GLenum {
             /**
              * Set once by the application and used infrequently for drawing.
@@ -174,7 +206,7 @@ class Buffer {
 
         /**
          * @brief Unbind any buffer from given target
-         * @param target     %Target
+         * @param target    %Target
          *
          * @see @fn_gl{BindBuffer}
          */
@@ -220,7 +252,7 @@ class Buffer {
 
         /**
          * @brief Bind buffer
-         * @param target     %Target
+         * @param target    %Target
          *
          * @see @fn_gl{BindBuffer}
          */
@@ -320,7 +352,7 @@ class Buffer {
 
         /**
          * @brief Set buffer subdata
-         * @param offset    Offset
+         * @param offset    Offset in the buffer
          * @param size      Data size
          * @param data      Pointer to data
          *
@@ -333,7 +365,7 @@ class Buffer {
 
         /**
          * @brief Set buffer subdata
-         * @param offset    Offset
+         * @param offset    Offset in the buffer
          * @param data      Fixed-size array with data
          *
          * Sets buffer subdata with default target. More convenient for
@@ -347,7 +379,7 @@ class Buffer {
 
         /**
          * @brief Set buffer subdata
-         * @param offset    Offset
+         * @param offset    Offset in the buffer
          * @param data      Vector with data
          *
          * Sets buffer subdata with default target.
@@ -365,7 +397,7 @@ class Buffer {
         /**
          * @brief Set buffer subdata
          * @param target    %Target
-         * @param offset    Offset
+         * @param offset    Offset in the buffer
          * @param size      Data size
          * @param data      Pointer to data
          *
@@ -379,7 +411,7 @@ class Buffer {
         /**
          * @brief Set buffer subdata
          * @param target    %Target
-         * @param offset    Offset
+         * @param offset    Offset in the buffer
          * @param data      Fixed-size array with data
          *
          * More convenient for setting data from fixed-size arrays than
@@ -393,7 +425,7 @@ class Buffer {
         /**
          * @brief Set buffer subdata
          * @param target    %Target
-         * @param offset    Offset
+         * @param offset    Offset in the buffer
          * @param data      Vector with data
          *
          * @see setSubData(Target, GLintptr, GLsizeiptr, const GLvoid*)
