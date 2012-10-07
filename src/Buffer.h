@@ -20,6 +20,7 @@
  */
 
 #include <cstddef>
+#include <array>
 #include <vector>
 
 #include "Magnum.h"
@@ -266,6 +267,11 @@ class Buffer {
             setData(_defaultTarget, data, usage);
         }
 
+        /** @overload */
+        template<std::size_t size, class T> inline void setData(const std::array<T, size>& data, Usage usage) {
+            setData(_defaultTarget, data, usage);
+        }
+
         /**
          * @brief Set buffer data
          * @param target    %Target
@@ -304,6 +310,11 @@ class Buffer {
          * @see setData(Target, GLsizeiptr, const GLvoid*, Usage)
          */
         template<class T> inline void setData(Target target, const std::vector<T>& data, Usage usage) {
+            setData(target, data.size()*sizeof(T), data.data(), usage);
+        }
+
+        /** @overload */
+        template<std::size_t size, class T> inline void setData(Target target, const std::array<T, size>& data, Usage usage) {
             setData(target, data.size()*sizeof(T), data.data(), usage);
         }
 
@@ -346,6 +357,11 @@ class Buffer {
             setSubData(_defaultTarget, offset, data);
         }
 
+        /** @overload */
+        template<std::size_t size, class T> inline void setSubData(GLintptr offset, const std::array<T, size>& data) {
+            setSubData(_defaultTarget, offset, data);
+        }
+
         /**
          * @brief Set buffer subdata
          * @param target    %Target
@@ -383,6 +399,11 @@ class Buffer {
          * @see setSubData(Target, GLintptr, GLsizeiptr, const GLvoid*)
          */
         template<class T> inline void setSubData(Target target, GLintptr offset, const std::vector<T>& data) {
+            setSubData(target, offset, data.size()*sizeof(T), data.data());
+        }
+
+        /** @overload */
+        template<std::size_t size, class T> inline void setSubData(Target target, GLintptr offset, const std::array<T, size>& data) {
             setSubData(target, offset, data.size()*sizeof(T), data.data());
         }
 
