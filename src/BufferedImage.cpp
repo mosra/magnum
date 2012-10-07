@@ -21,7 +21,7 @@ template<std::uint8_t dimensions> void BufferedImage<dimensions>::setData(const 
     _components = components;
     _type = type;
     _size = size;
-    _buffer.setData(Buffer::Target::PixelPack, pixelSize(_components, _type)*size.product(), data, usage);
+    _buffer.setData(pixelSize(_components, _type)*size.product(), data, usage);
 }
 
 template class BufferedImage<1>;
