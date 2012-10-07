@@ -18,6 +18,8 @@
 #include <fstream>
 
 #include "Shader.h"
+#include "Implementation/State.h"
+#include "Implementation/ShaderProgramState.h"
 
 #define LINKER_MESSAGE_MAX_LENGTH 1024
 
@@ -25,10 +27,24 @@ using namespace std;
 
 namespace Magnum {
 
+AbstractShaderProgram::~AbstractShaderProgram() {
+    /* Remove current usage from the state */
+    GLuint& current = Context::current()->state()->shaderProgram->current;
+    if(current == _id)
+        current = 0;
+
+    glDeleteProgram(_id);
+}
+
 bool AbstractShaderProgram::use() {
     if(state != Linked) return false;
 
-    glUseProgram(_id);
+    /* Use only if the program isn't already in use */
+    GLuint& current = Context::current()->state()->shaderProgram->current;
+    if(current != _id) {
+        current = _id;
+        glUseProgram(_id);
+    }
     return true;
 }
 

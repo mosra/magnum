@@ -642,8 +642,6 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         State state;
 };
 
-inline AbstractShaderProgram::~AbstractShaderProgram() { glDeleteProgram(_id); }
-
 }
 
 #endif

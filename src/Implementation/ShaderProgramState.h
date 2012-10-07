@@ -1,3 +1,5 @@
+#ifndef Magnum_Implementation_ShaderProgramState_h
+#define Magnum_Implementation_ShaderProgramState_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -13,18 +15,17 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "State.h"
-
-#include "BufferState.h"
-#include "ShaderProgramState.h"
+#include "Magnum.h"
 
 namespace Magnum { namespace Implementation {
 
-State::State(): buffer(new BufferState), shaderProgram(new ShaderProgramState) {}
+struct ShaderProgramState {
+    inline constexpr ShaderProgramState(): current(0) {}
 
-State::~State() {
-    delete shaderProgram;
-    delete buffer;
-}
+    /* Currently used program */
+    GLuint current;
+};
 
 }}
+
+#endif

@@ -20,12 +20,14 @@
 namespace Magnum { namespace Implementation {
 
 struct BufferState;
+struct ShaderProgramState;
 
 struct State {
     State();
     ~State();
 
     BufferState* const buffer;
+    ShaderProgramState* const shaderProgram;
 };
 
 }}
