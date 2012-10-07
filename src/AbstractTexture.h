@@ -557,7 +557,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @see @fn_gl{GenTextures}
          */
         inline AbstractTexture(GLenum target): _target(target) {
-            glGenTextures(1, &texture);
+            glGenTextures(1, &_id);
         }
 
         /**
@@ -568,8 +568,8 @@ class MAGNUM_EXPORT AbstractTexture {
          */
         virtual ~AbstractTexture() = 0;
 
-        /** @brief OpenGL internal texture ID */
-        inline GLuint id() const { return texture; }
+        /** @brief OpenGL texture ID */
+        inline GLuint id() const { return _id; }
 
         /**
          * @brief Bind texture for rendering
@@ -675,14 +675,14 @@ class MAGNUM_EXPORT AbstractTexture {
          * @see @fn_gl{BindTexture}
          */
         inline void bind() {
-            glBindTexture(_target, texture);
+            glBindTexture(_target, _id);
         }
 
     private:
-        GLuint texture;
+        GLuint _id;
 };
 
-inline AbstractTexture::~AbstractTexture() { glDeleteTextures(1, &texture); }
+inline AbstractTexture::~AbstractTexture() { glDeleteTextures(1, &_id); }
 
 /** @relates AbstractTexture
 @brief Convertor of component count and data type to InternalFormat

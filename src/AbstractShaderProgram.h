@@ -220,7 +220,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @see @fn_gl{CreateProgram}
          */
         inline AbstractShaderProgram(): state(Initialized) {
-            program = glCreateProgram();
+            _id = glCreateProgram();
         }
 
         /**
@@ -253,7 +253,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gles30 (no extension providing this functionality)
          */
         inline void setRetrievableBinary(bool enabled) {
-            glProgramParameteri(program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, enabled ? GL_TRUE : GL_FALSE);
+            glProgramParameteri(_id, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, enabled ? GL_TRUE : GL_FALSE);
         }
 
         #ifndef MAGNUM_TARGET_GLES
@@ -268,7 +268,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl41 Extension @extension{ARB,separate_shader_objects}
          */
         inline void setSeparable(bool enabled) {
-            glProgramParameteri(program, GL_PROGRAM_SEPARABLE, enabled ? GL_TRUE : GL_FALSE);
+            glProgramParameteri(_id, GL_PROGRAM_SEPARABLE, enabled ? GL_TRUE : GL_FALSE);
         }
         #endif
 
@@ -638,11 +638,11 @@ class MAGNUM_EXPORT AbstractShaderProgram {
             Failed
         };
 
-        GLuint program;
+        GLuint _id;
         State state;
 };
 
-inline AbstractShaderProgram::~AbstractShaderProgram() { glDeleteProgram(program); }
+inline AbstractShaderProgram::~AbstractShaderProgram() { glDeleteProgram(_id); }
 
 }
 

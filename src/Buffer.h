@@ -263,7 +263,7 @@ class MAGNUM_EXPORT Buffer {
          * @see @fn_gl{GenBuffers}
          */
         inline Buffer(Target defaultTarget): _defaultTarget(defaultTarget) {
-            glGenBuffers(1, &buffer);
+            glGenBuffers(1, &_id);
         }
 
         /**
@@ -273,14 +273,14 @@ class MAGNUM_EXPORT Buffer {
          * @see @fn_gl{DeleteBuffers}
          */
         inline virtual ~Buffer() {
-            glDeleteBuffers(1, &buffer);
+            glDeleteBuffers(1, &_id);
         }
 
         /** @brief Default bind type */
         inline Target defaultTarget() const { return _defaultTarget; }
 
-        /** @brief OpenGL internal buffer ID */
-        inline GLuint id() const { return buffer; }
+        /** @brief OpenGL buffer ID */
+        inline GLuint id() const { return _id; }
 
         /**
          * @brief Bind buffer
@@ -297,7 +297,7 @@ class MAGNUM_EXPORT Buffer {
          * @see @fn_gl{BindBuffer}
          */
         inline void bind(Target target) {
-            glBindBuffer(static_cast<GLenum>(target), buffer);
+            glBindBuffer(static_cast<GLenum>(target), _id);
         }
 
         /**
@@ -480,7 +480,7 @@ class MAGNUM_EXPORT Buffer {
         }
 
     private:
-        GLuint buffer;
+        GLuint _id;
         Target _defaultTarget;
 };
 

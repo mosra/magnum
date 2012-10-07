@@ -20,44 +20,44 @@ namespace Magnum {
 #ifndef MAGNUM_TARGET_GLES2
 bool AbstractQuery::resultAvailable() {
     GLuint result;
-    glGetQueryObjectuiv(query, GL_QUERY_RESULT_AVAILABLE, &result);
+    glGetQueryObjectuiv(_id, GL_QUERY_RESULT_AVAILABLE, &result);
     return result == GL_TRUE;
 }
 
 template<> bool AbstractQuery::result<bool>() {
     GLuint result;
-    glGetQueryObjectuiv(query, GL_QUERY_RESULT, &result);
+    glGetQueryObjectuiv(_id, GL_QUERY_RESULT, &result);
     return result == GL_TRUE;
 }
 
 template<> GLuint AbstractQuery::result<GLuint>() {
     GLuint result;
-    glGetQueryObjectuiv(query, GL_QUERY_RESULT, &result);
+    glGetQueryObjectuiv(_id, GL_QUERY_RESULT, &result);
     return result;
 }
 
 #ifndef MAGNUM_TARGET_GLES
 template<> GLint AbstractQuery::result<GLint>() {
     GLint result;
-    glGetQueryObjectiv(query, GL_QUERY_RESULT, &result);
+    glGetQueryObjectiv(_id, GL_QUERY_RESULT, &result);
     return result;
 }
 
 template<> GLuint64 AbstractQuery::result<GLuint64>() {
     GLuint64 result;
-    glGetQueryObjectui64v(query, GL_QUERY_RESULT, &result);
+    glGetQueryObjectui64v(_id, GL_QUERY_RESULT, &result);
     return result;
 }
 
 template<> GLint64 AbstractQuery::result<GLint64>() {
     GLint64 result;
-    glGetQueryObjecti64v(query, GL_QUERY_RESULT, &result);
+    glGetQueryObjecti64v(_id, GL_QUERY_RESULT, &result);
     return result;
 }
 #endif
 
 void Query::begin(Query::Target target) {
-    glBeginQuery(static_cast<GLenum>(target), query);
+    glBeginQuery(static_cast<GLenum>(target), id());
     this->target = new Target(target);
 }
 
@@ -70,7 +70,7 @@ void Query::end() {
 }
 
 void SampleQuery::begin(SampleQuery::Target target) {
-    glBeginQuery(static_cast<GLenum>(target), query);
+    glBeginQuery(static_cast<GLenum>(target), id());
     this->target = new Target(target);
 }
 

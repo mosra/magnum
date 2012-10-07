@@ -124,7 +124,7 @@ class BufferedTexture {
          * @see @fn_gl{GenTextures}
          */
         inline BufferedTexture() {
-            glGenTextures(1, &texture);
+            glGenTextures(1, &_id);
         }
 
         /**
@@ -134,7 +134,7 @@ class BufferedTexture {
          * @see @fn_gl{DeleteTextures}
          */
         inline virtual ~BufferedTexture() {
-            glDeleteTextures(1, &texture);
+            glDeleteTextures(1, &_id);
         }
 
         /**
@@ -166,10 +166,10 @@ class BufferedTexture {
         }
 
     private:
-        GLuint texture;
+        GLuint _id;
 
         inline void bind() {
-            glBindTexture(GL_TEXTURE_BUFFER, texture);
+            glBindTexture(GL_TEXTURE_BUFFER, _id);
         }
 };
 

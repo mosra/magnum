@@ -28,7 +28,7 @@ namespace Magnum {
 bool AbstractShaderProgram::use() {
     if(state != Linked) return false;
 
-    glUseProgram(program);
+    glUseProgram(_id);
     return true;
 }
 
@@ -36,26 +36,26 @@ bool AbstractShaderProgram::attachShader(Shader& shader) {
     GLuint _shader = shader.compile();
     if(!_shader) return false;
 
-    glAttachShader(program, _shader);
+    glAttachShader(_id, _shader);
     return true;
 }
 
 void AbstractShaderProgram::bindAttributeLocation(GLuint location, const string& name) {
     CORRADE_ASSERT(state == Initialized, "AbstractShaderProgram: attribute cannot be bound after linking.", );
 
-    glBindAttribLocation(program, location, name.c_str());
+    glBindAttribLocation(_id, location, name.c_str());
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::bindFragmentDataLocation(GLuint location, const std::string& name) {
     CORRADE_ASSERT(state == Initialized, "AbstractShaderProgram: fragment data location cannot be bound after linking.", );
 
-    glBindFragDataLocation(program, location, name.c_str());
+    glBindFragDataLocation(_id, location, name.c_str());
 }
 void AbstractShaderProgram::bindFragmentDataLocationIndexed(GLuint location, GLuint index, const std::string& name) {
     CORRADE_ASSERT(state == Initialized, "AbstractShaderProgram: fragment data location cannot be bound after linking.", );
 
-    glBindFragDataLocationIndexed(program, location, index, name.c_str());
+    glBindFragDataLocationIndexed(_id, location, index, name.c_str());
 }
 #endif
 
@@ -64,15 +64,15 @@ void AbstractShaderProgram::link() {
     if(state != Initialized) return;
 
     /* Link shader program */
-    glLinkProgram(program);
+    glLinkProgram(_id);
 
     /* Check link status */
     GLint status;
-    glGetProgramiv(program, GL_LINK_STATUS, &status);
+    glGetProgramiv(_id, GL_LINK_STATUS, &status);
 
     /* Display errors or warnings */
     char message[LINKER_MESSAGE_MAX_LENGTH];
-    glGetProgramInfoLog(program, LINKER_MESSAGE_MAX_LENGTH, nullptr, message);
+    glGetProgramInfoLog(_id, LINKER_MESSAGE_MAX_LENGTH, nullptr, message);
 
     /* Show error log and delete shader */
     if(status == GL_FALSE) {
@@ -92,7 +92,7 @@ GLint AbstractShaderProgram::uniformLocation(const std::string& name) {
     /** @todo What if linking just failed (not programmer error?) */
     CORRADE_ASSERT(state == Linked, "AbstractShaderProgram: uniform location cannot be retrieved before linking.", -1);
 
-    GLint location = glGetUniformLocation(program, name.c_str());
+    GLint location = glGetUniformLocation(_id, name.c_str());
     if(location == -1)
         Warning() << "AbstractShaderProgram: location of uniform \'" + name + "\' cannot be retrieved!";
     return location;

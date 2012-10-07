@@ -41,7 +41,7 @@ class MAGNUM_EXPORT AbstractQuery {
          * Generates one OpenGL query.
          * @see @fn_gl{GenQueries}
          */
-        inline AbstractQuery() { glGenQueries(1, &query); }
+        inline AbstractQuery() { glGenQueries(1, &_id); }
 
         /**
          * @brief Destructor
@@ -49,7 +49,10 @@ class MAGNUM_EXPORT AbstractQuery {
          * Deletes assigned OpenGL query.
          * @see @fn_gl{DeleteQueries}
          */
-        virtual inline ~AbstractQuery() { glDeleteQueries(1, &query); }
+        virtual inline ~AbstractQuery() { glDeleteQueries(1, &_id); }
+
+        /** @brief OpenGL query ID */
+        inline GLuint id() const { return _id; }
 
         /**
          * @brief Whether the result is available
@@ -71,8 +74,8 @@ class MAGNUM_EXPORT AbstractQuery {
          */
         template<class T> T result();
 
-    protected:
-        GLuint query; /**< @brief OpenGL internal query ID */
+    private:
+        GLuint _id;
 };
 
 
@@ -276,7 +279,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
          * @requires_gl30 Extension @extension{NV,conditional_render}
          */
         inline void beginConditionalRender(ConditionalRenderMode mode) {
-            glBeginConditionalRender(query, static_cast<GLenum>(mode));
+            glBeginConditionalRender(id(), static_cast<GLenum>(mode));
         }
 
         /**
@@ -336,7 +339,7 @@ class TimeQuery: public AbstractQuery {
          * @see @fn_gl{QueryCounter} with @def_gl{TIMESTAMP}
          */
         inline void timestamp() {
-            glQueryCounter(query, GL_TIMESTAMP);
+            glQueryCounter(id(), GL_TIMESTAMP);
         }
 };
 #endif

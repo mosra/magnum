@@ -756,7 +756,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @see @fn_gl{GenFramebuffers}
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        inline Framebuffer() { glGenFramebuffers(1, &framebuffer); }
+        inline Framebuffer() { glGenFramebuffers(1, &_id); }
 
         /**
          * @brief Destructor
@@ -765,7 +765,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @see @fn_gl{DeleteFramebuffers}
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        inline ~Framebuffer() { glDeleteFramebuffers(1, &framebuffer); }
+        inline ~Framebuffer() { glDeleteFramebuffers(1, &_id); }
 
         /**
          * @brief Bind default framebuffer to given target
@@ -785,7 +785,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         inline void bind(Target target) {
-            glBindFramebuffer(static_cast<GLenum>(target), framebuffer);
+            glBindFramebuffer(static_cast<GLenum>(target), _id);
         }
 
         #ifndef MAGNUM_TARGET_GLES
@@ -1164,7 +1164,7 @@ class MAGNUM_EXPORT Framebuffer {
         /*@}*/
 
     private:
-        GLuint framebuffer;
+        GLuint _id;
 };
 
 CORRADE_ENUMSET_OPERATORS(Framebuffer::ClearMask)
