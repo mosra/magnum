@@ -77,6 +77,15 @@ class Buffer {
             /** Used for storing vertex attributes. */
             Array = GL_ARRAY_BUFFER,
 
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Used for storing atomic counters.
+             * @requires_gl42 Extension @extension{ARB,shader_atomic_counters}
+             * @requires_gl
+             */
+            AtomicCounter = GL_ATOMIC_COUNTER_BUFFER,
+            #endif
+
             /**
              * Source for copies.
              * @requires_gl31 Extension @extension{ARB,copy_buffer}
@@ -92,6 +101,13 @@ class Buffer {
             CopyWrite = GL_COPY_WRITE_BUFFER,
 
             #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Indirect compute dispatch commands.
+             * @requires_gl43 Extension @extension{ARB,compute_shader}
+             * @requires_gl
+             */
+            DispatchIndirect = GL_DISPATCH_INDIRECT_BUFFER,
+
             /**
              * Used for supplying arguments for instanced drawing.
              * @requires_gl
@@ -116,6 +132,13 @@ class Buffer {
             PixelUnpack = GL_PIXEL_UNPACK_BUFFER,
 
             #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Used for shader storage.
+             * @requires_gl43 Extension @extension{ARB,shader_storage_buffer_object}
+             * @requires_gl
+             */
+            ShaderStorage = GL_SHADER_STORAGE_BUFFER,
+
             /**
              * Source for texel fetches. See BufferedTexture.
              * @requires_gl
