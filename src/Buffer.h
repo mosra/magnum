@@ -25,6 +25,8 @@
 
 #include "Magnum.h"
 
+#include "magnumVisibility.h"
+
 namespace Magnum {
 
 /**
@@ -56,10 +58,9 @@ std::vector<Vector3> data;
 buffer.setData(data, Buffer::Usage::StaticDraw);
 @endcode
 
-@todo Support for buffer copying (OpenGL 3.1, @extension{ARB,copy_buffer})
 @todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
  */
-class Buffer {
+class MAGNUM_EXPORT Buffer {
     Buffer(const Buffer& other) = delete;
     Buffer(Buffer&& other) = delete;
     Buffer& operator=(const Buffer& other) = delete;
@@ -87,14 +88,14 @@ class Buffer {
             #endif
 
             /**
-             * Source for copies.
+             * Source for copies. See copy().
              * @requires_gl31 Extension @extension{ARB,copy_buffer}
              * @requires_gles30 (no extension providing this functionality)
              */
             CopyRead = GL_COPY_READ_BUFFER,
 
             /**
-             * Target for copies.
+             * Target for copies. See copy().
              * @requires_gl31 Extension @extension{ARB,copy_buffer}
              * @requires_gles30 (no extension providing this functionality)
              */
@@ -236,6 +237,22 @@ class Buffer {
         inline static void unbind(Target target) {
             glBindBuffer(static_cast<GLenum>(target), 0);
         }
+
+        /**
+         * @brief Copy one buffer to another
+         * @param read          %Buffer from which to read
+         * @param write         %Buffer to which to copy
+         * @param readOffset    Offset in the read buffer
+         * @param writeOffset   Offset in the write buffer
+         * @param size          Data size
+         *
+         * Read buffer is bound to `Target::CopyRead`, write buffer to
+         * `Target::CopyWrite` and the copy is performed.
+         * @requires_gl31 Extension @extension{ARB,copy_buffer}
+         * @requires_gles30 (no extension providing this functionality)
+         * @see @fn_gl{CopyBufferSubData}
+         */
+        static void copy(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
 
         /**
          * @brief Constructor

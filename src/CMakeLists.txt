@@ -21,6 +21,7 @@ set(Magnum_SRCS
     AbstractImage.cpp
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
+    Buffer.cpp
     BufferedImage.cpp
     BufferedTexture.cpp
     Context.cpp
