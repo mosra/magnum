@@ -117,7 +117,7 @@ void TgaImporterTest::bits24() {
     #else
     CORRADE_VERIFY(image->components() == AbstractImage::Components::RGB);
     #endif
-    CORRADE_COMPARE(image->dimensions(), Math::Vector2<GLsizei>(2, 3));
+    CORRADE_COMPARE(image->size(), Math::Vector2<GLsizei>(2, 3));
     CORRADE_VERIFY(image->type() == TypeTraits<GLubyte>::imageType());
     CORRADE_COMPARE(string(static_cast<const char*>(image->data()), 2*3*3), string(pixels, 2*3*3));
 }
@@ -144,7 +144,7 @@ void TgaImporterTest::bits32() {
     #else
     CORRADE_VERIFY(image->components() == AbstractImage::Components::RGBA);
     #endif
-    CORRADE_COMPARE(image->dimensions(), Math::Vector2<GLsizei>(2, 3));
+    CORRADE_COMPARE(image->size(), Math::Vector2<GLsizei>(2, 3));
     CORRADE_VERIFY(image->type() == TypeTraits<GLubyte>::imageType());
     CORRADE_COMPARE(string(static_cast<const char*>(image->data()), 2*3*3), string(pixels, 2*3*3));
 }
