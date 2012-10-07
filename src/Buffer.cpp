@@ -15,12 +15,31 @@
 
 #include "Buffer.h"
 
+#include <Utility/Debug.h>
+
+#include "Context.h"
+#include "Extensions.h"
+
 namespace Magnum {
 
-void Buffer::copy(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
+Buffer::CopyImplementation Buffer::copyImplementation = &Buffer::copyImplementationDefault;
+
+void Buffer::initializeContextBasedFunctionality(Context* context) {
+    if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+        Debug() << "Buffer: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
+
+        copyImplementation = &Buffer::copyImplementationDSA;
+    }
+}
+
+void Buffer::copyImplementationDefault(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
     read->bind(Target::CopyRead);
     write->bind(Target::CopyWrite);
     glCopyBufferSubData(static_cast<GLenum>(Target::CopyRead), static_cast<GLenum>(Target::CopyWrite), readOffset, writeOffset, size);
+}
+
+void Buffer::copyImplementationDSA(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
+    glNamedCopyBufferSubDataEXT(read->_id, write->_id, readOffset, writeOffset, size);
 }
 
 }

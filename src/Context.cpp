@@ -19,6 +19,7 @@
 #include <unordered_map>
 #include <Utility/Debug.h>
 
+#include "Buffer.h"
 #include "Extensions.h"
 
 using namespace std;
@@ -191,6 +192,9 @@ Context::Context() {
     /* Set this context as current */
     CORRADE_ASSERT(!_current, "Context: Another context currently active", );
     _current = this;
+
+    /* Initialize functionality based on current OpenGL version and extensions */
+    Buffer::initializeContextBasedFunctionality(this);
 }
 
 Context::~Context() {

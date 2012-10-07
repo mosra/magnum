@@ -29,6 +29,8 @@
 
 namespace Magnum {
 
+class Context;
+
 /**
 @brief %Buffer
 
@@ -61,6 +63,8 @@ buffer.setData(data, Buffer::Usage::StaticDraw);
 @todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
  */
 class MAGNUM_EXPORT Buffer {
+    friend class Context;
+
     Buffer(const Buffer& other) = delete;
     Buffer(Buffer&& other) = delete;
     Buffer& operator=(const Buffer& other) = delete;
@@ -246,13 +250,16 @@ class MAGNUM_EXPORT Buffer {
          * @param writeOffset   Offset in the write buffer
          * @param size          Data size
          *
-         * Read buffer is bound to `Target::CopyRead`, write buffer to
-         * `Target::CopyWrite` and the copy is performed.
+         * If @extension{EXT,direct_state_access} is not available, read
+         * buffer is bound to `Target::CopyRead` and write buffer to
+         * `Target::CopyWrite` before the copy is performed.
          * @requires_gl31 Extension @extension{ARB,copy_buffer}
          * @requires_gles30 (no extension providing this functionality)
-         * @see @fn_gl{CopyBufferSubData}
+         * @see @fn_gl{CopyBufferSubData} or @fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}
          */
-        static void copy(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
+        inline static void copy(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
+            copyImplementation(read, write, readOffset, writeOffset, size);
+        }
 
         /**
          * @brief Constructor
@@ -480,6 +487,13 @@ class MAGNUM_EXPORT Buffer {
         }
 
     private:
+        static void initializeContextBasedFunctionality(Context* context);
+
+        typedef void(*CopyImplementation)(Buffer*, Buffer*, GLintptr, GLintptr, GLsizeiptr);
+        static void MAGNUM_LOCAL copyImplementationDefault(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
+        static void MAGNUM_LOCAL copyImplementationDSA(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
+        static CopyImplementation copyImplementation;
+
         GLuint _id;
         Target _defaultTarget;
 };
