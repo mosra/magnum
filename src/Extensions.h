@@ -123,6 +123,7 @@ namespace GL {
         _extension(GL,EXT,draw_buffers2,                GL210, GL300) // #340
         _extension(GL,EXT,texture_integer,              GL210, GL300) // #343
         _extension(GL,EXT,transform_feedback,           GL210, GL300) // #352
+        _extension(GL,EXT,direct_state_access,          GL210,  None) // #353
         _extension(GL,EXT,texture_snorm,                GL300, GL310) // #365
     } namespace NV {
         _extension(GL,NV,half_float,                    GL210, GL300) // #283
