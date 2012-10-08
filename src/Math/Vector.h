@@ -70,6 +70,8 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
         /** @brief Default constructor */
         inline constexpr Vector() {}
 
+        /** @todo Creating Vector from combination of vector and scalar types */
+
         /**
          * @brief Initializer-list constructor
          * @param first First value

@@ -28,6 +28,8 @@
 
 namespace Magnum { namespace Math {
 
+/** @todo Properly test all constexpr */
+
 template<std::size_t, std::size_t, class> class RectangularMatrix;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -88,6 +90,8 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @brief %Matrix from column vectors
          * @param first First column vector
          * @param next  Next column vectors
+         *
+         * @todo Creating matrix from arbitrary combination of matrices with n rows
          */
         template<class ...U> inline constexpr static RectangularMatrix<cols, rows, T> from(const Vector<rows, T>& first, const U&... next) {
             static_assert(sizeof...(next)+1 == cols, "Improper number of arguments passed to Matrix from Vector constructor");

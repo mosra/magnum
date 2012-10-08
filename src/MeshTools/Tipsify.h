@@ -40,6 +40,7 @@ class MESHTOOLS_EXPORT Tipsify {
          *
          * Computes count and indices of adjacent triangles for each vertex
          * (used internally).
+         * @todo Export only for unit test, hide otherwise
          */
         void buildAdjacency(std::vector<std::uint32_t>& liveTriangleCount, std::vector<std::uint32_t>& neighborOffset, std::vector<std::uint32_t>& neighbors) const;
 

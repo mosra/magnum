@@ -238,6 +238,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
             return (*this)[3].xyz();
         }
 
+        /** @todo up(), forward(), right() */
+
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline Point3D<T> operator*(const Point3D<T>& other) const {
             return Matrix<4, T>::operator*(other);

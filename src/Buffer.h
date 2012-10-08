@@ -61,6 +61,7 @@ buffer.setData(data, Buffer::Usage::StaticDraw);
 @endcode
 
 @todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
+@todo BindBufferRange/BindBufferOffset/BindBufferBase for transform feedback (3.0, @extension{EXT,transform_feedback})
  */
 class MAGNUM_EXPORT Buffer {
     friend class Context;

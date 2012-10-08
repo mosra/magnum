@@ -26,6 +26,8 @@
 
 namespace Magnum {
 
+/** @todo Remove/internalize things used only in one place (Math::log, Pow, Log)? Simplify SizeTraits? */
+
 /**
 @brief Traits class providing suitable types for given data sizes
 @tparam byte    Highest byte needed (counting from zero)
