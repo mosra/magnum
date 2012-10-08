@@ -19,6 +19,7 @@
 #include <unordered_map>
 #include <Utility/Debug.h>
 
+#include "AbstractShaderProgram.h"
 #include "Buffer.h"
 #include "Extensions.h"
 #include "Implementation/State.h"
@@ -198,6 +199,7 @@ Context::Context() {
     _state = new Implementation::State;
 
     /* Initialize functionality based on current OpenGL version and extensions */
+    AbstractShaderProgram::initializeContextBasedFunctionality(this);
     Buffer::initializeContextBasedFunctionality(this);
 }
 

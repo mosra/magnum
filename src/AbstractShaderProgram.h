@@ -19,15 +19,22 @@
  * @brief Class Magnum::AbstractShaderProgram
  */
 
-#include <map>
+#include <cstdint>
+#include <string>
 
-#include "Math/RectangularMatrix.h"
 #include "Magnum.h"
 
 #include "magnumVisibility.h"
 
 namespace Magnum {
 
+namespace Math {
+    template<std::size_t, std::size_t, class> class RectangularMatrix;
+    template<std::size_t, class> class Matrix;
+    template<std::size_t, class> class Vector;
+}
+
+class Context;
 class Shader;
 
 /**
@@ -191,9 +198,10 @@ void draw(const Magnum::Matrix4& transformationMatrix, Magnum::Camera* camera) {
 @endcode
 
 @todo Uniform arrays support
-@todo DSA for uniforms - glProgramUniform*() (OpenGL 4.1, @extension{ARB,separate_shader_objects})
  */
 class MAGNUM_EXPORT AbstractShaderProgram {
+    friend class Context;
+
     AbstractShaderProgram(const AbstractShaderProgram& other) = delete;
     AbstractShaderProgram(AbstractShaderProgram&& other) = delete;
     AbstractShaderProgram& operator=(const AbstractShaderProgram& other) = delete;
@@ -232,7 +240,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         virtual ~AbstractShaderProgram() = 0;
 
         /**
-         * @brief Use shader
+         * @brief Use shader for rendering
          * @return False if the program wasn't successfully linked, true
          *      otherwise.
          *
@@ -369,46 +377,49 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @param location      Uniform location (see uniformLocation())
          * @param value         Value
          *
-         * @attention This function doesn't check whether this shader is in use!
-         * @see @fn_gl{Uniform}
+         * If neither @extension{ARB,separate_shader_objects} nor
+         * @extension{EXT,direct_state_access} is available, use() is called
+         * before the operation.
+         * @see use(), @fn_gl{Uniform} or `glProgramUniform()` from
+         * @extension{ARB,separate_shader_objects}/@extension{EXT,direct_state_access}.
          */
         inline void setUniform(GLint location, GLfloat value) {
-            glUniform1f(location, value);
+            (this->*uniform1fImplementation)(location, value);
         }
 
         /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 2, GLfloat>& value) {
-            glUniform2fv(location, 1, value.data());
+        inline void setUniform(GLint location, const Math::Vector<2, GLfloat>& value) {
+            (this->*uniform2fvImplementation)(location, value);
         }
 
         /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 3, GLfloat>& value) {
-            glUniform3fv(location, 1, value.data());
+        inline void setUniform(GLint location, const Math::Vector<3, GLfloat>& value) {
+            (this->*uniform3fvImplementation)(location, value);
         }
 
         /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 4, GLfloat>& value) {
-            glUniform4fv(location, 1, value.data());
+        inline void setUniform(GLint location, const Math::Vector<4, GLfloat>& value) {
+            (this->*uniform4fvImplementation)(location, value);
         }
 
         /** @copydoc setUniform(GLint, GLfloat) */
         inline void setUniform(GLint location, GLint value) {
-            glUniform1i(location, value);
+            (this->*uniform1iImplementation)(location, value);
         }
 
         /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 2, GLint>& value) {
-            glUniform2iv(location, 1, value.data());
+        inline void setUniform(GLint location, const Math::Vector<2, GLint>& value) {
+            (this->*uniform2ivImplementation)(location, value);
         }
 
         /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 3, GLint>& value) {
-            glUniform3iv(location, 1, value.data());
+        inline void setUniform(GLint location, const Math::Vector<3, GLint>& value) {
+            (this->*uniform3ivImplementation)(location, value);
         }
 
         /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 4, GLint>& value) {
-            glUniform4iv(location, 1, value.data());
+        inline void setUniform(GLint location, const Math::Vector<4, GLint>& value) {
+            (this->*uniform4ivImplementation)(location, value);
         }
 
         /**
@@ -417,7 +428,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gles30 (no extension providing this functionality)
          */
         inline void setUniform(GLint location, GLuint value) {
-            glUniform1ui(location, value);
+            (this->*uniform1uiImplementation)(location, value);
         }
 
         /**
@@ -425,8 +436,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 (no extension providing this functionality)
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 2, GLuint>& value) {
-            glUniform2uiv(location, 1, value.data());
+        inline void setUniform(GLint location, const Math::Vector<2, GLuint>& value) {
+            (this->*uniform2uivImplementation)(location, value);
         }
 
         /**
@@ -434,8 +445,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 (no extension providing this functionality)
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 3, GLuint>& value) {
-            glUniform3uiv(location, 1, value.data());
+        inline void setUniform(GLint location, const Math::Vector<3, GLuint>& value) {
+            (this->*uniform3uivImplementation)(location, value);
         }
 
         /**
@@ -443,8 +454,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 (no extension providing this functionality)
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 4, GLuint>& value) {
-            glUniform4uiv(location, 1, value.data());
+        inline void setUniform(GLint location, const Math::Vector<4, GLuint>& value) {
+            (this->*uniform4uivImplementation)(location, value);
         }
 
         #ifndef MAGNUM_TARGET_GLES
@@ -454,7 +465,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, GLdouble value) {
-            glUniform1d(location, value);
+            (this->*uniform1dImplementation)(location, value);
         }
 
         /**
@@ -462,8 +473,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 2, GLdouble>& value) {
-            glUniform2dv(location, 1, value.data());
+        inline void setUniform(GLint location, const Math::Vector<2, GLdouble>& value) {
+            (this->*uniform2dvImplementation)(location, value);
         }
 
         /**
@@ -471,8 +482,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 3, GLdouble>& value) {
-            glUniform3dv(location, 1, value.data());
+        inline void setUniform(GLint location, const Math::Vector<3, GLdouble>& value) {
+            (this->*uniform3dvImplementation)(location, value);
         }
 
         /**
@@ -480,24 +491,24 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<1, 4, GLdouble>& value) {
-            glUniform4dv(location, 1, value.data());
+        inline void setUniform(GLint location, const Math::Vector<4, GLdouble>& value) {
+            (this->*uniform4dvImplementation)(location, value);
         }
         #endif
 
         /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<2, 2, GLfloat>& value) {
-            glUniformMatrix2fv(location, 1, GL_FALSE, value.data());
+        inline void setUniform(GLint location, const Math::Matrix<2, GLfloat>& value) {
+            (this->*uniformMatrix2fvImplementation)(location, value);
         }
 
         /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<3, 3, GLfloat>& value) {
-            glUniformMatrix3fv(location, 1, GL_FALSE, value.data());
+        inline void setUniform(GLint location, const Math::Matrix<3, GLfloat>& value) {
+            (this->*uniformMatrix3fvImplementation)(location, value);
         }
 
         /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<4, 4, GLfloat>& value) {
-            glUniformMatrix4fv(location, 1, GL_FALSE, value.data());
+        inline void setUniform(GLint location, const Math::Matrix<4, GLfloat>& value) {
+            (this->*uniformMatrix4fvImplementation)(location, value);
         }
 
         /**
@@ -505,7 +516,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gles30 (no extension providing this functionality)
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<2, 3, GLfloat>& value) {
-            glUniformMatrix2x3fv(location, 1, GL_FALSE, value.data());
+            (this->*uniformMatrix2x3fvImplementation)(location, value);
         }
 
         /**
@@ -513,7 +524,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gles30 (no extension providing this functionality)
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<3, 2, GLfloat>& value) {
-            glUniformMatrix3x2fv(location, 1, GL_FALSE, value.data());
+            (this->*uniformMatrix3x2fvImplementation)(location, value);
         }
 
         /**
@@ -521,7 +532,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gles30 (no extension providing this functionality)
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<2, 4, GLfloat>& value) {
-            glUniformMatrix2x4fv(location, 1, GL_FALSE, value.data());
+            (this->*uniformMatrix2x4fvImplementation)(location, value);
         }
 
         /**
@@ -529,7 +540,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gles30 (no extension providing this functionality)
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<4, 2, GLfloat>& value) {
-            glUniformMatrix4x2fv(location, 1, GL_FALSE, value.data());
+            (this->*uniformMatrix4x2fvImplementation)(location, value);
         }
 
         /**
@@ -537,7 +548,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gles30 (no extension providing this functionality)
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<3, 4, GLfloat>& value) {
-            glUniformMatrix3x4fv(location, 1, GL_FALSE, value.data());
+            (this->*uniformMatrix3x4fvImplementation)(location, value);
         }
 
         /**
@@ -545,7 +556,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gles30 (no extension providing this functionality)
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<4, 3, GLfloat>& value) {
-            glUniformMatrix4x3fv(location, 1, GL_FALSE, value.data());
+            (this->*uniformMatrix4x3fvImplementation)(location, value);
         }
 
         #ifndef MAGNUM_TARGET_GLES
@@ -554,8 +565,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<2, 2, GLdouble>& value) {
-            glUniformMatrix2dv(location, 1, GL_FALSE, value.data());
+        inline void setUniform(GLint location, const Math::Matrix<2, GLdouble>& value) {
+            (this->*uniformMatrix2dvImplementation)(location, value);
         }
 
         /**
@@ -563,8 +574,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<3, 3, GLdouble>& value) {
-            glUniformMatrix3dv(location, 1, GL_FALSE, value.data());
+        inline void setUniform(GLint location, const Math::Matrix<3, GLdouble>& value) {
+            (this->*uniformMatrix3dvImplementation)(location, value);
         }
 
         /**
@@ -572,8 +583,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<4, 4, GLdouble>& value) {
-            glUniformMatrix4dv(location, 1, GL_FALSE, value.data());
+        inline void setUniform(GLint location, const Math::Matrix<4, GLdouble>& value) {
+            (this->*uniformMatrix4dvImplementation)(location, value);
         }
 
         /**
@@ -582,7 +593,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<2, 3, GLdouble>& value) {
-            glUniformMatrix2x3dv(location, 1, GL_FALSE, value.data());
+            (this->*uniformMatrix2x3dvImplementation)(location, value);
         }
 
         /**
@@ -591,7 +602,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<3, 2, GLdouble>& value) {
-            glUniformMatrix3x2dv(location, 1, GL_FALSE, value.data());
+            (this->*uniformMatrix3x2dvImplementation)(location, value);
         }
 
         /**
@@ -600,7 +611,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<2, 4, GLdouble>& value) {
-            glUniformMatrix2x4dv(location, 1, GL_FALSE, value.data());
+            (this->*uniformMatrix2x4dvImplementation)(location, value);
         }
 
         /**
@@ -609,7 +620,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<4, 2, GLdouble>& value) {
-            glUniformMatrix4x2dv(location, 1, GL_FALSE, value.data());
+            (this->*uniformMatrix4x2dvImplementation)(location, value);
         }
 
         /**
@@ -618,7 +629,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<3, 4, GLdouble>& value) {
-            glUniformMatrix3x4dv(location, 1, GL_FALSE, value.data());
+            (this->*uniformMatrix3x4dvImplementation)(location, value);
         }
 
         /**
@@ -627,7 +638,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<4, 3, GLdouble>& value) {
-            glUniformMatrix4x3dv(location, 1, GL_FALSE, value.data());
+            (this->*uniformMatrix4x3dvImplementation)(location, value);
         }
         #endif
 
@@ -637,6 +648,162 @@ class MAGNUM_EXPORT AbstractShaderProgram {
             Linked,
             Failed
         };
+
+        static void initializeContextBasedFunctionality(Context* context);
+
+        typedef void(AbstractShaderProgram::*Uniform1fImplementation)(GLint, GLfloat);
+        typedef void(AbstractShaderProgram::*Uniform2fvImplementation)(GLint, const Math::Vector<2, GLfloat>&);
+        typedef void(AbstractShaderProgram::*Uniform3fvImplementation)(GLint, const Math::Vector<3, GLfloat>&);
+        typedef void(AbstractShaderProgram::*Uniform4fvImplementation)(GLint, const Math::Vector<4, GLfloat>&);
+        typedef void(AbstractShaderProgram::*Uniform1iImplementation)(GLint, GLint);
+        typedef void(AbstractShaderProgram::*Uniform2ivImplementation)(GLint, const Math::Vector<2, GLint>&);
+        typedef void(AbstractShaderProgram::*Uniform3ivImplementation)(GLint, const Math::Vector<3, GLint>&);
+        typedef void(AbstractShaderProgram::*Uniform4ivImplementation)(GLint, const Math::Vector<4, GLint>&);
+        typedef void(AbstractShaderProgram::*Uniform1uiImplementation)(GLint, GLuint);
+        typedef void(AbstractShaderProgram::*Uniform2uivImplementation)(GLint, const Math::Vector<2, GLuint>&);
+        typedef void(AbstractShaderProgram::*Uniform3uivImplementation)(GLint, const Math::Vector<3, GLuint>&);
+        typedef void(AbstractShaderProgram::*Uniform4uivImplementation)(GLint, const Math::Vector<4, GLuint>&);
+        #ifndef MAGNUM_TARGET_GLES
+        typedef void(AbstractShaderProgram::*Uniform1dImplementation)(GLint, GLdouble);
+        typedef void(AbstractShaderProgram::*Uniform2dvImplementation)(GLint, const Math::Vector<2, GLdouble>&);
+        typedef void(AbstractShaderProgram::*Uniform3dvImplementation)(GLint, const Math::Vector<3, GLdouble>&);
+        typedef void(AbstractShaderProgram::*Uniform4dvImplementation)(GLint, const Math::Vector<4, GLdouble>&);
+        #endif
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLfloat value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<2, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<3, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<4, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLint value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<2, GLint>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<3, GLint>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<4, GLint>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLuint value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<2, GLuint>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<3, GLuint>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<4, GLuint>& value);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLdouble value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<2, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<3, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<4, GLdouble>& value);
+        #endif
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, GLfloat value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<2, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<3, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<4, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, GLint value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<2, GLint>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<3, GLint>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<4, GLint>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, GLuint value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<2, GLuint>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<3, GLuint>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<4, GLuint>& value);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, GLdouble value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<2, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<3, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<4, GLdouble>& value);
+        #endif
+        static Uniform1fImplementation uniform1fImplementation;
+        static Uniform2fvImplementation uniform2fvImplementation;
+        static Uniform3fvImplementation uniform3fvImplementation;
+        static Uniform4fvImplementation uniform4fvImplementation;
+        static Uniform1iImplementation uniform1iImplementation;
+        static Uniform2ivImplementation uniform2ivImplementation;
+        static Uniform3ivImplementation uniform3ivImplementation;
+        static Uniform4ivImplementation uniform4ivImplementation;
+        static Uniform1uiImplementation uniform1uiImplementation;
+        static Uniform2uivImplementation uniform2uivImplementation;
+        static Uniform3uivImplementation uniform3uivImplementation;
+        static Uniform4uivImplementation uniform4uivImplementation;
+        #ifndef MAGNUM_TARGET_GLES
+        static Uniform1dImplementation uniform1dImplementation;
+        static Uniform2dvImplementation uniform2dvImplementation;
+        static Uniform3dvImplementation uniform3dvImplementation;
+        static Uniform4dvImplementation uniform4dvImplementation;
+        #endif
+
+        typedef void(AbstractShaderProgram::*UniformMatrix2fvImplementation)(GLint, const Math::Matrix<2, GLfloat>&);
+        typedef void(AbstractShaderProgram::*UniformMatrix3fvImplementation)(GLint, const Math::Matrix<3, GLfloat>&);
+        typedef void(AbstractShaderProgram::*UniformMatrix4fvImplementation)(GLint, const Math::Matrix<4, GLfloat>&);
+        typedef void(AbstractShaderProgram::*UniformMatrix2x3fvImplementation)(GLint, const Math::RectangularMatrix<2, 3, GLfloat>&);
+        typedef void(AbstractShaderProgram::*UniformMatrix3x2fvImplementation)(GLint, const Math::RectangularMatrix<3, 2, GLfloat>&);
+        typedef void(AbstractShaderProgram::*UniformMatrix2x4fvImplementation)(GLint, const Math::RectangularMatrix<2, 4, GLfloat>&);
+        typedef void(AbstractShaderProgram::*UniformMatrix4x2fvImplementation)(GLint, const Math::RectangularMatrix<4, 2, GLfloat>&);
+        typedef void(AbstractShaderProgram::*UniformMatrix3x4fvImplementation)(GLint, const Math::RectangularMatrix<3, 4, GLfloat>&);
+        typedef void(AbstractShaderProgram::*UniformMatrix4x3fvImplementation)(GLint, const Math::RectangularMatrix<4, 3, GLfloat>&);
+        #ifndef MAGNUM_TARGET_GLES
+        typedef void(AbstractShaderProgram::*UniformMatrix2dvImplementation)(GLint, const Math::Matrix<2, GLdouble>&);
+        typedef void(AbstractShaderProgram::*UniformMatrix3dvImplementation)(GLint, const Math::Matrix<3, GLdouble>&);
+        typedef void(AbstractShaderProgram::*UniformMatrix4dvImplementation)(GLint, const Math::Matrix<4, GLdouble>&);
+        typedef void(AbstractShaderProgram::*UniformMatrix2x3dvImplementation)(GLint, const Math::RectangularMatrix<2, 3, GLdouble>&);
+        typedef void(AbstractShaderProgram::*UniformMatrix3x2dvImplementation)(GLint, const Math::RectangularMatrix<3, 2, GLdouble>&);
+        typedef void(AbstractShaderProgram::*UniformMatrix2x4dvImplementation)(GLint, const Math::RectangularMatrix<2, 4, GLdouble>&);
+        typedef void(AbstractShaderProgram::*UniformMatrix4x2dvImplementation)(GLint, const Math::RectangularMatrix<4, 2, GLdouble>&);
+        typedef void(AbstractShaderProgram::*UniformMatrix3x4dvImplementation)(GLint, const Math::RectangularMatrix<3, 4, GLdouble>&);
+        typedef void(AbstractShaderProgram::*UniformMatrix4x3dvImplementation)(GLint, const Math::RectangularMatrix<4, 3, GLdouble>&);
+        #endif
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Matrix<2, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Matrix<3, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Matrix<4, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<2, 3, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<3, 2, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<2, 4, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<4, 2, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<3, 4, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<4, 3, GLfloat>& value);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Matrix<2, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Matrix<3, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Matrix<4, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<2, 3, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<3, 2, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<2, 4, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<4, 2, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<3, 4, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<4, 3, GLdouble>& value);
+        #endif
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Matrix<2, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Matrix<3, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Matrix<4, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::RectangularMatrix<2, 3, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::RectangularMatrix<3, 2, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::RectangularMatrix<2, 4, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::RectangularMatrix<4, 2, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::RectangularMatrix<3, 4, GLfloat>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::RectangularMatrix<4, 3, GLfloat>& value);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Matrix<2, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Matrix<3, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Matrix<4, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::RectangularMatrix<2, 3, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::RectangularMatrix<3, 2, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::RectangularMatrix<2, 4, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::RectangularMatrix<4, 2, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::RectangularMatrix<3, 4, GLdouble>& value);
+        void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::RectangularMatrix<4, 3, GLdouble>& value);
+        #endif
+        static UniformMatrix2fvImplementation uniformMatrix2fvImplementation;
+        static UniformMatrix3fvImplementation uniformMatrix3fvImplementation;
+        static UniformMatrix4fvImplementation uniformMatrix4fvImplementation;
+        static UniformMatrix2x3fvImplementation uniformMatrix2x3fvImplementation;
+        static UniformMatrix3x2fvImplementation uniformMatrix3x2fvImplementation;
+        static UniformMatrix2x4fvImplementation uniformMatrix2x4fvImplementation;
+        static UniformMatrix4x2fvImplementation uniformMatrix4x2fvImplementation;
+        static UniformMatrix3x4fvImplementation uniformMatrix3x4fvImplementation;
+        static UniformMatrix4x3fvImplementation uniformMatrix4x3fvImplementation;
+        #ifndef MAGNUM_TARGET_GLES
+        static UniformMatrix2dvImplementation uniformMatrix2dvImplementation;
+        static UniformMatrix3dvImplementation uniformMatrix3dvImplementation;
+        static UniformMatrix4dvImplementation uniformMatrix4dvImplementation;
+        static UniformMatrix2x3dvImplementation uniformMatrix2x3dvImplementation;
+        static UniformMatrix3x2dvImplementation uniformMatrix3x2dvImplementation;
+        static UniformMatrix2x4dvImplementation uniformMatrix2x4dvImplementation;
+        static UniformMatrix4x2dvImplementation uniformMatrix4x2dvImplementation;
+        static UniformMatrix3x4dvImplementation uniformMatrix3x4dvImplementation;
+        static UniformMatrix4x3dvImplementation uniformMatrix4x3dvImplementation;
+        #endif
 
         GLuint _id;
         State state;
