@@ -63,8 +63,8 @@ static const GLint SpecularTextureLayer = 1;
  - **Uniform locations** for setting uniform data (see below) (private
    constants), for example:
 @code
-static const GLint TransformationMatrixUniform = 0;
-static const GLint ProjectionMatrixUniform = 1;
+static const GLint TransformationUniform = 0;
+static const GLint ProjectionUniform = 1;
 static const GLint DiffuseTextureUniform = 2;
 static const GLint SpecularTextureUniform = 3;
 @endcode
@@ -81,13 +81,16 @@ MyShader() {
 }
 @endcode
  - **Uniform setting functions**, which will provide public interface for
-   protected setUniform() functions. Example:
+   protected setUniform() functions. For usability purposes you can implement
+   also method chaining. Example:
 @code
-void setTransformationMatrixUniform(const Matrix4& matrix) {
-    setUniform(TransformationMatrixUniform, matrix);
+MyShader* setTransformation(const Matrix4& matrix) {
+    setUniform(TransformationUniform, matrix);
+    return this;
 }
-void setProjectionMatrixUniform(const Matrix4& matrix) {
-    setUniform(ProjectionMatrixUniform, matrix);
+MyShader* setProjection(const Matrix4& matrix) {
+    setUniform(ProjectionUniform, matrix);
+    return this;
 }
 @endcode
 
@@ -144,8 +147,8 @@ code, e.g.:
 @code
 #version 430
 // or #extension GL_ARB_explicit_uniform_location: enable
-layout(location = 0) uniform mat4 transformationMatrix;
-layout(location = 1) uniform mat4 projectionMatrix;
+layout(location = 0) uniform mat4 transformation;
+layout(location = 1) uniform mat4 projection;
 @endcode
 @requires_gl (for explicit uniform location instead of using uniformLocation())
 @requires_gl43 Extension @extension{ARB,explicit_uniform_location} (for
@@ -154,8 +157,8 @@ layout(location = 1) uniform mat4 projectionMatrix;
 If you don't have the required extension, you can get uniform location using
 uniformLocation() after linking stage:
 @code
-GLint transformationMatrixUniform = uniformLocation("transformationMatrix");
-GLint projectionMatrixUniform = uniformLocation("projectionMatrix");
+GLint transformationUniform = uniformLocation("transformation");
+GLint projectionUniform = uniformLocation("projection");
 @endcode
 
 @subsection AbstractShaderProgram-texture-layer Binding texture layer uniforms
@@ -183,18 +186,18 @@ setUniform(SpecularTextureUniform, SpecularTextureLayer);
 @section AbstractShaderProgram-rendering-workflow Rendering workflow
 
 Basic workflow with %AbstractShaderProgram subclasses is: instancing the class
-(once at the beginning), then in Object::draw() reimplementation calling
-use(), setting uniforms, binding required textures to their respective layers
-using AbstractTexture::bind(GLint) and calling Mesh::draw(). For example:
+(once at the beginning), then in draw event setting uniforms and marking the
+shader for use, binding required textures to their respective layers using
+AbstractTexture::bind(GLint) and calling Mesh::draw(). For example:
 @code
-void draw(const Magnum::Matrix4& transformationMatrix, Magnum::Camera* camera) {
-    shader.use();
-    shader.setTransformationMatrixUniform(transformationMatrix);
-    shader.setProjectionMatrixUniform(camera->projectionMatrix());
-    diffuseTexture.bind(MyShader::DiffuseTextureLayer);
-    specularTexture.bind(MyShader::SpecularTextureLayer);
-    mesh.draw();
-}
+shader->setTransformation(transformation)
+    ->setProjection(projection)
+    ->use();
+
+diffuseTexture->bind(MyShader::DiffuseTextureLayer);
+specularTexture->bind(MyShader::SpecularTextureLayer);
+
+mesh.draw();
 @endcode
 
 @todo Uniform arrays support
