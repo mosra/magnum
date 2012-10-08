@@ -33,6 +33,7 @@ classic textures, coordinates for cube map textures is signed three-part
 vector from the center of the cube, which intersects one of the six sides of
 the cube map.
 
+@see CubeMapTexture::setSeamless()
 @requires_gl40 Extension @extension{ARB,texture_cube_map_array}
 */
 class CubeMapTextureArray: public AbstractTexture {
@@ -46,16 +47,6 @@ class CubeMapTextureArray: public AbstractTexture {
             PositiveZ = 4,  /**< +Z cube side */
             NegativeZ = 5   /**< -Z cube side */
         };
-
-        /**
-         * @brief Enable/disable seamless cube map textures
-         *
-         * @see @fn_gl{Enable}/@fn_gl{Disable} with @def_gl{TEXTURE_CUBE_MAP_SEAMLESS}
-         * @requires_gl32 Extension @extension{ARB,seamless_cube_map}
-         */
-        inline static void setSeamless(bool enabled) {
-            enabled ? glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS) : glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-        }
 
         /**
          * @brief Constructor
