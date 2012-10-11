@@ -17,9 +17,6 @@
 
 #include <algorithm>
 
-#include "AbstractShaderProgram.h"
-#include "Mesh.h"
-#include "ResourceManager.h"
 #include "AbstractShape.h"
 #include "ShapedObjectGroup.h"
 

@@ -24,24 +24,9 @@
 
 #include "magnumPhysicsVisibility.h"
 
-namespace Magnum {
-
-class AbstractShaderProgram;
-template<class T, class U> class Resource;
-
-namespace Physics {
+namespace Magnum { namespace Physics {
 
 template<std::uint8_t> class ShapedObject;
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-namespace Implementation {
-    enum class DebugMode {
-        None,
-        Wireframe,
-        SolidWireframe
-    };
-}
-#endif
 
 /**
 @brief Group of shaped objects
@@ -55,21 +40,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapedObjectGroup {
     friend class ShapedObject<dimensions>;
 
     public:
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        /**
-         * @brief Debug mode
-         *
-         * @see setDebugMode()
-         */
-        enum class DebugMode {
-            None,               /**< @brief Nothing is rendered */
-            Wireframe,          /**< @brief Wireframe of the shape is rendered */
-            SolidWireframe      /**< @brief Solid with wireframe is rendered */
-        };
-        #else
-        typedef Implementation::DebugMode DebugMode;
-        #endif
-
         /**
          * @brief Destructor
          *
@@ -78,12 +48,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapedObjectGroup {
         inline virtual ~ShapedObjectGroup() {
             for(auto i: objects) delete i;
         }
-
-        /** @brief Debug mode */
-        inline DebugMode debugMode() const { return _debugMode; }
-
-        /** @brief Set debug mode */
-        inline void setDebugMode(DebugMode mode) { _debugMode = mode; }
 
         /**
          * @brief Whether the group is dirty
@@ -111,9 +75,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapedObjectGroup {
         void setClean();
 
     private:
-        Resource<AbstractShaderProgram, AbstractShaderProgram>& shader();
-
-        DebugMode _debugMode;
         std::vector<ShapedObject<dimensions>*> objects;
         bool dirty;
 };
