@@ -56,8 +56,15 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapedObject: public Scen
         inline AbstractShape<dimensions>* shape() { return _shape; }
         inline const AbstractShape<dimensions>* shape() const { return _shape; } /**< @overload */
 
-        /** @brief Set object shape */
-        void setShape(AbstractShape<dimensions>* shape) { _shape = shape; }
+        /**
+         * @brief Set object shape
+         * @return Pointer to self (for method chaining)
+         */
+        inline ShapedObject<dimensions>* setShape(AbstractShape<dimensions>* shape) {
+            _shape = shape;
+            setDirty();
+            return this;
+        }
 
         /**
          * @copybrief SceneGraph::AbstractObject::setDirty()
