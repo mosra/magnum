@@ -107,6 +107,20 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapeGroup: public Abstra
 
         bool collides(const AbstractShape<dimensions>* other) const;
 
+        /**
+         * @brief First object in the group
+         *
+         * If there is no such object, returns `nullptr`.
+         */
+        inline AbstractShape<dimensions>* first() { return a; }
+
+        /**
+         * @brief Second object in the group
+         *
+         * If there is no such object, returns `nullptr`.
+         */
+        inline AbstractShape<dimensions>* second() { return b; }
+
     private:
         inline ShapeGroup(int operation, AbstractShape<dimensions>* a, AbstractShape<dimensions>* b): operation(operation), a(a), b(b) {}
 
