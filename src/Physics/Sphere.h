@@ -40,6 +40,10 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Sphere: public AbstractSh
         /** @brief Constructor */
         inline Sphere(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position, float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
 
+        inline typename AbstractShape<dimensions>::Type type() const {
+            return AbstractShape<dimensions>::Type::Sphere;
+        }
+
         void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
 
         bool collides(const AbstractShape<dimensions>* other) const;
@@ -81,11 +85,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Sphere: public AbstractSh
 
         /** @brief Collision with sphere */
         bool operator%(const Sphere<dimensions>& other) const;
-
-    protected:
-        inline typename AbstractShape<dimensions>::Type type() const {
-            return AbstractShape<dimensions>::Type::Sphere;
-        }
 
     private:
         Math::Vector<dimensions, GLfloat> _position,

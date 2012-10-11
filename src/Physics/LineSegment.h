@@ -33,8 +33,9 @@ template<std::uint8_t dimensions> class LineSegment: public Line<dimensions> {
         /** @brief Constructor */
         inline LineSegment(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a, const typename DimensionTraits<dimensions, GLfloat>::VectorType& b): Line<dimensions>(a, b) {}
 
-    protected:
-        inline typename AbstractShape<dimensions>::Type type() const { return AbstractShape<dimensions>::Type::LineSegment; }
+        inline typename AbstractShape<dimensions>::Type type() const {
+            return AbstractShape<dimensions>::Type::LineSegment;
+        }
 };
 
 /** @brief Two-dimensional line segment */

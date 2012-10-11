@@ -35,6 +35,10 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Box: public AbstractShape
         /** @brief Constructor */
         inline Box(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation): _transformation(transformation), _transformedTransformation(transformation) {}
 
+        inline typename AbstractShape<dimensions>::Type type() const {
+            return AbstractShape<dimensions>::Type::Box;
+        }
+
         void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
 
         /** @brief Transformation */
@@ -50,11 +54,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Box: public AbstractShape
         /** @brief Transformed transformation */
         inline typename DimensionTraits<dimensions, GLfloat>::MatrixType transformedTransformation() const {
             return _transformedTransformation;
-        }
-
-    protected:
-        inline typename AbstractShape<dimensions>::Type type() const {
-            return AbstractShape<dimensions>::Type::Box;
         }
 
     private:

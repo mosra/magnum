@@ -99,12 +99,13 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapeGroup: public Abstra
         /** @brief Move assignment */
         ShapeGroup& operator=(ShapeGroup&& other);
 
+        inline typename AbstractShape<dimensions>::Type type() const {
+            return AbstractShape<dimensions>::Type::ShapeGroup;
+        }
+
         void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
 
         bool collides(const AbstractShape<dimensions>* other) const;
-
-    protected:
-        virtual typename AbstractShape<dimensions>::Type type() const { return AbstractShape<dimensions>::Type::ShapeGroup; }
 
     private:
         inline ShapeGroup(int operation, AbstractShape<dimensions>* a, AbstractShape<dimensions>* b): operation(operation), a(a), b(b) {}

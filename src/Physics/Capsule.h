@@ -39,6 +39,10 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Capsule: public AbstractS
         /** @brief Constructor */
         inline Capsule(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a, const typename DimensionTraits<dimensions, GLfloat>::VectorType& b, float radius): _a(a), _transformedA(a), _b(b), _transformedB(b), _radius(radius), _transformedRadius(radius) {}
 
+        inline typename AbstractShape<dimensions>::Type type() const {
+            return AbstractShape<dimensions>::Type::Capsule;
+        }
+
         void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
 
         bool collides(const AbstractShape<dimensions>* other) const;
@@ -89,11 +93,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Capsule: public AbstractS
 
         /** @brief Collision with sphere */
         bool operator%(const Sphere<dimensions>& other) const;
-
-    protected:
-        inline typename AbstractShape<dimensions>::Type type() const {
-            return AbstractShape<dimensions>::Type::Capsule;
-        }
 
     private:
         Math::Vector<dimensions, GLfloat> _a, _transformedA,

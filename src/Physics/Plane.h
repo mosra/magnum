@@ -35,6 +35,8 @@ class PHYSICS_EXPORT Plane: public AbstractShape<3> {
         /** @brief Constructor */
         inline Plane(const Vector3& position, const Vector3& normal): _position(position), _transformedPosition(position), _normal(normal), _transformedNormal(normal) {}
 
+        inline Type type() const { return Type::Plane; }
+
         #ifndef DOXYGEN_GENERATING_OUTPUT
         void applyTransformation(const Matrix4& transformation);
         bool collides(const AbstractShape<3>* other) const;
@@ -74,9 +76,6 @@ class PHYSICS_EXPORT Plane: public AbstractShape<3> {
 
         /** @brief Collision with line segment */
         bool operator%(const LineSegment3D& other) const;
-
-    protected:
-        inline Type type() const { return Type::Plane; }
 
     private:
         Vector3 _position, _transformedPosition,

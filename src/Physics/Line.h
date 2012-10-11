@@ -35,6 +35,10 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Line: public AbstractShap
         /** @brief Constructor */
         inline Line(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a, const typename DimensionTraits<dimensions, GLfloat>::VectorType& b): _a(a), _transformedA(a), _b(b), _transformedB(b) {}
 
+        inline typename AbstractShape<dimensions>::Type type() const {
+            return AbstractShape<dimensions>::Type::Line;
+        }
+
         void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
 
         /** @brief First point */
@@ -65,11 +69,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Line: public AbstractShap
         /** @brief Transformed second point */
         inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedB() const {
             return _transformedB;
-        }
-
-    protected:
-        inline typename AbstractShape<dimensions>::Type type() const {
-            return AbstractShape<dimensions>::Type::Line;
         }
 
     private:

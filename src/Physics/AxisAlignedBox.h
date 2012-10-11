@@ -34,6 +34,10 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT AxisAlignedBox: public Ab
         /** @brief Constructor */
         inline AxisAlignedBox(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position, const typename DimensionTraits<dimensions, GLfloat>::VectorType& size): _position(position), _transformedPosition(position), _size(size), _transformedSize(size) {}
 
+        inline typename AbstractShape<dimensions>::Type type() const {
+            return AbstractShape<dimensions>::Type::AxisAlignedBox;
+        }
+
         void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
 
         /** @brief Position */
@@ -62,11 +66,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT AxisAlignedBox: public Ab
         /** @brief Transformed size */
         inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedSize() const {
             return _transformedSize;
-        }
-
-    protected:
-        inline typename AbstractShape<dimensions>::Type type() const {
-            return AbstractShape<dimensions>::Type::AxisAlignedBox;
         }
 
     private:
