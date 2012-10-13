@@ -397,10 +397,10 @@ class MAGNUM_EXPORT Buffer {
         }
 
     private:
-        static void initializeContextBasedFunctionality(Context* context);
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
 
         static void bind(Target hint, GLuint id);
-        Target bindInternal(Target hint);
+        Target MAGNUM_LOCAL bindInternal(Target hint);
 
         typedef void(*CopyImplementation)(Buffer*, Buffer*, GLintptr, GLintptr, GLsizeiptr);
         static void MAGNUM_LOCAL copyImplementationDefault(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);

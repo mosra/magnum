@@ -684,7 +684,7 @@ class MAGNUM_EXPORT AbstractTexture {
         #endif
 
     private:
-        static void initializeContextBasedFunctionality(Context* context);
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
 
         GLuint _id;
 };
