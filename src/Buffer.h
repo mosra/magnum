@@ -60,6 +60,18 @@ std::vector<Vector3> data;
 buffer.setData(data, Buffer::Usage::StaticDraw);
 @endcode
 
+@section Buffer-performance-optimization Performance optimizations
+The engine tracks currently bound buffers to avoid unnecessary calls to
+@fn_gl{BindBuffer}. If the buffer is already bound to some target,
+functions copy(), setData() and setSubData() use that target in
+@fn_gl{CopyBufferSubData}, @fn_gl{BufferData} and @fn_gl{BufferSubData}
+functions instead of binding the buffer to some specific target.
+
+If extension @extension{EXT,direct_state_access} is available, functions
+copy(), setData() and setSubData() use DSA functions to avoid unnecessary
+calls to @fn_gl{BindBuffer}. See their respective documentation for more
+information.
+
 @todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
 @todo BindBufferRange/BindBufferOffset/BindBufferBase for transform feedback (3.0, @extension{EXT,transform_feedback})
  */
@@ -247,12 +259,12 @@ class MAGNUM_EXPORT Buffer {
          * @param writeOffset   Offset in the write buffer
          * @param size          Data size
          *
-         * If @extension{EXT,direct_state_access} is not available, read
-         * buffer is bound to `Target::CopyRead` and write buffer to
-         * `Target::CopyWrite` before the copy is performed.
+         * If @extension{EXT,direct_state_access} is not available, both
+         * buffers are bound to some target before the copy is performed.
          * @requires_gl31 Extension @extension{ARB,copy_buffer}
          * @requires_gles30 (no extension providing this functionality)
-         * @see @fn_gl{CopyBufferSubData} or @fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}
+         * @see @fn_gl{BindBuffer} and @fn_gl{CopyBufferSubData} or
+         *      @fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}
          */
         inline static void copy(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
             copyImplementation(read, write, readOffset, writeOffset, size);
@@ -287,7 +299,7 @@ class MAGNUM_EXPORT Buffer {
         /**
          * @brief Bind buffer
          *
-         * Binds buffer with default target.
+         * Binds buffer to default target.
          * @see bind(Target)
          */
         inline void bind() { bind(_defaultTarget); }
@@ -307,11 +319,12 @@ class MAGNUM_EXPORT Buffer {
          * @param usage     %Buffer usage
          *
          * If @extension{EXT,direct_state_access} is not available, the buffer
-         * is bound to default target before the operation.
-         * @see bind(), @fn_gl{BufferData} or @fn_gl_extension{NamedBufferData,EXT,direct_state_access}
+         * is bound to some target before the operation.
+         * @see @fn_gl{BindBuffer} and @fn_gl{BufferData} or
+         *      @fn_gl_extension{NamedBufferData,EXT,direct_state_access}
          */
         inline void setData(GLsizeiptr size, const GLvoid* data, Usage usage) {
-            (this->*Magnum::Buffer::setDataImplementation)(size, data, usage);
+            (this->*setDataImplementation)(size, data, usage);
         }
 
         /**
@@ -348,8 +361,9 @@ class MAGNUM_EXPORT Buffer {
          * @param data      Pointer to data
          *
          * If @extension{EXT,direct_state_access} is not available, the buffer
-         * is bound to default target before the operation.
-         * @see bind(), @fn_gl{BufferSubData} or @fn_gl_extension{NamedBufferSubData,EXT,direct_state_access}
+         * is bound to some target before the operation.
+         * @see @fn_gl{BindBuffer} and @fn_gl{BufferSubData} or
+         *      @fn_gl_extension{NamedBufferSubData,EXT,direct_state_access}
          */
         inline void setSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
             (this->*setSubDataImplementation)(offset, size, data);
