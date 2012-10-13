@@ -15,6 +15,10 @@
 
 #include "AbstractTexture.h"
 
+#include "Context.h"
+#include "Implementation/State.h"
+#include "Implementation/TextureState.h"
+
 namespace Magnum {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -35,25 +39,49 @@ static_assert((filter_or(NearestNeighbor, BaseLevel) == GL_NEAREST) &&
 #endif
 
 GLint AbstractTexture::maxSupportedLayerCount() {
-    GLint value;
-    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &value);
-    return value;
+    return Context::current()->state()->texture->maxSupportedLayerCount;
 }
 
 #ifndef MAGNUM_TARGET_GLES
 GLfloat AbstractTexture::maxSupportedAnisotropy() {
-    GLfloat value;
-    glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &value);
+    GLfloat& value = Context::current()->state()->texture->maxSupportedAnisotropy;
+
+    /* Get the value, if not already cached */
+    if(value == 0.0f)
+        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &value);
+
     return value;
 }
 #endif
+
+AbstractTexture::~AbstractTexture() {
+    /* Remove all bindings */
+    for(GLuint& binding: Context::current()->state()->texture->bindings)
+        if(binding == _id) binding = 0;
+
+    glDeleteTextures(1, &_id);
+}
+
+void AbstractTexture::bind(GLint layer) {
+    Implementation::TextureState* const textureState = Context::current()->state()->texture;
+
+    /* If already bound in given layer, nothing to do */
+    if(textureState->bindings[layer] == _id) return;
+
+    /* Change to given layer, if not already there */
+    if(textureState->currentLayer != layer)
+        glActiveTexture(GL_TEXTURE0 + (textureState->currentLayer = layer));
+
+    /* Bind the texture to the layer */
+    glBindTexture(_target, (textureState->bindings[layer] = _id));
+}
 
 AbstractTexture* AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE || mipmap == Mipmap::BaseLevel, "AbstractTexture: rectangle textures cannot have mipmaps", this);
     #endif
 
-    bind();
+    bindInternal();
     glTexParameteri(_target, GL_TEXTURE_MIN_FILTER,
         static_cast<GLint>(filter)|static_cast<GLint>(mipmap));
     return this;
@@ -64,9 +92,37 @@ AbstractTexture* AbstractTexture::generateMipmap() {
     CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE, "AbstractTexture: rectangle textures cannot have mipmaps", this);
     #endif
 
-    bind();
+    bindInternal();
     glGenerateMipmap(_target);
     return this;
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+void AbstractTexture::bindInternal() {
+    Implementation::TextureState* const textureState = Context::current()->state()->texture;
+
+    /* If the texture is already bound in current layer, nothing to do */
+    if(textureState->bindings[textureState->currentLayer] == _id)
+        return;
+
+    /* Set internal layer as active if not already */
+    const GLint internalLayer = textureState->maxSupportedLayerCount-1;
+    if(textureState->currentLayer != internalLayer)
+        glActiveTexture(GL_TEXTURE0 + (textureState->currentLayer = internalLayer));
+
+    /* Bind the texture to internal layer, if not already */
+    if(textureState->bindings[internalLayer] != _id)
+        glBindTexture(_target, (textureState->bindings[internalLayer] = _id));
+}
+#endif
+
+void AbstractTexture::initializeContextBasedFunctionality(Context* context) {
+    Implementation::TextureState* const textureState = context->state()->texture;
+    GLint& value = textureState->maxSupportedLayerCount;
+
+    /* Get the value and resize bindings array */
+    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &value);
+    textureState->bindings.resize(value);
 }
 
 AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components components, AbstractTexture::ComponentType type) {

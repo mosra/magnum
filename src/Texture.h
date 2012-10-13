@@ -130,7 +130,7 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          *      that can easily create all values the same)
          */
         inline Texture<Dimensions>* setWrapping(const Math::Vector<Dimensions, Wrapping>& wrapping) {
-            bind();
+            bindInternal();
             DataHelper<Dimensions>::setWrapping(_target, wrapping);
             return this;
         }
@@ -148,7 +148,7 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          * @see bind(), @fn_gl{TexImage1D}, @fn_gl{TexImage2D}, @fn_gl{TexImage3D}
          */
         template<class Image> inline Texture<Dimensions>* setData(GLint mipLevel, InternalFormat internalFormat, Image* image) {
-            bind();
+            bindInternal();
             DataHelper<Dimensions>::set(_target, mipLevel, internalFormat, image);
             return this;
         }
@@ -172,7 +172,7 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          * @see bind(), @fn_gl{TexSubImage1D}, @fn_gl{TexSubImage2D}, @fn_gl{TexSubImage3D}
          */
         template<class Image> inline Texture<Dimensions>* setSubData(GLint mipLevel, const typename DimensionTraits<Dimensions, GLint>::VectorType& offset, Image* image) {
-            bind();
+            bindInternal();
             DataHelper<Dimensions>::setSub(_target, mipLevel, offset, image);
             return this;
         }

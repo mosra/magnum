@@ -26,6 +26,8 @@
 
 namespace Magnum {
 
+class Context;
+
 /**
 @brief Base for textures
 
@@ -42,10 +44,24 @@ AbstractShaderProgram::setUniform(GLint, GLint).
 See Texture, CubeMapTexture and CubeMapTextureArray documentation for more
 information.
 
+@section AbstractTexture-performance-optimization Performance optimizations
+The engine tracks currently bound textures in all available layers to avoid
+unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}. %Texture
+configuration functions use dedicated highest available texture layer to not
+affect active bindings in user layers. %Texture limits (such as
+maxSupportedLayerCount()) are cached, so repeated queries don't result in
+repeated @fn_gl{Get} calls.
+
+To achieve least state changes, fully configure each texture in one run --
+method chaining comes in handy -- and try to have often used textures in
+dedicated layers, not occupied by other textures.
+
 @todo Add glPixelStore encapsulation
 @todo Texture copying
 */
 class MAGNUM_EXPORT AbstractTexture {
+    friend class Context;
+
     AbstractTexture(const AbstractTexture& other) = delete;
     AbstractTexture(AbstractTexture&& other) = delete;
     AbstractTexture& operator=(const AbstractTexture& other) = delete;
@@ -533,8 +549,8 @@ class MAGNUM_EXPORT AbstractTexture {
         /**
          * @brief Max supported layer count
          *
-         * At least 48.
-         * @see bind(GLint), @fn_gl{Get} with @def_gl{MAX_COMBINED_TEXTURE_IMAGE_UNITS}
+         * @see bind(GLint), @fn_gl{Get} with @def_gl{MAX_COMBINED_TEXTURE_IMAGE_UNITS},
+         *      @fn_gl{ActiveTexture}
          */
         static GLint maxSupportedLayerCount();
 
@@ -577,12 +593,9 @@ class MAGNUM_EXPORT AbstractTexture {
          * Sets current texture as active in given layer. The layer must be
          * between 0 and maxSupportedLayerCount(). Note that only one texture
          * can be bound to given layer.
-         * @see bind(), @fn_gl{ActiveTexture}
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
          */
-        inline void bind(GLint layer) {
-            glActiveTexture(GL_TEXTURE0 + layer);
-            bind();
-        }
+        void bind(GLint layer);
 
         /**
          * @brief Set minification filter
@@ -612,7 +625,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @see bind(), @fn_gl{TexParameter} with @def_gl{TEXTURE_MAG_FILTER}
          */
         inline AbstractTexture* setMagnificationFilter(Filter filter) {
-            bind();
+            bindInternal();
             glTexParameteri(_target, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(filter));
             return this;
         }
@@ -628,7 +641,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @requires_gl
          */
         inline AbstractTexture* setBorderColor(const Color4<GLfloat>& color) {
-            bind();
+            bindInternal();
             glTexParameterfv(_target, GL_TEXTURE_BORDER_COLOR, color.data());
             return this;
         }
@@ -644,7 +657,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @requires_extension @extension{EXT,texture_filter_anisotropic}
          */
         inline AbstractTexture* setMaxAnisotropy(GLfloat anisotropy) {
-            bind();
+            bindInternal();
             glTexParameterf(_target, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
             return this;
         }
@@ -663,26 +676,18 @@ class MAGNUM_EXPORT AbstractTexture {
     protected:
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<std::uint8_t textureDimensions> struct DataHelper {};
+
+        /* Unlike bind() this also sets the binding layer as active */
+        void bindInternal();
+
+        const GLenum _target;
         #endif
 
-        const GLenum _target;       /**< @brief Target */
-
-        /**
-         * @brief Bind texture for parameter modification
-         *
-         * Unlike bind(GLint) doesn't bind the texture to any particular
-         * layer, thus unusable for binding for rendering.
-         * @see @fn_gl{BindTexture}
-         */
-        inline void bind() {
-            glBindTexture(_target, _id);
-        }
-
     private:
+        static void initializeContextBasedFunctionality(Context* context);
+
         GLuint _id;
 };
-
-inline AbstractTexture::~AbstractTexture() { glDeleteTextures(1, &_id); }
 
 /** @relates AbstractTexture
 @brief Convertor of component count and data type to InternalFormat

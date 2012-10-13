@@ -1,3 +1,5 @@
+#ifndef Magnum_Implementation_TextureState_h
+#define Magnum_Implementation_TextureState_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -13,20 +15,22 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "State.h"
+#include "Magnum.h"
 
-#include "BufferState.h"
-#include "ShaderProgramState.h"
-#include "TextureState.h"
+#include "Buffer.h"
 
 namespace Magnum { namespace Implementation {
 
-State::State(): buffer(new BufferState), shaderProgram(new ShaderProgramState), texture(new TextureState) {}
+struct TextureState {
+    inline TextureState(): maxSupportedLayerCount(0), maxSupportedAnisotropy(0.0f), currentLayer(0) {}
 
-State::~State() {
-    delete texture;
-    delete shaderProgram;
-    delete buffer;
-}
+    GLint maxSupportedLayerCount;
+    GLfloat maxSupportedAnisotropy;
+    GLint currentLayer;
+
+    std::vector<GLuint> bindings;
+};
 
 }}
+
+#endif

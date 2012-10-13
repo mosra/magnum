@@ -60,7 +60,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @copydoc Texture::setWrapping()
          */
         inline CubeMapTextureArray* setWrapping(const Math::Vector<3, Wrapping>& wrapping) {
-            bind();
+            bindInternal();
             DataHelper<3>::setWrapping(GL_TEXTURE_CUBE_MAP_ARRAY, wrapping);
             return this;
         }
@@ -73,7 +73,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * The images are ordered the same way as Coordinate enum.
          */
         template<class T> inline CubeMapTextureArray* setData(GLint mipLevel, InternalFormat internalFormat, T* image) {
-            bind();
+            bindInternal();
             DataHelper<3>::set(GL_TEXTURE_CUBE_MAP_ARRAY, mipLevel, internalFormat, image);
             return this;
         }
@@ -97,7 +97,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @see setSubData(GLsizei, Coordinate, GLint, const Math::Vector<2, GLint>&, const Image*)
          */
         template<class Image> inline CubeMapTextureArray* setSubData(GLint mipLevel, const Math::Vector<3, GLint>& offset, const Image* image) {
-            bind();
+            bindInternal();
             DataHelper<3>::setSub(GL_TEXTURE_CUBE_MAP_ARRAY, mipLevel, offset, image, Math::Vector<3, GLsizei>(Math::Vector<Image::Dimensions, GLsizei>()));
             return this;
         }
@@ -118,7 +118,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @see setSubData(GLint, const Math::Vector<3, GLint>&, const Image*)
          */
         template<class Image> inline CubeMapTextureArray* setSubData(GLsizei layer, Coordinate coordinate, GLint mipLevel, const Math::Vector<2, GLint>& offset, const Image* image) {
-            bind();
+            bindInternal();
             DataHelper<3>::setSub(GL_TEXTURE_CUBE_MAP_ARRAY, mipLevel, Math::Vector<3, GLint>(offset, layer*6+static_cast<GLsizei>(coordinate)), image, Math::Vector<2, GLsizei>(Math::Vector<Image::Dimensions, GLsizei>()));
             return this;
         }

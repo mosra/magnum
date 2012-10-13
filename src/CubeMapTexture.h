@@ -86,7 +86,7 @@ class CubeMapTexture: public AbstractTexture {
          * @copydoc Texture::setWrapping()
          */
         inline CubeMapTexture* setWrapping(const Math::Vector<3, Wrapping>& wrapping) {
-            bind();
+            bindInternal();
             DataHelper<3>::setWrapping(GL_TEXTURE_CUBE_MAP, wrapping);
             return this;
         }
@@ -97,7 +97,7 @@ class CubeMapTexture: public AbstractTexture {
          * @return Pointer to self (for method chaining)
          */
         template<class Image> inline CubeMapTexture* setData(Coordinate coordinate, GLint mipLevel, InternalFormat internalFormat, Image* image) {
-            bind();
+            bindInternal();
             DataHelper<2>::set(static_cast<GLenum>(coordinate), mipLevel, internalFormat, image);
             return this;
         }
@@ -108,7 +108,7 @@ class CubeMapTexture: public AbstractTexture {
          * @return Pointer to self (for method chaining)
          */
         template<class Image> inline CubeMapTexture* setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector<2, GLint>& offset, const Image* image) {
-            bind();
+            bindInternal();
             DataHelper<2>::setSub(static_cast<GLenum>(coordinate), mipLevel, offset, image);
             return this;
         }

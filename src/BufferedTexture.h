@@ -133,7 +133,7 @@ class BufferedTexture: private AbstractTexture {
          * @see @fn_gl{BindTexture}, @fn_gl{TexBuffer}
          */
         void setBuffer(InternalFormat internalFormat, Buffer* buffer) {
-            AbstractTexture::bind();
+            bindInternal();
             glTexBuffer(GL_TEXTURE_BUFFER, internalFormat, buffer->id());
         }
 };

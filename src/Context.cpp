@@ -20,6 +20,7 @@
 #include <Utility/Debug.h>
 
 #include "AbstractShaderProgram.h"
+#include "AbstractTexture.h"
 #include "Buffer.h"
 #include "Extensions.h"
 #include "Implementation/State.h"
@@ -201,6 +202,7 @@ Context::Context() {
     /* Initialize functionality based on current OpenGL version and extensions */
     AbstractShaderProgram::initializeContextBasedFunctionality(this);
     Buffer::initializeContextBasedFunctionality(this);
+    AbstractTexture::initializeContextBasedFunctionality(this);
 }
 
 Context::~Context() {
