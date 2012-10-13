@@ -19,6 +19,7 @@
  * @brief Class Magnum::BufferedTexture
  */
 
+#include "AbstractTexture.h"
 #include "Buffer.h"
 
 namespace Magnum {
@@ -39,7 +40,7 @@ data using integer coordinates in `texelFetch()`.
 @requires_gl
 @requires_gl31 Extension @extension{ARB,texture_buffer_object}
 */
-class BufferedTexture {
+class BufferedTexture: private AbstractTexture {
     BufferedTexture(const BufferedTexture& other) = delete;
     BufferedTexture(BufferedTexture&& other) = delete;
     BufferedTexture& operator=(const BufferedTexture& other) = delete;
@@ -116,38 +117,10 @@ class BufferedTexture {
 
         /*@}*/
 
-        /**
-         * @brief Constructor
-         *
-         * Creates one OpenGL texture.
-         * @see @fn_gl{GenTextures}
-         */
-        inline BufferedTexture() {
-            glGenTextures(1, &_id);
-        }
+        inline BufferedTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
 
-        /**
-         * @brief Destructor
-         *
-         * Deletes assigned OpenGL texture.
-         * @see @fn_gl{DeleteTextures}
-         */
-        inline virtual ~BufferedTexture() {
-            glDeleteTextures(1, &_id);
-        }
-
-        /**
-         * @brief Bind texture for rendering
-         *
-         * Sets current texture as active in given layer. The layer must be
-         * between 0 and maxSupportedLayerCount(). Note that only one texture
-         * can be bound to given layer.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
-         */
-        inline void bind(GLint layer) {
-            glActiveTexture(GL_TEXTURE0 + layer);
-            bind();
-        }
+        /** @copydoc AbstractTexture::bind() */
+        inline void bind(GLint layer) { AbstractTexture::bind(layer); }
 
         /**
          * @brief Set texture buffer
@@ -160,15 +133,8 @@ class BufferedTexture {
          * @see @fn_gl{BindTexture}, @fn_gl{TexBuffer}
          */
         void setBuffer(InternalFormat internalFormat, Buffer* buffer) {
-            bind();
+            AbstractTexture::bind();
             glTexBuffer(GL_TEXTURE_BUFFER, internalFormat, buffer->id());
-        }
-
-    private:
-        GLuint _id;
-
-        inline void bind() {
-            glBindTexture(GL_TEXTURE_BUFFER, _id);
         }
 };
 
