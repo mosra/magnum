@@ -19,7 +19,6 @@
  * @brief Class Magnum::BufferedTexture
  */
 
-#include "Renderbuffer.h"
 #include "Buffer.h"
 
 namespace Magnum {
