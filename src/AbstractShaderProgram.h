@@ -200,6 +200,18 @@ specularTexture->bind(MyShader::SpecularTextureLayer);
 mesh.draw();
 @endcode
 
+@section AbstractShaderProgram-performance-optimization Performance optimizations
+The engine tracks currently used shader program to avoid unnecessary calls to
+@fn_gl{UseProgram}.
+
+If extension @extension{ARB,separate_shader_objects} or
+@extension{EXT,direct_state_access} is available, uniform setting
+functions use DSA functions to avoid unnecessary calls to @fn_gl{UseProgram}.
+See setUniform(GLint, GLfloat) documentation for more information.
+
+To achieve least state changes, set all uniforms in one run -- method chaining
+comes in handy.
+
 @todo Uniform arrays support
  */
 class MAGNUM_EXPORT AbstractShaderProgram {
@@ -381,10 +393,10 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @param value         Value
          *
          * If neither @extension{ARB,separate_shader_objects} nor
-         * @extension{EXT,direct_state_access} is available, use() is called
-         * before the operation.
-         * @see use(), @fn_gl{Uniform} or `glProgramUniform()` from
-         * @extension{ARB,separate_shader_objects}/@extension{EXT,direct_state_access}.
+         * @extension{EXT,direct_state_access} is available, the shader is
+         * marked for use before the operation.
+         * @see @fn_gl{UseProgram}, @fn_gl{Uniform} or `glProgramUniform()`
+         *      from @extension{ARB,separate_shader_objects}/@extension{EXT,direct_state_access}.
          */
         inline void setUniform(GLint location, GLfloat value) {
             (this->*uniform1fImplementation)(location, value);
