@@ -189,20 +189,22 @@ AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components comp
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-void AbstractTexture::DataHelper<2>::setWrapping(GLenum target, const Math::Vector<2, Wrapping>& wrapping) {
+void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture* texture, const Math::Vector<2, Wrapping>& wrapping) {
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(target != GL_TEXTURE_RECTANGLE || ((wrapping[0] == Wrapping::ClampToEdge || wrapping[0] == Wrapping::ClampToBorder) && (wrapping[0] == Wrapping::ClampToEdge || wrapping[1] == Wrapping::ClampToEdge)), "AbstractTexture: rectangle texture wrapping must either clamp to border or to edge", );
+    CORRADE_ASSERT(texture->_target != GL_TEXTURE_RECTANGLE || ((wrapping[0] == Wrapping::ClampToEdge || wrapping[0] == Wrapping::ClampToBorder) && (wrapping[0] == Wrapping::ClampToEdge || wrapping[1] == Wrapping::ClampToEdge)), "AbstractTexture: rectangle texture wrapping must either clamp to border or to edge", );
     #endif
 
-    glTexParameteri(target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
-    glTexParameteri(target, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
+    texture->bindInternal();
+    glTexParameteri(texture->_target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
+    glTexParameteri(texture->_target, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
 }
 
-void AbstractTexture::DataHelper<3>::setWrapping(GLenum target, const Math::Vector<3, Wrapping>& wrapping) {
-    glTexParameteri(target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
-    glTexParameteri(target, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
+void AbstractTexture::DataHelper<3>::setWrapping(AbstractTexture* texture, const Math::Vector<3, Wrapping>& wrapping) {
+    texture->bindInternal();
+    glTexParameteri(texture->_target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
+    glTexParameteri(texture->_target, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
     #ifndef MAGNUM_TARGET_GLES
-    glTexParameteri(target, GL_TEXTURE_WRAP_R, static_cast<GLint>(wrapping[2]));
+    glTexParameteri(texture->_target, GL_TEXTURE_WRAP_R, static_cast<GLint>(wrapping[2]));
     #endif
 }
 #endif
