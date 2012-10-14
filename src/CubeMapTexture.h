@@ -109,6 +109,32 @@ class CubeMapTexture: public AbstractTexture {
             DataHelper<2>::setSub(this, static_cast<GLenum>(coordinate), mipLevel, offset, image);
             return this;
         }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline CubeMapTexture* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::BaseLevel) {
+            AbstractTexture::setMinificationFilter(filter, mipmap);
+            return this;
+        }
+        inline CubeMapTexture* setMagnificationFilter(Filter filter) {
+            AbstractTexture::setMagnificationFilter(filter);
+            return this;
+        }
+        #ifndef MAGNUM_TARGET_GLES
+        inline CubeMapTexture* setBorderColor(const Color4<GLfloat>& color) {
+            AbstractTexture::setBorderColor(color);
+            return this;
+        }
+        inline CubeMapTexture* setMaxAnisotropy(GLfloat anisotropy) {
+            AbstractTexture::setMaxAnisotropy(anisotropy);
+            return this;
+        }
+        #endif
+        inline CubeMapTexture* generateMipmap() {
+            AbstractTexture::generateMipmap();
+            return this;
+        }
+        #endif
 };
 
 }

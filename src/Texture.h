@@ -188,6 +188,32 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
             DataHelper<Dimensions>::setSub(this, _target, mipLevel, offset, image);
             return this;
         }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline Texture<Dimensions>* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::BaseLevel) {
+            AbstractTexture::setMinificationFilter(filter, mipmap);
+            return this;
+        }
+        inline Texture<Dimensions>* setMagnificationFilter(Filter filter) {
+            AbstractTexture::setMagnificationFilter(filter);
+            return this;
+        }
+        #ifndef MAGNUM_TARGET_GLES
+        inline Texture<Dimensions>* setBorderColor(const Color4<GLfloat>& color) {
+            AbstractTexture::setBorderColor(color);
+            return this;
+        }
+        inline Texture<Dimensions>* setMaxAnisotropy(GLfloat anisotropy) {
+            AbstractTexture::setMaxAnisotropy(anisotropy);
+            return this;
+        }
+        #endif
+        inline Texture<Dimensions>* generateMipmap() {
+            AbstractTexture::generateMipmap();
+            return this;
+        }
+        #endif
 };
 
 #ifndef MAGNUM_TARGET_GLES

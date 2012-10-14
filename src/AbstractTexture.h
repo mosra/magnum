@@ -63,6 +63,9 @@ To achieve least state changes, fully configure each texture in one run --
 method chaining comes in handy -- and try to have often used textures in
 dedicated layers, not occupied by other textures.
 
+Always fully configure the texture before setting the texture data, so OpenGL
+can optimize the data to match your settings.
+
 @todo Add glPixelStore encapsulation
 @todo Texture copying
 */

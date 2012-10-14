@@ -118,6 +118,32 @@ class CubeMapTextureArray: public AbstractTexture {
             DataHelper<3>::setSub(this, GL_TEXTURE_CUBE_MAP_ARRAY, mipLevel, Math::Vector3<GLint>(offset, layer*6+static_cast<GLsizei>(coordinate)), image, Math::Vector<2, GLsizei>(Math::Vector<Image::Dimensions, GLsizei>()));
             return this;
         }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline CubeMapTextureArray* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::BaseLevel) {
+            AbstractTexture::setMinificationFilter(filter, mipmap);
+            return this;
+        }
+        inline CubeMapTextureArray* setMagnificationFilter(Filter filter) {
+            AbstractTexture::setMagnificationFilter(filter);
+            return this;
+        }
+        #ifndef MAGNUM_TARGET_GLES
+        inline CubeMapTextureArray* setBorderColor(const Color4<GLfloat>& color) {
+            AbstractTexture::setBorderColor(color);
+            return this;
+        }
+        inline CubeMapTextureArray* setMaxAnisotropy(GLfloat anisotropy) {
+            AbstractTexture::setMaxAnisotropy(anisotropy);
+            return this;
+        }
+        #endif
+        inline CubeMapTextureArray* generateMipmap() {
+            AbstractTexture::generateMipmap();
+            return this;
+        }
+        #endif
 };
 
 }
