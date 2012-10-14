@@ -24,6 +24,7 @@
 #include "Buffer.h"
 #include "Extensions.h"
 #include "Implementation/State.h"
+#include "BufferedTexture.h"
 
 using namespace std;
 
@@ -201,8 +202,9 @@ Context::Context() {
 
     /* Initialize functionality based on current OpenGL version and extensions */
     AbstractShaderProgram::initializeContextBasedFunctionality(this);
-    Buffer::initializeContextBasedFunctionality(this);
     AbstractTexture::initializeContextBasedFunctionality(this);
+    Buffer::initializeContextBasedFunctionality(this);
+    BufferedTexture::initializeContextBasedFunctionality(this);
 }
 
 Context::~Context() {

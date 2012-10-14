@@ -16,10 +16,34 @@
 #include "AbstractTexture.h"
 
 #include "Context.h"
+#include "Extensions.h"
 #include "Implementation/State.h"
 #include "Implementation/TextureState.h"
 
 namespace Magnum {
+
+AbstractTexture::BindImplementation AbstractTexture::bindImplementation =
+    &AbstractTexture::bindImplementationDefault;
+AbstractTexture::ParameteriImplementation AbstractTexture::parameteriImplementation =
+    &AbstractTexture::parameterImplementationDefault;
+AbstractTexture::ParameterfImplementation AbstractTexture::parameterfImplementation =
+    &AbstractTexture::parameterImplementationDefault;
+AbstractTexture::ParameterfvImplementation AbstractTexture::parameterfvImplementation =
+    &AbstractTexture::parameterImplementationDefault;
+AbstractTexture::MipmapImplementation AbstractTexture::mipmapImplementation =
+    &AbstractTexture::mipmapImplementationDefault;
+AbstractTexture::Image1DImplementation AbstractTexture::image1DImplementation =
+    &AbstractTexture::imageImplementationDefault;
+AbstractTexture::Image2DImplementation AbstractTexture::image2DImplementation =
+    &AbstractTexture::imageImplementationDefault;
+AbstractTexture::Image3DImplementation AbstractTexture::image3DImplementation =
+    &AbstractTexture::imageImplementationDefault;
+AbstractTexture::SubImage1DImplementation AbstractTexture::subImage1DImplementation =
+    &AbstractTexture::subImageImplementationDefault;
+AbstractTexture::SubImage2DImplementation AbstractTexture::subImage2DImplementation =
+    &AbstractTexture::subImageImplementationDefault;
+AbstractTexture::SubImage3DImplementation AbstractTexture::subImage3DImplementation =
+    &AbstractTexture::subImageImplementationDefault;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 
@@ -68,6 +92,12 @@ void AbstractTexture::bind(GLint layer) {
     /* If already bound in given layer, nothing to do */
     if(textureState->bindings[layer] == _id) return;
 
+    (this->*bindImplementation)(layer);
+}
+
+void AbstractTexture::bindImplementationDefault(GLint layer) {
+    Implementation::TextureState* const textureState = Context::current()->state()->texture;
+
     /* Change to given layer, if not already there */
     if(textureState->currentLayer != layer)
         glActiveTexture(GL_TEXTURE0 + (textureState->currentLayer = layer));
@@ -76,13 +106,16 @@ void AbstractTexture::bind(GLint layer) {
     glBindTexture(_target, (textureState->bindings[layer] = _id));
 }
 
+void AbstractTexture::bindImplementationDSA(GLint layer) {
+    glBindMultiTextureEXT(GL_TEXTURE0 + layer, _target, (Context::current()->state()->texture->bindings[layer] = _id));
+}
+
 AbstractTexture* AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE || mipmap == Mipmap::BaseLevel, "AbstractTexture: rectangle textures cannot have mipmaps", this);
     #endif
 
-    bindInternal();
-    glTexParameteri(_target, GL_TEXTURE_MIN_FILTER,
+    (this->*parameteriImplementation)(GL_TEXTURE_MIN_FILTER,
         static_cast<GLint>(filter)|static_cast<GLint>(mipmap));
     return this;
 }
@@ -92,9 +125,17 @@ AbstractTexture* AbstractTexture::generateMipmap() {
     CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE, "AbstractTexture: rectangle textures cannot have mipmaps", this);
     #endif
 
+    (this->*mipmapImplementation)();
+    return this;
+}
+
+void AbstractTexture::mipmapImplementationDefault() {
     bindInternal();
     glGenerateMipmap(_target);
-    return this;
+}
+
+void AbstractTexture::mipmapImplementationDSA() {
+    glGenerateTextureMipmapEXT(_id, _target);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -123,6 +164,103 @@ void AbstractTexture::initializeContextBasedFunctionality(Context* context) {
     /* Get the value and resize bindings array */
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &value);
     textureState->bindings.resize(value);
+
+    if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+        Debug() << "AbstractTexture: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
+
+        bindImplementation = &AbstractTexture::bindImplementationDSA;
+        parameteriImplementation = &AbstractTexture::parameterImplementationDSA;
+        parameterfImplementation = &AbstractTexture::parameterImplementationDSA;
+        parameterfvImplementation = &AbstractTexture::parameterImplementationDSA;
+        mipmapImplementation = &AbstractTexture::mipmapImplementationDSA;
+        image1DImplementation = &AbstractTexture::imageImplementationDSA;
+        image2DImplementation = &AbstractTexture::imageImplementationDSA;
+        image3DImplementation = &AbstractTexture::imageImplementationDSA;
+        subImage1DImplementation = &AbstractTexture::subImageImplementationDSA;
+        subImage2DImplementation = &AbstractTexture::subImageImplementationDSA;
+        subImage3DImplementation = &AbstractTexture::subImageImplementationDSA;
+    }
+}
+
+void AbstractTexture::parameterImplementationDefault(GLenum parameter, GLint value) {
+    bindInternal();
+    glTexParameteri(_target, parameter, value);
+}
+
+void AbstractTexture::parameterImplementationDSA(GLenum parameter, GLint value) {
+    glTextureParameteriEXT(_id, _target, parameter, value);
+}
+
+void AbstractTexture::parameterImplementationDefault(GLenum parameter, GLfloat value) {
+    bindInternal();
+    glTexParameterf(_target, parameter, value);
+}
+
+void AbstractTexture::parameterImplementationDSA(GLenum parameter, GLfloat value) {
+    glTextureParameterfEXT(_id, _target, parameter, value);
+}
+
+void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLfloat* values) {
+    bindInternal();
+    glTexParameterfv(_target, parameter, values);
+}
+
+void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLfloat* values) {
+    glTextureParameterfvEXT(_id, _target, parameter, values);
+}
+
+void AbstractTexture::imageImplementationDefault(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<1, GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
+    bindInternal();
+    glTexImage1D(target, mipLevel, internalFormat, size[0], 0, static_cast<GLenum>(components), static_cast<GLenum>(type), data);
+}
+
+void AbstractTexture::imageImplementationDSA(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<1, GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
+    glTextureImage1DEXT(_id, target, mipLevel, internalFormat, size[0], 0, static_cast<GLenum>(components), static_cast<GLenum>(type), data);
+}
+
+void AbstractTexture::imageImplementationDefault(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
+    bindInternal();
+    glTexImage2D(target, mipLevel, internalFormat, size.x(), size.y(), 0, static_cast<GLenum>(components), static_cast<GLenum>(type), data);
+}
+
+void AbstractTexture::imageImplementationDSA(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
+    glTextureImage2DEXT(_id, target, mipLevel, internalFormat, size.x(), size.y(), 0, static_cast<GLenum>(components), static_cast<GLenum>(type), data);
+}
+
+void AbstractTexture::imageImplementationDefault(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector3<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
+    bindInternal();
+    glTexImage3D(target, mipLevel, internalFormat, size.x(), size.y(), size.z(), 0, static_cast<GLenum>(components), static_cast<GLenum>(type), data);
+}
+
+void AbstractTexture::imageImplementationDSA(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector3<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
+    glTextureImage3DEXT(_id, target, mipLevel, internalFormat, size.x(), size.y(), size.z(), 0, static_cast<GLenum>(components), static_cast<GLenum>(type), data);
+}
+
+void AbstractTexture::subImageImplementationDefault(GLenum target, GLint mipLevel, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
+    bindInternal();
+    glTexSubImage1D(target, mipLevel, offset[0], size[0], static_cast<GLenum>(components), static_cast<GLenum>(type), data);
+}
+
+void AbstractTexture::subImageImplementationDSA(GLenum target, GLint mipLevel, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
+    glTextureSubImage1DEXT(_id, target, mipLevel, offset[0], size[0], static_cast<GLenum>(components), static_cast<GLenum>(type), data);
+}
+
+void AbstractTexture::subImageImplementationDefault(GLenum target, GLint mipLevel, const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
+    bindInternal();
+    glTexSubImage2D(target, mipLevel, offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(components), static_cast<GLenum>(type), data);
+}
+
+void AbstractTexture::subImageImplementationDSA(GLenum target, GLint mipLevel, const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
+    glTextureSubImage2DEXT(_id, target, mipLevel, offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(components), static_cast<GLenum>(type), data);
+}
+
+void AbstractTexture::subImageImplementationDefault(GLenum target, GLint mipLevel, const Math::Vector3<GLint>& offset, const Math::Vector3<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
+    bindInternal();
+    glTexSubImage3D(target, mipLevel, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), static_cast<GLenum>(components), static_cast<GLenum>(type), data);
+}
+
+void AbstractTexture::subImageImplementationDSA(GLenum target, GLint mipLevel, const Math::Vector3<GLint>& offset, const Math::Vector3<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
+    glTextureSubImage3DEXT(_id, target, mipLevel, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), static_cast<GLenum>(components), static_cast<GLenum>(type), data);
 }
 
 AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components components, AbstractTexture::ComponentType type) {
@@ -189,22 +327,20 @@ AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components comp
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture* texture, const Math::Vector<2, Wrapping>& wrapping) {
+void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture* texture, const Math::Vector2<Wrapping>& wrapping) {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_ASSERT(texture->_target != GL_TEXTURE_RECTANGLE || ((wrapping[0] == Wrapping::ClampToEdge || wrapping[0] == Wrapping::ClampToBorder) && (wrapping[0] == Wrapping::ClampToEdge || wrapping[1] == Wrapping::ClampToEdge)), "AbstractTexture: rectangle texture wrapping must either clamp to border or to edge", );
     #endif
 
-    texture->bindInternal();
-    glTexParameteri(texture->_target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
-    glTexParameteri(texture->_target, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
+    (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.x()));
+    (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping.y()));
 }
 
-void AbstractTexture::DataHelper<3>::setWrapping(AbstractTexture* texture, const Math::Vector<3, Wrapping>& wrapping) {
-    texture->bindInternal();
-    glTexParameteri(texture->_target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
-    glTexParameteri(texture->_target, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping[1]));
+void AbstractTexture::DataHelper<3>::setWrapping(AbstractTexture* texture, const Math::Vector3<Wrapping>& wrapping) {
+    (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.x()));
+    (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping.y()));
     #ifndef MAGNUM_TARGET_GLES
-    glTexParameteri(texture->_target, GL_TEXTURE_WRAP_R, static_cast<GLint>(wrapping[2]));
+    (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_R, static_cast<GLint>(wrapping.z()));
     #endif
 }
 #endif

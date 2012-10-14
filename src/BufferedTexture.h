@@ -20,9 +20,11 @@
  */
 
 #include "AbstractTexture.h"
-#include "Buffer.h"
 
 namespace Magnum {
+
+class Buffer;
+class Context;
 
 #ifndef MAGNUM_TARGET_GLES
 /**
@@ -37,10 +39,19 @@ using data setting functions in Buffer itself.
 When using buffered texture in the shader, use `samplerBuffer` and fetch the
 data using integer coordinates in `texelFetch()`.
 
+@section BufferedTexture-performance-optimization Performance optimizations
+If extension @extension{EXT,direct_state_access} is available, setBuffer()
+uses DSA function to avoid unnecessary calls to @fn_gl{ActiveTexture} and
+@fn_gl{BindTexture}. See @ref AbstractTexture-performance-optimization
+"relevant section in AbstractTexture documentation" and respective function
+documentation for more information.
+
 @requires_gl
 @requires_gl31 Extension @extension{ARB,texture_buffer_object}
 */
-class BufferedTexture: private AbstractTexture {
+class MAGNUM_EXPORT BufferedTexture: private AbstractTexture {
+    friend class Context;
+
     BufferedTexture(const BufferedTexture& other) = delete;
     BufferedTexture(BufferedTexture&& other) = delete;
     BufferedTexture& operator=(const BufferedTexture& other) = delete;
@@ -130,12 +141,20 @@ class BufferedTexture: private AbstractTexture {
          * Binds given buffer to this texture. The buffer itself can be then
          * filled with data of proper format at any time using Buffer own data
          * setting functions.
-         * @see @fn_gl{BindTexture}, @fn_gl{TexBuffer}
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBuffer}
+         *      or @fn_gl_extension{TextureBuffer,EXT,direct_state_access}
          */
-        void setBuffer(InternalFormat internalFormat, Buffer* buffer) {
-            bindInternal();
-            glTexBuffer(GL_TEXTURE_BUFFER, internalFormat, buffer->id());
+        inline void setBuffer(InternalFormat internalFormat, Buffer* buffer) {
+            (this->*setBufferImplementation)(internalFormat, buffer);
         }
+
+    private:
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+
+        typedef void(BufferedTexture::*SetBufferImplementation)(InternalFormat, Buffer*);
+        void MAGNUM_LOCAL setBufferImplementationDefault(InternalFormat internalFormat, Buffer* buffer);
+        void MAGNUM_LOCAL setBufferImplementationDSA(InternalFormat internalFormat, Buffer* buffer);
+        static SetBufferImplementation setBufferImplementation;
 };
 
 /** @relates BufferedTexture

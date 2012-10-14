@@ -23,6 +23,7 @@
 
 #include "Magnum.h"
 #include "Color.h"
+#include "AbstractImage.h"
 
 namespace Magnum {
 
@@ -51,6 +52,12 @@ configuration functions use dedicated highest available texture layer to not
 affect active bindings in user layers. %Texture limits (such as
 maxSupportedLayerCount()) are cached, so repeated queries don't result in
 repeated @fn_gl{Get} calls.
+
+If extension @extension{EXT,direct_state_access} is available, bind() uses DSA
+function to avoid unnecessary calls to @fn_gl{ActiveTexture}. Also all texture
+configuration functions use DSA functions to avoid unnecessary calls to
+@fn_gl{ActiveTexture} and @fn_gl{BindTexture}. See respective function
+documentation for more information.
 
 To achieve least state changes, fully configure each texture in one run --
 method chaining comes in handy -- and try to have often used textures in
@@ -592,8 +599,11 @@ class MAGNUM_EXPORT AbstractTexture {
          *
          * Sets current texture as active in given layer. The layer must be
          * between 0 and maxSupportedLayerCount(). Note that only one texture
-         * can be bound to given layer.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
+         * can be bound to given layer. If @extension{EXT,direct_state_access}
+         * is not available, the layer is made active before binding the
+         * texture.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} or
+         *      @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
          */
         void bind(GLint layer);
 
@@ -606,12 +616,15 @@ class MAGNUM_EXPORT AbstractTexture {
          * @return Pointer to self (for method chaining)
          *
          * Sets filter used when the object pixel size is smaller than the
-         * texture size.
+         * texture size. If @extension{EXT,direct_state_access} is not
+         * available, the texture is bound to some layer before the operation.
          * @attention For rectangle textures only some modes are supported,
-         * see @ref AbstractTexture::Filter "Filter" and
-         * @ref AbstractTexture::Mipmap "Mipmap" documentation for more
-         * information.
-         * @see bind(), @fn_gl{TexParameter} with @def_gl{TEXTURE_MIN_FILTER}
+         *      see @ref AbstractTexture::Filter "Filter" and
+         *      @ref AbstractTexture::Mipmap "Mipmap" documentation for more
+         *      information.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_MIN_FILTER}
          */
         AbstractTexture* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::BaseLevel);
 
@@ -621,12 +634,14 @@ class MAGNUM_EXPORT AbstractTexture {
          * @return Pointer to self (for method chaining)
          *
          * Sets filter used when the object pixel size is larger than largest
-         * texture size.
-         * @see bind(), @fn_gl{TexParameter} with @def_gl{TEXTURE_MAG_FILTER}
+         * texture size. If @extension{EXT,direct_state_access} is not
+         * available, the texture is bound to some layer before the operation.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_MAG_FILTER}
          */
         inline AbstractTexture* setMagnificationFilter(Filter filter) {
-            bindInternal();
-            glTexParameteri(_target, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(filter));
+            (this->*parameteriImplementation)(GL_TEXTURE_MAG_FILTER, static_cast<GLint>(filter));
             return this;
         }
 
@@ -636,13 +651,15 @@ class MAGNUM_EXPORT AbstractTexture {
          * @return Pointer to self (for method chaining)
          *
          * Border color when @ref AbstractTexture::Wrapping "wrapping" is set
-         * to `ClampToBorder`.
-         * @see bind(), @fn_gl{TexParameter} with @def_gl{TEXTURE_BORDER_COLOR}
+         * to `ClampToBorder`. If @extension{EXT,direct_state_access} is not
+         * available, the texture is bound to some layer before the operation.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_BORDER_COLOR}
          * @requires_gl
          */
         inline AbstractTexture* setBorderColor(const Color4<GLfloat>& color) {
-            bindInternal();
-            glTexParameterfv(_target, GL_TEXTURE_BORDER_COLOR, color.data());
+            (this->*parameterfvImplementation)(GL_TEXTURE_BORDER_COLOR, color.data());
             return this;
         }
 
@@ -650,15 +667,19 @@ class MAGNUM_EXPORT AbstractTexture {
          * @brief Set max anisotropy
          * @return Pointer to self (for method chaining)
          *
-         * Default value is `1.0`, which means no anisotropy. Set to value
-         * greater than `1.0` for anisotropic filtering.
-         * @see maxSupportedAnisotropy(), bind(), @fn_gl{TexParameter} with @def_gl{TEXTURE_MAX_ANISOTROPY_EXT}
+         * Default value is `1.0f`, which means no anisotropy. Set to value
+         * greater than `1.0f` for anisotropic filtering. If
+         * @extension{EXT,direct_state_access} is not available, the texture
+         * is bound to some layer before the operation.
+         * @see maxSupportedAnisotropy(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_MAX_ANISOTROPY_EXT}
          * @requires_gl
          * @requires_extension @extension{EXT,texture_filter_anisotropic}
          */
         inline AbstractTexture* setMaxAnisotropy(GLfloat anisotropy) {
-            bindInternal();
-            glTexParameterf(_target, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
+            (this->*parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
             return this;
         }
         #endif
@@ -667,8 +688,12 @@ class MAGNUM_EXPORT AbstractTexture {
          * @brief Generate mipmap
          * @return Pointer to self (for method chaining)
          *
-         * Can not be used for rectangle textures.
-         * @see setMinificationFilter(), @fn_gl{GenerateMipmap}
+         * Can not be used for rectangle textures. If
+         * @extension{EXT,direct_state_access} is not available, the texture
+         * is bound to some layer before the operation.
+         * @see setMinificationFilter(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{GenerateMipmap} or
+         *      @fn_gl_extension{GenerateTextureMipmap,EXT,direct_state_access}
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         AbstractTexture* generateMipmap();
@@ -678,13 +703,68 @@ class MAGNUM_EXPORT AbstractTexture {
         template<std::uint8_t textureDimensions> struct DataHelper {};
 
         /* Unlike bind() this also sets the binding layer as active */
-        void bindInternal();
+        void MAGNUM_LOCAL bindInternal();
 
         const GLenum _target;
         #endif
 
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+
+        typedef void(AbstractTexture::*BindImplementation)(GLint);
+        void MAGNUM_LOCAL bindImplementationDefault(GLint layer);
+        void MAGNUM_LOCAL bindImplementationDSA(GLint layer);
+        static MAGNUM_LOCAL BindImplementation bindImplementation;
+
+        typedef void(AbstractTexture::*ParameteriImplementation)(GLenum, GLint);
+        void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, GLint value);
+        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLint value);
+        static ParameteriImplementation parameteriImplementation;
+
+        typedef void(AbstractTexture::*ParameterfImplementation)(GLenum, GLfloat);
+        void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, GLfloat value);
+        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLfloat value);
+        static ParameterfImplementation parameterfImplementation;
+
+        typedef void(AbstractTexture::*ParameterfvImplementation)(GLenum, const GLfloat*);
+        void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, const GLfloat* values);
+        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLfloat* values);
+        static ParameterfvImplementation parameterfvImplementation;
+
+        typedef void(AbstractTexture::*MipmapImplementation)();
+        void MAGNUM_LOCAL mipmapImplementationDefault();
+        void MAGNUM_LOCAL mipmapImplementationDSA();
+        static MAGNUM_LOCAL MipmapImplementation mipmapImplementation;
+
+        typedef void(AbstractTexture::*Image1DImplementation)(GLenum, GLint, InternalFormat, const Math::Vector<1, GLsizei>&, AbstractImage::Components, AbstractImage::ComponentType, const GLvoid*);
+        void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<1, GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        void MAGNUM_LOCAL imageImplementationDSA(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<1, GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        static Image1DImplementation image1DImplementation;
+
+        typedef void(AbstractTexture::*Image2DImplementation)(GLenum, GLint, InternalFormat, const Math::Vector2<GLsizei>&, AbstractImage::Components, AbstractImage::ComponentType, const GLvoid*);
+        void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        void MAGNUM_LOCAL imageImplementationDSA(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        static Image2DImplementation image2DImplementation;
+
+        typedef void(AbstractTexture::*Image3DImplementation)(GLenum, GLint, InternalFormat, const Math::Vector3<GLsizei>&, AbstractImage::Components, AbstractImage::ComponentType, const GLvoid*);
+        void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector3<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        void MAGNUM_LOCAL imageImplementationDSA(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector3<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        static Image3DImplementation image3DImplementation;
+
+        typedef void(AbstractTexture::*SubImage1DImplementation)(GLenum, GLint, const Math::Vector<1, GLint>&, const Math::Vector<1, GLsizei>&, AbstractImage::Components, AbstractImage::ComponentType, const GLvoid*);
+        void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint mipLevel, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDSA(GLenum target, GLint mipLevel, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        static SubImage1DImplementation subImage1DImplementation;
+
+        typedef void(AbstractTexture::*SubImage2DImplementation)(GLenum, GLint, const Math::Vector2<GLint>&, const Math::Vector2<GLsizei>&, AbstractImage::Components, AbstractImage::ComponentType, const GLvoid*);
+        void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint mipLevel, const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDSA(GLenum target, GLint mipLevel, const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        static SubImage2DImplementation subImage2DImplementation;
+
+        typedef void(AbstractTexture::*SubImage3DImplementation)(GLenum, GLint, const Math::Vector3<GLint>&, const Math::Vector3<GLsizei>&, AbstractImage::Components, AbstractImage::ComponentType, const GLvoid*);
+        void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint mipLevel, const Math::Vector3<GLint>& offset, const Math::Vector3<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDSA(GLenum target, GLint mipLevel, const Math::Vector3<GLint>& offset, const Math::Vector3<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        static SubImage3DImplementation subImage3DImplementation;
 
         GLuint _id;
 };
@@ -715,18 +795,15 @@ template<> struct AbstractTexture::DataHelper<1> {
     inline constexpr static Target target() { return Target::Texture1D; }
 
     inline static void setWrapping(AbstractTexture* texture, const Math::Vector<1, Wrapping>& wrapping) {
-        texture->bindInternal();
-        glTexParameteri(texture->_target, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
+        (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
     }
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type set(AbstractTexture* texture, GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image) {
-        texture->bindInternal();
-        glTexImage1D(target, mipLevel, internalFormat, image->size()[0], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        (texture->*image1DImplementation)(target, mipLevel, internalFormat, image->size(), image->components(), image->type(), image->data());
     }
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type setSub(AbstractTexture* texture, GLenum target, GLint mipLevel, const Math::Vector<1, GLint>& offset, Image* image) {
-        texture->bindInternal();
-        glTexSubImage1D(target, mipLevel, offset[0], image->size()[0], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        (texture->*subImage1DImplementation)(target, mipLevel, offset, image->size(), image->components(), image->type(), image->data());
     }
 };
 #endif
@@ -742,21 +819,18 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
 
     inline constexpr static Target target() { return Target::Texture2D; }
 
-    static void setWrapping(AbstractTexture* texture, const Math::Vector<2, Wrapping>& wrapping);
+    static void setWrapping(AbstractTexture* texture, const Math::Vector2<Wrapping>& wrapping);
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type set(AbstractTexture* texture, GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image) {
-        texture->bindInternal();
-        glTexImage2D(target, mipLevel, internalFormat, image->size()[0], image->size()[1], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        (texture->*image2DImplementation)(target, mipLevel, internalFormat, image->size(), image->components(), image->type(), image->data());
     }
 
-    template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type setSub(AbstractTexture* texture, GLenum target, GLint mipLevel, const Math::Vector<2, GLint>& offset, Image* image) {
-        texture->bindInternal();
-        glTexSubImage2D(target, mipLevel, offset[0], offset[1], image->size()[0], image->size()[1], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+    template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type setSub(AbstractTexture* texture, GLenum target, GLint mipLevel, const Math::Vector2<GLint>& offset, Image* image) {
+        (texture->*subImage2DImplementation)(target, mipLevel, offset, image->size(), image->components(), image->type(), image->data());
     }
 
-    template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type setSub(AbstractTexture* texture, GLenum target, GLint mipLevel, const Math::Vector<2, GLint>& offset, Image* image) {
-        texture->bindInternal();
-        glTexSubImage2D(target, mipLevel, offset[0], offset[1], image->size()[0], 1, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+    template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type setSub(AbstractTexture* texture, GLenum target, GLint mipLevel, const Math::Vector2<GLint>& offset, Image* image) {
+        (texture->*subImage2DImplementation)(target, mipLevel, offset, Math::Vector2<GLint>(image->size(), 1), image->components(), image->type(), image->data());
     }
 };
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
@@ -767,21 +841,18 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
 
     inline constexpr static Target target() { return Target::Texture3D; }
 
-    static void setWrapping(AbstractTexture* texture, const Math::Vector<3, Wrapping>& wrapping);
+    static void setWrapping(AbstractTexture* texture, const Math::Vector3<Wrapping>& wrapping);
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 3, void>::type set(AbstractTexture* texture, GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image) {
-        texture->bindInternal();
-        glTexImage3D(target, mipLevel, internalFormat, image->size()[0], image->size()[1], image->size()[2], 0, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+        (texture->*image3DImplementation)(target, mipLevel, internalFormat, image->size(), image->components(), image->type(), image->data());
     }
 
-    template<class Image> inline static typename std::enable_if<Image::Dimensions == 3, void>::type setSub(AbstractTexture* texture, GLenum target, GLint mipLevel, const Math::Vector<3, GLint>& offset, Image* image) {
-        texture->bindInternal();
-        glTexSubImage3D(target, mipLevel, offset[0], offset[1], offset[2], image->size()[0], image->size()[1], image->size()[2], static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+    template<class Image> inline static typename std::enable_if<Image::Dimensions == 3, void>::type setSub(AbstractTexture* texture, GLenum target, GLint mipLevel, const Math::Vector3<GLint>& offset, Image* image) {
+        (texture->*subImage3DImplementation)(target, mipLevel, offset, image->size(), image->components(), image->type(), image->data());
     }
 
-    template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type setSub(AbstractTexture* texture, GLenum target, GLint mipLevel, const Math::Vector<3, GLint>& offset, Image* image) {
-        texture->bindInternal();
-        glTexSubImage3D(target, mipLevel, offset[0], offset[1], offset[2], image->size()[0], image->size()[1], 1, static_cast<GLenum>(image->components()), static_cast<GLenum>(image->type()), image->data());
+    template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type setSub(AbstractTexture* texture, GLenum target, GLint mipLevel, const Math::Vector3<GLint>& offset, Image* image) {
+        (texture->*subImage3DImplementation)(target, mipLevel, offset, Math::Vector3<GLint>(image->size(), 1), image->components(), image->type(), image->data());
     }
 };
 #endif

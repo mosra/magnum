@@ -27,9 +27,9 @@ namespace Magnum {
 @brief Cube map texture
 
 %Texture used mainly for environemnt maps. See AbstractTexture documentation
-for more information about usage. It consists of 6 square textures generating
-6 faces of the cube as following. Note that all images must be turned upside
-down (+Y is top):
+for more information. It consists of 6 square textures generating 6 faces of
+the cube as following. Note that all images must be turned upside down (+Y is
+top):
 
               +----+
               | -Y |
@@ -105,7 +105,7 @@ class CubeMapTexture: public AbstractTexture {
          * @param coordinate    Coordinate
          * @return Pointer to self (for method chaining)
          */
-        template<class Image> inline CubeMapTexture* setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector<2, GLint>& offset, const Image* image) {
+        template<class Image> inline CubeMapTexture* setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector2<GLint>& offset, const Image* image) {
             DataHelper<2>::setSub(this, static_cast<GLenum>(coordinate), mipLevel, offset, image);
             return this;
         }

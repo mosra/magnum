@@ -28,7 +28,7 @@ namespace Magnum {
 @brief %Texture
 
 Template class for one- to three-dimensional textures. See AbstractTexture
-documentation for more information about usage.
+documentation for more information.
 
 In shader, the texture is used via `sampler1D`, `sampler2D` or `sampler3D`
 depending on dimension count. Note that you can have more than one texture bound
@@ -120,12 +120,15 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          *
          * Sets wrapping type for coordinates out of range (0, 1) for normal
          * textures and (0, textureSizeInGivenDirection-1) for rectangle
-         * textures.
+         * textures. If @extension{EXT,direct_state_access} is not available,
+         * the texture is bound to some layer before the operation.
          * @attention For rectangle textures only some modes are supported,
-         * see @ref AbstractTexture::Wrapping "Wrapping" documentation for
-         * more information.
-         * @see bind(), @fn_gl{TexParameter} with @def_gl{TEXTURE_WRAP_S},
-         *      @def_gl{TEXTURE_WRAP_T}, @def_gl{TEXTURE_WRAP_R}
+         *      see @ref AbstractTexture::Wrapping "Wrapping" documentation
+         *      for more information.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_WRAP_S}, @def_gl{TEXTURE_WRAP_T},
+         *      @def_gl{TEXTURE_WRAP_R}
          * @todo Use something better for this than Vector (mainly something
          *      that can easily create all values the same)
          */
@@ -143,8 +146,13 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          * @return Pointer to self (for method chaining)
          *
          * Sets texture data from given image. The image is not deleted
-         * afterwards.
-         * @see bind(), @fn_gl{TexImage1D}, @fn_gl{TexImage2D}, @fn_gl{TexImage3D}
+         * afterwards. If @extension{EXT,direct_state_access} is not available,
+         * the texture is bound to some layer before the operation.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexImage1D}/
+         *      @fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
+         *      @fn_gl_extension{TextureImage1D,EXT,direct_state_access}/
+         *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
+         *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}
          */
         template<class Image> inline Texture<Dimensions>* setData(GLint mipLevel, InternalFormat internalFormat, Image* image) {
             DataHelper<Dimensions>::set(this, _target, mipLevel, internalFormat, image);
@@ -167,7 +175,14 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          * taken as if it had the last dimension equal to 1. It can be used
          * for e.g. updating 3D texture with multiple 2D images or for filling
          * 1D texture array (which is two-dimensional) with 1D images.
-         * @see bind(), @fn_gl{TexSubImage1D}, @fn_gl{TexSubImage2D}, @fn_gl{TexSubImage3D}
+         *
+         * If @extension{EXT,direct_state_access} is not available, the
+         * texture is bound to some layer before the operation.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexSubImage1D}/
+         *      @fn_gl{TexSubImage2D}/@fn_gl{TexSubImage3D} or
+         *      @fn_gl_extension{TextureSubImage1D,EXT,direct_state_access}/
+         *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
+         *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access}
          */
         template<class Image> inline Texture<Dimensions>* setSubData(GLint mipLevel, const typename DimensionTraits<Dimensions, GLint>::VectorType& offset, Image* image) {
             DataHelper<Dimensions>::setSub(this, _target, mipLevel, offset, image);

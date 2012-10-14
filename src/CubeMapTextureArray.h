@@ -26,7 +26,7 @@ namespace Magnum {
 /**
 @brief Cube map texture array
 
-For information about usage, see CubeMapTexture documentation.
+For information, see CubeMapTexture and AbstractTexture documentation.
 
 When using cube map texture in the shader, use `samplerCubeArray`. Unlike
 classic textures, coordinates for cube map textures is signed three-part
@@ -59,7 +59,7 @@ class CubeMapTextureArray: public AbstractTexture {
         /**
          * @copydoc Texture::setWrapping()
          */
-        inline CubeMapTextureArray* setWrapping(const Math::Vector<3, Wrapping>& wrapping) {
+        inline CubeMapTextureArray* setWrapping(const Math::Vector3<Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(this, wrapping);
             return this;
         }
@@ -94,8 +94,8 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * @see setSubData(GLsizei, Coordinate, GLint, const Math::Vector<2, GLint>&, const Image*)
          */
-        template<class Image> inline CubeMapTextureArray* setSubData(GLint mipLevel, const Math::Vector<3, GLint>& offset, const Image* image) {
-            DataHelper<3>::setSub(this, GL_TEXTURE_CUBE_MAP_ARRAY, mipLevel, offset, image, Math::Vector<3, GLsizei>(Math::Vector<Image::Dimensions, GLsizei>()));
+        template<class Image> inline CubeMapTextureArray* setSubData(GLint mipLevel, const Math::Vector3<GLint>& offset, const Image* image) {
+            DataHelper<3>::setSub(this, GL_TEXTURE_CUBE_MAP_ARRAY, mipLevel, offset, image, Math::Vector3<GLsizei>(Math::Vector<Image::Dimensions, GLsizei>()));
             return this;
         }
 
@@ -114,8 +114,8 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * @see setSubData(GLint, const Math::Vector<3, GLint>&, const Image*)
          */
-        template<class Image> inline CubeMapTextureArray* setSubData(GLsizei layer, Coordinate coordinate, GLint mipLevel, const Math::Vector<2, GLint>& offset, const Image* image) {
-            DataHelper<3>::setSub(this, GL_TEXTURE_CUBE_MAP_ARRAY, mipLevel, Math::Vector<3, GLint>(offset, layer*6+static_cast<GLsizei>(coordinate)), image, Math::Vector<2, GLsizei>(Math::Vector<Image::Dimensions, GLsizei>()));
+        template<class Image> inline CubeMapTextureArray* setSubData(GLsizei layer, Coordinate coordinate, GLint mipLevel, const Math::Vector2<GLint>& offset, const Image* image) {
+            DataHelper<3>::setSub(this, GL_TEXTURE_CUBE_MAP_ARRAY, mipLevel, Math::Vector3<GLint>(offset, layer*6+static_cast<GLsizei>(coordinate)), image, Math::Vector<2, GLsizei>(Math::Vector<Image::Dimensions, GLsizei>()));
             return this;
         }
 };
