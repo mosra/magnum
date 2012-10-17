@@ -17,6 +17,7 @@ set(MagnumPhysics_SRCS
     Sphere.cpp
 
     Implementation/AbstractDebugRenderer.cpp
+    Implementation/BoxRenderer.cpp
     Implementation/ShapeShader.cpp
     ${MagnumPhysics_RCS})
 set(MagnumPhysics_HEADERS

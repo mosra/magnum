@@ -22,6 +22,7 @@
 #include "ShapedObject.h"
 #include "ShapeGroup.h"
 #include "Implementation/AbstractDebugRenderer.h"
+#include "Implementation/BoxRenderer.h"
 #include "Implementation/ShapeShader.h"
 
 namespace Magnum {
@@ -36,6 +37,8 @@ SceneGraph::Object2D* DebugDrawResourceManager::createDebugRenderer(AbstractShap
 
 SceneGraph::Object2D* DebugDrawResourceManager::createDebugMesh(SceneGraph::Object2D* parent, AbstractShape2D* shape, ResourceKey options) {
     switch(shape->type()) {
+        case AbstractShape2D::Type::Box:
+            return new Implementation::BoxRenderer<2>(*static_cast<Box2D*>(shape), options, parent);
         case AbstractShape2D::Type::ShapeGroup: {
             if(!parent) parent = new SceneGraph::Object2D;
             ShapeGroup2D* group = static_cast<ShapeGroup2D*>(shape);
