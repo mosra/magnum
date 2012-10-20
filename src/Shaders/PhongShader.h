@@ -38,64 +38,87 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
         typedef Attribute<0, Point3D> Position; /**< @brief Vertex position */
         typedef Attribute<1, Vector3> Normal;   /**< @brief Normal direction */
 
-        /** @brief Constructor */
         PhongShader();
 
         /**
-         * @brief %Ambient color
+         * @brief Ambient color
+         * @return Pointer to self (for method chaining)
          *
          * If not set, default value is `(0.0f, 0.0f, 0.0f)`.
          */
-        inline void setAmbientColorUniform(const Color3<GLfloat>& color) {
+        inline PhongShader* setAmbientColor(const Color3<GLfloat>& color) {
             setUniform(ambientColorUniform, color);
+            return this;
         }
 
-        /** @brief Diffuse color */
-        inline void setDiffuseColorUniform(const Color3<GLfloat>& color) {
+        /**
+         * @brief Diffuse color
+         * @return Pointer to self (for method chaining)
+         */
+        inline PhongShader* setDiffuseColor(const Color3<GLfloat>& color) {
             setUniform(diffuseColorUniform, color);
+            return this;
         }
 
         /**
          * @brief Specular color
+         * @return Pointer to self (for method chaining)
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
          */
-        inline void setSpecularColorUniform(const Color3<GLfloat>& color) {
+        inline PhongShader* setSpecularColor(const Color3<GLfloat>& color) {
             setUniform(specularColorUniform, color);
+            return this;
         }
 
         /**
          * @brief Shininess
+         * @return Pointer to self (for method chaining)
          *
          * The larger value, the harder surface (smaller specular highlight).
          * If not set, default value is `80.0f`.
          */
-        inline void setShininessUniform(GLfloat shininess) {
+        inline PhongShader* setShininess(GLfloat shininess) {
             setUniform(shininessUniform, shininess);
-        }
-
-        /** @brief Transformation matrix */
-        inline void setTransformationMatrixUniform(const Matrix4& matrix) {
-            setUniform(transformationMatrixUniform, matrix);
-        }
-
-        /** @brief Projection matrix */
-        inline void setProjectionMatrixUniform(const Matrix4& matrix) {
-            setUniform(projectionMatrixUniform, matrix);
-        }
-
-        /** @brief %Light position */
-        inline void setLightUniform(const Vector3& light) {
-            setUniform(lightUniform, light);
+            return this;
         }
 
         /**
-         * @brief %Light color
+         * @brief Transformation matrix
+         * @return Pointer to self (for method chaining)
+         */
+        inline PhongShader* setTransformation(const Matrix4& matrix) {
+            setUniform(transformationMatrixUniform, matrix);
+            return this;
+        }
+
+        /**
+         * @brief Projection matrix
+         * @return Pointer to self (for method chaining)
+         */
+        inline PhongShader* setProjection(const Matrix4& matrix) {
+            setUniform(projectionMatrixUniform, matrix);
+            return this;
+        }
+
+        /**
+         * @brief Light position
+         * @return Pointer to self (for method chaining)
+         */
+        inline PhongShader* setLightPosition(const Vector3& light) {
+            setUniform(lightUniform, light);
+            return this;
+        }
+
+        /**
+         * @brief Light color
+         * @return Pointer to self (for method chaining)
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
          */
-        inline void setLightColorUniform(const Color3<GLfloat>& color) {
+        inline PhongShader* setLightColor(const Color3<GLfloat>& color) {
             setUniform(lightColorUniform, color);
+            return this;
         }
 
     private:
