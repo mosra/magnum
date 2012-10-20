@@ -18,6 +18,7 @@ install(FILES ${MagnumMath_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Ma
 
 add_subdirectory(Algorithms)
 add_subdirectory(Geometry)
+add_subdirectory(VectorFields)
 
 if(BUILD_TESTS)
     enable_testing()
