@@ -17,14 +17,21 @@
 
 #include <Utility/Resource.h>
 
+#include "Extensions.h"
 #include "Shader.h"
 
 namespace Magnum { namespace Shaders {
 
 PhongShader::PhongShader() {
     Corrade::Utility::Resource rs("MagnumShaders");
-    attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("PhongShader.vert")));
-    attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, rs.get("PhongShader.frag")));
+    Version v = Context::current()->isVersionSupported(Version::GL320) ? Version::GL320 : Version::GL210;
+    attachShader(Shader::fromData(v, Shader::Type::Vertex, rs.get("PhongShader.vert")));
+    attachShader(Shader::fromData(v, Shader::Type::Fragment, rs.get("PhongShader.frag")));
+
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>()) {
+        bindAttributeLocation(Position::Location, "position");
+        bindAttributeLocation(Normal::Location, "normal");
+    }
 
     link();
 

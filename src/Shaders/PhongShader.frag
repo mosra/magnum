@@ -1,3 +1,8 @@
+#if __VERSION__ == 120
+#define in varying
+#define color gl_FragColor
+#endif
+
 uniform vec3 ambientColor = vec3(0.0, 0.0, 0.0);
 uniform vec3 diffuseColor;
 uniform vec3 specularColor = vec3(1.0, 1.0, 1.0);
@@ -8,7 +13,9 @@ in vec3 transformedNormal;
 in vec3 lightDirection;
 in vec3 cameraDirection;
 
+#if __VERSION__ != 120
 out vec4 color;
+#endif
 
 void main() {
     /* Ambient color */

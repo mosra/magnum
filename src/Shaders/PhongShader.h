@@ -30,8 +30,8 @@ namespace Magnum { namespace Shaders {
 /**
 @brief Phong shader
 
-@requires_gl33 The shader is written in GLSL 3.3, although it should be trivial
-    to port it to older versions.
+If supported, uses GLSL 3.20 and @extension{ARB,explicit_attrib_location},
+otherwise falls back to GLSL 1.20.
 */
 class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
     public:

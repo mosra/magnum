@@ -1,9 +1,20 @@
+#if __VERSION__ == 120
+#define in attribute
+#define out varying
+#endif
+
 uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 uniform vec3 light;
 
+#if __VERSION__ != 120 && defined(GL_ARB_explicit_attrib_location)
+#extension GL_ARB_explicit_attrib_location: enable
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec3 normal;
+#else
+in vec4 position;
+in vec3 normal;
+#endif
 
 out vec3 transformedNormal;
 out vec3 lightDirection;
