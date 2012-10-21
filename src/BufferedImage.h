@@ -48,7 +48,9 @@ template<std::uint8_t dimensions> class BufferedImage: public AbstractImage {
          * Dimensions and buffer are empty, call setData() to fill the image
          * with data.
          */
-        inline BufferedImage(Components components, ComponentType type): AbstractImage(components, type), _buffer(Buffer::Target::PixelPack) {}
+        inline BufferedImage(Components components, ComponentType type): AbstractImage(components, type) {
+            _buffer.setTargetHint(Buffer::Target::PixelPack);
+        }
 
         /** @brief %Image size */
         inline constexpr typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }

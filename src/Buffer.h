@@ -65,7 +65,8 @@ The engine tracks currently bound buffers to avoid unnecessary calls to
 @fn_gl{BindBuffer}. If the buffer is already bound to some target,
 functions copy(), setData() and setSubData() use that target in
 @fn_gl{CopyBufferSubData}, @fn_gl{BufferData} and @fn_gl{BufferSubData}
-functions instead of binding the buffer to some specific target.
+functions instead of binding the buffer to some specific target. You can also
+use setTargetHint() to possibly reduce unnecessary rebinding.
 
 If extension @extension{EXT,direct_state_access} is available, functions
 copy(), setData() and setSubData() use DSA functions to avoid unnecessary
@@ -259,8 +260,10 @@ class MAGNUM_EXPORT Buffer {
          * @param writeOffset   Offset in the write buffer
          * @param size          Data size
          *
-         * If @extension{EXT,direct_state_access} is not available, both
-         * buffers are bound to some target before the copy is performed.
+         * If @extension{EXT,direct_state_access} is not available and the
+         * buffers aren't already bound somewhere, they are bound to
+         * `Target::CopyRead` and `Target::CopyWrite` before the copy is
+         * performed.
          * @requires_gl31 Extension @extension{ARB,copy_buffer}
          * @requires_gles30 (no extension providing this functionality)
          * @see @fn_gl{BindBuffer} and @fn_gl{CopyBufferSubData} or
@@ -272,13 +275,11 @@ class MAGNUM_EXPORT Buffer {
 
         /**
          * @brief Constructor
-         * @param defaultTarget Default target (used when calling bind()
-         *      without parameter)
          *
          * Generates new OpenGL buffer.
          * @see @fn_gl{GenBuffers}
          */
-        inline Buffer(Target defaultTarget): _defaultTarget(defaultTarget) {
+        inline Buffer(): _targetHint(Target::Array) {
             glGenBuffers(1, &_id);
         }
 
@@ -290,19 +291,24 @@ class MAGNUM_EXPORT Buffer {
          */
         virtual ~Buffer();
 
-        /** @brief Default bind type */
-        inline Target defaultTarget() const { return _defaultTarget; }
-
         /** @brief OpenGL buffer ID */
         inline GLuint id() const { return _id; }
 
+        /** @brief Target hint */
+        inline Target targetHint() const { return _targetHint; }
+
         /**
-         * @brief Bind buffer
+         * @brief Set target hint
          *
-         * Binds buffer to default target.
-         * @see bind(Target)
+         * If @extension{EXT,direct_state_access} is not available, the buffer
+         * must be internally bound to some target before any operation. You
+         * can specify target which will always be used when binding the
+         * buffer internally, possibly saving some calls to @fn_gl{BindBuffer}.
+         *
+         * Default target hint is `Target::Array`.
+         * @see setData(), setSubData()
          */
-        inline void bind() { bind(_defaultTarget); }
+        inline void setTargetHint(Target hint) { _targetHint = hint; }
 
         /**
          * @brief Bind buffer
@@ -318,9 +324,10 @@ class MAGNUM_EXPORT Buffer {
          * @param data      Pointer to data
          * @param usage     %Buffer usage
          *
-         * If @extension{EXT,direct_state_access} is not available, the buffer
-         * is bound to some target before the operation.
-         * @see @fn_gl{BindBuffer} and @fn_gl{BufferData} or
+         * If @extension{EXT,direct_state_access} is not available and the
+         * buffer is not already bound somewhere, it is bound to hinted target
+         * before the operation.
+         * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{BufferData} or
          *      @fn_gl_extension{NamedBufferData,EXT,direct_state_access}
          */
         inline void setData(GLsizeiptr size, const GLvoid* data, Usage usage) {
@@ -360,10 +367,11 @@ class MAGNUM_EXPORT Buffer {
          * @param size      Data size
          * @param data      Pointer to data
          *
-         * If @extension{EXT,direct_state_access} is not available, the buffer
-         * is bound to some target before the operation.
-         * @see @fn_gl{BindBuffer} and @fn_gl{BufferSubData} or
-         *      @fn_gl_extension{NamedBufferSubData,EXT,direct_state_access}
+         * If @extension{EXT,direct_state_access} is not available and the
+         * buffer is not already bound somewhere, it is bound to hinted target
+         * before the operation.
+         * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{BufferSubData}
+         *      or @fn_gl_extension{NamedBufferSubData,EXT,direct_state_access}
          */
         inline void setSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
             (this->*setSubDataImplementation)(offset, size, data);
@@ -418,7 +426,7 @@ class MAGNUM_EXPORT Buffer {
         static SetSubDataImplementation setSubDataImplementation;
 
         GLuint _id;
-        Target _defaultTarget;
+        Target _targetHint;
 };
 
 }

@@ -30,7 +30,7 @@ void IndexedMesh::draw() {
     /* Buffers must be bound after initialization */
     #ifdef MAGNUM_TARGET_GLES
     bind();
-    _indexBuffer.bind();
+    _indexBuffer.bind(Buffer::Target::ElementArray);
     #endif
 
     /** @todo Start at given index */
@@ -50,7 +50,7 @@ void IndexedMesh::finalize() {
 
     /* Bind index buffer to VAO too */
     #ifndef MAGNUM_TARGET_GLES
-    _indexBuffer.bind();
+    _indexBuffer.bind(Buffer::Target::ElementArray);
     #endif
 }
 #endif

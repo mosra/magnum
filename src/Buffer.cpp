@@ -85,7 +85,7 @@ void Buffer::copyImplementationDSA(Buffer* read, Buffer* write, GLintptr readOff
 }
 
 void Buffer::setDataImplementationDefault(GLsizeiptr size, const GLvoid* data, Buffer::Usage usage) {
-    glBufferData(static_cast<GLenum>(bindInternal(_defaultTarget)), size, data, static_cast<GLenum>(usage));
+    glBufferData(static_cast<GLenum>(bindInternal(_targetHint)), size, data, static_cast<GLenum>(usage));
 }
 
 void Buffer::setDataImplementationDSA(GLsizeiptr size, const GLvoid* data, Buffer::Usage usage) {
@@ -93,7 +93,7 @@ void Buffer::setDataImplementationDSA(GLsizeiptr size, const GLvoid* data, Buffe
 }
 
 void Buffer::setSubDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
-    glBufferSubData(static_cast<GLenum>(bindInternal(_defaultTarget)), offset, size, data);
+    glBufferSubData(static_cast<GLenum>(bindInternal(_targetHint)), offset, size, data);
 }
 
 void Buffer::setSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
