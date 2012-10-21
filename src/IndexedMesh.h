@@ -25,21 +25,39 @@
 namespace Magnum {
 
 /**
- * @brief Indexed mesh
- */
+@brief Indexed mesh
+
+@section IndexedMesh-configuration Indexed mesh configuration
+
+Next to @ref Mesh-configuration "everything needed for non-indexed mesh" you
+have to specify also index count and type (either in constructor or using
+setIndexCount() and setIndexType()). Then fill index buffer or use
+MeshTools::compressIndices() to conveniently fill the index buffer and set
+index count and type.
+
+@section IndexedMesh-drawing Rendering meshes
+
+From user point-of-view the operation is the same as for
+@ref Mesh-drawing "non-indexed meshes".
+
+@section IndexedMesh-performance-optimization Performance optimizations
+
+If @extension{APPLE,vertex_array_object} is supported, next to
+@ref Mesh-performance-optimization "optimizations in Mesh itself" the index
+buffer is bound on object construction instead of in every draw() call.
+*/
 class MAGNUM_EXPORT IndexedMesh: public Mesh {
+    friend class Context;
+
     public:
         /**
          * @brief Implicit constructor
          * @param primitive     Primitive type
          *
-         * Allows creating the object without knowing anything about mesh data.
-         * Note that you have to call setVertexCount(), setIndexCount() and
-         * setIndexType() manually for mesh to draw properly.
+         * @see @fn_gl{BindVertexArray} (if @extension{APPLE,vertex_array_object}
+         *      is available)
          */
-        inline IndexedMesh(Primitive primitive = Primitive::Triangles): Mesh(primitive), _indexCount(0), _indexType(Type::UnsignedShort) {
-            _indexBuffer.setTargetHint(Buffer::Target::ElementArray);
-        }
+        IndexedMesh(Primitive primitive = Primitive::Triangles);
 
         /**
          * @brief Constructor
@@ -47,10 +65,12 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          * @param vertexCount   Count of unique vertices
          * @param indexCount    Count of indices
          * @param indexType     Type of indices (indexable, see TypeTraits)
+         *
+         * @see setPrimitive(), setVertexCount(), setIndexCount(),
+         *      setIndexType(), @fn_gl{BindVertexArray} (if
+         *      @extension{APPLE,vertex_array_object} is available)
          */
-        inline IndexedMesh(Primitive primitive, GLsizei vertexCount, GLsizei indexCount, Type indexType = Type::UnsignedShort): Mesh(primitive, vertexCount), _indexCount(indexCount), _indexType(indexType) {
-            _indexBuffer.setTargetHint(Buffer::Target::ElementArray);
-        }
+        IndexedMesh(Primitive primitive, GLsizei vertexCount, GLsizei indexCount, Type indexType = Type::UnsignedShort);
 
         /** @brief Index count */
         inline GLsizei indexCount() const { return _indexCount; }
@@ -60,7 +80,6 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          * @return Pointer to self (for method chaining)
          *
          * @see MeshTools::compressIndices()
-         * @todo definalize after that?
          */
         inline IndexedMesh* setIndexCount(GLsizei count) {
             _indexCount = count;
@@ -73,6 +92,8 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
         /**
          * @brief Set index type
          * @return Pointer to self (for method chaining)
+         *
+         * @see MeshTools::compressIndices()
          */
         inline IndexedMesh* setIndexType(Type type) {
             _indexType = type;
@@ -90,20 +111,35 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
         /**
          * @brief Draw the mesh
          *
-         * Expects an active shader with all uniforms set.
-         * @see Buffer::bind(), bind(), unbind(), finalize(), @fn_gl{DrawElements}
+         * Expects an active shader with all uniforms set. See
+         * @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
+         * for more information.
+         * @see @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
+         *      @fn_gl{VertexAttribPointer}, @fn_gl{DisableVertexAttribArray}
+         *      or @fn_gl{BindVertexArray} (if @extension{APPLE,vertex_array_object}
+         *      is available), @fn_gl{DrawElements}
          */
         void draw();
 
-    protected:
-        /**
-         * @brief Finalize the mesh
-         *
-         * @see Mesh::finalize(), Buffer::bind()
-         */
-        MAGNUM_LOCAL void finalize();
-
     private:
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+
+        void MAGNUM_LOCAL bind();
+
+        typedef void(IndexedMesh::*CreateIndexedImplementation)();
+        void MAGNUM_LOCAL createIndexedImplementationDefault();
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL createIndexedImplementationVAO();
+        #endif
+        static MAGNUM_LOCAL CreateIndexedImplementation createIndexedImplementation;
+
+        typedef void(IndexedMesh::*BindIndexedImplementation)();
+        void MAGNUM_LOCAL bindIndexedImplementationDefault();
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL bindIndexedImplementationVAO();
+        #endif
+        static MAGNUM_LOCAL BindIndexedImplementation bindIndexedImplementation;
+
         Buffer _indexBuffer;
         GLsizei _indexCount;
         Type _indexType;

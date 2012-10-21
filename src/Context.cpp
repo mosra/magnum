@@ -23,6 +23,8 @@
 #include "AbstractTexture.h"
 #include "Buffer.h"
 #include "Extensions.h"
+#include "IndexedMesh.h"
+#include "Mesh.h"
 #include "Implementation/State.h"
 #include "BufferedTexture.h"
 
@@ -205,6 +207,8 @@ Context::Context() {
     AbstractTexture::initializeContextBasedFunctionality(this);
     Buffer::initializeContextBasedFunctionality(this);
     BufferedTexture::initializeContextBasedFunctionality(this);
+    IndexedMesh::initializeContextBasedFunctionality(this);
+    Mesh::initializeContextBasedFunctionality(this);
 }
 
 Context::~Context() {

@@ -18,59 +18,38 @@
 #include <Utility/Debug.h>
 
 #include "Buffer.h"
+#include "Context.h"
+#include "Extensions.h"
 
 using namespace std;
 
 namespace Magnum {
 
-Mesh::Mesh(Mesh&& other):
-    #ifndef MAGNUM_TARGET_GLES
-    vao(other.vao),
-    #endif
-    _primitive(other._primitive), _vertexCount(other._vertexCount), finalized(other.finalized), attributes(other.attributes)
-{
-    #ifndef MAGNUM_TARGET_GLES
-    other.vao = 0;
-    #endif
-}
+Mesh::CreateImplementation Mesh::createImplementation = &Mesh::createImplementationDefault;
+Mesh::DestroyImplementation Mesh::destroyImplementation = &Mesh::destroyImplementationDefault;
+Mesh::BindAttributeImplementation Mesh::bindAttributeImplementation = &Mesh::bindAttributeImplementationDefault;
+Mesh::BindImplementation Mesh::bindImplementation = &Mesh::bindImplementationDefault;
+Mesh::UnbindImplementation Mesh::unbindImplementation = &Mesh::unbindImplementationDefault;
 
-void Mesh::destroy() {
-    #ifndef MAGNUM_TARGET_GLES
-    glDeleteVertexArrays(1, &vao);
-    #endif
+Mesh::Mesh(Mesh&& other): vao(other.vao), _primitive(other._primitive), _vertexCount(other._vertexCount), attributes(other.attributes) {
+    other.vao = 0;
 }
 
 Mesh& Mesh::operator=(Mesh&& other) {
-    destroy();
+    (this->*destroyImplementation)();
 
-    #ifndef MAGNUM_TARGET_GLES
     vao = other.vao;
-    #endif
     _primitive = other._primitive;
     _vertexCount = other._vertexCount;
-    finalized = other.finalized;
     attributes = other.attributes;
 
-    #ifndef MAGNUM_TARGET_GLES
     other.vao = 0;
-    #endif
 
     return *this;
 }
 
 void Mesh::draw() {
-    /* Vertex array must be bound before finalization */
-    #ifndef MAGNUM_TARGET_GLES
     bind();
-    #endif
-
-    /* Finalize, if not already */
-    finalize();
-
-    /* Buffers must be bound after initialization */
-    #ifdef MAGNUM_TARGET_GLES
-    bind();
-    #endif
 
     /** @todo Start at given index */
     glDrawArrays(static_cast<GLenum>(_primitive), 0, _vertexCount);
@@ -78,53 +57,11 @@ void Mesh::draw() {
     unbind();
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 void Mesh::bind() {
-    #ifndef MAGNUM_TARGET_GLES
-    glBindVertexArray(vao);
-    #else
-    bindBuffers();
-    #endif
-}
-
-void Mesh::unbind() {
-    #ifndef MAGNUM_TARGET_GLES
-    glBindVertexArray(0);
-    #else
-    for(const Attribute& attribute: attributes)
-        glDisableVertexAttribArray(attribute.location);
-    #endif
-}
-
-void Mesh::finalize() {
-    /* Already finalized */
-    if(finalized) return;
-
     CORRADE_ASSERT((_vertexCount == 0) == attributes.empty(), "Mesh: vertex count is non-zero, but no attributes are bound", );
 
-    finalized = true;
-
-    #ifndef MAGNUM_TARGET_GLES
-    bindBuffers();
-    #endif
+    (this->*bindImplementation)();
 }
-
-void Mesh::bindBuffers() {
-    /* Bind all attributes to this buffer */
-    for(const Attribute& attribute: attributes) {
-        glEnableVertexAttribArray(attribute.location);
-
-        attribute.buffer->bind(Buffer::Target::Array);
-
-        #ifndef MAGNUM_TARGET_GLES
-        if(TypeInfo::isIntegral(attribute.type))
-            glVertexAttribIPointer(attribute.location, attribute.count, static_cast<GLenum>(attribute.type), attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
-        else
-        #endif
-            glVertexAttribPointer(attribute.location, attribute.count, static_cast<GLenum>(attribute.type), GL_FALSE, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
-    }
-}
-#endif
 
 void Mesh::addVertexAttribute(Buffer* buffer, GLuint location, GLint count, Type type, GLintptr offset, GLsizei stride) {
     CORRADE_ASSERT(_vertexCount != 0, "Mesh: vertex count must be set before binding attributes", );
@@ -137,6 +74,82 @@ void Mesh::addVertexAttribute(Buffer* buffer, GLuint location, GLint count, Type
         offset,
         stride
     });
+
+    (this->*bindAttributeImplementation)(attributes.back());
 }
+
+void Mesh::vertexAttribPointer(const Mesh::Attribute& attribute) {
+    glEnableVertexAttribArray(attribute.location);
+
+    attribute.buffer->bind(Buffer::Target::Array);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(TypeInfo::isIntegral(attribute.type))
+        glVertexAttribIPointer(attribute.location, attribute.count, static_cast<GLenum>(attribute.type), attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
+    else
+    #endif
+        glVertexAttribPointer(attribute.location, attribute.count, static_cast<GLenum>(attribute.type), GL_FALSE, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
+}
+
+void Mesh::initializeContextBasedFunctionality(Context* context) {
+    if(context->isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>()) {
+        #ifndef MAGNUM_TARGET_GLES
+        Debug() << "Mesh: using" << Extensions::GL::APPLE::vertex_array_object::string() << "features";
+
+        createImplementation = &Mesh::createImplementationVAO;
+        destroyImplementation = &Mesh::destroyImplementationVAO;
+        bindAttributeImplementation = &Mesh::bindAttributeImplementationVAO;
+        bindImplementation = &Mesh::bindImplementationVAO;
+        unbindImplementation = &Mesh::unbindImplementationVAO;
+        #endif
+    }
+}
+
+void Mesh::createImplementationDefault() {}
+
+#ifndef MAGNUM_TARGET_GLES
+void Mesh::createImplementationVAO() {
+    glGenVertexArrays(1, &vao);
+}
+#endif
+
+void Mesh::destroyImplementationDefault() {}
+
+#ifndef MAGNUM_TARGET_GLES
+void Mesh::destroyImplementationVAO() {
+    glDeleteVertexArrays(1, &vao);
+}
+#endif
+
+void Mesh::bindAttributeImplementationDefault(const Attribute&) {}
+
+#ifndef MAGNUM_TARGET_GLES
+void Mesh::bindAttributeImplementationVAO(const Attribute& attribute) {
+    glBindVertexArray(vao);
+    vertexAttribPointer(attribute);
+}
+#endif
+
+void Mesh::bindImplementationDefault() {
+    for(const Attribute& attribute: attributes)
+        vertexAttribPointer(attribute);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void Mesh::bindImplementationVAO() {
+    glBindVertexArray(vao);
+}
+#endif
+
+void Mesh::unbindImplementationDefault() {
+    for(const Attribute& attribute: attributes)
+        glDisableVertexAttribArray(attribute.location);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void Mesh::unbindImplementationVAO() {
+    glBindVertexArray(0);
+}
+#endif
 
 }

@@ -17,21 +17,28 @@
 
 #include <Utility/Debug.h>
 
+#include "Context.h"
+#include "Extensions.h"
+
 namespace Magnum {
 
+IndexedMesh::CreateIndexedImplementation IndexedMesh::createIndexedImplementation = &IndexedMesh::createIndexedImplementationDefault;
+IndexedMesh::BindIndexedImplementation IndexedMesh::bindIndexedImplementation = &IndexedMesh::bindIndexedImplementationDefault;
+
+IndexedMesh::IndexedMesh(Mesh::Primitive primitive): Mesh(primitive), _indexCount(0), _indexType(Type::UnsignedShort) {
+    _indexBuffer.setTargetHint(Buffer::Target::ElementArray);
+
+    (this->*createIndexedImplementation)();
+}
+
+IndexedMesh::IndexedMesh(Mesh::Primitive primitive, GLsizei vertexCount, GLsizei indexCount, Type indexType): Mesh(primitive, vertexCount), _indexCount(indexCount), _indexType(indexType) {
+    _indexBuffer.setTargetHint(Buffer::Target::ElementArray);
+
+    (this->*createIndexedImplementation)();
+}
+
 void IndexedMesh::draw() {
-    /* Vertex array must be bound before finalization */
-    #ifndef MAGNUM_TARGET_GLES
     bind();
-    #endif
-
-    finalize();
-
-    /* Buffers must be bound after initialization */
-    #ifdef MAGNUM_TARGET_GLES
-    bind();
-    _indexBuffer.bind(Buffer::Target::ElementArray);
-    #endif
 
     /** @todo Start at given index */
     glDrawElements(static_cast<GLenum>(primitive()), _indexCount, static_cast<GLenum>(_indexType), nullptr);
@@ -39,20 +46,40 @@ void IndexedMesh::draw() {
     unbind();
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-void IndexedMesh::finalize() {
-    if(isFinalized()) return;
-
+void IndexedMesh::bind() {
     CORRADE_ASSERT(_indexCount, "IndexedMesh: the mesh has zero index count!", );
 
-    /* Finalize attribute positions */
-    Mesh::finalize();
-
-    /* Bind index buffer to VAO too */
-    #ifndef MAGNUM_TARGET_GLES
-    _indexBuffer.bind(Buffer::Target::ElementArray);
-    #endif
+    Mesh::bind();
+    (this->*bindIndexedImplementation)();
 }
+
+void IndexedMesh::initializeContextBasedFunctionality(Context* context) {
+    if(context->isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>()) {
+        #ifndef MAGNUM_TARGET_GLES
+        Debug() << "IndexedMesh: using" << Extensions::GL::APPLE::vertex_array_object::string() << "features";
+
+        createIndexedImplementation = &IndexedMesh::createIndexedImplementationVAO;
+        bindIndexedImplementation = &IndexedMesh::bindIndexedImplementationVAO;
+        #endif
+    }
+}
+
+void IndexedMesh::createIndexedImplementationDefault() {}
+
+#ifndef MAGNUM_TARGET_GLES
+void IndexedMesh::createIndexedImplementationVAO() {
+    glBindVertexArray(vao);
+
+    _indexBuffer.bind(Buffer::Target::ElementArray);
+}
+#endif
+
+void IndexedMesh::bindIndexedImplementationDefault() {
+    _indexBuffer.bind(Buffer::Target::ElementArray);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void IndexedMesh::bindIndexedImplementationVAO() {}
 #endif
 
 }

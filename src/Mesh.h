@@ -27,6 +27,7 @@
 namespace Magnum {
 
 class Buffer;
+class Context;
 
 /**
 @brief Base class for managing non-indexed meshes
@@ -77,8 +78,12 @@ mesh->setPrimitive(plane.primitive())
 
 Basic workflow is to set up respective shader (see @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation" for more infromation) and call Mesh::draw().
 
-VAOs are used for desktop OpenGL (not in OpenGL ES).
-@requires_gl30 Extension @extension{APPLE,vertex_array_object}
+@section Mesh-performance-optimization Performance optimizations
+
+If @extension{APPLE,vertex_array_object} is supported, VAOs are used instead
+of binding the buffers and specifying vertex attribute pointers in each
+draw() call.
+
 @requires_gl30 Extension @extension{EXT,gpu_shader4} (for unsigned integer attributes)
 
 @todo Support for normalized values (e.g. for color as char[4] passed to
@@ -90,6 +95,9 @@ VAOs are used for desktop OpenGL (not in OpenGL ES).
 @todo Redo in a way that allows glMultiDrawArrays, glDrawArraysInstanced etc.
  */
 class MAGNUM_EXPORT Mesh {
+    friend class IndexedMesh;
+    friend class Context;
+
     Mesh(const Mesh& other) = delete;
     Mesh& operator=(const Mesh& other) = delete;
 
@@ -331,12 +339,11 @@ class MAGNUM_EXPORT Mesh {
          * @param primitive     Primitive type
          * @param vertexCount   Vertex count
          *
-         * @see @fn_gl{GenVertexArrays}, setPrimitive(), setVertexCount()
+         * @see setPrimitive(), setVertexCount(), @fn_gl{GenVertexArrays} (if
+         *      @extension{APPLE,vertex_array_object} is available)
          */
-        inline Mesh(Primitive primitive = Primitive::Triangles, GLsizei vertexCount = 0): _primitive(primitive), _vertexCount(vertexCount), finalized(false) {
-            #ifndef MAGNUM_TARGET_GLES
-            glGenVertexArrays(1, &vao);
-            #endif
+        inline Mesh(Primitive primitive = Primitive::Triangles, GLsizei vertexCount = 0): _primitive(primitive), _vertexCount(vertexCount) {
+            (this->*createImplementation)();
         }
 
         /** @brief Move constructor */
@@ -345,19 +352,15 @@ class MAGNUM_EXPORT Mesh {
         /**
          * @brief Destructor
          *
-         * @see @fn_gl{DeleteVertexArrays}
+         * @see @fn_gl{DeleteVertexArrays} (if
+         *      @extension{APPLE,vertex_array_object} is available)
          */
-        inline virtual ~Mesh() { destroy(); }
+        inline virtual ~Mesh() {
+            (this->*destroyImplementation)();
+        }
 
         /** @brief Move assignment */
         Mesh& operator=(Mesh&& other);
-
-        /**
-         * @brief Whether the mesh is finalized
-         *
-         * When the mesh is finalized, no new attributes can be bound.
-         */
-        inline bool isFinalized() const { return finalized; }
 
         /** @brief Primitive type */
         inline Primitive primitive() const { return _primitive; }
@@ -385,7 +388,6 @@ class MAGNUM_EXPORT Mesh {
          */
         inline Mesh* setVertexCount(GLsizei vertexCount) {
             _vertexCount = vertexCount;
-            finalized = false;
             attributes.clear();
             return this;
         }
@@ -428,7 +430,10 @@ class MAGNUM_EXPORT Mesh {
          *      mesh, you must ensure it will exist for whole lifetime of the
          *      mesh and delete it afterwards.
          *
-         * @see addInterleavedVertexBuffer()
+         * @see addInterleavedVertexBuffer(), @fn_gl{BindVertexArray},
+         *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
+         *      @fn_gl{VertexAttribPointer} (if
+         *      @extension{APPLE,vertex_array_object} is available)
          */
         template<class ...T> inline Mesh* addVertexBuffer(Buffer* buffer, const T&... attributes) {
             addVertexBufferInternal(buffer, 0, attributes...);
@@ -485,7 +490,10 @@ class MAGNUM_EXPORT Mesh {
          *      mesh, you must ensure it will exist for whole lifetime of the
          *      mesh and delete it afterwards.
          *
-         * @see addVertexBufferStride(), addVertexBuffer()
+         * @see addVertexBufferStride(), addVertexBuffer(),
+         *      @fn_gl{BindVertexArray}, @fn_gl{EnableVertexAttribArray},
+         *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer} (if
+         *      @extension{APPLE,vertex_array_object} is available)
          */
         template<class ...T> inline Mesh* addInterleavedVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes) {
             addInterleavedVertexBufferInternal(buffer, offset, strideOfInterleaved(attributes...), attributes...);
@@ -505,41 +513,15 @@ class MAGNUM_EXPORT Mesh {
         /**
          * @brief Draw the mesh
          *
-         * Expects an active shader with all uniforms set.
-         * @see bind(), unbind(), finalize(), @fn_gl{DrawArrays}
+         * Expects an active shader with all uniforms set. See
+         * @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
+         * for more information.
+         * @see @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
+         *      @fn_gl{VertexAttribPointer}, @fn_gl{DisableVertexAttribArray}
+         *      or @fn_gl{BindVertexArray} (if @extension{APPLE,vertex_array_object}
+         *      is available), @fn_gl{DrawArrays}
          */
         virtual void draw();
-
-    protected:
-        /**
-         * @brief Bind all buffers
-         *
-         * @see @fn_gl{EnableVertexAttribArray}, @fn_gl{VertexAttribPointer}
-         */
-        void bindBuffers();
-
-        /**
-         * @brief Bind vertex array or all buffers
-         *
-         * @see @fn_gl{BindVertexArray} or bindBuffers()
-         */
-        void bind();
-
-        /**
-         * @brief Unbind vertex array or all buffers
-         *
-         * @see @fn_gl{BindVertexArray} or @fn_gl{DisableVertexAttribArray}
-         */
-        void unbind();
-
-        /**
-         * @brief Finalize the mesh
-         *
-         * Computes location and stride of each attribute in its buffer. After
-         * this function is called, no new attribute can be bound.
-         * @see bindBuffers()
-         */
-        MAGNUM_LOCAL void finalize();
 
     private:
         struct MAGNUM_LOCAL Attribute {
@@ -550,6 +532,8 @@ class MAGNUM_EXPORT Mesh {
             GLintptr offset;
             GLsizei stride;
         };
+
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
 
         /* Adding non-interleaved vertex attributes */
         template<GLuint location, class T, class ...U> inline void addVertexBufferInternal(Buffer* buffer, GLintptr offset, const AbstractShaderProgram::Attribute<location, T>&, const U&... attributes) {
@@ -588,14 +572,52 @@ class MAGNUM_EXPORT Mesh {
 
         void MAGNUM_EXPORT addVertexAttribute(Buffer* buffer, GLuint location, GLint count, Type type, GLintptr offset, GLsizei stride);
 
-        void destroy();
+        void MAGNUM_LOCAL bind();
 
+        inline void unbind() {
+            (this->*unbindImplementation)();
+        }
+
+        void MAGNUM_LOCAL vertexAttribPointer(const Attribute& attribute);
+
+        typedef void(Mesh::*CreateImplementation)();
+        void MAGNUM_LOCAL createImplementationDefault();
         #ifndef MAGNUM_TARGET_GLES
-        GLuint vao;
+        void MAGNUM_LOCAL createImplementationVAO();
         #endif
+        static CreateImplementation createImplementation;
+
+        typedef void(Mesh::*DestroyImplementation)();
+        void MAGNUM_LOCAL destroyImplementationDefault();
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL destroyImplementationVAO();
+        #endif
+        static DestroyImplementation destroyImplementation;
+
+        typedef void(Mesh::*BindAttributeImplementation)(const Attribute&);
+        void MAGNUM_LOCAL bindAttributeImplementationDefault(const Attribute& attribute);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL bindAttributeImplementationVAO(const Attribute& attribute);
+        #endif
+        static MAGNUM_LOCAL BindAttributeImplementation bindAttributeImplementation;
+
+        typedef void(Mesh::*BindImplementation)();
+        void MAGNUM_LOCAL bindImplementationDefault();
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL bindImplementationVAO();
+        #endif
+        static MAGNUM_LOCAL BindImplementation bindImplementation;
+
+        typedef void(Mesh::*UnbindImplementation)();
+        void MAGNUM_LOCAL unbindImplementationDefault();
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL unbindImplementationVAO();
+        #endif
+        static MAGNUM_LOCAL UnbindImplementation unbindImplementation;
+
+        GLuint vao;
         Primitive _primitive;
         GLsizei _vertexCount;
-        bool finalized;
 
         std::vector<Attribute> attributes;
 };
