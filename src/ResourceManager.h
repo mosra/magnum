@@ -345,6 +345,12 @@ template<class T, class U = T> class Resource {
             return static_cast<U*>(data);
         }
 
+        /** @brief %Resource data */
+        inline operator U*() {
+            acquire();
+            return static_cast<U*>(data);
+        }
+
     private:
         inline Resource(Implementation::ResourceManagerData<T>* manager, ResourceKey key): manager(manager), _key(key), lastCheck(0), _state(ResourceState::NotLoaded), data(nullptr) {
             manager->incrementReferenceCount(key);
