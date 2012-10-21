@@ -327,28 +327,13 @@ class MAGNUM_EXPORT Mesh {
         };
 
         /**
-         * @brief Implicit constructor
-         * @param primitive     Primitive type
-         *
-         * Allows creating the object without knowing anything about mesh
-         * data. Note that you have to call setVertexCount() manually for mesh
-         * to draw properly.
-         * @see @fn_gl{GenVertexArrays}
-         */
-        inline Mesh(Primitive primitive = Primitive::Triangles): _primitive(primitive), _vertexCount(0), finalized(false) {
-            #ifndef MAGNUM_TARGET_GLES
-            glGenVertexArrays(1, &vao);
-            #endif
-        }
-
-        /**
          * @brief Constructor
          * @param primitive     Primitive type
          * @param vertexCount   Vertex count
          *
-         * @see @fn_gl{GenVertexArrays}
+         * @see @fn_gl{GenVertexArrays}, setPrimitive(), setVertexCount()
          */
-        inline Mesh(Primitive primitive, GLsizei vertexCount): _primitive(primitive), _vertexCount(vertexCount), finalized(false) {
+        inline Mesh(Primitive primitive = Primitive::Triangles, GLsizei vertexCount = 0): _primitive(primitive), _vertexCount(vertexCount), finalized(false) {
             #ifndef MAGNUM_TARGET_GLES
             glGenVertexArrays(1, &vao);
             #endif
