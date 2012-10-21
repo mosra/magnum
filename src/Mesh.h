@@ -34,12 +34,11 @@ class Context;
 
 @section Mesh-configuration Mesh configuration
 
-To properly configure mesh, you have to set primitive and vertex count, either
-in constructor or using setPrimitive() and setVertexCount(). Then create
-vertex buffers, fill them with vertex data and assign them to mesh and given
-shader locations using addVertexBuffer() or addInterleavedVertexBuffer(). You
-can also use MeshTools::interleave() to conveniently set vertex count and
-buffer data.
+To properly configure mesh, you have to set primitive either in constructor or
+using setPrimitive() and call setVertexCount(). Then create vertex buffers,
+fill them with vertex data and assign them to mesh and given shader locations
+using addVertexBuffer() or addInterleavedVertexBuffer(). You can also use
+MeshTools::interleave() to conveniently set vertex count and buffer data.
 
 Note that the buffer is not managed (e.g. deleted on destruction) by the mesh,
 so you have to manage it on your own. On the other hand it allows you to use
@@ -337,12 +336,12 @@ class MAGNUM_EXPORT Mesh {
         /**
          * @brief Constructor
          * @param primitive     Primitive type
-         * @param vertexCount   Vertex count
          *
+         * Creates mesh with no vertex buffers and zero vertex count.
          * @see setPrimitive(), setVertexCount(), @fn_gl{GenVertexArrays} (if
          *      @extension{APPLE,vertex_array_object} is available)
          */
-        inline Mesh(Primitive primitive = Primitive::Triangles, GLsizei vertexCount = 0): _primitive(primitive), _vertexCount(vertexCount) {
+        inline Mesh(Primitive primitive = Primitive::Triangles): _primitive(primitive), _vertexCount(0) {
             (this->*createImplementation)();
         }
 

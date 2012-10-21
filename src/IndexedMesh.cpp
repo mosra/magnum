@@ -31,12 +31,6 @@ IndexedMesh::IndexedMesh(Mesh::Primitive primitive): Mesh(primitive), _indexCoun
     (this->*createIndexedImplementation)();
 }
 
-IndexedMesh::IndexedMesh(Mesh::Primitive primitive, GLsizei vertexCount, GLsizei indexCount, Type indexType): Mesh(primitive, vertexCount), _indexCount(indexCount), _indexType(indexType) {
-    _indexBuffer.setTargetHint(Buffer::Target::ElementArray);
-
-    (this->*createIndexedImplementation)();
-}
-
 void IndexedMesh::draw() {
     bind();
 

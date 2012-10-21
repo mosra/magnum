@@ -30,10 +30,9 @@ namespace Magnum {
 @section IndexedMesh-configuration Indexed mesh configuration
 
 Next to @ref Mesh-configuration "everything needed for non-indexed mesh" you
-have to specify also index count and type (either in constructor or using
-setIndexCount() and setIndexType()). Then fill index buffer or use
-MeshTools::compressIndices() to conveniently fill the index buffer and set
-index count and type.
+have to call also setIndexCount() and setIndexType(). Then fill index buffer
+or use MeshTools::compressIndices() to conveniently fill the index buffer and
+set index count and type.
 
 @section IndexedMesh-drawing Rendering meshes
 
@@ -51,26 +50,15 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
 
     public:
         /**
-         * @brief Implicit constructor
-         * @param primitive     Primitive type
-         *
-         * @see @fn_gl{BindVertexArray} (if @extension{APPLE,vertex_array_object}
-         *      is available)
-         */
-        IndexedMesh(Primitive primitive = Primitive::Triangles);
-
-        /**
          * @brief Constructor
          * @param primitive     Primitive type
-         * @param vertexCount   Count of unique vertices
-         * @param indexCount    Count of indices
-         * @param indexType     Type of indices (indexable, see TypeTraits)
          *
+         * Creates indexed mesh with zero vertex count and zero index count.
          * @see setPrimitive(), setVertexCount(), setIndexCount(),
          *      setIndexType(), @fn_gl{BindVertexArray} (if
          *      @extension{APPLE,vertex_array_object} is available)
          */
-        IndexedMesh(Primitive primitive, GLsizei vertexCount, GLsizei indexCount, Type indexType = Type::UnsignedShort);
+        IndexedMesh(Primitive primitive = Primitive::Triangles);
 
         /** @brief Index count */
         inline GLsizei indexCount() const { return _indexCount; }
