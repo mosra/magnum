@@ -17,8 +17,6 @@
 
 #include "Magnum.h"
 
-#include "Buffer.h"
-
 namespace Magnum { namespace Implementation {
 
 struct TextureState {

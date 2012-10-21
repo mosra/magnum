@@ -38,6 +38,7 @@ Encapsulates one OpenGL buffer object and provides functions for convenient
 data updates.
 
 @section Buffer-data Data updating
+
 Default way to set or update buffer data with setData() or setSubData() is to
 explicitly specify data size and pass the pointer to it:
 @code
@@ -61,6 +62,7 @@ buffer.setData(data, Buffer::Usage::StaticDraw);
 @endcode
 
 @section Buffer-performance-optimization Performance optimizations
+
 The engine tracks currently bound buffers to avoid unnecessary calls to
 @fn_gl{BindBuffer}. If the buffer is already bound to some target,
 functions copy(), setData() and setSubData() use that target in
@@ -307,6 +309,9 @@ class MAGNUM_EXPORT Buffer {
          *
          * Default target hint is `Target::Array`.
          * @see setData(), setSubData()
+         * @todo Target::ElementArray cannot be used when no VAO is bound -
+         *      http://www.opengl.org/wiki/Vertex_Specification#Index_buffers
+         *      ... damned GL state
          */
         inline void setTargetHint(Target hint) { _targetHint = hint; }
 
@@ -314,6 +319,8 @@ class MAGNUM_EXPORT Buffer {
          * @brief Bind buffer
          * @param target    %Target
          *
+         * @todo Allow binding to Target::ElementArray only if VAO is bound
+         *      to avoid potential issues?
          * @see @fn_gl{BindBuffer}
          */
         inline void bind(Target target) { bind(target, _id); }

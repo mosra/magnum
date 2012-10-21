@@ -22,11 +22,11 @@
 #include "AbstractShaderProgram.h"
 #include "AbstractTexture.h"
 #include "Buffer.h"
+#include "BufferedTexture.h"
 #include "Extensions.h"
 #include "IndexedMesh.h"
 #include "Mesh.h"
 #include "Implementation/State.h"
-#include "BufferedTexture.h"
 
 using namespace std;
 

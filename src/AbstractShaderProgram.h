@@ -95,6 +95,7 @@ MyShader* setProjection(const Matrix4& matrix) {
 @endcode
 
 @subsection AbstractShaderProgram-attribute-location Binding attribute location
+
 The preferred workflow is to specify attribute location for vertex shader
 input attributes and fragment shader output attributes explicitly in the
 shader code, e.g.:
@@ -142,6 +143,7 @@ bindFragmentDataLocationIndexed(1, 1, "ambient");
 @endcode
 
 @subsection AbstractShaderProgram-uniform-location Uniform locations
+
 The preferred workflow is to specify uniform locations directly in the shader
 code, e.g.:
 @code
@@ -162,6 +164,7 @@ GLint projectionUniform = uniformLocation("projection");
 @endcode
 
 @subsection AbstractShaderProgram-texture-layer Binding texture layer uniforms
+
 The preferred workflow is to specify texture layers directly in the shader
 code, e.g.:
 @code
@@ -202,6 +205,7 @@ mesh.draw();
 @endcode
 
 @section AbstractShaderProgram-performance-optimization Performance optimizations
+
 The engine tracks currently used shader program to avoid unnecessary calls to
 @fn_gl{UseProgram}.
 
