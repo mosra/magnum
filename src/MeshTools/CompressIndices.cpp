@@ -33,15 +33,16 @@ std::tuple<size_t, Type, char* > CompressIndices::operator()() const {
     return SizeBasedCall<Compressor>(*std::max_element(indices.begin(), indices.end()))(indices);
 }
 
-void CompressIndices::operator()(IndexedMesh* mesh, Buffer::Usage usage) const {
+void CompressIndices::operator()(IndexedMesh* mesh, Buffer* buffer, Buffer::Usage usage) const {
     size_t indexCount;
     Type indexType;
     char* data;
     std::tie(indexCount, indexType, data) = operator()();
 
-    mesh->setIndexType(indexType);
-    mesh->setIndexCount(indices.size());
-    mesh->indexBuffer()->setData(indexCount*TypeInfo::sizeOf(indexType), data, usage);
+    mesh->setIndexBuffer(buffer)
+        ->setIndexType(indexType)
+        ->setIndexCount(indices.size());
+    buffer->setData(indexCount*TypeInfo::sizeOf(indexType), data, usage);
 
     delete[] data;
 }

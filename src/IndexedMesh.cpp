@@ -17,18 +17,19 @@
 
 #include <Utility/Debug.h>
 
+#include "Buffer.h"
 #include "Context.h"
 #include "Extensions.h"
 
 namespace Magnum {
 
-IndexedMesh::CreateIndexedImplementation IndexedMesh::createIndexedImplementation = &IndexedMesh::createIndexedImplementationDefault;
+IndexedMesh::BindIndexBufferImplementation IndexedMesh::bindIndexBufferImplementation = &IndexedMesh::bindIndexBufferImplementationDefault;
 IndexedMesh::BindIndexedImplementation IndexedMesh::bindIndexedImplementation = &IndexedMesh::bindIndexedImplementationDefault;
 
-IndexedMesh::IndexedMesh(Mesh::Primitive primitive): Mesh(primitive), _indexCount(0), _indexType(Type::UnsignedShort) {
-    _indexBuffer.setTargetHint(Buffer::Target::ElementArray);
-
-    (this->*createIndexedImplementation)();
+IndexedMesh* IndexedMesh::setIndexBuffer(Buffer* buffer) {
+    _indexBuffer = buffer;
+    (this->*bindIndexBufferImplementation)();
+    return this;
 }
 
 void IndexedMesh::draw() {
@@ -52,24 +53,24 @@ void IndexedMesh::initializeContextBasedFunctionality(Context* context) {
         #ifndef MAGNUM_TARGET_GLES
         Debug() << "IndexedMesh: using" << Extensions::GL::APPLE::vertex_array_object::string() << "features";
 
-        createIndexedImplementation = &IndexedMesh::createIndexedImplementationVAO;
+        bindIndexBufferImplementation = &IndexedMesh::bindIndexBufferImplementationVAO;
         bindIndexedImplementation = &IndexedMesh::bindIndexedImplementationVAO;
         #endif
     }
 }
 
-void IndexedMesh::createIndexedImplementationDefault() {}
+void IndexedMesh::bindIndexBufferImplementationDefault() {}
 
 #ifndef MAGNUM_TARGET_GLES
-void IndexedMesh::createIndexedImplementationVAO() {
+void IndexedMesh::bindIndexBufferImplementationVAO() {
     glBindVertexArray(vao);
 
-    _indexBuffer.bind(Buffer::Target::ElementArray);
+    _indexBuffer->bind(Buffer::Target::ElementArray);
 }
 #endif
 
 void IndexedMesh::bindIndexedImplementationDefault() {
-    _indexBuffer.bind(Buffer::Target::ElementArray);
+    _indexBuffer->bind(Buffer::Target::ElementArray);
 }
 
 #ifndef MAGNUM_TARGET_GLES

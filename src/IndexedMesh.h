@@ -20,7 +20,6 @@
  */
 
 #include "Mesh.h"
-#include "Buffer.h"
 
 namespace Magnum {
 
@@ -30,9 +29,15 @@ namespace Magnum {
 @section IndexedMesh-configuration Indexed mesh configuration
 
 Next to @ref Mesh-configuration "everything needed for non-indexed mesh" you
-have to call also setIndexCount() and setIndexType(). Then fill index buffer
-or use MeshTools::compressIndices() to conveniently fill the index buffer and
-set index count and type.
+have to call also setIndexCount() and setIndexType(). Then create index buffer
+and assign it to the mesh using setIndexBuffer() or use
+MeshTools::compressIndices() to conveniently fill the index buffer and set
+index count and type.
+
+Similarly as in Mesh itself the index buffer is not managed by the mesh, so
+you have to manage it on your own. On the other hand it allows you to use
+one index buffer for more meshes (with different vertex data in each mesh, for
+example) or store more than only index data in one buffer.
 
 @section IndexedMesh-drawing Rendering meshes
 
@@ -53,12 +58,21 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          * @brief Constructor
          * @param primitive     Primitive type
          *
-         * Creates indexed mesh with zero vertex count and zero index count.
-         * @see setPrimitive(), setVertexCount(), setIndexCount(),
-         *      setIndexType(), @fn_gl{BindVertexArray} (if
-         *      @extension{APPLE,vertex_array_object} is available)
+         * Creates indexed mesh with no index buffer, zero vertex count and
+         * zero index count.
+         * @see setPrimitive(), setVertexCount(), setIndexBuffer(),
+         *      setIndexCount(), setIndexType()
          */
-        IndexedMesh(Primitive primitive = Primitive::Triangles);
+        inline IndexedMesh(Primitive primitive = Primitive::Triangles): Mesh(primitive), _indexBuffer(nullptr), _indexCount(0), _indexType(Type::UnsignedShort) {}
+
+        /**
+         * @brief Set index buffer
+         *
+         * @see MeshTools::compressIndices(), @fn_gl{BindVertexArray},
+         *      @fn_gl{BindBuffer} (if @extension{APPLE,vertex_array_object}
+         *      is available)
+         */
+        IndexedMesh* setIndexBuffer(Buffer* buffer);
 
         /** @brief Index count */
         inline GLsizei indexCount() const { return _indexCount; }
@@ -89,14 +103,6 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
         }
 
         /**
-         * @brief Index buffer
-         *
-         * Returns pointer to index buffer, which should be then filled with
-         * indices (of type specified in constructor).
-         */
-        inline Buffer* indexBuffer() { return &_indexBuffer; }
-
-        /**
          * @brief Draw the mesh
          *
          * Expects an active shader with all uniforms set. See
@@ -114,12 +120,12 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
 
         void MAGNUM_LOCAL bind();
 
-        typedef void(IndexedMesh::*CreateIndexedImplementation)();
-        void MAGNUM_LOCAL createIndexedImplementationDefault();
+        typedef void(IndexedMesh::*BindIndexBufferImplementation)();
+        void MAGNUM_LOCAL bindIndexBufferImplementationDefault();
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL createIndexedImplementationVAO();
+        void MAGNUM_LOCAL bindIndexBufferImplementationVAO();
         #endif
-        static MAGNUM_LOCAL CreateIndexedImplementation createIndexedImplementation;
+        static MAGNUM_LOCAL BindIndexBufferImplementation bindIndexBufferImplementation;
 
         typedef void(IndexedMesh::*BindIndexedImplementation)();
         void MAGNUM_LOCAL bindIndexedImplementationDefault();
@@ -128,7 +134,7 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
         #endif
         static MAGNUM_LOCAL BindIndexedImplementation bindIndexedImplementation;
 
-        Buffer _indexBuffer;
+        Buffer* _indexBuffer;
         GLsizei _indexCount;
         Type _indexType;
 };

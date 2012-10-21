@@ -41,7 +41,7 @@ class MESHTOOLS_EXPORT CompressIndices {
 
         std::tuple<std::size_t, Type, char*> operator()() const;
 
-        void operator()(IndexedMesh* mesh, Buffer::Usage usage) const;
+        void operator()(IndexedMesh* mesh, Buffer* buffer, Buffer::Usage usage) const;
 
     private:
         struct Compressor {
@@ -85,18 +85,20 @@ inline std::tuple<std::size_t, Type, char*> compressIndices(const std::vector<st
 /**
 @brief Compress vertex indices and write them to index buffer
 @param mesh     Output mesh
+@param buffer   Index buffer
 @param usage    Index buffer usage
 @param indices  Index array
 
 The same as compressIndices(const std::vector<std::uint32_t>&), but this
-function writes the output to mesh's index buffer and updates index count and
+function writes the output to given index buffer and updates index count and
 type in the mesh accordingly, so you don't have to call
-IndexedMesh::setIndexCount() and IndexedMesh::setIndexType() on your own.
+IndexedMesh::setIndexBuffer(), IndexedMesh::setIndexCount() and
+IndexedMesh::setIndexType() on your own.
 
 @see MeshTools::interleave()
 */
-inline void compressIndices(IndexedMesh* mesh, Buffer::Usage usage, const std::vector<std::uint32_t>& indices) {
-    return Implementation::CompressIndices{indices}(mesh, usage);
+inline void compressIndices(IndexedMesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<std::uint32_t>& indices) {
+    return Implementation::CompressIndices{indices}(mesh, buffer, usage);
 }
 
 }}
