@@ -27,7 +27,7 @@ Mesh::Mesh(Mesh&& other):
     #ifndef MAGNUM_TARGET_GLES
     vao(other.vao),
     #endif
-    _primitive(other._primitive), _vertexCount(other._vertexCount), finalized(other.finalized), _buffers(other._buffers), _attributes(other._attributes)
+    _primitive(other._primitive), _vertexCount(other._vertexCount), finalized(other.finalized), attributes(other.attributes)
 {
     #ifndef MAGNUM_TARGET_GLES
     other.vao = 0;
@@ -35,9 +35,6 @@ Mesh::Mesh(Mesh&& other):
 }
 
 void Mesh::destroy() {
-    for(auto& it: _buffers)
-        delete it.first;
-
     #ifndef MAGNUM_TARGET_GLES
     glDeleteVertexArrays(1, &vao);
     #endif
@@ -52,21 +49,13 @@ Mesh& Mesh::operator=(Mesh&& other) {
     _primitive = other._primitive;
     _vertexCount = other._vertexCount;
     finalized = other.finalized;
-    _buffers = other._buffers;
-    _attributes = other._attributes;
+    attributes = other.attributes;
 
     #ifndef MAGNUM_TARGET_GLES
     other.vao = 0;
     #endif
 
     return *this;
-}
-
-Buffer* Mesh::addBuffer(BufferType interleaved) {
-    Buffer* buffer = new Buffer(Buffer::Target::Array);
-    _buffers.insert(make_pair(buffer, make_pair(interleaved, vector<Attribute>())));
-
-    return buffer;
 }
 
 void Mesh::draw() {
@@ -102,8 +91,8 @@ void Mesh::unbind() {
     #ifndef MAGNUM_TARGET_GLES
     glBindVertexArray(0);
     #else
-    for(set<GLuint>::const_iterator it = _attributes.begin(); it != _attributes.end(); ++it)
-        glDisableVertexAttribArray(*it);
+    for(const Attribute& attribute: attributes)
+        glDisableVertexAttribArray(attribute.location);
     #endif
 }
 
@@ -111,45 +100,8 @@ void Mesh::finalize() {
     /* Already finalized */
     if(finalized) return;
 
-    CORRADE_ASSERT(_vertexCount, "Mesh: the mesh has zero vertex count!", );
+    CORRADE_ASSERT((_vertexCount == 0) == attributes.empty(), "Mesh: vertex count is non-zero, but no attributes are bound", );
 
-    /* Finalize attribute positions for every buffer */
-    for(auto& it: _buffers) {
-        /* Avoid confustion */
-        bool interleaved = it.second.first == BufferType::Interleaved;
-        vector<Attribute>& attributes = it.second.second;
-
-        /* Interleaved buffer, set stride and position of first attribute */
-        if(interleaved) {
-            /* Set attribute position and compute stride */
-            GLsizei stride = 0;
-            for(vector<Attribute>::iterator ait = attributes.begin(); ait != attributes.end(); ++ait) {
-                /* The attribute is positioned at the end of previous */
-                ait->pointer = reinterpret_cast<const GLvoid*>(stride);
-
-                /* Add attribute size (per vertex) to stride */
-                stride += ait->size*TypeInfo::sizeOf(ait->type);
-            }
-
-            /* Set computed stride for all attributes */
-            for(vector<Attribute>::iterator ait = attributes.begin(); ait != attributes.end(); ++ait)
-                ait->stride = stride;
-
-        /* Non-interleaved buffer, set position of every attribute */
-        } else {
-            /* Set attribute position */
-            GLsizei position = 0;
-            for(vector<Attribute>::iterator ait = attributes.begin(); ait != attributes.end(); ++ait) {
-                /* The attribute is positioned at the end of previous attribute array */
-                ait->pointer = reinterpret_cast<const GLvoid*>(position);
-
-                /* Add attribute size (for all vertices) to position */
-                position += ait->size*TypeInfo::sizeOf(ait->type)*_vertexCount;
-            }
-        }
-    }
-
-    /* Mesh is now finalized, attribute binding is not allowed */
     finalized = true;
 
     #ifndef MAGNUM_TARGET_GLES
@@ -158,46 +110,33 @@ void Mesh::finalize() {
 }
 
 void Mesh::bindBuffers() {
-    /* Enable vertex arrays for all attributes */
-    for(set<GLuint>::const_iterator it = _attributes.begin(); it != _attributes.end(); ++it)
-        glEnableVertexAttribArray(*it);
+    /* Bind all attributes to this buffer */
+    for(const Attribute& attribute: attributes) {
+        glEnableVertexAttribArray(attribute.location);
 
-    for(auto& it: _buffers) {
-        /* Avoid confusion */
-        vector<Attribute>& attributes = it.second.second;
+        attribute.buffer->bind(Buffer::Target::Array);
 
-        /* Bind buffer */
-        it.first->bind();
-
-        /* Bind all attributes to this buffer */
-        for(vector<Attribute>::const_iterator ait = attributes.begin(); ait != attributes.end(); ++ait)
-            #ifndef MAGNUM_TARGET_GLES
-            if(TypeInfo::isIntegral(ait->type))
-                glVertexAttribIPointer(ait->attribute, ait->size, static_cast<GLenum>(ait->type), ait->stride, ait->pointer);
-            else
-            #endif
-                glVertexAttribPointer(ait->attribute, ait->size, static_cast<GLenum>(ait->type), GL_FALSE, ait->stride, ait->pointer);
+        #ifndef MAGNUM_TARGET_GLES
+        if(TypeInfo::isIntegral(attribute.type))
+            glVertexAttribIPointer(attribute.location, attribute.count, static_cast<GLenum>(attribute.type), attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
+        else
+        #endif
+            glVertexAttribPointer(attribute.location, attribute.count, static_cast<GLenum>(attribute.type), GL_FALSE, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
     }
 }
 #endif
 
-void Mesh::bindAttribute(Buffer* buffer, GLuint attribute, GLint size, Type type) {
-    /* The mesh is finalized or attribute is already bound, nothing to do */
-    if(finalized || _attributes.find(attribute) != _attributes.end()) return;
+void Mesh::addVertexAttribute(Buffer* buffer, GLuint location, GLint count, Type type, GLintptr offset, GLsizei stride) {
+    CORRADE_ASSERT(_vertexCount != 0, "Mesh: vertex count must be set before binding attributes", );
 
-    /* If buffer is not managed by this mesh, nothing to do */
-    auto found = _buffers.find(buffer);
-    if(found == _buffers.end()) return;
-
-    Attribute a;
-    a.attribute = attribute;
-    a.size = size;
-    a.type = type;
-    a.stride = 0;
-    a.pointer = nullptr;
-
-    found->second.second.push_back(a);
-    _attributes.insert(attribute);
+    attributes.push_back({
+        buffer,
+        location,
+        count,
+        type,
+        offset,
+        stride
+    });
 }
 
 }

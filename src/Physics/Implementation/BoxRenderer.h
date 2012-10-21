@@ -17,7 +17,11 @@
 
 #include "AbstractDebugRenderer.h"
 
-namespace Magnum { namespace Physics {
+namespace Magnum {
+
+class Buffer;
+
+namespace Physics {
 
 template<std::uint8_t> class Box;
 
@@ -30,6 +34,7 @@ template<std::uint8_t dimensions> class BoxRenderer: public AbstractDebugRendere
         void draw(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation, typename SceneGraph::AbstractObject<dimensions>::CameraType* camera);
 
     private:
+        Resource<Buffer> buffer;
         Box<dimensions>& box;
 };
 

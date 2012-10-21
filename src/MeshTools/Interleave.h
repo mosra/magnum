@@ -53,8 +53,6 @@ class Interleave {
         }
 
         template<class ...T> void operator()(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const T&... attributes) {
-            CORRADE_ASSERT(mesh->isInterleaved(buffer), "MeshTools::interleave(): the buffer is not interleaved, nothing done", );
-
             operator()(attributes...);
 
             mesh->setVertexCount(_attributeCount);
@@ -153,7 +151,7 @@ output to given array buffer and updates vertex count in the mesh accordingly,
 so you don't have to call Mesh::setVertexCount() on your own.
 
 @attention Setting primitive type and binding the attributes to shader is left
-    to user - see Mesh::setPrimitive() and Mesh::bindAttribute().
+    to user - see @ref Mesh-configuration "Mesh documentation".
 
 For only one attribute array this function is convenient equivalent to the
 following, without any performance loss:
@@ -161,10 +159,6 @@ following, without any performance loss:
 buffer->setData(attribute, usage);
 mesh->setVertexCount(attribute.size());
 @endcode
-
-@attention If there is more than one attribute array, the buffer must be set
-    as interleaved (see Mesh::addBuffer()), otherwise this function does
-    nothing.
 
 @see MeshTools::compressIndices()
 */

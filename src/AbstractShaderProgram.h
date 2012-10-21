@@ -44,12 +44,12 @@ class Shader;
 
 This class is designed to be used via subclassing. Subclasses define these
 functions and properties:
- - <strong>%Attribute location</strong> typedefs defining locations and types
-   for attribute binding with Mesh::bindAttribute(), for example:
+ - <strong>%Attribute definitions</strong> with location and type for
+   configuring meshes, for example:
 @code
-typedef Attribute<0, Point3D> Position;
-typedef Attribute<1, Vector3> Normal;
-typedef Attribute<2, Vector2> TextureCoords;
+static const Attribute<0, Point3D> Position;
+static const Attribute<1, Vector3> Normal;
+static const Attribute<2, Vector2> TextureCoordinates;
 @endcode
    @todoc Output attribute location (for bindFragmentDataLocationIndexed(),
         referenced also from Framebuffer::mapDefaultForDraw() / Framebuffer::mapForDraw())
@@ -103,7 +103,7 @@ shader code, e.g.:
 // or #extension GL_ARB_explicit_attrib_location: enable
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec3 normal;
-layout(location = 2) in vec2 textureCoords;
+layout(location = 2) in vec2 textureCoordinates;
 @endcode
 Similarly for ouput attributes, you can also specify blend equation color
 index for them (see Framebuffer::BlendFunction for more information about
@@ -131,9 +131,9 @@ attaching the shaders and linking the program:
 @code
 // Shaders attached...
 
-bindAttributeLocation(Position::Location, "position");
-bindAttributeLocation(Normal::Location, "normal");
-bindAttributeLocation(TextureCoords::Location, "textureCoords");
+bindAttributeLocation(Position.Location, "position");
+bindAttributeLocation(Normal.Location, "normal");
+bindAttributeLocation(TextureCoords.Location, "textureCoordinates");
 
 bindFragmentDataLocationIndexed(0, 0, "color");
 bindFragmentDataLocationIndexed(1, 1, "ambient");
@@ -185,10 +185,11 @@ setUniform(SpecularTextureUniform, SpecularTextureLayer);
 
 @section AbstractShaderProgram-rendering-workflow Rendering workflow
 
-Basic workflow with %AbstractShaderProgram subclasses is: instancing the class
-(once at the beginning), then in draw event setting uniforms and marking the
-shader for use, binding required textures to their respective layers using
-AbstractTexture::bind(GLint) and calling Mesh::draw(). For example:
+Basic workflow with %AbstractShaderProgram subclasses is to instance the class
+and configuring attribute binding in meshes (see @ref Mesh-configuration "Mesh documentation"
+for more information) at the beginning, then in draw event setting uniforms
+and marking the shader for use, binding required textures to their respective
+layers using AbstractTexture::bind(GLint) and calling Mesh::draw(). Example:
 @code
 shader->setTransformation(transformation)
     ->setProjection(projection)
@@ -205,9 +206,9 @@ The engine tracks currently used shader program to avoid unnecessary calls to
 @fn_gl{UseProgram}.
 
 If extension @extension{ARB,separate_shader_objects} or
-@extension{EXT,direct_state_access} is available, uniform setting
-functions use DSA functions to avoid unnecessary calls to @fn_gl{UseProgram}.
-See setUniform(GLint, GLfloat) documentation for more information.
+@extension{EXT,direct_state_access} is available, uniform setting functions
+use DSA functions to avoid unnecessary calls to @fn_gl{UseProgram}. See
+setUniform(GLint, GLfloat) documentation for more information.
 
 To achieve least state changes, set all uniforms in one run -- method chaining
 comes in handy.

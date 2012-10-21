@@ -35,8 +35,8 @@ otherwise falls back to GLSL 1.20.
 */
 class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
     public:
-        typedef Attribute<0, Point3D> Position; /**< @brief Vertex position */
-        typedef Attribute<1, Vector3> Normal;   /**< @brief Normal direction */
+        static const Attribute<0, Point3D> Position;    /**< @brief Vertex position */
+        static const Attribute<1, Vector3> Normal;      /**< @brief Normal direction */
 
         PhongShader();
 

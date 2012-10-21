@@ -16,6 +16,7 @@
 #include "DebugDrawResourceManager.h"
 
 #include "AbstractShaderProgram.h"
+#include "Buffer.h"
 #include "Mesh.h"
 #include "AbstractShape.h"
 #include "Box.h"
@@ -27,7 +28,7 @@
 
 namespace Magnum {
 
-template class ResourceManager<AbstractShaderProgram, Mesh, Physics::Implementation::Options>;
+template class ResourceManager<AbstractShaderProgram, Buffer, Mesh, Physics::Implementation::Options>;
 
 namespace Physics {
 

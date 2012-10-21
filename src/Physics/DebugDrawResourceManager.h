@@ -28,6 +28,7 @@
 namespace Magnum {
 
 class AbstractShaderProgram;
+class Buffer;
 class Mesh;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -38,7 +39,7 @@ namespace Physics { namespace Implementation {
     template<std::uint8_t> class AbstractDebugRenderer;
 }}
 
-extern template class PHYSICS_EXPORT ResourceManager<AbstractShaderProgram, Mesh, Physics::Implementation::Options>;
+extern template class PHYSICS_EXPORT ResourceManager<AbstractShaderProgram, Buffer, Mesh, Physics::Implementation::Options>;
 #endif
 
 namespace SceneGraph {
@@ -83,7 +84,7 @@ DebugDrawResourceManager::createDebugRenderer(object->shape(), "red")
     ->setParent(object);
 @endcode
 */
-class PHYSICS_EXPORT DebugDrawResourceManager: public ResourceManager<AbstractShaderProgram, Mesh, Physics::Implementation::Options> {
+class PHYSICS_EXPORT DebugDrawResourceManager: public ResourceManager<AbstractShaderProgram, Buffer, Mesh, Physics::Implementation::Options> {
     public:
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /** @brief %Options */

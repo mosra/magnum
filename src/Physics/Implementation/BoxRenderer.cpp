@@ -31,14 +31,13 @@ namespace {
         constexpr static char shader[] = "shader2d";
         constexpr static char key[] = "box2d";
 
-        static Mesh* mesh() {
+        static Mesh* mesh(Buffer* buffer) {
             Primitives::Square square;
             Mesh* mesh = new Mesh;
-            Buffer* buffer = mesh->addBuffer(Mesh::BufferType::NonInterleaved);
             buffer->setData(*square.positions(0), Buffer::Usage::StaticDraw);
             return mesh->setPrimitive(square.primitive())
-                ->bindAttribute<typename Implementation::ShapeShader<2>::Position>(buffer)
-                ->setVertexCount(square.positions(0)->size());
+                ->setVertexCount(square.positions(0)->size())
+                ->addVertexBuffer(buffer, Implementation::ShapeShader<2>::Position());
         }
     };
 
@@ -46,14 +45,13 @@ namespace {
         constexpr static char shader[] = "shader3d";
         constexpr static char key[] = "box3d";
 
-        static Mesh* mesh() {
+        static Mesh* mesh(Buffer* buffer) {
             Primitives::Cube cube;
             Mesh* mesh = new Mesh;
-            Buffer* buffer = mesh->addBuffer(Mesh::BufferType::NonInterleaved);
             buffer->setData(*cube.positions(0), Buffer::Usage::StaticDraw);
             return mesh->setPrimitive(cube.primitive())
-                ->bindAttribute<typename Implementation::ShapeShader<2>::Position>(buffer)
-                ->setVertexCount(cube.positions(0)->size());
+                ->setVertexCount(cube.positions(0)->size())
+                ->addVertexBuffer(buffer, Implementation::ShapeShader<2>::Position());
         }
     };
 }
@@ -63,9 +61,11 @@ constexpr char BoxMesh<2>::key[];
 constexpr char BoxMesh<3>::shader[];
 constexpr char BoxMesh<3>::key[];
 
-template<std::uint8_t dimensions> BoxRenderer<dimensions>::BoxRenderer(Box<dimensions>& box, ResourceKey options, typename SceneGraph::AbstractObject<dimensions>::ObjectType* parent): AbstractDebugRenderer<dimensions>(BoxMesh<dimensions>::shader, BoxMesh<dimensions>::key, options, parent), box(box) {
-    if(!this->mesh)
-        DebugDrawResourceManager::instance()->set<Mesh>(this->mesh.key(), BoxMesh<dimensions>::mesh(), ResourceDataState::Final, ResourcePolicy::Manual);
+template<std::uint8_t dimensions> BoxRenderer<dimensions>::BoxRenderer(Box<dimensions>& box, ResourceKey options, typename SceneGraph::AbstractObject<dimensions>::ObjectType* parent): AbstractDebugRenderer<dimensions>(BoxMesh<dimensions>::shader, BoxMesh<dimensions>::key, options, parent), buffer(DebugDrawResourceManager::instance()->get<Buffer>(BoxMesh<dimensions>::key)), box(box) {
+    if(!this->mesh) {
+        DebugDrawResourceManager::instance()->set(this->buffer.key(), new Buffer, ResourceDataState::Final, ResourcePolicy::Manual);
+        DebugDrawResourceManager::instance()->set<Mesh>(this->mesh.key(), BoxMesh<dimensions>::mesh(buffer), ResourceDataState::Final, ResourcePolicy::Manual);
+    }
 }
 
 template<std::uint8_t dimensions> void BoxRenderer<dimensions>::draw(const typename DimensionTraits<dimensions, GLfloat>::MatrixType&, typename SceneGraph::AbstractObject<dimensions>::CameraType* camera) {
