@@ -37,7 +37,7 @@ template<std::uint8_t dimensions> class SCENEGRAPH_EXPORT Scene: public Abstract
         #ifndef DOXYGEN_GENERATING_OUTPUT
         void setParent(typename AbstractObject<dimensions>::ObjectType* parent) = delete;
         void setTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) = delete;
-        void multiplyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation, typename AbstractObject<dimensions>::Transformation type = DimensionTraits<dimensions, GLfloat>::Transformation::Global) = delete;
+        void multiplyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation, typename AbstractObject<dimensions>::Transformation type = (DimensionTraits<dimensions, GLfloat>::Transformation::Global)) = delete;
         void translate(const typename DimensionTraits<dimensions, GLfloat>::VectorType& vec, typename AbstractObject<dimensions>::Transformation type = AbstractObject<dimensions>::Transformation::Global) = delete;
         void scale(const typename DimensionTraits<dimensions, GLfloat>::VectorType& vec, typename AbstractObject<dimensions>::Transformation type = AbstractObject<dimensions>::Transformation::Global) = delete;
         void rotate(GLfloat angle, const typename DimensionTraits<dimensions, GLfloat>::VectorType& vec, typename AbstractObject<dimensions>::Transformation type = AbstractObject<dimensions>::Transformation::Global) = delete;
