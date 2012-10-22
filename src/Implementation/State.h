@@ -20,6 +20,7 @@
 namespace Magnum { namespace Implementation {
 
 struct BufferState;
+struct MeshState;
 struct ShaderProgramState;
 struct TextureState;
 
@@ -28,6 +29,7 @@ struct State {
     ~State();
 
     BufferState* const buffer;
+    MeshState* const mesh;
     ShaderProgramState* const shaderProgram;
     TextureState* const texture;
 };

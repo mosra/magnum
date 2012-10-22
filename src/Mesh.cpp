@@ -20,6 +20,8 @@
 #include "Buffer.h"
 #include "Context.h"
 #include "Extensions.h"
+#include "Implementation/MeshState.h"
+#include "Implementation/State.h"
 
 using namespace std;
 
@@ -30,6 +32,14 @@ Mesh::DestroyImplementation Mesh::destroyImplementation = &Mesh::destroyImplemen
 Mesh::BindAttributeImplementation Mesh::bindAttributeImplementation = &Mesh::bindAttributeImplementationDefault;
 Mesh::BindImplementation Mesh::bindImplementation = &Mesh::bindImplementationDefault;
 Mesh::UnbindImplementation Mesh::unbindImplementation = &Mesh::unbindImplementationDefault;
+
+Mesh::~Mesh() {
+    /* Remove current vao from the state */
+    GLuint& current = Context::current()->state()->mesh->currentVAO;
+    if(current == vao) current = 0;
+
+    (this->*destroyImplementation)();
+}
 
 Mesh::Mesh(Mesh&& other): vao(other.vao), _primitive(other._primitive), _vertexCount(other._vertexCount), attributes(other.attributes) {
     other.vao = 0;
@@ -55,6 +65,11 @@ void Mesh::draw() {
     glDrawArrays(static_cast<GLenum>(_primitive), 0, _vertexCount);
 
     unbind();
+}
+
+void Mesh::bindVAO(GLuint vao) {
+    GLuint& current = Context::current()->state()->mesh->currentVAO;
+    if(current != vao) glBindVertexArray(current = vao);
 }
 
 void Mesh::bind() {
@@ -125,7 +140,7 @@ void Mesh::bindAttributeImplementationDefault(const Attribute&) {}
 
 #ifndef MAGNUM_TARGET_GLES
 void Mesh::bindAttributeImplementationVAO(const Attribute& attribute) {
-    glBindVertexArray(vao);
+    bindVAO(vao);
     vertexAttribPointer(attribute);
 }
 #endif
@@ -137,7 +152,7 @@ void Mesh::bindImplementationDefault() {
 
 #ifndef MAGNUM_TARGET_GLES
 void Mesh::bindImplementationVAO() {
-    glBindVertexArray(vao);
+    bindVAO(vao);
 }
 #endif
 
@@ -148,7 +163,7 @@ void Mesh::unbindImplementationDefault() {
 
 #ifndef MAGNUM_TARGET_GLES
 void Mesh::unbindImplementationVAO() {
-    glBindVertexArray(0);
+    bindVAO(0);
 }
 #endif
 

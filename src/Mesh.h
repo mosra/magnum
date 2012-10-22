@@ -81,7 +81,8 @@ Basic workflow is to set up respective shader (see @ref AbstractShaderProgram-re
 
 If @extension{APPLE,vertex_array_object} is supported, VAOs are used instead
 of binding the buffers and specifying vertex attribute pointers in each
-draw() call.
+draw() call. The engine tracks currently bound VAO to avoid unnecessary calls
+to @fn_gl{BindVertexArray}.
 
 @requires_gl30 Extension @extension{EXT,gpu_shader4} (for unsigned integer attributes)
 
@@ -354,9 +355,7 @@ class MAGNUM_EXPORT Mesh {
          * @see @fn_gl{DeleteVertexArrays} (if
          *      @extension{APPLE,vertex_array_object} is available)
          */
-        inline virtual ~Mesh() {
-            (this->*destroyImplementation)();
-        }
+        virtual ~Mesh();
 
         /** @brief Move assignment */
         Mesh& operator=(Mesh&& other);
@@ -571,6 +570,8 @@ class MAGNUM_EXPORT Mesh {
 
         void MAGNUM_EXPORT addVertexAttribute(Buffer* buffer, GLuint location, GLint count, Type type, GLintptr offset, GLsizei stride);
 
+        static void MAGNUM_LOCAL bindVAO(GLuint vao);
+
         void MAGNUM_LOCAL bind();
 
         inline void unbind() {
@@ -591,7 +592,7 @@ class MAGNUM_EXPORT Mesh {
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL destroyImplementationVAO();
         #endif
-        static DestroyImplementation destroyImplementation;
+        static MAGNUM_LOCAL DestroyImplementation destroyImplementation;
 
         typedef void(Mesh::*BindAttributeImplementation)(const Attribute&);
         void MAGNUM_LOCAL bindAttributeImplementationDefault(const Attribute& attribute);

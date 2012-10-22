@@ -63,8 +63,7 @@ void IndexedMesh::bindIndexBufferImplementationDefault() {}
 
 #ifndef MAGNUM_TARGET_GLES
 void IndexedMesh::bindIndexBufferImplementationVAO() {
-    glBindVertexArray(vao);
-
+    bindVAO(vao);
     _indexBuffer->bind(Buffer::Target::ElementArray);
 }
 #endif

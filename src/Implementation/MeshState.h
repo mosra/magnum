@@ -1,3 +1,5 @@
+#ifndef Magnum_Implementation_MeshState_h
+#define Magnum_Implementation_MeshState_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -13,22 +15,16 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "State.h"
-
-#include "BufferState.h"
-#include "MeshState.h"
-#include "ShaderProgramState.h"
-#include "TextureState.h"
+#include "Magnum.h"
 
 namespace Magnum { namespace Implementation {
 
-State::State(): buffer(new BufferState), mesh(new MeshState), shaderProgram(new ShaderProgramState), texture(new TextureState) {}
+struct MeshState {
+    inline MeshState(): currentVAO(0) {}
 
-State::~State() {
-    delete texture;
-    delete shaderProgram;
-    delete mesh;
-    delete buffer;
-}
+    GLuint currentVAO;
+};
 
 }}
+
+#endif
