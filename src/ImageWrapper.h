@@ -80,11 +80,11 @@ template<std::uint8_t dimensions> class ImageWrapper: public AbstractImage {
         inline ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type): AbstractImage(components, type), _size(size), _data(nullptr) {}
 
         /** @brief %Image size */
-        inline constexpr typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
+        inline typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
 
         /** @brief Pointer to raw data */
         inline void* data() { return _data; }
-        inline constexpr const void* data() const { return _data; } /**< @overload */
+        inline const void* data() const { return _data; } /**< @overload */
 
         /**
          * @brief Set image data

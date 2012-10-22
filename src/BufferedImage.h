@@ -53,7 +53,7 @@ template<std::uint8_t dimensions> class BufferedImage: public AbstractImage {
         }
 
         /** @brief %Image size */
-        inline constexpr typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
+        inline typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
 
         /**
          * @brief Data
