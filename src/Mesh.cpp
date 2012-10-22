@@ -162,9 +162,7 @@ void Mesh::unbindImplementationDefault() {
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Mesh::unbindImplementationVAO() {
-    bindVAO(0);
-}
+void Mesh::unbindImplementationVAO() {}
 #endif
 
 }

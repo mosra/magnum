@@ -321,6 +321,8 @@ class MAGNUM_EXPORT Buffer {
          *
          * @todo Allow binding to Target::ElementArray only if VAO is bound
          *      to avoid potential issues?
+         * @bug Binding to ElementArray if any VAO is active will corrupt the mesh
+         * @todo Don't allow user to bind buffers?
          * @see @fn_gl{BindBuffer}
          */
         inline void bind(Target target) { bind(target, _id); }
