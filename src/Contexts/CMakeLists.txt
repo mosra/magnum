@@ -72,7 +72,7 @@ if(NEED_ABSTRACTXWINDOWCONTEXT)
     install(FILES AbstractXWindowContext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Contexts)
 endif()
 
-# GLX window context
+# GLX context
 if(NEED_GLXCONTEXT)
     add_library(MagnumGlxContextHandler OBJECT GlxContextHandler.cpp)
     # X11 macros are a mess, disable warnings for C-style casts

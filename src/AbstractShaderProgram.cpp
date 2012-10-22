@@ -72,8 +72,7 @@ AbstractShaderProgram::UniformMatrix4x3dvImplementation AbstractShaderProgram::u
 AbstractShaderProgram::~AbstractShaderProgram() {
     /* Remove current usage from the state */
     GLuint& current = Context::current()->state()->shaderProgram->current;
-    if(current == _id)
-        current = 0;
+    if(current == _id) current = 0;
 
     glDeleteProgram(_id);
 }
@@ -83,10 +82,7 @@ bool AbstractShaderProgram::use() {
 
     /* Use only if the program isn't already in use */
     GLuint& current = Context::current()->state()->shaderProgram->current;
-    if(current != _id) {
-        current = _id;
-        glUseProgram(_id);
-    }
+    if(current != _id) glUseProgram(current = _id);
     return true;
 }
 
