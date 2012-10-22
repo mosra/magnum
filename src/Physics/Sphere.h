@@ -92,11 +92,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Sphere: public AbstractSh
         float _radius, _transformedRadius;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-extern template class PHYSICS_EXPORT Sphere<2>;
-extern template class PHYSICS_EXPORT Sphere<3>;
-#endif
-
 /** @brief Two-dimensional sphere */
 typedef Sphere<2> Sphere2D;
 

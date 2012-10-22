@@ -61,11 +61,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Box: public AbstractShape
             _transformedTransformation;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-extern template class PHYSICS_EXPORT Box<2>;
-extern template class PHYSICS_EXPORT Box<3>;
-#endif
-
 /** @brief Two-dimensional box */
 typedef Box<2> Box2D;
 

@@ -73,11 +73,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT AxisAlignedBox: public Ab
             _size, _transformedSize;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-extern template class PHYSICS_EXPORT AxisAlignedBox<2>;
-extern template class PHYSICS_EXPORT AxisAlignedBox<3>;
-#endif
-
 /** @brief Two-dimensional axis-aligned box */
 typedef AxisAlignedBox<2> AxisAlignedBox2D;
 

@@ -59,11 +59,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Point: public AbstractSha
         Math::Vector<dimensions, GLfloat> _position, _transformedPosition;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-extern template class PHYSICS_EXPORT Point<2>;
-extern template class PHYSICS_EXPORT Point<3>;
-#endif
-
 /** @brief Two-dimensional point */
 typedef Point<2> Point2D;
 

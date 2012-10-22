@@ -100,11 +100,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Capsule: public AbstractS
         float _radius, _transformedRadius;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-extern template class PHYSICS_EXPORT Capsule<2>;
-extern template class PHYSICS_EXPORT Capsule<3>;
-#endif
-
 /** @brief Two-dimensional capsule */
 typedef Capsule<2> Capsule2D;
 

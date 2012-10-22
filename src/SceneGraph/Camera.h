@@ -161,10 +161,6 @@ template<std::uint8_t dimensions> class SCENEGRAPH_EXPORT AbstractCamera: public
 template<std::uint8_t dimensions> inline AbstractCamera<dimensions>::~AbstractCamera() {}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-/* These templates are instantiated in source file */
-extern template class SCENEGRAPH_EXPORT AbstractCamera<2>;
-extern template class SCENEGRAPH_EXPORT AbstractCamera<3>;
-
 namespace Implementation {
     template<std::uint8_t dimensions> class Camera {};
 

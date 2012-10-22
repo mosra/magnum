@@ -79,11 +79,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapedObjectGroup {
         bool dirty;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-extern template class PHYSICS_EXPORT ShapedObjectGroup<2>;
-extern template class PHYSICS_EXPORT ShapedObjectGroup<3>;
-#endif
-
 /** @brief Group of two-dimensional shaped objects */
 typedef ShapedObjectGroup<2> ShapedObjectGroup2D;
 

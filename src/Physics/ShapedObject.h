@@ -86,11 +86,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapedObject: public Scen
         AbstractShape<dimensions>* _shape;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-extern template class PHYSICS_EXPORT ShapedObject<2>;
-extern template class PHYSICS_EXPORT ShapedObject<3>;
-#endif
-
 /** @brief Two-dimensional shaped object */
 typedef ShapedObject<2> ShapedObject2D;
 

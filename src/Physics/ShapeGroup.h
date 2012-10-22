@@ -129,11 +129,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapeGroup: public Abstra
         AbstractShape<dimensions>* b;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-extern template class PHYSICS_EXPORT ShapeGroup<2>;
-extern template class PHYSICS_EXPORT ShapeGroup<3>;
-#endif
-
 /** @brief Two-dimensional shape group */
 typedef ShapeGroup<2> ShapeGroup2D;
 

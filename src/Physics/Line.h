@@ -76,11 +76,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Line: public AbstractShap
             _b, _transformedB;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-extern template class PHYSICS_EXPORT Line<2>;
-extern template class PHYSICS_EXPORT Line<3>;
-#endif
-
 /** @brief Infinite two-dimensional line */
 typedef Line<2> Line2D;
 

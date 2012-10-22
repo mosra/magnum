@@ -118,11 +118,6 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT AbstractShape {
         virtual bool collides(const AbstractShape<dimensions>* other) const;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-extern template class PHYSICS_EXPORT AbstractShape<2>;
-extern template class PHYSICS_EXPORT AbstractShape<3>;
-#endif
-
 /** @brief Abstract two-dimensional shape */
 typedef AbstractShape<2> AbstractShape2D;
 

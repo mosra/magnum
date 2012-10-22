@@ -36,7 +36,7 @@ Trade::ImageData.
 @see BufferedImage1D, BufferedImage2D, BufferedImage3D, Buffer
 @requires_gles30 (no extension providing this functionality)
 */
-template<std::uint8_t dimensions> class BufferedImage: public AbstractImage {
+template<std::uint8_t dimensions> class MAGNUM_EXPORT BufferedImage: public AbstractImage {
     public:
         const static std::uint8_t Dimensions = dimensions; /**< @brief %Image dimension count */
 
@@ -108,12 +108,6 @@ template<std::uint8_t dimensions> class BufferedImage: public AbstractImage {
         Math::Vector<Dimensions, GLsizei> _size;    /**< @brief %Image size */
         Buffer _buffer;                             /**< @brief %Image buffer */
 };
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-extern template class MAGNUM_EXPORT BufferedImage<1>;
-extern template class MAGNUM_EXPORT BufferedImage<2>;
-extern template class MAGNUM_EXPORT BufferedImage<3>;
-#endif
 
 /** @brief One-dimensional buffered image */
 typedef BufferedImage<1> BufferedImage1D;

@@ -312,12 +312,6 @@ template<std::uint8_t dimensions> inline AbstractObject<dimensions>::~AbstractOb
 template<std::uint8_t dimensions> inline void AbstractObject<dimensions>::draw(const typename DimensionTraits<dimensions, GLfloat>::MatrixType&, CameraType*) {}
 template<std::uint8_t dimensions> inline void AbstractObject<dimensions>::clean(const typename DimensionTraits<dimensions, GLfloat>::MatrixType&) { dirty = false; }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-/* These templates are instantiated in source file */
-extern template class SCENEGRAPH_EXPORT AbstractObject<2>;
-extern template class SCENEGRAPH_EXPORT AbstractObject<3>;
-#endif
-
 /**
 @brief Two-dimensional object
 
