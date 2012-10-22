@@ -237,6 +237,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @todo Support for BGRA attribute type (OpenGL 3.2, @extension{ARB,vertex_array_bgra})
          */
         template<GLuint i, class T> struct Attribute {
+            inline constexpr Attribute() = default;
+
             static const GLuint Location = i;   /**< Location to which the attribute is bound */
             typedef T Type;                     /**< %Attribute type */
         };
