@@ -39,8 +39,12 @@ namespace Physics { namespace Implementation {
     template<std::uint8_t> class AbstractDebugRenderer;
 }}
 
+#ifndef WIN32
 extern template class PHYSICS_EXPORT ResourceManager<AbstractShaderProgram, Buffer, Mesh, Physics::Implementation::Options>;
 #endif
+#endif
+
+/** @todo fix extern template multiple definition linker errors in mingw32-gcc */
 
 namespace SceneGraph {
     class Object2D;
