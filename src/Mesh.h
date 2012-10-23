@@ -36,9 +36,10 @@ class Context;
 
 To properly configure mesh, you have to set primitive either in constructor or
 using setPrimitive() and call setVertexCount(). Then create vertex buffers,
-fill them with vertex data and assign them to mesh and given shader locations
-using addVertexBuffer() or addInterleavedVertexBuffer(). You can also use
-MeshTools::interleave() to conveniently set vertex count and buffer data.
+and them with vertex data. You can also use MeshTools::interleave() to
+conveniently set vertex count and buffer data. At last assign them to mesh and
+given shader locations using addVertexBuffer(), addInterleavedVertexBuffer()
+or addVertexBufferStride().
 
 Note that the buffer is not managed (e.g. deleted on destruction) by the mesh,
 so you have to manage it on your own. On the other hand it allows you to use
@@ -83,6 +84,12 @@ If @extension{APPLE,vertex_array_object} is supported, VAOs are used instead
 of binding the buffers and specifying vertex attribute pointers in each
 draw() call. The engine tracks currently bound VAO to avoid unnecessary calls
 to @fn_gl{BindVertexArray}.
+
+If extension @extension{EXT,direct_state_access} and VAOs are available,
+DSA functions are used for specifying attribute locations to avoid unnecessary
+calls to @fn_gl{BindBuffer} and @fn_gl{BindVertexArray}. See documentation of
+addVertexBuffer(), addInterleavedVertexBuffer(), addVertexBufferStride() for
+more information.
 
 @requires_gl30 Extension @extension{EXT,gpu_shader4} (for unsigned integer attributes)
 
@@ -428,10 +435,12 @@ class MAGNUM_EXPORT Mesh {
          *      mesh, you must ensure it will exist for whole lifetime of the
          *      mesh and delete it afterwards.
          *
-         * @see addInterleavedVertexBuffer(), @fn_gl{BindVertexArray},
-         *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
-         *      @fn_gl{VertexAttribPointer} (if
-         *      @extension{APPLE,vertex_array_object} is available)
+         * @see addInterleavedVertexBuffer(), addVertexBufferStride(),
+         *      @fn_gl{BindVertexArray}, @fn_gl{EnableVertexAttribArray},
+         *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer} or
+         *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
+         *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access}
+         *      if @extension{APPLE,vertex_array_object} is available
          */
         template<class ...T> inline Mesh* addVertexBuffer(Buffer* buffer, const T&... attributes) {
             addVertexBufferInternal(buffer, 0, attributes...);
@@ -490,8 +499,10 @@ class MAGNUM_EXPORT Mesh {
          *
          * @see addVertexBufferStride(), addVertexBuffer(),
          *      @fn_gl{BindVertexArray}, @fn_gl{EnableVertexAttribArray},
-         *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer} (if
-         *      @extension{APPLE,vertex_array_object} is available)
+         *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer} or
+         *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
+         *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access}
+         *      if @extension{APPLE,vertex_array_object} is available
          */
         template<class ...T> inline Mesh* addInterleavedVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes) {
             addInterleavedVertexBufferInternal(buffer, offset, strideOfInterleaved(attributes...), attributes...);
@@ -598,6 +609,7 @@ class MAGNUM_EXPORT Mesh {
         void MAGNUM_LOCAL bindAttributeImplementationDefault(const Attribute& attribute);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL bindAttributeImplementationVAO(const Attribute& attribute);
+        void MAGNUM_LOCAL bindAttributeImplementationDSA(const Attribute& attribute);
         #endif
         static MAGNUM_LOCAL BindAttributeImplementation bindAttributeImplementation;
 

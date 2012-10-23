@@ -113,7 +113,12 @@ void Mesh::initializeContextBasedFunctionality(Context* context) {
 
         createImplementation = &Mesh::createImplementationVAO;
         destroyImplementation = &Mesh::destroyImplementationVAO;
-        bindAttributeImplementation = &Mesh::bindAttributeImplementationVAO;
+
+        if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+            Debug() << "Mesg: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
+            bindAttributeImplementation = &Mesh::bindAttributeImplementationDSA;
+        } else bindAttributeImplementation = &Mesh::bindAttributeImplementationVAO;
+
         bindImplementation = &Mesh::bindImplementationVAO;
         unbindImplementation = &Mesh::unbindImplementationVAO;
         #endif
@@ -142,6 +147,16 @@ void Mesh::bindAttributeImplementationDefault(const Attribute&) {}
 void Mesh::bindAttributeImplementationVAO(const Attribute& attribute) {
     bindVAO(vao);
     vertexAttribPointer(attribute);
+}
+void Mesh::bindAttributeImplementationDSA(const Attribute& attribute) {
+    glEnableVertexArrayAttribEXT(vao, attribute.location);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(TypeInfo::isIntegral(attribute.type))
+        glVertexArrayVertexAttribIOffsetEXT(vao, attribute.buffer->id(), attribute.location, attribute.count, static_cast<GLenum>(attribute.type), attribute.stride, attribute.offset);
+    else
+    #endif
+        glVertexArrayVertexAttribOffsetEXT(vao, attribute.buffer->id(), attribute.location, attribute.count, static_cast<GLenum>(attribute.type), GL_FALSE, attribute.stride, attribute.offset);
 }
 #endif
 
