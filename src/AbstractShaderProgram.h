@@ -100,8 +100,8 @@ The preferred workflow is to specify attribute location for vertex shader
 input attributes and fragment shader output attributes explicitly in the
 shader code, e.g.:
 @code
-#version 330
-// or #extension GL_ARB_explicit_attrib_location: enable
+// GLSL 3.30, or
+#extension GL_ARB_explicit_attrib_location: enable
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 textureCoordinates;
@@ -147,8 +147,8 @@ bindFragmentDataLocationIndexed(1, 1, "ambient");
 The preferred workflow is to specify uniform locations directly in the shader
 code, e.g.:
 @code
-#version 430
-// or #extension GL_ARB_explicit_uniform_location: enable
+// GLSL 4.30, or
+#extension GL_ARB_explicit_uniform_location: enable
 layout(location = 0) uniform mat4 transformation;
 layout(location = 1) uniform mat4 projection;
 @endcode
@@ -168,8 +168,8 @@ GLint projectionUniform = uniformLocation("projection");
 The preferred workflow is to specify texture layers directly in the shader
 code, e.g.:
 @code
-#version 420
-// or #extension GL_ARB_shading_language_420pack: enable
+// GLSL 4.20, or
+#extension GL_ARB_shading_language_420pack: enable
 layout(binding = 0) uniform sampler2D diffuseTexture;
 layout(binding = 1) uniform sampler2D specularTexture;
 @endcode
@@ -181,7 +181,6 @@ layout(binding = 1) uniform sampler2D specularTexture;
 If you don't have the required extension (or if you want to change the layer
 later), you can set the texture layer uniform using setUniform(GLint, GLint):
 @code
-use();
 setUniform(DiffuseTextureUniform, DiffuseTextureLayer);
 setUniform(SpecularTextureUniform, SpecularTextureLayer);
 @endcode
