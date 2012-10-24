@@ -24,6 +24,7 @@ supported on Intel GPUs even if they are capable of OpenGL 2.1 only).
 - @subpage requires-extension
 - @subpage requires-gles30
 - @subpage requires-es-extension
+- @subpage unsupported
 
 @page requires-gl Functionality requiring desktop OpenGL (not available on OpenGL ES)
 @page requires-gl30 Functionality requiring OpenGL 3.0

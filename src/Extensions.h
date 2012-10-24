@@ -127,11 +127,14 @@ namespace GL {
         _extension(GL,EXT,transform_feedback,           GL210, GL300) // #352
         _extension(GL,EXT,direct_state_access,          GL210,  None) // #353
         _extension(GL,EXT,texture_snorm,                GL300, GL310) // #365
+    } namespace INTEL {
+        /* INTEL_map_texture not supported */                         // #429
     } namespace NV {
         _extension(GL,NV,half_float,                    GL210, GL300) // #283
         _extension(GL,NV,primitive_restart,             GL210, GL310) // #285
         _extension(GL,NV,depth_buffer_float,            GL210, GL300) // #334
         _extension(GL,NV,conditional_render,            GL210, GL300) // #346
+        /* NV_draw_texture not supported */                           // #430
     }
 }
 #undef _extension

@@ -97,7 +97,6 @@ more information.
 @todo Support for normalized values (e.g. for color as char[4] passed to
      shader as floating-point vec4)
 @todo Support for packed unsigned integer types for attributes (OpenGL 3.3, @extension{ARB,vertex_type_2_10_10_10_rev})
-@todo Support for fixed precision type for attributes (OpenGL 4.1, @extension{ARB,ES2_compatibility})
 @todo Support for double type for attributes (OpenGL 4.1, @extension{ARB,vertex_attrib_64bit})
 @todo Support for indirect draw buffer (OpenGL 4.0, @extension{ARB,draw_indirect})
 @todo Redo in a way that allows glMultiDrawArrays, glDrawArraysInstanced etc.
