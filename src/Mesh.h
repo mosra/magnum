@@ -93,6 +93,7 @@ more information.
 
 @requires_gl30 Extension @extension{EXT,gpu_shader4} (for unsigned integer attributes)
 
+@todo The attributes can be specified with different type than in shader - how?
 @todo Support for normalized values (e.g. for color as char[4] passed to
      shader as floating-point vec4)
 @todo Support for packed unsigned integer types for attributes (OpenGL 3.3, @extension{ARB,vertex_type_2_10_10_10_rev})
