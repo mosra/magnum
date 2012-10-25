@@ -231,7 +231,7 @@ template<> struct TypeTraits<GLdouble>: public Math::MathTypeTraits<double> {
 };
 #endif
 
-template<class T, std::size_t vectorSize> struct TypeTraits<Math::Vector<vectorSize, T>> {
+template<std::size_t vectorSize, class T> struct TypeTraits<Math::Vector<vectorSize, T>> {
     inline constexpr static Type type() { return TypeTraits<T>::type(); }
     /* Can not be used for indices */
     /* Can not be used for images */
@@ -247,7 +247,7 @@ template<class T> struct TypeTraits<Math::Point3D<T>>: public TypeTraits<Math::V
 template<class T> struct TypeTraits<Color3<T>>: public TypeTraits<Math::Vector<3, T>> {};
 template<class T> struct TypeTraits<Color4<T>>: public TypeTraits<Math::Vector<4, T>> {};
 
-template<class T, std::size_t matrixSize> struct TypeTraits<Math::Matrix<matrixSize, T>> {
+template<std::size_t matrixSize, class T> struct TypeTraits<Math::Matrix<matrixSize, T>> {
     inline constexpr static Type type() { return TypeTraits<T>::type(); }
     /* Can not be used for indices */
     /* Can not be used for images */
