@@ -101,7 +101,8 @@ void Mesh::vertexAttribPointer(const Mesh::Attribute& attribute) {
     #ifndef MAGNUM_TARGET_GLES
     if(TypeInfo::isIntegral(attribute.type))
         glVertexAttribIPointer(attribute.location, attribute.count, static_cast<GLenum>(attribute.type), attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
-    else
+    else if(attribute.type == Type::Double)
+        glVertexAttribLPointer(attribute.location, attribute.count, static_cast<GLenum>(attribute.type), attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
     #endif
         glVertexAttribPointer(attribute.location, attribute.count, static_cast<GLenum>(attribute.type), GL_FALSE, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
 }
@@ -154,7 +155,8 @@ void Mesh::bindAttributeImplementationDSA(const Attribute& attribute) {
     #ifndef MAGNUM_TARGET_GLES
     if(TypeInfo::isIntegral(attribute.type))
         glVertexArrayVertexAttribIOffsetEXT(vao, attribute.buffer->id(), attribute.location, attribute.count, static_cast<GLenum>(attribute.type), attribute.stride, attribute.offset);
-    else
+    else if(attribute.type == Type::Double)
+        glVertexArrayVertexAttribLOffsetEXT(vao, attribute.buffer->id(), attribute.location, attribute.count, static_cast<GLenum>(attribute.type), attribute.stride, attribute.offset);
     #endif
         glVertexArrayVertexAttribOffsetEXT(vao, attribute.buffer->id(), attribute.location, attribute.count, static_cast<GLenum>(attribute.type), GL_FALSE, attribute.stride, attribute.offset);
 }

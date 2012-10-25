@@ -91,13 +91,16 @@ calls to @fn_gl{BindBuffer} and @fn_gl{BindVertexArray}. See documentation of
 addVertexBuffer(), addInterleavedVertexBuffer(), addVertexBufferStride() for
 more information.
 
-@requires_gl30 Extension @extension{EXT,gpu_shader4} (for unsigned integer attributes)
+@requires_gles30 Integer attributes are not supported in OpenGL ES 2.0.
+@requires_gl30 %Extension @extension{EXT,gpu_shader4} (for integer attributes)
+
+@requires_gl Double attributes are supported only on Desktop OpenGL.
+@requires_gl41 %Extension @extension{ARB,vertex_attrib_64bit} (for double attributes)
 
 @todo The attributes can be specified with different type than in shader - how?
 @todo Support for normalized values (e.g. for color as char[4] passed to
      shader as floating-point vec4)
 @todo Support for packed unsigned integer types for attributes (OpenGL 3.3, @extension{ARB,vertex_type_2_10_10_10_rev})
-@todo Support for double type for attributes (OpenGL 4.1, @extension{ARB,vertex_attrib_64bit})
 @todo Support for indirect draw buffer (OpenGL 4.0, @extension{ARB,draw_indirect})
 @todo Redo in a way that allows glMultiDrawArrays, glDrawArraysInstanced etc.
  */
