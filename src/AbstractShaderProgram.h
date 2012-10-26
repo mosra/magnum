@@ -203,6 +203,53 @@ specularTexture->bind(MyShader::SpecularTextureLayer);
 mesh.draw();
 @endcode
 
+@section AbstractShaderProgram-types Mapping between GLSL and Magnum types
+
+- `vec2`, `vec3` and `vec4` is @ref Math::Vector "Math::Vector<2, GLfloat>",
+  @ref Math::Vector "Math::Vector<3, GLfloat>" and
+  @ref Math::Vector "Math::Vector<4, GLfloat>".
+
+- `mat2`, `mat3` and `mat4` is @ref Math::Matrix "Math::Matrix<2, GLfloat>",
+  @ref Math::Matrix "Math::Matrix<3, GLfloat>" and
+  @ref Math::Matrix "Math::Matrix<4, GLfloat>".
+
+- `mat2x3`, `mat3x2`, `mat2x4`, `mat4x2`, `mat3x4`, `mat4x3` is
+  @ref Math::RectangularMatrix "Math::RectangularMatrix<2, 3, GLfloat>",
+  @ref Math::RectangularMatrix "Math::RectangularMatrix<3, 2, GLfloat>",
+  @ref Math::RectangularMatrix "Math::RectangularMatrix<2, 4, GLfloat>",
+  @ref Math::RectangularMatrix "Math::RectangularMatrix<4, 2, GLfloat>",
+  @ref Math::RectangularMatrix "Math::RectangularMatrix<3, 4, GLfloat>" and
+  @ref Math::RectangularMatrix "Math::RectangularMatrix<4, 3, GLfloat>".
+
+- `ivec2`, `ivec3` and `ivec4` is @ref Math::Vector "Math::Vector<2, GLint>",
+  @ref Math::Vector "Math::Vector<3, GLint>" and
+  @ref Math::Vector "Math::Vector<4, GLint>", `uvec2`, `uvec3` and `uvec4` is
+  @ref Math::Vector "Math::Vector<2, GLuint>",
+  @ref Math::Vector "Math::Vector<3, GLuint>" and
+  @ref Math::Vector "Math::Vector<4, GLuint>".
+  @requires_gl30 %Extension @extension{EXT,gpu_shader4} (for integer attributes)
+  @requires_gles30 Integer attributes are not supported in OpenGL ES 2.0.
+
+- `dvec2`, `dvec3` and `dvec4` is @ref Math::Vector "Math::Vector<2, GLdouble>",
+  @ref Math::Vector "Math::Vector<3, GLdouble>" and
+  @ref Math::Vector "Math::Vector<4, GLdouble>", `dmat2`, `dmat3` and `dmat4`
+  is @ref Math::Matrix "Math::Matrix<2, GLdouble>",
+  @ref Math::Matrix "Math::Matrix<3, GLdouble>" and
+  @ref Math::Matrix "Math::Matrix<4, GLdouble>", `dmat2x3`, `dmat3x2`,
+  `dmat2x4`, `dmat4x2`, `dmat3x4`, `dmat4x3` is
+  @ref Math::RectangularMatrix "Math::RectangularMatrix<2, 3, GLdouble>",
+  @ref Math::RectangularMatrix "Math::RectangularMatrix<3, 2, GLdouble>",
+  @ref Math::RectangularMatrix "Math::RectangularMatrix<2, 4, GLdouble>",
+  @ref Math::RectangularMatrix "Math::RectangularMatrix<4, 2, GLdouble>",
+  @ref Math::RectangularMatrix "Math::RectangularMatrix<3, 4, GLdouble>" and
+  @ref Math::RectangularMatrix "Math::RectangularMatrix<4, 3, GLdouble>".
+  @requires_gl41 %Extension @extension{ARB,vertex_attrib_64bit} (for double attributes)
+  @requires_gl Double attributes are supported only on desktop OpenGL.
+
+Only types listed here (and their subclasses and specializations, such as
+@ref Matrix3 or Color4) can be used for setting uniforms and specifying
+vertex attributes. See also TypeTraits::AttributeType.
+
 @section AbstractShaderProgram-performance-optimization Performance optimizations
 
 The engine tracks currently used shader program to avoid unnecessary calls to
