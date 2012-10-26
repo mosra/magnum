@@ -22,9 +22,6 @@
 
 namespace Magnum { namespace Shaders {
 
-const PhongShader::Attribute<0, Point3D> PhongShader::Position;
-const PhongShader::Attribute<1, Vector3> PhongShader::Normal;
-
 PhongShader::PhongShader() {
     Corrade::Utility::Resource rs("MagnumShaders");
     Version v = Context::current()->isVersionSupported(Version::GL320) ? Version::GL320 : Version::GL210;
@@ -32,8 +29,8 @@ PhongShader::PhongShader() {
     attachShader(Shader::fromData(v, Shader::Type::Fragment, rs.get("PhongShader.frag")));
 
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>()) {
-        bindAttributeLocation(Position.Location, "position");
-        bindAttributeLocation(Normal.Location, "normal");
+        bindAttributeLocation(Position::Location, "position");
+        bindAttributeLocation(Normal::Location, "normal");
     }
 
     link();

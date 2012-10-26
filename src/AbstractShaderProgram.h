@@ -21,8 +21,10 @@
 
 #include <cstdint>
 #include <string>
+#include <Containers/EnumSet.h>
 
 #include "Magnum.h"
+#include "TypeTraits.h"
 
 #include "magnumVisibility.h"
 
@@ -37,8 +39,14 @@ namespace Math {
 class Context;
 class Shader;
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
+    template<class> struct Attribute;
+}
+#endif
+
 /**
-@brief Base class for shaders
+@brief Base class for shader program implementations
 
 @section AbstractShaderProgram-subclassing Subclassing workflow
 
@@ -277,16 +285,146 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         /**
          * @brief Base struct for attribute location and type
          *
-         * See @ref AbstractShaderProgram-subclassing or Mesh::bindAttribute()
-         * for an example.
+         * Template parameter @p T is the type which is used for shader
+         * attribute, e.g. @ref Math::Vector4 "Vector4<GLint>" for `ivec4`.
+         * DataType is type of passed data when adding vertex buffers to mesh.
+         * By default it is the same as type used in shader (e.g.
+         * @ref DataType "DataType::Int" for @ref Math::Vector4 "Vector4<GLint>").
+         * It's also possible to pass integer data to floating-point shader
+         * inputs. In this case you may want to normalize the values (e.g.
+         * color components from 0-255 to 0.0f-1.0f) - see
+         * @ref DataOption "DataOption::Normalize".
          *
-         * @todo Support for BGRA attribute type (OpenGL 3.2, @extension{ARB,vertex_array_bgra})
+         * Only some types are allowed as attribute types, see
+         * @ref AbstractShaderProgram-types or TypeTraits::AttributeType for
+         * more information.
+         *
+         * See @ref AbstractShaderProgram-subclassing for example usage in
+         * shaders and @ref Mesh-configuration for example usage when adding
+         * vertex buffers to mesh.
          */
-        template<GLuint i, class T> struct Attribute {
-            inline constexpr Attribute() = default;
+        template<GLuint i, class T> class Attribute {
+            public:
+                /** @brief Location to which the attribute is bound */
+                static const GLuint Location = i;
 
-            static const GLuint Location = i;   /**< Location to which the attribute is bound */
-            typedef T Type;                     /**< %Attribute type */
+                /**
+                 * @brief Type
+                 *
+                 * Type used in shader code.
+                 * @see DataType
+                 */
+                typedef typename TypeTraits<T>::AttributeType Type;
+
+                /**
+                 * @brief Data type
+                 *
+                 * Type of data passed to shader.
+                 * @see Type, DataOptions, Attribute()
+                 */
+                #ifdef DOXYGEN_GENERATING_OUTPUT
+                enum class DataType: GLenum {
+                    UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte */
+                    Byte = GL_BYTE,                     /**< Byte */
+                    UnsignedShort = GL_UNSIGNED_SHORT,  /**< Unsigned short */
+                    Short = GL_SHORT,                   /**< Short */
+                    UnsignedInt = GL_UNSIGNED_INT,      /**< Unsigned int */
+                    Int = GL_INT,                       /**< Int */
+
+                    /**
+                     * Half float. Only for float attribute types.
+                     * @requires_gl30 %Extension @extension{NV,half_float}
+                     * @requires_gles30 %Extension @es_extension{OES,vertex_half_float}
+                     */
+                    Half = GL_HALF_FLOAT,
+
+                    /** Float. Only for float attribute types. */
+                    Float = GL_FLOAT,
+
+                    #ifndef MAGNUM_TARGET_GLES
+                    /**
+                     * Double. Only for float and double attribute types.
+                     * @requires_gl Only floats are available in OpenGL ES.
+                     */
+                    Double = GL_DOUBLE,
+                    #endif
+
+                    /* GL_FIXED not supported */
+
+                    /**
+                     * Unsigned 2.10.10.10 packed integer. Only for
+                     * four-component float vector attribute type.
+                     * @todo How about (incompatible) @es_extension{OES,vertex_type_10_10_10_2}?
+                     * @requires_gl33 %Extension @extension{ARB,vertex_type_2_10_10_10_rev}
+                     * @requires_gles30 (no extension providing this functionality)
+                     */
+                    UnsignedInt2101010REV = GL_UNSIGNED_INT_2_10_10_10_REV,
+
+                    /**
+                     * Signed 2.10.10.10 packed integer. Only for
+                     * four-component float vector attribute type.
+                     * @requires_gl33 %Extension @extension{ARB,vertex_type_2_10_10_10_rev}
+                     * @requires_gles30 (no extension providing this functionality)
+                     */
+                    Int2101010REV = GL_INT_2_10_10_10_REV
+                };
+                #else
+                typedef typename Implementation::Attribute<T>::DataType DataType;
+                #endif
+
+                /**
+                 * @brief Data option
+                 * @see DataOptions, Attribute()
+                 */
+                #ifdef DOXYGEN_GENERATING_OUTPUT
+                enum class DataOption: std::uint8_t {
+                    /**
+                     * Normalize integer components. Only for float attribute
+                     * types. Default is to not normalize.
+                     */
+                    Normalize = 1 << 0,
+
+                    /**
+                     * BGRA component ordering. Default is RGBA. Only for
+                     * four-component float vector attribute type.
+                     * @requires_gl32 %Extension @extension{ARB,vertex_array_bgra}
+                     * @requires_gl Only RGBA component ordering is available
+                     *      on OpenGL ES.
+                     */
+                    BGRA = 1 << 1
+                };
+                #else
+                typedef typename Implementation::Attribute<T>::DataOption DataOption;
+                #endif
+
+                /**
+                 * @brief Data options
+                 * @see Attribute()
+                 */
+                #ifdef DOXYGEN_GENERATING_OUTPUT
+                typedef typename Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
+                #else
+                typedef typename Implementation::Attribute<T>::DataOptions DataOptions;
+                #endif
+
+                /**
+                 * @brief Constructor
+                 * @param dataType      Type of passed data. Default is the
+                 *      same as type used in shader (e.g. DataType::Integer
+                 *      for Vector4<GLint>).
+                 * @param dataOptions   Data options. Default is no options.
+                 */
+                inline constexpr Attribute(DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _dataType(dataType), _dataOptions(dataOptions) {}
+
+                /** @brief Type of passed data */
+                inline constexpr DataType dataType() const { return _dataType; }
+
+                /** @brief Data options */
+                inline constexpr DataOptions dataOptions() const { return _dataOptions; }
+
+            private:
+                const DataType _dataType;
+                const DataOptions _dataOptions;
         };
 
         /**
@@ -876,6 +1014,172 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         GLuint _id;
         State state;
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
+
+template<class> struct Attribute {};
+
+template<> struct Attribute<GLfloat> {
+    enum class DataType: GLenum {
+        UnsignedByte = GL_UNSIGNED_BYTE,
+        Byte = GL_BYTE,
+        UnsignedShort = GL_UNSIGNED_SHORT,
+        Short = GL_SHORT,
+        UnsignedInt = GL_UNSIGNED_INT,
+        Int = GL_INT,
+        HalfFloat = GL_HALF_FLOAT,
+        Float = GL_FLOAT,
+        Double = GL_DOUBLE
+    };
+
+    enum class DataOption: std::uint8_t {
+        Normalized = 1 << 0
+    };
+
+    typedef Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
+
+    static const DataType DefaultDataType = DataType::Float;
+
+    inline constexpr static GLint size(DataOptions) { return 1; }
+    inline constexpr static std::size_t vectorCount() { return 1; }
+};
+
+CORRADE_ENUMSET_OPERATORS(Attribute<GLfloat>::DataOptions)
+
+template<size_t vectorSize> struct Attribute<Math::Vector<vectorSize, GLfloat>>: public Attribute<GLfloat> {
+    inline constexpr static GLint size(DataOptions) { return vectorSize; }
+    inline constexpr static std::size_t vectorCount() { return 1; }
+};
+
+template<size_t cols, size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, GLfloat>>: public Attribute<GLfloat> {
+    inline constexpr static GLint size(DataOptions) { return rows; }
+    inline constexpr static std::size_t vectorCount() { return cols; }
+};
+
+template<size_t matrixSize> struct Attribute<Math::Matrix<matrixSize, GLfloat>>: public Attribute<GLfloat> {
+    inline constexpr static GLint size(DataOptions) { return matrixSize; }
+    inline constexpr static std::size_t vectorCount() { return matrixSize; }
+};
+
+template<> struct Attribute<Math::Vector<4, GLfloat>> {
+    enum class DataType: GLenum {
+        UnsignedByte = GL_UNSIGNED_BYTE,
+        Byte = GL_BYTE,
+        UnsignedShort = GL_UNSIGNED_SHORT,
+        Short = GL_SHORT,
+        UnsignedInt = GL_UNSIGNED_INT,
+        Int = GL_INT,
+        Half = GL_HALF_FLOAT,
+        Float = GL_FLOAT,
+        Double = GL_DOUBLE,
+        UnsignedAlpha2RGB10 = GL_UNSIGNED_INT_2_10_10_10_REV,
+        Alpha2RGB10 = GL_INT_2_10_10_10_REV
+    };
+
+    enum class DataOption: std::uint8_t {
+        Normalized = 1 << 0,
+        BGRA = 2 << 0
+    };
+
+    typedef Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
+
+    static const DataType DefaultDataType = DataType::Float;
+
+    inline constexpr static GLint size(DataOptions options) {
+        return options & DataOption::BGRA ? GL_BGRA : 4;
+    }
+    inline constexpr static std::size_t vectorCount() { return 1; }
+};
+
+typedef Math::Vector<4, GLfloat> _Vector4;
+CORRADE_ENUMSET_OPERATORS(Attribute<_Vector4>::DataOptions)
+
+template<> struct Attribute<GLint> {
+    enum class DataType: GLenum {
+        UnsignedByte = GL_UNSIGNED_BYTE,
+        Byte = GL_BYTE,
+        UnsignedShort = GL_UNSIGNED_SHORT,
+        Short = GL_SHORT,
+        UnsignedInt = GL_UNSIGNED_INT,
+        Int = GL_INT
+    };
+
+    enum class DataOption: std::uint8_t {};
+
+    typedef Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
+
+    static const DataType DefaultDataType = DataType::Int;
+
+    inline constexpr static GLint size() { return 1; }
+};
+
+template<> struct Attribute<GLuint> {
+    typedef Attribute<GLint>::DataType DataType;
+    typedef Attribute<GLint>::DataOption DataOption;
+
+    typedef Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
+
+    static const DataType DefaultDataType = DataType::UnsignedInt;
+
+    inline constexpr static GLint size() { return 1; }
+};
+
+template<size_t size> struct Attribute<Math::Vector<size, GLint>>: public Attribute<GLint> {
+    inline constexpr static GLint size() { return size; }
+};
+
+template<size_t size> struct Attribute<Math::Vector<size, GLuint>>: public Attribute<GLuint> {
+    inline constexpr static GLint size() { return size; }
+};
+
+template<> struct Attribute<GLdouble> {
+    enum class DataType: GLenum {
+        Double = GL_DOUBLE
+    };
+
+    enum class DataOption: std::uint8_t {};
+
+    typedef Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
+
+    static const DataType DefaultDataType = DataType::Double;
+
+    inline constexpr static GLint size() { return 1; }
+    inline constexpr static std::size_t vectorCount() { return 1; }
+};
+
+template<size_t cols, size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, GLdouble>>: public Attribute<GLdouble> {
+    inline constexpr static GLint size() { return rows; }
+    inline constexpr static std::size_t vectorCount() { return cols; }
+};
+
+template<size_t size> struct Attribute<Math::Matrix<size, GLdouble>>: public Attribute<GLdouble> {
+    inline constexpr static GLint size() { return size; }
+    inline constexpr static std::size_t vectorCount() { return size; }
+};
+
+template<size_t size> struct Attribute<Math::Vector<size, GLdouble>>: public Attribute<GLdouble> {
+    inline constexpr static GLint size() { return size; }
+    inline constexpr static std::size_t vectorCount() { return size; }
+};
+
+template<class T> struct Attribute<Math::Vector2<T>>: public Attribute<Math::Vector<2, T>> {};
+template<class T> struct Attribute<Math::Vector3<T>>: public Attribute<Math::Vector<3, T>> {};
+template<class T> struct Attribute<Math::Vector4<T>>: public Attribute<Math::Vector<4, T>> {};
+
+template<class T> struct Attribute<Math::Point2D<T>>: public Attribute<Math::Vector3<T>> {};
+template<class T> struct Attribute<Math::Point3D<T>>: public Attribute<Math::Vector4<T>> {};
+
+template<class> class Color3;
+template<class> class Color4;
+template<class T> struct Attribute<Color3<T>>: public Attribute<Math::Vector3<T>> {};
+template<class T> struct Attribute<Color4<T>>: public Attribute<Math::Vector4<T>> {};
+
+template<class T> struct Attribute<Math::Matrix3<T>>: public Attribute<Math::Matrix<3, T>> {};
+template<class T> struct Attribute<Math::Matrix4<T>>: public Attribute<Math::Matrix<4, T>> {};
+
+}
+#endif
 
 }
 
