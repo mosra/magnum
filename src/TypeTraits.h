@@ -42,7 +42,7 @@ Where it makes sense, this class extends Math::MathTypeTraits with
 OpenGL-specific traits.
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T> struct TypeTraits: public Math::MathTypeTraits<T> {
+template<class T> struct TypeTraits: Math::MathTypeTraits<T> {
     /**
      * @brief Corresponding type for vertex attributes
      *
@@ -176,7 +176,7 @@ template<> struct TypeOf<Type::Float> { typedef GLfloat Type; };
 template<> struct TypeOf<Type::Double> { typedef GLdouble Type; };
 #endif
 
-template<> struct TypeTraits<GLubyte>: public Math::MathTypeTraits<std::uint8_t> {
+template<> struct TypeTraits<GLubyte>: Math::MathTypeTraits<std::uint8_t> {
     /* Can not be used for attributes */
     inline constexpr static Type type() { return Type::UnsignedByte; }
     inline constexpr static Type indexType() { return Type::UnsignedByte; }
@@ -185,7 +185,7 @@ template<> struct TypeTraits<GLubyte>: public Math::MathTypeTraits<std::uint8_t>
     inline constexpr static std::size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLbyte>: public Math::MathTypeTraits<std::int8_t> {
+template<> struct TypeTraits<GLbyte>: Math::MathTypeTraits<std::int8_t> {
     /* Can not be used for attributes */
     inline constexpr static Type type() { return Type::Byte; }
     /* Can not be used for indices */
@@ -194,7 +194,7 @@ template<> struct TypeTraits<GLbyte>: public Math::MathTypeTraits<std::int8_t> {
     inline constexpr static std::size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLushort>: public Math::MathTypeTraits<std::uint16_t> {
+template<> struct TypeTraits<GLushort>: Math::MathTypeTraits<std::uint16_t> {
     /* Can not be used for attributes */
     inline constexpr static Type type() { return Type::UnsignedShort; }
     inline constexpr static Type indexType() { return Type::UnsignedShort; }
@@ -203,7 +203,7 @@ template<> struct TypeTraits<GLushort>: public Math::MathTypeTraits<std::uint16_
     inline constexpr static std::size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLshort>: public Math::MathTypeTraits<std::int16_t> {
+template<> struct TypeTraits<GLshort>: Math::MathTypeTraits<std::int16_t> {
     /* Can not be used for attributes */
     inline constexpr static Type type() { return Type::Short; }
     /* Can not be used for indices */
@@ -212,7 +212,7 @@ template<> struct TypeTraits<GLshort>: public Math::MathTypeTraits<std::int16_t>
     inline constexpr static std::size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLuint>: public Math::MathTypeTraits<std::uint32_t> {
+template<> struct TypeTraits<GLuint>: Math::MathTypeTraits<std::uint32_t> {
     typedef GLuint AttributeType;
     inline constexpr static Type type() { return Type::UnsignedInt; }
     inline constexpr static Type indexType() { return Type::UnsignedInt; }
@@ -221,7 +221,7 @@ template<> struct TypeTraits<GLuint>: public Math::MathTypeTraits<std::uint32_t>
     inline constexpr static std::size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLint>: public Math::MathTypeTraits<std::int32_t> {
+template<> struct TypeTraits<GLint>: Math::MathTypeTraits<std::int32_t> {
     typedef GLint AttributeType;
     inline constexpr static Type type() { return Type::Int; }
     /* Can not be used for indices */
@@ -230,7 +230,7 @@ template<> struct TypeTraits<GLint>: public Math::MathTypeTraits<std::int32_t> {
     inline constexpr static std::size_t count() { return 1; }
 };
 
-template<> struct TypeTraits<GLfloat>: public Math::MathTypeTraits<float> {
+template<> struct TypeTraits<GLfloat>: Math::MathTypeTraits<float> {
     typedef GLfloat AttributeType;
     inline constexpr static Type type() { return Type::Float; }
     /* Can not be used for indices */
@@ -240,7 +240,7 @@ template<> struct TypeTraits<GLfloat>: public Math::MathTypeTraits<float> {
 };
 
 #ifndef MAGNUM_TARGET_GLES
-template<> struct TypeTraits<GLdouble>: public Math::MathTypeTraits<double> {
+template<> struct TypeTraits<GLdouble>: Math::MathTypeTraits<double> {
     typedef GLdouble AttributeType;
     inline constexpr static Type type() { return Type::Double; }
     /* Can not be used for indices */
@@ -282,7 +282,7 @@ namespace Implementation {
     #endif
 }
 
-template<std::size_t vectorSize, class T> struct TypeTraits<Math::Vector<vectorSize, T>>: public Implementation::VectorTypeTraits<vectorSize, T> {};
+template<std::size_t vectorSize, class T> struct TypeTraits<Math::Vector<vectorSize, T>>: Implementation::VectorTypeTraits<vectorSize, T> {};
 
 /* Only some vectors can be used as attributes */
 template<class T> struct TypeTraits<Math::Vector<1, T>>: Implementation::VectorTypeTraits<1, T>, Implementation::VectorAttributeType<T> {};
@@ -290,13 +290,13 @@ template<class T> struct TypeTraits<Math::Vector<2, T>>: Implementation::VectorT
 template<class T> struct TypeTraits<Math::Vector<3, T>>: Implementation::VectorTypeTraits<3, T>, Implementation::VectorAttributeType<T> {};
 template<class T> struct TypeTraits<Math::Vector<4, T>>: Implementation::VectorTypeTraits<4, T>, Implementation::VectorAttributeType<T> {};
 
-template<class T> struct TypeTraits<Math::Vector2<T>>: public TypeTraits<Math::Vector<2, T>> {};
-template<class T> struct TypeTraits<Math::Vector3<T>>: public TypeTraits<Math::Vector<3, T>> {};
-template<class T> struct TypeTraits<Math::Vector4<T>>: public TypeTraits<Math::Vector<4, T>> {};
-template<class T> struct TypeTraits<Math::Point2D<T>>: public TypeTraits<Math::Vector<3, T>> {};
-template<class T> struct TypeTraits<Math::Point3D<T>>: public TypeTraits<Math::Vector<4, T>> {};
-template<class T> struct TypeTraits<Color3<T>>: public TypeTraits<Math::Vector<3, T>> {};
-template<class T> struct TypeTraits<Color4<T>>: public TypeTraits<Math::Vector<4, T>> {};
+template<class T> struct TypeTraits<Math::Vector2<T>>: TypeTraits<Math::Vector<2, T>> {};
+template<class T> struct TypeTraits<Math::Vector3<T>>: TypeTraits<Math::Vector<3, T>> {};
+template<class T> struct TypeTraits<Math::Vector4<T>>: TypeTraits<Math::Vector<4, T>> {};
+template<class T> struct TypeTraits<Math::Point2D<T>>: TypeTraits<Math::Vector<3, T>> {};
+template<class T> struct TypeTraits<Math::Point3D<T>>: TypeTraits<Math::Vector<4, T>> {};
+template<class T> struct TypeTraits<Color3<T>>: TypeTraits<Math::Vector<3, T>> {};
+template<class T> struct TypeTraits<Color4<T>>: TypeTraits<Math::Vector<4, T>> {};
 
 namespace Implementation {
     template<std::size_t cols, std::size_t rows, class T> struct MatrixTypeTraits {
@@ -322,7 +322,7 @@ namespace Implementation {
     #endif
 }
 
-template<std::size_t cols, std::size_t rows, class T> struct TypeTraits<Math::RectangularMatrix<cols, rows, T>>: public Implementation::MatrixTypeTraits<cols, rows, T> {};
+template<std::size_t cols, std::size_t rows, class T> struct TypeTraits<Math::RectangularMatrix<cols, rows, T>>: Implementation::MatrixTypeTraits<cols, rows, T> {};
 
 /* Only some floating-point matrices can be used as attributes */
 template<class T> struct TypeTraits<Math::RectangularMatrix<2, 2, T>>: Implementation::MatrixTypeTraits<2, 2, T>, Implementation::MatrixAttributeType<T> {};
@@ -337,8 +337,8 @@ template<class T> struct TypeTraits<Math::RectangularMatrix<4, 3, T>>: Implement
 
 template<std::size_t matrixSize, class T> struct TypeTraits<Math::Matrix<matrixSize, T>>: TypeTraits<Math::RectangularMatrix<matrixSize, matrixSize, T>> {};
 
-template<class T> struct TypeTraits<Math::Matrix3<T>>: public TypeTraits<Math::Matrix<3, T>> {};
-template<class T> struct TypeTraits<Math::Matrix4<T>>: public TypeTraits<Math::Matrix<4, T>> {};
+template<class T> struct TypeTraits<Math::Matrix3<T>>: TypeTraits<Math::Matrix<3, T>> {};
+template<class T> struct TypeTraits<Math::Matrix4<T>>: TypeTraits<Math::Matrix<4, T>> {};
 #endif
 
 }

@@ -126,49 +126,49 @@ template<> struct MathTypeTraitsLong<8> {
 
 }
 
-template<> struct MathTypeTraits<std::uint8_t>: public Implementation::MathTypeTraitsIntegral<std::uint8_t> {
+template<> struct MathTypeTraits<std::uint8_t>: Implementation::MathTypeTraitsIntegral<std::uint8_t> {
     typedef std::uint32_t NumericType;
     typedef float FloatingPointType;
 };
-template<> struct MathTypeTraits<std::int8_t>: public Implementation::MathTypeTraitsIntegral<std::int8_t> {
+template<> struct MathTypeTraits<std::int8_t>: Implementation::MathTypeTraitsIntegral<std::int8_t> {
     typedef std::int32_t NumericType;
     typedef float FloatingPointType;
 };
 
-template<> struct MathTypeTraits<std::uint16_t>: public Implementation::MathTypeTraitsIntegral<std::uint16_t> {
+template<> struct MathTypeTraits<std::uint16_t>: Implementation::MathTypeTraitsIntegral<std::uint16_t> {
     typedef std::uint32_t NumericType;
     typedef float FloatingPointType;
 };
-template<> struct MathTypeTraits<std::int16_t>: public Implementation::MathTypeTraitsIntegral<std::int16_t> {
+template<> struct MathTypeTraits<std::int16_t>: Implementation::MathTypeTraitsIntegral<std::int16_t> {
     typedef std::int32_t NumericType;
     typedef float FloatingPointType;
 };
 
-template<> struct MathTypeTraits<std::uint32_t>: public Implementation::MathTypeTraitsIntegral<std::uint32_t> {
+template<> struct MathTypeTraits<std::uint32_t>: Implementation::MathTypeTraitsIntegral<std::uint32_t> {
     typedef std::uint32_t NumericType;
     typedef double FloatingPointType;
 };
-template<> struct MathTypeTraits<std::int32_t>: public Implementation::MathTypeTraitsIntegral<std::int32_t> {
+template<> struct MathTypeTraits<std::int32_t>: Implementation::MathTypeTraitsIntegral<std::int32_t> {
     typedef std::int32_t NumericType;
     typedef double FloatingPointType;
 };
 
-template<> struct MathTypeTraits<std::uint64_t>: public Implementation::MathTypeTraitsIntegral<std::uint64_t> {
+template<> struct MathTypeTraits<std::uint64_t>: Implementation::MathTypeTraitsIntegral<std::uint64_t> {
     typedef std::uint64_t NumericType;
     typedef long double FloatingPointType;
 };
-template<> struct MathTypeTraits<std::int64_t>: public Implementation::MathTypeTraitsIntegral<std::int64_t> {
+template<> struct MathTypeTraits<std::int64_t>: Implementation::MathTypeTraitsIntegral<std::int64_t> {
     typedef std::int64_t NumericType;
     typedef long double FloatingPointType;
 };
 
-template<> struct MathTypeTraits<float>: public Implementation::MathTypeTraitsFloatingPoint<float> {
+template<> struct MathTypeTraits<float>: Implementation::MathTypeTraitsFloatingPoint<float> {
     typedef float NumericType;
     typedef float FloatingPointType;
 
     inline constexpr static float epsilon() { return FLOAT_EQUALITY_PRECISION; }
 };
-template<> struct MathTypeTraits<double>: public Implementation::MathTypeTraitsFloatingPoint<double> {
+template<> struct MathTypeTraits<double>: Implementation::MathTypeTraitsFloatingPoint<double> {
     typedef float NumericType;
     typedef double FloatingPointType;
 
