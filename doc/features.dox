@@ -3,6 +3,8 @@ namespace Magnum {
 @brief Fundamental principles and design goals
 
 - @subpage matrix-vector - @copybrief matrix-vector
+- @subpage scenegraph - @copybrief scenegraph
 - @subpage collision-detection - @copybrief collision-detection
+- @subpage compilation-speedup - @copybrief compilation-speedup
 */
 }

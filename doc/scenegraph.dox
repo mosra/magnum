@@ -1,0 +1,267 @@
+namespace Magnum { namespace SceneGraph {
+/** @page scenegraph Using scene graph
+@brief Overview of scene management capabilities.
+
+@tableofcontents
+
+%Scene graph provides way to hiearchically manage your objects, their
+transformation, physics interaction, animation and rendering. There are
+naturally many possible combinations (2D vs. 3D, different transformation
+representations, animated vs. static, object can have collision shape,
+participate in physics events, have forward vs. deferred rendering...). To
+make everything possible without combinatiorial explosion and allow the users
+to provide their own features, scene graph in %Magnum is composed of three
+main components:
+
+ - objects, providing parent/children hierarchy
+ - transformations, implementing particular transformation type
+ - features, providing rendering capabilities, collision detection, physics
+   etc.
+
+@section scenegraph-transformation Transformations
+
+Transformation handles object position, rotation etc. and its basic property
+is dimension count (2D or 3D) and underlying floating-point type (by default
+`float`s are used everywhere, but you can use `double`s too).
+
+%Scene graph has implementation of transformations in both 2D and 3D, using
+either matrices or combination of position and rotation. Each implementation
+has its own advantages and disadvantages -- for example when using matrices
+you can have nearly arbitrary transformations, but composing transformations
+and computing their inverse is costly operation. On the other hand quaternions
+won't allow you to scale or shear objects, but are more memory efficient than
+matrices.
+
+It's also possible to implement your own transformation class for specific
+needs, see @ref AbstractTransformation-subclassing
+"AbstractTransformation documentation" for more information.
+
+@section scenegraph-hierarchy Scene hierarchy
+
+%Scene hierarchy is skeleton part of scene graph. In the root there is Scene
+and its children are Object instances. The hierarchy has some transformation
+type, identical for all objects (because for example having part of the tree
+in 2D and part in 3D just wouldn't make sense). Common usage is to typedef
+%Scene and %Object with desired transformation type:
+@code
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
+@endcode
+
+Then you can start building the hierarchy by *parenting* one object to another.
+Parent object can be either passed in constructor or using Object::setParent().
+%Scene is always root object, so it naturally cannot have parent object.
+@code
+Scene3D scene;
+
+Object3D* first = new Object3D(&scene);
+Object3D* second = new Object3D(&first);
+@endcode
+
+Object3D children can be accessed using Object::firstChild() and
+Object::lastChild(), then you can traverse siblings (objects with the same
+parent) with Object::previousSibling() and Object::nextSibling(). For example
+all children of an object can be traversed the following way:
+@code
+Object3D* o;
+for(Object3D* child = o->firstChild(); child; child = child->nextSibling()) {
+    // ...
+}
+@endcode
+
+The hierarchy takes care of memory management - when an object is destroyed,
+all its children are destroyed too. See detailed explanation of
+@ref scenegraph-object-construction-order "construction and destruction order"
+for information about possible issues.
+
+The object is derived from the transformation you specified earlier in the
+`typedef`, so you can directly transform the objects using methods of given
+transformation implementation. %Scene, as a root object, cannot have any
+transformation. For convenience you can use method chaining:
+@code
+Object3D* next = new Object3D;
+next->setParent(another)
+    ->translate(Vector3::yAxis(3.0f))
+    ->rotateY(deg(35.0f));
+@endcode
+
+@section scenegraph-features Object features
+
+The object itself handles only parent/child relationship and transformation.
+To make the object renderable, animatable, add collision shape to it etc., you
+have to add a *feature* to it.
+
+Each feature takes pointer to holder object in constructor, so adding a
+feature to an object might look like this:
+@code
+Object3D* o;
+MyFeature* feature = new MyFeature(o);
+@endcode
+
+Features of an object can be accessed using Object::firstFeature() and
+Object::lastFeature(), then you can traverse the features using
+AbstractFeature::previousFeature() and AbstractFeature::nextFeature(),
+similarly to traversing object children:
+@code
+Object3D* o;
+for(Object3D::FeatureType feature = o->firstFeature(); feature; feature = feature->nextFeature()) {
+    // ...
+}
+@endcode
+
+Some features are passive, some active. Passive features can be just added to
+an object like above, without any additional work (for example collision shape).
+Active features require the user to implement some virtual function (for
+example to draw the object on screen or perform animation step). To make things
+convenient, features can be added directly to object itself using multiple
+inheritance, so you can conveniently add all the active features you want and
+implement needed functions in your own Object subclass without having to
+subclass each feature individually (and making the code overly verbose).
+Simplified example:
+@code
+class Bomb: public Object3D, Drawable, Animatable {
+    public:
+        inline Bomb(Object3D* parent): Object3D(parent), Drawable(this), Animatable(this) {}
+
+    protected:
+        void draw() {
+            // drawing implementation for Drawable feature
+        }
+
+        void animationStep() {
+            // animation step for Animatable feature
+        }
+};
+@endcode
+
+From the outside there is no difference between features added as member and
+features added using multiple inheritance, they can be both accessed from
+feature list.
+
+Similarly to object hierarchy, when destroying object, all its features (both
+member and inherited) are destroyed. See detailed explanation of
+@ref scenegraph-feature-construction-order "construction and destruction order"
+for information about possible issues.
+
+@section scenegraph-caching Transformation caching
+
+Some features need to operate with absolute transformations and their
+inversions - for example camera needs its inverse transformation to render the
+scene, collision detection needs to know about positions of surrounding
+objects etc. To avoid computing the transformations from scratch every time,
+the feature can cache them.
+
+The cached data stay until the object is marked as dirty - that is by changing
+transformation, changing parent or explicitly calling Object::setDirty(). If
+the object is marked as dirty, all its children are marked as dirty too and
+AbstractFeature::markDirty() is called on every feature. Calling
+Object::setClean() cleans the dirty object and all its dirty parents.
+The function goes through all object features and calls AbstractFeature::clean()
+or AbstractFeature::cleanInverted() depending on which caching is enabled on
+given feature. If the object is already clean, Object::setClean() does nothing.
+
+Most probably you will need caching in Object itself -- which doesn't support
+it on its own -- however you can take advantage of multiple inheritance and
+implement it using AbstractFeature. In order to have caching, you must enable
+it first, because by default the caching is disabled. You can enable it using
+AbstractFeature::setCachedTransformations() and then implement corresponding
+cleaning function(s):
+@code
+class CachingObject: public Object3D, Object3D::FeatureType {
+    public:
+        CachingObject(Object3D* parent): Object3D::FeatureType(this) {
+            setCachedTransformations(CachedTransformation::Absolute);
+        }
+
+    protected:
+        void clean(const Matrix4& absoluteTransformation) override {
+            absolutePosition = absoluteTransformation.translation();
+        }
+
+    private:
+        Vector3 absolutePosition;
+};
+@endcode
+
+When you need to use the cached value, you can explicitly request the cleanup
+by calling Object::setClean(). Camera, for example, calls it automatically
+before it starts rendering, as it needs its own inverse transformation to
+properly draw the objects.
+
+@section scenegraph-construction-order Construction and destruction order
+
+There aren't any limitations and usage trade-offs of what you can and can't do
+when working with objects and features, but there are two issues which you
+should be aware of:
+
+@subsection scenegraph-object-construction-order Object hierarchy
+
+When objects are created on the heap (the preferred way, using `new`), they
+can be constructed in any order and they will be destroyed when their parent
+is destroyed. When creating them on the stack, however, they will be destroyed
+when they go out of scope. Normally, the natural order of creation is not a
+problem:
+@code
+{
+    Scene3D scene;
+    Object3D object(&scene);
+}
+@endcode
+The object is created last, so it will be destroyed first, removing itself
+from `scene`'s children list, causing no problems when destroying `scene`
+object later. However, if their order is swapped, it will cause problems:
+@code
+{
+    Object3D object;
+    Scene3D scene;
+
+    object.setParent(&scene);
+} // crash!
+@endcode
+The scene will be destroyed first, deleting all its children, which is wrong,
+because `object` is created on stack. If this doesn't already crash, the
+`object` destructor is called (again), making things even worse.
+
+@subsection scenegraph-feature-construction-order Member and inherited features
+
+When destroying the object, all its features are destroyed. For features added
+as member it's no issue, features added using multiple inheritance must be
+inherited after the %Object class:
+@code
+class MyObject: public Object3D, MyFeature {
+    public:
+        inline MyObject(Object3D* parent): Object3D(parent), MyFeature(this) {}
+};
+@endcode
+When constructing MyObject, Object3D constructor is called first and then
+MyFeature constructor adds itself to Object3D's list of features. When
+destroying MyObject, its destructor is called and then the destructors of
+ancestor classes -- first MyFeature destructor, which will remove itself from
+Object3D's list, then Object3D destructor.
+
+However, if we would inherit MyFeature first, it will cause problems:
+@code
+class MyObject: MyFeature, public Object3D {
+    public:
+        inline MyObject(Object3D* parent): MyFeature(this), Object3D(parent) {} // crash!
+};
+@endcode
+MyFeature tries to add itself to feature list in not-yet-constructed Object3D,
+causing undefined behavior. Then, if this doesn't already crash, Object3D is
+created, creating empty feature list, making the feature invisible.
+
+If we would construct them in swapped order (if it is even possible), it
+wouldn't help either:
+@code
+class MyObject: MyFeature, public Object3D {
+    public:
+        inline MyObject(Object3D* parent): Object3D(parent), MyFeature(this) {}
+
+        // crash on destruction!
+};
+@endcode
+On destruction, Object3D destructor is called first, deleting MyFeature,
+which is wrong, because MyFeature is in the same object. After that (if the
+program didn't already crash) destructor of MyFeature is called (again).
+*/
+}}
