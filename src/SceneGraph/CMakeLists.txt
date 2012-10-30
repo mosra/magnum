@@ -1,10 +1,8 @@
 # Files shared between main library and unit test library
 set(MagnumSceneGraph_SRCS
-    Camera.cpp
-    Light.cpp)
+    Camera.cpp)
 set(MagnumSceneGraph_HEADERS
     Camera.h
-    Light.h
     Object.h
     Scene.h
 
