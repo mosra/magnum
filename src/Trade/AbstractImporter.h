@@ -42,12 +42,12 @@ typedef ImageData<2> ImageData2D;
 typedef ImageData<3> ImageData3D;
 
 /**
-@brief Base class for importer plugins
+@brief Base for importer plugins
 
 Importer is used for importing data like scenes, lights, objects, images,
 textures etc.
 
-@section AbstractImporterSubclassing Subclassing
+@section AbstractImporter-subclassing Subclassing
 Plugin implements function features(), one or more open() functions,
 function close() and one or more pairs of data access functions, based on
 which features are supported in given format.

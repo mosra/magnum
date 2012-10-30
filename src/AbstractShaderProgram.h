@@ -46,7 +46,7 @@ namespace Implementation {
 #endif
 
 /**
-@brief Base class for shader program implementations
+@brief Base for shader program implementations
 
 @section AbstractShaderProgram-subclassing Subclassing workflow
 
