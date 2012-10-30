@@ -104,6 +104,48 @@ template<class T = GLfloat> class MatrixTransformation3D: public AbstractTransla
         }
 
         /**
+         * @brief Rotate object around X axis
+         * @param angle             Angle in radians, counterclockwise
+         * @param type              Transformation type
+         * @return Pointer to self (for method chaining)
+         *
+         * Same as calling multiplyTransformation() with Matrix4::rotationX().
+         * @see deg(), rad()
+         */
+        inline MatrixTransformation3D<T>* rotateX(T angle, TransformationType type = TransformationType::Global) override {
+            multiplyTransformation(Math::Matrix4<T>::rotationX(angle), type);
+            return this;
+        }
+
+        /**
+         * @brief Rotate object around Y axis
+         * @param angle             Angle in radians, counterclockwise
+         * @param type              Transformation type
+         * @return Pointer to self (for method chaining)
+         *
+         * Same as calling multiplyTransformation() with Matrix4::rotationY().
+         * @see deg(), rad()
+         */
+        inline MatrixTransformation3D<T>* rotateY(T angle, TransformationType type = TransformationType::Global) override {
+            multiplyTransformation(Math::Matrix4<T>::rotationY(angle), type);
+            return this;
+        }
+
+        /**
+         * @brief Rotate object around Z axis
+         * @param angle             Angle in radians, counterclockwise
+         * @param type              Transformation type
+         * @return Pointer to self (for method chaining)
+         *
+         * Same as calling multiplyTransformation() with Matrix4::rotationZ().
+         * @see deg(), rad()
+         */
+        inline MatrixTransformation3D<T>* rotateZ(T angle, TransformationType type = TransformationType::Global) override {
+            multiplyTransformation(Math::Matrix4<T>::rotationZ(angle), type);
+            return this;
+        }
+
+        /**
          * @copydoc AbstractTranslationRotationScaling3D::scale()
          * Same as calling multiplyTransformation() with Matrix4::scaling().
          */

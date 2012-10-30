@@ -20,6 +20,7 @@
  */
 
 #include "AbstractTransformation.h"
+#include "Math/Vector3.h"
 
 namespace Magnum { namespace SceneGraph {
 
@@ -50,6 +51,48 @@ template<class T = GLfloat> class AbstractTranslationRotation3D: public Abstract
          * @see deg(), rad(), Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()
          */
         virtual AbstractTranslationRotation3D<T>* rotate(T angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) = 0;
+
+        /**
+         * @brief Rotate object around X axis
+         * @param angle             Angle in radians, counterclockwise
+         * @param type              Transformation type
+         * @return Pointer to self (for method chaining)
+         *
+         * In some implementations faster than calling
+         * `rotate(angle, Vector3::xAxis())`.
+         * @see deg(), rad()
+         */
+        virtual AbstractTranslationRotation3D<T>* rotateX(T angle, TransformationType type = TransformationType::Global) {
+            return rotate(angle, Math::Vector3<T>::xAxis(), type);
+        }
+
+        /**
+         * @brief Rotate object around Y axis
+         * @param angle             Angle in radians, counterclockwise
+         * @param type              Transformation type
+         * @return Pointer to self (for method chaining)
+         *
+         * In some implementations faster than calling
+         * `rotate(angle, Vector3::yAxis())`.
+         * @see deg(), rad()
+         */
+        virtual AbstractTranslationRotation3D<T>* rotateY(T angle, TransformationType type = TransformationType::Global) {
+            return rotate(angle, Math::Vector3<T>::yAxis(), type);
+        }
+
+        /**
+         * @brief Rotate object around Z axis
+         * @param angle             Angle in radians, counterclockwise
+         * @param type              Transformation type
+         * @return Pointer to self (for method chaining)
+         *
+         * In some implementations faster than calling
+         * `rotate(angle, Vector3::zAxis())`.
+         * @see deg(), rad()
+         */
+        virtual AbstractTranslationRotation3D<T>* rotateZ(T angle, TransformationType type = TransformationType::Global) {
+            return rotate(angle, Math::Vector3<T>::zAxis(), type);
+        }
 };
 
 }}
