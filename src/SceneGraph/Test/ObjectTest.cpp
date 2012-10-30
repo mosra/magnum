@@ -67,24 +67,6 @@ void ObjectTest::parenting() {
     CORRADE_VERIFY(!childOne->hasChildren());
 }
 
-void ObjectTest::absoluteTransformation() {
-    Scene3D s;
-
-    /* Proper transformation composition */
-    Object3D o(&s);
-    o.translate(Vector3::xAxis(2.0f));
-    Object3D o2(&o);
-    o2.rotate(deg(90.0f), Vector3::yAxis());
-    CORRADE_COMPARE(o2.absoluteTransformation(),
-        Matrix4::translation(Vector3::xAxis(2.0f))*Matrix4::rotation(deg(90.0f), Vector3::yAxis()));
-    CORRADE_COMPARE(o2.absoluteTransformation(), o2.absoluteTransformationMatrix());
-
-    /* Transformation of root object */
-    Object3D o3;
-    o3.translate({1.0f, 2.0f, 3.0f});
-    CORRADE_COMPARE(o3.absoluteTransformation(), Matrix4::translation({1.0f, 2.0f, 3.0f}));
-}
-
 void ObjectTest::scene() {
     Scene3D scene;
     CORRADE_VERIFY(scene.scene() == &scene);
@@ -97,6 +79,24 @@ void ObjectTest::scene() {
 
     CORRADE_VERIFY(childTwo->scene() == &scene);
     CORRADE_VERIFY(childOfOrphan->scene() == nullptr);
+}
+
+void ObjectTest::absoluteTransformation() {
+    Scene3D s;
+
+    /* Proper transformation composition */
+    Object3D o(&s);
+    o.translate(Vector3::xAxis(2.0f));
+    Object3D o2(&o);
+    o2.rotateY(deg(90.0f));
+    CORRADE_COMPARE(o2.absoluteTransformation(),
+        Matrix4::translation(Vector3::xAxis(2.0f))*Matrix4::rotationY(deg(90.0f)));
+    CORRADE_COMPARE(o2.absoluteTransformation(), o2.absoluteTransformationMatrix());
+
+    /* Transformation of root object */
+    Object3D o3;
+    o3.translate({1.0f, 2.0f, 3.0f});
+    CORRADE_COMPARE(o3.absoluteTransformation(), Matrix4::translation({1.0f, 2.0f, 3.0f}));
 }
 
 void ObjectTest::caching() {
