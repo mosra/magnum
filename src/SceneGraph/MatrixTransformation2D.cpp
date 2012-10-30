@@ -1,5 +1,3 @@
-#ifndef Magnum_SceneGraph_Test_ObjectTest_h
-#define Magnum_SceneGraph_Test_ObjectTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,20 +13,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <TestSuite/Tester.h>
+#include "MatrixTransformation2D.h"
 
-namespace Magnum { namespace SceneGraph { namespace Test {
+#include "Object.hpp"
 
-class ObjectTest: public Corrade::TestSuite::Tester<ObjectTest> {
-    public:
-        ObjectTest();
+namespace Magnum { namespace SceneGraph {
 
-        void parenting();
-        void scene();
-        void absoluteTransformation();
-        void caching();
-};
-
-}}}
-
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template class SCENEGRAPH_EXPORT Object<MatrixTransformation2D<>>;
 #endif
+
+}}

@@ -1,0 +1,130 @@
+#ifndef Magnum_SceneGraph_AbstractObject_h
+#define Magnum_SceneGraph_AbstractObject_h
+/*
+    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
+
+    This file is part of Magnum.
+
+    Magnum is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License version 3
+    only, as published by the Free Software Foundation.
+
+    Magnum is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License version 3 for more details.
+*/
+
+/** @file
+ * @brief Class Magnum::SceneGraph::AbstractObject, alias Magnum::SceneGraph::AbstractObject2D, Magnum::SceneGraph::AbstractObject3D
+ */
+
+#include <Containers/LinkedList.h>
+
+#include "DimensionTraits.h"
+#include "Magnum.h"
+
+#include "magnumCompatibility.h"
+
+namespace Magnum { namespace SceneGraph {
+
+template<std::uint8_t, class> class AbstractFeature;
+
+/**
+@brief Base for objects
+
+Provides minimal interface for features, not depending on object
+transformation implementation. See Object or @ref scenegraph for more
+information.
+
+@see AbstractObject2D, AbstractObject3D
+*/
+template<std::uint8_t dimensions, class T = GLfloat> class AbstractObject
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    : private Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>
+    #endif
+{
+    friend class Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>;
+    friend class Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
+    friend AbstractFeature<dimensions, T>::AbstractFeature(AbstractObject<dimensions, T>*);
+
+    public:
+        /** @brief Feature object type */
+        typedef AbstractFeature<dimensions, T> FeatureType;
+
+        inline virtual ~AbstractObject() {}
+
+        /** @brief Whether this object has features */
+        inline bool hasFeatures() const {
+            return !Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>::isEmpty();
+        }
+
+        /** @brief First object feature or `nullptr`, if this object has no features */
+        inline FeatureType* firstFeature() {
+            return Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>::first();
+        }
+
+        /** @overload */
+        inline const FeatureType* firstFeature() const {
+            return Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>::first();
+        }
+
+        /** @brief Last object feature or `nullptr`, if this object has no features */
+        inline FeatureType* lastFeature() {
+            return Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>::last();
+        }
+
+        /** @overload */
+        inline const FeatureType* lastFeature() const {
+            return Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>::last();
+        }
+
+        /** @{ @name Object transformation */
+
+        /**
+         * @brief Transformation matrix relative to root object
+         *
+         * @see Object::absoluteTransformation()
+         */
+        virtual typename DimensionTraits<dimensions, T>::MatrixType absoluteTransformationMatrix() const = 0;
+
+        /*@}*/
+};
+
+/**
+@brief Base for two-dimensional objects
+
+Convenience alternative to <tt>%AbstractObject<2, T></tt>. See AbstractObject
+for more information.
+@note Not available on GCC < 4.7. Use <tt>%AbstractObject<2, T></tt> instead.
+@see AbstractObject3D
+@todoc Remove workaround when Doxygen supports alias template
+*/
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_GCC46_COMPATIBILITY
+template<class T = GLfloat> using AbstractObject2D = AbstractObject<2, T>;
+#endif
+#else
+typedef AbstractObject<2, T = GLfloat> AbstractObject2D;
+#endif
+
+/**
+@brief Base for three-dimensional objects
+
+Convenience alternative to <tt>%AbstractObject<3, T></tt>. See AbstractObject
+for more information.
+@note Not available on GCC < 4.7. Use <tt>%AbstractObject<3, T></tt> instead.
+@see AbstractObject2D
+@todoc Remove workaround when Doxygen supports alias template
+*/
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_GCC46_COMPATIBILITY
+template<class T = GLfloat> using AbstractObject3D = AbstractObject<3, T>;
+#endif
+#else
+typedef AbstractObject<3, T = GLfloat> AbstractObject3D;
+#endif
+
+}}
+
+#endif

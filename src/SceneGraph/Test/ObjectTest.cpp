@@ -18,7 +18,7 @@
 #include <sstream>
 
 #include "Math/Constants.h"
-#include "SceneGraph/Camera.h"
+#include "SceneGraph/MatrixTransformation3D.h"
 #include "SceneGraph/Scene.h"
 
 using namespace std;
@@ -27,13 +27,14 @@ CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::ObjectTest)
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<GLfloat>> Object3D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<GLfloat>> Scene3D;
+
 ObjectTest::ObjectTest() {
     addTests(&ObjectTest::parenting,
-             &ObjectTest::transformation,
-             &ObjectTest::absoluteTransformationWrongCamera,
-             &ObjectTest::absoluteTransformation,
              &ObjectTest::scene,
-             &ObjectTest::dirty);
+             &ObjectTest::absoluteTransformation,
+             &ObjectTest::caching);
 }
 
 void ObjectTest::parenting() {
@@ -66,61 +67,19 @@ void ObjectTest::parenting() {
     CORRADE_VERIFY(!childOne->hasChildren());
 }
 
-void ObjectTest::transformation() {
-    Object3D o;
-    Object3D o2;
-
-    o.setTransformation(Matrix4::translation(Vector3::xAxis(1.0f)));
-    o2.translate(Vector3::xAxis(1.0f));
-    o.multiplyTransformation(Matrix4::rotation(deg(35.0f), Vector3::zAxis()));
-    o2.rotate(deg(35.0f), Vector3::zAxis());
-
-    CORRADE_COMPARE(o.transformation(), Matrix4::rotation(deg(35.0f), Vector3::zAxis())*
-        Matrix4::translation(Vector3::xAxis(1.0f)));
-    CORRADE_COMPARE(o2.transformation(), o.transformation());
-
-    o.multiplyTransformation(Matrix4::scaling(Vector3(2.0f)), Object3D::Transformation::Local);
-    o2.scale(Vector3(2.0f), Object3D::Transformation::Local);
-    CORRADE_COMPARE(o.transformation(), Matrix4::rotation(deg(35.0f), Vector3::zAxis())*
-        Matrix4::translation(Vector3::xAxis(1.0f))*
-        Matrix4::scaling(Vector3(2.0f)));
-    CORRADE_COMPARE(o2.transformation(), o.transformation());
-}
-
-void ObjectTest::absoluteTransformationWrongCamera() {
-    stringstream ss;
-    Error::setOutput(&ss);
-
-    Scene3D s;
-    Object3D o(&s);
-    o.translate(Vector3::yAxis());
-    Camera3D c;
-    CORRADE_COMPARE(o.absoluteTransformation(&c), Matrix4::translation(Vector3::yAxis()));
-    CORRADE_COMPARE(ss.str(), "Object::absoluteTransformation(): the camera is not part of the same scene as object!\n");
-
-    ss.str("");
-    Object3D o2;
-    o2.translate(Vector3::xAxis());
-    CORRADE_COMPARE(o2.absoluteTransformation(&c), Matrix4::translation(Vector3::xAxis()));
-    CORRADE_COMPARE(ss.str(), "Object::absoluteTransformation(): the object is not part of camera scene!\n");
-}
-
 void ObjectTest::absoluteTransformation() {
     Scene3D s;
-    Camera3D c(&s);
-    c.translate(Vector3::zAxis(2.0f));
-    CORRADE_COMPARE(s.absoluteTransformation(), Matrix4());
-    CORRADE_COMPARE(c.absoluteTransformation(&c), Matrix4());
 
+    /* Proper transformation composition */
     Object3D o(&s);
-    o.scale(Vector3(2.0f));
+    o.translate(Vector3::xAxis(2.0f));
     Object3D o2(&o);
-    o.rotate(deg(90.0f), Vector3::yAxis());
+    o2.rotate(deg(90.0f), Vector3::yAxis());
     CORRADE_COMPARE(o2.absoluteTransformation(),
-        Matrix4::scaling(Vector3(2.0f))*Matrix4::rotation(deg(90.0f), Vector3::yAxis()));
-    CORRADE_COMPARE(o2.absoluteTransformation(&c),
-        (Matrix4::translation(Vector3::zAxis(2.0f)).inverted())*Matrix4::scaling(Vector3(2.0f))*Matrix4::rotation(deg(90.0f), Vector3::yAxis()));
+        Matrix4::translation(Vector3::xAxis(2.0f))*Matrix4::rotation(deg(90.0f), Vector3::yAxis()));
+    CORRADE_COMPARE(o2.absoluteTransformation(), o2.absoluteTransformationMatrix());
 
+    /* Transformation of root object */
     Object3D o3;
     o3.translate({1.0f, 2.0f, 3.0f});
     CORRADE_COMPARE(o3.absoluteTransformation(), Matrix4::translation({1.0f, 2.0f, 3.0f}));
@@ -128,6 +87,7 @@ void ObjectTest::absoluteTransformation() {
 
 void ObjectTest::scene() {
     Scene3D scene;
+    CORRADE_VERIFY(scene.scene() == &scene);
 
     Object3D* childOne = new Object3D(&scene);
     Object3D* childTwo = new Object3D(childOne);
@@ -139,23 +99,81 @@ void ObjectTest::scene() {
     CORRADE_VERIFY(childOfOrphan->scene() == nullptr);
 }
 
-void ObjectTest::dirty() {
+void ObjectTest::caching() {
     Scene3D scene;
 
-    CleaningObject* childOne = new CleaningObject(&scene);
+    class CachingFeature: public AbstractFeature<3, GLfloat> {
+        public:
+            CachingFeature(AbstractObject<3, GLfloat>* object): AbstractFeature<3, GLfloat>(object) {
+                setCachedTransformations(CachedTransformation::Absolute);
+            }
+
+            Matrix4 cleanedAbsoluteTransformation;
+
+            void clean(const Matrix4& absoluteTransformation) override {
+                cleanedAbsoluteTransformation = absoluteTransformation;
+            }
+    };
+
+    class CachingInvertedFeature: public AbstractFeature<3, GLfloat> {
+        public:
+            CachingInvertedFeature(AbstractObject<3, GLfloat>* object): AbstractFeature<3, GLfloat>(object) {
+                setCachedTransformations(CachedTransformation::InvertedAbsolute);
+            }
+
+            Matrix4 cleanedInvertedAbsoluteTransformation;
+
+            void cleanInverted(const Matrix4& invertedAbsoluteTransformation) override {
+                cleanedInvertedAbsoluteTransformation = invertedAbsoluteTransformation;
+            }
+    };
+
+    class CachingObject: public Object3D, AbstractFeature<3, GLfloat> {
+        public:
+            inline CachingObject(Object3D* parent = nullptr): Object3D(parent), AbstractFeature<3, GLfloat>(this) {
+                setCachedTransformations(CachedTransformation::Absolute);
+            }
+
+            Matrix4 cleanedAbsoluteTransformation;
+
+        protected:
+            void clean(const Matrix4& absoluteTransformation) override {
+                cleanedAbsoluteTransformation = absoluteTransformation;
+            }
+    };
+
+    CachingObject* childOne = new CachingObject(&scene);
     childOne->scale(Vector3(2.0f));
-    CleaningObject* childTwo = new CleaningObject(childOne);
+
+    CachingObject* childTwo = new CachingObject(childOne);
     childTwo->translate(Vector3::xAxis(1.0f));
-    CleaningObject* childThree = new CleaningObject(childTwo);
+    CachingFeature* childTwoFeature = new CachingFeature(childTwo);
+    CachingInvertedFeature* childTwoFeature2 = new CachingInvertedFeature(childTwo);
+
+    CachingObject* childThree = new CachingObject(childTwo);
     childThree->rotate(deg(90.0f), Vector3::yAxis());
 
     /* Object is dirty at the beginning */
     CORRADE_VERIFY(scene.isDirty());
     CORRADE_VERIFY(childOne->isDirty());
+    CORRADE_VERIFY(childTwo->isDirty());
+    CORRADE_VERIFY(childThree->isDirty());
 
     /* Clean the object and all its dirty parents (but not children) */
-    childOne->setClean();
-    CORRADE_COMPARE(childOne->cleanedAbsoluteTransformation, childOne->absoluteTransformation());
+    childTwo->setClean();
+    CORRADE_VERIFY(!scene.isDirty());
+    CORRADE_VERIFY(!childOne->isDirty());
+    CORRADE_VERIFY(!childTwo->isDirty());
+    CORRADE_VERIFY(childThree->isDirty());
+
+    /* Verify the right matrices were passed */
+    CORRADE_COMPARE(childOne->cleanedAbsoluteTransformation, childOne->absoluteTransformationMatrix());
+    CORRADE_COMPARE(childTwo->cleanedAbsoluteTransformation, childTwo->absoluteTransformationMatrix());
+    CORRADE_COMPARE(childTwoFeature->cleanedAbsoluteTransformation, childTwo->absoluteTransformationMatrix());
+    CORRADE_COMPARE(childTwoFeature2->cleanedInvertedAbsoluteTransformation, childTwo->absoluteTransformationMatrix().inverted());
+
+    /* Mark object and all its children as dirty (but not parents) */
+    childTwo->setDirty();
     CORRADE_VERIFY(!scene.isDirty());
     CORRADE_VERIFY(!childOne->isDirty());
     CORRADE_VERIFY(childTwo->isDirty());
@@ -169,24 +187,14 @@ void ObjectTest::dirty() {
     /* If any object in the hierarchy is already clean, it shouldn't clean it again */
     childTwo->setClean();
     CORRADE_COMPARE(childOne->cleanedAbsoluteTransformation, Matrix4(Matrix4::Zero));
-    CORRADE_COMPARE(childTwo->cleanedAbsoluteTransformation, childTwo->absoluteTransformation());
-    CORRADE_VERIFY(!childOne->isDirty());
-    CORRADE_VERIFY(!childTwo->isDirty());
-    CORRADE_VERIFY(childThree->isDirty());
 
-    /* Mark object and all its children as dirty (but not parents) */
-    childTwo->setDirty();
-    CORRADE_VERIFY(!scene.isDirty());
-    CORRADE_VERIFY(!childOne->isDirty());
-    CORRADE_VERIFY(childTwo->isDirty());
-    CORRADE_VERIFY(childThree->isDirty());
-
-    /* Reparent object => make it and its children dirty (but not parents) */
+    /* Remove object from tree => make it and its children dirty */
     childThree->setClean();
-    CORRADE_COMPARE(childThree->cleanedAbsoluteTransformation, childThree->absoluteTransformation());
     childTwo->setParent(nullptr);
     CORRADE_VERIFY(childTwo->isDirty());
     CORRADE_VERIFY(!childOne->isDirty());
+
+    /* Add object to tree => make it and its children dirty, don't touch parents */
     childTwo->setParent(&scene);
     CORRADE_VERIFY(!scene.isDirty());
     CORRADE_VERIFY(childTwo->isDirty());

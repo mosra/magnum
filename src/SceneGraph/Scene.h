@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::Scene, typedef Magnum::SceneGraph::Scene2D, Magnum::SceneGraph::Scene3D
+ * @brief Class Magnum::SceneGraph::Scene
  */
 
 #include "Object.h"
@@ -26,32 +26,13 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief %Scene
 
-@see Scene2D, Scene3D
+Basically Object which cannot have parent or non-default transformation.
+See @ref scenegraph for introduction.
 */
-template<std::uint8_t dimensions> class SCENEGRAPH_EXPORT Scene: public AbstractObject<dimensions>::ObjectType {
+template<class Transformation> class Scene: public Object<Transformation> {
     public:
-        /** @copydoc AbstractObject::isScene() */
         inline bool isScene() const { return true; }
-
-        /** @todo Some deleted functions belong only to Scene2D, some only to Scene3D - what to do? */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        void setParent(typename AbstractObject<dimensions>::ObjectType* parent) = delete;
-        void setTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) = delete;
-        void multiplyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation, typename AbstractObject<dimensions>::Transformation type = (DimensionTraits<dimensions, GLfloat>::Transformation::Global)) = delete;
-        void translate(const typename DimensionTraits<dimensions, GLfloat>::VectorType& vec, typename AbstractObject<dimensions>::Transformation type = AbstractObject<dimensions>::Transformation::Global) = delete;
-        void scale(const typename DimensionTraits<dimensions, GLfloat>::VectorType& vec, typename AbstractObject<dimensions>::Transformation type = AbstractObject<dimensions>::Transformation::Global) = delete;
-        void rotate(GLfloat angle, const typename DimensionTraits<dimensions, GLfloat>::VectorType& vec, typename AbstractObject<dimensions>::Transformation type = AbstractObject<dimensions>::Transformation::Global) = delete;
-        #endif
-
-    private:
-        inline void draw(const typename DimensionTraits<dimensions, GLfloat>::MatrixType&, typename AbstractObject<dimensions>::CameraType*) {}
 };
-
-/** @brief Two-dimensional scene */
-typedef Scene<2> Scene2D;
-
-/** @brief Three-dimensional scene */
-typedef Scene<3> Scene3D;
 
 }}
 
