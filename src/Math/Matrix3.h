@@ -36,37 +36,37 @@ template<class T> class Matrix3: public Matrix<3, T> {
     public:
         /**
          * @brief 2D translation matrix
-         * @param vec   Translation vector
+         * @param vector    Translation vector
          *
          * @see translation(), Matrix4::translation(const Vector3&),
          *      Vector2::xAxis(), Vector2::yAxis()
          */
-        inline constexpr static Matrix3<T> translation(const Vector2<T>& vec) {
+        inline constexpr static Matrix3<T> translation(const Vector2<T>& vector) {
             return Matrix3<T>( /* Column-major! */
                 T(1), T(0), T(0),
                 T(0), T(1), T(0),
-                vec.x(), vec.y(), T(1)
+                vector.x(), vector.y(), T(1)
             );
         }
 
         /**
          * @brief 2D scaling matrix
-         * @param vec   Scaling vector
+         * @param vector    Scaling vector
          *
          * @see rotationScaling() const, Matrix4::scaling(const Vector3&),
          *      Vector2::xScale(), Vector2::yScale()
          */
-        inline constexpr static Matrix3<T> scaling(const Vector2<T>& vec) {
+        inline constexpr static Matrix3<T> scaling(const Vector2<T>& vector) {
             return Matrix3<T>( /* Column-major! */
-                vec.x(), T(0), T(0),
-                T(0), vec.y(), T(0),
+                vector.x(), T(0), T(0),
+                T(0), vector.y(), T(0),
                 T(0), T(0), T(1)
             );
         }
 
         /**
          * @brief 2D rotation matrix
-         * @param angle Rotation angle (counterclockwise, in radians)
+         * @param angle     Rotation angle (counterclockwise, in radians)
          *
          * @see rotation() const, Matrix4::rotation(T, const Vector3&), deg(),
          *      rad()

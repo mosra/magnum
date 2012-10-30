@@ -97,7 +97,7 @@ void Matrix4Test::rotation() {
     Error::setOutput(&o);
 
     CORRADE_COMPARE(Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f}), Matrix4());
-    CORRADE_COMPARE(o.str(), "Math::Matrix4::rotation(): vector must be normalized\n");
+    CORRADE_COMPARE(o.str(), "Math::Matrix4::rotation(): axis must be normalized\n");
 
     Matrix4 matrix(
          0.35612214f, -0.80181062f,   0.47987163f, 0.0f,

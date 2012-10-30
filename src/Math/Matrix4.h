@@ -38,40 +38,40 @@ template<class T> class Matrix4: public Matrix<4, T> {
     public:
         /**
          * @brief 3D translation
-         * @param vec   Translation vector
+         * @param vector    Translation vector
          *
          * @see translation(), Matrix3::translation(const Vector2&),
          *      Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()
          */
-        inline constexpr static Matrix4<T> translation(const Vector3<T>& vec) {
+        inline constexpr static Matrix4<T> translation(const Vector3<T>& vector) {
             return Matrix4<T>( /* Column-major! */
                 T(1), T(0), T(0), T(0),
                 T(0), T(1), T(0), T(0),
                 T(0), T(0), T(1), T(0),
-                vec.x(), vec.y(), vec.z(), T(1)
+                vector.x(), vector.y(), vector.z(), T(1)
             );
         }
 
         /**
          * @brief 3D scaling
-         * @param vec   Scaling vector
+         * @param vector    Scaling vector
          *
          * @see rotationScaling() const, Matrix3::scaling(const Vector2&),
          *      Vector3::xScale(), Vector3::yScale(), Vector3::zScale()
          */
-        inline constexpr static Matrix4<T> scaling(const Vector3<T>& vec) {
+        inline constexpr static Matrix4<T> scaling(const Vector3<T>& vector) {
             return Matrix4<T>( /* Column-major! */
-                vec.x(), T(0), T(0), T(0),
-                T(0), vec.y(), T(0), T(0),
-                T(0), T(0), vec.z(), T(0),
+                vector.x(), T(0), T(0), T(0),
+                T(0), vector.y(), T(0), T(0),
+                T(0), T(0), vector.z(), T(0),
                 T(0), T(0), T(0), T(1)
             );
         }
 
         /**
          * @brief 3D rotation around arbitrary axis
-         * @param angle Rotation angle (counterclockwise, in radians)
-         * @param vec   Normalized rotation axis
+         * @param angle             Rotation angle (counterclockwise, in radians)
+         * @param normalizedAxis    Normalized rotation axis
          *
          * If possible, use faster alternatives like xRotation(), yRotation()
          * or zRotation().
@@ -80,32 +80,32 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @attention Assertion fails on non-normalized rotation vector and
          *      identity matrix is returned.
          */
-        static Matrix4<T> rotation(T angle, const Vector3<T>& vec) {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(vec.dot(), T(1)),
-                           "Math::Matrix4::rotation(): vector must be normalized", {});
+        static Matrix4<T> rotation(T angle, const Vector3<T>& normalizedAxis) {
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedAxis.dot(), T(1)),
+                           "Math::Matrix4::rotation(): axis must be normalized", {});
 
             T sine = std::sin(angle);
             T cosine = std::cos(angle);
             T oneMinusCosine = T(1) - cosine;
 
-            T xx = vec.x()*vec.x();
-            T xy = vec.x()*vec.y();
-            T xz = vec.x()*vec.z();
-            T yy = vec.y()*vec.y();
-            T yz = vec.y()*vec.z();
-            T zz = vec.z()*vec.z();
+            T xx = normalizedAxis.x()*normalizedAxis.x();
+            T xy = normalizedAxis.x()*normalizedAxis.y();
+            T xz = normalizedAxis.x()*normalizedAxis.z();
+            T yy = normalizedAxis.y()*normalizedAxis.y();
+            T yz = normalizedAxis.y()*normalizedAxis.z();
+            T zz = normalizedAxis.z()*normalizedAxis.z();
 
             return Matrix4<T>( /* Column-major! */
                 cosine + xx*oneMinusCosine,
-                    xy*oneMinusCosine + vec.z()*sine,
-                        xz*oneMinusCosine - vec.y()*sine,
+                    xy*oneMinusCosine + normalizedAxis.z()*sine,
+                        xz*oneMinusCosine - normalizedAxis.y()*sine,
                            T(0),
-                xy*oneMinusCosine - vec.z()*sine,
+                xy*oneMinusCosine - normalizedAxis.z()*sine,
                     cosine + yy*oneMinusCosine,
-                        yz*oneMinusCosine + vec.x()*sine,
+                        yz*oneMinusCosine + normalizedAxis.x()*sine,
                            T(0),
-                xz*oneMinusCosine + vec.y()*sine,
-                    yz*oneMinusCosine - vec.x()*sine,
+                xz*oneMinusCosine + normalizedAxis.y()*sine,
+                    yz*oneMinusCosine - normalizedAxis.x()*sine,
                         cosine + zz*oneMinusCosine,
                            T(0),
                 T(0), T(0), T(0), T(1)
