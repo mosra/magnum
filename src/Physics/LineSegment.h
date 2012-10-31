@@ -33,7 +33,7 @@ template<std::uint8_t dimensions> class LineSegment: public Line<dimensions> {
         /** @brief Constructor */
         inline LineSegment(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a, const typename DimensionTraits<dimensions, GLfloat>::VectorType& b): Line<dimensions>(a, b) {}
 
-        inline typename AbstractShape<dimensions>::Type type() const {
+        inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::LineSegment;
         }
 };

@@ -28,6 +28,8 @@
 
 #include "AbstractWindowContext.h"
 
+#include "magnumCompatibility.h"
+
 namespace Magnum {
 
 class Context;
@@ -63,7 +65,7 @@ class Sdl2WindowContext: public AbstractWindowContext {
          */
         ~Sdl2WindowContext();
 
-        int exec();
+        int exec() override;
 
         /** @{ @name Drawing functions */
 

@@ -22,6 +22,8 @@
 #include "Math/Vector3.h"
 #include "AbstractShape.h"
 
+#include "magnumCompatibility.h"
+
 namespace Magnum { namespace Physics {
 
 template<std::uint8_t> class Line;
@@ -40,13 +42,13 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Sphere: public AbstractSh
         /** @brief Constructor */
         inline Sphere(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position, float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
 
-        inline typename AbstractShape<dimensions>::Type type() const {
+        inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::Sphere;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
 
-        bool collides(const AbstractShape<dimensions>* other) const;
+        bool collides(const AbstractShape<dimensions>* other) const override;
 
         /** @brief Position */
         inline typename DimensionTraits<dimensions, GLfloat>::VectorType position() const {

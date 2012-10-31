@@ -22,6 +22,8 @@
 #include "Math/Vector3.h"
 #include "AbstractShape.h"
 
+#include "magnumCompatibility.h"
+
 namespace Magnum { namespace Physics {
 
 /**
@@ -34,11 +36,11 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT AxisAlignedBox: public Ab
         /** @brief Constructor */
         inline AxisAlignedBox(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position, const typename DimensionTraits<dimensions, GLfloat>::VectorType& size): _position(position), _transformedPosition(position), _size(size), _transformedSize(size) {}
 
-        inline typename AbstractShape<dimensions>::Type type() const {
+        inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::AxisAlignedBox;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
 
         /** @brief Position */
         inline typename DimensionTraits<dimensions, GLfloat>::VectorType position() const {

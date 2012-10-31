@@ -22,6 +22,8 @@
 #include "Math/Vector3.h"
 #include "AbstractShape.h"
 
+#include "magnumCompatibility.h"
+
 namespace Magnum { namespace Physics {
 
 template<std::uint8_t> class Line;
@@ -35,14 +37,14 @@ class PHYSICS_EXPORT Plane: public AbstractShape<3> {
         /** @brief Constructor */
         inline Plane(const Vector3& position, const Vector3& normal): _position(position), _transformedPosition(position), _normal(normal), _transformedNormal(normal) {}
 
-        inline Type type() const { return Type::Plane; }
+        inline Type type() const override { return Type::Plane; }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        void applyTransformation(const Matrix4& transformation);
-        bool collides(const AbstractShape<3>* other) const;
+        void applyTransformation(const Matrix4& transformation) override;
+        bool collides(const AbstractShape<3>* other) const override;
         #else
-        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
-        bool collides(const AbstractShape* other) const;
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
+        bool collides(const AbstractShape* other) const override;
         #endif
 
         /** @brief Position */

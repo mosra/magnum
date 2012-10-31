@@ -23,6 +23,8 @@
 #include "Math/Matrix4.h"
 #include "AbstractShape.h"
 
+#include "magnumCompatibility.h"
+
 namespace Magnum { namespace Physics {
 
 /**
@@ -35,11 +37,11 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Box: public AbstractShape
         /** @brief Constructor */
         inline Box(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation): _transformation(transformation), _transformedTransformation(transformation) {}
 
-        inline typename AbstractShape<dimensions>::Type type() const {
+        inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::Box;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
 
         /** @brief Transformation */
         inline typename DimensionTraits<dimensions, GLfloat>::MatrixType transformation() const {

@@ -33,6 +33,8 @@
 #include "AbstractWindowContext.h"
 #include "AbstractContextHandler.h"
 
+#include "magnumCompatibility.h"
+
 namespace Magnum {
 
 class Context;
@@ -67,7 +69,7 @@ class AbstractXWindowContext: public AbstractWindowContext {
          */
         virtual ~AbstractXWindowContext() = 0;
 
-        int exec();
+        int exec() override;
 
         /** @brief Exit application main loop */
         inline void exit() { flags |= Flag::Exit; }

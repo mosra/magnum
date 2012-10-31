@@ -28,6 +28,8 @@
 
 #include "AbstractWindowContext.h"
 
+#include "magnumCompatibility.h"
+
 namespace Magnum {
 
 class Context;
@@ -58,7 +60,7 @@ class GlutWindowContext: public AbstractWindowContext {
 
         ~GlutWindowContext();
 
-        inline int exec() {
+        inline int exec() override {
             glutMainLoop();
             return 0;
         }

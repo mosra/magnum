@@ -22,6 +22,8 @@
 #include "Math/Vector3.h"
 #include "AbstractShape.h"
 
+#include "magnumCompatibility.h"
+
 namespace Magnum { namespace Physics {
 
 /**
@@ -35,11 +37,11 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Line: public AbstractShap
         /** @brief Constructor */
         inline Line(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a, const typename DimensionTraits<dimensions, GLfloat>::VectorType& b): _a(a), _transformedA(a), _b(b), _transformedB(b) {}
 
-        inline typename AbstractShape<dimensions>::Type type() const {
+        inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::Line;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
 
         /** @brief First point */
         inline typename DimensionTraits<dimensions, GLfloat>::VectorType a() const {

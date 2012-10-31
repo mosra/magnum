@@ -27,6 +27,8 @@
 
 #include "AbstractContextHandler.h"
 
+#include "magnumCompatibility.h"
+
 namespace Magnum { namespace Contexts {
 
 /**
@@ -41,19 +43,19 @@ class GlxContextHandler: public AbstractContextHandler<Display*, VisualID, Windo
     public:
         ~GlxContextHandler();
 
-        VisualID getVisualId(Display* nativeDisplay);
-        void createContext(Window nativeWindow);
+        VisualID getVisualId(Display* nativeDisplay) override;
+        void createContext(Window nativeWindow) override;
 
         /* This must be enabled, otherwise (on my NVidia) it crashes when creating VAO. WTF. */
-        inline ExtensionWrangler::ExperimentalFeatures experimentalExtensionWranglerFeatures() const {
+        inline ExtensionWrangler::ExperimentalFeatures experimentalExtensionWranglerFeatures() const override {
             return ExtensionWrangler::ExperimentalFeatures::Enable;
         }
 
-        inline void makeCurrent() {
+        inline void makeCurrent() override {
             glXMakeCurrent(display, window, context);
         }
 
-        inline void swapBuffers() {
+        inline void swapBuffers() override {
             glXSwapBuffers(display, window);
         }
 

@@ -24,6 +24,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "magnumCompatibility.h"
+
 namespace Magnum { namespace Physics {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -99,13 +101,13 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapeGroup: public Abstra
         /** @brief Move assignment */
         ShapeGroup& operator=(ShapeGroup&& other);
 
-        inline typename AbstractShape<dimensions>::Type type() const {
+        inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::ShapeGroup;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
 
-        bool collides(const AbstractShape<dimensions>* other) const;
+        bool collides(const AbstractShape<dimensions>* other) const override;
 
         /**
          * @brief First object in the group

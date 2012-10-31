@@ -28,6 +28,8 @@
 
 #include "AbstractContextHandler.h"
 
+#include "magnumCompatibility.h"
+
 namespace Magnum { namespace Contexts {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -48,14 +50,14 @@ class EglContextHandler: public AbstractContextHandler<EGLNativeDisplayType, Vis
     public:
         ~EglContextHandler();
 
-        VisualId getVisualId(EGLNativeDisplayType nativeDisplay);
-        void createContext(EGLNativeWindowType nativeWindow);
+        VisualId getVisualId(EGLNativeDisplayType nativeDisplay) override;
+        void createContext(EGLNativeWindowType nativeWindow) override;
 
-        inline void makeCurrent() {
+        inline void makeCurrent() override {
             eglMakeCurrent(display, surface, surface, context);
         }
 
-        inline void swapBuffers() {
+        inline void swapBuffers() override {
             eglSwapBuffers(display, surface);
         }
 

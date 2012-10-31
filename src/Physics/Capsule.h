@@ -22,6 +22,8 @@
 #include "Math/Vector3.h"
 #include "AbstractShape.h"
 
+#include "magnumCompatibility.h"
+
 namespace Magnum { namespace Physics {
 
 template<std::uint8_t> class Point;
@@ -39,13 +41,13 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Capsule: public AbstractS
         /** @brief Constructor */
         inline Capsule(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a, const typename DimensionTraits<dimensions, GLfloat>::VectorType& b, float radius): _a(a), _transformedA(a), _b(b), _transformedB(b), _radius(radius), _transformedRadius(radius) {}
 
-        inline typename AbstractShape<dimensions>::Type type() const {
+        inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::Capsule;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
 
-        bool collides(const AbstractShape<dimensions>* other) const;
+        bool collides(const AbstractShape<dimensions>* other) const override;
 
         /** @brief Start point */
         inline typename DimensionTraits<dimensions, GLfloat>::VectorType a() const {
