@@ -400,7 +400,7 @@ EXTRACT_STATIC         = NO
 # defined locally in source files will be included in the documentation.
 # If set to NO only classes defined in header files are included.
 
-EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_LOCAL_CLASSES  = NO
 
 # This flag is only useful for Objective-C code. When set to YES local
 # methods, which are defined in the implementation section but not in
@@ -704,6 +704,7 @@ INPUT_ENCODING         = UTF-8
 
 FILE_PATTERNS          = *.cpp \
                          *.h \
+                         *.hpp \
                          *.dox
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories
@@ -860,7 +861,7 @@ USE_HTAGS              = NO
 # will generate a verbatim copy of the header file for each class for
 # which an include is specified. Set to NO to disable this.
 
-VERBATIM_HEADERS       = YES
+VERBATIM_HEADERS       = NO
 
 #---------------------------------------------------------------------------
 # configuration options related to the alphabetical class index
