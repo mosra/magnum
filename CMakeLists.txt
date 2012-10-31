@@ -4,6 +4,8 @@ project(Magnum)
 
 include(CMakeDependentOption)
 
+option(GCC46_COMPATIBILITY "Enable compatibility mode for GCC 4.6 (might disable some features)" OFF)
+
 option(TARGET_GLES "Build for OpenGL ES instead of desktop OpenGL" OFF)
 cmake_dependent_option(TARGET_GLES2 "Build for OpenGL ES 2" ON "TARGET_GLES" OFF)
 

@@ -11,6 +11,11 @@ endif()
 if(TARGET_GLES2)
     set(MAGNUM_TARGET_GLES2 1)
 endif()
+
+if(GCC46_COMPATIBILITY)
+    set(MAGNUM_GCC46_COMPATIBILITY 1)
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/magnumConfigure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h)
 
@@ -73,6 +78,7 @@ set(Magnum_HEADERS
     Timeline.h
     TypeTraits.h
 
+    magnumCompatibility.h
     magnumVisibility.h)
 add_library(MagnumObjects OBJECT ${Magnum_SRCS})
 
