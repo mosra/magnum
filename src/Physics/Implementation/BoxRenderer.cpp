@@ -20,7 +20,7 @@
 #include "Physics/DebugDrawResourceManager.h"
 #include "Primitives/Cube.h"
 #include "Primitives/Square.h"
-#include "ShapeShader.h"
+#include "Shaders/FlatShader.h"
 
 namespace Magnum { namespace Physics { namespace Implementation {
 
@@ -37,7 +37,7 @@ namespace {
             buffer->setData(*square.positions(0), Buffer::Usage::StaticDraw);
             return mesh->setPrimitive(square.primitive())
                 ->setVertexCount(square.positions(0)->size())
-                ->addVertexBuffer(buffer, Implementation::ShapeShader<2>::Position());
+                ->addVertexBuffer(buffer, Shaders::FlatShader<2>::Position());
         }
     };
 
@@ -51,7 +51,7 @@ namespace {
             buffer->setData(*cube.positions(0), Buffer::Usage::StaticDraw);
             return mesh->setPrimitive(cube.primitive())
                 ->setVertexCount(cube.positions(0)->size())
-                ->addVertexBuffer(buffer, Implementation::ShapeShader<2>::Position());
+                ->addVertexBuffer(buffer, Shaders::FlatShader<2>::Position());
         }
     };
 }

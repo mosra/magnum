@@ -1,5 +1,5 @@
-#ifndef Magnum_Physics_Implementation_ShapeShader_h
-#define Magnum_Physics_Implementation_ShapeShader_h
+#ifndef Magnum_Shaders_FlatShader_h
+#define Magnum_Shaders_FlatShader_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,26 +15,46 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+/** @file
+ * @brief Class Magnum::Shaders::FlatShader
+ */
+
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "AbstractShaderProgram.h"
 #include "Color.h"
 #include "DimensionTraits.h"
 
-namespace Magnum { namespace Physics { namespace Implementation {
+#include "magnumShadersVisibility.h"
 
-template<std::uint8_t dimensions> class ShapeShader: public AbstractShaderProgram {
+namespace Magnum { namespace Shaders {
+
+/**
+@brief Flat shader
+
+Draws whole mesh with one color.
+*/
+template<std::uint8_t dimensions> class SHADERS_EXPORT FlatShader: public AbstractShaderProgram {
     public:
+        /** @brief Vertex position */
         typedef Attribute<0, typename DimensionTraits<dimensions, GLfloat>::PointType> Position;
 
-        ShapeShader();
+        FlatShader();
 
-        ShapeShader<dimensions>* setTransformationProjection(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& matrix) {
+        /**
+         * @brief Set transformation and projection matrix
+         * @return Pointer to self (for method chaining)
+         */
+        FlatShader<dimensions>* setTransformationProjection(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& matrix) {
             setUniform(transformationProjectionUniform, matrix);
             return this;
         }
 
-        ShapeShader<dimensions>* setColor(const Color3<GLfloat>& color) {
+        /**
+         * @brief Set color
+         * @return Pointer to self (for method chaining)
+         */
+        FlatShader<dimensions>* setColor(const Color3<GLfloat>& color) {
             setUniform(colorUniform, color);
             return this;
         }
@@ -44,9 +64,6 @@ template<std::uint8_t dimensions> class ShapeShader: public AbstractShaderProgra
             colorUniform;
 };
 
-extern template class ShapeShader<2>;
-extern template class ShapeShader<3>;
-
-}}}
+}}
 
 #endif

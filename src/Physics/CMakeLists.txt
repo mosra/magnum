@@ -1,7 +1,3 @@
-corrade_add_resource(MagnumPhysics_RCS MagnumPhysics
-    Implementation/ShapeShader2D.vert ALIAS ShapeShader2D.vert
-    Implementation/ShapeShader2D.frag ALIAS ShapeShader2D.frag)
-
 set(MagnumPhysics_SRCS
     AbstractShape.cpp
     AxisAlignedBox.cpp
@@ -17,9 +13,7 @@ set(MagnumPhysics_SRCS
     Sphere.cpp
 
     Implementation/AbstractDebugRenderer.cpp
-    Implementation/BoxRenderer.cpp
-    Implementation/ShapeShader.cpp
-    ${MagnumPhysics_RCS})
+    Implementation/BoxRenderer.cpp)
 set(MagnumPhysics_HEADERS
     AbstractShape.h
     AxisAlignedBox.h
@@ -39,7 +33,7 @@ set(MagnumPhysics_HEADERS
 
 add_library(MagnumPhysics SHARED ${MagnumPhysics_SRCS})
 
-target_link_libraries(MagnumPhysics Magnum MagnumPrimitives MagnumSceneGraph)
+target_link_libraries(MagnumPhysics Magnum MagnumPrimitives MagnumSceneGraph MagnumShaders)
 
 install(TARGETS MagnumPhysics DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumPhysics_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Physics)

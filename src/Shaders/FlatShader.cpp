@@ -13,30 +13,30 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "ShapeShader.h"
+#include "FlatShader.h"
 
 #include <Utility/Resource.h>
 
 #include "Shader.h"
 
-namespace Magnum { namespace Physics { namespace Implementation {
+namespace Magnum { namespace Shaders {
 
 namespace {
     template<std::uint8_t dimensions> struct ShaderName {};
 
     template<> struct ShaderName<2> {
-        constexpr static const char* Vertex = "ShapeShader2D.vert";
-        constexpr static const char* Fragment = "ShapeShader2D.frag";
+        constexpr static const char* Vertex = "FlatShader2D.vert";
+        constexpr static const char* Fragment = "FlatShader2D.frag";
     };
 
     template<> struct ShaderName<3> {
-        constexpr static const char* Vertex = "ShapeShader3D.vert";
-        constexpr static const char* Fragment = "ShapeShader3D.frag";
+        constexpr static const char* Vertex = "FlatShader3D.vert";
+        constexpr static const char* Fragment = "FlatShader3D.frag";
     };
 }
 
-template<std::uint8_t dimensions> ShapeShader<dimensions>::ShapeShader() {
-    Corrade::Utility::Resource resource("MagnumPhysics");
+template<std::uint8_t dimensions> FlatShader<dimensions>::FlatShader() {
+    Corrade::Utility::Resource resource("MagnumShaders");
     attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, resource.get(ShaderName<dimensions>::Vertex)));
     attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, resource.get(ShaderName<dimensions>::Fragment)));
 
@@ -46,7 +46,7 @@ template<std::uint8_t dimensions> ShapeShader<dimensions>::ShapeShader() {
     colorUniform = uniformLocation("color");
 }
 
-template class ShapeShader<2>;
-template class ShapeShader<3>;
+template class FlatShader<2>;
+template class FlatShader<3>;
 
-}}}
+}}

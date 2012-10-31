@@ -18,11 +18,11 @@
 #include "AbstractShaderProgram.h"
 #include "Mesh.h"
 #include "Physics/DebugDrawResourceManager.h"
-#include "ShapeShader.h"
+#include "Shaders/FlatShader.h"
 
 namespace Magnum { namespace Physics { namespace Implementation {
 
-template<std::uint8_t dimensions> AbstractDebugRenderer<dimensions>::AbstractDebugRenderer(ResourceKey shader, ResourceKey mesh, ResourceKey options, typename SceneGraph::AbstractObject<dimensions>::ObjectType* parent): SceneGraph::AbstractObject<dimensions>::ObjectType(parent), shader(DebugDrawResourceManager::instance()->get<AbstractShaderProgram, ShapeShader<dimensions>>(shader)), mesh(DebugDrawResourceManager::instance()->get<Mesh>(mesh)), options(DebugDrawResourceManager::instance()->get<Options>(options)) {}
+template<std::uint8_t dimensions> AbstractDebugRenderer<dimensions>::AbstractDebugRenderer(ResourceKey shader, ResourceKey mesh, ResourceKey options, typename SceneGraph::AbstractObject<dimensions>::ObjectType* parent): SceneGraph::AbstractObject<dimensions>::ObjectType(parent), shader(DebugDrawResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader<dimensions>>(shader)), mesh(DebugDrawResourceManager::instance()->get<Mesh>(mesh)), options(DebugDrawResourceManager::instance()->get<Options>(options)) {}
 
 template class AbstractDebugRenderer<2>;
 template class AbstractDebugRenderer<3>;

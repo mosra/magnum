@@ -16,8 +16,8 @@
 # libraries. Additional dependencies are specified by the components. The
 # optional components are:
 #  MeshTools     - MeshTools library
-#  Physics       - Physics library (depends on Primitives and SceneGraph
-#                  components)
+#  Physics       - Physics library (depends on Primitives, SceneGraph and
+#                  Shaders components)
 #  Primitives    - Library with stock geometric primitives (static)
 #  SceneGraph    - Scene graph library
 #  Shaders       - Library with stock shaders

@@ -24,18 +24,20 @@ namespace Magnum {
 class AbstractShaderProgram;
 class Mesh;
 
+namespace Shaders {
+    template<std::uint8_t> class FlatShader;
+}
+
 namespace Physics { namespace Implementation {
 
 struct Options;
-
-template<std::uint8_t> class ShapeShader;
 
 template<std::uint8_t dimensions> class AbstractDebugRenderer: public SceneGraph::AbstractObject<dimensions>::ObjectType {
     public:
         AbstractDebugRenderer(ResourceKey shader, ResourceKey mesh, ResourceKey options, typename SceneGraph::AbstractObject<dimensions>::ObjectType* parent);
 
     protected:
-        Resource<AbstractShaderProgram, ShapeShader<dimensions>> shader;
+        Resource<AbstractShaderProgram, Shaders::FlatShader<dimensions>> shader;
         Resource<Mesh> mesh;
         Resource<Options> options;
 };

@@ -18,13 +18,13 @@
 #include "AbstractShaderProgram.h"
 #include "Buffer.h"
 #include "Mesh.h"
+#include "Shaders/FlatShader.h"
 #include "AbstractShape.h"
 #include "Box.h"
 #include "ShapedObject.h"
 #include "ShapeGroup.h"
 #include "Implementation/AbstractDebugRenderer.h"
 #include "Implementation/BoxRenderer.h"
-#include "Implementation/ShapeShader.h"
 
 namespace Magnum {
 
@@ -52,7 +52,7 @@ SceneGraph::Object2D* DebugDrawResourceManager::createDebugMesh(SceneGraph::Obje
 
 DebugDrawResourceManager::DebugDrawResourceManager() {
     setFallback<Options>(new Options);
-    set<AbstractShaderProgram>("shader2d", new Implementation::ShapeShader<2>, ResourceDataState::Final, ResourcePolicy::Resident);
+    set<AbstractShaderProgram>("shader2d", new Shaders::FlatShader<2>, ResourceDataState::Final, ResourcePolicy::Resident);
 }
 
 DebugDrawResourceManager::~DebugDrawResourceManager() {}
