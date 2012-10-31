@@ -41,7 +41,7 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
         PhongShader();
 
         /**
-         * @brief Ambient color
+         * @brief Set ambient color
          * @return Pointer to self (for method chaining)
          *
          * If not set, default value is `(0.0f, 0.0f, 0.0f)`.
@@ -52,7 +52,7 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
         }
 
         /**
-         * @brief Diffuse color
+         * @brief Set diffuse color
          * @return Pointer to self (for method chaining)
          */
         inline PhongShader* setDiffuseColor(const Color3<GLfloat>& color) {
@@ -61,7 +61,7 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
         }
 
         /**
-         * @brief Specular color
+         * @brief Set specular color
          * @return Pointer to self (for method chaining)
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
@@ -72,7 +72,7 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
         }
 
         /**
-         * @brief Shininess
+         * @brief Set shininess
          * @return Pointer to self (for method chaining)
          *
          * The larger value, the harder surface (smaller specular highlight).
@@ -84,7 +84,7 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
         }
 
         /**
-         * @brief Transformation matrix
+         * @brief Set transformation matrix
          * @return Pointer to self (for method chaining)
          */
         inline PhongShader* setTransformation(const Matrix4& matrix) {
@@ -93,7 +93,7 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
         }
 
         /**
-         * @brief Projection matrix
+         * @brief Set projection matrix
          * @return Pointer to self (for method chaining)
          */
         inline PhongShader* setProjection(const Matrix4& matrix) {
@@ -102,7 +102,7 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
         }
 
         /**
-         * @brief Light position
+         * @brief Set light position
          * @return Pointer to self (for method chaining)
          */
         inline PhongShader* setLightPosition(const Vector3& light) {
@@ -111,7 +111,7 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
         }
 
         /**
-         * @brief Light color
+         * @brief Set light color
          * @return Pointer to self (for method chaining)
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
