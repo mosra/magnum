@@ -15,6 +15,7 @@
 
 #include "BufferedTexture.h"
 
+#ifndef MAGNUM_TARGET_GLES
 #include "Buffer.h"
 #include "Context.h"
 #include "Extensions.h"
@@ -40,7 +41,6 @@ void BufferedTexture::setBufferImplementationDSA(BufferedTexture::InternalFormat
     glTextureBufferEXT(id(), GL_TEXTURE_BUFFER, internalFormat, buffer->id());
 }
 
-#ifndef MAGNUM_TARGET_GLES
 BufferedTexture::InternalFormat::InternalFormat(Components components, ComponentType type) {
     #define internalFormatSwitch(c) switch(type) {                          \
         case ComponentType::UnsignedByte:                                   \
@@ -72,6 +72,6 @@ BufferedTexture::InternalFormat::InternalFormat(Components components, Component
         internalFormatSwitch(RGBA)
     #undef internalFormatSwitch
 }
-#endif
 
 }
+#endif

@@ -15,18 +15,20 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#ifndef MAGNUM_TARGET_GLES
 /** @file
  * @brief Class Magnum::BufferedTexture
  */
+#endif
 
 #include "AbstractTexture.h"
 
+#ifndef MAGNUM_TARGET_GLES
 namespace Magnum {
 
 class Buffer;
 class Context;
 
-#ifndef MAGNUM_TARGET_GLES
 /**
 @brief Buffered texture
 
@@ -46,8 +48,8 @@ uses DSA function to avoid unnecessary calls to @fn_gl{ActiveTexture} and
 "relevant section in AbstractTexture documentation" and respective function
 documentation for more information.
 
-@requires_gl
 @requires_gl31 Extension @extension{ARB,texture_buffer_object}
+@requires_gl Texture buffers are not available in OpenGL ES.
 */
 class MAGNUM_EXPORT BufferedTexture: private AbstractTexture {
     friend class Context;
@@ -169,8 +171,8 @@ inline BufferedTexture::InternalFormat operator|(BufferedTexture::Components com
 inline BufferedTexture::InternalFormat operator|(BufferedTexture::ComponentType type, BufferedTexture::Components components) {
     return BufferedTexture::InternalFormat(components, type);
 }
-#endif
 
 }
+#endif
 
 #endif

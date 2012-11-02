@@ -34,7 +34,7 @@ Class for storing image data in GPU memory. Can be replaced with Image, which
 stores image data in client memory, ImageWrapper, or for example with
 Trade::ImageData.
 @see BufferedImage1D, BufferedImage2D, BufferedImage3D, Buffer
-@requires_gles30 (no extension providing this functionality)
+@requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 */
 template<std::uint8_t dimensions> class MAGNUM_EXPORT BufferedImage: public AbstractImage {
     public:

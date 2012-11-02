@@ -100,7 +100,7 @@ class MAGNUM_EXPORT Buffer {
             /**
              * Used for storing atomic counters.
              * @requires_gl42 Extension @extension{ARB,shader_atomic_counters}
-             * @requires_gl
+             * @requires_gl Atomic counters are not available in OpenGL ES.
              */
             AtomicCounter = GL_ATOMIC_COUNTER_BUFFER,
             #endif
@@ -108,14 +108,16 @@ class MAGNUM_EXPORT Buffer {
             /**
              * Source for copies. See copy().
              * @requires_gl31 Extension @extension{ARB,copy_buffer}
-             * @requires_gles30 (no extension providing this functionality)
+             * @requires_gles30 Buffer copying is not available in OpenGL ES
+             *      2.0.
              */
             CopyRead = GL_COPY_READ_BUFFER,
 
             /**
              * Target for copies. See copy().
              * @requires_gl31 Extension @extension{ARB,copy_buffer}
-             * @requires_gles30 (no extension providing this functionality)
+             * @requires_gles30 Buffer copying is not available in OpenGL ES
+             *      2.0.
              */
             CopyWrite = GL_COPY_WRITE_BUFFER,
 
@@ -123,14 +125,14 @@ class MAGNUM_EXPORT Buffer {
             /**
              * Indirect compute dispatch commands.
              * @requires_gl43 Extension @extension{ARB,compute_shader}
-             * @requires_gl
+             * @requires_gl Compute shaders are not available in OpenGL ES.
              */
             DispatchIndirect = GL_DISPATCH_INDIRECT_BUFFER,
 
             /**
-             * Used for supplying arguments for instanced drawing.
-             * @requires_gl
+             * Used for supplying arguments for indirect drawing.
              * @requires_gl40 Extension @extension{ARB,draw_indirect}
+             * @requires_gl Indirect drawing not available in OpenGL ES.
              */
             DrawIndirect = GL_DRAW_INDIRECT_BUFFER,
             #endif
@@ -140,13 +142,15 @@ class MAGNUM_EXPORT Buffer {
 
             /**
              * Target for pixel pack operations.
-             * @requires_gles30 (no extension providing this functionality)
+             * @requires_gles30 Pixel buffer objects are not available in
+             *      OpenGL ES 2.0.
              */
             PixelPack = GL_PIXEL_PACK_BUFFER,
 
             /**
              * Source for texture update operations.
-             * @requires_gles30 (no extension providing this functionality)
+             * @requires_gles30 Pixel buffer objects are not available in
+             *      OpenGL ES 2.0.
              */
             PixelUnpack = GL_PIXEL_UNPACK_BUFFER,
 
@@ -154,14 +158,14 @@ class MAGNUM_EXPORT Buffer {
             /**
              * Used for shader storage.
              * @requires_gl43 Extension @extension{ARB,shader_storage_buffer_object}
-             * @requires_gl
+             * @requires_gl Shader storage is not available in OpenGL ES.
              */
             ShaderStorage = GL_SHADER_STORAGE_BUFFER,
 
             /**
              * Source for texel fetches. See BufferedTexture.
-             * @requires_gl
              * @requires_gl31 Extension @extension{ARB,texture_buffer_object}
+             * @requires_gl Texture buffers are not available in OpenGL ES.
              */
             Texture = GL_TEXTURE_BUFFER,
             #endif
@@ -169,14 +173,16 @@ class MAGNUM_EXPORT Buffer {
             /**
              * Target for transform feedback.
              * @requires_gl30 Extension @extension{EXT,transform_feedback}
-             * @requires_gles30 (no extension providing this functionality)
+             * @requires_gles30 Transform feedback is not available in OpenGL
+             *      ES 2.0.
              */
             TransformFeedback = GL_TRANSFORM_FEEDBACK_BUFFER,
 
             /**
              * Used for storing uniforms.
              * @requires_gl31 Extension @extension{ARB,uniform_buffer_object}
-             * @requires_gles30 (no extension providing this functionality)
+             * @requires_gles30 Uniform buffers are not available in OpenGL ES
+             *      2.0.
              */
             Uniform = GL_UNIFORM_BUFFER
         };
@@ -195,14 +201,16 @@ class MAGNUM_EXPORT Buffer {
             /**
              * Set once as output from an OpenGL command and used infequently
              * for drawing.
-             * @requires_gles30 (no extension providing this functionality)
+             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StreamDraw"
+             *      is available in OpenGL ES 2.0.
              */
             StreamRead = GL_STREAM_READ,
 
             /**
              * Set once as output from an OpenGL command and used infrequently
              * for drawing or copying to other buffers.
-             * @requires_gles30 (no extension providing this functionality)
+             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StreamDraw"
+             *      is available in OpenGL ES 2.0.
              */
             StreamCopy = GL_STREAM_COPY,
 
@@ -214,14 +222,16 @@ class MAGNUM_EXPORT Buffer {
             /**
              * Set once as output from an OpenGL command and queried many
              * times by the application.
-             * @requires_gles30 (no extension providing this functionality)
+             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StaticDraw"
+             *      is available in OpenGL ES 2.0.
              */
             StaticRead = GL_STATIC_READ,
 
             /**
              * Set once as output from an OpenGL command and used frequently
              * for drawing or copying to other buffers.
-             * @requires_gles30 (no extension providing this functionality)
+             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StaticDraw"
+             *      is available in OpenGL ES 2.0.
              */
             StaticCopy = GL_STATIC_COPY,
 
@@ -234,14 +244,16 @@ class MAGNUM_EXPORT Buffer {
             /**
              * Updated frequently as output from OpenGL command and queried
              * many times from the application.
-             * @requires_gles30 (no extension providing this functionality)
+             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::DynamicDraw"
+             *      is available in OpenGL ES 2.0.
              */
             DynamicRead = GL_DYNAMIC_READ,
 
             /**
              * Updated frequently as output from OpenGL command and used
              * frequently for drawing or copying to other images.
-             * @requires_gles30 (no extension providing this functionality)
+             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::DynamicCopy"
+             *      is available in OpenGL ES 2.0.
              */
             DynamicCopy = GL_DYNAMIC_COPY
         };
@@ -254,6 +266,7 @@ class MAGNUM_EXPORT Buffer {
          */
         inline static void unbind(Target target) { bind(target, 0); }
 
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Copy one buffer to another
          * @param read          %Buffer from which to read
@@ -267,13 +280,14 @@ class MAGNUM_EXPORT Buffer {
          * `Target::CopyRead` and `Target::CopyWrite` before the copy is
          * performed.
          * @requires_gl31 Extension @extension{ARB,copy_buffer}
-         * @requires_gles30 (no extension providing this functionality)
+         * @requires_gles30 Buffer copying is not available in OpenGL ES 2.0.
          * @see @fn_gl{BindBuffer} and @fn_gl{CopyBufferSubData} or
          *      @fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}
          */
         inline static void copy(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
             copyImplementation(read, write, readOffset, writeOffset, size);
         }
+        #endif
 
         /**
          * @brief Constructor
@@ -419,19 +433,27 @@ class MAGNUM_EXPORT Buffer {
         static void bind(Target hint, GLuint id);
         Target MAGNUM_LOCAL bindInternal(Target hint);
 
+        #ifndef MAGNUM_TARGET_GLES2
         typedef void(*CopyImplementation)(Buffer*, Buffer*, GLintptr, GLintptr, GLsizeiptr);
         static void MAGNUM_LOCAL copyImplementationDefault(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
+        #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_LOCAL copyImplementationDSA(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
+        #endif
         static CopyImplementation copyImplementation;
+        #endif
 
         typedef void(Buffer::*SetDataImplementation)(GLsizeiptr, const GLvoid*, Usage);
         void MAGNUM_LOCAL setDataImplementationDefault(GLsizeiptr size, const GLvoid* data, Usage usage);
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL setDataImplementationDSA(GLsizeiptr size, const GLvoid* data, Usage usage);
+        #endif
         static SetDataImplementation setDataImplementation;
 
         typedef void(Buffer::*SetSubDataImplementation)(GLintptr, GLsizeiptr, const GLvoid*);
         void MAGNUM_LOCAL setSubDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data);
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL setSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data);
+        #endif
         static SetSubDataImplementation setSubDataImplementation;
 
         GLuint _id;
