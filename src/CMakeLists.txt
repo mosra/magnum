@@ -28,7 +28,6 @@ set(Magnum_SRCS
     AbstractShaderProgram.cpp
     Buffer.cpp
     BufferedImage.cpp
-    BufferedTexture.cpp
     Context.cpp
     Framebuffer.cpp
     Image.cpp
@@ -48,16 +47,21 @@ set(Magnum_SRCS
     Trade/AbstractImporter.cpp
     Trade/MeshData2D.cpp
     Trade/MeshData3D.cpp)
+
+# Desktop-only code
+if(NOT TARGET_GLES)
+    set(Magnum_SRCS ${Magnum_SRCS}
+        BufferedTexture.cpp)
+endif()
+
 set(Magnum_HEADERS
     AbstractImage.h
     AbstractShaderProgram.h
     AbstractTexture.h
     BufferedImage.h
-    BufferedTexture.h
     Buffer.h
     Color.h
     Context.h
-    CubeMapTextureArray.h
     CubeMapTexture.h
     DimensionTraits.h
     Extensions.h
@@ -80,6 +84,14 @@ set(Magnum_HEADERS
 
     magnumCompatibility.h
     magnumVisibility.h)
+
+# Desktop-only headers
+if(NOT TARGET_GLES)
+    set(Magnum_HEADERS ${Magnum_HEADERS}
+        BufferedTexture.h
+        CubeMapTextureArray.h)
+endif()
+
 add_library(MagnumObjects OBJECT ${Magnum_SRCS})
 
 # Files shared between main library and math unit test library
