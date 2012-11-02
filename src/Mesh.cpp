@@ -43,7 +43,7 @@ Mesh::~Mesh() {
     (this->*destroyImplementation)();
 }
 
-Mesh::Mesh(Mesh&& other): vao(other.vao), _primitive(other._primitive), _vertexCount(other._vertexCount), attributes(other.attributes) {
+Mesh::Mesh(Mesh&& other): vao(other.vao), _primitive(other._primitive), _vertexCount(other._vertexCount), attributes(std::move(other.attributes)), integerAttributes(std::move(other.integerAttributes)), longAttributes(std::move(other.longAttributes)) {
     other.vao = 0;
 }
 
@@ -53,7 +53,9 @@ Mesh& Mesh::operator=(Mesh&& other) {
     vao = other.vao;
     _primitive = other._primitive;
     _vertexCount = other._vertexCount;
-    attributes = other.attributes;
+    attributes = std::move(other.attributes);
+    integerAttributes = std::move(other.integerAttributes);
+    longAttributes = std::move(other.longAttributes);
 
     other.vao = 0;
 
