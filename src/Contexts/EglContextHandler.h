@@ -26,6 +26,9 @@
 #endif
 #include <EGL/egl.h>
 
+/* undef Xlib nonsense to avoid conflicts */
+#undef None
+
 #include "AbstractContextHandler.h"
 
 #include "magnumCompatibility.h"

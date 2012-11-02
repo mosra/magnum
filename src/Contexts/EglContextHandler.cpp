@@ -15,6 +15,8 @@
 
 #include "EglContextHandler.h"
 
+#include <Utility/Debug.h>
+
 #include "Context.h"
 
 namespace Magnum { namespace Contexts {
