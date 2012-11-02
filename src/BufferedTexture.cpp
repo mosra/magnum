@@ -34,43 +34,11 @@ void BufferedTexture::initializeContextBasedFunctionality(Context* context) {
 
 void BufferedTexture::setBufferImplementationDefault(BufferedTexture::InternalFormat internalFormat, Buffer* buffer) {
     bindInternal();
-    glTexBuffer(GL_TEXTURE_BUFFER, internalFormat, buffer->id());
+    glTexBuffer(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer->id());
 }
 
 void BufferedTexture::setBufferImplementationDSA(BufferedTexture::InternalFormat internalFormat, Buffer* buffer) {
-    glTextureBufferEXT(id(), GL_TEXTURE_BUFFER, internalFormat, buffer->id());
-}
-
-BufferedTexture::InternalFormat::InternalFormat(Components components, ComponentType type) {
-    #define internalFormatSwitch(c) switch(type) {                          \
-        case ComponentType::UnsignedByte:                                   \
-            internalFormat = GL_##c##8UI; break;                            \
-        case ComponentType::Byte:                                           \
-            internalFormat = GL_##c##8I; break;                             \
-        case ComponentType::UnsignedShort:                                  \
-            internalFormat = GL_##c##16UI; break;                           \
-        case ComponentType::Short:                                          \
-            internalFormat = GL_##c##16I; break;                            \
-        case ComponentType::UnsignedInt:                                    \
-            internalFormat = GL_##c##32UI; break;                           \
-        case ComponentType::Int:                                            \
-            internalFormat = GL_##c##32I; break;                            \
-        case ComponentType::Half:                                           \
-            internalFormat = GL_##c##16F; break;                            \
-        case ComponentType::Float:                                          \
-            internalFormat = GL_##c##32F; break;                            \
-        case ComponentType::NormalizedUnsignedByte:                         \
-            internalFormat = GL_##c##8; break;                              \
-        case ComponentType::NormalizedUnsignedShort:                        \
-            internalFormat = GL_##c##16; break;                             \
-    }
-    if(components == Components::Red)
-        internalFormatSwitch(R)
-    else if(components == Components::RedGreen)
-        internalFormatSwitch(RG)
-    else if(components == Components::RGBA)
-        internalFormatSwitch(RGBA)
-    #undef internalFormatSwitch
+    glTextureBufferEXT(id(), GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer->id());
 }
 
 }

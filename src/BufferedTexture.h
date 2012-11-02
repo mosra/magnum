@@ -79,75 +79,120 @@ class MAGNUM_EXPORT BufferedTexture: private AbstractTexture {
     BufferedTexture& operator=(BufferedTexture&& other) = delete;
 
     public:
-        /** @{ @name Internal buffered texture formats */
-
         /**
-         * @copybrief AbstractTexture::Components
+         * @brief Internal format
          *
-         * Like AbstractTexture::Components, without three-component RGB.
+         * @see setBuffer()
          */
-        enum class Components {
-            Red, RedGreen, RGBA
-        };
+        enum class InternalFormat: GLenum {
+            /** Red component, normalized unsigned byte. */
+            R8 = GL_R8,
 
-        /**
-         * @copybrief AbstractTexture::ComponentType
-         *
-         * Like AbstractTexture::ComponentType, without normalized signed
-         * types.
-         */
-        enum class ComponentType {
-            UnsignedByte, Byte, UnsignedShort, Short, UnsignedInt, Int, Half,
-            Float, NormalizedUnsignedByte, NormalizedUnsignedShort
-        };
+            /** Red and green component, each normalized unsigned byte. */
+            RG8 = GL_RG8,
 
-        /** @copybrief AbstractTexture::Format */
-        enum class Format: GLenum {
+            /** RGBA, each component normalized unsigned byte. */
+            RGBA8 = GL_RGBA8,
+
+            /** Red component, normalized unsigned short. */
+            R16 = GL_R16,
+
+            /** Red and green component, each normalized unsigned short. */
+            RG16 = GL_RG16,
+
+            /** RGBA, each component normalized unsigned short. */
+            RGBA16 = GL_RGBA16,
+
+            /** Red component, non-normalized unsigned byte. */
+            R8UI = GL_R8UI,
+
+            /** Red and green component, each non-normalized unsigned byte. */
+            RG8UI = GL_RG8UI,
+
+            /** RGBA, each component non-normalized unsigned byte. */
+            RGBA8UI = GL_RGBA8UI,
+
+            /** Red component, non-normalized signed byte. */
+            R8I = GL_R8I,
+
+            /** Red and green component, each non-normalized signed byte. */
+            RG8I = GL_RG8I,
+
+            /** RGBA, each component non-normalized signed byte. */
+            RGBA8I = GL_RGBA8I,
+
+            /** Red component, non-normalized unsigned short. */
+            R16UI = GL_R16UI,
+
+            /** Red and green component, each non-normalized unsigned short. */
+            RG16UI = GL_RG16UI,
+
+            /** RGBA, each component non-normalized unsigned short. */
+            RGBA16UI = GL_RGBA16UI,
+
+            /** Red component, non-normalized signed short. */
+            R16I = GL_R16I,
+
+            /** Red and green component, each non-normalized signed short. */
+            RG16I = GL_RG16I,
+
+            /** RGBA, each component non-normalized signed short. */
+            RGBA16I = GL_RGBA16I,
+
+            /** Red component, non-normalized unsigned int. */
+            R32UI = GL_R32UI,
+
+            /** Red and green component, each non-normalized unsigned int. */
+            RG32UI = GL_RG32UI,
+
             /**
-             * Three-component RGB, float, each component 32bit, 96bit total.
-             *
+             * RGB, each component non-normalized unsigned int.
              * @requires_gl40 Extension @extension{ARB,texture_buffer_object_rgb32}
              */
-            RGB32Float = GL_RGB32F,
+            RGB32UI = GL_RGB32UI,
+
+            /** RGBA, each component non-normalized unsigned int. */
+            RGBA32UI = GL_RGBA32UI,
+
+            /** Red component, non-normalized signed int. */
+            R32I = GL_R32I,
+
+            /** Red and green component, each non-normalized signed int. */
+            RG32I = GL_RG32I,
 
             /**
-             * Three-component RGB, unsigned non-normalized, each component
-             * 32bit, 96bit total.
-             *
+             * RGB, each component non-normalized signed int.
              * @requires_gl40 Extension @extension{ARB,texture_buffer_object_rgb32}
              */
-            RGB32UnsignedInt = GL_RGB32UI,
+            RGB32I = GL_RGB32I,
+
+            /** RGBA, each component non-normalized signed int. */
+            RGBA32I = GL_RGBA32I,
+
+            /** Red component, half float. */
+            R16F = GL_R16F,
+
+            /** Red and green component, each half float. */
+            RG16F = GL_RG16F,
+
+            /** RGBA, each component half float. */
+            RGBA16F = GL_RGBA16F,
+
+            /** Red component, float. */
+            R32F = GL_R32F,
+
+            /** Red and green component, each float. */
+            RG32F = GL_RG32F,
 
             /**
-             * Three-component RGB, signed non-normalized, each component
-             * 32bit, 96bit total.
-             *
+             * RGB, each component float.
              * @requires_gl40 Extension @extension{ARB,texture_buffer_object_rgb32}
              */
-            RGB32Int = GL_RGB32I
+            RGB32F = GL_RGB32F,
+
+            /** RGBA, each component float. */
+            RGBA32F = GL_RGBA32F
         };
-
-        /** @copydoc AbstractTexture::InternalFormat */
-        class MAGNUM_EXPORT InternalFormat {
-            public:
-                /** @copybrief AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components, AbstractTexture::ComponentType) */
-                InternalFormat(Components components, ComponentType type);
-
-                /** @copydoc AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Format) */
-                inline constexpr InternalFormat(Format format): internalFormat(static_cast<GLenum>(format)) {}
-
-                /**
-                 * @brief OpenGL internal format ID
-                 *
-                 * @todoc Remove workaround when Doxygen supports \@copydoc for conversion operators
-                 */
-                inline constexpr operator GLint() const { return internalFormat; }
-
-            private:
-                GLint internalFormat;
-        };
-
-        /*@}*/
 
         inline BufferedTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
 
@@ -177,19 +222,6 @@ class MAGNUM_EXPORT BufferedTexture: private AbstractTexture {
         void MAGNUM_LOCAL setBufferImplementationDSA(InternalFormat internalFormat, Buffer* buffer);
         static SetBufferImplementation setBufferImplementation;
 };
-
-/** @relates BufferedTexture
-@brief Convertor of component count and data type to InternalFormat
-*/
-inline BufferedTexture::InternalFormat operator|(BufferedTexture::Components components, BufferedTexture::ComponentType type) {
-    return BufferedTexture::InternalFormat(components, type);
-}
-/** @relates BufferedTexture
- * @overload
- */
-inline BufferedTexture::InternalFormat operator|(BufferedTexture::ComponentType type, BufferedTexture::Components components) {
-    return BufferedTexture::InternalFormat(components, type);
-}
 
 }
 #endif
