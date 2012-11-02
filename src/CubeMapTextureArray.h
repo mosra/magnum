@@ -15,12 +15,15 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#ifndef MAGNUM_TARGET_GLES
 /** @file
  * @brief Class Magnum::CubeMapTextureArray
  */
+#endif
 
 #include "Texture.h"
 
+#ifndef MAGNUM_TARGET_GLES
 namespace Magnum {
 
 /**
@@ -35,6 +38,7 @@ the cube map.
 
 @see CubeMapTexture::setSeamless()
 @requires_gl40 Extension @extension{ARB,texture_cube_map_array}
+@requires_gl Cube map texture arrays are not available in OpenGL ES.
 */
 class CubeMapTextureArray: public AbstractTexture {
     public:
@@ -129,7 +133,6 @@ class CubeMapTextureArray: public AbstractTexture {
             AbstractTexture::setMagnificationFilter(filter);
             return this;
         }
-        #ifndef MAGNUM_TARGET_GLES
         inline CubeMapTextureArray* setBorderColor(const Color4<GLfloat>& color) {
             AbstractTexture::setBorderColor(color);
             return this;
@@ -138,7 +141,6 @@ class CubeMapTextureArray: public AbstractTexture {
             AbstractTexture::setMaxAnisotropy(anisotropy);
             return this;
         }
-        #endif
         inline CubeMapTextureArray* generateMipmap() {
             AbstractTexture::generateMipmap();
             return this;
@@ -147,5 +149,6 @@ class CubeMapTextureArray: public AbstractTexture {
 };
 
 }
+#endif
 
 #endif

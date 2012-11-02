@@ -65,9 +65,9 @@ class CubeMapTexture: public AbstractTexture {
          *
          * Initially disabled on desktop OpenGL.
          * @see @fn_gl{Enable}/@fn_gl{Disable} with @def_gl{TEXTURE_CUBE_MAP_SEAMLESS}
+         * @requires_gl32 Extension @extension{ARB,seamless_cube_map}
          * @requires_gl Not available in OpenGL ES 2.0, always enabled in
          *      OpenGL ES 3.0.
-         * @requires_gl32 Extension @extension{ARB,seamless_cube_map}
          */
         inline static void setSeamless(bool enabled) {
             enabled ? glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS) : glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
@@ -125,11 +125,11 @@ class CubeMapTexture: public AbstractTexture {
             AbstractTexture::setBorderColor(color);
             return this;
         }
+        #endif
         inline CubeMapTexture* setMaxAnisotropy(GLfloat anisotropy) {
             AbstractTexture::setMaxAnisotropy(anisotropy);
             return this;
         }
-        #endif
         inline CubeMapTexture* generateMipmap() {
             AbstractTexture::generateMipmap();
             return this;

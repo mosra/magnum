@@ -32,14 +32,18 @@ AbstractTexture::ParameterfvImplementation AbstractTexture::parameterfvImplement
     &AbstractTexture::parameterImplementationDefault;
 AbstractTexture::MipmapImplementation AbstractTexture::mipmapImplementation =
     &AbstractTexture::mipmapImplementationDefault;
+#ifndef MAGNUM_TARGET_GLES
 AbstractTexture::Image1DImplementation AbstractTexture::image1DImplementation =
     &AbstractTexture::imageImplementationDefault;
+#endif
 AbstractTexture::Image2DImplementation AbstractTexture::image2DImplementation =
     &AbstractTexture::imageImplementationDefault;
 AbstractTexture::Image3DImplementation AbstractTexture::image3DImplementation =
     &AbstractTexture::imageImplementationDefault;
+#ifndef MAGNUM_TARGET_GLES
 AbstractTexture::SubImage1DImplementation AbstractTexture::subImage1DImplementation =
     &AbstractTexture::subImageImplementationDefault;
+#endif
 AbstractTexture::SubImage2DImplementation AbstractTexture::subImage2DImplementation =
     &AbstractTexture::subImageImplementationDefault;
 AbstractTexture::SubImage3DImplementation AbstractTexture::subImage3DImplementation =
@@ -66,17 +70,18 @@ GLint AbstractTexture::maxSupportedLayerCount() {
     return Context::current()->state()->texture->maxSupportedLayerCount;
 }
 
-#ifndef MAGNUM_TARGET_GLES
 GLfloat AbstractTexture::maxSupportedAnisotropy() {
     GLfloat& value = Context::current()->state()->texture->maxSupportedAnisotropy;
 
+    /** @todo Re-enable when extension header is available */
+    #ifndef MAGNUM_TARGET_GLES
     /* Get the value, if not already cached */
     if(value == 0.0f)
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &value);
+    #endif
 
     return value;
 }
-#endif
 
 AbstractTexture::~AbstractTexture() {
     /* Remove all bindings */
@@ -106,9 +111,11 @@ void AbstractTexture::bindImplementationDefault(GLint layer) {
     glBindTexture(_target, (textureState->bindings[layer] = _id));
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::bindImplementationDSA(GLint layer) {
     glBindMultiTextureEXT(GL_TEXTURE0 + layer, _target, (Context::current()->state()->texture->bindings[layer] = _id));
 }
+#endif
 
 AbstractTexture* AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
     #ifndef MAGNUM_TARGET_GLES
@@ -134,9 +141,11 @@ void AbstractTexture::mipmapImplementationDefault() {
     glGenerateMipmap(_target);
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::mipmapImplementationDSA() {
     glGenerateTextureMipmapEXT(_id, _target);
 }
+#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 void AbstractTexture::bindInternal() {
@@ -165,6 +174,7 @@ void AbstractTexture::initializeContextBasedFunctionality(Context* context) {
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &value);
     textureState->bindings.resize(value);
 
+    #ifndef MAGNUM_TARGET_GLES
     if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         Debug() << "AbstractTexture: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
 
@@ -180,6 +190,7 @@ void AbstractTexture::initializeContextBasedFunctionality(Context* context) {
         subImage2DImplementation = &AbstractTexture::subImageImplementationDSA;
         subImage3DImplementation = &AbstractTexture::subImageImplementationDSA;
     }
+    #endif
 }
 
 void AbstractTexture::parameterImplementationDefault(GLenum parameter, GLint value) {
@@ -187,24 +198,29 @@ void AbstractTexture::parameterImplementationDefault(GLenum parameter, GLint val
     glTexParameteri(_target, parameter, value);
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::parameterImplementationDSA(GLenum parameter, GLint value) {
     glTextureParameteriEXT(_id, _target, parameter, value);
 }
+#endif
 
 void AbstractTexture::parameterImplementationDefault(GLenum parameter, GLfloat value) {
     bindInternal();
     glTexParameterf(_target, parameter, value);
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::parameterImplementationDSA(GLenum parameter, GLfloat value) {
     glTextureParameterfEXT(_id, _target, parameter, value);
 }
+#endif
 
 void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLfloat* values) {
     bindInternal();
     glTexParameterfv(_target, parameter, values);
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLfloat* values) {
     glTextureParameterfvEXT(_id, _target, parameter, values);
 }
@@ -217,25 +233,42 @@ void AbstractTexture::imageImplementationDefault(GLenum target, GLint mipLevel, 
 void AbstractTexture::imageImplementationDSA(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<1, GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
     glTextureImage1DEXT(_id, target, mipLevel, internalFormat, size[0], 0, static_cast<GLenum>(components), static_cast<GLenum>(type), data);
 }
+#endif
 
 void AbstractTexture::imageImplementationDefault(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
     bindInternal();
     glTexImage2D(target, mipLevel, internalFormat, size.x(), size.y(), 0, static_cast<GLenum>(components), static_cast<GLenum>(type), data);
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::imageImplementationDSA(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
     glTextureImage2DEXT(_id, target, mipLevel, internalFormat, size.x(), size.y(), 0, static_cast<GLenum>(components), static_cast<GLenum>(type), data);
 }
+#endif
 
 void AbstractTexture::imageImplementationDefault(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector3<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
     bindInternal();
+    /** @todo Get some extension wrangler instead to avoid linker errors to glTexImage3D() on ES2 */
+    #ifndef MAGNUM_TARGET_GLES2
     glTexImage3D(target, mipLevel, internalFormat, size.x(), size.y(), size.z(), 0, static_cast<GLenum>(components), static_cast<GLenum>(type), data);
+    #else
+    static_cast<void>(target);
+    static_cast<void>(mipLevel);
+    static_cast<void>(internalFormat);
+    static_cast<void>(size);
+    static_cast<void>(components);
+    static_cast<void>(type);
+    static_cast<void>(data);
+    #endif
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::imageImplementationDSA(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector3<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
     glTextureImage3DEXT(_id, target, mipLevel, internalFormat, size.x(), size.y(), size.z(), 0, static_cast<GLenum>(components), static_cast<GLenum>(type), data);
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::subImageImplementationDefault(GLenum target, GLint mipLevel, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
     bindInternal();
     glTexSubImage1D(target, mipLevel, offset[0], size[0], static_cast<GLenum>(components), static_cast<GLenum>(type), data);
@@ -244,24 +277,40 @@ void AbstractTexture::subImageImplementationDefault(GLenum target, GLint mipLeve
 void AbstractTexture::subImageImplementationDSA(GLenum target, GLint mipLevel, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
     glTextureSubImage1DEXT(_id, target, mipLevel, offset[0], size[0], static_cast<GLenum>(components), static_cast<GLenum>(type), data);
 }
+#endif
 
 void AbstractTexture::subImageImplementationDefault(GLenum target, GLint mipLevel, const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
     bindInternal();
     glTexSubImage2D(target, mipLevel, offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(components), static_cast<GLenum>(type), data);
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::subImageImplementationDSA(GLenum target, GLint mipLevel, const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
     glTextureSubImage2DEXT(_id, target, mipLevel, offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(components), static_cast<GLenum>(type), data);
 }
+#endif
 
 void AbstractTexture::subImageImplementationDefault(GLenum target, GLint mipLevel, const Math::Vector3<GLint>& offset, const Math::Vector3<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
     bindInternal();
+    /** @todo Get some extension wrangler instead to avoid linker errors to glTexSubImage3D() on ES2 */
+    #ifndef MAGNUM_TARGET_GLES2
     glTexSubImage3D(target, mipLevel, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), static_cast<GLenum>(components), static_cast<GLenum>(type), data);
+    #else
+    static_cast<void>(target);
+    static_cast<void>(mipLevel);
+    static_cast<void>(offset);
+    static_cast<void>(size);
+    static_cast<void>(components);
+    static_cast<void>(type);
+    static_cast<void>(data);
+    #endif
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::subImageImplementationDSA(GLenum target, GLint mipLevel, const Math::Vector3<GLint>& offset, const Math::Vector3<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data) {
     glTextureSubImage3DEXT(_id, target, mipLevel, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), static_cast<GLenum>(components), static_cast<GLenum>(type), data);
 }
+#endif
 
 AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components components, AbstractTexture::ComponentType type) {
     #ifndef MAGNUM_TARGET_GLES

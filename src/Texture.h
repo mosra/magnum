@@ -44,7 +44,7 @@ don't support mipmapping and repeating wrapping modes, see @ref Texture::Filter
 "Filter", @ref Texture::Mipmap "Mipmap" and generateMipmap() documentation
 for more information.
 
-@requires_gl (rectangle textures)
+@requires_gl Rectangle textures are not available in OpenGL ES.
 @requires_gl31 Extension @extension{ARB,texture_rectangle} (rectangle textures)
 
 @see Texture1D, Texture2D, Texture3D, CubeMapTexture, CubeMapTextureArray
@@ -63,7 +63,8 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
         enum class Target: GLenum {
             /**
              * One-dimensional texture
-             * @requires_gl
+             * @requires_gl Only 2D and 3D textures are available in OpenGL
+             *      ES.
              */
             Texture1D = GL_TEXTURE_1D,
 
@@ -71,28 +72,30 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
 
             /**
              * Three-dimensional texture
-             * @requires_gles30 (no extension providing this functionality)
+             * @requires_gles30 %Extension @es_extension{OES,texture_3D}
              */
             Texture3D = GL_TEXTURE_3D,
 
             /**
              * One-dimensional texture array (i.e. two dimensions in total)
-             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,texture_array}
+             * @requires_gl Only 2D and 3D textures are available in OpenGL
+             *      ES.
              */
             Texture1DArray = GL_TEXTURE_1D_ARRAY,
 
             /**
              * Two-dimensional texture array (i.e. three dimensions in total)
              * @requires_gl30 Extension @extension{EXT,texture_array}
-             * @requires_gles30 (no extension providing this functionality)
+             * @requires_gles30 Array textures are not available in OpenGL ES
+             *      2.0.
              */
             Texture2DArray = GL_TEXTURE_2D_ARRAY,
 
             /**
              * Rectangle texture (i.e. two dimensions)
-             * @requires_gl
              * @requires_gl31 Extension @extension{ARB,texture_rectangle}
+             * @requires_gl Rectangle textures are not available in OpenGL ES.
              */
             Rectangle = GL_TEXTURE_RECTANGLE
         };
@@ -220,7 +223,7 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
 /**
 @brief One-dimensional texture
 
-@requires_gl
+@requires_gl Only 2D and 3D textures are available in OpenGL ES.
 */
 typedef Texture<1> Texture1D;
 #endif
@@ -231,7 +234,7 @@ typedef Texture<2> Texture2D;
 /**
 @brief Three-dimensional texture
 
-@requires_gles30 (no extension providing this functionality)
+@requires_gles30 %Extension @es_extension{OES,texture_3D}
 */
 typedef Texture<3> Texture3D;
 
