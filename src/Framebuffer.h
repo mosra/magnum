@@ -788,6 +788,9 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
         enum class DefaultReadAttachment: GLenum {
+            /** Don't read from any framebuffer */
+            None = GL_NONE,
+
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Read from back left framebuffer.
