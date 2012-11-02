@@ -25,13 +25,12 @@
 
 namespace Magnum {
 
-#ifndef MAGNUM_TARGET_GLES2
 /**
 @brief Base class for queries
 
 See Query, SampleQuery, TimeQuery documentation for more information.
 @todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
-@requires_gles30 (no extension providing this functionality)
+@requires_gles30 %Extension @es_extension{EXT,occlusion_query_boolean}
 */
 class MAGNUM_EXPORT AbstractQuery {
     public:
@@ -69,8 +68,9 @@ class MAGNUM_EXPORT AbstractQuery {
          * Note that this function is blocking until the result is available.
          * See resultAvailable().
          * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT}
-         * @requires_gl Result type `GLint`, `GLuint64`, `GLint64`
          * @requires_gl33 Extension @extension{ARB,timer_query} (result type `GLuint64` and `GLint64`)
+         * @requires_gl Result types @c GLint, @c GLuint64 and @c GLint64 are
+         *      not available in OpenGL ES.
          */
         template<class T> T result();
 
@@ -86,7 +86,6 @@ template<> GLuint MAGNUM_EXPORT AbstractQuery::result<GLuint>();
 template<> GLint MAGNUM_EXPORT AbstractQuery::result<GLint>();
 template<> GLuint64 MAGNUM_EXPORT AbstractQuery::result<GLuint64>();
 template<> GLint64 MAGNUM_EXPORT AbstractQuery::result<GLint64>();
-#endif
 #endif
 
 /**
@@ -109,7 +108,7 @@ if(!q.resultAvailable()) {
 GLuint primitiveCount = q.result<GLuint>();
 @endcode
 @requires_gl30 Extension @extension{EXT,transform_feedback}
-@requires_gles30 (no extension providing this functionality)
+@requires_gles30 Only sample queries are available on OpenGL ES 2.0.
 */
 class MAGNUM_EXPORT Query: public AbstractQuery {
     public:
@@ -119,7 +118,8 @@ class MAGNUM_EXPORT Query: public AbstractQuery {
             /**
              * Count of primitives generated from vertex shader or geometry
              * shader.
-             * @requires_gl
+             * @requires_gl Only transform feedback query is available in
+             *      OpenGL ES.
              */
             PrimitivesGenerated = GL_PRIMITIVES_GENERATED,
             #endif
@@ -132,8 +132,9 @@ class MAGNUM_EXPORT Query: public AbstractQuery {
 
             /**
              * Elapsed time
-             * @requires_gl
              * @requires_gl33 Extension @extension{ARB,timer_query}
+             * @requires_gl Only transform feedback query is available in
+             *      OpenGL ES.
              */
             TimeElapsed = GL_TIME_ELAPSED
             #endif
@@ -197,7 +198,7 @@ q.beginConditionalRender(SampleQuery::ConditionalRenderMode::Wait);
 // render full version of the object only if the query returns nonzero result
 q.endConditionalRender();
 @endcode
-@requires_gles30 (no extension providing this functionality)
+@requires_gles30 %Extension @es_extension{EXT,occlusion_query_boolean}
 */
 class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
     public:
@@ -206,7 +207,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Count of samples passed from fragment shader
-             * @requires_gl
+             * @requires_gl Only boolean query is available in OpenGL ES.
              */
             SamplesPassed = GL_SAMPLES_PASSED,
             #endif
@@ -231,8 +232,8 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
         /**
          * @brief Conditional render mode
          *
-         * @requires_gl
          * @requires_gl30 Extension @extension{NV,conditional_render}
+         * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
         enum class ConditionalRenderMode: GLenum {
             /**
@@ -277,6 +278,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
          *
          * @see @fn_gl{BeginConditionalRender}
          * @requires_gl30 Extension @extension{NV,conditional_render}
+         * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
         inline void beginConditionalRender(ConditionalRenderMode mode) {
             glBeginConditionalRender(id(), static_cast<GLenum>(mode));
@@ -287,6 +289,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
          *
          * @see @fn_gl{EndConditionalRender}
          * @requires_gl30 Extension @extension{NV,conditional_render}
+         * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
         inline void endConditionalRender() {
             glEndConditionalRender();
@@ -328,8 +331,8 @@ GLuint timeElapsed1 = tmp-q1.result<GLuint>();
 GLuint timeElapsed2 = q3.result<GLuint>()-tmp;
 @endcode
 Using this query results in fewer OpenGL calls when doing more measures.
-@requires_gl
 @requires_gl33 Extension @extension{ARB,timer_query}
+@requires_gl Timer query is not available in OpenGL ES.
 */
 class TimeQuery: public AbstractQuery {
     public:
