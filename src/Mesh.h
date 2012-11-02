@@ -557,6 +557,7 @@ class MAGNUM_EXPORT Mesh {
             GLsizei stride;
         };
 
+        #ifndef MAGNUM_TARGET_GLES2
         struct MAGNUM_LOCAL IntegerAttribute {
             Buffer* buffer;
             GLuint location;
@@ -566,6 +567,7 @@ class MAGNUM_EXPORT Mesh {
             GLsizei stride;
         };
 
+        #ifndef MAGNUM_TARGET_GLES
         struct MAGNUM_LOCAL LongAttribute {
             Buffer* buffer;
             GLuint location;
@@ -574,6 +576,8 @@ class MAGNUM_EXPORT Mesh {
             GLintptr offset;
             GLsizei stride;
         };
+        #endif
+        #endif
         #endif
 
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
@@ -629,7 +633,7 @@ class MAGNUM_EXPORT Mesh {
             (this->*attributePointerImplementation)(attributes.back());
         }
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_integral<typename TypeTraits<T>::AttributeType>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
             integerAttributes.push_back({
                 buffer,
@@ -643,6 +647,7 @@ class MAGNUM_EXPORT Mesh {
             (this->*attributeIPointerImplementation)(integerAttributes.back());
         }
 
+        #ifndef MAGNUM_TARGET_GLES
         template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename TypeTraits<T>::AttributeType, GLdouble>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
             for(GLuint i = 0; i != Implementation::Attribute<T>::vectorCount(); ++i) {
                 longAttributes.push_back({
@@ -658,6 +663,7 @@ class MAGNUM_EXPORT Mesh {
             }
         }
         #endif
+        #endif
 
         static void MAGNUM_LOCAL bindVAO(GLuint vao);
 
@@ -668,59 +674,57 @@ class MAGNUM_EXPORT Mesh {
         }
 
         void MAGNUM_LOCAL vertexAttribPointer(const Attribute& attribute);
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         void MAGNUM_LOCAL vertexAttribPointer(const IntegerAttribute& attribute);
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL vertexAttribPointer(const LongAttribute& attribute);
+        #endif
         #endif
 
         typedef void(Mesh::*CreateImplementation)();
         void MAGNUM_LOCAL createImplementationDefault();
-        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL createImplementationVAO();
-        #endif
         static CreateImplementation createImplementation;
 
         typedef void(Mesh::*DestroyImplementation)();
         void MAGNUM_LOCAL destroyImplementationDefault();
-        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL destroyImplementationVAO();
-        #endif
         static MAGNUM_LOCAL DestroyImplementation destroyImplementation;
 
         typedef void(Mesh::*AttributePointerImplementation)(const Attribute&);
         void MAGNUM_LOCAL attributePointerImplementationDefault(const Attribute& attribute);
-        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL attributePointerImplementationVAO(const Attribute& attribute);
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL attributePointerImplementationDSA(const Attribute& attribute);
         #endif
         static AttributePointerImplementation attributePointerImplementation;
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         typedef void(Mesh::*AttributeIPointerImplementation)(const IntegerAttribute&);
         void MAGNUM_LOCAL attributePointerImplementationDefault(const IntegerAttribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationVAO(const IntegerAttribute& attribute);
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL attributePointerImplementationDSA(const IntegerAttribute& attribute);
+        #endif
         static AttributeIPointerImplementation attributeIPointerImplementation;
 
+        #ifndef MAGNUM_TARGET_GLES
         typedef void(Mesh::*AttributeLPointerImplementation)(const LongAttribute&);
         void MAGNUM_LOCAL attributePointerImplementationDefault(const LongAttribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationVAO(const LongAttribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationDSA(const LongAttribute& attribute);
         static AttributeLPointerImplementation attributeLPointerImplementation;
         #endif
+        #endif
 
         typedef void(Mesh::*BindImplementation)();
         void MAGNUM_LOCAL bindImplementationDefault();
-        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL bindImplementationVAO();
-        #endif
         static MAGNUM_LOCAL BindImplementation bindImplementation;
 
         typedef void(Mesh::*UnbindImplementation)();
         void MAGNUM_LOCAL unbindImplementationDefault();
-        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL unbindImplementationVAO();
-        #endif
         static MAGNUM_LOCAL UnbindImplementation unbindImplementation;
 
         GLuint vao;
@@ -728,8 +732,12 @@ class MAGNUM_EXPORT Mesh {
         GLsizei _vertexCount;
 
         std::vector<Attribute> attributes;
+        #ifndef MAGNUM_TARGET_GLES2
         std::vector<IntegerAttribute> integerAttributes;
+        #ifndef MAGNUM_TARGET_GLES
         std::vector<LongAttribute> longAttributes;
+        #endif
+        #endif
 };
 
 }

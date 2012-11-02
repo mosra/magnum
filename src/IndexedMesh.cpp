@@ -49,31 +49,30 @@ void IndexedMesh::bind() {
 }
 
 void IndexedMesh::initializeContextBasedFunctionality(Context* context) {
+    /** @todo VAOs are in ES 3.0 and as extension in ES 2.0, enable them when some extension wrangler is available */
+    #ifndef MAGNUM_TARGET_GLES
     if(context->isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>()) {
-        #ifndef MAGNUM_TARGET_GLES
         Debug() << "IndexedMesh: using" << Extensions::GL::APPLE::vertex_array_object::string() << "features";
 
         bindIndexBufferImplementation = &IndexedMesh::bindIndexBufferImplementationVAO;
         bindIndexedImplementation = &IndexedMesh::bindIndexedImplementationVAO;
-        #endif
     }
+    #else
+    static_cast<void>(context);
+    #endif
 }
 
 void IndexedMesh::bindIndexBufferImplementationDefault() {}
 
-#ifndef MAGNUM_TARGET_GLES
 void IndexedMesh::bindIndexBufferImplementationVAO() {
     bindVAO(vao);
     _indexBuffer->bind(Buffer::Target::ElementArray);
 }
-#endif
 
 void IndexedMesh::bindIndexedImplementationDefault() {
     _indexBuffer->bind(Buffer::Target::ElementArray);
 }
 
-#ifndef MAGNUM_TARGET_GLES
 void IndexedMesh::bindIndexedImplementationVAO() {}
-#endif
 
 }

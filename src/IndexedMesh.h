@@ -122,16 +122,12 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
 
         typedef void(IndexedMesh::*BindIndexBufferImplementation)();
         void MAGNUM_LOCAL bindIndexBufferImplementationDefault();
-        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL bindIndexBufferImplementationVAO();
-        #endif
         static MAGNUM_LOCAL BindIndexBufferImplementation bindIndexBufferImplementation;
 
         typedef void(IndexedMesh::*BindIndexedImplementation)();
         void MAGNUM_LOCAL bindIndexedImplementationDefault();
-        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL bindIndexedImplementationVAO();
-        #endif
         static MAGNUM_LOCAL BindIndexedImplementation bindIndexedImplementation;
 
         Buffer* _indexBuffer;
