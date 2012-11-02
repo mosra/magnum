@@ -35,6 +35,7 @@ example usage.
 */
 namespace Extensions {
 
+#ifndef MAGNUM_TARGET_GLES
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define _extension(prefix, vendor, extension, _requiredVersion, _coreVersion) \
     struct extension {                                                      \
@@ -138,6 +139,7 @@ namespace GL {
     }
 }
 #undef _extension
+#endif
 #endif
 
 }

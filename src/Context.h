@@ -46,10 +46,33 @@ enum class Version: GLint {
     GL400 = 400,                    /**< @brief OpenGL 4.0, GLSL 4.00 */
     GL410 = 410,                    /**< @brief OpenGL 4.1, GLSL 4.10 */
     GL420 = 420,                    /**< @brief OpenGL 4.2, GLSL 4.20 */
-    GL430 = 430                     /**< @brief OpenGL 4.3, GLSL 4.30 */
+    GL430 = 430,                    /**< @brief OpenGL 4.3, GLSL 4.30 */
+    #endif
+
+    /**
+     * @brief OpenGL ES 2.0, GLSL ES 1.00
+     *
+     * All the functionality is present in OpenGL 4.2 (extension
+     * @extension{ARB,ES2_compatibility}), so on desktop OpenGL this is
+     * equivalent to @ref Version "Version::GL410".
+     */
+    #ifndef MAGNUM_TARGET_GLES
+    GLES200 = 410,
     #else
-    GLES200 = 200,                  /**< @brief OpenGL ES 2.0, GLSL ES 1.00 */
-    GLES300 = 300                   /**< @brief OpenGL ES 3.0, GLSL ES 3.00 */
+    GLES200 = 200,
+    #endif
+
+    /**
+     * @brief OpenGL ES 3.0, GLSL ES 3.00
+     *
+     * All the functionality is present in OpenGL 4.3 (extension
+     * @extension{ARB,ES3_compatibility}), so on desktop OpenGL this is the
+     * equivalent to @ref Version "Version::GL430".
+     */
+    #ifndef MAGNUM_TARGET_GLES
+    GLES300 = 430,
+    #else
+    GLES300 = 300
     #endif
 };
 

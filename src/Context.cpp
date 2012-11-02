@@ -36,6 +36,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
     #define _extension(prefix, vendor, extension)                           \
         {Extensions::prefix::vendor::extension::Index, Extensions::prefix::vendor::extension::requiredVersion(), Extensions::prefix::vendor::extension::coreVersion(), Extensions::prefix::vendor::extension::string()}
     static const std::vector<Extension> empty;
+    #ifndef MAGNUM_TARGET_GLES
     static const std::vector<Extension> extensions{
         _extension(GL,EXT,texture_filter_anisotropic)};
     static const std::vector<Extension> extensions300{
@@ -126,18 +127,30 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,texture_storage)};
     static const std::vector<Extension> extensions430;
     #undef _extension
+    #else
+    static const std::vector<Extension> extensions;
+    static const std::vector<Extension> extensionsES200;
+    static const std::vector<Extension> extensionsES300;
+    #endif
 
     switch(version) {
         case Version::None:  return extensions;
+        #ifndef MAGNUM_TARGET_GLES
         case Version::GL210: return empty;
         case Version::GL300: return extensions300;
         case Version::GL310: return extensions310;
         case Version::GL320: return extensions320;
         case Version::GL330: return extensions330;
         case Version::GL400: return extensions400;
+        /* case Version::GLES200: */
         case Version::GL410: return extensions410;
         case Version::GL420: return extensions420;
+        /* case Version::GLES300: */
         case Version::GL430: return extensions430;
+        #else
+        case Version::GLES200: return extensionsES200;
+        case Version::GLES300: return extensionsES300;
+        #endif
     }
 
     return empty;
@@ -153,6 +166,7 @@ Context::Context() {
 
     /* Get first future (not supported) version */
     vector<Version> versions{
+        #ifndef MAGNUM_TARGET_GLES
         Version::GL300,
         Version::GL310,
         Version::GL320,
@@ -161,6 +175,10 @@ Context::Context() {
         Version::GL410,
         Version::GL420,
         Version::GL430,
+        #else
+        Version::GLES200,
+        Version::GLES300,
+        #endif
         Version::None
     };
     size_t future = 0;
@@ -176,7 +194,12 @@ Context::Context() {
             futureExtensions.insert(make_pair(extension._string, extension));
 
     /* Check for presence of extensions in future versions */
+    #ifndef MAGNUM_TARGET_GLES
     if(isVersionSupported(Version::GL300)) {
+    #else
+    if(isVersionSupported(Version::GLES300)) {
+    #endif
+        #ifndef MAGNUM_TARGET_GLES2
         GLuint index = 0;
         const char* extension;
         while((extension = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, index++)))) {
@@ -186,8 +209,9 @@ Context::Context() {
                 extensionStatus.set(found->second._index);
             }
         }
+        #endif
 
-    /* OpenGL 2.1 doesn't have glGetStringi() */
+    /* OpenGL 2.1 / OpenGL ES 2.0 doesn't have glGetStringi() */
     } else {
         vector<string> extensions = Corrade::Utility::split(reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS)), ' ');
         for(const string& extension: extensions) {
@@ -210,7 +234,9 @@ Context::Context() {
     AbstractShaderProgram::initializeContextBasedFunctionality(this);
     AbstractTexture::initializeContextBasedFunctionality(this);
     Buffer::initializeContextBasedFunctionality(this);
+    #ifndef MAGNUM_TARGET_GLES
     BufferedTexture::initializeContextBasedFunctionality(this);
+    #endif
     IndexedMesh::initializeContextBasedFunctionality(this);
     Mesh::initializeContextBasedFunctionality(this);
 }
