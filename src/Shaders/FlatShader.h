@@ -33,6 +33,7 @@ namespace Magnum { namespace Shaders {
 @brief Flat shader
 
 Draws whole mesh with one color.
+@see FlatShader2D, FlatShader3D
 */
 template<std::uint8_t dimensions> class SHADERS_EXPORT FlatShader: public AbstractShaderProgram {
     public:
@@ -63,6 +64,12 @@ template<std::uint8_t dimensions> class SHADERS_EXPORT FlatShader: public Abstra
         GLint transformationProjectionUniform,
             colorUniform;
 };
+
+/** @brief 2D flat shader */
+typedef FlatShader<2> FlatShader2D;
+
+/** @brief 3D flat shader */
+typedef FlatShader<3> FlatShader3D;
 
 }}
 
