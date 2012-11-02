@@ -33,8 +33,7 @@ namespace Magnum {
 /**
 @brief %Buffered image
 
-Class for storing image data in GPU memory. Can be replaced with Image, which
-stores image data in client memory, ImageWrapper, or for example with
+Stores image data in GPU memory. Interchangeable with Image, ImageWrapper or
 Trade::ImageData.
 @see BufferedImage1D, BufferedImage2D, BufferedImage3D, Buffer
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
@@ -45,13 +44,13 @@ template<std::uint8_t dimensions> class MAGNUM_EXPORT BufferedImage: public Abst
 
         /**
          * @brief Constructor
-         * @param components        Color components
-         * @param type              Data type
+         * @param format            Format of pixel data
+         * @param type              Data type of pixel data
          *
          * Dimensions and buffer are empty, call setData() to fill the image
          * with data.
          */
-        inline BufferedImage(Components components, ComponentType type): AbstractImage(components, type) {
+        inline BufferedImage(Format format, Type type): AbstractImage(format, type) {
             _buffer.setTargetHint(Buffer::Target::PixelPack);
         }
 
@@ -78,25 +77,25 @@ template<std::uint8_t dimensions> class MAGNUM_EXPORT BufferedImage: public Abst
         /**
          * @brief Set image data
          * @param size              %Image size
-         * @param components        Color components. Data type is detected
-         *      from passed data array.
+         * @param format            Format of pixel data. Data type is
+         *      detected from passed data array.
          * @param data              %Image data
          * @param usage             %Image buffer usage
          *
          * Updates the image buffer with given data. The data are not deleted
          * after filling the buffer.
          *
-         * @see setData(const Math::Vector<Dimensions, GLsizei>&, Components, ComponentType, const GLvoid*, Buffer::Usage)
+         * @see setData(const Math::Vector<Dimensions, GLsizei>&, Format, Type, const GLvoid*, Buffer::Usage)
          */
-        template<class T> inline void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, const T* data, Buffer::Usage usage) {
-            setData(size, components, TypeTraits<T>::imageType(), data, usage);
+        template<class T> inline void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, const T* data, Buffer::Usage usage) {
+            setData(size, format, TypeTraits<T>::imageType(), data, usage);
         }
 
         /**
          * @brief Set image data
          * @param size              %Image size
-         * @param components        Color components
-         * @param type              Data type
+         * @param format            Format of pixel data
+         * @param type              Data type of pixel data
          * @param data              %Image data
          * @param usage             %Image buffer usage
          *
@@ -105,11 +104,11 @@ template<std::uint8_t dimensions> class MAGNUM_EXPORT BufferedImage: public Abst
          *
          * @see Buffer::setData()
          */
-        void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage);
+        void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, const GLvoid* data, Buffer::Usage usage);
 
-    protected:
-        Math::Vector<Dimensions, GLsizei> _size;    /**< @brief %Image size */
-        Buffer _buffer;                             /**< @brief %Image buffer */
+    private:
+        Math::Vector<Dimensions, GLsizei> _size;
+        Buffer _buffer;
 };
 
 /** @brief One-dimensional buffered image */

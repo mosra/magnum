@@ -29,8 +29,9 @@ namespace Magnum { namespace Trade {
 /**
 @brief %Image data
 
-Provides access to image data and additional information about data type and
-dimensions. Can be used in the same situations as Image and BufferedImage.
+Access to image data provided by AbstractImporter subclasses. Interchangeable
+with Image, ImageWrapper or BufferedImage.
+@see ImageData1D, ImageData2D, ImageData3D
 */
 template<std::uint8_t dimensions> class ImageData: public AbstractImage {
     public:
@@ -40,27 +41,27 @@ template<std::uint8_t dimensions> class ImageData: public AbstractImage {
          * @brief Constructor
          * @param name              %Image name
          * @param size              %Image size
-         * @param components        Color components. Data type is detected
-         *      from passed data array.
+         * @param format            Format of pixel data. Data type is
+         *      detected from passed data array.
          * @param data              %Image data
          *
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        template<class T> inline ImageData(const std::string& name, const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _name(name), _size(size), _data(reinterpret_cast<char*>(data)) {}
+        template<class T> inline ImageData(const std::string& name, const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, T* data): AbstractImage(format, TypeTraits<T>::imageType()), _name(name), _size(size), _data(reinterpret_cast<char*>(data)) {}
 
         /**
          * @brief Constructor
          * @param name              %Image name
          * @param size              %Image size
-         * @param components        Color components
-         * @param type              Data type
+         * @param format            Format of pixel data
+         * @param type              Data type of pixel data
          * @param data              %Image data
          *
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        inline ImageData(const std::string& name, const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _name(name), _size(size), _data(reinterpret_cast<char*>(data)) {}
+        inline ImageData(const std::string& name, const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, GLvoid* data): AbstractImage(format, type), _name(name), _size(size), _data(reinterpret_cast<char*>(data)) {}
 
         /** @brief Destructor */
         inline ~ImageData() { delete[] _data; }

@@ -45,21 +45,21 @@ void Framebuffer::mapForDraw(std::initializer_list<std::int8_t> colorAttachments
     delete[] attachments;
 }
 
-void Framebuffer::read(const Vector2i& offset, const Vector2i& size, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image) {
-    char* data = new char[AbstractImage::pixelSize(components, type)*size.product()];
-    glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(components), static_cast<GLenum>(type), data);
-    image->setData(size, components, type, data);
+void Framebuffer::read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, Image2D* image) {
+    char* data = new char[AbstractImage::pixelSize(format, type)*size.product()];
+    glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), data);
+    image->setData(size, format, type, data);
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-void Framebuffer::read(const Vector2i& offset, const Vector2i& size, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage) {
+void Framebuffer::read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, BufferedImage2D* image, Buffer::Usage usage) {
     /* If the buffer doesn't have sufficient size, resize it */
     /** @todo Explicitly reset also when buffer usage changes */
-    if(image->size() != size || image->components() != components || image->type() != type)
-        image->setData(size, components, type, nullptr, usage);
+    if(image->size() != size || image->format() != format || image->type() != type)
+        image->setData(size, format, type, nullptr, usage);
 
     image->buffer()->bind(Buffer::Target::PixelPack);
-    glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(components), static_cast<GLenum>(type), nullptr);
+    glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), nullptr);
 }
 #endif
 

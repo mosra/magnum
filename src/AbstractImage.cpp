@@ -21,80 +21,100 @@
 
 namespace Magnum {
 
-std::size_t AbstractImage::pixelSize(Components format, ComponentType type) {
+std::size_t AbstractImage::pixelSize(Format format, Type type) {
     std::size_t size = 0;
     switch(type) {
+        case Type::UnsignedByte:
+        #ifndef MAGNUM_TARGET_GLES2
+        case Type::Byte:
+        #endif
+            size = 1; break;
+        case Type::UnsignedShort:
+        #ifndef MAGNUM_TARGET_GLES2
+        case Type::Short:
+        #endif
+        case Type::HalfFloat:
+            size = 2; break;
+        case Type::UnsignedInt:
+        #ifndef MAGNUM_TARGET_GLES2
+        case Type::Int:
+        #endif
+        case Type::Float:
+            size = 4; break;
+
         #ifndef MAGNUM_TARGET_GLES
-        case ComponentType::RGB332:
-        case ComponentType::BGR233:
+        case Type::UnsignedByte332:
+        case Type::UnsignedByte233Rev:
             return 1;
         #endif
-        case ComponentType::RGB565:
+        case Type::UnsignedShort565:
         #ifndef MAGNUM_TARGET_GLES
-        case ComponentType::BGR565:
+        case Type::UnsignedShort565Rev:
         #endif
-        case ComponentType::RGBA4:
-        #ifndef MAGNUM_TARGET_GLES
-        case ComponentType::ABGR4:
-        #endif
-        case ComponentType::RGB5Alpha1:
-        #ifndef MAGNUM_TARGET_GLES
-        case ComponentType::Alpha1BGR5:
-        #endif
+        case Type::UnsignedShort4444:
+        case Type::UnsignedShort4444Rev:
+        case Type::UnsignedShort5551:
+        case Type::UnsignedShort1555Rev:
             return 2;
         #ifndef MAGNUM_TARGET_GLES
-        case ComponentType::RGBA8:
-        case ComponentType::ABGR8:
-        case ComponentType::RGB10Alpha2:
-        case ComponentType::Alpha2RGB10:
-        case ComponentType::Depth24Stencil8:
-        case ComponentType::B10GR11Float:
-        case ComponentType::Exponent5RGB9:
+        case Type::UnsignedInt8888:
+        case Type::UnsignedInt8888Rev:
+        case Type::UnsignedInt1010102:
+        #endif
+        case Type::UnsignedInt2101010Rev:
+        #ifndef MAGNUM_TARGET_GLES2
+        case Type::UnsignedInt10F11F11FRev:
+        case Type::UnsignedInt5999Rev:
+        #endif
+        case Type::UnsignedInt248:
             return 4;
-        case ComponentType::Depth32FloatStencil8:
+        #ifndef MAGNUM_TARGET_GLES2
+        case Type::Float32UnsignedInt248Rev:
             return 8;
         #endif
-        case ComponentType::UnsignedByte:
-        case ComponentType::Byte:
-            size = 1; break;
-        case ComponentType::UnsignedShort:
-        case ComponentType::Short:
-        #ifndef MAGNUM_TARGET_GLES
-        case ComponentType::HalfFloat:
-            size = 2; break;
-        #endif
-        case ComponentType::UnsignedInt:
-        case ComponentType::Int:
-        case ComponentType::Float:
-            size = 4; break;
     }
 
     switch(format) {
-        #ifndef MAGNUM_TARGET_GLES
-        case Components::Red:
-        case Components::Green:
-        case Components::Blue:
-            return 1*size;
-        case Components::RedGreen:
-            return 2*size;
+        case Format::Red:
+        #ifndef MAGNUM_TARGET_GLES2
+        case Format::RedInteger:
         #endif
-        case Components::RGB:
         #ifndef MAGNUM_TARGET_GLES
-        case Components::BGR:
+        case Format::Green:
+        case Format::Blue:
+        case Format::GreenInteger:
+        case Format::BlueInteger:
+        #endif
+            return 1*size;
+        case Format::RG:
+        #ifndef MAGNUM_TARGET_GLES2
+        case Format::RGInteger:
+        #endif
+            return 2*size;
+        case Format::RGB:
+        #ifndef MAGNUM_TARGET_GLES2
+        case Format::RGBInteger:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case Format::BGR:
+        case Format::BGRInteger:
         #endif
             return 3*size;
-        case Components::RGBA:
-        #ifndef MAGNUM_TARGET_GLES
-        case Components::BGRA:
+        case Format::RGBA:
+        #ifndef MAGNUM_TARGET_GLES2
+        case Format::RGBAInteger:
+        #endif
+        case Format::BGRA:
+        #ifndef MAGNUM_TARGET_GLES2
+        case Format::BGRAInteger:
         #endif
             return 4*size;
 
-        #ifndef MAGNUM_TARGET_GLES
-        case Components::Depth:
-        case Components::StencilIndex:
-        case Components::DepthStencil:
+        /* Handled above */
+        case Format::DepthComponent:
+        case Format::StencilIndex:
+        case Format::DepthStencil:
             CORRADE_INTERNAL_ASSERT(false);
-        #endif
     }
 
     return 0;

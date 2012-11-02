@@ -17,9 +17,9 @@
 
 namespace Magnum {
 
-template<std::uint8_t dimensions> void Image<dimensions>::setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, GLvoid* data) {
+template<std::uint8_t dimensions> void Image<dimensions>::setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, GLvoid* data) {
     delete[] _data;
-    _components = components;
+    _format = format;
     _type = type;
     _size = size;
     _data = reinterpret_cast<char*>(data);

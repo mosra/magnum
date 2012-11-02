@@ -677,22 +677,22 @@ class MAGNUM_EXPORT Framebuffer {
          * @brief Read block of pixels from framebuffer to image
          * @param offset            Offset in the framebuffer
          * @param size              %Image size
-         * @param components        Color components
-         * @param type              Data type
+         * @param format            Format of pixel data
+         * @param type              Data type of pixel data
          * @param image             %Image where to put the data
          *
          * @see @fn_gl{ReadPixels}
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        static void read(const Vector2i& offset, const Vector2i& size, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image);
+        static void read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, Image2D* image);
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Read block of pixels from framebuffer to buffered image
          * @param offset            Offset in the framebuffer
          * @param size              %Image size
-         * @param components        Color components
-         * @param type              Data type
+         * @param format            Format of pixel data
+         * @param type              Data type of pixel data
          * @param image             Buffered image where to put the data
          * @param usage             %Buffer usage
          *
@@ -700,7 +700,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
          */
-        static void read(const Vector2i& offset, const Vector2i& size, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage);
+        static void read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, BufferedImage2D* image, Buffer::Usage usage);
         #endif
 
         /*@}*/

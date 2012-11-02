@@ -1151,37 +1151,37 @@ class MAGNUM_EXPORT AbstractTexture {
         static MAGNUM_LOCAL MipmapImplementation mipmapImplementation;
 
         #ifndef MAGNUM_TARGET_GLES
-        typedef void(AbstractTexture::*Image1DImplementation)(GLenum, GLint, InternalFormat, const Math::Vector<1, GLsizei>&, AbstractImage::Components, AbstractImage::ComponentType, const GLvoid*);
-        void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<1, GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
-        void MAGNUM_LOCAL imageImplementationDSA(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<1, GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        typedef void(AbstractTexture::*Image1DImplementation)(GLenum, GLint, InternalFormat, const Math::Vector<1, GLsizei>&, AbstractImage::Format, AbstractImage::Type, const GLvoid*);
+        void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<1, GLsizei>& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
+        void MAGNUM_LOCAL imageImplementationDSA(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Math::Vector<1, GLsizei>& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
         static Image1DImplementation image1DImplementation;
         #endif
 
-        typedef void(AbstractTexture::*Image2DImplementation)(GLenum, GLint, InternalFormat, const Vector2i&, AbstractImage::Components, AbstractImage::ComponentType, const GLvoid*);
-        void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Vector2i& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
-        void MAGNUM_LOCAL imageImplementationDSA(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Vector2i& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        typedef void(AbstractTexture::*Image2DImplementation)(GLenum, GLint, InternalFormat, const Vector2i&, AbstractImage::Format, AbstractImage::Type, const GLvoid*);
+        void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
+        void MAGNUM_LOCAL imageImplementationDSA(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
         static Image2DImplementation image2DImplementation;
 
-        typedef void(AbstractTexture::*Image3DImplementation)(GLenum, GLint, InternalFormat, const Vector3i&, AbstractImage::Components, AbstractImage::ComponentType, const GLvoid*);
-        void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Vector3i& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
-        void MAGNUM_LOCAL imageImplementationDSA(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Vector3i& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        typedef void(AbstractTexture::*Image3DImplementation)(GLenum, GLint, InternalFormat, const Vector3i&, AbstractImage::Format, AbstractImage::Type, const GLvoid*);
+        void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Vector3i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
+        void MAGNUM_LOCAL imageImplementationDSA(GLenum target, GLint mipLevel, InternalFormat internalFormat, const Vector3i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
         static Image3DImplementation image3DImplementation;
 
         #ifndef MAGNUM_TARGET_GLES
-        typedef void(AbstractTexture::*SubImage1DImplementation)(GLenum, GLint, const Math::Vector<1, GLint>&, const Math::Vector<1, GLsizei>&, AbstractImage::Components, AbstractImage::ComponentType, const GLvoid*);
-        void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint mipLevel, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
-        void MAGNUM_LOCAL subImageImplementationDSA(GLenum target, GLint mipLevel, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        typedef void(AbstractTexture::*SubImage1DImplementation)(GLenum, GLint, const Math::Vector<1, GLint>&, const Math::Vector<1, GLsizei>&, AbstractImage::Format, AbstractImage::Type, const GLvoid*);
+        void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint mipLevel, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDSA(GLenum target, GLint mipLevel, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
         static SubImage1DImplementation subImage1DImplementation;
         #endif
 
-        typedef void(AbstractTexture::*SubImage2DImplementation)(GLenum, GLint, const Vector2i&, const Vector2i&, AbstractImage::Components, AbstractImage::ComponentType, const GLvoid*);
-        void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint mipLevel, const Vector2i& offset, const Vector2i& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
-        void MAGNUM_LOCAL subImageImplementationDSA(GLenum target, GLint mipLevel, const Vector2i& offset, const Vector2i& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        typedef void(AbstractTexture::*SubImage2DImplementation)(GLenum, GLint, const Vector2i&, const Vector2i&, AbstractImage::Format, AbstractImage::Type, const GLvoid*);
+        void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint mipLevel, const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDSA(GLenum target, GLint mipLevel, const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
         static SubImage2DImplementation subImage2DImplementation;
 
-        typedef void(AbstractTexture::*SubImage3DImplementation)(GLenum, GLint, const Vector3i&, const Vector3i&, AbstractImage::Components, AbstractImage::ComponentType, const GLvoid*);
-        void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint mipLevel, const Vector3i& offset, const Vector3i& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
-        void MAGNUM_LOCAL subImageImplementationDSA(GLenum target, GLint mipLevel, const Vector3i& offset, const Vector3i& size, AbstractImage::Components components, AbstractImage::ComponentType type, const GLvoid* data);
+        typedef void(AbstractTexture::*SubImage3DImplementation)(GLenum, GLint, const Vector3i&, const Vector3i&, AbstractImage::Format, AbstractImage::Type, const GLvoid*);
+        void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint mipLevel, const Vector3i& offset, const Vector3i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDSA(GLenum target, GLint mipLevel, const Vector3i& offset, const Vector3i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
         static SubImage3DImplementation subImage3DImplementation;
 
         GLuint _id;
@@ -1201,11 +1201,11 @@ template<> struct AbstractTexture::DataHelper<1> {
     }
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type set(AbstractTexture* texture, GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image) {
-        (texture->*image1DImplementation)(target, mipLevel, internalFormat, image->size(), image->components(), image->type(), image->data());
+        (texture->*image1DImplementation)(target, mipLevel, internalFormat, image->size(), image->format(), image->type(), image->data());
     }
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type setSub(AbstractTexture* texture, GLenum target, GLint mipLevel, const Math::Vector<1, GLint>& offset, Image* image) {
-        (texture->*subImage1DImplementation)(target, mipLevel, offset, image->size(), image->components(), image->type(), image->data());
+        (texture->*subImage1DImplementation)(target, mipLevel, offset, image->size(), image->format(), image->type(), image->data());
     }
 };
 #endif
@@ -1224,15 +1224,15 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
     static void setWrapping(AbstractTexture* texture, const Array2D<Wrapping>& wrapping);
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type set(AbstractTexture* texture, GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image) {
-        (texture->*image2DImplementation)(target, mipLevel, internalFormat, image->size(), image->components(), image->type(), image->data());
+        (texture->*image2DImplementation)(target, mipLevel, internalFormat, image->size(), image->format(), image->type(), image->data());
     }
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type setSub(AbstractTexture* texture, GLenum target, GLint mipLevel, const Vector2i& offset, Image* image) {
-        (texture->*subImage2DImplementation)(target, mipLevel, offset, image->size(), image->components(), image->type(), image->data());
+        (texture->*subImage2DImplementation)(target, mipLevel, offset, image->size(), image->format(), image->type(), image->data());
     }
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type setSub(AbstractTexture* texture, GLenum target, GLint mipLevel, const Vector2i& offset, Image* image) {
-        (texture->*subImage2DImplementation)(target, mipLevel, offset, Vector2i(image->size(), 1), image->components(), image->type(), image->data());
+        (texture->*subImage2DImplementation)(target, mipLevel, offset, Vector2i(image->size(), 1), image->format(), image->type(), image->data());
     }
 };
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
@@ -1250,15 +1250,15 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     static void setWrapping(AbstractTexture* texture, const Array3D<Wrapping>& wrapping);
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 3, void>::type set(AbstractTexture* texture, GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image) {
-        (texture->*image3DImplementation)(target, mipLevel, internalFormat, image->size(), image->components(), image->type(), image->data());
+        (texture->*image3DImplementation)(target, mipLevel, internalFormat, image->size(), image->format(), image->type(), image->data());
     }
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 3, void>::type setSub(AbstractTexture* texture, GLenum target, GLint mipLevel, const Vector3i& offset, Image* image) {
-        (texture->*subImage3DImplementation)(target, mipLevel, offset, image->size(), image->components(), image->type(), image->data());
+        (texture->*subImage3DImplementation)(target, mipLevel, offset, image->size(), image->format(), image->type(), image->data());
     }
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type setSub(AbstractTexture* texture, GLenum target, GLint mipLevel, const Vector3i& offset, Image* image) {
-        (texture->*subImage3DImplementation)(target, mipLevel, offset, Vector3i(image->size(), 1), image->components(), image->type(), image->data());
+        (texture->*subImage3DImplementation)(target, mipLevel, offset, Vector3i(image->size(), 1), image->format(), image->type(), image->data());
     }
 };
 #endif

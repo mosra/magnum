@@ -38,7 +38,8 @@ targeted for wrapping data which are either stored in stack/constant memory
 same properties for each frame, such as video stream. Thus it is not possible
 to change image properties, only data pointer.
 
-See also Image, BufferedImage and Trade::ImageData.
+Interchangeable with Image, BufferedImage or Trade::ImageData.
+@see ImageWrapper1D, ImageWrapper2D, ImageWrapper3D
 */
 template<std::uint8_t dimensions> class ImageWrapper: public AbstractImage {
     public:
@@ -47,37 +48,37 @@ template<std::uint8_t dimensions> class ImageWrapper: public AbstractImage {
         /**
          * @brief Constructor
          * @param size              %Image size
-         * @param components        Color components. Data type is detected
-         *      from passed data array.
+         * @param format            Format of pixel data. Data type is
+         *      detected from passed data array.
          * @param data              %Image data with proper size
          *
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        template<class T> inline ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _size(size), _data(data) {}
+        template<class T> inline ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, T* data): AbstractImage(format, TypeTraits<T>::imageType()), _size(size), _data(data) {}
 
         /**
          * @brief Constructor
          * @param size              %Image size
-         * @param components        Color components
-         * @param type              Data type
+         * @param format            Format of pixel data
+         * @param type              Data type of pixel data
          * @param data              %Image data
          *
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        inline ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
+        inline ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, GLvoid* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
 
         /**
          * @brief Constructor
          * @param size              %Image size
-         * @param components        Color components
-         * @param type              Data type
+         * @param format            Format of pixel data
+         * @param type              Data type of pixel data
          *
          * Dimensions and data pointer are set to zero, call setData() to fill
          * the image with data.
          */
-        inline ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type): AbstractImage(components, type), _size(size), _data(nullptr) {}
+        inline ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type): AbstractImage(format, type), _size(size), _data(nullptr) {}
 
         /** @brief %Image size */
         inline typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
@@ -98,9 +99,9 @@ template<std::uint8_t dimensions> class ImageWrapper: public AbstractImage {
             _data = reinterpret_cast<char*>(data);
         }
 
-    protected:
-        Math::Vector<Dimensions, GLsizei> _size;    /**< @brief %Image size */
-        char* _data;                                /**< @brief %Image data */
+    private:
+        Math::Vector<Dimensions, GLsizei> _size;
+        char* _data;
 };
 
 /** @brief One-dimensional image wrapper */

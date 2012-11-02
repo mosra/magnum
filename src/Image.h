@@ -29,9 +29,8 @@ namespace Magnum {
 /**
 @brief %Image
 
-Class for storing image data on client memory. Can be replaced with
-ImageWrapper, BufferedImage, which stores image data in GPU memory, or for
-example with Trade::ImageData.
+Stores image data on client memory. Interchangeable with ImageWrapper,
+BufferedImage or Trade::ImageData.
 @see Image1D, Image2D, Image3D
 */
 template<std::uint8_t dimensions> class Image: public AbstractImage {
@@ -41,36 +40,36 @@ template<std::uint8_t dimensions> class Image: public AbstractImage {
         /**
          * @brief Constructor
          * @param size              %Image size
-         * @param components        Color components. Data type is detected
-         *      from passed data array.
+         * @param format            Format of pixel data. Data type is
+         *      detected from passed data array.
          * @param data              %Image data with proper size
          *
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        template<class T> inline Image(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _size(size), _data(data) {}
+        template<class T> inline Image(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, T* data): AbstractImage(format, TypeTraits<T>::imageType()), _size(size), _data(data) {}
 
         /**
          * @brief Constructor
          * @param size              %Image size
-         * @param components        Color components
-         * @param type              Data type
+         * @param format            Format of pixel data
+         * @param type              Data type of pixel data
          * @param data              %Image data
          *
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        inline Image(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
+        inline Image(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, GLvoid* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
 
         /**
          * @brief Constructor
-         * @param components        Color components
-         * @param type              Data type
+         * @param format            Format of pixel data
+         * @param type              Data type of pixel data
          *
          * Dimensions and data pointer are set to zero, call setData() to fill
          * the image with data.
          */
-        inline Image(Components components, ComponentType type): AbstractImage(components, type), _data(nullptr) {}
+        inline Image(Format format, Type type): AbstractImage(format, type), _data(nullptr) {}
 
         /** @brief Destructor */
         inline ~Image() { delete[] _data; }
@@ -85,32 +84,32 @@ template<std::uint8_t dimensions> class Image: public AbstractImage {
         /**
          * @brief Set image data
          * @param size              %Image size
-         * @param components        Color components. Data type is detected
-         *      from passed data array.
+         * @param format            Format of pixel data. Data type is
+         *      detected from passed data array.
          * @param data              %Image data
          *
          * Deletes previous data and replaces them with new. Note that the
          * data are not copied, but they are deleted on destruction.
          */
-        template<class T> inline void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, T* data) {
-            setData(size, components, TypeTraits<T>::imageType(), data);
+        template<class T> inline void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, T* data) {
+            setData(size, format, TypeTraits<T>::imageType(), data);
         }
 
         /**
          * @brief Set image data
          * @param size              %Image size
-         * @param components        Color components
-         * @param type              Data type
+         * @param format            Format of pixel data
+         * @param type              Data type of pixel data
          * @param data              %Image data
          *
          * Deletes previous data and replaces them with new. Note that the
          * data are not copied, but they are deleted on destruction.
          */
-        void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, GLvoid* data);
+        void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, GLvoid* data);
 
-    protected:
-        Math::Vector<Dimensions, GLsizei> _size;    /**< @brief %Image size */
-        char* _data;                                /**< @brief %Image data */
+    private:
+        Math::Vector<Dimensions, GLsizei> _size;
+        char* _data;
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
