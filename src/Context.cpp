@@ -151,7 +151,7 @@ Context::Context() {
     glGetIntegerv(GL_MINOR_VERSION, &_minorVersion);
     _version = static_cast<Version>(_majorVersion*100+_minorVersion*10);
 
-    /* Future versions */
+    /* Get first future (not supported) version */
     vector<Version> versions{
         Version::GL300,
         Version::GL310,
@@ -167,7 +167,9 @@ Context::Context() {
     while(versions[future] != Version::None && versions[future] < _version)
         ++future;
 
-    /* Extensions */
+    /* List of extensions from future versions (extensions from current and
+       previous versions should be supported automatically, so we don't need
+       to check for them) */
     unordered_map<string, Extension> futureExtensions;
     for(size_t i = future; i != versions.size(); ++i)
         for(const Extension& extension: Extension::extensions(versions[i]))

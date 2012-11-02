@@ -111,7 +111,7 @@ enum class Type: GLenum {
     ,
     /**
      * Double
-     * @requires_gl
+     * @requires_gl Only floats are available in OpenGL ES.
      */
     Double = GL_DOUBLE
     #endif
