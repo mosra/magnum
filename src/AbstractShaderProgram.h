@@ -121,22 +121,11 @@ using color input index):
 layout(location = 0, index = 0) out vec4 color;
 layout(location = 1, index = 1) out vec4 ambient;
 @endcode
-@requires_gl (for explicit input attribute location instead of using
-     bindAttributeLocation())
-@requires_gl (for using bindFragmentDataLocation() /
-    bindFragmentDataLocationIndexed())
-@requires_gl30 Extension @extension{EXT,gpu_shader4} (for using
-    bindFragmentDataLocation())
-@requires_gl33 Extension @extension{ARB,blend_func_extended} (for using
-    bindFragmentDataLocationIndexed())
-@requires_gl33 Extension @extension{ARB,explicit_attrib_location} (for
-    explicit attribute location instead of using bindAttributeLocation())
-@requires_gles30 (no extension providing this functionality) (for explicit
-    input and output attribute location)
 
-If you don't have the required extension, you can use functions bindAttributeLocation()
-and bindFragmentDataLocation() / bindFragmentDataLocationIndexed() between
-attaching the shaders and linking the program:
+If you don't have the required extension, you can use functions
+bindAttributeLocation() and bindFragmentDataLocation() /
+bindFragmentDataLocationIndexed() between attaching the shaders and linking
+the program:
 @code
 // Shaders attached...
 
@@ -150,6 +139,19 @@ bindFragmentDataLocationIndexed(1, 1, "ambient");
 // Link...
 @endcode
 
+@requires_gl30 %Extension @extension{EXT,gpu_shader4} for using
+    bindFragmentDataLocation().
+@requires_gl33 %Extension @extension{ARB,blend_func_extended} for using
+    bindFragmentDataLocationIndexed().
+@requires_gl33 %Extension @extension{ARB,explicit_attrib_location} for
+    explicit attribute location instead of using bindAttributeLocation(),
+    bindFragmentDataLocation() or bindFragmentDataLocationIndexed().
+@requires_gles30 Explicit location specification of input attributes is not
+    supported in OpenGL ES 2.0, use bindAttributeLocation() instead.
+@requires_gles30 Multiple fragment shader outputs are not available in OpenGL
+    ES 2.0, similar functionality is available in extension
+    @extension{NV,draw_buffers}.
+
 @subsection AbstractShaderProgram-uniform-location Uniform locations
 
 The preferred workflow is to specify uniform locations directly in the shader
@@ -160,9 +162,6 @@ code, e.g.:
 layout(location = 0) uniform mat4 transformation;
 layout(location = 1) uniform mat4 projection;
 @endcode
-@requires_gl (for explicit uniform location instead of using uniformLocation())
-@requires_gl43 Extension @extension{ARB,explicit_uniform_location} (for
-    explicit uniform location instead of using uniformLocation())
 
 If you don't have the required extension, you can get uniform location using
 uniformLocation() after linking stage:
@@ -170,6 +169,11 @@ uniformLocation() after linking stage:
 GLint transformationUniform = uniformLocation("transformation");
 GLint projectionUniform = uniformLocation("projection");
 @endcode
+
+@requires_gl43 Extension @extension{ARB,explicit_uniform_location} for
+    explicit uniform location instead of using uniformLocation().
+@requires_gl Explicit uniform location is not supported in OpenGL ES. Use
+    uniformLocation() instead.
 
 @subsection AbstractShaderProgram-texture-layer Binding texture layer uniforms
 
@@ -181,10 +185,6 @@ code, e.g.:
 layout(binding = 0) uniform sampler2D diffuseTexture;
 layout(binding = 1) uniform sampler2D specularTexture;
 @endcode
-@requires_gl (for explicit texture layer binding instead of using
-    setUniform(GLint, GLint))
-@requires_gl42 Extension @extension{ARB,shading_language_420pack} (for explicit
-    texture layer binding instead of using setUniform(GLint, GLint))
 
 If you don't have the required extension (or if you want to change the layer
 later), you can set the texture layer uniform using setUniform(GLint, GLint):
@@ -192,6 +192,11 @@ later), you can set the texture layer uniform using setUniform(GLint, GLint):
 setUniform(DiffuseTextureUniform, DiffuseTextureLayer);
 setUniform(SpecularTextureUniform, SpecularTextureLayer);
 @endcode
+
+@requires_gl42 Extension @extension{ARB,shading_language_420pack} for explicit
+    texture layer binding instead of using setUniform(GLint, GLint).
+@requires_gl Explicit texture layer binding is not supported in OpenGL ES. Use
+    setUniform(GLint, GLint) instead.
 
 @section AbstractShaderProgram-rendering-workflow Rendering workflow
 
@@ -235,8 +240,10 @@ mesh.draw();
   @ref Math::Vector "Math::Vector<2, GLuint>",
   @ref Math::Vector "Math::Vector<3, GLuint>" and
   @ref Math::Vector "Math::Vector<4, GLuint>".
-  @requires_gl30 %Extension @extension{EXT,gpu_shader4} (for integer attributes)
-  @requires_gles30 Integer attributes are not supported in OpenGL ES 2.0.
+  @requires_gl30 %Extension @extension{EXT,gpu_shader4} (for integer attributes
+    and unsigned integer uniforms)
+  @requires_gles30 Integer attributes and unsigned integer uniforms are not
+    available in OpenGL ES 2.0.
 
 - `dvec2`, `dvec3` and `dvec4` is @ref Math::Vector "Math::Vector<2, GLdouble>",
   @ref Math::Vector "Math::Vector<3, GLdouble>" and
@@ -251,8 +258,9 @@ mesh.draw();
   @ref Math::RectangularMatrix "Math::RectangularMatrix<4, 2, GLdouble>",
   @ref Math::RectangularMatrix "Math::RectangularMatrix<3, 4, GLdouble>" and
   @ref Math::RectangularMatrix "Math::RectangularMatrix<4, 3, GLdouble>".
-  @requires_gl41 %Extension @extension{ARB,vertex_attrib_64bit} (for double attributes)
-  @requires_gl Double attributes are supported only on desktop OpenGL.
+  @requires_gl41 %Extension @extension{ARB,vertex_attrib_64bit} (for double
+    attributes)
+  @requires_gl Double attributes are not available in OpenGL ES.
 
 Only types listed here (and their subclasses and specializations, such as
 @ref Matrix3 or Color4) can be used for setting uniforms and specifying
@@ -388,8 +396,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
                      * BGRA component ordering. Default is RGBA. Only for
                      * four-component float vector attribute type.
                      * @requires_gl32 %Extension @extension{ARB,vertex_array_bgra}
-                     * @requires_gl Only RGBA component ordering is available
-                     *      on OpenGL ES.
+                     * @requires_gl Only RGBA component ordering is supported
+                     *      in OpenGL ES.
                      */
                     BGRA = 1 << 1
                 };
@@ -462,15 +470,13 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @note This function should be called after attachShader() calls and
          *      before link().
          * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_BINARY_RETRIEVABLE_HINT}
-         * @requires_gl
          * @requires_gl41 Extension @extension{ARB,get_program_binary}
-         * @requires_gles30 (no extension providing this functionality)
+         * @requires_gles30 Always allowed in OpenGL ES 2.0.
          */
         inline void setRetrievableBinary(bool enabled) {
             glProgramParameteri(_id, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, enabled ? GL_TRUE : GL_FALSE);
         }
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Allow the program to be bound to individual pipeline stages
          *
@@ -478,13 +484,17 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @note This function should be called after attachShader() calls and
          *      before link().
          * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_SEPARABLE}
-         * @requires_gl
          * @requires_gl41 Extension @extension{ARB,separate_shader_objects}
+         * @requires_es_extension %Extension @es_extension{EXT,separate_shader_objects}
          */
         inline void setSeparable(bool enabled) {
+            /** @todo Remove when extension wrangler is available for ES */
+            #ifndef MAGNUM_TARGET_GLES
             glProgramParameteri(_id, GL_PROGRAM_SEPARABLE, enabled ? GL_TRUE : GL_FALSE);
+            #else
+            static_cast<void>(enabled);
+            #endif
         }
-        #endif
 
         /**
          * @brief Load shader
@@ -536,8 +546,9 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
          * @see @fn_gl{BindFragDataLocationIndexed}
-         * @requires_gl
          * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+         * @requires_gl Multiple blend function inputs are not available in
+         *      OpenGL ES.
          */
         void bindFragmentDataLocationIndexed(GLuint location, GLuint index, const std::string& name);
 
@@ -549,8 +560,9 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * The same as bindFragmentDataLocationIndexed(), but with `index` set
          * to `0`.
          * @see @fn_gl{BindFragDataLocation}
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
+         * @requires_gl Use explicit location specification in OpenGL ES 3.0
+         *      instead.
          */
         void bindFragmentDataLocation(GLuint location, const std::string& name);
         #endif
@@ -628,10 +640,11 @@ class MAGNUM_EXPORT AbstractShaderProgram {
             (this->*uniform4ivImplementation)(location, value);
         }
 
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @copydoc setUniform(GLint, GLfloat)
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
-         * @requires_gles30 (no extension providing this functionality)
+         * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
         inline void setUniform(GLint location, GLuint value) {
             (this->*uniform1uiImplementation)(location, value);
@@ -640,7 +653,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         /**
          * @copydoc setUniform(GLint, GLfloat)
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
-         * @requires_gles30 (no extension providing this functionality)
+         * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
         inline void setUniform(GLint location, const Math::Vector<2, GLuint>& value) {
             (this->*uniform2uivImplementation)(location, value);
@@ -649,7 +662,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         /**
          * @copydoc setUniform(GLint, GLfloat)
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
-         * @requires_gles30 (no extension providing this functionality)
+         * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
         inline void setUniform(GLint location, const Math::Vector<3, GLuint>& value) {
             (this->*uniform3uivImplementation)(location, value);
@@ -658,11 +671,12 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         /**
          * @copydoc setUniform(GLint, GLfloat)
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
-         * @requires_gles30 (no extension providing this functionality)
+         * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
         inline void setUniform(GLint location, const Math::Vector<4, GLuint>& value) {
             (this->*uniform4uivImplementation)(location, value);
         }
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -717,9 +731,10 @@ class MAGNUM_EXPORT AbstractShaderProgram {
             (this->*uniformMatrix4fvImplementation)(location, value);
         }
 
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gles30 (no extension providing this functionality)
+         * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<2, 3, GLfloat>& value) {
             (this->*uniformMatrix2x3fvImplementation)(location, value);
@@ -727,7 +742,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gles30 (no extension providing this functionality)
+         * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<3, 2, GLfloat>& value) {
             (this->*uniformMatrix3x2fvImplementation)(location, value);
@@ -735,7 +750,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gles30 (no extension providing this functionality)
+         * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<2, 4, GLfloat>& value) {
             (this->*uniformMatrix2x4fvImplementation)(location, value);
@@ -743,7 +758,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gles30 (no extension providing this functionality)
+         * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<4, 2, GLfloat>& value) {
             (this->*uniformMatrix4x2fvImplementation)(location, value);
@@ -751,7 +766,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gles30 (no extension providing this functionality)
+         * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<3, 4, GLfloat>& value) {
             (this->*uniformMatrix3x4fvImplementation)(location, value);
@@ -759,11 +774,12 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gles30 (no extension providing this functionality)
+         * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<4, 3, GLfloat>& value) {
             (this->*uniformMatrix4x3fvImplementation)(location, value);
         }
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -865,10 +881,12 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         typedef void(AbstractShaderProgram::*Uniform2ivImplementation)(GLint, const Math::Vector<2, GLint>&);
         typedef void(AbstractShaderProgram::*Uniform3ivImplementation)(GLint, const Math::Vector<3, GLint>&);
         typedef void(AbstractShaderProgram::*Uniform4ivImplementation)(GLint, const Math::Vector<4, GLint>&);
+        #ifndef MAGNUM_TARGET_GLES2
         typedef void(AbstractShaderProgram::*Uniform1uiImplementation)(GLint, GLuint);
         typedef void(AbstractShaderProgram::*Uniform2uivImplementation)(GLint, const Math::Vector<2, GLuint>&);
         typedef void(AbstractShaderProgram::*Uniform3uivImplementation)(GLint, const Math::Vector<3, GLuint>&);
         typedef void(AbstractShaderProgram::*Uniform4uivImplementation)(GLint, const Math::Vector<4, GLuint>&);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         typedef void(AbstractShaderProgram::*Uniform1dImplementation)(GLint, GLdouble);
         typedef void(AbstractShaderProgram::*Uniform2dvImplementation)(GLint, const Math::Vector<2, GLdouble>&);
@@ -883,16 +901,17 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<2, GLint>& value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<3, GLint>& value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<4, GLint>& value);
+        #ifndef MAGNUM_TARGET_GLES2
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLuint value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<2, GLuint>& value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<3, GLuint>& value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<4, GLuint>& value);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLdouble value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<2, GLdouble>& value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<3, GLdouble>& value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Vector<4, GLdouble>& value);
-        #endif
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, GLfloat value);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<2, GLfloat>& value);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<3, GLfloat>& value);
@@ -905,7 +924,6 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<2, GLuint>& value);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<3, GLuint>& value);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<4, GLuint>& value);
-        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, GLdouble value);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<2, GLdouble>& value);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Vector<3, GLdouble>& value);
@@ -919,10 +937,12 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         static Uniform2ivImplementation uniform2ivImplementation;
         static Uniform3ivImplementation uniform3ivImplementation;
         static Uniform4ivImplementation uniform4ivImplementation;
+        #ifndef MAGNUM_TARGET_GLES2
         static Uniform1uiImplementation uniform1uiImplementation;
         static Uniform2uivImplementation uniform2uivImplementation;
         static Uniform3uivImplementation uniform3uivImplementation;
         static Uniform4uivImplementation uniform4uivImplementation;
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         static Uniform1dImplementation uniform1dImplementation;
         static Uniform2dvImplementation uniform2dvImplementation;
@@ -933,12 +953,14 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         typedef void(AbstractShaderProgram::*UniformMatrix2fvImplementation)(GLint, const Math::Matrix<2, GLfloat>&);
         typedef void(AbstractShaderProgram::*UniformMatrix3fvImplementation)(GLint, const Math::Matrix<3, GLfloat>&);
         typedef void(AbstractShaderProgram::*UniformMatrix4fvImplementation)(GLint, const Math::Matrix<4, GLfloat>&);
+        #ifndef MAGNUM_TARGET_GLES2
         typedef void(AbstractShaderProgram::*UniformMatrix2x3fvImplementation)(GLint, const Math::RectangularMatrix<2, 3, GLfloat>&);
         typedef void(AbstractShaderProgram::*UniformMatrix3x2fvImplementation)(GLint, const Math::RectangularMatrix<3, 2, GLfloat>&);
         typedef void(AbstractShaderProgram::*UniformMatrix2x4fvImplementation)(GLint, const Math::RectangularMatrix<2, 4, GLfloat>&);
         typedef void(AbstractShaderProgram::*UniformMatrix4x2fvImplementation)(GLint, const Math::RectangularMatrix<4, 2, GLfloat>&);
         typedef void(AbstractShaderProgram::*UniformMatrix3x4fvImplementation)(GLint, const Math::RectangularMatrix<3, 4, GLfloat>&);
         typedef void(AbstractShaderProgram::*UniformMatrix4x3fvImplementation)(GLint, const Math::RectangularMatrix<4, 3, GLfloat>&);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         typedef void(AbstractShaderProgram::*UniformMatrix2dvImplementation)(GLint, const Math::Matrix<2, GLdouble>&);
         typedef void(AbstractShaderProgram::*UniformMatrix3dvImplementation)(GLint, const Math::Matrix<3, GLdouble>&);
@@ -953,12 +975,14 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Matrix<2, GLfloat>& value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Matrix<3, GLfloat>& value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Matrix<4, GLfloat>& value);
+        #ifndef MAGNUM_TARGET_GLES2
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<2, 3, GLfloat>& value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<3, 2, GLfloat>& value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<2, 4, GLfloat>& value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<4, 2, GLfloat>& value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<3, 4, GLfloat>& value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<4, 3, GLfloat>& value);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Matrix<2, GLdouble>& value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::Matrix<3, GLdouble>& value);
@@ -969,7 +993,6 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<4, 2, GLdouble>& value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<3, 4, GLdouble>& value);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, const Math::RectangularMatrix<4, 3, GLdouble>& value);
-        #endif
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Matrix<2, GLfloat>& value);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Matrix<3, GLfloat>& value);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Matrix<4, GLfloat>& value);
@@ -979,7 +1002,6 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::RectangularMatrix<4, 2, GLfloat>& value);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::RectangularMatrix<3, 4, GLfloat>& value);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::RectangularMatrix<4, 3, GLfloat>& value);
-        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Matrix<2, GLdouble>& value);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Matrix<3, GLdouble>& value);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, const Math::Matrix<4, GLdouble>& value);
@@ -993,12 +1015,14 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         static UniformMatrix2fvImplementation uniformMatrix2fvImplementation;
         static UniformMatrix3fvImplementation uniformMatrix3fvImplementation;
         static UniformMatrix4fvImplementation uniformMatrix4fvImplementation;
+        #ifndef MAGNUM_TARGET_GLES2
         static UniformMatrix2x3fvImplementation uniformMatrix2x3fvImplementation;
         static UniformMatrix3x2fvImplementation uniformMatrix3x2fvImplementation;
         static UniformMatrix2x4fvImplementation uniformMatrix2x4fvImplementation;
         static UniformMatrix4x2fvImplementation uniformMatrix4x2fvImplementation;
         static UniformMatrix3x4fvImplementation uniformMatrix3x4fvImplementation;
         static UniformMatrix4x3fvImplementation uniformMatrix4x3fvImplementation;
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         static UniformMatrix2dvImplementation uniformMatrix2dvImplementation;
         static UniformMatrix3dvImplementation uniformMatrix3dvImplementation;
@@ -1029,8 +1053,12 @@ template<> struct Attribute<GLfloat> {
         UnsignedInt = GL_UNSIGNED_INT,
         Int = GL_INT,
         HalfFloat = GL_HALF_FLOAT,
-        Float = GL_FLOAT,
+        Float = GL_FLOAT
+
+        #ifndef MAGNUM_TARGET_GLES
+        ,
         Double = GL_DOUBLE
+        #endif
     };
 
     enum class DataOption: std::uint8_t {
@@ -1072,23 +1100,34 @@ template<> struct Attribute<Math::Vector<4, GLfloat>> {
         Int = GL_INT,
         Half = GL_HALF_FLOAT,
         Float = GL_FLOAT,
+        #ifndef MAGNUM_TARGET_GLES
         Double = GL_DOUBLE,
+        #endif
         UnsignedAlpha2RGB10 = GL_UNSIGNED_INT_2_10_10_10_REV,
         Alpha2RGB10 = GL_INT_2_10_10_10_REV
     };
 
     enum class DataOption: std::uint8_t {
-        Normalized = 1 << 0,
+        Normalized = 1 << 0
+
+        #ifndef MAGNUM_TARGET_GLES
+        ,
         BGRA = 2 << 0
+        #endif
     };
 
     typedef Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
 
     static const DataType DefaultDataType = DataType::Float;
 
+    #ifndef MAGNUM_TARGET_GLES
     inline constexpr static GLint size(DataOptions options) {
         return options & DataOption::BGRA ? GL_BGRA : 4;
     }
+    #else
+    inline constexpr static GLint size(DataOptions) { return 4; }
+    #endif
+
     inline constexpr static std::size_t vectorCount() { return 1; }
 };
 
@@ -1133,6 +1172,7 @@ template<size_t size> struct Attribute<Math::Vector<size, GLuint>>: public Attri
     inline constexpr static GLint size() { return size; }
 };
 
+#ifndef MAGNUM_TARGET_GLES
 template<> struct Attribute<GLdouble> {
     enum class DataType: GLenum {
         Double = GL_DOUBLE
@@ -1162,6 +1202,7 @@ template<size_t size> struct Attribute<Math::Vector<size, GLdouble>>: public Att
     inline constexpr static GLint size() { return size; }
     inline constexpr static std::size_t vectorCount() { return size; }
 };
+#endif
 
 template<class T> struct Attribute<Math::Vector2<T>>: public Attribute<Math::Vector<2, T>> {};
 template<class T> struct Attribute<Math::Vector3<T>>: public Attribute<Math::Vector<3, T>> {};
