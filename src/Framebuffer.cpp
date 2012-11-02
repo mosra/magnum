@@ -20,7 +20,7 @@
 
 namespace Magnum {
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 void Framebuffer::mapDefaultForDraw(std::initializer_list<DefaultDrawAttachment> attachments) {
     GLenum* _attachments = new GLenum[attachments.size()];
     for(auto it = attachments.begin(); it != attachments.end(); ++it)
@@ -30,6 +30,7 @@ void Framebuffer::mapDefaultForDraw(std::initializer_list<DefaultDrawAttachment>
     glDrawBuffers(attachments.size(), _attachments);
     delete[] _attachments;
 }
+#endif
 
 void Framebuffer::mapForDraw(std::initializer_list<std::int8_t> colorAttachments) {
     GLenum* attachments = new GLenum[colorAttachments.size()];
@@ -37,10 +38,12 @@ void Framebuffer::mapForDraw(std::initializer_list<std::int8_t> colorAttachments
         attachments[it-colorAttachments.begin()] = *it + GL_COLOR_ATTACHMENT0;
 
     bind(Target::Draw);
+    /** @todo Re-enable when extension wrangler is available for ES2 */
+    #ifndef MAGNUM_TARGET_GLES2
     glDrawBuffers(colorAttachments.size(), attachments);
+    #endif
     delete[] attachments;
 }
-#endif
 
 void Framebuffer::read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image) {
     char* data = new char[AbstractImage::pixelSize(components, type)*size.product()];
@@ -48,7 +51,6 @@ void Framebuffer::read(const Math::Vector2<GLint>& offset, const Math::Vector2<G
     image->setData(size, components, type, data);
 }
 
-#ifndef MAGNUM_TARGET_GLES
 void Framebuffer::read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage) {
     /* If the buffer doesn't have sufficient size, resize it */
     /** @todo Explicitly reset also when buffer usage changes */
@@ -58,6 +60,5 @@ void Framebuffer::read(const Math::Vector2<GLint>& offset, const Math::Vector2<G
     image->buffer()->bind(Buffer::Target::PixelPack);
     glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(components), static_cast<GLenum>(type), nullptr);
 }
-#endif
 
 }

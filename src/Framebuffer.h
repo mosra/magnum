@@ -86,14 +86,15 @@ class MAGNUM_EXPORT Framebuffer {
             /**
              * Logical operation
              * @see setLogicOperation()
-             * @requires_gl Logic operations on framebuffer are in desktop OpenGL only.
+             * @requires_gl Logical operations on framebuffer are not
+             *      available in OpenGL ES.
              */
             LogicOperation = GL_COLOR_LOGIC_OP,
 
             /**
              * Depth clamping. If enabled, ignores near and far clipping plane.
-             * @requires_gl
              * @requires_gl32 Extension @extension{ARB,depth_clamp}
+             * @requires_gl Depth clamping is not available in OpenGL ES.
              */
             DepthClamp = GL_DEPTH_CLAMP,
             #endif
@@ -184,7 +185,7 @@ class MAGNUM_EXPORT Framebuffer {
          *
          * Initial value is `1.0`.
          * @see @fn_gl{ClearDepth}
-         * @requires_gl See setClearDepth(GLfloat), which is supported in OpenGL ES.
+         * @requires_gl See setClearDepth(GLfloat), which is available in OpenGL ES.
          */
         inline static void setClearDepth(GLdouble depth) { glClearDepth(depth); }
         #endif
@@ -431,24 +432,19 @@ class MAGNUM_EXPORT Framebuffer {
         enum class BlendEquation: GLenum {
             Add = GL_FUNC_ADD,                          /**< `source + destination` */
             Subtract = GL_FUNC_SUBTRACT,                /**< `source - destination` */
-            ReverseSubtract = GL_FUNC_REVERSE_SUBTRACT  /**< `destination - source` */
-
-            #ifndef MAGNUM_TARGET_GLES
-            /** @todo Enable for ES3 when the headers are available */
-            ,
+            ReverseSubtract = GL_FUNC_REVERSE_SUBTRACT, /**< `destination - source` */
 
             /**
              * `min(source, destination)`
-             * @requires_gles30 Extension @es_extension{EXT,blend_minmax}
+             * @requires_gles30 %Extension @es_extension2{EXT,blend_minmax,blend_minmax}
              */
             Min = GL_MIN,
 
             /**
              * `max(source, destination)`
-             * @requires_gles30 Extension @es_extension{EXT,blend_minmax}
+             * @requires_gles30 %Extension @es_extension2{EXT,blend_minmax,blend_minmax}
              */
             Max = GL_MAX
-            #endif
         };
 
         /**
@@ -499,8 +495,9 @@ class MAGNUM_EXPORT Framebuffer {
              * Second source color (@f$ RGB = (R_{s1}, G_{s1}, B_{s1}); A = A_{s1} @f$)
              *
              * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl
              * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+             * @requires_gl Multiple blending inputs are not available in
+             *      OpenGL ES.
              */
             SecondSourceColor = GL_SRC1_COLOR,
             #endif
@@ -515,8 +512,9 @@ class MAGNUM_EXPORT Framebuffer {
              * One minus second source color (@f$ RGB = (1.0 - R_{s1}, 1.0 - G_{s1}, 1.0 - B_{s1}); A = 1.0 - A_{s1} @f$)
              *
              * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl
              * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+             * @requires_gl Multiple blending inputs are not available in
+             *      OpenGL ES.
              */
             OneMinusSecondSourceColor = GL_ONE_MINUS_SRC1_COLOR,
             #endif
@@ -536,8 +534,9 @@ class MAGNUM_EXPORT Framebuffer {
              * Second source alpha (@f$ RGB = (A_{s1}, A_{s1}, A_{s1}); A = A_{s1} @f$)
              *
              * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl
              * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+             * @requires_gl Multiple blending inputs are not available in
+             *      OpenGL ES.
              */
             SecondSourceAlpha = GL_SRC1_ALPHA,
             #endif
@@ -552,8 +551,9 @@ class MAGNUM_EXPORT Framebuffer {
              * One minus second source alpha (@f$ RGB = (1.0 - A_{s1}, 1.0 - A_{s1}, 1.0 - A_{s1}); A = 1.0 - A_{s1} @f$)
              *
              * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl
              * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+             * @requires_gl Multiple blending inputs are not available in
+             *      OpenGL ES.
              */
             OneMinusSecondSourceAlpha = GL_ONE_MINUS_SRC1_ALPHA,
             #endif
@@ -650,7 +650,8 @@ class MAGNUM_EXPORT Framebuffer {
          * @brief Logical operation
          *
          * @see setLogicOperation()
-         * @requires_gl
+         * @requires_gl Logical operations on framebuffer are not available in
+         *      OpenGL ES.
          */
         enum class LogicOperation: GLenum {
             Clear = GL_CLEAR,               /**< `0` */
@@ -676,7 +677,8 @@ class MAGNUM_EXPORT Framebuffer {
          *
          * @attention You have to enable logical operation with setFeature() first.
          * @see @fn_gl{LogicOp}
-         * @requires_gl Logic operations on framebuffer are in desktop OpenGL only.
+         * @requires_gl Logical operations on framebuffer are not available in
+         *      OpenGL ES.
          */
         inline static void setLogicOperation(LogicOperation operation) {
             glLogicOp(static_cast<GLenum>(operation));
@@ -694,60 +696,157 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
         enum class Target: GLenum {
-            #ifndef MAGNUM_TARGET_GLES
             /**
              * For reading only.
-             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
+             * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample}
+             *      or @es_extension{ANGLE,framebuffer_blit}
              */
             Read = GL_READ_FRAMEBUFFER,
 
             /**
              * For drawing only.
-             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
+             * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample}
+             *      or @es_extension{ANGLE,framebuffer_blit}
              */
             Draw = GL_DRAW_FRAMEBUFFER,
-            #endif
 
             ReadDraw = GL_FRAMEBUFFER       /**< For both reading and drawing. */
         };
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Draw attachment for default framebuffer
          *
          * @see mapDefaultForDraw()
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * @requires_gles30 Draw attachments for default framebuffer are
+         *      available only in OpenGL ES 3.0.
          */
         enum class DefaultDrawAttachment: GLenum {
-            None = GL_NONE,                 /**< Don't use the output. */
-            BackLeft = GL_BACK_LEFT,        /**< Write output to back left framebuffer. */
-            BackRight = GL_BACK_RIGHT,      /**< Write output to back right framebuffer. */
-            FrontLeft = GL_FRONT_LEFT,      /**< Write output to front left framebuffer. */
-            FrontRight = GL_FRONT_RIGHT     /**< Write output to front right framebuffer. */
+            /** Don't use the output. */
+            None = GL_NONE,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Write output to back left framebuffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            BackLeft = GL_BACK_LEFT,
+
+            /**
+             * Write output to back right framebuffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            BackRight = GL_BACK_RIGHT,
+
+            /**
+             * Write output to front left framebuffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            FrontLeft = GL_FRONT_LEFT,
+
+            /**
+             * Write output to front right framebuffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            FrontRight = GL_FRONT_RIGHT,
+            #endif
+
+            /**
+             * Write output to back framebuffer.
+             *
+             * On desktop OpenGL, this is equal to
+             * @ref Magnum::Framebuffer::DefaultDrawAttachment "DefaultDrawAttachment::BackLeft".
+             */
+            #ifdef MAGNUM_TARGET_GLES
+            Back = GL_BACK,
+            #else
+            Back = GL_BACK_LEFT,
+            #endif
+
+            /**
+             * Write output to front framebuffer.
+             *
+             * On desktop OpenGL, this is equal to
+             * @ref Magnum::Framebuffer::DefaultDrawAttachment "DefaultDrawAttachment::FrontLeft".
+             */
+            #ifdef MAGNUM_TARGET_GLES
+            Front = GL_FRONT
+            #else
+            Front = GL_FRONT_LEFT
+            #endif
         };
+        #endif
 
         /**
          * @brief Read attachment for default framebuffer
          *
          * @see mapDefaultForRead()
-         * @requires_gl
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * @requires_gl30 %Extension @extension{EXT,framebuffer_object}
+         * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
         enum class DefaultReadAttachment: GLenum {
-            FrontLeft = GL_FRONT_LEFT,      /**< Read from front left framebuffer. */
-            FrontRight = GL_FRONT_RIGHT,    /**< Read from front right framebuffer. */
-            BackLeft = GL_BACK_LEFT,        /**< Read from back left framebuffer. */
-            BackRight = GL_BACK_RIGHT,      /**< Read from back right framebuffer. */
-            Left = GL_LEFT,                 /**< Read from left framebuffers. */
-            Right = GL_RIGHT,               /**< Read from right framebuffers. */
-            Front = GL_FRONT,               /**< Read from front framebuffers. */
-            Back = GL_BACK,                 /**< Read from back framebuffers. */
-            FrontAndBack = GL_FRONT_AND_BACK /**< Read from front and back framebuffers. */
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Read from back left framebuffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            BackLeft = GL_BACK_LEFT,
+
+            /**
+             * Read from back right framebuffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            BackRight = GL_BACK_RIGHT,
+
+            /**
+             * Read from front left framebuffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            FrontLeft = GL_FRONT_LEFT,
+
+            /**
+             * Read from front right framebuffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            FrontRight = GL_FRONT_RIGHT,
+
+            /**
+             * Read from left framebuffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            Left = GL_LEFT,
+
+            /**
+             * Read from right framebuffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            Right = GL_RIGHT,
+            #endif
+
+            /** Read from back framebuffer. */
+            Back = GL_BACK,
+
+            /**
+             * Read from front framebuffer.
+             * @requires_es_extension %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
+             */
+            Front = GL_FRONT
+
+            #ifndef MAGNUM_TARGET_GLES
+            ,
+
+            /**
+             * Read from front and back framebuffer.
+             * @requires_gl In OpenGL ES you must specify either
+             *      @ref Magnum::Framebuffer::DefaultReadAttachment "DefaultReadAttachment::Front"
+             *      or @ref Magnum::Framebuffer::DefaultReadAttachment "DefaultReadAttachment::Back".
+             */
+            FrontAndBack = GL_FRONT_AND_BACK
+            #endif
         };
-        #endif
 
         /**
          * @brief Constructor
@@ -788,7 +887,7 @@ class MAGNUM_EXPORT Framebuffer {
             glBindFramebuffer(static_cast<GLenum>(target), _id);
         }
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Map given attachments of default framebuffer for drawing
          * @param attachments       Default attachments. If any value is
@@ -800,10 +899,12 @@ class MAGNUM_EXPORT Framebuffer {
          * should have either renderbuffer or texture attached for writing to
          * work properly.
          * @see mapForDraw(), mapDefaultForRead(), bindDefault(), @fn_gl{DrawBuffers}
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * @requires_gles30 Draw attachments for default framebuffer are
+         *      available only in OpenGL ES 3.0.
          */
         static void mapDefaultForDraw(std::initializer_list<DefaultDrawAttachment> attachments);
+        #endif
 
         /**
          * @brief Map given color attachments of current framebuffer for drawing
@@ -816,8 +917,8 @@ class MAGNUM_EXPORT Framebuffer {
          * should have either renderbuffer or texture attached for writing to
          * work properly.
          * @see mapDefaultForDraw(), mapForRead(), bind(), @fn_gl{DrawBuffers}
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * @requires_gles30 %Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
          */
         void mapForDraw(std::initializer_list<std::int8_t> colorAttachments);
 
@@ -828,8 +929,8 @@ class MAGNUM_EXPORT Framebuffer {
          * Each used attachment should have either renderbuffer or texture
          * attached to work properly.
          * @see mapForRead(), mapDefaultForDraw(), bindDefault(), @fn_gl{ReadBuffer}
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
         inline static void mapDefaultForRead(DefaultReadAttachment attachment) {
             bindDefault(Target::Read);
@@ -843,14 +944,13 @@ class MAGNUM_EXPORT Framebuffer {
          * The color attachment should have either renderbuffer or texture
          * attached for reading to work properly.
          * @see mapDefaultForRead(), mapForDraw(), bind(), @fn_gl{ReadBuffer}
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
         inline void mapForRead(std::uint8_t colorAttachment) {
             bind(Target::Read);
             glReadBuffer(GL_COLOR_ATTACHMENT0 + colorAttachment);
         }
-        #endif
 
         /*@}*/
 
@@ -871,10 +971,12 @@ class MAGNUM_EXPORT Framebuffer {
 
             Stencil = GL_STENCIL_ATTACHMENT /**< Stencil output only. */
 
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             ,
             /**
              * Both depth and stencil output.
+             * @requires_gles30 Combined depth and stencil attachment is not
+             *      available in OpenGL ES 2.0.
              */
             DepthStencil = GL_DEPTH_STENCIL_ATTACHMENT
             #endif
@@ -919,8 +1021,8 @@ class MAGNUM_EXPORT Framebuffer {
          * @param mipLevel          Mip level
          *
          * @see bind(), @fn_gl{FramebufferTexture}
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * @requires_gl Only 2D and 3D textures are available in OpenGL ES.
          */
         inline void attachTexture1D(Target target, DepthStencilAttachment depthStencilAttachment, Texture1D* texture, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -937,8 +1039,8 @@ class MAGNUM_EXPORT Framebuffer {
          * @param mipLevel          Mip level
          *
          * @see bind(), @fn_gl{FramebufferTexture}
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * @requires_gl Only 2D and 3D textures are available in OpenGL ES.
          */
         inline void attachTexture1D(Target target, std::uint8_t colorAttachment, Texture1D* texture, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -1018,7 +1120,6 @@ class MAGNUM_EXPORT Framebuffer {
             glFramebufferTexture2D(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, static_cast<GLenum>(coordinate), texture->id(), mipLevel);
         }
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Attach 3D texture to given framebuffer depth/stencil attachment
          * @param target            %Target
@@ -1028,14 +1129,22 @@ class MAGNUM_EXPORT Framebuffer {
          * @param layer             Layer of 2D image within a 3D texture
          *
          * @see bind(), @fn_gl{FramebufferTexture}
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * @requires_es_extension %Extension @es_extension{OES,texture_3D}
          */
         inline void attachTexture3D(Target target, DepthStencilAttachment depthStencilAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {
             /** @todo Check for internal format compatibility */
             /** @todo Check for texture target compatibility */
             bind(target);
+            /** @todo Get some extension wrangler for glFramebufferTexture3D() (extension only) */
+            #ifndef MAGNUM_TARGET_GLES
             glFramebufferTexture3D(static_cast<GLenum>(target), static_cast<GLenum>(depthStencilAttachment), static_cast<GLenum>(texture->target()), texture->id(), mipLevel, layer);
+            #else
+            static_cast<void>(depthStencilAttachment);
+            static_cast<void>(texture);
+            static_cast<void>(mipLevel);
+            static_cast<void>(layer);
+            #endif
         }
 
         /**
@@ -1047,30 +1156,36 @@ class MAGNUM_EXPORT Framebuffer {
          * @param layer             Layer of 2D image within a 3D texture.
          *
          * @see bind(), @fn_gl{FramebufferTexture}
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * @requires_es_extension %Extension @es_extension{OES,texture_3D}
          */
         inline void attachTexture3D(Target target, std::uint8_t colorAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {
             /** @todo Check for internal format compatibility */
             /** @todo Check for texture target compatibility */
             bind(target);
+            /** @todo Get some extension wrangler for glFramebufferTexture3D() (extension only) */
+            #ifndef MAGNUM_TARGET_GLES
             glFramebufferTexture3D(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, static_cast<GLenum>(texture->target()), texture->id(), mipLevel, layer);
+            #else
+            static_cast<void>(colorAttachment);
+            static_cast<void>(texture);
+            static_cast<void>(mipLevel);
+            static_cast<void>(layer);
+            #endif
         }
-        #endif
 
         /*@}*/
 
         /** @{ @name Framebuffer blitting and reading */
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Output mask for blitting
          *
          * Specifies which data are copied when performing blit operation
          * using blit().
          * @see BlitMask
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
          */
         enum class Blit: GLbitfield {
             Color = GL_COLOR_BUFFER_BIT,    /**< Color */
@@ -1080,8 +1195,8 @@ class MAGNUM_EXPORT Framebuffer {
 
         /**
          * @brief Output mask for blitting
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
          */
         typedef Corrade::Containers::EnumSet<Blit, GLbitfield,
             GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT> BlitMask;
@@ -1102,8 +1217,8 @@ class MAGNUM_EXPORT Framebuffer {
          * and drawing. If multiple attachments are specified in mapForDraw()
          * / mapDefaultForDraw(), the data are written to each of them.
          * @see @fn_gl{BlitFramebuffer}
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
+         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
          */
         inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, const Math::Vector2<GLint>& destinationBottomLeft, const Math::Vector2<GLint>& destinationTopRight, BlitMask blitMask, AbstractTexture::Filter filter) {
             glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), destinationBottomLeft.x(), destinationBottomLeft.y(), destinationTopRight.x(), destinationTopRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(filter));
@@ -1123,13 +1238,12 @@ class MAGNUM_EXPORT Framebuffer {
          * AbstractTexture::Filter::NearestNeighbor filtering is used by
          * default.
          * @see @fn_gl{BlitFramebuffer}
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
+         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
          */
         inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, BlitMask blitMask) {
             glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(AbstractTexture::Filter::NearestNeighbor));
         }
-        #endif
 
         /**
          * @brief Read block of pixels from framebuffer to image
@@ -1144,7 +1258,6 @@ class MAGNUM_EXPORT Framebuffer {
          */
         static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image);
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Read block of pixels from framebuffer to buffered image
          * @param offset            Offset in the framebuffer
@@ -1155,11 +1268,10 @@ class MAGNUM_EXPORT Framebuffer {
          * @param usage             %Buffer usage
          *
          * @see Buffer::bind(Target), @fn_gl{ReadPixels}
-         * @requires_gl
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
          */
         static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage);
-        #endif
 
         /*@}*/
 
