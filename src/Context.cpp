@@ -129,6 +129,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
 
     switch(version) {
         case Version::None:  return extensions;
+        case Version::GL210: return empty;
         case Version::GL300: return extensions300;
         case Version::GL310: return extensions310;
         case Version::GL320: return extensions320;
@@ -137,8 +138,9 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         case Version::GL410: return extensions410;
         case Version::GL420: return extensions420;
         case Version::GL430: return extensions430;
-        default: return empty;
     }
+
+    return empty;
 }
 
 Context* Context::_current = nullptr;
