@@ -195,6 +195,7 @@ class MAGNUM_EXPORT Framebuffer {
          *
          * @see @fn_gl{ClearDepth}
          * @requires_gl41 Extension @extension{ARB,ES2_compatibility}
+         * @todo Call double version if the extension is not available
          */
         inline static void setClearDepth(GLfloat depth) { glClearDepthf(depth); }
 
