@@ -194,10 +194,30 @@ class MAGNUM_EXPORT Context {
             return _supportedExtensions;
         }
 
-        /** @brief Whether given OpenGL version is supported */
+        /**
+         * @brief Whether given OpenGL version is supported
+         *
+         * @see supportedVersion()
+         */
         inline bool isVersionSupported(Version version) const {
             return _version >= version;
         }
+
+        /**
+         * @brief Get supported OpenGL version
+         *
+         * Returns first supported OpenGL version from passed list. Convenient
+         * equivalent to subsequent isVersionSupported() calls, e.g.:
+         * @code
+         * Version v = isVersionSupported(Version::GL330) ? Version::GL330 : Version::GL210;
+         * Version v = supportedVersion({Version::GL330, Version::GL210});
+         * @endcode
+         *
+         * If no version from the list is supported, returns lowest available
+         * OpenGL version (@ref Version "Version::GL210" for desktop OpenGL,
+         * @ref Version "Version::GLES200" for OpenGL ES).
+         */
+        Version supportedVersion(std::initializer_list<Version> versions) const;
 
         /**
          * @brief Whether given extension is supported

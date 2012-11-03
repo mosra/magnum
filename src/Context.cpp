@@ -247,4 +247,15 @@ Context::~Context() {
     _current = nullptr;
 }
 
+Version Context::supportedVersion(initializer_list<Version> versions) const {
+    for(auto version: versions)
+        if(isVersionSupported(version)) return version;
+
+    #ifndef MAGNUM_TARGET_GLES
+    return Version::GL210;
+    #else
+    return Version::GLES200;
+    #endif
+}
+
 }
