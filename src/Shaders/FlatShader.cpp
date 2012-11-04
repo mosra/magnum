@@ -17,6 +17,7 @@
 
 #include <Utility/Resource.h>
 
+#include "Extensions.h"
 #include "Shader.h"
 
 namespace Magnum { namespace Shaders {
@@ -36,9 +37,31 @@ namespace {
 }
 
 template<std::uint8_t dimensions> FlatShader<dimensions>::FlatShader() {
-    Corrade::Utility::Resource resource("MagnumShaders");
-    attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, resource.get(ShaderName<dimensions>::Vertex)));
-    attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, resource.get(ShaderName<dimensions>::Fragment)));
+    Corrade::Utility::Resource rs("MagnumShaders");
+
+    #ifndef MAGNUM_TARGET_GLES
+    Version v = Context::current()->supportedVersion({/*Version::GL320, */Version::GL210});
+    #else
+    Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
+    #endif
+
+    Shader vertexShader(v, Shader::Type::Vertex);
+    vertexShader.addSource(rs.get("compatibility.glsl"));
+    vertexShader.addSource(rs.get(ShaderName<dimensions>::Vertex));
+    attachShader(vertexShader);
+
+    Shader fragmentShader(v, Shader::Type::Fragment);
+    fragmentShader.addSource(rs.get("compatibility.glsl"));
+    fragmentShader.addSource(rs.get(ShaderName<dimensions>::Fragment));
+    attachShader(fragmentShader);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>()) {
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES300)) {
+    #endif
+        bindAttributeLocation(Position::Location, "position");
+    }
 
     link();
 
