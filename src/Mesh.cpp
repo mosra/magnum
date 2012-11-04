@@ -146,7 +146,7 @@ void Mesh::initializeContextBasedFunctionality(Context* context) {
         destroyImplementation = &Mesh::destroyImplementationVAO;
 
         if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-            Debug() << "Mesg: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
+            Debug() << "Mesh: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
 
             attributePointerImplementation = &Mesh::attributePointerImplementationDSA;
             attributeIPointerImplementation = &Mesh::attributePointerImplementationDSA;
