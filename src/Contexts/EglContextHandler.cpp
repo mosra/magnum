@@ -30,12 +30,20 @@ EglContextHandler::~EglContextHandler() {
 VisualId EglContextHandler::getVisualId(EGLNativeDisplayType nativeDisplay) {
     /* Initialize */
     display = eglGetDisplay(nativeDisplay);
-    eglInitialize(display, nullptr, nullptr);
+    if(!eglInitialize(display, nullptr, nullptr)) {
+        Error() << "Cannot initialize EGL:" << errorString(eglGetError());
+        exit(1);
+    }
+
     #ifndef MAGNUM_TARGET_GLES
-    eglBindAPI(EGL_OPENGL_API);
+    EGLenum api = EGL_OPENGL_API;
     #else
-    eglBindAPI(EGL_OPENGL_ES_API);
+    EGLenum api = EGL_OPENGL_ES_API;
     #endif
+    if(!eglBindAPI(api)) {
+        Error() << "Cannot bind EGL API:" << errorString(eglGetError());
+        exit(1);
+    }
 
     /* Choose EGL config */
     static const EGLint attribs[] = {
@@ -52,14 +60,19 @@ VisualId EglContextHandler::getVisualId(EGLNativeDisplayType nativeDisplay) {
     };
     EGLint configCount;
     if(!eglChooseConfig(display, attribs, &config, 1, &configCount)) {
-        Error() << "Cannot get EGL visual config";
+        Error() << "Cannot get EGL visual config:" << errorString(eglGetError());
+        exit(1);
+    }
+
+    if(!configCount) {
+        Error() << "No matching EGL visual config available";
         exit(1);
     }
 
     /* Get visual ID */
     EGLint visualId;
     if(!eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID, &visualId)) {
-        Error() << "Cannot get native visual ID";
+        Error() << "Cannot get native visual ID:" << errorString(eglGetError());
         exit(1);
     }
 
@@ -73,18 +86,40 @@ void EglContextHandler::createContext(EGLNativeWindowType window) {
         #endif
         EGL_NONE
     };
-    context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttributes);
-    if(!context) {
-        Error() << "Cannot create EGL context";
+    if(!eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttributes)) {
+        Error() << "Cannot create EGL context:" << errorString(eglGetError());
         exit(1);
     }
-    surface = eglCreateWindowSurface(display, config, window, NULL);
-    if(!surface) {
-        Error() << "Cannot create window surface";
+    if(!(surface = eglCreateWindowSurface(display, config, window, NULL))) {
+        Error() << "Cannot create window surface:" << errorString(eglGetError());
         exit(1);
     }
 
     /** @bug Fixme: On desktop OpenGL and Mesa EGL implementation OpenGL version is 1.0, which is wrong */
+}
+
+const char* EglContextHandler::errorString(EGLint error) {
+    switch(error) {
+        #define _error(name) case name: return #name;
+        _error(EGL_SUCCESS)
+        _error(EGL_NOT_INITIALIZED)
+        _error(EGL_BAD_ACCESS)
+        _error(EGL_BAD_ALLOC)
+        _error(EGL_BAD_ATTRIBUTE)
+        _error(EGL_BAD_CONTEXT)
+        _error(EGL_BAD_CONFIG)
+        _error(EGL_BAD_CURRENT_SURFACE)
+        _error(EGL_BAD_DISPLAY)
+        _error(EGL_BAD_SURFACE)
+        _error(EGL_BAD_MATCH)
+        _error(EGL_BAD_PARAMETER)
+        _error(EGL_BAD_NATIVE_PIXMAP)
+        _error(EGL_BAD_NATIVE_WINDOW)
+        _error(EGL_CONTEXT_LOST)
+        #undef _error
+    }
+
+    return "";
 }
 
 }}

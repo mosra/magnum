@@ -65,6 +65,8 @@ class EglContextHandler: public AbstractContextHandler<EGLNativeDisplayType, Vis
         }
 
     private:
+        const char* errorString(EGLint error);
+
         EGLDisplay display;
         EGLConfig config;
         EGLSurface surface;
