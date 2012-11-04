@@ -88,6 +88,7 @@ template<> GLuint64 MAGNUM_EXPORT AbstractQuery::result<GLuint64>();
 template<> GLint64 MAGNUM_EXPORT AbstractQuery::result<GLint64>();
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
 /**
 @brief %Query for primitives and elapsed time
 
@@ -163,6 +164,7 @@ class MAGNUM_EXPORT Query: public AbstractQuery {
     private:
         Target* target;
 };
+#endif
 
 /**
 @brief %Query for samples
