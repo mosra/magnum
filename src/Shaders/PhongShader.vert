@@ -1,4 +1,4 @@
-#if __VERSION__ == 120
+#ifndef NEW_GLSL
 #define in attribute
 #define out varying
 #endif
@@ -7,8 +7,7 @@ uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 uniform vec3 light;
 
-#if __VERSION__ != 120 && defined(GL_ARB_explicit_attrib_location)
-#extension GL_ARB_explicit_attrib_location: enable
+#ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec3 normal;
 #else

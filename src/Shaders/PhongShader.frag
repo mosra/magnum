@@ -1,4 +1,4 @@
-#if __VERSION__ == 120
+#ifndef NEW_GLSL
 #define in varying
 #define color gl_FragColor
 #endif
@@ -13,7 +13,7 @@ in vec3 transformedNormal;
 in vec3 lightDirection;
 in vec3 cameraDirection;
 
-#if __VERSION__ != 120
+#ifdef NEW_GLSL
 out vec4 color;
 #endif
 

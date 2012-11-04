@@ -24,11 +24,28 @@ namespace Magnum { namespace Shaders {
 
 PhongShader::PhongShader() {
     Corrade::Utility::Resource rs("MagnumShaders");
-    Version v = Context::current()->isVersionSupported(Version::GL320) ? Version::GL320 : Version::GL210;
-    attachShader(Shader::fromData(v, Shader::Type::Vertex, rs.get("PhongShader.vert")));
-    attachShader(Shader::fromData(v, Shader::Type::Fragment, rs.get("PhongShader.frag")));
 
+    #ifndef MAGNUM_TARGET_GLES
+    Version v = Context::current()->supportedVersion({Version::GL320, Version::GL210});
+    #else
+    Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
+    #endif
+
+    Shader vertexShader(v, Shader::Type::Vertex);
+    vertexShader.addSource(rs.get("compatibility.glsl"));
+    vertexShader.addSource(rs.get("PhongShader.vert"));
+    attachShader(vertexShader);
+
+    Shader fragmentShader(v, Shader::Type::Fragment);
+    fragmentShader.addSource(rs.get("compatibility.glsl"));
+    fragmentShader.addSource(rs.get("PhongShader.frag"));
+    attachShader(fragmentShader);
+
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>()) {
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES300)) {
+    #endif
         bindAttributeLocation(Position::Location, "position");
         bindAttributeLocation(Normal::Location, "normal");
     }
