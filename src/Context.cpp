@@ -213,12 +213,16 @@ Context::Context() {
 
     /* OpenGL 2.1 / OpenGL ES 2.0 doesn't have glGetStringi() */
     } else {
-        vector<string> extensions = Corrade::Utility::split(reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS)), ' ');
-        for(const string& extension: extensions) {
-            auto found = futureExtensions.find(extension);
-            if(found != futureExtensions.end()) {
-                _supportedExtensions.push_back(found->second);
-                extensionStatus.set(found->second._index);
+        /* Don't crash when glGetString() returns nullptr */
+        const char* e = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
+        if(e) {
+            vector<string> extensions = Corrade::Utility::split(e, ' ');
+            for(const string& extension: extensions) {
+                auto found = futureExtensions.find(extension);
+                if(found != futureExtensions.end()) {
+                    _supportedExtensions.push_back(found->second);
+                    extensionStatus.set(found->second._index);
+                }
             }
         }
     }
