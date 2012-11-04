@@ -30,7 +30,7 @@ EglContextHandler::~EglContextHandler() {
 VisualId EglContextHandler::getVisualId(EGLNativeDisplayType nativeDisplay) {
     /* Initialize */
     display = eglGetDisplay(nativeDisplay);
-    eglInitialize(display, 0, 0);
+    eglInitialize(display, nullptr, nullptr);
     #ifndef MAGNUM_TARGET_GLES
     eglBindAPI(EGL_OPENGL_API);
     #else
