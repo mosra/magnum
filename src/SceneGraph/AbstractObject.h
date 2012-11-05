@@ -79,6 +79,19 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractObject
             return Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>::last();
         }
 
+        /**
+         * @brief %Scene object
+         * @return Root object which is also scene or `nullptr`, if the object
+         *      is not part of any scene.
+         *
+         * @todo Rename to scene() when I fully understand and fix covariant
+         *      return issues.
+         */
+        virtual AbstractObject<dimensions, T>* sceneObject() = 0;
+
+        /** @overload */
+        virtual const AbstractObject<dimensions, T>* sceneObject() const = 0;
+
         /** @{ @name Object transformation */
 
         /**
@@ -87,6 +100,48 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractObject
          * @see Object::absoluteTransformation()
          */
         virtual typename DimensionTraits<dimensions, T>::MatrixType absoluteTransformationMatrix() const = 0;
+
+        /*@}*/
+
+        /**
+         * @{ @name Transformation caching
+         *
+         * See @ref scenegraph-caching for more information.
+         */
+
+        /**
+         * @brief Whether absolute transformation is dirty
+         *
+         * Returns `true` if transformation of the object or any parent has
+         * changed since last call to setClean(), `false` otherwise.
+         *
+         * All objects are dirty by default.
+         *
+         * @see @ref scenegraph-caching
+         */
+        virtual bool isDirty() const = 0;
+
+        /**
+         * @brief Set object absolute transformation as dirty
+         *
+         * Calls AbstractFeature::markDirty() on all object features and
+         * recursively calls setDirty() on every child object which is not
+         * already dirty. If the object is already marked as dirty, the
+         * function does nothing.
+         * @see @ref scenegraph-caching, setClean(), isDirty()
+         */
+        virtual void setDirty() = 0;
+
+        /**
+         * @brief Clean object absolute transformation
+         *
+         * Calls AbstractFeature::clean() and/or AbstractFeature::cleanInverted()
+         * on all object features which have caching enabled and recursively
+         * calls setClean() on every parent which is not already clean. If the
+         * object is already clean, the function does nothing.
+         * @see @ref scenegraph-caching, setDirty(), isDirty()
+         */
+        virtual void setClean() = 0;
 
         /*@}*/
 };

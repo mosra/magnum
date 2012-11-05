@@ -28,15 +28,23 @@
 namespace Magnum { namespace SceneGraph {
 
 template<class Transformation> Scene<Transformation>* Object<Transformation>::scene() {
-    Object<Transformation>* p(this);
-    while(p && !p->isScene()) p = p->parent();
-    return static_cast<Scene<Transformation>*>(p);
+    return static_cast<Scene<Transformation>*>(sceneObject());
 }
 
 template<class Transformation> const Scene<Transformation>* Object<Transformation>::scene() const {
+    return static_cast<const Scene<Transformation>*>(sceneObject());
+}
+
+template<class Transformation> Object<Transformation>* Object<Transformation>::sceneObject() {
+    Object<Transformation>* p(this);
+    while(p && !p->isScene()) p = p->parent();
+    return p;
+}
+
+template<class Transformation> const Object<Transformation>* Object<Transformation>::sceneObject() const {
     const Object<Transformation>* p(this);
     while(p && !p->isScene()) p = p->parent();
-    return static_cast<const Scene<Transformation>*>(p);
+    return p;
 }
 
 template<class Transformation> Object<Transformation>* Object<Transformation>::setParent(Object<Transformation>* parent) {

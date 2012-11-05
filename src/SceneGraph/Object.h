@@ -188,49 +188,14 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
 
         /*@}*/
 
-        /**
-         * @{ @name Transformation caching
-         *
-         * See @ref scenegraph-caching for more information.
-         */
-
-        /**
-         * @brief Whether absolute transformation is dirty
-         *
-         * Returns `true` if transformation of the object or any parent has
-         * changed since last call to setClean(), `false` otherwise.
-         *
-         * All objects are dirty by default.
-         *
-         * @see @ref scenegraph-caching
-         */
-        inline bool isDirty() const { return !!(flags & Flag::Dirty); }
-
-        /**
-         * @brief Set object absolute transformation as dirty
-         *
-         * Calls AbstractFeature::markDirty() on all object features and
-         * recursively calls setDirty() on every child object which is not
-         * already dirty. If the object is already marked as dirty, the
-         * function does nothing.
-         * @see @ref scenegraph-caching, setClean(), isDirty()
-         */
-        void setDirty();
-
-        /**
-         * @brief Clean object absolute transformation
-         *
-         * Calls AbstractFeature::clean() and/or AbstractFeature::cleanInverted()
-         * on all object features which have caching enabled and recursively
-         * calls setClean() on every parent which is not already clean. If the
-         * object is already clean, the function does nothing.
-         * @see @ref scenegraph-caching, setDirty(), isDirty()
-         */
-        void setClean();
-
-        /*@}*/
+        inline bool isDirty() const override { return !!(flags & Flag::Dirty); }
+        void setDirty() override;
+        void setClean() override;
 
     private:
+        Object<Transformation>* sceneObject() override;
+        const Object<Transformation>* sceneObject() const override;
+
         typedef Implementation::ObjectFlag Flag;
         typedef Implementation::ObjectFlags Flags;
         Flags flags;
