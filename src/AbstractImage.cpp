@@ -95,7 +95,7 @@ size_t AbstractImage::pixelSize(Components format, ComponentType type) {
         case Components::Depth:
         case Components::StencilIndex:
         case Components::DepthStencil:
-            CORRADE_ASSERT(false, "AbstractImage::pixelSize(): unhandled depth/stencil type", 0);
+            CORRADE_INTERNAL_ASSERT(false);
         #endif
     }
 
