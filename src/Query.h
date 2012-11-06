@@ -87,6 +87,7 @@ template<> GLint MAGNUM_EXPORT AbstractQuery::result<GLint>();
 template<> GLuint64 MAGNUM_EXPORT AbstractQuery::result<GLuint64>();
 template<> GLint64 MAGNUM_EXPORT AbstractQuery::result<GLint64>();
 #endif
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 /**
@@ -347,7 +348,6 @@ class TimeQuery: public AbstractQuery {
             glQueryCounter(id(), GL_TIMESTAMP);
         }
 };
-#endif
 #endif
 
 }

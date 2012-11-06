@@ -24,7 +24,7 @@
 
 namespace Magnum {
 
-/**
+/** @relates ResourceManager
  * @brief %Resource state
  *
  * @see Resource::state(), ResourceManager::state()
@@ -43,7 +43,7 @@ enum class ResourceState {
     Final
 };
 
-/**
+/** @relates ResourceManager
  * @brief %Resource data state
  *
  * @see ResourceManager::set()
@@ -65,7 +65,7 @@ enum class ResourceDataState {
     Final = int(ResourceState::Final)
 };
 
-/**
+/** @relates ResourceManager
 @brief %Resource policy
 
 @see ResourceManager::set(), ResourceManager::free()
@@ -88,7 +88,7 @@ enum class ResourcePolicy {
 @brief Key for accessing resource
 
 @see ResourceManager::referenceCount(), ResourceManager::state(),
-    ResourceManager::get(), ResourceManager::set()
+    ResourceManager::get(), ResourceManager::set(), Resource::key()
 */
 class ResourceKey: public Corrade::Utility::MurmurHash2::Digest {
     public:
@@ -438,7 +438,7 @@ if(!cube) {
 - Using the resource data.
 @code
 shader->use();
-texture->bind();
+texture->bind(layer);
 cube->draw();
 @endcode
 - Destroying resource references and deleting manager instance when nothing
