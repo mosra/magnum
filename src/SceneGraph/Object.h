@@ -33,7 +33,9 @@ template<class Transformation> class Scene;
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     enum class ObjectFlag: std::uint8_t {
-        Dirty = 1 << 0
+        Dirty = 1 << 0,
+        Visited = 1 << 1,
+        Joint = 1 << 2
     };
 
     typedef Corrade::Containers::EnumSet<ObjectFlag, std::uint8_t> ObjectFlags;
@@ -80,7 +82,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          * @brief Constructor
          * @param parent    Parent object
          */
-        inline Object(Object<Transformation>* parent = nullptr): flags(Flag::Dirty) {
+        inline Object(Object<Transformation>* parent = nullptr): counter(0xFFFFu), flags(Flag::Dirty) {
             setParent(parent);
         }
 
@@ -186,6 +188,17 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          */
         typename Transformation::DataType absoluteTransformation() const;
 
+        /**
+         * @brief Transformations of given group of objects relative to this object
+         *
+         * All transformations can be premultiplied with @p initialTransformation,
+         * if specified.
+         * @see AbstractObject::transformationMatrices()
+         */
+        /* `objects` passed by copy intentionally (to allow move from
+           transformationMatrices() and avoid copy in the function itself) */
+        std::vector<typename Transformation::DataType> transformations(std::vector<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation = typename Transformation::DataType()) const;
+
         /*@}*/
 
         inline bool isDirty() const override { return !!(flags & Flag::Dirty); }
@@ -196,8 +209,13 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         Object<Transformation>* sceneObject() override;
         const Object<Transformation>* sceneObject() const override;
 
+        std::vector<typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType> transformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType& initialTransformationMatrix = typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType()) const override;
+
+        typename Transformation::DataType computeJointTransformation(const std::vector<Object<Transformation>*>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const;
+
         typedef Implementation::ObjectFlag Flag;
         typedef Implementation::ObjectFlags Flags;
+        std::uint16_t counter;
         Flags flags;
 };
 

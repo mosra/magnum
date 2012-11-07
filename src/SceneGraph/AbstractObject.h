@@ -101,6 +101,17 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractObject
          */
         virtual typename DimensionTraits<dimensions, T>::MatrixType absoluteTransformationMatrix() const = 0;
 
+        /**
+         * @brief Transformation matrices of given set of objects relative to this object
+         *
+         * All transformations are premultiplied with @p initialTransformationMatrix,
+         * if specified.
+         * @warning This function cannot check if all objects are of the same
+         *      Object type, use typesafe Object::transformations() when
+         *      possible.
+         */
+        virtual std::vector<typename DimensionTraits<dimensions, T>::MatrixType> transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const typename DimensionTraits<dimensions, T>::MatrixType& initialTransformationMatrix = typename DimensionTraits<dimensions, T>::MatrixType()) const = 0;
+
         /*@}*/
 
         /**
