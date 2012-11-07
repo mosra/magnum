@@ -1,6 +1,7 @@
 set(MagnumSceneGraph_SRCS )
 set(MagnumSceneGraph_HEADERS
     AbstractFeature.h
+    AbstractGroupedFeature.h
     AbstractObject.h
     AbstractTransformation.h
     AbstractTranslationRotation2D.h
