@@ -1,4 +1,5 @@
-set(MagnumSceneGraph_SRCS )
+set(MagnumSceneGraph_SRCS
+    Camera.cpp)
 set(MagnumSceneGraph_HEADERS
     AbstractFeature.h
     AbstractGroupedFeature.h
@@ -8,6 +9,9 @@ set(MagnumSceneGraph_HEADERS
     AbstractTranslationRotation3D.h
     AbstractTranslationRotationScaling2D.h
     AbstractTranslationRotationScaling3D.h
+    Camera.h
+    Camera.hpp
+    Drawable.h
     MatrixTransformation2D.h
     MatrixTransformation3D.h
     Object.h
@@ -15,7 +19,7 @@ set(MagnumSceneGraph_HEADERS
     Scene.h
 
     magnumSceneGraphVisibility.h)
-# add_library(MagnumSceneGraphObjects OBJECT ${MagnumSceneGraph_SRCS})
+add_library(MagnumSceneGraphObjects OBJECT ${MagnumSceneGraph_SRCS})
 
 # Files compiled with different flags for main library and unit test library
 set(MagnumSceneGraph_GracefulAssert_SRCS
@@ -24,11 +28,11 @@ set(MagnumSceneGraph_GracefulAssert_SRCS
 
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
-# set_target_properties(MagnumSceneGraphObjects PROPERTIES COMPILE_FLAGS "-DMagnumSceneGraphObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+set_target_properties(MagnumSceneGraphObjects PROPERTIES COMPILE_FLAGS "-DMagnumSceneGraphObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
 # SceneGraph library
 add_library(MagnumSceneGraph SHARED
-#     $<TARGET_OBJECTS:MagnumSceneGraphObjects>
+    $<TARGET_OBJECTS:MagnumSceneGraphObjects>
     ${MagnumSceneGraph_GracefulAssert_SRCS})
 target_link_libraries(MagnumSceneGraph Magnum)
 
@@ -40,7 +44,7 @@ if(BUILD_TESTS)
 
     # Library with graceful assert for testing
     add_library(MagnumSceneGraphTestLib SHARED
-#         $<TARGET_OBJECTS:MagnumSceneGraphObjects>
+        $<TARGET_OBJECTS:MagnumSceneGraphObjects>
         ${MagnumSceneGraph_GracefulAssert_SRCS})
     set_target_properties(MagnumSceneGraphTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
     target_link_libraries(MagnumSceneGraphTestLib Magnum)

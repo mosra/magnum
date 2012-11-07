@@ -30,6 +30,7 @@ class CameraTest: public Corrade::TestSuite::Tester<CameraTest> {
         void orthographic();
         void perspective();
         void projectionSizeViewport();
+        void draw();
 };
 
 }}}
