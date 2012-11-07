@@ -70,7 +70,7 @@ enum class Version: GLint {
      * equivalent to @ref Version "Version::GL430".
      */
     #ifndef MAGNUM_TARGET_GLES
-    GLES300 = 430,
+    GLES300 = 430
     #else
     GLES300 = 300
     #endif
