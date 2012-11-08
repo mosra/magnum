@@ -127,11 +127,20 @@ namespace Implementation {
 
         public:
             struct Data {
-                Data(const Data&) = delete;
                 Data& operator=(const Data&) = delete;
                 Data& operator=(Data&&) = delete;
 
                 inline Data(): data(nullptr), state(ResourceDataState::Mutable), policy(ResourcePolicy::Manual), referenceCount(0) {}
+
+                /* Fugly hack for GCC 4.5, because std::pair doesn't have move constructor yet */
+                #ifndef CORRADE_GCC45_COMPATIBILITY
+                Data(const Data&) = delete;
+                #else
+                Data(const Data& other): data(other.data), state(other.state), policy(other.policy), referenceCount(other.referenceCount) {
+                    const_cast<Data&>(other).data = nullptr;
+                    const_cast<Data&>(other).referenceCount = 0;
+                }
+                #endif
 
                 Data(Data&& other): data(other.data), state(other.state), policy(other.policy), referenceCount(other.referenceCount) {
                     other.data = nullptr;
