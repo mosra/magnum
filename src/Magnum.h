@@ -19,6 +19,7 @@
  * @brief Basic definitions
  */
 
+#include "magnumCompatibility.h"
 #include "magnumConfigure.h"
 
 #ifndef MAGNUM_TARGET_GLES
