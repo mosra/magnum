@@ -101,11 +101,21 @@ void Profiler::printStatistics() {
     vector<size_t> totalSorted(sections.size());
     iota(totalSorted.begin(), totalSorted.end(), 0);
 
+    #ifndef CORRADE_GCC44_COMPATIBILITY
     sort(totalSorted.begin(), totalSorted.end(), [this](size_t i, size_t j){return totalData[i] > totalData[j];});
+    #else
+    sort(totalSorted.begin(), totalSorted.end(), Compare(this));
+    #endif
 
     Corrade::Utility::Debug() << "Statistics for last" << measureDuration << "frames:";
     for(size_t i = 0; i != sections.size(); ++i)
-        Corrade::Utility::Debug() << ' ' << sections[totalSorted[i]] << chrono::microseconds(totalData[totalSorted[i]]).count()/frameCount << u8"µs";
+        Corrade::Utility::Debug() << ' ' << sections[totalSorted[i]]
+            << chrono::microseconds(totalData[totalSorted[i]]).count()/frameCount
+            #ifndef CORRADE_GCC44_COMPATIBILITY
+            << u8"µs";
+            #else
+            << "µs";
+            #endif
 }
 
 }

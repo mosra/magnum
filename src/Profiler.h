@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 
+#include "magnumCompatibility.h"
 #include "magnumVisibility.h"
 
 namespace Magnum {
@@ -190,6 +191,19 @@ class MAGNUM_EXPORT Profiler {
         void printStatistics();
 
     private:
+        #if !defined(DOXYGEN_GENERATING_OUTPUT) && defined(CORRADE_GCC44_COMPATIBILITY)
+        struct Compare {
+            public:
+                inline Compare(const Profiler* p): p(p) {}
+                inline bool operator()(size_t i, size_t j) const {
+                    return p->totalData[i] > p->totalData[j];
+                }
+
+            private:
+                const Profiler* p;
+        };
+        #endif
+
         void save();
 
         bool enabled;
