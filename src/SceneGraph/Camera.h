@@ -193,7 +193,7 @@ class SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2> {
          * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
          * @see setOrthographic()
          */
-        inline Camera2D(Object2D* parent = nullptr): AbstractCamera(parent) {}
+        inline Camera2D(Object2D* parent = nullptr): AbstractCamera<2>(parent) {}
 
         /**
          * @brief Set projection
@@ -220,7 +220,7 @@ class SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3> {
          * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
          * @see setOrthographic(), setPerspective()
          */
-        inline Camera3D(Object3D* parent = nullptr): AbstractCamera(parent), _near(0.0f), _far(0.0f) {}
+        inline Camera3D(Object3D* parent = nullptr): AbstractCamera<3>(parent), _near(0.0f), _far(0.0f) {}
 
         /**
          * @brief Set orthographic projection

@@ -38,7 +38,7 @@ bool Plane::collides(const AbstractShape<3>* other) const {
     if(other->type() == Type::LineSegment)
         return *this % *static_cast<const LineSegment3D*>(other);
 
-    return AbstractShape::collides(other);
+    return AbstractShape<3>::collides(other);
 }
 
 bool Plane::operator%(const Line3D& other) const {
