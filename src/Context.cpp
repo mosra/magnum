@@ -182,7 +182,7 @@ Context::Context() {
         Version::None
     };
     size_t future = 0;
-    while(versions[future] != Version::None && versions[future] < _version)
+    while(versions[future] != Version::None && !isVersionSupported(_version))
         ++future;
 
     /* List of extensions from future versions (extensions from current and

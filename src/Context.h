@@ -235,7 +235,7 @@ class MAGNUM_EXPORT Context {
          * @see isExtensionSupported(const Extension&) const
          */
         template<class T> inline bool isExtensionSupported() const {
-            return _version >= T::coreVersion() || (_version >= T::requiredVersion() && extensionStatus[T::Index]);
+            return isVersionSupported(T::coreVersion()) || (isVersionSupported(T::requiredVersion()) && extensionStatus[T::Index]);
         }
 
         /**
@@ -248,7 +248,7 @@ class MAGNUM_EXPORT Context {
          * @see supportedExtensions(), Extension::extensions()
          */
         inline bool isExtensionSupported(const Extension& extension) const {
-            return _version >= extension._coreVersion || (_version >= extension._requiredVersion && extensionStatus[extension._index]);
+            return isVersionSupported(extension._coreVersion) || (isVersionSupported(extension._requiredVersion) && extensionStatus[extension._index]);
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
