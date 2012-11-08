@@ -28,8 +28,8 @@ namespace {
     template<std::uint8_t> struct BoxMesh {};
 
     template<> struct BoxMesh<2> {
-        constexpr static char shader[] = "shader2d";
-        constexpr static char key[] = "box2d";
+        constexpr static ResourceKey shader() { return {"shader2d"}; }
+        constexpr static ResourceKey key() { return {"box2d"}; }
 
         static Mesh* mesh(Buffer* buffer) {
             Primitives::Square square;
@@ -42,8 +42,8 @@ namespace {
     };
 
     template<> struct BoxMesh<3> {
-        constexpr static char shader[] = "shader3d";
-        constexpr static char key[] = "box3d";
+        constexpr static ResourceKey shader() { return {"shader3d"}; }
+        constexpr static ResourceKey key() { return {"box3d"}; }
 
         static Mesh* mesh(Buffer* buffer) {
             Primitives::Cube cube;
@@ -56,12 +56,7 @@ namespace {
     };
 }
 
-constexpr char BoxMesh<2>::shader[];
-constexpr char BoxMesh<2>::key[];
-constexpr char BoxMesh<3>::shader[];
-constexpr char BoxMesh<3>::key[];
-
-template<std::uint8_t dimensions> BoxRenderer<dimensions>::BoxRenderer(Box<dimensions>& box, ResourceKey options, typename SceneGraph::AbstractObject<dimensions>::ObjectType* parent): AbstractDebugRenderer<dimensions>(BoxMesh<dimensions>::shader, BoxMesh<dimensions>::key, options, parent), buffer(DebugDrawResourceManager::instance()->get<Buffer>(BoxMesh<dimensions>::key)), box(box) {
+template<std::uint8_t dimensions> BoxRenderer<dimensions>::BoxRenderer(Box<dimensions>& box, ResourceKey options, typename SceneGraph::AbstractObject<dimensions>::ObjectType* parent): AbstractDebugRenderer<dimensions>(BoxMesh<dimensions>::shader(), BoxMesh<dimensions>::key(), options, parent), buffer(DebugDrawResourceManager::instance()->get<Buffer>(BoxMesh<dimensions>::key())), box(box) {
     if(!this->mesh) {
         DebugDrawResourceManager::instance()->set(this->buffer.key(), new Buffer, ResourceDataState::Final, ResourcePolicy::Manual);
         DebugDrawResourceManager::instance()->set<Mesh>(this->mesh.key(), BoxMesh<dimensions>::mesh(buffer), ResourceDataState::Final, ResourcePolicy::Manual);
