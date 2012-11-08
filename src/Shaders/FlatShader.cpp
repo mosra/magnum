@@ -40,7 +40,7 @@ template<std::uint8_t dimensions> FlatShader<dimensions>::FlatShader() {
     Corrade::Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
-    Version v = Context::current()->supportedVersion({/*Version::GL320, */Version::GL210});
+    Version v = Context::current()->supportedVersion({Version::GL320, Version::GL210});
     #else
     Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
