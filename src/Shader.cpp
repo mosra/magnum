@@ -48,7 +48,8 @@ Shader::Shader(Version version, Type type): _type(type), _state(State::Initializ
         case Version::GLES300: addSource("#version 300\n"); break;
         #endif
 
-        default: break;
+        default:
+            CORRADE_ASSERT(false, "Shader::Shader(): unsupported version" << GLint(version), );
     }
 }
 

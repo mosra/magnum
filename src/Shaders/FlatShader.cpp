@@ -26,13 +26,13 @@ namespace {
     template<std::uint8_t dimensions> struct ShaderName {};
 
     template<> struct ShaderName<2> {
-        constexpr static const char* Vertex = "FlatShader2D.vert";
-        constexpr static const char* Fragment = "FlatShader2D.frag";
+        constexpr static const char* vertex() { return "FlatShader2D.vert"; }
+        constexpr static const char* fragment() { return "FlatShader2D.frag"; }
     };
 
     template<> struct ShaderName<3> {
-        constexpr static const char* Vertex = "FlatShader3D.vert";
-        constexpr static const char* Fragment = "FlatShader3D.frag";
+        constexpr static const char* vertex() { return "FlatShader3D.vert"; }
+        constexpr static const char* fragment() { return "FlatShader3D.frag"; }
     };
 }
 
@@ -40,19 +40,19 @@ template<std::uint8_t dimensions> FlatShader<dimensions>::FlatShader() {
     Corrade::Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
-    Version v = Context::current()->supportedVersion({/*Version::GL320, */Version::GL210});
+    Version v = Context::current()->supportedVersion({Version::GL320, Version::GL210});
     #else
     Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
     Shader vertexShader(v, Shader::Type::Vertex);
     vertexShader.addSource(rs.get("compatibility.glsl"));
-    vertexShader.addSource(rs.get(ShaderName<dimensions>::Vertex));
+    vertexShader.addSource(rs.get(ShaderName<dimensions>::vertex()));
     attachShader(vertexShader);
 
     Shader fragmentShader(v, Shader::Type::Fragment);
     fragmentShader.addSource(rs.get("compatibility.glsl"));
-    fragmentShader.addSource(rs.get(ShaderName<dimensions>::Fragment));
+    fragmentShader.addSource(rs.get(ShaderName<dimensions>::fragment()));
     attachShader(fragmentShader);
 
     #ifndef MAGNUM_TARGET_GLES
