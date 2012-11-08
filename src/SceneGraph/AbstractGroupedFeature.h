@@ -140,9 +140,9 @@ template<std::uint8_t dimensions, class Feature, class T = GLfloat> class Featur
          * Deletes all features belogning to this group.
          */
         inline virtual ~FeatureGroup() {
-            for(auto i: features) {
-                i->_group = nullptr;
-                delete i;
+            for(auto it = features.begin(); it != features.end(); ++it) {
+                (*it)->_group = nullptr;
+                delete *it;
             }
         }
 

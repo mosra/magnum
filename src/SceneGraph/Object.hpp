@@ -239,10 +239,10 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
         computeJointTransformation(jointObjects, jointTransformations, i, initialTransformation);
 
     /* All visited marks are now cleaned, clean joint marks and counters */
-    for(auto i: jointObjects) {
-        CORRADE_INTERNAL_ASSERT(i->flags & Flag::Joint);
-        i->flags &= ~Flag::Joint;
-        i->counter = 0xFFFFu;
+    for(auto it = jointObjects.begin(); it != jointObjects.end(); ++it) {
+        CORRADE_INTERNAL_ASSERT((*it)->flags & Flag::Joint);
+        (*it)->flags &= ~Flag::Joint;
+        (*it)->counter = 0xFFFFu;
     }
 
     /* Shrink the array to contain only transformations of requested objects and return */
