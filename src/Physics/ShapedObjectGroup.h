@@ -45,7 +45,7 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapedObjectGroup {
          *
          * Marks the group as dirty.
          */
-        inline constexpr ShapedObjectGroup(): dirty(true) {}
+        inline ShapedObjectGroup(): dirty(true) {}
 
         /**
          * @brief Destructor
