@@ -85,8 +85,9 @@ GLfloat AbstractTexture::maxSupportedAnisotropy() {
 
 AbstractTexture::~AbstractTexture() {
     /* Remove all bindings */
-    for(GLuint& binding: Context::current()->state()->texture->bindings)
-        if(binding == _id) binding = 0;
+    std::vector<GLuint>& bindings = Context::current()->state()->texture->bindings;
+    for(auto it = Context::current()->state()->texture->bindings.begin(); it != bindings.end(); ++it)
+        if(*it == _id) *it = 0;
 
     glDeleteTextures(1, &_id);
 }

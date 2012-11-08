@@ -53,7 +53,8 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapedObjectGroup {
          * Deletes all objects belogning to the group.
          */
         inline virtual ~ShapedObjectGroup() {
-            for(auto i: objects) delete i;
+            for(auto it = objects.begin(); it != objects.end(); ++it)
+                delete *it;
         }
 
         /**

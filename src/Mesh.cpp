@@ -228,16 +228,16 @@ void Mesh::attributePointerImplementationDSA(const LongAttribute& attribute) {
 #endif
 
 void Mesh::bindImplementationDefault() {
-    for(const Attribute& attribute: attributes)
-        vertexAttribPointer(attribute);
+    for(auto it = attributes.begin(); it != attributes.end(); ++it)
+        vertexAttribPointer(*it);
 
     #ifndef MAGNUM_TARGET_GLES2
-    for(const IntegerAttribute& attribute: integerAttributes)
-        vertexAttribPointer(attribute);
+    for(auto it = integerAttributes.begin(); it != integerAttributes.end(); ++it)
+        vertexAttribPointer(*it);
 
     #ifndef MAGNUM_TARGET_GLES
-    for(const LongAttribute& attribute: longAttributes)
-        vertexAttribPointer(attribute);
+    for(auto it = longAttributes.begin(); it != longAttributes.end(); ++it)
+        vertexAttribPointer(*it);
     #endif
     #endif
 }
@@ -247,16 +247,16 @@ void Mesh::bindImplementationVAO() {
 }
 
 void Mesh::unbindImplementationDefault() {
-    for(const Attribute& attribute: attributes)
-        glDisableVertexAttribArray(attribute.location);
+    for(auto it = attributes.begin(); it != attributes.end(); ++it)
+        glDisableVertexAttribArray(it->location);
 
     #ifndef MAGNUM_TARGET_GLES2
-    for(const IntegerAttribute& attribute: integerAttributes)
-        glDisableVertexAttribArray(attribute.location);
+    for(auto it = integerAttributes.begin(); it != integerAttributes.end(); ++it)
+        glDisableVertexAttribArray(it->location);
 
     #ifndef MAGNUM_TARGET_GLES
-    for(const LongAttribute& attribute: longAttributes)
-        glDisableVertexAttribArray(attribute.location);
+    for(auto it = longAttributes.begin(); it != longAttributes.end(); ++it)
+        glDisableVertexAttribArray(it->location);
     #endif
     #endif
 }

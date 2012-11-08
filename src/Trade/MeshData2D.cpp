@@ -19,8 +19,8 @@ namespace Magnum { namespace Trade {
 
 MeshData2D::~MeshData2D() {
     delete _indices;
-    for(auto i: _positions) delete i;
-    for(auto i: _textureCoords2D) delete i;
+    for(auto it = _positions.begin(); it != _positions.end(); ++it) delete *it;
+    for(auto it = _textureCoords2D.begin(); it != _textureCoords2D.end(); ++it) delete *it;
 }
 
 }}
