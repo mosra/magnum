@@ -200,7 +200,11 @@ class MAGNUM_EXPORT Context {
          * @see supportedVersion()
          */
         inline bool isVersionSupported(Version version) const {
+            #ifndef CORRADE_GCC44_COMPATIBILITY
             return _version >= version;
+            #else
+            return static_cast<GLint>(_version) >= static_cast<GLint>(version);
+            #endif
         }
 
         /**
