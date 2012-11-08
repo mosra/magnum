@@ -19,10 +19,13 @@
  * @brief Class Magnum::Shader
  */
 
-#include "Magnum.h"
-
 #include <vector>
 #include <string>
+
+#include "Magnum.h"
+#include "Context.h"
+
+#include "magnumVisibility.h"
 
 namespace Magnum {
 
@@ -45,24 +48,31 @@ class MAGNUM_EXPORT Shader {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Tessellation control shader
-             * @requires_gl
              * @requires_gl40 Extension @extension{ARB,tessellation_shader}
+             * @requires_gl Tessellation shaders are not available in OpenGL ES.
              */
             TessellationControl = GL_TESS_CONTROL_SHADER,
 
             /**
              * Tessellation evaluation shader
-             * @requires_gl
              * @requires_gl40 Extension @extension{ARB,tessellation_shader}
+             * @requires_gl Tessellation shaders are not available in OpenGL ES.
              */
             TessellationEvaluation = GL_TESS_EVALUATION_SHADER,
 
             /**
              * Geometry shader
-             * @requires_gl
              * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+             * @requires_gl Geometry shaders are not available in OpenGL ES.
              */
             Geometry = GL_GEOMETRY_SHADER,
+
+            /**
+             * Compute shader
+             * @requires_gl43 Extension @extension{ARB,compute_shader}
+             * @requires_gl Compute shaders are not available in OpenGL ES.
+             */
+            Compute = GL_COMPUTE_SHADER,
             #endif
 
             Fragment = GL_FRAGMENT_SHADER   /**< Fragment shader */
@@ -77,59 +87,62 @@ class MAGNUM_EXPORT Shader {
 
         /**
          * @brief Load shader from source
+         * @param version   Target version
          * @param type      %Shader type
          * @param source    %Shader source
          * @return Shader instance
          *
          * Loads the shader from one source. Shorthand for
          * @code
-         * Shader s(type);
+         * Shader s(version, type);
          * s.addData(data);
          * @endcode
          * Note that it is also possible to create shader from more than one
          * source.
          */
-        inline static Shader fromData(Type type, const std::string& source) {
-            Shader s(type);
+        inline static Shader fromData(Version version, Type type, const std::string& source) {
+            Shader s(version, type);
             s.addSource(source);
             return s;
         }
 
         /**
          * @brief Load shader from file
+         * @param version   Target version
          * @param type      %Shader type
-         * @param filename  %Source filename
+         * @param filename  Source filename
          * @return Shader instance
          *
          * Loads the shader from from one file. Shorthand for
          * @code
-         * Shader s(type);
+         * Shader s(version, type);
          * s.addFile(filename);
          * @endcode
          * Note that it is also possible to create shader from more than one
          * source.
          */
-        inline static Shader fromFile(Type type, const char* filename) {
-            Shader s(type);
+        inline static Shader fromFile(Version version, Type type, const char* filename) {
+            Shader s(version, type);
             s.addFile(filename);
             return s;
         }
 
         /**
          * @brief Constructor
+         * @param version   Target version
+         * @param type      %Shader type
          *
-         * Creates empty OpenGL shader. Sources can be added with addSource()
-         * or addFile().
-         * @see fromData(), fromFile()
+         * Creates empty OpenGL shader and adds @c \#version directive at the
+         * beginning. Sources can be added with addSource() or addFile().
+         * @see fromData(), fromFile(), @fn_gl{CreateShader}
          */
-        inline Shader(Type type): _type(type), _state(State::Initialized), shader(0) {
-            shader = glCreateShader(static_cast<GLenum>(_type));
-        }
+        Shader(Version version, Type type);
 
         /**
          * @brief Destructor
          *
          * Deletes associated OpenGL shader.
+         * @see @fn_gl{DeleteShader}
          */
         inline ~Shader() { if(shader) glDeleteShader(shader); }
 
@@ -183,7 +196,9 @@ class MAGNUM_EXPORT Shader {
          * before, it tries to compile it. If compilation fails or no sources
          * are present, returns 0. If the shader was compiled already, returns
          * already existing shader.
-         * @see state()
+         * @see state(), @fn_gl{ShaderSource}, @fn_gl{CompileShader},
+         *      @fn_gl{GetShader} with @def_gl{COMPILE_STATUS},
+         *      @fn_gl{GetShaderInfoLog}
          */
         GLuint compile();
 

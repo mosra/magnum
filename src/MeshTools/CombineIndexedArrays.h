@@ -33,17 +33,17 @@ namespace Implementation {
 
 class CombineIndexedArrays {
     public:
-        template<class ...T> std::vector<unsigned int> operator()(const std::tuple<const std::vector<unsigned int>&, std::vector<T>&>&... indexedArrays) {
+        template<class ...T> std::vector<std::uint32_t> operator()(const std::tuple<const std::vector<std::uint32_t>&, std::vector<T>&>&... indexedArrays) {
             /* Compute index count */
-            size_t _indexCount = indexCount(std::get<0>(indexedArrays)...);
+            std::size_t _indexCount = indexCount(std::get<0>(indexedArrays)...);
 
             /* Resulting index array */
-            std::vector<unsigned int> result;
+            std::vector<std::uint32_t> result;
             result.resize(_indexCount);
             std::iota(result.begin(), result.end(), 0);
 
             /* All index combinations */
-            std::vector<Math::Vector<sizeof...(indexedArrays), unsigned int> > indexCombinations(_indexCount);
+            std::vector<Math::Vector<sizeof...(indexedArrays), std::uint32_t> > indexCombinations(_indexCount);
             writeCombinedIndices(indexCombinations, std::get<0>(indexedArrays)...);
 
             /* Make the combinations unique */
@@ -56,24 +56,24 @@ class CombineIndexedArrays {
         }
 
     private:
-        template<class ...T> inline static size_t indexCount(const std::vector<unsigned int>& first, const std::vector<T>&... next) {
+        template<class ...T> inline static std::size_t indexCount(const std::vector<std::uint32_t>& first, const std::vector<T>&... next) {
             CORRADE_ASSERT(sizeof...(next) == 0 || indexCount(next...) == first.size(), "MeshTools::combineIndexedArrays(): index arrays don't have the same length, nothing done.", 0);
 
             return first.size();
         }
 
-        template<size_t size, class ...T> static void writeCombinedIndices(std::vector<Math::Vector<size, unsigned int>>& output, const std::vector<unsigned int>& first, const std::vector<T>&... next) {
+        template<std::size_t size, class ...T> static void writeCombinedIndices(std::vector<Math::Vector<size, std::uint32_t>>& output, const std::vector<std::uint32_t>& first, const std::vector<T>&... next) {
             /* Copy the data to output */
-            for(size_t i = 0; i != output.size(); ++i)
+            for(std::size_t i = 0; i != output.size(); ++i)
                 output[i][size-sizeof...(next)-1] = first[i];
 
             writeCombinedIndices(output, next...);
         }
 
-        template<size_t size, class T, class ...U> static void writeCombinedArrays(const std::vector<Math::Vector<size, unsigned int>>& combinedIndices, std::vector<T>& first, std::vector<U>&... next) {
+        template<std::size_t size, class T, class ...U> static void writeCombinedArrays(const std::vector<Math::Vector<size, std::uint32_t>>& combinedIndices, std::vector<T>& first, std::vector<U>&... next) {
             /* Rewrite output array */
             std::vector<T> output;
-            for(size_t i = 0; i != combinedIndices.size(); ++i)
+            for(std::size_t i = 0; i != combinedIndices.size(); ++i)
                 output.push_back(first[combinedIndices[i][size-sizeof...(next)-1]]);
             std::swap(output, first);
 
@@ -81,9 +81,9 @@ class CombineIndexedArrays {
         }
 
         /* Terminator functions for recursive calls */
-        inline static size_t indexCount() { return 0; }
-        template<size_t size> inline static void writeCombinedIndices(std::vector<Math::Vector<size, unsigned int>>&) {}
-        template<size_t size> inline static void writeCombinedArrays(const std::vector<Math::Vector<size, unsigned int>>&) {}
+        inline static std::size_t indexCount() { return 0; }
+        template<std::size_t size> inline static void writeCombinedIndices(std::vector<Math::Vector<size, std::uint32_t>>&) {}
+        template<std::size_t size> inline static void writeCombinedArrays(const std::vector<Math::Vector<size, std::uint32_t>>&) {}
 };
 
 }
@@ -105,19 +105,19 @@ avoid explicit verbose specification of tuple type, you can write it with help
 of some STL functions like shown below. Also if one index array is shader by
 more than one attribute array, just pass the index array more times. Example:
 @code
-std::vector<unsigned int> vertexIndices;
-std::vector<Vector4> vertices;
-std::vector<unsigned int> normalTextureIndices;
+std::vector<std::uint32_t> vertexIndices;
+std::vector<Point3D> positions;
+std::vector<std::uint32_t> normalTextureIndices;
 std::vector<Vector3> normals;
 std::vector<Vector2> textureCoordinates;
 
-std::vector<unsigned int> indices = MeshTools::combineIndexedArrays(
-    std::make_tuple(std::cref(vertexIndices), std::ref(vertices)),
+std::vector<std::uint32_t> indices = MeshTools::combineIndexedArrays(
+    std::make_tuple(std::cref(vertexIndices), std::ref(positions)),
     std::make_tuple(std::cref(normalTextureIndices), std::ref(normals)),
     std::make_tuple(std::cref(normalTextureIndices), std::ref(textureCoordinates))
 );
 @endcode
-`vertices`, `normals` and `textureCoordinates` will then contain combined
+`positions`, `normals` and `textureCoordinates` will then contain combined
 attributes indexed with `indices`.
 
 @attention All index arrays should have the same size, otherwise zero-length
@@ -127,7 +127,7 @@ attributes indexed with `indices`.
     which parameter is index array and which is attribute array, mainly when
     both are of the same type.
 */
-template<class ...T> std::vector<unsigned int> combineIndexedArrays(const std::tuple<const std::vector<unsigned int>&, std::vector<T>&>&... indexedArrays) {
+template<class ...T> std::vector<std::uint32_t> combineIndexedArrays(const std::tuple<const std::vector<std::uint32_t>&, std::vector<T>&>&... indexedArrays) {
     return Implementation::CombineIndexedArrays()(indexedArrays...);
 }
 

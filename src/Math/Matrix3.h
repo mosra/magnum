@@ -20,57 +20,64 @@
  */
 
 #include "Matrix.h"
-#include "Vector3.h"
+#include "Point2D.h"
 
 namespace Magnum { namespace Math {
 
 /**
-@brief 3x3 matrix
+@brief 3x3 matrix for affine transformations in 2D
+@tparam T   Data type
 
-Provides functions for transformations in 2D. See also Matrix4 for 3D
-transformations.
+Provides functions for transformations in 2D. See Matrix4 for 3D
+transformations. See also @ref matrix-vector for brief introduction.
 @configurationvalueref{Magnum::Math::Matrix3}
 */
 template<class T> class Matrix3: public Matrix<3, T> {
     public:
         /**
          * @brief 2D translation matrix
-         * @param vec   Translation vector
+         * @param vector    Translation vector
          *
-         * @see Matrix4::translation(), Vector2::xAxis(), Vector2::yAxis()
+         * @see translation(), Matrix4::translation(const Vector3&),
+         *      Vector2::xAxis(), Vector2::yAxis()
          */
-        inline constexpr static Matrix3<T> translation(const Vector2<T>& vec) {
+        inline constexpr static Matrix3<T> translation(const Vector2<T>& vector) {
             return Matrix3<T>( /* Column-major! */
                 T(1), T(0), T(0),
                 T(0), T(1), T(0),
-                vec.x(), vec.y(), T(1)
+                vector.x(), vector.y(), T(1)
             );
         }
 
         /**
          * @brief 2D scaling matrix
-         * @param vec   Scaling vector
+         * @param vector    Scaling vector
          *
-         * @see Matrix4::scaling(), Vector2::xScale(), Vector2::yScale()
+         * @see rotationScaling() const, Matrix4::scaling(const Vector3&),
+         *      Vector2::xScale(), Vector2::yScale()
          */
-        inline constexpr static Matrix3<T> scaling(const Vector2<T>& vec) {
+        inline constexpr static Matrix3<T> scaling(const Vector2<T>& vector) {
             return Matrix3<T>( /* Column-major! */
-                vec.x(), T(0), T(0),
-                T(0), vec.y(), T(0),
+                vector.x(), T(0), T(0),
+                T(0), vector.y(), T(0),
                 T(0), T(0), T(1)
             );
         }
 
         /**
-         * @brief 3D rotation matrix
-         * @param angle Rotation angle (counterclockwise, in radians)
+         * @brief 2D rotation matrix
+         * @param angle     Rotation angle (counterclockwise, in radians)
          *
-         * @see Matrix4::rotation(), deg(), rad()
+         * @see rotation() const, Matrix4::rotation(T, const Vector3&), deg(),
+         *      rad()
          */
         static Matrix3<T> rotation(T angle) {
+            T sine = std::sin(angle);
+            T cosine = std::cos(angle);
+
             return Matrix3<T>( /* Column-major! */
-                T(cos(angle)), T(sin(angle)), T(0),
-                -T(sin(angle)), T(cos(angle)), T(0),
+                cosine, sine, T(0),
+                -sine, cosine, T(0),
                 T(0), T(0), T(1)
             );
         }
@@ -79,13 +86,13 @@ template<class T> class Matrix3: public Matrix<3, T> {
         inline constexpr explicit Matrix3(typename Matrix<3, T>::ZeroType): Matrix<3, T>(Matrix<3, T>::Zero) {}
 
         /** @copydoc Matrix::Matrix(IdentityType, T) */
-        inline constexpr explicit Matrix3(typename Matrix<3, T>::IdentityType = (Matrix<3, T>::Identity), T value = T(1)): Matrix<3, T>(
+        inline constexpr Matrix3(typename Matrix<3, T>::IdentityType = (Matrix<3, T>::Identity), T value = T(1)): Matrix<3, T>(
             value, T(0), T(0),
             T(0), value, T(0),
             T(0), T(0), value
         ) {}
 
-        /** @copydoc Matrix::Matrix(T, U...) */
+        /** @copydoc Matrix::Matrix */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> inline constexpr Matrix3(T first, U... next): Matrix<3, T>(first, next...) {}
         #else
@@ -95,13 +102,60 @@ template<class T> class Matrix3: public Matrix<3, T> {
         /** @brief Copy constructor */
         inline constexpr Matrix3(const RectangularMatrix<3, 3, T>& other): Matrix<3, T>(other) {}
 
+        /**
+         * @brief 2D rotation and scaling part of the matrix
+         *
+         * Upper-left 2x2 part of the matrix.
+         * @see rotation() const, rotation(T), Matrix4::rotationScaling() const
+         */
+        inline Matrix<2, T> rotationScaling() const {
+            return Matrix<2, T>::from(
+                (*this)[0].xy(),
+                (*this)[1].xy());
+        }
+
+        /**
+         * @brief 2D rotation part of the matrix
+         *
+         * Normalized upper-left 2x2 part of the matrix.
+         * @see rotationScaling() const, rotation(T), Matrix4::rotation() const
+         */
+        inline Matrix<2, T> rotation() const {
+            return Matrix<2, T>::from(
+                (*this)[0].xy().normalized(),
+                (*this)[1].xy().normalized());
+        }
+
+        /**
+         * @brief 2D translation part of the matrix
+         *
+         * First two elements of last column.
+         * @see translation(const Vector2&), Matrix4::translation()
+         */
+        inline Vector2<T>& translation() {
+            return (*this)[2].xy();
+        }
+
+        /** @overload */
+        inline constexpr Vector2<T> translation() const {
+            return (*this)[2].xy();
+        }
+
+        /** @todo up(), right() */
+
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline Point2D<T> operator*(const Point2D<T>& other) const {
+            return Matrix<3, T>::operator*(other);
+        }
+        #endif
+
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix3, Vector3, 3)
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(3, 3, Matrix3<T>)
 };
 
 /** @debugoperator{Magnum::Math::Matrix3} */
-template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix3<T>& value) {
-    return debug << static_cast<const Magnum::Math::Matrix<3, T>&>(value);
+template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Matrix3<T>& value) {
+    return debug << static_cast<const Matrix<3, T>&>(value);
 }
 
 }}

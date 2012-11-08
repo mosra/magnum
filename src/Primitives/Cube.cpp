@@ -15,11 +15,13 @@
 
 #include "Cube.h"
 
+#include "Math/Point3D.h"
+
 using namespace std;
 
 namespace Magnum { namespace Primitives {
 
-Cube::Cube(): MeshData("", Mesh::Primitive::Triangles, new vector<unsigned int>{
+Cube::Cube(): MeshData3D("", Mesh::Primitive::Triangles, new vector<uint32_t>{
     0, 2, 1,
     2, 3, 1,
     1, 3, 5,
@@ -32,7 +34,7 @@ Cube::Cube(): MeshData("", Mesh::Primitive::Triangles, new vector<unsigned int>{
     2, 6, 7,
     4, 1, 5,
     4, 0, 1
-}, {new vector<Vector4>}, {new vector<Vector3>{
+}, {new vector<Point3D>}, {new vector<Vector3>{
     {-1.0f, -1.0f, -1.0f},
     { 1.0f, -1.0f, -1.0f},
     {-1.0f,  1.0f, -1.0f},
@@ -42,7 +44,7 @@ Cube::Cube(): MeshData("", Mesh::Primitive::Triangles, new vector<unsigned int>{
     {-1.0f,  1.0f,  1.0f},
     { 1.0f,  1.0f,  1.0f}
 }}, {}) {
-    vertices(0)->assign(normals(0)->begin(), normals(0)->end());
+    positions(0)->assign(normals(0)->begin(), normals(0)->end());
 }
 
 }}

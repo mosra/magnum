@@ -19,24 +19,26 @@
  * @brief Class Magnum::BufferedImage, typedef Magnum::BufferedImage1D, Magnum::BufferedImage2D, Magnum::BufferedImage3D
  */
 
+#include "Math/Vector3.h"
 #include "AbstractImage.h"
 #include "Buffer.h"
+#include "DimensionTraits.h"
 #include "TypeTraits.h"
 
 namespace Magnum {
 
-#ifndef MAGNUM_TARGET_GLES
 /**
 @brief %Buffered image
 
 Class for storing image data in GPU memory. Can be replaced with Image, which
 stores image data in client memory, ImageWrapper, or for example with
 Trade::ImageData.
-@requires_gl
+@see BufferedImage1D, BufferedImage2D, BufferedImage3D, Buffer
+@requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 */
-template<size_t imageDimensions> class BufferedImage: public AbstractImage {
+template<std::uint8_t dimensions> class MAGNUM_EXPORT BufferedImage: public AbstractImage {
     public:
-        const static size_t Dimensions = imageDimensions;   /**< @brief Image dimension count */
+        const static std::uint8_t Dimensions = dimensions; /**< @brief %Image dimension count */
 
         /**
          * @brief Constructor
@@ -46,10 +48,12 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
          * Dimensions and buffer are empty, call setData() to fill the image
          * with data.
          */
-        BufferedImage(Components components, ComponentType type): AbstractImage(components, type), _buffer(Buffer::Target::PixelPack) {}
+        inline BufferedImage(Components components, ComponentType type): AbstractImage(components, type) {
+            _buffer.setTargetHint(Buffer::Target::PixelPack);
+        }
 
-        /** @brief %Image dimensions */
-        inline constexpr Math::Vector<Dimensions, GLsizei> dimensions() const { return _dimensions; }
+        /** @brief %Image size */
+        inline typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
 
         /**
          * @brief Data
@@ -57,8 +61,10 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
          * Binds the buffer to @ref Buffer::Target "pixel unpack
          * target" and returns nullptr, so it can be used for texture updating
          * functions the same way as Image::data().
+         *
+         * @see Buffer::bind(Target)
          */
-        void* data() {
+        inline void* data() {
             _buffer.bind(Buffer::Target::PixelUnpack);
             return nullptr;
         }
@@ -68,7 +74,7 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
 
         /**
          * @brief Set image data
-         * @param dimensions        %Image dimensions
+         * @param size              %Image size
          * @param components        Color components. Data type is detected
          *      from passed data array.
          * @param data              %Image data
@@ -76,14 +82,16 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
          *
          * Updates the image buffer with given data. The data are not deleted
          * after filling the buffer.
+         *
+         * @see setData(const Math::Vector<Dimensions, GLsizei>&, Components, ComponentType, const GLvoid*, Buffer::Usage)
          */
-        template<class T> inline void setData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, const T* data, Buffer::Usage usage) {
-            setData(dimensions, components, TypeTraits<T>::imageType(), data, usage);
+        template<class T> inline void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, const T* data, Buffer::Usage usage) {
+            setData(size, components, TypeTraits<T>::imageType(), data, usage);
         }
 
         /**
          * @brief Set image data
-         * @param dimensions        %Image dimensions
+         * @param size              %Image size
          * @param components        Color components
          * @param type              Data type
          * @param data              %Image data
@@ -91,17 +99,14 @@ template<size_t imageDimensions> class BufferedImage: public AbstractImage {
          *
          * Updates the image buffer with given data. The data are not deleted
          * after filling the buffer.
+         *
+         * @see Buffer::setData()
          */
-        void setData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage) {
-            _components = components;
-            _type = type;
-            _dimensions = dimensions;
-            _buffer.setData(Buffer::Target::PixelPack, pixelSize(_components, _type)*dimensions.product(), data, usage);
-        }
+        void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage);
 
     protected:
-        Math::Vector<Dimensions, GLsizei> _dimensions;  /**< @brief %Image dimensions */
-        Buffer _buffer;                                 /**< @brief %Image buffer */
+        Math::Vector<Dimensions, GLsizei> _size;    /**< @brief %Image size */
+        Buffer _buffer;                             /**< @brief %Image buffer */
 };
 
 /** @brief One-dimensional buffered image */
@@ -112,7 +117,6 @@ typedef BufferedImage<2> BufferedImage2D;
 
 /** @brief Three-dimensional buffered image */
 typedef BufferedImage<3> BufferedImage3D;
-#endif
 
 }
 

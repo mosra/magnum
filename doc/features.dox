@@ -1,0 +1,8 @@
+namespace Magnum {
+/** @page features Feature overview
+@brief Fundamental principles and design goals
+
+- @subpage matrix-vector - @copybrief matrix-vector
+- @subpage collision-detection - @copybrief collision-detection
+*/
+}

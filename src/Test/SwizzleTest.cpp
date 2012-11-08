@@ -23,13 +23,14 @@ CORRADE_TEST_MAIN(Magnum::Test::SwizzleTest)
 
 namespace Magnum { namespace Test {
 
-typedef Math::Vector2<int> Vector2;
-typedef Math::Vector3<int> Vector3;
-typedef Math::Vector4<int> Vector4;
+typedef Math::Vector2<int32_t> Vector2;
+typedef Math::Vector3<int32_t> Vector3;
+typedef Math::Vector4<int32_t> Vector4;
 
 SwizzleTest::SwizzleTest() {
     addTests(&SwizzleTest::xyzw,
              &SwizzleTest::rgba,
+             &SwizzleTest::constants,
              &SwizzleTest::fromSmall,
              &SwizzleTest::type,
              &SwizzleTest::defaultType);
@@ -49,12 +50,24 @@ void SwizzleTest::rgba() {
     CORRADE_COMPARE((swizzle<'b', 'r', 'a', 'g'>(orig)), swizzled);
 }
 
+void SwizzleTest::constants() {
+    Vector4 orig(2, 4, 5, 7);
+    Vector4 swizzled(1, 7, 0, 4);
+    CORRADE_COMPARE(swizzle(orig, "1w0g"), swizzled);
+    CORRADE_COMPARE((swizzle<'1', 'w', '0', 'g'>(orig)), swizzled);
+}
+
 void SwizzleTest::fromSmall() {
+    #ifndef CORRADE_GCC45_COMPATIBILITY
     /* Force compile-time evaluation for both */
     constexpr Vector2 orig(1, 2);
-    #ifndef CORRADE_GCC45_COMPATIBILITY
-    CORRADE_VERIFY((integral_constant<bool, swizzle(orig, "gxr").x() == 2>::value));
+    constexpr Vector3 swizzled(swizzle(orig, "gxr"));
+    CORRADE_VERIFY((integral_constant<bool, swizzled.x() == 2>::value));
+    #else
+    Vector2 orig(1, 2);
     #endif
+
+    CORRADE_COMPARE(swizzle(orig, "gxr"), Vector3(2, 1, 1));
     CORRADE_COMPARE((swizzle<'g', 'x', 'r'>(orig)), Vector3(2, 1, 1));
 }
 
@@ -81,14 +94,10 @@ void SwizzleTest::type() {
 
 void SwizzleTest::defaultType() {
     Vector4 orig(1, 2, 3, 4);
-
-    Math::Vector<1, int> b(3);
-    CORRADE_COMPARE(swizzle<'b'>(orig), b);
-    CORRADE_COMPARE(swizzle(orig, "b"), b);
-
-    Math::Vector<7, int> bragzyx(3, 1, 4, 2, 3, 2, 1);
-    CORRADE_COMPARE((swizzle<'b', 'r', 'a', 'g', 'z', 'y', 'x'>(orig)), bragzyx);
-    CORRADE_COMPARE(swizzle(orig, "bragzyx"), bragzyx);
+    CORRADE_COMPARE(swizzle<'b'>(orig), (Math::Vector<1, int32_t>(3)));
+    CORRADE_COMPARE(swizzle(orig, "b"), (Math::Vector<1, int32_t>(3)));
+    CORRADE_COMPARE((swizzle<'b', 'r', 'a', 'g', 'z', 'y', 'x'>(orig)), (Math::Vector<7, int32_t>(3, 1, 4, 2, 3, 2, 1)));
+    CORRADE_COMPARE(swizzle(orig, "bragzyx"), (Math::Vector<7, int32_t>(3, 1, 4, 2, 3, 2, 1)));
 }
 
 }}

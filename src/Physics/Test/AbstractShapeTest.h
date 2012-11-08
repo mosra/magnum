@@ -17,6 +17,7 @@
 
 #include <TestSuite/Tester.h>
 
+#include "Math/Matrix4.h"
 #include "Magnum.h"
 
 namespace Magnum { namespace Physics { namespace Test {

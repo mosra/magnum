@@ -17,45 +17,62 @@
 
 namespace Magnum {
 
-#ifndef MAGNUM_TARGET_GLES
 bool AbstractQuery::resultAvailable() {
+    /** @todo Re-enable when extension wrangler is available for ES */
+    #ifndef MAGNUM_TARGET_GLES2
     GLuint result;
-    glGetQueryObjectuiv(query, GL_QUERY_RESULT_AVAILABLE, &result);
+    glGetQueryObjectuiv(_id, GL_QUERY_RESULT_AVAILABLE, &result);
     return result == GL_TRUE;
+    #else
+    return false;
+    #endif
 }
 
 template<> bool AbstractQuery::result<bool>() {
+    /** @todo Re-enable when extension wrangler is available for ES */
+    #ifndef MAGNUM_TARGET_GLES2
     GLuint result;
-    glGetQueryObjectuiv(query, GL_QUERY_RESULT, &result);
+    glGetQueryObjectuiv(_id, GL_QUERY_RESULT, &result);
     return result == GL_TRUE;
+    #else
+    return false;
+    #endif
 }
 
 template<> GLuint AbstractQuery::result<GLuint>() {
+    /** @todo Re-enable when extension wrangler is available for ES */
+    #ifndef MAGNUM_TARGET_GLES2
     GLuint result;
-    glGetQueryObjectuiv(query, GL_QUERY_RESULT, &result);
+    glGetQueryObjectuiv(_id, GL_QUERY_RESULT, &result);
     return result;
+    #else
+    return 0;
+    #endif
 }
 
+#ifndef MAGNUM_TARGET_GLES
 template<> GLint AbstractQuery::result<GLint>() {
     GLint result;
-    glGetQueryObjectiv(query, GL_QUERY_RESULT, &result);
+    glGetQueryObjectiv(_id, GL_QUERY_RESULT, &result);
     return result;
 }
 
 template<> GLuint64 AbstractQuery::result<GLuint64>() {
     GLuint64 result;
-    glGetQueryObjectui64v(query, GL_QUERY_RESULT, &result);
+    glGetQueryObjectui64v(_id, GL_QUERY_RESULT, &result);
     return result;
 }
 
 template<> GLint64 AbstractQuery::result<GLint64>() {
     GLint64 result;
-    glGetQueryObjecti64v(query, GL_QUERY_RESULT, &result);
+    glGetQueryObjecti64v(_id, GL_QUERY_RESULT, &result);
     return result;
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES2
 void Query::begin(Query::Target target) {
-    glBeginQuery(static_cast<GLenum>(target), query);
+    glBeginQuery(static_cast<GLenum>(target), id());
     this->target = new Target(target);
 }
 
@@ -66,19 +83,25 @@ void Query::end() {
     delete target;
     target = nullptr;
 }
+#endif
 
 void SampleQuery::begin(SampleQuery::Target target) {
-    glBeginQuery(static_cast<GLenum>(target), query);
+    /** @todo Re-enable when extension wrangler is available for ES */
+    #ifndef MAGNUM_TARGET_GLES2
+    glBeginQuery(static_cast<GLenum>(target), id());
+    #endif
     this->target = new Target(target);
 }
 
 void SampleQuery::end() {
     if(!target) return;
 
+    /** @todo Re-enable when extension wrangler is available for ES */
+    #ifndef MAGNUM_TARGET_GLES2
     glEndQuery(static_cast<GLenum>(*target));
+    #endif
     delete target;
     target = nullptr;
 }
-#endif
 
 }

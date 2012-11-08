@@ -17,7 +17,10 @@
 
 #include <limits>
 
+#include "Math/Matrix4.h"
+#include "Math/Point3D.h"
 #include "Math/Geometry/Intersection.h"
+#include "LineSegment.h"
 
 using namespace std;
 using namespace Magnum::Math::Geometry;
@@ -25,25 +28,25 @@ using namespace Magnum::Math::Geometry;
 namespace Magnum { namespace Physics {
 
 void Plane::applyTransformation(const Matrix4& transformation) {
-    _transformedPosition = (transformation*Vector4(_position)).xyz();
+    _transformedPosition = (transformation*Point3D(_position)).xyz();
     _transformedNormal = transformation.rotation()*_normal;
 }
 
-bool Plane::collides(const AbstractShape* other) const {
+bool Plane::collides(const AbstractShape<3>* other) const {
     if(other->type() == Type::Line)
-        return *this % *static_cast<const Line*>(other);
+        return *this % *static_cast<const Line3D*>(other);
     if(other->type() == Type::LineSegment)
-        return *this % *static_cast<const LineSegment*>(other);
+        return *this % *static_cast<const LineSegment3D*>(other);
 
     return AbstractShape::collides(other);
 }
 
-bool Plane::operator%(const Line& other) const {
+bool Plane::operator%(const Line3D& other) const {
     float t = Intersection::planeLine(transformedPosition(), transformedNormal(), other.transformedA(), other.transformedB());
     return t != t || (t != numeric_limits<float>::infinity() && t != -numeric_limits<float>::infinity());
 }
 
-bool Plane::operator%(const LineSegment& other) const {
+bool Plane::operator%(const LineSegment3D& other) const {
     float t = Intersection::planeLine(transformedPosition(), transformedNormal(), other.transformedA(), other.transformedB());
     return t > 0.0f && t < 1.0f;
 }

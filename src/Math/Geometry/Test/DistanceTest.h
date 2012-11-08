@@ -23,8 +23,10 @@ class DistanceTest: public Corrade::TestSuite::Tester<DistanceTest> {
     public:
         DistanceTest();
 
-        void linePoint();
-        void lineSegmentPoint();
+        void linePoint2D();
+        void linePoint3D();
+        void lineSegmentPoint2D();
+        void lineSegmentPoint3D();
 };
 
 }}}}

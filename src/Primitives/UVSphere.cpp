@@ -15,11 +15,15 @@
 
 #include "UVSphere.h"
 
+#include <Utility/Debug.h>
+
+#include "Math/Constants.h"
+
 using namespace std;
 
 namespace Magnum { namespace Primitives {
 
-UVSphere::UVSphere(unsigned int rings, unsigned int segments, TextureCoords textureCoords): Capsule(segments, textureCoords) {
+UVSphere::UVSphere(uint32_t rings, uint32_t segments, TextureCoords textureCoords): Capsule(segments, textureCoords) {
     CORRADE_ASSERT(rings >= 2 && segments >= 3, "UVSphere must have at least two rings and three segments", );
 
     GLfloat textureCoordsVIncrement = 1.0f/rings;
@@ -29,7 +33,7 @@ UVSphere::UVSphere(unsigned int rings, unsigned int segments, TextureCoords text
     capVertex(-1.0f, -1.0f, 0.0f);
 
     /* Vertex rings */
-    vertexRings(rings-1, 0.0f, -Math::Constants<GLfloat>::pi()/2+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
+    hemisphereVertexRings(rings-1, 0.0f, -Math::Constants<GLfloat>::pi()/2+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
 
     /* Top cap vertex */
     capVertex(1.0f, 1.0f, 1.0f);

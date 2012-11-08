@@ -15,18 +15,22 @@
 
 #include "TypeTraits.h"
 
+#include <type_traits>
+
+using namespace std;
+
 namespace Magnum {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-static_assert(sizeof(GLubyte) == sizeof(unsigned char), "GLubyte is not the same as unsigned char");
-static_assert(sizeof(GLbyte) == sizeof(char), "GLbyte is not the same as char");
-static_assert(sizeof(GLushort) == sizeof(unsigned short), "GLushort is not the same as unsigned short");
-static_assert(sizeof(GLshort) == sizeof(short), "GLshort is not the same as short");
-static_assert(sizeof(GLuint) == sizeof(unsigned int), "GLuint is not the same as unsigned int");
-static_assert(sizeof(GLint) == sizeof(int), "GLint is not the same as int");
-static_assert(sizeof(GLfloat) == sizeof(float), "GLfloat is not the same as float");
+static_assert(is_same<GLubyte, uint8_t>::value, "GLubyte is not the same as uint8_t");
+static_assert(is_same<GLbyte, int8_t>::value, "GLbyte is not the same as int8_t");
+static_assert(is_same<GLushort, uint16_t>::value, "GLushort is not the same as uint16_t");
+static_assert(is_same<GLshort, int16_t>::value, "GLshort is not the same as int16_t");
+static_assert(is_same<GLuint, uint32_t>::value, "GLuint is not the same as uint32_t");
+static_assert(is_same<GLint, int32_t>::value, "GLint is not the same as int32_t");
+static_assert(is_same<GLfloat, float>::value, "GLfloat is not the same as float");
 #ifndef MAGNUM_TARGET_GLES
-static_assert(sizeof(GLdouble) == sizeof(double), "GLdouble is not the same as double");
+static_assert(is_same<GLdouble, double>::value, "GLdouble is not the same as double");
 #endif
 #endif
 

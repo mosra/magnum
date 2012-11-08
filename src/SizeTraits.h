@@ -19,9 +19,14 @@
  * @brief Class Magnum::SizeTraits, Magnum::SizeBasedCall, Magnum::Pow, Magnum::Log
  */
 
+#include <Utility/Debug.h>
+
+#include "Math/Math.h"
 #include "Magnum.h"
 
 namespace Magnum {
+
+/** @todo Remove/internalize things used only in one place (Math::log, Pow, Log)? Simplify SizeTraits? */
 
 /**
 @brief Traits class providing suitable types for given data sizes
@@ -36,7 +41,7 @@ to compute logarithms at compile time, e.g.
 `SizeTraits<Log<256, 289>::%value>::%SizeType`.
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<size_t byte> struct SizeTraits {
+template<std::size_t byte> struct SizeTraits {
     /**
      * @brief (Unsigned) type able to index the data
      *
@@ -46,7 +51,7 @@ template<size_t byte> struct SizeTraits {
     typedef T SizeType;
 };
 #else
-template<size_t byte> struct SizeTraits: public SizeTraits<byte - 1> {};
+template<std::size_t byte> struct SizeTraits: public SizeTraits<byte - 1> {};
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -72,7 +77,7 @@ template<> struct SizeTraits<4> {
 If you have templated function which you want to call with type suitable for
 indexing data of some size, you will probably use cascade of IFs, like this:
 @code
-size_t dataSize;
+std::size_t dataSize;
 template<class IndexType> Bar foo(Arg1 arg1, Arg2 arg2, ...);
 
 Bar bar;
@@ -106,7 +111,7 @@ template<class Return, class Base> struct SizeBasedCall: public Base {
      * @brief Constructor
      * @param size          Data size
      */
-    SizeBasedCall(size_t size): size(size) {}
+    SizeBasedCall(std::size_t size): size(size) {}
 
     /**
      * @brief Functor
@@ -161,7 +166,7 @@ template<class Return, class Base> struct SizeBasedCall: public Base {
     }
 
     private:
-        size_t size;
+        std::size_t size;
 };
 
 /**
@@ -172,14 +177,14 @@ template<class Return, class Base> struct SizeBasedCall: public Base {
 Useful mainly for computing template parameter value, e.g. in conjunction with
 SizeTraits class.
 */
-template<size_t base, size_t exponent> struct Pow {
+template<std::uint32_t base, std::uint32_t exponent> struct Pow {
     /** @brief Value of the power */
-    enum { value = base*Pow<base, exponent-1>::value };
+    enum: std::uint32_t { value = base*Pow<base, exponent-1>::value };
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<size_t base> struct Pow<base, 0> {
-    enum { value = 1 };
+template<std::uint32_t base> struct Pow<base, 0> {
+    enum: std::uint32_t { value = 1 };
 };
 #endif
 
@@ -191,15 +196,15 @@ template<size_t base> struct Pow<base, 0> {
 Useful mainly for computing template parameter value, e.g. in conjunction with
 SizeTraits class.
 */
-template<size_t base, size_t number> struct Log {
+template<std::uint32_t base, std::uint32_t number> struct Log {
     /** @brief Value of the logarithm */
-    enum { value = 1+Log<base, number/base>::value };
+    enum: std::uint32_t { value = 1+Log<base, number/base>::value };
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<size_t base> struct Log<base, 1>: public Log<base, 0> {};
-template<size_t base> struct Log<base, 0> {
-    enum { value = 0 };
+template<std::uint32_t base> struct Log<base, 1>: public Log<base, 0> {};
+template<std::uint32_t base> struct Log<base, 0> {
+    enum: std::uint32_t { value = 0 };
 };
 #endif
 

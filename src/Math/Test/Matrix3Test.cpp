@@ -17,8 +17,8 @@
 
 #include <sstream>
 
+#include "Constants.h"
 #include "Matrix3.h"
-#include "Math.h"
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::Matrix3Test)
 
@@ -28,12 +28,17 @@ using namespace Corrade::Utility;
 namespace Magnum { namespace Math { namespace Test {
 
 typedef Math::Matrix3<float> Matrix3;
+typedef Math::Matrix<2, float> Matrix2;
+typedef Math::Vector2<float> Vector2;
 
 Matrix3Test::Matrix3Test() {
     addTests(&Matrix3Test::constructIdentity,
              &Matrix3Test::translation,
              &Matrix3Test::scaling,
              &Matrix3Test::rotation,
+             &Matrix3Test::rotationScalingPart,
+             &Matrix3Test::rotationPart,
+             &Matrix3Test::translationPart,
              &Matrix3Test::debug,
              &Matrix3Test::configuration);
 }
@@ -88,6 +93,42 @@ void Matrix3Test::rotation() {
     );
 
     CORRADE_COMPARE(Matrix3::rotation(deg(15.0f)), matrix);
+}
+
+void Matrix3Test::rotationScalingPart() {
+    Matrix3 m(
+        3.0f, 5.0f, 8.0f,
+        4.0f, 4.0f, 7.0f,
+        7.0f, -1.0f, 8.0f
+    );
+
+    Matrix2 expected(
+        3.0f, 5.0f,
+        4.0f, 4.0f
+    );
+
+    CORRADE_COMPARE(m.rotationScaling(), expected);
+}
+
+void Matrix3Test::rotationPart() {
+    Matrix2 expectedRotationPart(
+        0.965926f, 0.258819f,
+        -0.258819f, 0.965926f
+    );
+
+    Matrix3 rotation = Matrix3::rotation(deg(15.0f));
+    CORRADE_COMPARE(rotation.rotation(), expectedRotationPart);
+
+    Matrix3 rotationTransformed = Matrix3::translation({2.0f, 5.0f})*rotation*Matrix3::scaling(Vector2(9.0f));
+    CORRADE_COMPARE(rotationTransformed.rotation(), expectedRotationPart);
+}
+
+void Matrix3Test::translationPart() {
+    Matrix3 m(1.0f, 0.0f, 0.0f,
+              0.0f, 1.0f, 0.0f,
+              -5.0f, 12.0f, 1.0f);
+    Vector2 expected(-5.0f, 12.0f);
+    CORRADE_COMPARE(m.translation(), expected);
 }
 
 void Matrix3Test::debug() {

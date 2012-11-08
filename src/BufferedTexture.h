@@ -15,16 +15,20 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#ifndef MAGNUM_TARGET_GLES
 /** @file
  * @brief Class Magnum::BufferedTexture
  */
+#endif
 
-#include "Renderbuffer.h"
-#include "Buffer.h"
-
-namespace Magnum {
+#include "AbstractTexture.h"
 
 #ifndef MAGNUM_TARGET_GLES
+namespace Magnum {
+
+class Buffer;
+class Context;
+
 /**
 @brief Buffered texture
 
@@ -37,10 +41,19 @@ using data setting functions in Buffer itself.
 When using buffered texture in the shader, use `samplerBuffer` and fetch the
 data using integer coordinates in `texelFetch()`.
 
-@requires_gl
+@section BufferedTexture-performance-optimization Performance optimizations
+If extension @extension{EXT,direct_state_access} is available, setBuffer()
+uses DSA function to avoid unnecessary calls to @fn_gl{ActiveTexture} and
+@fn_gl{BindTexture}. See @ref AbstractTexture-performance-optimization
+"relevant section in AbstractTexture documentation" and respective function
+documentation for more information.
+
 @requires_gl31 Extension @extension{ARB,texture_buffer_object}
+@requires_gl Texture buffers are not available in OpenGL ES.
 */
-class BufferedTexture {
+class MAGNUM_EXPORT BufferedTexture: private AbstractTexture {
+    friend class Context;
+
     BufferedTexture(const BufferedTexture& other) = delete;
     BufferedTexture(BufferedTexture&& other) = delete;
     BufferedTexture& operator=(const BufferedTexture& other) = delete;
@@ -117,25 +130,10 @@ class BufferedTexture {
 
         /*@}*/
 
-        /**
-         * @brief Constructor
-         *
-         * Creates one OpenGL texture.
-         */
-        inline BufferedTexture() {
-            glGenTextures(1, &texture);
-        }
+        inline BufferedTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
 
-        /** @copydoc AbstractTexture::~AbstractTexture() */
-        inline virtual ~BufferedTexture() {
-            glDeleteTextures(1, &texture);
-        }
-
-        /** @copydoc AbstractTexture::bind(GLint) */
-        inline void bind(GLint layer) {
-            glActiveTexture(GL_TEXTURE0 + layer);
-            bind();
-        }
+        /** @copydoc AbstractTexture::bind() */
+        inline void bind(GLint layer) { AbstractTexture::bind(layer); }
 
         /**
          * @brief Set texture buffer
@@ -145,19 +143,20 @@ class BufferedTexture {
          * Binds given buffer to this texture. The buffer itself can be then
          * filled with data of proper format at any time using Buffer own data
          * setting functions.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBuffer}
+         *      or @fn_gl_extension{TextureBuffer,EXT,direct_state_access}
          */
-        void setBuffer(InternalFormat internalFormat, Buffer* buffer) {
-            bind();
-            glTexBuffer(GL_TEXTURE_BUFFER, internalFormat, buffer->id());
+        inline void setBuffer(InternalFormat internalFormat, Buffer* buffer) {
+            (this->*setBufferImplementation)(internalFormat, buffer);
         }
 
     private:
-        GLuint texture;
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
 
-        /** @copydoc AbstractTexture::bind() */
-        inline void bind() {
-            glBindTexture(GL_TEXTURE_BUFFER, texture);
-        }
+        typedef void(BufferedTexture::*SetBufferImplementation)(InternalFormat, Buffer*);
+        void MAGNUM_LOCAL setBufferImplementationDefault(InternalFormat internalFormat, Buffer* buffer);
+        void MAGNUM_LOCAL setBufferImplementationDSA(InternalFormat internalFormat, Buffer* buffer);
+        static SetBufferImplementation setBufferImplementation;
 };
 
 /** @relates BufferedTexture
@@ -172,8 +171,8 @@ inline BufferedTexture::InternalFormat operator|(BufferedTexture::Components com
 inline BufferedTexture::InternalFormat operator|(BufferedTexture::ComponentType type, BufferedTexture::Components components) {
     return BufferedTexture::InternalFormat(components, type);
 }
-#endif
 
 }
+#endif
 
 #endif

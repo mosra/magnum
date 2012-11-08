@@ -15,6 +15,9 @@
 
 #include "SphereTest.h"
 
+#include "Math/Constants.h"
+#include "Physics/LineSegment.h"
+#include "Physics/Point.h"
 #include "Physics/Sphere.h"
 
 CORRADE_TEST_MAIN(Magnum::Physics::Test::SphereTest)
@@ -30,7 +33,7 @@ SphereTest::SphereTest() {
 }
 
 void SphereTest::applyTransformation() {
-    Physics::Sphere sphere({1.0f, 2.0f, 3.0f}, 7.0f);
+    Physics::Sphere3D sphere({1.0f, 2.0f, 3.0f}, 7.0f);
 
     sphere.applyTransformation(Matrix4::rotation(deg(90.0f), Vector3::yAxis()));
     CORRADE_COMPARE(sphere.transformedPosition(), Vector3(3.0f, 2.0f, -1.0f));
@@ -47,9 +50,9 @@ void SphereTest::applyTransformation() {
 }
 
 void SphereTest::collisionPoint() {
-    Physics::Sphere sphere({1.0f, 2.0f, 3.0f}, 2.0f);
-    Physics::Point point({1.0f, 3.0f, 3.0f});
-    Physics::Point point2({1.0f, 3.0f, 1.0f});
+    Physics::Sphere3D sphere({1.0f, 2.0f, 3.0f}, 2.0f);
+    Physics::Point3D point({1.0f, 3.0f, 3.0f});
+    Physics::Point3D point2({1.0f, 3.0f, 1.0f});
 
     randomTransformation(sphere);
     randomTransformation(point);
@@ -60,9 +63,9 @@ void SphereTest::collisionPoint() {
 }
 
 void SphereTest::collisionLine() {
-    Physics::Sphere sphere({1.0f, 2.0f, 3.0f}, 2.0f);
-    Physics::Line line({1.0f, 1.5f, 3.5f}, {1.0f, 2.5f, 2.5f});
-    Physics::Line line2({1.0f, 2.0f, 5.1f}, {1.0f, 3.0f, 5.1f});
+    Physics::Sphere3D sphere({1.0f, 2.0f, 3.0f}, 2.0f);
+    Physics::Line3D line({1.0f, 1.5f, 3.5f}, {1.0f, 2.5f, 2.5f});
+    Physics::Line3D line2({1.0f, 2.0f, 5.1f}, {1.0f, 3.0f, 5.1f});
 
     randomTransformation(sphere);
     randomTransformation(line);
@@ -73,9 +76,9 @@ void SphereTest::collisionLine() {
 }
 
 void SphereTest::collisionLineSegment() {
-    Physics::Sphere sphere({1.0f, 2.0f, 3.0f}, 2.0f);
-    Physics::LineSegment line({1.0f, 2.0f, 4.9f}, {1.0f, 2.0f, 7.0f});
-    Physics::LineSegment line2({1.0f, 2.0f, 5.1f}, {1.0f, 2.0f, 7.0f});
+    Physics::Sphere3D sphere({1.0f, 2.0f, 3.0f}, 2.0f);
+    Physics::LineSegment3D line({1.0f, 2.0f, 4.9f}, {1.0f, 2.0f, 7.0f});
+    Physics::LineSegment3D line2({1.0f, 2.0f, 5.1f}, {1.0f, 2.0f, 7.0f});
 
     randomTransformation(sphere);
     randomTransformation(line);
@@ -86,9 +89,9 @@ void SphereTest::collisionLineSegment() {
 }
 
 void SphereTest::collisionSphere() {
-    Physics::Sphere sphere({1.0f, 2.0f, 3.0f}, 2.0f);
-    Physics::Sphere sphere1({1.0f, 3.0f, 5.0f}, 1.0f);
-    Physics::Sphere sphere2({1.0f, 3.0f, 0.0f}, 1.0f);
+    Physics::Sphere3D sphere({1.0f, 2.0f, 3.0f}, 2.0f);
+    Physics::Sphere3D sphere1({1.0f, 3.0f, 5.0f}, 1.0f);
+    Physics::Sphere3D sphere2({1.0f, 3.0f, 0.0f}, 1.0f);
 
     randomTransformation(sphere);
     randomTransformation(sphere1);

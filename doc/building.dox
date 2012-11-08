@@ -37,13 +37,14 @@ subdirectory:
     git submodule update
 
 @section building-compilation Compilation, installation
-The library (for example with GLUT context) can be built and installed using
-these four commands. See below for more information about optional features.
+The library (for example with GLUT window context) can be built and installed
+using these four commands. See below for more information about optional
+features.
 
     mkdir -p build && cd build
     cmake .. \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DWITH_GLUTCONTEXT=ON
+        -DWITH_GLUTWINDOWCONTEXT=ON
     make
     make install
 
@@ -59,29 +60,31 @@ By default the engine is built with everything except
 @ref Contexts "context libraries". Using `WITH_*` CMake parameters you can
 specify which parts will be built and which not:
 
- - `WITH_EVERYTHING` - Defaults to `ON`, builds everything except contexts. If
-   set to `OFF`, only the main library is built and you can select additional
-   libraries with the following:
+ - `WITH_EVERYTHING` - Defaults to `ON`, builds everything except window
+   contexts. If set to `OFF`, only the main library is built and you can
+   select additional libraries with the following:
  - `WITH_MESHTOOLS` - MeshTools library.
  - `WITH_PHYSICS` - Physics library.
  - `WITH_PRIMITIVES` - Primitives library.
  - `WITH_SHADERS` - Shaders library.
 
-None of the context libraries is built by default, regardless to
+None of the window context libraries is built by default, regardless to
 `WITH_EVERYTHING` is enabled or not:
 
- - `WITH_EGLCONTEXT` - X/EGL context, available only if targeting OpenGL ES
-   (see above). Requires **X11** and **EGL** libraries.
- - `WITH_GLUTCONTEXT` - GLUT context, available only if targeting desktop
-   OpenGL. Requires **GLUT** library.
- - `WITH_SDL2CONTEXT` - SDL2 context. Requires **SDL2** library.
+ - `WITH_XEGLWINDOWCONTEXT` - X/EGL window context, available only if
+   targeting OpenGL ES (see above). Requires **X11** and **EGL** libraries.
+ - `WITH_GLXWINDOWCONTEXT` - GLX window context. Requires **X11** and **GLX**
+   libraries.
+ - `WITH_GLUTWINDOWCONTEXT` - GLUT window context, available only if targeting
+   desktop OpenGL. Requires **GLUT** library.
+ - `WITH_SDL2WINDOWCONTEXT` - SDL2 window context. Requires **SDL2** library.
 
 @subsection building-tests Building and running unit tests
 If you want to build also unit tests (which are not built by default), pass
 `-DBUILD_TESTS=True` to CMake. Unit tests use Corrade's @ref Corrade::TestSuite
 "TestSuite" framework and can be run using
 
-    ctest -V
+    ctest --output-on-failure
 
 in build directory. Everything should pass ;-)
 

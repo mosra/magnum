@@ -12,7 +12,6 @@ functionality, so if given hardware supports required extension, it doesn't
 need to have required OpenGL version too (e.g. `APPLE_vertex_array_object` is
 supported on Intel GPUs even if they are capable of OpenGL 2.1 only).
 
-- @subpage requires-gl
 - @subpage requires-gl30
 - @subpage requires-gl31
 - @subpage requires-gl32
@@ -22,8 +21,10 @@ supported on Intel GPUs even if they are capable of OpenGL 2.1 only).
 - @subpage requires-gl42
 - @subpage requires-gl43
 - @subpage requires-extension
+- @subpage requires-gl
 - @subpage requires-gles30
 - @subpage requires-es-extension
+- @subpage unsupported
 
 @page requires-gl Functionality requiring desktop OpenGL (not available on OpenGL ES)
 @page requires-gl30 Functionality requiring OpenGL 3.0

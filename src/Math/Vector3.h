@@ -25,7 +25,10 @@ namespace Magnum { namespace Math {
 
 /**
 @brief Three-component vector
+@tparam T   Data type
 
+See @ref matrix-vector for brief introduction. See also Point2D for
+homogeneous two-dimensional coordinates.
 @configurationvalueref{Magnum::Math::Vector3}
 */
 template<class T> class Vector3: public Vector<3, T> {
@@ -110,26 +113,25 @@ template<class T> class Vector3: public Vector<3, T> {
 
         /**
          * @brief Constructor
-         * @param x     X value
-         * @param y     Y value
-         * @param z     Z value
+         * @param x     X component
+         * @param y     Y component
+         * @param z     Z component
          */
         inline constexpr Vector3(T x, T y, T z): Vector<3, T>(x, y, z) {}
 
         /**
          * @brief Constructor
-         * @param xy    Two component vector
-         * @param z     Z value
+         * @param xy    Two-component vector
+         * @param z     Z component
          */
-        inline constexpr Vector3(const Vector<2, T>& xy, T z): Vector<3, T>(xy[0], xy[1], z) {}
+        inline constexpr Vector3(const Vector2<T>& xy, T z): Vector<3, T>(xy[0], xy[1], z) {}
 
-        inline constexpr T x() const { return (*this)[0]; } /**< @brief X component */
-        inline constexpr T y() const { return (*this)[1]; } /**< @brief Y component */
-        inline constexpr T z() const { return (*this)[2]; } /**< @brief Z component */
-
-        inline void setX(T value) { (*this)[0] = value; }   /**< @brief Set X component */
-        inline void setY(T value) { (*this)[1] = value; }   /**< @brief Set Y component */
-        inline void setZ(T value) { (*this)[2] = value; }   /**< @brief Set Z component */
+        inline T& x() { return (*this)[0]; }                /**< @brief X component */
+        inline constexpr T x() const { return (*this)[0]; } /**< @overload */
+        inline T& y() { return (*this)[1]; }                /**< @brief Y component */
+        inline constexpr T y() const { return (*this)[1]; } /**< @overload */
+        inline T& z() { return (*this)[2]; }                /**< @brief Z component */
+        inline constexpr T z() const { return (*this)[2]; } /**< @overload */
 
         /**
          * @brief XY part of the vector
@@ -137,7 +139,8 @@ template<class T> class Vector3: public Vector<3, T> {
          *
          * @see swizzle()
          */
-        inline constexpr Vector2<T> xy() const { return Vector2<T>::from(Vector<3, T>::data()); }
+        inline Vector2<T>& xy() { return Vector2<T>::from(Vector<3, T>::data()); }
+        inline constexpr Vector2<T> xy() const { return Vector2<T>::from(Vector<3, T>::data()); } /**< @overload */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector3, 3)
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 3, Vector3<T>)
@@ -146,8 +149,8 @@ template<class T> class Vector3: public Vector<3, T> {
 MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Vector3, 3)
 
 /** @debugoperator{Magnum::Math::Vector3} */
-template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector3<T>& value) {
-    return debug << static_cast<const Magnum::Math::Vector<3, T>&>(value);
+template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Vector3<T>& value) {
+    return debug << static_cast<const Vector<3, T>&>(value);
 }
 
 }}

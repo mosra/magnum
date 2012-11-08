@@ -16,42 +16,56 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::Point
+ * @brief Class Magnum::Physics::Point, typedef Magnum::Physics::Point2D, Magnum::Physics::Point3D
  */
 
+#include "Math/Vector3.h"
 #include "AbstractShape.h"
+
+#include "magnumCompatibility.h"
 
 namespace Magnum { namespace Physics {
 
-/** @brief %Point */
-class Point: public AbstractShape {
+/**
+@brief %Point
+
+@see Point2D, Point3D
+*/
+template<std::uint8_t dimensions> class PHYSICS_EXPORT Point: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Point(const Vector3& position): _position(position), _transformedPosition(position) {}
+        inline Point(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position): _position(position), _transformedPosition(position) {}
 
-        inline void applyTransformation(const Matrix4& transformation) {
-            _transformedPosition = (transformation*Vector4(_position)).xyz();
+        inline typename AbstractShape<dimensions>::Type type() const override {
+            return AbstractShape<dimensions>::Type::Point;
         }
 
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
+
         /** @brief Position */
-        inline Vector3 position() const { return _position; }
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType position() const {
+            return _position;
+        }
 
         /** @brief Set position */
-        inline void setPosition(const Vector3& position) {
+        inline void setPosition(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position) {
             _position = position;
         }
 
         /** @brief Transformed position */
-        inline Vector3 transformedPosition() const {
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedPosition() const {
             return _transformedPosition;
         }
 
-    protected:
-        inline Type type() const { return Type::Point; }
-
     private:
-        Vector3 _position, _transformedPosition;
+        Math::Vector<dimensions, GLfloat> _position, _transformedPosition;
 };
+
+/** @brief Two-dimensional point */
+typedef Point<2> Point2D;
+
+/** @brief Three-dimensional point */
+typedef Point<3> Point3D;
 
 }}
 

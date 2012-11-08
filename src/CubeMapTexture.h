@@ -27,9 +27,9 @@ namespace Magnum {
 @brief Cube map texture
 
 %Texture used mainly for environemnt maps. See AbstractTexture documentation
-for more information about usage. It consists of 6 square textures generating
-6 faces of the cube as following. Note that all images must be turned upside
-down (+Y is top):
+for more information. It consists of 6 square textures generating 6 faces of
+the cube as following. Note that all images must be turned upside down (+Y is
+top):
 
               +----+
               | -Y |
@@ -63,8 +63,11 @@ class CubeMapTexture: public AbstractTexture {
         /**
          * @brief Enable/disable seamless cube map textures
          *
-         * @requires_gl
+         * Initially disabled on desktop OpenGL.
+         * @see @fn_gl{Enable}/@fn_gl{Disable} with @def_gl{TEXTURE_CUBE_MAP_SEAMLESS}
          * @requires_gl32 Extension @extension{ARB,seamless_cube_map}
+         * @requires_gl Not available in OpenGL ES 2.0, always enabled in
+         *      OpenGL ES 3.0.
          */
         inline static void setSeamless(bool enabled) {
             enabled ? glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS) : glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
@@ -75,34 +78,63 @@ class CubeMapTexture: public AbstractTexture {
          * @brief Constructor
          *
          * Creates one cube map OpenGL texture.
+         * @see @def_gl{TEXTURE_CUBE_MAP}
          */
         inline CubeMapTexture(): AbstractTexture(GL_TEXTURE_CUBE_MAP) {}
 
         /**
          * @copydoc Texture::setWrapping()
          */
-        inline void setWrapping(const Math::Vector<3, Wrapping>& wrapping) {
-            bind();
-            DataHelper<3>::setWrapping(GL_TEXTURE_CUBE_MAP, wrapping);
+        inline CubeMapTexture* setWrapping(const Math::Vector<3, Wrapping>& wrapping) {
+            DataHelper<3>::setWrapping(this, wrapping);
+            return this;
         }
 
         /**
          * @copydoc Texture::setData(GLint, InternalFormat, Image*)
          * @param coordinate    Coordinate
+         * @return Pointer to self (for method chaining)
          */
-        template<class Image> inline void setData(Coordinate coordinate, GLint mipLevel, InternalFormat internalFormat, Image* image) {
-            bind();
-            DataHelper<2>::set(static_cast<GLenum>(coordinate), mipLevel, internalFormat, image);
+        template<class Image> inline CubeMapTexture* setData(Coordinate coordinate, GLint mipLevel, InternalFormat internalFormat, Image* image) {
+            DataHelper<2>::set(this, static_cast<GLenum>(coordinate), mipLevel, internalFormat, image);
+            return this;
         }
 
         /**
-         * @copydoc Texture::setSubData(GLint, const Math::Vector<Dimensions, GLint>&, Image*)
+         * @copydoc Texture::setSubData(GLint, const typename DimensionTraits<Dimensions, GLint>::VectorType&, Image*)
          * @param coordinate    Coordinate
+         * @return Pointer to self (for method chaining)
          */
-        template<class Image> inline void setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector<2, GLint>& offset, const Image* image) {
-            bind();
-            DataHelper<2>::setSub(static_cast<GLenum>(coordinate), mipLevel, offset, image);
+        template<class Image> inline CubeMapTexture* setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector2<GLint>& offset, const Image* image) {
+            DataHelper<2>::setSub(this, static_cast<GLenum>(coordinate), mipLevel, offset, image);
+            return this;
         }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline CubeMapTexture* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::BaseLevel) {
+            AbstractTexture::setMinificationFilter(filter, mipmap);
+            return this;
+        }
+        inline CubeMapTexture* setMagnificationFilter(Filter filter) {
+            AbstractTexture::setMagnificationFilter(filter);
+            return this;
+        }
+        #ifndef MAGNUM_TARGET_GLES
+        inline CubeMapTexture* setBorderColor(const Color4<GLfloat>& color) {
+            AbstractTexture::setBorderColor(color);
+            return this;
+        }
+        #endif
+        inline CubeMapTexture* setMaxAnisotropy(GLfloat anisotropy) {
+            AbstractTexture::setMaxAnisotropy(anisotropy);
+            return this;
+        }
+        inline CubeMapTexture* generateMipmap() {
+            AbstractTexture::generateMipmap();
+            return this;
+        }
+        #endif
 };
 
 }

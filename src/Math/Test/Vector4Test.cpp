@@ -39,7 +39,7 @@ Vector4Test::Vector4Test() {
 }
 
 void Vector4Test::construct() {
-    CORRADE_COMPARE(Vector4(), Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+    CORRADE_COMPARE(Vector4(), Vector4(0.0f, 0.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(Vector4(1, 2, 3, 4), (Vector<4, float>(1.0f, 2.0f, 3.0f, 4.0f)));
     CORRADE_COMPARE(Vector4(Vector<3, float>(1.0f, 2.0f, 3.0f), 4), (Vector<4, float>(1.0f, 2.0f, 3.0f, 4.0f)));
 }

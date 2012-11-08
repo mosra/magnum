@@ -16,54 +16,70 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::AxisAlignedBox
+ * @brief Class Magnum::Physics::AxisAlignedBox, typedef Magnum::Physics::AxisAlignedBox2D, Magnum::Physics.:AxisAlignedBox3D
  */
 
+#include "Math/Vector3.h"
 #include "AbstractShape.h"
+
+#include "magnumCompatibility.h"
 
 namespace Magnum { namespace Physics {
 
-/** @brief Axis aligned box */
-class PHYSICS_EXPORT AxisAlignedBox: public AbstractShape {
+/**
+@brief Axis-aligned box
+
+@see AxisAlignedBox2D, AxisAlignedBox3D
+*/
+template<std::uint8_t dimensions> class PHYSICS_EXPORT AxisAlignedBox: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline AxisAlignedBox(const Vector3& position, const Vector3& size): _position(position), _transformedPosition(position), _size(size), _transformedSize(size) {}
+        inline AxisAlignedBox(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position, const typename DimensionTraits<dimensions, GLfloat>::VectorType& size): _position(position), _transformedPosition(position), _size(size), _transformedSize(size) {}
 
-        void applyTransformation(const Matrix4& transformation);
+        inline typename AbstractShape<dimensions>::Type type() const override {
+            return AbstractShape<dimensions>::Type::AxisAlignedBox;
+        }
+
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
 
         /** @brief Position */
-        inline Vector3 position() const { return _position; }
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType position() const {
+            return _position;
+        }
 
         /** @brief Set position */
-        inline void setPosition(const Vector3& position) {
+        inline void setPosition(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position) {
             _position = position;
         }
 
         /** @brief Size */
-        inline Vector3 size() const { return _size; }
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType size() const { return _size; }
 
         /** @brief Set size */
-        inline void setSize(const Vector3& size) {
+        inline void setSize(const typename DimensionTraits<dimensions, GLfloat>::VectorType& size) {
             _size = size;
         }
 
         /** @brief Transformed position */
-        inline Vector3 transformedPosition() const {
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedPosition() const {
             return _transformedPosition;
         }
 
         /** @brief Transformed size */
-        inline Vector3 transformedSize() const {
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedSize() const {
             return _transformedSize;
         }
 
-    protected:
-        inline Type type() const { return Type::AxisAlignedBox; }
-
     private:
-        Vector3 _position, _transformedPosition,
+        Math::Vector<dimensions, GLfloat> _position, _transformedPosition,
             _size, _transformedSize;
 };
+
+/** @brief Two-dimensional axis-aligned box */
+typedef AxisAlignedBox<2> AxisAlignedBox2D;
+
+/** @brief Three-dimensional axis-aligned box */
+typedef AxisAlignedBox<3> AxisAlignedBox3D;
 
 }}
 

@@ -25,7 +25,7 @@ using namespace Magnum::Math;
 
 namespace Magnum { namespace SceneGraph {
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> ObjectType* Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setParent(ObjectType* parent) {
+template<std::uint8_t dimensions> typename AbstractObject<dimensions>::ObjectType* AbstractObject<dimensions>::setParent(ObjectType* parent) {
     /* Skip if nothing to do or this is scene */
     if(this->parent() == parent || isScene()) return static_cast<ObjectType*>(this);
 
@@ -49,11 +49,11 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
     return static_cast<ObjectType*>(this);
 }
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> MatrixType Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::absoluteTransformation(CameraType* camera) {
+template<std::uint8_t dimensions> typename DimensionTraits<dimensions, GLfloat>::MatrixType AbstractObject<dimensions>::absoluteTransformation(CameraType* camera) {
     /* Shortcut for absolute transformation of camera relative to itself */
-    if(camera == this) return MatrixType();
+    if(camera == this) return typename DimensionTraits<dimensions, GLfloat>::MatrixType();
 
-    MatrixType t = _transformation;
+    typename DimensionTraits<dimensions, GLfloat>::MatrixType t = _transformation;
 
     ObjectType* p = parent();
     while(p != nullptr) {
@@ -77,7 +77,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
     return t;
 }
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> SceneType* Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::scene() {
+template<std::uint8_t dimensions> typename AbstractObject<dimensions>::SceneType* AbstractObject<dimensions>::scene() {
     /* Goes up the family tree until it finds object which is parent of itself
        (that's the scene) */
     ObjectType* p = parent();
@@ -89,7 +89,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
     return nullptr;
 }
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> ObjectType* Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setTransformation(const MatrixType& transformation) {
+template<std::uint8_t dimensions> typename AbstractObject<dimensions>::ObjectType* AbstractObject<dimensions>::setTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
     /* Setting transformation is forbidden for the scene */
     /** @todo Assert for this? */
     if(isScene()) return static_cast<ObjectType*>(this);
@@ -99,7 +99,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
     return static_cast<ObjectType*>(this);
 }
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setDirty() {
+template<std::uint8_t dimensions> void AbstractObject<dimensions>::setDirty() {
     /* The object (and all its children) are already dirty, nothing to do */
     if(dirty) return;
 
@@ -110,7 +110,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         i->setDirty();
 }
 
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> void Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::setClean() {
+template<std::uint8_t dimensions> void AbstractObject<dimensions>::setClean() {
     /* The object (and all its parents) are already clean, nothing to do */
     if(!dirty) return;
 
@@ -130,7 +130,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
     /* Call setClean(const Matrix4&) for every parent and also this object */
     ObjectType* o = objects.top();
     objects.pop();
-    MatrixType absoluteTransformation = o->absoluteTransformation();
+    typename DimensionTraits<dimensions, GLfloat>::MatrixType absoluteTransformation = o->absoluteTransformation();
     o->clean(absoluteTransformation);
     while(!objects.empty()) {
         o = objects.top();
@@ -141,7 +141,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
 }
 
 /* Explicitly instantiate the templates */
-template class Object<Matrix3, Vector2, Object2D, Scene2D, Camera2D>;
-template class Object<Matrix4, Vector3, Object3D, Scene3D, Camera3D>;
+template class AbstractObject<2>;
+template class AbstractObject<3>;
 
 }}

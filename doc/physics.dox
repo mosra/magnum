@@ -1,7 +1,0 @@
-namespace Magnum { namespace Physics {
-/** @page physics Physics library
-@brief Collision detection and rigid body dynamics.
-
-@subpage collision-detection
-*/
-}}

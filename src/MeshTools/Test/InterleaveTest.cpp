@@ -37,18 +37,18 @@ InterleaveTest::InterleaveTest() {
 void InterleaveTest::attributeCount() {
     stringstream ss;
     Error::setOutput(&ss);
-    CORRADE_COMPARE((Implementation::Interleave::attributeCount(vector<char>{0, 1, 2},
-        vector<char>{0, 1, 2, 3, 4, 5})), size_t(0));
+    CORRADE_COMPARE((Implementation::Interleave::attributeCount(vector<int8_t>{0, 1, 2},
+        vector<int8_t>{0, 1, 2, 3, 4, 5})), size_t(0));
     CORRADE_COMPARE(ss.str(), "MeshTools::interleave(): attribute arrays don't have the same length, nothing done.\n");
 
-    CORRADE_COMPARE((Implementation::Interleave::attributeCount(vector<char>{0, 1, 2},
-        vector<char>{3, 4, 5})), size_t(3));
+    CORRADE_COMPARE((Implementation::Interleave::attributeCount(vector<int8_t>{0, 1, 2},
+        vector<int8_t>{3, 4, 5})), size_t(3));
 }
 
 void InterleaveTest::stride() {
-    CORRADE_COMPARE(Implementation::Interleave::stride(vector<char>()), size_t(1));
-    CORRADE_COMPARE(Implementation::Interleave::stride(vector<int>()), size_t(4));
-    CORRADE_COMPARE((Implementation::Interleave::stride(vector<char>(), vector<int>())), size_t(5));
+    CORRADE_COMPARE(Implementation::Interleave::stride(vector<int8_t>()), size_t(1));
+    CORRADE_COMPARE(Implementation::Interleave::stride(vector<int32_t>()), size_t(4));
+    CORRADE_COMPARE((Implementation::Interleave::stride(vector<int8_t>(), vector<int32_t>())), size_t(5));
 }
 
 void InterleaveTest::write() {
@@ -56,9 +56,9 @@ void InterleaveTest::write() {
     size_t stride;
     char* data;
     tie(attributeCount, stride, data) = MeshTools::interleave(
-        vector<char>{0, 1, 2},
-        vector<int>{3, 4, 5},
-        vector<short>{6, 7, 8});
+        vector<int8_t>{0, 1, 2},
+        vector<int32_t>{3, 4, 5},
+        vector<int16_t>{6, 7, 8});
 
     CORRADE_COMPARE(attributeCount, size_t(3));
     CORRADE_COMPARE(stride, size_t(7));

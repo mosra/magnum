@@ -19,43 +19,47 @@
  * @brief Class Magnum::Primitives::Icosphere
  */
 
-#include "Trade/MeshData.h"
+#include "Math/Vector3.h"
 #include "MeshTools/Subdivide.h"
 #include "MeshTools/Clean.h"
+#include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
 
-template<size_t subdivisions> class Icosphere;
+template<std::size_t subdivisions> class Icosphere;
 
 /**
-@brief %Icosphere primitive with zero subdivisions
+@brief 3D icosphere primitive with zero subdivisions
 
+Indexed triangle mesh with normals.
 @todo Use own computed (and more precise) icosahedron data, not these stolen
 from Blender.
 */
-template<> class Icosphere<0>: public Trade::MeshData {
+template<> class Icosphere<0>: public Trade::MeshData3D {
     public:
         /** @brief Constructor */
         Icosphere();
 };
 
 /**
- * @brief %Icosphere primitive
- * @tparam subdivisions     Number of subdivisions
- */
+@brief 3D icosphere primitive
+@tparam subdivisions     Number of subdivisions
+
+Indexed triangle mesh with normals.
+*/
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<size_t subdivisions> class Icosphere: public Icosphere<0> {
+template<std::size_t subdivisions> class Icosphere: public Icosphere<0> {
 #else
-template<size_t subdivisions> class Icosphere {
+template<std::size_t subdivisions> class Icosphere {
 #endif
     public:
         /** @brief Constructor */
         Icosphere() {
-            for(size_t i = 0; i != subdivisions; ++i)
+            for(std::size_t i = 0; i != subdivisions; ++i)
                 MeshTools::subdivide(*indices(), *normals(0), interpolator);
 
             MeshTools::clean(*indices(), *normals(0));
-            vertices(0)->assign(normals(0)->begin(), normals(0)->end());
+            positions(0)->assign(normals(0)->begin(), normals(0)->end());
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT

@@ -23,7 +23,11 @@
 
 namespace Magnum { namespace Primitives {
 
-/** @brief UV Sphere primitive */
+/**
+@brief 3D UV sphere primitive
+
+Indexed triangle mesh with normals and optional 2D texture coordinates.
+*/
 class UVSphere: public Capsule {
     public:
         /**
@@ -35,7 +39,7 @@ class UVSphere: public Capsule {
          * If texture coordinates are generated, vertices of one segment are
          * duplicated for texture wrapping.
          */
-        UVSphere(unsigned int rings, unsigned int segments, TextureCoords textureCoords = TextureCoords::DontGenerate);
+        UVSphere(std::uint32_t rings, std::uint32_t segments, TextureCoords textureCoords = TextureCoords::DontGenerate);
 };
 
 }}

@@ -15,28 +15,12 @@
 
 #include "Framebuffer.h"
 
+#include "BufferedImage.h"
+#include "Image.h"
+
 namespace Magnum {
 
-Framebuffer::ClearMask Framebuffer::clearMask = Framebuffer::Clear::Color;
-
-void Framebuffer::setFeature(Feature feature, bool enabled) {
-    /* Enable or disable the feature */
-    enabled ? glEnable(static_cast<GLenum>(feature)) : glDisable(static_cast<GLenum>(feature));
-
-    /* Update clear mask, if needed */
-    ClearMask clearMaskChange;
-    if(feature == Feature::DepthTest) clearMaskChange = Clear::Depth;
-    else if(feature == Feature::StencilTest) clearMaskChange = Clear::Stencil;
-    else return;
-
-    enabled ? clearMask |= clearMaskChange : clearMask &= ~clearMaskChange;
-}
-
-void Framebuffer::setViewport(const Math::Vector2<GLint>& position, const Math::Vector2<GLsizei>& size) {
-    glViewport(position.x(), position.y(), size.x(), size.y());
-}
-
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 void Framebuffer::mapDefaultForDraw(std::initializer_list<DefaultDrawAttachment> attachments) {
     GLenum* _attachments = new GLenum[attachments.size()];
     for(auto it = attachments.begin(); it != attachments.end(); ++it)
@@ -46,34 +30,35 @@ void Framebuffer::mapDefaultForDraw(std::initializer_list<DefaultDrawAttachment>
     glDrawBuffers(attachments.size(), _attachments);
     delete[] _attachments;
 }
+#endif
 
-void Framebuffer::mapForDraw(std::initializer_list<int> colorAttachments) {
+void Framebuffer::mapForDraw(std::initializer_list<std::int8_t> colorAttachments) {
     GLenum* attachments = new GLenum[colorAttachments.size()];
     for(auto it = colorAttachments.begin(); it != colorAttachments.end(); ++it)
         attachments[it-colorAttachments.begin()] = *it + GL_COLOR_ATTACHMENT0;
 
     bind(Target::Draw);
+    /** @todo Re-enable when extension wrangler is available for ES2 */
+    #ifndef MAGNUM_TARGET_GLES2
     glDrawBuffers(colorAttachments.size(), attachments);
+    #endif
     delete[] attachments;
 }
-#endif
 
-void Framebuffer::read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& dimensions, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image) {
-    char* data = new char[AbstractImage::pixelSize(components, type)*dimensions.product()];
-    glReadPixels(offset.x(), offset.y(), dimensions.x(), dimensions.y(), static_cast<GLenum>(components), static_cast<GLenum>(type), data);
-    image->setData(dimensions, components, type, data);
+void Framebuffer::read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image) {
+    char* data = new char[AbstractImage::pixelSize(components, type)*size.product()];
+    glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(components), static_cast<GLenum>(type), data);
+    image->setData(size, components, type, data);
 }
 
-#ifndef MAGNUM_TARGET_GLES
-void Framebuffer::read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& dimensions, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage) {
+void Framebuffer::read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage) {
     /* If the buffer doesn't have sufficient size, resize it */
     /** @todo Explicitly reset also when buffer usage changes */
-    if(image->dimensions() != dimensions || image->components() != components || image->type() != type)
-        image->setData(dimensions, components, type, nullptr, usage);
+    if(image->size() != size || image->components() != components || image->type() != type)
+        image->setData(size, components, type, nullptr, usage);
 
     image->buffer()->bind(Buffer::Target::PixelPack);
-    glReadPixels(offset.x(), offset.y(), dimensions.x(), dimensions.y(), static_cast<GLenum>(components), static_cast<GLenum>(type), nullptr);
+    glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(components), static_cast<GLenum>(type), nullptr);
 }
-#endif
 
 }

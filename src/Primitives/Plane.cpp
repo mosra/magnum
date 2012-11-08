@@ -15,11 +15,13 @@
 
 #include "Plane.h"
 
+#include "Math/Point3D.h"
+
 using namespace std;
 
 namespace Magnum { namespace Primitives {
 
-Plane::Plane(): MeshData("", Mesh::Primitive::TriangleStrip, nullptr, {new vector<Vector4>{
+Plane::Plane(): MeshData3D("", Mesh::Primitive::TriangleStrip, nullptr, {new vector<Point3D>{
     {1.0f, -1.0f, 0.0f},
     {1.0f, 1.0f, 0.0f},
     {-1.0f, -1.0f, 0.0f},

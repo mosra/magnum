@@ -16,35 +16,58 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::Capsule
+ * @brief Class Magnum::Physics::Capsule, typedef Magnum::Physics::Capsule2D, Magnum::Physics::Capsule3D
  */
 
+#include "Math/Vector3.h"
 #include "AbstractShape.h"
-#include "Point.h"
-#include "Sphere.h"
+
+#include "magnumCompatibility.h"
 
 namespace Magnum { namespace Physics {
+
+template<std::uint8_t> class Point;
+template<std::uint8_t> class Sphere;
 
 /**
 @brief %Capsule defined by cylinder start and end point and radius
 
 Unlike other elements the capsule doesn't support asymmetric scaling. When
 applying transformation, the scale factor is averaged from all axes.
+@see Capsule2D, Capsule3D
 */
-class PHYSICS_EXPORT Capsule: public AbstractShape {
+template<std::uint8_t dimensions> class PHYSICS_EXPORT Capsule: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Capsule(const Vector3& a, const Vector3& b, float radius): _a(a), _transformedA(a), _b(b), _transformedB(b), _radius(radius), _transformedRadius(radius) {}
+        inline Capsule(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a, const typename DimensionTraits<dimensions, GLfloat>::VectorType& b, float radius): _a(a), _transformedA(a), _b(b), _transformedB(b), _radius(radius), _transformedRadius(radius) {}
 
-        void applyTransformation(const Matrix4& transformation);
+        inline typename AbstractShape<dimensions>::Type type() const override {
+            return AbstractShape<dimensions>::Type::Capsule;
+        }
 
-        bool collides(const AbstractShape* other) const;
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
 
-        inline Vector3 a() const { return _a; }         /**< @brief Start point */
-        inline Vector3 b() const { return _a; }         /**< @brief End point */
+        bool collides(const AbstractShape<dimensions>* other) const override;
 
-        inline void setA(const Vector3& a) { _a = a; }  /**< @brief Set start point */
-        inline void setB(const Vector3& b) { _b = b; }  /**< @brief Set end point */
+        /** @brief Start point */
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType a() const {
+            return _a;
+        }
+
+        /** @brief End point */
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType b() const {
+            return _a;
+        }
+
+        /** @brief Set start point */
+        inline void setA(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a) {
+            _a = a;
+        }
+
+        /** @brief Set end point */
+        inline void setB(const typename DimensionTraits<dimensions, GLfloat>::VectorType& b) {
+            _b = b;
+        }
 
         /** @brief Radius */
         inline float radius() const { return _radius; }
@@ -53,10 +76,14 @@ class PHYSICS_EXPORT Capsule: public AbstractShape {
         inline void setRadius(float radius) { _radius = radius; }
 
         /** @brief Transformed first point */
-        inline Vector3 transformedA() const { return _transformedA; }
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedA() const {
+            return _transformedA;
+        }
 
         /** @brief Transformed second point */
-        inline Vector3 transformedB() const { return _transformedB; }
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedB() const {
+            return _transformedB;
+        }
 
         /** @brief Transformed radius */
         inline float transformedRadius() const {
@@ -64,25 +91,28 @@ class PHYSICS_EXPORT Capsule: public AbstractShape {
         }
 
         /** @brief Collision with point */
-        bool operator%(const Point& other) const;
+        bool operator%(const Point<dimensions>& other) const;
 
         /** @brief Collision with sphere */
-        bool operator%(const Sphere& other) const;
-
-    protected:
-        inline Type type() const { return Type::Capsule; }
+        bool operator%(const Sphere<dimensions>& other) const;
 
     private:
-        Vector3 _a, _transformedA,
+        Math::Vector<dimensions, GLfloat> _a, _transformedA,
             _b, _transformedB;
         float _radius, _transformedRadius;
 };
 
+/** @brief Two-dimensional capsule */
+typedef Capsule<2> Capsule2D;
+
+/** @brief Three-dimensional capsule */
+typedef Capsule<3> Capsule3D;
+
 /** @collisionoperator{Point,Capsule} */
-inline bool operator%(const Point& a, const Capsule& b) { return b % a; }
+template<std::uint8_t dimensions> inline bool operator%(const Point<dimensions>& a, const Capsule<dimensions>& b) { return b % a; }
 
 /** @collisionoperator{Sphere,Capsule} */
-inline bool operator%(const Sphere& a, const Capsule& b) { return b % a; }
+template<std::uint8_t dimensions> inline bool operator%(const Sphere<dimensions>& a, const Capsule<dimensions>& b) { return b % a; }
 
 }}
 

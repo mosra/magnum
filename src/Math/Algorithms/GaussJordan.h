@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class GaussJordan
+ * @brief Class Magnum::Math::Algorithms::GaussJordan
  */
 
 #include "Math/RectangularMatrix.h"
@@ -48,7 +48,7 @@ class GaussJordan {
          * and the final backsubstitution is done only on @p t, as @p a would
          * always end with identity matrix anyway.
          */
-        template<size_t size, size_t rows, class T> static bool inPlaceTransposed(RectangularMatrix<size, size, T>& a, RectangularMatrix<size, rows, T>& t);
+        template<std::size_t size, std::size_t rows, class T> static bool inPlaceTransposed(RectangularMatrix<size, size, T>& a, RectangularMatrix<size, rows, T>& t);
 
         /**
          * @brief Eliminate in place
@@ -56,7 +56,7 @@ class GaussJordan {
          * Transposes the matrices, calls inPlaceTransposed() on them and then
          * transposes them back.
          */
-        template<size_t size, size_t cols, class T> static bool inPlace(RectangularMatrix<size, size, T>& a, RectangularMatrix<cols, size, T>& t) {
+        template<std::size_t size, std::size_t cols, class T> static bool inPlace(RectangularMatrix<size, size, T>& a, RectangularMatrix<cols, size, T>& t) {
             a = a.transposed();
             RectangularMatrix<size, cols, T> tTransposed = t.transposed();
 
@@ -69,11 +69,11 @@ class GaussJordan {
         }
 };
 
-template<size_t size, size_t cols, class T> bool GaussJordan::inPlaceTransposed(RectangularMatrix<size, size, T>& a, RectangularMatrix<size, cols, T>& t) {
-    for(size_t row = 0; row != size; ++row) {
+template<std::size_t size, std::size_t cols, class T> bool GaussJordan::inPlaceTransposed(RectangularMatrix<size, size, T>& a, RectangularMatrix<size, cols, T>& t) {
+    for(std::size_t row = 0; row != size; ++row) {
         /* Find max pivot */
-        size_t rowMax = row;
-        for(size_t row2 = row+1; row2 != size; ++row2)
+        std::size_t rowMax = row;
+        for(std::size_t row2 = row+1; row2 != size; ++row2)
             if(std::abs(a(row2, row)) > std::abs(a(rowMax, row)))
                 rowMax = row2;
 
@@ -86,7 +86,7 @@ template<size_t size, size_t cols, class T> bool GaussJordan::inPlaceTransposed(
             return false;
 
         /* Eliminate column */
-        for(size_t row2 = row+1; row2 != size; ++row2) {
+        for(std::size_t row2 = row+1; row2 != size; ++row2) {
             T c = a(row2, row)/a(row, row);
 
             a[row2] -= a[row]*c;
@@ -95,10 +95,10 @@ template<size_t size, size_t cols, class T> bool GaussJordan::inPlaceTransposed(
     }
 
     /* Backsubstitute */
-    for(size_t row = size; row != 0; --row) {
+    for(std::size_t row = size; row != 0; --row) {
         T c = T(1)/a(row-1, row-1);
 
-        for(size_t row2 = 0; row2 != row-1; ++row2)
+        for(std::size_t row2 = 0; row2 != row-1; ++row2)
             t[row2] -= t[row-1]*a(row2, row-1)*c;
 
         /* Normalize the row */

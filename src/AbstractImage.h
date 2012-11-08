@@ -19,7 +19,11 @@
  * @brief Class Magnum::AbstractImage
  */
 
+#include <cstddef>
+
 #include "Magnum.h"
+
+#include "magnumVisibility.h"
 
 namespace Magnum {
 
@@ -264,7 +268,7 @@ class MAGNUM_EXPORT AbstractImage {
          * @param components        Color components
          * @param type              Data type
          */
-        static size_t pixelSize(Components components, ComponentType type);
+        static std::size_t pixelSize(Components components, ComponentType type);
 
         /**
          * @brief Constructor

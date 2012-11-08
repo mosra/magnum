@@ -4,22 +4,26 @@ namespace Magnum {
 %Magnum is 3D graphics engine written in C++11 and OpenGL 3 Core Profile.
 Features:
 
-- Easy-to-use templated @ref Math "mathematical library" for matrix/vector
-  calculations and @ref Math::Geometry "geometry".
+- Easy-to-use templated @ref Math "mathematical library" for
+  @ref matrix-vector "matrix/vector calculations" and
+  @ref Math::Geometry "geometry".
+- Classes wrapping OpenGL objects and simplifying their usage -
+  @ref AbstractShaderProgram "shaders", @ref Buffer "buffers",
+  @ref Mesh "meshes" and @ref AbstractTexture "textures". Access to
+  @ref Framebuffer "framebuffer" and @ref AbstractQuery "occlusion queries".
+- @ref MeshTools "Mesh tools" for cleaning, optimizing and generating meshes,
+  utility classes for @ref Color.h "color conversion", @ref Timeline "timeline"
+  and @ref Profiler "profiling".
 - Hierarchical @ref SceneGraph "scene graph" which supports transformation
-  caching for better performance, classes for convenient usage of
-  @ref AbstractShaderProgram "shaders", @ref Buffer "buffers" and
-  @ref AbstractTexture "textures". Access to @ref Framebuffer "framebuffer"
-  and @ref AbstractQuery "occlusion queries".
-- @ref Physics "Physics library" for collision detection and rigid body
-  dynamics, @ref MeshTools "Mesh tools" for cleaning, optimizing and
-  generating meshes.
+  caching for better performance, @ref Physics "physics library" for collision
+  detection and rigid body dynamics.
 - Plugin-based @ref Trade "data exchange framework" for importing image, mesh,
   material and scene data in various formats.
 - Collection of pre-made @ref Primitives "graphic primitives" and
   @ref Shaders "shaders" for testing purposes.
 - Classes for easy creation of OpenGL context with @ref Contexts
-  "various toolkits".
+  "various toolkits", methods for querying
+  @ref Context "supported OpenGL version and available extensions".
 - Comprehensive use of C++11 features for safety, performance and ease of
   development. All code which doesn't directly interact with OpenGL is
   covered with unit tests.
@@ -34,21 +38,20 @@ Guide @ref building "how to download and build Magnum" on different platforms.
 
 @section getting-started Getting started
 
-Applications using %Magnum have at least two parts. One part manages OpenGL
-context using some toolkit and takes care of window resizing, mouse and
-keyboard input, while the other manages the scene and does the rendering.
-While it is possible for you to manage the OpenGL context and events on your
-own, %Magnum provides implementations for the most common toolkits (such as
-GLUT, SDL or Qt) in Contexts namespace. %Scene in %Magnum is composed of
-hierarchically connected object instances. To build the scene you need Scene
-object with assigned camera and at least one Object instance.
+To get up and running, you must first subclass one of the provided window
+context classes and implement required functions. %Magnum provides
+implementations for the most common toolkits (such as GLUT, Xlib, or SDL2) in
+Contexts namespace.
+
+Then you can either draw your meshes directly or use SceneGraph which will
+help you with object hierarchy, transformations and resource management.
 
 @subsection getting-started-examples Tutorials and examples
 
-The best way to get started is to @ref examples-triangle "render your first triangle"
-in step-by-step tutorial. Then you can dig deeper and try @ref example-index
-"other examples", read about fundamental principles in the documentation or
-start experimenting on your own!
+The best way to get started is to render your first triangle in
+@ref example-index "step-by-step tutorial". Then you can dig deeper and try
+other examples, read about @ref features "fundamental principles" in the
+documentation or start experimenting on your own!
 
 @subsection getting-started-hacking Hacking Magnum
 

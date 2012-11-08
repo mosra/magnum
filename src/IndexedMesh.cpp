@@ -15,21 +15,25 @@
 
 #include "IndexedMesh.h"
 
+#include <Utility/Debug.h>
+
+#include "Buffer.h"
+#include "Context.h"
+#include "Extensions.h"
+
 namespace Magnum {
 
+IndexedMesh::BindIndexBufferImplementation IndexedMesh::bindIndexBufferImplementation = &IndexedMesh::bindIndexBufferImplementationDefault;
+IndexedMesh::BindIndexedImplementation IndexedMesh::bindIndexedImplementation = &IndexedMesh::bindIndexedImplementationDefault;
+
+IndexedMesh* IndexedMesh::setIndexBuffer(Buffer* buffer) {
+    _indexBuffer = buffer;
+    (this->*bindIndexBufferImplementation)();
+    return this;
+}
+
 void IndexedMesh::draw() {
-    /* Vertex array must be bound before finalization */
-    #ifndef MAGNUM_TARGET_GLES
     bind();
-    #endif
-
-    finalize();
-
-    /* Buffers must be bound after initialization */
-    #ifdef MAGNUM_TARGET_GLES
-    bind();
-    _indexBuffer.bind();
-    #endif
 
     /** @todo Start at given index */
     glDrawElements(static_cast<GLenum>(primitive()), _indexCount, static_cast<GLenum>(_indexType), nullptr);
@@ -37,20 +41,38 @@ void IndexedMesh::draw() {
     unbind();
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-void IndexedMesh::finalize() {
-    if(isFinalized()) return;
-
+void IndexedMesh::bind() {
     CORRADE_ASSERT(_indexCount, "IndexedMesh: the mesh has zero index count!", );
 
-    /* Finalize attribute positions */
-    Mesh::finalize();
+    Mesh::bind();
+    (this->*bindIndexedImplementation)();
+}
 
-    /* Bind index buffer to VAO too */
+void IndexedMesh::initializeContextBasedFunctionality(Context* context) {
+    /** @todo VAOs are in ES 3.0 and as extension in ES 2.0, enable them when some extension wrangler is available */
     #ifndef MAGNUM_TARGET_GLES
-    _indexBuffer.bind();
+    if(context->isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>()) {
+        Debug() << "IndexedMesh: using" << Extensions::GL::APPLE::vertex_array_object::string() << "features";
+
+        bindIndexBufferImplementation = &IndexedMesh::bindIndexBufferImplementationVAO;
+        bindIndexedImplementation = &IndexedMesh::bindIndexedImplementationVAO;
+    }
+    #else
+    static_cast<void>(context);
     #endif
 }
-#endif
+
+void IndexedMesh::bindIndexBufferImplementationDefault() {}
+
+void IndexedMesh::bindIndexBufferImplementationVAO() {
+    bindVAO(vao);
+    _indexBuffer->bind(Buffer::Target::ElementArray);
+}
+
+void IndexedMesh::bindIndexedImplementationDefault() {
+    _indexBuffer->bind(Buffer::Target::ElementArray);
+}
+
+void IndexedMesh::bindIndexedImplementationVAO() {}
 
 }

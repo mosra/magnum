@@ -15,25 +15,30 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#ifndef MAGNUM_TARGET_GLES
 /** @file
  * @brief Class Magnum::CubeMapTextureArray
  */
+#endif
 
 #include "Texture.h"
 
+#ifndef MAGNUM_TARGET_GLES
 namespace Magnum {
 
 /**
 @brief Cube map texture array
 
-For information about usage, see CubeMapTexture documentation.
+For information, see CubeMapTexture and AbstractTexture documentation.
 
 When using cube map texture in the shader, use `samplerCubeArray`. Unlike
 classic textures, coordinates for cube map textures is signed three-part
 vector from the center of the cube, which intersects one of the six sides of
 the cube map.
 
+@see CubeMapTexture::setSeamless()
 @requires_gl40 Extension @extension{ARB,texture_cube_map_array}
+@requires_gl Cube map texture arrays are not available in OpenGL ES.
 */
 class CubeMapTextureArray: public AbstractTexture {
     public:
@@ -48,27 +53,19 @@ class CubeMapTextureArray: public AbstractTexture {
         };
 
         /**
-         * @brief Enable/disable seamless cube map textures
-         *
-         * @requires_gl32 Extension @extension{ARB,seamless_cube_map}
-         */
-        inline static void setSeamless(bool enabled) {
-            enabled ? glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS) : glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-        }
-
-        /**
          * @brief Constructor
          *
          * Creates one cube map OpenGL texture.
+         * @see @def_gl{TEXTURE_CUBE_MAP_ARRAY}
          */
         inline CubeMapTextureArray(): AbstractTexture(GL_TEXTURE_CUBE_MAP_ARRAY) {}
 
         /**
          * @copydoc Texture::setWrapping()
          */
-        inline void setWrapping(const Math::Vector<3, Wrapping>& wrapping) {
-            bind();
-            DataHelper<3>::setWrapping(GL_TEXTURE_CUBE_MAP_ARRAY, wrapping);
+        inline CubeMapTextureArray* setWrapping(const Math::Vector3<Wrapping>& wrapping) {
+            DataHelper<3>::setWrapping(this, wrapping);
+            return this;
         }
 
         /**
@@ -78,9 +75,9 @@ class CubeMapTextureArray: public AbstractTexture {
          * for all layers. Each group of 6 2D images is one cube map layer.
          * The images are ordered the same way as Coordinate enum.
          */
-        template<class T> inline void setData(GLint mipLevel, InternalFormat internalFormat, T* image) {
-            bind();
-            DataHelper<3>::set(GL_TEXTURE_CUBE_MAP_ARRAY, mipLevel, internalFormat, image);
+        template<class T> inline CubeMapTextureArray* setData(GLint mipLevel, InternalFormat internalFormat, T* image) {
+            DataHelper<3>::set(this, GL_TEXTURE_CUBE_MAP_ARRAY, mipLevel, internalFormat, image);
+            return this;
         }
 
         /**
@@ -89,6 +86,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @param offset        Offset where to put data in the texture
          * @param image         Three-dimensional Image, BufferedImage or for
          *      example Trade::ImageData
+         * @return Pointer to self (for method chaining)
          *
          * Sets texture subdata from given image. The image is not deleted
          * afterwards.
@@ -100,9 +98,9 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * @see setSubData(GLsizei, Coordinate, GLint, const Math::Vector<2, GLint>&, const Image*)
          */
-        template<class Image> inline void setSubData(GLint mipLevel, const Math::Vector<3, GLint>& offset, const Image* image) {
-            bind();
-            DataHelper<3>::setSub(GL_TEXTURE_CUBE_MAP_ARRAY, mipLevel, offset, image, Math::Vector<3, GLsizei>(Math::Vector<Image::Dimensions, GLsizei>()));
+        template<class Image> inline CubeMapTextureArray* setSubData(GLint mipLevel, const Math::Vector3<GLint>& offset, const Image* image) {
+            DataHelper<3>::setSub(this, GL_TEXTURE_CUBE_MAP_ARRAY, mipLevel, offset, image, Math::Vector3<GLsizei>(Math::Vector<Image::Dimensions, GLsizei>()));
+            return this;
         }
 
         /**
@@ -113,18 +111,44 @@ class CubeMapTextureArray: public AbstractTexture {
          * @param offset        Offset where to put data in the texture
          * @param image         Two-dimensional Image, BufferedImage or for
          *      example Trade::ImageData
+         * @return Pointer to self (for method chaining)
          *
          * Sets texture subdata from given image. The image is not deleted
          * afterwards.
          *
          * @see setSubData(GLint, const Math::Vector<3, GLint>&, const Image*)
          */
-        template<class Image> inline void setSubData(GLsizei layer, Coordinate coordinate, GLint mipLevel, const Math::Vector<2, GLint>& offset, const Image* image) {
-            bind();
-            DataHelper<3>::setSub(GL_TEXTURE_CUBE_MAP_ARRAY, mipLevel, Math::Vector<3, GLint>(offset, layer*6+static_cast<GLsizei>(coordinate)), image, Math::Vector<2, GLsizei>(Math::Vector<Image::Dimensions, GLsizei>()));
+        template<class Image> inline CubeMapTextureArray* setSubData(GLsizei layer, Coordinate coordinate, GLint mipLevel, const Math::Vector2<GLint>& offset, const Image* image) {
+            DataHelper<3>::setSub(this, GL_TEXTURE_CUBE_MAP_ARRAY, mipLevel, Math::Vector3<GLint>(offset, layer*6+static_cast<GLsizei>(coordinate)), image, Math::Vector<2, GLsizei>(Math::Vector<Image::Dimensions, GLsizei>()));
+            return this;
         }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline CubeMapTextureArray* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::BaseLevel) {
+            AbstractTexture::setMinificationFilter(filter, mipmap);
+            return this;
+        }
+        inline CubeMapTextureArray* setMagnificationFilter(Filter filter) {
+            AbstractTexture::setMagnificationFilter(filter);
+            return this;
+        }
+        inline CubeMapTextureArray* setBorderColor(const Color4<GLfloat>& color) {
+            AbstractTexture::setBorderColor(color);
+            return this;
+        }
+        inline CubeMapTextureArray* setMaxAnisotropy(GLfloat anisotropy) {
+            AbstractTexture::setMaxAnisotropy(anisotropy);
+            return this;
+        }
+        inline CubeMapTextureArray* generateMipmap() {
+            AbstractTexture::generateMipmap();
+            return this;
+        }
+        #endif
 };
 
 }
+#endif
 
 #endif

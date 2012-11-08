@@ -19,22 +19,33 @@
  * @brief Class Magnum::Physics::Plane
  */
 
+#include "Math/Vector3.h"
 #include "AbstractShape.h"
 
-#include "Line.h"
-#include "LineSegment.h"
+#include "magnumCompatibility.h"
 
 namespace Magnum { namespace Physics {
 
-/** @brief Infinite plane, defined by position and normal */
-class PHYSICS_EXPORT Plane: public AbstractShape {
+template<std::uint8_t> class Line;
+typedef Line<3> Line3D;
+template<std::uint8_t> class LineSegment;
+typedef LineSegment<3> LineSegment3D;
+
+/** @brief Infinite plane, defined by position and normal (3D only) */
+class PHYSICS_EXPORT Plane: public AbstractShape<3> {
     public:
         /** @brief Constructor */
         inline Plane(const Vector3& position, const Vector3& normal): _position(position), _transformedPosition(position), _normal(normal), _transformedNormal(normal) {}
 
-        void applyTransformation(const Matrix4& transformation);
+        inline Type type() const override { return Type::Plane; }
 
-        bool collides(const AbstractShape* other) const;
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        void applyTransformation(const Matrix4& transformation) override;
+        bool collides(const AbstractShape<3>* other) const override;
+        #else
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
+        bool collides(const AbstractShape* other) const override;
+        #endif
 
         /** @brief Position */
         inline Vector3 position() const { return _position; }
@@ -63,13 +74,10 @@ class PHYSICS_EXPORT Plane: public AbstractShape {
         }
 
         /** @brief Collision with line */
-        bool operator%(const Line& other) const;
+        bool operator%(const Line3D& other) const;
 
         /** @brief Collision with line segment */
-        bool operator%(const LineSegment& other) const;
-
-    protected:
-        inline Type type() const { return Type::Plane; }
+        bool operator%(const LineSegment3D& other) const;
 
     private:
         Vector3 _position, _transformedPosition,
@@ -77,10 +85,10 @@ class PHYSICS_EXPORT Plane: public AbstractShape {
 };
 
 /** @collisionoperator{Line,Plane} */
-inline bool operator%(const Line& a, const Plane& b) { return b % a; }
+inline bool operator%(const Line3D& a, const Plane& b) { return b % a; }
 
 /** @collisionoperator{LineSegment,Plane} */
-inline bool operator%(const LineSegment& a, const Plane& b) { return b % a; }
+inline bool operator%(const LineSegment3D& a, const Plane& b) { return b % a; }
 
 
 }}

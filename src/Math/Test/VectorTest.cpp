@@ -17,8 +17,8 @@
 
 #include <sstream>
 
+#include "Constants.h"
 #include "Vector.h"
-#include "Math.h"
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::VectorTest)
 
@@ -28,12 +28,10 @@ using namespace Corrade::Utility;
 namespace Magnum { namespace Math { namespace Test {
 
 typedef Vector<4, float> Vector4;
-typedef Vector<4, int> Vector4i;
 typedef Vector<3, float> Vector3;
 
 VectorTest::VectorTest() {
     addTests(&VectorTest::construct,
-             &VectorTest::constructFrom,
              &VectorTest::dot,
              &VectorTest::multiplyDivideComponentWise,
              &VectorTest::dotSelf,
@@ -53,15 +51,6 @@ void VectorTest::construct() {
 
     float data[] = { 1.0f, 2.0f, 3.0f, 4.0f };
     CORRADE_COMPARE(Vector4::from(data), Vector4(1.0f, 2.0f, 3.0f, 4.0f));
-}
-
-void VectorTest::constructFrom() {
-    Vector4 floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
-    Vector4 floatingPointRounded(1.0f, 2.0f, -15.0f, 7.0f);
-    Vector4i integral(1, 2, -15, 7);
-
-    CORRADE_COMPARE(Vector4i::from(floatingPoint), integral);
-    CORRADE_COMPARE(Vector4::from(integral), floatingPointRounded);
 }
 
 void VectorTest::dot() {
@@ -110,7 +99,7 @@ void VectorTest::angle() {
     Error::setOutput(&o);
     /* Both vectors must be normalized, otherwise NaN is returned */
     CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f}), numeric_limits<Vector3::Type>::quiet_NaN());
-    CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized!\n");
+    CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized\n");
     CORRADE_COMPARE(Vector3::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized()), numeric_limits<Vector3::Type>::quiet_NaN());
 
     CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), Vector3(1.0f, -2.0f, 3.0f).normalized()), rad(1.162514f));

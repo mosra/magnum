@@ -1,7 +1,10 @@
 corrade_add_test2(PhysicsAxisAlignedBoxTest AxisAlignedBoxTest.cpp LIBRARIES MagnumPhysics)
+corrade_add_test2(PhysicsBoxTest BoxTest.cpp LIBRARIES MagnumPhysics)
 corrade_add_test2(PhysicsCapsuleTest CapsuleTest.cpp LIBRARIES MagnumPhysics)
 corrade_add_test2(PhysicsLineTest LineTest.cpp LIBRARIES MagnumPhysics)
 corrade_add_test2(PhysicsPlaneTest PlaneTest.cpp LIBRARIES MagnumPhysics)
 corrade_add_test2(PhysicsPointTest PointTest.cpp LIBRARIES MagnumPhysics)
 corrade_add_test2(PhysicsShapeGroupTest ShapeGroupTest.cpp LIBRARIES MagnumPhysics)
 corrade_add_test2(PhysicsSphereTest SphereTest.cpp LIBRARIES MagnumPhysics)
+
+corrade_add_test2(PhysicsShapedObjectTest ShapedObjectTest.cpp LIBRARIES MagnumPhysics)

@@ -25,21 +25,22 @@ namespace Magnum { namespace Math {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    template<size_t size, class T> class MatrixDeterminant;
+    template<std::size_t size, class T> class MatrixDeterminant;
 }
 #endif
 
 /**
 @brief Square matrix
-@tparam s   %Matrix size
+@tparam size    %Matrix size
+@tparam T       Data type
+
+See @ref matrix-vector for brief introduction.
 
 @configurationvalueref{Magnum::Math::Matrix}
-@todo @c PERFORMANCE - loop unrolling for Matrix<3, T> and Matrix<4, T>
-@todo first col, then row (cache adjacency)
  */
-template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
+template<std::size_t size, class T> class Matrix: public RectangularMatrix<size, size, T> {
     public:
-        const static size_t size = s;    /**< @brief %Matrix size */
+        const static std::size_t Size = size; /**< @brief %Matrix size */
 
         /** @brief Pass to constructor to create zero-filled matrix */
         enum ZeroType { Zero };
@@ -61,12 +62,12 @@ template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
          * `Matrix m(Matrix::Identity);`. Optional parameter @p value allows
          * you to specify value on diagonal.
          */
-        inline explicit Matrix(IdentityType = Identity, T value = T(1)) {
-            for(size_t i = 0; i != size; ++i)
+        inline Matrix(IdentityType = Identity, T value = T(1)) {
+            for(std::size_t i = 0; i != size; ++i)
                 (*this)(i, i) = value;
         }
 
-        /** @copydoc RectangularMatrix::RectangularMatrix(T, U...) */
+        /** @copydoc RectangularMatrix::RectangularMatrix */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> inline constexpr Matrix(T first, U... next): RectangularMatrix<size, size, T>(first, next...) {}
         #else
@@ -91,18 +92,18 @@ template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
         T trace() const {
             T out(0);
 
-            for(size_t i = 0; i != size; ++i)
+            for(std::size_t i = 0; i != size; ++i)
                 out += (*this)(i, i);
 
             return out;
         }
 
         /** @brief %Matrix without given column and row */
-        Matrix<size-1, T> ij(size_t skipCol, size_t skipRow) const {
+        Matrix<size-1, T> ij(std::size_t skipCol, std::size_t skipRow) const {
             Matrix<size-1, T> out(Matrix<size-1, T>::Zero);
 
-            for(size_t row = 0; row != size-1; ++row)
-                for(size_t col = 0; col != size-1; ++col)
+            for(std::size_t col = 0; col != size-1; ++col)
+                for(std::size_t row = 0; row != size-1; ++row)
                     out(col, row) = (*this)(col + (col >= skipCol),
                                             row + (row >= skipRow));
 
@@ -112,15 +113,12 @@ template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
         /**
          * @brief Determinant
          *
-         * Computed recursively using Laplace's formula:
-         * @f[
-         * \det(A) = \sum_{j=1}^n (-1)^{i+j} a_{i,j} \det(A^{i,j})
-         * @f]
-         * @f$ A^{i, j} @f$ is matrix without i-th row and j-th column, see
+         * Computed recursively using Laplace's formula: @f[
+         *      \det(A) = \sum_{j=1}^n (-1)^{i+j} a_{i,j} \det(A^{i,j})
+         * @f] @f$ A^{i, j} @f$ is matrix without i-th row and j-th column, see
          * ij(). The formula is expanded down to 2x2 matrix, where the
-         * determinant is computed directly:
-         * @f[
-         * \det(A) = a_{0, 0} a_{1, 1} - a_{1, 0} a_{0, 1}
+         * determinant is computed directly: @f[
+         *      \det(A) = a_{0, 0} a_{1, 1} - a_{1, 0} a_{0, 1}
          * @f]
          */
         inline T determinant() const { return Implementation::MatrixDeterminant<size, T>()(*this); }
@@ -128,9 +126,8 @@ template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
         /**
          * @brief Inverted matrix
          *
-         * Computed using Cramer's rule:
-         * @f[
-         * A^{-1} = \frac{1}{\det(A)} Adj(A)
+         * Computed using Cramer's rule: @f[
+         *      A^{-1} = \frac{1}{\det(A)} Adj(A)
          * @f]
          */
         Matrix<size, T> inverted() const {
@@ -138,8 +135,8 @@ template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
 
             T _determinant = determinant();
 
-            for(size_t row = 0; row != size; ++row)
-                for(size_t col = 0; col != size; ++col)
+            for(std::size_t col = 0; col != size; ++col)
+                for(std::size_t row = 0; row != size; ++row)
                     out(col, row) = (((row+col) & 1) ? -1 : 1)*ij(row, col).determinant()/_determinant;
 
             return out;
@@ -150,7 +147,7 @@ template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
         inline Matrix<size, T> operator*(const Matrix<size, T>& other) const {
             return RectangularMatrix<size, size, T>::operator*(other);
         }
-        template<size_t otherCols> inline RectangularMatrix<otherCols, size, T> operator*(const RectangularMatrix<otherCols, size, T>& other) const {
+        template<std::size_t otherCols> inline RectangularMatrix<otherCols, size, T> operator*(const RectangularMatrix<otherCols, size, T>& other) const {
             return RectangularMatrix<size, size, T>::operator*(other);
         }
         inline Vector<size, T> operator*(const Vector<size, T>& other) const {
@@ -162,17 +159,17 @@ template<size_t s, class T> class Matrix: public RectangularMatrix<s, s, T> {
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Matrix<size, T>>::type operator*(U number, const Matrix<size, T>& matrix) {
+template<std::size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Matrix<size, T>>::type operator*(U number, const Matrix<size, T>& matrix) {
     return number*RectangularMatrix<size, size, T>(matrix);
 }
-template<size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Matrix<size, T>>::type operator/(U number, const Matrix<size, T>& matrix) {
+template<std::size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Matrix<size, T>>::type operator/(U number, const Matrix<size, T>& matrix) {
     return number/RectangularMatrix<size, size, T>(matrix);
 }
 #endif
 
 /** @debugoperator{Magnum::Math::Matrix} */
-template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix<size, T>& value) {
-    return debug << static_cast<const Magnum::Math::RectangularMatrix<size, size, T>&>(value);
+template<std::size_t size, class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Matrix<size, T>& value) {
+    return debug << static_cast<const RectangularMatrix<size, size, T>&>(value);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -192,10 +189,10 @@ template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utili
         return *this;                                                       \
     }                                                                       \
                                                                             \
-    inline VectorType<T>& operator[](size_t col) {                          \
+    inline VectorType<T>& operator[](std::size_t col) {                     \
         return VectorType<T>::from(Matrix<size, T>::data()+col*size);       \
     }                                                                       \
-    inline constexpr const VectorType<T>& operator[](size_t col) const {    \
+    inline constexpr const VectorType<T>& operator[](std::size_t col) const { \
         return VectorType<T>::from(Matrix<size, T>::data()+col*size);       \
     }                                                                       \
                                                                             \
@@ -206,7 +203,7 @@ template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utili
         Matrix<size, T>::operator*=(other);                                 \
         return *this;                                                       \
     }                                                                       \
-    template<size_t otherCols> inline RectangularMatrix<otherCols, size, T> operator*(const RectangularMatrix<otherCols, size, T>& other) const { \
+    template<std::size_t otherCols> inline RectangularMatrix<otherCols, size, T> operator*(const RectangularMatrix<otherCols, size, T>& other) const { \
         return Matrix<size, T>::operator*(other);                           \
     }                                                                       \
     inline VectorType<T> operator*(const Vector<size, T>& other) const {    \
@@ -226,13 +223,12 @@ template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utili
 
 namespace Implementation {
 
-template<size_t size, class T> class MatrixDeterminant {
+template<std::size_t size, class T> class MatrixDeterminant {
     public:
-        /** @brief Functor */
         T operator()(const Matrix<size, T>& m) {
             T out(0);
 
-            for(size_t col = 0; col != size; ++col)
+            for(std::size_t col = 0; col != size; ++col)
                 out += ((col & 1) ? -1 : 1)*m(col, 0)*m.ij(col, 0).determinant();
 
             return out;
@@ -241,7 +237,6 @@ template<size_t size, class T> class MatrixDeterminant {
 
 template<class T> class MatrixDeterminant<2, T> {
     public:
-        /** @brief Functor */
         inline constexpr T operator()(const Matrix<2, T>& m) {
             return m(0, 0)*m(1, 1) - m(1, 0)*m(0, 1);
         }
@@ -249,7 +244,6 @@ template<class T> class MatrixDeterminant<2, T> {
 
 template<class T> class MatrixDeterminant<1, T> {
     public:
-        /** @brief Functor */
         inline constexpr T operator()(const Matrix<1, T>& m) {
             return m(0, 0);
         }
@@ -262,7 +256,7 @@ template<class T> class MatrixDeterminant<1, T> {
 
 namespace Corrade { namespace Utility {
     /** @configurationvalue{Magnum::Math::Matrix} */
-    template<size_t size, class T> struct ConfigurationValue<Magnum::Math::Matrix<size, T>>: public ConfigurationValue<Magnum::Math::RectangularMatrix<size, size, T>> {};
+    template<std::size_t size, class T> struct ConfigurationValue<Magnum::Math::Matrix<size, T>>: public ConfigurationValue<Magnum::Math::RectangularMatrix<size, size, T>> {};
 }}
 
 #endif

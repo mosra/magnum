@@ -25,7 +25,9 @@ namespace Magnum { namespace Math {
 
 /**
 @brief Two-component vector
+@tparam T   Data type
 
+See @ref matrix-vector for brief introduction.
 @configurationvalueref{Magnum::Math::Vector2}
 */
 template<class T> class Vector2: public Vector<2, T> {
@@ -68,8 +70,11 @@ template<class T> class Vector2: public Vector<2, T> {
          */
         inline constexpr static Vector2<T> yScale(T scale) { return Vector2<T>(T(1), scale); }
 
+        /** @copydoc Vector::Vector() */
+        inline constexpr Vector2() {}
+
         /** @copydoc Vector::Vector(T) */
-        inline constexpr explicit Vector2(T value = T()): Vector<2, T>(value, value) {}
+        inline constexpr explicit Vector2(T value): Vector<2, T>(value, value) {}
 
         /** @brief Copy constructor */
         inline constexpr Vector2(const RectangularMatrix<1, 2, T>& other): Vector<2, T>(other) {}
@@ -81,11 +86,10 @@ template<class T> class Vector2: public Vector<2, T> {
          */
         inline constexpr Vector2(T x, T y): Vector<2, T>(x, y) {}
 
-        inline constexpr T x() const { return (*this)[0]; } /**< @brief X component */
-        inline constexpr T y() const { return (*this)[1]; } /**< @brief Y component */
-
-        inline void setX(T value) { (*this)[0] = value; }   /**< @brief Set X component */
-        inline void setY(T value) { (*this)[1] = value; }   /**< @brief Set Y component */
+        inline T& x() { return (*this)[0]; }                /**< @brief X component */
+        inline constexpr T x() const { return (*this)[0]; } /**< @overload */
+        inline T& y() { return (*this)[1]; }                /**< @brief Y component */
+        inline constexpr T y() const { return (*this)[1]; } /**< @overload */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector2, 2)
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 2, Vector2<T>)
@@ -94,8 +98,8 @@ template<class T> class Vector2: public Vector<2, T> {
 MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Vector2, 2)
 
 /** @debugoperator{Magnum::Math::Vector2} */
-template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector2<T>& value) {
-    return debug << static_cast<const Magnum::Math::Vector<2, T>&>(value);
+template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Vector2<T>& value) {
+    return debug << static_cast<const Vector<2, T>&>(value);
 }
 
 }}

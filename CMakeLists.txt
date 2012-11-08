@@ -4,30 +4,25 @@ project(Magnum)
 
 include(CMakeDependentOption)
 
-option(TARGET_GLES "Build for OpenGL ES 2 instead of desktop OpenGL" OFF)
+option(GCC46_COMPATIBILITY "Enable compatibility mode for GCC 4.6 (might disable some features)" OFF)
+
+option(TARGET_GLES "Build for OpenGL ES instead of desktop OpenGL" OFF)
+cmake_dependent_option(TARGET_GLES2 "Build for OpenGL ES 2" ON "TARGET_GLES" OFF)
 
 # Parts of the library
 option(WITH_EVERYTHING "Build everything (doesn't include contexts)" ON)
-option(WITH_MESHTOOLS "Build MeshTools library" OFF)
-option(WITH_PHYSICS "Build Physics library" OFF)
-option(WITH_PRIMITIVES "Builf Primitives library" OFF)
-option(WITH_SCENEGRAPH "Build SceneGraph library" OFF)
-option(WITH_SHADERS "Build Shaders library" OFF)
+cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" OFF "NOT WITH_EVERYTHING" ON)
+cmake_dependent_option(WITH_PHYSICS "Build Physics library" OFF "NOT WITH_EVERYTHING" ON)
+cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" OFF "NOT WITH_EVERYTHING" ON)
+cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" OFF "NOT WITH_EVERYTHING;NOT WITH_PHYSICS" ON)
+cmake_dependent_option(WITH_SHADERS "Build Shaders library" OFF "NOT WITH_EVERYTHING;NOT WITH_PHYSICS" ON)
 
-option(WITH_GLXCONTEXT "Build GlxContext library" OFF)
-cmake_dependent_option(WITH_XEGLCONTEXT "Build XEglContext library" OFF "TARGET_GLES" OFF)
-cmake_dependent_option(WITH_GLUTCONTEXT "Build GlutContext library" OFF "NOT TARGET_GLES" OFF)
-option(WITH_SDL2CONTEXT "Build Sdl2Context library" OFF)
+option(WITH_GLXWINDOWCONTEXT "Build GlxWindowContext library" OFF)
+cmake_dependent_option(WITH_XEGLWINDOWCONTEXT "Build XEglWindowContext library" OFF "TARGET_GLES" OFF)
+cmake_dependent_option(WITH_GLUTWINDOWCONTEXT "Build GlutWindowContext library" OFF "NOT TARGET_GLES" OFF)
+option(WITH_SDL2WINDOWCONTEXT "Build Sdl2WindowContext library" OFF)
 
 option(BUILD_TESTS "Build unit tests." OFF)
-
-if(WITH_EVERYTHING)
-    set(WITH_MESHTOOLS ON)
-    set(WITH_PHYSICS ON)
-    set(WITH_PRIMITIVES ON)
-    set(WITH_SCENEGRAPH ON)
-    set(WITH_SHADERS ON)
-endif()
 
 if(BUILD_TESTS)
     enable_testing()
@@ -57,5 +52,8 @@ set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
 set(MAGNUM_CMAKE_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
 
+include_directories(${CMAKE_SOURCE_DIR}/external)
+
+add_subdirectory(external)
 add_subdirectory(modules)
 add_subdirectory(src)

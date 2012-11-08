@@ -1,11 +1,14 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(MagnumMath_HEADERS
+    Constants.h
     Math.h
     MathTypeTraits.h
     Matrix.h
     Matrix3.h
     Matrix4.h
+    Point2D.h
+    Point3D.h
     RectangularMatrix.h
     Vector.h
     Vector2.h

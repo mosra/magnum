@@ -160,7 +160,7 @@ template<class T> class Color3: public Math::Vector3<T> {
          * @brief Create integral color from floating-point color
          *
          * E.g. `{0.294118, 0.45098, 0.878431}` is converted to
-         * `{75, 115, 224}`, if resulting type is `unsigned char`.
+         * `{75, 115, 224}`, if resulting type is `uint8_t`.
          *
          * @note This function is enabled only if source type is floating-point
          *      and destination type is integral.
@@ -175,7 +175,7 @@ template<class T> class Color3: public Math::Vector3<T> {
          * @brief Create floating-point color from integral color
          *
          * E.g. `{75, 115, 224}` is converted to
-         * `{0.294118, 0.45098, 0.878431}`, if source type is `unsigned char`.
+         * `{0.294118, 0.45098, 0.878431}`, if source type is `uint8_t`.
          *
          * @note This function is enabled only if source type is integral
          *      and destination type is floating-point.
@@ -224,13 +224,12 @@ template<class T> class Color3: public Math::Vector3<T> {
          */
         inline constexpr Color3(T r, T g, T b): Math::Vector3<T>(r, g, b) {}
 
-        inline constexpr T r() const { return Math::Vector3<T>::x(); }  /**< @brief R component */
-        inline constexpr T g() const { return Math::Vector3<T>::y(); }  /**< @brief G component */
-        inline constexpr T b() const { return Math::Vector3<T>::z(); }  /**< @brief B component */
-
-        inline void setR(T value) { Math::Vector3<T>::setX(value); }    /**< @brief Set R component */
-        inline void setG(T value) { Math::Vector3<T>::setY(value); }    /**< @brief Set G component */
-        inline void setB(T value) { Math::Vector3<T>::setZ(value); }    /**< @brief Set B component */
+        inline T& r() { return Math::Vector3<T>::x(); }                 /**< @brief R component */
+        inline constexpr T r() const { return Math::Vector3<T>::x(); }  /**< @overload */
+        inline T& g() { return Math::Vector3<T>::y(); }                 /**< @brief G component */
+        inline constexpr T g() const { return Math::Vector3<T>::y(); }  /**< @overload */
+        inline T& b() { return Math::Vector3<T>::z(); }                 /**< @brief B component */
+        inline constexpr T b() const { return Math::Vector3<T>::z(); }  /**< @overload */
 
         /**
          * @brief Convert to HSV
@@ -360,17 +359,16 @@ template<class T> class Color4: public Math::Vector4<T> {
          */
         /* Not marked as explicit, because conversion from Color3 to Color4
            is fairly common, nearly always with A set to 1 */
-        inline constexpr Color4(const Math::Vector<3, T>& rgb, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
+        inline constexpr Color4(const Math::Vector3<T>& rgb, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
 
-        inline constexpr T r() const { return Math::Vector4<T>::x(); }  /**< @brief R component */
-        inline constexpr T g() const { return Math::Vector4<T>::y(); }  /**< @brief G component */
-        inline constexpr T b() const { return Math::Vector4<T>::z(); }  /**< @brief B component */
-        inline constexpr T a() const { return Math::Vector4<T>::w(); }  /**< @brief A component */
-
-        inline void setR(T value) { Math::Vector4<T>::setX(value); }    /**< @brief Set R component */
-        inline void setG(T value) { Math::Vector4<T>::setY(value); }    /**< @brief Set G component */
-        inline void setB(T value) { Math::Vector4<T>::setZ(value); }    /**< @brief Set B component */
-        inline void setA(T value) { Math::Vector4<T>::setW(value); }    /**< @brief Set A component */
+        inline T& r() { return Math::Vector4<T>::x(); }                 /**< @brief R component */
+        inline constexpr T r() const { return Math::Vector4<T>::x(); }  /**< @overload */
+        inline T& g() { return Math::Vector4<T>::y(); }                 /**< @brief G component */
+        inline constexpr T g() const { return Math::Vector4<T>::y(); }  /**< @overload */
+        inline T& b() { return Math::Vector4<T>::z(); }                 /**< @brief B component */
+        inline constexpr T b() const { return Math::Vector4<T>::z(); }  /**< @overload */
+        inline T& a() { return Math::Vector4<T>::w(); }                 /**< @brief A component */
+        inline constexpr T a() const { return Math::Vector4<T>::w(); }  /**< @overload */
 
         /**
          * @brief RGB part of the vector
@@ -378,7 +376,8 @@ template<class T> class Color4: public Math::Vector4<T> {
          *
          * @see swizzle()
          */
-        inline constexpr Color3<T> rgb() const { return Math::Vector4<T>::xyz(); }
+        inline Color3<T>& rgb() { return Color3<T>::from(Math::Vector4<T>::data()); }
+        inline constexpr Color3<T> rgb() const { return Color3<T>::from(Math::Vector4<T>::data()); } /**< @overload */
 
         /** @copydoc Color3::toHSV() */
         inline constexpr HSV toHSV() const {
@@ -407,13 +406,13 @@ template<class T> class Color4: public Math::Vector4<T> {
 MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Color4, 4)
 
 /** @debugoperator{Magnum::Color3} */
-template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Color3<T>& value) {
-    return debug << static_cast<const Magnum::Math::Vector3<T>&>(value);
+template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Color3<T>& value) {
+    return debug << static_cast<const Math::Vector3<T>&>(value);
 }
 
 /** @debugoperator{Magnum::Color4} */
-template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Color4<T>& value) {
-    return debug << static_cast<const Magnum::Math::Vector4<T>&>(value);
+template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Color4<T>& value) {
+    return debug << static_cast<const Math::Vector4<T>&>(value);
 }
 
 }

@@ -15,6 +15,8 @@
 
 #include "LineTest.h"
 
+#include "Math/Constants.h"
+#include "Math/Matrix4.h"
 #include "Physics/Line.h"
 
 CORRADE_TEST_MAIN(Magnum::Physics::Test::LineTest)
@@ -26,7 +28,7 @@ LineTest::LineTest() {
 }
 
 void LineTest::applyTransformation() {
-    Physics::Line line({1.0f, 2.0f, 3.0f}, {-1.0f, -2.0f, -3.0f});
+    Physics::Line3D line({1.0f, 2.0f, 3.0f}, {-1.0f, -2.0f, -3.0f});
     line.applyTransformation(Matrix4::rotation(deg(90.0f), Vector3::zAxis()));
     CORRADE_COMPARE(line.transformedA(), Vector3(-2.0f, 1.0f, 3.0f));
     CORRADE_COMPARE(line.transformedB(), Vector3(2.0f, -1.0f, -3.0f));

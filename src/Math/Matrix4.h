@@ -19,16 +19,17 @@
  * @brief Class Magnum::Math::Matrix4
  */
 
-#include "Matrix3.h"
-#include "Vector4.h"
+#include "Matrix.h"
+#include "Point3D.h"
 
 namespace Magnum { namespace Math {
 
 /**
-@brief 4x4 matrix
+@brief 4x4 matrix for affine transformations in 3D
+@tparam T   Data type
 
-Provides functions for transformations in 3D. See also Matrix3 for 2D
-transformations.
+Provides functions for transformations in 3D. See Matrix3 for 2D
+transformations. See also @ref matrix-vector for brief introduction.
 @configurationvalueref{Magnum::Math::Matrix4}
 @todo Shearing
 @todo Reflection
@@ -36,70 +37,137 @@ transformations.
 template<class T> class Matrix4: public Matrix<4, T> {
     public:
         /**
-         * @brief 3D translation matrix
-         * @param vec   Translation vector
+         * @brief 3D translation
+         * @param vector    Translation vector
          *
-         * @see Matrix3::translation(), Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()
+         * @see translation(), Matrix3::translation(const Vector2&),
+         *      Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()
          */
-        inline constexpr static Matrix4<T> translation(const Vector3<T>& vec) {
+        inline constexpr static Matrix4<T> translation(const Vector3<T>& vector) {
             return Matrix4<T>( /* Column-major! */
                 T(1), T(0), T(0), T(0),
                 T(0), T(1), T(0), T(0),
                 T(0), T(0), T(1), T(0),
-                vec.x(), vec.y(), vec.z(), T(1)
+                vector.x(), vector.y(), vector.z(), T(1)
             );
         }
 
         /**
-         * @brief 3D scaling matrix
-         * @param vec   Scaling vector
+         * @brief 3D scaling
+         * @param vector    Scaling vector
          *
-         * @see Matrix3::scaling(), Vector3::xScale(), Vector3::yScale(), Vector3::zScale()
+         * @see rotationScaling() const, Matrix3::scaling(const Vector2&),
+         *      Vector3::xScale(), Vector3::yScale(), Vector3::zScale()
          */
-        inline constexpr static Matrix4<T> scaling(const Vector3<T>& vec) {
+        inline constexpr static Matrix4<T> scaling(const Vector3<T>& vector) {
             return Matrix4<T>( /* Column-major! */
-                vec.x(), T(0), T(0), T(0),
-                T(0), vec.y(), T(0), T(0),
-                T(0), T(0), vec.z(), T(0),
+                vector.x(), T(0), T(0), T(0),
+                T(0), vector.y(), T(0), T(0),
+                T(0), T(0), vector.z(), T(0),
                 T(0), T(0), T(0), T(1)
             );
         }
 
         /**
-         * @brief 3D rotation matrix
-         * @param angle Rotation angle (counterclockwise, in radians)
-         * @param vec   Rotation vector
+         * @brief 3D rotation around arbitrary axis
+         * @param angle             Rotation angle (counterclockwise, in radians)
+         * @param normalizedAxis    Normalized rotation axis
          *
-         * @see Matrix3::rotation(), Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis(), deg(), rad()
-         * @todo optimize - Assume the vectors are normalized?
+         * If possible, use faster alternatives like rotationX(), rotationY()
+         * and rotationZ().
+         * @see rotation() const, Matrix3::rotation(T), Vector3::xAxis(),
+         *      Vector3::yAxis(), Vector3::zAxis(), deg(), rad()
+         * @attention Assertion fails on non-normalized rotation vector and
+         *      identity matrix is returned.
          */
-        static Matrix4<T> rotation(T angle, const Vector3<T>& vec) {
-            Vector3<T> vn = vec.normalized();
+        static Matrix4<T> rotation(T angle, const Vector3<T>& normalizedAxis) {
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedAxis.dot(), T(1)),
+                           "Math::Matrix4::rotation(): axis must be normalized", {});
 
             T sine = std::sin(angle);
             T cosine = std::cos(angle);
             T oneMinusCosine = T(1) - cosine;
 
-            T xx = vn.x()*vn.x();
-            T xy = vn.x()*vn.y();
-            T xz = vn.x()*vn.z();
-            T yy = vn.y()*vn.y();
-            T yz = vn.y()*vn.z();
-            T zz = vn.z()*vn.z();
+            T xx = normalizedAxis.x()*normalizedAxis.x();
+            T xy = normalizedAxis.x()*normalizedAxis.y();
+            T xz = normalizedAxis.x()*normalizedAxis.z();
+            T yy = normalizedAxis.y()*normalizedAxis.y();
+            T yz = normalizedAxis.y()*normalizedAxis.z();
+            T zz = normalizedAxis.z()*normalizedAxis.z();
 
             return Matrix4<T>( /* Column-major! */
                 cosine + xx*oneMinusCosine,
-                    xy*oneMinusCosine + vn.z()*sine,
-                        xz*oneMinusCosine - vn.y()*sine,
+                    xy*oneMinusCosine + normalizedAxis.z()*sine,
+                        xz*oneMinusCosine - normalizedAxis.y()*sine,
                            T(0),
-                xy*oneMinusCosine - vn.z()*sine,
+                xy*oneMinusCosine - normalizedAxis.z()*sine,
                     cosine + yy*oneMinusCosine,
-                        yz*oneMinusCosine + vn.x()*sine,
+                        yz*oneMinusCosine + normalizedAxis.x()*sine,
                            T(0),
-                xz*oneMinusCosine + vn.y()*sine,
-                    yz*oneMinusCosine - vn.x()*sine,
+                xz*oneMinusCosine + normalizedAxis.y()*sine,
+                    yz*oneMinusCosine - normalizedAxis.x()*sine,
                         cosine + zz*oneMinusCosine,
                            T(0),
+                T(0), T(0), T(0), T(1)
+            );
+        }
+
+        /**
+         * @brief 3D rotation around X axis
+         * @param angle Rotation angle (counterclockwise, in radians)
+         *
+         * Faster than calling `Matrix4::rotation(angle, Vector3::xAxis())`.
+         * @see rotation(T, const Vector3&), rotationY(), rotationZ(),
+         *      rotation() const, Matrix3::rotation(T), deg(), rad()
+         */
+        static Matrix4<T> rotationX(T angle) {
+            T sine = std::sin(angle);
+            T cosine = std::cos(angle);
+
+            return Matrix4<T>( /* Column-major! */
+                T(1), T(0), T(0), T(0),
+                T(0), cosine, sine, T(0),
+                T(0), -sine, cosine, T(0),
+                T(0), T(0), T(0), T(1)
+            );
+        }
+
+        /**
+         * @brief 3D rotation around Y axis
+         * @param angle Rotation angle (counterclockwise, in radians)
+         *
+         * Faster than calling `Matrix4::rotation(angle, Vector3::yAxis())`.
+         * @see rotation(T, const Vector3&), rotationX(), rotationZ(),
+         *      rotation() const, Matrix3::rotation(T), deg(), rad()
+         */
+        static Matrix4<T> rotationY(T angle) {
+            T sine = std::sin(angle);
+            T cosine = std::cos(angle);
+
+            return Matrix4<T>( /* Column-major! */
+                cosine, T(0), -sine, T(0),
+                T(0), T(1), T(0), T(0),
+                sine, T(0), cosine, T(0),
+                T(0), T(0), T(0), T(1)
+            );
+        }
+
+        /**
+         * @brief 3D rotation matrix around Z axis
+         * @param angle Rotation angle (counterclockwise, in radians)
+         *
+         * Faster than calling `Matrix4::rotation(angle, Vector3::zAxis())`.
+         * @see rotation(T, const Vector3&), rotationX(), rotationY(),
+         *      rotation() const, Matrix3::rotation(T), deg(), rad()
+         */
+        static Matrix4<T> rotationZ(T angle) {
+            T sine = std::sin(angle);
+            T cosine = std::cos(angle);
+
+            return Matrix4<T>( /* Column-major! */
+                cosine, sine, T(0), T(0),
+                -sine, cosine, T(0), T(0),
+                T(0), T(0), T(1), T(0),
                 T(0), T(0), T(0), T(1)
             );
         }
@@ -108,14 +176,14 @@ template<class T> class Matrix4: public Matrix<4, T> {
         inline constexpr explicit Matrix4(typename Matrix<4, T>::ZeroType): Matrix<4, T>(Matrix<4, T>::Zero) {}
 
         /** @copydoc Matrix::Matrix(IdentityType, T) */
-        inline constexpr explicit Matrix4(typename Matrix<4, T>::IdentityType = (Matrix<4, T>::Identity), T value = T(1)): Matrix<4, T>(
+        inline constexpr Matrix4(typename Matrix<4, T>::IdentityType = (Matrix<4, T>::Identity), T value = T(1)): Matrix<4, T>(
             value, T(0), T(0), T(0),
             T(0), value, T(0), T(0),
             T(0), T(0), value, T(0),
             T(0), T(0), T(0), value
         ) {}
 
-        /** @copydoc Matrix::Matrix(T, U...) */
+        /** @copydoc Matrix::Matrix */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> inline constexpr Matrix4(T first, U... next): Matrix<4, T>(first, next...) {}
         #else
@@ -125,27 +193,38 @@ template<class T> class Matrix4: public Matrix<4, T> {
         /** @brief Copy constructor */
         inline constexpr Matrix4(const RectangularMatrix<4, 4, T>& other): Matrix<4, T>(other) {}
 
-        /** @copydoc Matrix::ij() */
-        inline Matrix3<T> ij(size_t skipRow, size_t skipCol) const { return Matrix<4, T>::ij(skipRow, skipCol); }
-
-        /** @brief Rotation and scaling part of the matrix */
-        inline Matrix3<T> rotationScaling() const {
+        /**
+         * @brief 3D rotation and scaling part of the matrix
+         *
+         * Upper-left 3x3 part of the matrix.
+         * @see rotation() const, rotation(T, const Vector3&),
+         *      Matrix3::rotationScaling() const
+         */
+        inline Matrix<3, T> rotationScaling() const {
+            /* Not Matrix3, because it is for affine 2D transformations */
             #ifndef CORRADE_GCC45_COMPATIBILITY /* GCC 4.5 badly optimizes this */
-            return Matrix3<T>::from(
+            return Matrix<3, T>::from(
                 (*this)[0].xyz(),
                 (*this)[1].xyz(),
                 (*this)[2].xyz());
             #else
-            return Matrix3<T>(
+            return Matrix<3, T>(
                 (*this)(0, 0), (*this)(0, 1), (*this)(0, 2),
                 (*this)(1, 0), (*this)(1, 1), (*this)(1, 2),
                 (*this)(2, 0), (*this)(2, 1), (*this)(2, 2));
             #endif
         }
 
-        /** @brief Rotation part of the matrix */
-        inline Matrix3<T> rotation() const {
-            return Matrix3<T>::from(
+        /**
+         * @brief 3D rotation part of the matrix
+         *
+         * Normalized upper-left 3x3 part of the matrix.
+         * @see rotationScaling() const, rotation(T, const Vector3&),
+         *      Matrix3::rotation() const
+         */
+        inline Matrix<3, T> rotation() const {
+            /* Not Matrix3, because it is for affine 2D transformations */
+            return Matrix<3, T>::from(
                 #ifndef CORRADE_GCC45_COMPATIBILITY /* GCC 4.5 badly optimizes this */
                 (*this)[0].xyz().normalized(),
                 (*this)[1].xyz().normalized(),
@@ -157,13 +236,36 @@ template<class T> class Matrix4: public Matrix<4, T> {
                 #endif
         }
 
+        /**
+         * @brief 3D translation part of the matrix
+         *
+         * First three elements of last column.
+         * @see translation(const Vector3&), Matrix3::translation()
+         */
+        inline Vector3<T>& translation() {
+            return (*this)[3].xyz();
+        }
+
+        /** @overload */
+        inline constexpr Vector3<T> translation() const {
+            return (*this)[3].xyz();
+        }
+
+        /** @todo up(), forward(), right() */
+
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline Point3D<T> operator*(const Point3D<T>& other) const {
+            return Matrix<4, T>::operator*(other);
+        }
+        #endif
+
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix4, Vector4, 4)
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(4, 4, Matrix4<T>)
 };
 
 /** @debugoperator{Magnum::Math::Matrix4} */
-template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Matrix4<T>& value) {
-    return debug << static_cast<const Magnum::Math::Matrix<4, T>&>(value);
+template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Matrix4<T>& value) {
+    return debug << static_cast<const Matrix<4, T>&>(value);
 }
 
 }}

@@ -19,7 +19,9 @@
  * @brief Class Magnum::Image, typedef Magnum::Image1D, Magnum::Image2D, Magnum::Image3D
  */
 
+#include "Math/Vector3.h"
 #include "AbstractImage.h"
+#include "DimensionTraits.h"
 #include "TypeTraits.h"
 
 namespace Magnum {
@@ -30,14 +32,15 @@ namespace Magnum {
 Class for storing image data on client memory. Can be replaced with
 ImageWrapper, BufferedImage, which stores image data in GPU memory, or for
 example with Trade::ImageData.
+@see Image1D, Image2D, Image3D
 */
-template<size_t imageDimensions> class Image: public AbstractImage {
+template<std::uint8_t dimensions> class Image: public AbstractImage {
     public:
-        const static size_t Dimensions = imageDimensions;   /**< @brief Image dimension count */
+        const static std::uint8_t Dimensions = dimensions; /**< @brief %Image dimension count */
 
         /**
          * @brief Constructor
-         * @param dimensions        %Image dimensions
+         * @param size              %Image size
          * @param components        Color components. Data type is detected
          *      from passed data array.
          * @param data              %Image data with proper size
@@ -45,11 +48,11 @@ template<size_t imageDimensions> class Image: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        template<class T> inline Image(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _dimensions(dimensions), _data(data) {}
+        template<class T> inline Image(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _size(size), _data(data) {}
 
         /**
          * @brief Constructor
-         * @param dimensions        %Image dimensions
+         * @param size              %Image size
          * @param components        Color components
          * @param type              Data type
          * @param data              %Image data
@@ -57,7 +60,7 @@ template<size_t imageDimensions> class Image: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        inline Image(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _dimensions(dimensions), _data(reinterpret_cast<char*>(data)) {}
+        inline Image(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
 
         /**
          * @brief Constructor
@@ -72,16 +75,16 @@ template<size_t imageDimensions> class Image: public AbstractImage {
         /** @brief Destructor */
         inline ~Image() { delete[] _data; }
 
-        /** @brief %Image dimensions */
-        inline constexpr const Math::Vector<Dimensions, GLsizei>& dimensions() const { return _dimensions; }
+        /** @brief %Image size */
+        inline typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
 
         /** @brief Pointer to raw data */
         inline void* data() { return _data; }
-        inline constexpr const void* data() const { return _data; } /**< @overload */
+        inline const void* data() const { return _data; } /**< @overload */
 
         /**
          * @brief Set image data
-         * @param dimensions        %Image dimensions
+         * @param size              %Image size
          * @param components        Color components. Data type is detected
          *      from passed data array.
          * @param data              %Image data
@@ -89,13 +92,13 @@ template<size_t imageDimensions> class Image: public AbstractImage {
          * Deletes previous data and replaces them with new. Note that the
          * data are not copied, but they are deleted on destruction.
          */
-        template<class T> inline void setData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, T* data) {
-            setData(dimensions, components, TypeTraits<T>::imageType(), data);
+        template<class T> inline void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, T* data) {
+            setData(size, components, TypeTraits<T>::imageType(), data);
         }
 
         /**
          * @brief Set image data
-         * @param dimensions        %Image dimensions
+         * @param size              %Image size
          * @param components        Color components
          * @param type              Data type
          * @param data              %Image data
@@ -103,18 +106,18 @@ template<size_t imageDimensions> class Image: public AbstractImage {
          * Deletes previous data and replaces them with new. Note that the
          * data are not copied, but they are deleted on destruction.
          */
-        void setData(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, GLvoid* data) {
-            delete[] _data;
-            _components = components;
-            _type = type;
-            _dimensions = dimensions;
-            _data = reinterpret_cast<char*>(data);
-        }
+        void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, GLvoid* data);
 
     protected:
-        Math::Vector<Dimensions, GLsizei> _dimensions;  /**< @brief %Image dimensions */
-        char* _data;                                    /**< @brief %Image data */
+        Math::Vector<Dimensions, GLsizei> _size;    /**< @brief %Image size */
+        char* _data;                                /**< @brief %Image data */
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+extern template class MAGNUM_EXPORT Image<1>;
+extern template class MAGNUM_EXPORT Image<2>;
+extern template class MAGNUM_EXPORT Image<3>;
+#endif
 
 /** @brief One-dimensional image */
 typedef Image<1> Image1D;

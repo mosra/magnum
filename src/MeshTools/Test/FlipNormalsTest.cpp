@@ -17,6 +17,7 @@
 
 #include <sstream>
 
+#include "Math/Vector3.h"
 #include "MeshTools/FlipNormals.h"
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::FlipNormalsTest)
@@ -35,19 +36,19 @@ void FlipNormalsTest::wrongIndexCount() {
     stringstream ss;
     Error::setOutput(&ss);
 
-    vector<unsigned int> indices{0, 1};
+    vector<uint32_t> indices{0, 1};
     MeshTools::flipFaceWinding(indices);
 
     CORRADE_COMPARE(ss.str(), "MeshTools::flipNormals(): index count is not divisible by 3!\n");
 }
 
 void FlipNormalsTest::flipFaceWinding() {
-    vector<unsigned int> indices{0, 1, 2,
+    vector<uint32_t> indices{0, 1, 2,
                                  3, 4, 5};
     MeshTools::flipFaceWinding(indices);
 
-    CORRADE_COMPARE(indices, (vector<unsigned int>{0, 2, 1,
-                                                   3, 5, 4}));
+    CORRADE_COMPARE(indices, (vector<uint32_t>{0, 2, 1,
+                                               3, 5, 4}));
 }
 
 void FlipNormalsTest::flipNormals() {

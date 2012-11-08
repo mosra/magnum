@@ -1,8 +1,13 @@
-corrade_add_resource(MagnumShaders_RCS MagnumShaders PhongShader.frag PhongShader.vert)
+corrade_add_resource(MagnumShaders_RCS MagnumShaders
+    FlatShader2D.vert FlatShader2D.frag
+    PhongShader.frag PhongShader.vert
+    compatibility.glsl)
 set(MagnumShaders_SRCS
+    FlatShader.cpp
     PhongShader.cpp
     ${MagnumShaders_RCS})
 set(MagnumShaders_HEADERS
+    FlatShader.h
     PhongShader.h
 
     magnumShadersVisibility.h)

@@ -17,6 +17,7 @@
 
 #include <sstream>
 
+#include "Math/Point3D.h"
 #include "MeshTools/GenerateFlatNormals.h"
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::GenerateFlatNormalsTest)
@@ -33,7 +34,7 @@ GenerateFlatNormalsTest::GenerateFlatNormalsTest() {
 void GenerateFlatNormalsTest::wrongIndexCount() {
     stringstream ss;
     Error::setOutput(&ss);
-    vector<unsigned int> indices;
+    vector<uint32_t> indices;
     vector<Vector3> normals;
     tie(indices, normals) = MeshTools::generateFlatNormals({
         0, 1
@@ -46,21 +47,19 @@ void GenerateFlatNormalsTest::wrongIndexCount() {
 
 void GenerateFlatNormalsTest::generate() {
     /* Two vertices connected by one edge, each winded in another direction */
-    vector<unsigned int> indices;
+    vector<uint32_t> indices;
     vector<Vector3> normals;
-    vector<Vector4> vertices{
+    tie(indices, normals) = MeshTools::generateFlatNormals({
+        0, 1, 2,
+        1, 2, 3
+    }, vector<Point3D>{
         {-1.0f, 0.0f, 0.0f},
         {0.0f, -1.0f, 0.0f},
         {0.0f, 1.0f, 0.0f},
         {1.0f, 0.0f, 0.0f}
-    };
-    tie(indices, normals) = MeshTools::generateFlatNormals({
-        0, 1, 2,
-        1, 2, 3
-    }, vertices);
+    });
 
-
-    CORRADE_COMPARE(indices, (vector<unsigned int>{
+    CORRADE_COMPARE(indices, (vector<uint32_t>{
         0, 0, 0,
         1, 1, 1
     }));

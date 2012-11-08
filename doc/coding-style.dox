@@ -57,7 +57,39 @@ with @c \@extension command:
 @extension{ARB,timer_query}
 @endcode
 It produces link to the specification of the extension in OpenGL registry,
-e.g. @extension{ARB,timer_query}.
+e.g. @extension{ARB,timer_query}. Similarly for OpenGL ES extensions there is
+@c \@es_extension command. Some extensions have slightly different URL,
+with command @c \@es_extension2 you can specify extension filename, if the
+previous command gives 404 error. The following produces link to
+@es_extension2{NV,read_buffer_front,GL_NV_read_buffer} extension:
+@code
+@es_extension2{NV,read_buffer_front,GL_NV_read_buffer}
+@endcode
+
+@subsubsection documentation-commands-ref_gl Links to related OpenGL functions and definitions
+
+If an function touches OpenGL, related OpenGL functions should be documented
+in @c \@see block with @c \@fn_gl command. If only specific definition is used
+in the function, document it with @c \@def_gl command. Example usage:
+@code
+// @see @fn_gl{Enable}/@fn_gl{Disable} with @def_gl{TEXTURE_CUBE_MAP_SEAMLESS}
+inline static void setSeamless(bool enabled) {
+    enabled ? glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS) : glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+}
+@endcode
+
+It produces link to the online manual, in this case @fn_gl{Enable}/@fn_gl{Disable}
+with @def_gl{TEXTURE_CUBE_MAP_SEAMLESS}.
+
+For functions which are not part of OpenGL core specification, but only as
+extensions, use @c \@fn_gl_extension command, e.g.
+@code
+@fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}
+@endcode
+First parameter is function name without the suffix, the second two parameters
+are the same as in @c \@extension command. It produced link to extension
+specification, with function name as link text, in this case
+@fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}.
 
 @subsubsection documentation-commands-requires Classes and functions requiring specific OpenGL version or extensions
 
@@ -76,6 +108,14 @@ marked. On the other hand, if the version/extension is needed only by one
 function, only the function should be marked. If the extension is needed only
 for some functionality (not related to any member function), it should be
 noted in the description.
+
+Similarly for OpenGL ES there is command @c \@requires_gl for functionality
+not available in OpenGL ES at all, @c \@requires_gles30 for functionality
+requiring OpenGL ES 3.0 (i.e. not part of OpenGL 2.0) and
+@c \@requires_es_extension for specific extensions not part of OpenGL ES
+specification. When there is both required desktop OpenGL version/extension
+and OpenGL ES version/extension, first come desktop requirements, then ES
+requirements.
 
 All classes and functions using those commands are cross-referenced in page
 @ref required-extensions.

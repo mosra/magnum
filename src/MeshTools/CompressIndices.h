@@ -19,60 +19,36 @@
  * @brief Function Magnum::MeshTools::compressIndices()
  */
 
-#include <cstring>
-#include <vector>
 #include <tuple>
-#include <algorithm>
 
+#include "Buffer.h"
 #include "TypeTraits.h"
-#include "SizeTraits.h"
-#include "IndexedMesh.h"
 
-namespace Magnum { namespace MeshTools {
+#include "magnumMeshToolsVisibility.h"
+
+namespace Magnum {
+
+class IndexedMesh;
+
+namespace MeshTools {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
-class CompressIndices {
+class MESHTOOLS_EXPORT CompressIndices {
     public:
-        CompressIndices(const std::vector<unsigned int>& indices): indices(indices) {}
+        CompressIndices(const std::vector<std::uint32_t>& indices): indices(indices) {}
 
-        inline std::tuple<size_t, Type, char*> operator()() const {
-            #ifndef CORRADE_GCC44_COMPATIBILITY
-            return SizeBasedCall<Compressor>(*std::max_element(indices.begin(), indices.end()))(indices);
-            #else
-            return SizeBasedCall<std::tuple<size_t, Type, char*>, Compressor>(*std::max_element(indices.begin(), indices.end()))(indices);
-            #endif
-        }
+        std::tuple<std::size_t, Type, char*> operator()() const;
 
-        void operator()(IndexedMesh* mesh, Buffer::Usage usage) const {
-            size_t indexCount;
-            Type indexType;
-            char* data;
-            std::tie(indexCount, indexType, data) = operator()();
-
-            mesh->setIndexType(indexType);
-            mesh->setIndexCount(indices.size());
-            mesh->indexBuffer()->setData(indexCount*TypeInfo::sizeOf(indexType), data, usage);
-
-            delete[] data;
-        }
+        void operator()(IndexedMesh* mesh, Buffer* buffer, Buffer::Usage usage) const;
 
     private:
         struct Compressor {
-            template<class IndexType> static std::tuple<size_t, Type, char*> run(const std::vector<unsigned int>& indices) {
-                /* Create smallest possible version of index buffer */
-                char* buffer = new char[indices.size()*sizeof(IndexType)];
-                for(size_t i = 0; i != indices.size(); ++i) {
-                    IndexType index = indices[i];
-                    memcpy(buffer+i*sizeof(IndexType), reinterpret_cast<const char*>(&index), sizeof(IndexType));
-                }
-
-                return std::make_tuple(indices.size(), TypeTraits<IndexType>::indexType(), buffer);
-            }
+            template<class IndexType> static std::tuple<std::size_t, Type, char*> run(const std::vector<std::uint32_t>& indices);
         };
 
-        const std::vector<unsigned int>& indices;
+        const std::vector<std::uint32_t>& indices;
 };
 
 }
@@ -86,38 +62,43 @@ class CompressIndices {
 
 This function takes index array and outputs them compressed to smallest
 possible size. For example when your indices have maximum number 463, it's
-wasteful to store them in array of `unsigned int`s, array of `unsigned short`s
-is sufficient. Size of the buffer can be computed from index count and type,
-as shown below. Example usage:
+wasteful to store them in array of 32bit integers, array of 16bit integers is
+sufficient. Size of the buffer can be computed from index count and type, as
+shown below. Example usage:
 @code
-size_t indexCount;
+std::size_t indexCount;
 Type indexType;
 char* data;
 std::tie(indexCount, indexType, data) = MeshTools::compressIndices(indices);
-size_t dataSize = indexCount*TypeInfo::sizeOf(indexType);
+std::size_t dataSize = indexCount*TypeInfo::sizeOf(indexType);
 // ...
 delete[] data;
 @endcode
 
-See also compressIndices(IndexedMesh*, Buffer::Usage, const std::vector<unsigned int>&),
+See also compressIndices(IndexedMesh*, Buffer::Usage, const std::vector<std::uint32_t>&),
 which writes the compressed data directly into index buffer of given mesh.
 */
-inline std::tuple<size_t, Type, char*> compressIndices(const std::vector<unsigned int>& indices) {
+inline std::tuple<std::size_t, Type, char*> compressIndices(const std::vector<std::uint32_t>& indices) {
     return Implementation::CompressIndices{indices}();
 }
 
 /**
 @brief Compress vertex indices and write them to index buffer
 @param mesh     Output mesh
+@param buffer   Index buffer
 @param usage    Index buffer usage
 @param indices  Index array
 
-The same as compressIndices(const std::vector<unsigned int>&), but this
-function writes the output to mesh's index buffer and updates index count and
-type in the mesh accordingly.
+The same as compressIndices(const std::vector<std::uint32_t>&), but this
+function writes the output to given index buffer and updates index count and
+type in the mesh accordingly, so you don't have to call
+IndexedMesh::setIndexBuffer(), IndexedMesh::setIndexCount() and
+IndexedMesh::setIndexType() on your own.
+
+@see MeshTools::interleave()
 */
-inline void compressIndices(IndexedMesh* mesh, Buffer::Usage usage, const std::vector<unsigned int>& indices) {
-    return Implementation::CompressIndices{indices}(mesh, usage);
+inline void compressIndices(IndexedMesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<std::uint32_t>& indices) {
+    return Implementation::CompressIndices{indices}(mesh, buffer, usage);
 }
 
 }}

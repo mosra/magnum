@@ -15,11 +15,18 @@
 
 #include "Line.h"
 
+#include "Math/Matrix3.h"
+#include "Math/Matrix4.h"
+
 namespace Magnum { namespace Physics {
 
-void Line::applyTransformation(const Matrix4& transformation) {
-    _transformedA = (transformation*Vector4(_a)).xyz();
-    _transformedB = (transformation*Vector4(_b)).xyz();
+template<std::uint8_t dimensions> void Line<dimensions>::applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
+    _transformedA = (transformation*typename DimensionTraits<dimensions, GLfloat>::PointType(_a)).vector();
+    _transformedB = (transformation*typename DimensionTraits<dimensions, GLfloat>::PointType(_b)).vector();
 }
+
+/* Explicitly instantiate the templates */
+template class Line<2>;
+template class Line<3>;
 
 }}

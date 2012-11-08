@@ -16,40 +16,73 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::Line
+ * @brief Class Magnum::Physics::Line, typedef Magnum::Physics::Line2D, Magnum::Physics::Line3D
  */
 
+#include "Math/Vector3.h"
 #include "AbstractShape.h"
+
+#include "magnumCompatibility.h"
 
 namespace Magnum { namespace Physics {
 
-/** @brief Infinite line, defined by two points */
-class PHYSICS_EXPORT Line: public AbstractShape {
+/**
+@brief Infinite line, defined by two points
+
+@see Line2D, Line3D
+@todo collision detection of two Line2D
+*/
+template<std::uint8_t dimensions> class PHYSICS_EXPORT Line: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Line(const Vector3& a, const Vector3& b): _a(a), _transformedA(a), _b(b), _transformedB(b) {}
+        inline Line(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a, const typename DimensionTraits<dimensions, GLfloat>::VectorType& b): _a(a), _transformedA(a), _b(b), _transformedB(b) {}
 
-        void applyTransformation(const Matrix4& transformation);
+        inline typename AbstractShape<dimensions>::Type type() const override {
+            return AbstractShape<dimensions>::Type::Line;
+        }
 
-        inline Vector3 a() const { return _a; }         /**< @brief First point */
-        inline Vector3 b() const { return _a; }         /**< @brief Second point */
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
 
-        inline void setA(const Vector3& a) { _a = a; }  /**< @brief Set first point */
-        inline void setB(const Vector3& b) { _b = b; }  /**< @brief Set second point */
+        /** @brief First point */
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType a() const {
+            return _a;
+        }
+
+        /** @brief Second point */
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType b() const {
+            return _a;
+        }
+
+        /** @brief Set first point */
+        inline void setA(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a) {
+            _a = a;
+        }
+
+        /** @brief Set second point */
+        inline void setB(const typename DimensionTraits<dimensions, GLfloat>::VectorType& b) {
+            _b = b;
+        }
 
         /** @brief Transformed first point */
-        inline Vector3 transformedA() const { return _transformedA; }
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedA() const {
+            return _transformedA;
+        }
 
         /** @brief Transformed second point */
-        inline Vector3 transformedB() const { return _transformedB; }
-
-    protected:
-        inline Type type() const { return Type::Line; }
+        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedB() const {
+            return _transformedB;
+        }
 
     private:
-        Vector3 _a, _transformedA,
+        Math::Vector<dimensions, GLfloat> _a, _transformedA,
             _b, _transformedB;
 };
+
+/** @brief Infinite two-dimensional line */
+typedef Line<2> Line2D;
+
+/** @brief Infinite three-dimensional line */
+typedef Line<3> Line3D;
 
 }}
 

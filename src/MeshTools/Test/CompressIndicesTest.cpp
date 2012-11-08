@@ -37,7 +37,7 @@ void CompressIndicesTest::compressChar() {
     Type indexType;
     char* data;
     tie(indexCount, indexType, data) = MeshTools::compressIndices(
-        vector<unsigned int>{1, 2, 3, 0, 4});
+        vector<uint32_t>{1, 2, 3, 0, 4});
 
     CORRADE_COMPARE(indexCount, 5);
     CORRADE_VERIFY(indexType == Type::UnsignedByte);
@@ -52,7 +52,7 @@ void CompressIndicesTest::compressShort() {
     Type indexType;
     char* data;
     tie(indexCount, indexType, data) = MeshTools::compressIndices(
-        vector<unsigned int>{1, 256, 0, 5});
+        vector<uint32_t>{1, 256, 0, 5});
 
     CORRADE_COMPARE(indexCount, 4);
     CORRADE_VERIFY(indexType == Type::UnsignedShort);
@@ -78,7 +78,7 @@ void CompressIndicesTest::compressInt() {
     Type indexType;
     char* data;
     tie(indexCount, indexType, data) = MeshTools::compressIndices(
-        vector<unsigned int>{65536, 3, 2});
+        vector<uint32_t>{65536, 3, 2});
 
     CORRADE_COMPARE(indexCount, 3);
     CORRADE_VERIFY(indexType == Type::UnsignedInt);

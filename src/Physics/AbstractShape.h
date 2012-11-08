@@ -20,17 +20,56 @@
  */
 
 #include "Magnum.h"
+#include "DimensionTraits.h"
+
 #include "magnumPhysicsVisibility.h"
 
 namespace Magnum { namespace Physics {
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
+    template<std::uint8_t dimensions> struct ShapeDimensionTraits {};
+
+    template<> struct ShapeDimensionTraits<2> {
+        enum class Type {
+            Point,
+            Line,
+            LineSegment,
+            Sphere,
+            Capsule,
+            AxisAlignedBox,
+            Box,
+            ShapeGroup
+        };
+    };
+
+    template<> struct ShapeDimensionTraits<3> {
+        enum class Type {
+            Point,
+            Line,
+            LineSegment,
+            Sphere,
+            Capsule,
+            AxisAlignedBox,
+            Box,
+            ShapeGroup,
+            Plane
+        };
+    };
+}
+#endif
 
 /**
 @brief Base class for shapes
 
 See @ref collision-detection for brief introduction.
+@see AbstractShape2D, AbstractShape3D
 */
-class PHYSICS_EXPORT AbstractShape {
+template<std::uint8_t dimensions> class PHYSICS_EXPORT AbstractShape {
     public:
+        /** @brief Dimension count */
+        static const std::uint8_t Dimensions = dimensions;
+
         /**
          * @brief Shape type
          *
@@ -38,17 +77,21 @@ class PHYSICS_EXPORT AbstractShape {
          *      the list provides collision detection for previous shapes, not
          *      the other way around.
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
         enum class Type {
-            Point,
-            Line,
-            LineSegment,
-            Plane,
-            Sphere,
-            Capsule,
-            AxisAlignedBox,
-            Box,
-            ShapeGroup
+            Point,          /**< Point */
+            Line,           /**< Line */
+            LineSegment,    /**< @ref LineSegment "Line segment" */
+            Sphere,         /**< Sphere */
+            Capsule,        /**< Capsule */
+            AxisAlignedBox, /**< @ref AxisAlignedBox "Axis aligned box" */
+            Box,            /**< Box */
+            ShapeGroup,     /**< @ref ShapeGroup "Shape group" */
+            Plane           /**< Plane (3D only) */
         };
+        #else
+        typedef typename Implementation::ShapeDimensionTraits<dimensions>::Type Type;
+        #endif
 
         /** @brief Destructor */
         virtual inline ~AbstractShape() {}
@@ -62,7 +105,7 @@ class PHYSICS_EXPORT AbstractShape {
          * Applies transformation to user-defined shape properties and caches
          * them for later usage in collision detection.
          */
-        virtual void applyTransformation(const Matrix4& transformation) = 0;
+        virtual void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) = 0;
 
         /**
          * @brief Detect collision with other shape
@@ -72,8 +115,14 @@ class PHYSICS_EXPORT AbstractShape {
          * @internal If other shape is more complex than this, returns
          *      `other->collides(this)`.
          */
-        virtual bool collides(const AbstractShape* other) const;
+        virtual bool collides(const AbstractShape<dimensions>* other) const;
 };
+
+/** @brief Abstract two-dimensional shape */
+typedef AbstractShape<2> AbstractShape2D;
+
+/** @brief Abstract three-dimensional shape */
+typedef AbstractShape<3> AbstractShape3D;
 
 }}
 

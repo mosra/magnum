@@ -19,211 +19,327 @@
  * @brief Class Magnum::Buffer
  */
 
+#include <cstddef>
+#include <array>
+#include <vector>
+
 #include "Magnum.h"
+
+#include "magnumVisibility.h"
 
 namespace Magnum {
 
-/**
-@brief Class for managing buffers
+class Context;
 
-@todo Support for buffer copying (OpenGL 3.1, @extension{ARB,copy_buffer})
+/**
+@brief %Buffer
+
+Encapsulates one OpenGL buffer object and provides functions for convenient
+data updates.
+
+@section Buffer-data Data updating
+
+Default way to set or update buffer data with setData() or setSubData() is to
+explicitly specify data size and pass the pointer to it:
+@code
+Vector3* data = new Vector3[200];
+buffer.setData(200*sizeof(Vector3), data, Buffer::Usage::StaticDraw);
+@endcode
+Howewer, in some cases, you have the data in fixed-size array with size known
+at compile time. There is an convenient overload which detects the size of
+passed array, so you don't have to repeat it:
+@code
+Vector3 data[] = {
+    // ...
+};
+buffer.setData(data, Buffer::Usage::StaticDraw);
+@endcode
+There is also overload for array-like containers from STL, such as `std::vector` or
+`std::array`:
+@code
+std::vector<Vector3> data;
+buffer.setData(data, Buffer::Usage::StaticDraw);
+@endcode
+
+@section Buffer-performance-optimization Performance optimizations
+
+The engine tracks currently bound buffers to avoid unnecessary calls to
+@fn_gl{BindBuffer}. If the buffer is already bound to some target,
+functions copy(), setData() and setSubData() use that target in
+@fn_gl{CopyBufferSubData}, @fn_gl{BufferData} and @fn_gl{BufferSubData}
+functions instead of binding the buffer to some specific target. You can also
+use setTargetHint() to possibly reduce unnecessary rebinding.
+
+If extension @extension{EXT,direct_state_access} is available, functions
+copy(), setData() and setSubData() use DSA functions to avoid unnecessary
+calls to @fn_gl{BindBuffer}. See their respective documentation for more
+information.
+
 @todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
+@todo BindBufferRange/BindBufferOffset/BindBufferBase for transform feedback (3.0, @extension{EXT,transform_feedback})
  */
-class Buffer {
+class MAGNUM_EXPORT Buffer {
+    friend class Context;
+
     Buffer(const Buffer& other) = delete;
     Buffer(Buffer&& other) = delete;
     Buffer& operator=(const Buffer& other) = delete;
     Buffer& operator=(Buffer&& other) = delete;
 
     public:
-        /** @brief %Buffer target */
+        /**
+         * @brief %Buffer target
+         *
+         * @see bind(Target), unbind(Target)
+         */
         enum class Target: GLenum {
             /** Used for storing vertex attributes. */
             Array = GL_ARRAY_BUFFER,
 
             #ifndef MAGNUM_TARGET_GLES
             /**
-             * Source for copies.
-             * @requires_gl
+             * Used for storing atomic counters.
+             * @requires_gl42 Extension @extension{ARB,shader_atomic_counters}
+             * @requires_gl Atomic counters are not available in OpenGL ES.
+             */
+            AtomicCounter = GL_ATOMIC_COUNTER_BUFFER,
+            #endif
+
+            /**
+             * Source for copies. See copy().
              * @requires_gl31 Extension @extension{ARB,copy_buffer}
+             * @requires_gles30 Buffer copying is not available in OpenGL ES
+             *      2.0.
              */
             CopyRead = GL_COPY_READ_BUFFER,
 
             /**
-             * Target for copies.
-             * @requires_gl
+             * Target for copies. See copy().
              * @requires_gl31 Extension @extension{ARB,copy_buffer}
+             * @requires_gles30 Buffer copying is not available in OpenGL ES
+             *      2.0.
              */
             CopyWrite = GL_COPY_WRITE_BUFFER,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Indirect compute dispatch commands.
+             * @requires_gl43 Extension @extension{ARB,compute_shader}
+             * @requires_gl Compute shaders are not available in OpenGL ES.
+             */
+            DispatchIndirect = GL_DISPATCH_INDIRECT_BUFFER,
+
+            /**
+             * Used for supplying arguments for indirect drawing.
+             * @requires_gl40 Extension @extension{ARB,draw_indirect}
+             * @requires_gl Indirect drawing not available in OpenGL ES.
+             */
+            DrawIndirect = GL_DRAW_INDIRECT_BUFFER,
             #endif
 
             /** Used for storing vertex indices. */
-            ElementArray = GL_ELEMENT_ARRAY_BUFFER
-
-            #ifndef MAGNUM_TARGET_GLES
-            ,
-
-            /**
-             * Source for texture update operations.
-             * @requires_gl
-             */
-            PixelUnpack = GL_PIXEL_UNPACK_BUFFER,
+            ElementArray = GL_ELEMENT_ARRAY_BUFFER,
 
             /**
              * Target for pixel pack operations.
-             * @requires_gl
+             * @requires_gles30 Pixel buffer objects are not available in
+             *      OpenGL ES 2.0.
              */
             PixelPack = GL_PIXEL_PACK_BUFFER,
 
             /**
-             * Source for texel fetches.
-             *
-             * @see BufferedTexture
-             * @requires_gl
+             * Source for texture update operations.
+             * @requires_gles30 Pixel buffer objects are not available in
+             *      OpenGL ES 2.0.
+             */
+            PixelUnpack = GL_PIXEL_UNPACK_BUFFER,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Used for shader storage.
+             * @requires_gl43 Extension @extension{ARB,shader_storage_buffer_object}
+             * @requires_gl Shader storage is not available in OpenGL ES.
+             */
+            ShaderStorage = GL_SHADER_STORAGE_BUFFER,
+
+            /**
+             * Source for texel fetches. See BufferedTexture.
              * @requires_gl31 Extension @extension{ARB,texture_buffer_object}
+             * @requires_gl Texture buffers are not available in OpenGL ES.
              */
             Texture = GL_TEXTURE_BUFFER,
+            #endif
 
             /**
              * Target for transform feedback.
-             * @requires_gl
              * @requires_gl30 Extension @extension{EXT,transform_feedback}
+             * @requires_gles30 Transform feedback is not available in OpenGL
+             *      ES 2.0.
              */
             TransformFeedback = GL_TRANSFORM_FEEDBACK_BUFFER,
 
             /**
              * Used for storing uniforms.
-             * @requires_gl
              * @requires_gl31 Extension @extension{ARB,uniform_buffer_object}
+             * @requires_gles30 Uniform buffers are not available in OpenGL ES
+             *      2.0.
              */
-            Uniform = GL_UNIFORM_BUFFER,
-
-            /**
-             * Used for supplying arguments for instanced drawing.
-             * @requires_gl
-             * @requires_gl40 Extension @extension{ARB,draw_indirect}
-             */
-            DrawIndirect = GL_DRAW_INDIRECT_BUFFER
-            #endif
+            Uniform = GL_UNIFORM_BUFFER
         };
 
-        /** @brief Buffer usage */
+        /**
+         * @brief %Buffer usage
+         *
+         * @see setData(GLsizeiptr, const GLvoid*, Usage)
+         */
         enum class Usage: GLenum {
             /**
              * Set once by the application and used infrequently for drawing.
              */
             StreamDraw = GL_STREAM_DRAW,
 
-            #ifndef MAGNUM_TARGET_GLES
             /**
              * Set once as output from an OpenGL command and used infequently
              * for drawing.
-             * @requires_gl
+             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StreamDraw"
+             *      is available in OpenGL ES 2.0.
              */
             StreamRead = GL_STREAM_READ,
 
             /**
              * Set once as output from an OpenGL command and used infrequently
              * for drawing or copying to other buffers.
-             * @requires_gl
+             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StreamDraw"
+             *      is available in OpenGL ES 2.0.
              */
             StreamCopy = GL_STREAM_COPY,
-            #endif
 
             /**
              * Set once by the application and used frequently for drawing.
              */
             StaticDraw = GL_STATIC_DRAW,
 
-            #ifndef MAGNUM_TARGET_GLES
             /**
              * Set once as output from an OpenGL command and queried many
              * times by the application.
-             * @requires_gl
+             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StaticDraw"
+             *      is available in OpenGL ES 2.0.
              */
             StaticRead = GL_STATIC_READ,
 
             /**
              * Set once as output from an OpenGL command and used frequently
              * for drawing or copying to other buffers.
-             * @requires_gl
+             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StaticDraw"
+             *      is available in OpenGL ES 2.0.
              */
             StaticCopy = GL_STATIC_COPY,
-            #endif
 
             /**
              * Updated frequently by the application and used frequently
              * for drawing or copying to other images.
              */
-            DynamicDraw = GL_DYNAMIC_DRAW
-
-            #ifndef MAGNUM_TARGET_GLES
-            ,
+            DynamicDraw = GL_DYNAMIC_DRAW,
 
             /**
              * Updated frequently as output from OpenGL command and queried
              * many times from the application.
-             * @requires_gl
+             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::DynamicDraw"
+             *      is available in OpenGL ES 2.0.
              */
             DynamicRead = GL_DYNAMIC_READ,
 
             /**
              * Updated frequently as output from OpenGL command and used
              * frequently for drawing or copying to other images.
-             * @requires_gl
+             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::DynamicCopy"
+             *      is available in OpenGL ES 2.0.
              */
             DynamicCopy = GL_DYNAMIC_COPY
-            #endif
         };
 
         /**
          * @brief Unbind any buffer from given target
-         * @param target     %Target
+         * @param target    %Target
+         *
+         * @see @fn_gl{BindBuffer}
          */
-        inline static void unbind(Target target) {
-            glBindBuffer(static_cast<GLenum>(target), 0);
+        inline static void unbind(Target target) { bind(target, 0); }
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Copy one buffer to another
+         * @param read          %Buffer from which to read
+         * @param write         %Buffer to which to copy
+         * @param readOffset    Offset in the read buffer
+         * @param writeOffset   Offset in the write buffer
+         * @param size          Data size
+         *
+         * If @extension{EXT,direct_state_access} is not available and the
+         * buffers aren't already bound somewhere, they are bound to
+         * `Target::CopyRead` and `Target::CopyWrite` before the copy is
+         * performed.
+         * @requires_gl31 Extension @extension{ARB,copy_buffer}
+         * @requires_gles30 Buffer copying is not available in OpenGL ES 2.0.
+         * @see @fn_gl{BindBuffer} and @fn_gl{CopyBufferSubData} or
+         *      @fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}
+         */
+        inline static void copy(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
+            copyImplementation(read, write, readOffset, writeOffset, size);
         }
+        #endif
 
         /**
          * @brief Constructor
-         * @param defaultTarget Default target (used when calling bind()
-         *      without parameter)
          *
          * Generates new OpenGL buffer.
+         * @see @fn_gl{GenBuffers}
          */
-        inline Buffer(Target defaultTarget): _defaultTarget(defaultTarget) {
-            glGenBuffers(1, &buffer);
+        inline Buffer(): _targetHint(Target::Array) {
+            glGenBuffers(1, &_id);
         }
 
         /**
          * @brief Destructor
          *
          * Deletes associated OpenGL buffer.
+         * @see @fn_gl{DeleteBuffers}
          */
-        inline virtual ~Buffer() {
-            glDeleteBuffers(1, &buffer);
-        }
+        virtual ~Buffer();
 
-        /** @brief Default bind type */
-        inline Target defaultTarget() const { return _defaultTarget; }
+        /** @brief OpenGL buffer ID */
+        inline GLuint id() const { return _id; }
 
-        /** @brief OpenGL internal buffer ID */
-        inline GLuint id() const { return buffer; }
+        /** @brief Target hint */
+        inline Target targetHint() const { return _targetHint; }
 
         /**
-         * @brief Bind buffer
+         * @brief Set target hint
          *
-         * Binds buffer with default target.
+         * If @extension{EXT,direct_state_access} is not available, the buffer
+         * must be internally bound to some target before any operation. You
+         * can specify target which will always be used when binding the
+         * buffer internally, possibly saving some calls to @fn_gl{BindBuffer}.
+         *
+         * Default target hint is `Target::Array`.
+         * @see setData(), setSubData()
+         * @todo Target::ElementArray cannot be used when no VAO is bound -
+         *      http://www.opengl.org/wiki/Vertex_Specification#Index_buffers
+         *      ... damned GL state
          */
-        inline void bind() { bind(_defaultTarget); }
+        inline void setTargetHint(Target hint) { _targetHint = hint; }
 
         /**
          * @brief Bind buffer
-         * @param target     %Target
+         * @param target    %Target
+         *
+         * @todo Allow binding to Target::ElementArray only if VAO is bound
+         *      to avoid potential issues?
+         * @bug Binding to ElementArray if any VAO is active will corrupt the mesh
+         * @todo Don't allow user to bind buffers?
+         * @see @fn_gl{BindBuffer}
          */
-        inline void bind(Target target) {
-            glBindBuffer(static_cast<GLenum>(target), buffer);
-        }
+        inline void bind(Target target) { bind(target, _id); }
 
         /**
          * @brief Set buffer data
@@ -231,10 +347,14 @@ class Buffer {
          * @param data      Pointer to data
          * @param usage     %Buffer usage
          *
-         * Sets buffer data with default target.
+         * If @extension{EXT,direct_state_access} is not available and the
+         * buffer is not already bound somewhere, it is bound to hinted target
+         * before the operation.
+         * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{BufferData} or
+         *      @fn_gl_extension{NamedBufferData,EXT,direct_state_access}
          */
         inline void setData(GLsizeiptr size, const GLvoid* data, Usage usage) {
-            setData(_defaultTarget, size, data, usage);
+            (this->*setDataImplementation)(size, data, usage);
         }
 
         /**
@@ -242,12 +362,10 @@ class Buffer {
          * @param data      Fixed-size array with data
          * @param usage     %Buffer usage
          *
-         * Sets buffer data with default target. More convenient for setting
-         * data from fixed-size arrays than
-         * setData(GLsizeiptr, const GLvoid*, Usage).
+         * @see setData(GLsizeiptr, const GLvoid*, Usage).
          */
-        template<size_t size, class T> inline void setData(const T(&data)[size], Usage usage) {
-            setData(_defaultTarget, data, usage);
+        template<std::size_t size, class T> inline void setData(const T(&data)[size], Usage usage) {
+            setData(size*sizeof(T), data, usage);
         }
 
         /**
@@ -255,121 +373,91 @@ class Buffer {
          * @param data      Vector with data
          * @param usage     %Buffer usage
          *
-         * Sets buffer data with default target.
+         * @see setData(GLsizeiptr, const GLvoid*, Usage)
          */
         template<class T> inline void setData(const std::vector<T>& data, Usage usage) {
-            setData(_defaultTarget, data, usage);
+            setData(data.size()*sizeof(T), data.data(), usage);
         }
 
-        /**
-         * @brief Set buffer data
-         * @param target    %Target
-         * @param size      Data size
-         * @param data      Pointer to data
-         * @param usage     %Buffer usage
-         */
-        inline void setData(Target target, GLsizeiptr size, const GLvoid* data, Usage usage) {
-            bind(target);
-            glBufferData(static_cast<GLenum>(target), size, data, static_cast<GLenum>(usage));
-        }
-
-        /**
-         * @brief Set buffer data
-         * @param target    %Target
-         * @param data      Fixed-size array with data
-         * @param usage     %Buffer usage
-         *
-         * More convenient for setting data from fixed-size arrays than
-         * setData(Target, GLsizeiptr, const GLvoid*, Usage).
-         */
-        template<size_t size, class T> inline void setData(Target target, const T(&data)[size], Usage usage) {
-            setData(target, size*sizeof(T), data, usage);
-        }
-
-        /**
-         * @brief Set buffer data
-         * @param target    %Target
-         * @param data      Vector with data
-         * @param usage     %Buffer usage
-         */
-        template<class T> inline void setData(Target target, const std::vector<T>& data, Usage usage) {
-            setData(target, data.size()*sizeof(T), data.data(), usage);
+        /** @overload */
+        template<std::size_t size, class T> inline void setData(const std::array<T, size>& data, Usage usage) {
+            setData(data.size()*sizeof(T), data.data(), usage);
         }
 
         /**
          * @brief Set buffer subdata
-         * @param offset    Offset
+         * @param offset    Offset in the buffer
          * @param size      Data size
          * @param data      Pointer to data
          *
-         * Sets buffer subdata with default target.
+         * If @extension{EXT,direct_state_access} is not available and the
+         * buffer is not already bound somewhere, it is bound to hinted target
+         * before the operation.
+         * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{BufferSubData}
+         *      or @fn_gl_extension{NamedBufferSubData,EXT,direct_state_access}
          */
         inline void setSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
-            setSubData(_defaultTarget, offset, size, data);
+            (this->*setSubDataImplementation)(offset, size, data);
         }
 
         /**
          * @brief Set buffer subdata
-         * @param offset    Offset
+         * @param offset    Offset in the buffer
          * @param data      Fixed-size array with data
          *
-         * Sets buffer subdata with default target. More convenient for
-         * setting data from fixed-size arrays than
-         * setSubData(GLintptr, GLsizeiptr, const GLvoid*).
+         * @see setSubData(GLintptr, GLsizeiptr, const GLvoid*)
          */
-        template<size_t size, class T> inline void setSubData(GLintptr offset, const T(&data)[size]) {
-            setSubData(_defaultTarget, offset, data);
+        template<std::size_t size, class T> inline void setSubData(GLintptr offset, const T(&data)[size]) {
+            setSubData(offset, size*sizeof(T), data);
         }
 
         /**
          * @brief Set buffer subdata
-         * @param offset    Offset
+         * @param offset    Offset in the buffer
          * @param data      Vector with data
          *
-         * Sets buffer subdata with default target.
+         * @see setSubData(GLintptr, GLsizeiptr, const GLvoid*)
          */
         template<class T> inline void setSubData(GLintptr offset, const std::vector<T>& data) {
-            setSubData(_defaultTarget, offset, data);
+            setSubData(offset, data.size()*sizeof(T), data.data());
         }
 
-        /**
-         * @brief Set buffer subdata
-         * @param target    %Target
-         * @param offset    Offset
-         * @param size      Data size
-         * @param data      Pointer to data
-         */
-        inline void setSubData(Target target, GLintptr offset, GLsizeiptr size, const GLvoid* data) {
-            bind(target);
-            glBufferSubData(static_cast<GLenum>(target), offset, size, data);
-        }
-
-        /**
-         * @brief Set buffer subdata
-         * @param target    %Target
-         * @param offset    Offset
-         * @param data      Fixed-size array with data
-         *
-         * More convenient for setting data from fixed-size arrays than
-         * setSubData(Target, GLintptr, GLsizeiptr, const GLvoid*).
-         */
-        template<size_t size, class T> inline void setSubData(Target target, GLintptr offset, const T(&data)[size]) {
-            setSubData(target, offset, size*sizeof(T), data);
-        }
-
-        /**
-         * @brief Set buffer subdata
-         * @param target    %Target
-         * @param offset    Offset
-         * @param data      Vector with data
-         */
-        template<class T> inline void setSubData(Target target, GLintptr offset, const std::vector<T>& data) {
-            setSubData(target, offset, data.size()*sizeof(T), data.data());
+        /** @overload */
+        template<std::size_t size, class T> inline void setSubData(GLintptr offset, const std::array<T, size>& data) {
+            setSubData(offset, data.size()*sizeof(T), data.data());
         }
 
     private:
-        GLuint buffer;
-        Target _defaultTarget;
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+
+        static void bind(Target hint, GLuint id);
+        Target MAGNUM_LOCAL bindInternal(Target hint);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        typedef void(*CopyImplementation)(Buffer*, Buffer*, GLintptr, GLintptr, GLsizeiptr);
+        static void MAGNUM_LOCAL copyImplementationDefault(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
+        #ifndef MAGNUM_TARGET_GLES
+        static void MAGNUM_LOCAL copyImplementationDSA(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
+        #endif
+        static CopyImplementation copyImplementation;
+        #endif
+
+        typedef void(Buffer::*SetDataImplementation)(GLsizeiptr, const GLvoid*, Usage);
+        void MAGNUM_LOCAL setDataImplementationDefault(GLsizeiptr size, const GLvoid* data, Usage usage);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL setDataImplementationDSA(GLsizeiptr size, const GLvoid* data, Usage usage);
+        #endif
+        static SetDataImplementation setDataImplementation;
+
+        typedef void(Buffer::*SetSubDataImplementation)(GLintptr, GLsizeiptr, const GLvoid*);
+        void MAGNUM_LOCAL setSubDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL setSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data);
+        #endif
+        static SetSubDataImplementation setSubDataImplementation;
+
+        GLuint _id;
+        Target _targetHint;
 };
 
 }

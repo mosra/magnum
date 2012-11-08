@@ -23,41 +23,17 @@
 
 namespace Magnum { namespace Math {
 
-template<size_t size, class T> class Vector;
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-namespace Implementation {
-    /* Implementation for Vector<size, T>::from(const Vector<size, U>&) */
-    template<class T, class U, size_t ...sequence> inline constexpr Math::Vector<sizeof...(sequence), T> vectorFrom(Sequence<sequence...>, const Math::Vector<sizeof...(sequence), U>& vector) {
-        return {T(vector[sequence])...};
-    }
-}
-#endif
-
 /**
 @brief %Vector
+@tparam size    %Vector size
+@tparam T       Data type
 
+See @ref matrix-vector for brief introduction.
 @configurationvalueref{Magnum::Math::Vector}
-@todo Constexprize all for loops
 */
-template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
+template<std::size_t size, class T> class Vector: public RectangularMatrix<1, size, T> {
     public:
-        const static size_t size = s;    /**< @brief %Vector size */
-
-        /**
-         * @brief %Vector from another of different type
-         *
-         * Performs only default casting on the values, no rounding or
-         * anything else. Example usage:
-         * @code
-         * Vector<4, float> floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
-         * Vector<4, int> integral(Vector<4, int>::from(floatingPoint));
-         * // integral == {1, 2, -15, 7}
-         * @endcode
-         */
-        template<class U> inline constexpr static Vector<size, T> from(const Vector<size, U>& other) {
-            return Implementation::vectorFrom<T, U>(typename Implementation::GenerateSequence<size>::Type(), other);
-        }
+        const static std::size_t Size = size; /**< @brief %Vector size */
 
         /**
          * @brief Dot product
@@ -70,7 +46,7 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
         static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
             T out(0);
 
-            for(size_t i = 0; i != size; ++i)
+            for(std::size_t i = 0; i != size; ++i)
                 out += a[i]*b[i];
 
             return out;
@@ -82,17 +58,19 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
          * @f[
          * \phi = \frac{a \cdot b}{|a| \cdot |b|}
          * @f]
-         * @attention If any of the parameters is not normalized (and
-         * assertions are enabled), returns NaN.
+         * @attention Assertion fails on non-normalized vectors and NaN is
+         *      returned.
          */
         inline static T angle(const Vector<size, T>& a, const Vector<size, T>& b) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(a.dot(), T(1)) && MathTypeTraits<T>::equals(b.dot(), T(1)),
-                           "Math::Vector::angle(): vectors must be normalized!", std::numeric_limits<T>::quiet_NaN());
+                           "Math::Vector::angle(): vectors must be normalized", std::numeric_limits<T>::quiet_NaN());
             return std::acos(dot(a, b));
         }
 
         /** @brief Default constructor */
         inline constexpr Vector() {}
+
+        /** @todo Creating Vector from combination of vector and scalar types */
 
         /**
          * @brief Initializer-list constructor
@@ -114,7 +92,7 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
         #else
         inline explicit Vector(T value) {
         #endif
-            for(size_t i = 0; i != size; ++i)
+            for(std::size_t i = 0; i != size; ++i)
                 (*this)[i] = value;
         }
 
@@ -122,15 +100,15 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
         inline constexpr Vector(const RectangularMatrix<1, size, T>& other): RectangularMatrix<1, size, T>(other) {}
 
         /** @brief Value at given position */
-        inline T& operator[](size_t pos) { return RectangularMatrix<1, size, T>::_data[pos]; }
-        inline constexpr T operator[](size_t pos) const { return RectangularMatrix<1, size, T>::_data[pos]; } /**< @overload */
+        inline T& operator[](std::size_t pos) { return RectangularMatrix<1, size, T>::_data[pos]; }
+        inline constexpr T operator[](std::size_t pos) const { return RectangularMatrix<1, size, T>::_data[pos]; } /**< @overload */
 
         /**
          * @brief Multiply vector component-wise
          *
          * @see operator*=(const Vector<size, T>&)
          */
-        Vector<size, T> operator*(const Vector<size, T>& other) const {
+        inline Vector<size, T> operator*(const Vector<size, T>& other) const {
             return Vector<size, T>(*this)*=other;
         }
 
@@ -141,7 +119,7 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
          * because it does the computation in-place.
          */
         Vector<size, T>& operator*=(const Vector<size, T>& other) {
-            for(size_t i = 0; i != size; ++i)
+            for(std::size_t i = 0; i != size; ++i)
                 (*this)[i] *= other[i];
 
             return *this;
@@ -152,7 +130,7 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
          *
          * @see operator/=(const Vector<size, T>&)
          */
-        Vector<size, T> operator/(const Vector<size, T>& other) const {
+        inline Vector<size, T> operator/(const Vector<size, T>& other) const {
             return Vector<size, T>(*this)/=other;
         }
 
@@ -163,7 +141,7 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
          * because it does the computation in-place.
          */
         Vector<size, T>& operator/=(const Vector<size, T>& other) {
-            for(size_t i = 0; i != size; ++i)
+            for(std::size_t i = 0; i != size; ++i)
                 (*this)[i] /= other[i];
 
             return *this;
@@ -201,7 +179,7 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
         T sum() const {
             T out(0);
 
-            for(size_t i = 0; i != size; ++i)
+            for(std::size_t i = 0; i != size; ++i)
                 out += (*this)[i];
 
             return out;
@@ -211,7 +189,7 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
         T product() const {
             T out(1);
 
-            for(size_t i = 0; i != size; ++i)
+            for(std::size_t i = 0; i != size; ++i)
                 out *= (*this)[i];
 
             return out;
@@ -221,7 +199,7 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
         T min() const {
             T out((*this)[0]);
 
-            for(size_t i = 1; i != size; ++i)
+            for(std::size_t i = 1; i != size; ++i)
                 out = std::min(out, (*this)[i]);
 
             return out;
@@ -231,7 +209,7 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
         T max() const {
             T out((*this)[0]);
 
-            for(size_t i = 1; i != size; ++i)
+            for(std::size_t i = 1; i != size; ++i)
                 out = std::max(out, (*this)[i]);
 
             return out;
@@ -239,7 +217,7 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* Reimplementation of functions to return correct type */
-        template<size_t otherCols> inline RectangularMatrix<otherCols, size, T> operator*(const RectangularMatrix<otherCols, 1, T>& other) const {
+        template<std::size_t otherCols> inline RectangularMatrix<otherCols, size, T> operator*(const RectangularMatrix<otherCols, 1, T>& other) const {
             return RectangularMatrix<1, size, T>::operator*(other);
         }
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(1, size, Vector<size, T>)
@@ -248,26 +226,26 @@ template<size_t s, class T> class Vector: public RectangularMatrix<1, s, T> {
 
     private:
         /* Hiding unused things from RectangularMatrix */
-        using RectangularMatrix<1, size, T>::cols;
-        using RectangularMatrix<1, size, T>::rows;
+        using RectangularMatrix<1, size, T>::Cols;
+        using RectangularMatrix<1, size, T>::Rows;
         using RectangularMatrix<1, size, T>::operator[];
         using RectangularMatrix<1, size, T>::operator();
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator*(U number, const Vector<size, T>& vector) {
+template<std::size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator*(U number, const Vector<size, T>& vector) {
     return number*RectangularMatrix<1, size, T>(vector);
 }
-template<size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator/(U number, const Vector<size, T>& vector) {
+template<std::size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator/(U number, const Vector<size, T>& vector) {
     return number/RectangularMatrix<1, size, T>(vector);
 }
 #endif
 
 /** @debugoperator{Magnum::Math::Vector} */
-template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Magnum::Math::Vector<size, T>& value) {
+template<std::size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Vector<size, T>& value) {
     debug << "Vector(";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
-    for(size_t i = 0; i != size; ++i) {
+    for(std::size_t i = 0; i != size; ++i) {
         if(i != 0) debug << ", ";
         debug << typename MathTypeTraits<T>::NumericType(value[i]);
     }
@@ -293,7 +271,7 @@ template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utili
         return *this;                                                       \
     }                                                                       \
                                                                             \
-    template<size_t otherCols> inline Math::RectangularMatrix<otherCols, size, T> operator*(const Math::RectangularMatrix<otherCols, 1, T>& other) const { \
+    template<std::size_t otherCols> inline Math::RectangularMatrix<otherCols, size, T> operator*(const Math::RectangularMatrix<otherCols, 1, T>& other) const { \
         return Math::Vector<size, T>::operator*(other);    \
     }                                                                       \
     inline Type<T> operator*(const Math::Vector<size, T>& other) const {    \
@@ -327,33 +305,7 @@ template<size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utili
 namespace Corrade { namespace Utility {
 
 /** @configurationvalue{Magnum::Math::Vector} */
-template<size_t size, class T> struct ConfigurationValue<Magnum::Math::Vector<size, T>> {
-    /** @brief Writes elements separated with spaces */
-    static std::string toString(const Magnum::Math::Vector<size, T>& value, int flags = 0) {
-        std::string output;
-
-        for(size_t pos = 0; pos != size; ++pos) {
-            if(!output.empty()) output += ' ';
-            output += ConfigurationValue<T>::toString(value[pos], flags);
-        }
-
-        return output;
-    }
-
-    /** @brief Reads elements separated with whitespace */
-    static Magnum::Math::Vector<size, T> fromString(const std::string& stringValue, int flags = 0) {
-        Magnum::Math::Vector<size, T> result;
-        std::istringstream in(stringValue);
-
-        std::string num;
-        for(size_t pos = 0; pos != size; ++pos) {
-            in >> num;
-            result[pos] = ConfigurationValue<T>::fromString(num, flags);
-        }
-
-        return result;
-    }
-};
+template<std::size_t size, class T> struct ConfigurationValue<Magnum::Math::Vector<size, T>>: public ConfigurationValue<Magnum::Math::RectangularMatrix<1, size, T>> {};
 
 }}
 

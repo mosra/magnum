@@ -19,17 +19,19 @@
  * @brief Class Magnum::Primitives::Capsule
  */
 
-#include "Trade/MeshData.h"
+#include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
 
 /**
-@brief %Capsule primitive
+@brief 3D capsule primitive
 
-Cylinder along Y axis with hemispheres instead of caps.
+Cylinder along Y axis with hemispheres instead of caps. Indexed triangle mesh
+with normals and optional 2D texture coordinates.
 */
-class Capsule: public Trade::MeshData {
+class Capsule: public Trade::MeshData3D {
     friend class UVSphere;
+    friend class Cylinder;
 
     public:
         /** @brief Whether to generate texture coordinates */
@@ -40,8 +42,10 @@ class Capsule: public Trade::MeshData {
 
         /**
          * @brief Constructor
-         * @param rings         Number of (face) rings for each hemisphere.
+         * @param hemisphereRings Number of (face) rings for each hemisphere.
          *      Must be larger or equal to 1.
+         * @param cylinderRings Number of (face) rings for cylinder. Must be
+         *      larger or equal to 1.
          * @param segments      Number of (face) segments. Must be larger or equal to 3.
          * @param length        Length of the capsule, excluding hemispheres.
          * @param textureCoords Whether to generate texture coordinates.
@@ -49,18 +53,19 @@ class Capsule: public Trade::MeshData {
          * If texture coordinates are generated, vertices of one segment are
          * duplicated for texture wrapping.
          */
-        Capsule(unsigned int rings, unsigned int segments, GLfloat length, TextureCoords textureCoords = TextureCoords::DontGenerate);
+        Capsule(std::uint32_t hemisphereRings, std::uint32_t cylinderRings, std::uint32_t segments, GLfloat length, TextureCoords textureCoords = TextureCoords::DontGenerate);
 
     private:
-        inline Capsule(unsigned int segments, TextureCoords textureCoords): MeshData("", Mesh::Primitive::Triangles, new std::vector<unsigned int>, {new std::vector<Vector4>()}, {new std::vector<Vector3>()}, textureCoords == TextureCoords::Generate ? std::vector<std::vector<Vector2>*>{new std::vector<Vector2>()} : std::vector<std::vector<Vector2>*>()), segments(segments), textureCoords(textureCoords) {}
+        Capsule(std::uint32_t segments, TextureCoords textureCoords);
 
         void capVertex(GLfloat y, GLfloat normalY, GLfloat textureCoordsV);
-        void vertexRings(unsigned int count, GLfloat centerY, GLfloat startRingAngle, GLfloat ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);
+        void hemisphereVertexRings(std::uint32_t count, GLfloat centerY, GLfloat startRingAngle, GLfloat ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);
+        void cylinderVertexRings(std::uint32_t count, GLfloat startY, GLfloat yIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);
         void bottomFaceRing();
-        void faceRings(unsigned int count);
+        void faceRings(std::uint32_t count, std::uint32_t offset = 1);
         void topFaceRing();
 
-        unsigned int segments;
+        std::uint32_t segments;
         TextureCoords textureCoords;
 };
 

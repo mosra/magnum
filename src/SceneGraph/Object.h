@@ -16,16 +16,45 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::Object, Magnum::SceneGraph::Object2D, Magnum::SceneGraph::Object3D
+ * @brief Class Magnum::SceneGraph::AbstractObject, Magnum::SceneGraph::Object2D, Magnum::SceneGraph::Object3D
  */
 
 #include <Containers/LinkedList.h>
 
+#include "Math/Matrix3.h"
+#include "Math/Matrix4.h"
 #include "Magnum.h"
+#include "DimensionTraits.h"
 
 #include "magnumSceneGraphVisibility.h"
 
 namespace Magnum { namespace SceneGraph {
+
+class Camera2D;
+class Camera3D;
+class Object2D;
+class Object3D;
+template<std::uint8_t dimensions> class Scene;
+typedef Scene<2> Scene2D;
+typedef Scene<3> Scene3D;
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
+    template<std::uint8_t dimensions> struct ObjectDimensionTraits {};
+
+    template<> struct ObjectDimensionTraits<2> {
+        typedef Object2D ObjectType;
+        typedef Camera2D CameraType;
+        typedef Scene2D SceneType;
+    };
+
+    template<> struct ObjectDimensionTraits<3> {
+        typedef Object3D ObjectType;
+        typedef Camera3D CameraType;
+        typedef Scene3D SceneType;
+    };
+}
+#endif
 
 /**
 @todo User-specified Object implementation:
@@ -38,27 +67,38 @@ namespace Magnum { namespace SceneGraph {
 */
 
 /**
- * @brief Base for all positioned objects
- *
- * @todo Transform transformation when changing parent, so the object stays in
- * place.
+@brief Base for all positioned objects
+
+@todo Transform transformation when changing parent, so the object stays in
+place.
  */
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> class SCENEGRAPH_EXPORT Object: public Corrade::Containers::LinkedList<ObjectType>, public Corrade::Containers::LinkedListItem<ObjectType, ObjectType> {
+template<std::uint8_t dimensions> class SCENEGRAPH_EXPORT AbstractObject: public Corrade::Containers::LinkedList<typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType>, public Corrade::Containers::LinkedListItem<typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType, typename Implementation::ObjectDimensionTraits<dimensions>::ObjectType> {
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Object(const Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>& other) = delete;
-    Object(Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>&& other) = delete;
-    Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>& operator=(const Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>& other) = delete;
-    Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>& operator=(Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>&& other) = delete;
+    AbstractObject(const AbstractObject<dimensions>& other) = delete;
+    AbstractObject(AbstractObject<dimensions>&& other) = delete;
+    AbstractObject<dimensions>& operator=(const AbstractObject<dimensions>& other) = delete;
+    AbstractObject<dimensions>& operator=(AbstractObject<dimensions>&& other) = delete;
     #endif
 
     public:
+        static const std::uint8_t Dimensions = dimensions; /**< @brief %Object dimension count */
+
+        /** @brief %Object type for given dimension count */
+        typedef typename Implementation::ObjectDimensionTraits<Dimensions>::ObjectType ObjectType;
+
+        /** @brief %Camera type for given dimension count */
+        typedef typename Implementation::ObjectDimensionTraits<Dimensions>::CameraType CameraType;
+
+        /** @brief %Scene type for given dimension count */
+        typedef typename Implementation::ObjectDimensionTraits<Dimensions>::SceneType SceneType;
+
         /**
          * @brief Constructor
          * @param parent    Parent object
          *
          * Sets all transformations to their default values.
          */
-        inline Object(ObjectType* parent = nullptr): dirty(true) {
+        inline AbstractObject(ObjectType* parent = nullptr): dirty(true) {
             setParent(parent);
         }
 
@@ -68,7 +108,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
          * Removes itself from parent's children list and destroys all own
          * children.
          */
-        virtual inline ~Object() {}
+        virtual ~AbstractObject() = 0;
 
         /** @{ @name Scene hierarchy */
 
@@ -77,7 +117,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
 
         /**
          * @brief %Scene
-         * @return If the object is not assigned to any scene, returns nullptr.
+         * @return %Scene or `nullptr`, if the object is not part of any scene.
          */
         SceneType* scene();
 
@@ -99,7 +139,10 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         /** @brief Last child object or `nullptr`, if this object has no children */
         inline ObjectType* lastChild() { return Corrade::Containers::LinkedList<ObjectType>::last(); }
 
-        /** @brief Set parent object */
+        /**
+         * @brief Set parent object
+         * @return Pointer to self (for method chaining)
+         */
         ObjectType* setParent(ObjectType* parent);
 
         /*@}*/
@@ -120,7 +163,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         };
 
         /** @brief Transformation */
-        inline MatrixType transformation() const {
+        inline typename DimensionTraits<dimensions, GLfloat>::MatrixType transformation() const {
             return _transformation;
         }
 
@@ -135,17 +178,21 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
          * objects every time it is asked, unless this function is
          * reimplemented in a different way.
          */
-        virtual MatrixType absoluteTransformation(CameraType* camera = nullptr);
+        virtual typename DimensionTraits<dimensions, GLfloat>::MatrixType absoluteTransformation(CameraType* camera = nullptr);
 
-        /** @brief Set transformation */
-        ObjectType* setTransformation(const MatrixType& transformation);
+        /**
+         * @brief Set transformation
+         * @return Pointer to self (for method chaining)
+         */
+        ObjectType* setTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation);
 
         /**
          * @brief Multiply transformation
          * @param transformation    Transformation
          * @param type              Transformation type
+         * @return Pointer to self (for method chaining)
          */
-        inline ObjectType* multiplyTransformation(const MatrixType& transformation, Transformation type = Transformation::Global) {
+        inline ObjectType* multiplyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation, Transformation type = Transformation::Global) {
             setTransformation(type == Transformation::Global ?
                 transformation*_transformation : _transformation*transformation);
             return static_cast<ObjectType*>(this);
@@ -162,7 +209,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
          *
          * Default implementation does nothing.
          */
-        virtual void draw(const MatrixType& transformationMatrix, CameraType* camera);
+        virtual void draw(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformationMatrix, CameraType* camera);
 
         /** @{ @name Caching helpers
          *
@@ -237,7 +284,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
          * }
          * @endcode
          */
-        virtual void clean(const MatrixType& absoluteTransformation);
+        virtual void clean(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& absoluteTransformation);
 
         /*@}*/
 
@@ -255,36 +302,29 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         using Corrade::Containers::LinkedListItem<ObjectType, ObjectType>::previous;
         using Corrade::Containers::LinkedListItem<ObjectType, ObjectType>::next;
 
-        MatrixType _transformation;
+        typename DimensionTraits<dimensions, GLfloat>::MatrixType _transformation;
         bool dirty;
 };
 
+template<std::uint8_t dimensions> inline AbstractObject<dimensions>::~AbstractObject() {}
+
 /* Implementations for inline functions with unused parameters */
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> inline void Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::draw(const MatrixType&, CameraType*) {}
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> inline void Object<MatrixType, VectorType, ObjectType, SceneType, CameraType>::clean(const MatrixType&) { dirty = false; }
+template<std::uint8_t dimensions> inline void AbstractObject<dimensions>::draw(const typename DimensionTraits<dimensions, GLfloat>::MatrixType&, CameraType*) {}
+template<std::uint8_t dimensions> inline void AbstractObject<dimensions>::clean(const typename DimensionTraits<dimensions, GLfloat>::MatrixType&) { dirty = false; }
 
-class Camera2D;
-class Camera3D;
-class Object2D;
-class Object3D;
-template<class MatrixType, class VectorType, class ObjectType, class CameraType> class Scene;
-typedef Scene<Matrix3, Vector2, Object2D, Camera2D> Scene2D;
-typedef Scene<Matrix4, Vector3, Object3D, Camera3D> Scene3D;
+/**
+@brief Two-dimensional object
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-/* These templates are instantiated in source file */
-extern template class SCENEGRAPH_EXPORT Object<Matrix3, Vector2, Object2D, Scene2D, Camera2D>;
-extern template class SCENEGRAPH_EXPORT Object<Matrix4, Vector3, Object3D, Scene3D, Camera3D>;
-#endif
-
-/** @brief Two-dimensional object */
-class SCENEGRAPH_EXPORT Object2D: public Object<Matrix3, Vector2, Object2D, Scene2D, Camera2D> {
+@see Object3D
+*/
+class SCENEGRAPH_EXPORT Object2D: public AbstractObject<2> {
     public:
-        /** @copydoc Object::Object */
-        inline Object2D(Object2D* parent = nullptr): Object(parent) {}
+        /** @copydoc AbstractObject::AbstractObject() */
+        inline Object2D(Object2D* parent = nullptr): AbstractObject(parent) {}
 
         /**
          * @brief Translate object
+         * @return Pointer to self (for method chaining)
          *
          * Same as calling multiplyTransformation() with Matrix3::translation().
          */
@@ -295,6 +335,7 @@ class SCENEGRAPH_EXPORT Object2D: public Object<Matrix3, Vector2, Object2D, Scen
 
         /**
          * @brief Scale object
+         * @return Pointer to self (for method chaining)
          *
          * Same as calling multiplyTransformation() with Matrix3::scaling().
          */
@@ -305,6 +346,7 @@ class SCENEGRAPH_EXPORT Object2D: public Object<Matrix3, Vector2, Object2D, Scen
 
         /**
          * @brief Rotate object
+         * @return Pointer to self (for method chaining)
          *
          * Same as calling multiplyTransformation() with Matrix3::rotation().
          */
@@ -317,6 +359,7 @@ class SCENEGRAPH_EXPORT Object2D: public Object<Matrix3, Vector2, Object2D, Scen
          * @brief Move object in stacking order
          * @param under     Sibling object under which to move or `nullptr`,
          *      if you want to move it above all.
+         * @return Pointer to self (for method chaining)
          */
         inline Object2D* move(Object2D* under) {
             parent()->Corrade::Containers::LinkedList<Object2D>::move(this, under);
@@ -324,14 +367,19 @@ class SCENEGRAPH_EXPORT Object2D: public Object<Matrix3, Vector2, Object2D, Scen
         }
 };
 
-/** @brief Three-dimensional object */
-class SCENEGRAPH_EXPORT Object3D: public Object<Matrix4, Vector3, Object3D, Scene3D, Camera3D> {
+/**
+@brief Three-dimensional object
+
+@see Object2D
+*/
+class SCENEGRAPH_EXPORT Object3D: public AbstractObject<3> {
     public:
-        /** @copydoc Object::Object */
-        inline Object3D(Object3D* parent = nullptr): Object(parent) {}
+        /** @copydoc AbstractObject::AbstractObject() */
+        inline Object3D(Object3D* parent = nullptr): AbstractObject(parent) {}
 
         /**
          * @brief Translate object
+         * @return Pointer to self (for method chaining)
          *
          * Same as calling multiplyTransformation() with Matrix4::translation().
          */
@@ -342,6 +390,7 @@ class SCENEGRAPH_EXPORT Object3D: public Object<Matrix4, Vector3, Object3D, Scen
 
         /**
          * @brief Scale object
+         * @return Pointer to self (for method chaining)
          *
          * Same as calling multiplyTransformation() with Matrix4::scaling().
          */
@@ -352,6 +401,7 @@ class SCENEGRAPH_EXPORT Object3D: public Object<Matrix4, Vector3, Object3D, Scen
 
         /**
          * @brief Rotate object
+         * @return Pointer to self (for method chaining)
          *
          * Same as calling multiplyTransformation() with Matrix4::rotation().
          */

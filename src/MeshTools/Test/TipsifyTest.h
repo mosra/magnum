@@ -28,8 +28,8 @@ class TipsifyTest: public Corrade::TestSuite::Tester<TipsifyTest> {
         void tipsify();
 
     private:
-        std::vector<unsigned int> indices;
-        size_t vertexCount;
+        std::vector<std::uint32_t> indices;
+        std::size_t vertexCount;
 };
 
 }}}

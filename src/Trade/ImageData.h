@@ -19,7 +19,9 @@
  * @brief Class Magnum::Trade::ImageData
  */
 
+#include "Math/Vector3.h"
 #include "AbstractImage.h"
+#include "DimensionTraits.h"
 #include "TypeTraits.h"
 
 namespace Magnum { namespace Trade {
@@ -30,14 +32,14 @@ namespace Magnum { namespace Trade {
 Provides access to image data and additional information about data type and
 dimensions. Can be used in the same situations as Image and BufferedImage.
 */
-template<size_t imageDimensions> class ImageData: public AbstractImage {
+template<std::uint8_t dimensions> class ImageData: public AbstractImage {
     public:
-        const static size_t Dimensions = imageDimensions;   /**< @brief %Image dimension count */
+        const static std::uint8_t Dimensions = dimensions; /**< @brief %Image dimension count */
 
         /**
          * @brief Constructor
          * @param name              %Image name
-         * @param dimensions        %Image dimensions
+         * @param size              %Image size
          * @param components        Color components. Data type is detected
          *      from passed data array.
          * @param data              %Image data
@@ -45,12 +47,12 @@ template<size_t imageDimensions> class ImageData: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        template<class T> inline ImageData(const std::string& name, const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _name(name), _dimensions(dimensions), _data(reinterpret_cast<char*>(data)) {}
+        template<class T> inline ImageData(const std::string& name, const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _name(name), _size(size), _data(reinterpret_cast<char*>(data)) {}
 
         /**
          * @brief Constructor
          * @param name              %Image name
-         * @param dimensions        %Image dimensions
+         * @param size              %Image size
          * @param components        Color components
          * @param type              Data type
          * @param data              %Image data
@@ -58,7 +60,7 @@ template<size_t imageDimensions> class ImageData: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        inline ImageData(const std::string& name, const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _name(name), _dimensions(dimensions), _data(reinterpret_cast<char*>(data)) {}
+        inline ImageData(const std::string& name, const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _name(name), _size(size), _data(reinterpret_cast<char*>(data)) {}
 
         /** @brief Destructor */
         inline ~ImageData() { delete[] _data; }
@@ -66,16 +68,16 @@ template<size_t imageDimensions> class ImageData: public AbstractImage {
         /** @brief %Image name */
         inline std::string name() const { return _name; }
 
-        /** @brief %Image dimensions */
-        inline constexpr const Math::Vector<Dimensions, GLsizei>& dimensions() const { return _dimensions; }
+        /** @brief %Image size */
+        inline typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
 
         /** @brief Pointer to raw data */
         inline void* data() { return _data; }
-        inline constexpr const void* data() const { return _data; } /**< @overload */
+        inline const void* data() const { return _data; } /**< @overload */
 
     private:
         std::string _name;
-        Math::Vector<Dimensions, GLsizei> _dimensions;
+        Math::Vector<Dimensions, GLsizei> _size;
         char* _data;
 };
 

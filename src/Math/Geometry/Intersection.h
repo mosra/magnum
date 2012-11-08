@@ -39,14 +39,12 @@ class Intersection {
          * is inside the line segment defined by `a` and `b`.
          *
          * First the parameter *f* of parametric equation of the plane
-         * is computed from plane normal **n** and plane position:
-         * @f[
+         * is computed from plane normal **n** and plane position: @f[
          *      \begin{pmatrix} n_0 \\ n_1 \\ n_2 \end{pmatrix} \cdot
          *      \begin{pmatrix} x \\ y \\ z \end{pmatrix} - f = 0
          * @f]
          * Using plane normal **n**, parameter *f* and points **a** and **b**,
-         * value of *t* is computed and returned.
-         * @f[
+         * value of *t* is computed and returned. @f[
          *      \begin{array}{rcl}
          *          \Delta \boldsymbol b & = & \boldsymbol b - \boldsymbol a \\
          *          f & = & \boldsymbol n \cdot (\boldsymbol a + \Delta \boldsymbol b \cdot t) \\

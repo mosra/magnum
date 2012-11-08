@@ -15,11 +15,11 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#include "corradeCompatibility.h"
 #include "magnumConfigure.h"
 
-#ifdef CORRADE_GCC45_COMPATIBILITY
-#define constexpr
-#define nullptr 0
+#ifdef MAGNUM_GCC46_COMPATIBILITY
+#define override
 #endif
 
 #endif

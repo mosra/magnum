@@ -33,29 +33,29 @@ CombineIndexedArraysTest::CombineIndexedArraysTest() {
 void CombineIndexedArraysTest::wrongIndexCount() {
     stringstream ss;
     Error::setOutput(&ss);
-    vector<unsigned int> array;
-    vector<unsigned int> result = MeshTools::combineIndexedArrays(
-        tuple<const vector<unsigned int>&, vector<unsigned int>&>(vector<unsigned int>{0, 1, 0}, array),
-        tuple<const vector<unsigned int>&, vector<unsigned int>&>(vector<unsigned int>{3, 4}, array));
+    vector<uint32_t> array;
+    vector<uint32_t> result = MeshTools::combineIndexedArrays(
+        tuple<const vector<uint32_t>&, vector<uint32_t>&>(vector<uint32_t>{0, 1, 0}, array),
+        tuple<const vector<uint32_t>&, vector<uint32_t>&>(vector<uint32_t>{3, 4}, array));
 
     CORRADE_COMPARE(result.size(), 0);
     CORRADE_COMPARE(ss.str(), "MeshTools::combineIndexedArrays(): index arrays don't have the same length, nothing done.\n");
 }
 
 void CombineIndexedArraysTest::combine() {
-    vector<unsigned int> array1{ 0, 1 };
-    vector<unsigned int> array2{ 0, 1, 2, 3, 4 };
-    vector<unsigned int> array3{ 0, 1, 2, 3, 4, 5, 6, 7 };
+    vector<uint32_t> array1{ 0, 1 };
+    vector<uint32_t> array2{ 0, 1, 2, 3, 4 };
+    vector<uint32_t> array3{ 0, 1, 2, 3, 4, 5, 6, 7 };
 
-    vector<unsigned int> result = MeshTools::combineIndexedArrays(
-        tuple<const vector<unsigned int>&, vector<unsigned int>&>(vector<unsigned int>{0, 1, 0}, array1),
-        tuple<const vector<unsigned int>&, vector<unsigned int>&>(vector<unsigned int>{3, 4, 3}, array2),
-        tuple<const vector<unsigned int>&, vector<unsigned int>&>(vector<unsigned int>{6, 7, 6}, array3));
+    vector<uint32_t> result = MeshTools::combineIndexedArrays(
+        tuple<const vector<uint32_t>&, vector<uint32_t>&>(vector<uint32_t>{0, 1, 0}, array1),
+        tuple<const vector<uint32_t>&, vector<uint32_t>&>(vector<uint32_t>{3, 4, 3}, array2),
+        tuple<const vector<uint32_t>&, vector<uint32_t>&>(vector<uint32_t>{6, 7, 6}, array3));
 
-    CORRADE_COMPARE(result, (vector<unsigned int>{0, 1, 0}));
-    CORRADE_COMPARE(array1, (vector<unsigned int>{0, 1}));
-    CORRADE_COMPARE(array2, (vector<unsigned int>{3, 4}));
-    CORRADE_COMPARE(array3, (vector<unsigned int>{6, 7}));
+    CORRADE_COMPARE(result, (vector<uint32_t>{0, 1, 0}));
+    CORRADE_COMPARE(array1, (vector<uint32_t>{0, 1}));
+    CORRADE_COMPARE(array2, (vector<uint32_t>{3, 4}));
+    CORRADE_COMPARE(array3, (vector<uint32_t>{6, 7}));
 }
 
 }}}

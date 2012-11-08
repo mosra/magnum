@@ -3,20 +3,23 @@ Features:
 
  * Easy-to-use templated mathematical library for matrix/vector calculations
    and geometry.
+ * Classes wrapping OpenGL objects and simplifying their usage - shaders,
+   buffers, meshes and textures. Access to framebuffer and occlusion queries.
+ * Mesh tools for cleaning, optimizing and generating meshes, utility classes
+   for color conversion, timeline and profiling.
  * Hierarchical scene graph which supports transformation caching for better
-   performance, classes for convenient usage of shaders, buffers and textures.
-   Access to framebuffer and occlusion queries.
- * Physics library for collision detection and rigid body dynamics. Mesh tools
-   for cleaning, optimizing and generating meshes.
+   performance, physics library for collision detection and rigid body
+   dynamics.
  * Plugin-based data exchange framework for importing image, mesh, material
    and scene data in various formats.
  * Collection of pre-made graphic primitives and shaders for testing purposes.
- * Classes for easy creation of OpenGL context with various toolkits.
+ * Classes for easy creation of OpenGL context with various toolkits, methods
+   for querying supported OpenGL version and available extensions.
  * Comprehensive use of C++11 features for safety, performance and ease of
    development. All code which doesn't directly interact with OpenGL is
    covered with unit tests.
  * Actively maintained Doxygen documentation. Occasionally updated snapshot is
-   also available online at http://mosra.cz/blog/magnum-doc .
+   also available online at http://mosra.cz/blog/magnum-doc/ .
 
 INSTALLATION
 ============
@@ -37,18 +40,18 @@ Minimal dependencies
    **OpenGL ES 2** headers, if targeting OpenGL ES.
  * **GLEW** - OpenGL extension wrangler
  * **Corrade** - Plugin management and utility library. You can get it at
-   http://mosra.cz/blog/corrade.php
+   http://github.com/mosra/corrade or at http://mosra.cz/blog/corrade.php.
 
 Compilation, installation
 -------------------------
 
-The library (for example with GLUT context) can be built and installed using
-these four commands:
+The library (for example with GLUT window context) can be built and installed
+using these four commands:
 
     mkdir -p build && cd build
     cmake .. \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DWITH_GLUTCONTEXT=ON
+        -DWITH_GLUTWINDOWCONTEXT=ON
     make
     make install
 
@@ -59,7 +62,7 @@ If you want to build also unit tests (which are not built by default), pass
 `-DBUILD_TESTS=True` to CMake. Unit tests use Corrade's TestSuite framework
 and can be run using
 
-    ctest -V
+    ctest --output-on-failure
 
 in build directory. Everything should pass ;-)
 

@@ -40,6 +40,7 @@ Vector3Test::Vector3Test() {
 }
 
 void Vector3Test::construct() {
+    CORRADE_COMPARE(Vector3(), Vector3(0.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(Vector3(1, 2, 3), (Vector<3, float>(1.0f, 2.0f, 3.0f)));
     CORRADE_COMPARE(Vector3(Vector<2, float>(1.0f, 2.0f), 3), (Vector<3, float>(1.0f, 2.0f, 3.0f)));
 }

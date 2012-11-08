@@ -23,8 +23,6 @@ class MathTest: public Corrade::TestSuite::Tester<MathTest> {
     public:
         MathTest();
 
-        void constants();
-        void degrad();
         void normalize();
         void denormalize();
         void clamp();

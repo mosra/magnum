@@ -28,8 +28,12 @@ class Matrix4Test: public Corrade::TestSuite::Tester<Matrix4Test> {
         void translation();
         void scaling();
         void rotation();
+        void rotationX();
+        void rotationY();
+        void rotationZ();
         void rotationScalingPart();
         void rotationPart();
+        void translationPart();
 
         void debug();
         void configuration();

@@ -19,7 +19,9 @@
  * @brief Class Magnum::ImageWrapper
  */
 
+#include "Math/Vector3.h"
 #include "AbstractImage.h"
+#include "DimensionTraits.h"
 #include "TypeTraits.h"
 
 namespace Magnum {
@@ -38,13 +40,13 @@ to change image properties, only data pointer.
 
 See also Image, BufferedImage and Trade::ImageData.
 */
-template<size_t imageDimensions> class ImageWrapper: public AbstractImage {
+template<std::uint8_t dimensions> class ImageWrapper: public AbstractImage {
     public:
-        const static size_t Dimensions = imageDimensions;   /**< @brief Image dimension count */
+        const static std::uint8_t Dimensions = dimensions; /**< @brief %Image dimension count */
 
         /**
          * @brief Constructor
-         * @param dimensions        %Image dimensions
+         * @param size              %Image size
          * @param components        Color components. Data type is detected
          *      from passed data array.
          * @param data              %Image data with proper size
@@ -52,11 +54,11 @@ template<size_t imageDimensions> class ImageWrapper: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        template<class T> inline ImageWrapper(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _dimensions(dimensions), _data(data) {}
+        template<class T> inline ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, T* data): AbstractImage(components, TypeTraits<T>::imageType()), _size(size), _data(data) {}
 
         /**
          * @brief Constructor
-         * @param dimensions        %Image dimensions
+         * @param size              %Image size
          * @param components        Color components
          * @param type              Data type
          * @param data              %Image data
@@ -64,25 +66,25 @@ template<size_t imageDimensions> class ImageWrapper: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        inline ImageWrapper(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _dimensions(dimensions), _data(reinterpret_cast<char*>(data)) {}
+        inline ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, GLvoid* data): AbstractImage(components, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
 
         /**
          * @brief Constructor
-         * @param dimensions        %Image dimensions
+         * @param size              %Image size
          * @param components        Color components
          * @param type              Data type
          *
          * Dimensions and data pointer are set to zero, call setData() to fill
          * the image with data.
          */
-        inline ImageWrapper(const Math::Vector<Dimensions, GLsizei>& dimensions, Components components, ComponentType type): AbstractImage(components, type), _dimensions(dimensions), _data(nullptr) {}
+        inline ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type): AbstractImage(components, type), _size(size), _data(nullptr) {}
 
-        /** @brief %Image dimensions */
-        inline constexpr const Math::Vector<Dimensions, GLsizei>& dimensions() const { return _dimensions; }
+        /** @brief %Image size */
+        inline typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
 
         /** @brief Pointer to raw data */
         inline void* data() { return _data; }
-        inline constexpr const void* data() const { return _data; } /**< @overload */
+        inline const void* data() const { return _data; } /**< @overload */
 
         /**
          * @brief Set image data
@@ -92,13 +94,13 @@ template<size_t imageDimensions> class ImageWrapper: public AbstractImage {
          * passed in constructor. The data are not copied nor deleted on
          * destruction.
          */
-        void setData(GLvoid* data) {
+        inline void setData(GLvoid* data) {
             _data = reinterpret_cast<char*>(data);
         }
 
     protected:
-        Math::Vector<Dimensions, GLsizei> _dimensions;  /**< @brief %Image dimensions */
-        char* _data;                                    /**< @brief %Image data */
+        Math::Vector<Dimensions, GLsizei> _size;    /**< @brief %Image size */
+        char* _data;                                /**< @brief %Image data */
 };
 
 /** @brief One-dimensional image wrapper */

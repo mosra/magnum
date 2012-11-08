@@ -17,8 +17,8 @@
 
 #include <sstream>
 
+#include "Constants.h"
 #include "Matrix4.h"
-#include "Math.h"
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::Matrix4Test)
 
@@ -28,15 +28,20 @@ using namespace Corrade::Utility;
 namespace Magnum { namespace Math { namespace Test {
 
 typedef Math::Matrix4<float> Matrix4;
-typedef Math::Matrix3<float> Matrix3;
+typedef Math::Matrix<3, float> Matrix3;
+typedef Math::Vector3<float> Vector3;
 
 Matrix4Test::Matrix4Test() {
     addTests(&Matrix4Test::constructIdentity,
              &Matrix4Test::translation,
              &Matrix4Test::scaling,
              &Matrix4Test::rotation,
+             &Matrix4Test::rotationX,
+             &Matrix4Test::rotationY,
+             &Matrix4Test::rotationZ,
              &Matrix4Test::rotationScalingPart,
              &Matrix4Test::rotationPart,
+             &Matrix4Test::translationPart,
              &Matrix4Test::debug,
              &Matrix4Test::configuration);
 }
@@ -88,14 +93,46 @@ void Matrix4Test::scaling() {
 }
 
 void Matrix4Test::rotation() {
-    Matrix4 matrix(
-        0.35612214f,  -0.80181062f, 0.47987163f,  0.0f,
-        0.47987163f,  0.59757638f,  0.6423595f,  0.0f,
-        -0.80181062f, 0.0015183985f, 0.59757638f,  0.0f,
-        0.0f,       0.0f,       0.0f,       1.0f
-    );
+    ostringstream o;
+    Error::setOutput(&o);
 
-    CORRADE_COMPARE(Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f}), matrix);
+    CORRADE_COMPARE(Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f}), Matrix4());
+    CORRADE_COMPARE(o.str(), "Math::Matrix4::rotation(): axis must be normalized\n");
+
+    Matrix4 matrix(
+         0.35612214f, -0.80181062f,   0.47987163f, 0.0f,
+         0.47987163f,  0.59757638f,   0.6423595f,  0.0f,
+        -0.80181062f,  0.0015183985f, 0.59757638f, 0.0f,
+         0.0f,         0.0f,          0.0f,        1.0f
+    );
+    CORRADE_COMPARE(Matrix4::rotation(deg(-74.0f), Vector3(-1.0f, 2.0f, 2.0f).normalized()), matrix);
+}
+
+void Matrix4Test::rotationX() {
+    Matrix4 matrix(1.0f,  0.0f,        0.0f,        0.0f,
+                   0.0f,  0.90096887f, 0.43388374f, 0.0f,
+                   0.0f, -0.43388374f, 0.90096887f, 0.0f,
+                   0.0f,  0.0f,        0.0f,        1.0f);
+    CORRADE_COMPARE(Matrix4::rotation(rad(Math::Constants<float>::pi()/7), Vector3::xAxis()), matrix);
+    CORRADE_COMPARE(Matrix4::rotationX(rad(Math::Constants<float>::pi()/7)), matrix);
+}
+
+void Matrix4Test::rotationY() {
+    Matrix4 matrix(0.90096887f, 0.0f, -0.43388374f, 0.0f,
+                   0.0f,        1.0f,  0.0f,        0.0f,
+                   0.43388374f, 0.0f,  0.90096887f, 0.0f,
+                   0.0f,        0.0f,  0.0f,        1.0f);
+    CORRADE_COMPARE(Matrix4::rotation(rad(Math::Constants<float>::pi()/7), Vector3::yAxis()), matrix);
+    CORRADE_COMPARE(Matrix4::rotationY(rad(Math::Constants<float>::pi()/7)), matrix);
+}
+
+void Matrix4Test::rotationZ() {
+    Matrix4 matrix( 0.90096887f, 0.43388374f, 0.0f, 0.0f,
+                   -0.43388374f, 0.90096887f, 0.0f, 0.0f,
+                    0.0f,        0.0f,        1.0f, 0.0f,
+                    0.0f,        0.0f,        0.0f, 1.0f);
+    CORRADE_COMPARE(Matrix4::rotation(rad(Math::Constants<float>::pi()/7), Vector3::zAxis()), matrix);
+    CORRADE_COMPARE(Matrix4::rotationZ(rad(Math::Constants<float>::pi()/7)), matrix);
 }
 
 void Matrix4Test::rotationScalingPart() {
@@ -122,11 +159,20 @@ void Matrix4Test::rotationPart() {
         -0.80181062f, 0.0015183985f, 0.59757638f
     );
 
-    Matrix4 rotation = Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f});
+    Matrix4 rotation = Matrix4::rotation(deg(-74.0f), Vector3(-1.0f, 2.0f, 2.0f).normalized());
     CORRADE_COMPARE(rotation.rotation(), expectedRotationPart);
 
-    Matrix4 rotationTransformed = Matrix4::translation({2.0f, 5.0f, -3.0f})*rotation*Matrix4::scaling(Vector3<float>(9.0f));
+    Matrix4 rotationTransformed = Matrix4::translation({2.0f, 5.0f, -3.0f})*rotation*Matrix4::scaling(Vector3(9.0f));
     CORRADE_COMPARE(rotationTransformed.rotation(), expectedRotationPart);
+}
+
+void Matrix4Test::translationPart() {
+    Matrix4 m(1.0f, 0.0f, 0.0f, 0.0f,
+              0.0f, 1.0f, 0.0f, 0.0f,
+              0.0f, 0.0f, 1.0f, 0.0f,
+              -5.0f, 12.0f, 0.5f, 1.0f);
+    Vector3 expected(-5.0f, 12.0f, 0.5f);
+    CORRADE_COMPARE(m.translation(), expected);
 }
 
 void Matrix4Test::debug() {

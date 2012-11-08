@@ -16,42 +16,58 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::Box
+ * @brief Class Magnum::Physics::Box, typedef Magnum::Physics::Box2D, Magnum::Physics::Box3D
  */
 
+#include "Math/Matrix3.h"
+#include "Math/Matrix4.h"
 #include "AbstractShape.h"
+
+#include "magnumCompatibility.h"
 
 namespace Magnum { namespace Physics {
 
-/** @brief Unit size box with assigned transformation matrix */
-class Box: public AbstractShape {
+/**
+@brief Unit-size box with assigned transformation matrix
+
+@see Box2D, Box3D
+*/
+template<std::uint8_t dimensions> class PHYSICS_EXPORT Box: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Box(const Matrix4& transformation): _transformation(transformation), _transformedTransformation(transformation) {}
+        inline Box(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation): _transformation(transformation), _transformedTransformation(transformation) {}
 
-        inline void applyTransformation(const Matrix4& transformation) {
-            _transformedTransformation = transformation*_transformation;
+        inline typename AbstractShape<dimensions>::Type type() const override {
+            return AbstractShape<dimensions>::Type::Box;
         }
 
+        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
+
         /** @brief Transformation */
-        inline constexpr Matrix4 transformation() const { return _transformation; }
+        inline typename DimensionTraits<dimensions, GLfloat>::MatrixType transformation() const {
+            return _transformation;
+        }
 
         /** @brief Set transformation */
-        inline Vector3 setTransformation(const Matrix4& transformation) {
+        inline void setTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
             _transformation = transformation;
         }
 
         /** @brief Transformed transformation */
-        inline constexpr Vector3 transformedTransformation() const {
+        inline typename DimensionTraits<dimensions, GLfloat>::MatrixType transformedTransformation() const {
             return _transformedTransformation;
         }
 
-    protected:
-        inline Type type() const { return Type::Box; }
-
     private:
-        Vector3 _transformation, _transformedTransformation;
+        Math::Matrix<dimensions+1, GLfloat> _transformation,
+            _transformedTransformation;
 };
+
+/** @brief Two-dimensional box */
+typedef Box<2> Box2D;
+
+/** @brief Three-dimensional box */
+typedef Box<3> Box3D;
 
 }}
 

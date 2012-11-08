@@ -15,9 +15,32 @@
 
 #include "BufferedTexture.h"
 
+#ifndef MAGNUM_TARGET_GLES
+#include "Buffer.h"
+#include "Context.h"
+#include "Extensions.h"
+
 namespace Magnum {
 
-#ifndef MAGNUM_TARGET_GLES
+BufferedTexture::SetBufferImplementation BufferedTexture::setBufferImplementation = &BufferedTexture::setBufferImplementationDefault;
+
+void BufferedTexture::initializeContextBasedFunctionality(Context* context) {
+    if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+        Debug() << "BufferedTexture: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
+
+        setBufferImplementation = &BufferedTexture::setBufferImplementationDSA;
+    }
+}
+
+void BufferedTexture::setBufferImplementationDefault(BufferedTexture::InternalFormat internalFormat, Buffer* buffer) {
+    bindInternal();
+    glTexBuffer(GL_TEXTURE_BUFFER, internalFormat, buffer->id());
+}
+
+void BufferedTexture::setBufferImplementationDSA(BufferedTexture::InternalFormat internalFormat, Buffer* buffer) {
+    glTextureBufferEXT(id(), GL_TEXTURE_BUFFER, internalFormat, buffer->id());
+}
+
 BufferedTexture::InternalFormat::InternalFormat(Components components, ComponentType type) {
     #define internalFormatSwitch(c) switch(type) {                          \
         case ComponentType::UnsignedByte:                                   \
@@ -49,6 +72,6 @@ BufferedTexture::InternalFormat::InternalFormat(Components components, Component
         internalFormatSwitch(RGBA)
     #undef internalFormatSwitch
 }
-#endif
 
 }
+#endif

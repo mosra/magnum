@@ -14,7 +14,12 @@
 */
 
 #include "AbstractImage.h"
+
+#include <Utility/Debug.h>
+
 #include "TypeTraits.h"
+
+using namespace std;
 
 namespace Magnum {
 
@@ -69,6 +74,8 @@ size_t AbstractImage::pixelSize(Components format, ComponentType type) {
     switch(format) {
         #ifndef MAGNUM_TARGET_GLES
         case Components::Red:
+        case Components::Green:
+        case Components::Blue:
             return 1*size;
         case Components::RedGreen:
             return 2*size;
@@ -83,9 +90,16 @@ size_t AbstractImage::pixelSize(Components format, ComponentType type) {
         case Components::BGRA:
         #endif
             return 4*size;
-        default:
-            return 0;
+
+        #ifndef MAGNUM_TARGET_GLES
+        case Components::Depth:
+        case Components::StencilIndex:
+        case Components::DepthStencil:
+            CORRADE_INTERNAL_ASSERT(false);
+        #endif
     }
+
+    return 0;
 }
 
 }

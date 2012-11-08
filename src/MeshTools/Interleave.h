@@ -36,7 +36,7 @@ class Interleave {
     public:
         inline Interleave(): _attributeCount(0), _stride(0), _data(nullptr) {}
 
-        template<class ...T> std::tuple<size_t, size_t, char*> operator()(const T&... attributes) {
+        template<class ...T> std::tuple<std::size_t, std::size_t, char*> operator()(const T&... attributes) {
             /* Compute buffer size and stride */
             _attributeCount = attributeCount(attributes...);
             if(_attributeCount) {
@@ -53,8 +53,6 @@ class Interleave {
         }
 
         template<class ...T> void operator()(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const T&... attributes) {
-            CORRADE_ASSERT(mesh->isInterleaved(buffer), "MeshTools::interleave(): the buffer is not interleaved, nothing done", );
-
             operator()(attributes...);
 
             mesh->setVertexCount(_attributeCount);
@@ -63,13 +61,19 @@ class Interleave {
             delete[] _data;
         }
 
-        template<class T, class ...U> inline static size_t attributeCount(const T& first, const U&... next) {
+        /* Specialization for only one attribute array */
+        template<class T> void operator()(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const T& attribute) {
+            mesh->setVertexCount(attribute.size());
+            buffer->setData(attribute, usage);
+        }
+
+        template<class T, class ...U> inline static std::size_t attributeCount(const T& first, const U&... next) {
             CORRADE_ASSERT(sizeof...(next) == 0 || attributeCount(next...) == first.size(), "MeshTools::interleave(): attribute arrays don't have the same length, nothing done.", 0);
 
             return first.size();
         }
 
-        template<class T, class ...U> inline static size_t stride(const T&, const U&... next) {
+        template<class T, class ...U> inline static std::size_t stride(const T&, const U&... next) {
             return sizeof(typename T::value_type) + stride(next...);
         }
 
@@ -77,19 +81,19 @@ class Interleave {
         template<class T, class ...U> void write(char* startingOffset, const T& first, const U&... next) {
             /* Copy the data to the buffer */
             auto it = first.begin();
-            for(size_t i = 0; i != _attributeCount; ++i, ++it)
+            for(std::size_t i = 0; i != _attributeCount; ++i, ++it)
                 memcpy(startingOffset+i*_stride, reinterpret_cast<const char*>(&*it), sizeof(typename T::value_type));
 
             write(startingOffset+sizeof(typename T::value_type), next...);
         }
 
         /* Terminator functions for recursive calls */
-        inline static size_t attributeCount() { return 0; }
-        inline static size_t stride() { return 0; }
+        inline static std::size_t attributeCount() { return 0; }
+        inline static std::size_t stride() { return 0; }
         inline void write(char*) {}
 
-        size_t _attributeCount;
-        size_t _stride;
+        std::size_t _attributeCount;
+        std::size_t _stride;
         char* _data;
 };
 
@@ -108,13 +112,13 @@ so data for each attribute are in continuous place in memory. Size of the data
 buffer can be computed from attribute count and stride, as shown below. Example
 usage:
 @code
-std::vector<Vector4> vertices;
+std::vector<Vector4> positions;
 std::vector<Vector2> textureCoordinates;
-size_t attributeCount;
-size_t stride;
+std::size_t attributeCount;
+std::size_t stride;
 char* data;
-std::tie(attributeCount, stride, data) = MeshTools::interleave(vertices, textureCoordinates);
-size_t dataSize = attributeCount*stride;
+std::tie(attributeCount, stride, data) = MeshTools::interleave(positions, textureCoordinates);
+std::size_t dataSize = attributeCount*stride;
 // ...
 delete[] data;
 @endcode
@@ -124,14 +128,14 @@ The only requirements to attribute array type is that it must have typedef
 function `size()` returning count of elements. In most cases it will be
 `std::vector` or `std::array`.
 
-See also interleave(Mesh*, Buffer*, Buffer::Usage, const std::vector<T>&...),
+See also interleave(Mesh*, Buffer*, Buffer::Usage, const T&...),
 which writes the interleaved array directly into buffer of given mesh.
 
 @attention Each passed array should have the same size, if not, resulting
     array has zero length.
 */
 /* enable_if to avoid clash with overloaded function below */
-template<class T, class ...U> inline typename std::enable_if<!std::is_convertible<T, Mesh*>::value, std::tuple<size_t, size_t, char*>>::type interleave(const T& attribute, const U&... attributes) {
+template<class T, class ...U> inline typename std::enable_if<!std::is_convertible<T, Mesh*>::value, std::tuple<std::size_t, std::size_t, char*>>::type interleave(const T& attribute, const U&... attributes) {
     return Implementation::Interleave()(attribute, attributes...);
 }
 
@@ -142,12 +146,21 @@ template<class T, class ...U> inline typename std::enable_if<!std::is_convertibl
 @param buffer       Output array buffer
 @param usage        Array buffer usage
 
-The same as interleave(const T&...), but this function writes the output to
-given array buffer and updates vertex count in the mesh accordingly.
+The same as interleave(const T&, const U&...), but this function writes the
+output to given array buffer and updates vertex count in the mesh accordingly,
+so you don't have to call Mesh::setVertexCount() on your own.
 
-@attention The buffer must be set as interleaved (see Mesh::addBuffer()),
-    otherwise this function does nothing. Binding the attributes to shader is
-    left to user.
+@attention Setting primitive type and binding the attributes to shader is left
+    to user - see @ref Mesh-configuration "Mesh documentation".
+
+For only one attribute array this function is convenient equivalent to the
+following, without any performance loss:
+@code
+buffer->setData(attribute, usage);
+mesh->setVertexCount(attribute.size());
+@endcode
+
+@see MeshTools::compressIndices()
 */
 template<class ...T> inline void interleave(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const T&... attributes) {
     return Implementation::Interleave()(mesh, buffer, usage, attributes...);

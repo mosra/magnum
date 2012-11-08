@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::Camera, Magnum::SceneGraph::Camera2D, Magnum::SceneGraph::Camera3D
+ * @brief Class Magnum::SceneGraph::AbstractCamera, Magnum::SceneGraph::Camera2D, Magnum::SceneGraph::Camera3D
  */
 
 #include "Object.h"
@@ -36,8 +36,6 @@ namespace Implementation {
         NotPreserved, Extend, Clip
     };
 
-    template<size_t dimensions> class Camera {};
-
     template<class MatrixType> MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Vector2& projectionScale, const Math::Vector2<GLsizei>& viewport);
 
     /* These templates are instantiated in source file */
@@ -49,7 +47,7 @@ namespace Implementation {
 /**
 @brief %Camera object
  */
-template<class MatrixType, class VectorType, class ObjectType, class SceneType, class CameraType> class SCENEGRAPH_EXPORT Camera: public ObjectType {
+template<std::uint8_t dimensions> class SCENEGRAPH_EXPORT AbstractCamera: public AbstractObject<dimensions>::ObjectType {
     public:
         /**
          * @brief Aspect ratio policy
@@ -66,14 +64,19 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         };
         #endif
 
-        /** @copydoc Object::Object */
-        Camera(ObjectType* parent = nullptr);
+        /** @copydoc AbstractObject::AbstractObject() */
+        AbstractCamera(typename AbstractObject<dimensions>::ObjectType* parent = nullptr);
+
+        virtual ~AbstractCamera() = 0;
 
         /** @brief Aspect ratio policy */
         inline AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }
 
-        /** @brief Set aspect ratio policy */
-        void setAspectRatioPolicy(AspectRatioPolicy policy) { _aspectRatioPolicy = policy; }
+        /**
+         * @brief Set aspect ratio policy
+         * @return Pointer to self (for method chaining)
+         */
+        typename AbstractObject<dimensions>::CameraType* setAspectRatioPolicy(AspectRatioPolicy policy);
 
         /**
          * @brief Camera matrix
@@ -81,7 +84,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
          * Camera matrix describes world position relative to the camera and is
          * applied as first.
          */
-        inline MatrixType cameraMatrix() {
+        inline typename DimensionTraits<dimensions, GLfloat>::MatrixType cameraMatrix() {
             this->setClean();
             return _cameraMatrix;
         }
@@ -93,7 +96,7 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
          * as last.
          * @see projectionSize()
          */
-        inline MatrixType projectionMatrix() const { return _projectionMatrix; }
+        inline typename DimensionTraits<dimensions, GLfloat>::MatrixType projectionMatrix() const { return _projectionMatrix; }
 
         /**
          * @brief Size of (near) XY plane in current projection
@@ -102,7 +105,6 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
          * @see projectionMatrix()
          */
         inline Vector2 projectionSize() const {
-            /** @todo Test this properly with fixAspectRatio() when Camera is free from gl*() calls */
             return {2.0f/_projectionMatrix[0].x(), 2.0f/_projectionMatrix[1].y()};
         }
 
@@ -112,57 +114,56 @@ template<class MatrixType, class VectorType, class ObjectType, class SceneType, 
         /**
          * @brief Set viewport size
          *
-         * Call when window size changes.
-         *
-         * Calls Framebuffer::setViewport() and stores viewport size
-         * internally.
+         * Stores viewport size internally and recalculates projection matrix
+         * according to aspect ratio policy.
+         * @see setAspectRatioPolicy()
          */
         virtual void setViewport(const Math::Vector2<GLsizei>& size);
 
         /**
          * @brief Draw the scene
          *
-         * Calls Framebuffer::clear() and draws the scene using drawChildren().
+         * Draws the scene using drawChildren().
          */
         virtual void draw();
 
-        using ObjectType::draw; /* Don't hide Object's draw() */
+        using AbstractObject<dimensions>::ObjectType::draw; /* Don't hide Object's draw() */
 
     protected:
         /**
          * Recalculates camera matrix.
          */
-        void clean(const MatrixType& absoluteTransformation);
+        void clean(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& absoluteTransformation);
 
         /**
          * @brief Draw object children
          *
          * Recursively draws all children of the object.
          */
-        void drawChildren(ObjectType* object, const MatrixType& transformationMatrix);
+        void drawChildren(typename AbstractObject<dimensions>::ObjectType* object, const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformationMatrix);
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline void fixAspectRatio() {
-            _projectionMatrix = Implementation::aspectRatioFix<MatrixType>(_aspectRatioPolicy, {rawProjectionMatrix[0].x(), rawProjectionMatrix[1].y()}, _viewport)*rawProjectionMatrix;
+            _projectionMatrix = Implementation::aspectRatioFix<typename DimensionTraits<dimensions, GLfloat>::MatrixType>(_aspectRatioPolicy, {rawProjectionMatrix[0].x(), rawProjectionMatrix[1].y()}, _viewport)*rawProjectionMatrix;
         }
 
-        MatrixType rawProjectionMatrix;
+        typename DimensionTraits<dimensions, GLfloat>::MatrixType rawProjectionMatrix;
         AspectRatioPolicy _aspectRatioPolicy;
         #endif
 
     private:
-        MatrixType _projectionMatrix;
-        MatrixType _cameraMatrix;
+        typename DimensionTraits<dimensions, GLfloat>::MatrixType _projectionMatrix;
+        typename DimensionTraits<dimensions, GLfloat>::MatrixType _cameraMatrix;
 
         Math::Vector2<GLsizei> _viewport;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-/* These templates are instantiated in source file */
-extern template class SCENEGRAPH_EXPORT Camera<Matrix3, Vector2, Object2D, Scene2D, Camera2D>;
-extern template class SCENEGRAPH_EXPORT Camera<Matrix4, Vector3, Object3D, Scene3D, Camera3D>;
+template<std::uint8_t dimensions> inline AbstractCamera<dimensions>::~AbstractCamera() {}
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
+    template<std::uint8_t dimensions> class Camera {};
+
     template<> class Camera<2> {
         public:
             inline constexpr static Matrix3 aspectRatioScale(const Vector2& scale) {
@@ -178,8 +179,12 @@ namespace Implementation {
 }
 #endif
 
-/** @brief %Camera for two-dimensional scenes */
-class SCENEGRAPH_EXPORT Camera2D: public Camera<Matrix3, Vector2, Object2D, Scene2D, Camera2D> {
+/**
+@brief %Camera for two-dimensional scenes
+
+@see Camera3D
+*/
+class SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2> {
     public:
         /**
          * @brief Constructor
@@ -188,20 +193,25 @@ class SCENEGRAPH_EXPORT Camera2D: public Camera<Matrix3, Vector2, Object2D, Scen
          * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
          * @see setOrthographic()
          */
-        inline Camera2D(Object2D* parent = nullptr): Camera(parent) {}
+        inline Camera2D(Object2D* parent = nullptr): AbstractCamera(parent) {}
 
         /**
          * @brief Set projection
          * @param size      Size of the view
+         * @return Pointer to self (for method chaining)
          *
          * The area of given size will be scaled down to range @f$ [-1; 1] @f$
          * on all directions.
          */
-        void setProjection(const Vector2& size);
+        Camera2D* setProjection(const Vector2& size);
 };
 
-/** @brief %Camera for three-dimensional scenes */
-class SCENEGRAPH_EXPORT Camera3D: public Camera<Matrix4, Vector3, Object3D, Scene3D, Camera3D> {
+/**
+@brief %Camera for three-dimensional scenes
+
+@see Camera2D
+*/
+class SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3> {
     public:
         /**
          * @brief Constructor
@@ -210,28 +220,30 @@ class SCENEGRAPH_EXPORT Camera3D: public Camera<Matrix4, Vector3, Object3D, Scen
          * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
          * @see setOrthographic(), setPerspective()
          */
-        inline Camera3D(Object3D* parent = nullptr): Camera(parent), _near(0.0f), _far(0.0f) {}
+        inline Camera3D(Object3D* parent = nullptr): AbstractCamera(parent), _near(0.0f), _far(0.0f) {}
 
         /**
          * @brief Set orthographic projection
          * @param size      Size of the view
          * @param near      Near clipping plane
          * @param far       Far clipping plane
+         * @return Pointer to self (for method chaining)
          *
          * The volume of given size will be scaled down to range @f$ [-1; 1] @f$
          * on all directions.
          */
-        void setOrthographic(const Vector2& size, GLfloat near, GLfloat far);
+        Camera3D* setOrthographic(const Vector2& size, GLfloat near, GLfloat far);
 
         /**
          * @brief Set perspective projection
          * @param fov       Field of view angle
          * @param near      Near clipping plane
          * @param far       Far clipping plane
+         * @return Pointer to self (for method chaining)
          *
          * @todo Aspect ratio
          */
-        void setPerspective(GLfloat fov, GLfloat near, GLfloat far);
+        Camera3D* setPerspective(GLfloat fov, GLfloat near, GLfloat far);
 
         /** @brief Near clipping plane */
         inline GLfloat near() const { return _near; }

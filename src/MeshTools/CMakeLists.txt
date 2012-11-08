@@ -1,5 +1,6 @@
 # Files shared between main library and unit test library
 set(MagnumMeshTools_SRCS
+    CompressIndices.cpp
     Tipsify.cpp)
 set(MagnumMeshTools_HEADERS
     Clean.h
@@ -10,6 +11,7 @@ set(MagnumMeshTools_HEADERS
     Interleave.h
     Subdivide.h
     Tipsify.h
+    Transform.h
 
     magnumMeshToolsVisibility.h)
 if(NOT CMAKE_NO_OBJECT_TARGET)

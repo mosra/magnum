@@ -1,14 +1,21 @@
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wold-style-cast -pedantic -std=c++0x -fvisibility=hidden")
-
-# If targeting GLES, save it into configuration header
-if(TARGET_GLES)
-    set(MAGNUM_TARGET_GLES 1)
-endif()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wold-style-cast -Winit-self -pedantic -std=c++0x -fvisibility=hidden")
 
 # -Wdouble-promotion is supported from GCC 4.6
 # TODO: do this with check_c_compiler_flags()
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.6.0")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion")
+endif()
+
+# If targeting GLES, save it into configuration header
+if(TARGET_GLES)
+    set(MAGNUM_TARGET_GLES 1)
+endif()
+if(TARGET_GLES2)
+    set(MAGNUM_TARGET_GLES2 1)
+endif()
+
+if(GCC46_COMPATIBILITY)
+    set(MAGNUM_GCC46_COMPATIBILITY 1)
 endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/magnumConfigure.h.cmake
@@ -21,8 +28,11 @@ set(Magnum_SRCS
     AbstractImage.cpp
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
-    BufferedTexture.cpp
+    Buffer.cpp
+    BufferedImage.cpp
+    Context.cpp
     Framebuffer.cpp
+    Image.cpp
     IndexedMesh.cpp
     Mesh.cpp
     Profiler.cpp
@@ -30,20 +40,33 @@ set(Magnum_SRCS
     Renderbuffer.cpp
     Shader.cpp
     SizeTraits.cpp
+    Timeline.cpp
     TypeTraits.cpp
 
+    Implementation/BufferState.cpp
+    Implementation/State.cpp
+
     Trade/AbstractImporter.cpp
-    Trade/MeshData.cpp)
+    Trade/MeshData2D.cpp
+    Trade/MeshData3D.cpp)
+
+# Desktop-only code
+if(NOT TARGET_GLES)
+    set(Magnum_SRCS ${Magnum_SRCS}
+        BufferedTexture.cpp)
+endif()
+
 set(Magnum_HEADERS
     AbstractImage.h
     AbstractShaderProgram.h
     AbstractTexture.h
     BufferedImage.h
-    BufferedTexture.h
     Buffer.h
     Color.h
-    CubeMapTextureArray.h
+    Context.h
     CubeMapTexture.h
+    DimensionTraits.h
+    Extensions.h
     Framebuffer.h
     Image.h
     ImageWrapper.h
@@ -53,14 +76,24 @@ set(Magnum_HEADERS
     Profiler.h
     Query.h
     Renderbuffer.h
+    ResourceManager.h
     Shader.h
     SizeTraits.h
     Swizzle.h
     Texture.h
+    Timeline.h
     TypeTraits.h
 
     magnumCompatibility.h
     magnumVisibility.h)
+
+# Desktop-only headers
+if(NOT TARGET_GLES)
+    set(Magnum_HEADERS ${Magnum_HEADERS}
+        BufferedTexture.h
+        CubeMapTextureArray.h)
+endif()
+
 if(NOT CMAKE_NO_OBJECT_TARGET)
     add_library(MagnumObjects OBJECT ${Magnum_SRCS})
 endif()
@@ -88,12 +121,18 @@ else()
         ${Magnum_SRCS}
         ${MagnumMath_SRCS})
 endif()
-target_link_libraries(Magnum ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY})
+set(Magnum_LIBS
+    ${CORRADE_UTILITY_LIBRARY}
+    ${CORRADE_PLUGINMANAGER_LIBRARY})
 if(NOT TARGET_GLES)
-    target_link_libraries(Magnum ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY})
+    set(Magnum_LIBS ${Magnum_LIBS}
+        ${OPENGL_gl_LIBRARY}
+        ${GLEW_LIBRARY})
 else()
-    target_link_libraries(Magnum ${OPENGLES2_LIBRARY})
+    set(Magnum_LIBS ${Magnum_LIBS}
+        ${OPENGLES2_LIBRARY})
 endif()
+target_link_libraries(Magnum ${Magnum_LIBS})
 
 install(TARGETS Magnum DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${Magnum_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
@@ -137,12 +176,7 @@ if(BUILD_TESTS)
             ${Magnum_SRCS})
     endif()
     set_target_properties(MagnumTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
-    target_link_libraries(MagnumTestLib ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY})
-    if(NOT TARGET_GLES)
-        target_link_libraries(MagnumTestLib ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY})
-    else()
-        target_link_libraries(MagnumTestLib ${OPENGLES2_LIBRARY})
-    endif()
+    target_link_libraries(MagnumTestLib ${Magnum_LIBS})
 
     add_subdirectory(Test)
 endif()
