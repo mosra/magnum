@@ -320,7 +320,7 @@ template<std::uint8_t dimensions> inline void AbstractObject<dimensions>::clean(
 class SCENEGRAPH_EXPORT Object2D: public AbstractObject<2> {
     public:
         /** @copydoc AbstractObject::AbstractObject() */
-        inline Object2D(Object2D* parent = nullptr): AbstractObject(parent) {}
+        inline Object2D(Object2D* parent = nullptr): AbstractObject<2>(parent) {}
 
         /**
          * @brief Translate object
@@ -375,7 +375,7 @@ class SCENEGRAPH_EXPORT Object2D: public AbstractObject<2> {
 class SCENEGRAPH_EXPORT Object3D: public AbstractObject<3> {
     public:
         /** @copydoc AbstractObject::AbstractObject() */
-        inline Object3D(Object3D* parent = nullptr): AbstractObject(parent) {}
+        inline Object3D(Object3D* parent = nullptr): AbstractObject<3>(parent) {}
 
         /**
          * @brief Translate object
