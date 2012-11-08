@@ -1,11 +1,21 @@
-# Files shared between main library and unit test library
 set(MagnumSceneGraph_SRCS
-    Camera.cpp
-    Light.cpp)
+    Camera.cpp)
 set(MagnumSceneGraph_HEADERS
+    AbstractFeature.h
+    AbstractGroupedFeature.h
+    AbstractObject.h
+    AbstractTransformation.h
+    AbstractTranslationRotation2D.h
+    AbstractTranslationRotation3D.h
+    AbstractTranslationRotationScaling2D.h
+    AbstractTranslationRotationScaling3D.h
     Camera.h
-    Light.h
+    Camera.hpp
+    Drawable.h
+    MatrixTransformation2D.h
+    MatrixTransformation3D.h
     Object.h
+    Object.hpp
     Scene.h
 
     magnumSceneGraphVisibility.h)
@@ -13,7 +23,8 @@ add_library(MagnumSceneGraphObjects OBJECT ${MagnumSceneGraph_SRCS})
 
 # Files compiled with different flags for main library and unit test library
 set(MagnumSceneGraph_GracefulAssert_SRCS
-    Object.cpp)
+    MatrixTransformation2D.cpp
+    MatrixTransformation3D.cpp)
 
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well

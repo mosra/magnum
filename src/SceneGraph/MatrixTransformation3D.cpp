@@ -1,5 +1,3 @@
-#ifndef Magnum_SceneGraph_Test_CameraTest_h
-#define Magnum_SceneGraph_Test_CameraTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,24 +13,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <TestSuite/Tester.h>
+#include "MatrixTransformation3D.h"
 
-namespace Magnum { namespace SceneGraph { namespace Test {
+#include "Object.hpp"
 
-class CameraTest: public Corrade::TestSuite::Tester<CameraTest> {
-    public:
-        CameraTest();
+namespace Magnum { namespace SceneGraph {
 
-        void fixAspectRatio();
-        void defaultProjection2D();
-        void defaultProjection3D();
-        void projection2D();
-        void orthographic();
-        void perspective();
-        void projectionSizeViewport();
-        void draw();
-};
-
-}}}
-
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template class SCENEGRAPH_EXPORT Object<MatrixTransformation3D<>>;
 #endif
+
+}}

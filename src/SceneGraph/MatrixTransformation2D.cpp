@@ -13,14 +13,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Light.h"
+#include "MatrixTransformation2D.h"
+
+#include "Object.hpp"
 
 namespace Magnum { namespace SceneGraph {
 
-void Light::clean(const Matrix4& absoluteTransformation) {
-    Object3D::clean(absoluteTransformation);
-
-    _position = absoluteTransformation[3];
-}
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template class SCENEGRAPH_EXPORT Object<MatrixTransformation2D<>>;
+#endif
 
 }}

@@ -17,8 +17,6 @@
 
 #include <TestSuite/Tester.h>
 
-#include "SceneGraph/Object.h"
-
 namespace Magnum { namespace SceneGraph { namespace Test {
 
 class ObjectTest: public Corrade::TestSuite::Tester<ObjectTest> {
@@ -26,24 +24,10 @@ class ObjectTest: public Corrade::TestSuite::Tester<ObjectTest> {
         ObjectTest();
 
         void parenting();
-        void transformation();
-        void absoluteTransformationWrongCamera();
-        void absoluteTransformation();
         void scene();
-        void dirty();
-
-    private:
-        class CleaningObject: public Object3D {
-            public:
-                CleaningObject(Object3D* parent = nullptr): Object3D(parent) {}
-
-                inline void clean(const Matrix4& absoluteTransformation) {
-                    Object3D::clean(absoluteTransformation);
-
-                    cleanedAbsoluteTransformation = absoluteTransformation;
-                }
-                Matrix4 cleanedAbsoluteTransformation;
-        };
+        void absoluteTransformation();
+        void transformations();
+        void caching();
 };
 
 }}}

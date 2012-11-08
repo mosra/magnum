@@ -72,7 +72,8 @@ Basic primitives for testing purposes.
 @namespace Magnum::SceneGraph
 @brief %Scene graph library
 
-Setting up and rendering the scene.
+Managing object hierarchy, transformations and interactions. See
+@ref scenegraph for introduction.
 */
 
 /** @dir Shaders

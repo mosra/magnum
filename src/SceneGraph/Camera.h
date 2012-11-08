@@ -16,10 +16,14 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractCamera, Magnum::SceneGraph::Camera2D, Magnum::SceneGraph::Camera3D
+ * @brief Class Magnum::SceneGraph::AbstractCamera, Magnum::SceneGraph::Camera2D, Magnum::SceneGraph::Camera3D, alias Magnum::SceneGraph::AbstractCamera2D, Magnum::SceneGraph::AbstractCamera3D
  */
 
-#include "Object.h"
+#include "Math/Matrix3.h"
+#include "Math/Matrix4.h"
+#include "AbstractFeature.h"
+
+#include "magnumSceneGraphVisibility.h"
 
 #ifdef WIN32 /* I so HATE windows.h */
 #undef near
@@ -27,6 +31,14 @@
 #endif
 
 namespace Magnum { namespace SceneGraph {
+
+template<std::uint8_t, class> class Drawable;
+template<std::uint8_t, class, class> class FeatureGroup;
+#ifndef MAGNUM_GCC46_COMPATIBILITY
+template<std::uint8_t dimensions, class T = GLfloat> using DrawableGroup = FeatureGroup<dimensions, Drawable<dimensions, T>, T>;
+#else
+template<std::uint8_t, class> class DrawableGroup;
+#endif
 
 /** @todo Export implementation symbols only for tests */
 
@@ -36,18 +48,28 @@ namespace Implementation {
         NotPreserved, Extend, Clip
     };
 
-    template<class MatrixType> MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Vector2& projectionScale, const Math::Vector2<GLsizei>& viewport);
-
-    /* These templates are instantiated in source file */
-    extern template SCENEGRAPH_EXPORT Matrix3 aspectRatioFix<Matrix3>(AspectRatioPolicy, const Vector2&, const Math::Vector2<GLsizei>&);
-    extern template SCENEGRAPH_EXPORT Matrix4 aspectRatioFix<Matrix4>(AspectRatioPolicy, const Vector2&, const Math::Vector2<GLsizei>&);
+    template<std::uint8_t dimensions, class T> typename DimensionTraits<dimensions, T>::MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Math::Vector2<GLsizei>& viewport);
 }
 #endif
 
 /**
-@brief %Camera object
- */
-template<std::uint8_t dimensions> class SCENEGRAPH_EXPORT AbstractCamera: public AbstractObject<dimensions>::ObjectType {
+@brief Base for cameras
+
+See Drawable documentation for more information.
+
+@section AbstractCamera-explicit-specializations Explicit template specializations
+
+The following specialization are explicitly compiled into SceneGraph library.
+For other specializations you have to use Camera.hpp implementation file to
+avoid linker errors. See @ref compilation-speedup-hpp for more information.
+
+ - @ref AbstractCamera "AbstractCamera<2>"
+ - @ref AbstractCamera "AbstractCamera<3>"
+
+@see Camera2D, Camera3D, Drawable, DrawableGroup, AbstractCamera2D,
+    AbstractCamera3D
+*/
+template<std::uint8_t dimensions, class T = GLfloat> class SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions, T> {
     public:
         /**
          * @brief Aspect ratio policy
@@ -64,8 +86,13 @@ template<std::uint8_t dimensions> class SCENEGRAPH_EXPORT AbstractCamera: public
         };
         #endif
 
-        /** @copydoc AbstractObject::AbstractObject() */
-        AbstractCamera(typename AbstractObject<dimensions>::ObjectType* parent = nullptr);
+        /**
+         * @brief Constructor
+         * @param object        Object holding the camera
+         */
+        inline AbstractCamera(AbstractObject<dimensions, T>* object): AbstractFeature<dimensions, T>(object), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {
+            AbstractFeature<dimensions, T>::setCachedTransformations(AbstractFeature<dimensions, T>::CachedTransformation::InvertedAbsolute);
+        }
 
         virtual ~AbstractCamera() = 0;
 
@@ -76,7 +103,7 @@ template<std::uint8_t dimensions> class SCENEGRAPH_EXPORT AbstractCamera: public
          * @brief Set aspect ratio policy
          * @return Pointer to self (for method chaining)
          */
-        typename AbstractObject<dimensions>::CameraType* setAspectRatioPolicy(AspectRatioPolicy policy);
+        AbstractCamera<dimensions, T>* setAspectRatioPolicy(AspectRatioPolicy policy);
 
         /**
          * @brief Camera matrix
@@ -84,8 +111,8 @@ template<std::uint8_t dimensions> class SCENEGRAPH_EXPORT AbstractCamera: public
          * Camera matrix describes world position relative to the camera and is
          * applied as first.
          */
-        inline typename DimensionTraits<dimensions, GLfloat>::MatrixType cameraMatrix() {
-            this->setClean();
+        inline typename DimensionTraits<dimensions, T>::MatrixType cameraMatrix() {
+            AbstractFeature<dimensions, T>::object()->setClean();
             return _cameraMatrix;
         }
 
@@ -96,7 +123,7 @@ template<std::uint8_t dimensions> class SCENEGRAPH_EXPORT AbstractCamera: public
          * as last.
          * @see projectionSize()
          */
-        inline typename DimensionTraits<dimensions, GLfloat>::MatrixType projectionMatrix() const { return _projectionMatrix; }
+        inline typename DimensionTraits<dimensions, T>::MatrixType projectionMatrix() const { return _projectionMatrix; }
 
         /**
          * @brief Size of (near) XY plane in current projection
@@ -104,8 +131,8 @@ template<std::uint8_t dimensions> class SCENEGRAPH_EXPORT AbstractCamera: public
          * Returns size of near XY plane computed from projection matrix.
          * @see projectionMatrix()
          */
-        inline Vector2 projectionSize() const {
-            return {2.0f/_projectionMatrix[0].x(), 2.0f/_projectionMatrix[1].y()};
+        inline Math::Vector2<T> projectionSize() const {
+            return {T(2.0)/_projectionMatrix[0].x(), T(2.0)/_projectionMatrix[1].y()};
         }
 
         /** @brief Viewport size */
@@ -121,79 +148,95 @@ template<std::uint8_t dimensions> class SCENEGRAPH_EXPORT AbstractCamera: public
         virtual void setViewport(const Math::Vector2<GLsizei>& size);
 
         /**
-         * @brief Draw the scene
+         * @brief Draw
          *
-         * Draws the scene using drawChildren().
+         * Draws given group of drawables.
          */
-        virtual void draw();
-
-        using AbstractObject<dimensions>::ObjectType::draw; /* Don't hide Object's draw() */
+        virtual void draw(DrawableGroup<dimensions, T>& group);
 
     protected:
-        /**
-         * Recalculates camera matrix.
-         */
-        void clean(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& absoluteTransformation);
-
-        /**
-         * @brief Draw object children
-         *
-         * Recursively draws all children of the object.
-         */
-        void drawChildren(typename AbstractObject<dimensions>::ObjectType* object, const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformationMatrix);
+        /** Recalculates camera matrix */
+        inline void cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType& invertedAbsoluteTransformation) override {
+            _cameraMatrix = invertedAbsoluteTransformation;
+        }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline void fixAspectRatio() {
-            _projectionMatrix = Implementation::aspectRatioFix<typename DimensionTraits<dimensions, GLfloat>::MatrixType>(_aspectRatioPolicy, {rawProjectionMatrix[0].x(), rawProjectionMatrix[1].y()}, _viewport)*rawProjectionMatrix;
+            _projectionMatrix = Implementation::aspectRatioFix<dimensions, T>(_aspectRatioPolicy, {rawProjectionMatrix[0].x(), rawProjectionMatrix[1].y()}, _viewport)*rawProjectionMatrix;
         }
 
-        typename DimensionTraits<dimensions, GLfloat>::MatrixType rawProjectionMatrix;
+        typename DimensionTraits<dimensions, T>::MatrixType rawProjectionMatrix;
         AspectRatioPolicy _aspectRatioPolicy;
         #endif
 
     private:
-        typename DimensionTraits<dimensions, GLfloat>::MatrixType _projectionMatrix;
-        typename DimensionTraits<dimensions, GLfloat>::MatrixType _cameraMatrix;
+        typename DimensionTraits<dimensions, T>::MatrixType _projectionMatrix;
+        typename DimensionTraits<dimensions, T>::MatrixType _cameraMatrix;
 
         Math::Vector2<GLsizei> _viewport;
 };
 
-template<std::uint8_t dimensions> inline AbstractCamera<dimensions>::~AbstractCamera() {}
+template<std::uint8_t dimensions, class T> inline AbstractCamera<dimensions, T>::~AbstractCamera() {}
 
+/**
+@brief Base for two-dimensional cameras
+
+Convenience alternative to <tt>%AbstractCamera<2, T></tt>. See AbstractCamera
+for more information.
+@note Not available on GCC < 4.7. Use <tt>%AbstractCamera<2, T></tt> instead.
+@see AbstractCamera3D
+@todoc Remove workaround when Doxygen supports alias template
+*/
 #ifndef DOXYGEN_GENERATING_OUTPUT
-namespace Implementation {
-    template<std::uint8_t dimensions> class Camera {};
-
-    template<> class Camera<2> {
-        public:
-            inline constexpr static Matrix3 aspectRatioScale(const Vector2& scale) {
-                return Matrix3::scaling({scale.x(), scale.y()});
-            }
-    };
-    template<> class Camera<3> {
-        public:
-            inline constexpr static Matrix4 aspectRatioScale(const Vector2& scale) {
-                return Matrix4::scaling({scale.x(), scale.y(), 1.0f});
-            }
-    };
-}
+#ifndef MAGNUM_GCC46_COMPATIBILITY
+template<class T = GLfloat> using AbstractCamera2D = AbstractCamera<2, T>;
+#endif
+#else
+typedef AbstractCamera<2, T = GLfloat> AbstractCamera2D;
 #endif
 
 /**
-@brief %Camera for two-dimensional scenes
+@brief Base for three-dimensional cameras
 
-@see Camera3D
+Convenience alternative to <tt>%AbstractCamera<3, T></tt>. See AbstractCamera
+for more information.
+@note Not available on GCC < 4.7. Use <tt>%AbstractCamera<3, T></tt> instead.
+@see AbstractCamera2D
+@todoc Remove workaround when Doxygen supports alias template
 */
-class SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2> {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_GCC46_COMPATIBILITY
+template<class T = GLfloat> using AbstractCamera3D = AbstractCamera<3, T>;
+#endif
+#else
+typedef AbstractCamera<3, T = GLfloat> AbstractCamera3D;
+#endif
+
+/**
+@brief Camera for two-dimensional scenes
+
+See Drawable documentation for more information.
+
+@section Object-explicit-specializations Explicit template specializations
+
+The following specialization are explicitly compiled into SceneGraph library.
+For other specializations you have to use Camera.hpp implementation file to
+avoid linker errors. See @ref compilation-speedup-hpp for more information.
+
+ - @ref Camera2D "Camera2D<GLfloat>"
+
+@see Camera3D, Drawable, DrawableGroup
+*/
+template<class T = GLfloat> class SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2, T> {
     public:
         /**
          * @brief Constructor
-         * @param parent    Parent object
+         * @param object    %Object holding this feature
          *
          * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
          * @see setOrthographic()
          */
-        inline Camera2D(Object2D* parent = nullptr): AbstractCamera<2>(parent) {}
+        inline Camera2D(AbstractObject<2, T>* object): AbstractCamera<2, T>(object) {}
 
         /**
          * @brief Set projection
@@ -203,24 +246,42 @@ class SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2> {
          * The area of given size will be scaled down to range @f$ [-1; 1] @f$
          * on all directions.
          */
-        Camera2D* setProjection(const Vector2& size);
+        Camera2D<T>* setProjection(const Math::Vector2<T>& size);
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline Camera2D<T>* setAspectRatioPolicy(typename AbstractCamera<2, T>::AspectRatioPolicy policy) {
+            AbstractCamera<2, T>::setAspectRatioPolicy(policy);
+            return this;
+        }
+        #endif
 };
 
 /**
-@brief %Camera for three-dimensional scenes
+@brief Camera for three-dimensional scenes
 
-@see Camera2D
+See Drawable documentation for more information.
+
+@section Object-explicit-specializations Explicit template specializations
+
+The following specialization are explicitly compiled into SceneGraph library.
+For other specializations you have to use Camera.hpp implementation file to
+avoid linker errors. See @ref compilation-speedup-hpp for more information.
+
+ - @ref Camera3D "Camera3D<GLfloat>"
+
+@see Camera2D, Drawable, DrawableGroup
 */
-class SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3> {
+template<class T = GLfloat> class SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3, T> {
     public:
         /**
          * @brief Constructor
-         * @param parent    Parent object
+         * @param object    %Object holding this feature
          *
          * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
          * @see setOrthographic(), setPerspective()
          */
-        inline Camera3D(Object3D* parent = nullptr): AbstractCamera<3>(parent), _near(0.0f), _far(0.0f) {}
+        inline Camera3D(AbstractObject<3, T>* object): AbstractCamera<3, T>(object), _near(0.0f), _far(0.0f) {}
 
         /**
          * @brief Set orthographic projection
@@ -232,7 +293,7 @@ class SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3> {
          * The volume of given size will be scaled down to range @f$ [-1; 1] @f$
          * on all directions.
          */
-        Camera3D* setOrthographic(const Vector2& size, GLfloat near, GLfloat far);
+        Camera3D<T>* setOrthographic(const Math::Vector2<T>& size, T near, T far);
 
         /**
          * @brief Set perspective projection
@@ -243,17 +304,31 @@ class SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3> {
          *
          * @todo Aspect ratio
          */
-        Camera3D* setPerspective(GLfloat fov, GLfloat near, GLfloat far);
+        Camera3D<T>* setPerspective(T fov, T near, T far);
 
         /** @brief Near clipping plane */
-        inline GLfloat near() const { return _near; }
+        inline T near() const { return _near; }
 
         /** @brief Far clipping plane */
-        inline GLfloat far() const { return _far; }
+        inline T far() const { return _far; }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline Camera3D<T>* setAspectRatioPolicy(typename AbstractCamera<3, T>::AspectRatioPolicy policy) {
+            AbstractCamera<3, T>::setAspectRatioPolicy(policy);
+            return this;
+        }
+        #endif
 
     private:
-        GLfloat _near, _far;
+        T _near, _far;
 };
+
+/* Make implementers' life easier */
+#ifndef MAGNUM_GCC46_COMPATIBILITY
+template<class T = GLfloat> using DrawableGroup2D = DrawableGroup<2, T>;
+template<class T = GLfloat> using DrawableGroup3D = DrawableGroup<3, T>;
+#endif
 
 }}
 
