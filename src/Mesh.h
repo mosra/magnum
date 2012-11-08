@@ -619,7 +619,7 @@ class MAGNUM_EXPORT Mesh {
 
         template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename TypeTraits<T>::AttributeType, GLfloat>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
             for(GLuint i = 0; i != Implementation::Attribute<T>::vectorCount(); ++i) {
-                attributes.push_back({
+                attributes.push_back(Attribute{
                     buffer,
                     location+i,
                     Implementation::Attribute<T>::size(attribute.dataOptions()),
@@ -635,7 +635,7 @@ class MAGNUM_EXPORT Mesh {
 
         #ifndef MAGNUM_TARGET_GLES2
         template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_integral<typename TypeTraits<T>::AttributeType>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
-            integerAttributes.push_back({
+            integerAttributes.push_back(IntegerAttribute{
                 buffer,
                 location,
                 Implementation::Attribute<T>::size(),
@@ -650,7 +650,7 @@ class MAGNUM_EXPORT Mesh {
         #ifndef MAGNUM_TARGET_GLES
         template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename TypeTraits<T>::AttributeType, GLdouble>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
             for(GLuint i = 0; i != Implementation::Attribute<T>::vectorCount(); ++i) {
-                longAttributes.push_back({
+                longAttributes.push_back(LongAttribute{
                     buffer,
                     location+i,
                     Implementation::Attribute<T>::size(),

@@ -39,10 +39,21 @@ namespace {
 template<std::uint8_t dimensions> FlatShader<dimensions>::FlatShader() {
     Corrade::Utility::Resource rs("MagnumShaders");
 
+    /* Weird bug in GCC 4.5 - cannot use initializer list here, although the
+       same thing works in PhongShader flawlessly*/
+    #ifndef CORRADE_GCC45_COMPATIBILITY
     #ifndef MAGNUM_TARGET_GLES
     Version v = Context::current()->supportedVersion({Version::GL320, Version::GL210});
     #else
     Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
+    #endif
+    #else
+    #ifndef MAGNUM_TARGET_GLES
+    std::initializer_list<Version> vs{Version::GL320, Version::GL210};
+    #else
+    std::initializer_list<Version> vs{Version::GLES300, Version::GLES200};
+    #endif
+    Version v = Context::current()->supportedVersion(vs);
     #endif
 
     Shader vertexShader(v, Shader::Type::Vertex);
