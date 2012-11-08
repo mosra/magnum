@@ -56,7 +56,7 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          * @brief Angle between normalized vectors
          *
          * @f[
-         * \phi = \frac{a \cdot b}{|a| \cdot |b|}
+         * \phi = acos \left(\frac{a \cdot b}{|a| \cdot |b|} \right)
          * @f]
          * @attention Assertion fails on non-normalized vectors and NaN is
          *      returned.
