@@ -1,6 +1,6 @@
 corrade_add_resource(MagnumShaders_RCS MagnumShaders
     FlatShader2D.vert FlatShader2D.frag
-    PhongShader.frag PhongShader.vert
+    PhongShader.vert PhongShader.frag
     compatibility.glsl)
 set(MagnumShaders_SRCS
     FlatShader.cpp
