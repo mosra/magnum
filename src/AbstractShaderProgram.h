@@ -36,6 +36,8 @@ namespace Math {
     template<std::size_t, class> class Vector;
 }
 
+template<class> class Color3;
+template<class> class Color4;
 class Context;
 class Shader;
 
@@ -1211,8 +1213,6 @@ template<class T> struct Attribute<Math::Vector4<T>>: public Attribute<Math::Vec
 template<class T> struct Attribute<Math::Point2D<T>>: public Attribute<Math::Vector3<T>> {};
 template<class T> struct Attribute<Math::Point3D<T>>: public Attribute<Math::Vector4<T>> {};
 
-template<class> class Color3;
-template<class> class Color4;
 template<class T> struct Attribute<Color3<T>>: public Attribute<Math::Vector3<T>> {};
 template<class T> struct Attribute<Color4<T>>: public Attribute<Math::Vector4<T>> {};
 
