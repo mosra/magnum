@@ -118,6 +118,19 @@ if(NOT CORRADE_FOUND)
     return()
 endif()
 
+# Configuration
+file(READ ${CORRADE_INCLUDE_DIR}/corradeConfigure.h _corradeConfigure)
+
+# Compatibility?
+string(FIND "${_corradeConfigure}" "#define CORRADE_GCC44_COMPATIBILITY" _GCC44_COMPATIBILITY)
+if(NOT _GCC44_COMPATIBILITY EQUAL -1)
+    set(CORRADE_GCC44_COMPATIBILITY 1)
+endif()
+string(FIND "${_corradeConfigure}" "#define CORRADE_GCC45_COMPATIBILITY" _GCC45_COMPATIBILITY)
+if(NOT _GCC45_COMPATIBILITY EQUAL -1)
+    set(CORRADE_GCC45_COMPATIBILITY 1)
+endif()
+
 include(CorradeMacros)
 include(CorradeLibSuffix)
 set(CORRADE_LIBRARIES ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY})
