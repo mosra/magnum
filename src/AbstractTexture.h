@@ -232,9 +232,11 @@ class MAGNUM_EXPORT AbstractTexture {
              * are converted to range @f$ [-1.0; 1.0] @f$.
              * @requires_gl31 Extension @extension{EXT,texture_snorm}
              */
-            NormalizedByte,
+            NormalizedByte
 
             #ifndef MAGNUM_TARGET_GLES
+            ,
+
             /**
              * Normalized unsigned short, i.e. values from range @f$ [0; 65536] @f$
              * are converted to range @f$ [0.0; 1.0] @f$.
