@@ -8,7 +8,9 @@
 #
 
 # Library
-find_library(OPENGLES2_LIBRARY GLESv2)
+find_library(OPENGLES2_LIBRARY NAMES
+    GLESv2
+    ppapi_gles2) # NaCl
 
 # Include dir
 find_path(OPENGLES2_INCLUDE_DIR
