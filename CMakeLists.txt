@@ -30,6 +30,13 @@ endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Magnum_SOURCE_DIR}/modules/")
 
+# If targetting NaCl, set explicit OpenGL ES 2.0 support
+if(${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
+    set(TARGET_GLES 1)
+    set(TARGET_GLES2 1)
+    set(MAGNUM_TARGET_NACL 1)
+endif()
+
 # Check dependencies
 find_package(Corrade REQUIRED)
 if(NOT TARGET_GLES)
