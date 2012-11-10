@@ -2,10 +2,10 @@
 #define fragmentColor gl_FragColor
 #endif
 
-uniform vec3 color;
+uniform lowp vec3 color;
 
 #ifndef NEW_GLSL
-out vec4 fragmentColor;
+out lowp vec4 fragmentColor;
 #endif
 
 void main() {

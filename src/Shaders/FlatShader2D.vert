@@ -2,12 +2,12 @@
 #define in attribute
 #endif
 
-uniform mat3 transformationProjection;
+uniform highp mat3 transformationProjection;
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = 0) in vec3 position;
+layout(location = 0) in highp vec3 position;
 #else
-in vec3 position;
+in highp vec3 position;
 #endif
 
 void main() {

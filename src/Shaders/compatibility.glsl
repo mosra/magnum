@@ -12,3 +12,10 @@
 #if defined(GL_ES) && __VERSION__ >= 300
 #define EXPLICIT_ATTRIB_LOCATION
 #endif
+
+/* Precision qualifiers are not supported in GLSL 1.20 */
+#if !defined(GL_ES) && __VERSION__ == 120
+#define highp
+#define mediump
+#define lowp
+#endif
