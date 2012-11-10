@@ -1058,7 +1058,11 @@ template<> struct Attribute<GLfloat> {
         Short = GL_SHORT,
         UnsignedInt = GL_UNSIGNED_INT,
         Int = GL_INT,
+        #ifndef MAGNUM_TARGET_GLES2
         HalfFloat = GL_HALF_FLOAT,
+        #else
+        HalfFloat = GL_HALF_FLOAT_OES,
+        #endif
         Float = GL_FLOAT
 
         #ifndef MAGNUM_TARGET_GLES
@@ -1104,7 +1108,11 @@ template<> struct Attribute<Math::Vector<4, GLfloat>> {
         Short = GL_SHORT,
         UnsignedInt = GL_UNSIGNED_INT,
         Int = GL_INT,
-        Half = GL_HALF_FLOAT,
+        #ifndef MAGNUM_TARGET_GLES2
+        HalfFloat = GL_HALF_FLOAT,
+        #else
+        HalfFloat = GL_HALF_FLOAT_OES,
+        #endif
         Float = GL_FLOAT
         #ifndef MAGNUM_TARGET_GLES
         ,

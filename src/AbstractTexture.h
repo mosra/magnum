@@ -874,8 +874,12 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
 };
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     enum class Target: GLenum {
+        #ifndef MAGNUM_TARGET_GLES2
         Texture3D = GL_TEXTURE_3D,
         Texture2DArray = GL_TEXTURE_2D_ARRAY
+        #else
+        Texture3D = GL_TEXTURE_3D_OES
+        #endif
     };
 
     inline constexpr static Target target() { return Target::Texture3D; }

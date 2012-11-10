@@ -710,7 +710,11 @@ class MAGNUM_EXPORT Framebuffer {
              * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample}
              *      or @es_extension{ANGLE,framebuffer_blit}
              */
+            #ifndef MAGNUM_TARGET_GLES2
             Read = GL_READ_FRAMEBUFFER,
+            #else
+            Read = GL_READ_FRAMEBUFFER_APPLE,
+            #endif
 
             /**
              * For drawing only.
@@ -718,7 +722,11 @@ class MAGNUM_EXPORT Framebuffer {
              * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample}
              *      or @es_extension{ANGLE,framebuffer_blit}
              */
+            #ifndef MAGNUM_TARGET_GLES2
             Draw = GL_DRAW_FRAMEBUFFER,
+            #else
+            Draw = GL_DRAW_FRAMEBUFFER_APPLE,
+            #endif
 
             ReadDraw = GL_FRAMEBUFFER       /**< For both reading and drawing. */
         };
