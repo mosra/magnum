@@ -21,7 +21,9 @@ option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
 cmake_dependent_option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF "TARGET_GLES" OFF)
 cmake_dependent_option(WITH_GLUTAPPLICATION "Build GlutApplication library" OFF "NOT TARGET_GLES" OFF)
 option(WITH_SDL2APPLICATION "Build Sdl2Application library" OFF)
-
+if(${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
+    option(WITH_NACLAPPLICATION "Build NaClApplication library" OFF)
+endif()
 option(BUILD_TESTS "Build unit tests." OFF)
 
 if(BUILD_TESTS)

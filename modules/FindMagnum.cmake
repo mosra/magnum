@@ -25,6 +25,8 @@
 #  XEglApplication - X/EGL application (depends on EGL and X11 libraries)
 #  GlutApplication - GLUT application (depends on GLUT library)
 #  Sdl2Application - SDL2 application (depends on SDL2 library)
+#  NaClApplication - NaCl application (only if targetting Google Chrome
+#   Native Client)
 # Example usage with specifying additional components is:
 #  find_package(Magnum [REQUIRED|COMPONENTS]
 #               MeshTools Primitives GlutApplication)
@@ -133,6 +135,8 @@ foreach(component ${Magnum_FIND_COMPONENTS})
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
         endif()
+
+        # NaCl application has no additional dependencies
 
         # GLX application dependencies
         if(${component} STREQUAL GlxApplication)
