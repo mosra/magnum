@@ -39,6 +39,17 @@ else()
     find_package(OpenGLES2 REQUIRED)
 endif()
 
+# Configuration variables (saved later to corradeConfigure.h)
+if(TARGET_GLES)
+    set(MAGNUM_TARGET_GLES 1)
+endif()
+if(TARGET_GLES2)
+    set(MAGNUM_TARGET_GLES2 1)
+endif()
+if(GCC46_COMPATIBILITY)
+    set(MAGNUM_GCC46_COMPATIBILITY 1)
+endif()
+
 # Installation paths
 set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
 set(MAGNUM_CMAKE_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
