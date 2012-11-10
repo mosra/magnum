@@ -27,7 +27,6 @@ set(Magnum_SRCS
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
     Buffer.cpp
-    BufferedImage.cpp
     Context.cpp
     Framebuffer.cpp
     Image.cpp
@@ -54,11 +53,16 @@ if(NOT TARGET_GLES)
         BufferedTexture.cpp)
 endif()
 
+# Not-ES2 code
+if(NOT TARGET_GLES2)
+    set(Magnum_SRCS ${Magnum_SRCS}
+        BufferedImage.cpp)
+endif()
+
 set(Magnum_HEADERS
     AbstractImage.h
     AbstractShaderProgram.h
     AbstractTexture.h
-    BufferedImage.h
     Buffer.h
     Color.h
     Context.h
@@ -90,6 +94,12 @@ if(NOT TARGET_GLES)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         BufferedTexture.h
         CubeMapTextureArray.h)
+endif()
+
+# Not-ES2 headers
+if(NOT TARGET_GLES2)
+    set(Magnum_HEADERS ${Magnum_HEADERS}
+        BufferedImage.h)
 endif()
 
 add_library(MagnumObjects OBJECT ${Magnum_SRCS})
