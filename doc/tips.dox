@@ -1,0 +1,8 @@
+namespace Magnum {
+/** @page tips Tips and tricks
+@brief Hints for better productivity and performance
+
+- @subpage compilation-speedup - @copybrief compilation-speedup
+- @subpage best-practices - @copybrief best-practices
+*/
+}
