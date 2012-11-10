@@ -29,12 +29,16 @@
 
 namespace Magnum {
 
+#ifndef MAGNUM_TARGET_GLES2
 template<std::uint8_t> class BufferedImage;
+#endif
 template<std::uint8_t> class Image;
 
+#ifndef MAGNUM_TARGET_GLES2
 typedef BufferedImage<1> BufferedImage1D;
 typedef BufferedImage<2> BufferedImage2D;
 typedef BufferedImage<3> BufferedImage3D;
+#endif
 typedef Image<1> Image1D;
 typedef Image<2> Image2D;
 typedef Image<3> Image3D;
@@ -433,8 +437,10 @@ class MAGNUM_EXPORT Framebuffer {
         enum class BlendEquation: GLenum {
             Add = GL_FUNC_ADD,                          /**< `source + destination` */
             Subtract = GL_FUNC_SUBTRACT,                /**< `source - destination` */
-            ReverseSubtract = GL_FUNC_REVERSE_SUBTRACT, /**< `destination - source` */
+            ReverseSubtract = GL_FUNC_REVERSE_SUBTRACT  /**< `destination - source` */
 
+            #ifndef MAGNUM_TARGET_GLES2
+            ,
             /**
              * `min(source, destination)`
              * @requires_gles30 %Extension @es_extension2{EXT,blend_minmax,blend_minmax}
@@ -446,6 +452,7 @@ class MAGNUM_EXPORT Framebuffer {
              * @requires_gles30 %Extension @es_extension2{EXT,blend_minmax,blend_minmax}
              */
             Max = GL_MAX
+            #endif
         };
 
         /**
@@ -1262,6 +1269,7 @@ class MAGNUM_EXPORT Framebuffer {
          */
         static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image);
 
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Read block of pixels from framebuffer to buffered image
          * @param offset            Offset in the framebuffer
@@ -1276,6 +1284,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
          */
         static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage);
+        #endif
 
         /*@}*/
 

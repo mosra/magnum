@@ -361,6 +361,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
                     /* GL_FIXED not supported */
 
+                    #ifndef MAGNUM_TARGET_GLES2
                     /**
                      * Unsigned 2.10.10.10 packed integer. Only for
                      * four-component float vector attribute type.
@@ -377,6 +378,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
                      * @requires_gles30 (no extension providing this functionality)
                      */
                     Int2101010REV = GL_INT_2_10_10_10_REV
+                    #endif
                 };
                 #else
                 typedef typename Implementation::Attribute<T>::DataType DataType;
@@ -465,6 +467,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         bool use();
 
     protected:
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Allow retrieving program binary
          *
@@ -478,6 +481,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         inline void setRetrievableBinary(bool enabled) {
             glProgramParameteri(_id, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, enabled ? GL_TRUE : GL_FALSE);
         }
+        #endif
 
         /**
          * @brief Allow the program to be bound to individual pipeline stages
@@ -1101,12 +1105,16 @@ template<> struct Attribute<Math::Vector<4, GLfloat>> {
         UnsignedInt = GL_UNSIGNED_INT,
         Int = GL_INT,
         Half = GL_HALF_FLOAT,
-        Float = GL_FLOAT,
+        Float = GL_FLOAT
         #ifndef MAGNUM_TARGET_GLES
-        Double = GL_DOUBLE,
+        ,
+        Double = GL_DOUBLE
         #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        ,
         UnsignedAlpha2RGB10 = GL_UNSIGNED_INT_2_10_10_10_REV,
         Alpha2RGB10 = GL_INT_2_10_10_10_REV
+        #endif
     };
 
     enum class DataOption: std::uint8_t {

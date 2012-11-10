@@ -312,6 +312,7 @@ void AbstractTexture::subImageImplementationDSA(GLenum target, GLint mipLevel, c
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
 AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components components, AbstractTexture::ComponentType type) {
     #ifndef MAGNUM_TARGET_GLES
     #define internalFormatSwitch(c) switch(type) {                          \
@@ -374,6 +375,7 @@ AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components comp
         internalFormatSwitch(RGBA)
     #undef internalFormatSwitch
 }
+#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture* texture, const Math::Vector2<Wrapping>& wrapping) {

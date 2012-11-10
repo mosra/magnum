@@ -42,6 +42,7 @@ class Renderbuffer {
     public:
         /** @{ @name Internal renderbuffer formats */
 
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @copybrief AbstractTexture::Components
          *
@@ -67,6 +68,7 @@ class Renderbuffer {
             , NormalizedUnsignedShort
             #endif
         };
+        #endif
 
         /**
          * @copybrief AbstractTexture::Format
@@ -76,15 +78,27 @@ class Renderbuffer {
          * compressed formats, but with added separate stencil index.
          */
         enum class Format: GLenum {
-            Red = GL_RED, RedGreen = GL_RG, RGBA = GL_RGBA,
+            #ifndef MAGNUM_TARGET_GLES2
+            Red = GL_RED, RedGreen = GL_RG,
+            #endif
+
+            RGBA = GL_RGBA,
 
             #ifndef MAGNUM_TARGET_GLES
             BGRA = GL_BGRA,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES2
             SRGBA = GL_SRGB8_ALPHA8, RGB10Alpha2 = GL_RGB10_A2,
-            RGB10AlphaUnsigned2 = GL_RGB10_A2UI, RGB5Alpha1 = GL_RGB5_A1,
-            RGBA4 = GL_RGBA4, RFloat11GFloat11BFloat10 = GL_R11F_G11F_B10F,
+            RGB10AlphaUnsigned2 = GL_RGB10_A2UI,
+            #endif
+
+            RGB5Alpha1 = GL_RGB5_A1,
+            RGBA4 = GL_RGBA4,
+
+            #ifndef MAGNUM_TARGET_GLES2
+            RFloat11GFloat11BFloat10 = GL_R11F_G11F_B10F,
+            #endif
 
             /* 1.5.6 <= GLEW < 1.8.0 doesn't have this, even if there is
                GL_ARB_ES2_compatibility */
@@ -156,8 +170,10 @@ class Renderbuffer {
         /** @copydoc AbstractTexture::InternalFormat */
         class MAGNUM_EXPORT InternalFormat {
             public:
+                #ifndef MAGNUM_TARGET_GLES2
                 /** @copydoc AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Components, AbstractTexture::ComponentType) */
                 InternalFormat(Components components, ComponentType type);
+                #endif
 
                 /** @copydoc AbstractTexture::InternalFormat::InternalFormat(AbstractTexture::Format) */
                 inline constexpr InternalFormat(Format format): internalFormat(static_cast<GLenum>(format)) {}
@@ -223,6 +239,7 @@ class Renderbuffer {
         GLuint renderbuffer;
 };
 
+#ifndef MAGNUM_TARGET_GLES2
 /** @relates Renderbuffer
 @brief Convertor of component count and data type to InternalFormat
 
@@ -237,6 +254,7 @@ inline Renderbuffer::InternalFormat operator|(Renderbuffer::Components component
 inline Renderbuffer::InternalFormat operator|(Renderbuffer::ComponentType type, Renderbuffer::Components components) {
     return Renderbuffer::InternalFormat(components, type);
 }
+#endif
 
 }
 

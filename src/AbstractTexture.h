@@ -141,6 +141,7 @@ class MAGNUM_EXPORT AbstractTexture {
 
         /** @{ @name Internal texture formats */
 
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Color components
          *
@@ -253,6 +254,7 @@ class MAGNUM_EXPORT AbstractTexture {
             NormalizedShort
             #endif
         };
+        #endif
 
         /**
          * @brief Internal format
@@ -261,6 +263,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * normalization see enums Components and ComponentType.
          */
         enum class Format: GLenum {
+            #ifndef MAGNUM_TARGET_GLES2
             /**
              * One-component (red channel), unsigned normalized, probably
              * 8bit.
@@ -276,6 +279,7 @@ class MAGNUM_EXPORT AbstractTexture {
              * @requires_gles30 (no extension providing this functionality)
              */
             RedGreen = GL_RG,
+            #endif
 
             /**
              * Three-component RGB, unsigned normalized, each component
@@ -311,6 +315,7 @@ class MAGNUM_EXPORT AbstractTexture {
             BGRA = GL_BGRA,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES2
             /**
              * Four-component sRGBA, unsigned normalized, each component
              * 8bit, 32bit total.
@@ -339,6 +344,7 @@ class MAGNUM_EXPORT AbstractTexture {
              * @requires_gles30 (no extension providing this functionality)
              */
             RGB10Alpha2Unsigned = GL_RGB10_A2UI,
+            #endif
 
             /**
              * Four-component RGBA, unsigned normalized, each RGB component
@@ -352,6 +358,7 @@ class MAGNUM_EXPORT AbstractTexture {
              */
             RGBA4 = GL_RGBA4,
 
+            #ifndef MAGNUM_TARGET_GLES2
             /**
              * Three-component RGB, float, red and green 11bit, blue 10bit,
              * 32bit total.
@@ -359,6 +366,7 @@ class MAGNUM_EXPORT AbstractTexture {
              * @requires_gles30 (no extension providing this functionality)
              */
             RG11B10Float = GL_R11F_G11F_B10F,
+            #endif
 
             /* 1.5.6 <= GLEW < 1.8.0 doesn't have this, even if there is
                GL_ARB_ES2_compatibility */
@@ -367,9 +375,11 @@ class MAGNUM_EXPORT AbstractTexture {
              * Three-component RGB, unsigned normalized, red and blue 5bit,
              * green 6bit, 16bit total.
              */
-            RGB565 = GL_RGB565,
+            RGB565 = GL_RGB565
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES2
+            ,
             /**
              * Three-component RGB, unsigned with exponent, each component
              * 9bit, exponent 5bit, 32bit total.
@@ -377,6 +387,7 @@ class MAGNUM_EXPORT AbstractTexture {
              * @requires_gles30 (no extension providing this functionality)
              */
             RGB9Exponent5 = GL_RGB9_E5,
+            #endif
 
             #ifndef MAGNUM_TARGET_GLES
             /**
@@ -487,6 +498,7 @@ class MAGNUM_EXPORT AbstractTexture {
             DepthStencil = GL_DEPTH_STENCIL,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES2
             /**
              * 16bit depth component.
              * @requires_gles30 (no extension providing this functionality)
@@ -519,6 +531,7 @@ class MAGNUM_EXPORT AbstractTexture {
              * @requires_gles30 (no extension providing this functionality)
              */
             Depth32FloatStencil8 = GL_DEPTH32F_STENCIL8
+            #endif
         };
 
         /**
@@ -539,12 +552,14 @@ class MAGNUM_EXPORT AbstractTexture {
          */
         class MAGNUM_EXPORT InternalFormat {
             public:
+                #ifndef MAGNUM_TARGET_GLES2
                 /**
                  * @brief Constructor from component count and data type per component
                  *
                  * @requires_gles30 (no extension providing this functionality)
                  */
                 InternalFormat(Components components, ComponentType type);
+                #endif
 
                 /** @brief Constructor from named internal format */
                 inline constexpr InternalFormat(Format format): internalFormat(static_cast<GLint>(format)) {}
@@ -791,6 +806,7 @@ class MAGNUM_EXPORT AbstractTexture {
         GLuint _id;
 };
 
+#ifndef MAGNUM_TARGET_GLES2
 /** @relates AbstractTexture
 @brief Convertor of component count and data type to InternalFormat
 
@@ -806,6 +822,7 @@ inline AbstractTexture::InternalFormat operator|(AbstractTexture::Components com
 inline AbstractTexture::InternalFormat operator|(AbstractTexture::ComponentType type, AbstractTexture::Components components) {
     return AbstractTexture::InternalFormat(components, type);
 }
+#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES

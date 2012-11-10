@@ -17,6 +17,7 @@
 
 namespace Magnum {
 
+#ifndef MAGNUM_TARGET_GLES2
 template<std::uint8_t dimensions> void BufferedImage<dimensions>::setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Components components, ComponentType type, const GLvoid* data, Buffer::Usage usage) {
     _components = components;
     _type = type;
@@ -27,5 +28,6 @@ template<std::uint8_t dimensions> void BufferedImage<dimensions>::setData(const 
 template class BufferedImage<1>;
 template class BufferedImage<2>;
 template class BufferedImage<3>;
+#endif
 
 }

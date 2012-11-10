@@ -105,6 +105,7 @@ class MAGNUM_EXPORT Buffer {
             AtomicCounter = GL_ATOMIC_COUNTER_BUFFER,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES2
             /**
              * Source for copies. See copy().
              * @requires_gl31 Extension @extension{ARB,copy_buffer}
@@ -120,6 +121,7 @@ class MAGNUM_EXPORT Buffer {
              *      2.0.
              */
             CopyWrite = GL_COPY_WRITE_BUFFER,
+            #endif
 
             #ifndef MAGNUM_TARGET_GLES
             /**
@@ -138,7 +140,10 @@ class MAGNUM_EXPORT Buffer {
             #endif
 
             /** Used for storing vertex indices. */
-            ElementArray = GL_ELEMENT_ARRAY_BUFFER,
+            ElementArray = GL_ELEMENT_ARRAY_BUFFER
+
+            #ifndef MAGNUM_TARGET_GLES2
+            ,
 
             /**
              * Target for pixel pack operations.
@@ -153,6 +158,7 @@ class MAGNUM_EXPORT Buffer {
              *      OpenGL ES 2.0.
              */
             PixelUnpack = GL_PIXEL_UNPACK_BUFFER,
+            #endif
 
             #ifndef MAGNUM_TARGET_GLES
             /**
@@ -170,6 +176,7 @@ class MAGNUM_EXPORT Buffer {
             Texture = GL_TEXTURE_BUFFER,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES2
             /**
              * Target for transform feedback.
              * @requires_gl30 Extension @extension{EXT,transform_feedback}
@@ -185,6 +192,7 @@ class MAGNUM_EXPORT Buffer {
              *      2.0.
              */
             Uniform = GL_UNIFORM_BUFFER
+            #endif
         };
 
         /**
@@ -198,6 +206,7 @@ class MAGNUM_EXPORT Buffer {
              */
             StreamDraw = GL_STREAM_DRAW,
 
+            #ifndef MAGNUM_TARGET_GLES2
             /**
              * Set once as output from an OpenGL command and used infequently
              * for drawing.
@@ -213,12 +222,14 @@ class MAGNUM_EXPORT Buffer {
              *      is available in OpenGL ES 2.0.
              */
             StreamCopy = GL_STREAM_COPY,
+            #endif
 
             /**
              * Set once by the application and used frequently for drawing.
              */
             StaticDraw = GL_STATIC_DRAW,
 
+            #ifndef MAGNUM_TARGET_GLES2
             /**
              * Set once as output from an OpenGL command and queried many
              * times by the application.
@@ -234,12 +245,16 @@ class MAGNUM_EXPORT Buffer {
              *      is available in OpenGL ES 2.0.
              */
             StaticCopy = GL_STATIC_COPY,
+            #endif
 
             /**
              * Updated frequently by the application and used frequently
              * for drawing or copying to other images.
              */
-            DynamicDraw = GL_DYNAMIC_DRAW,
+            DynamicDraw = GL_DYNAMIC_DRAW
+
+            #ifndef MAGNUM_TARGET_GLES2
+            ,
 
             /**
              * Updated frequently as output from OpenGL command and queried
@@ -256,6 +271,7 @@ class MAGNUM_EXPORT Buffer {
              *      is available in OpenGL ES 2.0.
              */
             DynamicCopy = GL_DYNAMIC_COPY
+            #endif
         };
 
         /**

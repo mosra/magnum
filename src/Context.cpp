@@ -160,8 +160,13 @@ Context* Context::_current = nullptr;
 
 Context::Context() {
     /* Version */
+    #ifndef MAGNUM_TARGET_GLES2
     glGetIntegerv(GL_MAJOR_VERSION, &_majorVersion);
     glGetIntegerv(GL_MINOR_VERSION, &_minorVersion);
+    #else
+    _majorVersion = 2;
+    _minorVersion = 0;
+    #endif
     _version = static_cast<Version>(_majorVersion*100+_minorVersion*10);
 
     /* Get first future (not supported) version */
