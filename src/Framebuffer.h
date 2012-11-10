@@ -945,7 +945,12 @@ class MAGNUM_EXPORT Framebuffer {
          */
         inline static void mapDefaultForRead(DefaultReadAttachment attachment) {
             bindDefault(Target::Read);
+            /** @todo Get some extension wrangler instead to avoid undeclared glReadBuffer() on ES2 */
+            #ifndef MAGNUM_TARGET_GLES2
             glReadBuffer(static_cast<GLenum>(attachment));
+            #else
+            static_cast<void>(attachment);
+            #endif
         }
 
         /**
@@ -960,7 +965,12 @@ class MAGNUM_EXPORT Framebuffer {
          */
         inline void mapForRead(std::uint8_t colorAttachment) {
             bind(Target::Read);
+            /** @todo Get some extension wrangler instead to avoid undeclared glReadBuffer() on ES2 */
+            #ifndef MAGNUM_TARGET_GLES2
             glReadBuffer(GL_COLOR_ATTACHMENT0 + colorAttachment);
+            #else
+            static_cast<void>(colorAttachment);
+            #endif
         }
 
         /*@}*/
@@ -1232,7 +1242,17 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
          */
         inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, const Math::Vector2<GLint>& destinationBottomLeft, const Math::Vector2<GLint>& destinationTopRight, BlitMask blitMask, AbstractTexture::Filter filter) {
+            /** @todo Get some extension wrangler instead to avoid undeclared glBlitFramebuffer() on ES2 */
+            #ifndef MAGNUM_TARGET_GLES2
             glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), destinationBottomLeft.x(), destinationBottomLeft.y(), destinationTopRight.x(), destinationTopRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(filter));
+            #else
+            static_cast<void>(bottomLeft);
+            static_cast<void>(topRight);
+            static_cast<void>(destinationBottomLeft);
+            static_cast<void>(destinationTopRight);
+            static_cast<void>(blitMask);
+            static_cast<void>(filter);
+            #endif
         }
 
         /**
@@ -1253,7 +1273,14 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
          */
         inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, BlitMask blitMask) {
+            /** @todo Get some extension wrangler instead to avoid undeclared glBlitFramebuffer() on ES2 */
+            #ifndef MAGNUM_TARGET_GLES2
             glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(AbstractTexture::Filter::NearestNeighbor));
+            #else
+            static_cast<void>(bottomLeft);
+            static_cast<void>(topRight);
+            static_cast<void>(blitMask);
+            #endif
         }
 
         /**

@@ -40,7 +40,12 @@ class MAGNUM_EXPORT AbstractQuery {
          * Generates one OpenGL query.
          * @see @fn_gl{GenQueries}
          */
-        inline AbstractQuery() { glGenQueries(1, &_id); }
+        inline AbstractQuery() {
+            /** @todo Get some extension wrangler instead to avoid undeclared glGenQueries() on ES2 */
+            #ifndef MAGNUM_TARGET_GLES2
+            glGenQueries(1, &_id);
+            #endif
+        }
 
         /**
          * @brief Destructor
@@ -48,7 +53,12 @@ class MAGNUM_EXPORT AbstractQuery {
          * Deletes assigned OpenGL query.
          * @see @fn_gl{DeleteQueries}
          */
-        virtual inline ~AbstractQuery() { glDeleteQueries(1, &_id); }
+        virtual inline ~AbstractQuery() {
+            /** @todo Get some extension wrangler instead to avoid undeclared glGenQueries() on ES2 */
+            #ifndef MAGNUM_TARGET_GLES2
+            glDeleteQueries(1, &_id);
+            #endif
+        }
 
         /** @brief OpenGL query ID */
         inline GLuint id() const { return _id; }
