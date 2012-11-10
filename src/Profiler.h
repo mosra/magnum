@@ -32,7 +32,7 @@ namespace Magnum {
 @brief Measuring elapsed time in each frame
 
 Measures time passed during specified sections of each frame. It's meant to be
-used in rendering and event loops (e.g. Contexts::GlutContext::drawEvent()),
+used in rendering and event loops (e.g. Platform::GlutApplication::drawEvent()),
 but it's possible to use it standalone elsewhere. Example usage:
 @code
 Profiler p;

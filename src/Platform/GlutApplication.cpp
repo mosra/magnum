@@ -13,16 +13,16 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "GlutWindowContext.h"
+#include "GlutApplication.h"
 
 #include "Context.h"
 #include "ExtensionWrangler.h"
 
-namespace Magnum { namespace Contexts {
+namespace Magnum { namespace Platform {
 
-GlutWindowContext* GlutWindowContext::instance = nullptr;
+GlutApplication* GlutApplication::instance = nullptr;
 
-GlutWindowContext::GlutWindowContext(int& argc, char** argv, const std::string& title, const Math::Vector2<GLsizei>& size) {
+GlutApplication::GlutApplication(int& argc, char** argv, const std::string& title, const Math::Vector2<GLsizei>& size) {
     /* Save global instance */
     instance = this;
 
@@ -43,7 +43,7 @@ GlutWindowContext::GlutWindowContext(int& argc, char** argv, const std::string& 
     c = new Context;
 }
 
-GlutWindowContext::~GlutWindowContext() {
+GlutApplication::~GlutApplication() {
     delete c;
 }
 

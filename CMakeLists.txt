@@ -17,10 +17,10 @@ cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" OFF "NOT WITH_
 cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" OFF "NOT WITH_EVERYTHING;NOT WITH_PHYSICS" ON)
 cmake_dependent_option(WITH_SHADERS "Build Shaders library" OFF "NOT WITH_EVERYTHING;NOT WITH_PHYSICS" ON)
 
-option(WITH_GLXWINDOWCONTEXT "Build GlxWindowContext library" OFF)
-cmake_dependent_option(WITH_XEGLWINDOWCONTEXT "Build XEglWindowContext library" OFF "TARGET_GLES" OFF)
-cmake_dependent_option(WITH_GLUTWINDOWCONTEXT "Build GlutWindowContext library" OFF "NOT TARGET_GLES" OFF)
-option(WITH_SDL2WINDOWCONTEXT "Build Sdl2WindowContext library" OFF)
+option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
+cmake_dependent_option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF "TARGET_GLES" OFF)
+cmake_dependent_option(WITH_GLUTAPPLICATION "Build GlutApplication library" OFF "NOT TARGET_GLES" OFF)
+option(WITH_SDL2APPLICATION "Build Sdl2Application library" OFF)
 
 option(BUILD_TESTS "Build unit tests." OFF)
 

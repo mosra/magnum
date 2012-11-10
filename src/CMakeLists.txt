@@ -124,7 +124,7 @@ install(FILES ${Magnum_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 # Install also configure file
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 
-add_subdirectory(Contexts)
+add_subdirectory(Platform)
 add_subdirectory(Math)
 add_subdirectory(Trade)
 

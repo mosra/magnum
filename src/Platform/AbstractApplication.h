@@ -1,5 +1,5 @@
-#ifndef Magnum_Contexts_AbstractWindowContext_h
-#define Magnum_Contexts_AbstractWindowContext_h
+#ifndef Magnum_Platform_AbstractApplication_h
+#define Magnum_Platform_AbstractApplication_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,18 +16,18 @@
 */
 
 /** @file
- * @brief Class Magnum::Contexts::AbstractWindowContext
+ * @brief Class Magnum::Platform::AbstractApplication
  */
 
-namespace Magnum { namespace Contexts {
+namespace Magnum { namespace Platform {
 
 /**
-@brief Base class for context creation
+@brief Base class for applications
 
-See subclasses documentation for more information. Context classes subclasses
-are meant to be used directly in `main()`, for example:
+See subclasses documentation for more information. Subclasses are meant to be
+used directly in `main()`, for example:
 @code
-class MyContext: public Magnum::Contexts::GlutWindowContext {
+class MyContext: public Magnum::Platform::GlutApplication {
     // implement required methods...
 };
 int main(int argc, char** argv) {
@@ -36,9 +36,9 @@ int main(int argc, char** argv) {
 }
 @endcode
 */
-class AbstractWindowContext {
+class AbstractApplication {
     public:
-        virtual inline ~AbstractWindowContext() {}
+        virtual inline ~AbstractApplication() {}
 
         /**
          * @brief Execute main loop

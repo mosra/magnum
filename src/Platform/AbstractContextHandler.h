@@ -1,5 +1,5 @@
-#ifndef Magnum_Contexts_AbstractContextHandler_h
-#define Magnum_Contexts_AbstractContextHandler_h
+#ifndef Magnum_Platform_AbstractContextHandler_h
+#define Magnum_Platform_AbstractContextHandler_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,12 +16,12 @@
 */
 
 /** @file
- * @brief Class Magnum::Contexts::AbstractContextHandler
+ * @brief Class Magnum::Platform::AbstractContextHandler
  */
 
 #include "ExtensionWrangler.h"
 
-namespace Magnum { namespace Contexts {
+namespace Magnum { namespace Platform {
 
 /** @brief Base for OpenGL context handlers */
 template<class Display, class VisualId, class Window> class AbstractContextHandler {

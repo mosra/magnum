@@ -21,7 +21,7 @@ Features:
   material and scene data in various formats.
 - Collection of pre-made @ref Primitives "graphic primitives" and
   @ref Shaders "shaders" for testing purposes.
-- Classes for easy creation of OpenGL context with @ref Contexts
+- Classes for creating OpenGL-enabled applications with @ref Platform
   "various toolkits", methods for querying
   @ref Context "supported OpenGL version and available extensions".
 - Comprehensive use of C++11 features for safety, performance and ease of
@@ -41,7 +41,7 @@ Guide @ref building "how to download and build Magnum" on different platforms.
 To get up and running, you must first subclass one of the provided window
 context classes and implement required functions. %Magnum provides
 implementations for the most common toolkits (such as GLUT, Xlib, or SDL2) in
-Contexts namespace.
+Platform namespace.
 
 Then you can either draw your meshes directly or use SceneGraph which will
 help you with object hierarchy, transformations and resource management.

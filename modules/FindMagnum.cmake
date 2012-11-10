@@ -21,13 +21,13 @@
 #  Primitives    - Library with stock geometric primitives (static)
 #  SceneGraph    - Scene graph library
 #  Shaders       - Library with stock shaders
-#  GlxContext    - GLX context (depends on X11 libraries)
-#  XEglContext   - X/EGL context (depends on EGL and X11 libraries)
-#  GlutContext   - GLUT context (depends on GLUT library)
-#  Sdl2Context   - SDL2 context (depends on SDL2 library)
+#  GlxApplication - GLX application (depends on X11 libraries)
+#  XEglApplication - X/EGL application (depends on EGL and X11 libraries)
+#  GlutApplication - GLUT application (depends on GLUT library)
+#  Sdl2Application - SDL2 application (depends on SDL2 library)
 # Example usage with specifying additional components is:
 #  find_package(Magnum [REQUIRED|COMPONENTS]
-#               MeshTools Primitives GlutContext)
+#               MeshTools Primitives GlutApplication)
 # For each component is then defined:
 #  MAGNUM_*_FOUND   - Whether the component was found
 #  MAGNUM_*_LIBRARIES - Component library and dependent libraries
@@ -92,8 +92,8 @@ else()
     find_package(OpenGLES2 REQUIRED)
 endif()
 
-# On Windows, *WindowContext libraries need to have ${MAGNUM_LIBRARY} listed
-# in dependencies also after *WindowContext.lib static library name to avoid
+# On Windows, *Application libraries need to have ${MAGNUM_LIBRARY} listed
+# in dependencies also after *Application.lib static library name to avoid
 # linker errors
 if(WIN32)
     set(_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY ${MAGNUM_LIBRARY})
@@ -108,13 +108,13 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
     set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX ${component})
 
-    # Window contexts
-    if(${component} MATCHES .+WindowContext)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Contexts)
+    # Applications
+    if(${component} MATCHES .+Application)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Platform)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES ${component}.h)
 
-        # GLUT window context dependencies
-        if(${component} STREQUAL GlutWindowContext)
+        # GLUT application dependencies
+        if(${component} STREQUAL GlutApplication)
             find_package(GLUT)
             if(GLUT_FOUND)
                 set(_MAGNUM_${_COMPONENT}_LIBRARIES ${GLUT_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY})
@@ -123,8 +123,8 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             endif()
         endif()
 
-        # SDL2 window context dependencies
-        if(${component} STREQUAL Sdl2WindowContext)
+        # SDL2 application dependencies
+        if(${component} STREQUAL Sdl2Application)
             find_package(SDL2)
             if(SDL2_FOUND)
                 set(_MAGNUM_${_COMPONENT}_LIBRARIES ${SDL2_LIBRARY} ${_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY})
@@ -134,8 +134,8 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             endif()
         endif()
 
-        # GLX window context dependencies
-        if(${component} STREQUAL GlxWindowContext)
+        # GLX application dependencies
+        if(${component} STREQUAL GlxApplication)
             find_package(X11)
             if(X11_FOUND)
                 set(_MAGNUM_${_COMPONENT}_LIBRARIES ${X11_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY})
@@ -144,8 +144,8 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             endif()
         endif()
 
-        # X/EGL window context dependencies
-        if(${component} STREQUAL XEglWindowContext)
+        # X/EGL application dependencies
+        if(${component} STREQUAL XEglApplication)
             find_package(EGL)
             find_package(X11)
             if(EGL_FOUND AND X11_FOUND)

@@ -13,7 +13,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractXWindowContext.h"
+#include "AbstractXApplication.h"
 
 #include "Context.h"
 #include "ExtensionWrangler.h"
@@ -25,9 +25,9 @@
 
 using namespace std;
 
-namespace Magnum { namespace Contexts {
+namespace Magnum { namespace Platform {
 
-AbstractXWindowContext::AbstractXWindowContext(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int&, char**, const string& title, const Math::Vector2<GLsizei>& size): contextHandler(contextHandler), viewportSize(size), flags(Flag::Redraw) {
+AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int&, char**, const string& title, const Math::Vector2<GLsizei>& size): contextHandler(contextHandler), viewportSize(size), flags(Flag::Redraw) {
     /* Get default X display */
     display = XOpenDisplay(0);
 
@@ -75,7 +75,7 @@ AbstractXWindowContext::AbstractXWindowContext(AbstractContextHandler<Display*, 
     c = new Context;
 }
 
-AbstractXWindowContext::~AbstractXWindowContext() {
+AbstractXApplication::~AbstractXApplication() {
     delete c;
 
     /* Shut down context handler */
@@ -86,7 +86,7 @@ AbstractXWindowContext::~AbstractXWindowContext() {
     XCloseDisplay(display);
 }
 
-int AbstractXWindowContext::exec() {
+int AbstractXApplication::exec() {
     /* Show window */
     XMapWindow(display, window);
 

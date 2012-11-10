@@ -1,5 +1,5 @@
-#ifndef Magnum_Contexts_GlxContextHandler_h
-#define Magnum_Contexts_GlxContextHandler_h
+#ifndef Magnum_Platform_GlxContextHandler_h
+#define Magnum_Platform_GlxContextHandler_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Contexts::GlxContextHandler
+ * @brief Class Magnum::Platform::GlxContextHandler
  */
 
 #include "Magnum.h"
@@ -29,15 +29,15 @@
 
 #include "magnumCompatibility.h"
 
-namespace Magnum { namespace Contexts {
+namespace Magnum { namespace Platform {
 
 /**
-@brief GLX interface
+@brief GLX context
 
 Creates OpenGL 3.2 core context or OpenGL ES 2.0 context, if targetting
 OpenGL ES.
 
-Used in GlxWindowContext.
+Used in GlxApplication.
 */
 class GlxContextHandler: public AbstractContextHandler<Display*, VisualID, Window> {
     public:

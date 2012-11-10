@@ -1,5 +1,5 @@
-#ifndef Magnum_Contexts_XEglWindowContext_h
-#define Magnum_Contexts_XEglWindowContext_h
+#ifndef Magnum_Platform_XEglApplication_h
+#define Magnum_Platform_XEglApplication_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,20 +16,20 @@
 */
 
 /** @file
- * @brief Class Magnum::Contexts::XEglWindowContext
+ * @brief Class Magnum::Platform::XEglApplication
  */
 
-#include "AbstractXWindowContext.h"
+#include "AbstractXApplication.h"
 #include "EglContextHandler.h"
 
-namespace Magnum { namespace Contexts {
+namespace Magnum { namespace Platform {
 
 /**
-@brief X/EGL context
+@brief X/EGL application
 
 Uses EglContextHandler.
 */
-class XEglWindowContext: public AbstractXWindowContext {
+class XEglApplication: public AbstractXApplication {
     public:
         /**
          * @brief Constructor
@@ -40,7 +40,7 @@ class XEglWindowContext: public AbstractXWindowContext {
          *
          * Creates window with double-buffered OpenGL ES 2 context.
          */
-        inline XEglWindowContext(int& argc, char** argv, const std::string& title = "Magnum X/EGL window context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600)): AbstractXWindowContext(new EglContextHandler, argc, argv, title, size) {}
+        inline XEglApplication(int& argc, char** argv, const std::string& title = "Magnum X/EGL application", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600)): AbstractXApplication(new EglContextHandler, argc, argv, title, size) {}
 };
 
 }}

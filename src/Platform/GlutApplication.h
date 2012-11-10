@@ -1,5 +1,5 @@
-#ifndef Magnum_Contexts_GlutWindowContext_h
-#define Magnum_Contexts_GlutWindowContext_h
+#ifndef Magnum_Platform_GlutApplication_h
+#define Magnum_Platform_GlutApplication_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Contexts::GlutWindowContext
+ * @brief Class Magnum::Platform::GlutApplication
  */
 
 #include <string>
@@ -26,7 +26,7 @@
 
 #include <GL/freeglut.h>
 
-#include "AbstractWindowContext.h"
+#include "AbstractApplication.h"
 
 #include "magnumCompatibility.h"
 
@@ -34,10 +34,10 @@ namespace Magnum {
 
 class Context;
 
-namespace Contexts {
+namespace Platform {
 
 /** @nosubgrouping
-@brief GLUT context
+@brief GLUT application
 
 Supports keyboard handling for limited subset of keys, mouse handling with
 support for changing cursor and mouse tracking and warping.
@@ -45,7 +45,7 @@ support for changing cursor and mouse tracking and warping.
 You need to implement at least drawEvent() and viewportEvent() to be able to
 draw on the screen.
 */
-class GlutWindowContext: public AbstractWindowContext {
+class GlutApplication: public AbstractApplication {
     public:
         /**
          * @brief Constructor
@@ -56,9 +56,9 @@ class GlutWindowContext: public AbstractWindowContext {
          *
          * Creates double-buffered RGBA window with depth and stencil buffers.
          */
-        GlutWindowContext(int& argc, char** argv, const std::string& title = "Magnum GLUT window context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
+        GlutApplication(int& argc, char** argv, const std::string& title = "Magnum GLUT application", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
 
-        ~GlutWindowContext();
+        ~GlutApplication();
 
         inline int exec() override {
             glutMainLoop();
@@ -250,16 +250,16 @@ class GlutWindowContext: public AbstractWindowContext {
             instance->drawEvent();
         }
 
-        static GlutWindowContext* instance;
+        static GlutApplication* instance;
 
         Context* c;
 };
 
 /* Implementations for inline functions with unused parameters */
-inline void GlutWindowContext::keyPressEvent(Key, const Math::Vector2<int>&) {}
-inline void GlutWindowContext::mousePressEvent(MouseButton, const Math::Vector2<int>&) {}
-inline void GlutWindowContext::mouseReleaseEvent(MouseButton, const Math::Vector2<int>&) {}
-inline void GlutWindowContext::mouseMotionEvent(const Math::Vector2<int>&) {}
+inline void GlutApplication::keyPressEvent(Key, const Math::Vector2<int>&) {}
+inline void GlutApplication::mousePressEvent(MouseButton, const Math::Vector2<int>&) {}
+inline void GlutApplication::mouseReleaseEvent(MouseButton, const Math::Vector2<int>&) {}
+inline void GlutApplication::mouseMotionEvent(const Math::Vector2<int>&) {}
 
 }}
 
