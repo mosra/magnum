@@ -1,0 +1,29 @@
+# Author: mosra <mosra@centrum.cz>
+pkgname=nacl-magnum
+pkgver=dev
+pkgrel=1
+pkgdesc="OpenGL 3 graphics engine (NaCl x86-64 version)"
+arch=('x86_64')
+url="https://github.com/mosra/magnum"
+license=('LGPLv3')
+depends=('nacl-corrade')
+makedepends=('nacl-sdk' 'cmake')
+options=(!makeflags !buildflags !strip)
+
+build() {
+    mkdir -p "$startdir/build-nacl-x86-64"
+    cd "$startdir/build-nacl-x86-64"
+
+    cmake .. \
+        -DCMAKE_MODULE_PATH="$startdir/toolchains/modules" \
+        -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/NaCl-glibc-x86-64.cmake" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/nacl \
+        -DWITH_NACLAPPLICATION=ON
+    make
+}
+
+package() {
+    cd "$startdir/build-nacl-x86-64"
+    make DESTDIR="$pkgdir/" install
+}

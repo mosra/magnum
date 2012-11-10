@@ -2,7 +2,7 @@
 #define __gl3_h_
 
 /*
- * gl3.h last updated on $Date: 2012-07-23 03:53:52 -0700 (Mon, 23 Jul 2012) $
+ * gl3.h last updated on $Date: 2012-09-12 10:13:02 -0700 (Wed, 12 Sep 2012) $
  */
 
 #include <GLES3/gl3platform.h>
@@ -507,8 +507,6 @@ typedef struct __GLsync *GLsync;
 #define GL_RGBA8                                         0x8058
 #define GL_RGB10_A2                                      0x8059
 #define GL_TEXTURE_BINDING_3D                            0x806A
-#define GL_PACK_SKIP_IMAGES                              0x806B
-#define GL_PACK_IMAGE_HEIGHT                             0x806C
 #define GL_UNPACK_SKIP_IMAGES                            0x806D
 #define GL_UNPACK_IMAGE_HEIGHT                           0x806E
 #define GL_TEXTURE_3D                                    0x806F

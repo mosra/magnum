@@ -1,5 +1,5 @@
-#ifndef Magnum_Contexts_ExtensionWrangler_h
-#define Magnum_Contexts_ExtensionWrangler_h
+#ifndef Magnum_Platform_ExtensionWrangler_h
+#define Magnum_Platform_ExtensionWrangler_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,10 +16,10 @@
 */
 
 /** @file
- * @brief Class Magnum::Contexts::ExtensionWrangler
+ * @brief Class Magnum::Platform::ExtensionWrangler
  */
 
-namespace Magnum { namespace Contexts {
+namespace Magnum { namespace Platform {
 
 /** @brief Extension wrangler interface */
 class ExtensionWrangler {

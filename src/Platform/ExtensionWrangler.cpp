@@ -19,7 +19,7 @@
 
 #include "Magnum.h"
 
-namespace Magnum { namespace Contexts {
+namespace Magnum { namespace Platform {
 
 void ExtensionWrangler::initialize(ExperimentalFeatures experimentalFeatures) {
     #ifndef MAGNUM_TARGET_GLES

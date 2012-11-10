@@ -1,5 +1,5 @@
-#ifndef Magnum_Contexts_GlxWindowContext_h
-#define Magnum_Contexts_GlxWindowContext_h
+#ifndef Magnum_Platform_GlxApplication_h
+#define Magnum_Platform_GlxApplication_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,20 +16,35 @@
 */
 
 /** @file
- * @brief Class Magnum::Contexts::GlxWindowContext
+ * @brief Class Magnum::Platform::GlxApplication
  */
 
-#include "AbstractXWindowContext.h"
+#include "AbstractXApplication.h"
 #include "GlxContextHandler.h"
 
-namespace Magnum { namespace Contexts {
+namespace Magnum { namespace Platform {
 
 /**
-@brief GLX context
+@brief GLX application
 
 Uses GlxContextHandler.
+
+@section GlxApplication-usage Usage
+
+You need to implement at least drawEvent() and viewportEvent() to be able to
+draw on the screen. The subclass can be then used directly in `main()`, for
+example:
+@code
+class MyApplication: public Magnum::Platform::GlxApplication {
+    // implement required methods...
+};
+int main(int argc, char** argv) {
+    MyApplication c(argc, argv);
+    return c.exec();
+}
+@endcode
 */
-class GlxWindowContext: public AbstractXWindowContext {
+class GlxApplication: public AbstractXApplication {
     public:
         /**
          * @brief Constructor
@@ -41,7 +56,7 @@ class GlxWindowContext: public AbstractXWindowContext {
          * Creates window with double-buffered OpenGL 3.2 core context or
          * OpenGL ES 2.0 context, if targetting OpenGL ES.
          */
-        inline GlxWindowContext(int& argc, char** argv, const std::string& title = "Magnum GLX window context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600)): AbstractXWindowContext(new GlxContextHandler, argc, argv, title, size) {}
+        inline GlxApplication(int& argc, char** argv, const std::string& title = "Magnum GLX application", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600)): AbstractXApplication(new GlxContextHandler, argc, argv, title, size) {}
 };
 
 }}

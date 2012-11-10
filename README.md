@@ -13,8 +13,8 @@ Features:
  * Plugin-based data exchange framework for importing image, mesh, material
    and scene data in various formats.
  * Collection of pre-made graphic primitives and shaders for testing purposes.
- * Classes for easy creation of OpenGL context with various toolkits, methods
-   for querying supported OpenGL version and available extensions.
+ * Classes for creating OpenGL-enabled applications with various toolkits,
+   methods for querying supported OpenGL version and available extensions.
  * Comprehensive use of C++11 features for safety, performance and ease of
    development. All code which doesn't directly interact with OpenGL is
    covered with unit tests.
@@ -36,22 +36,20 @@ Minimal dependencies
    which are tested to support everything needed: **GCC** >= 4.6 and **Clang**
    >= 3.1.
  * **CMake** >= 2.8.8 (needed for `OBJECT` library target)
- * **OpenGL** headers, on Linux most probably shipped with Mesa or
-   **OpenGL ES 2** headers, if targeting OpenGL ES.
- * **GLEW** - OpenGL extension wrangler
+ * **GLEW** - OpenGL extension wrangler (only if targeting desktop OpenGL)
  * **Corrade** - Plugin management and utility library. You can get it at
    http://github.com/mosra/corrade or at http://mosra.cz/blog/corrade.php.
 
 Compilation, installation
 -------------------------
 
-The library (for example with GLUT window context) can be built and installed
-using these four commands:
+The library (for example with support for GLUT applications) can be built and
+installed using these four commands:
 
     mkdir -p build && cd build
     cmake .. \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DWITH_GLUTWINDOWCONTEXT=ON
+        -DWITH_GLUTAPPLICATION=ON
     make
     make install
 
@@ -59,8 +57,8 @@ Building and running unit tests
 -------------------------------
 
 If you want to build also unit tests (which are not built by default), pass
-`-DBUILD_TESTS=True` to CMake. Unit tests use Corrade's TestSuite framework
-and can be run using
+`-DBUILD_TESTS=ON` to CMake. Unit tests use Corrade's TestSuite framework and
+can be run using
 
     ctest --output-on-failure
 

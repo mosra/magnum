@@ -29,12 +29,16 @@
 
 namespace Magnum {
 
+#ifndef MAGNUM_TARGET_GLES2
 template<std::uint8_t> class BufferedImage;
+#endif
 template<std::uint8_t> class Image;
 
+#ifndef MAGNUM_TARGET_GLES2
 typedef BufferedImage<1> BufferedImage1D;
 typedef BufferedImage<2> BufferedImage2D;
 typedef BufferedImage<3> BufferedImage3D;
+#endif
 typedef Image<1> Image1D;
 typedef Image<2> Image2D;
 typedef Image<3> Image3D;
@@ -433,8 +437,10 @@ class MAGNUM_EXPORT Framebuffer {
         enum class BlendEquation: GLenum {
             Add = GL_FUNC_ADD,                          /**< `source + destination` */
             Subtract = GL_FUNC_SUBTRACT,                /**< `source - destination` */
-            ReverseSubtract = GL_FUNC_REVERSE_SUBTRACT, /**< `destination - source` */
+            ReverseSubtract = GL_FUNC_REVERSE_SUBTRACT  /**< `destination - source` */
 
+            #ifndef MAGNUM_TARGET_GLES2
+            ,
             /**
              * `min(source, destination)`
              * @requires_gles30 %Extension @es_extension2{EXT,blend_minmax,blend_minmax}
@@ -446,6 +452,7 @@ class MAGNUM_EXPORT Framebuffer {
              * @requires_gles30 %Extension @es_extension2{EXT,blend_minmax,blend_minmax}
              */
             Max = GL_MAX
+            #endif
         };
 
         /**
@@ -703,7 +710,11 @@ class MAGNUM_EXPORT Framebuffer {
              * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample}
              *      or @es_extension{ANGLE,framebuffer_blit}
              */
+            #ifndef MAGNUM_TARGET_GLES2
             Read = GL_READ_FRAMEBUFFER,
+            #else
+            Read = GL_READ_FRAMEBUFFER_APPLE,
+            #endif
 
             /**
              * For drawing only.
@@ -711,7 +722,11 @@ class MAGNUM_EXPORT Framebuffer {
              * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample}
              *      or @es_extension{ANGLE,framebuffer_blit}
              */
+            #ifndef MAGNUM_TARGET_GLES2
             Draw = GL_DRAW_FRAMEBUFFER,
+            #else
+            Draw = GL_DRAW_FRAMEBUFFER_APPLE,
+            #endif
 
             ReadDraw = GL_FRAMEBUFFER       /**< For both reading and drawing. */
         };
@@ -938,7 +953,12 @@ class MAGNUM_EXPORT Framebuffer {
          */
         inline static void mapDefaultForRead(DefaultReadAttachment attachment) {
             bindDefault(Target::Read);
+            /** @todo Get some extension wrangler instead to avoid undeclared glReadBuffer() on ES2 */
+            #ifndef MAGNUM_TARGET_GLES2
             glReadBuffer(static_cast<GLenum>(attachment));
+            #else
+            static_cast<void>(attachment);
+            #endif
         }
 
         /**
@@ -953,7 +973,12 @@ class MAGNUM_EXPORT Framebuffer {
          */
         inline void mapForRead(std::uint8_t colorAttachment) {
             bind(Target::Read);
+            /** @todo Get some extension wrangler instead to avoid undeclared glReadBuffer() on ES2 */
+            #ifndef MAGNUM_TARGET_GLES2
             glReadBuffer(GL_COLOR_ATTACHMENT0 + colorAttachment);
+            #else
+            static_cast<void>(colorAttachment);
+            #endif
         }
 
         /*@}*/
@@ -1225,7 +1250,17 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
          */
         inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, const Math::Vector2<GLint>& destinationBottomLeft, const Math::Vector2<GLint>& destinationTopRight, BlitMask blitMask, AbstractTexture::Filter filter) {
+            /** @todo Get some extension wrangler instead to avoid undeclared glBlitFramebuffer() on ES2 */
+            #ifndef MAGNUM_TARGET_GLES2
             glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), destinationBottomLeft.x(), destinationBottomLeft.y(), destinationTopRight.x(), destinationTopRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(filter));
+            #else
+            static_cast<void>(bottomLeft);
+            static_cast<void>(topRight);
+            static_cast<void>(destinationBottomLeft);
+            static_cast<void>(destinationTopRight);
+            static_cast<void>(blitMask);
+            static_cast<void>(filter);
+            #endif
         }
 
         /**
@@ -1246,7 +1281,14 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
          */
         inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, BlitMask blitMask) {
+            /** @todo Get some extension wrangler instead to avoid undeclared glBlitFramebuffer() on ES2 */
+            #ifndef MAGNUM_TARGET_GLES2
             glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(AbstractTexture::Filter::NearestNeighbor));
+            #else
+            static_cast<void>(bottomLeft);
+            static_cast<void>(topRight);
+            static_cast<void>(blitMask);
+            #endif
         }
 
         /**
@@ -1262,6 +1304,7 @@ class MAGNUM_EXPORT Framebuffer {
          */
         static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image);
 
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Read block of pixels from framebuffer to buffered image
          * @param offset            Offset in the framebuffer
@@ -1276,6 +1319,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
          */
         static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage);
+        #endif
 
         /*@}*/
 

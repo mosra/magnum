@@ -15,9 +15,7 @@ Minimal set of tools and libraries required for building is:
   which are tested to support everything needed: **GCC** >= 4.6 and **Clang**
   >= 3.1.
 - **CMake** >= 2.8.8 (needed for `OBJECT` library target)
-- **OpenGL** headers, on Linux most probably shipped with Mesa, or
-  **OpenGL ES 2** headers, if targeting OpenGL ES (see below).
-- **GLEW** - OpenGL extension wrangler
+- **GLEW** - OpenGL extension wrangler (only if targeting desktop OpenGL)
 - **Corrade** - Plugin management and utility library. You can get it at
   http://github.com/mosra/corrade or at http://mosra.cz/blog/corrade.php.
 
@@ -37,14 +35,14 @@ subdirectory:
     git submodule update
 
 @section building-compilation Compilation, installation
-The library (for example with GLUT window context) can be built and installed
-using these four commands. See below for more information about optional
-features.
+The library (for example with support for GLUT applications) can be built and
+installed using these four commands. See below for more information about
+optional features.
 
     mkdir -p build && cd build
     cmake .. \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DWITH_GLUTWINDOWCONTEXT=ON
+        -DWITH_GLUTAPPLICATION=ON
     make
     make install
 
@@ -57,7 +55,7 @@ OpenGL ES, set `TARGET_GLES` to `ON` or pass `-DTARGET_GLES=ON` to CMake. Note
 that some features are available for desktop OpenGL only, see @ref requires-gl.
 
 By default the engine is built with everything except
-@ref Contexts "context libraries". Using `WITH_*` CMake parameters you can
+@ref Platform "application libraries". Using `WITH_*` CMake parameters you can
 specify which parts will be built and which not:
 
  - `WITH_EVERYTHING` - Defaults to `ON`, builds everything except window
@@ -66,22 +64,23 @@ specify which parts will be built and which not:
  - `WITH_MESHTOOLS` - MeshTools library.
  - `WITH_PHYSICS` - Physics library.
  - `WITH_PRIMITIVES` - Primitives library.
+ - `WITH_SCENEGRAPH` - SceneGraph library.
  - `WITH_SHADERS` - Shaders library.
 
-None of the window context libraries is built by default, regardless to
+None of the application libraries is built by default, regardless to
 `WITH_EVERYTHING` is enabled or not:
 
- - `WITH_XEGLWINDOWCONTEXT` - X/EGL window context, available only if
-   targeting OpenGL ES (see above). Requires **X11** and **EGL** libraries.
- - `WITH_GLXWINDOWCONTEXT` - GLX window context. Requires **X11** and **GLX**
+ - `WITH_XEGLAPPLICATION` - X/EGL application, available only if targeting
+   OpenGL ES (see above). Requires **X11** and **EGL** libraries.
+ - `WITH_GLXAPPLICATION` - GLX application. Requires **X11** and **GLX**
    libraries.
- - `WITH_GLUTWINDOWCONTEXT` - GLUT window context, available only if targeting
+ - `WITH_GLUTAPPLICATION` - GLUT application, available only if targeting
    desktop OpenGL. Requires **GLUT** library.
- - `WITH_SDL2WINDOWCONTEXT` - SDL2 window context. Requires **SDL2** library.
+ - `WITH_SDL2APPLICATION` - SDL2 application. Requires **SDL2** library.
 
 @subsection building-tests Building and running unit tests
 If you want to build also unit tests (which are not built by default), pass
-`-DBUILD_TESTS=True` to CMake. Unit tests use Corrade's @ref Corrade::TestSuite
+`-DBUILD_TESTS=ON` to CMake. Unit tests use Corrade's @ref Corrade::TestSuite
 "TestSuite" framework and can be run using
 
     ctest --output-on-failure
@@ -122,8 +121,8 @@ unsupported CXX flags.
 this system there is also prepared `mingw32-magnum` development package in
 root, named `PKGBUILD-mingw32`.
 
-You will need MinGW32 versions of the compiler and all libraries (OpenGL
-headers, GLEW, Corrade), i.e. these ArchLinux packages:
+You will need MinGW32 versions of the compiler and all libraries (GLEW,
+Corrade), i.e. these ArchLinux packages:
 
 - `mingw32-gcc`, which depends on `mingw32-w32api` containing OpenGL headers
 - `mingw32-runtime`

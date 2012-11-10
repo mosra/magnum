@@ -15,9 +15,11 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#ifndef MAGNUM_TARGET_GLES2
 /** @file
  * @brief Class Magnum::BufferedImage, typedef Magnum::BufferedImage1D, Magnum::BufferedImage2D, Magnum::BufferedImage3D
  */
+#endif
 
 #include "Math/Vector3.h"
 #include "AbstractImage.h"
@@ -27,6 +29,7 @@
 
 namespace Magnum {
 
+#ifndef MAGNUM_TARGET_GLES2
 /**
 @brief %Buffered image
 
@@ -117,6 +120,7 @@ typedef BufferedImage<2> BufferedImage2D;
 
 /** @brief Three-dimensional buffered image */
 typedef BufferedImage<3> BufferedImage3D;
+#endif
 
 }
 

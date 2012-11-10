@@ -6,21 +6,6 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND NOT "${CMAKE_CXX_COMPILER_VERSI
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion")
 endif()
 
-# If targeting GLES, save it into configuration header
-if(TARGET_GLES)
-    set(MAGNUM_TARGET_GLES 1)
-endif()
-if(TARGET_GLES2)
-    set(MAGNUM_TARGET_GLES2 1)
-endif()
-
-if(CORRADE_GCC44_COMPATIBILITY)
-    set(GCC46_COMPATIBILITY 1)
-endif()
-if(GCC46_COMPATIBILITY)
-    set(MAGNUM_GCC46_COMPATIBILITY 1)
-endif()
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/magnumConfigure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h)
 
@@ -32,7 +17,6 @@ set(Magnum_SRCS
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
     Buffer.cpp
-    BufferedImage.cpp
     Context.cpp
     Framebuffer.cpp
     Image.cpp
@@ -59,11 +43,16 @@ if(NOT TARGET_GLES)
         BufferedTexture.cpp)
 endif()
 
+# Not-ES2 code
+if(NOT TARGET_GLES2)
+    set(Magnum_SRCS ${Magnum_SRCS}
+        BufferedImage.cpp)
+endif()
+
 set(Magnum_HEADERS
     AbstractImage.h
     AbstractShaderProgram.h
     AbstractTexture.h
-    BufferedImage.h
     Buffer.h
     Color.h
     Context.h
@@ -95,6 +84,12 @@ if(NOT TARGET_GLES)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         BufferedTexture.h
         CubeMapTextureArray.h)
+endif()
+
+# Not-ES2 headers
+if(NOT TARGET_GLES2)
+    set(Magnum_HEADERS ${Magnum_HEADERS}
+        BufferedImage.h)
 endif()
 
 if(NOT CMAKE_NO_OBJECT_TARGET)
@@ -143,7 +138,7 @@ install(FILES ${Magnum_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 # Install also configure file
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 
-add_subdirectory(Contexts)
+add_subdirectory(Platform)
 add_subdirectory(Math)
 add_subdirectory(Trade)
 

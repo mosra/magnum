@@ -31,15 +31,15 @@ extern "C" {
 /* glcorearb.h replaces gl3.h. It is for use with OpenGL core
  * profile implementations.
  *
- * glcorearb.h last updated on $Date: 2012-08-13 16:18:01 -0700 (Mon, 13 Aug 2012) $
+ * glcorearb.h last updated on $Date: 2012-09-19 19:02:24 -0700 (Wed, 19 Sep 2012) $
  *
- * RELEASE NOTES - 2012/08/13
+ * RELEASE NOTES - 2012/09/19
  *
  * glcorearb.h should be placed in the same directory as gl.h and
  * included as
  * '<GL/glcorearb.h>'.
  *
- * gl3.h includes only APIs in the latest OpenGL core profile
+ * glcorearb.h includes only APIs in the latest OpenGL core profile
  * implementation together with APIs in newer ARB extensions which can be
  * can be supported by the core profile. It does not, and never will
  * include functionality removed from the core profile, such as
@@ -48,7 +48,7 @@ extern "C" {
  * It is not possible to #include both <GL/glcorearb.h> and either of
  * <GL/gl.h> or <GL/glext.h> in the same source file.
  *
- * Feedback can be given by register for the Khronos Bugzilla
+ * Feedback can be given by registering for the Khronos Bugzilla
  * (www.khronos.org/bugzilla) and filing issues there under product
  * "OpenGL", category "Registry".
  */
@@ -107,6 +107,7 @@ typedef void GLvoid;
 #define GL_TRIANGLES                      0x0004
 #define GL_TRIANGLE_STRIP                 0x0005
 #define GL_TRIANGLE_FAN                   0x0006
+#define GL_QUADS                          0x0007
 /* AlphaFunction */
 #define GL_NEVER                          0x0200
 #define GL_LESS                           0x0201
@@ -157,6 +158,7 @@ typedef void GLvoid;
 #define GL_LINE_WIDTH                     0x0B21
 #define GL_LINE_WIDTH_RANGE               0x0B22
 #define GL_LINE_WIDTH_GRANULARITY         0x0B23
+#define GL_POLYGON_MODE                   0x0B40
 #define GL_POLYGON_SMOOTH                 0x0B41
 #define GL_CULL_FACE                      0x0B44
 #define GL_CULL_FACE_MODE                 0x0B45
@@ -484,6 +486,7 @@ typedef void GLvoid;
 #define GL_DYNAMIC_READ                   0x88E9
 #define GL_DYNAMIC_COPY                   0x88EA
 #define GL_SAMPLES_PASSED                 0x8914
+#define GL_SRC1_ALPHA                     0x8589
 #endif
 
 #ifndef GL_VERSION_2_0
@@ -827,7 +830,6 @@ typedef void GLvoid;
 #define GL_MAX_TEXTURE_BUFFER_SIZE        0x8C2B
 #define GL_TEXTURE_BINDING_BUFFER         0x8C2C
 #define GL_TEXTURE_BUFFER_DATA_STORE_BINDING 0x8C2D
-#define GL_TEXTURE_BUFFER_FORMAT          0x8C2E
 #define GL_TEXTURE_RECTANGLE              0x84F5
 #define GL_TEXTURE_BINDING_RECTANGLE      0x84F6
 #define GL_PROXY_TEXTURE_RECTANGLE        0x84F7
@@ -1093,6 +1095,7 @@ typedef void GLvoid;
 /* reuse GL_MEDIUM_INT */
 /* reuse GL_HIGH_INT */
 /* reuse GL_SHADER_COMPILER */
+/* reuse GL_SHADER_BINARY_FORMATS */
 /* reuse GL_NUM_SHADER_BINARY_FORMATS */
 /* reuse GL_MAX_VERTEX_UNIFORM_VECTORS */
 /* reuse GL_MAX_VARYING_VECTORS */
@@ -1796,6 +1799,7 @@ typedef void GLvoid;
 #ifndef GL_ARB_texture_gather
 #define GL_MIN_PROGRAM_TEXTURE_GATHER_OFFSET_ARB 0x8E5E
 #define GL_MAX_PROGRAM_TEXTURE_GATHER_OFFSET_ARB 0x8E5F
+#define GL_MAX_PROGRAM_TEXTURE_GATHER_COMPONENTS_ARB 0x8F9F
 #endif
 
 #ifndef GL_ARB_texture_query_lod
@@ -1973,6 +1977,7 @@ typedef void GLvoid;
 #define GL_MEDIUM_INT                     0x8DF4
 #define GL_HIGH_INT                       0x8DF5
 #define GL_SHADER_COMPILER                0x8DFA
+#define GL_SHADER_BINARY_FORMATS          0x8DF8
 #define GL_NUM_SHADER_BINARY_FORMATS      0x8DF9
 #define GL_MAX_VERTEX_UNIFORM_VECTORS     0x8DFB
 #define GL_MAX_VARYING_VECTORS            0x8DFC
@@ -4176,18 +4181,6 @@ typedef GLuint (APIENTRYP PFNGLGETDEBUGMESSAGELOGARBPROC) (GLuint count, GLsizei
 #define GL_ARB_robustness 1
 #ifdef GLCOREARB_PROTOTYPES
 GLAPI GLenum APIENTRY glGetGraphicsResetStatusARB (void);
-GLAPI void APIENTRY glGetnMapdvARB (GLenum target, GLenum query, GLsizei bufSize, GLdouble *v);
-GLAPI void APIENTRY glGetnMapfvARB (GLenum target, GLenum query, GLsizei bufSize, GLfloat *v);
-GLAPI void APIENTRY glGetnMapivARB (GLenum target, GLenum query, GLsizei bufSize, GLint *v);
-GLAPI void APIENTRY glGetnPixelMapfvARB (GLenum map, GLsizei bufSize, GLfloat *values);
-GLAPI void APIENTRY glGetnPixelMapuivARB (GLenum map, GLsizei bufSize, GLuint *values);
-GLAPI void APIENTRY glGetnPixelMapusvARB (GLenum map, GLsizei bufSize, GLushort *values);
-GLAPI void APIENTRY glGetnPolygonStippleARB (GLsizei bufSize, GLubyte *pattern);
-GLAPI void APIENTRY glGetnColorTableARB (GLenum target, GLenum format, GLenum type, GLsizei bufSize, GLvoid *table);
-GLAPI void APIENTRY glGetnConvolutionFilterARB (GLenum target, GLenum format, GLenum type, GLsizei bufSize, GLvoid *image);
-GLAPI void APIENTRY glGetnSeparableFilterARB (GLenum target, GLenum format, GLenum type, GLsizei rowBufSize, GLvoid *row, GLsizei columnBufSize, GLvoid *column, GLvoid *span);
-GLAPI void APIENTRY glGetnHistogramARB (GLenum target, GLboolean reset, GLenum format, GLenum type, GLsizei bufSize, GLvoid *values);
-GLAPI void APIENTRY glGetnMinmaxARB (GLenum target, GLboolean reset, GLenum format, GLenum type, GLsizei bufSize, GLvoid *values);
 GLAPI void APIENTRY glGetnTexImageARB (GLenum target, GLint level, GLenum format, GLenum type, GLsizei bufSize, GLvoid *img);
 GLAPI void APIENTRY glReadnPixelsARB (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLsizei bufSize, GLvoid *data);
 GLAPI void APIENTRY glGetnCompressedTexImageARB (GLenum target, GLint lod, GLsizei bufSize, GLvoid *img);
@@ -4197,18 +4190,6 @@ GLAPI void APIENTRY glGetnUniformuivARB (GLuint program, GLint location, GLsizei
 GLAPI void APIENTRY glGetnUniformdvARB (GLuint program, GLint location, GLsizei bufSize, GLdouble *params);
 #endif /* GLCOREARB_PROTOTYPES */
 typedef GLenum (APIENTRYP PFNGLGETGRAPHICSRESETSTATUSARBPROC) (void);
-typedef void (APIENTRYP PFNGLGETNMAPDVARBPROC) (GLenum target, GLenum query, GLsizei bufSize, GLdouble *v);
-typedef void (APIENTRYP PFNGLGETNMAPFVARBPROC) (GLenum target, GLenum query, GLsizei bufSize, GLfloat *v);
-typedef void (APIENTRYP PFNGLGETNMAPIVARBPROC) (GLenum target, GLenum query, GLsizei bufSize, GLint *v);
-typedef void (APIENTRYP PFNGLGETNPIXELMAPFVARBPROC) (GLenum map, GLsizei bufSize, GLfloat *values);
-typedef void (APIENTRYP PFNGLGETNPIXELMAPUIVARBPROC) (GLenum map, GLsizei bufSize, GLuint *values);
-typedef void (APIENTRYP PFNGLGETNPIXELMAPUSVARBPROC) (GLenum map, GLsizei bufSize, GLushort *values);
-typedef void (APIENTRYP PFNGLGETNPOLYGONSTIPPLEARBPROC) (GLsizei bufSize, GLubyte *pattern);
-typedef void (APIENTRYP PFNGLGETNCOLORTABLEARBPROC) (GLenum target, GLenum format, GLenum type, GLsizei bufSize, GLvoid *table);
-typedef void (APIENTRYP PFNGLGETNCONVOLUTIONFILTERARBPROC) (GLenum target, GLenum format, GLenum type, GLsizei bufSize, GLvoid *image);
-typedef void (APIENTRYP PFNGLGETNSEPARABLEFILTERARBPROC) (GLenum target, GLenum format, GLenum type, GLsizei rowBufSize, GLvoid *row, GLsizei columnBufSize, GLvoid *column, GLvoid *span);
-typedef void (APIENTRYP PFNGLGETNHISTOGRAMARBPROC) (GLenum target, GLboolean reset, GLenum format, GLenum type, GLsizei bufSize, GLvoid *values);
-typedef void (APIENTRYP PFNGLGETNMINMAXARBPROC) (GLenum target, GLboolean reset, GLenum format, GLenum type, GLsizei bufSize, GLvoid *values);
 typedef void (APIENTRYP PFNGLGETNTEXIMAGEARBPROC) (GLenum target, GLint level, GLenum format, GLenum type, GLsizei bufSize, GLvoid *img);
 typedef void (APIENTRYP PFNGLREADNPIXELSARBPROC) (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLsizei bufSize, GLvoid *data);
 typedef void (APIENTRYP PFNGLGETNCOMPRESSEDTEXIMAGEARBPROC) (GLenum target, GLint lod, GLsizei bufSize, GLvoid *img);

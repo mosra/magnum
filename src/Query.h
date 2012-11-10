@@ -40,7 +40,12 @@ class MAGNUM_EXPORT AbstractQuery {
          * Generates one OpenGL query.
          * @see @fn_gl{GenQueries}
          */
-        inline AbstractQuery() { glGenQueries(1, &_id); }
+        inline AbstractQuery() {
+            /** @todo Get some extension wrangler instead to avoid undeclared glGenQueries() on ES2 */
+            #ifndef MAGNUM_TARGET_GLES2
+            glGenQueries(1, &_id);
+            #endif
+        }
 
         /**
          * @brief Destructor
@@ -48,7 +53,12 @@ class MAGNUM_EXPORT AbstractQuery {
          * Deletes assigned OpenGL query.
          * @see @fn_gl{DeleteQueries}
          */
-        virtual inline ~AbstractQuery() { glDeleteQueries(1, &_id); }
+        virtual inline ~AbstractQuery() {
+            /** @todo Get some extension wrangler instead to avoid undeclared glGenQueries() on ES2 */
+            #ifndef MAGNUM_TARGET_GLES2
+            glDeleteQueries(1, &_id);
+            #endif
+        }
 
         /** @brief OpenGL query ID */
         inline GLuint id() const { return _id; }
@@ -219,7 +229,11 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
              * Whether any samples passed from fragment shader
              * @requires_gl33 Extension @extension{ARB,occlusion_query2}
              */
+            #ifndef MAGNUM_TARGET_GLES2
             AnySamplesPassed = GL_ANY_SAMPLES_PASSED,
+            #else
+            AnySamplesPassed = GL_ANY_SAMPLES_PASSED_EXT,
+            #endif
 
             /**
              * Whether any samples passed from fragment shader (conservative)
@@ -228,7 +242,11 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
              * test at the expense of some false positives.
              * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
              */
+            #ifndef MAGNUM_TARGET_GLES2
             AnySamplesPassedConservative = GL_ANY_SAMPLES_PASSED_CONSERVATIVE
+            #else
+            AnySamplesPassedConservative = GL_ANY_SAMPLES_PASSED_CONSERVATIVE_EXT
+            #endif
         };
 
         #ifndef MAGNUM_TARGET_GLES

@@ -21,14 +21,18 @@ namespace Magnum { namespace Implementation {
 
 const Buffer::Target BufferState::targetForIndex[] = {
     Buffer::Target::Array,
+    Buffer::Target::ElementArray
+    #ifndef MAGNUM_TARGET_GLES2
+    ,
     Buffer::Target::CopyRead,
     Buffer::Target::CopyWrite,
-    Buffer::Target::ElementArray,
     Buffer::Target::PixelPack,
     Buffer::Target::PixelUnpack,
     Buffer::Target::TransformFeedback,
-    Buffer::Target::Uniform,
+    Buffer::Target::Uniform
+    #endif
     #ifndef MAGNUM_TARGET_GLES
+    ,
     Buffer::Target::AtomicCounter,
     Buffer::Target::DispatchIndirect,
     Buffer::Target::DrawIndirect,
@@ -40,13 +44,15 @@ const Buffer::Target BufferState::targetForIndex[] = {
 std::size_t BufferState::indexForTarget(Buffer::Target target) {
     switch(target) {
         case Buffer::Target::Array:             return 1;
-        case Buffer::Target::CopyRead:          return 2;
-        case Buffer::Target::CopyWrite:         return 3;
-        case Buffer::Target::ElementArray:      return 4;
+        case Buffer::Target::ElementArray:      return 2;
+        #ifndef MAGNUM_TARGET_GLES2
+        case Buffer::Target::CopyRead:          return 3;
+        case Buffer::Target::CopyWrite:         return 4;
         case Buffer::Target::PixelPack:         return 5;
         case Buffer::Target::PixelUnpack:       return 6;
         case Buffer::Target::TransformFeedback: return 7;
         case Buffer::Target::Uniform:           return 8;
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         case Buffer::Target::AtomicCounter:     return 9;
         case Buffer::Target::DispatchIndirect:  return 10;

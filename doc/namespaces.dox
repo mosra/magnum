@@ -10,13 +10,13 @@
 Contains classes for interacting with OpenGL.
 */
 
-/** @dir Contexts
- * @brief Namespace Magnum::Contexts
+/** @dir Platform
+ * @brief Namespace Magnum::Platform
  */
-/** @namespace Magnum::Contexts
-@brief Context creation
+/** @namespace Magnum::Platform
+@brief Platform-specific application and context creation
 
-Base classes for creating OpenGL contexts with various toolkits.
+Base classes for creating applications with various toolkits.
 */
 
 /** @dir Math

@@ -17,11 +17,13 @@ cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" OFF "NOT WITH_
 cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" OFF "NOT WITH_EVERYTHING;NOT WITH_PHYSICS" ON)
 cmake_dependent_option(WITH_SHADERS "Build Shaders library" OFF "NOT WITH_EVERYTHING;NOT WITH_PHYSICS" ON)
 
-option(WITH_GLXWINDOWCONTEXT "Build GlxWindowContext library" OFF)
-cmake_dependent_option(WITH_XEGLWINDOWCONTEXT "Build XEglWindowContext library" OFF "TARGET_GLES" OFF)
-cmake_dependent_option(WITH_GLUTWINDOWCONTEXT "Build GlutWindowContext library" OFF "NOT TARGET_GLES" OFF)
-option(WITH_SDL2WINDOWCONTEXT "Build Sdl2WindowContext library" OFF)
-
+option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
+cmake_dependent_option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF "TARGET_GLES" OFF)
+cmake_dependent_option(WITH_GLUTAPPLICATION "Build GlutApplication library" OFF "NOT TARGET_GLES" OFF)
+option(WITH_SDL2APPLICATION "Build Sdl2Application library" OFF)
+if(${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
+    option(WITH_NACLAPPLICATION "Build NaClApplication library" OFF)
+endif()
 option(BUILD_TESTS "Build unit tests." OFF)
 
 if(BUILD_TESTS)
@@ -38,6 +40,13 @@ if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION} VERSION_
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Magnum_SOURCE_DIR}/modules-compatibility/")
 endif()
 
+# If targetting NaCl, set explicit OpenGL ES 2.0 support
+if(${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
+    set(TARGET_GLES 1)
+    set(TARGET_GLES2 1)
+    set(MAGNUM_TARGET_NACL 1)
+endif()
+
 # Check dependencies
 find_package(Corrade REQUIRED)
 if(NOT TARGET_GLES)
@@ -45,6 +54,21 @@ if(NOT TARGET_GLES)
     find_package(GLEW REQUIRED)
 else()
     find_package(OpenGLES2 REQUIRED)
+endif()
+
+# Configuration variables (saved later to corradeConfigure.h)
+if(TARGET_GLES)
+    set(MAGNUM_TARGET_GLES 1)
+endif()
+if(TARGET_GLES2)
+    set(MAGNUM_TARGET_GLES2 1)
+endif()
+
+if(CORRADE_GCC45_COMPATIBILITY)
+    set(GCC46_COMPATIBILITY 1)
+endif()
+if(GCC46_COMPATIBILITY)
+    set(MAGNUM_GCC46_COMPATIBILITY 1)
 endif()
 
 # Installation paths

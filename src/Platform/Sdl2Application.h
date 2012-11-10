@@ -1,5 +1,5 @@
-#ifndef Magnum_Contexts_Sdl2WindowContext_h
-#define Magnum_Contexts_Sdl2WindowContext_h
+#ifndef Magnum_Platform_Sdl2Application_h
+#define Magnum_Platform_Sdl2Application_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Contexts::Sdl2WindowContext
+ * @brief Class Magnum::Platform::Sdl2Application
  */
 
 #include "Math/Vector2.h"
@@ -26,25 +26,35 @@
 #include <SDL2/SDL_scancode.h>
 #include <Corrade/Containers/EnumSet.h>
 
-#include "AbstractWindowContext.h"
-
 #include "magnumCompatibility.h"
 
 namespace Magnum {
 
 class Context;
 
-namespace Contexts {
+namespace Platform {
 
 /** @nosubgrouping
-@brief SDL2 context
+@brief SDL2 application
 
 Supports keyboard and mouse handling.
 
+@section Sdl2Application-usage Usage
+
 You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen.
+draw on the screen. The subclass can be then used directly in `main()`, for
+example:
+@code
+class MyApplication: public Magnum::Platform::Sdl2Application {
+    // implement required methods...
+};
+int main(int argc, char** argv) {
+    MyApplication c(argc, argv);
+    return c.exec();
+}
+@endcode
 */
-class Sdl2WindowContext: public AbstractWindowContext {
+class Sdl2Application {
     public:
         /**
          * @brief Constructor
@@ -56,30 +66,34 @@ class Sdl2WindowContext: public AbstractWindowContext {
          * Creates centered non-resizable window with double-buffered
          * OpenGL 3.2 context with 24bit depth buffer.
          */
-        Sdl2WindowContext(int argc, char** argv, const std::string& title = "Magnum SDL2 window context", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
+        Sdl2Application(int argc, char** argv, const std::string& title = "Magnum SDL2 application", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
 
         /**
          * @brief Destructor
          *
          * Deletes context and destroys the window.
          */
-        ~Sdl2WindowContext();
+        virtual ~Sdl2Application();
 
-        int exec() override;
+        /**
+         * @brief Execute main loop
+         * @return Value for returning from `main()`.
+         */
+        int exec();
 
         /** @{ @name Drawing functions */
 
     protected:
-        /** @copydoc GlutWindowContext::viewportEvent() */
+        /** @copydoc GlutApplication::viewportEvent() */
         virtual void viewportEvent(const Math::Vector2<GLsizei>& size) = 0;
 
-        /** @copydoc GlutWindowContext::drawEvent() */
+        /** @copydoc GlutApplication::drawEvent() */
         virtual void drawEvent() = 0;
 
-        /** @copydoc GlutWindowContext::swapBuffers() */
+        /** @copydoc GlutApplication::swapBuffers() */
         inline void swapBuffers() { SDL_GL_SwapWindow(window); }
 
-        /** @copydoc GlutWindowContext::redraw() */
+        /** @copydoc GlutApplication::redraw() */
         inline void redraw() { _redraw = true; }
 
         /*@}*/
@@ -203,14 +217,14 @@ class Sdl2WindowContext: public AbstractWindowContext {
         bool _redraw;
 };
 
-CORRADE_ENUMSET_OPERATORS(Sdl2WindowContext::Modifiers)
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Modifiers)
 
 /* Implementations for inline functions with unused parameters */
-inline void Sdl2WindowContext::keyPressEvent(Key, Modifiers, const Math::Vector2<int>&) {}
-inline void Sdl2WindowContext::keyReleaseEvent(Key, Modifiers, const Math::Vector2<int>&) {}
-inline void Sdl2WindowContext::mousePressEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
-inline void Sdl2WindowContext::mouseReleaseEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
-inline void Sdl2WindowContext::mouseMotionEvent(Modifiers, const Math::Vector2<int>&) {}
+inline void Sdl2Application::keyPressEvent(Key, Modifiers, const Math::Vector2<int>&) {}
+inline void Sdl2Application::keyReleaseEvent(Key, Modifiers, const Math::Vector2<int>&) {}
+inline void Sdl2Application::mousePressEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
+inline void Sdl2Application::mouseReleaseEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
+inline void Sdl2Application::mouseMotionEvent(Modifiers, const Math::Vector2<int>&) {}
 
 }}
 
