@@ -3,7 +3,6 @@ add_library(MagnumPlatformExtensionWrangler OBJECT ExtensionWrangler.cpp)
 
 set(MagnumPlatform_HEADERS
     AbstractContextHandler.h
-    AbstractApplication.h
     ExtensionWrangler.h)
 install(FILES ${MagnumPlatform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 

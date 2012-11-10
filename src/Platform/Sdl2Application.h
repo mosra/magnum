@@ -26,8 +26,6 @@
 #include <SDL2/SDL_scancode.h>
 #include <Corrade/Containers/EnumSet.h>
 
-#include "AbstractApplication.h"
-
 #include "magnumCompatibility.h"
 
 namespace Magnum {
@@ -41,10 +39,22 @@ namespace Platform {
 
 Supports keyboard and mouse handling.
 
+@section Sdl2Application-usage Usage
+
 You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen.
+draw on the screen. The subclass can be then used directly in `main()`, for
+example:
+@code
+class MyApplication: public Magnum::Platform::Sdl2Application {
+    // implement required methods...
+};
+int main(int argc, char** argv) {
+    MyApplication c(argc, argv);
+    return c.exec();
+}
+@endcode
 */
-class Sdl2Application: public AbstractApplication {
+class Sdl2Application {
     public:
         /**
          * @brief Constructor
@@ -63,9 +73,13 @@ class Sdl2Application: public AbstractApplication {
          *
          * Deletes context and destroys the window.
          */
-        ~Sdl2Application();
+        virtual ~Sdl2Application();
 
-        int exec() override;
+        /**
+         * @brief Execute main loop
+         * @return Value for returning from `main()`.
+         */
+        int exec();
 
         /** @{ @name Drawing functions */
 

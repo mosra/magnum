@@ -28,6 +28,21 @@ namespace Magnum { namespace Platform {
 @brief GLX application
 
 Uses GlxContextHandler.
+
+@section GlxApplication-usage Usage
+
+You need to implement at least drawEvent() and viewportEvent() to be able to
+draw on the screen. The subclass can be then used directly in `main()`, for
+example:
+@code
+class MyApplication: public Magnum::Platform::GlxApplication {
+    // implement required methods...
+};
+int main(int argc, char** argv) {
+    MyApplication c(argc, argv);
+    return c.exec();
+}
+@endcode
 */
 class GlxApplication: public AbstractXApplication {
     public:

@@ -30,7 +30,6 @@
 #undef Always
 
 #include "Math/Vector2.h"
-#include "AbstractApplication.h"
 #include "AbstractContextHandler.h"
 
 #include "magnumCompatibility.h"
@@ -48,7 +47,7 @@ Supports keyboard and mouse handling.
 
 @note Not meant to be used directly, see subclasses.
 */
-class AbstractXApplication: public AbstractApplication {
+class AbstractXApplication {
     public:
         /**
          * @brief Constructor
@@ -69,7 +68,11 @@ class AbstractXApplication: public AbstractApplication {
          */
         virtual ~AbstractXApplication() = 0;
 
-        int exec() override;
+        /**
+         * @brief Execute main loop
+         * @return Value for returning from `main()`.
+         */
+        int exec();
 
         /** @brief Exit application main loop */
         inline void exit() { flags |= Flag::Exit; }

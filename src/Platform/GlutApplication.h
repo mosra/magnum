@@ -26,8 +26,6 @@
 
 #include <GL/freeglut.h>
 
-#include "AbstractApplication.h"
-
 #include "magnumCompatibility.h"
 
 namespace Magnum {
@@ -42,10 +40,22 @@ namespace Platform {
 Supports keyboard handling for limited subset of keys, mouse handling with
 support for changing cursor and mouse tracking and warping.
 
+@section GlutApplication-usage Usage
+
 You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen.
+draw on the screen. The subclass can be then used directly in `main()`, for
+example:
+@code
+class MyApplication: public Magnum::Platform::GlutApplication {
+    // implement required methods...
+};
+int main(int argc, char** argv) {
+    MyApplication c(argc, argv);
+    return c.exec();
+}
+@endcode
 */
-class GlutApplication: public AbstractApplication {
+class GlutApplication {
     public:
         /**
          * @brief Constructor
@@ -58,9 +68,13 @@ class GlutApplication: public AbstractApplication {
          */
         GlutApplication(int& argc, char** argv, const std::string& title = "Magnum GLUT application", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
 
-        ~GlutApplication();
+        virtual ~GlutApplication();
 
-        inline int exec() override {
+        /**
+         * @brief Execute main loop
+         * @return Value for returning from `main()`.
+         */
+        inline int exec() {
             glutMainLoop();
             return 0;
         }
