@@ -36,9 +36,7 @@ Minimal dependencies
    which are tested to support everything needed: **GCC** >= 4.6 and **Clang**
    >= 3.1.
  * **CMake** >= 2.8.8 (needed for `OBJECT` library target)
- * **OpenGL** headers, on Linux most probably shipped with Mesa or
-   **OpenGL ES 2** headers, if targeting OpenGL ES.
- * **GLEW** - OpenGL extension wrangler
+ * **GLEW** - OpenGL extension wrangler (only if targeting desktop OpenGL)
  * **Corrade** - Plugin management and utility library. You can get it at
    http://github.com/mosra/corrade or at http://mosra.cz/blog/corrade.php.
 
@@ -59,8 +57,8 @@ Building and running unit tests
 -------------------------------
 
 If you want to build also unit tests (which are not built by default), pass
-`-DBUILD_TESTS=True` to CMake. Unit tests use Corrade's TestSuite framework
-and can be run using
+`-DBUILD_TESTS=ON` to CMake. Unit tests use Corrade's TestSuite framework and
+can be run using
 
     ctest --output-on-failure
 

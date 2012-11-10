@@ -15,9 +15,7 @@ Minimal set of tools and libraries required for building is:
   which are tested to support everything needed: **GCC** >= 4.6 and **Clang**
   >= 3.1.
 - **CMake** >= 2.8.8 (needed for `OBJECT` library target)
-- **OpenGL** headers, on Linux most probably shipped with Mesa, or
-  **OpenGL ES 2** headers, if targeting OpenGL ES (see below).
-- **GLEW** - OpenGL extension wrangler
+- **GLEW** - OpenGL extension wrangler (only if targeting desktop OpenGL)
 - **Corrade** - Plugin management and utility library. You can get it at
   http://github.com/mosra/corrade or at http://mosra.cz/blog/corrade.php.
 
@@ -66,6 +64,7 @@ specify which parts will be built and which not:
  - `WITH_MESHTOOLS` - MeshTools library.
  - `WITH_PHYSICS` - Physics library.
  - `WITH_PRIMITIVES` - Primitives library.
+ - `WITH_SCENEGRAPH` - SceneGraph library.
  - `WITH_SHADERS` - Shaders library.
 
 None of the application libraries is built by default, regardless to
@@ -81,7 +80,7 @@ None of the application libraries is built by default, regardless to
 
 @subsection building-tests Building and running unit tests
 If you want to build also unit tests (which are not built by default), pass
-`-DBUILD_TESTS=True` to CMake. Unit tests use Corrade's @ref Corrade::TestSuite
+`-DBUILD_TESTS=ON` to CMake. Unit tests use Corrade's @ref Corrade::TestSuite
 "TestSuite" framework and can be run using
 
     ctest --output-on-failure
@@ -122,8 +121,8 @@ unsupported CXX flags.
 this system there is also prepared `mingw32-magnum` development package in
 root, named `PKGBUILD-mingw32`.
 
-You will need MinGW32 versions of the compiler and all libraries (OpenGL
-headers, GLEW, Corrade), i.e. these ArchLinux packages:
+You will need MinGW32 versions of the compiler and all libraries (GLEW,
+Corrade), i.e. these ArchLinux packages:
 
 - `mingw32-gcc`, which depends on `mingw32-w32api` containing OpenGL headers
 - `mingw32-runtime`
