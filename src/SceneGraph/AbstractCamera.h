@@ -1,5 +1,5 @@
-#ifndef Magnum_SceneGraph_Camera_h
-#define Magnum_SceneGraph_Camera_h
+#ifndef Magnum_SceneGraph_AbstractCamera_h
+#define Magnum_SceneGraph_AbstractCamera_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractCamera, Magnum::SceneGraph::Camera2D, Magnum::SceneGraph::Camera3D, enum AspectRatioPolicy, alias Magnum::SceneGraph::AbstractCamera2D, Magnum::SceneGraph::AbstractCamera3D
+ * @brief Class Magnum::SceneGraph::AbstractCamera, enum AspectRatioPolicy, alias Magnum::SceneGraph::AbstractCamera2D, Magnum::SceneGraph::AbstractCamera3D
  */
 
 #include "Math/Matrix3.h"
@@ -24,11 +24,6 @@
 #include "AbstractFeature.h"
 
 #include "magnumSceneGraphVisibility.h"
-
-#ifdef WIN32 /* I so HATE windows.h */
-#undef near
-#undef far
-#endif
 
 namespace Magnum { namespace SceneGraph {
 
@@ -66,14 +61,16 @@ instantiatable, use Camera2D or Camera3D subclasses instead.
 @section AbstractCamera-explicit-specializations Explicit template specializations
 
 The following specialization are explicitly compiled into SceneGraph library.
-For other specializations you have to use Camera.hpp implementation file to
-avoid linker errors. See @ref compilation-speedup-hpp for more information.
+For other specializations you have to use AbstractCamera.hpp implementation
+file to avoid linker errors. See also relevant sections in
+@ref Camera2D-explicit-specializations "Camera2D" and
+@ref Camera3D-explicit-specializations "Camera3D" class documentation or
+@ref compilation-speedup-hpp for more information.
 
  - @ref AbstractCamera "AbstractCamera<2>"
  - @ref AbstractCamera "AbstractCamera<3>"
 
-@see Camera2D, Camera3D, Drawable, DrawableGroup, AbstractCamera2D,
-    AbstractCamera3D
+@see Drawable, DrawableGroup, AbstractCamera2D, AbstractCamera3D
 */
 template<std::uint8_t dimensions, class T = GLfloat> class SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions, T> {
     public:
@@ -202,118 +199,6 @@ template<class T = GLfloat> using AbstractCamera3D = AbstractCamera<3, T>;
 #else
 typedef AbstractCamera<3, T = GLfloat> AbstractCamera3D;
 #endif
-
-/**
-@brief Camera for two-dimensional scenes
-
-See Drawable documentation for more information.
-
-@section Object-explicit-specializations Explicit template specializations
-
-The following specialization are explicitly compiled into SceneGraph library.
-For other specializations you have to use Camera.hpp implementation file to
-avoid linker errors. See @ref compilation-speedup-hpp for more information.
-
- - @ref Camera2D "Camera2D<GLfloat>"
-
-@see Camera3D, Drawable, DrawableGroup
-*/
-template<class T = GLfloat> class SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2, T> {
-    public:
-        /**
-         * @brief Constructor
-         * @param object    %Object holding this feature
-         *
-         * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
-         * @see setOrthographic()
-         */
-        inline Camera2D(AbstractObject<2, T>* object): AbstractCamera<2, T>(object) {}
-
-        /**
-         * @brief Set projection
-         * @param size      Size of the view
-         * @return Pointer to self (for method chaining)
-         *
-         * The area of given size will be scaled down to range @f$ [-1; 1] @f$
-         * on all directions.
-         */
-        Camera2D<T>* setProjection(const Math::Vector2<T>& size);
-
-        /* Overloads to remove WTF-factor from method chaining order */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline Camera2D<T>* setAspectRatioPolicy(AspectRatioPolicy policy) {
-            AbstractCamera<2, T>::setAspectRatioPolicy(policy);
-            return this;
-        }
-        #endif
-};
-
-/**
-@brief Camera for three-dimensional scenes
-
-See Drawable documentation for more information.
-
-@section Object-explicit-specializations Explicit template specializations
-
-The following specialization are explicitly compiled into SceneGraph library.
-For other specializations you have to use Camera.hpp implementation file to
-avoid linker errors. See @ref compilation-speedup-hpp for more information.
-
- - @ref Camera3D "Camera3D<GLfloat>"
-
-@see Camera2D, Drawable, DrawableGroup
-*/
-template<class T = GLfloat> class SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3, T> {
-    public:
-        /**
-         * @brief Constructor
-         * @param object    %Object holding this feature
-         *
-         * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
-         * @see setOrthographic(), setPerspective()
-         */
-        inline Camera3D(AbstractObject<3, T>* object): AbstractCamera<3, T>(object), _near(0.0f), _far(0.0f) {}
-
-        /**
-         * @brief Set orthographic projection
-         * @param size      Size of the view
-         * @param near      Near clipping plane
-         * @param far       Far clipping plane
-         * @return Pointer to self (for method chaining)
-         *
-         * The volume of given size will be scaled down to range @f$ [-1; 1] @f$
-         * on all directions.
-         */
-        Camera3D<T>* setOrthographic(const Math::Vector2<T>& size, T near, T far);
-
-        /**
-         * @brief Set perspective projection
-         * @param fov       Field of view angle
-         * @param near      Near clipping plane
-         * @param far       Far clipping plane
-         * @return Pointer to self (for method chaining)
-         *
-         * @todo Aspect ratio
-         */
-        Camera3D<T>* setPerspective(T fov, T near, T far);
-
-        /** @brief Near clipping plane */
-        inline T near() const { return _near; }
-
-        /** @brief Far clipping plane */
-        inline T far() const { return _far; }
-
-        /* Overloads to remove WTF-factor from method chaining order */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline Camera3D<T>* setAspectRatioPolicy(AspectRatioPolicy policy) {
-            AbstractCamera<3, T>::setAspectRatioPolicy(policy);
-            return this;
-        }
-        #endif
-
-    private:
-        T _near, _far;
-};
 
 /* Make implementers' life easier */
 #ifndef MAGNUM_GCC46_COMPATIBILITY

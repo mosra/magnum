@@ -1,5 +1,5 @@
-#ifndef Magnum_SceneGraph_Camera_hpp
-#define Magnum_SceneGraph_Camera_hpp
+#ifndef Magnum_SceneGraph_AbstractCamera_hpp
+#define Magnum_SceneGraph_AbstractCamera_hpp
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,15 +16,12 @@
 */
 
 /** @file
- * @brief @ref compilation-speedup-hpp "Template implementation" for Camera.h
+ * @brief @ref compilation-speedup-hpp "Template implementation" for AbstractCamera.h
  */
 
-#include "Camera.h"
-
-#include <algorithm>
+#include "AbstractCamera.h"
 
 #include "Drawable.h"
-#include "Scene.h"
 
 using namespace std;
 
@@ -94,50 +91,6 @@ template<std::uint8_t dimensions, class T> void AbstractCamera<dimensions, T>::d
     /* Perform the drawing */
     for(std::size_t i = 0; i != transformations.size(); ++i)
         group[i]->draw(transformations[i], this);
-}
-
-template<class T> Camera2D<T>* Camera2D<T>::setProjection(const Math::Vector2<T>& size) {
-    /* Scale the volume down so it fits in (-1, 1) in all directions */
-    AbstractCamera<2, T>::rawProjectionMatrix = Math::Matrix3<T>::scaling(2.0f/size);
-
-    AbstractCamera<2, T>::fixAspectRatio();
-    return this;
-}
-
-template<class T> Camera3D<T>* Camera3D<T>::setOrthographic(const Math::Vector2<T>& size, T near, T far) {
-    _near = near;
-    _far = far;
-
-    Math::Vector2<T> xyScale = T(2.0)/size;
-    T zScale = T(2.0)/(near-far);
-
-    AbstractCamera<3, T>::rawProjectionMatrix = Math::Matrix4<T>(
-        xyScale.x(),    T(0.0),         T(0.0),         T(0.0),
-        T(0.0),         xyScale.y(),    T(0.0),         T(0.0),
-        T(0.0),         T(0.0),         zScale,         T(0.0),
-        T(0.0),         T(0.0),         near*zScale-1,  T(1.0)
-    );
-
-    AbstractCamera<3, T>::fixAspectRatio();
-    return this;
-}
-
-template<class T> Camera3D<T>* Camera3D<T>::setPerspective(T fov, T near, T far) {
-    _near = near;
-    _far = far;
-
-    T xyScale = T(1.0)/tan(fov/2); /* == near/size */
-    T zScale = T(1.0)/(near-far);
-
-    AbstractCamera<3, T>::rawProjectionMatrix = Matrix4(
-        xyScale,    T(0.0),     T(0.0),                 T(0.0),
-        T(0.0),     xyScale,    T(0.0),                 T(0.0),
-        T(0.0),     T(0.0),     (far+near)*zScale,      T(-1.0),
-        T(0.0),     T(0.0),     (2*far*near)*zScale,    T(0.0)
-    );
-
-    AbstractCamera<3, T>::fixAspectRatio();
-    return this;
 }
 
 }}

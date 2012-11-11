@@ -16,11 +16,13 @@
 #include "CameraTest.h"
 
 #include "Math/Constants.h"
-#include "SceneGraph/Camera.h"
-#include "SceneGraph/Camera.hpp" /* only for aspectRatioFix(), so it doesn't have to be exported */
+#include "SceneGraph/AbstractCamera.hpp" /* only for aspectRatioFix(), so it doesn't have to be exported */
+#include "SceneGraph/Camera2D.h"
+#include "SceneGraph/Camera3D.h"
 #include "SceneGraph/Drawable.h"
 #include "SceneGraph/MatrixTransformation2D.h"
 #include "SceneGraph/MatrixTransformation3D.h"
+#include "SceneGraph/Scene.h"
 
 CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::CameraTest)
 
