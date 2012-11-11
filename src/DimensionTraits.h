@@ -17,6 +17,8 @@
 
 #include <cstdint>
 
+#include "Magnum.h"
+
 /** @file
  * @brief Class Magnum::DimensionTraits
  */
@@ -36,7 +38,7 @@ namespace Math {
 }
 
 /** @brief Matrix, point and vector specializations for given dimension count */
-template<std::uint8_t dimensions, class T> struct DimensionTraits {
+template<std::uint8_t dimensions, class T = GLfloat> struct DimensionTraits {
     #ifdef DOXYGEN_GENERATING_OUTPUT
     /**
      * @brief Vector type
