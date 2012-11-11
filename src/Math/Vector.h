@@ -61,10 +61,10 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          * @attention Assertion fails on non-normalized vectors and NaN is
          *      returned.
          */
-        inline static T angle(const Vector<size, T>& a, const Vector<size, T>& b) {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(a.dot(), T(1)) && MathTypeTraits<T>::equals(b.dot(), T(1)),
+        inline static T angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
                            "Math::Vector::angle(): vectors must be normalized", std::numeric_limits<T>::quiet_NaN());
-            return std::acos(dot(a, b));
+            return std::acos(dot(normalizedA, normalizedB));
         }
 
         /** @brief Default constructor */
