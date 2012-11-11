@@ -72,6 +72,7 @@ template<std::uint8_t dimensions, class Feature, class T = GLfloat> class Featur
          * @brief Add feature to the group
          *
          * If the features is part of another group, it is removed from it.
+         * @see remove(), AbstractGroupedFeature::AbstractGroupedFeature()
          */
         void add(Feature* feature) {
             /** @todo Assert the same scene for all items? -- can't easily
@@ -90,6 +91,7 @@ template<std::uint8_t dimensions, class Feature, class T = GLfloat> class Featur
          * @brief Remove feature from the group
          *
          * The feature must be part of the group.
+         * @see add()
          */
         void remove(Feature* feature) {
             CORRADE_ASSERT(feature->_group == this,
