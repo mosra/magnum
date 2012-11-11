@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractCamera, Magnum::SceneGraph::Camera2D, Magnum::SceneGraph::Camera3D, alias Magnum::SceneGraph::AbstractCamera2D, Magnum::SceneGraph::AbstractCamera3D
+ * @brief Class Magnum::SceneGraph::AbstractCamera, Magnum::SceneGraph::Camera2D, Magnum::SceneGraph::Camera3D, enum AspectRatioPolicy, alias Magnum::SceneGraph::AbstractCamera2D, Magnum::SceneGraph::AbstractCamera3D
  */
 
 #include "Math/Matrix3.h"
@@ -40,14 +40,19 @@ template<std::uint8_t dimensions, class T = GLfloat> using DrawableGroup = Featu
 template<std::uint8_t, class> class DrawableGroup;
 #endif
 
-/** @todo Export implementation symbols only for tests */
+/** @relates AbstractCamera
+@brief Camera aspect ratio policy
+
+@see AbstractCamera::setAspectRatioPolicy()
+*/
+enum class AspectRatioPolicy {
+    NotPreserved,   /**< Don't preserve aspect ratio (default) */
+    Extend,         /**< Extend on larger side of view */
+    Clip            /**< Clip on smaller side of view */
+};
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    enum class AspectRatioPolicy {
-        NotPreserved, Extend, Clip
-    };
-
     template<std::uint8_t dimensions, class T> typename DimensionTraits<dimensions, T>::MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Math::Vector2<GLsizei>& viewport);
 }
 #endif
@@ -71,21 +76,6 @@ avoid linker errors. See @ref compilation-speedup-hpp for more information.
 */
 template<std::uint8_t dimensions, class T = GLfloat> class SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions, T> {
     public:
-        /**
-         * @brief Aspect ratio policy
-         *
-         * @see aspectRatioPolicy(), setAspectRatioPolicy()
-         */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Implementation::AspectRatioPolicy AspectRatioPolicy;
-        #else
-        enum class AspectRatioPolicy {
-            NotPreserved,   /**< Don't preserve aspect ratio (default) */
-            Extend,         /**< Extend on larger side of view */
-            Clip            /**< Clip on smaller side of view */
-        };
-        #endif
-
         /**
          * @brief Constructor
          * @param object        Object holding the camera
@@ -250,7 +240,7 @@ template<class T = GLfloat> class SCENEGRAPH_EXPORT Camera2D: public AbstractCam
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline Camera2D<T>* setAspectRatioPolicy(typename AbstractCamera<2, T>::AspectRatioPolicy policy) {
+        inline Camera2D<T>* setAspectRatioPolicy(AspectRatioPolicy policy) {
             AbstractCamera<2, T>::setAspectRatioPolicy(policy);
             return this;
         }
@@ -314,7 +304,7 @@ template<class T = GLfloat> class SCENEGRAPH_EXPORT Camera3D: public AbstractCam
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline Camera3D<T>* setAspectRatioPolicy(typename AbstractCamera<3, T>::AspectRatioPolicy policy) {
+        inline Camera3D<T>* setAspectRatioPolicy(AspectRatioPolicy policy) {
             AbstractCamera<3, T>::setAspectRatioPolicy(policy);
             return this;
         }

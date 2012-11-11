@@ -52,37 +52,37 @@ void CameraTest::fixAspectRatio() {
     Vector2 projectionScaleZeroX(0.0f, 0.5f);
     Math::Vector2<GLsizei> sizeZeroY(400, 0);
     Math::Vector2<GLsizei> sizeZeroX(0, 300);
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(Implementation::AspectRatioPolicy::Clip, projectionScaleZeroX, size)), Matrix4());
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(Implementation::AspectRatioPolicy::Clip, projectionScaleZeroY, size)), Matrix4());
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(Implementation::AspectRatioPolicy::Clip, projectionScale, sizeZeroY)), Matrix4());
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(Implementation::AspectRatioPolicy::Extend, projectionScale, sizeZeroX)), Matrix4());
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Clip, projectionScaleZeroX, size)), Matrix4());
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Clip, projectionScaleZeroY, size)), Matrix4());
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Clip, projectionScale, sizeZeroY)), Matrix4());
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Extend, projectionScale, sizeZeroX)), Matrix4());
 
     /* Not preserved */
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(Implementation::AspectRatioPolicy::NotPreserved, projectionScale, size)), Matrix4());
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::NotPreserved, projectionScale, size)), Matrix4());
 
     /* Clip */
     Matrix4 expectedClip(1.0f, 0.0f,      0.0f, 0.0f,
                          0.0f, 4.0f/3.0f, 0.0f, 0.0f,
                          0.0f, 0.0f,      1.0f, 0.0f,
                          0.0f, 0.0f,      0.0f, 1.0f);
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(Implementation::AspectRatioPolicy::Clip, Vector2(0.5f), size)), expectedClip);
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Clip, Vector2(0.5f), size)), expectedClip);
     Matrix4 expectedClipRectangle(1.0f, 0.0f, 0.0f, 0.0f,
                                   0.0f, 2.0f, 0.0f, 0.0f,
                                   0.0f, 0.0f, 1.0f, 0.0f,
                                   0.0f, 0.0f, 0.0f, 1.0f);
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(Implementation::AspectRatioPolicy::Clip, projectionScale, size)), expectedClipRectangle);
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Clip, projectionScale, size)), expectedClipRectangle);
 
     /* Extend */
     Matrix4 expectedExtend(3.0f/4.0f, 0.0f, 0.0f, 0.0f,
                            0.0f,      1.0f, 0.0f, 0.0f,
                            0.0f,      0.0f, 1.0f, 0.0f,
                            0.0f,      0.0f, 0.0f, 1.0f);
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(Implementation::AspectRatioPolicy::Extend, Vector2(0.5f), size)), expectedExtend);
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Extend, Vector2(0.5f), size)), expectedExtend);
     Matrix4 expectedExtendRectangle(0.5f, 0.0f, 0.0f, 0.0f,
                                     0.0f, 1.0f, 0.0f, 0.0f,
                                     0.0f, 0.0f, 1.0f, 0.0f,
                                     0.0f, 0.0f, 0.0f, 1.0f);
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(Implementation::AspectRatioPolicy::Extend, projectionScale, size)), expectedExtendRectangle);
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Extend, projectionScale, size)), expectedExtendRectangle);
 }
 
 void CameraTest::defaultProjection2D() {
@@ -159,10 +159,10 @@ void CameraTest::projectionSizeViewport() {
     camera.setViewport({200, 300});
     CORRADE_COMPARE(camera.projectionSize(), Vector2(2.0f, 2.0f));
 
-    camera.setAspectRatioPolicy(Camera3D::AspectRatioPolicy::Extend);
+    camera.setAspectRatioPolicy(AspectRatioPolicy::Extend);
     CORRADE_COMPARE(camera.projectionSize(), Vector2(2.0f, 3.0f));
 
-    camera.setAspectRatioPolicy(Camera3D::AspectRatioPolicy::Clip);
+    camera.setAspectRatioPolicy(AspectRatioPolicy::Clip);
     CORRADE_COMPARE(camera.projectionSize(), Vector2(4.0f/3.0f, 2.0f));
 }
 
