@@ -16,6 +16,7 @@ set(MagnumSceneGraph_HEADERS
     Camera3D.h
     Camera3D.hpp
     Drawable.h
+    FeatureGroup.h
     MatrixTransformation2D.h
     MatrixTransformation3D.h
     Object.h
