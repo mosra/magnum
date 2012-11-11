@@ -60,7 +60,8 @@ namespace Implementation {
 /**
 @brief Base for cameras
 
-See Drawable documentation for more information.
+See Drawable documentation for more information. This class is not directly
+instantiatable, use Camera2D or Camera3D subclasses instead.
 
 @section AbstractCamera-explicit-specializations Explicit template specializations
 

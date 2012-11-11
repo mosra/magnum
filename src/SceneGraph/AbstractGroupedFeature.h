@@ -33,7 +33,7 @@ template<std::uint8_t, class, class> class FeatureGroup;
 
 Used together with FeatureGroup.
 
-@section AbstractGroupedFeature-usage Usage
+@section AbstractGroupedFeature-subclassing Subclassing
 
 Usage is via subclassing the feature using [CRTP](http://en.wikipedia.org/wiki/Curiously_recurring_template_pattern)
 and typedef'ing FeatureGroup to accept only given type, e.g.:
