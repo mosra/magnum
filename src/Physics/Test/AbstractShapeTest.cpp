@@ -1,5 +1,3 @@
-#ifndef Magnum_Physics_Test_AbstractShapeTest_h
-#define Magnum_Physics_Test_AbstractShapeTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,17 +13,29 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <TestSuite/Tester.h>
+#include "AbstractShapeTest.h"
+
+#include <sstream>
+#include <Utility/Debug.h>
+
+#include "Physics/AbstractShape.h"
+
+CORRADE_TEST_MAIN(Magnum::Physics::Test::AbstractShapeTest)
 
 namespace Magnum { namespace Physics { namespace Test {
 
-class AbstractShapeTest: public Corrade::TestSuite::Tester<AbstractShapeTest> {
-    public:
-        AbstractShapeTest();
+AbstractShapeTest::AbstractShapeTest() {
+    addTests(&AbstractShapeTest::debug);
+}
 
-        void debug();
-};
+void AbstractShapeTest::debug() {
+    std::ostringstream o;
+    Debug(&o) << AbstractShape2D::Type::ShapeGroup;
+    CORRADE_COMPARE(o.str(), "AbstractShape2D::Type::ShapeGroup\n");
+
+    o.str("");
+    Debug(&o) << AbstractShape3D::Type::Plane;
+    CORRADE_COMPARE(o.str(), "AbstractShape3D::Type::Plane\n");
+}
 
 }}}
-
-#endif
