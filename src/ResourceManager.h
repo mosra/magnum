@@ -133,12 +133,12 @@ namespace Implementation {
 
                 inline Data(): data(nullptr), state(ResourceDataState::Mutable), policy(ResourcePolicy::Manual), referenceCount(0) {}
 
-                Data(Data&& other): data(other.data), state(other.state), policy(other.policy), referenceCount(other.referenceCount) {
+                inline Data(Data&& other): data(other.data), state(other.state), policy(other.policy), referenceCount(other.referenceCount) {
                     other.data = nullptr;
                     other.referenceCount = 0;
                 }
 
-                ~Data() {
+                inline ~Data() {
                     CORRADE_ASSERT(referenceCount == 0, "ResourceManager: cannot destruct it while data are still referenced", );
                     delete data;
                 }
@@ -389,6 +389,8 @@ template<class T, class U = T> class Resource {
 Provides storage for arbitrary set of types, accessible globally using
 instance().
 
+@section ResourceManager-usage Usage
+
 Each resource is referenced from Resource class. For optimizing performance,
 each resource can be set as mutable or final. Mutable resources can be
 modified by the manager and thus each %Resource instance asks the manager for
@@ -444,6 +446,9 @@ cube->draw();
 - Destroying resource references and deleting manager instance when nothing
   references the resources anymore.
 */
+/* Due to too much work involved with explicit template instantiation (all
+   Resource combinations, all ResourceManagerData...), this class doesn't have
+   template implementation file. */
 template<class... Types> class ResourceManager: protected Implementation::ResourceManagerData<Types>... {
     public:
         /** @brief Global instance */
@@ -557,7 +562,7 @@ template<class... Types> class ResourceManager: protected Implementation::Resour
 };
 
 /** @debugoperator{Magnum::ResourceKey} */
-template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const ResourceKey& value) {
+template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const ResourceKey& value) {
     return debug << static_cast<const Corrade::Utility::HashDigest<sizeof(std::size_t)>&>(value);
 }
 
