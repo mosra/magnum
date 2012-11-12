@@ -46,8 +46,10 @@ namespace Implementation {
 @brief %Object
 
 Base of scene graph. Contains specific transformation implementation, takes
-care of parent/children relationships and contains features. See
-@ref scenegraph for introduction.
+care of parent/children relationship and contains features. See @ref scenegraph
+for introduction.
+
+Uses Corrade::Containers::LinkedList for parent/children relationship.
 
 @section Object-explicit-specializations Explicit template specializations
 

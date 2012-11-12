@@ -35,6 +35,8 @@ Provides minimal interface for features, not depending on object transformation
 implementation. This class is not directly instantiatable, use Object subclass
 instead. See also @ref scenegraph for more information.
 
+Uses Corrade::Containers::LinkedList for storing features.
+
 @see AbstractObject2D, AbstractObject3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT

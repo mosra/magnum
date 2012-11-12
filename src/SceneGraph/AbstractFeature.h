@@ -45,6 +45,9 @@ namespace Implementation {
 Contained in Object, takes care of transformation caching. See @ref scenegraph
 for introduction.
 
+Uses Corrade::Containers::LinkedList for accessing holder object and sibling
+features.
+
 @section AbstractFeature-subclassing Subclassing
 
 Feature is templated on dimension count and underlying transformation type, so
