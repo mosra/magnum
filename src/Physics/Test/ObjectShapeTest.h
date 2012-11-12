@@ -1,3 +1,5 @@
+#ifndef Magnum_Physics_Test_ObjectShapeTest_h
+#define Magnum_Physics_Test_ObjectShapeTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -13,20 +15,17 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "ShapedObjectGroup.h"
+#include <TestSuite/Tester.h>
 
-#include "ShapedObject.h"
+namespace Magnum { namespace Physics { namespace Test {
 
-namespace Magnum { namespace Physics {
+class ObjectShapeTest: public Corrade::TestSuite::Tester<ObjectShapeTest> {
+    public:
+        ObjectShapeTest();
 
-template<std::uint8_t dimensions> void ShapedObjectGroup<dimensions>::setClean() {
-    for(ShapedObject<dimensions>* object: objects)
-        if(object->isDirty()) object->setClean();
+        void clean();
+};
 
-    dirty = false;
-}
+}}}
 
-template class ShapedObjectGroup<2>;
-template class ShapedObjectGroup<3>;
-
-}}
+#endif

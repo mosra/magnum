@@ -6,6 +6,8 @@ set(MagnumPhysics_SRCS
     Line.cpp
     Plane.cpp
     Point.cpp
+    ObjectShape.cpp
+    ObjectShapeGroup.cpp
     ShapeGroup.cpp
     Sphere.cpp)
 set(MagnumPhysics_HEADERS
@@ -17,6 +19,8 @@ set(MagnumPhysics_HEADERS
     LineSegment.h
     Plane.h
     Point.h
+    ObjectShape.h
+    ObjectShapeGroup.h
     ShapeGroup.h
     Sphere.h
 

@@ -13,23 +13,36 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "ShapedObjectTest.h"
+#include "ObjectShapeTest.h"
 
-#include "Physics/ShapedObjectGroup.h"
-#include "Physics/ShapedObject.h"
+#include "Physics/ObjectShapeGroup.h"
+#include "Physics/ObjectShape.h"
+#include "Physics/Point.h"
+#include "SceneGraph/MatrixTransformation3D.h"
+#include "SceneGraph/Scene.h"
 
-CORRADE_TEST_MAIN(Magnum::Physics::Test::ShapedObjectTest)
+CORRADE_TEST_MAIN(Magnum::Physics::Test::ObjectShapeTest)
 
 namespace Magnum { namespace Physics { namespace Test {
 
-ShapedObjectTest::ShapedObjectTest() {
-    addTests(&ShapedObjectTest::clean);
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
+
+ObjectShapeTest::ObjectShapeTest() {
+    addTests(&ObjectShapeTest::clean);
 }
 
-void ShapedObjectTest::clean() {
-    ShapedObjectGroup3D group;
+void ObjectShapeTest::clean() {
+    Scene3D scene;
+    ObjectShapeGroup3D group;
 
-    ShapedObject3D a(&group), b(&group);
+    Object3D a(&scene);
+    ObjectShape3D* shape = new ObjectShape3D(&a, &group);
+    shape->setShape(new Physics::Point3D({1.0f, -2.0f, 3.0f}));
+    a.scale(Vector3(-2.0f));
+
+    Object3D b(&scene);
+    new ObjectShape3D(&b, &group);
 
     /* Everything is dirty at the beginning */
     CORRADE_VERIFY(group.isDirty());
@@ -41,6 +54,10 @@ void ShapedObjectTest::clean() {
     CORRADE_VERIFY(group.isDirty());
     CORRADE_VERIFY(!a.isDirty());
     CORRADE_VERIFY(b.isDirty());
+
+    /* Verify that the feature was actually cleaned */
+    CORRADE_COMPARE(static_cast<const Physics::Point3D*>(shape->shape())->transformedPosition(),
+        Vector3(-2.0f, 4.0f, -6.0f));
 
     /* Setting group clean will clean whole group */
     a.setDirty();
