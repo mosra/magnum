@@ -4,7 +4,7 @@
 
 uniform lowp vec3 color;
 
-#ifndef NEW_GLSL
+#ifdef NEW_GLSL
 out lowp vec4 fragmentColor;
 #endif
 
