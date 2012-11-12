@@ -5,7 +5,8 @@ namespace Magnum {
 %Magnum can be downloaded from GitHub and built either
 @ref building-compilation "manually" or using already prepared packaging files,
 currently only @ref building-arch "ArchLinux PKGBUILDs". Guide how to
-@ref building-win "crosscompile for Windows" is also available.
+crosscompile for @ref building-win "Windows" and
+@ref building-nacl "Google Chrome Native Client" is also available.
 
 @tableofcontents
 
@@ -16,25 +17,28 @@ Minimal set of tools and libraries required for building is:
   >= 3.1.
 - **CMake** >= 2.8.8 (needed for `OBJECT` library target)
 - **GLEW** - OpenGL extension wrangler (only if targeting desktop OpenGL)
-- **Corrade** - Plugin management and utility library. You can get it at
-  http://github.com/mosra/corrade or at http://mosra.cz/blog/corrade.php.
+- **Corrade** - Plugin management and utility library. See
+  @ref building-corrade "Corrade download and installation guide" for more
+  information.
 
 @section building-download Downloading the sources
+
 The source is available on GitHub: https://github.com/mosra/magnum. Clone the
 repository with your favorite IDE or Git GUI, download currrent snapshot as
 compressed archive or use the command line:
 
     git clone git://github.com/mosra/magnum.git
 
-If you need toolchains for crosscompiling, run also the following commands or,
+If you need toolchains for crosscompiling, run also the following commands, or,
 if you build from source archive, download snapshot of toolchains repository
 from https://github.com/mosra/toolchains and put them in `toolchains/`
-subdirectory:
+subdirectory.
 
     git submodule init
     git submodule update
 
 @section building-compilation Compilation, installation
+
 The library (for example with support for GLUT applications) can be built and
 installed using these four commands. See below for more information about
 optional features.
@@ -50,6 +54,7 @@ If you want to build with another compiler (e.g. Clang), pass
 `-DCMAKE_CXX_COMPILER=clang++` to CMake.
 
 @subsection building-optional Enabling or disabling features
+
 By default the engine is built for desktop OpenGL. If you want to target
 OpenGL ES, set `TARGET_GLES` to `ON` or pass `-DTARGET_GLES=ON` to CMake. Note
 that some features are available for desktop OpenGL only, see @ref requires-gl.
@@ -79,6 +84,7 @@ None of the application libraries is built by default, regardless to
  - `WITH_SDL2APPLICATION` - SDL2 application. Requires **SDL2** library.
 
 @subsection building-tests Building and running unit tests
+
 If you want to build also unit tests (which are not built by default), pass
 `-DBUILD_TESTS=ON` to CMake. Unit tests use Corrade's @ref Corrade::TestSuite
 "TestSuite" framework and can be run using
@@ -88,6 +94,7 @@ If you want to build also unit tests (which are not built by default), pass
 in build directory. Everything should pass ;-)
 
 @subsection building-doc Building documentation
+
 The documentation (which you are currently reading) is written in **Doxygen**
 (version 1.8 with Markdown support is used, but older versions should do good
 job too) and additionally uses **Graphviz** for class diagrams and  **TeX**
@@ -100,6 +107,7 @@ will be in `build/doc/` directory. You might need to create `build/` directory
 if it doesn't exist yet.
 
 @section building-arch Building ArchLinux packages
+
 In `package/archlinux` directory is currently one PKGBUILD for Git development
 build. The package is also in AUR under the same name.
 
@@ -117,6 +125,7 @@ Both development PKGBUILDs can detect when Clang is used and remove
 unsupported CXX flags.
 
 @section building-win Crosscompiling for Windows using MinGW
+
 @note This guide is tailored mainly for crosscompiling from ArchLinux. For
 this system there is also prepared `mingw32-magnum` development package in
 root, named `PKGBUILD-mingw32`.
@@ -131,7 +140,8 @@ Corrade), i.e. these ArchLinux packages:
 
 Make sure you have `toolchains` submodule updated, as
 @ref building-download "explained above". Then create build directory and run
-cmake and make:
+cmake and make. You may need to modify the `basic-mingw32.cmake` file and
+`CMAKE_INSTALL_PREFIX` to suit your distribution filesystem hierarchy.
 
     mkdir build-win
     cd build-win
@@ -140,8 +150,51 @@ cmake and make:
         -DCMAKE_INSTALL_PREFIX=/usr/i486-mingw32
     make
 
-You may need to modify the `basic-mingw32.cmake` file and
-`CMAKE_INSTALL_PREFIX` to suit your distribution filesystem hierarchy. If
-everything goes well, in `build-win/` subdirectories will be the DLLs.
+Then you can install the package using `make install` to make it available for
+depending projects.
+
+@section building-nacl Compiling for Google Chrome Native Client
+
+You will need [Native Client SDK](https://developers.google.com/native-client/beta/sdk/download).
+Tested version is `pepper_22`.
+
+Make sure you have `toolchains` Git submodule updated, as
+@ref building-download "explained above". Don't forget to adapt `NACL_PREFIX
+variable in `generic/NaCl-glibc-x86-32.cmake` and `generic/NaCl-glibc-x86-64.cmake`
+to path where your SDK is installed. Default is `/usr/nacl`.
+
+Then create build directories for x86-32 and x86-64 and run cmake and make in
+them. The toolchains needs access to its platform file, so be sure to properly
+set **absolute** path to `modules/` directory containing `Platform/NaCl.cmake`.
+Also adapt `CMAKE_INSTALL_PREFIX` to the same value you entered into toolchain
+files above.
+
+    mkdir -p build-nacl-x86-32
+    cd build-nacl-x86-32
+    cmake .. \
+        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-glibc-x86-32.cmake" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/nacl \
+        -DWITH_NACLAPPLICATION=ON \
+        -DLIB_SUFFIX=/32
+    make
+
+    mkdir -p build-nacl-x86-64
+    cd build-nacl-x86-64
+    cmake .. \
+        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-glibc-x86-64.cmake" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/nacl \
+        -DWITH_NACLAPPLICATION=ON
+    make
+
+Then you can install both versions using `make install` to make them available
+for depending projects. The headers are shared by both versions.
+
+For ArchLinux there is also prepared package file in root, named
+`PKGBUILD-nacl`.
+
 */
 }

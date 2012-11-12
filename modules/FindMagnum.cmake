@@ -207,7 +207,7 @@ endforeach()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Magnum
-    REQUIRED_VARS MAGNUM_INCLUDE_DIR MAGNUM_LIBRARY
+    REQUIRED_VARS MAGNUM_LIBRARY MAGNUM_INCLUDE_DIR
     HANDLE_COMPONENTS)
 
 # Dependent libraries and includes

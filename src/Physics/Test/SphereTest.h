@@ -15,11 +15,11 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractShapeTest.h"
+#include "ShapeTestBase.h"
 
 namespace Magnum { namespace Physics { namespace Test {
 
-class SphereTest: public Corrade::TestSuite::Tester<SphereTest>, AbstractShapeTest {
+class SphereTest: public Corrade::TestSuite::Tester<SphereTest>, ShapeTestBase {
     public:
         SphereTest();
 

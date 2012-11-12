@@ -15,6 +15,8 @@
 
 #include "AbstractShape.h"
 
+#include <Utility/Debug.h>
+
 namespace Magnum { namespace Physics {
 
 template<std::uint8_t dimensions> bool AbstractShape<dimensions>::collides(const AbstractShape* other) const {
@@ -27,5 +29,42 @@ template<std::uint8_t dimensions> bool AbstractShape<dimensions>::collides(const
 
 template class AbstractShape<2>;
 template class AbstractShape<3>;
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+Debug operator<<(Debug debug, AbstractShape2D::Type value) {
+    switch(value) {
+        #define _val(value) case AbstractShape2D::Type::value: return debug << "AbstractShape2D::Type::" #value;
+        _val(Point)
+        _val(Line)
+        _val(LineSegment)
+        _val(Sphere)
+        _val(Capsule)
+        _val(AxisAlignedBox)
+        _val(Box)
+        _val(ShapeGroup)
+        #undef _val
+    }
+
+    return debug << "AbstractShape2D::Type::(unknown)";
+}
+
+Debug operator<<(Debug debug, AbstractShape3D::Type value) {
+    switch(value) {
+        #define _val(value) case AbstractShape3D::Type::value: return debug << "AbstractShape3D::Type::" #value;
+        _val(Point)
+        _val(Line)
+        _val(LineSegment)
+        _val(Sphere)
+        _val(Capsule)
+        _val(AxisAlignedBox)
+        _val(Box)
+        _val(ShapeGroup)
+        _val(Plane)
+        #undef _val
+    }
+
+    return debug << "AbstractShape2D::Type::(unknown)";
+}
+#endif
 
 }}

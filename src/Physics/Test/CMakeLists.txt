@@ -1,3 +1,4 @@
+corrade_add_test2(PhysicsAbstractShapeTest AbstractShapeTest.cpp LIBRARIES MagnumPhysics)
 corrade_add_test2(PhysicsAxisAlignedBoxTest AxisAlignedBoxTest.cpp LIBRARIES MagnumPhysics)
 corrade_add_test2(PhysicsBoxTest BoxTest.cpp LIBRARIES MagnumPhysics)
 corrade_add_test2(PhysicsCapsuleTest CapsuleTest.cpp LIBRARIES MagnumPhysics)

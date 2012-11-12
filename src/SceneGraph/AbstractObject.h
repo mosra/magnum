@@ -33,9 +33,9 @@ template<std::uint8_t, class> class AbstractFeature;
 /**
 @brief Base for objects
 
-Provides minimal interface for features, not depending on object
-transformation implementation. See Object or @ref scenegraph for more
-information.
+Provides minimal interface for features, not depending on object transformation
+implementation. This class is not directly instantiatable, use Object subclass
+instead. See also @ref scenegraph for more information.
 
 @see AbstractObject2D, AbstractObject3D
 */

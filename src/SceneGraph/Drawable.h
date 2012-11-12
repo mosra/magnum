@@ -48,7 +48,7 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 
 class DrawableObject: public Object3D, SceneGraph::Drawable3D<> {
     public:
-        DrawableObject(Object* parent, SceneGraph::DrawableGroup3D<>* group): Object3D(parent), SceneGraph::Drawable3D<>(this, group) {
+        DrawableObject(Object* parent = nullptr, SceneGraph::DrawableGroup3D<>* group = nullptr): Object3D(parent), SceneGraph::Drawable3D<>(this, group) {
             // ...
         }
 
@@ -59,7 +59,8 @@ class DrawableObject: public Object3D, SceneGraph::Drawable3D<> {
 @endcode
 
 Then you add these objects to your scene and some drawable group and transform
-them as you like:
+them as you like. You can also use DrawableGroup::add() and
+DrawableGroup::remove() for that.
 @code
 Scene3D scene;
 SceneGraph::DrawableGroup3D<> group;

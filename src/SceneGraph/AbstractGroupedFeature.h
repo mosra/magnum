@@ -16,24 +16,23 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractGroupedFeature, Magnum::SceneGraph::FeatureGroup, alias Magnum::SceneGraph::AbstractGroupedFeature2D, Magnum::SceneGraph::AbstractGroupedFeature3D, Magnum::SceneGraph::FeatureGroup2D, Magnum::SceneGraph::FeatureGroup3D
+ * @brief Class Magnum::SceneGraph::AbstractGroupedFeature, alias Magnum::SceneGraph::AbstractGroupedFeature2D, Magnum::SceneGraph::AbstractGroupedFeature3D
  */
 
 #include <algorithm>
 #include <vector>
 
 #include "AbstractFeature.h"
+#include "FeatureGroup.h"
 
 namespace Magnum { namespace SceneGraph {
-
-template<std::uint8_t, class, class> class FeatureGroup;
 
 /**
 @brief Base for grouped features
 
 Used together with FeatureGroup.
 
-@section AbstractGroupedFeature-usage Usage
+@section AbstractGroupedFeature-subclassing Subclassing
 
 Usage is via subclassing the feature using [CRTP](http://en.wikipedia.org/wiki/Curiously_recurring_template_pattern)
 and typedef'ing FeatureGroup to accept only given type, e.g.:
@@ -124,114 +123,10 @@ template<class Derived, class T = GLfloat> using AbstractGroupedFeature3D = Abst
 typedef AbstractGroupedFeature<3, Derived, T = GLfloat> AbstractGroupedFeature3D;
 #endif
 
-/**
-@brief Group of features
-
-See AbstractGroupedFeature for more information.
-@see FeatureGroup2D, FeatureGroup3D
-*/
-template<std::uint8_t dimensions, class Feature, class T = GLfloat> class FeatureGroup {
-    friend class AbstractGroupedFeature<dimensions, Feature, T>;
-
-    public:
-        /**
-         * @brief Destructor
-         *
-         * Deletes all features belogning to this group.
-         */
-        inline virtual ~FeatureGroup() {
-            for(auto it = features.begin(); it != features.end(); ++it) {
-                (*it)->_group = nullptr;
-                delete *it;
-            }
-        }
-
-        /** @brief Whether the group is empty */
-        inline bool isEmpty() const { return features.empty(); }
-
-        /** @brief Count of features in the group */
-        inline std::size_t size() const { return features.size(); }
-
-        /** @brief Feature at given index */
-        inline Feature* operator[](std::size_t index) {
-            return features[index];
-        }
-
-        /** @overload */
-        inline const Feature* operator[](std::size_t index) const {
-            return features[index];
-        }
-
-        /**
-         * @brief Add feature to the group
-         *
-         * If the features is part of another group, it is removed from it.
-         */
-        void add(Feature* feature) {
-            /** @todo Assert the same scene for all items? -- can't easily
-                watch when feature object is removed from hierarchy */
-
-            /* Remove from previous group */
-            if(feature->_group)
-                feature->_group->remove(feature);
-
-            /* Crossreference the feature and group together */
-            features.push_back(feature);
-            feature->_group = this;
-        }
-
-        /**
-         * @brief Remove feature from the group
-         *
-         * The feature must be part of the group.
-         */
-        void remove(Feature* feature) {
-            CORRADE_ASSERT(feature->_group == this,
-                "SceneGraph::AbstractFeatureGroup::remove(): feature is not part of this group", );
-
-            /* Remove the feature and reset group pointer */
-            features.erase(std::find(features.begin(), features.end(), feature));
-            feature->_group = nullptr;
-        }
-
-    private:
-        std::vector<Feature*> features;
-};
-
-/**
-@brief Base for two-dimensional object features
-
-Convenience alternative to <tt>%FeatureGroup<2, Feature, T></tt>. See
-AbstractGroupedFeature for more information.
-@note Not available on GCC < 4.7. Use <tt>%FeatureGroup<2, Feature, T></tt>
-    instead.
-@see FeatureGroup3D
-@todoc Remove workaround when Doxygen supports alias template
-*/
-#ifndef DOXYGEN_GENERATING_OUTPUT
+/* Make implementers' life easier */
 #ifndef MAGNUM_GCC46_COMPATIBILITY
 template<class Feature, class T = GLfloat> using FeatureGroup2D = FeatureGroup<2, Feature, T>;
-#endif
-#else
-typedef FeatureGroup<2, Feature, T = GLfloat> FeatureGroup2D;
-#endif
-
-/**
-@brief Base for three-dimensional object features
-
-Convenience alternative to <tt>%FeatureGroup<3, Feature, T></tt>. See
-AbstractGroupedFeature for more information.
-@note Not available on GCC < 4.7. Use <tt>%FeatureGroup<3, Feature, T></tt>
-    instead.
-@see FeatureGroup2D
-@todoc Remove workaround when Doxygen supports alias template
-*/
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef MAGNUM_GCC46_COMPATIBILITY
 template<class Feature, class T = GLfloat> using FeatureGroup3D = FeatureGroup<3, Feature, T>;
-#endif
-#else
-typedef FeatureGroup<3, Feature, T = GLfloat> FeatureGroup3D;
 #endif
 
 }}

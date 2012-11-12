@@ -74,12 +74,12 @@ template<class T = GLfloat> class MatrixTransformation2D: public AbstractTransla
         }
 
         /**
-         * @brief Multiply transformation
+         * @brief Transform object
          * @param transformation    Transformation
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          */
-        inline MatrixTransformation2D<T>* multiplyTransformation(const Math::Matrix3<T>& transformation, TransformationType type = TransformationType::Global) {
+        inline MatrixTransformation2D<T>* transform(const Math::Matrix3<T>& transformation, TransformationType type = TransformationType::Global) {
             setTransformation(type == TransformationType::Global ?
                 transformation*_transformation : _transformation*transformation);
             return this;
@@ -87,28 +87,28 @@ template<class T = GLfloat> class MatrixTransformation2D: public AbstractTransla
 
         /**
          * @copydoc AbstractTranslationRotationScaling2D::translate()
-         * Same as calling multiplyTransformation() with Matrix3::translation().
+         * Same as calling transform() with Matrix3::translation().
          */
         inline MatrixTransformation2D<T>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) override {
-            multiplyTransformation(Math::Matrix3<T>::translation(vector), type);
+            transform(Math::Matrix3<T>::translation(vector), type);
             return this;
         }
 
         /**
          * @copydoc AbstractTranslationRotationScaling2D::rotate()
-         * Same as calling multiplyTransformation() with Matrix3::rotation().
+         * Same as calling transform() with Matrix3::rotation().
          */
         inline MatrixTransformation2D<T>* rotate(T angle, TransformationType type = TransformationType::Global) override {
-            multiplyTransformation(Math::Matrix3<T>::rotation(angle), type);
+            transform(Math::Matrix3<T>::rotation(angle), type);
             return this;
         }
 
         /**
          * @copydoc AbstractTranslationRotationScaling2D::scale()
-         * Same as calling multiplyTransformation() with Matrix3::scaling().
+         * Same as calling transform() with Matrix3::scaling().
          */
         inline MatrixTransformation2D<T>* scale(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) override {
-            multiplyTransformation(Math::Matrix3<T>::scaling(vector), type);
+            transform(Math::Matrix3<T>::scaling(vector), type);
             return this;
         }
 

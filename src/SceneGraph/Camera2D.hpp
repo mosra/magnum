@@ -1,3 +1,5 @@
+#ifndef Magnum_SceneGraph_Camera2D_hpp
+#define Magnum_SceneGraph_Camera2D_hpp
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -13,16 +15,25 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Camera2D.hpp"
-#include "Camera3D.hpp"
+/** @file
+ * @brief @ref compilation-speedup-hpp "Template implementation" for Camera2D.h
+ */
+
+#include "AbstractCamera.hpp"
+#include "Camera2D.h"
+
+using namespace std;
 
 namespace Magnum { namespace SceneGraph {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template class SCENEGRAPH_EXPORT AbstractCamera<2, GLfloat>;
-template class SCENEGRAPH_EXPORT AbstractCamera<3, GLfloat>;
-template class SCENEGRAPH_EXPORT Camera2D<GLfloat>;
-template class SCENEGRAPH_EXPORT Camera3D<GLfloat>;
-#endif
+template<class T> Camera2D<T>* Camera2D<T>::setProjection(const Math::Vector2<T>& size) {
+    /* Scale the volume down so it fits in (-1, 1) in all directions */
+    AbstractCamera<2, T>::rawProjectionMatrix = Math::Matrix3<T>::scaling(2.0f/size);
+
+    AbstractCamera<2, T>::fixAspectRatio();
+    return this;
+}
 
 }}
+
+#endif
