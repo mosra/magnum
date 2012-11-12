@@ -109,9 +109,9 @@ find_path(CORRADE_INCLUDE_DIR
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Corrade DEFAULT_MSG
-    CORRADE_INCLUDE_DIR
     CORRADE_UTILITY_LIBRARY
     CORRADE_PLUGINMANAGER_LIBRARY
+    CORRADE_INCLUDE_DIR
     CORRADE_RC_EXECUTABLE)
 
 if(NOT CORRADE_FOUND)
