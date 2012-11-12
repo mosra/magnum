@@ -28,8 +28,6 @@
 
 namespace Magnum { namespace SceneGraph {
 
-template<class Transformation> class Scene;
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     enum class ObjectFlag: std::uint8_t {

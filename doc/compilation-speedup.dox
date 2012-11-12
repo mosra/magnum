@@ -14,6 +14,11 @@ floating-point vectors and matrices like @ref Vector3 and @ref Matrix4, but to
 actually use any of them, you have to include the respective header, e.g.
 Math/Vector3.h.
 
+You are encouraged to use forward declarations also in your code. However, for
+some types it can be too cumbersome -- e.g. too many template parameters,
+typedefs etc. In this case a header with forward declarations is usually
+available: see SceneGraph/SceneGraph.h for example.
+
 @section compilation-speedup-templates Templates
 
 Many things in %Magnum are templated to allow handling of various types and

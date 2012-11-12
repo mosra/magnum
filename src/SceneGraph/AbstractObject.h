@@ -22,13 +22,11 @@
 #include <Containers/LinkedList.h>
 
 #include "DimensionTraits.h"
-#include "Magnum.h"
+#include "SceneGraph.h"
 
 #include "magnumCompatibility.h"
 
 namespace Magnum { namespace SceneGraph {
-
-template<std::uint8_t, class> class AbstractFeature;
 
 /**
 @brief Base for objects
@@ -39,10 +37,11 @@ instead. See also @ref scenegraph for more information.
 
 @see AbstractObject2D, AbstractObject3D
 */
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<std::uint8_t dimensions, class T> class AbstractObject: private Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>
+#else
 template<std::uint8_t dimensions, class T = GLfloat> class AbstractObject
-    #ifndef DOXYGEN_GENERATING_OUTPUT
-    : private Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>
-    #endif
+#endif
 {
     friend class Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>;
     friend class Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;

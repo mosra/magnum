@@ -27,14 +27,6 @@
 
 namespace Magnum { namespace SceneGraph {
 
-template<std::uint8_t, class> class Drawable;
-template<std::uint8_t, class, class> class FeatureGroup;
-#ifndef MAGNUM_GCC46_COMPATIBILITY
-template<std::uint8_t dimensions, class T = GLfloat> using DrawableGroup = FeatureGroup<dimensions, Drawable<dimensions, T>, T>;
-#else
-template<std::uint8_t, class> class DrawableGroup;
-#endif
-
 /** @relates AbstractCamera
 @brief Camera aspect ratio policy
 
@@ -72,7 +64,12 @@ file to avoid linker errors. See also relevant sections in
 
 @see Drawable, DrawableGroup, AbstractCamera2D, AbstractCamera3D
 */
-template<std::uint8_t dimensions, class T = GLfloat> class SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions, T> {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<std::uint8_t dimensions, class T>
+#else
+template<std::uint8_t dimensions, class T = GLfloat>
+#endif
+class SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions, T> {
     public:
         /**
          * @brief Constructor
@@ -198,12 +195,6 @@ template<class T = GLfloat> using AbstractCamera3D = AbstractCamera<3, T>;
 #endif
 #else
 typedef AbstractCamera<3, T = GLfloat> AbstractCamera3D;
-#endif
-
-/* Make implementers' life easier */
-#ifndef MAGNUM_GCC46_COMPATIBILITY
-template<class T = GLfloat> using DrawableGroup2D = DrawableGroup<2, T>;
-template<class T = GLfloat> using DrawableGroup3D = DrawableGroup<3, T>;
 #endif
 
 }}

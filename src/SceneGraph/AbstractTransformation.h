@@ -21,12 +21,10 @@
 
 #include <vector>
 
-#include "Magnum.h"
 #include "DimensionTraits.h"
+#include "SceneGraph.h"
 
 namespace Magnum { namespace SceneGraph {
-
-template<class> class Object;
 
 /**
 @brief Base for transformations
@@ -43,7 +41,12 @@ When sublassing, you have to:
 
 @see AbstractTransformation2D, AbstractTransformation3D
 */
-template<std::uint8_t dimensions, class T = GLfloat> class AbstractTransformation {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<std::uint8_t dimensions, class T>
+#else
+template<std::uint8_t dimensions, class T = GLfloat>
+#endif
+class AbstractTransformation {
     public:
         /** @brief Underlying floating-point type */
         typedef T Type;

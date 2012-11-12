@@ -38,7 +38,12 @@ avoid linker errors. See @ref compilation-speedup-hpp for more information.
 
 @see Camera3D, Drawable, DrawableGroup
 */
-template<class T = GLfloat> class SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2, T> {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T>
+#else
+template<class T = GLfloat>
+#endif
+class SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2, T> {
     public:
         /**
          * @brief Constructor

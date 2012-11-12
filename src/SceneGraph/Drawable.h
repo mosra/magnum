@@ -23,14 +23,6 @@
 
 namespace Magnum { namespace SceneGraph {
 
-template<std::uint8_t, class> class AbstractCamera;
-template<std::uint8_t, class> class Drawable;
-#ifndef MAGNUM_GCC46_COMPATIBILITY
-template<std::uint8_t dimensions, class T = GLfloat> using DrawableGroup = FeatureGroup<dimensions, Drawable<dimensions, T>, T>;
-#else
-template<std::uint8_t, class> class DrawableGroup;
-#endif
-
 /**
 @brief %Drawable
 
@@ -85,7 +77,12 @@ void MyApplication::drawEvent() {
 
 @see Drawable2D, Drawable3D, DrawableGroup2D, DrawableGroup3D
 */
-template<std::uint8_t dimensions, class T = GLfloat> class Drawable: public AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T> {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<std::uint8_t dimensions, class T>
+#else
+template<std::uint8_t dimensions, class T = GLfloat>
+#endif
+class Drawable: public AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T> {
     public:
         /** @copydoc AbstractGroupedFeature::AbstractGroupedFeature() */
         inline Drawable(AbstractObject<dimensions, T>* object, DrawableGroup<dimensions, T>* group = nullptr): AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>(object, group) {}
@@ -145,7 +142,12 @@ See Drawable for more information.
 #if !defined(MAGNUM_GCC46_COMPATIBILITY) && !defined(DOXYGEN_GENERATING_OUTPUT)
 template<std::uint8_t dimensions, class T = GLfloat> using DrawableGroup = FeatureGroup<dimensions, Drawable<dimensions, T>, T>;
 #else
-template<std::uint8_t dimensions, class T = GLfloat> class DrawableGroup: public FeatureGroup<dimensions, Drawable<dimensions, T>, T> {};
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<std::uint8_t dimensions, class T>
+#else
+template<std::uint8_t dimensions, class T = GLfloat>
+#endif
+class DrawableGroup: public FeatureGroup<dimensions, Drawable<dimensions, T>, T> {};
 #endif
 
 /**
@@ -180,12 +182,6 @@ template<class T = GLfloat> using DrawableGroup3D = DrawableGroup<3, T>;
 #endif
 #else
 typedef DrawableGroup<3, T = GLfloat> DrawableGroup3D;
-#endif
-
-/* Make implementers' life easier */
-#ifndef MAGNUM_GCC46_COMPATIBILITY
-template<class T = GLfloat> using AbstractCamera2D = AbstractCamera<2, T>;
-template<class T = GLfloat> using AbstractCamera3D = AbstractCamera<3, T>;
 #endif
 
 }}

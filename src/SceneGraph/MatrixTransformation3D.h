@@ -30,7 +30,12 @@ namespace Magnum { namespace SceneGraph {
 
 @see MatrixTransformation2D
 */
-template<class T = GLfloat> class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T>
+#else
+template<class T = GLfloat>
+#endif
+class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
     public:
         /** @brief Transformation matrix type */
         typedef typename DimensionTraits<3, T>::MatrixType DataType;
