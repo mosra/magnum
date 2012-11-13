@@ -79,6 +79,15 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
 
     public:
         /**
+         * @brief Clean absolute transformations of given set of objects
+         *
+         * Only dirty objects in the list are cleaned.
+         * @see setClean(), AbstractObject::setClean()
+         */
+        /* `objects` passed by copy intentionally (to avoid copy internally) */
+        static void setClean(std::vector<Object<Transformation>*> objects);
+
+        /**
          * @brief Constructor
          * @param parent    Parent object
          */
@@ -212,6 +221,8 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         std::vector<typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType> transformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType& initialTransformationMatrix = typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType()) const override;
 
         typename Transformation::DataType computeJointTransformation(const std::vector<Object<Transformation>*>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const;
+
+        void setClean(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) const override;
 
         void setClean(const typename Transformation::DataType& absoluteTransformation);
 

@@ -30,12 +30,27 @@ namespace Magnum { namespace SceneGraph { namespace Test {
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<GLfloat>> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<GLfloat>> Scene3D;
 
+class CachingObject: public Object3D, AbstractFeature<3, GLfloat> {
+    public:
+        inline CachingObject(Object3D* parent = nullptr): Object3D(parent), AbstractFeature<3, GLfloat>(this) {
+            setCachedTransformations(CachedTransformation::Absolute);
+        }
+
+        Matrix4 cleanedAbsoluteTransformation;
+
+    protected:
+        void clean(const Matrix4& absoluteTransformation) override {
+            cleanedAbsoluteTransformation = absoluteTransformation;
+        }
+};
+
 ObjectTest::ObjectTest() {
     addTests(&ObjectTest::parenting,
              &ObjectTest::scene,
              &ObjectTest::absoluteTransformation,
              &ObjectTest::transformations,
-             &ObjectTest::setClean);
+             &ObjectTest::setClean,
+             &ObjectTest::bulkSetClean);
 }
 
 void ObjectTest::parenting() {
@@ -197,20 +212,6 @@ void ObjectTest::setClean() {
             }
     };
 
-    class CachingObject: public Object3D, AbstractFeature<3, GLfloat> {
-        public:
-            inline CachingObject(Object3D* parent = nullptr): Object3D(parent), AbstractFeature<3, GLfloat>(this) {
-                setCachedTransformations(CachedTransformation::Absolute);
-            }
-
-            Matrix4 cleanedAbsoluteTransformation;
-
-        protected:
-            void clean(const Matrix4& absoluteTransformation) override {
-                cleanedAbsoluteTransformation = absoluteTransformation;
-            }
-    };
-
     CachingObject* childOne = new CachingObject(&scene);
     childOne->scale(Vector3(2.0f));
 
@@ -275,6 +276,38 @@ void ObjectTest::setClean() {
     CORRADE_VERIFY(!scene.isDirty());
     CORRADE_VERIFY(childTwo->isDirty());
     CORRADE_VERIFY(childThree->isDirty());
+}
+
+void ObjectTest::bulkSetClean() {
+    /* Verify it doesn't crash when passed empty list */
+    Object3D::setClean(vector<Object3D*>());
+
+    Scene3D scene;
+    Object3D a(&scene);
+    Object3D b(&scene);
+    b.setClean();
+    Object3D c(&scene);
+    c.translate(Vector3::zAxis(3.0f));
+    CachingObject d(&c);
+    d.scale(Vector3(-2.0f));
+    Object3D e(&scene);
+    vector<Object3D*> cleanAll{&a, &b, &c, &d, &e};
+
+    /* All objects should be cleaned */
+    CORRADE_VERIFY(a.isDirty());
+    CORRADE_VERIFY(!b.isDirty());
+    CORRADE_VERIFY(c.isDirty());
+    CORRADE_VERIFY(d.isDirty());
+    CORRADE_VERIFY(e.isDirty());
+    Object3D::setClean(cleanAll);
+    CORRADE_VERIFY(!a.isDirty());
+    CORRADE_VERIFY(!b.isDirty());
+    CORRADE_VERIFY(!c.isDirty());
+    CORRADE_VERIFY(!d.isDirty());
+    CORRADE_VERIFY(!e.isDirty());
+
+    /* Verify that right transformation was passed */
+    CORRADE_COMPARE(d.cleanedAbsoluteTransformation, Matrix4::translation(Vector3::zAxis(3.0f))*Matrix4::scaling(Vector3(-2.0f)));
 }
 
 }}}

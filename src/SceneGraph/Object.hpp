@@ -21,6 +21,7 @@
 
 #include "Object.h"
 
+#include <algorithm>
 #include <stack>
 
 #include "Scene.h"
@@ -251,6 +252,33 @@ template<class Transformation> typename Transformation::DataType Object<Transfor
             o = parent;
         }
     }
+}
+
+template<class Transformation> void Object<Transformation>::setClean(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) const {
+    std::vector<Object<Transformation>*> castObjects(objects.size());
+    for(std::size_t i = 0; i != objects.size(); ++i)
+        /** @todo Ensure this doesn't crash, somehow */
+        castObjects[i] = static_cast<Object<Transformation>*>(objects[i]);
+
+    setClean(std::move(castObjects));
+}
+
+template<class Transformation> void Object<Transformation>::setClean(std::vector<Object<Transformation>*> objects) {
+    /* Remove all clean objects from the list */
+    auto firstClean = std::remove_if(objects.begin(), objects.end(), [](Object<Transformation>* o) { return !o->isDirty(); });
+    objects.erase(firstClean, objects.end());
+
+    /* No dirty objects left, done */
+    if(objects.empty()) return;
+
+    /* Compute absolute transformations */
+    Scene<Transformation>* scene = objects[0]->scene();
+    CORRADE_ASSERT(scene, "Object::setClean(): objects must be part of some scene", );
+    std::vector<typename Transformation::DataType> transformations(scene->transformations(objects));
+
+    /* Go through all objects and clean them */
+    for(std::size_t i = 0; i != objects.size(); ++i)
+        objects[i]->setClean(transformations[i]);
 }
 
 template<class Transformation> void Object<Transformation>::setClean(const typename Transformation::DataType& absoluteTransformation) {

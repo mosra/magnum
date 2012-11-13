@@ -28,6 +28,7 @@ class ObjectTest: public Corrade::TestSuite::Tester<ObjectTest> {
         void absoluteTransformation();
         void transformations();
         void setClean();
+        void bulkSetClean();
 };
 
 }}}
