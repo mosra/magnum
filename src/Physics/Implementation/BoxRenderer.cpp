@@ -20,6 +20,7 @@
 #include "Physics/DebugDrawResourceManager.h"
 #include "Primitives/Cube.h"
 #include "Primitives/Square.h"
+#include "SceneGraph/AbstractCamera.h"
 #include "Shaders/FlatShader.h"
 
 namespace Magnum { namespace Physics { namespace Implementation {
@@ -28,8 +29,8 @@ namespace {
     template<std::uint8_t> struct BoxMesh {};
 
     template<> struct BoxMesh<2> {
-        constexpr static ResourceKey shader() { return {"shader2d"}; }
-        constexpr static ResourceKey key() { return {"box2d"}; }
+        static ResourceKey shader() { return {"shader2d"}; }
+        static ResourceKey key() { return {"box2d"}; }
 
         static Mesh* mesh(Buffer* buffer) {
             Primitives::Square square;
@@ -42,8 +43,8 @@ namespace {
     };
 
     template<> struct BoxMesh<3> {
-        constexpr static ResourceKey shader() { return {"shader3d"}; }
-        constexpr static ResourceKey key() { return {"box3d"}; }
+        static ResourceKey shader() { return {"shader3d"}; }
+        static ResourceKey key() { return {"box3d"}; }
 
         static Mesh* mesh(Buffer* buffer) {
             Primitives::Cube cube;
@@ -56,16 +57,16 @@ namespace {
     };
 }
 
-template<std::uint8_t dimensions> BoxRenderer<dimensions>::BoxRenderer(Box<dimensions>& box, ResourceKey options, typename SceneGraph::AbstractObject<dimensions>::ObjectType* parent): AbstractDebugRenderer<dimensions>(BoxMesh<dimensions>::shader(), BoxMesh<dimensions>::key(), options, parent), buffer(DebugDrawResourceManager::instance()->get<Buffer>(BoxMesh<dimensions>::key())), box(box) {
+template<std::uint8_t dimensions> BoxRenderer<dimensions>::BoxRenderer(Box<dimensions>& box): AbstractDebugRenderer<dimensions>(BoxMesh<dimensions>::shader(), BoxMesh<dimensions>::key()), buffer(DebugDrawResourceManager::instance()->get<Buffer>(BoxMesh<dimensions>::key())), box(box) {
     if(!this->mesh) {
         DebugDrawResourceManager::instance()->set(this->buffer.key(), new Buffer, ResourceDataState::Final, ResourcePolicy::Manual);
         DebugDrawResourceManager::instance()->set<Mesh>(this->mesh.key(), BoxMesh<dimensions>::mesh(buffer), ResourceDataState::Final, ResourcePolicy::Manual);
     }
 }
 
-template<std::uint8_t dimensions> void BoxRenderer<dimensions>::draw(const typename DimensionTraits<dimensions, GLfloat>::MatrixType&, typename SceneGraph::AbstractObject<dimensions>::CameraType* camera) {
-    this->shader->setTransformationProjection(camera->projectionMatrix()*box.transformedTransformation())
-        ->setColor(this->options->color)
+template<std::uint8_t dimensions> void BoxRenderer<dimensions>::draw(Resource<Options>& options, const typename DimensionTraits<dimensions, GLfloat>::MatrixType&, typename SceneGraph::AbstractCamera<dimensions>* camera) {
+    this->shader->setTransformationProjection(camera->projectionMatrix()*camera->cameraMatrix()*box.transformedTransformation())
+        ->setColor(options->color)
         ->use();
     this->mesh->draw();
 }

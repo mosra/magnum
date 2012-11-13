@@ -18,13 +18,14 @@
 #include "AbstractShaderProgram.h"
 #include "Buffer.h"
 #include "Mesh.h"
+#include "ResourceManager.h"
 #include "Shaders/FlatShader.h"
 #include "AbstractShape.h"
 #include "Box.h"
-#include "ShapedObject.h"
+#include "ObjectShape.h"
 #include "ShapeGroup.h"
-#include "Implementation/AbstractDebugRenderer.h"
 #include "Implementation/BoxRenderer.h"
+#include "Implementation/DebugRenderer.h"
 
 namespace Magnum {
 
@@ -32,23 +33,32 @@ template class ResourceManager<AbstractShaderProgram, Buffer, Mesh, Physics::Imp
 
 namespace Physics {
 
-SceneGraph::Object2D* DebugDrawResourceManager::createDebugRenderer(AbstractShape2D* shape, ResourceKey options) {
-    return createDebugMesh(nullptr, shape, options);
+template<std::uint8_t dimensions> SceneGraph::Drawable<dimensions>* DebugDrawResourceManager::createDebugRenderer(ObjectShape<dimensions>* shape, ResourceKey options) {
+    Implementation::DebugRenderer<dimensions>* renderer = new Implementation::DebugRenderer<dimensions>(shape->object(), instance()->get<Options>(options));
+    createDebugMesh(renderer, shape->shape());
+    return renderer;
 }
 
-SceneGraph::Object2D* DebugDrawResourceManager::createDebugMesh(SceneGraph::Object2D* parent, AbstractShape2D* shape, ResourceKey options) {
+template SceneGraph::Drawable<2>* DebugDrawResourceManager::createDebugRenderer(ObjectShape<2>* shape, ResourceKey options);
+template SceneGraph::Drawable<3>* DebugDrawResourceManager::createDebugRenderer(ObjectShape<3>* shape, ResourceKey options);
+
+void DebugDrawResourceManager::createDebugMesh(Implementation::DebugRenderer<2>* renderer, AbstractShape2D* shape) {
     switch(shape->type()) {
         case AbstractShape2D::Type::Box:
-            return new Implementation::BoxRenderer<2>(*static_cast<Box2D*>(shape), options, parent);
+            renderer->addRenderer(new Implementation::BoxRenderer<2>(*static_cast<Box2D*>(shape)));
+            break;
         case AbstractShape2D::Type::ShapeGroup: {
-            if(!parent) parent = new SceneGraph::Object2D;
             ShapeGroup2D* group = static_cast<ShapeGroup2D*>(shape);
-            if(group->first()) createDebugMesh(parent, group->first(), options);
-            if(group->second()) createDebugMesh(parent, group->second(), options);
-            return parent;
-        } default: return nullptr;
+            if(group->first()) createDebugMesh(renderer, group->first());
+            if(group->second()) createDebugMesh(renderer, group->second());
+            break;
+        }
+        default:
+            Warning() << "Physics::DebugDrawResourceManager::createDebugRenderer(): type" << shape->type() << "not implemented";
     }
 }
+
+void DebugDrawResourceManager::createDebugMesh(Implementation::DebugRenderer<3>*, AbstractShape3D*) {}
 
 DebugDrawResourceManager::DebugDrawResourceManager() {
     setFallback<Options>(new Options);
