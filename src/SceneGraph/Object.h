@@ -213,6 +213,8 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
 
         typename Transformation::DataType computeJointTransformation(const std::vector<Object<Transformation>*>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const;
 
+        void setClean(const typename Transformation::DataType& absoluteTransformation);
+
         typedef Implementation::ObjectFlag Flag;
         typedef Implementation::ObjectFlags Flags;
         std::uint16_t counter;

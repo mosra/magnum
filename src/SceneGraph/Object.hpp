@@ -123,42 +123,9 @@ template<class Transformation> void Object<Transformation>::setClean() {
         Object<Transformation>* o = objects.top();
         objects.pop();
 
-        /* Compose transformations */
+        /* Compose transformation and clean object */
         absoluteTransformation = Transformation::compose(absoluteTransformation, o->transformation());
-
-        /* "Lazy storage" for transformation matrix and inverted transformation matrix */
-        typedef typename AbstractFeature<Transformation::Dimensions, typename Transformation::Type>::CachedTransformation CachedTransformation;
-        typename AbstractFeature<Transformation::Dimensions, typename Transformation::Type>::CachedTransformations cached;
-        typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType
-            matrix, invertedMatrix;
-
-        /* Clean all features */
-        for(AbstractFeature<Transformation::Dimensions, typename Transformation::Type>* i = o->firstFeature(); i; i = i->nextFeature()) {
-            /* Cached absolute transformation, compute it if it wasn't
-               computed already */
-            if(i->cachedTransformations() & CachedTransformation::Absolute) {
-                if(!(cached & CachedTransformation::Absolute)) {
-                    cached |= CachedTransformation::Absolute;
-                    matrix = Transformation::toMatrix(absoluteTransformation);
-                }
-
-                i->clean(matrix);
-            }
-
-            /* Cached inverse absolute transformation, compute it if it wasn't
-               computed already */
-            if(i->cachedTransformations() & CachedTransformation::InvertedAbsolute) {
-                if(!(cached & CachedTransformation::InvertedAbsolute)) {
-                    cached |= CachedTransformation::InvertedAbsolute;
-                    invertedMatrix = Transformation::toMatrix(Transformation::inverted(absoluteTransformation));
-                }
-
-                i->cleanInverted(invertedMatrix);
-            }
-        }
-
-        /* Mark object as clean */
-        o->flags &= ~Flag::Dirty;
+        o->setClean(absoluteTransformation);
     }
 }
 
@@ -284,6 +251,42 @@ template<class Transformation> typename Transformation::DataType Object<Transfor
             o = parent;
         }
     }
+}
+
+template<class Transformation> void Object<Transformation>::setClean(const typename Transformation::DataType& absoluteTransformation) {
+    /* "Lazy storage" for transformation matrix and inverted transformation matrix */
+    typedef typename AbstractFeature<Transformation::Dimensions, typename Transformation::Type>::CachedTransformation CachedTransformation;
+    typename AbstractFeature<Transformation::Dimensions, typename Transformation::Type>::CachedTransformations cached;
+    typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType
+        matrix, invertedMatrix;
+
+    /* Clean all features */
+    for(AbstractFeature<Transformation::Dimensions, typename Transformation::Type>* i = this->firstFeature(); i; i = i->nextFeature()) {
+        /* Cached absolute transformation, compute it if it wasn't
+            computed already */
+        if(i->cachedTransformations() & CachedTransformation::Absolute) {
+            if(!(cached & CachedTransformation::Absolute)) {
+                cached |= CachedTransformation::Absolute;
+                matrix = Transformation::toMatrix(absoluteTransformation);
+            }
+
+            i->clean(matrix);
+        }
+
+        /* Cached inverse absolute transformation, compute it if it wasn't
+            computed already */
+        if(i->cachedTransformations() & CachedTransformation::InvertedAbsolute) {
+            if(!(cached & CachedTransformation::InvertedAbsolute)) {
+                cached |= CachedTransformation::InvertedAbsolute;
+                invertedMatrix = Transformation::toMatrix(Transformation::inverted(absoluteTransformation));
+            }
+
+            i->cleanInverted(invertedMatrix);
+        }
+    }
+
+    /* Mark object as clean */
+    flags &= ~Flag::Dirty;
 }
 
 }}
