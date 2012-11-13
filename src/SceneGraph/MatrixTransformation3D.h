@@ -69,7 +69,7 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
         MatrixTransformation3D<T>* setTransformation(const Math::Matrix4<T>& transformation) {
             /* Setting transformation is forbidden for the scene */
             /** @todo Assert for this? */
-            /** @todo Do this in some common code? */
+            /** @todo Do this in some common code so we don't need to include Object? */
             if(!static_cast<Object<MatrixTransformation3D<T>>*>(this)->isScene()) {
                 _transformation = transformation;
                 static_cast<Object<MatrixTransformation3D<T>>*>(this)->setDirty();

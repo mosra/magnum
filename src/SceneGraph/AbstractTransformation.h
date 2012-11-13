@@ -64,6 +64,13 @@ class AbstractTransformation {
          */
 
         /**
+         * @todo Common way to call setClean() on the object after setting
+         *      transformation & disallowing transformation setting on scene,
+         *      so the implementer doesn't forget to do it? It could also
+         *      allow to hide Object::isScene() from unwanted publicity.
+         */
+
+        /**
          * @brief Transformation data type
          *
          * The type must satisfy the following requirements:
