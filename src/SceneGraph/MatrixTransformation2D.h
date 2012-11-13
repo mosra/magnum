@@ -30,7 +30,12 @@ namespace Magnum { namespace SceneGraph {
 
 @see MatrixTransformation3D
 */
-template<class T = GLfloat> class MatrixTransformation2D: public AbstractTranslationRotationScaling2D<T> {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T>
+#else
+template<class T = GLfloat>
+#endif
+class MatrixTransformation2D: public AbstractTranslationRotationScaling2D<T> {
     public:
         /** @brief Transformation matrix type */
         typedef typename DimensionTraits<2, T>::MatrixType DataType;
@@ -64,7 +69,7 @@ template<class T = GLfloat> class MatrixTransformation2D: public AbstractTransla
         MatrixTransformation2D<T>* setTransformation(const Math::Matrix3<T>& transformation) {
             /* Setting transformation is forbidden for the scene */
             /** @todo Assert for this? */
-            /** @todo Do this in some common code? */
+            /** @todo Do this in some common code so we don't need to include Object? */
             if(!static_cast<Object<MatrixTransformation2D<T>>*>(this)->isScene()) {
                 _transformation = transformation;
                 static_cast<Object<MatrixTransformation2D<T>>*>(this)->setDirty();

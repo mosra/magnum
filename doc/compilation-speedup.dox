@@ -14,6 +14,11 @@ floating-point vectors and matrices like @ref Vector3 and @ref Matrix4, but to
 actually use any of them, you have to include the respective header, e.g.
 Math/Vector3.h.
 
+You are encouraged to use forward declarations also in your code. However, for
+some types it can be too cumbersome -- e.g. too many template parameters,
+typedefs etc. In this case a header with forward declarations is usually
+available: see SceneGraph/SceneGraph.h for example.
+
 @section compilation-speedup-templates Templates
 
 Many things in %Magnum are templated to allow handling of various types and
@@ -33,17 +38,18 @@ Template implementation files have `*.hpp` extension (hinting that they are
 something between `*.h` and `*.cpp` files).
 
 Template implementation file can be included along the header itself and it
-will just work, but it doesn't positively affect compilation time. If you are
-using one template specialization on many places, template implementation
-files give you the ability to explicitly instantiate the template in some
-source file. Then you can include only the header everywhere else and leave
-the rest on the linker.
+will just work, but it will negatively affect compilation time. If you are
+using one template specialization in many places, the compiler performs
+compilation of the same template specialization many times. Template
+implementation files give you the ability to explicitly instantiate the
+template only once in some dedicated source file. Then you can include just
+the header everywhere else and leave the rest on the linker.
 
 Templated classes which have implementation files state in their documentation
 all common specializations that are already compiled in the libraries. So,
-unless the templated class is too generic (ResourceManager for example) or you
-need something special, you don't have to mess with Object implementation
-files at all. See Color3 or SceneGraph::Object for an example.
+unless the templated class is too generic or you need something special, you
+don't have to mess with template implementation files at all. See
+SceneGraph::Object or SceneGraph::AbstractCamera for an example.
 
 Sometimes you however need to use your own specialization and that's why
 template implementation files are included in the library. For example we want
@@ -61,8 +67,8 @@ using namespace Magnum::SceneGraph;
 template class Object<MatrixTransformation3D<GLdouble>>;
 @endcode
 All other files using the same object specialization now need to include only
-SceneGraph/Object.h header and if we compile our `Object.cpp` together with
-the rest, the Object specialization will be compiled only once.
+SceneGraph/Object.h header. Thus the Object specialization will be compiled
+only once in our `Object.cpp` file, saving precious compilation time.
 
 @subsection compilation-speedup-extern-templates Extern templates
 

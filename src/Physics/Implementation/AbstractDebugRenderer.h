@@ -15,9 +15,9 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Color.h"
+#include "DimensionTraits.h"
 #include "ResourceManager.h"
-#include "SceneGraph/Camera.h"
+#include "SceneGraph/SceneGraph.h"
 
 namespace Magnum {
 
@@ -32,18 +32,18 @@ namespace Physics { namespace Implementation {
 
 struct Options;
 
-template<std::uint8_t dimensions> class AbstractDebugRenderer: public SceneGraph::AbstractObject<dimensions>::ObjectType {
+template<std::uint8_t dimensions> class AbstractDebugRenderer {
     public:
-        AbstractDebugRenderer(ResourceKey shader, ResourceKey mesh, ResourceKey options, typename SceneGraph::AbstractObject<dimensions>::ObjectType* parent);
+        AbstractDebugRenderer(ResourceKey shader, ResourceKey mesh);
+
+        virtual ~AbstractDebugRenderer();
+
+        virtual void draw(Resource<Options>& options, const typename DimensionTraits<dimensions>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, GLfloat>* camera) = 0;
 
     protected:
         Resource<AbstractShaderProgram, Shaders::FlatShader<dimensions>> shader;
         Resource<Mesh> mesh;
-        Resource<Options> options;
 };
-
-extern template class AbstractDebugRenderer<2>;
-extern template class AbstractDebugRenderer<3>;
 
 }}}
 

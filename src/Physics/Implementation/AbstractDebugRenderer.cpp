@@ -22,7 +22,9 @@
 
 namespace Magnum { namespace Physics { namespace Implementation {
 
-template<std::uint8_t dimensions> AbstractDebugRenderer<dimensions>::AbstractDebugRenderer(ResourceKey shader, ResourceKey mesh, ResourceKey options, typename SceneGraph::AbstractObject<dimensions>::ObjectType* parent): SceneGraph::AbstractObject<dimensions>::ObjectType(parent), shader(DebugDrawResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader<dimensions>>(shader)), mesh(DebugDrawResourceManager::instance()->get<Mesh>(mesh)), options(DebugDrawResourceManager::instance()->get<Options>(options)) {}
+template<std::uint8_t dimensions> AbstractDebugRenderer<dimensions>::AbstractDebugRenderer(ResourceKey shader, ResourceKey mesh): shader(DebugDrawResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader<dimensions>>(shader)), mesh(DebugDrawResourceManager::instance()->get<Mesh>(mesh)) {}
+
+template<std::uint8_t dimensions> AbstractDebugRenderer<dimensions>::~AbstractDebugRenderer() {}
 
 template class AbstractDebugRenderer<2>;
 template class AbstractDebugRenderer<3>;

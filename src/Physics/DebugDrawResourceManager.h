@@ -22,6 +22,7 @@
 #include "Magnum.h"
 #include "Color.h"
 #include "ResourceManager.h"
+#include "SceneGraph/SceneGraph.h"
 
 #include "magnumPhysicsVisibility.h"
 
@@ -36,26 +37,19 @@ namespace Physics { namespace Implementation {
     struct Options {
         Color3<GLfloat> color;
     };
-    template<std::uint8_t> class AbstractDebugRenderer;
+    template<std::uint8_t> class DebugRenderer;
 }}
-
-#ifndef WIN32
-extern template class PHYSICS_EXPORT ResourceManager<AbstractShaderProgram, Buffer, Mesh, Physics::Implementation::Options>;
 #endif
-#endif
-
-/** @todo fix extern template multiple definition linker errors in mingw32-gcc */
-
-namespace SceneGraph {
-    class Object2D;
-    class Object3D;
-}
 
 namespace Physics {
 
 template<std::uint8_t> class AbstractShape;
 typedef AbstractShape<2> AbstractShape2D;
 typedef AbstractShape<3> AbstractShape3D;
+
+template<std::uint8_t> class ObjectShape;
+typedef ObjectShape<2> ObjectShape2D;
+typedef ObjectShape<3> ObjectShape3D;
 
 /**
 @brief %Resource manager for physics debug draw
@@ -64,14 +58,18 @@ Can create objects which draw object collision shape for debugging purposes.
 
 @section DebugDrawResourceManager-usage Basic usage
 The manager must be instanced for the whole lifetime of debug draw objects.
-To create debug draw objects, call createDebugRenderer() and add the resulting
-object to the scene. You can specify options via Options struct - add it to
+To create debug renderers, call createDebugRenderer() and add the resulting
+drawable to some group. You can specify options via Options struct - add it to
 the manager and then create debug renderer with the same options key. This way
-you can easily share the same options with more objects. If no options for
+you can easily share the same options with more renderers. If no options for
 given key exist, default is used.
 
 Example code:
 @code
+// Group of drawables,preferrably dedicated for debug renderers, so you can
+// easily enable or disable debug draw
+DrawableGroup2D group;
+
 // Instance the manager at first
 DebugDrawResourceManager manager;
 
@@ -81,11 +79,10 @@ auto o = new DebugDrawResourceManager::Options {
 };
 manager->set<DebugDrawResourceManager::Options>("red", o, ResourceDataState::Final, ResourcePolicy::Persistent);
 
-// Add debug draw object for given shape, use "red" options for it, don't
-// forget to add it to the scene
-ShapedObject2D* object;
-DebugDrawResourceManager::createDebugRenderer(object->shape(), "red")
-    ->setParent(object);
+// Create debug renderer for given shape, use "red" options for it. Don't
+// forget to add it to some drawable group.
+ObjectShape2D* shape;
+group.add(DebugDrawResourceManager::createDebugRenderer(shape, "red"));
 @endcode
 */
 class PHYSICS_EXPORT DebugDrawResourceManager: public ResourceManager<AbstractShaderProgram, Buffer, Mesh, Physics::Implementation::Options> {
@@ -106,17 +103,17 @@ class PHYSICS_EXPORT DebugDrawResourceManager: public ResourceManager<AbstractSh
          *      @ref DebugDrawResourceManager-usage "class documentation" for
          *      more information.
          *
-         * Returned object is not parented to anything, you have to add it to
-         * desired scene yourself.
+         * Returned drawable is not part of any group, you have to add it to
+         * one yourself.
          */
-        static SceneGraph::Object2D* createDebugRenderer(AbstractShape2D* shape, ResourceKey options = ResourceKey());
+        template<std::uint8_t dimensions> static SceneGraph::Drawable<dimensions>* createDebugRenderer(ObjectShape<dimensions>* shape, ResourceKey options = ResourceKey());
 
         DebugDrawResourceManager();
-
         ~DebugDrawResourceManager();
 
     private:
-        static SceneGraph::Object2D* createDebugMesh(SceneGraph::Object2D* parent, AbstractShape2D* shape, ResourceKey options);
+        static void createDebugMesh(Implementation::DebugRenderer<2>* renderer, AbstractShape2D* shape);
+        static void createDebugMesh(Implementation::DebugRenderer<3>* renderer, AbstractShape3D* shape);
 };
 
 }}

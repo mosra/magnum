@@ -28,7 +28,12 @@ namespace Magnum { namespace SceneGraph {
 
 @see AbstractTranslationRotationScaling2D
 */
-template<class T = GLfloat> class AbstractTranslationRotationScaling3D: public AbstractTranslationRotation3D<T> {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T>
+#else
+template<class T = GLfloat>
+#endif
+class AbstractTranslationRotationScaling3D: public AbstractTranslationRotation3D<T> {
     public:
         /**
          * @brief Scale object

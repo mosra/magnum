@@ -1,5 +1,5 @@
-#ifndef Magnum_Physics_Test_ShapedObjectTest_h
-#define Magnum_Physics_Test_ShapedObjectTest_h
+#ifndef Magnum_Physics_Test_ObjectShapeTest_h
+#define Magnum_Physics_Test_ObjectShapeTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -19,9 +19,9 @@
 
 namespace Magnum { namespace Physics { namespace Test {
 
-class ShapedObjectTest: public Corrade::TestSuite::Tester<ShapedObjectTest> {
+class ObjectShapeTest: public Corrade::TestSuite::Tester<ObjectShapeTest> {
     public:
-        ShapedObjectTest();
+        ObjectShapeTest();
 
         void clean();
 };

@@ -30,6 +30,7 @@ namespace Magnum { namespace Physics {
 /**
 @brief Unit-size box with assigned transformation matrix
 
+@todo Use quat + position + size instead?
 @see Box2D, Box3D
 */
 template<std::uint8_t dimensions> class PHYSICS_EXPORT Box: public AbstractShape<dimensions> {

@@ -1,1 +1,1 @@
-corrade_add_test2(MathAlgorithmsGaussJordanTest GaussJordanTest.cpp)
+corrade_add_test2(MathAlgorithmsGaussJordanTest GaussJordanTest.cpp LIBRARIES MagnumMathTestLib)

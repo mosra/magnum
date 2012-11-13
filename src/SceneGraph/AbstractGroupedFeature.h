@@ -47,7 +47,12 @@ typedef SceneGraph::FeatureGroup3D<Drawable> DrawableGroup;
 @see AbstractGroupedFeature2D, AbstractGroupedFeature3D, FeatureGroup,
     FeatureGroup2D, FeatureGroup3D
 */
-template<std::uint8_t dimensions, class Derived, class T = GLfloat> class AbstractGroupedFeature: public AbstractFeature<dimensions, T> {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<std::uint8_t dimensions, class Derived, class T>
+#else
+template<std::uint8_t dimensions, class Derived, class T = GLfloat>
+#endif
+class AbstractGroupedFeature: public AbstractFeature<dimensions, T> {
     friend class FeatureGroup<dimensions, Derived, T>;
 
     public:
@@ -121,12 +126,6 @@ template<class Derived, class T = GLfloat> using AbstractGroupedFeature3D = Abst
 #endif
 #else
 typedef AbstractGroupedFeature<3, Derived, T = GLfloat> AbstractGroupedFeature3D;
-#endif
-
-/* Make implementers' life easier */
-#ifndef MAGNUM_GCC46_COMPATIBILITY
-template<class Feature, class T = GLfloat> using FeatureGroup2D = FeatureGroup<2, Feature, T>;
-template<class Feature, class T = GLfloat> using FeatureGroup3D = FeatureGroup<3, Feature, T>;
 #endif
 
 }}

@@ -22,6 +22,7 @@ set(MagnumSceneGraph_HEADERS
     Object.h
     Object.hpp
     Scene.h
+    SceneGraph.h
 
     magnumSceneGraphVisibility.h)
 add_library(MagnumSceneGraphObjects OBJECT ${MagnumSceneGraph_SRCS})

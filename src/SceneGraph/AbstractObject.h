@@ -22,13 +22,11 @@
 #include <Containers/LinkedList.h>
 
 #include "DimensionTraits.h"
-#include "Magnum.h"
+#include "SceneGraph.h"
 
 #include "magnumCompatibility.h"
 
 namespace Magnum { namespace SceneGraph {
-
-template<std::uint8_t, class> class AbstractFeature;
 
 /**
 @brief Base for objects
@@ -37,12 +35,15 @@ Provides minimal interface for features, not depending on object transformation
 implementation. This class is not directly instantiatable, use Object subclass
 instead. See also @ref scenegraph for more information.
 
+Uses Corrade::Containers::LinkedList for storing features.
+
 @see AbstractObject2D, AbstractObject3D
 */
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<std::uint8_t dimensions, class T> class AbstractObject: private Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>
+#else
 template<std::uint8_t dimensions, class T = GLfloat> class AbstractObject
-    #ifndef DOXYGEN_GENERATING_OUTPUT
-    : private Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>
-    #endif
+#endif
 {
     friend class Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>;
     friend class Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
@@ -150,9 +151,23 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractObject
          * on all object features which have caching enabled and recursively
          * calls setClean() on every parent which is not already clean. If the
          * object is already clean, the function does nothing.
+         *
+         * See also setClean(const std::vector& objects), which cleans given
+         * set of objects more efficiently than when calling setClean() on
+         * each object individually.
          * @see @ref scenegraph-caching, setDirty(), isDirty()
          */
         virtual void setClean() = 0;
+
+        /**
+         * @brief Clean absolute transformations of given set of objects
+         *
+         * Only dirty objects in the list are cleaned.
+         * @warning This function cannot check if all objects are of the same
+         *      Object type, use typesafe Object::setClean(const std::vector& objects) when
+         *      possible.
+         */
+        virtual void setClean(const std::vector<AbstractObject<dimensions, T>*>& objects) const = 0;
 
         /*@}*/
 };

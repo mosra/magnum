@@ -98,7 +98,9 @@ endif()
 
 # Files shared between main library and math unit test library
 set(MagnumMath_SRCS
-    Math/Math.cpp)
+    Math/Math.cpp
+    Math/RectangularMatrix.cpp
+    Math/Vector.cpp)
 if(NOT CMAKE_NO_OBJECT_TARGET)
     add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
 endif()
@@ -167,13 +169,21 @@ if(BUILD_TESTS)
 
     # Library with graceful assert for testing
     if(NOT CMAKE_NO_OBJECT_TARGET)
+        add_library(MagnumMathTestLib SHARED
+            $<TARGET_OBJECTS:MagnumMathObjects>)
+
         add_library(MagnumTestLib SHARED
-            $<TARGET_OBJECTS:MagnumObjects>)
+            $<TARGET_OBJECTS:MagnumObjects>
+            $<TARGET_OBJECTS:MagnumMathObjects>)
     else()
+        add_library(MagnumMathTestLib SHARED
+            ${MagnumMath_SRCS})
+
         add_library(MagnumTestLib SHARED
-            ${Magnum_SRCS})
+            ${Magnum_SRCS}
+            ${MagnumMath_SRCS})
     endif()
-    set_target_properties(MagnumTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
+    set_target_properties(MagnumTestLib MagnumMathTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
     target_link_libraries(MagnumTestLib ${Magnum_LIBS})
 
     add_subdirectory(Test)

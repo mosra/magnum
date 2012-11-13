@@ -21,12 +21,10 @@
 
 #include <vector>
 
-#include "Magnum.h"
 #include "DimensionTraits.h"
+#include "SceneGraph.h"
 
 namespace Magnum { namespace SceneGraph {
-
-template<class> class Object;
 
 /**
 @brief Base for transformations
@@ -43,7 +41,12 @@ When sublassing, you have to:
 
 @see AbstractTransformation2D, AbstractTransformation3D
 */
-template<std::uint8_t dimensions, class T = GLfloat> class AbstractTransformation {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<std::uint8_t dimensions, class T>
+#else
+template<std::uint8_t dimensions, class T = GLfloat>
+#endif
+class AbstractTransformation {
     public:
         /** @brief Underlying floating-point type */
         typedef T Type;
@@ -58,6 +61,13 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractTransformatio
          * @{ @name Subclass implementation
          *
          * These members must be defined by the implementation.
+         */
+
+        /**
+         * @todo Common way to call setClean() on the object after setting
+         *      transformation & disallowing transformation setting on scene,
+         *      so the implementer doesn't forget to do it? It could also
+         *      allow to hide Object::isScene() from unwanted publicity.
          */
 
         /**

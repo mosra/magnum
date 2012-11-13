@@ -1,5 +1,5 @@
-#ifndef Magnum_Physics_ShapedObjectGroup_h
-#define Magnum_Physics_ShapedObjectGroup_h
+#ifndef Magnum_Physics_ObjectShapeGroup_h
+#define Magnum_Physics_ObjectShapeGroup_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,28 +16,28 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::ShapedObjectGroup
+ * @brief Class Magnum::Physics::ObjectShapeGroup
  */
 
 #include <cstdint>
 #include <vector>
 
+#include "SceneGraph/FeatureGroup.h"
+
 #include "magnumPhysicsVisibility.h"
 
 namespace Magnum { namespace Physics {
 
-template<std::uint8_t> class ShapedObject;
+template<std::uint8_t> class ObjectShape;
 
 /**
-@brief Group of shaped objects
+@brief Group of object shapes
 
-@ref ShapedObject "ShapedObject*D" instances are added to the group by
-specifying it in the constructor. When the group is deleted, all objects
-belogning to it are deleted too.
-@see ShapedObjectGroup2D, ShapedObjectGroup3D
+
+@see ObjectShapeGroup2D, ObjectShapeGroup3D
 */
-template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapedObjectGroup {
-    friend class ShapedObject<dimensions>;
+template<std::uint8_t dimensions> class PHYSICS_EXPORT ObjectShapeGroup: public SceneGraph::FeatureGroup<dimensions, ObjectShape<dimensions>> {
+    friend class ObjectShape<dimensions>;
 
     public:
         /**
@@ -45,17 +45,7 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapedObjectGroup {
          *
          * Marks the group as dirty.
          */
-        inline ShapedObjectGroup(): dirty(true) {}
-
-        /**
-         * @brief Destructor
-         *
-         * Deletes all objects belogning to the group.
-         */
-        inline virtual ~ShapedObjectGroup() {
-            for(auto it = objects.begin(); it != objects.end(); ++it)
-                delete *it;
-        }
+        inline ObjectShapeGroup(): dirty(true) {}
 
         /**
          * @brief Whether the group is dirty
@@ -83,15 +73,14 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapedObjectGroup {
         void setClean();
 
     private:
-        std::vector<ShapedObject<dimensions>*> objects;
         bool dirty;
 };
 
 /** @brief Group of two-dimensional shaped objects */
-typedef ShapedObjectGroup<2> ShapedObjectGroup2D;
+typedef ObjectShapeGroup<2> ObjectShapeGroup2D;
 
 /** @brief Group of three-dimensional shaped objects */
-typedef ShapedObjectGroup<3> ShapedObjectGroup3D;
+typedef ObjectShapeGroup<3> ObjectShapeGroup3D;
 
 }}
 

@@ -13,20 +13,26 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "ShapedObjectGroup.h"
+#include "ObjectShapeGroup.h"
 
-#include "ShapedObject.h"
+#include "ObjectShape.h"
 
 namespace Magnum { namespace Physics {
 
-template<std::uint8_t dimensions> void ShapedObjectGroup<dimensions>::setClean() {
-    for(auto it = objects.begin(); it != objects.end(); ++it)
-        if((*it)->isDirty()) (*it)->setClean();
+template<std::uint8_t dimensions> void ObjectShapeGroup<dimensions>::setClean() {
+    /* Clean all objects */
+    if(!this->isEmpty()) {
+        std::vector<SceneGraph::AbstractObject<dimensions>*> objects(this->size());
+        for(std::size_t i = 0; i != this->size(); ++i)
+            objects[i] = (*this)[i]->object();
+
+        objects[0]->setClean(objects);
+    }
 
     dirty = false;
 }
 
-template class ShapedObjectGroup<2>;
-template class ShapedObjectGroup<3>;
+template class ObjectShapeGroup<2>;
+template class ObjectShapeGroup<3>;
 
 }}

@@ -45,6 +45,9 @@ namespace Implementation {
 Contained in Object, takes care of transformation caching. See @ref scenegraph
 for introduction.
 
+Uses Corrade::Containers::LinkedList for accessing holder object and sibling
+features.
+
 @section AbstractFeature-subclassing Subclassing
 
 Feature is templated on dimension count and underlying transformation type, so
@@ -114,10 +117,11 @@ which is automatically extracted from the pointer in our constructor.
 
 @see AbstractFeature2D, AbstractFeature3D
 */
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<std::uint8_t dimensions, class T> class AbstractFeature: private Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>
+#else
 template<std::uint8_t dimensions, class T = GLfloat> class AbstractFeature
-    #ifndef DOXYGEN_GENERATING_OUTPUT
-    : private Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>
-    #endif
+#endif
 {
     friend class Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>;
     friend class Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;

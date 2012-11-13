@@ -17,6 +17,8 @@
 
 #include "AbstractDebugRenderer.h"
 
+#include "magnumCompatibility.h"
+
 namespace Magnum {
 
 class Buffer;
@@ -29,17 +31,14 @@ namespace Implementation {
 
 template<std::uint8_t dimensions> class BoxRenderer: public AbstractDebugRenderer<dimensions> {
     public:
-        BoxRenderer(Box<dimensions>& box, ResourceKey options, typename SceneGraph::AbstractObject<dimensions>::ObjectType* parent);
+        BoxRenderer(Box<dimensions>& box);
 
-        void draw(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation, typename SceneGraph::AbstractObject<dimensions>::CameraType* camera);
+        void draw(Resource<Options>& options, const typename DimensionTraits<dimensions>::MatrixType& transformation, typename SceneGraph::AbstractCamera<dimensions, GLfloat>* camera) override;
 
     private:
         Resource<Buffer> buffer;
         Box<dimensions>& box;
 };
-
-extern template class BoxRenderer<2>;
-extern template class BoxRenderer<3>;
 
 }}}
 

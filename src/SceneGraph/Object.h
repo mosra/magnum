@@ -28,8 +28,6 @@
 
 namespace Magnum { namespace SceneGraph {
 
-template<class Transformation> class Scene;
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     enum class ObjectFlag: std::uint8_t {
@@ -48,8 +46,10 @@ namespace Implementation {
 @brief %Object
 
 Base of scene graph. Contains specific transformation implementation, takes
-care of parent/children relationships and contains features. See
-@ref scenegraph for introduction.
+care of parent/children relationship and contains features. See @ref scenegraph
+for introduction.
+
+Uses Corrade::Containers::LinkedList for parent/children relationship.
 
 @section Object-explicit-specializations Explicit template specializations
 
@@ -78,6 +78,15 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
     #endif
 
     public:
+        /**
+         * @brief Clean absolute transformations of given set of objects
+         *
+         * Only dirty objects in the list are cleaned.
+         * @see setClean(), AbstractObject::setClean()
+         */
+        /* `objects` passed by copy intentionally (to avoid copy internally) */
+        static void setClean(std::vector<Object<Transformation>*> objects);
+
         /**
          * @brief Constructor
          * @param parent    Parent object
@@ -212,6 +221,10 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         std::vector<typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType> transformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType& initialTransformationMatrix = typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType()) const override;
 
         typename Transformation::DataType computeJointTransformation(const std::vector<Object<Transformation>*>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const;
+
+        void setClean(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) const override;
+
+        void setClean(const typename Transformation::DataType& absoluteTransformation);
 
         typedef Implementation::ObjectFlag Flag;
         typedef Implementation::ObjectFlags Flags;

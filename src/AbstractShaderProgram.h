@@ -28,6 +28,8 @@
 
 #include "magnumVisibility.h"
 
+/** @todo early asserts (no bool returns?) */
+
 namespace Magnum {
 
 namespace Math {

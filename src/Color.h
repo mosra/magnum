@@ -143,6 +143,8 @@ range @f$ [0.0, 1.0] @f$.
 
 @todo Signed normalization to [-1.0, 1.0] like in OpenGL?
 */
+/* Not using template specialization because some internal functions are
+   impossible to explicitly instantiate */
 template<class T> class Color3: public Math::Vector3<T> {
     public:
         /** @brief Corresponding floating-point type for HSV computation */
@@ -287,6 +289,8 @@ MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Color3, 3)
 
 See Color3 for more information.
 */
+/* Not using template specialization because some internal functions are
+   impossible to explicitly instantiate */
 template<class T> class Color4: public Math::Vector4<T> {
     public:
         /** @copydoc Color3::FloatingPointType */

@@ -19,16 +19,13 @@
  * @brief Class Magnum::SceneGraph::FeatureGroup, alias Magnum::SceneGraph::FeatureGroup2D, Magnum::SceneGraph::FeatureGroup3D
  */
 
-#include <cstdint>
 #include <algorithm>
 #include <vector>
 #include <Utility/Debug.h>
 
-#include "Magnum.h"
+#include "SceneGraph.h"
 
 namespace Magnum { namespace SceneGraph {
-
-template<std::uint8_t, class, class T> class AbstractGroupedFeature;
 
 /**
 @brief Group of features
@@ -36,7 +33,12 @@ template<std::uint8_t, class, class T> class AbstractGroupedFeature;
 See AbstractGroupedFeature for more information.
 @see FeatureGroup2D, FeatureGroup3D
 */
-template<std::uint8_t dimensions, class Feature, class T = GLfloat> class FeatureGroup {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<std::uint8_t dimensions, class Feature, class T>
+#else
+template<std::uint8_t dimensions, class Feature, class T = GLfloat>
+#endif
+class FeatureGroup {
     friend class AbstractGroupedFeature<dimensions, Feature, T>;
 
     public:
