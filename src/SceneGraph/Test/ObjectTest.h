@@ -27,7 +27,7 @@ class ObjectTest: public Corrade::TestSuite::Tester<ObjectTest> {
         void scene();
         void absoluteTransformation();
         void transformations();
-        void caching();
+        void setClean();
 };
 
 }}}

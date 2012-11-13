@@ -35,7 +35,7 @@ ObjectTest::ObjectTest() {
              &ObjectTest::scene,
              &ObjectTest::absoluteTransformation,
              &ObjectTest::transformations,
-             &ObjectTest::caching);
+             &ObjectTest::setClean);
 }
 
 void ObjectTest::parenting() {
@@ -168,7 +168,7 @@ void ObjectTest::transformations() {
     CORRADE_COMPARE(o.str(), "SceneGraph::Object::transformations(): the objects are not part of the same tree\n");
 }
 
-void ObjectTest::caching() {
+void ObjectTest::setClean() {
     Scene3D scene;
 
     class CachingFeature: public AbstractFeature<3, GLfloat> {
