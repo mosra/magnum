@@ -120,6 +120,9 @@ void ObjectTest::transformations() {
 
     Matrix4 initial = Matrix4::rotationX(deg(90.0f)).inverted();
 
+    /* Empty list */
+    CORRADE_COMPARE(s.transformations(vector<Object3D*>(), initial), vector<Matrix4>());
+
     /* Scene alone */
     CORRADE_COMPARE(s.transformations({&s}, initial), vector<Matrix4>{initial});
 
