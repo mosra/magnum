@@ -39,8 +39,8 @@ template<std::uint8_t dimensions> SceneGraph::Drawable<dimensions>* DebugDrawRes
     return renderer;
 }
 
-template SceneGraph::Drawable<2>* DebugDrawResourceManager::createDebugRenderer(ObjectShape<2>* shape, ResourceKey options);
-template SceneGraph::Drawable<3>* DebugDrawResourceManager::createDebugRenderer(ObjectShape<3>* shape, ResourceKey options);
+template SceneGraph::Drawable<2> PHYSICS_EXPORT * DebugDrawResourceManager::createDebugRenderer(ObjectShape<2>* shape, ResourceKey options);
+template SceneGraph::Drawable<3> PHYSICS_EXPORT * DebugDrawResourceManager::createDebugRenderer(ObjectShape<3>* shape, ResourceKey options);
 
 void DebugDrawResourceManager::createDebugMesh(Implementation::DebugRenderer<2>* renderer, AbstractShape2D* shape) {
     switch(shape->type()) {
