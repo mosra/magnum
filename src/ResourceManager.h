@@ -567,10 +567,12 @@ template<class... Types> class ResourceManager: protected Implementation::Resour
         static ResourceManager<Types...>*& internalInstance();
 };
 
+#ifndef MAGNUM_RESOURCEMANAGER_DONT_DEFINE_INTERNALINSTANCE
 template<class ...Types> ResourceManager<Types...>*& ResourceManager<Types...>::internalInstance() {
     static ResourceManager<Types...>* _instance(nullptr);
     return _instance;
 }
+#endif
 
 /** @debugoperator{Magnum::ResourceKey} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const ResourceKey& value) {
