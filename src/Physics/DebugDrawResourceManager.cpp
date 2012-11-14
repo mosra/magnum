@@ -21,9 +21,11 @@
 #include "ResourceManager.h"
 #include "Shaders/FlatShader.h"
 #include "AbstractShape.h"
+#include "AxisAlignedBox.h"
 #include "Box.h"
 #include "ObjectShape.h"
 #include "ShapeGroup.h"
+#include "Implementation/AxisAlignedBoxRenderer.h"
 #include "Implementation/BoxRenderer.h"
 #include "Implementation/DebugRenderer.h"
 
@@ -44,6 +46,8 @@ template SceneGraph::Drawable<3> PHYSICS_EXPORT * DebugDrawResourceManager::crea
 
 void DebugDrawResourceManager::createDebugMesh(Implementation::DebugRenderer<2>* renderer, AbstractShape2D* shape) {
     switch(shape->type()) {
+        case AbstractShape2D::Type::AxisAlignedBox:
+            renderer->addRenderer(new Implementation::AxisAlignedBoxRenderer<2>(*static_cast<AxisAlignedBox2D*>(shape)));
         case AbstractShape2D::Type::Box:
             renderer->addRenderer(new Implementation::BoxRenderer<2>(*static_cast<Box2D*>(shape)));
             break;

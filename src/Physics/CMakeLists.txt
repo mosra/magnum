@@ -12,7 +12,9 @@ set(MagnumPhysics_SRCS
     ShapeGroup.cpp
     Sphere.cpp
 
+    Implementation/AbstractBoxRenderer.cpp
     Implementation/AbstractDebugRenderer.cpp
+    Implementation/AxisAlignedBoxRenderer.cpp
     Implementation/BoxRenderer.cpp)
 
 set(MagnumPhysics_HEADERS
