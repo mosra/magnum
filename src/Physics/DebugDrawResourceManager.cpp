@@ -13,6 +13,8 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#define MAGNUM_RESOURCEMANAGER_DEFINE_INTERNALINSTANCE
+
 #include "DebugDrawResourceManager.h"
 
 #include "AbstractShaderProgram.h"
