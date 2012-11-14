@@ -452,7 +452,10 @@ cube->draw();
 template<class... Types> class ResourceManager: protected Implementation::ResourceManagerData<Types>... {
     public:
         /** @brief Global instance */
-        inline static ResourceManager<Types...>* instance() { return _instance; }
+        inline static ResourceManager<Types...>* instance() {
+            CORRADE_ASSERT(_instance, "ResourceManager::instance(): no instance exists", nullptr);
+            return _instance;
+        }
 
         /**
          * @brief Constructor
@@ -463,7 +466,7 @@ template<class... Types> class ResourceManager: protected Implementation::Resour
          * @see instance()
          */
         inline ResourceManager() {
-            CORRADE_ASSERT(!_instance, "ResourceManager: another instance is already created!", );
+            CORRADE_ASSERT(!_instance, "ResourceManager::ResourceManager(): another instance is already created", );
             _instance = this;
         }
 
@@ -473,7 +476,10 @@ template<class... Types> class ResourceManager: protected Implementation::Resour
          * Sets global instance pointer to `nullptr`.
          * @see instance()
          */
-        inline ~ResourceManager() { _instance = nullptr; }
+        inline ~ResourceManager() {
+            CORRADE_INTERNAL_ASSERT(_instance == this);
+            _instance = nullptr;
+        }
 
         /** @brief Count of resources of given type */
         template<class T> inline std::size_t count() {
