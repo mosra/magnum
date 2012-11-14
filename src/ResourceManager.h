@@ -453,8 +453,8 @@ template<class... Types> class ResourceManager: protected Implementation::Resour
     public:
         /** @brief Global instance */
         inline static ResourceManager<Types...>* instance() {
-            CORRADE_ASSERT(_instance, "ResourceManager::instance(): no instance exists", nullptr);
-            return _instance;
+            CORRADE_ASSERT(internalInstance(), "ResourceManager::instance(): no instance exists", nullptr);
+            return internalInstance();
         }
 
         /**
@@ -466,8 +466,8 @@ template<class... Types> class ResourceManager: protected Implementation::Resour
          * @see instance()
          */
         inline ResourceManager() {
-            CORRADE_ASSERT(!_instance, "ResourceManager::ResourceManager(): another instance is already created", );
-            _instance = this;
+            CORRADE_ASSERT(!internalInstance(), "ResourceManager::ResourceManager(): another instance is already created", );
+            internalInstance() = this;
         }
 
         /**
@@ -477,8 +477,8 @@ template<class... Types> class ResourceManager: protected Implementation::Resour
          * @see instance()
          */
         inline ~ResourceManager() {
-            CORRADE_INTERNAL_ASSERT(_instance == this);
-            _instance = nullptr;
+            CORRADE_INTERNAL_ASSERT(internalInstance() == this);
+            internalInstance() = nullptr;
         }
 
         /** @brief Count of resources of given type */
@@ -564,15 +564,18 @@ template<class... Types> class ResourceManager: protected Implementation::Resour
         }
         inline void freeInternal() const {}
 
-        static ResourceManager<Types...>* _instance;
+        static ResourceManager<Types...>*& internalInstance();
 };
+
+template<class ...Types> ResourceManager<Types...>*& ResourceManager<Types...>::internalInstance() {
+    static ResourceManager<Types...>* _instance(nullptr);
+    return _instance;
+}
 
 /** @debugoperator{Magnum::ResourceKey} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const ResourceKey& value) {
     return debug << static_cast<const Corrade::Utility::HashDigest<sizeof(std::size_t)>&>(value);
 }
-
-template<class ...Types> ResourceManager<Types...>* ResourceManager<Types...>::_instance(nullptr);
 
 }
 
