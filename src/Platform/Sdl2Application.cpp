@@ -83,12 +83,26 @@ int Sdl2Application::exec() {
                             break;
                     } break;
                 case SDL_KEYDOWN:
-                    keyPressEvent(static_cast<Key>(event.key.keysym.sym), Modifiers(), {});
+                case SDL_KEYUP: {
+                    /*
+                     * Fix up the modifiers -- we want >= operator to work
+                     * properly on Shift, Ctrl, Alt, but SDL generates
+                     * different event for left / right keys, thus
+                     * (modifiers >= Shift) would pass only if both left and
+                     * right were pressed, which is usually not what the
+                     * developers wants.
+                     */
+                    Modifiers modifiers(static_cast<Modifier>(event.key.keysym.mod));
+                    if(modifiers & Modifier::Shift) modifiers |= Modifier::Shift;
+                    if(modifiers & Modifier::Ctrl) modifiers |= Modifier::Ctrl;
+                    if(modifiers & Modifier::Alt) modifiers |= Modifier::Alt;
+
+                    if(event.type == SDL_KEYDOWN)
+                        keyPressEvent(static_cast<Key>(event.key.keysym.sym), modifiers, {});
+                    else
+                        keyReleaseEvent(static_cast<Key>(event.key.keysym.sym), modifiers, {});
                     break;
-                case SDL_KEYUP:
-                    keyReleaseEvent(static_cast<Key>(event.key.keysym.sym), Modifiers(), {});
-                    break;
-                case SDL_MOUSEBUTTONDOWN:
+                } case SDL_MOUSEBUTTONDOWN:
                     mousePressEvent(static_cast<MouseButton>(event.button.button), Modifiers(), {event.button.x, event.button.y});
                     break;
                 case SDL_MOUSEBUTTONUP:

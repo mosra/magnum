@@ -100,17 +100,24 @@ class Sdl2Application {
         /**
          * @brief %Modifier
          *
-         * @see Modifiers, keyPressEvent(), keyReleaseEvent(),
-         *      mousePressEvent(), mouseReleaseEvent(), mouseMotionEvent()
+         * @see Modifiers, keyPressEvent(), keyReleaseEvent()
          */
-        enum class Modifier: unsigned int {};
+        enum class Modifier: Uint16 {
+            Shift = KMOD_SHIFT,         /**< Shift */
+            Ctrl = KMOD_CTRL,           /**< Ctrl */
+            Alt = KMOD_ALT,             /**< Alt */
+            AltGr = KMOD_MODE,          /**< AltGr */
+
+            CapsLock = KMOD_CAPS,       /**< Caps lock */
+            NumLock = KMOD_NUM          /**< Num lock */
+        };
 
         /**
          * @brief Set of modifiers
          *
          * @see keyPressEvent(), keyReleaseEvent()
          */
-        typedef Corrade::Containers::EnumSet<Modifier, unsigned int> Modifiers;
+        typedef Corrade::Containers::EnumSet<Modifier, Uint16> Modifiers;
 
         /**
          * @brief Key
@@ -130,7 +137,7 @@ class Sdl2Application {
         /**
          * @brief Key press event
          * @param key       Key pressed
-         * @param modifiers Active modifiers (not yet implemented)
+         * @param modifiers Active modifiers
          * @param position  Cursor position (not yet implemented)
          */
         virtual void keyPressEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
@@ -138,7 +145,7 @@ class Sdl2Application {
         /**
          * @brief Key release event
          * @param key       Key released
-         * @param modifiers Active modifiers (not yet implemented)
+         * @param modifiers Active modifiers
          * @param position  Cursor position (not yet implemented)
          */
         virtual void keyReleaseEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
@@ -175,7 +182,7 @@ class Sdl2Application {
         /**
          * @brief Mouse press event
          * @param button    Button pressed
-         * @param modifiers Active modifiers (not yet implemented)
+         * @param modifiers Active modifiers (not implemented)
          * @param position  Cursor position
          *
          * Called when mouse button is pressed. Default implementation does
@@ -186,7 +193,7 @@ class Sdl2Application {
         /**
          * @brief Mouse release event
          * @param button    Button released
-         * @param modifiers Active modifiers (not yet implemented)
+         * @param modifiers Active modifiers (not implemented)
          * @param position  Cursor position
          *
          * Called when mouse button is released. Default implementation does
@@ -196,7 +203,7 @@ class Sdl2Application {
 
         /**
          * @brief Mouse motion event
-         * @param modifiers Active modifiers (not yet implemented)
+         * @param modifiers Active modifiers (not implemented)
          * @param position  Mouse position relative to the window
          *
          * Called when mouse is moved. Default implementation does nothing.

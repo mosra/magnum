@@ -105,15 +105,16 @@ class AbstractXApplication {
          */
         enum class Modifier: unsigned int {
             Shift = ShiftMask,          /**< Shift */
-            CapsLock = LockMask,        /**< Caps lock */
             Ctrl = ControlMask,         /**< Ctrl */
             Alt = Mod1Mask,             /**< Alt */
-            NumLock = Mod2Mask,         /**< Num lock */
             AltGr = Mod5Mask,           /**< AltGr */
 
             LeftButton = Button1Mask,   /**< Left mouse button */
             MiddleButton = Button2Mask, /**< Middle mouse button */
-            RightButton = Button3Mask   /**< Right mouse button */
+            RightButton = Button3Mask,  /**< Right mouse button */
+
+            CapsLock = LockMask,        /**< Caps lock */
+            NumLock = Mod2Mask          /**< Num lock */
         };
 
         /**
