@@ -125,12 +125,76 @@ class Sdl2Application {
          * @see keyPressEvent(), keyReleaseEvent()
          */
         enum class Key: SDL_Keycode {
-            Up = SDLK_UP,                   /**< Up arrow */
-            Down = SDLK_DOWN,               /**< Down arrow */
-            Left = SDLK_LEFT,               /**< Left arrow */
-            Right = SDLK_RIGHT,             /**< Right arrow */
-            Plus = SDLK_PLUS,               /**< Plus */
-            Minus = SDLK_MINUS              /**< Minus */
+            Enter = SDLK_RETURN,        /**< Enter */
+            Esc = SDLK_ESCAPE,          /**< Escape */
+
+            Up = SDLK_UP,               /**< Up arrow */
+            Down = SDLK_DOWN,           /**< Down arrow */
+            Left = SDLK_LEFT,           /**< Left arrow */
+            Right = SDLK_RIGHT,         /**< Right arrow */
+            F1 = SDLK_F1,               /**< F1 */
+            F2 = SDLK_F2,               /**< F2 */
+            F3 = SDLK_F3,               /**< F3 */
+            F4 = SDLK_F4,               /**< F4 */
+            F5 = SDLK_F5,               /**< F5 */
+            F6 = SDLK_F6,               /**< F6 */
+            F7 = SDLK_F7,               /**< F7 */
+            F8 = SDLK_F8,               /**< F8 */
+            F9 = SDLK_F9,               /**< F9 */
+            F10 = SDLK_F10,             /**< F10 */
+            F11 = SDLK_F11,             /**< F11 */
+            F12 = SDLK_F12,             /**< F12 */
+            Home = SDLK_HOME,           /**< Home */
+            End = SDLK_END,             /**< End */
+            PageUp = SDLK_PAGEUP,       /**< Page up */
+            PageDown = SDLK_PAGEDOWN,   /**< Page down */
+
+            Space = SDLK_SPACE,         /**< Space */
+            Comma = SDLK_COMMA,         /**< Comma */
+            Period = SDLK_PERIOD,       /**< Period */
+            Minus = SDLK_MINUS,         /**< Minus */
+            Plus = SDLK_PLUS,           /**< Plus */
+            Slash = SDLK_SLASH,         /**< Slash */
+            Percent = SDLK_PERCENT,     /**< Percent */
+            Equal = SDLK_EQUALS,        /**< Equal */
+
+            Zero = SDLK_0,              /**< Zero */
+            One = SDLK_1,               /**< One */
+            Two = SDLK_2,               /**< Two */
+            Three = SDLK_3,             /**< Three */
+            Four = SDLK_4,              /**< Four */
+            Five = SDLK_5,              /**< Five */
+            Six = SDLK_6,               /**< Six */
+            Seven = SDLK_7,             /**< Seven */
+            Eight = SDLK_8,             /**< Eight */
+            Nine = SDLK_9,              /**< Nine */
+
+            A = SDLK_a,                 /**< Letter A */
+            B = SDLK_b,                 /**< Letter B */
+            C = SDLK_c,                 /**< Letter C */
+            D = SDLK_d,                 /**< Letter D */
+            E = SDLK_e,                 /**< Letter E */
+            F = SDLK_f,                 /**< Letter F */
+            G = SDLK_g,                 /**< Letter G */
+            H = SDLK_h,                 /**< Letter H */
+            I = SDLK_i,                 /**< Letter I */
+            J = SDLK_j,                 /**< Letter J */
+            K = SDLK_k,                 /**< Letter K */
+            L = SDLK_l,                 /**< Letter L */
+            M = SDLK_m,                 /**< Letter M */
+            N = SDLK_n,                 /**< Letter N */
+            O = SDLK_o,                 /**< Letter O */
+            P = SDLK_p,                 /**< Letter P */
+            Q = SDLK_q,                 /**< Letter Q */
+            R = SDLK_r,                 /**< Letter R */
+            S = SDLK_s,                 /**< Letter S */
+            T = SDLK_t,                 /**< Letter T */
+            U = SDLK_u,                 /**< Letter U */
+            V = SDLK_v,                 /**< Letter V */
+            W = SDLK_w,                 /**< Letter W */
+            X = SDLK_x,                 /**< Letter X */
+            Y = SDLK_y,                 /**< Letter Y */
+            Z = SDLK_z                  /**< Letter Z */
         };
 
     protected:

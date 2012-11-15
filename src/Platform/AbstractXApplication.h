@@ -130,6 +130,7 @@ class AbstractXApplication {
          * @see keyPressEvent(), keyReleaseEvent()
          */
         enum class Key: KeySym {
+            Enter = XK_Return,          /**< Enter */
             Esc = XK_Escape,            /**< Escape */
 
             Up = XK_Up,                 /**< Up arrow */
