@@ -16,8 +16,8 @@
 #include "NaClApplication.h"
 
 #include <ppapi/cpp/graphics_3d.h>
-#include <ppapi/lib/gl/gles2/gl2ext_ppapi.h>
 #include <ppapi/cpp/completion_callback.h>
+#include <ppapi/lib/gl/gles2/gl2ext_ppapi.h>
 
 #include "Context.h"
 
@@ -48,6 +48,10 @@ NaClApplication::NaClApplication(PP_Instance instance, const Math::Vector2<GLsiz
     glSetCurrentContextPPAPI(graphics->pp_resource());
 
     c = new Context;
+
+    /* Enable input handling for mouse and keyboard */
+    RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE|PP_INPUTEVENT_CLASS_WHEEL);
+    RequestFilteringInputEvents(PP_INPUTEVENT_CLASS_KEYBOARD);
 }
 
 NaClApplication::~NaClApplication() {
@@ -72,6 +76,31 @@ void NaClApplication::DidChangeView(const pp::View& view) {
     }
 
     drawEvent();
+}
+
+bool NaClApplication::HandleInputEvent(const pp::InputEvent& event) {
+    /* Assume everything is properly sequential here */
+    CORRADE_INTERNAL_ASSERT(!(flags & Flag::SwapInProgress));
+
+    switch(event.GetType()) {
+        case PP_INPUTEVENT_TYPE_KEYDOWN: {
+            pp::KeyboardInputEvent keyEvent(event);
+            keyPressEvent(static_cast<Key>(keyEvent.GetKeyCode()), static_cast<Modifier>(keyEvent.GetModifiers()), {});
+            break;
+        } case PP_INPUTEVENT_TYPE_KEYUP: {
+            pp::KeyboardInputEvent keyEvent(event);
+            keyReleaseEvent(static_cast<Key>(keyEvent.GetKeyCode()), static_cast<Modifier>(keyEvent.GetModifiers()), {});
+            break;
+        } default: return false;
+    }
+
+    /* Not need to redraw => assume the event was ignored */
+    if(!(flags & Flag::Redraw)) return false;
+
+    /* Redraw */
+    flags &= ~Flag::Redraw;
+    drawEvent();
+    return true;
 }
 
 void NaClApplication::swapBuffers() {

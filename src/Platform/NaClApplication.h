@@ -21,6 +21,7 @@
 
 #include <string>
 #include <Containers/EnumSet.h>
+#include <ppapi/cpp/input_event.h>
 #include <ppapi/cpp/instance.h>
 #include <ppapi/cpp/instance_handle.h>
 #include <ppapi/cpp/module.h>
@@ -105,9 +106,134 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient {
          * Marks the window for redrawing, resulting in call of drawEvent()
          * in the next iteration.
          */
-        inline void redraw() {
-            flags |= Flag::Redraw;
-        }
+        inline void redraw() { flags |= Flag::Redraw; }
+
+        /*@}*/
+
+        /** @{ @name Keyboard handling */
+
+    public:
+        /**
+         * @brief %Modifier
+         *
+         * @todo AltGr + PP_INPUTEVENT_MODIFIER_ISKEYPAD, PP_INPUTEVENT_MODIFIER_ISAUTOREPEAT
+         * @see Modifiers, keyPressEvent(), keyReleaseEvent()
+         */
+        enum class Modifier: std::uint32_t {
+            Shift = PP_INPUTEVENT_MODIFIER_SHIFTKEY,    /**< Shift */
+            Ctrl = PP_INPUTEVENT_MODIFIER_CONTROLKEY,   /**< Ctrl */
+            Alt = PP_INPUTEVENT_MODIFIER_ALTKEY,        /**< Alt */
+            Meta = PP_INPUTEVENT_MODIFIER_METAKEY,      /**< Meta */
+
+            LeftButton = PP_INPUTEVENT_MODIFIER_LEFTBUTTONDOWN,     /**< Left mouse button */
+            MiddleButton = PP_INPUTEVENT_MODIFIER_MIDDLEBUTTONDOWN, /**< Middle mouse button */
+            RightButton = PP_INPUTEVENT_MODIFIER_RIGHTBUTTONDOWN,   /**< Right mouse button */
+
+            CapsLock = PP_INPUTEVENT_MODIFIER_CAPSLOCKKEY,  /**< Caps lock */
+            NumLock = PP_INPUTEVENT_MODIFIER_NUMLOCKKEY     /**< Num lock */
+        };
+
+        /**
+         * @brief Set of modifiers
+         *
+         * @see keyPressEvent(), keyReleaseEvent()
+         */
+        typedef Corrade::Containers::EnumSet<Modifier, std::uint32_t> Modifiers;
+
+        /**
+         * @brief Key
+         *
+         * @todo Slash, percent, equal to be compatible with *XApplication
+         * @see keyPressEvent(), keyReleaseEvent()
+         */
+        enum class Key: std::uint32_t {
+            Enter = 0x0D,               /**< Enter */
+            Esc = 0x1B,                 /**< Escape */
+
+            Up = 0x26,                  /**< Up arrow */
+            Down = 0x28,                /**< Down arrow */
+            Left = 0x25,                /**< Left arrow */
+            Right = 0x27,               /**< Right arrow */
+            F1 = 0x70,                  /**< F1 */
+            F2 = 0x71,                  /**< F2 */
+            F3 = 0x72,                  /**< F3 */
+            F4 = 0x73,                  /**< F4 */
+            F5 = 0x74,                  /**< F5 */
+            F6 = 0x75,                  /**< F6 */
+            F7 = 0x76,                  /**< F7 */
+            F8 = 0x77,                  /**< F8 */
+            F9 = 0x78,                  /**< F9 */
+            F10 = 0x79,                 /**< F10 */
+            F11 = 0x7A,                 /**< F11 */
+            F12 = 0x7B,                 /**< F12 */
+            Home = 0x24,                /**< Home */
+            End = 0x23,                 /**< End */
+            PageUp = 0x21,              /**< Page up */
+            PageDown = 0x22,            /**< Page down */
+
+            Space = 0x20,               /**< Space */
+            Comma = 0xBC,               /**< Comma */
+            Period = 0xBE,              /**< Period */
+            Minus = 0xBD,               /**< Minus */
+            Plus = 0xBB,                /**< Plus */
+
+            Zero = '0',                 /**< Zero */
+            One = '1',                  /**< One */
+            Two = '2',                  /**< Two */
+            Three = '3',                /**< Three */
+            Four = '4',                 /**< Four */
+            Five = '5',                 /**< Five */
+            Six = '6',                  /**< Six */
+            Seven = '7',                /**< Seven */
+            Eight = '8',                /**< Eight */
+            Nine = '9',                 /**< Nine */
+
+            A = 'A',                    /**< Letter A */
+            B = 'B',                    /**< Letter B */
+            C = 'C',                    /**< Letter C */
+            D = 'D',                    /**< Letter D */
+            E = 'E',                    /**< Letter E */
+            F = 'F',                    /**< Letter F */
+            G = 'G',                    /**< Letter G */
+            H = 'H',                    /**< Letter H */
+            I = 'I',                    /**< Letter I */
+            J = 'J',                    /**< Letter J */
+            K = 'K',                    /**< Letter K */
+            L = 'L',                    /**< Letter L */
+            M = 'M',                    /**< Letter M */
+            N = 'N',                    /**< Letter N */
+            O = 'O',                    /**< Letter O */
+            P = 'P',                    /**< Letter P */
+            Q = 'Q',                    /**< Letter Q */
+            R = 'R',                    /**< Letter R */
+            S = 'S',                    /**< Letter S */
+            T = 'T',                    /**< Letter T */
+            U = 'U',                    /**< Letter U */
+            V = 'V',                    /**< Letter V */
+            W = 'W',                    /**< Letter W */
+            X = 'X',                    /**< Letter X */
+            Y = 'Y',                    /**< Letter Y */
+            Z = 'Z'                     /**< Letter Z */
+        };
+
+    protected:
+        /**
+         * @brief Key press event
+         * @param key       Key pressed
+         * @param modifiers Active modifiers
+         * @param position  Cursor position (not implemented)
+         *
+         * Called when an key is pressed. Default implementation does nothing.
+         */
+        virtual void keyPressEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
+
+        /**
+         * @brief Key release event
+         * @param key       Key released
+         * @param modifiers Active modifiers
+         * @param position  Cursor position (not implemented)
+         */
+        virtual void keyReleaseEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
 
         /*@}*/
 
@@ -124,6 +250,8 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient {
         }
 
         void DidChangeView(const pp::View& view) override;
+
+        bool HandleInputEvent(const pp::InputEvent& event) override;
 
         static void swapCallback(void* applicationInstance, std::int32_t);
 
@@ -179,6 +307,10 @@ When no other application header is included this macro is also aliased to
 #undef MAGNUM_APPLICATION_MAIN
 #endif
 #endif
+
+/* Implementations for inline functions with unused parameters */
+inline void NaClApplication::keyPressEvent(Key, Modifiers, const Math::Vector2<int>&) {}
+inline void NaClApplication::keyReleaseEvent(Key, Modifiers, const Math::Vector2<int>&) {}
 
 }}
 

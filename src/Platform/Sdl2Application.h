@@ -96,6 +96,7 @@ class Sdl2Application {
         /*@}*/
 
         /** @{ @name Keyboard handling */
+
     public:
         /**
          * @brief %Modifier
