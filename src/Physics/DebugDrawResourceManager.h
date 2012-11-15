@@ -21,7 +21,12 @@
 
 #include "Magnum.h"
 #include "Color.h"
+
+#ifndef MAGNUM_RESOURCEMANAGER_DEFINE_INTERNALINSTANCE
+#define MAGNUM_RESOURCEMANAGER_DONT_DEFINE_INTERNALINSTANCE
+#endif
 #include "ResourceManager.h"
+
 #include "SceneGraph/SceneGraph.h"
 
 #include "magnumPhysicsVisibility.h"
@@ -40,6 +45,8 @@ namespace Physics { namespace Implementation {
     template<std::uint8_t> class DebugRenderer;
 }}
 #endif
+
+extern template ResourceManager<AbstractShaderProgram, Buffer, Mesh, Physics::Implementation::Options> PHYSICS_EXPORT *& ResourceManager<AbstractShaderProgram, Buffer, Mesh, Physics::Implementation::Options>::internalInstance();
 
 namespace Physics {
 

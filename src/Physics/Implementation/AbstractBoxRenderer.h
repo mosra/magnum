@@ -1,5 +1,5 @@
-#ifndef Magnum_Physics_Implementation_BoxRenderer_h
-#define Magnum_Physics_Implementation_BoxRenderer_h
+#ifndef Magnum_Physics_Implementation_AbstractBoxRenderer_h
+#define Magnum_Physics_Implementation_AbstractBoxRenderer_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,22 +15,24 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractBoxRenderer.h"
-
-#include "Physics/Box.h"
+#include "AbstractDebugRenderer.h"
 
 #include "magnumCompatibility.h"
 
-namespace Magnum { namespace Physics { namespace Implementation {
+namespace Magnum {
 
-template<std::uint8_t dimensions> class BoxRenderer: public AbstractBoxRenderer<dimensions> {
+class Buffer;
+
+namespace Physics { namespace Implementation {
+
+template<std::uint8_t dimensions> class AbstractBoxRenderer: public AbstractDebugRenderer<dimensions> {
     public:
-        inline BoxRenderer(Box<dimensions>& box): box(box) {}
+        AbstractBoxRenderer();
 
-        void draw(Resource<Options>& options, const typename DimensionTraits<dimensions>::MatrixType& transformation, typename SceneGraph::AbstractCamera<dimensions, GLfloat>* camera) override;
+        ~AbstractBoxRenderer();
 
-    private:
-        Box<dimensions>& box;
+    protected:
+        Resource<Buffer> buffer;
 };
 
 }}}

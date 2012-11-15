@@ -13,7 +13,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "BoxRenderer.h"
+#include "AxisAlignedBoxRenderer.h"
 
 #include "Mesh.h"
 #include "Physics/DebugDrawResourceManager.h"
@@ -22,14 +22,17 @@
 
 namespace Magnum { namespace Physics { namespace Implementation {
 
-template<std::uint8_t dimensions> void BoxRenderer<dimensions>::draw(Resource<Options>& options, const typename DimensionTraits<dimensions, GLfloat>::MatrixType&, typename SceneGraph::AbstractCamera<dimensions>* camera) {
-    this->shader->setTransformationProjection(camera->projectionMatrix()*camera->cameraMatrix()*box.transformedTransformation())
+template<std::uint8_t dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(Resource<Options>& options, const typename DimensionTraits<dimensions, GLfloat>::MatrixType&, typename SceneGraph::AbstractCamera<dimensions>* camera) {
+    typename DimensionTraits<dimensions>::MatrixType transformation =
+        DimensionTraits<dimensions>::MatrixType::translation(axisAlignedBox.transformedPosition())*
+        DimensionTraits<dimensions>::MatrixType::scaling(axisAlignedBox.transformedSize());
+    this->shader->setTransformationProjection(camera->projectionMatrix()*camera->cameraMatrix()*transformation)
         ->setColor(options->color)
         ->use();
     this->mesh->draw();
 }
 
-template class BoxRenderer<2>;
-template class BoxRenderer<3>;
+template class AxisAlignedBoxRenderer<2>;
+template class AxisAlignedBoxRenderer<3>;
 
 }}}

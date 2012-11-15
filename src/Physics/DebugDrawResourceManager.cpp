@@ -13,6 +13,8 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#define MAGNUM_RESOURCEMANAGER_DEFINE_INTERNALINSTANCE
+
 #include "DebugDrawResourceManager.h"
 
 #include "AbstractShaderProgram.h"
@@ -21,9 +23,11 @@
 #include "ResourceManager.h"
 #include "Shaders/FlatShader.h"
 #include "AbstractShape.h"
+#include "AxisAlignedBox.h"
 #include "Box.h"
 #include "ObjectShape.h"
 #include "ShapeGroup.h"
+#include "Implementation/AxisAlignedBoxRenderer.h"
 #include "Implementation/BoxRenderer.h"
 #include "Implementation/DebugRenderer.h"
 
@@ -39,11 +43,13 @@ template<std::uint8_t dimensions> SceneGraph::Drawable<dimensions>* DebugDrawRes
     return renderer;
 }
 
-template SceneGraph::Drawable<2>* DebugDrawResourceManager::createDebugRenderer(ObjectShape<2>* shape, ResourceKey options);
-template SceneGraph::Drawable<3>* DebugDrawResourceManager::createDebugRenderer(ObjectShape<3>* shape, ResourceKey options);
+template SceneGraph::Drawable<2> PHYSICS_EXPORT * DebugDrawResourceManager::createDebugRenderer(ObjectShape<2>* shape, ResourceKey options);
+template SceneGraph::Drawable<3> PHYSICS_EXPORT * DebugDrawResourceManager::createDebugRenderer(ObjectShape<3>* shape, ResourceKey options);
 
 void DebugDrawResourceManager::createDebugMesh(Implementation::DebugRenderer<2>* renderer, AbstractShape2D* shape) {
     switch(shape->type()) {
+        case AbstractShape2D::Type::AxisAlignedBox:
+            renderer->addRenderer(new Implementation::AxisAlignedBoxRenderer<2>(*static_cast<AxisAlignedBox2D*>(shape)));
         case AbstractShape2D::Type::Box:
             renderer->addRenderer(new Implementation::BoxRenderer<2>(*static_cast<Box2D*>(shape)));
             break;

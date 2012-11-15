@@ -461,7 +461,10 @@ cube->draw();
 template<class... Types> class ResourceManager: protected Implementation::ResourceManagerData<Types>... {
     public:
         /** @brief Global instance */
-        inline static ResourceManager<Types...>* instance() { return _instance; }
+        inline static ResourceManager<Types...>* instance() {
+            CORRADE_ASSERT(internalInstance(), "ResourceManager::instance(): no instance exists", nullptr);
+            return internalInstance();
+        }
 
         /**
          * @brief Constructor
@@ -472,8 +475,8 @@ template<class... Types> class ResourceManager: protected Implementation::Resour
          * @see instance()
          */
         inline ResourceManager() {
-            CORRADE_ASSERT(!_instance, "ResourceManager: another instance is already created!", );
-            _instance = this;
+            CORRADE_ASSERT(!internalInstance(), "ResourceManager::ResourceManager(): another instance is already created", );
+            internalInstance() = this;
         }
 
         /**
@@ -482,7 +485,10 @@ template<class... Types> class ResourceManager: protected Implementation::Resour
          * Sets global instance pointer to `nullptr`.
          * @see instance()
          */
-        inline ~ResourceManager() { _instance = nullptr; }
+        inline ~ResourceManager() {
+            CORRADE_INTERNAL_ASSERT(internalInstance() == this);
+            internalInstance() = nullptr;
+        }
 
         /** @brief Count of resources of given type */
         template<class T> inline std::size_t count() {
@@ -567,15 +573,20 @@ template<class... Types> class ResourceManager: protected Implementation::Resour
         }
         inline void freeInternal() const {}
 
-        static ResourceManager<Types...>* _instance;
+        static ResourceManager<Types...>*& internalInstance();
 };
+
+#ifndef MAGNUM_RESOURCEMANAGER_DONT_DEFINE_INTERNALINSTANCE
+template<class ...Types> ResourceManager<Types...>*& ResourceManager<Types...>::internalInstance() {
+    static ResourceManager<Types...>* _instance(nullptr);
+    return _instance;
+}
+#endif
 
 /** @debugoperator{Magnum::ResourceKey} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const ResourceKey& value) {
     return debug << static_cast<const Corrade::Utility::HashDigest<sizeof(std::size_t)>&>(value);
 }
-
-template<class ...Types> ResourceManager<Types...>* ResourceManager<Types...>::_instance(nullptr);
 
 }
 

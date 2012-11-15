@@ -13,23 +13,20 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "BoxRenderer.h"
+#include "AbstractShapeRenderer.h"
 
+#include "AbstractShaderProgram.h"
 #include "Mesh.h"
 #include "Physics/DebugDrawResourceManager.h"
-#include "SceneGraph/AbstractCamera.h"
 #include "Shaders/FlatShader.h"
 
 namespace Magnum { namespace Physics { namespace Implementation {
 
-template<std::uint8_t dimensions> void BoxRenderer<dimensions>::draw(Resource<Options>& options, const typename DimensionTraits<dimensions, GLfloat>::MatrixType&, typename SceneGraph::AbstractCamera<dimensions>* camera) {
-    this->shader->setTransformationProjection(camera->projectionMatrix()*camera->cameraMatrix()*box.transformedTransformation())
-        ->setColor(options->color)
-        ->use();
-    this->mesh->draw();
-}
+template<std::uint8_t dimensions> AbstractShapeRenderer<dimensions>::AbstractShapeRenderer(ResourceKey shader, ResourceKey mesh): shader(DebugDrawResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader<dimensions>>(shader)), mesh(DebugDrawResourceManager::instance()->get<Mesh>(mesh)) {}
 
-template class BoxRenderer<2>;
-template class BoxRenderer<3>;
+template<std::uint8_t dimensions> AbstractShapeRenderer<dimensions>::~AbstractShapeRenderer() {}
+
+template class AbstractShapeRenderer<2>;
+template class AbstractShapeRenderer<3>;
 
 }}}

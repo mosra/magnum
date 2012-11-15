@@ -1,5 +1,5 @@
-#ifndef Magnum_Physics_Implementation_BoxRenderer_h
-#define Magnum_Physics_Implementation_BoxRenderer_h
+#ifndef Magnum_Physics_Implementation_AxisAlignedBoxRenderer_h
+#define Magnum_Physics_Implementation_AxisAlignedBoxRenderer_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -17,20 +17,20 @@
 
 #include "AbstractBoxRenderer.h"
 
-#include "Physics/Box.h"
+#include "Physics/AxisAlignedBox.h"
 
 #include "magnumCompatibility.h"
 
 namespace Magnum { namespace Physics { namespace Implementation {
 
-template<std::uint8_t dimensions> class BoxRenderer: public AbstractBoxRenderer<dimensions> {
+template<std::uint8_t dimensions> class AxisAlignedBoxRenderer: public AbstractBoxRenderer<dimensions> {
     public:
-        inline BoxRenderer(Box<dimensions>& box): box(box) {}
+        inline AxisAlignedBoxRenderer(AxisAlignedBox<dimensions>& axisAlignedBox): axisAlignedBox(axisAlignedBox) {}
 
-        void draw(Resource<Options>& options, const typename DimensionTraits<dimensions>::MatrixType& transformation, typename SceneGraph::AbstractCamera<dimensions, GLfloat>* camera) override;
+        void draw(Resource<Options>& options, const typename DimensionTraits<dimensions>::MatrixType& transformation, typename SceneGraph::AbstractCamera<dimensions>* camera) override;
 
     private:
-        Box<dimensions>& box;
+        AxisAlignedBox<dimensions>& axisAlignedBox;
 };
 
 }}}
