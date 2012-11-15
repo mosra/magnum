@@ -51,6 +51,7 @@ namespace Extensions {
 namespace GL {
     #line 1
     namespace AMD {
+        _extension(GL,AMD,vertex_shader_layer,          GL210,  None) // #417
         _extension(GL,AMD,shader_trinary_minmax,        GL210,  None) // #428
     } namespace APPLE {
         _extension(GL,APPLE,flush_buffer_range,         GL210, GL300) // #321
