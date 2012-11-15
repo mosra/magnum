@@ -34,7 +34,7 @@ homogeneous two-dimensional coordinates.
 template<class T> class Vector3: public Vector<3, T> {
     public:
         /**
-         * @brief %Vector in direction of X axis
+         * @brief %Vector in direction of X axis (right)
          *
          * Usable for translation or rotation along given axis, for example:
          * @code
@@ -46,7 +46,7 @@ template<class T> class Vector3: public Vector<3, T> {
         inline constexpr static Vector3<T> xAxis(T length = T(1)) { return Vector3<T>(length, T(), T()); }
 
         /**
-         * @brief %Vector in direction of Y axis
+         * @brief %Vector in direction of Y axis (up)
          *
          * See xAxis() for more information.
          * @see yScale()
@@ -54,7 +54,7 @@ template<class T> class Vector3: public Vector<3, T> {
         inline constexpr static Vector3<T> yAxis(T length = T(1)) { return Vector3<T>(T(), length, T()); }
 
         /**
-         * @brief %Vector in direction of Z axis
+         * @brief %Vector in direction of Z axis (backward)
          *
          * See xAxis() for more information.
          * @see zScale()
@@ -62,7 +62,7 @@ template<class T> class Vector3: public Vector<3, T> {
         inline constexpr static Vector3<T> zAxis(T length = T(1)) { return Vector3<T>(T(), T(), length); }
 
         /**
-         * @brief Scaling vector in direction of X axis
+         * @brief Scaling vector in direction of X axis (width)
          *
          * Usable for scaling along given direction, for example:
          * @code
@@ -73,7 +73,7 @@ template<class T> class Vector3: public Vector<3, T> {
         inline constexpr static Vector3<T> xScale(T scale) { return Vector3<T>(scale, T(1), T(1)); }
 
         /**
-         * @brief Scaling vector in direction of Y axis
+         * @brief Scaling vector in direction of Y axis (height)
          *
          * See xScale() for more information.
          * @see yAxis()
@@ -81,7 +81,7 @@ template<class T> class Vector3: public Vector<3, T> {
         inline constexpr static Vector3<T> yScale(T scale) { return Vector3<T>(T(1), scale, T(1)); }
 
         /**
-         * @brief Scaling vector in direction of Z axis
+         * @brief Scaling vector in direction of Z axis (depth)
          *
          * See xScale() for more information.
          * @see zAxis()

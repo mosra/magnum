@@ -37,7 +37,8 @@ namespace Platform {
 /** @nosubgrouping
 @brief SDL2 application
 
-Supports keyboard and mouse handling.
+Application using [Simple DirectMedia Layer](www.libsdl.org/). Supports
+keyboard and mouse handling.
 
 @section Sdl2Application-usage Usage
 
@@ -223,7 +224,7 @@ class Sdl2Application {
         /**
          * @brief Mouse button
          *
-         * @see mouseEvent()
+         * @see mousePressEvent(), mouseReleaseEvent()
          */
         enum class MouseButton: Uint8 {
             Left = SDL_BUTTON_LEFT,         /**< Left button */
@@ -231,16 +232,6 @@ class Sdl2Application {
             Right = SDL_BUTTON_RIGHT,       /**< Right button */
             WheelUp = 4,                    /**< Wheel up */
             WheelDown = 5                   /**< Wheel down */
-        };
-
-        /**
-         * @brief Mouse state
-         *
-         * @see mouseEvent()
-         */
-        enum class MouseState: Uint8 {
-            Pressed = SDL_PRESSED,          /**< Button pressed */
-            Released = SDL_RELEASED         /**< Button released */
         };
 
     protected:

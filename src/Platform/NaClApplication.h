@@ -46,6 +46,9 @@ namespace Platform {
 /** @nosubgrouping
 @brief NaCl application
 
+Application running in [Google Chrome Native Client](https://developers.google.com/native-client/).
+Supports keyboard and mouse handling.
+
 @section NaClApplication-usage Usage
 
 You need to implement at least drawEvent() and viewportEvent() to be able to
@@ -71,41 +74,20 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient {
 
         ~NaClApplication();
 
+    protected:
+
         /** @{ @name Drawing functions */
 
-    protected:
-        /**
-         * @brief Viewport event
-         *
-         * Called when viewport size changes. You should pass the new size to
-         * Framebuffer::setViewport() or SceneGraph::Camera::setViewport(),
-         * if using scene graph.
-         */
+        /** @copydoc GlutApplication::viewportEvent() */
         virtual void viewportEvent(const Math::Vector2<GLsizei>& size) = 0;
 
-        /**
-         * @brief Draw event
-         *
-         * Here implement your drawing functions, such as calling
-         * SceneGraph::Camera::draw(). After drawing is finished, call
-         * swapBuffers(). If you want to draw immediately again, call also
-         * redraw().
-         */
+        /** @copydoc GlutApplication::drawEvent() */
         virtual void drawEvent() = 0;
 
-        /**
-         * @brief Swap buffers
-         *
-         * Paints currently rendered framebuffer on screen.
-         */
+        /** @copydoc GlutApplication::swapBuffers() */
         void swapBuffers();
 
-        /**
-         * @brief Redraw immediately
-         *
-         * Marks the window for redrawing, resulting in call of drawEvent()
-         * in the next iteration.
-         */
+        /** @copydoc GlutApplication::redraw() */
         inline void redraw() { flags |= Flag::Redraw; }
 
         /*@}*/

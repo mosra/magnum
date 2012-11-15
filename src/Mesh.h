@@ -388,6 +388,8 @@ class MAGNUM_EXPORT Mesh {
         /**
          * @brief Set primitive type
          * @return Pointer to self (for method chaining)
+         *
+         * Default is @ref Primitive "Primitive::Triangles".
          */
         inline Mesh* setPrimitive(Primitive primitive) {
             _primitive = primitive;
@@ -401,6 +403,7 @@ class MAGNUM_EXPORT Mesh {
          * @brief Set vertex count
          * @return Pointer to self (for method chaining)
          *
+         * Default is zero.
          * @attention All bound attributes are reset after calling this
          *      function, so you must call
          *      addVertexBuffer()/addInterleavedVertexBuffer() afterwards.

@@ -81,6 +81,7 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          * @brief Set index count
          * @return Pointer to self (for method chaining)
          *
+         * Default is zero.
          * @see MeshTools::compressIndices()
          */
         inline IndexedMesh* setIndexCount(GLsizei count) {
@@ -95,6 +96,7 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          * @brief Set index type
          * @return Pointer to self (for method chaining)
          *
+         * Default is @ref Type "Type::UnsignedShort".
          * @see MeshTools::compressIndices()
          */
         inline IndexedMesh* setIndexType(Type type) {
