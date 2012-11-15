@@ -1,0 +1,177 @@
+namespace Magnum {
+/** @page portability Writing portable applications
+@brief How to support different platforms and different OpenGL capabilities within one codebase.
+
+@tableofcontents
+
+@section portability-target Target-specific code
+
+If %Magnum is compiled with e.g. OpenGL ES 2.0 support, some features present
+in desktop version are not available. It means that some classes, functions
+and enum values are simply not included in headers. It is designed this way to
+make porting easier -- it is better to fail at compile time on e.g. undefined
+enum value than fail at runtime in some corner case because given texture
+format is not supported.
+
+If you include Magnum.h, you get these predefined macros:
+
+ - `MAGNUM_TARGET_GLES` if targetting OpenGL ES 2.0 or 3.0
+ - `MAGNUM_TARGET_GLES2` if targetting OpenGL ES 2.0
+ - `MAGNUM_TARGET_NACL` if targetting Google Chrome Native Client
+
+Example usage:
+@code
+#ifndef MAGNUM_TARGET_GLES
+Mesh::setPolygonMode(Mesh::PolygonMode::Lines);
+// draw mesh as wireframe...
+#else
+// use different mesh, as polygon mode is not supported in OpenGL ES...
+#endif
+@endcode
+
+Each feature is marked accordingly if it is not available in some targets. See
+also @ref requires-gl and @ref requires-gles30.
+
+@section portability-compiler Compiler-specific code
+
+%Magnum is attempting to be future-proof and as intuitive for users as
+possible. Many features from C++11 are used to simplify things and make them
+faster and more secure, but on the other hand it requires fairly recent
+compiler with good enough support of the new standard. Currently %Magnum is
+written with GCC 4.7 and Clang 3.1 in mind, but support for some other
+compilers is also available:
+
+ - GCC 4.6 support can be explicitly enabled with CMake option
+   `MAGNUM_GCC46_COMPATIBILITY`
+
+The options are also available as predefined macros when including Magnum.h.
+
+Each feature is marked accordingly if it is not available on some compilers,
+see @ref SceneGraph::DrawableGroup3D for an example. It is up to you (or your
+platform) which compiler your code will support, code written for GCC 4.7 will
+work also on Magnum compiled with support for older compilers.
+
+@section portability-extensions Extension-aware code
+
+Some functionality is depending on support of particular extension and thus
+the decision cannot be made at compile time. Header Extensions.h contains list
+of extensions, which you can pass to Context::isExtensionSupported() and
+decide based on that:
+@code
+if(Context::instance()->isExtensionSupported<GL::ARB::geometry_shader4>()) {
+    // draw mesh with wireframe on top in one pass using geometry shader...
+} else {
+    // draw underlying mesh...
+    Mesh::setPolygonMode(Mesh::PolygonMode::Lines);
+    // draw mesh as wirefreame in second pass...
+}
+@endcode
+
+You can also decide on particular OpenGL version using Context::isVersionSupported(),
+but remember that some features from that version might be available even if
+the drivers don't expose that version.
+
+Each feature is marked accordingly if it needs specific extension or specific
+OpenGL version. Various classes in %Magnum are taking advantage of some
+extensions and enable faster code paths if given extension is available, for
+example @ref AbstractShaderProgram-performance-optimization "AbstractShaderProgram",
+@ref AbstractTexture-performance-optimization "AbstractTexture" or
+@ref Mesh-performance-optimization "Mesh". See also @ref required-extensions.
+
+@section portability-shaders Portable shaders
+
+%Shaders are probably the most painful thing to port. There are many issues to
+address - different shader syntax (`in`/`out` vs. `attribute` and `varying`
+etc.), explicit vs. implicit methods to specify vertex attribute, uniform and
+texture uniform locations, required precision qualifiers in OpenGL ES etc.
+
+Shader class allows you to explicitly specify shader version and based on that
+you can decide on the syntax in your shader code. You can also use
+Context::supportedVersion() to conveniently select highest supported version
+from a list:
+@code
+// MyShader.vert
+#if __VERSION__ < 130
+#define in attribute
+#define out varying
+#endif
+
+in vec4 position;
+in vec3 normal;
+
+out vec4 transformedNormal;
+
+void main() {
+    // ...
+}
+@endcode
+@code
+// MyShader.cpp
+Version version = Context::instance()->supportedVersion({Version::GL430, Version::GL330, Version::GL210});
+attachShader(Shader::fromFile(version, "MyShader.vert"));
+@endcode
+
+All shaders in Shaders namespace support desktop OpenGL starting from version
+2.1 and also OpenGL ES 2.0 and 3.0. Feel free to look into their sources to
+see how portability is handled there.
+
+@section portability-applications Platform-specific application support
+
+Your application might run on Windows box, on some embedded Linux or even in
+browser - each platform has different requirements how to create entry point
+to the application, how to handle input events, how to create window and
+OpenGL context etc. Namespace Platform contains base classes for applications
+which are abstracting most of it for your convenience.
+
+All the classes support limited form of static polymorphism, which means you
+can switch to another base class and probably don't need to change any other
+code. It has its limitations, though - some toolkits don't support all keys,
+mouse movement events etc.
+
+In most cases the entry point is classic `main()` function, but some platforms
+(e.g. Native Client) have different requirements. To make things easier, entry
+points are handled using macros, which take care of the rest. Each application
+has its own specific macro and if no other application header is included, the
+macro is also aliased to MAGNUM_APPLICATION_MAIN() to save you typing.
+
+Example application, which targets both embedded Linux (using plain X and EGL)
+and desktop (using SDL2 toolkit). Thanks to static polymorphism most of the
+functions will work on both without changes:
+@code
+#ifndef MAGNUM_TARGET_GLES
+#include <Platform/Sdl2Application.h>
+#else
+#include <Platform/XEglApplication.h>
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+typedef Platform::Sdl2Application ApplicationBase;
+#else
+typedef Platform::XEglApplication ApplicationBase;
+#endif
+
+class MyApplication: public ApplicationBase {
+    public:
+        MyApplication(int& argc, char** argv): ApplicationBase(argc, argv, "My Application") {
+            // ...
+        }
+
+    protected:
+        void viewportEvent(const Math::Vector2<GLsizei>& size) override {
+            // ...
+        }
+
+        void drawEvent() override {
+            // ...
+        }
+
+        void keyPressEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position) {
+            // ...
+        }
+};
+
+MAGNUM_APPLICATION_MAIN(MyApplication)
+@endcode
+
+*/
+}
