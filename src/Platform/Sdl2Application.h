@@ -202,7 +202,7 @@ class Sdl2Application {
          * @brief Key press event
          * @param key       Key pressed
          * @param modifiers Active modifiers
-         * @param position  Cursor position (not yet implemented)
+         * @param position  Cursor position (not implemented)
          */
         virtual void keyPressEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
 
@@ -210,7 +210,7 @@ class Sdl2Application {
          * @brief Key release event
          * @param key       Key released
          * @param modifiers Active modifiers
-         * @param position  Cursor position (not yet implemented)
+         * @param position  Cursor position (not implemented)
          */
         virtual void keyReleaseEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
 
