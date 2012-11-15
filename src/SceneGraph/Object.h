@@ -215,6 +215,13 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         void setClean() override;
 
     private:
+        /* GCC 4.4 doesn't support lambda functions */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        struct DirtyCheck {
+            inline bool operator()(Object<Transformation>* o) const { return !o->isDirty(); }
+        };
+        #endif
+
         Object<Transformation>* sceneObject() override;
         const Object<Transformation>* sceneObject() const override;
 

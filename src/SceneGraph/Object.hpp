@@ -265,7 +265,7 @@ template<class Transformation> void Object<Transformation>::setClean(const std::
 
 template<class Transformation> void Object<Transformation>::setClean(std::vector<Object<Transformation>*> objects) {
     /* Remove all clean objects from the list */
-    auto firstClean = std::remove_if(objects.begin(), objects.end(), [](Object<Transformation>* o) { return !o->isDirty(); });
+    auto firstClean = std::remove_if(objects.begin(), objects.end(), DirtyCheck());
     objects.erase(firstClean, objects.end());
 
     /* No dirty objects left, done */
