@@ -37,7 +37,8 @@ template<std::uint8_t dimensions> class DebugRenderer: public SceneGraph::Drawab
         DebugRenderer(SceneGraph::AbstractObject<dimensions>* object, Resource<Options>&& options): SceneGraph::Drawable<dimensions>(object), options(options) {}
 
         inline ~DebugRenderer() {
-            for(auto i: renderers) delete i;
+            for(auto it = renderers.begin(); it != renderers.end(); ++it)
+                delete *it;
         }
 
         inline void addRenderer(AbstractDebugRenderer<dimensions>* renderer) {
@@ -45,7 +46,8 @@ template<std::uint8_t dimensions> class DebugRenderer: public SceneGraph::Drawab
         }
 
         inline void draw(const typename DimensionTraits<dimensions>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, GLfloat>* camera) override {
-            for(auto i: renderers) i->draw(options, transformationMatrix, camera);
+            for(auto it = renderers.begin(); it != renderers.end(); ++it)
+                (*it)->draw(options, transformationMatrix, camera);
         }
 
     private:
