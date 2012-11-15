@@ -91,6 +91,18 @@ bool NaClApplication::HandleInputEvent(const pp::InputEvent& event) {
             pp::KeyboardInputEvent keyEvent(event);
             keyReleaseEvent(static_cast<Key>(keyEvent.GetKeyCode()), static_cast<Modifier>(keyEvent.GetModifiers()), {});
             break;
+        } case PP_INPUTEVENT_TYPE_MOUSEDOWN: {
+            pp::MouseInputEvent mouseEvent(event);
+            mousePressEvent(static_cast<MouseButton>(mouseEvent.GetButton()), static_cast<Modifier>(mouseEvent.GetModifiers()), {mouseEvent.GetPosition().x(), mouseEvent.GetPosition().y()});
+            break;
+        } case PP_INPUTEVENT_TYPE_MOUSEUP: {
+            pp::MouseInputEvent mouseEvent(event);
+            mouseReleaseEvent(static_cast<MouseButton>(mouseEvent.GetButton()), static_cast<Modifier>(mouseEvent.GetModifiers()), {mouseEvent.GetPosition().x(), mouseEvent.GetPosition().y()});
+            break;
+        } case PP_INPUTEVENT_TYPE_MOUSEMOVE: {
+            pp::MouseInputEvent mouseEvent(event);
+            mouseMotionEvent(static_cast<Modifier>(mouseEvent.GetModifiers()), {mouseEvent.GetPosition().x(), mouseEvent.GetPosition().y()});
+            break;
         } default: return false;
     }
 

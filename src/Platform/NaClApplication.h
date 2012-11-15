@@ -136,7 +136,8 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient {
         /**
          * @brief Set of modifiers
          *
-         * @see keyPressEvent(), keyReleaseEvent()
+         * @see keyPressEvent(), keyReleaseEvent(), mousePressEvent(),
+         *      mouseReleaseEvent(), mouseMotionEvent()
          */
         typedef Corrade::Containers::EnumSet<Modifier, std::uint32_t> Modifiers;
 
@@ -237,6 +238,54 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient {
 
         /*@}*/
 
+        /** @{ @name Mouse handling */
+
+    public:
+        /**
+         * @brief Mouse button
+         *
+         * @see mousePressEvent(), mouseReleaseEvent()
+         */
+        enum class MouseButton: unsigned int {
+            Left = PP_INPUTEVENT_MOUSEBUTTON_LEFT,      /**< Left button */
+            Middle = PP_INPUTEVENT_MOUSEBUTTON_MIDDLE,  /**< Middle button */
+            Right = PP_INPUTEVENT_MOUSEBUTTON_RIGHT     /**< Right button */
+        };
+
+    protected:
+        /**
+         * @brief Mouse press event
+         * @param button    Button pressed
+         * @param modifiers Active modifiers
+         * @param position  Cursor position
+         *
+         * Called when mouse button is pressed. Default implementation does
+         * nothing.
+         */
+        virtual void mousePressEvent(MouseButton button, Modifiers modifiers, const Math::Vector2<int>& position);
+
+        /**
+         * @brief Mouse release event
+         * @param button    Button released
+         * @param modifiers Active modifiers
+         * @param position  Cursor position
+         *
+         * Called when mouse button is released. Default implementation does
+         * nothing.
+         */
+        virtual void mouseReleaseEvent(MouseButton button, Modifiers modifiers, const Math::Vector2<int>& position);
+
+        /**
+         * @brief Mouse motion event
+         * @param modifiers Active modifiers
+         * @param position  Cursor position
+         *
+         * Called when mouse is moved.
+         */
+        virtual void mouseMotionEvent(Modifiers modifiers, const Math::Vector2<int>& position);
+
+        /*@}*/
+
     private:
         enum class Flag: std::uint8_t {
             ViewportUpdated = 1 << 0,
@@ -311,6 +360,10 @@ When no other application header is included this macro is also aliased to
 /* Implementations for inline functions with unused parameters */
 inline void NaClApplication::keyPressEvent(Key, Modifiers, const Math::Vector2<int>&) {}
 inline void NaClApplication::keyReleaseEvent(Key, Modifiers, const Math::Vector2<int>&) {}
+inline void NaClApplication::mousePressEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
+inline void NaClApplication::mouseReleaseEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
+inline void NaClApplication::mouseMotionEvent(Modifiers, const Math::Vector2<int>&) {}
+
 
 }}
 
