@@ -296,6 +296,34 @@ class AbstractXApplication {
         Flags flags;
 };
 
+/** @hideinitializer
+@param className Class name
+
+Can be used as equivalent to the following code to achieve better portability,
+see @ref portability-applications for more information.
+@code
+int main(int argc, char** argv) {
+    className app(argc, argv);
+    return app.exec();
+}
+@endcode
+When no other application header is included this macro is also aliased to
+`MAGNUM_APPLICATION_MAIN()`.
+*/
+#define MAGNUM_XAPPLICATION_MAIN(className)                                 \
+    int main(int argc, char** argv) {                                       \
+        className app(argc, argv);                                          \
+        return app.exec();                                                  \
+    }
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_APPLICATION_MAIN
+#define MAGNUM_APPLICATION_MAIN(className) MAGNUM_XAPPLICATION_MAIN(className)
+#else
+#undef MAGNUM_APPLICATION_MAIN
+#endif
+#endif
+
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Modifiers)
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Flags)
 

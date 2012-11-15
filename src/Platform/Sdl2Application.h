@@ -42,16 +42,13 @@ Supports keyboard and mouse handling.
 @section Sdl2Application-usage Usage
 
 You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen. The subclass can be then used directly in `main()`, for
-example:
+draw on the screen.  The subclass can be then used directly in `main()` - see
+convenience macro MAGNUM_SDL2APPLICATION_MAIN().
 @code
 class MyApplication: public Magnum::Platform::Sdl2Application {
     // implement required methods...
 };
-int main(int argc, char** argv) {
-    MyApplication c(argc, argv);
-    return c.exec();
-}
+MAGNUM_SDL2APPLICATION_MAIN(MyApplication)
 @endcode
 */
 class Sdl2Application {
@@ -216,6 +213,34 @@ class Sdl2Application {
 
         bool _redraw;
 };
+
+/** @hideinitializer
+@param className Class name
+
+Can be used as equivalent to the following code to achieve better portability,
+see @ref portability-applications for more information.
+@code
+int main(int argc, char** argv) {
+    className app(argc, argv);
+    return app.exec();
+}
+@endcode
+When no other application header is included this macro is also aliased to
+`MAGNUM_APPLICATION_MAIN()`.
+*/
+#define MAGNUM_SDL2APPLICATION_MAIN(className)                              \
+    int main(int argc, char** argv) {                                       \
+        className app(argc, argv);                                          \
+        return app.exec();                                                  \
+    }
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_APPLICATION_MAIN
+#define MAGNUM_APPLICATION_MAIN(className) MAGNUM_SDL2APPLICATION_MAIN(className)
+#else
+#undef MAGNUM_APPLICATION_MAIN
+#endif
+#endif
 
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Modifiers)
 

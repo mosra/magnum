@@ -32,16 +32,13 @@ Uses EglContextHandler.
 @section XEglApplication-usage Usage
 
 You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen. The subclass can be then used directly in `main()`, for
-example:
+draw on the screen.  The subclass can be then used directly in `main()` - see
+convenience macro MAGNUM_XAPPLICATION_MAIN().
 @code
 class MyApplication: public Magnum::Platform::XEglApplication {
     // implement required methods...
 };
-int main(int argc, char** argv) {
-    MyApplication c(argc, argv);
-    return c.exec();
-}
+MAGNUM_XAPPLICATION_MAIN(MyApplication)
 @endcode
 */
 class XEglApplication: public AbstractXApplication {

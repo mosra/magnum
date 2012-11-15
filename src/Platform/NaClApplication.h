@@ -160,7 +160,9 @@ namespace Implementation {
 @brief Entry point for NaCl application
 @param application  Application class name
 
-See NaClApplication for more information.
+See NaClApplication and @ref portability-applications for more information.
+When no other application header is included this macro is also aliased to
+`MAGNUM_APPLICATION_MAIN()`.
 */
 /* look at that insane placement of __attribute__. WTF. */
 #define MAGNUM_NACLAPPLICATION_MAIN(application)                            \
@@ -169,6 +171,14 @@ See NaClApplication for more information.
             return new Magnum::Platform::Implementation::NaClModule<application>(); \
         }                                                                   \
     }
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_APPLICATION_MAIN
+#define MAGNUM_APPLICATION_MAIN(className) MAGNUM_NACLAPPLICATION_MAIN(className)
+#else
+#undef MAGNUM_APPLICATION_MAIN
+#endif
+#endif
 
 }}
 
