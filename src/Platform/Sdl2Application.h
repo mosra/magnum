@@ -42,16 +42,13 @@ Supports keyboard and mouse handling.
 @section Sdl2Application-usage Usage
 
 You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen. The subclass can be then used directly in `main()`, for
-example:
+draw on the screen.  The subclass can be then used directly in `main()` - see
+convenience macro MAGNUM_SDL2APPLICATION_MAIN().
 @code
 class MyApplication: public Magnum::Platform::Sdl2Application {
     // implement required methods...
 };
-int main(int argc, char** argv) {
-    MyApplication c(argc, argv);
-    return c.exec();
-}
+MAGNUM_SDL2APPLICATION_MAIN(MyApplication)
 @endcode
 */
 class Sdl2Application {
@@ -99,21 +96,29 @@ class Sdl2Application {
         /*@}*/
 
         /** @{ @name Keyboard handling */
+
     public:
         /**
          * @brief %Modifier
          *
-         * @see Modifiers, keyPressEvent(), keyReleaseEvent(),
-         *      mousePressEvent(), mouseReleaseEvent(), mouseMotionEvent()
+         * @see Modifiers, keyPressEvent(), keyReleaseEvent()
          */
-        enum class Modifier: unsigned int {};
+        enum class Modifier: Uint16 {
+            Shift = KMOD_SHIFT,         /**< Shift */
+            Ctrl = KMOD_CTRL,           /**< Ctrl */
+            Alt = KMOD_ALT,             /**< Alt */
+            AltGr = KMOD_MODE,          /**< AltGr */
+
+            CapsLock = KMOD_CAPS,       /**< Caps lock */
+            NumLock = KMOD_NUM          /**< Num lock */
+        };
 
         /**
          * @brief Set of modifiers
          *
          * @see keyPressEvent(), keyReleaseEvent()
          */
-        typedef Corrade::Containers::EnumSet<Modifier, unsigned int> Modifiers;
+        typedef Corrade::Containers::EnumSet<Modifier, Uint16> Modifiers;
 
         /**
          * @brief Key
@@ -121,28 +126,92 @@ class Sdl2Application {
          * @see keyPressEvent(), keyReleaseEvent()
          */
         enum class Key: SDL_Keycode {
-            Up = SDLK_UP,                   /**< Up arrow */
-            Down = SDLK_DOWN,               /**< Down arrow */
-            Left = SDLK_LEFT,               /**< Left arrow */
-            Right = SDLK_RIGHT,             /**< Right arrow */
-            Plus = SDLK_PLUS,               /**< Plus */
-            Minus = SDLK_MINUS              /**< Minus */
+            Enter = SDLK_RETURN,        /**< Enter */
+            Esc = SDLK_ESCAPE,          /**< Escape */
+
+            Up = SDLK_UP,               /**< Up arrow */
+            Down = SDLK_DOWN,           /**< Down arrow */
+            Left = SDLK_LEFT,           /**< Left arrow */
+            Right = SDLK_RIGHT,         /**< Right arrow */
+            F1 = SDLK_F1,               /**< F1 */
+            F2 = SDLK_F2,               /**< F2 */
+            F3 = SDLK_F3,               /**< F3 */
+            F4 = SDLK_F4,               /**< F4 */
+            F5 = SDLK_F5,               /**< F5 */
+            F6 = SDLK_F6,               /**< F6 */
+            F7 = SDLK_F7,               /**< F7 */
+            F8 = SDLK_F8,               /**< F8 */
+            F9 = SDLK_F9,               /**< F9 */
+            F10 = SDLK_F10,             /**< F10 */
+            F11 = SDLK_F11,             /**< F11 */
+            F12 = SDLK_F12,             /**< F12 */
+            Home = SDLK_HOME,           /**< Home */
+            End = SDLK_END,             /**< End */
+            PageUp = SDLK_PAGEUP,       /**< Page up */
+            PageDown = SDLK_PAGEDOWN,   /**< Page down */
+
+            Space = SDLK_SPACE,         /**< Space */
+            Comma = SDLK_COMMA,         /**< Comma */
+            Period = SDLK_PERIOD,       /**< Period */
+            Minus = SDLK_MINUS,         /**< Minus */
+            Plus = SDLK_PLUS,           /**< Plus */
+            Slash = SDLK_SLASH,         /**< Slash */
+            Percent = SDLK_PERCENT,     /**< Percent */
+            Equal = SDLK_EQUALS,        /**< Equal */
+
+            Zero = SDLK_0,              /**< Zero */
+            One = SDLK_1,               /**< One */
+            Two = SDLK_2,               /**< Two */
+            Three = SDLK_3,             /**< Three */
+            Four = SDLK_4,              /**< Four */
+            Five = SDLK_5,              /**< Five */
+            Six = SDLK_6,               /**< Six */
+            Seven = SDLK_7,             /**< Seven */
+            Eight = SDLK_8,             /**< Eight */
+            Nine = SDLK_9,              /**< Nine */
+
+            A = SDLK_a,                 /**< Letter A */
+            B = SDLK_b,                 /**< Letter B */
+            C = SDLK_c,                 /**< Letter C */
+            D = SDLK_d,                 /**< Letter D */
+            E = SDLK_e,                 /**< Letter E */
+            F = SDLK_f,                 /**< Letter F */
+            G = SDLK_g,                 /**< Letter G */
+            H = SDLK_h,                 /**< Letter H */
+            I = SDLK_i,                 /**< Letter I */
+            J = SDLK_j,                 /**< Letter J */
+            K = SDLK_k,                 /**< Letter K */
+            L = SDLK_l,                 /**< Letter L */
+            M = SDLK_m,                 /**< Letter M */
+            N = SDLK_n,                 /**< Letter N */
+            O = SDLK_o,                 /**< Letter O */
+            P = SDLK_p,                 /**< Letter P */
+            Q = SDLK_q,                 /**< Letter Q */
+            R = SDLK_r,                 /**< Letter R */
+            S = SDLK_s,                 /**< Letter S */
+            T = SDLK_t,                 /**< Letter T */
+            U = SDLK_u,                 /**< Letter U */
+            V = SDLK_v,                 /**< Letter V */
+            W = SDLK_w,                 /**< Letter W */
+            X = SDLK_x,                 /**< Letter X */
+            Y = SDLK_y,                 /**< Letter Y */
+            Z = SDLK_z                  /**< Letter Z */
         };
 
     protected:
         /**
          * @brief Key press event
          * @param key       Key pressed
-         * @param modifiers Active modifiers (not yet implemented)
-         * @param position  Cursor position (not yet implemented)
+         * @param modifiers Active modifiers
+         * @param position  Cursor position (not implemented)
          */
         virtual void keyPressEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
 
         /**
          * @brief Key release event
          * @param key       Key released
-         * @param modifiers Active modifiers (not yet implemented)
-         * @param position  Cursor position (not yet implemented)
+         * @param modifiers Active modifiers
+         * @param position  Cursor position (not implemented)
          */
         virtual void keyReleaseEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
 
@@ -178,7 +247,7 @@ class Sdl2Application {
         /**
          * @brief Mouse press event
          * @param button    Button pressed
-         * @param modifiers Active modifiers (not yet implemented)
+         * @param modifiers Active modifiers (not implemented)
          * @param position  Cursor position
          *
          * Called when mouse button is pressed. Default implementation does
@@ -189,7 +258,7 @@ class Sdl2Application {
         /**
          * @brief Mouse release event
          * @param button    Button released
-         * @param modifiers Active modifiers (not yet implemented)
+         * @param modifiers Active modifiers (not implemented)
          * @param position  Cursor position
          *
          * Called when mouse button is released. Default implementation does
@@ -199,7 +268,7 @@ class Sdl2Application {
 
         /**
          * @brief Mouse motion event
-         * @param modifiers Active modifiers (not yet implemented)
+         * @param modifiers Active modifiers (not implemented)
          * @param position  Mouse position relative to the window
          *
          * Called when mouse is moved. Default implementation does nothing.
@@ -216,6 +285,34 @@ class Sdl2Application {
 
         bool _redraw;
 };
+
+/** @hideinitializer
+@param className Class name
+
+Can be used as equivalent to the following code to achieve better portability,
+see @ref portability-applications for more information.
+@code
+int main(int argc, char** argv) {
+    className app(argc, argv);
+    return app.exec();
+}
+@endcode
+When no other application header is included this macro is also aliased to
+`MAGNUM_APPLICATION_MAIN()`.
+*/
+#define MAGNUM_SDL2APPLICATION_MAIN(className)                              \
+    int main(int argc, char** argv) {                                       \
+        className app(argc, argv);                                          \
+        return app.exec();                                                  \
+    }
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_APPLICATION_MAIN
+#define MAGNUM_APPLICATION_MAIN(className) MAGNUM_SDL2APPLICATION_MAIN(className)
+#else
+#undef MAGNUM_APPLICATION_MAIN
+#endif
+#endif
 
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Modifiers)
 

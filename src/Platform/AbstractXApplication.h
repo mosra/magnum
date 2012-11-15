@@ -105,15 +105,16 @@ class AbstractXApplication {
          */
         enum class Modifier: unsigned int {
             Shift = ShiftMask,          /**< Shift */
-            CapsLock = LockMask,        /**< Caps lock */
             Ctrl = ControlMask,         /**< Ctrl */
             Alt = Mod1Mask,             /**< Alt */
-            NumLock = Mod2Mask,         /**< Num lock */
             AltGr = Mod5Mask,           /**< AltGr */
 
             LeftButton = Button1Mask,   /**< Left mouse button */
             MiddleButton = Button2Mask, /**< Middle mouse button */
-            RightButton = Button3Mask   /**< Right mouse button */
+            RightButton = Button3Mask,  /**< Right mouse button */
+
+            CapsLock = LockMask,        /**< Caps lock */
+            NumLock = Mod2Mask          /**< Num lock */
         };
 
         /**
@@ -129,6 +130,7 @@ class AbstractXApplication {
          * @see keyPressEvent(), keyReleaseEvent()
          */
         enum class Key: KeySym {
+            Enter = XK_Return,          /**< Enter */
             Esc = XK_Escape,            /**< Escape */
 
             Up = XK_Up,                 /**< Up arrow */
@@ -295,6 +297,34 @@ class AbstractXApplication {
 
         Flags flags;
 };
+
+/** @hideinitializer
+@param className Class name
+
+Can be used as equivalent to the following code to achieve better portability,
+see @ref portability-applications for more information.
+@code
+int main(int argc, char** argv) {
+    className app(argc, argv);
+    return app.exec();
+}
+@endcode
+When no other application header is included this macro is also aliased to
+`MAGNUM_APPLICATION_MAIN()`.
+*/
+#define MAGNUM_XAPPLICATION_MAIN(className)                                 \
+    int main(int argc, char** argv) {                                       \
+        className app(argc, argv);                                          \
+        return app.exec();                                                  \
+    }
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_APPLICATION_MAIN
+#define MAGNUM_APPLICATION_MAIN(className) MAGNUM_XAPPLICATION_MAIN(className)
+#else
+#undef MAGNUM_APPLICATION_MAIN
+#endif
+#endif
 
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Modifiers)
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Flags)

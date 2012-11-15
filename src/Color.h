@@ -141,6 +141,7 @@ range @f$ [0.0, 1.0] @f$.
 
 @see Color4
 
+@todo Hue in degrees so users can use deg()
 @todo Signed normalization to [-1.0, 1.0] like in OpenGL?
 */
 /* Not using template specialization because some internal functions are

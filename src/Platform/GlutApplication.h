@@ -43,16 +43,13 @@ support for changing cursor and mouse tracking and warping.
 @section GlutApplication-usage Usage
 
 You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen. The subclass can be then used directly in `main()`, for
-example:
+draw on the screen. The subclass can be then used directly in `main()` - see
+convenience macro MAGNUM_GLUTAPPLICATION_MAIN().
 @code
 class MyApplication: public Magnum::Platform::GlutApplication {
     // implement required methods...
 };
-int main(int argc, char** argv) {
-    MyApplication c(argc, argv);
-    return c.exec();
-}
+MAGNUM_GLUTAPPLICATION_MAIN(MyApplication)
 @endcode
 */
 class GlutApplication {
@@ -268,6 +265,34 @@ class GlutApplication {
 
         Context* c;
 };
+
+/** @hideinitializer
+@param className Class name
+
+Can be used as equivalent to the following code to achieve better portability,
+see @ref portability-applications for more information.
+@code
+int main(int argc, char** argv) {
+    className app(argc, argv);
+    return app.exec();
+}
+@endcode
+When no other application header is included this macro is also aliased to
+`MAGNUM_APPLICATION_MAIN()`.
+*/
+#define MAGNUM_GLUTAPPLICATION_MAIN(className)                              \
+    int main(int argc, char** argv) {                                       \
+        className app(argc, argv);                                          \
+        return app.exec();                                                  \
+    }
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_APPLICATION_MAIN
+#define MAGNUM_APPLICATION_MAIN(className) MAGNUM_GLUTAPPLICATION_MAIN(className)
+#else
+#undef MAGNUM_APPLICATION_MAIN
+#endif
+#endif
 
 /* Implementations for inline functions with unused parameters */
 inline void GlutApplication::keyPressEvent(Key, const Math::Vector2<int>&) {}

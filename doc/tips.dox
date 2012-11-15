@@ -1,8 +1,9 @@
 namespace Magnum {
 /** @page tips Tips and tricks
-@brief Hints for better productivity and performance
+@brief Hints for better productivity and performance.
 
-- @subpage compilation-speedup - @copybrief compilation-speedup
+- @subpage portability - @copybrief portability
 - @subpage best-practices - @copybrief best-practices
+- @subpage compilation-speedup - @copybrief compilation-speedup
 */
 }
