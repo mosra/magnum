@@ -20,10 +20,11 @@
 namespace Magnum { namespace Implementation {
 
 struct ShaderProgramState {
-    inline constexpr ShaderProgramState(): current(0) {}
+    inline constexpr ShaderProgramState(): current(0), maxSupportedVertexAttributeCount(0) {}
 
     /* Currently used program */
     GLuint current;
+    GLint maxSupportedVertexAttributeCount;
 };
 
 }}

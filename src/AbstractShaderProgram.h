@@ -273,7 +273,8 @@ vertex attributes. See also TypeTraits::AttributeType.
 @section AbstractShaderProgram-performance-optimization Performance optimizations
 
 The engine tracks currently used shader program to avoid unnecessary calls to
-@fn_gl{UseProgram}.
+@fn_gl{UseProgram}. %Shader limits (such as maxSupportedVertexAttributeCount())
+are cached, so repeated queries don't result in repeated @fn_gl{Get} calls.
 
 If extension @extension{ARB,separate_shader_objects} or
 @extension{EXT,direct_state_access} is available, uniform setting functions
@@ -297,6 +298,11 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         /**
          * @brief Base struct for attribute location and type
          *
+         * Template parameter @p location is vertex attribute location, number
+         * between `0` and maxSupportedVertexAttributeCount(). To ensure
+         * compatibility, you should always have vertex attribute with
+         * location `0`.
+         *
          * Template parameter @p T is the type which is used for shader
          * attribute, e.g. @ref Math::Vector4 "Vector4<GLint>" for `ivec4`.
          * DataType is type of passed data when adding vertex buffers to mesh.
@@ -315,10 +321,10 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * shaders and @ref Mesh-configuration for example usage when adding
          * vertex buffers to mesh.
          */
-        template<GLuint i, class T> class Attribute {
+        template<GLuint location, class T> class Attribute {
             public:
                 /** @brief Location to which the attribute is bound */
-                static const GLuint Location = i;
+                static const GLuint Location = location;
 
                 /**
                  * @brief Type
@@ -440,6 +446,15 @@ class MAGNUM_EXPORT AbstractShaderProgram {
                 const DataType _dataType;
                 const DataOptions _dataOptions;
         };
+
+        /**
+         * @brief Max supported vertex attribute count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls.
+         * @see Attribute, @fn_gl{Get} with @def_gl{MAX_VERTEX_ATTRIBS}
+         */
+        static GLint maxSupportedVertexAttributeCount();
 
         /**
          * @brief Constructor
