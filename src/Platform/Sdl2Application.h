@@ -372,6 +372,13 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         inline Math::Vector2<int> position() const { return _position; }
 
         /**
+         * @brief Relative position
+         *
+         * Position relative to previous event
+         */
+        inline Math::Vector2<int> relativePosition() const { return _relativePosition; }
+
+        /**
          * @brief Modifiers
          *
          * Lazily populated on first request.
@@ -379,9 +386,9 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        inline MouseMoveEvent(const Math::Vector2<int>& position): _position(position), modifiersLoaded(false) {}
+        inline MouseMoveEvent(const Math::Vector2<int>& position, const Math::Vector2<int>& relativePosition): _position(position), _relativePosition(relativePosition), modifiersLoaded(false) {}
 
-        const Math::Vector2<int> _position;
+        const Math::Vector2<int> _position, _relativePosition;
         bool modifiersLoaded;
         Modifiers _modifiers;
 };

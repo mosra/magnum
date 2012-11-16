@@ -117,7 +117,7 @@ int Sdl2Application::exec() {
                     } break;
 
                 case SDL_MOUSEMOTION: {
-                    MouseMoveEvent e({event.motion.x, event.motion.y});
+                    MouseMoveEvent e({event.motion.x, event.motion.y}, {event.motion.xrel, event.motion.yrel});
                     mouseMoveEvent(e);
                     break;
                 }
