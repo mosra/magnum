@@ -83,27 +83,33 @@ bool NaClApplication::HandleInputEvent(const pp::InputEvent& event) {
     CORRADE_INTERNAL_ASSERT(!(flags & Flag::SwapInProgress));
 
     switch(event.GetType()) {
-        case PP_INPUTEVENT_TYPE_KEYDOWN: {
+        case PP_INPUTEVENT_TYPE_KEYDOWN:
+        case PP_INPUTEVENT_TYPE_KEYUP: {
             pp::KeyboardInputEvent keyEvent(event);
-            keyPressEvent(static_cast<Key>(keyEvent.GetKeyCode()), static_cast<Modifier>(keyEvent.GetModifiers()), {});
+            KeyEvent e(static_cast<KeyEvent::Key>(keyEvent.GetKeyCode()), static_cast<InputEvent::Modifier>(keyEvent.GetModifiers()));
+            event.GetType() == PP_INPUTEVENT_TYPE_KEYDOWN ? keyPressEvent(e) : keyReleaseEvent(e);
+            if(!e.isAccepted()) return false;
             break;
-        } case PP_INPUTEVENT_TYPE_KEYUP: {
-            pp::KeyboardInputEvent keyEvent(event);
-            keyReleaseEvent(static_cast<Key>(keyEvent.GetKeyCode()), static_cast<Modifier>(keyEvent.GetModifiers()), {});
-            break;
-        } case PP_INPUTEVENT_TYPE_MOUSEDOWN: {
+        }
+
+        case PP_INPUTEVENT_TYPE_MOUSEDOWN:
+        case PP_INPUTEVENT_TYPE_MOUSEUP: {
             pp::MouseInputEvent mouseEvent(event);
-            mousePressEvent(static_cast<MouseButton>(mouseEvent.GetButton()), static_cast<Modifier>(mouseEvent.GetModifiers()), {mouseEvent.GetPosition().x(), mouseEvent.GetPosition().y()});
+            MouseEvent e(static_cast<MouseEvent::Button>(mouseEvent.GetButton()), {mouseEvent.GetPosition().x(), mouseEvent.GetPosition().y()}, static_cast<InputEvent::Modifier>(mouseEvent.GetModifiers()));
+            event.GetType() == PP_INPUTEVENT_TYPE_MOUSEDOWN ? mousePressEvent(e) : mouseReleaseEvent(e);
+            if(!e.isAccepted()) return false;
             break;
-        } case PP_INPUTEVENT_TYPE_MOUSEUP: {
+        }
+
+        case PP_INPUTEVENT_TYPE_MOUSEMOVE: {
             pp::MouseInputEvent mouseEvent(event);
-            mouseReleaseEvent(static_cast<MouseButton>(mouseEvent.GetButton()), static_cast<Modifier>(mouseEvent.GetModifiers()), {mouseEvent.GetPosition().x(), mouseEvent.GetPosition().y()});
+            MouseMoveEvent e({mouseEvent.GetPosition().x(), mouseEvent.GetPosition().y()}, static_cast<InputEvent::Modifier>(mouseEvent.GetModifiers()));
+            mouseMoveEvent(e);
+            if(!e.isAccepted()) return false;
             break;
-        } case PP_INPUTEVENT_TYPE_MOUSEMOVE: {
-            pp::MouseInputEvent mouseEvent(event);
-            mouseMotionEvent(static_cast<Modifier>(mouseEvent.GetModifiers()), {mouseEvent.GetPosition().x(), mouseEvent.GetPosition().y()});
-            break;
-        } default: return false;
+        }
+
+        default: return false;
     }
 
     /* Not need to redraw => assume the event was ignored */

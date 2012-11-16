@@ -63,6 +63,11 @@ MAGNUM_NACLAPPLICATION_MAIN(MyApplication)
 */
 class NaClApplication: public pp::Instance, public pp::Graphics3DClient {
     public:
+        class InputEvent;
+        class KeyEvent;
+        class MouseEvent;
+        class MouseMoveEvent;
+
         /**
          * @brief Constructor
          * @param instance  Module instance
@@ -94,12 +99,103 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient {
 
         /** @{ @name Keyboard handling */
 
+        /**
+         * @brief Key press event
+         *
+         * Called when an key is pressed. Default implementation does nothing.
+         * If you accept the event, call @ref InputEvent::setAccepted() "setAccepted()"
+         * on it, otherwise the event will be propagated to the browser.
+         */
+        virtual void keyPressEvent(KeyEvent& event);
+
+        /**
+         * @brief Key release event
+         *
+         * Called when an key is released. Default implementation does nothing.
+         * If you accept the event, call @ref InputEvent::setAccepted() "setAccepted()"
+         * on it, otherwise the event will be propagated to the browser.
+         */
+        virtual void keyReleaseEvent(KeyEvent& event);
+
+        /*@}*/
+
+        /** @{ @name Mouse handling */
+
+        /**
+         * @brief Mouse press event
+         *
+         * Called when mouse button is pressed. Default implementation does
+         * nothing. If you accept the event, call @ref InputEvent::setAccepted() "setAccepted()"
+         * on it, otherwise the event will be propagated to the browser.
+         */
+        virtual void mousePressEvent(MouseEvent& event);
+
+        /**
+         * @brief Mouse release event
+         *
+         * Called when mouse button is released. Default implementation does
+         * nothing. If you accept the event, call @ref InputEvent::setAccepted() "setAccepted()"
+         * on it, otherwise the event will be propagated to the browser.
+         */
+        virtual void mouseReleaseEvent(MouseEvent& event);
+
+        /**
+         * @brief Mouse move event
+         *
+         * Called when mouse is moved. Default implementation does nothing. If
+         * you accept the event, call @ref InputEvent::setAccepted() "setAccepted()"
+         * on it, otherwise the event will be propagated to the browser.
+         */
+        virtual void mouseMoveEvent(MouseMoveEvent& event);
+
+        /*@}*/
+
+    private:
+        enum class Flag: std::uint8_t {
+            ViewportUpdated = 1 << 0,
+            SwapInProgress = 1 << 1,
+            Redraw = 1 << 2
+        };
+        typedef Corrade::Containers::EnumSet<Flag, std::uint8_t> Flags;
+
+        inline void Graphics3DContextLost() override {
+            CORRADE_ASSERT(false, "NaClApplication: context unexpectedly lost", );
+        }
+
+        void DidChangeView(const pp::View& view) override;
+
+        bool HandleInputEvent(const pp::InputEvent& event) override;
+
+        static void swapCallback(void* applicationInstance, std::int32_t);
+
+        pp::Graphics3D* graphics;
+        Context* c;
+        Math::Vector2<GLsizei> viewportSize;
+        Flags flags;
+
+        CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
+};
+
+/**
+@brief Base for input events
+
+If you accept the event, call setAccepted(), otherwise the event will be
+propagated to the browser.
+@see KeyEvent, MouseEvent, MouseMoveEvent, keyPressEvent(), keyReleaseEvent(),
+    mousePressEvent(), mouseReleaseEvent(), mouseMoveEvent()
+*/
+class NaClApplication::InputEvent {
+    InputEvent(const InputEvent& other) = delete;
+    InputEvent(InputEvent&& other) = delete;
+    InputEvent& operator=(const InputEvent& other) = delete;
+    InputEvent& operator=(InputEvent&& other) = delete;
+
     public:
         /**
          * @brief %Modifier
          *
          * @todo AltGr + PP_INPUTEVENT_MODIFIER_ISKEYPAD, PP_INPUTEVENT_MODIFIER_ISAUTOREPEAT
-         * @see Modifiers, keyPressEvent(), keyReleaseEvent()
+         * @see Modifiers, modifiers()
          */
         enum class Modifier: std::uint32_t {
             Shift = PP_INPUTEVENT_MODIFIER_SHIFTKEY,    /**< Shift */
@@ -118,16 +214,51 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient {
         /**
          * @brief Set of modifiers
          *
-         * @see keyPressEvent(), keyReleaseEvent(), mousePressEvent(),
-         *      mouseReleaseEvent(), mouseMotionEvent()
+         * @see modifiers()
          */
         typedef Corrade::Containers::EnumSet<Modifier, std::uint32_t> Modifiers;
 
+        inline virtual ~InputEvent() {}
+
+        /** @brief Modifiers */
+        inline Modifiers modifiers() const { return _modifiers; }
+
+        /**
+         * @brief Set event as accepted
+         *
+         * If the event is ignored (i.e., not set as accepted), it is
+         * propagated to the browser. By default is each event ignored.
+         */
+        inline void setAccepted(bool accepted = true) { _accepted = accepted; }
+
+        /** @brief Whether the event is accepted */
+        inline bool isAccepted() { return _accepted; }
+
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    protected:
+        inline InputEvent(Modifiers modifiers): _accepted(false), _modifiers(modifiers) {}
+    #endif
+
+    private:
+        bool _accepted;
+        const Modifiers _modifiers;
+};
+
+/**
+@brief Key event
+
+See InputEvent for more information.
+@see keyPressEvent(), keyReleaseEvent()
+*/
+class NaClApplication::KeyEvent: public NaClApplication::InputEvent {
+    friend class NaClApplication;
+
+    public:
         /**
          * @brief Key
          *
          * @todo Slash, percent, equal to be compatible with *XApplication
-         * @see keyPressEvent(), keyReleaseEvent()
+         * @see key()
          */
         enum class Key: std::uint32_t {
             Enter = 0x0D,               /**< Enter */
@@ -199,99 +330,66 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient {
             Z = 'Z'                     /**< Letter Z */
         };
 
-    protected:
-        /**
-         * @brief Key press event
-         * @param key       Key pressed
-         * @param modifiers Active modifiers
-         * @param position  Cursor position (not implemented)
-         *
-         * Called when an key is pressed. Default implementation does nothing.
-         */
-        virtual void keyPressEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
+        /** @brief Key */
+        inline Key key() const { return _key; }
 
-        /**
-         * @brief Key release event
-         * @param key       Key released
-         * @param modifiers Active modifiers
-         * @param position  Cursor position (not implemented)
-         */
-        virtual void keyReleaseEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
+    private:
+        inline KeyEvent(Key key, Modifiers modifiers): InputEvent(modifiers), _key(key) {}
 
-        /*@}*/
+        const Key _key;
+};
 
-        /** @{ @name Mouse handling */
+/**
+@brief Mouse event
+
+See InputEvent for more information.
+@see MouseMoveEvent, mousePressEvent(), mouseReleaseEvent()
+*/
+class NaClApplication::MouseEvent: public NaClApplication::InputEvent {
+    friend class NaClApplication;
 
     public:
         /**
-         * @brief Mouse button
+         * @brief Button
          *
-         * @see mousePressEvent(), mouseReleaseEvent()
+         * @see button()
          */
-        enum class MouseButton: unsigned int {
+        enum class Button: unsigned int {
             Left = PP_INPUTEVENT_MOUSEBUTTON_LEFT,      /**< Left button */
             Middle = PP_INPUTEVENT_MOUSEBUTTON_MIDDLE,  /**< Middle button */
             Right = PP_INPUTEVENT_MOUSEBUTTON_RIGHT     /**< Right button */
         };
 
-    protected:
-        /**
-         * @brief Mouse press event
-         * @param button    Button pressed
-         * @param modifiers Active modifiers
-         * @param position  Cursor position
-         *
-         * Called when mouse button is pressed. Default implementation does
-         * nothing.
-         */
-        virtual void mousePressEvent(MouseButton button, Modifiers modifiers, const Math::Vector2<int>& position);
+        /** @brief Button */
+        inline Button button() const { return _button; }
 
-        /**
-         * @brief Mouse release event
-         * @param button    Button released
-         * @param modifiers Active modifiers
-         * @param position  Cursor position
-         *
-         * Called when mouse button is released. Default implementation does
-         * nothing.
-         */
-        virtual void mouseReleaseEvent(MouseButton button, Modifiers modifiers, const Math::Vector2<int>& position);
-
-        /**
-         * @brief Mouse motion event
-         * @param modifiers Active modifiers
-         * @param position  Cursor position
-         *
-         * Called when mouse is moved.
-         */
-        virtual void mouseMotionEvent(Modifiers modifiers, const Math::Vector2<int>& position);
-
-        /*@}*/
+        /** @brief Position */
+        inline Math::Vector2<int> position() const { return _position; }
 
     private:
-        enum class Flag: std::uint8_t {
-            ViewportUpdated = 1 << 0,
-            SwapInProgress = 1 << 1,
-            Redraw = 1 << 2
-        };
-        typedef Corrade::Containers::EnumSet<Flag, std::uint8_t> Flags;
+        inline MouseEvent(Button button, const Math::Vector2<int>& position, Modifiers modifiers): InputEvent(modifiers), _button(button), _position(position) {}
 
-        inline void Graphics3DContextLost() override {
-            CORRADE_ASSERT(false, "NaClApplication: context unexpectedly lost", );
-        }
+        const Button _button;
+        const Math::Vector2<int> _position;
+};
 
-        void DidChangeView(const pp::View& view) override;
+/**
+@brief Mouse move event
 
-        bool HandleInputEvent(const pp::InputEvent& event) override;
+See InputEvent for more information.
+@see MouseEvent, mouseMoveEvent()
+*/
+class NaClApplication::MouseMoveEvent: public NaClApplication::InputEvent {
+    friend class NaClApplication;
 
-        static void swapCallback(void* applicationInstance, std::int32_t);
+    public:
+        /** @brief Position */
+        inline Math::Vector2<int> position() const { return _position; }
 
-        pp::Graphics3D* graphics;
-        Context* c;
-        Math::Vector2<GLsizei> viewportSize;
-        Flags flags;
+    private:
+        inline MouseMoveEvent(const Math::Vector2<int>& position, Modifiers modifiers): InputEvent(modifiers), _position(position) {}
 
-        CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
+        const Math::Vector2<int> _position;
 };
 
 CORRADE_ENUMSET_OPERATORS(NaClApplication::Flags)
@@ -339,13 +437,14 @@ When no other application header is included this macro is also aliased to
 #endif
 #endif
 
-/* Implementations for inline functions with unused parameters */
-inline void NaClApplication::keyPressEvent(Key, Modifiers, const Math::Vector2<int>&) {}
-inline void NaClApplication::keyReleaseEvent(Key, Modifiers, const Math::Vector2<int>&) {}
-inline void NaClApplication::mousePressEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
-inline void NaClApplication::mouseReleaseEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
-inline void NaClApplication::mouseMotionEvent(Modifiers, const Math::Vector2<int>&) {}
+CORRADE_ENUMSET_OPERATORS(NaClApplication::InputEvent::Modifiers)
 
+/* Implementations for inline functions with unused parameters */
+inline void NaClApplication::keyPressEvent(KeyEvent&) {}
+inline void NaClApplication::keyReleaseEvent(KeyEvent&) {}
+inline void NaClApplication::mousePressEvent(MouseEvent&) {}
+inline void NaClApplication::mouseReleaseEvent(MouseEvent&) {}
+inline void NaClApplication::mouseMoveEvent(MouseMoveEvent&) {}
 
 }}
 
