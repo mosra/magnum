@@ -27,9 +27,6 @@
 
 namespace Magnum {
 
-class Buffer;
-class Context;
-
 /**
 @brief Non-indexed mesh
 

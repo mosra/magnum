@@ -24,10 +24,9 @@
 #include "Math/MathTypeTraits.h"
 #include "Math/Math.h"
 #include "Math/Vector4.h"
+#include "Magnum.h"
 
 namespace Magnum {
-
-template<class T> class Color3;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {

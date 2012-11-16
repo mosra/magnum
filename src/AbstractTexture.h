@@ -19,15 +19,11 @@
  * @brief Class Magnum::AbstractTexture
  */
 
-#include <cstdint>
-
 #include "Magnum.h"
 #include "Color.h"
 #include "AbstractImage.h"
 
 namespace Magnum {
-
-class Context;
 
 /**
 @brief Base for textures

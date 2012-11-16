@@ -29,20 +29,6 @@
 
 namespace Magnum {
 
-#ifndef MAGNUM_TARGET_GLES2
-template<std::uint8_t> class BufferedImage;
-#endif
-template<std::uint8_t> class Image;
-
-#ifndef MAGNUM_TARGET_GLES2
-typedef BufferedImage<1> BufferedImage1D;
-typedef BufferedImage<2> BufferedImage2D;
-typedef BufferedImage<3> BufferedImage3D;
-#endif
-typedef Image<1> Image1D;
-typedef Image<2> Image2D;
-typedef Image<3> Image3D;
-
 /** @nosubgrouping
 @brief %Framebuffer
 

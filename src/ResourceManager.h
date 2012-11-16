@@ -29,7 +29,7 @@ namespace Magnum {
  *
  * @see Resource::state(), ResourceManager::state()
  */
-enum class ResourceState {
+enum class ResourceState: std::uint8_t {
     /** The resource is not yet loaded. */
     NotLoaded,
 
@@ -48,7 +48,7 @@ enum class ResourceState {
  *
  * @see ResourceManager::set()
  */
-enum class ResourceDataState {
+enum class ResourceDataState: std::uint8_t {
     /**
      * The resource can be changed by the manager in the future. This is
      * slower, as Resource needs to ask the manager for new version every time
@@ -70,7 +70,7 @@ enum class ResourceDataState {
 
 @see ResourceManager::set(), ResourceManager::free()
  */
-enum class ResourcePolicy {
+enum class ResourcePolicy: std::uint8_t {
     /** The resource will stay resident for whole lifetime of resource manager. */
     Resident,
 

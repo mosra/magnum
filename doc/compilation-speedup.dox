@@ -17,7 +17,10 @@ Math/Vector3.h.
 You are encouraged to use forward declarations also in your code. However, for
 some types it can be too cumbersome -- e.g. too many template parameters,
 typedefs etc. In this case a header with forward declarations is usually
-available: see SceneGraph/SceneGraph.h for example.
+available, each namespace has its own:
+
+ - Magnum.h
+ - SceneGraph/SceneGraph.h
 
 @section compilation-speedup-templates Templates
 

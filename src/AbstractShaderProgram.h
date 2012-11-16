@@ -19,7 +19,6 @@
  * @brief Class Magnum::AbstractShaderProgram
  */
 
-#include <cstdint>
 #include <string>
 #include <Containers/EnumSet.h>
 
@@ -37,11 +36,6 @@ namespace Math {
     template<std::size_t, class> class Matrix;
     template<std::size_t, class> class Vector;
 }
-
-template<class> class Color3;
-template<class> class Color4;
-class Context;
-class Shader;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
