@@ -122,6 +122,22 @@ class Sdl2Application {
 
         /** @{ @name Mouse handling */
 
+        /** @brief Whether mouse is locked */
+        inline bool isMouseLocked() const {
+            return SDL_GetRelativeMouseMode();
+        }
+
+        /**
+         * @brief Enable or disable mouse locking
+         *
+         * When mouse is locked, the cursor is hidden and only
+         * MouseMoveEvent::relativePosition() is changing, absolute position
+         * stays the same.
+         */
+        inline void setMouseLocked(bool enabled) {
+            SDL_SetRelativeMouseMode(enabled ? SDL_TRUE : SDL_FALSE);
+        }
+
         /**
          * @brief Mouse press event
          *
