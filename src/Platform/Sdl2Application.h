@@ -54,6 +54,11 @@ MAGNUM_SDL2APPLICATION_MAIN(MyApplication)
 */
 class Sdl2Application {
     public:
+        class InputEvent;
+        class KeyEvent;
+        class MouseEvent;
+        class MouseMoveEvent;
+
         /**
          * @brief Constructor
          * @param argc      Count of arguments of `main()` function
@@ -79,9 +84,10 @@ class Sdl2Application {
          */
         int exec();
 
+    protected:
+
         /** @{ @name Drawing functions */
 
-    protected:
         /** @copydoc GlutApplication::viewportEvent() */
         virtual void viewportEvent(const Math::Vector2<GLsizei>& size) = 0;
 
@@ -98,11 +104,75 @@ class Sdl2Application {
 
         /** @{ @name Keyboard handling */
 
+        /**
+         * @brief Key press event
+         *
+         * Called when an key is pressed. Default implementation does nothing.
+         */
+        virtual void keyPressEvent(KeyEvent& event);
+
+        /**
+         * @brief Key release event
+         *
+         * Called when an key is released. Default implementation does nothing.
+         */
+        virtual void keyReleaseEvent(KeyEvent& event);
+
+        /*@}*/
+
+        /** @{ @name Mouse handling */
+
+        /**
+         * @brief Mouse press event
+         *
+         * Called when mouse button is pressed. Default implementation does
+         * nothing.
+         */
+        virtual void mousePressEvent(MouseEvent& event);
+
+        /**
+         * @brief Mouse release event
+         *
+         * Called when mouse button is released. Default implementation does
+         * nothing.
+         */
+        virtual void mouseReleaseEvent(MouseEvent& event);
+
+        /**
+         * @brief Mouse move event
+         *
+         * Called when mouse is moved. Default implementation does nothing.
+         */
+        virtual void mouseMoveEvent(MouseMoveEvent& event);
+
+        /*@}*/
+
+    private:
+        SDL_Window* window;
+        SDL_GLContext context;
+
+        Context* c;
+
+        bool _redraw;
+};
+
+/**
+@brief Base for input events
+
+@see KeyEvent, MouseEvent, MouseMoveEvent, keyPressEvent(), keyReleaseEvent(),
+    mousePressEvent(), mouseReleaseEvent(), mouseMoveEvent()
+*/
+class Sdl2Application::InputEvent {
+    InputEvent(const InputEvent& other) = delete;
+    InputEvent(InputEvent&& other) = delete;
+    InputEvent& operator=(const InputEvent& other) = delete;
+    InputEvent& operator=(InputEvent&& other) = delete;
+
     public:
         /**
          * @brief %Modifier
          *
-         * @see Modifiers, keyPressEvent(), keyReleaseEvent()
+         * @see Modifiers, KeyEvent::modifiers()
          */
         enum class Modifier: Uint16 {
             Shift = KMOD_SHIFT,         /**< Shift */
@@ -117,14 +187,47 @@ class Sdl2Application {
         /**
          * @brief Set of modifiers
          *
-         * @see keyPressEvent(), keyReleaseEvent()
+         * @see KeyEvent::modifiers()
          */
         typedef Corrade::Containers::EnumSet<Modifier, Uint16> Modifiers;
 
+        inline virtual ~InputEvent() {}
+
+        /**
+         * @brief Set event as accepted
+         *
+         * Does nothing. Included only for compatibility with
+         * NaClApplication::InputEvent.
+         */
+        inline void setAccepted(bool = true) {}
+
+        /**
+         * @brief Whether the event is accepted
+         *
+         * Always returns true. Included only for compatibility with
+         * NaClApplication::InputEvent.
+         */
+        inline bool isAccepted() const { return true; }
+
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    protected:
+        inline InputEvent() {}
+    #endif
+};
+
+/**
+@brief Key event
+
+@see keyPressEvent(), keyReleaseEvent()
+*/
+class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
+    friend class Sdl2Application;
+
+    public:
         /**
          * @brief Key
          *
-         * @see keyPressEvent(), keyReleaseEvent()
+         * @see key()
          */
         enum class Key: SDL_Keycode {
             Enter = SDLK_RETURN,        /**< Enter */
@@ -199,34 +302,34 @@ class Sdl2Application {
             Z = SDLK_z                  /**< Letter Z */
         };
 
-    protected:
-        /**
-         * @brief Key press event
-         * @param key       Key pressed
-         * @param modifiers Active modifiers
-         * @param position  Cursor position (not implemented)
-         */
-        virtual void keyPressEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
+        /** @brief Key */
+        inline Key key() const { return _key; }
 
-        /**
-         * @brief Key release event
-         * @param key       Key released
-         * @param modifiers Active modifiers
-         * @param position  Cursor position (not implemented)
-         */
-        virtual void keyReleaseEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
+        /** @brief Modifiers */
+        inline Modifiers modifiers() const { return _modifiers; }
 
-        /*@}*/
+    private:
+        inline KeyEvent(Key key, Modifiers modifiers): _key(key), _modifiers(modifiers) {}
 
-        /** @{ @name Mouse handling */
+        const Key _key;
+        const Modifiers _modifiers;
+};
+
+/**
+@brief Mouse event
+
+@see MouseMoveEvent, mousePressEvent(), mouseReleaseEvent()
+*/
+class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
+    friend class Sdl2Application;
 
     public:
         /**
          * @brief Mouse button
          *
-         * @see mousePressEvent(), mouseReleaseEvent()
+         * @see button()
          */
-        enum class MouseButton: Uint8 {
+        enum class Button: Uint8 {
             Left = SDL_BUTTON_LEFT,         /**< Left button */
             Middle = SDL_BUTTON_MIDDLE,     /**< Middle button */
             Right = SDL_BUTTON_RIGHT,       /**< Right button */
@@ -234,47 +337,35 @@ class Sdl2Application {
             WheelDown = 5                   /**< Wheel down */
         };
 
-    protected:
-        /**
-         * @brief Mouse press event
-         * @param button    Button pressed
-         * @param modifiers Active modifiers (not implemented)
-         * @param position  Cursor position
-         *
-         * Called when mouse button is pressed. Default implementation does
-         * nothing.
-         */
-        virtual void mousePressEvent(MouseButton button, Modifiers modifiers, const Math::Vector2<int>& position);
+        /** @brief Button */
+        inline Button button() const { return _button; }
 
-        /**
-         * @brief Mouse release event
-         * @param button    Button released
-         * @param modifiers Active modifiers (not implemented)
-         * @param position  Cursor position
-         *
-         * Called when mouse button is released. Default implementation does
-         * nothing.
-         */
-        virtual void mouseReleaseEvent(MouseButton button, Modifiers modifiers, const Math::Vector2<int>& position);
-
-        /**
-         * @brief Mouse motion event
-         * @param modifiers Active modifiers (not implemented)
-         * @param position  Mouse position relative to the window
-         *
-         * Called when mouse is moved. Default implementation does nothing.
-         */
-        virtual void mouseMotionEvent(Modifiers modifiers, const Math::Vector2<int>& position);
-
-        /*@}*/
+        /** @brief Position */
+        inline Math::Vector2<int> position() const { return _position; }
 
     private:
-        SDL_Window* window;
-        SDL_GLContext context;
+        inline MouseEvent(Button button, const Math::Vector2<int>& position): _button(button), _position(position) {}
 
-        Context* c;
+        const Button _button;
+        const Math::Vector2<int> _position;
+};
 
-        bool _redraw;
+/**
+@brief Mouse move event
+
+@see MouseEvent, mouseMoveEvent()
+*/
+class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
+    friend class Sdl2Application;
+
+    public:
+        /** @brief Position */
+        inline Math::Vector2<int> position() const { return _position; }
+
+    private:
+        inline MouseMoveEvent(const Math::Vector2<int>& position): _position(position) {}
+
+        const Math::Vector2<int> _position;
 };
 
 /** @hideinitializer
@@ -305,14 +396,14 @@ When no other application header is included this macro is also aliased to
 #endif
 #endif
 
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::Modifiers)
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::InputEvent::Modifiers)
 
 /* Implementations for inline functions with unused parameters */
-inline void Sdl2Application::keyPressEvent(Key, Modifiers, const Math::Vector2<int>&) {}
-inline void Sdl2Application::keyReleaseEvent(Key, Modifiers, const Math::Vector2<int>&) {}
-inline void Sdl2Application::mousePressEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
-inline void Sdl2Application::mouseReleaseEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
-inline void Sdl2Application::mouseMotionEvent(Modifiers, const Math::Vector2<int>&) {}
+inline void Sdl2Application::keyPressEvent(KeyEvent&) {}
+inline void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
+inline void Sdl2Application::mousePressEvent(MouseEvent&) {}
+inline void Sdl2Application::mouseReleaseEvent(MouseEvent&) {}
+inline void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
 
 }}
 
