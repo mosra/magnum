@@ -135,4 +135,16 @@ int Sdl2Application::exec() {
     return 0;
 }
 
+Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseEvent::modifiers() {
+    if(modifiersLoaded) return _modifiers;
+    modifiersLoaded = true;
+    return _modifiers = static_cast<Modifier>(SDL_GetModState());
+}
+
+Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseMoveEvent::modifiers() {
+    if(modifiersLoaded) return _modifiers;
+    modifiersLoaded = true;
+    return _modifiers = static_cast<Modifier>(SDL_GetModState());
+}
+
 }}

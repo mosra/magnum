@@ -343,11 +343,20 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         /** @brief Position */
         inline Math::Vector2<int> position() const { return _position; }
 
+        /**
+         * @brief Modifiers
+         *
+         * Lazily populated on first request.
+         */
+        Modifiers modifiers();
+
     private:
-        inline MouseEvent(Button button, const Math::Vector2<int>& position): _button(button), _position(position) {}
+        inline MouseEvent(Button button, const Math::Vector2<int>& position): _button(button), _position(position), modifiersLoaded(false) {}
 
         const Button _button;
         const Math::Vector2<int> _position;
+        bool modifiersLoaded;
+        Modifiers _modifiers;
 };
 
 /**
@@ -362,10 +371,19 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         /** @brief Position */
         inline Math::Vector2<int> position() const { return _position; }
 
+        /**
+         * @brief Modifiers
+         *
+         * Lazily populated on first request.
+         */
+        Modifiers modifiers();
+
     private:
-        inline MouseMoveEvent(const Math::Vector2<int>& position): _position(position) {}
+        inline MouseMoveEvent(const Math::Vector2<int>& position): _position(position), modifiersLoaded(false) {}
 
         const Math::Vector2<int> _position;
+        bool modifiersLoaded;
+        Modifiers _modifiers;
 };
 
 /** @hideinitializer
