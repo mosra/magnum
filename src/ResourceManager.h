@@ -333,22 +333,30 @@ template<class T, class U = T> class Resource {
             return data;
         }
 
-        /** @brief %Resource data */
-        inline U& operator*() {
-            acquire();
-            return *static_cast<U*>(data);
-        }
-
-        /** @brief %Resource data */
-        inline U* operator->() {
-            acquire();
-            return static_cast<U*>(data);
-        }
-
-        /** @brief %Resource data */
+        /**
+         * @brief %Resource data
+         *
+         * The resource must be loaded before accessing it. Use boolean
+         * conversion operator or state() for testing whether it is loaded.
+         */
         inline operator U*() {
             acquire();
+            CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), nullptr);
             return static_cast<U*>(data);
+        }
+
+        /** @overload */
+        inline U* operator->() {
+            acquire();
+            CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), nullptr);
+            return static_cast<U*>(data);
+        }
+
+        /** @overload */
+        inline U& operator*() {
+            acquire();
+            CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), *static_cast<U*>(data));
+            return *static_cast<U*>(data);
         }
 
     private:
