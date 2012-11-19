@@ -19,6 +19,7 @@
  * @brief Class Magnum::SceneGraph::AbstractObject, alias Magnum::SceneGraph::AbstractObject2D, Magnum::SceneGraph::AbstractObject3D
  */
 
+#include <vector>
 #include <Containers/LinkedList.h>
 
 #include "DimensionTraits.h"
