@@ -1,6 +1,9 @@
-/** @page best-practices Best practices in OpenGL
+namespace Magnum {
+/** @page best-practices Best practices and platform-specific information
 
-@brief Platform-specific and general performance advices
+@brief Performance advices and solutions for platform-specific issues
+
+@tableofcontents
 
 Here is collection of carefully selected links to official guidelines and
 other articles with valuable information to help developers create better
@@ -8,8 +11,23 @@ applications. Feel free to add one, if it contains new unique information.
 
 @section best-practices-platform Platform-specific
 
-- Mac OS - [Best Practices for Working with Vertex Data](https://developer.apple.com/library/mac/#documentation/graphicsimaging/Conceptual/OpenGL-MacProgGuide/opengl_vertexdata/opengl_vertexdata.html), [Best Practices for Working with Texture Data](https://developer.apple.com/library/mac/#documentation/graphicsimaging/Conceptual/OpenGL-MacProgGuide/opengl_texturedata/opengl_texturedata.html)
-- iOS - [Best Practices for Working with Vertex Data](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesforWorkingwithVertexData/TechniquesforWorkingwithVertexData.html), [Best Practices for Working with Texture Data](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesForWorkingWithTextureData/TechniquesForWorkingWithTextureData.html), [Best Practices for Shaders](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/BestPracticesforShaders/BestPracticesforShaders.html#//apple_ref/doc/uid/TP40008793-CH7-SW3)
-- Google Chrome Native Client - [Best practices for 3D graphics](https://developers.google.com/native-client/beta/devguide/coding/3D-graphics#best-practices)
+Some platforms need special care, see their respective sections for more
+information.
+
+@subsection best-practices-mac Mac OS
+
+- [Best Practices for Working with Vertex Data](https://developer.apple.com/library/mac/#documentation/graphicsimaging/Conceptual/OpenGL-MacProgGuide/opengl_vertexdata/opengl_vertexdata.html)
+- [Best Practices for Working with Texture Data](https://developer.apple.com/library/mac/#documentation/graphicsimaging/Conceptual/OpenGL-MacProgGuide/opengl_texturedata/opengl_texturedata.html)
+
+@subsection best-practices-ios iOS
+
+- [Best Practices for Working with Vertex Data](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesforWorkingwithVertexData/TechniquesforWorkingwithVertexData.html)
+- [Best Practices for Working with Texture Data](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesForWorkingWithTextureData/TechniquesForWorkingWithTextureData.html)
+- [Best Practices for Shaders](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/BestPracticesforShaders/BestPracticesforShaders.html#//apple_ref/doc/uid/TP40008793-CH7-SW3)
+
+@subsection best-practices-nacl Google Chrome Native Client
+
+- [Best practices for 3D graphics](https://developers.google.com/native-client/beta/devguide/coding/3D-graphics#best-practices)
 
 */
+}
