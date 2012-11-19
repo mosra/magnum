@@ -95,9 +95,10 @@ class ResourceKey: public Corrade::Utility::MurmurHash2::Digest {
         /**
          * @brief Default constructor
          *
-         * The same as calling other constructors with empty string.
+         * Creates zero key. Note that it is not the same as calling other
+         * constructors with empty string.
          */
-        inline ResourceKey(): Corrade::Utility::MurmurHash2::Digest(Corrade::Utility::MurmurHash2()("")) {}
+        inline constexpr ResourceKey() {}
 
         /** @brief Constructor */
         inline ResourceKey(const std::string& key): Corrade::Utility::MurmurHash2::Digest(Corrade::Utility::MurmurHash2()(key)) {}
