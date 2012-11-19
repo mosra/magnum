@@ -33,6 +33,8 @@ IndexedMesh* IndexedMesh::setIndexBuffer(Buffer* buffer) {
 }
 
 void IndexedMesh::draw() {
+    if(!_indexCount) return;
+
     bind();
 
     /** @todo Start at given index */
