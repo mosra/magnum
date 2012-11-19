@@ -122,6 +122,22 @@ class Sdl2Application {
 
         /** @{ @name Mouse handling */
 
+        /** @brief Whether mouse is locked */
+        inline bool isMouseLocked() const {
+            return SDL_GetRelativeMouseMode();
+        }
+
+        /**
+         * @brief Enable or disable mouse locking
+         *
+         * When mouse is locked, the cursor is hidden and only
+         * MouseMoveEvent::relativePosition() is changing, absolute position
+         * stays the same.
+         */
+        inline void setMouseLocked(bool enabled) {
+            SDL_SetRelativeMouseMode(enabled ? SDL_TRUE : SDL_FALSE);
+        }
+
         /**
          * @brief Mouse press event
          *
@@ -343,11 +359,20 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         /** @brief Position */
         inline Math::Vector2<int> position() const { return _position; }
 
+        /**
+         * @brief Modifiers
+         *
+         * Lazily populated on first request.
+         */
+        Modifiers modifiers();
+
     private:
-        inline MouseEvent(Button button, const Math::Vector2<int>& position): _button(button), _position(position) {}
+        inline MouseEvent(Button button, const Math::Vector2<int>& position): _button(button), _position(position), modifiersLoaded(false) {}
 
         const Button _button;
         const Math::Vector2<int> _position;
+        bool modifiersLoaded;
+        Modifiers _modifiers;
 };
 
 /**
@@ -362,10 +387,26 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         /** @brief Position */
         inline Math::Vector2<int> position() const { return _position; }
 
-    private:
-        inline MouseMoveEvent(const Math::Vector2<int>& position): _position(position) {}
+        /**
+         * @brief Relative position
+         *
+         * Position relative to previous event
+         */
+        inline Math::Vector2<int> relativePosition() const { return _relativePosition; }
 
-        const Math::Vector2<int> _position;
+        /**
+         * @brief Modifiers
+         *
+         * Lazily populated on first request.
+         */
+        Modifiers modifiers();
+
+    private:
+        inline MouseMoveEvent(const Math::Vector2<int>& position, const Math::Vector2<int>& relativePosition): _position(position), _relativePosition(relativePosition), modifiersLoaded(false) {}
+
+        const Math::Vector2<int> _position, _relativePosition;
+        bool modifiersLoaded;
+        Modifiers _modifiers;
 };
 
 /** @hideinitializer

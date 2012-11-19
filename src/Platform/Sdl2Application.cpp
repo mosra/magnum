@@ -117,7 +117,7 @@ int Sdl2Application::exec() {
                     } break;
 
                 case SDL_MOUSEMOTION: {
-                    MouseMoveEvent e({event.motion.x, event.motion.y});
+                    MouseMoveEvent e({event.motion.x, event.motion.y}, {event.motion.xrel, event.motion.yrel});
                     mouseMoveEvent(e);
                     break;
                 }
@@ -133,6 +133,18 @@ int Sdl2Application::exec() {
     }
 
     return 0;
+}
+
+Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseEvent::modifiers() {
+    if(modifiersLoaded) return _modifiers;
+    modifiersLoaded = true;
+    return _modifiers = static_cast<Modifier>(SDL_GetModState());
+}
+
+Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseMoveEvent::modifiers() {
+    if(modifiersLoaded) return _modifiers;
+    modifiersLoaded = true;
+    return _modifiers = static_cast<Modifier>(SDL_GetModState());
 }
 
 }}

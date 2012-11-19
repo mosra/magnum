@@ -29,6 +29,15 @@ When writing wrappers for OpenGL functions and defines, try to match the
 original name as closely as possible, although expanding abbrevations (and
 removing redundant prefixes) is encouraged.
 
+@subsubsection cpp-forward-declarations Forward declarations and forward declaration headers
+
+Use forward declarations in headers as much as possible, as it can
+significantly reduce time of incremental compilation. When an namespace has
+classes which are commonly forward-declared, consider making a forward
+declaration header - it should have the same name as the namespace itself and
+contain foward declarations for all classes, enums and copies of all
+meaningful typedefs. See SceneGraph/SceneGraph.h for an example.
+
 @section documentation Doxygen documentation
 
 @subsection documentation-commands Special documentation commands

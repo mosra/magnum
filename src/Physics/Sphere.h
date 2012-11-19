@@ -21,14 +21,11 @@
 
 #include "Math/Vector3.h"
 #include "AbstractShape.h"
+#include "Physics.h"
 
 #include "magnumCompatibility.h"
 
 namespace Magnum { namespace Physics {
-
-template<std::uint8_t> class Line;
-template<std::uint8_t> class LineSegment;
-template<std::uint8_t> class Point;
 
 /**
 @brief %Sphere defined by position and radius

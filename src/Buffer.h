@@ -305,11 +305,13 @@ class MAGNUM_EXPORT Buffer {
 
         /**
          * @brief Constructor
+         * @param targetHint    Target hint, see setTargetHint() for more
+         *      information
          *
          * Generates new OpenGL buffer.
          * @see @fn_gl{GenBuffers}
          */
-        inline Buffer(): _targetHint(Target::Array) {
+        inline Buffer(Target targetHint = Target::Array): _targetHint(targetHint) {
             glGenBuffers(1, &_id);
         }
 

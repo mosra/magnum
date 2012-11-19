@@ -23,16 +23,14 @@
 #include <vector>
 
 #include "SceneGraph/FeatureGroup.h"
+#include "Physics.h"
 
 #include "magnumPhysicsVisibility.h"
 
 namespace Magnum { namespace Physics {
 
-template<std::uint8_t> class ObjectShape;
-
 /**
 @brief Group of object shapes
-
 
 @see ObjectShapeGroup2D, ObjectShapeGroup3D
 */
@@ -83,5 +81,8 @@ typedef ObjectShapeGroup<2> ObjectShapeGroup2D;
 typedef ObjectShapeGroup<3> ObjectShapeGroup3D;
 
 }}
+
+/* Make the definition complete */
+#include "ObjectShape.h"
 
 #endif

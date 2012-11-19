@@ -21,15 +21,11 @@
 
 #include "Math/Vector3.h"
 #include "AbstractShape.h"
+#include "Physics.h"
 
 #include "magnumCompatibility.h"
 
 namespace Magnum { namespace Physics {
-
-template<std::uint8_t> class Line;
-typedef Line<3> Line3D;
-template<std::uint8_t> class LineSegment;
-typedef LineSegment<3> LineSegment3D;
 
 /** @brief Infinite plane, defined by position and normal (3D only) */
 class PHYSICS_EXPORT Plane: public AbstractShape<3> {

@@ -26,9 +26,6 @@
 
 namespace Magnum { namespace Physics {
 
-template<std::uint8_t> class ObjectShapeGroup;
-template<std::uint8_t> class AbstractShape;
-
 /**
 @brief Object shape
 

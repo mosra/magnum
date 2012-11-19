@@ -25,10 +25,11 @@ set(MagnumPhysics_HEADERS
     DebugDrawResourceManager.h
     Line.h
     LineSegment.h
-    Plane.h
-    Point.h
     ObjectShape.h
     ObjectShapeGroup.h
+    Physics.h
+    Plane.h
+    Point.h
     ShapeGroup.h
     Sphere.h
 
