@@ -68,6 +68,9 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
         /**
          * @brief Set index buffer
          *
+         * By default there is no index buffer. Parameter @p buffer can be
+         * `nullptr`, in that case current index buffer is unbound from the
+         * mesh.
          * @see MeshTools::compressIndices(), @fn_gl{BindVertexArray},
          *      @fn_gl{BindBuffer} (if @extension{APPLE,vertex_array_object}
          *      is available)

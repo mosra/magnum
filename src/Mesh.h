@@ -112,6 +112,8 @@ more information.
 
 @todo Support for indirect draw buffer (OpenGL 4.0, @extension{ARB,draw_indirect})
 @todo Redo in a way that allows glMultiDrawArrays, glDrawArraysInstanced etc.
+@todo Allow unbinding all vertex buffers with some function (not as side effect),
+    similarly to unbinding index buffer in IndexedMesh
  */
 class MAGNUM_EXPORT Mesh {
     friend class IndexedMesh;
