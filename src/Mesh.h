@@ -27,9 +27,6 @@
 
 namespace Magnum {
 
-class Buffer;
-class Context;
-
 /**
 @brief Non-indexed mesh
 
@@ -115,6 +112,8 @@ more information.
 
 @todo Support for indirect draw buffer (OpenGL 4.0, @extension{ARB,draw_indirect})
 @todo Redo in a way that allows glMultiDrawArrays, glDrawArraysInstanced etc.
+@todo Allow unbinding all vertex buffers with some function (not as side effect),
+    similarly to unbinding index buffer in IndexedMesh
  */
 class MAGNUM_EXPORT Mesh {
     friend class IndexedMesh;
@@ -388,6 +387,8 @@ class MAGNUM_EXPORT Mesh {
         /**
          * @brief Set primitive type
          * @return Pointer to self (for method chaining)
+         *
+         * Default is @ref Primitive "Primitive::Triangles".
          */
         inline Mesh* setPrimitive(Primitive primitive) {
             _primitive = primitive;
@@ -401,6 +402,7 @@ class MAGNUM_EXPORT Mesh {
          * @brief Set vertex count
          * @return Pointer to self (for method chaining)
          *
+         * Default is zero.
          * @attention All bound attributes are reset after calling this
          *      function, so you must call
          *      addVertexBuffer()/addInterleavedVertexBuffer() afterwards.

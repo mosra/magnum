@@ -33,7 +33,7 @@ See @ref matrix-vector for brief introduction.
 template<class T> class Vector2: public Vector<2, T> {
     public:
         /**
-         * @brief %Vector in direction of X axis
+         * @brief %Vector in direction of X axis (right)
          *
          * Usable for translation in given axis, for example:
          * @code
@@ -44,7 +44,7 @@ template<class T> class Vector2: public Vector<2, T> {
         inline constexpr static Vector2<T> xAxis(T length = T(1)) { return Vector2<T>(length, T()); }
 
         /**
-         * @brief %Vector in direction of Y axis
+         * @brief %Vector in direction of Y axis (up)
          *
          * See xAxis() for more information.
          * @see yScale()
@@ -52,7 +52,7 @@ template<class T> class Vector2: public Vector<2, T> {
         inline constexpr static Vector2<T> yAxis(T length = T(1)) { return Vector2<T>(T(), length); }
 
         /**
-         * @brief Scaling vector in direction of X axis
+         * @brief Scaling vector in direction of X axis (width)
          *
          * Usable for scaling along given direction, for example:
          * @code
@@ -63,7 +63,7 @@ template<class T> class Vector2: public Vector<2, T> {
         inline constexpr static Vector2<T> xScale(T scale) { return Vector2<T>(scale, T(1)); }
 
         /**
-         * @brief Scaling vector in direction of Y axis
+         * @brief Scaling vector in direction of Y axis (height)
          *
          * See xScale() for more information.
          * @see yAxis()
@@ -81,8 +81,8 @@ template<class T> class Vector2: public Vector<2, T> {
 
         /**
          * @brief Constructor
-         * @param x     X value
-         * @param y     Y value
+         * @param x     X component
+         * @param y     Y component
          */
         inline constexpr Vector2(T x, T y): Vector<2, T>(x, y) {}
 

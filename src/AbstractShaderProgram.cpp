@@ -73,6 +73,16 @@ AbstractShaderProgram::UniformMatrix3x4dvImplementation AbstractShaderProgram::u
 AbstractShaderProgram::UniformMatrix4x3dvImplementation AbstractShaderProgram::uniformMatrix4x3dvImplementation = &AbstractShaderProgram::uniformImplementationDefault;
 #endif
 
+GLint AbstractShaderProgram::maxSupportedVertexAttributeCount() {
+    GLint& value = Context::current()->state()->shaderProgram->maxSupportedVertexAttributeCount;
+
+    /* Get the value, if not already cached */
+    if(value == 0)
+        glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &value);
+
+    return value;
+}
+
 AbstractShaderProgram::~AbstractShaderProgram() {
     /* Remove current usage from the state */
     GLuint& current = Context::current()->state()->shaderProgram->current;

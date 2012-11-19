@@ -19,15 +19,11 @@
  * @brief Class Magnum::AbstractTexture
  */
 
-#include <cstdint>
-
 #include "Magnum.h"
 #include "Color.h"
 #include "AbstractImage.h"
 
 namespace Magnum {
-
-class Context;
 
 /**
 @brief Base for textures
@@ -576,7 +572,10 @@ class MAGNUM_EXPORT AbstractTexture {
         /**
          * @brief Max supported layer count
          *
-         * @see bind(GLint), @fn_gl{Get} with @def_gl{MAX_COMBINED_TEXTURE_IMAGE_UNITS},
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls.
+         * @see @ref AbstractShaderProgram-subclassing, bind(GLint),
+         *      @fn_gl{Get} with @def_gl{MAX_COMBINED_TEXTURE_IMAGE_UNITS},
          *      @fn_gl{ActiveTexture}
          */
         static GLint maxSupportedLayerCount();
@@ -584,6 +583,8 @@ class MAGNUM_EXPORT AbstractTexture {
         /**
          * @brief Max supported anisotropy
          *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls.
          * @see setMaxAnisotropy(), @fn_gl{Get} with @def_gl{MAX_TEXTURE_MAX_ANISOTROPY_EXT}
          * @requires_extension %Extension @extension{EXT,texture_filter_anisotropic}
          * @requires_es_extension %Extension @es_extension2{EXT,texture_filter_anisotropic,texture_filter_anisotropic}

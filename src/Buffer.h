@@ -29,8 +29,6 @@
 
 namespace Magnum {
 
-class Context;
-
 /**
 @brief %Buffer
 

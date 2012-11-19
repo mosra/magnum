@@ -26,9 +26,6 @@
 #ifndef MAGNUM_TARGET_GLES
 namespace Magnum {
 
-class Buffer;
-class Context;
-
 /**
 @brief Buffered texture
 

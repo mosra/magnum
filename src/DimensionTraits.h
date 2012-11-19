@@ -16,7 +16,6 @@
 */
 
 #include <cstddef>
-#include <cstdint>
 
 #include "Magnum.h"
 

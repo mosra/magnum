@@ -30,9 +30,6 @@ namespace Math {
     template<std::size_t, class> class Vector;
 }
 
-template<class> class Color3;
-template<class> class Color4;
-
 /**
 @brief Traits class for plain OpenGL types
 

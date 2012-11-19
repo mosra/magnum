@@ -29,7 +29,7 @@ namespace Magnum {
  *
  * @see Resource::state(), ResourceManager::state()
  */
-enum class ResourceState {
+enum class ResourceState: std::uint8_t {
     /** The resource is not yet loaded. */
     NotLoaded,
 
@@ -48,7 +48,7 @@ enum class ResourceState {
  *
  * @see ResourceManager::set()
  */
-enum class ResourceDataState {
+enum class ResourceDataState: std::uint8_t {
     /**
      * The resource can be changed by the manager in the future. This is
      * slower, as Resource needs to ask the manager for new version every time
@@ -70,7 +70,7 @@ enum class ResourceDataState {
 
 @see ResourceManager::set(), ResourceManager::free()
  */
-enum class ResourcePolicy {
+enum class ResourcePolicy: std::uint8_t {
     /** The resource will stay resident for whole lifetime of resource manager. */
     Resident,
 
@@ -95,9 +95,10 @@ class ResourceKey: public Corrade::Utility::MurmurHash2::Digest {
         /**
          * @brief Default constructor
          *
-         * The same as calling other constructors with empty string.
+         * Creates zero key. Note that it is not the same as calling other
+         * constructors with empty string.
          */
-        inline ResourceKey(): Corrade::Utility::MurmurHash2::Digest(Corrade::Utility::MurmurHash2()("")) {}
+        inline constexpr ResourceKey() {}
 
         /** @brief Constructor */
         inline ResourceKey(const std::string& key): Corrade::Utility::MurmurHash2::Digest(Corrade::Utility::MurmurHash2()(key)) {}
@@ -342,22 +343,30 @@ template<class T, class U = T> class Resource {
             return data;
         }
 
-        /** @brief %Resource data */
-        inline U& operator*() {
-            acquire();
-            return *static_cast<U*>(data);
-        }
-
-        /** @brief %Resource data */
-        inline U* operator->() {
-            acquire();
-            return static_cast<U*>(data);
-        }
-
-        /** @brief %Resource data */
+        /**
+         * @brief %Resource data
+         *
+         * The resource must be loaded before accessing it. Use boolean
+         * conversion operator or state() for testing whether it is loaded.
+         */
         inline operator U*() {
             acquire();
+            CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), nullptr);
             return static_cast<U*>(data);
+        }
+
+        /** @overload */
+        inline U* operator->() {
+            acquire();
+            CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), nullptr);
+            return static_cast<U*>(data);
+        }
+
+        /** @overload */
+        inline U& operator*() {
+            acquire();
+            CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), *static_cast<U*>(data));
+            return *static_cast<U*>(data);
         }
 
     private:

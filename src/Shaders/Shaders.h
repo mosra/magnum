@@ -1,5 +1,5 @@
-#ifndef Magnum_Implementation_ShaderProgramState_h
-#define Magnum_Implementation_ShaderProgramState_h
+#ifndef Magnum_Shaders_Shader_h
+#define Magnum_Shaders_Shader_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,17 +15,23 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Magnum.h"
+/** @file
+ * @brief Forward declarations for Magnum::Shaders namespace
+ */
 
-namespace Magnum { namespace Implementation {
+#include <cstdint>
 
-struct ShaderProgramState {
-    inline constexpr ShaderProgramState(): current(0), maxSupportedVertexAttributeCount(0) {}
+namespace Magnum { namespace Shaders {
 
-    /* Currently used program */
-    GLuint current;
-    GLint maxSupportedVertexAttributeCount;
-};
+template<std::uint8_t> class FlatShader;
+typedef FlatShader<2> FlatShader2D;
+typedef FlatShader<3> FlatShader3D;
+
+class PhongShader;
+
+template<std::uint8_t> class VertexColorShader;
+typedef VertexColorShader<2> VertexColorShader2D;
+typedef VertexColorShader<3> VertexColorShader3D;
 
 }}
 

@@ -11,6 +11,7 @@ set(MagnumShaders_SRCS
 set(MagnumShaders_HEADERS
     FlatShader.h
     PhongShader.h
+    Shaders.h
     VertexColorShader.h
 
     magnumShadersVisibility.h)

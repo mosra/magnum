@@ -33,6 +33,8 @@ IndexedMesh* IndexedMesh::setIndexBuffer(Buffer* buffer) {
 }
 
 void IndexedMesh::draw() {
+    if(!_indexCount) return;
+
     bind();
 
     /** @todo Start at given index */
@@ -42,7 +44,7 @@ void IndexedMesh::draw() {
 }
 
 void IndexedMesh::bind() {
-    CORRADE_ASSERT(_indexCount, "IndexedMesh: the mesh has zero index count!", );
+    CORRADE_ASSERT(!_indexCount || _indexBuffer, "IndexedMesh: index buffer must be added if index count is non-zero", );
 
     Mesh::bind();
     (this->*bindIndexedImplementation)();
@@ -66,11 +68,13 @@ void IndexedMesh::bindIndexBufferImplementationDefault() {}
 
 void IndexedMesh::bindIndexBufferImplementationVAO() {
     bindVAO(vao);
-    _indexBuffer->bind(Buffer::Target::ElementArray);
+    if(_indexBuffer) _indexBuffer->bind(Buffer::Target::ElementArray);
+    else Buffer::unbind(Buffer::Target::ElementArray);
 }
 
 void IndexedMesh::bindIndexedImplementationDefault() {
-    _indexBuffer->bind(Buffer::Target::ElementArray);
+    if(_indexBuffer) _indexBuffer->bind(Buffer::Target::ElementArray);
+    else Buffer::unbind(Buffer::Target::ElementArray);
 }
 
 void IndexedMesh::bindIndexedImplementationVAO() {}

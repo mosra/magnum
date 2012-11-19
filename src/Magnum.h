@@ -16,8 +16,10 @@
 */
 
 /** @file
- * @brief Basic definitions
+ * @brief Basic definitions and forward declarations for Magnum namespace
  */
+
+#include <cstdint>
 
 #include "magnumCompatibility.h"
 #include "magnumConfigure.h"
@@ -94,6 +96,71 @@ typedef Math::Matrix4<GLfloat> Matrix4;
 /* Copying angle converters from Math namespace */
 using Math::deg;
 using Math::rad;
+
+/* Forward declarations for all types in root namespace */
+class AbstractImage;
+class AbstractShaderProgram;
+class AbstractTexture;
+class Buffer;
+
+#ifndef MAGNUM_TARGET_GLES2
+template<std::uint8_t> class BufferedImage;
+typedef BufferedImage<1> BufferedImage1D;
+typedef BufferedImage<2> BufferedImage2D;
+typedef BufferedImage<3> BufferedImage3D;
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+class BufferedTexture;
+#endif
+
+template<class> class Color3;
+template<class> class Color4;
+
+enum class Version: GLint;
+class Context;
+class Extension;
+
+class CubeMapTexture;
+
+#ifndef MAGNUM_TARGET_GLES
+class CubeMapTextureArray;
+#endif
+
+class Framebuffer;
+
+template<std::uint8_t> class Image;
+typedef Image<1> Image1D;
+typedef Image<2> Image2D;
+typedef Image<3> Image3D;
+
+template<std::uint8_t> class ImageWrapper;
+typedef ImageWrapper<1> ImageWrapper1D;
+typedef ImageWrapper<2> ImageWrapper2D;
+typedef ImageWrapper<3> ImageWrapper3D;
+
+class IndexedMesh;
+class Mesh;
+class Profiler;
+class Query;
+class Renderbuffer;
+
+enum class ResourceState: std::uint8_t;
+enum class ResourceDataState: std::uint8_t;
+enum class ResourcePolicy: std::uint8_t;
+template<class, class> class Resource;
+template<class...> class ResourceManager;
+
+class Shader;
+
+template<std::uint8_t> class Texture;
+#ifndef MAGNUM_TARGET_GLES
+typedef Texture<1> Texture1D;
+#endif
+typedef Texture<2> Texture2D;
+typedef Texture<3> Texture3D;
+
+class Timeline;
 
 }
 

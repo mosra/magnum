@@ -90,6 +90,8 @@ Mesh* Mesh::setVertexCount(GLsizei vertexCount) {
 }
 
 void Mesh::draw() {
+    if(!_vertexCount) return;
+
     bind();
 
     /** @todo Start at given index */

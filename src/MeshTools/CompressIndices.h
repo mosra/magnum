@@ -26,11 +26,7 @@
 
 #include "magnumMeshToolsVisibility.h"
 
-namespace Magnum {
-
-class IndexedMesh;
-
-namespace MeshTools {
+namespace Magnum { namespace MeshTools {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {

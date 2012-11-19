@@ -82,6 +82,7 @@ int Sdl2Application::exec() {
                             _redraw = true;
                             break;
                     } break;
+
                 case SDL_KEYDOWN:
                 case SDL_KEYUP: {
                     /*
@@ -92,31 +93,36 @@ int Sdl2Application::exec() {
                      * right were pressed, which is usually not what the
                      * developers wants.
                      */
-                    Modifiers modifiers(static_cast<Modifier>(event.key.keysym.mod));
-                    if(modifiers & Modifier::Shift) modifiers |= Modifier::Shift;
-                    if(modifiers & Modifier::Ctrl) modifiers |= Modifier::Ctrl;
-                    if(modifiers & Modifier::Alt) modifiers |= Modifier::Alt;
+                    InputEvent::Modifiers modifiers(static_cast<InputEvent::Modifier>(event.key.keysym.mod));
+                    if(modifiers & InputEvent::Modifier::Shift) modifiers |= InputEvent::Modifier::Shift;
+                    if(modifiers & InputEvent::Modifier::Ctrl) modifiers |= InputEvent::Modifier::Ctrl;
+                    if(modifiers & InputEvent::Modifier::Alt) modifiers |= InputEvent::Modifier::Alt;
 
-                    if(event.type == SDL_KEYDOWN)
-                        keyPressEvent(static_cast<Key>(event.key.keysym.sym), modifiers, {});
-                    else
-                        keyReleaseEvent(static_cast<Key>(event.key.keysym.sym), modifiers, {});
+                    KeyEvent e(static_cast<KeyEvent::Key>(event.key.keysym.sym), modifiers);
+                    event.type == SDL_KEYDOWN ? keyPressEvent(e) : keyReleaseEvent(e);
                     break;
-                } case SDL_MOUSEBUTTONDOWN:
-                    mousePressEvent(static_cast<MouseButton>(event.button.button), Modifiers(), {event.button.x, event.button.y});
+                }
+
+                case SDL_MOUSEBUTTONDOWN:
+                case SDL_MOUSEBUTTONUP: {
+                    MouseEvent e(static_cast<MouseEvent::Button>(event.button.button), {event.button.x, event.button.y});
+                    event.type == SDL_MOUSEBUTTONDOWN ? mousePressEvent(e) : mouseReleaseEvent(e);
                     break;
-                case SDL_MOUSEBUTTONUP:
-                    mouseReleaseEvent(static_cast<MouseButton>(event.button.button), Modifiers(), {event.button.x, event.button.y});
-                    break;
+                }
+
                 case SDL_MOUSEWHEEL:
-                    if(event.wheel.y != 0)
-                        mousePressEvent(event.wheel.y < 0 ? MouseButton::WheelUp : MouseButton::WheelDown, Modifiers(), {event.wheel.x, event.wheel.y});
+                    if(event.wheel.y != 0) {
+                        MouseEvent e(event.wheel.y < 0 ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {event.wheel.x, event.wheel.y});
+                        mousePressEvent(e);
+                    } break;
+
+                case SDL_MOUSEMOTION: {
+                    MouseMoveEvent e({event.motion.x, event.motion.y});
+                    mouseMoveEvent(e);
                     break;
-                case SDL_MOUSEMOTION:
-                    mouseMotionEvent(Modifiers(), {event.motion.x, event.motion.y});
-                    break;
-                case SDL_QUIT:
-                    return 0;
+                }
+
+                case SDL_QUIT: return 0;
             }
         }
 

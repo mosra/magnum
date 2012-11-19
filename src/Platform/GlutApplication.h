@@ -83,8 +83,8 @@ class GlutApplication {
          * @brief Viewport event
          *
          * Called when viewport size changes. You should pass the new size to
-         * Framebuffer::setViewport() or SceneGraph::Camera::setViewport(),
-         * if using scene graph.
+         * Framebuffer::setViewport() (and SceneGraph::AbstractCamera::setViewport(),
+         * if using scene graph).
          */
         virtual void viewportEvent(const Math::Vector2<GLsizei>& size) = 0;
 
@@ -92,7 +92,7 @@ class GlutApplication {
          * @brief Draw event
          *
          * Here implement your drawing functions, such as calling
-         * SceneGraph::Camera::draw(). After drawing is finished, call
+         * SceneGraph::AbstractCamera::draw(). After drawing is finished, call
          * swapBuffers(). If you want to draw immediately again, call also
          * redraw().
          */
@@ -110,7 +110,7 @@ class GlutApplication {
         /**
          * @brief Redraw immediately
          *
-         * Marks the window for redrawing, resulting in call of drawEvent()
+         * Marks the window for redrawing, resulting in call to drawEvent()
          * in the next iteration.
          */
         virtual inline void redraw() {
@@ -230,7 +230,6 @@ class GlutApplication {
          *
          * Called when any mouse button is pressed and mouse is moved. Default
          * implementation does nothing.
-         *
          * @see setMouseTracking()
          */
         virtual void mouseMotionEvent(const Math::Vector2<int>& position);
