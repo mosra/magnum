@@ -117,6 +117,30 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          */
         void draw() override;
 
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline IndexedMesh* setPrimitive(Primitive primitive) {
+            Mesh::setPrimitive(primitive);
+            return this;
+        }
+        inline IndexedMesh* setVertexCount(GLsizei vertexCount) {
+            Mesh::setVertexCount(vertexCount);
+            return this;
+        }
+        template<class ...T> inline IndexedMesh* addVertexBuffer(Buffer* buffer, const T&... attributes) {
+            Mesh::addVertexBuffer(buffer, attributes...);
+            return this;
+        }
+        template<class ...T> inline IndexedMesh* addInterleavedVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes) {
+            Mesh::addInterleavedVertexBuffer(buffer, offset, attributes...);
+            return this;
+        }
+        template<GLuint location, class T> inline IndexedMesh* addVertexBufferStride(Buffer* buffer, GLintptr offset, GLsizei stride, const AbstractShaderProgram::Attribute<location, T>& attribute) {
+            Mesh::addVertexBufferStride(buffer, offset, stride, attribute);
+            return this;
+        }
+        #endif
+
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
 
