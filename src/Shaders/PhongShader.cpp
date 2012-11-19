@@ -60,6 +60,14 @@ PhongShader::PhongShader() {
     projectionMatrixUniform = uniformLocation("projectionMatrix");
     lightUniform = uniformLocation("light");
     lightColorUniform = uniformLocation("lightColor");
+
+    /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
+    #ifdef MAGNUM_TARGET_GLES
+    setAmbientColor({});
+    setSpecularColor(Vector3(1.0f));
+    setLightColor(Vector3(1.0f));
+    setShininess(80.0f);
+    #endif
 }
 
 }}
