@@ -32,7 +32,7 @@ namespace Magnum { namespace SceneGraph {
 
 @see AbstractCamera::setAspectRatioPolicy()
 */
-enum class AspectRatioPolicy {
+enum class AspectRatioPolicy: std::uint8_t {
     NotPreserved,   /**< Don't preserve aspect ratio (default) */
     Extend,         /**< Extend on larger side of view */
     Clip            /**< Clip on smaller side of view */
