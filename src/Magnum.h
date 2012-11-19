@@ -117,7 +117,9 @@ class BufferedTexture;
 template<class> class Color3;
 template<class> class Color4;
 
+#ifndef CORRADE_GCC45_COMPATIBILITY
 enum class Version: GLint;
+#endif
 class Context;
 class Extension;
 
@@ -145,9 +147,11 @@ class Profiler;
 class Query;
 class Renderbuffer;
 
+#ifndef CORRADE_GCC45_COMPATIBILITY
 enum class ResourceState: std::uint8_t;
 enum class ResourceDataState: std::uint8_t;
 enum class ResourcePolicy: std::uint8_t;
+#endif
 template<class, class> class Resource;
 template<class...> class ResourceManager;
 
