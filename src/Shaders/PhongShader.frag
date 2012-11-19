@@ -3,11 +3,18 @@
 #define color gl_FragColor
 #endif
 
-uniform lowp vec3 ambientColor = vec3(0.0, 0.0, 0.0);
 uniform lowp vec3 diffuseColor;
+#ifndef GL_ES
+uniform lowp vec3 ambientColor = vec3(0.0, 0.0, 0.0);
 uniform lowp vec3 specularColor = vec3(1.0, 1.0, 1.0);
 uniform lowp vec3 lightColor = vec3(1.0, 1.0, 1.0);
 uniform mediump float shininess = 80.0;
+#else
+uniform lowp vec3 ambientColor;
+uniform lowp vec3 specularColor;
+uniform lowp vec3 lightColor;
+uniform mediump float shininess;
+#endif
 
 in mediump vec3 transformedNormal;
 in highp vec3 lightDirection;
@@ -29,7 +36,7 @@ void main() {
     color.rgb += diffuseColor*lightColor*intensity;
 
     /* Add specular color, if needed */
-    if(intensity != 0) {
+    if(intensity > 0.001) {
         highp vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
         mediump float specularity = pow(max(0.0, dot(normalize(cameraDirection), reflection)), shininess);
         color.rgb += specularColor*specularity;

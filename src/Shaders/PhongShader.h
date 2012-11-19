@@ -84,11 +84,12 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
         }
 
         /**
-         * @brief Set transformation matrix
+         * @brief Set transformation matrix and normal matrix
          * @return Pointer to self (for method chaining)
          */
         inline PhongShader* setTransformation(const Matrix4& matrix) {
             setUniform(transformationMatrixUniform, matrix);
+            setUniform(normalMatrixUniform, matrix.rotation());
             return this;
         }
 
@@ -128,6 +129,7 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
             shininessUniform,
             transformationMatrixUniform,
             projectionMatrixUniform,
+            normalMatrixUniform,
             lightUniform,
             lightColorUniform;
 };

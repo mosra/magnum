@@ -5,6 +5,7 @@
 
 uniform highp mat4 transformationMatrix;
 uniform highp mat4 projectionMatrix;
+uniform mediump mat3 normalMatrix;
 uniform highp vec3 light;
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
@@ -25,7 +26,7 @@ void main() {
     highp vec3 transformedPosition = transformedPosition4.xyz/transformedPosition4.w;
 
     /* Transformed normal vector */
-    transformedNormal = normalize(mat3x3(transformationMatrix)*normal);
+    transformedNormal = normalMatrix*normal;
 
     /* Direction to the light */
     lightDirection = normalize(light - transformedPosition);

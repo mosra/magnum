@@ -91,10 +91,11 @@ class GlutApplication {
         /**
          * @brief Draw event
          *
-         * Here implement your drawing functions, such as calling
-         * SceneGraph::AbstractCamera::draw(). After drawing is finished, call
-         * swapBuffers(). If you want to draw immediately again, call also
-         * redraw().
+         * Called when the screen is redrawn. You should clean the framebuffer
+         * using Framebuffer::clear() and then add your own drawing functions,
+         * such as calling SceneGraph::AbstractCamera::draw(). After drawing
+         * is finished, call swapBuffers(). If you want to draw immediately
+         * again, call also redraw().
          */
         virtual void drawEvent() = 0;
 
