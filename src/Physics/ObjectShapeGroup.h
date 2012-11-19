@@ -82,4 +82,7 @@ typedef ObjectShapeGroup<3> ObjectShapeGroup3D;
 
 }}
 
+/* Make the definition complete */
+#include "ObjectShape.h"
+
 #endif
