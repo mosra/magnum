@@ -50,6 +50,13 @@ care of parent/children relationship and contains features. See @ref scenegraph
 for introduction.
 
 Uses Corrade::Containers::LinkedList for parent/children relationship.
+Traversing through the list is done like in the following code. It is also
+possible to go in reverse order using lastChild() and previousSibling().
+@code
+for(Object* child = o->firstChild(); child; child = child->nextSibling()) {
+    // ...
+}
+@endcode
 
 @section Object-explicit-specializations Explicit template specializations
 

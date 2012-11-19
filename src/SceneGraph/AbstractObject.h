@@ -35,7 +35,14 @@ Provides minimal interface for features, not depending on object transformation
 implementation. This class is not directly instantiatable, use Object subclass
 instead. See also @ref scenegraph for more information.
 
-Uses Corrade::Containers::LinkedList for storing features.
+Uses Corrade::Containers::LinkedList for storing features. Traversing through
+the list is done like in the following code. It is also possible to go in
+reverse order using lastFeature() and AbstractFeature::previousFeature().
+@code
+for(AbstractFeature* feature = o->firstFeature(); feature; feature = feature->nextFeature()) {
+    // ...
+}
+@endcode
 
 @see AbstractObject2D, AbstractObject3D
 */
