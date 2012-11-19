@@ -25,7 +25,9 @@
 
 namespace Magnum { namespace SceneGraph {
 
+#ifndef CORRADE_GCC45_COMPATIBILITY
 enum class AspectRatioPolicy: std::uint8_t;
+#endif
 
 template<std::uint8_t dimensions, class T = GLfloat> class AbstractCamera;
 #ifndef MAGNUM_GCC46_COMPATIBILITY
@@ -51,7 +53,9 @@ template<class T = GLfloat> using AbstractObject2D = AbstractObject<2, T>;
 template<class T = GLfloat> using AbstractObject3D = AbstractObject<3, T>;
 #endif
 
+#ifndef CORRADE_GCC45_COMPATIBILITY
 enum class TransformationType: std::uint8_t;
+#endif
 
 template<std::uint8_t dimensions, class T = GLfloat> class AbstractTransformation;
 #ifndef MAGNUM_GCC46_COMPATIBILITY
