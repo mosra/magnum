@@ -36,7 +36,7 @@ void main() {
     color.rgb += diffuseColor*lightColor*intensity;
 
     /* Add specular color, if needed */
-    if(intensity != 0) {
+    if(intensity > 0.001) {
         highp vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
         mediump float specularity = pow(max(0.0, dot(normalize(cameraDirection), reflection)), shininess);
         color.rgb += specularColor*specularity;
