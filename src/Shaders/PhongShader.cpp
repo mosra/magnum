@@ -58,6 +58,7 @@ PhongShader::PhongShader() {
     shininessUniform = uniformLocation("shininess");
     transformationMatrixUniform = uniformLocation("transformationMatrix");
     projectionMatrixUniform = uniformLocation("projectionMatrix");
+    normalMatrixUniform = uniformLocation("normalMatrix");
     lightUniform = uniformLocation("light");
     lightColorUniform = uniformLocation("lightColor");
 
