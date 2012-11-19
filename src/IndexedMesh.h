@@ -115,7 +115,7 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          *      or @fn_gl{BindVertexArray} (if @extension{APPLE,vertex_array_object}
          *      is available), @fn_gl{DrawElements}
          */
-        void draw();
+        void draw() override;
 
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
