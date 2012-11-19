@@ -28,14 +28,11 @@
 #include "ResourceManager.h"
 
 #include "SceneGraph/SceneGraph.h"
+#include "Physics.h"
 
 #include "magnumPhysicsVisibility.h"
 
 namespace Magnum {
-
-class AbstractShaderProgram;
-class Buffer;
-class Mesh;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Physics { namespace Implementation {
@@ -49,14 +46,6 @@ namespace Physics { namespace Implementation {
 extern template ResourceManager<AbstractShaderProgram, Buffer, Mesh, Physics::Implementation::Options> PHYSICS_EXPORT *& ResourceManager<AbstractShaderProgram, Buffer, Mesh, Physics::Implementation::Options>::internalInstance();
 
 namespace Physics {
-
-template<std::uint8_t> class AbstractShape;
-typedef AbstractShape<2> AbstractShape2D;
-typedef AbstractShape<3> AbstractShape3D;
-
-template<std::uint8_t> class ObjectShape;
-typedef ObjectShape<2> ObjectShape2D;
-typedef ObjectShape<3> ObjectShape3D;
 
 /**
 @brief %Resource manager for physics debug draw

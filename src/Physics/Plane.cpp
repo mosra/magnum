@@ -28,7 +28,7 @@ using namespace Magnum::Math::Geometry;
 namespace Magnum { namespace Physics {
 
 void Plane::applyTransformation(const Matrix4& transformation) {
-    _transformedPosition = (transformation*Point3D(_position)).xyz();
+    _transformedPosition = (transformation*Magnum::Point3D(_position)).xyz();
     _transformedNormal = transformation.rotation()*_normal;
 }
 

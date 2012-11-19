@@ -21,13 +21,11 @@
 
 #include "Math/Vector3.h"
 #include "AbstractShape.h"
+#include "Physics.h"
 
 #include "magnumCompatibility.h"
 
 namespace Magnum { namespace Physics {
-
-template<std::uint8_t> class Point;
-template<std::uint8_t> class Sphere;
 
 /**
 @brief %Capsule defined by cylinder start and end point and radius
