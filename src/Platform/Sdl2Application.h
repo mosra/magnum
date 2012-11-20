@@ -135,9 +135,7 @@ class Sdl2Application {
          * MouseMoveEvent::relativePosition() is changing, absolute position
          * stays the same.
          */
-        inline void setMouseLocked(bool enabled) {
-            SDL_SetRelativeMouseMode(enabled ? SDL_TRUE : SDL_FALSE);
-        }
+        void setMouseLocked(bool enabled);
 
     protected:
         /**
