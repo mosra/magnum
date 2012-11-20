@@ -1,5 +1,11 @@
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wold-style-cast -Winit-self -pedantic -std=c++0x -fvisibility=hidden")
 
+# Disable strict aliasing for GCC 4.4, as it breaks RectangularMatrix::from()
+# (and I have no better solution for that yet)
+if(CORRADE_GCC44_COMPATIBILITY)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
+endif()
+
 # -Wdouble-promotion is supported from GCC 4.6
 # TODO: do this with check_c_compiler_flags()
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.6.0")
