@@ -35,8 +35,8 @@ MeshTools::transform(Matrix4::scaling({2.0f, 0.5f, 0.0f}), vertices);
 @endcode
 */
 template<std::size_t size, class T, class U> inline void transform(const Math::Matrix<size, T>& matrix, U& vertices) {
-    for(Math::Vector<size, T>& vertex: vertices)
-        vertex = matrix*vertex;
+    for(auto it = vertices.begin(); it != vertices.end(); ++it)
+        *it = matrix**it;
 }
 
 }}
