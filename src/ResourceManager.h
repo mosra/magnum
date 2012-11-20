@@ -116,7 +116,8 @@ template<class T, class U> class Resource;
 namespace Implementation {
     struct ResourceKeyHash {
         inline std::size_t operator()(ResourceKey key) const {
-            return *reinterpret_cast<const std::size_t*>(key.byteArray());
+            /* GCC 4.4 thinks reinterpret_cast will break strict aliasing, doing it with bit cast instead */
+            return Corrade::Utility::bitCast<std::size_t>(key);
         }
     };
 

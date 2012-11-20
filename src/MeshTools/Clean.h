@@ -105,7 +105,8 @@ template<class Vertex, std::size_t vertexSize = Vertex::Size> class Clean {
         class IndexHash {
             public:
                 inline std::size_t operator()(const Math::Vector<vertexSize, std::size_t>& data) const {
-                    return *reinterpret_cast<const std::size_t*>(Corrade::Utility::MurmurHash2()(reinterpret_cast<const char*>(&data), sizeof(data)).byteArray());
+                    /* GCC 4.4 thinks reinterpret_cast will break strict aliasing, doing it with bit cast instead */
+                    return Corrade::Utility::bitCast<std::size_t>(Corrade::Utility::MurmurHash2()(reinterpret_cast<const char*>(&data), sizeof(data)));
                 }
         };
 
