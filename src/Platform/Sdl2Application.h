@@ -212,23 +212,21 @@ class Sdl2Application::InputEvent {
         /**
          * @brief Set event as accepted
          *
-         * Does nothing. Included only for compatibility with
-         * NaClApplication::InputEvent.
+         * If the event is ignored (i.e., not set as accepted), it might be
+         * propagated elsewhere. By default is each event ignored.
          */
-        inline void setAccepted(bool = true) {}
+        inline void setAccepted(bool accepted = true) { _accepted = accepted; }
 
-        /**
-         * @brief Whether the event is accepted
-         *
-         * Always returns true. Included only for compatibility with
-         * NaClApplication::InputEvent.
-         */
-        inline bool isAccepted() const { return true; }
+        /** @brief Whether the event is accepted */
+        inline bool isAccepted() { return _accepted; }
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
-        inline InputEvent() {}
+        inline InputEvent(): _accepted(false) {}
     #endif
+
+    private:
+        bool _accepted;
 };
 
 /**
@@ -390,7 +388,7 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         /**
          * @brief Relative position
          *
-         * Position relative to previous event
+         * Position relative to previous event.
          */
         inline Math::Vector2<int> relativePosition() const { return _relativePosition; }
 
