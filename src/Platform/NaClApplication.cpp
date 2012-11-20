@@ -102,7 +102,7 @@ bool NaClApplication::HandleInputEvent(const pp::InputEvent& event) {
 
         case PP_INPUTEVENT_TYPE_MOUSEMOVE: {
             pp::MouseInputEvent mouseEvent(event);
-            MouseMoveEvent e({mouseEvent.GetPosition().x(), mouseEvent.GetPosition().y()}, static_cast<InputEvent::Modifier>(mouseEvent.GetModifiers()));
+            MouseMoveEvent e({mouseEvent.GetPosition().x(), mouseEvent.GetPosition().y()},  {mouseEvent.GetMovement().x(), mouseEvent.GetMovement().y()}, static_cast<InputEvent::Modifier>(mouseEvent.GetModifiers()));
             mouseMoveEvent(e);
             if(!e.isAccepted()) return false;
             break;
