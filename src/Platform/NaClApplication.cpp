@@ -79,8 +79,7 @@ void NaClApplication::DidChangeView(const pp::View& view) {
 }
 
 bool NaClApplication::HandleInputEvent(const pp::InputEvent& event) {
-    /* Assume everything is properly sequential here */
-    CORRADE_INTERNAL_ASSERT(!(flags & Flag::SwapInProgress));
+    Flags tmpFlags = flags;
 
     switch(event.GetType()) {
         case PP_INPUTEVENT_TYPE_KEYDOWN:
@@ -112,12 +111,15 @@ bool NaClApplication::HandleInputEvent(const pp::InputEvent& event) {
         default: return false;
     }
 
-    /* Not need to redraw => assume the event was ignored */
-    if(!(flags & Flag::Redraw)) return false;
+    /* Assume everything is properly sequential here */
+    CORRADE_INTERNAL_ASSERT((tmpFlags & Flag::SwapInProgress) == (flags & Flag::SwapInProgress));
 
-    /* Redraw */
-    flags &= ~Flag::Redraw;
-    drawEvent();
+    /* Redraw, if it won't be handled after swap automatically */
+    if((flags & Flag::Redraw) && !(flags & Flag::SwapInProgress)) {
+        flags &= ~Flag::Redraw;
+        drawEvent();
+    }
+
     return true;
 }
 
