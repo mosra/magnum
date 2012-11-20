@@ -135,6 +135,11 @@ int Sdl2Application::exec() {
     return 0;
 }
 
+void Sdl2Application::setMouseLocked(bool enabled) {
+    SDL_SetWindowGrab(window, enabled ? SDL_TRUE : SDL_FALSE);
+    SDL_SetRelativeMouseMode(enabled ? SDL_TRUE : SDL_FALSE);
+}
+
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseEvent::modifiers() {
     if(modifiersLoaded) return _modifiers;
     modifiersLoaded = true;

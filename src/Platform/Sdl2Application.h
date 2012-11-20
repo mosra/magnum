@@ -122,6 +122,7 @@ class Sdl2Application {
 
         /** @{ @name Mouse handling */
 
+    public:
         /** @brief Whether mouse is locked */
         inline bool isMouseLocked() const {
             return SDL_GetRelativeMouseMode();
@@ -134,10 +135,9 @@ class Sdl2Application {
          * MouseMoveEvent::relativePosition() is changing, absolute position
          * stays the same.
          */
-        inline void setMouseLocked(bool enabled) {
-            SDL_SetRelativeMouseMode(enabled ? SDL_TRUE : SDL_FALSE);
-        }
+        void setMouseLocked(bool enabled);
 
+    protected:
         /**
          * @brief Mouse press event
          *

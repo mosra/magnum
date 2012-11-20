@@ -38,7 +38,7 @@ Matrix3Test::Matrix3Test() {
              &Matrix3Test::rotation,
              &Matrix3Test::rotationScalingPart,
              &Matrix3Test::rotationPart,
-             &Matrix3Test::translationPart,
+             &Matrix3Test::vectorParts,
              &Matrix3Test::debug,
              &Matrix3Test::configuration);
 }
@@ -123,12 +123,14 @@ void Matrix3Test::rotationPart() {
     CORRADE_COMPARE(rotationTransformed.rotation(), expectedRotationPart);
 }
 
-void Matrix3Test::translationPart() {
-    Matrix3 m(1.0f, 0.0f, 0.0f,
-              0.0f, 1.0f, 0.0f,
+void Matrix3Test::vectorParts() {
+    Matrix3 m(15.0f, 0.0f, 0.0f,
+              0.0f, -3.0f, 0.0f,
               -5.0f, 12.0f, 1.0f);
-    Vector2 expected(-5.0f, 12.0f);
-    CORRADE_COMPARE(m.translation(), expected);
+
+    CORRADE_COMPARE(m.right(), Vector2::xAxis(15.0f));
+    CORRADE_COMPARE(m.up(), Vector2::yAxis(-3.0f));
+    CORRADE_COMPARE(m.translation(), Vector2(-5.0f, 12.0f));
 }
 
 void Matrix3Test::debug() {
