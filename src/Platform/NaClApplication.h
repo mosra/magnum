@@ -386,10 +386,17 @@ class NaClApplication::MouseMoveEvent: public NaClApplication::InputEvent {
         /** @brief Position */
         inline Math::Vector2<int> position() const { return _position; }
 
-    private:
-        inline MouseMoveEvent(const Math::Vector2<int>& position, Modifiers modifiers): InputEvent(modifiers), _position(position) {}
+        /**
+         * @brief Relative position
+         *
+         * Position relative to previous event.
+         */
+        inline Math::Vector2<int> relativePosition() const { return _relativePosition; }
 
-        const Math::Vector2<int> _position;
+    private:
+        inline MouseMoveEvent(const Math::Vector2<int>& position, const Math::Vector2<int>& relativePosition, Modifiers modifiers): InputEvent(modifiers), _position(position), _relativePosition(relativePosition) {}
+
+        const Math::Vector2<int> _position, _relativePosition;
 };
 
 CORRADE_ENUMSET_OPERATORS(NaClApplication::Flags)
