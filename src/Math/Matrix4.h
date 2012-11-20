@@ -223,22 +223,42 @@ template<class T> class Matrix4: public Matrix<4, T> {
                 (*this)[2].xyz().normalized());
         }
 
+
+        /**
+         * @brief Right-pointing 3D vector
+         *
+         * First three elements of first column.
+         * @see Vector3::xAxis()
+         */
+        inline Vector3<T>& right() { return (*this)[0].xyz(); }
+        inline constexpr Vector3<T> right() const { return (*this)[0].xyz(); } /**< @overload */
+
+        /**
+         * @brief Up-pointing 3D vector
+         *
+         * First three elements of second column.
+         * @see Vector3::yAxis()
+         */
+        inline Vector3<T>& up() { return (*this)[1].xyz(); }
+        inline constexpr Vector3<T> up() const { return (*this)[1].xyz(); } /**< @overload */
+
+        /**
+         * @brief Backward-pointing 3D vector
+         *
+         * First three elements of third column.
+         * @see Vector3::yAxis()
+         */
+        inline Vector3<T>& backward() { return (*this)[2].xyz(); }
+        inline constexpr Vector3<T> backward() const { return (*this)[2].xyz(); } /**< @overload */
+
         /**
          * @brief 3D translation part of the matrix
          *
-         * First three elements of last column.
+         * First three elements of fourth column.
          * @see translation(const Vector3&), Matrix3::translation()
          */
-        inline Vector3<T>& translation() {
-            return (*this)[3].xyz();
-        }
-
-        /** @overload */
-        inline constexpr Vector3<T> translation() const {
-            return (*this)[3].xyz();
-        }
-
-        /** @todo up(), forward(), right() */
+        inline Vector3<T>& translation() { return (*this)[3].xyz(); }
+        inline constexpr Vector3<T> translation() const { return (*this)[3].xyz(); } /**< @overload */
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline Point3D<T> operator*(const Point3D<T>& other) const {

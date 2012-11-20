@@ -33,7 +33,7 @@ class Matrix4Test: public Corrade::TestSuite::Tester<Matrix4Test> {
         void rotationZ();
         void rotationScalingPart();
         void rotationPart();
-        void translationPart();
+        void vectorParts();
 
         void debug();
         void configuration();

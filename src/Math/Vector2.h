@@ -39,7 +39,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * @code
          * Matrix3::translation(Vector2::xAxis(5.0f)); // same as Matrix3::translation({5.0f, 0.0f});
          * @endcode
-         * @see yAxis(), xScale()
+         * @see yAxis(), xScale(), Matrix3::right()
          */
         inline constexpr static Vector2<T> xAxis(T length = T(1)) { return Vector2<T>(length, T()); }
 
@@ -47,7 +47,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * @brief %Vector in direction of Y axis (up)
          *
          * See xAxis() for more information.
-         * @see yScale()
+         * @see yScale(), Matrix3::up()
          */
         inline constexpr static Vector2<T> yAxis(T length = T(1)) { return Vector2<T>(T(), length); }
 

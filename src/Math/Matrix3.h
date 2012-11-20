@@ -127,21 +127,31 @@ template<class T> class Matrix3: public Matrix<3, T> {
         }
 
         /**
+         * @brief Right-pointing 2D vector
+         *
+         * First two elements of first column.
+         * @see Vector2::xAxis()
+         */
+        inline Vector2<T>& right() { return (*this)[0].xy(); }
+        inline constexpr Vector2<T> right() const { return (*this)[0].xy(); } /**< @overload */
+
+        /**
+         * @brief Up-pointing 2D vector
+         *
+         * First two elements of second column.
+         * @see Vector2::yAxis()
+         */
+        inline Vector2<T>& up() { return (*this)[1].xy(); }
+        inline constexpr Vector2<T> up() const { return (*this)[1].xy(); } /**< @overload */
+
+        /**
          * @brief 2D translation part of the matrix
          *
-         * First two elements of last column.
+         * First two elements of third column.
          * @see translation(const Vector2&), Matrix4::translation()
          */
-        inline Vector2<T>& translation() {
-            return (*this)[2].xy();
-        }
-
-        /** @overload */
-        inline constexpr Vector2<T> translation() const {
-            return (*this)[2].xy();
-        }
-
-        /** @todo up(), right() */
+        inline Vector2<T>& translation() { return (*this)[2].xy(); }
+        inline constexpr Vector2<T> translation() const { return (*this)[2].xy(); } /**< @overload */
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline Point2D<T> operator*(const Point2D<T>& other) const {
