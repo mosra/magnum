@@ -16,6 +16,7 @@ set(Magnum_SRCS
     AbstractShaderProgram.cpp
     Buffer.cpp
     Context.cpp
+    DebugMarker.cpp
     Framebuffer.cpp
     Image.cpp
     IndexedMesh.cpp
@@ -55,6 +56,7 @@ set(Magnum_HEADERS
     Color.h
     Context.h
     CubeMapTexture.h
+    DebugMarker.h
     DimensionTraits.h
     Extensions.h
     Framebuffer.h

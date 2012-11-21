@@ -136,6 +136,8 @@ namespace GL {
         _extension(GL,EXT,transform_feedback,           GL210, GL300) // #352
         _extension(GL,EXT,direct_state_access,          GL210,  None) // #353
         _extension(GL,EXT,texture_snorm,                GL300, GL310) // #365
+    } namespace GREMEDY {
+        _extension(GL,GREMEDY,string_marker,            GL210,  None) // #311
     } namespace INTEL {
         /* INTEL_map_texture not supported */                         // #429
     } namespace NV {
