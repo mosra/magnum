@@ -36,7 +36,7 @@ namespace Implementation {
 
 /** @brief OpenGL version */
 enum class Version: GLint {
-    None = 0,                       /**< @brief Unspecified */
+    None = 0xFFFF,                  /**< @brief Unspecified */
     #ifndef MAGNUM_TARGET_GLES
     GL210 = 210,                    /**< @brief OpenGL 2.1 / GLSL 1.20 */
     GL300 = 300,                    /**< @brief OpenGL 3.0 / GLSL 1.30 */
