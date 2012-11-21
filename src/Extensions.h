@@ -48,6 +48,9 @@ namespace Extensions {
         constexpr static Version coreVersion() { return Version::_coreVersion; } \
         constexpr static const char* string() { return #prefix "_" #vendor "_" #extension; } \
     };
+
+/* IMPORTANT: don't forget to add new extensions also in Context.cpp */
+
 namespace GL {
     #line 1
     namespace AMD {

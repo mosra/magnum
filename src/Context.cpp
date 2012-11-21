@@ -38,7 +38,10 @@ const std::vector<Extension>& Extension::extensions(Version version) {
     static const std::vector<Extension> empty;
     #ifndef MAGNUM_TARGET_GLES
     static const std::vector<Extension> extensions{
-        _extension(GL,EXT,texture_filter_anisotropic)};
+        _extension(GL,AMD,vertex_shader_layer),
+        _extension(GL,AMD,shader_trinary_minmax),
+        _extension(GL,EXT,texture_filter_anisotropic),
+        _extension(GL,EXT,direct_state_access)};
     static const std::vector<Extension> extensions300{
         _extension(GL,APPLE,flush_buffer_range),
         _extension(GL,APPLE,vertex_array_object),
