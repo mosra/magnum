@@ -41,7 +41,7 @@ template<std::uint8_t dimensions> class SHADERS_EXPORT VertexColorShader: public
         typedef Attribute<0, typename DimensionTraits<dimensions, GLfloat>::PointType> Position;
 
         /** @brief Vertex color */
-        typedef Attribute<1, Math::Point2D<GLfloat>> Color;
+        typedef Attribute<1, Color3<GLfloat>> Color;
 
         VertexColorShader();
 
