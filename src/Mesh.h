@@ -83,7 +83,7 @@ component ordering (e.g. directly from @ref Trade::TgaImporter "TGA file"):
 @code
 class MyShader: public AbstractShaderProgram {
     public:
-        typedef Attribute<1, Color4<GLfloat>> Color;
+        typedef Attribute<1, Color4<>> Color;
 
     // ...
 };

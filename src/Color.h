@@ -145,7 +145,12 @@ range @f$ [0.0, 1.0] @f$.
 */
 /* Not using template specialization because some internal functions are
    impossible to explicitly instantiate */
-template<class T> class Color3: public Math::Vector3<T> {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T>
+#else
+template<class T = GLfloat>
+#endif
+class Color3: public Math::Vector3<T> {
     public:
         /** @brief Corresponding floating-point type for HSV computation */
         typedef typename Math::MathTypeTraits<T>::FloatingPointType FloatingPointType;
@@ -291,7 +296,12 @@ See Color3 for more information.
 */
 /* Not using template specialization because some internal functions are
    impossible to explicitly instantiate */
-template<class T> class Color4: public Math::Vector4<T> {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T>
+#else
+template<class T = GLfloat>
+#endif
+class Color4: public Math::Vector4<T> {
     public:
         /** @copydoc Color3::FloatingPointType */
         typedef typename Color3<T>::FloatingPointType FloatingPointType;

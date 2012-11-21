@@ -55,7 +55,7 @@ template<std::uint8_t dimensions> class SHADERS_EXPORT FlatShader: public Abstra
          * @brief Set color
          * @return Pointer to self (for method chaining)
          */
-        FlatShader<dimensions>* setColor(const Color3<GLfloat>& color) {
+        FlatShader<dimensions>* setColor(const Color3<>& color) {
             setUniform(colorUniform, color);
             return this;
         }

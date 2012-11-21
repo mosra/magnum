@@ -37,7 +37,7 @@ namespace Magnum {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Physics { namespace Implementation {
     struct Options {
-        Color3<GLfloat> color;
+        Color3<> color;
     };
     template<std::uint8_t> class DebugRenderer;
 }}
@@ -86,7 +86,7 @@ class PHYSICS_EXPORT DebugDrawResourceManager: public ResourceManager<AbstractSh
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /** @brief %Options */
         struct Options {
-            Color3<GLfloat> color; /**< @brief Color */
+            Color3<> color; /**< @brief Color */
         };
         #else
         typedef Implementation::Options Options;

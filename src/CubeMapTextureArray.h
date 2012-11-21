@@ -133,7 +133,7 @@ class CubeMapTextureArray: public AbstractTexture {
             AbstractTexture::setMagnificationFilter(filter);
             return this;
         }
-        inline CubeMapTextureArray* setBorderColor(const Color4<GLfloat>& color) {
+        inline CubeMapTextureArray* setBorderColor(const Color4<>& color) {
             AbstractTexture::setBorderColor(color);
             return this;
         }
