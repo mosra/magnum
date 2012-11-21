@@ -26,8 +26,7 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 3D cube primitive
 
-Indexed triangle mesh with smooth normals.
-@todo Does anyone EVER want smooth normals on a cube?!
+2x2x2 cube. Non-indexed triangle mesh with flat normals.
 */
 class Cube: public Trade::MeshData3D {
     public:
