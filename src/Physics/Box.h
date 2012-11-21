@@ -36,31 +36,31 @@ namespace Magnum { namespace Physics {
 template<std::uint8_t dimensions> class PHYSICS_EXPORT Box: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Box(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation): _transformation(transformation), _transformedTransformation(transformation) {}
+        inline Box(const typename DimensionTraits<dimensions>::MatrixType& transformation): _transformation(transformation), _transformedTransformation(transformation) {}
 
         inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::Box;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
+        void applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) override;
 
         /** @brief Transformation */
-        inline typename DimensionTraits<dimensions, GLfloat>::MatrixType transformation() const {
+        inline typename DimensionTraits<dimensions>::MatrixType transformation() const {
             return _transformation;
         }
 
         /** @brief Set transformation */
-        inline void setTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
+        inline void setTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) {
             _transformation = transformation;
         }
 
         /** @brief Transformed transformation */
-        inline typename DimensionTraits<dimensions, GLfloat>::MatrixType transformedTransformation() const {
+        inline typename DimensionTraits<dimensions>::MatrixType transformedTransformation() const {
             return _transformedTransformation;
         }
 
     private:
-        Math::Matrix<dimensions+1, GLfloat> _transformation,
+        typename DimensionTraits<dimensions>::MatrixType _transformation,
             _transformedTransformation;
 };
 

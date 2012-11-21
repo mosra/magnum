@@ -105,7 +105,7 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT AbstractShape {
          * Applies transformation to user-defined shape properties and caches
          * them for later usage in collision detection.
          */
-        virtual void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) = 0;
+        virtual void applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) = 0;
 
         /**
          * @brief Detect collision with other shape

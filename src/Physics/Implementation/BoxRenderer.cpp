@@ -22,7 +22,7 @@
 
 namespace Magnum { namespace Physics { namespace Implementation {
 
-template<std::uint8_t dimensions> void BoxRenderer<dimensions>::draw(Resource<Options>& options, const typename DimensionTraits<dimensions, GLfloat>::MatrixType&, typename SceneGraph::AbstractCamera<dimensions>* camera) {
+template<std::uint8_t dimensions> void BoxRenderer<dimensions>::draw(Resource<Options>& options, const typename DimensionTraits<dimensions>::MatrixType&, typename SceneGraph::AbstractCamera<dimensions>* camera) {
     this->shader->setTransformationProjection(camera->projectionMatrix()*camera->cameraMatrix()*box.transformedTransformation())
         ->setColor(options->color)
         ->use();

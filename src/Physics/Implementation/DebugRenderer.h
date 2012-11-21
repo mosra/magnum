@@ -44,7 +44,7 @@ template<std::uint8_t dimensions> class DebugRenderer: public SceneGraph::Drawab
             renderers.push_back(renderer);
         }
 
-        inline void draw(const typename DimensionTraits<dimensions>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, GLfloat>* camera) override {
+        inline void draw(const typename DimensionTraits<dimensions>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions>* camera) override {
             for(auto i: renderers) i->draw(options, transformationMatrix, camera);
         }
 

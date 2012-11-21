@@ -20,8 +20,8 @@
 
 namespace Magnum { namespace Physics {
 
-template<std::uint8_t dimensions> void Point<dimensions>::applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
-    _transformedPosition = (transformation*typename DimensionTraits<dimensions, GLfloat>::PointType(_position)).vector();
+template<std::uint8_t dimensions> void Point<dimensions>::applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) {
+    _transformedPosition = (transformation*typename DimensionTraits<dimensions>::PointType(_position)).vector();
 }
 
 template class Point<2>;

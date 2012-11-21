@@ -105,7 +105,7 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapeGroup: public Abstra
             return AbstractShape<dimensions>::Type::ShapeGroup;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
+        void applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) override;
 
         bool collides(const AbstractShape<dimensions>* other) const override;
 
