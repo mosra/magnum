@@ -44,10 +44,6 @@ Sdl2Application::Sdl2Application(int, char**, const std::string& name, const Mat
         exit(1);
     }
 
-    /* Request OpenGL 3.2 */
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-
     /* Enable double buffering and 24bt depth buffer */
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);

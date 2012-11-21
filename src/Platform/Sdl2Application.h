@@ -37,8 +37,9 @@ namespace Platform {
 /** @nosubgrouping
 @brief SDL2 application
 
-Application using [Simple DirectMedia Layer](www.libsdl.org/). Supports
-keyboard and mouse handling.
+Application using [Simple DirectMedia Layer](www.libsdl.org/). Centered
+non-resizable window with double-buffered OpenGL context and 24bit depth
+buffer. Supports keyboard and mouse handling.
 
 @section Sdl2Application-usage Usage
 
@@ -65,9 +66,6 @@ class Sdl2Application {
          * @param argv      Arguments of `main()` function
          * @param title     Window title
          * @param size      Window size
-         *
-         * Creates centered non-resizable window with double-buffered
-         * OpenGL 3.2 context with 24bit depth buffer.
          */
         Sdl2Application(int argc, char** argv, const std::string& title = "Magnum SDL2 application", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
 
