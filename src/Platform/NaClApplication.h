@@ -24,6 +24,7 @@
 #include <ppapi/cpp/input_event.h>
 #include <ppapi/cpp/instance.h>
 #include <ppapi/cpp/module.h>
+#include <ppapi/cpp/mouse_lock.h>
 #include <ppapi/cpp/graphics_3d_client.h>
 #include <ppapi/gles2/gl2ext_ppapi.h>
 
@@ -57,7 +58,7 @@ class MyApplication: public Magnum::Platform::Sdl2Application {
 MAGNUM_NACLAPPLICATION_MAIN(MyApplication)
 @endcode
 */
-class NaClApplication: public pp::Instance, public pp::Graphics3DClient {
+class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public pp::MouseLock {
     public:
         class InputEvent;
         class KeyEvent;
@@ -130,6 +131,22 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient {
 
         /** @{ @name Mouse handling */
 
+    public:
+        /** @brief Whether mouse is locked */
+        inline bool isMouseLocked() const {
+            return flags & Flag::MouseLocked;
+        }
+
+        /**
+         * @brief Enable or disable mouse locking
+         *
+         * When mouse is locked, the cursor is hidden and only
+         * MouseMoveEvent::relativePosition() is changing, absolute position
+         * stays the same.
+         */
+        void setMouseLocked(bool enabled);
+
+    protected:
         /**
          * @brief Mouse press event
          *
@@ -165,7 +182,8 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient {
             SwapInProgress = 1 << 1,
             Redraw = 1 << 2,
             FullscreenSwitchInProgress = 1 << 3,
-            WillBeFullscreen = 1 << 4
+            WillBeFullscreen = 1 << 4,
+            MouseLocked = 1 << 5
         };
         typedef Corrade::Containers::EnumSet<Flag, std::uint8_t> Flags;
 
@@ -173,11 +191,16 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient {
             CORRADE_ASSERT(false, "NaClApplication: context unexpectedly lost", );
         }
 
+        inline void MouseLockLost() override {
+            flags &= ~Flag::MouseLocked;
+        }
+
         void DidChangeView(const pp::View& view) override;
 
         bool HandleInputEvent(const pp::InputEvent& event) override;
 
         static void swapCallback(void* applicationInstance, std::int32_t);
+        static void mouseLockCallback(void* applicationInstance, std::int32_t);
 
         pp::Graphics3D* graphics;
         pp::Fullscreen* fullscreen;

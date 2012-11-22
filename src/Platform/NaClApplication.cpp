@@ -23,7 +23,7 @@
 
 namespace Magnum { namespace Platform {
 
-NaClApplication::NaClApplication(PP_Instance instance, const Math::Vector2<GLsizei>& size): Instance(instance), Graphics3DClient(this), viewportSize(size) {
+NaClApplication::NaClApplication(PP_Instance instance, const Math::Vector2<GLsizei>& size): Instance(instance), Graphics3DClient(this), MouseLock(this), viewportSize(size) {
     int32_t attributes[] = {
         PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
         PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
@@ -185,6 +185,19 @@ void NaClApplication::swapCallback(void* applicationInstance, std::int32_t) {
         instance->flags &= ~Flag::Redraw;
         instance->drawEvent();
     }
+}
+
+void NaClApplication::setMouseLocked(bool enabled) {
+    /* Already done, nothing to do */
+    if(enabled == isMouseLocked()) return;
+
+    if(enabled) LockMouse(pp::CompletionCallback(&mouseLockCallback, this));
+    else UnlockMouse();
+}
+
+void NaClApplication::mouseLockCallback(void* applicationInstance, int32_t) {
+    NaClApplication* instance = static_cast<NaClApplication*>(applicationInstance);
+    instance->flags |= Flag::MouseLocked;
 }
 
 }}
