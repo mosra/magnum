@@ -33,6 +33,8 @@ and string(), but these structs are better suited for compile-time decisions
 rather than Extension instances. See Context::isExtensionSupported() for
 example usage.
 
+@see MAGNUM_ASSERT_EXTENSION_SUPPORTED()
+
 @todo Manual indices for extensions, this has gaps
 @todo Unhide ES2_compatibility, ES3_compatibility on ES
 @todo Add ES and GL 4.3 extensions

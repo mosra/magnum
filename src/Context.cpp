@@ -35,26 +35,26 @@ namespace Magnum {
 
 Debug operator<<(Debug debug, Version value) {
     switch(value) {
-        #define _c(value) case Version::value: return debug << "Version::" #value;
-        _c(None)
+        #define _c(value, string) case Version::value: return debug << string;
+        _c(None, "None")
         #ifndef MAGNUM_TARGET_GLES
-        _c(GL210)
-        _c(GL300)
-        _c(GL310)
-        _c(GL320)
-        _c(GL330)
-        _c(GL400)
-        _c(GL410)
-        _c(GL420)
-        _c(GL430)
+        _c(GL210, "OpenGL 2.1")
+        _c(GL300, "OpenGL 3.0")
+        _c(GL310, "OpenGL 3.1")
+        _c(GL320, "OpenGL 3.2")
+        _c(GL330, "OpenGL 3.3")
+        _c(GL400, "OpenGL 4.0")
+        _c(GL410, "OpenGL 4.1")
+        _c(GL420, "OpenGL 4.2")
+        _c(GL430, "OpenGL 4.3")
         #else
-        _c(GLES200)
-        _c(GLES300)
+        _c(GLES200, "OpenGL ES 2.0")
+        _c(GLES300, "OpenGL ES 3.0")
         #endif
         #undef _c
     }
 
-    return debug << "Version::(invalid)";
+    return debug << "Invalid";
 }
 
 const std::vector<Extension>& Extension::extensions(Version version) {
