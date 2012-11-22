@@ -53,13 +53,12 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
         }
 
         /**
-         * @brief Angle between normalized vectors
+         * @brief Angle between normalized vectors (in radians)
          *
          * @f[
          * \phi = acos \left(\frac{a \cdot b}{|a| \cdot |b|} \right)
          * @f]
-         * @attention Assertion fails on non-normalized vectors and NaN is
-         *      returned.
+         * @attention Both vectors must be normalized.
          */
         inline static T angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
