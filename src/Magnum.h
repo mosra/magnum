@@ -118,14 +118,16 @@ template<class = GLfloat> class Color4;
 
 enum class Version: GLint;
 class Context;
-class Extension;
-
 class CubeMapTexture;
 
 #ifndef MAGNUM_TARGET_GLES
 class CubeMapTextureArray;
 #endif
 
+/* DebugMarker forward declaration is not needed */
+/* DimensionTraits forward declaration is not needed */
+
+class Extension;
 class Framebuffer;
 
 template<std::uint8_t> class Image;
