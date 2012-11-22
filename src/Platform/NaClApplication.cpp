@@ -16,8 +16,8 @@
 #include "NaClApplication.h"
 
 #include <ppapi/cpp/graphics_3d.h>
+#include <ppapi/cpp/fullscreen.h>
 #include <ppapi/cpp/completion_callback.h>
-#include <ppapi/lib/gl/gles2/gl2ext_ppapi.h>
 
 #include "Context.h"
 
@@ -45,6 +45,8 @@ NaClApplication::NaClApplication(PP_Instance instance, const Math::Vector2<GLsiz
         exit(1);
     }
 
+    fullscreen = new pp::Fullscreen(this);
+
     glSetCurrentContextPPAPI(graphics->pp_resource());
 
     c = new Context;
@@ -52,14 +54,51 @@ NaClApplication::NaClApplication(PP_Instance instance, const Math::Vector2<GLsiz
     /* Enable input handling for mouse and keyboard */
     RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE|PP_INPUTEVENT_CLASS_WHEEL);
     RequestFilteringInputEvents(PP_INPUTEVENT_CLASS_KEYBOARD);
+
+    /* Make sure viewportEvent() is called for first time */
+    flags |= Flag::ViewportUpdated;
 }
 
 NaClApplication::~NaClApplication() {
     delete c;
+    delete fullscreen;
     delete graphics;
 }
 
+bool NaClApplication::isFullscreen() {
+    return fullscreen->IsFullscreen();
+}
+
+bool NaClApplication::setFullscreen(bool enabled) {
+    /* Given fullscreen mode already set or switching to it is in progress, done */
+    if(isFullscreen() == enabled || ((flags & Flag::FullscreenSwitchInProgress) && (flags & Flag::WillBeFullscreen) == enabled))
+        return true;
+
+    /* Switch to opposite fullscreen mode is in progress, can't revert it back */
+    if((flags & Flag::FullscreenSwitchInProgress) && (flags & Flag::WillBeFullscreen) != enabled)
+        return false;
+
+    /* Set fullscreen */
+    if(!fullscreen->SetFullscreen(enabled))
+        return false;
+
+    /* Set flags */
+    flags |= Flag::FullscreenSwitchInProgress;
+    enabled ? flags |= Flag::WillBeFullscreen : flags &= ~Flag::WillBeFullscreen;
+    return true;
+}
+
 void NaClApplication::DidChangeView(const pp::View& view) {
+    /* Fullscreen switch in progress */
+    if(flags & Flag::FullscreenSwitchInProgress) {
+        /* Done, remove the progress flag */
+        if(isFullscreen() == bool(flags & Flag::WillBeFullscreen))
+            flags &= ~Flag::FullscreenSwitchInProgress;
+
+        /* Don't process anything during the switch */
+        else return;
+    }
+
     Math::Vector2<GLsizei> size(view.GetRect().width(), view.GetRect().height());
 
     /* Canvas resized */
@@ -70,7 +109,7 @@ void NaClApplication::DidChangeView(const pp::View& view) {
     }
 
     /* Update viewport, if changed */
-    if(!(flags & Flag::ViewportUpdated)) {
+    if(flags & Flag::ViewportUpdated) {
         flags &= ~Flag::ViewportUpdated;
         viewportEvent(size);
     }
@@ -79,6 +118,9 @@ void NaClApplication::DidChangeView(const pp::View& view) {
 }
 
 bool NaClApplication::HandleInputEvent(const pp::InputEvent& event) {
+    /* Don't handle anything during switch from/to fullscreen */
+    if(flags & Flag::FullscreenSwitchInProgress) return false;
+
     Flags tmpFlags = flags;
 
     switch(event.GetType()) {

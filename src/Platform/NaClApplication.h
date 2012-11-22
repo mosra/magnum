@@ -23,7 +23,6 @@
 #include <Containers/EnumSet.h>
 #include <ppapi/cpp/input_event.h>
 #include <ppapi/cpp/instance.h>
-#include <ppapi/cpp/instance_handle.h>
 #include <ppapi/cpp/module.h>
 #include <ppapi/cpp/graphics_3d_client.h>
 #include <ppapi/gles2/gl2ext_ppapi.h>
@@ -35,6 +34,7 @@
 
 namespace pp {
     class Graphics3D;
+    class Fullscreen;
 }
 
 namespace Magnum {
@@ -78,6 +78,19 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient {
         explicit NaClApplication(PP_Instance instance, const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(640, 480));
 
         ~NaClApplication();
+
+        /** @brief Whether the application runs fullscreen */
+        bool isFullscreen();
+
+        /**
+         * @brief Set fullscreen
+         * @return `False` if switch to opposite mode is in progress or if the
+         *      switch is not possible, `true` otherwise.
+         *
+         * The switch is done asynchronously, during the switch no event
+         * processing is done.
+         */
+        bool setFullscreen(bool enabled);
 
     protected:
 
@@ -154,7 +167,9 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient {
         enum class Flag: std::uint8_t {
             ViewportUpdated = 1 << 0,
             SwapInProgress = 1 << 1,
-            Redraw = 1 << 2
+            Redraw = 1 << 2,
+            FullscreenSwitchInProgress = 1 << 3,
+            WillBeFullscreen = 1 << 4
         };
         typedef Corrade::Containers::EnumSet<Flag, std::uint8_t> Flags;
 
@@ -169,6 +184,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient {
         static void swapCallback(void* applicationInstance, std::int32_t);
 
         pp::Graphics3D* graphics;
+        pp::Fullscreen* fullscreen;
         Context* c;
         Math::Vector2<GLsizei> viewportSize;
         Flags flags;
