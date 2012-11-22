@@ -76,6 +76,9 @@ enum class Version: GLint {
     #endif
 };
 
+/** @debugoperator{Magnum::Context} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Version value);
+
 /**
 @brief Run-time information about OpenGL extension
 

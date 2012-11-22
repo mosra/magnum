@@ -33,6 +33,30 @@ using namespace std;
 
 namespace Magnum {
 
+Debug operator<<(Debug debug, Version value) {
+    switch(value) {
+        #define _c(value) case Version::value: return debug << "Version::" #value;
+        _c(None)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(GL210)
+        _c(GL300)
+        _c(GL310)
+        _c(GL320)
+        _c(GL330)
+        _c(GL400)
+        _c(GL410)
+        _c(GL420)
+        _c(GL430)
+        #else
+        _c(GLES200)
+        _c(GLES300)
+        #endif
+        #undef _c
+    }
+
+    return debug << "Version::(invalid)";
+}
+
 const std::vector<Extension>& Extension::extensions(Version version) {
     #define _extension(prefix, vendor, extension)                           \
         {Extensions::prefix::vendor::extension::Index, Extensions::prefix::vendor::extension::requiredVersion(), Extensions::prefix::vendor::extension::coreVersion(), Extensions::prefix::vendor::extension::string()}
