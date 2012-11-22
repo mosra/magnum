@@ -17,7 +17,6 @@
 
 #include <ppapi/cpp/graphics_3d.h>
 #include <ppapi/cpp/completion_callback.h>
-#include <ppapi/lib/gl/gles2/gl2ext_ppapi.h>
 
 #include "Context.h"
 

@@ -23,7 +23,6 @@
 #include <Containers/EnumSet.h>
 #include <ppapi/cpp/input_event.h>
 #include <ppapi/cpp/instance.h>
-#include <ppapi/cpp/instance_handle.h>
 #include <ppapi/cpp/module.h>
 #include <ppapi/cpp/graphics_3d_client.h>
 #include <ppapi/gles2/gl2ext_ppapi.h>
