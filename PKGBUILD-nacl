@@ -8,7 +8,7 @@ url="https://github.com/mosra/magnum"
 license=('LGPLv3')
 depends=('nacl-corrade')
 makedepends=('nacl-sdk' 'cmake')
-options=(!makeflags !buildflags !strip)
+options=(!buildflags !strip)
 
 build() {
     # Build 32bit
