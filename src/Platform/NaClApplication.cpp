@@ -92,8 +92,10 @@ void NaClApplication::DidChangeView(const pp::View& view) {
     /* Fullscreen switch in progress */
     if(flags & Flag::FullscreenSwitchInProgress) {
         /* Done, remove the progress flag */
-        if(isFullscreen() == bool(flags & Flag::WillBeFullscreen))
+        if(isFullscreen() == bool(flags & Flag::WillBeFullscreen)) {
             flags &= ~Flag::FullscreenSwitchInProgress;
+            flags |= Flag::Redraw;
+        }
 
         /* Don't process anything during the switch */
         else return;
