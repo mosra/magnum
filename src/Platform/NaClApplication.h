@@ -37,11 +37,7 @@ namespace pp {
     class Fullscreen;
 }
 
-namespace Magnum {
-
-class Context;
-
-namespace Platform {
+namespace Magnum { namespace Platform {
 
 /** @nosubgrouping
 @brief NaCl application
