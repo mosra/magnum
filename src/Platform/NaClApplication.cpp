@@ -51,6 +51,9 @@ NaClApplication::NaClApplication(PP_Instance instance, const Math::Vector2<GLsiz
     /* Enable input handling for mouse and keyboard */
     RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE|PP_INPUTEVENT_CLASS_WHEEL);
     RequestFilteringInputEvents(PP_INPUTEVENT_CLASS_KEYBOARD);
+
+    /* Make sure viewportEvent() is called for first time */
+    flags |= Flag::ViewportUpdated;
 }
 
 NaClApplication::~NaClApplication() {
@@ -69,7 +72,7 @@ void NaClApplication::DidChangeView(const pp::View& view) {
     }
 
     /* Update viewport, if changed */
-    if(!(flags & Flag::ViewportUpdated)) {
+    if(flags & Flag::ViewportUpdated) {
         flags &= ~Flag::ViewportUpdated;
         viewportEvent(size);
     }
