@@ -21,12 +21,9 @@
 
 namespace Magnum { namespace Math {
 
-/**
-@brief Numeric constants
-
-@internal See MathTypeTraits class for implementation notes.
-*/
+/** @brief Numeric constants */
 template<class T> struct Constants {
+    /* See MathTypeTraits for answer why these are functions and not constants. */
     #ifdef DOXYGEN_GENERATING_OUTPUT
     /**
      * @brief Pi
