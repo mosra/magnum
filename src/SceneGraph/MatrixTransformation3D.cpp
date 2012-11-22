@@ -20,7 +20,7 @@
 namespace Magnum { namespace SceneGraph {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template class SCENEGRAPH_EXPORT Object<MatrixTransformation3D<>>;
+template class MAGNUM_SCENEGRAPH_EXPORT Object<MatrixTransformation3D<>>;
 #endif
 
 }}

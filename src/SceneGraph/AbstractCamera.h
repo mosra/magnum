@@ -69,7 +69,7 @@ template<std::uint8_t dimensions, class T>
 #else
 template<std::uint8_t dimensions, class T = GLfloat>
 #endif
-class SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions, T> {
+class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions, T> {
     public:
         /**
          * @brief Constructor

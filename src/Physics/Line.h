@@ -32,7 +32,7 @@ namespace Magnum { namespace Physics {
 @see Line2D, Line3D
 @todo collision detection of two Line2D
 */
-template<std::uint8_t dimensions> class PHYSICS_EXPORT Line: public AbstractShape<dimensions> {
+template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Line: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
         inline Line(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b): _a(a), _transformedA(a), _b(b), _transformedB(b) {}

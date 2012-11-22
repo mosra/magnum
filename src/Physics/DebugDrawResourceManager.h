@@ -43,7 +43,7 @@ namespace Physics { namespace Implementation {
 }}
 #endif
 
-extern template ResourceManager<AbstractShaderProgram, Buffer, Mesh, Physics::Implementation::Options> PHYSICS_EXPORT *& ResourceManager<AbstractShaderProgram, Buffer, Mesh, Physics::Implementation::Options>::internalInstance();
+extern template ResourceManager<AbstractShaderProgram, Buffer, Mesh, Physics::Implementation::Options> MAGNUM_PHYSICS_EXPORT *& ResourceManager<AbstractShaderProgram, Buffer, Mesh, Physics::Implementation::Options>::internalInstance();
 
 namespace Physics {
 
@@ -81,7 +81,7 @@ ObjectShape2D* shape;
 group.add(DebugDrawResourceManager::createDebugRenderer(shape, "red"));
 @endcode
 */
-class PHYSICS_EXPORT DebugDrawResourceManager: public ResourceManager<AbstractShaderProgram, Buffer, Mesh, Physics::Implementation::Options> {
+class MAGNUM_PHYSICS_EXPORT DebugDrawResourceManager: public ResourceManager<AbstractShaderProgram, Buffer, Mesh, Physics::Implementation::Options> {
     public:
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /** @brief %Options */

@@ -17,12 +17,12 @@
 
 #ifdef _WIN32
     #ifdef MagnumPhysics_EXPORTS
-        #define PHYSICS_EXPORT __declspec(dllexport)
+        #define MAGNUM_PHYSICS_EXPORT __declspec(dllexport)
     #else
-        #define PHYSICS_EXPORT __declspec(dllimport)
+        #define MAGNUM_PHYSICS_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define PHYSICS_EXPORT __attribute__ ((visibility ("default")))
+    #define MAGNUM_PHYSICS_EXPORT __attribute__ ((visibility ("default")))
 #endif
 
 #endif

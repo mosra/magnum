@@ -31,7 +31,7 @@ namespace Magnum { namespace Physics {
 
 @see AxisAlignedBox2D, AxisAlignedBox3D
 */
-template<std::uint8_t dimensions> class PHYSICS_EXPORT AxisAlignedBox: public AbstractShape<dimensions> {
+template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT AxisAlignedBox: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
         inline AxisAlignedBox(const typename DimensionTraits<dimensions>::VectorType& position, const typename DimensionTraits<dimensions>::VectorType& size): _position(position), _transformedPosition(position), _size(size), _transformedSize(size) {}

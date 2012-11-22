@@ -35,7 +35,7 @@ namespace Magnum { namespace Shaders {
 Draws vertex-colored mesh.
 @see VertexColorShader2D, VertexColorShader3D
 */
-template<std::uint8_t dimensions> class SHADERS_EXPORT VertexColorShader: public AbstractShaderProgram {
+template<std::uint8_t dimensions> class MAGNUM_SHADERS_EXPORT VertexColorShader: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
         typedef Attribute<0, typename DimensionTraits<dimensions>::PointType> Position;

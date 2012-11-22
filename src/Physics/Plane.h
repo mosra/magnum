@@ -28,7 +28,7 @@
 namespace Magnum { namespace Physics {
 
 /** @brief Infinite plane, defined by position and normal (3D only) */
-class PHYSICS_EXPORT Plane: public AbstractShape<3> {
+class MAGNUM_PHYSICS_EXPORT Plane: public AbstractShape<3> {
     public:
         /** @brief Constructor */
         inline Plane(const Vector3& position, const Vector3& normal): _position(position), _transformedPosition(position), _normal(normal), _transformedNormal(normal) {}
