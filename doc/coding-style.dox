@@ -21,6 +21,10 @@ needed. You are encouraged to read it first:
 Headers shouldn't have `using` declarations inside them (unless there is good
 excuse, see Magnum.h).
 
+Headers have `*.h` extension, @ref compilation-speedup-hpp "template implementation headers"
+have `*.hpp` extension (hinting that they are something between `*.h` and
+`*.cpp` files).
+
 @subsection cpp-format Code format
 
 @subsubsection cpp-naming Naming

@@ -47,7 +47,8 @@ needs, see @ref AbstractTransformation-subclassing
 and its children are Object instances. The hierarchy has some transformation
 type, identical for all objects (because for example having part of the tree
 in 2D and part in 3D just wouldn't make sense). Common usage is to typedef
-%Scene and %Object with desired transformation type:
+%Scene and %Object with desired transformation type to save unnecessary typing
+later:
 @code
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
@@ -192,6 +193,8 @@ When you need to use the cached value, you can explicitly request the cleanup
 by calling Object::setClean(). Camera, for example, calls it automatically
 before it starts rendering, as it needs its own inverse transformation to
 properly draw the objects.
+
+See @ref AbstractFeature-subclassing-caching for more information.
 
 @section scenegraph-construction-order Construction and destruction order
 

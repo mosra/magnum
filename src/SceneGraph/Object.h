@@ -49,6 +49,13 @@ Base of scene graph. Contains specific transformation implementation, takes
 care of parent/children relationship and contains features. See @ref scenegraph
 for introduction.
 
+Common usage is to typedef Object with desired transformation type to save
+unnecessary typing later, along with Scene and possibly other types, e.g.:
+@code
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
+@endcode
+
 Uses Corrade::Containers::LinkedList for parent/children relationship.
 Traversing through the list is done like in the following code. It is also
 possible to go in reverse order using lastChild() and previousSibling().

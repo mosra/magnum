@@ -30,6 +30,7 @@ namespace Magnum { namespace Math {
 
 Provides functions for transformations in 3D. See Matrix3 for 2D
 transformations. See also @ref matrix-vector for brief introduction.
+@see Magnum::Matrix4
 @configurationvalueref{Magnum::Math::Matrix4}
 @todo Shearing
 @todo Reflection
