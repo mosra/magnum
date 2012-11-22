@@ -37,23 +37,23 @@ applying transformation, the scale factor is averaged from all axes.
 template<std::uint8_t dimensions> class PHYSICS_EXPORT Sphere: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Sphere(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position, float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
+        inline Sphere(const typename DimensionTraits<dimensions>::VectorType& position, float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
 
         inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::Sphere;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
+        void applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) override;
 
         bool collides(const AbstractShape<dimensions>* other) const override;
 
         /** @brief Position */
-        inline typename DimensionTraits<dimensions, GLfloat>::VectorType position() const {
+        inline typename DimensionTraits<dimensions>::VectorType position() const {
             return _position;
         }
 
         /** @brief Set position */
-        inline void setPosition(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position) {
+        inline void setPosition(const typename DimensionTraits<dimensions>::VectorType& position) {
             _position = position;
         }
 
@@ -64,7 +64,7 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Sphere: public AbstractSh
         inline void setRadius(float radius) { _radius = radius; }
 
         /** @brief Transformed position */
-        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedPosition() const {
+        inline typename DimensionTraits<dimensions>::VectorType transformedPosition() const {
             return _transformedPosition;
         }
 
@@ -86,7 +86,7 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Sphere: public AbstractSh
         bool operator%(const Sphere<dimensions>& other) const;
 
     private:
-        Math::Vector<dimensions, GLfloat> _position,
+        typename DimensionTraits<dimensions>::VectorType _position,
             _transformedPosition;
         float _radius, _transformedRadius;
 };

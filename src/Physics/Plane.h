@@ -39,7 +39,7 @@ class PHYSICS_EXPORT Plane: public AbstractShape<3> {
         void applyTransformation(const Matrix4& transformation) override;
         bool collides(const AbstractShape<3>* other) const override;
         #else
-        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
+        void applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) override;
         bool collides(const AbstractShape* other) const override;
         #endif
 

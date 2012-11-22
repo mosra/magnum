@@ -38,10 +38,10 @@ Draws vertex-colored mesh.
 template<std::uint8_t dimensions> class SHADERS_EXPORT VertexColorShader: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
-        typedef Attribute<0, typename DimensionTraits<dimensions, GLfloat>::PointType> Position;
+        typedef Attribute<0, typename DimensionTraits<dimensions>::PointType> Position;
 
         /** @brief Vertex color */
-        typedef Attribute<1, Math::Point2D<GLfloat>> Color;
+        typedef Attribute<1, Color3<>> Color;
 
         VertexColorShader();
 
@@ -49,7 +49,7 @@ template<std::uint8_t dimensions> class SHADERS_EXPORT VertexColorShader: public
          * @brief Set transformation and projection
          * @return Pointer to self (for method chaining)
          */
-        inline VertexColorShader<dimensions>* setTransformationProjection(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& matrix) {
+        inline VertexColorShader<dimensions>* setTransformationProjection(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
             setUniform(transformationProjectionUniform, matrix);
             return this;
         }

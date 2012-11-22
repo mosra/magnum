@@ -165,7 +165,7 @@ class MAGNUM_EXPORT Framebuffer {
          * Initial value is `{0.0f, 0.0f, 0.0f, 1.0f}`.
          * @see @fn_gl{ClearColor}
          */
-        inline static void setClearColor(const Color4<GLfloat>& color) {
+        inline static void setClearColor(const Color4<>& color) {
             glClearColor(color.r(), color.g(), color.b(), color.a());
         }
 
@@ -631,7 +631,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @attention You have to enable blending with setFeature() first.
          * @see @fn_gl{BlendColor}
          */
-        inline static void setBlendColor(const Color4<GLfloat>& color) {
+        inline static void setBlendColor(const Color4<>& color) {
             glBlendColor(color.r(), color.g(), color.b(), color.a());
         }
 

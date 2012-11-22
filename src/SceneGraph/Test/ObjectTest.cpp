@@ -27,12 +27,12 @@ CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::ObjectTest)
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<GLfloat>> Object3D;
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<GLfloat>> Scene3D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 
-class CachingObject: public Object3D, AbstractFeature<3, GLfloat> {
+class CachingObject: public Object3D, AbstractFeature<3> {
     public:
-        inline CachingObject(Object3D* parent = nullptr): Object3D(parent), AbstractFeature<3, GLfloat>(this) {
+        inline CachingObject(Object3D* parent = nullptr): Object3D(parent), AbstractFeature<3>(this) {
             setCachedTransformations(CachedTransformation::Absolute);
         }
 
@@ -189,9 +189,9 @@ void ObjectTest::transformations() {
 void ObjectTest::setClean() {
     Scene3D scene;
 
-    class CachingFeature: public AbstractFeature<3, GLfloat> {
+    class CachingFeature: public AbstractFeature<3> {
         public:
-            CachingFeature(AbstractObject<3, GLfloat>* object): AbstractFeature<3, GLfloat>(object) {
+            CachingFeature(AbstractObject<3>* object): AbstractFeature<3>(object) {
                 setCachedTransformations(CachedTransformation::Absolute);
             }
 
@@ -202,9 +202,9 @@ void ObjectTest::setClean() {
             }
     };
 
-    class CachingInvertedFeature: public AbstractFeature<3, GLfloat> {
+    class CachingInvertedFeature: public AbstractFeature<3> {
         public:
-            CachingInvertedFeature(AbstractObject<3, GLfloat>* object): AbstractFeature<3, GLfloat>(object) {
+            CachingInvertedFeature(AbstractObject<3>* object): AbstractFeature<3>(object) {
                 setCachedTransformations(CachedTransformation::InvertedAbsolute);
             }
 

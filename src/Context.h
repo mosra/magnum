@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Enum Version, class Magnum::Context, Magnum::Extension
+ * @brief Enum Version, class Magnum::Context, Magnum::Extension, macro MAGNUM_ASSERT_VERSION_SUPPORTED(), MAGNUM_ASSERT_EXTENSION_SUPPORTED()
  */
 
 #include <bitset>
@@ -34,9 +34,13 @@ namespace Implementation {
 }
 #endif
 
-/** @brief OpenGL version */
+/**
+@brief OpenGL version
+
+@see Context, MAGNUM_ASSERT_VERSION_SUPPORTED()
+*/
 enum class Version: GLint {
-    None = 0,                       /**< @brief Unspecified */
+    None = 0xFFFF,                  /**< @brief Unspecified */
     #ifndef MAGNUM_TARGET_GLES
     GL210 = 210,                    /**< @brief OpenGL 2.1 / GLSL 1.20 */
     GL300 = 300,                    /**< @brief OpenGL 3.0 / GLSL 1.30 */
@@ -75,6 +79,9 @@ enum class Version: GLint {
     GLES300 = 300
     #endif
 };
+
+/** @debugoperator{Magnum::Context} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Version value);
 
 /**
 @brief Run-time information about OpenGL extension
@@ -197,7 +204,7 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Whether given OpenGL version is supported
          *
-         * @see supportedVersion()
+         * @see supportedVersion(), MAGNUM_ASSERT_VERSION_SUPPORTED()
          */
         inline bool isVersionSupported(Version version) const {
             #ifndef CORRADE_GCC44_COMPATIBILITY
@@ -236,7 +243,8 @@ class MAGNUM_EXPORT Context {
          * }
          * @endcode
          *
-         * @see isExtensionSupported(const Extension&) const
+         * @see isExtensionSupported(const Extension&) const,
+         *      MAGNUM_ASSERT_EXTENSION_SUPPORTED()
          */
         template<class T> inline bool isExtensionSupported() const {
             return isVersionSupported(T::coreVersion()) || (isVersionSupported(T::requiredVersion()) && extensionStatus[T::Index]);
@@ -249,7 +257,8 @@ class MAGNUM_EXPORT Context {
          * hardware, but for general usage prefer isExtensionSupported() const,
          * as it does most operations in compile time.
          *
-         * @see supportedExtensions(), Extension::extensions()
+         * @see supportedExtensions(), Extension::extensions(),
+         *      MAGNUM_ASSERT_EXTENSION_SUPPORTED()
          */
         inline bool isExtensionSupported(const Extension& extension) const {
             return isVersionSupported(extension._coreVersion) || (isVersionSupported(extension._requiredVersion) && extensionStatus[extension._index]);
@@ -271,6 +280,65 @@ class MAGNUM_EXPORT Context {
 
         Implementation::State* _state;
 };
+
+/** @hideinitializer
+@brief Assert that given OpenGL version is supported
+@param version      Version
+
+Useful for initial checks on availability of required features.
+
+By default, if assertion fails, an message is printed to error output and the
+application exits with value `-3`. If `CORRADE_NO_ASSERT` is defined, this
+macro does nothing. Example usage:
+@code
+MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
+@endcode
+
+@see @ref Magnum::Context::isVersionSupported() "Context::isVersionSupported()",
+    MAGNUM_ASSERT_EXTENSION_SUPPORTED(), CORRADE_ASSERT(),
+    CORRADE_INTERNAL_ASSERT()
+*/
+#ifdef CORRADE_NO_ASSERT
+#define MAGNUM_ASSERT_VERSION_SUPPORTED(version) do {} while(0)
+#else
+#define MAGNUM_ASSERT_VERSION_SUPPORTED(version)                            \
+    do {                                                                    \
+        if(!Context::current()->isVersionSupported(version)) {    \
+            Corrade::Utility::Error() << "Magnum: required version" << version << "is not supported"; \
+            exit(-3);                                                       \
+        }                                                                   \
+    } while(0)
+#endif
+
+/** @hideinitializer
+@brief Assert that given OpenGL extension is supported
+@param extension    Extension name (from @ref Magnum::Extensions "Extensions"
+    namespace)
+
+Useful for initial checks on availability of required features.
+
+By default, if assertion fails, an message is printed to error output and the
+application exits with value `-3`. If `CORRADE_NO_ASSERT` is defined, this
+macro does nothing. Example usage:
+@code
+MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
+@endcode
+
+@see @ref Magnum::Context::isExtensionSupported() "Context::isExtensionSupported()",
+    MAGNUM_ASSERT_VERSION_SUPPORTED(), CORRADE_ASSERT(),
+    CORRADE_INTERNAL_ASSERT()
+*/
+#ifdef CORRADE_NO_ASSERT
+#define MAGNUM_ASSERT_EXTENSION_SUPPORTED(extension) do {} while(0)
+#else
+#define MAGNUM_ASSERT_EXTENSION_SUPPORTED(extension)                        \
+    do {                                                                    \
+        if(!Context::current()->isExtensionSupported<extension>()) { \
+            Corrade::Utility::Error() << "Magnum: required extension" << extension::string() << "is not supported"; \
+            exit(-3);                                                       \
+        }                                                                   \
+    } while(0)
+#endif
 
 }
 

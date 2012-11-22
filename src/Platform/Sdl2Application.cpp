@@ -20,15 +20,29 @@
 
 namespace Magnum { namespace Platform {
 
+namespace {
+
+/*
+ * Fix up the modifiers -- we want >= operator to work properly on Shift,
+ * Ctrl, Alt, but SDL generates different event for left / right keys, thus
+ * (modifiers >= Shift) would pass only if both left and right were pressed,
+ * which is usually not what the developers wants.
+ */
+Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
+    Sdl2Application::InputEvent::Modifiers modifiers(static_cast<Sdl2Application::InputEvent::Modifier>(mod));
+    if(modifiers & Sdl2Application::InputEvent::Modifier::Shift) modifiers |= Sdl2Application::InputEvent::Modifier::Shift;
+    if(modifiers & Sdl2Application::InputEvent::Modifier::Ctrl) modifiers |= Sdl2Application::InputEvent::Modifier::Ctrl;
+    if(modifiers & Sdl2Application::InputEvent::Modifier::Alt) modifiers |= Sdl2Application::InputEvent::Modifier::Alt;
+    return modifiers;
+}
+
+}
+
 Sdl2Application::Sdl2Application(int, char**, const std::string& name, const Math::Vector2<GLsizei>& size): _redraw(true) {
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         Error() << "Cannot initialize SDL.";
         exit(1);
     }
-
-    /* Request OpenGL 3.2 */
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 
     /* Enable double buffering and 24bt depth buffer */
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -85,20 +99,7 @@ int Sdl2Application::exec() {
 
                 case SDL_KEYDOWN:
                 case SDL_KEYUP: {
-                    /*
-                     * Fix up the modifiers -- we want >= operator to work
-                     * properly on Shift, Ctrl, Alt, but SDL generates
-                     * different event for left / right keys, thus
-                     * (modifiers >= Shift) would pass only if both left and
-                     * right were pressed, which is usually not what the
-                     * developers wants.
-                     */
-                    InputEvent::Modifiers modifiers(static_cast<InputEvent::Modifier>(event.key.keysym.mod));
-                    if(modifiers & InputEvent::Modifier::Shift) modifiers |= InputEvent::Modifier::Shift;
-                    if(modifiers & InputEvent::Modifier::Ctrl) modifiers |= InputEvent::Modifier::Ctrl;
-                    if(modifiers & InputEvent::Modifier::Alt) modifiers |= InputEvent::Modifier::Alt;
-
-                    KeyEvent e(static_cast<KeyEvent::Key>(event.key.keysym.sym), modifiers);
+                    KeyEvent e(static_cast<KeyEvent::Key>(event.key.keysym.sym), fixedModifiers(event.key.keysym.mod));
                     event.type == SDL_KEYDOWN ? keyPressEvent(e) : keyReleaseEvent(e);
                     break;
                 }
@@ -143,13 +144,13 @@ void Sdl2Application::setMouseLocked(bool enabled) {
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseEvent::modifiers() {
     if(modifiersLoaded) return _modifiers;
     modifiersLoaded = true;
-    return _modifiers = static_cast<Modifier>(SDL_GetModState());
+    return _modifiers = fixedModifiers(SDL_GetModState());
 }
 
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseMoveEvent::modifiers() {
     if(modifiersLoaded) return _modifiers;
     modifiersLoaded = true;
-    return _modifiers = static_cast<Modifier>(SDL_GetModState());
+    return _modifiers = fixedModifiers(SDL_GetModState());
 }
 
 }}

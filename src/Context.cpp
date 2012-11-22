@@ -27,10 +27,35 @@
 #include "IndexedMesh.h"
 #include "Mesh.h"
 #include "Implementation/State.h"
+#include "DebugMarker.h"
 
 using namespace std;
 
 namespace Magnum {
+
+Debug operator<<(Debug debug, Version value) {
+    switch(value) {
+        #define _c(value, string) case Version::value: return debug << string;
+        _c(None, "None")
+        #ifndef MAGNUM_TARGET_GLES
+        _c(GL210, "OpenGL 2.1")
+        _c(GL300, "OpenGL 3.0")
+        _c(GL310, "OpenGL 3.1")
+        _c(GL320, "OpenGL 3.2")
+        _c(GL330, "OpenGL 3.3")
+        _c(GL400, "OpenGL 4.0")
+        _c(GL410, "OpenGL 4.1")
+        _c(GL420, "OpenGL 4.2")
+        _c(GL430, "OpenGL 4.3")
+        #else
+        _c(GLES200, "OpenGL ES 2.0")
+        _c(GLES300, "OpenGL ES 3.0")
+        #endif
+        #undef _c
+    }
+
+    return debug << "Invalid";
+}
 
 const std::vector<Extension>& Extension::extensions(Version version) {
     #define _extension(prefix, vendor, extension)                           \
@@ -38,7 +63,11 @@ const std::vector<Extension>& Extension::extensions(Version version) {
     static const std::vector<Extension> empty;
     #ifndef MAGNUM_TARGET_GLES
     static const std::vector<Extension> extensions{
-        _extension(GL,EXT,texture_filter_anisotropic)};
+        _extension(GL,AMD,vertex_shader_layer),
+        _extension(GL,AMD,shader_trinary_minmax),
+        _extension(GL,EXT,texture_filter_anisotropic),
+        _extension(GL,EXT,direct_state_access),
+        _extension(GL,GREMEDY,string_marker)};
     static const std::vector<Extension> extensions300{
         _extension(GL,APPLE,flush_buffer_range),
         _extension(GL,APPLE,vertex_array_object),
@@ -248,6 +277,7 @@ Context::Context() {
     #ifndef MAGNUM_TARGET_GLES
     BufferedTexture::initializeContextBasedFunctionality(this);
     #endif
+    DebugMarker::initializeContextBasedFunctionality(this);
     IndexedMesh::initializeContextBasedFunctionality(this);
     Mesh::initializeContextBasedFunctionality(this);
 }

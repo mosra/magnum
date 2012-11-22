@@ -43,7 +43,7 @@ template<std::uint8_t dimensions> ShapeGroup<dimensions>& ShapeGroup<dimensions>
     return *this;
 }
 
-template<std::uint8_t dimensions> void ShapeGroup<dimensions>::applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) {
+template<std::uint8_t dimensions> void ShapeGroup<dimensions>::applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) {
     if(a) a->applyTransformation(transformation);
     if(b) b->applyTransformation(transformation);
 }

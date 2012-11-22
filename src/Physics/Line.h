@@ -35,46 +35,46 @@ namespace Magnum { namespace Physics {
 template<std::uint8_t dimensions> class PHYSICS_EXPORT Line: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Line(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a, const typename DimensionTraits<dimensions, GLfloat>::VectorType& b): _a(a), _transformedA(a), _b(b), _transformedB(b) {}
+        inline Line(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b): _a(a), _transformedA(a), _b(b), _transformedB(b) {}
 
         inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::Line;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
+        void applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) override;
 
         /** @brief First point */
-        inline typename DimensionTraits<dimensions, GLfloat>::VectorType a() const {
+        inline typename DimensionTraits<dimensions>::VectorType a() const {
             return _a;
         }
 
         /** @brief Second point */
-        inline typename DimensionTraits<dimensions, GLfloat>::VectorType b() const {
+        inline typename DimensionTraits<dimensions>::VectorType b() const {
             return _a;
         }
 
         /** @brief Set first point */
-        inline void setA(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a) {
+        inline void setA(const typename DimensionTraits<dimensions>::VectorType& a) {
             _a = a;
         }
 
         /** @brief Set second point */
-        inline void setB(const typename DimensionTraits<dimensions, GLfloat>::VectorType& b) {
+        inline void setB(const typename DimensionTraits<dimensions>::VectorType& b) {
             _b = b;
         }
 
         /** @brief Transformed first point */
-        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedA() const {
+        inline typename DimensionTraits<dimensions>::VectorType transformedA() const {
             return _transformedA;
         }
 
         /** @brief Transformed second point */
-        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedB() const {
+        inline typename DimensionTraits<dimensions>::VectorType transformedB() const {
             return _transformedB;
         }
 
     private:
-        Math::Vector<dimensions, GLfloat> _a, _transformedA,
+        typename DimensionTraits<dimensions>::VectorType _a, _transformedA,
             _b, _transformedB;
 };
 

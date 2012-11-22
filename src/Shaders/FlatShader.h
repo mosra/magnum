@@ -38,7 +38,7 @@ Draws whole mesh with one color.
 template<std::uint8_t dimensions> class SHADERS_EXPORT FlatShader: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
-        typedef Attribute<0, typename DimensionTraits<dimensions, GLfloat>::PointType> Position;
+        typedef Attribute<0, typename DimensionTraits<dimensions>::PointType> Position;
 
         FlatShader();
 
@@ -46,7 +46,7 @@ template<std::uint8_t dimensions> class SHADERS_EXPORT FlatShader: public Abstra
          * @brief Set transformation and projection matrix
          * @return Pointer to self (for method chaining)
          */
-        FlatShader<dimensions>* setTransformationProjection(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& matrix) {
+        FlatShader<dimensions>* setTransformationProjection(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
             setUniform(transformationProjectionUniform, matrix);
             return this;
         }
@@ -55,7 +55,7 @@ template<std::uint8_t dimensions> class SHADERS_EXPORT FlatShader: public Abstra
          * @brief Set color
          * @return Pointer to self (for method chaining)
          */
-        FlatShader<dimensions>* setColor(const Color3<GLfloat>& color) {
+        FlatShader<dimensions>* setColor(const Color3<>& color) {
             setUniform(colorUniform, color);
             return this;
         }

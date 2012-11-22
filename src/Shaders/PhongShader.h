@@ -46,7 +46,7 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
          *
          * If not set, default value is `(0.0f, 0.0f, 0.0f)`.
          */
-        inline PhongShader* setAmbientColor(const Color3<GLfloat>& color) {
+        inline PhongShader* setAmbientColor(const Color3<>& color) {
             setUniform(ambientColorUniform, color);
             return this;
         }
@@ -55,7 +55,7 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
          * @brief Set diffuse color
          * @return Pointer to self (for method chaining)
          */
-        inline PhongShader* setDiffuseColor(const Color3<GLfloat>& color) {
+        inline PhongShader* setDiffuseColor(const Color3<>& color) {
             setUniform(diffuseColorUniform, color);
             return this;
         }
@@ -66,7 +66,7 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
          */
-        inline PhongShader* setSpecularColor(const Color3<GLfloat>& color) {
+        inline PhongShader* setSpecularColor(const Color3<>& color) {
             setUniform(specularColorUniform, color);
             return this;
         }
@@ -117,7 +117,7 @@ class SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
          */
-        inline PhongShader* setLightColor(const Color3<GLfloat>& color) {
+        inline PhongShader* setLightColor(const Color3<>& color) {
             setUniform(lightColorUniform, color);
             return this;
         }

@@ -38,7 +38,7 @@ template<std::uint8_t dimensions> class AbstractDebugRenderer {
 
         virtual ~AbstractDebugRenderer();
 
-        virtual void draw(Resource<Options>& options, const typename DimensionTraits<dimensions>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, GLfloat>* camera) = 0;
+        virtual void draw(Resource<Options>& options, const typename DimensionTraits<dimensions>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions>* camera) = 0;
 
     protected:
         Resource<AbstractShaderProgram, Shaders::FlatShader<dimensions>> shader;

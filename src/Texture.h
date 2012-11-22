@@ -203,7 +203,7 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
             return this;
         }
         #ifndef MAGNUM_TARGET_GLES
-        inline Texture<Dimensions>* setBorderColor(const Color4<GLfloat>& color) {
+        inline Texture<Dimensions>* setBorderColor(const Color4<>& color) {
             AbstractTexture::setBorderColor(color);
             return this;
         }

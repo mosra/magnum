@@ -677,7 +677,7 @@ class MAGNUM_EXPORT AbstractTexture {
          *      with @def_gl{TEXTURE_BORDER_COLOR}
          * @requires_gl Texture border is not available in OpenGL ES.
          */
-        inline AbstractTexture* setBorderColor(const Color4<GLfloat>& color) {
+        inline AbstractTexture* setBorderColor(const Color4<>& color) {
             (this->*parameterfvImplementation)(GL_TEXTURE_BORDER_COLOR, color.data());
             return this;
         }

@@ -121,7 +121,7 @@ class CubeMapTexture: public AbstractTexture {
             return this;
         }
         #ifndef MAGNUM_TARGET_GLES
-        inline CubeMapTexture* setBorderColor(const Color4<GLfloat>& color) {
+        inline CubeMapTexture* setBorderColor(const Color4<>& color) {
             AbstractTexture::setBorderColor(color);
             return this;
         }

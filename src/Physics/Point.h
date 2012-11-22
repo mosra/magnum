@@ -34,31 +34,31 @@ namespace Magnum { namespace Physics {
 template<std::uint8_t dimensions> class PHYSICS_EXPORT Point: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Point(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position): _position(position), _transformedPosition(position) {}
+        inline Point(const typename DimensionTraits<dimensions>::VectorType& position): _position(position), _transformedPosition(position) {}
 
         inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::Point;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
+        void applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) override;
 
         /** @brief Position */
-        inline typename DimensionTraits<dimensions, GLfloat>::VectorType position() const {
+        inline typename DimensionTraits<dimensions>::VectorType position() const {
             return _position;
         }
 
         /** @brief Set position */
-        inline void setPosition(const typename DimensionTraits<dimensions, GLfloat>::VectorType& position) {
+        inline void setPosition(const typename DimensionTraits<dimensions>::VectorType& position) {
             _position = position;
         }
 
         /** @brief Transformed position */
-        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedPosition() const {
+        inline typename DimensionTraits<dimensions>::VectorType transformedPosition() const {
             return _transformedPosition;
         }
 
     private:
-        Math::Vector<dimensions, GLfloat> _position, _transformedPosition;
+        typename DimensionTraits<dimensions>::VectorType _position, _transformedPosition;
 };
 
 /** @brief Two-dimensional point */

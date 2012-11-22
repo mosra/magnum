@@ -114,8 +114,8 @@ typedef BufferedImage<3> BufferedImage3D;
 class BufferedTexture;
 #endif
 
-template<class> class Color3;
-template<class> class Color4;
+template<class = GLfloat> class Color3;
+template<class = GLfloat> class Color4;
 
 #ifndef CORRADE_GCC45_COMPATIBILITY
 enum class Version: GLint;

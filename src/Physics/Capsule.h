@@ -37,33 +37,33 @@ applying transformation, the scale factor is averaged from all axes.
 template<std::uint8_t dimensions> class PHYSICS_EXPORT Capsule: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Capsule(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a, const typename DimensionTraits<dimensions, GLfloat>::VectorType& b, float radius): _a(a), _transformedA(a), _b(b), _transformedB(b), _radius(radius), _transformedRadius(radius) {}
+        inline Capsule(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b, float radius): _a(a), _transformedA(a), _b(b), _transformedB(b), _radius(radius), _transformedRadius(radius) {}
 
         inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::Capsule;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformation) override;
+        void applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) override;
 
         bool collides(const AbstractShape<dimensions>* other) const override;
 
         /** @brief Start point */
-        inline typename DimensionTraits<dimensions, GLfloat>::VectorType a() const {
+        inline typename DimensionTraits<dimensions>::VectorType a() const {
             return _a;
         }
 
         /** @brief End point */
-        inline typename DimensionTraits<dimensions, GLfloat>::VectorType b() const {
+        inline typename DimensionTraits<dimensions>::VectorType b() const {
             return _a;
         }
 
         /** @brief Set start point */
-        inline void setA(const typename DimensionTraits<dimensions, GLfloat>::VectorType& a) {
+        inline void setA(const typename DimensionTraits<dimensions>::VectorType& a) {
             _a = a;
         }
 
         /** @brief Set end point */
-        inline void setB(const typename DimensionTraits<dimensions, GLfloat>::VectorType& b) {
+        inline void setB(const typename DimensionTraits<dimensions>::VectorType& b) {
             _b = b;
         }
 
@@ -74,12 +74,12 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Capsule: public AbstractS
         inline void setRadius(float radius) { _radius = radius; }
 
         /** @brief Transformed first point */
-        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedA() const {
+        inline typename DimensionTraits<dimensions>::VectorType transformedA() const {
             return _transformedA;
         }
 
         /** @brief Transformed second point */
-        inline typename DimensionTraits<dimensions, GLfloat>::VectorType transformedB() const {
+        inline typename DimensionTraits<dimensions>::VectorType transformedB() const {
             return _transformedB;
         }
 
@@ -95,7 +95,7 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Capsule: public AbstractS
         bool operator%(const Sphere<dimensions>& other) const;
 
     private:
-        Math::Vector<dimensions, GLfloat> _a, _transformedA,
+        typename DimensionTraits<dimensions>::VectorType _a, _transformedA,
             _b, _transformedB;
         float _radius, _transformedRadius;
 };

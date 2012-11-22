@@ -27,7 +27,7 @@ template<std::uint8_t dimensions> class BoxRenderer: public AbstractBoxRenderer<
     public:
         inline BoxRenderer(Box<dimensions>& box): box(box) {}
 
-        void draw(Resource<Options>& options, const typename DimensionTraits<dimensions>::MatrixType& transformation, typename SceneGraph::AbstractCamera<dimensions, GLfloat>* camera) override;
+        void draw(Resource<Options>& options, const typename DimensionTraits<dimensions>::MatrixType& transformation, typename SceneGraph::AbstractCamera<dimensions>* camera) override;
 
     private:
         Box<dimensions>& box;
