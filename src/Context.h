@@ -144,19 +144,34 @@ class MAGNUM_EXPORT Context {
         /** @brief Current context */
         inline static Context* current() { return _current; }
 
-        /** @brief OpenGL version */
+        /**
+         * @brief OpenGL version
+         *
+         * @see majorVersion(), minorVersion(), versionString(),
+         *      shadingLanguageVersionString()
+         */
         inline Version version() const { return _version; }
 
-        /** @brief Major OpenGL version (e.g. `4`) */
+        /**
+         * @brief Major OpenGL version (e.g. `4`)
+         *
+         * @see minorVersion(), version(), versionString(),
+         *      shadingLanguageVersionString()
+         */
         inline GLint majorVersion() const { return _majorVersion; }
 
-        /** @brief Minor OpenGL version (e.g. `3`) */
+        /**
+         * @brief Minor OpenGL version (e.g. `3`)
+         *
+         * @see majorVersion(), version(), versionString(),
+         *      shadingLanguageVersionString()
+         */
         inline GLint minorVersion() const { return _minorVersion; }
 
         /**
          * @brief Vendor string
          *
-         * @see @fn_gl{GetString} with @def_gl{VENDOR}
+         * @see rendererString(), @fn_gl{GetString} with @def_gl{VENDOR}
          */
         inline std::string vendorString() const {
             return reinterpret_cast<const char*>(glGetString(GL_VENDOR));
@@ -165,7 +180,7 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Renderer string
          *
-         * @see @fn_gl{GetString} with @def_gl{RENDERER}
+         * @see vendorString(), @fn_gl{GetString} with @def_gl{RENDERER}
          */
         inline std::string rendererString() const {
             return reinterpret_cast<const char*>(glGetString(GL_RENDERER));
@@ -174,7 +189,8 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Version string
          *
-         * @see @fn_gl{GetString} with @def_gl{VERSION}
+         * @see shadingLanguageVersionString(), version(), @fn_gl{GetString}
+         *      with @def_gl{VERSION}
          */
         inline std::string versionString() const {
             return reinterpret_cast<const char*>(glGetString(GL_VERSION));
@@ -183,7 +199,8 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Shading language version string
          *
-         * @see @fn_gl{GetString} with @def_gl{SHADING_LANGUAGE_VERSION}
+         * @see versionString(), version(), @fn_gl{GetString} with
+         *      @def_gl{SHADING_LANGUAGE_VERSION}
          */
         inline std::string shadingLanguageVersionString() const {
             return reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
