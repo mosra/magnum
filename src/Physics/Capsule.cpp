@@ -30,7 +30,7 @@ namespace Magnum { namespace Physics {
 template<std::uint8_t dimensions> void Capsule<dimensions>::applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) {
     _transformedA = (transformation*typename DimensionTraits<dimensions>::PointType(_a)).vector();
     _transformedB = (transformation*typename DimensionTraits<dimensions>::PointType(_b)).vector();
-    float scaling = (transformation.rotationScaling()*typename DimensionTraits<dimensions>::VectorType(1/Math::Constants<float>::sqrt3())).length();
+    float scaling = (transformation.rotationScaling()*typename DimensionTraits<dimensions>::VectorType(1/Constants::sqrt3())).length();
     _transformedRadius = scaling*_radius;
 }
 

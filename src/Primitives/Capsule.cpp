@@ -27,13 +27,13 @@ Capsule::Capsule(std::uint32_t hemisphereRings, std::uint32_t cylinderRings, std
 
     GLfloat height = 2.0f+length;
     GLfloat hemisphereTextureCoordsVIncrement = 1.0f/(hemisphereRings*height);
-    GLfloat hemisphereRingAngleIncrement = Math::Constants<GLfloat>::pi()/(2*hemisphereRings);
+    GLfloat hemisphereRingAngleIncrement = Constants::pi()/(2*hemisphereRings);
 
     /* Bottom cap vertex */
     capVertex(-height/2, -1.0f, 0.0f);
 
     /* Rings of bottom hemisphere */
-    hemisphereVertexRings(hemisphereRings-1, -length/2, -Math::Constants<GLfloat>::pi()/2+hemisphereRingAngleIncrement, hemisphereRingAngleIncrement, hemisphereTextureCoordsVIncrement, hemisphereTextureCoordsVIncrement);
+    hemisphereVertexRings(hemisphereRings-1, -length/2, -Constants::pi()/2+hemisphereRingAngleIncrement, hemisphereRingAngleIncrement, hemisphereTextureCoordsVIncrement, hemisphereTextureCoordsVIncrement);
 
     /* Rings of cylinder */
     cylinderVertexRings(cylinderRings+1, -length/2, length/cylinderRings, 1.0f/height, length/(cylinderRings*height));
@@ -61,7 +61,7 @@ void Capsule::capVertex(GLfloat y, GLfloat normalY, GLfloat textureCoordsV) {
 }
 
 void Capsule::hemisphereVertexRings(uint32_t count, GLfloat centerY, GLfloat startRingAngle, GLfloat ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement) {
-    GLfloat segmentAngleIncrement = 2*Math::Constants<GLfloat>::pi()/segments;
+    GLfloat segmentAngleIncrement = 2*Constants::pi()/segments;
     GLfloat x, y, z;
     for(uint32_t i = 0; i != count; ++i) {
         GLfloat ringAngle = startRingAngle + i*ringAngleIncrement;
@@ -87,7 +87,7 @@ void Capsule::hemisphereVertexRings(uint32_t count, GLfloat centerY, GLfloat sta
 }
 
 void Capsule::cylinderVertexRings(uint32_t count, GLfloat startY, GLfloat yIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement) {
-    GLfloat segmentAngleIncrement = 2*Math::Constants<GLfloat>::pi()/segments;
+    GLfloat segmentAngleIncrement = 2*Constants::pi()/segments;
     for(uint32_t i = 0; i != count; ++i) {
         for(uint32_t j = 0; j != segments; ++j) {
             GLfloat segmentAngle = j*segmentAngleIncrement;

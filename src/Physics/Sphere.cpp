@@ -31,11 +31,11 @@ namespace {
     template<std::uint8_t dimensions> static typename DimensionTraits<dimensions>::VectorType unitVector();
 
     template<> inline Vector2 unitVector<2>() {
-        return Vector2(1/Math::Constants<float>::sqrt2());
+        return Vector2(1/Constants::sqrt2());
     }
 
     template<> inline Vector3 unitVector<3>() {
-        return Vector3(1/Math::Constants<float>::sqrt3());
+        return Vector3(1/Constants::sqrt3());
     }
 }
 
