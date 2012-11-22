@@ -54,18 +54,20 @@ namespace Corrade {
 }
 
 namespace Magnum {
-    namespace Math {
-        template<class> class Vector2;
-        template<class> class Vector3;
-        template<class> class Vector4;
-        template<class> class Point2D;
-        template<class> class Point3D;
-        template<class> class Matrix3;
-        template<class> class Matrix4;
 
-        template<class T> constexpr T deg(T value);
-        template<class T> constexpr T rad(T value);
-    }
+namespace Math {
+    template<class> class Vector2;
+    template<class> class Vector3;
+    template<class> class Vector4;
+    template<class> class Point2D;
+    template<class> class Point3D;
+    template<class> class Matrix3;
+    template<class> class Matrix4;
+
+    template<class T> constexpr T deg(T value);
+    template<class T> constexpr T rad(T value);
+    template<class T> struct Constants;
+}
 
 /* Bring debugging facility from Corrade::Utility namespace */
 using Corrade::Utility::Debug;
@@ -92,6 +94,10 @@ typedef Math::Matrix3<GLfloat> Matrix3;
 
 /** @brief 4x4 floating-point matrix */
 typedef Math::Matrix4<GLfloat> Matrix4;
+
+/** @brief Floating-point constants */
+/* Using float instead of GLfloat to not break KDevelop autocompletion */
+typedef Math::Constants<float> Constants;
 
 /* Copying angle converters from Math namespace */
 using Math::deg;
@@ -121,14 +127,16 @@ template<class = GLfloat> class Color4;
 enum class Version: GLint;
 #endif
 class Context;
-class Extension;
-
 class CubeMapTexture;
 
 #ifndef MAGNUM_TARGET_GLES
 class CubeMapTextureArray;
 #endif
 
+/* DebugMarker forward declaration is not needed */
+/* DimensionTraits forward declaration is not needed */
+
+class Extension;
 class Framebuffer;
 
 template<std::uint8_t> class Image;

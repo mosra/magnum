@@ -45,8 +45,8 @@ void SphereTest::applyTransformation() {
     CORRADE_COMPARE(sphere.transformedRadius(), 14.0f);
 
     /* Apply average scaling to radius */
-    sphere.applyTransformation(Matrix4::scaling({Math::Constants<GLfloat>::sqrt3(), -Math::Constants<GLfloat>::sqrt2(), 2.0f}));
-    CORRADE_COMPARE(sphere.transformedRadius(), Math::Constants<GLfloat>::sqrt3()*7.0f);
+    sphere.applyTransformation(Matrix4::scaling({Constants::sqrt3(), -Constants::sqrt2(), 2.0f}));
+    CORRADE_COMPARE(sphere.transformedRadius(), Constants::sqrt3()*7.0f);
 }
 
 void SphereTest::collisionPoint() {

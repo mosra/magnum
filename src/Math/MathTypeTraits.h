@@ -47,13 +47,15 @@ specialization for given types.
 This class and class methods are specialized only for types where it makes
 sense, it has empty implementation for unknown types or types which don't
 support given feature, thus forcing the compilation stop with an error.
-
-@internal The following values are implemented as inline functions, not as
-    static const variables, because the compiler will inline the return values
-    instead of referencing to static data and unlike static const variables
-    the functions can be overloaded, deleted and hidden.
 */
 template<class T> struct MathTypeTraits {
+    /*
+     * The following values are implemented as inline functions, not as
+     * static const variables, because the compiler will inline the return
+     * values instead of referencing to static data and unlike static const
+     * variables the functions can be overloaded, deleted and hidden.
+     */
+
     #ifdef DOXYGEN_GENERATING_OUTPUT
     /**
      * @brief Corresponding numeric type large at least as 32bit integer

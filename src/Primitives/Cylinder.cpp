@@ -49,7 +49,7 @@ Cylinder::Cylinder(uint32_t rings, uint32_t segments, GLfloat length, Flags flag
 }
 
 void Cylinder::capVertexRing(GLfloat y, GLfloat textureCoordsV, const Vector3& normal) {
-    GLfloat segmentAngleIncrement = 2*Math::Constants<GLfloat>::pi()/segments;
+    GLfloat segmentAngleIncrement = 2*Constants::pi()/segments;
 
     for(uint32_t i = 0; i != segments; ++i) {
         GLfloat segmentAngle = i*segmentAngleIncrement;

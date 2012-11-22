@@ -33,6 +33,7 @@ using namespace std;
 
 namespace Magnum {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug operator<<(Debug debug, Version value) {
     switch(value) {
         #define _c(value, string) case Version::value: return debug << string;
@@ -56,6 +57,7 @@ Debug operator<<(Debug debug, Version value) {
 
     return debug << "Invalid";
 }
+#endif
 
 const std::vector<Extension>& Extension::extensions(Version version) {
     #define _extension(prefix, vendor, extension)                           \

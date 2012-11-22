@@ -29,7 +29,7 @@ namespace Magnum { namespace Math {
 
 Same as Vector3, except that constructors have default value for Z component
 set to one. See also @ref matrix-vector for brief introduction.
-@see Point3D
+@see Magnum::Point2D, Point3D
 @configurationvalueref{Magnum::Math::Point2D}
 */
 template<class T> class Point2D: public Vector3<T> {

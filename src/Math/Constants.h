@@ -24,9 +24,10 @@ namespace Magnum { namespace Math {
 /**
 @brief Numeric constants
 
-@internal See MathTypeTraits class for implementation notes.
+@see Magnum::Constants
 */
 template<class T> struct Constants {
+    /* See MathTypeTraits for answer why these are functions and not constants. */
     #ifdef DOXYGEN_GENERATING_OUTPUT
     /**
      * @brief Pi
@@ -63,6 +64,8 @@ Usable for entering e.g. rotation:
 @code
 Matrix4::rotation(deg(30.0f), Vector3::yAxis());
 @endcode
+
+This function (and also rad()) is available also in Magnum namespace itself.
 @see Constants, rad()
  */
 template<class T> inline constexpr T deg(T value) { return value*Constants<T>::pi()/180; }
