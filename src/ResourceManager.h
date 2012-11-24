@@ -139,6 +139,9 @@ namespace Implementation {
                 ++_lastChange;
             }
 
+            inline T* fallback() { return _fallback; }
+            inline const T* fallback() const { return _fallback; }
+
             inline void setFallback(T* data) {
                 delete _fallback;
                 _fallback = data;
@@ -152,8 +155,6 @@ namespace Implementation {
                     else ++it;
                 }
             }
-
-            inline T* fallback() const { return _fallback; }
 
         protected:
             inline ResourceManagerData(): _fallback(nullptr), _lastChange(0) {}
@@ -362,6 +363,16 @@ template<class... Types> class ResourceManager: protected Implementation::Resour
          */
         template<class T> inline void set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
             this->Implementation::ResourceManagerData<T>::set(key, data, state, policy);
+        }
+
+        /** @brief Fallback for not found resources */
+        template<class T> inline T* fallback() {
+            return this->Implementation::ResourceManagerData<T>::fallback();
+        }
+
+        /** @overload */
+        template<class T> inline const T* fallback() const {
+            return this->Implementation::ResourceManagerData<T>::fallback();
         }
 
         /** @brief Set fallback for not found resources */
