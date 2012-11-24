@@ -104,6 +104,15 @@ Collision detection system and rigid body objects. See @ref collision-detection
 for introduction.
 */
 
+/** @dir Text
+ * @brief Namespace Magnum::Text
+ */
+/** @namespace Magnum::Text
+@brief %Text rendering
+
+Font texture creation and text layouting.
+*/
+
 /** @dir TextureTools
  * @brief Namespace Magnum::TextureTools
  */

@@ -162,6 +162,10 @@ if(WITH_SHADERS)
     add_subdirectory(Shaders)
 endif()
 
+if(WITH_TEXT)
+    add_subdirectory(Text)
+endif()
+
 if(WITH_TEXTURETOOLS)
     add_subdirectory(TextureTools)
 endif()

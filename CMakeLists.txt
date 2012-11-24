@@ -15,6 +15,7 @@ cmake_dependent_option(WITH_PHYSICS "Build Physics library" OFF "NOT WITH_EVERYT
 cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" OFF "NOT WITH_EVERYTHING;NOT WITH_DEBUGTOOLS" ON)
 cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" OFF "NOT WITH_EVERYTHING;NOT WITH_DEBUGTOOLS" ON)
 cmake_dependent_option(WITH_SHADERS "Build Shaders library" OFF "NOT WITH_EVERYTHING;NOT WITH_DEBUGTOOLS" ON)
+cmake_dependent_option(WITH_TEXT "Build Text library" OFF "NOT WITH_EVERYTHING" ON)
 cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" OFF "NOT WITH_EVERYTHING" ON)
 
 cmake_dependent_option(WITH_MAGNUMINFO "Build magnum-info utility" OFF "NOT WITH_EVERYTHING" ON)
