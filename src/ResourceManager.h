@@ -28,7 +28,7 @@ namespace Magnum {
 /** @relates ResourceManager
  * @brief %Resource data state
  *
- * @see ResourceManager::set()
+ * @see ResourceManager::set(), ResourceState
  */
 enum class ResourceDataState: std::uint8_t {
     /**
@@ -37,14 +37,14 @@ enum class ResourceDataState: std::uint8_t {
      * the data are accessed, but allows changing the data for e.g. debugging
      * purposes.
      */
-    Mutable = int(ResourceState::Mutable),
+    Mutable = std::uint8_t(ResourceState::Mutable),
 
     /**
      * The resource cannot be changed by the manager in the future. This is
      * faster, as Resource instances will ask for the data only one time, thus
      * suitable for production code.
      */
-    Final = int(ResourceState::Final)
+    Final = std::uint8_t(ResourceState::Final)
 };
 
 /** @relates ResourceManager
@@ -113,7 +113,8 @@ namespace Implementation {
                 auto it = _data.find(key);
 
                 /* Cannot change resource with already final state */
-                CORRADE_ASSERT(it == _data.end() || it->second.state != ResourceDataState::Final, "ResourceManager: cannot change already final resource", );
+                CORRADE_ASSERT(it == _data.end() || it->second.state != ResourceDataState::Final,
+                    "ResourceManager: cannot change already final resource", );
 
                 /* If nothing is referencing reference-counted resource, we're done */
                 if(policy == ResourcePolicy::ReferenceCounted && (it == _data.end() || it->second.referenceCount == 0)) {
@@ -358,7 +359,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * }
          * @endcode
          * @attention If resource state is already `ResourceState::Final`,
-         * subsequent updates are not possible.
+         *      subsequent updates are not possible.
          * @see referenceCount(), state()
          */
         template<class T> inline void set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
