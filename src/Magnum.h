@@ -155,7 +155,8 @@ class Renderbuffer;
 enum class ResourceState: std::uint8_t;
 enum class ResourceDataState: std::uint8_t;
 enum class ResourcePolicy: std::uint8_t;
-template<class, class> class Resource;
+template<class T, class U = T> class Resource;
+class ResourceKey;
 template<class...> class ResourceManager;
 
 class Shader;

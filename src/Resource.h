@@ -19,6 +19,8 @@
  * @brief Class Magnum::ResourceKey, Magnum::Resource, enum Magnum::ResourceState, Magnum::ResourceDataState, Magnum::ResourcePolicy
  */
 
+#include "Magnum.h"
+
 namespace Magnum {
 
 /** @relates ResourceManager
@@ -118,7 +120,12 @@ namespace Implementation {
 
 See ResourceManager for more information.
 */
-template<class T, class U = T> class Resource {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T, class U>
+#else
+template<class T, class U = T>
+#endif
+class Resource {
     friend class Implementation::ResourceManagerData<T>;
 
     public:
