@@ -30,6 +30,7 @@ class ResourceManagerTest: public Corrade::TestSuite::Tester<ResourceManagerTest
         void residentPolicy();
         void referenceCountedPolicy();
         void manualPolicy();
+        void loader();
 };
 
 }}

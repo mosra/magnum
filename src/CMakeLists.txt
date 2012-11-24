@@ -51,6 +51,7 @@ endif()
 
 set(Magnum_HEADERS
     AbstractImage.h
+    AbstractResourceLoader.h
     AbstractShaderProgram.h
     AbstractTexture.h
     Buffer.h

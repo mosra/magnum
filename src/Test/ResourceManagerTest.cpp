@@ -17,6 +17,7 @@
 
 #include <sstream>
 
+#include "AbstractResourceLoader.h"
 #include "ResourceManager.h"
 
 using namespace std;
@@ -36,6 +37,18 @@ class Data {
 
 typedef Magnum::ResourceManager<int32_t, Data> ResourceManager;
 
+class IntResourceLoader: public AbstractResourceLoader<std::int32_t> {
+    public:
+        void load(ResourceKey key) override {
+            AbstractResourceLoader::load(key);
+        }
+
+        void load() {
+            set("hello", new std::int32_t(773), ResourceDataState::Final, ResourcePolicy::Resident);
+            setNotFound("world");
+        }
+};
+
 size_t Data::count = 0;
 
 ResourceManagerTest::ResourceManagerTest() {
@@ -45,7 +58,8 @@ ResourceManagerTest::ResourceManagerTest() {
              &ResourceManagerTest::basic,
              &ResourceManagerTest::residentPolicy,
              &ResourceManagerTest::referenceCountedPolicy,
-             &ResourceManagerTest::manualPolicy);
+             &ResourceManagerTest::manualPolicy,
+             &ResourceManagerTest::loader);
 }
 
 void ResourceManagerTest::state() {
@@ -203,6 +217,24 @@ void ResourceManagerTest::manualPolicy() {
     rm.set(dataKey, new Data(), ResourceDataState::Mutable, ResourcePolicy::Manual);
     CORRADE_COMPARE(rm.count<Data>(), 1);
     CORRADE_COMPARE(Data::count, 1);
+}
+
+void ResourceManagerTest::loader() {
+    ResourceManager rm;
+    IntResourceLoader loader;
+    rm.setLoader(&loader);
+
+    Resource<Data> data = rm.get<Data>("data");
+    Resource<std::int32_t> hello = rm.get<std::int32_t>("hello");
+    Resource<std::int32_t> world = rm.get<std::int32_t>("world");
+    CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
+    CORRADE_COMPARE(hello.state(), ResourceState::Loading);
+    CORRADE_COMPARE(world.state(), ResourceState::Loading);
+
+    loader.load();
+    CORRADE_COMPARE(hello.state(), ResourceState::Final);
+    CORRADE_COMPARE(*hello, 773);
+    CORRADE_COMPARE(world.state(), ResourceState::NotFound);
 }
 
 }}

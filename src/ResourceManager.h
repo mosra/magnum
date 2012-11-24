@@ -78,6 +78,8 @@ enum class ResourcePolicy: std::uint8_t {
     ReferenceCounted
 };
 
+template<class> class AbstractResourceLoader;
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     struct ResourceKeyHash {
@@ -88,6 +90,7 @@ namespace Implementation {
 
     template<class T> class ResourceManagerData {
         template<class, class> friend class Resource;
+        friend class AbstractResourceLoader<T>;
 
         ResourceManagerData(const ResourceManagerData<T>&) = delete;
         ResourceManagerData(ResourceManagerData<T>&&) = delete;
@@ -97,6 +100,11 @@ namespace Implementation {
         public:
             inline virtual ~ResourceManagerData() {
                 delete _fallback;
+
+                if(_loader) {
+                    _loader->manager = nullptr;
+                    delete _loader;
+                }
             }
 
             inline std::size_t lastChange() const { return _lastChange; }
@@ -133,6 +141,10 @@ namespace Implementation {
             }
 
             template<class U> inline Resource<T, U> get(ResourceKey key) {
+                /* Ask loader for the data, if they aren't there yet */
+                if(_loader && _data.find(key) == _data.end())
+                    _loader->load(key);
+
                 return Resource<T, U>(this, key);
             }
 
@@ -188,8 +200,20 @@ namespace Implementation {
                 }
             }
 
+            inline AbstractResourceLoader<T>* loader() { return _loader; }
+            inline const AbstractResourceLoader<T>* loader() const { return _loader; }
+
+            inline void setLoader(AbstractResourceLoader<T>* loader) {
+                /* Delete previous loader */
+                delete _loader;
+
+                /* Add new loader */
+                _loader = loader;
+                if(_loader) _loader->manager = this;
+            }
+
         protected:
-            inline ResourceManagerData(): _fallback(nullptr), _lastChange(0) {}
+            inline ResourceManagerData(): _fallback(nullptr), _loader(nullptr), _lastChange(0) {}
 
         private:
             struct Data {
@@ -233,6 +257,7 @@ namespace Implementation {
 
             std::unordered_map<ResourceKey, Data, ResourceKeyHash> _data;
             T* _fallback;
+            AbstractResourceLoader<T>* _loader;
             std::size_t _lastChange;
     };
 }
@@ -422,6 +447,26 @@ template<class... Types> class ResourceManager: private Implementation::Resource
             freeInternal(std::common_type<Types>()...);
         }
 
+        /** @brief Loader for given type of resources */
+        template<class T> inline AbstractResourceLoader<T>* loader() {
+            return this->Implementation::ResourceManagerData<T>::loader();
+        }
+
+        /** @overload */
+        template<class T> inline const AbstractResourceLoader<T>* loader() const {
+            return this->Implementation::ResourceManagerData<T>::loader();
+        }
+
+        /**
+         * @brief Set loader for given type of resources
+         *
+         * The loader will affect only loading of resources requested after
+         * that.
+         */
+        template<class T> inline void setLoader(AbstractResourceLoader<T>* loader) {
+            return this->Implementation::ResourceManagerData<T>::setLoader(loader);
+        }
+
     private:
         template<class FirstType, class ...NextTypes> inline void freeInternal(std::common_type<FirstType>, std::common_type<NextTypes>... t) {
             free<FirstType>();
@@ -441,5 +486,7 @@ template<class ...Types> ResourceManager<Types...>*& ResourceManager<Types...>::
 
 }
 
+/* Make the definition complete */
+#include "AbstractResourceLoader.h"
 
 #endif
