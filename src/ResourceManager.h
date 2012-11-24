@@ -35,35 +35,14 @@ namespace Implementation {
     };
 
     template<class T> class ResourceManagerData {
+        template<class, class> friend class Resource;
+
         ResourceManagerData(const ResourceManagerData<T>&) = delete;
         ResourceManagerData(ResourceManagerData<T>&&) = delete;
         ResourceManagerData<T>& operator=(const ResourceManagerData<T>&) = delete;
         ResourceManagerData<T>& operator=(ResourceManagerData<T>&&) = delete;
 
         public:
-            struct Data {
-                Data(const Data&) = delete;
-                Data& operator=(const Data&) = delete;
-                Data& operator=(Data&&) = delete;
-
-                inline Data(): data(nullptr), state(ResourceDataState::Mutable), policy(ResourcePolicy::Manual), referenceCount(0) {}
-
-                inline Data(Data&& other): data(other.data), state(other.state), policy(other.policy), referenceCount(other.referenceCount) {
-                    other.data = nullptr;
-                    other.referenceCount = 0;
-                }
-
-                inline ~Data() {
-                    CORRADE_ASSERT(referenceCount == 0, "ResourceManager: cannot destruct it while data are still referenced", );
-                    delete data;
-                }
-
-                T* data;
-                ResourceDataState state;
-                ResourcePolicy policy;
-                std::size_t referenceCount;
-            };
-
             inline virtual ~ResourceManagerData() {
                 delete _fallback;
             }
@@ -136,6 +115,33 @@ namespace Implementation {
 
             inline T* fallback() const { return _fallback; }
 
+        protected:
+            inline ResourceManagerData(): _fallback(nullptr), _lastChange(0) {}
+
+        private:
+            struct Data {
+                Data(const Data&) = delete;
+                Data& operator=(const Data&) = delete;
+                Data& operator=(Data&&) = delete;
+
+                inline Data(): data(nullptr), state(ResourceDataState::Mutable), policy(ResourcePolicy::Manual), referenceCount(0) {}
+
+                inline Data(Data&& other): data(other.data), state(other.state), policy(other.policy), referenceCount(other.referenceCount) {
+                    other.data = nullptr;
+                    other.referenceCount = 0;
+                }
+
+                inline ~Data() {
+                    CORRADE_ASSERT(referenceCount == 0, "ResourceManager: cannot destruct it while data are still referenced", );
+                    delete data;
+                }
+
+                T* data;
+                ResourceDataState state;
+                ResourcePolicy policy;
+                std::size_t referenceCount;
+            };
+
             inline const Data& data(ResourceKey key) {
                 return _data[key];
             }
@@ -152,10 +158,6 @@ namespace Implementation {
                     _data.erase(it);
             }
 
-        protected:
-            inline ResourceManagerData(): _fallback(nullptr), _lastChange(0) {}
-
-        private:
             std::unordered_map<ResourceKey, Data, ResourceKeyHash> _data;
             T* _fallback;
             std::size_t _lastChange;
