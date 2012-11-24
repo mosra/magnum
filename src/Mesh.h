@@ -33,8 +33,8 @@ namespace Magnum {
 @section Mesh-configuration Mesh configuration
 
 To properly configure mesh, you have to set primitive either in constructor or
-using setPrimitive() and call setVertexCount(). Then create vertex buffers,
-and them with vertex data. You can also use MeshTools::interleave() to
+using setPrimitive() and call setVertexCount(). Then create vertex buffers and
+fill them with vertex data. You can also use MeshTools::interleave() to
 conveniently set vertex count and buffer data. At last assign them to mesh and
 @ref AbstractShaderProgram::Attribute "shader attributes" using
 addVertexBuffer(), addInterleavedVertexBuffer() or addVertexBufferStride().
