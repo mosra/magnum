@@ -23,6 +23,8 @@
 
 #include "Magnum.h"
 
+#include "magnumVisibility.h"
+
 namespace Magnum {
 
 /** @relates Resource
@@ -43,6 +45,9 @@ enum class ResourceState: std::uint8_t {
     /** The resource is loaded and won't be changed by the manager anymore. */
     Final
 };
+
+/** @debugoperator{Magnum::Resource} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, ResourceState value);
 
 /**
 @brief Key for accessing resource

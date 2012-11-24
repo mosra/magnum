@@ -24,6 +24,7 @@ set(Magnum_SRCS
     Profiler.cpp
     Query.cpp
     Renderbuffer.cpp
+    Resource.cpp
     Shader.cpp
     SizeTraits.cpp
     Timeline.cpp

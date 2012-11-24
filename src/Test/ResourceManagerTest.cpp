@@ -51,14 +51,14 @@ void ResourceManagerTest::state() {
     ResourceKey questionKey("the-question");
     rm.set(questionKey, new int32_t(10), ResourceDataState::Mutable, ResourcePolicy::Resident);
     Resource<int32_t> theQuestion = rm.get<int32_t>(questionKey);
-    CORRADE_VERIFY(theQuestion.state() == ResourceState::Mutable);
+    CORRADE_COMPARE(theQuestion.state(), ResourceState::Mutable);
     CORRADE_COMPARE(*theQuestion, 10);
 
     /* Check that hash function is working properly */
     ResourceKey answerKey("the-answer");
     rm.set(answerKey, new int32_t(42), ResourceDataState::Final, ResourcePolicy::Resident);
     Resource<int32_t> theAnswer = rm.get<int32_t>(answerKey);
-    CORRADE_VERIFY(theAnswer.state() == ResourceState::Final);
+    CORRADE_COMPARE(theAnswer.state(), ResourceState::Final);
     CORRADE_COMPARE(*theAnswer, 42);
 
     CORRADE_COMPARE(rm.count<int32_t>(), 2);
@@ -72,7 +72,7 @@ void ResourceManagerTest::state() {
 
     /* Check non-final resource changes */
     rm.set(questionKey, new int32_t(20), ResourceDataState::Final, ResourcePolicy::Resident);
-    CORRADE_VERIFY(theQuestion.state() == ResourceState::Final);
+    CORRADE_COMPARE(theQuestion.state(), ResourceState::Final);
     CORRADE_COMPARE(*theQuestion, 20);
 }
 
@@ -99,14 +99,14 @@ void ResourceManagerTest::referenceCountedPolicy() {
         rm.set(dataRefCountKey, new Data(), ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
         CORRADE_COMPARE(rm.count<Data>(), 0);
         Resource<Data> data = rm.get<Data>(dataRefCountKey);
-        CORRADE_VERIFY(data.state() == ResourceState::NotLoaded);
+        CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
         CORRADE_COMPARE(Data::count, 0);
     } {
         Resource<Data> data = rm.get<Data>(dataRefCountKey);
         CORRADE_COMPARE(rm.count<Data>(), 1);
-        CORRADE_VERIFY(data.state() == ResourceState::NotLoaded);
+        CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
         rm.set(dataRefCountKey, new Data(), ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
-        CORRADE_VERIFY(data.state() == ResourceState::Final);
+        CORRADE_COMPARE(data.state(), ResourceState::Final);
         CORRADE_COMPARE(Data::count, 1);
     }
 
