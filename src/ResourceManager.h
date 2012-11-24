@@ -272,7 +272,7 @@ cube->draw();
 /* Due to too much work involved with explicit template instantiation (all
    Resource combinations, all ResourceManagerData...), this class doesn't have
    template implementation file. */
-template<class... Types> class ResourceManager: protected Implementation::ResourceManagerData<Types>... {
+template<class... Types> class ResourceManager: private Implementation::ResourceManagerData<Types>... {
     public:
         /** @brief Global instance */
         inline static ResourceManager<Types...>* instance() {
