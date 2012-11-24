@@ -10,6 +10,10 @@
     #extension GL_ARB_explicit_attrib_location: enable
     #define EXPLICIT_ATTRIB_LOCATION
 #endif
+#if defined(GL_ARB_shading_language_420pack)
+    #extension GL_ARB_shading_language_420pack: enable
+    #define EXPLICIT_TEXTURE_LAYER
+#endif
 #ifdef GL_ARB_explicit_uniform_location
     #extension GL_ARB_explicit_uniform_location: enable
     #define EXPLICIT_UNIFORM_LOCATION
@@ -19,7 +23,7 @@
 
 #if defined(GL_ES) && __VERSION__ >= 300
 #define EXPLICIT_ATTRIB_LOCATION
-/* EXPLICIT_UNIFORM_LOCATION is not available in OpenGL ES */
+/* EXPLICIT_TEXTURE_LAYER & EXPLICIT_UNIFORM_LOCATION is not available in OpenGL ES */
 #endif
 
 /* Precision qualifiers are not supported in GLSL 1.20 */
