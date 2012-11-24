@@ -32,6 +32,18 @@ namespace Magnum {
  */
 enum class ResourceDataState: std::uint8_t {
     /**
+     * The resource is currently loading. Parameter @p data in ResourceManager::set()
+     * should be set to `null`.
+     */
+    Loading = int(ResourceState::Loading),
+
+    /**
+     * The resource was not found. Parameter @p data in ResourceManager::set()
+     * should be set to `null`.
+     */
+    NotFound = int(ResourceState::NotFound),
+
+    /**
      * The resource can be changed by the manager in the future. This is
      * slower, as Resource needs to ask the manager for new version every time
      * the data are accessed, but allows changing the data for e.g. debugging
@@ -99,10 +111,25 @@ namespace Implementation {
 
             ResourceState state(ResourceKey key) const {
                 auto it = _data.find(key);
-                if(it == _data.end() || !it->second.data)
-                    return _fallback ? ResourceState::Fallback : ResourceState::NotLoaded;
-                else
-                    return static_cast<ResourceState>(it->second.state);
+
+                /* Resource not loaded */
+                if(it == _data.end() || !it->second.data) {
+                    /* Fallback found, add *Fallback to state */
+                    if(_fallback) {
+                        if(it != _data.end() && it->second.state == ResourceDataState::Loading)
+                            return ResourceState::LoadingFallback;
+                        else if(it != _data.end() && it->second.state == ResourceDataState::NotFound)
+                            return ResourceState::NotFoundFallback;
+                        else return ResourceState::NotLoadedFallback;
+                    }
+
+                    /* Fallback not found, loading didn't start yet */
+                    if(it == _data.end() || (it->second.state != ResourceDataState::Loading && it->second.state != ResourceDataState::NotFound))
+                        return ResourceState::NotLoaded;
+                }
+
+                /* Loading / NotFound without fallback, Mutable / Final */
+                return static_cast<ResourceState>(it->second.state);
             }
 
             template<class U> inline Resource<T, U> get(ResourceKey key) {
@@ -112,9 +139,13 @@ namespace Implementation {
             void set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
                 auto it = _data.find(key);
 
+                /* NotFound / Loading state shouldn't have any data */
+                CORRADE_ASSERT((data == nullptr) == (state == ResourceDataState::NotFound || state == ResourceDataState::Loading),
+                    "ResourceManager::set(): data should be null if and only if state is NotFound or Loading", );
+
                 /* Cannot change resource with already final state */
                 CORRADE_ASSERT(it == _data.end() || it->second.state != ResourceDataState::Final,
-                    "ResourceManager: cannot change already final resource", );
+                    "ResourceManager::set(): cannot change already final resource", );
 
                 /* If nothing is referencing reference-counted resource, we're done */
                 if(policy == ResourcePolicy::ReferenceCounted && (it == _data.end() || it->second.referenceCount == 0)) {

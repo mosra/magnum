@@ -24,6 +24,9 @@ class ResourceManagerTest: public Corrade::TestSuite::Tester<ResourceManagerTest
         ResourceManagerTest();
 
         void state();
+        void stateFallback();
+        void stateDisallowed();
+        void basic();
         void residentPolicy();
         void referenceCountedPolicy();
         void manualPolicy();

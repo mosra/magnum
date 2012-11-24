@@ -40,6 +40,9 @@ size_t Data::count = 0;
 
 ResourceManagerTest::ResourceManagerTest() {
     addTests(&ResourceManagerTest::state,
+             &ResourceManagerTest::stateFallback,
+             &ResourceManagerTest::stateDisallowed,
+             &ResourceManagerTest::basic,
              &ResourceManagerTest::residentPolicy,
              &ResourceManagerTest::referenceCountedPolicy,
              &ResourceManagerTest::manualPolicy);
@@ -48,19 +51,84 @@ ResourceManagerTest::ResourceManagerTest() {
 void ResourceManagerTest::state() {
     ResourceManager rm;
 
+    Resource<Data> data = rm.get<Data>("data");
+    CORRADE_VERIFY(!data);
+    CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
+    CORRADE_COMPARE(rm.state<Data>("data"), ResourceState::NotLoaded);
+
+    rm.set<Data>("data", nullptr, ResourceDataState::Loading, ResourcePolicy::Resident);
+    CORRADE_VERIFY(!data);
+    CORRADE_COMPARE(data.state(), ResourceState::Loading);
+    CORRADE_COMPARE(rm.state<Data>("data"), ResourceState::Loading);
+
+    rm.set<Data>("data", nullptr, ResourceDataState::NotFound, ResourcePolicy::Resident);
+    CORRADE_VERIFY(!data);
+    CORRADE_COMPARE(data.state(), ResourceState::NotFound);
+    CORRADE_COMPARE(rm.state<Data>("data"), ResourceState::NotFound);
+
+    /* Nothing happened at all */
+    CORRADE_COMPARE(Data::count, 0);
+}
+
+void ResourceManagerTest::stateFallback() {
+    {
+        ResourceManager rm;
+        rm.setFallback<Data>(new Data);
+
+        Resource<Data> data = rm.get<Data>("data");
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data.state(), ResourceState::NotLoadedFallback);
+        CORRADE_COMPARE(rm.state<Data>("data"), ResourceState::NotLoadedFallback);
+
+        rm.set<Data>("data", nullptr, ResourceDataState::Loading, ResourcePolicy::Resident);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data.state(), ResourceState::LoadingFallback);
+        CORRADE_COMPARE(rm.state<Data>("data"), ResourceState::LoadingFallback);
+
+        rm.set<Data>("data", nullptr, ResourceDataState::NotFound, ResourcePolicy::Resident);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data.state(), ResourceState::NotFoundFallback);
+        CORRADE_COMPARE(rm.state<Data>("data"), ResourceState::NotFoundFallback);
+
+        /* Only fallback is here */
+        CORRADE_COMPARE(Data::count, 1);
+    }
+
+    /* Fallback gets destroyed */
+    CORRADE_COMPARE(Data::count, 0);
+}
+
+void ResourceManagerTest::stateDisallowed() {
+    ResourceManager rm;
+
+    stringstream out;
+    Error::setOutput(&out);
+
+    Data d;
+    rm.set("data", &d, ResourceDataState::Loading, ResourcePolicy::Resident);
+    CORRADE_COMPARE(out.str(), "ResourceManager::set(): data should be null if and only if state is NotFound or Loading\n");
+
+    out.str("");
+    rm.set<Data>("data", nullptr, ResourceDataState::Final, ResourcePolicy::Resident);
+    CORRADE_COMPARE(out.str(), "ResourceManager::set(): data should be null if and only if state is NotFound or Loading\n");
+}
+
+void ResourceManagerTest::basic() {
+    ResourceManager rm;
+
+    /* One mutable, one final */
     ResourceKey questionKey("the-question");
-    rm.set(questionKey, new int32_t(10), ResourceDataState::Mutable, ResourcePolicy::Resident);
-    Resource<int32_t> theQuestion = rm.get<int32_t>(questionKey);
-    CORRADE_COMPARE(theQuestion.state(), ResourceState::Mutable);
-    CORRADE_COMPARE(*theQuestion, 10);
-
-    /* Check that hash function is working properly */
     ResourceKey answerKey("the-answer");
+    rm.set(questionKey, new int32_t(10), ResourceDataState::Mutable, ResourcePolicy::Resident);
     rm.set(answerKey, new int32_t(42), ResourceDataState::Final, ResourcePolicy::Resident);
+    Resource<int32_t> theQuestion = rm.get<int32_t>(questionKey);
     Resource<int32_t> theAnswer = rm.get<int32_t>(answerKey);
-    CORRADE_COMPARE(theAnswer.state(), ResourceState::Final);
-    CORRADE_COMPARE(*theAnswer, 42);
 
+    /* Check basic functionality */
+    CORRADE_COMPARE(theQuestion.state(), ResourceState::Mutable);
+    CORRADE_COMPARE(theAnswer.state(), ResourceState::Final);
+    CORRADE_COMPARE(*theQuestion, 10);
+    CORRADE_COMPARE(*theAnswer, 42);
     CORRADE_COMPARE(rm.count<int32_t>(), 2);
 
     /* Cannot change already final resource */
@@ -68,9 +136,9 @@ void ResourceManagerTest::state() {
     Error::setOutput(&out);
     rm.set(answerKey, new int32_t(43), ResourceDataState::Mutable, ResourcePolicy::Resident);
     CORRADE_COMPARE(*theAnswer, 42);
-    CORRADE_COMPARE(out.str(), "ResourceManager: cannot change already final resource\n");
+    CORRADE_COMPARE(out.str(), "ResourceManager::set(): cannot change already final resource\n");
 
-    /* Check non-final resource changes */
+    /* But non-final can be changed */
     rm.set(questionKey, new int32_t(20), ResourceDataState::Final, ResourcePolicy::Resident);
     CORRADE_COMPARE(theQuestion.state(), ResourceState::Final);
     CORRADE_COMPARE(*theQuestion, 20);

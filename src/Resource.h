@@ -33,11 +33,23 @@ namespace Magnum {
  * @see Resource::state(), ResourceManager::state()
  */
 enum class ResourceState: std::uint8_t {
-    /** The resource is not yet loaded. */
+    /** The resource is not yet loaded (and no fallback is available). */
     NotLoaded,
 
     /** The resource is not yet loaded and fallback resource is used instead. */
-    Fallback,
+    NotLoadedFallback,
+
+    /** The resource is currently loading (and no fallback is available). */
+    Loading,
+
+    /** The resource is currently loading and fallback resource is used instead. */
+    LoadingFallback,
+
+    /** The resource was not found (and no fallback is available). */
+    NotFound,
+
+    /** The resource was not found and fallback resource is used instead. */
+    NotFoundFallback,
 
     /** The resource is loaded, but can be changed by the manager at any time. */
     Mutable,
@@ -157,7 +169,7 @@ class Resource {
         /**
          * @brief %Resource state
          *
-         * @see operator bool()
+         * @see operator bool(), ResourceManager::state()
          */
         inline ResourceState state() {
             acquire();
@@ -166,10 +178,11 @@ class Resource {
 
         /**
          * @brief Whether the resource is available
-         * @return False when resource is not loaded and no fallback is
-         *      available, true otherwise.
          *
-         * @see state()
+         * Returns `false` when resource is not loaded and no fallback is
+         * available (i.e. state() is either @ref ResourceState "ResourceState::NotLoaded",
+         * @ref ResourceState "ResourceState::Loading" or
+         * @ref ResourceState "ResourceState::NotFound"), true otherwise.
          */
         inline operator bool() {
             acquire();
@@ -219,12 +232,23 @@ class Resource {
             lastCheck = manager->lastChange();
 
             /* Try to get the data */
-            if((data = d.data))
-                _state = static_cast<ResourceState>(d.state);
-            else if((data = manager->fallback()))
-                _state = ResourceState::Fallback;
-            else
-                _state = ResourceState::NotLoaded;
+            data = d.data;
+            _state = static_cast<ResourceState>(d.state);
+
+            /* Data are not available */
+            if(!data) {
+                /* Fallback found, add *Fallback to state */
+                if((data = manager->fallback())) {
+                    if(_state == ResourceState::Loading)
+                        _state = ResourceState::LoadingFallback;
+                    else if(_state == ResourceState::NotFound)
+                        _state = ResourceState::NotFoundFallback;
+                    else _state = ResourceState::NotLoadedFallback;
+
+                /* Fallback not found and loading didn't start yet */
+                } else if(_state != ResourceState::Loading && _state != ResourceState::NotFound)
+                    _state = ResourceState::NotLoaded;
+            }
         }
 
         Implementation::ResourceManagerData<T>* manager;
