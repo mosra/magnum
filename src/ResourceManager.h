@@ -16,15 +16,55 @@
 */
 
 /** @file
- * @brief Class Magnum::ResourceManager
+ * @brief Class Magnum::ResourceManager, enum Magnum::ResourceDataState, Magnum::ResourcePolicy
  */
 
 #include <unordered_map>
-#include <Utility/MurmurHash2.h>
 
 #include "Resource.h"
 
 namespace Magnum {
+
+/** @relates ResourceManager
+ * @brief %Resource data state
+ *
+ * @see ResourceManager::set()
+ */
+enum class ResourceDataState: std::uint8_t {
+    /**
+     * The resource can be changed by the manager in the future. This is
+     * slower, as Resource needs to ask the manager for new version every time
+     * the data are accessed, but allows changing the data for e.g. debugging
+     * purposes.
+     */
+    Mutable = int(ResourceState::Mutable),
+
+    /**
+     * The resource cannot be changed by the manager in the future. This is
+     * faster, as Resource instances will ask for the data only one time, thus
+     * suitable for production code.
+     */
+    Final = int(ResourceState::Final)
+};
+
+/** @relates ResourceManager
+@brief %Resource policy
+
+@see ResourceManager::set(), ResourceManager::free()
+ */
+enum class ResourcePolicy: std::uint8_t {
+    /** The resource will stay resident for whole lifetime of resource manager. */
+    Resident,
+
+    /**
+     * The resource will be unloaded when manually calling
+     * ResourceManager::free() if nothing references it.
+     */
+    Manual,
+
+    /** The resource will be unloaded when last reference to it is gone. */
+    ReferenceCounted
+};
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
@@ -356,11 +396,7 @@ template<class ...Types> ResourceManager<Types...>*& ResourceManager<Types...>::
 }
 #endif
 
-/** @debugoperator{Magnum::ResourceKey} */
-template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const ResourceKey& value) {
-    return debug << static_cast<const Corrade::Utility::HashDigest<sizeof(std::size_t)>&>(value);
 }
 
-}
 
 #endif

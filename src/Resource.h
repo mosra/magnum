@@ -16,14 +16,16 @@
 */
 
 /** @file /Resource.h
- * @brief Class Magnum::ResourceKey, Magnum::Resource, enum Magnum::ResourceState, Magnum::ResourceDataState, Magnum::ResourcePolicy
+ * @brief Class Magnum::ResourceKey, Magnum::Resource, enum Magnum::ResourceState
  */
+
+#include <Utility/MurmurHash2.h>
 
 #include "Magnum.h"
 
 namespace Magnum {
 
-/** @relates ResourceManager
+/** @relates Resource
  * @brief %Resource state
  *
  * @see Resource::state(), ResourceManager::state()
@@ -40,47 +42,6 @@ enum class ResourceState: std::uint8_t {
 
     /** The resource is loaded and won't be changed by the manager anymore. */
     Final
-};
-
-/** @relates ResourceManager
- * @brief %Resource data state
- *
- * @see ResourceManager::set()
- */
-enum class ResourceDataState: std::uint8_t {
-    /**
-     * The resource can be changed by the manager in the future. This is
-     * slower, as Resource needs to ask the manager for new version every time
-     * the data are accessed, but allows changing the data for e.g. debugging
-     * purposes.
-     */
-    Mutable = int(ResourceState::Mutable),
-
-    /**
-     * The resource cannot be changed by the manager in the future. This is
-     * faster, as Resource instances will ask for the data only one time, thus
-     * suitable for production code.
-     */
-    Final = int(ResourceState::Final)
-};
-
-/** @relates ResourceManager
-@brief %Resource policy
-
-@see ResourceManager::set(), ResourceManager::free()
- */
-enum class ResourcePolicy: std::uint8_t {
-    /** The resource will stay resident for whole lifetime of resource manager. */
-    Resident,
-
-    /**
-     * The resource will be unloaded when manually calling
-     * ResourceManager::free() if nothing references it.
-     */
-    Manual,
-
-    /** The resource will be unloaded when last reference to it is gone. */
-    ReferenceCounted
 };
 
 /**
@@ -108,6 +69,11 @@ class ResourceKey: public Corrade::Utility::MurmurHash2::Digest {
          */
         template<std::size_t size> inline constexpr ResourceKey(const char(&key)[size]): Corrade::Utility::MurmurHash2::Digest(Corrade::Utility::MurmurHash2()(key)) {}
 };
+
+/** @debugoperator{Magnum::ResourceKey} */
+inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const ResourceKey& value) {
+    return debug << static_cast<const Corrade::Utility::HashDigest<sizeof(std::size_t)>&>(value);
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
