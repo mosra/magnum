@@ -141,8 +141,8 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
 
     protected:
         /** Recalculates camera matrix */
-        inline void cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType& invertedAbsoluteTransformation) override {
-            _cameraMatrix = invertedAbsoluteTransformation;
+        inline void cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType& invertedAbsoluteTransformationMatrix) override {
+            _cameraMatrix = invertedAbsoluteTransformationMatrix;
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT

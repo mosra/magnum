@@ -40,7 +40,7 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT AxisAlignedBox: pu
             return AbstractShape<dimensions>::Type::AxisAlignedBox;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) override;
+        void applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) override;
 
         /** @brief Position */
         inline typename DimensionTraits<dimensions>::VectorType position() const {

@@ -66,7 +66,7 @@ template<std::uint8_t dimensions> VertexColorShader<dimensions>::VertexColorShad
 
     link();
 
-    transformationProjectionUniform = uniformLocation("transformationProjection");
+    transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
 }
 
 template class VertexColorShader<2>;

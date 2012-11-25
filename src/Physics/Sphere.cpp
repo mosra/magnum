@@ -39,9 +39,9 @@ namespace {
     }
 }
 
-template<std::uint8_t dimensions> void Sphere<dimensions>::applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) {
-    _transformedPosition = (transformation*typename DimensionTraits<dimensions>::PointType(_position)).vector();
-    float scaling = (transformation.rotationScaling()*unitVector<dimensions>()).length();
+template<std::uint8_t dimensions> void Sphere<dimensions>::applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
+    _transformedPosition = (matrix*typename DimensionTraits<dimensions>::PointType(_position)).vector();
+    float scaling = (matrix.rotationScaling()*unitVector<dimensions>()).length();
     _transformedRadius = scaling*_radius;
 }
 

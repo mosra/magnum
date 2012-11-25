@@ -65,7 +65,7 @@ template<std::uint8_t dimensions> FlatShader<dimensions>::FlatShader() {
 
     link();
 
-    transformationProjectionUniform = uniformLocation("transformationProjection");
+    transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
     colorUniform = uniformLocation("color");
 }
 

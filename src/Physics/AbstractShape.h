@@ -100,12 +100,12 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT AbstractShape {
         virtual Type type() const = 0;
 
         /**
-         * @brief Apply transformation
+         * @brief Apply transformation matrix
          *
-         * Applies transformation to user-defined shape properties and caches
-         * them for later usage in collision detection.
+         * Applies transformation matrix to user-defined shape properties and
+         * caches them for later usage in collision detection.
          */
-        virtual void applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) = 0;
+        virtual void applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) = 0;
 
         /**
          * @brief Detect collision with other shape

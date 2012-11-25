@@ -43,7 +43,7 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Capsule: public Ab
             return AbstractShape<dimensions>::Type::Capsule;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) override;
+        void applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) override;
 
         bool collides(const AbstractShape<dimensions>* other) const override;
 

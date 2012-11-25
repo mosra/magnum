@@ -78,7 +78,7 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShape: publi
         void markDirty() override;
 
         /** Applies transformation to associated shape. */
-        void clean(const typename DimensionTraits<dimensions>::MatrixType& absoluteTransformation) override;
+        void clean(const typename DimensionTraits<dimensions>::MatrixType& absoluteTransformationMatrix) override;
 
     private:
         AbstractShape<dimensions>* _shape;

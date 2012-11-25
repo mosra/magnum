@@ -36,8 +36,8 @@ template<uint8_t dimensions> void ObjectShape<dimensions>::markDirty() {
     group()->setDirty();
 }
 
-template<uint8_t dimensions> void ObjectShape<dimensions>::clean(const typename DimensionTraits<dimensions>::MatrixType& absoluteTransformation) {
-    if(_shape) _shape->applyTransformation(absoluteTransformation);
+template<uint8_t dimensions> void ObjectShape<dimensions>::clean(const typename DimensionTraits<dimensions>::MatrixType& absoluteTransformationMatrix) {
+    if(_shape) _shape->applyTransformationMatrix(absoluteTransformationMatrix);
 }
 
 template class ObjectShape<2>;

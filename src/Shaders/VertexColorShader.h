@@ -46,16 +46,16 @@ template<std::uint8_t dimensions> class MAGNUM_SHADERS_EXPORT VertexColorShader:
         VertexColorShader();
 
         /**
-         * @brief Set transformation and projection
+         * @brief Set transformation and projection matrix
          * @return Pointer to self (for method chaining)
          */
-        inline VertexColorShader<dimensions>* setTransformationProjection(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
-            setUniform(transformationProjectionUniform, matrix);
+        inline VertexColorShader<dimensions>* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
+            setUniform(transformationProjectionMatrixUniform, matrix);
             return this;
         }
 
     private:
-        GLint transformationProjectionUniform;
+        GLint transformationProjectionMatrixUniform;
 };
 
 /** @brief 2D vertex color shader */

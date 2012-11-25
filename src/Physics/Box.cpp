@@ -20,8 +20,8 @@
 
 namespace Magnum { namespace Physics {
 
-template<std::uint8_t dimensions> void Box<dimensions>::applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) {
-    _transformedTransformation = (transformation*_transformation);
+template<std::uint8_t dimensions> void Box<dimensions>::applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
+    _transformedTransformation = matrix*_transformation;
 }
 
 template class Box<2>;
