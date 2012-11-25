@@ -22,7 +22,7 @@
 #include <cmath>
 #include <limits>
 #include <Utility/Debug.h>
-#include <Utility/Configuration.h>
+#include <Utility/ConfigurationValue.h>
 
 #include "MathTypeTraits.h"
 
@@ -508,7 +508,7 @@ namespace Corrade { namespace Utility {
 /** @configurationvalue{Magnum::Math::RectangularMatrix} */
 template<std::size_t cols, std::size_t rows, class T> struct ConfigurationValue<Magnum::Math::RectangularMatrix<cols, rows, T>> {
     /** @brief Writes elements separated with spaces */
-    static std::string toString(const Magnum::Math::RectangularMatrix<cols, rows, T>& value, int flags = 0) {
+    static std::string toString(const Magnum::Math::RectangularMatrix<cols, rows, T>& value, ConfigurationValueFlags flags) {
         std::string output;
 
         for(std::size_t row = 0; row != rows; ++row) {
@@ -522,7 +522,7 @@ template<std::size_t cols, std::size_t rows, class T> struct ConfigurationValue<
     }
 
     /** @brief Reads elements separated with whitespace */
-    static Magnum::Math::RectangularMatrix<cols, rows, T> fromString(const std::string& stringValue, int flags = 0) {
+    static Magnum::Math::RectangularMatrix<cols, rows, T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
         Magnum::Math::RectangularMatrix<cols, rows, T> result;
         std::istringstream in(stringValue);
 

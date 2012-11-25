@@ -15,7 +15,7 @@
 
 #include "Point3DTest.h"
 
-#include <sstream>
+#include <Utility/Configuration.h>
 
 #include "Point3D.h"
 
@@ -47,10 +47,14 @@ void Point3DTest::debug() {
 }
 
 void Point3DTest::configuration() {
+    Configuration c;
+
     Point3D vec(3.0f, 3.125f, 9.0f, 9.55f);
     string value("3 3.125 9 9.55");
-    CORRADE_COMPARE(ConfigurationValue<Point3D>::toString(vec), value);
-    CORRADE_COMPARE(ConfigurationValue<Point3D>::fromString(value), vec);
+
+    c.setValue("point", vec);
+    CORRADE_COMPARE(c.value<std::string>("point"), value);
+    CORRADE_COMPARE(c.value<Point3D>("point"), vec);
 }
 
 }}}

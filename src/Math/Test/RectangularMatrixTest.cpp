@@ -15,7 +15,7 @@
 
 #include "RectangularMatrixTest.h"
 
-#include <sstream>
+#include <Utility/Configuration.h>
 
 #include "RectangularMatrix.h"
 
@@ -242,8 +242,12 @@ void RectangularMatrixTest::configuration() {
         7.0f, -1.0f, 8.0f, 9.55f
     );
     string value("3 4 7 5 4 -1 8 7 8 4 3.125 9.55");
-    CORRADE_COMPARE(ConfigurationValue<Matrix3x4>::toString(m), value);
-    CORRADE_COMPARE(ConfigurationValue<Matrix3x4>::fromString(value), m);
+
+    Configuration c;
+    c.setValue<Matrix3x4>("matrix", m);
+
+    CORRADE_COMPARE(c.value<std::string>("matrix"), value);
+    CORRADE_COMPARE(c.value<Matrix3x4>("matrix"), m);
 }
 
 }}}

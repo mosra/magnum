@@ -15,7 +15,7 @@
 
 #include "Point2DTest.h"
 
-#include <sstream>
+#include <Utility/Configuration.h>
 
 #include "Point2D.h"
 
@@ -47,10 +47,14 @@ void Point2DTest::debug() {
 }
 
 void Point2DTest::configuration() {
+    Configuration c;
+
     Point2D vec(3.0f, 3.125f, 9.55f);
     string value("3 3.125 9.55");
-    CORRADE_COMPARE(ConfigurationValue<Point2D>::toString(vec), value);
-    CORRADE_COMPARE(ConfigurationValue<Point2D>::fromString(value), vec);
+
+    c.setValue("point", vec);
+    CORRADE_COMPARE(c.value<std::string>("point"), value);
+    CORRADE_COMPARE(c.value<Point2D>("point"), vec);
 }
 
 }}}

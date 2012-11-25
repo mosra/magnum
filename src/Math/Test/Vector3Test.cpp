@@ -15,7 +15,7 @@
 
 #include "Vector3Test.h"
 
-#include <sstream>
+#include <Utility/Configuration.h>
 
 #include "Vector3.h"
 
@@ -75,10 +75,14 @@ void Vector3Test::debug() {
 }
 
 void Vector3Test::configuration() {
+    Configuration c;
+
     Vector3 vec(3.0f, 3.125f, 9.55f);
     string value("3 3.125 9.55");
-    CORRADE_COMPARE(ConfigurationValue<Vector3>::toString(vec), value);
-    CORRADE_COMPARE(ConfigurationValue<Vector3>::fromString(value), vec);
+
+    c.setValue("vector", vec);
+    CORRADE_COMPARE(c.value<std::string>("vector"), value);
+    CORRADE_COMPARE(c.value<Vector3>("vector"), vec);
 }
 
 }}}
