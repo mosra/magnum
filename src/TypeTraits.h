@@ -19,6 +19,8 @@
  * @brief Enum Magnum::Type, class Magnum::TypeOf, Magnum::TypeInfo, Magnum::TypeTraits
  */
 
+#include <Utility/ConfigurationValue.h>
+
 #include "Math/MathTypeTraits.h"
 #include "AbstractImage.h"
 
@@ -113,6 +115,9 @@ enum class Type: GLenum {
     Double = GL_DOUBLE
     #endif
 };
+
+/** @debugoperator{Magnum::TypeInfo} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Type value);
 
 /**
 @brief Class for converting Type enum values to types
@@ -339,5 +344,26 @@ template<class T> struct TypeTraits<Math::Matrix4<T>>: TypeTraits<Math::Matrix<4
 #endif
 
 }
+
+namespace Corrade { namespace Utility {
+
+/** @configurationvalue{Magnum::TypeInfo} */
+template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::Type> {
+    /**
+     * @brief Writes enum value as string
+     *
+     * If the value is invalid, returns empty string.
+     */
+    static std::string toString(Magnum::Type value, ConfigurationValueFlags);
+
+    /**
+     * @brief Reads enum value as string
+     *
+     * If the value is invalid, returns @ref Magnum::Type "Magnum::Type::Float".
+     */
+    static Magnum::Type fromString(const std::string& stringValue, ConfigurationValueFlags);
+};
+
+}}
 
 #endif

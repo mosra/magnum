@@ -16,6 +16,7 @@
 #include "TypeTraits.h"
 
 #include <type_traits>
+#include <Utility/Debug.h>
 
 using namespace std;
 
@@ -67,4 +68,64 @@ bool TypeInfo::isIntegral(Type type) {
     }
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+Debug operator<<(Debug debug, Type value) {
+    switch(value) {
+        #define _c(value) case Type::value: return debug << "Type::" #value;
+        _c(UnsignedByte)
+        _c(Byte)
+        _c(UnsignedShort)
+        _c(Short)
+        _c(UnsignedInt)
+        _c(Int)
+        _c(Float)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(Double)
+        #endif
+        #undef _c
+    }
+
+    return debug << "Type::(invalid)";
 }
+#endif
+
+}
+
+namespace Corrade { namespace Utility {
+
+std::string ConfigurationValue<Magnum::Type>::toString(Magnum::Type value, ConfigurationValueFlags) {
+    switch(value) {
+        #define _c(value) case Magnum::Type::value: return #value;
+        _c(UnsignedByte)
+        _c(Byte)
+        _c(UnsignedShort)
+        _c(Short)
+        _c(UnsignedInt)
+        _c(Int)
+        _c(Float)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(Double)
+        #endif
+        #undef _c
+    }
+
+    return "";
+}
+
+Magnum::Type ConfigurationValue<Magnum::Type>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
+    #define _c(value) if(stringValue == #value) return Magnum::Type::value;
+        _c(UnsignedByte)
+        _c(Byte)
+        _c(UnsignedShort)
+        _c(Short)
+        _c(UnsignedInt)
+        _c(Int)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(Double)
+        #endif
+    #undef _c
+
+    return Magnum::Type::Float;
+}
+
+}}
