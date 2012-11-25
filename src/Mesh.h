@@ -742,6 +742,30 @@ class MAGNUM_EXPORT Mesh {
         #endif
 };
 
+/** @debugoperator{Magnum::Mesh} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::Primitive value);
+
 }
+
+namespace Corrade { namespace Utility {
+
+/** @configurationvalue{Magnum::Mesh} */
+template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::Mesh::Primitive> {
+    /**
+     * @brief Writes enum value as string
+     *
+     * If the value is invalid, returns empty string.
+     */
+    static std::string toString(Magnum::Mesh::Primitive value, ConfigurationValueFlags);
+
+    /**
+     * @brief Reads enum value as string
+     *
+     * If the value is invalid, returns @ref Magnum::Mesh::Primitive "Mesh::Primitive::Points".
+     */
+    static Magnum::Mesh::Primitive fromString(const std::string& stringValue, ConfigurationValueFlags);
+};
+
+}}
 
 #endif
