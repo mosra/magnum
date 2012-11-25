@@ -43,7 +43,7 @@ void ShapeGroupTest::copy() {
     }
 
     /* Just to test that it doesn't crash */
-    group.applyTransformation(Matrix4::translation(Vector3::xAxis(1.0f)));
+    group.applyTransformationMatrix(Matrix4::translation(Vector3::xAxis(1.0f)));
 
     CORRADE_VERIFY(true);
 }
@@ -54,7 +54,7 @@ void ShapeGroupTest::reference() {
 
     ShapeGroup3D group = !(ref(point) || ref(segment));
 
-    group.applyTransformation(Matrix4::translation(Vector3(1.0f)));
+    group.applyTransformationMatrix(Matrix4::translation(Vector3(1.0f)));
 
     CORRADE_VERIFY((point.transformedPosition() == Vector3(2.0f, 3.0f, 4.0f)));
     CORRADE_VERIFY((segment.transformedA() == Vector3(3.0f, 2.0f, 31.0f)));

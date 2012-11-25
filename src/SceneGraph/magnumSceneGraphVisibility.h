@@ -17,13 +17,13 @@
 
 #ifdef _WIN32
     #if defined(MagnumSceneGraph_EXPORTS) || defined(MagnumSceneGraphObjects_EXPORTS)
-        #define SCENEGRAPH_EXPORT __declspec(dllexport)
+        #define MAGNUM_SCENEGRAPH_EXPORT __declspec(dllexport)
     #else
-        #define SCENEGRAPH_EXPORT __declspec(dllimport)
+        #define MAGNUM_SCENEGRAPH_EXPORT __declspec(dllimport)
     #endif
     #define SCENEGRAPH_LOCAL
 #else
-    #define SCENEGRAPH_EXPORT __attribute__ ((visibility ("default")))
+    #define MAGNUM_SCENEGRAPH_EXPORT __attribute__ ((visibility ("default")))
     #define SCENEGRAPH_LOCAL __attribute__ ((visibility ("hidden")))
 #endif
 

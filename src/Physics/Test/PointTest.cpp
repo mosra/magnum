@@ -28,7 +28,7 @@ PointTest::PointTest() {
 
 void PointTest::applyTransformation() {
     Physics::Point3D point({1.0f, 2.0f, 3.0f});
-    point.applyTransformation(Matrix4::translation({5.0f, 6.0f, 7.0f}));
+    point.applyTransformationMatrix(Matrix4::translation({5.0f, 6.0f, 7.0f}));
     CORRADE_COMPARE(point.transformedPosition(), Vector3(6.0f, 8.0f, 10.0f));
 }
 

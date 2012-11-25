@@ -1,5 +1,3 @@
-#ifndef Magnum_Shaders_magnumShadersVisibility_h
-#define Magnum_Shaders_magnumShadersVisibility_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,14 +13,27 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#ifdef _WIN32
-    #ifdef MagnumShaders_EXPORTS
-        #define MAGNUM_SHADERS_EXPORT __declspec(dllexport)
-    #else
-        #define MAGNUM_SHADERS_EXPORT __declspec(dllimport)
-    #endif
-#else
-    #define MAGNUM_SHADERS_EXPORT __attribute__ ((visibility ("default")))
+#include "Resource.h"
+
+namespace Magnum {
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+Debug MAGNUM_EXPORT operator<<(Debug debug, ResourceState value) {
+    switch(value) {
+        #define _c(value) case ResourceState::value: return debug << "ResourceState::" #value;
+        _c(NotLoaded)
+        _c(NotLoadedFallback)
+        _c(Loading)
+        _c(LoadingFallback)
+        _c(NotFound)
+        _c(NotFoundFallback)
+        _c(Mutable)
+        _c(Final)
+        #undef _c
+    }
+
+    return debug << "ResourceState::(invalid)";
+}
 #endif
 
-#endif
+}

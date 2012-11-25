@@ -120,8 +120,8 @@ typedef BufferedImage<3> BufferedImage3D;
 class BufferedTexture;
 #endif
 
-template<class = GLfloat> class Color3;
-template<class = GLfloat> class Color4;
+template<class T = GLfloat> class Color3;
+template<class T = GLfloat> class Color4;
 
 #ifndef CORRADE_GCC45_COMPATIBILITY
 enum class Version: GLint;
@@ -160,7 +160,8 @@ enum class ResourceState: std::uint8_t;
 enum class ResourceDataState: std::uint8_t;
 enum class ResourcePolicy: std::uint8_t;
 #endif
-template<class, class> class Resource;
+template<class T, class U = T> class Resource;
+class ResourceKey;
 template<class...> class ResourceManager;
 
 class Shader;

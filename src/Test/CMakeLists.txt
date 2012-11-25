@@ -1,5 +1,7 @@
 corrade_add_test2(ColorTest ColorTest.cpp LIBRARIES MagnumMathTestLib)
-corrade_add_test2(ResourceManagerTest ResourceManagerTest.cpp)
+corrade_add_test2(MeshTest MeshTest.cpp LIBRARIES Magnum)
+corrade_add_test2(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test2(SwizzleTest SwizzleTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test2(TypeTraitsTest TypeTraitsTest.cpp LIBRARIES Magnum)
 
 set_target_properties(ResourceManagerTest PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)

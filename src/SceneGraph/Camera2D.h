@@ -43,7 +43,7 @@ template<class T>
 #else
 template<class T = GLfloat>
 #endif
-class SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2, T> {
+class MAGNUM_SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2, T> {
     public:
         /**
          * @brief Constructor

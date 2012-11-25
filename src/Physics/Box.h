@@ -33,7 +33,7 @@ namespace Magnum { namespace Physics {
 @todo Use quat + position + size instead?
 @see Box2D, Box3D
 */
-template<std::uint8_t dimensions> class PHYSICS_EXPORT Box: public AbstractShape<dimensions> {
+template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Box: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
         inline Box(const typename DimensionTraits<dimensions>::MatrixType& transformation): _transformation(transformation), _transformedTransformation(transformation) {}
@@ -42,7 +42,7 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Box: public AbstractShape
             return AbstractShape<dimensions>::Type::Box;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) override;
+        void applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) override;
 
         /** @brief Transformation */
         inline typename DimensionTraits<dimensions>::MatrixType transformation() const {

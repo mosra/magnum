@@ -15,7 +15,7 @@
 
 #include "MatrixTest.h"
 
-#include <sstream>
+#include <Utility/Configuration.h>
 
 #include "Matrix.h"
 
@@ -186,6 +186,8 @@ void MatrixTest::debug() {
 }
 
 void MatrixTest::configuration() {
+    Configuration c;
+
     Matrix4 m(
         3.0f, 5.0f, 8.0f, 4.0f,
         4.0f, 4.0f, 7.0f, 3.125f,
@@ -193,8 +195,10 @@ void MatrixTest::configuration() {
         9.0f, 4.0f, 5.0f, 9.55f
     );
     string value("3 4 7 9 5 4 -1 4 8 7 8 5 4 3.125 0 9.55");
-    CORRADE_COMPARE(ConfigurationValue<Matrix4>::toString(m), value);
-    CORRADE_COMPARE(ConfigurationValue<Matrix4>::fromString(value), m);
+
+    c.setValue("matrix", m);
+    CORRADE_COMPARE(c.value<std::string>("matrix"), value);
+    CORRADE_COMPARE(c.value<Matrix4>("matrix"), m);
 }
 
 }}}

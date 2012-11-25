@@ -265,4 +265,55 @@ void Mesh::unbindImplementationDefault() {
 
 void Mesh::unbindImplementationVAO() {}
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+Debug operator<<(Debug debug, Mesh::Primitive value) {
+    switch(value) {
+        #define _c(value) case Mesh::Primitive::value: return debug << "Mesh::Primitive::" #value;
+        _c(Points)
+        _c(Lines)
+        _c(LineStrip)
+        _c(LineLoop)
+        _c(Triangles)
+        _c(TriangleStrip)
+        _c(TriangleFan)
+        #undef _c
+    }
+
+    return debug << "Mesh::Primitive::(invalid)";
 }
+#endif
+
+}
+
+namespace Corrade { namespace Utility {
+
+std::string ConfigurationValue<Magnum::Mesh::Primitive>::toString(Magnum::Mesh::Primitive value, ConfigurationValueFlags) {
+    switch(value) {
+        #define _c(value) case Magnum::Mesh::Primitive::value: return #value;
+        _c(Points)
+        _c(Lines)
+        _c(LineStrip)
+        _c(LineLoop)
+        _c(Triangles)
+        _c(TriangleStrip)
+        _c(TriangleFan)
+        #undef _c
+    }
+
+    return "";
+}
+
+Magnum::Mesh::Primitive ConfigurationValue<Magnum::Mesh::Primitive>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
+    #define _c(value) if(stringValue == #value) return Magnum::Mesh::Primitive::value;
+    _c(Lines)
+    _c(LineStrip)
+    _c(LineLoop)
+    _c(Triangles)
+    _c(TriangleStrip)
+    _c(TriangleFan)
+    #undef _c
+
+    return Magnum::Mesh::Primitive::Points;
+}
+
+}}

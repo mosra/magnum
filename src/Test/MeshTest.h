@@ -1,5 +1,5 @@
-#ifndef Magnum_Shaders_magnumShadersVisibility_h
-#define Magnum_Shaders_magnumShadersVisibility_h
+#ifndef Magnum_Test_MeshTest_h
+#define Magnum_Test_MeshTest_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,14 +15,18 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#ifdef _WIN32
-    #ifdef MagnumShaders_EXPORTS
-        #define MAGNUM_SHADERS_EXPORT __declspec(dllexport)
-    #else
-        #define MAGNUM_SHADERS_EXPORT __declspec(dllimport)
-    #endif
-#else
-    #define MAGNUM_SHADERS_EXPORT __attribute__ ((visibility ("default")))
-#endif
+#include <TestSuite/Tester.h>
+
+namespace Magnum { namespace Test {
+
+class MeshTest: public Corrade::TestSuite::Tester<MeshTest> {
+    public:
+        MeshTest();
+
+        void debug();
+        void configuration();
+};
+
+}}
 
 #endif

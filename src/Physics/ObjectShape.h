@@ -32,7 +32,7 @@ namespace Magnum { namespace Physics {
 Adds shape for collision detection to object.
 @see ObjectShape2D, ObjectShape3D
 */
-template<std::uint8_t dimensions> class PHYSICS_EXPORT ObjectShape: public SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>> {
+template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShape: public SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>> {
     public:
         /**
          * @brief Constructor
@@ -78,7 +78,7 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT ObjectShape: public Scene
         void markDirty() override;
 
         /** Applies transformation to associated shape. */
-        void clean(const typename DimensionTraits<dimensions>::MatrixType& absoluteTransformation) override;
+        void clean(const typename DimensionTraits<dimensions>::MatrixType& absoluteTransformationMatrix) override;
 
     private:
         AbstractShape<dimensions>* _shape;

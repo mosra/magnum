@@ -28,7 +28,7 @@
 namespace Magnum { namespace Physics {
 
 /** @brief Infinite plane, defined by position and normal (3D only) */
-class PHYSICS_EXPORT Plane: public AbstractShape<3> {
+class MAGNUM_PHYSICS_EXPORT Plane: public AbstractShape<3> {
     public:
         /** @brief Constructor */
         inline Plane(const Vector3& position, const Vector3& normal): _position(position), _transformedPosition(position), _normal(normal), _transformedNormal(normal) {}
@@ -36,10 +36,10 @@ class PHYSICS_EXPORT Plane: public AbstractShape<3> {
         inline Type type() const override { return Type::Plane; }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        void applyTransformation(const Matrix4& transformation) override;
+        void applyTransformationMatrix(const Matrix4& matrix) override;
         bool collides(const AbstractShape<3>* other) const override;
         #else
-        void applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) override;
+        void applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) override;
         bool collides(const AbstractShape* other) const override;
         #endif
 

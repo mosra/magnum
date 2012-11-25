@@ -43,9 +43,9 @@ template<std::uint8_t dimensions> ShapeGroup<dimensions>& ShapeGroup<dimensions>
     return *this;
 }
 
-template<std::uint8_t dimensions> void ShapeGroup<dimensions>::applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) {
-    if(a) a->applyTransformation(transformation);
-    if(b) b->applyTransformation(transformation);
+template<std::uint8_t dimensions> void ShapeGroup<dimensions>::applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
+    if(a) a->applyTransformationMatrix(matrix);
+    if(b) b->applyTransformationMatrix(matrix);
 }
 
 template<std::uint8_t dimensions> bool ShapeGroup<dimensions>::collides(const AbstractShape<dimensions>* other) const {

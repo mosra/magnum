@@ -31,7 +31,7 @@ namespace Magnum { namespace MeshTools {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
-class MESHTOOLS_EXPORT CompressIndices {
+class MAGNUM_MESHTOOLS_EXPORT CompressIndices {
     public:
         CompressIndices(const std::vector<std::uint32_t>& indices): indices(indices) {}
 

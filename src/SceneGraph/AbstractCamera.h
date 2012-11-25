@@ -69,7 +69,7 @@ template<std::uint8_t dimensions, class T>
 #else
 template<std::uint8_t dimensions, class T = GLfloat>
 #endif
-class SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions, T> {
+class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions, T> {
     public:
         /**
          * @brief Constructor
@@ -141,8 +141,8 @@ class SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions, T> {
 
     protected:
         /** Recalculates camera matrix */
-        inline void cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType& invertedAbsoluteTransformation) override {
-            _cameraMatrix = invertedAbsoluteTransformation;
+        inline void cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType& invertedAbsoluteTransformationMatrix) override {
+            _cameraMatrix = invertedAbsoluteTransformationMatrix;
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT

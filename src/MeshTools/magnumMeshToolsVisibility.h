@@ -17,12 +17,12 @@
 
 #ifdef _WIN32
     #if defined(MagnumMeshTools_EXPORTS) || defined(MagnumMeshToolsObjects_EXPORTS)
-        #define MESHTOOLS_EXPORT __declspec(dllexport)
+        #define MAGNUM_MESHTOOLS_EXPORT __declspec(dllexport)
     #else
-        #define MESHTOOLS_EXPORT __declspec(dllimport)
+        #define MAGNUM_MESHTOOLS_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define MESHTOOLS_EXPORT __attribute__ ((visibility ("default")))
+    #define MAGNUM_MESHTOOLS_EXPORT __attribute__ ((visibility ("default")))
 #endif
 
 #endif

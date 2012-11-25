@@ -72,8 +72,8 @@ class CachingFeature: public SceneGraph::AbstractFeature3D<> {
         }
 
     protected:
-        void clean(const Matrix4& absoluteTransformation) override {
-            absolutePosition = absoluteTransformation.translation();
+        void clean(const Matrix4& absoluteTransformationMatrix) override {
+            absolutePosition = absoluteTransformationMatrix.translation();
         }
 
     private:
@@ -258,7 +258,7 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractFeature
          * Default implementation does nothing.
          * @see @ref scenegraph-caching, cleanInverted()
          */
-        virtual void clean(const typename DimensionTraits<dimensions, T>::MatrixType& absoluteTransformation);
+        virtual void clean(const typename DimensionTraits<dimensions, T>::MatrixType& absoluteTransformationMatrix);
 
         /**
          * @brief Clean data based on inverted absolute transformation
@@ -272,7 +272,7 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractFeature
          * Default implementation does nothing.
          * @see @ref scenegraph-caching, clean()
          */
-        virtual void cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType& invertedAbsoluteTransformation);
+        virtual void cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType& invertedAbsoluteTransformationMatrix);
 
         /*@}*/
 

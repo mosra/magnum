@@ -35,7 +35,7 @@ namespace Magnum { namespace Shaders {
 Draws vertex-colored mesh.
 @see VertexColorShader2D, VertexColorShader3D
 */
-template<std::uint8_t dimensions> class SHADERS_EXPORT VertexColorShader: public AbstractShaderProgram {
+template<std::uint8_t dimensions> class MAGNUM_SHADERS_EXPORT VertexColorShader: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
         typedef Attribute<0, typename DimensionTraits<dimensions>::PointType> Position;
@@ -46,16 +46,16 @@ template<std::uint8_t dimensions> class SHADERS_EXPORT VertexColorShader: public
         VertexColorShader();
 
         /**
-         * @brief Set transformation and projection
+         * @brief Set transformation and projection matrix
          * @return Pointer to self (for method chaining)
          */
-        inline VertexColorShader<dimensions>* setTransformationProjection(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
-            setUniform(transformationProjectionUniform, matrix);
+        inline VertexColorShader<dimensions>* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
+            setUniform(transformationProjectionMatrixUniform, matrix);
             return this;
         }
 
     private:
-        GLint transformationProjectionUniform;
+        GLint transformationProjectionMatrixUniform;
 };
 
 /** @brief 2D vertex color shader */

@@ -51,7 +51,7 @@ use the same indices.
 @attention Index count must be divisible by 3, otherwise zero length result
     is generated.
 */
-std::tuple<std::vector<std::uint32_t>, std::vector<Vector3>> MESHTOOLS_EXPORT generateFlatNormals(const std::vector<std::uint32_t>& indices, const std::vector<Point3D>& positions);
+std::tuple<std::vector<std::uint32_t>, std::vector<Vector3>> MAGNUM_MESHTOOLS_EXPORT generateFlatNormals(const std::vector<std::uint32_t>& indices, const std::vector<Point3D>& positions);
 
 }}
 

@@ -57,7 +57,7 @@ Result of logical operations on shapes.
 See @ref collision-detection for brief introduction.
 @see ShapeGroup2D, ShapeGroup3D
 */
-template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapeGroup: public AbstractShape<dimensions> {
+template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT ShapeGroup: public AbstractShape<dimensions> {
     #ifndef DOXYGEN_GENERATING_OUTPUT
 //     template<class T> friend constexpr operator~(const T& a) -> enableIfIsBaseType;
 //     template<class T> friend constexpr operator~(T&& a) -> enableIfIsBaseType;
@@ -105,7 +105,7 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT ShapeGroup: public Abstra
             return AbstractShape<dimensions>::Type::ShapeGroup;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) override;
+        void applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) override;
 
         bool collides(const AbstractShape<dimensions>* other) const override;
 

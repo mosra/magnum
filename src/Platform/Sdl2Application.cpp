@@ -15,6 +15,8 @@
 
 #include "Sdl2Application.h"
 
+#include <Utility/utilities.h>
+
 #include "Context.h"
 #include "ExtensionWrangler.h"
 

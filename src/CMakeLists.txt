@@ -32,6 +32,7 @@ set(Magnum_SRCS
     Profiler.cpp
     Query.cpp
     Renderbuffer.cpp
+    Resource.cpp
     Shader.cpp
     SizeTraits.cpp
     Timeline.cpp
@@ -58,6 +59,7 @@ endif()
 
 set(Magnum_HEADERS
     AbstractImage.h
+    AbstractResourceLoader.h
     AbstractShaderProgram.h
     AbstractTexture.h
     Buffer.h
@@ -76,6 +78,7 @@ set(Magnum_HEADERS
     Profiler.h
     Query.h
     Renderbuffer.h
+    Resource.h
     ResourceManager.h
     Shader.h
     SizeTraits.h

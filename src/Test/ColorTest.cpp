@@ -15,6 +15,8 @@
 
 #include "ColorTest.h"
 
+#include <Utility/Configuration.h>
+
 #include "Color.h"
 
 using namespace std;
@@ -135,15 +137,21 @@ void ColorTest::debug() {
 }
 
 void ColorTest::configuration() {
+    Configuration c;
+
     Color3f color3(0.5f, 0.75f, 1.0f);
     string value3("0.5 0.75 1");
-    CORRADE_COMPARE(ConfigurationValue<Color3f>::toString(color3), value3);
-    CORRADE_COMPARE(ConfigurationValue<Color3f>::fromString(value3), color3);
+
+    c.setValue("color3", color3);
+    CORRADE_COMPARE(c.value<std::string>("color3"), value3);
+    CORRADE_COMPARE(c.value<Color3f>("color3"), color3);
 
     Color4f color4(0.5f, 0.75f, 0.0f, 1.0f);
     string value4("0.5 0.75 0 1");
-    CORRADE_COMPARE(ConfigurationValue<Color4f>::toString(color4), value4);
-    CORRADE_COMPARE(ConfigurationValue<Color4f>::fromString(value4), color4);
+
+    c.setValue("color4", color4);
+    CORRADE_COMPARE(c.value<std::string>("color4"), value4);
+    CORRADE_COMPARE(c.value<Color4f>("color4"), color4);
 }
 
 }}

@@ -65,7 +65,7 @@ namespace Implementation {
 See @ref collision-detection for brief introduction.
 @see AbstractShape2D, AbstractShape3D
 */
-template<std::uint8_t dimensions> class PHYSICS_EXPORT AbstractShape {
+template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT AbstractShape {
     public:
         /** @brief Dimension count */
         static const std::uint8_t Dimensions = dimensions;
@@ -100,12 +100,12 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT AbstractShape {
         virtual Type type() const = 0;
 
         /**
-         * @brief Apply transformation
+         * @brief Apply transformation matrix
          *
-         * Applies transformation to user-defined shape properties and caches
-         * them for later usage in collision detection.
+         * Applies transformation matrix to user-defined shape properties and
+         * caches them for later usage in collision detection.
          */
-        virtual void applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) = 0;
+        virtual void applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) = 0;
 
         /**
          * @brief Detect collision with other shape
@@ -126,8 +126,8 @@ typedef AbstractShape<3> AbstractShape3D;
 
 /** @debugoperator{Magnum::Physics::AbstractShape} */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug PHYSICS_EXPORT operator<<(Debug debug, AbstractShape2D::Type value);
-Debug PHYSICS_EXPORT operator<<(Debug debug, AbstractShape3D::Type value);
+Debug MAGNUM_PHYSICS_EXPORT operator<<(Debug debug, AbstractShape2D::Type value);
+Debug MAGNUM_PHYSICS_EXPORT operator<<(Debug debug, AbstractShape3D::Type value);
 #else
 template<std::uint8_t dimensions> Debug operator<<(Debug debug, typename AbstractShape<dimensions>::Type value);
 #endif

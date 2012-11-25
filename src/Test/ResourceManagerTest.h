@@ -17,33 +17,20 @@
 
 #include <TestSuite/Tester.h>
 
-namespace Magnum {
-
-template<class...> class ResourceManager;
-
-namespace Test {
-
-class Data {
-    public:
-        static std::size_t count;
-
-        inline Data() { ++count; }
-        inline ~Data() { --count; }
-};
-
-typedef Magnum::ResourceManager<int32_t, Data> ResourceManager;
+namespace Magnum { namespace Test {
 
 class ResourceManagerTest: public Corrade::TestSuite::Tester<ResourceManagerTest> {
     public:
         ResourceManagerTest();
 
         void state();
+        void stateFallback();
+        void stateDisallowed();
+        void basic();
+        void residentPolicy();
         void referenceCountedPolicy();
         void manualPolicy();
-        void destroy();
-
-    private:
-        ResourceManager* rm;
+        void loader();
 };
 
 }}

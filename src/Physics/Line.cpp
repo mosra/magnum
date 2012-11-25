@@ -20,9 +20,9 @@
 
 namespace Magnum { namespace Physics {
 
-template<std::uint8_t dimensions> void Line<dimensions>::applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) {
-    _transformedA = (transformation*typename DimensionTraits<dimensions>::PointType(_a)).vector();
-    _transformedB = (transformation*typename DimensionTraits<dimensions>::PointType(_b)).vector();
+template<std::uint8_t dimensions> void Line<dimensions>::applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
+    _transformedA = (matrix*typename DimensionTraits<dimensions>::PointType(_a)).vector();
+    _transformedB = (matrix*typename DimensionTraits<dimensions>::PointType(_b)).vector();
 }
 
 /* Explicitly instantiate the templates */

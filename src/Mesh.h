@@ -33,8 +33,8 @@ namespace Magnum {
 @section Mesh-configuration Mesh configuration
 
 To properly configure mesh, you have to set primitive either in constructor or
-using setPrimitive() and call setVertexCount(). Then create vertex buffers,
-and them with vertex data. You can also use MeshTools::interleave() to
+using setPrimitive() and call setVertexCount(). Then create vertex buffers and
+fill them with vertex data. You can also use MeshTools::interleave() to
 conveniently set vertex count and buffer data. At last assign them to mesh and
 @ref AbstractShaderProgram::Attribute "shader attributes" using
 addVertexBuffer(), addInterleavedVertexBuffer() or addVertexBufferStride().
@@ -742,6 +742,30 @@ class MAGNUM_EXPORT Mesh {
         #endif
 };
 
+/** @debugoperator{Magnum::Mesh} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::Primitive value);
+
 }
+
+namespace Corrade { namespace Utility {
+
+/** @configurationvalue{Magnum::Mesh} */
+template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::Mesh::Primitive> {
+    /**
+     * @brief Writes enum value as string
+     *
+     * If the value is invalid, returns empty string.
+     */
+    static std::string toString(Magnum::Mesh::Primitive value, ConfigurationValueFlags);
+
+    /**
+     * @brief Reads enum value as string
+     *
+     * If the value is invalid, returns @ref Magnum::Mesh::Primitive "Mesh::Primitive::Points".
+     */
+    static Magnum::Mesh::Primitive fromString(const std::string& stringValue, ConfigurationValueFlags);
+};
+
+}}
 
 #endif

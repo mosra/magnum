@@ -31,7 +31,7 @@ namespace Magnum { namespace Physics {
 
 @see Point2D, Point3D
 */
-template<std::uint8_t dimensions> class PHYSICS_EXPORT Point: public AbstractShape<dimensions> {
+template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Point: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
         inline Point(const typename DimensionTraits<dimensions>::VectorType& position): _position(position), _transformedPosition(position) {}
@@ -40,7 +40,7 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Point: public AbstractSha
             return AbstractShape<dimensions>::Type::Point;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) override;
+        void applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) override;
 
         /** @brief Position */
         inline typename DimensionTraits<dimensions>::VectorType position() const {

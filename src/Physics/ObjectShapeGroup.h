@@ -34,7 +34,7 @@ namespace Magnum { namespace Physics {
 
 @see ObjectShapeGroup2D, ObjectShapeGroup3D
 */
-template<std::uint8_t dimensions> class PHYSICS_EXPORT ObjectShapeGroup: public SceneGraph::FeatureGroup<dimensions, ObjectShape<dimensions>> {
+template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShapeGroup: public SceneGraph::FeatureGroup<dimensions, ObjectShape<dimensions>> {
     friend class ObjectShape<dimensions>;
 
     public:

@@ -53,9 +53,9 @@ functions and properties:
  - <strong>%Attribute definitions</strong> with location and type for
    configuring meshes, for example:
 @code
-static const Attribute<0, Point3D> Position;
-static const Attribute<1, Vector3> Normal;
-static const Attribute<2, Vector2> TextureCoordinates;
+typedef Attribute<0, Point3D> Position;
+typedef Attribute<1, Vector3> Normal;
+typedef Attribute<2, Vector2> TextureCoordinates;
 @endcode
    @todoc Output attribute location (for bindFragmentDataLocationIndexed(),
         referenced also from Framebuffer::mapDefaultForDraw() / Framebuffer::mapForDraw())
@@ -127,9 +127,9 @@ the program:
 @code
 // Shaders attached...
 
-bindAttributeLocation(Position.Location, "position");
-bindAttributeLocation(Normal.Location, "normal");
-bindAttributeLocation(TextureCoords.Location, "textureCoordinates");
+bindAttributeLocation(Position::Location, "position");
+bindAttributeLocation(Normal::Location, "normal");
+bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
 
 bindFragmentDataLocationIndexed(0, 0, "color");
 bindFragmentDataLocationIndexed(1, 1, "ambient");

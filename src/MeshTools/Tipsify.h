@@ -29,7 +29,7 @@ namespace Magnum { namespace MeshTools {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
-class MESHTOOLS_EXPORT Tipsify {
+class MAGNUM_MESHTOOLS_EXPORT Tipsify {
     public:
         inline Tipsify(std::vector<std::uint32_t>& indices, std::uint32_t vertexCount): indices(indices), vertexCount(vertexCount) {}
 

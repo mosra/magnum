@@ -34,7 +34,7 @@ Unlike other elements the sphere doesn't support asymmetric scaling. When
 applying transformation, the scale factor is averaged from all axes.
 @see Sphere2D, Sphere3D
 */
-template<std::uint8_t dimensions> class PHYSICS_EXPORT Sphere: public AbstractShape<dimensions> {
+template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Sphere: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
         inline Sphere(const typename DimensionTraits<dimensions>::VectorType& position, float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
@@ -43,7 +43,7 @@ template<std::uint8_t dimensions> class PHYSICS_EXPORT Sphere: public AbstractSh
             return AbstractShape<dimensions>::Type::Sphere;
         }
 
-        void applyTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) override;
+        void applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) override;
 
         bool collides(const AbstractShape<dimensions>* other) const override;
 

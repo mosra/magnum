@@ -35,17 +35,17 @@ SphereTest::SphereTest() {
 void SphereTest::applyTransformation() {
     Physics::Sphere3D sphere({1.0f, 2.0f, 3.0f}, 7.0f);
 
-    sphere.applyTransformation(Matrix4::rotation(deg(90.0f), Vector3::yAxis()));
+    sphere.applyTransformationMatrix(Matrix4::rotation(deg(90.0f), Vector3::yAxis()));
     CORRADE_COMPARE(sphere.transformedPosition(), Vector3(3.0f, 2.0f, -1.0f));
     CORRADE_COMPARE(sphere.transformedRadius(), 7.0f);
 
     /* Symmetric scaling */
-    sphere.applyTransformation(Matrix4::scaling(Vector3(2.0f)));
+    sphere.applyTransformationMatrix(Matrix4::scaling(Vector3(2.0f)));
     CORRADE_COMPARE(sphere.transformedPosition(), Vector3(2.0f, 4.0f, 6.0f));
     CORRADE_COMPARE(sphere.transformedRadius(), 14.0f);
 
     /* Apply average scaling to radius */
-    sphere.applyTransformation(Matrix4::scaling({Constants::sqrt3(), -Constants::sqrt2(), 2.0f}));
+    sphere.applyTransformationMatrix(Matrix4::scaling({Constants::sqrt3(), -Constants::sqrt2(), 2.0f}));
     CORRADE_COMPARE(sphere.transformedRadius(), Constants::sqrt3()*7.0f);
 }
 

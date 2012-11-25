@@ -18,6 +18,7 @@
 #include <string>
 #include <unordered_map>
 #include <Utility/Debug.h>
+#include <Utility/utilities.h>
 
 #include "AbstractShaderProgram.h"
 #include "AbstractTexture.h"
