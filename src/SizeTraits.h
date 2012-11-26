@@ -147,7 +147,13 @@ SizeTraits class.
 */
 template<std::uint32_t base, std::uint32_t exponent> struct Pow {
     /** @brief Value of the power */
-    enum: std::uint32_t { value = base*Pow<base, exponent-1>::value };
+    enum: std::uint32_t {
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        value = base*Pow<base, exponent-1>::value
+        #else
+        value
+        #endif
+    };
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -166,7 +172,13 @@ SizeTraits class.
 */
 template<std::uint32_t base, std::uint32_t number> struct Log {
     /** @brief Value of the logarithm */
-    enum: std::uint32_t { value = 1+Log<base, number/base>::value };
+    enum: std::uint32_t {
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        value = 1+Log<base, number/base>::value
+        #else
+        value
+        #endif
+    };
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
