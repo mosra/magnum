@@ -176,7 +176,12 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             return _data[col*rows+row];
         }
 
-        /** @brief Equality operator */
+        /**
+         * @brief Equality operator
+         *
+         * @see Vector::operator<(), Vector::operator<=(), Vector::operator>=(),
+         *      Vector::operator>()
+         */
         inline bool operator==(const RectangularMatrix<cols, rows, T>& other) const {
             for(std::size_t i = 0; i != cols*rows; ++i)
                 if(!MathTypeTraits<T>::equals(_data[i], other._data[i])) return false;
@@ -184,7 +189,12 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             return true;
         }
 
-        /** @brief Non-equality operator */
+        /**
+         * @brief Non-equality operator
+         *
+         * @see Vector::operator<(), Vector::operator<=(), Vector::operator>=(),
+         *      Vector::operator>()
+         */
         inline constexpr bool operator!=(const RectangularMatrix<cols, rows, T>& other) const {
             return !operator==(other);
         }
