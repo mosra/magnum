@@ -103,6 +103,54 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
         inline constexpr T operator[](std::size_t pos) const { return RectangularMatrix<1, size, T>::_data[pos]; } /**< @overload */
 
         /**
+         * @brief Component-wise less than
+         * @return `True` if all components are smaller than their
+         *      counterparts in @p other, `false` otherwise
+         */
+        inline bool operator<(const Vector<size, T>& other) const {
+            for(std::size_t i = 0; i != size; ++i)
+                if((*this)[i] >= other[i]) return false;
+
+            return true;
+        }
+
+        /**
+         * @brief Component-wise less than or equal
+         * @return `True` if all components are smaller than or equal to their
+         *      counterparts in @p other, `false` otherwise
+         */
+        inline bool operator<=(const Vector<size, T>& other) const {
+            for(std::size_t i = 0; i != size; ++i)
+                if((*this)[i] > other[i]) return false;
+
+            return true;
+        }
+
+        /**
+         * @brief Component-wise greater than or equal
+         * @return `True` if all components are larger than or equal to their
+         *      counterparts in @p other, `false` otherwise
+         */
+        inline bool operator>=(const Vector<size, T>& other) const {
+            for(std::size_t i = 0; i != size; ++i)
+                if((*this)[i] < other[i]) return false;
+
+            return true;
+        }
+
+        /**
+         * @brief Component-wise greater than
+         * @return `True` if all components are larger than their
+         *      counterparts in @p other, `false` otherwise
+         */
+        inline bool operator>(const Vector<size, T>& other) const {
+            for(std::size_t i = 0; i != size; ++i)
+                if((*this)[i] <= other[i]) return false;
+
+            return true;
+        }
+
+        /**
          * @brief Multiply vector component-wise
          *
          * @see operator*=(const Vector<size, T>&)

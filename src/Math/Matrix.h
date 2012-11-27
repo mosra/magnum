@@ -67,7 +67,15 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
                 (*this)(i, i) = value;
         }
 
-        /** @copydoc RectangularMatrix::RectangularMatrix */
+        /**
+         * @brief Initializer-list constructor
+         * @param first First value
+         * @param next  Next values
+         *
+         * Note that the values are in column-major order.
+         * @todoc Make this copydoc when Doxygen is fixed
+         * @todoc Remove workaround when Doxygen supports uniform initialization
+         */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> inline constexpr Matrix(T first, U... next): RectangularMatrix<size, size, T>(first, next...) {}
         #else

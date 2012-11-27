@@ -32,6 +32,7 @@ typedef Vector<3, float> Vector3;
 
 VectorTest::VectorTest() {
     addTests(&VectorTest::construct,
+             &VectorTest::compareComponentWise,
              &VectorTest::dot,
              &VectorTest::multiplyDivideComponentWise,
              &VectorTest::dotSelf,
@@ -51,6 +52,20 @@ void VectorTest::construct() {
 
     float data[] = { 1.0f, 2.0f, 3.0f, 4.0f };
     CORRADE_COMPARE(Vector4::from(data), Vector4(1.0f, 2.0f, 3.0f, 4.0f));
+}
+
+void VectorTest::compareComponentWise() {
+    CORRADE_VERIFY(Vector4(1.0f, -2.0f, -5.0f, 7.0f) < Vector4(1.1f, -1.0f, 3.0f, 8.0f));
+    CORRADE_VERIFY(!(Vector4(1.0f, -2.0f, -5.0f, 7.0f) < Vector4(1.1f, -1.0f, 3.0f, 7.0f)));
+
+    CORRADE_VERIFY(Vector4(1.0f, -2.0f, -5.0f, 7.0f) <= Vector4(1.1f, -1.0f, 3.0f, 7.0f));
+    CORRADE_VERIFY(!(Vector4(1.0f, -2.0f, -5.0f, 7.0f) <= Vector4(1.0f, -2.0f, -5.0f, 6.0f)));
+
+    CORRADE_VERIFY(Vector4(1.1f, -1.0f, 3.0f, 7.0f) >= Vector4(1.0f, -2.0f, -5.0f, 7.0f));
+    CORRADE_VERIFY(!(Vector4(1.0f, -2.0f, -5.0f, 6.0f) >= Vector4(1.0f, -2.0f, -5.0f, 7.0f)));
+
+    CORRADE_VERIFY(Vector4(1.1f, -1.0f, 3.0f, 8.0f) > Vector4(1.0f, -2.0f, -5.0f, 7.0f));
+    CORRADE_VERIFY(!(Vector4(1.1f, -1.0f, 3.0f, 7.0f) > Vector4(1.0f, -2.0f, -5.0f, 7.0f)));
 }
 
 void VectorTest::dot() {
