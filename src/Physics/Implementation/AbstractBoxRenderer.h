@@ -19,11 +19,7 @@
 
 #include "corradeCompatibility.h"
 
-namespace Magnum {
-
-class Buffer;
-
-namespace Physics { namespace Implementation {
+namespace Magnum { namespace Physics { namespace Implementation {
 
 template<std::uint8_t dimensions> class AbstractBoxRenderer: public AbstractDebugRenderer<dimensions> {
     public:
