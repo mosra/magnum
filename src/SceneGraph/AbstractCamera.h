@@ -173,7 +173,7 @@ for more information.
 @todoc Remove workaround when Doxygen supports alias template
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef MAGNUM_GCC46_COMPATIBILITY
+#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using AbstractCamera2D = AbstractCamera<2, T>;
 #endif
 #else
@@ -190,7 +190,7 @@ for more information.
 @todoc Remove workaround when Doxygen supports alias template
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef MAGNUM_GCC46_COMPATIBILITY
+#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using AbstractCamera3D = AbstractCamera<3, T>;
 #endif
 #else

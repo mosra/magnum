@@ -21,6 +21,7 @@
 
 #include <cstdint>
 
+#include "corradeConfigure.h"
 #include "magnumConfigure.h"
 
 #ifndef MAGNUM_TARGET_GLES

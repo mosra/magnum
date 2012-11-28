@@ -20,6 +20,8 @@
 #include "AbstractResourceLoader.h"
 #include "ResourceManager.h"
 
+#include "corradeCompatibility.h"
+
 using namespace std;
 using namespace Corrade::Utility;
 

@@ -17,7 +17,7 @@
 
 #include "AbstractDebugRenderer.h"
 
-#include "magnumCompatibility.h"
+#include "corradeCompatibility.h"
 
 namespace Magnum {
 

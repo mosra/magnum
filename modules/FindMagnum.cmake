@@ -67,12 +67,6 @@ find_path(MAGNUM_INCLUDE_DIR
 # Configuration
 file(READ ${MAGNUM_INCLUDE_DIR}/magnumConfigure.h _magnumConfigure)
 
-# Compatibility?
-string(FIND "${_magnumConfigure}" "#define MAGNUM_GCC46_COMPATIBILITY" _GCC46_COMPATIBILITY)
-if(NOT _GCC46_COMPATIBILITY EQUAL -1)
-    set(MAGNUM_GCC46_COMPATIBILITY 1)
-endif()
-
 # Built for specific target?
 string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES" _TARGET_GLES)
 if(NOT _TARGET_GLES EQUAL -1)

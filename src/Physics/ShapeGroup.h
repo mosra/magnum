@@ -24,7 +24,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "magnumCompatibility.h"
+#include "corradeCompatibility.h"
 
 namespace Magnum { namespace Physics {
 
