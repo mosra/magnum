@@ -32,8 +32,6 @@
 #include "Math/Vector2.h"
 #include "AbstractContextHandler.h"
 
-#include "magnumCompatibility.h"
-
 namespace Magnum {
 
 class Context;

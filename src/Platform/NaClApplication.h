@@ -31,7 +31,7 @@
 #include "Math/Vector2.h"
 #include "Magnum.h"
 
-#include "magnumCompatibility.h"
+#include "corradeCompatibility.h"
 
 namespace pp {
     class Graphics3D;

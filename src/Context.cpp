@@ -18,7 +18,7 @@
 #include <string>
 #include <unordered_map>
 #include <Utility/Debug.h>
-#include <Utility/utilities.h>
+#include <Utility/String.h>
 
 #include "AbstractShaderProgram.h"
 #include "AbstractTexture.h"
@@ -253,7 +253,7 @@ Context::Context() {
         /* Don't crash when glGetString() returns nullptr */
         const char* e = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
         if(e) {
-            vector<string> extensions = Corrade::Utility::split(e, ' ');
+            vector<string> extensions = Corrade::Utility::String::split(e, ' ');
             for(const string& extension: extensions) {
                 auto found = futureExtensions.find(extension);
                 if(found != futureExtensions.end()) {
