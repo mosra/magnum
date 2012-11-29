@@ -5,10 +5,20 @@
 # This module tries to find Corrade library and then defines:
 #  CORRADE_FOUND                    - True if Corrade library is found
 #  CORRADE_INCLUDE_DIR              - Include dir for Corrade
-#  CORRADE_LIBRARIES                - All Corrade libraries
-#  CORRADE_UTILITY_LIBRARY          - Corrade Utility library
-#  CORRADE_PLUGINMANAGER_LIBRARY    - Corrade Plugin manager library
+#  CORRADE_UTILITY_LIBRARIES        - Corrade Utility library and dependent
+#   libraries
+#  CORRADE_PLUGINMANAGER_LIBRARIES  - Corrade Plugin manager library and
+#   dependent libraries
+#  CORRADE_TESTSUITE_LIBRARIES      - Corrade TestSuite library and dependent
+#   libraries
 #  CORRADE_RC_EXECUTABLE            - Corrade resource compiler executable
+# Additionally these variables are defined for internal usage:
+#  CORRADE_UTILITY_LIBRARY          - Corrade Utility library (w/o
+#   dependencies)
+#  CORRADE_PLUGINMANAGER_LIBRARY    - Corrade Plugin manager library (w/o
+#   dependencies)
+#  CORRADE_TESTSUITE_LIBRARY        - Corrade TestSuite library (w/o
+#   dependencies)
 # If Corrade library is found, these macros and functions are defined:
 #
 #
@@ -17,8 +27,9 @@
 #                    sources...
 #                    [LIBRARIES libraries...])
 # Test name is also executable name. You can also specify libraries to link
-# with instead of using target_link_libraries(). Note that the
-# enable_testing() must be called explicitly.
+# with instead of using target_link_libraries(). CORRADE_TESTSUITE_LIBRARIES
+# are linked atuomatically to each test. Note that the enable_testing()
+# function must be called explicitly.
 #
 #
 # Add QtTest unit test.
@@ -98,6 +109,7 @@
 # Libraries
 find_library(CORRADE_UTILITY_LIBRARY CorradeUtility)
 find_library(CORRADE_PLUGINMANAGER_LIBRARY CorradePluginManager)
+find_library(CORRADE_TESTSUITE_LIBRARY CorradeTestSuite)
 
 # RC executable
 find_program(CORRADE_RC_EXECUTABLE corrade-rc)
@@ -111,6 +123,7 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Corrade DEFAULT_MSG
     CORRADE_UTILITY_LIBRARY
     CORRADE_PLUGINMANAGER_LIBRARY
+    CORRADE_TESTSUITE_LIBRARY
     CORRADE_INCLUDE_DIR
     CORRADE_RC_EXECUTABLE)
 
@@ -118,6 +131,19 @@ if(NOT CORRADE_FOUND)
     return()
 endif()
 
+# Configuration
+file(READ ${CORRADE_INCLUDE_DIR}/corradeConfigure.h _corradeConfigure)
+
+# Compatibility?
+string(FIND "${_corradeConfigure}" "#define CORRADE_GCC46_COMPATIBILITY" _GCC46_COMPATIBILITY)
+if(NOT _GCC46_COMPATIBILITY EQUAL -1)
+    set(CORRADE_GCC46_COMPATIBILITY 1)
+endif()
+
+set(CORRADE_UTILITY_LIBRARIES ${CORRADE_UTILITY_LIBRARY})
+set(CORRADE_PLUGINMANAGER_LIBRARIES ${CORRADE_PLUGINMANAGER_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
+set(CORRADE_TESTSUITE_LIBRARIES ${CORRADE_TESTSUITE_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
+mark_as_advanced(CORRADE_UTILITY_LIBRARY CORRADE_PLUGINMANAGER_LIBRARY CORRADE_TESTSUITE_LIBRARY)
+
 include(CorradeMacros)
 include(CorradeLibSuffix)
-set(CORRADE_LIBRARIES ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY})
