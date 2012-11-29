@@ -22,7 +22,7 @@
 #include "Math/Vector3.h"
 #include "AbstractShape.h"
 
-#include "magnumCompatibility.h"
+#include "corradeCompatibility.h"
 
 namespace Magnum { namespace Physics {
 

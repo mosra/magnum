@@ -4,8 +4,6 @@ project(Magnum)
 
 include(CMakeDependentOption)
 
-option(GCC46_COMPATIBILITY "Enable compatibility mode for GCC 4.6 (might disable some features)" OFF)
-
 option(TARGET_GLES "Build for OpenGL ES instead of desktop OpenGL" OFF)
 cmake_dependent_option(TARGET_GLES2 "Build for OpenGL ES 2" ON "TARGET_GLES" OFF)
 
@@ -62,13 +60,6 @@ if(TARGET_GLES)
 endif()
 if(TARGET_GLES2)
     set(MAGNUM_TARGET_GLES2 1)
-endif()
-
-if(CORRADE_GCC45_COMPATIBILITY)
-    set(GCC46_COMPATIBILITY 1)
-endif()
-if(GCC46_COMPATIBILITY)
-    set(MAGNUM_GCC46_COMPATIBILITY 1)
 endif()
 
 # Installation paths

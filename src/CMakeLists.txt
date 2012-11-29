@@ -87,7 +87,6 @@ set(Magnum_HEADERS
     Timeline.h
     TypeTraits.h
 
-    magnumCompatibility.h
     magnumVisibility.h)
 
 # Desktop-only headers

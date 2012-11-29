@@ -25,8 +25,6 @@
 #include "DimensionTraits.h"
 #include "SceneGraph.h"
 
-#include "magnumCompatibility.h"
-
 namespace Magnum { namespace SceneGraph {
 
 /**
@@ -190,7 +188,7 @@ for more information.
 @todoc Remove workaround when Doxygen supports alias template
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef MAGNUM_GCC46_COMPATIBILITY
+#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using AbstractObject2D = AbstractObject<2, T>;
 #endif
 #else
@@ -207,7 +205,7 @@ for more information.
 @todoc Remove workaround when Doxygen supports alias template
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef MAGNUM_GCC46_COMPATIBILITY
+#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using AbstractObject3D = AbstractObject<3, T>;
 #endif
 #else

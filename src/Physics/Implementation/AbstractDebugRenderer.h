@@ -18,17 +18,9 @@
 #include "DimensionTraits.h"
 #include "ResourceManager.h"
 #include "SceneGraph/SceneGraph.h"
+#include "Shaders/Shaders.h"
 
-namespace Magnum {
-
-class AbstractShaderProgram;
-class Mesh;
-
-namespace Shaders {
-    template<std::uint8_t> class FlatShader;
-}
-
-namespace Physics { namespace Implementation {
+namespace Magnum { namespace Physics { namespace Implementation {
 
 struct Options;
 

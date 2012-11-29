@@ -160,9 +160,13 @@ void Matrix4Test::rotationPart() {
     );
 
     Matrix4 rotation = Matrix4::rotation(deg(-74.0f), Vector3(-1.0f, 2.0f, 2.0f).normalized());
+    CORRADE_COMPARE(rotation.rotation().determinant(), 1.0f);
+    CORRADE_COMPARE(rotation.rotation()*rotation.rotation().transposed(), Matrix3());
     CORRADE_COMPARE(rotation.rotation(), expectedRotationPart);
 
     Matrix4 rotationTransformed = Matrix4::translation({2.0f, 5.0f, -3.0f})*rotation*Matrix4::scaling(Vector3(9.0f));
+    CORRADE_COMPARE(rotationTransformed.rotation().determinant(), 1.0f);
+    CORRADE_COMPARE(rotationTransformed.rotation()*rotationTransformed.rotation().transposed(), Matrix3());
     CORRADE_COMPARE(rotationTransformed.rotation(), expectedRotationPart);
 }
 

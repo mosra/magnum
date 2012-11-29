@@ -23,7 +23,7 @@
 #include "Math/Matrix4.h"
 #include "AbstractShape.h"
 
-#include "magnumCompatibility.h"
+#include "corradeCompatibility.h"
 
 namespace Magnum { namespace Physics {
 

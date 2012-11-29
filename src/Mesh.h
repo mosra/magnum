@@ -404,8 +404,9 @@ class MAGNUM_EXPORT Mesh {
          *
          * Default is zero.
          * @attention All bound attributes are reset after calling this
-         *      function, so you must call
-         *      addVertexBuffer()/addInterleavedVertexBuffer() afterwards.
+         *      function, so if your mesh has any vertex attributes, be sure
+         *      to call addVertexBuffer()/addInterleavedVertexBuffer()
+         *      afterwards.
          * @see MeshTools::interleave()
          */
         Mesh* setVertexCount(GLsizei vertexCount);

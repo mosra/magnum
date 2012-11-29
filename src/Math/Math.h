@@ -21,7 +21,7 @@
 #include <limits>
 #include <algorithm>
 
-#include "magnumCompatibility.h"
+#include "corradeCompatibility.h"
 #include "magnumVisibility.h"
 
 /** @file

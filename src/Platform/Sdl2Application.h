@@ -26,8 +26,6 @@
 #include <SDL2/SDL_scancode.h>
 #include <Corrade/Containers/EnumSet.h>
 
-#include "magnumCompatibility.h"
-
 namespace Magnum {
 
 class Context;

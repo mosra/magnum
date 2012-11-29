@@ -111,7 +111,7 @@ void Mesh::bindVAO(GLuint vao) {
 }
 
 void Mesh::bind() {
-    CORRADE_ASSERT((_vertexCount == 0) == attributes.empty(), "Mesh: vertex count is non-zero, but no attributes are bound", );
+    CORRADE_ASSERT((_vertexCount != 0) || !attributes.empty(), "Mesh: attributes are bound but vertex count is zero", );
 
     (this->*bindImplementation)();
 }

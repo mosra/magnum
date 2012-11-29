@@ -21,6 +21,8 @@
 
 #include "Mesh.h"
 
+#include "corradeCompatibility.h"
+
 namespace Magnum {
 
 /**

@@ -26,8 +26,6 @@
 
 #include <GL/freeglut.h>
 
-#include "magnumCompatibility.h"
-
 namespace Magnum {
 
 class Context;

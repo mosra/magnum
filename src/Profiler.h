@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-#include "magnumCompatibility.h"
+#include "corradeCompatibility.h"
 #include "magnumVisibility.h"
 
 namespace Magnum {

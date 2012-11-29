@@ -103,7 +103,7 @@ AbstractGroupedFeature for more information.
 @todoc Remove workaround when Doxygen supports alias template
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef MAGNUM_GCC46_COMPATIBILITY
+#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class Derived, class T = GLfloat> using AbstractGroupedFeature2D = AbstractGroupedFeature<2, Derived, T>;
 #endif
 #else
@@ -121,7 +121,7 @@ AbstractGroupedFeature for more information.
 @todoc Remove workaround when Doxygen supports alias template
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef MAGNUM_GCC46_COMPATIBILITY
+#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class Derived, class T = GLfloat> using AbstractGroupedFeature3D = AbstractGroupedFeature<3, Derived, T>;
 #endif
 #else

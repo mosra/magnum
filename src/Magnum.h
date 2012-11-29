@@ -21,7 +21,7 @@
 
 #include <cstdint>
 
-#include "magnumCompatibility.h"
+#include "corradeCompatibility.h"
 #include "magnumConfigure.h"
 
 #ifndef MAGNUM_TARGET_GLES
