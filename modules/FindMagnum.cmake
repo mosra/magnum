@@ -184,16 +184,17 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         find_path(_MAGNUM_${_COMPONENT}_INCLUDE_DIR
             NAMES ${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES}
             PATHS ${MAGNUM_INCLUDE_DIR}/${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX})
-
-        # Don't expose this variable to end users
-        mark_as_advanced(FORCE _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
     endif()
 
     # Decide if the library was found
     if(MAGNUM_${_COMPONENT}_LIBRARY AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
         set(MAGNUM_${_COMPONENT}_LIBRARIES ${MAGNUM_${_COMPONENT}_LIBRARY} ${_MAGNUM_${_COMPONENT}_LIBRARIES})
         set(MAGNUM_${_COMPONENT}_INCLUDE_DIRS ${_MAGNUM_${_COMPONENT}_INCLUDE_DIRS})
+
         set(Magnum_${component}_FOUND TRUE)
+
+        # Don't expose variables w/o dependencies to end users
+        mark_as_advanced(FORCE MAGNUM_${_COMPONENT}_LIBRARY _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
     else()
         set(Magnum_${component}_FOUND FALSE)
     endif()
