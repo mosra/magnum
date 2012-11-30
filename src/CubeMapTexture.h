@@ -26,10 +26,9 @@ namespace Magnum {
 /**
 @brief Cube map texture
 
-%Texture used mainly for environemnt maps. See AbstractTexture documentation
-for more information. It consists of 6 square textures generating 6 faces of
-the cube as following. Note that all images must be turned upside down (+Y is
-top):
+%Texture used mainly for environment maps. It consists of 6 square textures
+generating 6 faces of the cube as following. Note that all images must be
+turned upside down (+Y is top):
 
               +----+
               | -Y |
@@ -39,11 +38,29 @@ top):
               | +Y |
               +----+
 
-When using cube map texture in the shader, use `samplerCube`. Unlike classic
-textures, coordinates for cube map textures is signed three-part vector from
-the center of the cube, which intersects one of the six sides of the cube map.
+@section CubeMapTexture-usage Basic usage
 
-See AbstractTexture documentation for more information about usage.
+See Texture documentation for introduction.
+
+Common usage is to fully configure all texture parameters and then set the
+data from e.g. set of Image objects:
+@code
+Image2D positiveX({256, 256}, Image2D::Components::RGBA, Image2D::ComponentType::UnsignedByte, dataPositiveX);
+// ...
+
+CubeMapTexture texture;
+texture.setMagnificationFilter(Texture2D::Filter::Linear)
+    // ...
+    ->setData(CubeMapTexture::Coordinate::PositiveX, 0, Texture2D::Format::RGBA8, &positiveX)
+    ->setData(CubeMapTexture::Coordinate::NegativeX, 0, Texture2D::Format::RGBA8, &negativeX)
+    // ...
+@endcode
+
+The texture is bound to layer specified by shader via bind(). In shader, the
+texture is used via `samplerCube`. Unlike classic textures, coordinates for
+cube map textures is signed three-part vector from the center of the cube,
+which intersects one of the six sides of the cube map. See also
+AbstractShaderProgram for more information.
 
 @see CubeMapTextureArray
 */

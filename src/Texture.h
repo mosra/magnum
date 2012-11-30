@@ -27,12 +27,66 @@ namespace Magnum {
 /**
 @brief %Texture
 
-Template class for one- to three-dimensional textures. See AbstractTexture
-documentation for more information.
+Template class for one- to three-dimensional textures. See also
+AbstractTexture documentation for more information.
 
-In shader, the texture is used via `sampler1D`, `sampler2D` or `sampler3D`
-depending on dimension count. Note that you can have more than one texture bound
-to the shader - the only requirement is to have each texture in another layer.
+@section Texture-usage Usage
+
+Common usage is to fully configure all texture parameters and then set the
+data from e.g. Image. Example configuration of high quality texture with
+trilinear anisotropic filtering, i.e. the best you can ask for:
+@code
+void* data;
+Image2D image({4096, 4096}, Image2D::Components::RGBA, Image2D::ComponentType::UnsignedByte, data);
+
+Texture2D texture;
+texture.setMagnificationFilter(Texture2D::Filter::Linear)
+    ->setMinificationFilter(Texture2D::Filter::Linear, Texture2D::Mipmap::Linear)
+    ->setWrapping(Texture2D::Wrapping::ClampToEdge)
+    ->setMaxAnisotropy(Texture2D::maxSupportedAnisotropy)
+    ->setData(0, Texture2D::Format::RGBA8, &image)
+    ->generateMipmap();
+@endcode
+
+@attention Don't forget to fully configure the texture before use. Note that
+    default configuration (if setMinificationFilter() is not called with
+    another value) is to use mipmaps, so be sure to either call setMinificationFilter(),
+    explicitly set all mip levels or call generateMipmap(). If using rectangle
+    texture, you must also call setWrapping(), because the initial value is
+    not supported on rectangle textures. See also setMagnificationFilter() and
+    setBorderColor().
+
+The texture is bound to layer specified by shader via bind(). In shader, the
+texture is used via `sampler1D`, `sampler2D` or `sampler3D` depending on
+dimension count. See also AbstractShaderProgram documentation for more
+information.
+
+@section Texture-array Texture arrays
+
+It is possible to specify each layer separately using setSubData(), but you
+have to allocate the memory for all layers first, possibly by passing properly
+sized empty Image to setData(). Example: 2D texture array with 16 layers of
+64x64 images:
+@code
+Image3D dummy({64, 64, 16}, Image3D::Components::RGBA, Image3D::ComponentType::UnsignedByte, nullptr);
+
+Texture3D texture(Texture3D::Target::Texture2DArray);
+texture.setMagnificationFilter(Texture2D::Filter::Linear)
+    // ...
+    ->setData(0, Texture2D::Format::RGBA8, &dummy);
+
+for(std::size_t i = 0; i != 16; ++i) {
+    void* data = ...;
+    Image2D image({64, 64}, Image3D::Components::RGBA, Image3D::ComponentType::UnsignedByte, image);
+    texture->setSubData(0, Vector3i::zAxis(i), image);
+}
+
+// ...
+@endcode
+
+Similar approach can be used for any other texture types (e.g. setting
+Texture3D data using 2D layers, Texture2D data using one-dimensional chunks
+etc.).
 
 @section Texture-rectangle Rectangle textures
 
@@ -124,7 +178,8 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          * Sets wrapping type for coordinates out of range (0, 1) for normal
          * textures and (0, textureSizeInGivenDirection-1) for rectangle
          * textures. If @extension{EXT,direct_state_access} is not available,
-         * the texture is bound to some layer before the operation.
+         * the texture is bound to some layer before the operation. Initial
+         * value is @ref AbstractTexture::Wrapping "Wrapping::Repeat".
          * @attention For rectangle textures only some modes are supported,
          *      see @ref AbstractTexture::Wrapping "Wrapping" documentation
          *      for more information.

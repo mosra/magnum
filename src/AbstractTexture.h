@@ -28,22 +28,11 @@ namespace Magnum {
 /**
 @brief Base for textures
 
-@attention Don't forget to call @ref Texture::setWrapping() "setWrapping()",
-    setMinificationFilter() and setMagnificationFilter() after creating the
-    texture, otherwise the texture will be incomplete. If you specified
-    @ref Wrapping "Wrapping::ClampToBorder" in @ref Texture::setWrapping() "setWrapping()",
-    be sure to also call setBorderColor(). If you specified mipmap filtering
-    in setMinificationFilter(), be sure to also either explicitly set all mip
-    levels or call generateMipmap().
-
-The texture is bound to shader via bind(). Texture uniform on the shader must
-also be set to particular texture layer using
-AbstractShaderProgram::setUniform(GLint, GLint).
-
 See Texture, CubeMapTexture and CubeMapTextureArray documentation for more
-information.
+information and usage examples.
 
 @section AbstractTexture-performance-optimization Performance optimizations
+
 The engine tracks currently bound textures in all available layers to avoid
 unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}. %Texture
 configuration functions use dedicated highest available texture layer to not
@@ -639,6 +628,8 @@ class MAGNUM_EXPORT AbstractTexture {
          * Sets filter used when the object pixel size is smaller than the
          * texture size. If @extension{EXT,direct_state_access} is not
          * available, the texture is bound to some layer before the operation.
+         * Initial value is (@ref AbstractTexture::Filter "Filter::NearestNeighbor",
+         * @ref AbstractTexture::Mipmap "Mipmap::Linear").
          * @attention For rectangle textures only some modes are supported,
          *      see @ref AbstractTexture::Filter "Filter" and
          *      @ref AbstractTexture::Mipmap "Mipmap" documentation for more
@@ -657,6 +648,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * Sets filter used when the object pixel size is larger than largest
          * texture size. If @extension{EXT,direct_state_access} is not
          * available, the texture is bound to some layer before the operation.
+         * Initial value is @ref AbstractTexture::Filter "Filter::Linear".
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_MAG_FILTER}
@@ -674,6 +666,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * Border color when @ref AbstractTexture::Wrapping "wrapping" is set
          * to `ClampToBorder`. If @extension{EXT,direct_state_access} is not
          * available, the texture is bound to some layer before the operation.
+         * Initial value is `{0.0f, 0.0f, 0.0f, 0.0f}`.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_BORDER_COLOR}

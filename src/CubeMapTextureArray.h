@@ -29,12 +29,41 @@ namespace Magnum {
 /**
 @brief Cube map texture array
 
-For information, see CubeMapTexture and AbstractTexture documentation.
+See CubeMapTexture documentation for introduction.
 
-When using cube map texture in the shader, use `samplerCubeArray`. Unlike
-classic textures, coordinates for cube map textures is signed three-part
-vector from the center of the cube, which intersects one of the six sides of
-the cube map.
+@section CubeMapTextureArray-usage Usage
+
+Common usage is to specify each layer and face separately using setSubData().
+You have to allocate the memory for all layers and faces first, possibly by
+passing properly sized empty Image to setData(). Example: array with 16
+layers of cube map faces, each face consisting of six 64x64 images:
+@code
+Image3D dummy({64, 64, 16*6}, Image3D::Components::RGBA, Image3D::ComponentType::UnsignedByte, nullptr);
+
+CubeMapTextureArray texture;
+texture.setMagnificationFilter(CubeMapTextureArray::Filter::Linear)
+    // ...
+    ->setData(0, CubeMapTextureArray::Format::RGBA8, &dummy);
+
+for(std::size_t i = 0; i != 16; ++i) {
+    void* dataPositiveX = ...;
+    Image2D imagePositiveX({64, 64}, Image3D::Components::RGBA, Image3D::ComponentType::UnsignedByte, imagePositiveX);
+    // ...
+
+    texture->setSubData(i, CubeMapTextureArray::Coordinate::PositiveX, 0, imagePositiveX);
+    texture->setSubData(i, CubeMapTextureArray::Coordinate::NegativeX, 0, imageNegativeX);
+    // ...
+}
+
+// ...
+@endcode
+
+The texture is bound to layer specified by shader via bind(). In shader, the
+texture is used via `samplerCubeArray`. Unlike classic textures, coordinates
+for cube map texture arrays is signed four-part vector. First three parts
+define vector from the center of the cube which intersects with one of the six
+sides of the cube map, fourth part is layer in the array. See also
+AbstractShaderProgram for more information.
 
 @see CubeMapTexture::setSeamless()
 @requires_gl40 Extension @extension{ARB,texture_cube_map_array}
