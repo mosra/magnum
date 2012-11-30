@@ -83,6 +83,24 @@ typedef Math::Vector3<GLfloat> Vector3;
 /** @brief Four-component floating-point vector */
 typedef Math::Vector4<GLfloat> Vector4;
 
+/** @brief Two-component signed integer vector */
+typedef Math::Vector2<GLint> Vector2i;
+
+/** @brief Three-component signed integer vector */
+typedef Math::Vector3<GLint> Vector3i;
+
+/** @brief Four-component signed integer vector */
+typedef Math::Vector4<GLint> Vector4i;
+
+/** @brief Two-component unsigned integer vector */
+typedef Math::Vector2<GLuint> Vector2ui;
+
+/** @brief Three-component unsigned integer vector */
+typedef Math::Vector3<GLuint> Vector3ui;
+
+/** @brief Four-component unsigned integer vector */
+typedef Math::Vector4<GLuint> Vector4ui;
+
 /** @brief Two-dimensional floating-point homogeneous coordinates */
 typedef Math::Point2D<GLfloat> Point2D;
 
