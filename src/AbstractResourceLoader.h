@@ -55,7 +55,7 @@ template<class T> class AbstractResourceLoader {
          * Count of resources requested by calling load(), but not found by
          * the loader.
          */
-        inline std::size_t notFountCount() const { return _notFoundCount; }
+        inline std::size_t notFoundCount() const { return _notFoundCount; }
 
         /**
          * @brief Count of loaded resources
