@@ -34,7 +34,7 @@ In shader, the texture is used via `sampler1D`, `sampler2D` or `sampler3D`
 depending on dimension count. Note that you can have more than one texture bound
 to the shader - the only requirement is to have each texture in another layer.
 
-@section RectangleTextures Rectangle textures
+@section Texture-rectangle Rectangle textures
 
 If you want to use rectangle textures, set target in constructor to
 `Target::Rectangle` and in shader use `sampler2DRect`. Unlike `sampler2D`,

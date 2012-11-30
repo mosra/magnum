@@ -128,7 +128,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> inline constexpr RectangularMatrix(T first, U... next): _data{first, next...} {
-            static_assert(sizeof...(next)+1 == cols*rows, "Improper number of arguments passed to Matrix constructor");
+            static_assert(sizeof...(next)+1 == cols*rows, "Improper number of arguments passed to RectangularMatrix constructor");
         }
         #else
         template<class ...U> inline constexpr RectangularMatrix(T first, U... next);

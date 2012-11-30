@@ -325,6 +325,8 @@ cube->draw();
 @endcode
 - Destroying resource references and deleting manager instance when nothing
   references the resources anymore.
+
+@see AbstractResourceLoader
 */
 /* Due to too much work involved with explicit template instantiation (all
    Resource combinations, all ResourceManagerData...), this class doesn't have
@@ -460,8 +462,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
         /**
          * @brief Set loader for given type of resources
          *
-         * The loader will affect only loading of resources requested after
-         * that.
+         * See AbstractResourceLoader documentation for more information.
          */
         template<class T> inline void setLoader(AbstractResourceLoader<T>* loader) {
             return this->Implementation::ResourceManagerData<T>::setLoader(loader);
