@@ -19,7 +19,7 @@
  * @brief Class Magnum::AbstractTexture
  */
 
-#include "Magnum.h"
+#include "Array.h"
 #include "Color.h"
 #include "AbstractImage.h"
 
@@ -836,8 +836,8 @@ template<> struct AbstractTexture::DataHelper<1> {
 
     inline constexpr static Target target() { return Target::Texture1D; }
 
-    inline static void setWrapping(AbstractTexture* texture, const Math::Vector<1, Wrapping>& wrapping) {
-        (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping[0]));
+    inline static void setWrapping(AbstractTexture* texture, const Array1D<Wrapping>& wrapping) {
+        (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.x()));
     }
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type set(AbstractTexture* texture, GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image) {
@@ -861,7 +861,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
 
     inline constexpr static Target target() { return Target::Texture2D; }
 
-    static void setWrapping(AbstractTexture* texture, const Math::Vector2<Wrapping>& wrapping);
+    static void setWrapping(AbstractTexture* texture, const Array2D<Wrapping>& wrapping);
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type set(AbstractTexture* texture, GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image) {
         (texture->*image2DImplementation)(target, mipLevel, internalFormat, image->size(), image->components(), image->type(), image->data());
@@ -887,7 +887,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
 
     inline constexpr static Target target() { return Target::Texture3D; }
 
-    static void setWrapping(AbstractTexture* texture, const Math::Vector3<Wrapping>& wrapping);
+    static void setWrapping(AbstractTexture* texture, const Array3D<Wrapping>& wrapping);
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 3, void>::type set(AbstractTexture* texture, GLenum target, GLint mipLevel, InternalFormat internalFormat, Image* image) {
         (texture->*image3DImplementation)(target, mipLevel, internalFormat, image->size(), image->components(), image->type(), image->data());

@@ -132,10 +132,8 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_WRAP_S}, @def_gl{TEXTURE_WRAP_T},
          *      @def_gl{TEXTURE_WRAP_R}
-         * @todo Use something better for this than Vector (mainly something
-         *      that can easily create all values the same)
          */
-        inline Texture<Dimensions>* setWrapping(const Math::Vector<Dimensions, Wrapping>& wrapping) {
+        inline Texture<Dimensions>* setWrapping(const Array<Dimensions, Wrapping>& wrapping) {
             DataHelper<Dimensions>::setWrapping(this, wrapping);
             return this;
         }

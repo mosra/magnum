@@ -85,7 +85,7 @@ class CubeMapTexture: public AbstractTexture {
         /**
          * @copydoc Texture::setWrapping()
          */
-        inline CubeMapTexture* setWrapping(const Math::Vector<3, Wrapping>& wrapping) {
+        inline CubeMapTexture* setWrapping(const Array3D<Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(this, wrapping);
             return this;
         }
