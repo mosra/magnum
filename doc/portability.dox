@@ -157,7 +157,7 @@ class MyApplication: public ApplicationBase {
         }
 
     protected:
-        void viewportEvent(const Math::Vector2<GLsizei>& size) override {
+        void viewportEvent(const Vector2i& size) override {
             // ...
         }
 
@@ -165,7 +165,7 @@ class MyApplication: public ApplicationBase {
             // ...
         }
 
-        void keyPressEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position) {
+        void keyPressEvent(Key key, Modifiers modifiers, const Vector2i& position) {
             // ...
         }
 };

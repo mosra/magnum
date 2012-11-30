@@ -61,7 +61,7 @@ class GlutApplication {
          *
          * Creates double-buffered RGBA window with depth and stencil buffers.
          */
-        GlutApplication(int& argc, char** argv, const std::string& title = "Magnum GLUT application", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
+        GlutApplication(int& argc, char** argv, const std::string& title = "Magnum GLUT application", const Vector2i& size = Vector2i(800, 600));
 
         virtual ~GlutApplication();
 
@@ -84,7 +84,7 @@ class GlutApplication {
          * Framebuffer::setViewport() (and SceneGraph::AbstractCamera::setViewport(),
          * if using scene graph).
          */
-        virtual void viewportEvent(const Math::Vector2<GLsizei>& size) = 0;
+        virtual void viewportEvent(const Vector2i& size) = 0;
 
         /**
          * @brief Draw event
@@ -157,7 +157,7 @@ class GlutApplication {
          *
          * Called when an key is pressed. Default implementation does nothing.
          */
-        virtual void keyPressEvent(Key key, const Math::Vector2<int>& position);
+        virtual void keyPressEvent(Key key, const Vector2i& position);
 
         /*@}*/
 
@@ -203,7 +203,7 @@ class GlutApplication {
         }
 
         /** @brief Warp mouse cursor to given coordinates */
-        inline void warpMouseCursor(const Math::Vector2<GLsizei>& position) {
+        inline void warpMouseCursor(const Vector2i& position) {
             glutWarpPointer(position.x(), position.y());
         }
 
@@ -214,7 +214,7 @@ class GlutApplication {
          * Called when mouse button is pressed. Default implementation does
          * nothing.
          */
-        virtual void mousePressEvent(MouseButton button, const Math::Vector2<int>& position);
+        virtual void mousePressEvent(MouseButton button, const Vector2i& position);
 
         /**
          * @brief Mouse release event
@@ -222,7 +222,7 @@ class GlutApplication {
          * Called when mouse button is released. Default implementation does
          * nothing.
          */
-        virtual void mouseReleaseEvent(MouseButton button, const Math::Vector2<int>& position);
+        virtual void mouseReleaseEvent(MouseButton button, const Vector2i& position);
 
         /**
          * @brief Mouse motion event
@@ -231,7 +231,7 @@ class GlutApplication {
          * implementation does nothing.
          * @see setMouseTracking()
          */
-        virtual void mouseMotionEvent(const Math::Vector2<int>& position);
+        virtual void mouseMotionEvent(const Vector2i& position);
 
         /*@}*/
 
@@ -293,10 +293,10 @@ When no other application header is included this macro is also aliased to
 #endif
 
 /* Implementations for inline functions with unused parameters */
-inline void GlutApplication::keyPressEvent(Key, const Math::Vector2<int>&) {}
-inline void GlutApplication::mousePressEvent(MouseButton, const Math::Vector2<int>&) {}
-inline void GlutApplication::mouseReleaseEvent(MouseButton, const Math::Vector2<int>&) {}
-inline void GlutApplication::mouseMotionEvent(const Math::Vector2<int>&) {}
+inline void GlutApplication::keyPressEvent(Key, const Vector2i&) {}
+inline void GlutApplication::mousePressEvent(MouseButton, const Vector2i&) {}
+inline void GlutApplication::mouseReleaseEvent(MouseButton, const Vector2i&) {}
+inline void GlutApplication::mouseMotionEvent(const Vector2i&) {}
 
 }}
 

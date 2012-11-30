@@ -122,7 +122,7 @@ class CubeMapTexture: public AbstractTexture {
          * @param coordinate    Coordinate
          * @return Pointer to self (for method chaining)
          */
-        template<class Image> inline CubeMapTexture* setSubData(Coordinate coordinate, GLint mipLevel, const Math::Vector2<GLint>& offset, const Image* image) {
+        template<class Image> inline CubeMapTexture* setSubData(Coordinate coordinate, GLint mipLevel, const Vector2i& offset, const Image* image) {
             DataHelper<2>::setSub(this, static_cast<GLenum>(coordinate), mipLevel, offset, image);
             return this;
         }

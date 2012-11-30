@@ -72,7 +72,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
          *
          * Creates double-buffered RGBA canvas with depth and stencil buffers.
          */
-        explicit NaClApplication(PP_Instance instance, const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(640, 480));
+        explicit NaClApplication(PP_Instance instance, const Vector2i& size = Vector2i(640, 480));
 
         ~NaClApplication();
 
@@ -94,7 +94,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         /** @{ @name Drawing functions */
 
         /** @copydoc GlutApplication::viewportEvent() */
-        virtual void viewportEvent(const Math::Vector2<GLsizei>& size) = 0;
+        virtual void viewportEvent(const Vector2i& size) = 0;
 
         /** @copydoc GlutApplication::drawEvent() */
         virtual void drawEvent() = 0;
@@ -205,7 +205,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         pp::Graphics3D* graphics;
         pp::Fullscreen* fullscreen;
         Context* c;
-        Math::Vector2<GLsizei> viewportSize;
+        Vector2i viewportSize;
         Flags flags;
 
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
@@ -399,13 +399,13 @@ class NaClApplication::MouseEvent: public NaClApplication::InputEvent {
         inline Button button() const { return _button; }
 
         /** @brief Position */
-        inline Math::Vector2<int> position() const { return _position; }
+        inline Vector2i position() const { return _position; }
 
     private:
-        inline MouseEvent(Button button, const Math::Vector2<int>& position, Modifiers modifiers): InputEvent(modifiers), _button(button), _position(position) {}
+        inline MouseEvent(Button button, const Vector2i& position, Modifiers modifiers): InputEvent(modifiers), _button(button), _position(position) {}
 
         const Button _button;
-        const Math::Vector2<int> _position;
+        const Vector2i _position;
 };
 
 /**
@@ -419,19 +419,19 @@ class NaClApplication::MouseMoveEvent: public NaClApplication::InputEvent {
 
     public:
         /** @brief Position */
-        inline Math::Vector2<int> position() const { return _position; }
+        inline Vector2i position() const { return _position; }
 
         /**
          * @brief Relative position
          *
          * Position relative to previous event.
          */
-        inline Math::Vector2<int> relativePosition() const { return _relativePosition; }
+        inline Vector2i relativePosition() const { return _relativePosition; }
 
     private:
-        inline MouseMoveEvent(const Math::Vector2<int>& position, const Math::Vector2<int>& relativePosition, Modifiers modifiers): InputEvent(modifiers), _position(position), _relativePosition(relativePosition) {}
+        inline MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition, Modifiers modifiers): InputEvent(modifiers), _position(position), _relativePosition(relativePosition) {}
 
-        const Math::Vector2<int> _position, _relativePosition;
+        const Vector2i _position, _relativePosition;
 };
 
 CORRADE_ENUMSET_OPERATORS(NaClApplication::Flags)

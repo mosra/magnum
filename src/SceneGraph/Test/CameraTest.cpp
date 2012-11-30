@@ -47,13 +47,13 @@ CameraTest::CameraTest() {
 
 void CameraTest::fixAspectRatio() {
     Vector2 projectionScale(0.5f, 1.0f/3.0f);
-    Math::Vector2<GLsizei> size(400, 300);
+    Vector2i size(400, 300);
 
     /* Division by zero */
     Vector2 projectionScaleZeroY(0.5f, 0.0f);
     Vector2 projectionScaleZeroX(0.0f, 0.5f);
-    Math::Vector2<GLsizei> sizeZeroY(400, 0);
-    Math::Vector2<GLsizei> sizeZeroX(0, 300);
+    Vector2i sizeZeroY(400, 0);
+    Vector2i sizeZeroX(0, 300);
     CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Clip, projectionScaleZeroX, size)), Matrix4());
     CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Clip, projectionScaleZeroY, size)), Matrix4());
     CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Clip, projectionScale, sizeZeroY)), Matrix4());

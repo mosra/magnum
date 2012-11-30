@@ -29,7 +29,7 @@ using namespace std;
 
 namespace Magnum { namespace Platform {
 
-AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int&, char**, const string& title, const Math::Vector2<GLsizei>& size): contextHandler(contextHandler), viewportSize(size), flags(Flag::Redraw) {
+AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int&, char**, const string& title, const Vector2i& size): contextHandler(contextHandler), viewportSize(size), flags(Flag::Redraw) {
     /* Get default X display */
     display = XOpenDisplay(0);
 
@@ -108,7 +108,7 @@ int AbstractXApplication::exec() {
             switch(event.type) {
                 /* Window resizing */
                 case ConfigureNotify: {
-                    Math::Vector2<GLsizei> size(event.xconfigure.width, event.xconfigure.height);
+                    Vector2i size(event.xconfigure.width, event.xconfigure.height);
                     if(size != viewportSize) {
                         viewportSize = size;
                         viewportEvent(size);

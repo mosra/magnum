@@ -57,7 +57,7 @@ class AbstractXApplication {
          *
          * Creates window with double-buffered OpenGL ES 2 context.
          */
-        AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int& argc, char** argv, const std::string& title = "Magnum X application", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
+        AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int& argc, char** argv, const std::string& title = "Magnum X application", const Vector2i& size = Vector2i(800, 600));
 
         /**
          * @brief Destructor
@@ -79,7 +79,7 @@ class AbstractXApplication {
 
     protected:
         /** @copydoc GlutApplication::viewportEvent() */
-        virtual void viewportEvent(const Math::Vector2<GLsizei>& size) = 0;
+        virtual void viewportEvent(const Vector2i& size) = 0;
 
         /** @copydoc GlutApplication::drawEvent() */
         virtual void drawEvent() = 0;
@@ -209,7 +209,7 @@ class AbstractXApplication {
          *
          * Called when an key is pressed. Default implementation does nothing.
          */
-        virtual void keyPressEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
+        virtual void keyPressEvent(Key key, Modifiers modifiers, const Vector2i& position);
 
         /**
          * @brief Key press event
@@ -219,7 +219,7 @@ class AbstractXApplication {
          *
          * Called when an key is released. Default implementation does nothing.
          */
-        virtual void keyReleaseEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position);
+        virtual void keyReleaseEvent(Key key, Modifiers modifiers, const Vector2i& position);
 
         /*@}*/
 
@@ -249,7 +249,7 @@ class AbstractXApplication {
          * Called when mouse button is pressed. Default implementation does
          * nothing.
          */
-        virtual void mousePressEvent(MouseButton button, Modifiers modifiers, const Math::Vector2<int>& position);
+        virtual void mousePressEvent(MouseButton button, Modifiers modifiers, const Vector2i& position);
 
         /**
          * @brief Mouse release event
@@ -260,7 +260,7 @@ class AbstractXApplication {
          * Called when mouse button is released. Default implementation does
          * nothing.
          */
-        virtual void mouseReleaseEvent(MouseButton button, Modifiers modifiers, const Math::Vector2<int>& position);
+        virtual void mouseReleaseEvent(MouseButton button, Modifiers modifiers, const Vector2i& position);
 
         /**
          * @brief Mouse motion event
@@ -269,7 +269,7 @@ class AbstractXApplication {
          *
          * Called when mouse is moved.
          */
-        virtual void mouseMotionEvent(Modifiers modifiers, const Math::Vector2<int>& position);
+        virtual void mouseMotionEvent(Modifiers modifiers, const Vector2i& position);
 
         /*@}*/
 
@@ -291,7 +291,7 @@ class AbstractXApplication {
         Context* c;
 
         /** @todo Get this from the created window */
-        Math::Vector2<GLsizei> viewportSize;
+        Vector2i viewportSize;
 
         Flags flags;
 };
@@ -328,11 +328,11 @@ CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Modifiers)
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Flags)
 
 /* Implementations for inline functions with unused parameters */
-inline void AbstractXApplication::keyPressEvent(Key, Modifiers, const Math::Vector2<int>&) {}
-inline void AbstractXApplication::keyReleaseEvent(Key, Modifiers, const Math::Vector2<int>&) {}
-inline void AbstractXApplication::mousePressEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
-inline void AbstractXApplication::mouseReleaseEvent(MouseButton, Modifiers, const Math::Vector2<int>&) {}
-inline void AbstractXApplication::mouseMotionEvent(Modifiers, const Math::Vector2<int>&) {}
+inline void AbstractXApplication::keyPressEvent(Key, Modifiers, const Vector2i&) {}
+inline void AbstractXApplication::keyReleaseEvent(Key, Modifiers, const Vector2i&) {}
+inline void AbstractXApplication::mousePressEvent(MouseButton, Modifiers, const Vector2i&) {}
+inline void AbstractXApplication::mouseReleaseEvent(MouseButton, Modifiers, const Vector2i&) {}
+inline void AbstractXApplication::mouseMotionEvent(Modifiers, const Vector2i&) {}
 
 }}
 

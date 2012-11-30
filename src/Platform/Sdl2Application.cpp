@@ -40,7 +40,7 @@ Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
 
 }
 
-Sdl2Application::Sdl2Application(int, char**, const std::string& name, const Math::Vector2<GLsizei>& size): _redraw(true) {
+Sdl2Application::Sdl2Application(int, char**, const std::string& name, const Vector2i& size): _redraw(true) {
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         Error() << "Cannot initialize SDL.";
         exit(1);

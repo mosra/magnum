@@ -52,7 +52,7 @@ class XEglApplication: public AbstractXApplication {
          *
          * Creates window with double-buffered OpenGL ES 2 context.
          */
-        inline XEglApplication(int& argc, char** argv, const std::string& title = "Magnum X/EGL application", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600)): AbstractXApplication(new EglContextHandler, argc, argv, title, size) {}
+        inline XEglApplication(int& argc, char** argv, const std::string& title = "Magnum X/EGL application", const Vector2i& size = Vector2i(800, 600)): AbstractXApplication(new EglContextHandler, argc, argv, title, size) {}
 };
 
 }}

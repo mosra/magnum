@@ -230,7 +230,7 @@ class Renderbuffer {
          *
          * @see bind(), @fn_gl{RenderbufferStorage}
          */
-        inline void setStorage(InternalFormat internalFormat, const Math::Vector2<GLsizei>& size) {
+        inline void setStorage(InternalFormat internalFormat, const Vector2i& size) {
             bind();
             glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, size.x(), size.y());
         }

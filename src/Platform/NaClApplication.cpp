@@ -23,7 +23,7 @@
 
 namespace Magnum { namespace Platform {
 
-NaClApplication::NaClApplication(PP_Instance instance, const Math::Vector2<GLsizei>& size): Instance(instance), Graphics3DClient(this), MouseLock(this), viewportSize(size) {
+NaClApplication::NaClApplication(PP_Instance instance, const Vector2i& size): Instance(instance), Graphics3DClient(this), MouseLock(this), viewportSize(size) {
     int32_t attributes[] = {
         PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
         PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
@@ -101,7 +101,7 @@ void NaClApplication::DidChangeView(const pp::View& view) {
         else return;
     }
 
-    Math::Vector2<GLsizei> size(view.GetRect().width(), view.GetRect().height());
+    Vector2i size(view.GetRect().width(), view.GetRect().height());
 
     /* Canvas resized */
     if(viewportSize != size) {

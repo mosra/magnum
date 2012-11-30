@@ -127,7 +127,7 @@ class MAGNUM_EXPORT Framebuffer {
          * Call when window size changes.
          * @see @fn_gl{Viewport}
          */
-        inline static void setViewport(const Math::Vector2<GLint>& position, const Math::Vector2<GLsizei>& size) {
+        inline static void setViewport(const Vector2i& position, const Vector2i& size) {
             glViewport(position.x(), position.y(), size.x(), size.y());
         }
 
@@ -211,7 +211,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @attention You have to enable scissoring with setFeature() first.
          * @see @fn_gl{Scissor}
          */
-        inline static void setScissor(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLsizei>& size) {
+        inline static void setScissor(const Vector2i& bottomLeft, const Vector2i& size) {
             glScissor(bottomLeft.x(), bottomLeft.y(), size.x(), size.y());
         }
 
@@ -1235,7 +1235,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
          */
-        inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, const Math::Vector2<GLint>& destinationBottomLeft, const Math::Vector2<GLint>& destinationTopRight, BlitMask blitMask, AbstractTexture::Filter filter) {
+        inline static void blit(const Vector2i& bottomLeft, const Vector2i& topRight, const Vector2i& destinationBottomLeft, const Vector2i& destinationTopRight, BlitMask blitMask, AbstractTexture::Filter filter) {
             /** @todo Get some extension wrangler instead to avoid undeclared glBlitFramebuffer() on ES2 */
             #ifndef MAGNUM_TARGET_GLES2
             glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), destinationBottomLeft.x(), destinationBottomLeft.y(), destinationTopRight.x(), destinationTopRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(filter));
@@ -1266,7 +1266,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
          */
-        inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, BlitMask blitMask) {
+        inline static void blit(const Vector2i& bottomLeft, const Vector2i& topRight, BlitMask blitMask) {
             /** @todo Get some extension wrangler instead to avoid undeclared glBlitFramebuffer() on ES2 */
             #ifndef MAGNUM_TARGET_GLES2
             glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(AbstractTexture::Filter::NearestNeighbor));
@@ -1288,7 +1288,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @see @fn_gl{ReadPixels}
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image);
+        static void read(const Vector2i& offset, const Vector2i& size, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image);
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -1304,7 +1304,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
          */
-        static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage);
+        static void read(const Vector2i& offset, const Vector2i& size, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage);
         #endif
 
         /*@}*/

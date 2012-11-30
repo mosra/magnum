@@ -22,7 +22,7 @@ namespace Magnum { namespace Platform {
 
 GlutApplication* GlutApplication::instance = nullptr;
 
-GlutApplication::GlutApplication(int& argc, char** argv, const std::string& title, const Math::Vector2<GLsizei>& size) {
+GlutApplication::GlutApplication(int& argc, char** argv, const std::string& title, const Vector2i& size) {
     /* Save global instance */
     instance = this;
 

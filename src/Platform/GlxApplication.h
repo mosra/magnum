@@ -53,7 +53,7 @@ class GlxApplication: public AbstractXApplication {
          * Creates window with double-buffered OpenGL 3.2 core context or
          * OpenGL ES 2.0 context, if targetting OpenGL ES.
          */
-        inline GlxApplication(int& argc, char** argv, const std::string& title = "Magnum GLX application", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600)): AbstractXApplication(new GlxContextHandler, argc, argv, title, size) {}
+        inline GlxApplication(int& argc, char** argv, const std::string& title = "Magnum GLX application", const Vector2i& size = Vector2i(800, 600)): AbstractXApplication(new GlxContextHandler, argc, argv, title, size) {}
 };
 
 }}

@@ -65,7 +65,7 @@ class Sdl2Application {
          * @param title     Window title
          * @param size      Window size
          */
-        Sdl2Application(int argc, char** argv, const std::string& title = "Magnum SDL2 application", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
+        Sdl2Application(int argc, char** argv, const std::string& title = "Magnum SDL2 application", const Vector2i& size = Vector2i(800, 600));
 
         /**
          * @brief Destructor
@@ -85,7 +85,7 @@ class Sdl2Application {
         /** @{ @name Drawing functions */
 
         /** @copydoc GlutApplication::viewportEvent() */
-        virtual void viewportEvent(const Math::Vector2<GLsizei>& size) = 0;
+        virtual void viewportEvent(const Vector2i& size) = 0;
 
         /** @copydoc GlutApplication::drawEvent() */
         virtual void drawEvent() = 0;
@@ -351,7 +351,7 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         inline Button button() const { return _button; }
 
         /** @brief Position */
-        inline Math::Vector2<int> position() const { return _position; }
+        inline Vector2i position() const { return _position; }
 
         /**
          * @brief Modifiers
@@ -361,10 +361,10 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        inline MouseEvent(Button button, const Math::Vector2<int>& position): _button(button), _position(position), modifiersLoaded(false) {}
+        inline MouseEvent(Button button, const Vector2i& position): _button(button), _position(position), modifiersLoaded(false) {}
 
         const Button _button;
-        const Math::Vector2<int> _position;
+        const Vector2i _position;
         bool modifiersLoaded;
         Modifiers _modifiers;
 };
@@ -379,14 +379,14 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
 
     public:
         /** @brief Position */
-        inline Math::Vector2<int> position() const { return _position; }
+        inline Vector2i position() const { return _position; }
 
         /**
          * @brief Relative position
          *
          * Position relative to previous event.
          */
-        inline Math::Vector2<int> relativePosition() const { return _relativePosition; }
+        inline Vector2i relativePosition() const { return _relativePosition; }
 
         /**
          * @brief Modifiers
@@ -396,9 +396,9 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        inline MouseMoveEvent(const Math::Vector2<int>& position, const Math::Vector2<int>& relativePosition): _position(position), _relativePosition(relativePosition), modifiersLoaded(false) {}
+        inline MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition): _position(position), _relativePosition(relativePosition), modifiersLoaded(false) {}
 
-        const Math::Vector2<int> _position, _relativePosition;
+        const Vector2i _position, _relativePosition;
         bool modifiersLoaded;
         Modifiers _modifiers;
 };

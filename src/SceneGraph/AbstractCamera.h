@@ -40,7 +40,7 @@ enum class AspectRatioPolicy: std::uint8_t {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    template<std::uint8_t dimensions, class T> typename DimensionTraits<dimensions, T>::MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Math::Vector2<GLsizei>& viewport);
+    template<std::uint8_t dimensions, class T> typename DimensionTraits<dimensions, T>::MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Vector2i& viewport);
 }
 #endif
 
@@ -121,7 +121,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
         }
 
         /** @brief Viewport size */
-        inline Math::Vector2<GLsizei> viewport() const { return _viewport; }
+        inline Vector2i viewport() const { return _viewport; }
 
         /**
          * @brief Set viewport size
@@ -130,7 +130,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
          * according to aspect ratio policy.
          * @see setAspectRatioPolicy()
          */
-        virtual void setViewport(const Math::Vector2<GLsizei>& size);
+        virtual void setViewport(const Vector2i& size);
 
         /**
          * @brief Draw
@@ -158,7 +158,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
         typename DimensionTraits<dimensions, T>::MatrixType _projectionMatrix;
         typename DimensionTraits<dimensions, T>::MatrixType _cameraMatrix;
 
-        Math::Vector2<GLsizei> _viewport;
+        Vector2i _viewport;
 };
 
 template<std::uint8_t dimensions, class T> inline AbstractCamera<dimensions, T>::~AbstractCamera() {}

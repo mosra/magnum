@@ -90,7 +90,7 @@ namespace Implementation {
 
 Creates new vector from given components. Example:
 @code
-Vector4<std::int32_t> original(-1, 2, 3, 4);
+Vector4i original(-1, 2, 3, 4);
 
 auto vec = swizzle<'a', '1', '0', 'r', 'g', 'b'>(original);
 // vec == { 4, 1, 0, -1, 2, 3 }
@@ -118,7 +118,7 @@ template<char ...components, class T> inline constexpr typename Implementation::
 
 Creates new vector from given components. Example:
 @code
-Vector4<std::int32_t> original(-1, 2, 3, 4);
+Vector4i original(-1, 2, 3, 4);
 
 auto vec = swizzle(original, "a10rgb");
 // vec == { 4, 1, 0, -1, 2, 3 }
