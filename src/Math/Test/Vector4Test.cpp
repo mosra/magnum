@@ -32,6 +32,7 @@ typedef Math::Vector2<float> Vector2;
 
 Vector4Test::Vector4Test() {
     addTests(&Vector4Test::construct,
+             &Vector4Test::access,
              &Vector4Test::threeComponent,
              &Vector4Test::twoComponent,
              &Vector4Test::debug,
@@ -42,6 +43,20 @@ void Vector4Test::construct() {
     CORRADE_COMPARE(Vector4(), Vector4(0.0f, 0.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(Vector4(1, 2, 3, 4), (Vector<4, float>(1.0f, 2.0f, 3.0f, 4.0f)));
     CORRADE_COMPARE(Vector4(Vector<3, float>(1.0f, 2.0f, 3.0f), 4), (Vector<4, float>(1.0f, 2.0f, 3.0f, 4.0f)));
+}
+
+void Vector4Test::access() {
+    Vector4 vec(1.0f, -2.0f, 5.0f, 0.5f);
+    const Vector4 cvec(1.0f, -2.0f, 5.0f, 0.5f);
+
+    CORRADE_COMPARE(vec.x(), 1.0f);
+    CORRADE_COMPARE(vec.y(), -2.0f);
+    CORRADE_COMPARE(vec.z(), 5.0f);
+    CORRADE_COMPARE(vec.w(), 0.5f);
+    CORRADE_COMPARE(cvec.x(), 1.0f);
+    CORRADE_COMPARE(cvec.y(), -2.0f);
+    CORRADE_COMPARE(cvec.z(), 5.0f);
+    CORRADE_COMPARE(cvec.w(), 0.5f);
 }
 
 void Vector4Test::threeComponent() {

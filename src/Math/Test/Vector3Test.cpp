@@ -31,6 +31,7 @@ typedef Math::Vector2<float> Vector2;
 
 Vector3Test::Vector3Test() {
     addTests(&Vector3Test::construct,
+             &Vector3Test::access,
              &Vector3Test::cross,
              &Vector3Test::axes,
              &Vector3Test::scales,
@@ -43,6 +44,18 @@ void Vector3Test::construct() {
     CORRADE_COMPARE(Vector3(), Vector3(0.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(Vector3(1, 2, 3), (Vector<3, float>(1.0f, 2.0f, 3.0f)));
     CORRADE_COMPARE(Vector3(Vector<2, float>(1.0f, 2.0f), 3), (Vector<3, float>(1.0f, 2.0f, 3.0f)));
+}
+
+void Vector3Test::access() {
+    Vector3 vec(1.0f, -2.0f, 5.0f);
+    const Vector3 cvec(1.0f, -2.0f, 5.0f);
+
+    CORRADE_COMPARE(vec.x(), 1.0f);
+    CORRADE_COMPARE(vec.y(), -2.0f);
+    CORRADE_COMPARE(vec.z(), 5.0f);
+    CORRADE_COMPARE(cvec.x(), 1.0f);
+    CORRADE_COMPARE(cvec.y(), -2.0f);
+    CORRADE_COMPARE(cvec.z(), 5.0f);
 }
 
 void Vector3Test::cross() {

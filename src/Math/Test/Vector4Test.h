@@ -23,6 +23,7 @@ class Vector4Test: public Corrade::TestSuite::Tester<Vector4Test> {
     public:
         Vector4Test();
 
+        void access();
         void construct();
         void threeComponent();
         void twoComponent();

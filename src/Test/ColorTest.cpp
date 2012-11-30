@@ -33,7 +33,9 @@ typedef Magnum::Color3<float> Color3f;
 typedef Magnum::Color4<float> Color4f;
 
 ColorTest::ColorTest() {
-    addTests(&ColorTest::fromDenormalized,
+    addTests(&ColorTest::access,
+
+             &ColorTest::fromDenormalized,
              &ColorTest::fromNormalized,
 
              &ColorTest::fromHue,
@@ -50,6 +52,30 @@ ColorTest::ColorTest() {
 
              &ColorTest::debug,
              &ColorTest::configuration);
+}
+
+void ColorTest::access() {
+    Color3f c3(15, 255, 10);
+    const Color3f cc3(15, 255, 10);
+
+    CORRADE_COMPARE(c3.r(), 15);
+    CORRADE_COMPARE(c3.g(), 255);
+    CORRADE_COMPARE(c3.b(), 10);
+    CORRADE_COMPARE(cc3.r(), 15);
+    CORRADE_COMPARE(cc3.g(), 255);
+    CORRADE_COMPARE(cc3.b(), 10);
+
+    Color4 c4(125, 98, 51, 22);
+    const Color4f cc4(125, 98, 51, 22);
+
+    CORRADE_COMPARE(c4.r(), 125);
+    CORRADE_COMPARE(c4.g(), 98);
+    CORRADE_COMPARE(c4.b(), 51);
+    CORRADE_COMPARE(c4.a(), 22);
+    CORRADE_COMPARE(cc4.r(), 125);
+    CORRADE_COMPARE(cc4.g(), 98);
+    CORRADE_COMPARE(cc4.b(), 51);
+    CORRADE_COMPARE(cc4.a(), 22);
 }
 
 void ColorTest::fromDenormalized() {

@@ -30,6 +30,7 @@ typedef Math::Vector2<float> Vector2;
 
 Vector2Test::Vector2Test() {
     addTests(&Vector2Test::construct,
+             &Vector2Test::access,
              &Vector2Test::axes,
              &Vector2Test::scales,
              &Vector2Test::debug,
@@ -38,6 +39,16 @@ Vector2Test::Vector2Test() {
 
 void Vector2Test::construct() {
     CORRADE_COMPARE(Vector2(1, 2), (Vector<2, float>(1.0f, 2.0f)));
+}
+
+void Vector2Test::access() {
+    Vector2 vec(1.0f, -2.0f);
+    const Vector2 cvec(1.0f, -2.0f);
+
+    CORRADE_COMPARE(vec.x(), 1.0f);
+    CORRADE_COMPARE(vec.y(), -2.0f);
+    CORRADE_COMPARE(cvec.x(), 1.0f);
+    CORRADE_COMPARE(cvec.y(), -2.0f);
 }
 
 void Vector2Test::axes() {

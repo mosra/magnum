@@ -23,6 +23,8 @@ class ColorTest: public Corrade::TestSuite::Tester<ColorTest> {
     public:
         ColorTest();
 
+        void access();
+
         void fromDenormalized();
         void fromNormalized();
 
