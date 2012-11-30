@@ -29,6 +29,7 @@ static_assert(is_same<GLushort, uint16_t>::value, "GLushort is not the same as u
 static_assert(is_same<GLshort, int16_t>::value, "GLshort is not the same as int16_t");
 static_assert(is_same<GLuint, uint32_t>::value, "GLuint is not the same as uint32_t");
 static_assert(is_same<GLint, int32_t>::value, "GLint is not the same as int32_t");
+static_assert(is_same<GLsizei, int32_t>::value, "GLsizei is not the same as int32_t");
 static_assert(is_same<GLfloat, float>::value, "GLfloat is not the same as float");
 #ifndef MAGNUM_TARGET_GLES
 static_assert(is_same<GLdouble, double>::value, "GLdouble is not the same as double");
