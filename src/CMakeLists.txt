@@ -54,6 +54,7 @@ set(Magnum_HEADERS
     AbstractResourceLoader.h
     AbstractShaderProgram.h
     AbstractTexture.h
+    Array.h
     Buffer.h
     Color.h
     Context.h

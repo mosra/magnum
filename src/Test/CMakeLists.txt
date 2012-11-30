@@ -1,3 +1,4 @@
+corrade_add_test2(ArrayTest ArrayTest.cpp)
 corrade_add_test2(ColorTest ColorTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test2(MeshTest MeshTest.cpp LIBRARIES Magnum)
 corrade_add_test2(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES MagnumTestLib)

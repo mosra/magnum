@@ -107,6 +107,12 @@ using Math::rad;
 class AbstractImage;
 class AbstractShaderProgram;
 class AbstractTexture;
+
+template<std::uint8_t, class T> class Array;
+template<class T> class Array1D;
+template<class T> class Array2D;
+template<class T> class Array3D;
+
 class Buffer;
 
 #ifndef MAGNUM_TARGET_GLES2
