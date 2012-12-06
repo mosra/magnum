@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class TipsifyTest: public Corrade::TestSuite::Tester<TipsifyTest> {
+class TipsifyTest: public Corrade::TestSuite::Tester {
     public:
         TipsifyTest();
 

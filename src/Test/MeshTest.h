@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Test {
 
-class MeshTest: public Corrade::TestSuite::Tester<MeshTest> {
+class MeshTest: public Corrade::TestSuite::Tester {
     public:
         MeshTest();
 

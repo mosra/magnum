@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
-class CameraTest: public Corrade::TestSuite::Tester<CameraTest> {
+class CameraTest: public Corrade::TestSuite::Tester {
     public:
         CameraTest();
 

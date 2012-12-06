@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class InterleaveTest: public Corrade::TestSuite::Tester<InterleaveTest> {
+class InterleaveTest: public Corrade::TestSuite::Tester {
     public:
         InterleaveTest();
 

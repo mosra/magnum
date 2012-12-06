@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Physics { namespace Test {
 
-class AxisAlignedBoxTest: public Corrade::TestSuite::Tester<AxisAlignedBoxTest> {
+class AxisAlignedBoxTest: public Corrade::TestSuite::Tester {
     public:
         AxisAlignedBoxTest();
 

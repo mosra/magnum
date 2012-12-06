@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class CompressIndicesTest: public Corrade::TestSuite::Tester<CompressIndicesTest> {
+class CompressIndicesTest: public Corrade::TestSuite::Tester {
     public:
         CompressIndicesTest();
 

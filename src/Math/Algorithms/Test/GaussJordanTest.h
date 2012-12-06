@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
 
-class GaussJordanTest: public Corrade::TestSuite::Tester<GaussJordanTest> {
+class GaussJordanTest: public Corrade::TestSuite::Tester {
     public:
         GaussJordanTest();
 

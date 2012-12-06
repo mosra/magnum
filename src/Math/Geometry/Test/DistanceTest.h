@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Math { namespace Geometry { namespace Test {
 
-class DistanceTest: public Corrade::TestSuite::Tester<DistanceTest> {
+class DistanceTest: public Corrade::TestSuite::Tester {
     public:
         DistanceTest();
 

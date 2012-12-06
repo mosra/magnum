@@ -15,7 +15,7 @@
 
 #include "AbstractImage.h"
 
-#include <Utility/Debug.h>
+#include <Utility/Assert.h>
 
 #include "TypeTraits.h"
 

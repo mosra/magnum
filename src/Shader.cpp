@@ -16,7 +16,7 @@
 #include "Shader.h"
 
 #include <fstream>
-#include <Utility/Debug.h>
+#include <Utility/Assert.h>
 
 #define COMPILER_MESSAGE_MAX_LENGTH 1024
 

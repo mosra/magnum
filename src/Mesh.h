@@ -20,7 +20,7 @@
  */
 
 #include <vector>
-#include <Utility/Debug.h>
+#include <Utility/Assert.h>
 
 #include "AbstractShaderProgram.h"
 #include "TypeTraits.h"

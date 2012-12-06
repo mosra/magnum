@@ -19,6 +19,8 @@
  * @brief Class Magnum::Math::Vector
  */
 
+#include <Utility/Assert.h>
+
 #include "RectangularMatrix.h"
 
 namespace Magnum { namespace Math {

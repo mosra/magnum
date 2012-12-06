@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Primitives { namespace Test {
 
-class UVSphereTest: public Corrade::TestSuite::Tester<UVSphereTest> {
+class UVSphereTest: public Corrade::TestSuite::Tester {
     public:
         UVSphereTest();
 

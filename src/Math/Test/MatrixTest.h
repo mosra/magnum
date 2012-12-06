@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class MatrixTest: public Corrade::TestSuite::Tester<MatrixTest> {
+class MatrixTest: public Corrade::TestSuite::Tester {
     public:
         MatrixTest();
 

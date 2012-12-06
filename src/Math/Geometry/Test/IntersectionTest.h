@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Math { namespace Geometry { namespace Test {
 
-class IntersectionTest: public Corrade::TestSuite::Tester<IntersectionTest> {
+class IntersectionTest: public Corrade::TestSuite::Tester {
     public:
         IntersectionTest();
 

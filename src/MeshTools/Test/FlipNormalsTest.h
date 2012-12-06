@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class FlipNormalsTest: public Corrade::TestSuite::Tester<FlipNormalsTest> {
+class FlipNormalsTest: public Corrade::TestSuite::Tester {
     public:
         FlipNormalsTest();
 

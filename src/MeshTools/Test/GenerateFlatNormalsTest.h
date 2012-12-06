@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class GenerateFlatNormalsTest: public Corrade::TestSuite::Tester<GenerateFlatNormalsTest> {
+class GenerateFlatNormalsTest: public Corrade::TestSuite::Tester {
     public:
         GenerateFlatNormalsTest();
 

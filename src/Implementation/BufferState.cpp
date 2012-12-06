@@ -15,7 +15,7 @@
 
 #include "BufferState.h"
 
-#include <Utility/Debug.h>
+#include <Utility/Assert.h>
 
 namespace Magnum { namespace Implementation {
 

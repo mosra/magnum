@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class ConstantsTest: public Corrade::TestSuite::Tester<ConstantsTest> {
+class ConstantsTest: public Corrade::TestSuite::Tester {
     public:
         ConstantsTest();
 

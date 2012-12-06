@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Primitives { namespace Test {
 
-class CapsuleTest: public Corrade::TestSuite::Tester<CapsuleTest> {
+class CapsuleTest: public Corrade::TestSuite::Tester {
     public:
         CapsuleTest();
 

@@ -17,7 +17,7 @@
 
 #include <algorithm>
 #include <numeric>
-#include <Utility/Debug.h>
+#include <Utility/Assert.h>
 
 using namespace std;
 

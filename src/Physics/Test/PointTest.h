@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Physics { namespace Test {
 
-class PointTest: public Corrade::TestSuite::Tester<PointTest> {
+class PointTest: public Corrade::TestSuite::Tester {
     public:
         PointTest();
 

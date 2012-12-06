@@ -15,6 +15,7 @@
 
 #include "ExtensionWrangler.h"
 
+#include <cstdlib>
 #include <Utility/Debug.h>
 
 #include "Magnum.h"

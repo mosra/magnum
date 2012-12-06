@@ -21,7 +21,7 @@
 
 #include <algorithm>
 #include <vector>
-#include <Utility/Debug.h>
+#include <Utility/Assert.h>
 
 #include "SceneGraph.h"
 

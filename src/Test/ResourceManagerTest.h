@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Test {
 
-class ResourceManagerTest: public Corrade::TestSuite::Tester<ResourceManagerTest> {
+class ResourceManagerTest: public Corrade::TestSuite::Tester {
     public:
         ResourceManagerTest();
 
