@@ -62,8 +62,7 @@ std::size_t BufferState::indexForTarget(Buffer::Target target) {
         #endif
     }
 
-    CORRADE_ASSERT(false, "Unknown Buffer target", 0);
-    return 0;
+    CORRADE_INTERNAL_ASSERT(false);
 }
 
 }}
