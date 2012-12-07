@@ -22,8 +22,6 @@
 #include "Math/Vector2.h"
 #include <Swizzle.h>
 #include "Trade/ImageData.h"
-
-using namespace std;
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Trade { namespace TgaImporter {
@@ -32,8 +30,8 @@ namespace Magnum { namespace Trade { namespace TgaImporter {
 static_assert(sizeof(TgaImporter::Header) == 18, "TgaImporter: header size is not 18 bytes");
 #endif
 
-bool TgaImporter::TgaImporter::open(const string& filename, const string& name) {
-    ifstream in(filename.c_str());
+bool TgaImporter::TgaImporter::open(const std::string& filename, const std::string& name) {
+    std::ifstream in(filename.c_str());
     if(!in.good()) {
         Error() << "TgaImporter: cannot open file" << filename;
         return false;
@@ -43,7 +41,7 @@ bool TgaImporter::TgaImporter::open(const string& filename, const string& name) 
     return status;
 }
 
-bool TgaImporter::open(istream& in, const string& name) {
+bool TgaImporter::open(std::istream& in, const std::string& name) {
     if(_image) close();
     if(!in.good()) {
         Error() << "TgaImporter: cannot read input stream";
@@ -51,10 +49,10 @@ bool TgaImporter::open(istream& in, const string& name) {
     }
 
     /* Check if the file is long enough */
-    in.seekg(0, istream::end);
-    streampos filesize = in.tellg();
-    in.seekg(0, istream::beg);
-    if(filesize < streampos(sizeof(Header))) {
+    in.seekg(0, std::istream::end);
+    std::streampos filesize = in.tellg();
+    in.seekg(0, std::istream::beg);
+    if(filesize < std::streampos(sizeof(Header))) {
         Error() << "TgaImporter: the file is too short:" << filesize << "bytes";
         return false;
     }
@@ -97,7 +95,7 @@ bool TgaImporter::open(istream& in, const string& name) {
             return false;
     }
 
-    size_t size = header.width*header.height*header.bpp/8;
+    std::size_t size = header.width*header.height*header.bpp/8;
     GLubyte* buffer = new GLubyte[size];
     in.read(reinterpret_cast<char*>(buffer), size);
 

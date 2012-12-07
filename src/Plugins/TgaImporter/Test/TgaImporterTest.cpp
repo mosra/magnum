@@ -21,7 +21,6 @@
 
 #include "../TgaImporter.h"
 
-using namespace std;
 using namespace Corrade::Utility;
 
 CORRADE_TEST_MAIN(Magnum::Trade::TgaImporter::Test::TgaImporterTest)
@@ -39,7 +38,7 @@ TgaImporterTest::TgaImporterTest() {
 }
 
 void TgaImporterTest::openInexistent() {
-    ostringstream debug;
+    std::ostringstream debug;
     Error::setOutput(&debug);
 
     TgaImporter importer;
@@ -49,9 +48,9 @@ void TgaImporterTest::openInexistent() {
 
 void TgaImporterTest::openShort() {
     const char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    istringstream in(string(data, sizeof(data)));
+    std::istringstream in(std::string(data, sizeof(data)));
 
-    ostringstream debug;
+    std::ostringstream debug;
     Error::setOutput(&debug);
 
     TgaImporter importer;
@@ -61,9 +60,9 @@ void TgaImporterTest::openShort() {
 
 void TgaImporterTest::paletted() {
     const char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    istringstream in(string(data, sizeof(data)));
+    std::istringstream in(std::string(data, sizeof(data)));
 
-    ostringstream debug;
+    std::ostringstream debug;
     Error::setOutput(&debug);
 
     TgaImporter importer;
@@ -73,9 +72,9 @@ void TgaImporterTest::paletted() {
 
 void TgaImporterTest::nonRgb() {
     const char data[] = { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    istringstream in(string(data, sizeof(data)));
+    std::istringstream in(std::string(data, sizeof(data)));
 
-    ostringstream debug;
+    std::ostringstream debug;
     Error::setOutput(&debug);
 
     TgaImporter importer;
@@ -85,9 +84,9 @@ void TgaImporterTest::nonRgb() {
 
 void TgaImporterTest::bits16() {
     const char data[] = { 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0 };
-    istringstream in(string(data, sizeof(data)));
+    std::istringstream in(std::string(data, sizeof(data)));
 
-    ostringstream debug;
+    std::ostringstream debug;
     Error::setOutput(&debug);
 
     TgaImporter importer;
@@ -107,7 +106,7 @@ void TgaImporterTest::bits24() {
         3, 2, 1, 4, 3, 2, 5, 4, 3, 6, 5, 4, 7, 6, 5, 8, 7, 6
     };
     #endif
-    std::istringstream in(string(data, sizeof(data)));
+    std::istringstream in(std::string(data, sizeof(data)));
 
     TgaImporter importer;
     CORRADE_VERIFY(importer.open(in));
@@ -119,7 +118,7 @@ void TgaImporterTest::bits24() {
     #endif
     CORRADE_COMPARE(image->size(), Math::Vector2<GLsizei>(2, 3));
     CORRADE_VERIFY(image->type() == TypeTraits<GLubyte>::imageType());
-    CORRADE_COMPARE(string(static_cast<const char*>(image->data()), 2*3*3), string(pixels, 2*3*3));
+    CORRADE_COMPARE(std::string(static_cast<const char*>(image->data()), 2*3*3), std::string(pixels, 2*3*3));
 }
 
 void TgaImporterTest::bits32() {
@@ -134,7 +133,7 @@ void TgaImporterTest::bits32() {
         3, 2, 1, 1, 4, 3, 2, 1, 5, 4, 3, 1, 6, 5, 4, 1, 7, 6, 5, 1, 8, 7, 6, 1
     };
     #endif
-    std::istringstream in(string(data, sizeof(data)));
+    std::istringstream in(std::string(data, sizeof(data)));
 
     TgaImporter importer;
     CORRADE_VERIFY(importer.open(in));
@@ -146,7 +145,7 @@ void TgaImporterTest::bits32() {
     #endif
     CORRADE_COMPARE(image->size(), Math::Vector2<GLsizei>(2, 3));
     CORRADE_VERIFY(image->type() == TypeTraits<GLubyte>::imageType());
-    CORRADE_COMPARE(string(static_cast<const char*>(image->data()), 2*3*3), string(pixels, 2*3*3));
+    CORRADE_COMPARE(std::string(static_cast<const char*>(image->data()), 2*3*3), std::string(pixels, 2*3*3));
 }
 
 }}}}
