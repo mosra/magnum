@@ -15,6 +15,7 @@
 
 #include "TgaImporter.h"
 
+#include <fstream>
 #include <algorithm>
 #include <Utility/Endianness.h>
 

@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Trade { namespace TgaImporter { namespace Test {
 
-class TgaImporterTest: public Corrade::TestSuite::Tester<TgaImporterTest> {
+class TgaImporterTest: public Corrade::TestSuite::Tester {
     public:
         TgaImporterTest();
 

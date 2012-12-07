@@ -1,1 +1,1 @@
-corrade_add_test2(TgaImporterTest TgaImporterTest.cpp LIBRARIES TgaImporterTestLib)
+corrade_add_test(TgaImporterTest TgaImporterTest.cpp LIBRARIES TgaImporterTestLib)
