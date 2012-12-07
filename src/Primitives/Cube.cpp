@@ -17,11 +17,9 @@
 
 #include "Math/Point3D.h"
 
-using namespace std;
-
 namespace Magnum { namespace Primitives {
 
-Cube::Cube(): MeshData3D("", Mesh::Primitive::Triangles, nullptr, {new vector<Point3D>{
+Cube::Cube(): MeshData3D("", Mesh::Primitive::Triangles, nullptr, {new std::vector<Point3D>{
     {-1.0f, -1.0f,  1.0f},
     { 1.0f, -1.0f,  1.0f},
     { 1.0f,  1.0f,  1.0f}, /* +Z */
@@ -63,7 +61,7 @@ Cube::Cube(): MeshData3D("", Mesh::Primitive::Triangles, nullptr, {new vector<Po
     {-1.0f, -1.0f, -1.0f},
     {-1.0f,  1.0f,  1.0f},
     {-1.0f,  1.0f, -1.0f}
-}}, {new vector<Vector3>{
+}}, {new std::vector<Vector3>{
     { 0.0f,  0.0f,  1.0f},
     { 0.0f,  0.0f,  1.0f},
     { 0.0f,  0.0f,  1.0f}, /* +Z */

@@ -318,7 +318,7 @@ MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
     do {                                                                    \
         if(!Context::current()->isVersionSupported(version)) {    \
             Corrade::Utility::Error() << "Magnum: required version" << version << "is not supported"; \
-            exit(-3);                                                       \
+            std::exit(-3);                                                  \
         }                                                                   \
     } while(0)
 #endif
@@ -348,7 +348,7 @@ MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
     do {                                                                    \
         if(!Context::current()->isExtensionSupported<extension>()) { \
             Corrade::Utility::Error() << "Magnum: required extension" << extension::string() << "is not supported"; \
-            exit(-3);                                                       \
+            std::exit(-3);                                                  \
         }                                                                   \
     } while(0)
 #endif

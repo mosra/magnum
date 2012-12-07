@@ -21,7 +21,6 @@
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::Point2DTest)
 
-using namespace std;
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
@@ -41,7 +40,7 @@ void Point2DTest::construct() {
 }
 
 void Point2DTest::debug() {
-    ostringstream o;
+    std::ostringstream o;
     Debug(&o) << Point2D(0.5f, 15.0f, 1.0f);
     CORRADE_COMPARE(o.str(), "Vector(0.5, 15, 1)\n");
 }
@@ -50,10 +49,10 @@ void Point2DTest::configuration() {
     Configuration c;
 
     Point2D vec(3.0f, 3.125f, 9.55f);
-    string value("3 3.125 9.55");
+    std::string value("3 3.125 9.55");
 
     c.setValue("point", vec);
-    CORRADE_COMPARE(c.value<std::string>("point"), value);
+    CORRADE_COMPARE(c.value("point"), value);
     CORRADE_COMPARE(c.value<Point2D>("point"), vec);
 }
 

@@ -18,25 +18,23 @@
 #include <type_traits>
 #include <Utility/Debug.h>
 
-using namespace std;
-
 namespace Magnum {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-static_assert(is_same<GLubyte, uint8_t>::value, "GLubyte is not the same as uint8_t");
-static_assert(is_same<GLbyte, int8_t>::value, "GLbyte is not the same as int8_t");
-static_assert(is_same<GLushort, uint16_t>::value, "GLushort is not the same as uint16_t");
-static_assert(is_same<GLshort, int16_t>::value, "GLshort is not the same as int16_t");
-static_assert(is_same<GLuint, uint32_t>::value, "GLuint is not the same as uint32_t");
-static_assert(is_same<GLint, int32_t>::value, "GLint is not the same as int32_t");
-static_assert(is_same<GLsizei, int32_t>::value, "GLsizei is not the same as int32_t");
-static_assert(is_same<GLfloat, float>::value, "GLfloat is not the same as float");
+static_assert(std::is_same<GLubyte, std::uint8_t>::value, "GLubyte is not the same as std::uint8_t");
+static_assert(std::is_same<GLbyte, std::int8_t>::value, "GLbyte is not the same as std::int8_t");
+static_assert(std::is_same<GLushort, std::uint16_t>::value, "GLushort is not the same as std::uint16_t");
+static_assert(std::is_same<GLshort, std::int16_t>::value, "GLshort is not the same as std::int16_t");
+static_assert(std::is_same<GLuint, std::uint32_t>::value, "GLuint is not the same as std::uint32_t");
+static_assert(std::is_same<GLint, std::int32_t>::value, "GLint is not the same as std::int32_t");
+static_assert(std::is_same<GLsizei, std::int32_t>::value, "GLsizei is not the same as std::int32_t");
+static_assert(std::is_same<GLfloat, float>::value, "GLfloat is not the same as float");
 #ifndef MAGNUM_TARGET_GLES
-static_assert(is_same<GLdouble, double>::value, "GLdouble is not the same as double");
+static_assert(std::is_same<GLdouble, double>::value, "GLdouble is not the same as double");
 #endif
 #endif
 
-size_t TypeInfo::sizeOf(Type type) {
+std::size_t TypeInfo::sizeOf(Type type) {
     switch(type) {
         #define val(type) case Type::type: return TypeTraits<TypeOf<Type::type>::Type>::size();
         val(UnsignedByte)

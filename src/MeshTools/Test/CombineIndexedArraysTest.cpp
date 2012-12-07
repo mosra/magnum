@@ -21,8 +21,6 @@
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::CombineIndexedArraysTest)
 
-using namespace std;
-
 namespace Magnum { namespace MeshTools { namespace Test {
 
 CombineIndexedArraysTest::CombineIndexedArraysTest() {
@@ -31,31 +29,31 @@ CombineIndexedArraysTest::CombineIndexedArraysTest() {
 }
 
 void CombineIndexedArraysTest::wrongIndexCount() {
-    stringstream ss;
+    std::stringstream ss;
     Error::setOutput(&ss);
-    vector<uint32_t> array;
-    vector<uint32_t> result = MeshTools::combineIndexedArrays(
-        tuple<const vector<uint32_t>&, vector<uint32_t>&>(vector<uint32_t>{0, 1, 0}, array),
-        tuple<const vector<uint32_t>&, vector<uint32_t>&>(vector<uint32_t>{3, 4}, array));
+    std::vector<std::uint32_t> array;
+    std::vector<std::uint32_t> result = MeshTools::combineIndexedArrays(
+        std::tuple<const std::vector<std::uint32_t>&, std::vector<std::uint32_t>&>(std::vector<std::uint32_t>{0, 1, 0}, array),
+        std::tuple<const std::vector<std::uint32_t>&, std::vector<std::uint32_t>&>(std::vector<std::uint32_t>{3, 4}, array));
 
     CORRADE_COMPARE(result.size(), 0);
     CORRADE_COMPARE(ss.str(), "MeshTools::combineIndexedArrays(): index arrays don't have the same length, nothing done.\n");
 }
 
 void CombineIndexedArraysTest::combine() {
-    vector<uint32_t> array1{ 0, 1 };
-    vector<uint32_t> array2{ 0, 1, 2, 3, 4 };
-    vector<uint32_t> array3{ 0, 1, 2, 3, 4, 5, 6, 7 };
+    std::vector<std::uint32_t> array1{ 0, 1 };
+    std::vector<std::uint32_t> array2{ 0, 1, 2, 3, 4 };
+    std::vector<std::uint32_t> array3{ 0, 1, 2, 3, 4, 5, 6, 7 };
 
-    vector<uint32_t> result = MeshTools::combineIndexedArrays(
-        tuple<const vector<uint32_t>&, vector<uint32_t>&>(vector<uint32_t>{0, 1, 0}, array1),
-        tuple<const vector<uint32_t>&, vector<uint32_t>&>(vector<uint32_t>{3, 4, 3}, array2),
-        tuple<const vector<uint32_t>&, vector<uint32_t>&>(vector<uint32_t>{6, 7, 6}, array3));
+    std::vector<std::uint32_t> result = MeshTools::combineIndexedArrays(
+        std::tuple<const std::vector<std::uint32_t>&, std::vector<std::uint32_t>&>(std::vector<std::uint32_t>{0, 1, 0}, array1),
+        std::tuple<const std::vector<std::uint32_t>&, std::vector<std::uint32_t>&>(std::vector<std::uint32_t>{3, 4, 3}, array2),
+        std::tuple<const std::vector<std::uint32_t>&, std::vector<std::uint32_t>&>(std::vector<std::uint32_t>{6, 7, 6}, array3));
 
-    CORRADE_COMPARE(result, (vector<uint32_t>{0, 1, 0}));
-    CORRADE_COMPARE(array1, (vector<uint32_t>{0, 1}));
-    CORRADE_COMPARE(array2, (vector<uint32_t>{3, 4}));
-    CORRADE_COMPARE(array3, (vector<uint32_t>{6, 7}));
+    CORRADE_COMPARE(result, (std::vector<std::uint32_t>{0, 1, 0}));
+    CORRADE_COMPARE(array1, (std::vector<std::uint32_t>{0, 1}));
+    CORRADE_COMPARE(array2, (std::vector<std::uint32_t>{3, 4}));
+    CORRADE_COMPARE(array3, (std::vector<std::uint32_t>{6, 7}));
 }
 
 }}}

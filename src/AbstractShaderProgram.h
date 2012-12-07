@@ -1095,17 +1095,17 @@ template<> struct Attribute<GLfloat> {
 
 CORRADE_ENUMSET_OPERATORS(Attribute<GLfloat>::DataOptions)
 
-template<size_t vectorSize> struct Attribute<Math::Vector<vectorSize, GLfloat>>: public Attribute<GLfloat> {
+template<std::size_t vectorSize> struct Attribute<Math::Vector<vectorSize, GLfloat>>: public Attribute<GLfloat> {
     inline constexpr static GLint size(DataOptions) { return vectorSize; }
     inline constexpr static std::size_t vectorCount() { return 1; }
 };
 
-template<size_t cols, size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, GLfloat>>: public Attribute<GLfloat> {
+template<std::size_t cols, std::size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, GLfloat>>: public Attribute<GLfloat> {
     inline constexpr static GLint size(DataOptions) { return rows; }
     inline constexpr static std::size_t vectorCount() { return cols; }
 };
 
-template<size_t matrixSize> struct Attribute<Math::Matrix<matrixSize, GLfloat>>: public Attribute<GLfloat> {
+template<std::size_t matrixSize> struct Attribute<Math::Matrix<matrixSize, GLfloat>>: public Attribute<GLfloat> {
     inline constexpr static GLint size(DataOptions) { return matrixSize; }
     inline constexpr static std::size_t vectorCount() { return matrixSize; }
 };
@@ -1192,11 +1192,11 @@ template<> struct Attribute<GLuint> {
     inline constexpr static GLint size() { return 1; }
 };
 
-template<size_t size> struct Attribute<Math::Vector<size, GLint>>: public Attribute<GLint> {
+template<std::size_t size> struct Attribute<Math::Vector<size, GLint>>: public Attribute<GLint> {
     inline constexpr static GLint size() { return size; }
 };
 
-template<size_t size> struct Attribute<Math::Vector<size, GLuint>>: public Attribute<GLuint> {
+template<std::size_t size> struct Attribute<Math::Vector<size, GLuint>>: public Attribute<GLuint> {
     inline constexpr static GLint size() { return size; }
 };
 
@@ -1216,17 +1216,17 @@ template<> struct Attribute<GLdouble> {
     inline constexpr static std::size_t vectorCount() { return 1; }
 };
 
-template<size_t cols, size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, GLdouble>>: public Attribute<GLdouble> {
+template<std::size_t cols, std::size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, GLdouble>>: public Attribute<GLdouble> {
     inline constexpr static GLint size() { return rows; }
     inline constexpr static std::size_t vectorCount() { return cols; }
 };
 
-template<size_t size> struct Attribute<Math::Matrix<size, GLdouble>>: public Attribute<GLdouble> {
+template<std::size_t size> struct Attribute<Math::Matrix<size, GLdouble>>: public Attribute<GLdouble> {
     inline constexpr static GLint size() { return size; }
     inline constexpr static std::size_t vectorCount() { return size; }
 };
 
-template<size_t size> struct Attribute<Math::Vector<size, GLdouble>>: public Attribute<GLdouble> {
+template<std::size_t size> struct Attribute<Math::Vector<size, GLdouble>>: public Attribute<GLdouble> {
     inline constexpr static GLint size() { return size; }
     inline constexpr static std::size_t vectorCount() { return size; }
 };

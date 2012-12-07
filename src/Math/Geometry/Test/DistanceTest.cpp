@@ -22,8 +22,6 @@
 
 CORRADE_TEST_MAIN(Magnum::Math::Geometry::Test::DistanceTest)
 
-using namespace std;
-
 namespace Magnum { namespace Math { namespace Geometry { namespace Test {
 
 typedef Magnum::Math::Vector2<float> Vector2;

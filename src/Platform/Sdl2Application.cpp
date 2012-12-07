@@ -43,7 +43,7 @@ Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
 Sdl2Application::Sdl2Application(int, char**, const std::string& name, const Vector2i& size): _redraw(true) {
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         Error() << "Cannot initialize SDL.";
-        exit(1);
+        std::exit(1);
     }
 
     /* Enable double buffering and 24bt depth buffer */
@@ -54,7 +54,7 @@ Sdl2Application::Sdl2Application(int, char**, const std::string& name, const Vec
         size.x(), size.y(), SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     if(!window) {
         Error() << "Cannot create window.";
-        exit(2);
+        std::exit(2);
     }
 
     context = SDL_GL_CreateContext(window);

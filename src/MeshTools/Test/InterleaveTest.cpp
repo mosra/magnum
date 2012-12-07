@@ -23,7 +23,6 @@
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::InterleaveTest)
 
-using namespace std;
 using Corrade::Utility::Endianness;
 
 namespace Magnum { namespace MeshTools { namespace Test {
@@ -35,42 +34,42 @@ InterleaveTest::InterleaveTest() {
 }
 
 void InterleaveTest::attributeCount() {
-    stringstream ss;
+    std::stringstream ss;
     Error::setOutput(&ss);
-    CORRADE_COMPARE((Implementation::Interleave::attributeCount(vector<int8_t>{0, 1, 2},
-        vector<int8_t>{0, 1, 2, 3, 4, 5})), size_t(0));
+    CORRADE_COMPARE((Implementation::Interleave::attributeCount(std::vector<std::int8_t>{0, 1, 2},
+        std::vector<std::int8_t>{0, 1, 2, 3, 4, 5})), std::size_t(0));
     CORRADE_COMPARE(ss.str(), "MeshTools::interleave(): attribute arrays don't have the same length, nothing done.\n");
 
-    CORRADE_COMPARE((Implementation::Interleave::attributeCount(vector<int8_t>{0, 1, 2},
-        vector<int8_t>{3, 4, 5})), size_t(3));
+    CORRADE_COMPARE((Implementation::Interleave::attributeCount(std::vector<std::int8_t>{0, 1, 2},
+        std::vector<std::int8_t>{3, 4, 5})), std::size_t(3));
 }
 
 void InterleaveTest::stride() {
-    CORRADE_COMPARE(Implementation::Interleave::stride(vector<int8_t>()), size_t(1));
-    CORRADE_COMPARE(Implementation::Interleave::stride(vector<int32_t>()), size_t(4));
-    CORRADE_COMPARE((Implementation::Interleave::stride(vector<int8_t>(), vector<int32_t>())), size_t(5));
+    CORRADE_COMPARE(Implementation::Interleave::stride(std::vector<std::int8_t>()), std::size_t(1));
+    CORRADE_COMPARE(Implementation::Interleave::stride(std::vector<std::int32_t>()), std::size_t(4));
+    CORRADE_COMPARE((Implementation::Interleave::stride(std::vector<std::int8_t>(), std::vector<std::int32_t>())), std::size_t(5));
 }
 
 void InterleaveTest::write() {
-    size_t attributeCount;
-    size_t stride;
+    std::size_t attributeCount;
+    std::size_t stride;
     char* data;
-    tie(attributeCount, stride, data) = MeshTools::interleave(
-        vector<int8_t>{0, 1, 2},
-        vector<int32_t>{3, 4, 5},
-        vector<int16_t>{6, 7, 8});
+    std::tie(attributeCount, stride, data) = MeshTools::interleave(
+        std::vector<std::int8_t>{0, 1, 2},
+        std::vector<std::int32_t>{3, 4, 5},
+        std::vector<std::int16_t>{6, 7, 8});
 
-    CORRADE_COMPARE(attributeCount, size_t(3));
-    CORRADE_COMPARE(stride, size_t(7));
-    size_t size = attributeCount*stride;
+    CORRADE_COMPARE(attributeCount, std::size_t(3));
+    CORRADE_COMPARE(stride, std::size_t(7));
+    std::size_t size = attributeCount*stride;
     if(!Endianness::isBigEndian()) {
-        CORRADE_COMPARE(vector<char>(data, data+size), (vector<char>{
+        CORRADE_COMPARE(std::vector<char>(data, data+size), (std::vector<char>{
             0x00, 0x03, 0x00, 0x00, 0x00, 0x06, 0x00,
             0x01, 0x04, 0x00, 0x00, 0x00, 0x07, 0x00,
             0x02, 0x05, 0x00, 0x00, 0x00, 0x08, 0x00
         }));
     } else {
-        CORRADE_COMPARE(vector<char>(data, data+size), (vector<char>{
+        CORRADE_COMPARE(std::vector<char>(data, data+size), (std::vector<char>{
             0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x06,
             0x01, 0x00, 0x00, 0x00, 0x04, 0x00, 0x07,
             0x02, 0x00, 0x00, 0x00, 0x05, 0x00, 0x08

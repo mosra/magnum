@@ -22,7 +22,6 @@
 
 #include "corradeCompatibility.h"
 
-using namespace std;
 using namespace Corrade::Utility;
 
 CORRADE_TEST_MAIN(Magnum::Test::ResourceManagerTest)
@@ -37,7 +36,7 @@ class Data {
         inline ~Data() { --count; }
 };
 
-typedef Magnum::ResourceManager<int32_t, Data> ResourceManager;
+typedef Magnum::ResourceManager<std::int32_t, Data> ResourceManager;
 
 class IntResourceLoader: public AbstractResourceLoader<std::int32_t> {
     public:
@@ -117,7 +116,7 @@ void ResourceManagerTest::stateFallback() {
 void ResourceManagerTest::stateDisallowed() {
     ResourceManager rm;
 
-    stringstream out;
+    std::ostringstream out;
     Error::setOutput(&out);
 
     Data d;
@@ -135,27 +134,27 @@ void ResourceManagerTest::basic() {
     /* One mutable, one final */
     ResourceKey questionKey("the-question");
     ResourceKey answerKey("the-answer");
-    rm.set(questionKey, new int32_t(10), ResourceDataState::Mutable, ResourcePolicy::Resident);
-    rm.set(answerKey, new int32_t(42), ResourceDataState::Final, ResourcePolicy::Resident);
-    Resource<int32_t> theQuestion = rm.get<int32_t>(questionKey);
-    Resource<int32_t> theAnswer = rm.get<int32_t>(answerKey);
+    rm.set(questionKey, new std::int32_t(10), ResourceDataState::Mutable, ResourcePolicy::Resident);
+    rm.set(answerKey, new std::int32_t(42), ResourceDataState::Final, ResourcePolicy::Resident);
+    Resource<std::int32_t> theQuestion = rm.get<std::int32_t>(questionKey);
+    Resource<std::int32_t> theAnswer = rm.get<std::int32_t>(answerKey);
 
     /* Check basic functionality */
     CORRADE_COMPARE(theQuestion.state(), ResourceState::Mutable);
     CORRADE_COMPARE(theAnswer.state(), ResourceState::Final);
     CORRADE_COMPARE(*theQuestion, 10);
     CORRADE_COMPARE(*theAnswer, 42);
-    CORRADE_COMPARE(rm.count<int32_t>(), 2);
+    CORRADE_COMPARE(rm.count<std::int32_t>(), 2);
 
     /* Cannot change already final resource */
-    stringstream out;
+    std::ostringstream out;
     Error::setOutput(&out);
-    rm.set(answerKey, new int32_t(43), ResourceDataState::Mutable, ResourcePolicy::Resident);
+    rm.set(answerKey, new std::int32_t(43), ResourceDataState::Mutable, ResourcePolicy::Resident);
     CORRADE_COMPARE(*theAnswer, 42);
     CORRADE_COMPARE(out.str(), "ResourceManager::set(): cannot change already final resource\n");
 
     /* But non-final can be changed */
-    rm.set(questionKey, new int32_t(20), ResourceDataState::Final, ResourcePolicy::Resident);
+    rm.set(questionKey, new std::int32_t(20), ResourceDataState::Final, ResourcePolicy::Resident);
     CORRADE_COMPARE(theQuestion.state(), ResourceState::Final);
     CORRADE_COMPARE(*theQuestion, 20);
 }

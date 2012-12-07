@@ -17,8 +17,6 @@
 
 #include "Swizzle.h"
 
-using namespace std;
-
 CORRADE_TEST_MAIN(Magnum::Test::SwizzleTest)
 
 namespace Magnum { namespace Test {
@@ -57,37 +55,37 @@ void SwizzleTest::fromSmall() {
     /* Force compile-time evaluation for both */
     constexpr Vector2i orig(1, 2);
     constexpr Vector3i swizzled(swizzle(orig, "gxr"));
-    CORRADE_VERIFY((integral_constant<bool, swizzled.x() == 2>::value));
+    CORRADE_VERIFY((std::integral_constant<bool, swizzled.x() == 2>::value));
     CORRADE_COMPARE((swizzle<'g', 'x', 'r'>(orig)), Vector3i(2, 1, 1));
 }
 
 void SwizzleTest::type() {
     Vector4i orig;
-    CORRADE_VERIFY((is_same<decltype(swizzle<'y', 'a'>(orig)), Vector2i>::value));
-    CORRADE_VERIFY((is_same<decltype(swizzle(orig, "ya")), Vector2i>::value));
-    CORRADE_VERIFY((is_same<decltype(swizzle<'y', 'z', 'a'>(orig)), Vector3i>::value));
-    CORRADE_VERIFY((is_same<decltype(swizzle(orig, "yza")), Vector3i>::value));
-    CORRADE_VERIFY((is_same<decltype(swizzle<'y', 'a', 'y', 'x'>(orig)), Vector4i>::value));
-    CORRADE_VERIFY((is_same<decltype(swizzle(orig, "yayx")), Vector4i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(swizzle<'y', 'a'>(orig)), Vector2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(swizzle(orig, "ya")), Vector2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(swizzle<'y', 'z', 'a'>(orig)), Vector3i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(swizzle(orig, "yza")), Vector3i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(swizzle<'y', 'a', 'y', 'x'>(orig)), Vector4i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(swizzle(orig, "yayx")), Vector4i>::value));
 
     Color3<float> origColor3;
     Color4<double> origColor4;
-    CORRADE_VERIFY((is_same<decltype(swizzle<'y', 'z', 'r'>(origColor3)), Color3<float>>::value));
-    CORRADE_VERIFY((is_same<decltype(swizzle<'y', 'z', 'a'>(origColor4)), Color3<double>>::value));
-    CORRADE_VERIFY((is_same<decltype(swizzle(origColor3, "yzr")), Color3<float>>::value));
-    CORRADE_VERIFY((is_same<decltype(swizzle(origColor4, "yza")), Color3<double>>::value));
-    CORRADE_VERIFY((is_same<decltype(swizzle<'y', 'z', 'y', 'x'>(origColor3)), Color4<float>>::value));
-    CORRADE_VERIFY((is_same<decltype(swizzle<'y', 'a', 'y', 'x'>(origColor4)), Color4<double>>::value));
-    CORRADE_VERIFY((is_same<decltype(swizzle(origColor3, "yzyx")), Color4<float>>::value));
-    CORRADE_VERIFY((is_same<decltype(swizzle(origColor4, "yayx")), Color4<double>>::value));
+    CORRADE_VERIFY((std::is_same<decltype(swizzle<'y', 'z', 'r'>(origColor3)), Color3<>>::value));
+    CORRADE_VERIFY((std::is_same<decltype(swizzle<'y', 'z', 'a'>(origColor4)), Color3<double>>::value));
+    CORRADE_VERIFY((std::is_same<decltype(swizzle(origColor3, "yzr")), Color3<>>::value));
+    CORRADE_VERIFY((std::is_same<decltype(swizzle(origColor4, "yza")), Color3<double>>::value));
+    CORRADE_VERIFY((std::is_same<decltype(swizzle<'y', 'z', 'y', 'x'>(origColor3)), Color4<>>::value));
+    CORRADE_VERIFY((std::is_same<decltype(swizzle<'y', 'a', 'y', 'x'>(origColor4)), Color4<double>>::value));
+    CORRADE_VERIFY((std::is_same<decltype(swizzle(origColor3, "yzyx")), Color4<>>::value));
+    CORRADE_VERIFY((std::is_same<decltype(swizzle(origColor4, "yayx")), Color4<double>>::value));
 }
 
 void SwizzleTest::defaultType() {
     Vector4i orig(1, 2, 3, 4);
-    CORRADE_COMPARE(swizzle<'b'>(orig), (Math::Vector<1, int32_t>(3)));
-    CORRADE_COMPARE(swizzle(orig, "b"), (Math::Vector<1, int32_t>(3)));
-    CORRADE_COMPARE((swizzle<'b', 'r', 'a', 'g', 'z', 'y', 'x'>(orig)), (Math::Vector<7, int32_t>(3, 1, 4, 2, 3, 2, 1)));
-    CORRADE_COMPARE(swizzle(orig, "bragzyx"), (Math::Vector<7, int32_t>(3, 1, 4, 2, 3, 2, 1)));
+    CORRADE_COMPARE(swizzle<'b'>(orig), (Math::Vector<1, std::int32_t>(3)));
+    CORRADE_COMPARE(swizzle(orig, "b"), (Math::Vector<1, std::int32_t>(3)));
+    CORRADE_COMPARE((swizzle<'b', 'r', 'a', 'g', 'z', 'y', 'x'>(orig)), (Math::Vector<7, std::int32_t>(3, 1, 4, 2, 3, 2, 1)));
+    CORRADE_COMPARE(swizzle(orig, "bragzyx"), (Math::Vector<7, std::int32_t>(3, 1, 4, 2, 3, 2, 1)));
 }
 
 }}

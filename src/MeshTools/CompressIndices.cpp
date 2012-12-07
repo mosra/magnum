@@ -22,19 +22,17 @@
 #include "IndexedMesh.h"
 #include "SizeTraits.h"
 
-using namespace std;
-
 namespace Magnum { namespace MeshTools {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
-std::tuple<size_t, Type, char* > CompressIndices::operator()() const {
+std::tuple<std::size_t, Type, char* > CompressIndices::operator()() const {
     return SizeBasedCall<Compressor>(*std::max_element(indices.begin(), indices.end()))(indices);
 }
 
 void CompressIndices::operator()(IndexedMesh* mesh, Buffer* buffer, Buffer::Usage usage) const {
-    size_t indexCount;
+    std::size_t indexCount;
     Type indexType;
     char* data;
     std::tie(indexCount, indexType, data) = operator()();
@@ -47,10 +45,10 @@ void CompressIndices::operator()(IndexedMesh* mesh, Buffer* buffer, Buffer::Usag
     delete[] data;
 }
 
-template<class IndexType> std::tuple<size_t, Type, char*> CompressIndices::Compressor::run(const std::vector<uint32_t>& indices) {
+template<class IndexType> std::tuple<std::size_t, Type, char*> CompressIndices::Compressor::run(const std::vector<std::uint32_t>& indices) {
     /* Create smallest possible version of index buffer */
     char* buffer = new char[indices.size()*sizeof(IndexType)];
-    for(size_t i = 0; i != indices.size(); ++i) {
+    for(std::size_t i = 0; i != indices.size(); ++i) {
         IndexType index = indices[i];
         memcpy(buffer+i*sizeof(IndexType), reinterpret_cast<const char*>(&index), sizeof(IndexType));
     }

@@ -20,23 +20,21 @@
 #include "AbstractShape.h"
 #include "ObjectShapeGroup.h"
 
-using namespace std;
-
 namespace Magnum { namespace Physics {
 
-template<uint8_t dimensions> ObjectShape<dimensions>::ObjectShape(SceneGraph::AbstractObject<dimensions>* object, ObjectShapeGroup<dimensions>* group): SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>>(object, group), _shape(nullptr) {
+template<std::uint8_t dimensions> ObjectShape<dimensions>::ObjectShape(SceneGraph::AbstractObject<dimensions>* object, ObjectShapeGroup<dimensions>* group): SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>>(object, group), _shape(nullptr) {
     this->setCachedTransformations(SceneGraph::AbstractFeature<dimensions>::CachedTransformation::Absolute);
 }
 
-template<uint8_t dimensions> ObjectShape<dimensions>::~ObjectShape() {
+template<std::uint8_t dimensions> ObjectShape<dimensions>::~ObjectShape() {
     delete _shape;
 }
 
-template<uint8_t dimensions> void ObjectShape<dimensions>::markDirty() {
+template<std::uint8_t dimensions> void ObjectShape<dimensions>::markDirty() {
     group()->setDirty();
 }
 
-template<uint8_t dimensions> void ObjectShape<dimensions>::clean(const typename DimensionTraits<dimensions>::MatrixType& absoluteTransformationMatrix) {
+template<std::uint8_t dimensions> void ObjectShape<dimensions>::clean(const typename DimensionTraits<dimensions>::MatrixType& absoluteTransformationMatrix) {
     if(_shape) _shape->applyTransformationMatrix(absoluteTransformationMatrix);
 }
 

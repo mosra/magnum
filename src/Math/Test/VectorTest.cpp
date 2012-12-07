@@ -22,7 +22,6 @@
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::VectorTest)
 
-using namespace std;
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
@@ -110,18 +109,18 @@ void VectorTest::max() {
 }
 
 void VectorTest::angle() {
-    ostringstream o;
+    std::ostringstream o;
     Error::setOutput(&o);
     /* Both vectors must be normalized, otherwise NaN is returned */
-    CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f}), numeric_limits<Vector3::Type>::quiet_NaN());
+    CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f}), std::numeric_limits<Vector3::Type>::quiet_NaN());
     CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized\n");
-    CORRADE_COMPARE(Vector3::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized()), numeric_limits<Vector3::Type>::quiet_NaN());
+    CORRADE_COMPARE(Vector3::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized()), std::numeric_limits<Vector3::Type>::quiet_NaN());
 
     CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), Vector3(1.0f, -2.0f, 3.0f).normalized()), rad(1.162514f));
 }
 
 void VectorTest::debug() {
-    ostringstream o;
+    std::ostringstream o;
     Debug(&o) << Vector4(0.5f, 15.0f, 1.0f, 1.0f);
     CORRADE_COMPARE(o.str(), "Vector(0.5, 15, 1, 1)\n");
 
@@ -134,10 +133,10 @@ void VectorTest::configuration() {
     Configuration c;
 
     Vector4 vec(3.0f, 3.125f, 9.0f, 9.55f);
-    string value("3 3.125 9 9.55");
+    std::string value("3 3.125 9 9.55");
 
     c.setValue("vector", vec);
-    CORRADE_COMPARE(c.value<std::string>("vector"), value);
+    CORRADE_COMPARE(c.value("vector"), value);
     CORRADE_COMPARE(c.value<Vector4>("vector"), vec);
 }
 

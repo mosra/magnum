@@ -25,8 +25,6 @@
 typedef char GLchar;
 #endif
 
-using namespace std;
-
 namespace Magnum {
 
 Shader::Shader(Version version, Type type): _type(type), _state(State::Initialized), shader(0) {
@@ -72,7 +70,7 @@ Shader& Shader::operator=(Shader&& other) {
 
 bool Shader::addFile(const std::string& filename) {
     /* Open file */
-    ifstream file(filename.c_str());
+    std::ifstream file(filename.c_str());
     if(!file.good()) {
         file.close();
 
@@ -81,13 +79,13 @@ bool Shader::addFile(const std::string& filename) {
     }
 
     /* Get size of shader and initialize buffer */
-    file.seekg(0, ios::end);
-    size_t size = file.tellg();
+    file.seekg(0, std::ios::end);
+    std::size_t size = file.tellg();
     char* source = new char[size+1];
     source[size] = '\0';
 
     /* Read data, close */
-    file.seekg(0, ios::beg);
+    file.seekg(0, std::ios::beg);
     file.read(source, size);
     file.close();
 
@@ -104,7 +102,7 @@ GLuint Shader::compile() {
 
     /* Array of sources */
     const GLchar** _sources = new const GLchar*[sources.size()];
-    for(size_t i = 0; i != sources.size(); ++i)
+    for(std::size_t i = 0; i != sources.size(); ++i)
         _sources[i] = static_cast<const GLchar*>(sources[i].c_str());
 
     /* Create shader and set its source */

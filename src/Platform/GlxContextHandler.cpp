@@ -32,7 +32,7 @@ VisualID GlxContextHandler::getVisualId(Display* nativeDisplay) {
     glXQueryVersion(nativeDisplay, &major, &minor);
     if(major == 1 && minor < 4) {
         Error() << "GlxContextHandler: GLX version 1.4 or greater is required.";
-        exit(1);
+        std::exit(1);
     }
 
     /* Choose config */
@@ -50,7 +50,7 @@ VisualID GlxContextHandler::getVisualId(Display* nativeDisplay) {
     configs = glXChooseFBConfig(nativeDisplay, DefaultScreen(nativeDisplay), attributes, &configCount);
     if(!configCount) {
         Error() << "GlxContextHandler: no supported framebuffer configuration found.";
-        exit(1);
+        std::exit(1);
     }
 
     /* Get visual ID */
@@ -83,7 +83,7 @@ void GlxContextHandler::createContext(Window nativeWindow) {
     XFree(configs);
     if(!context) {
         Error() << "GlxContextHandler: cannot create context.";
-        exit(1);
+        std::exit(1);
     }
 }
 

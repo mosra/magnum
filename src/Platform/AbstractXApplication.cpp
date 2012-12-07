@@ -25,11 +25,9 @@
 /* Mask for X events */
 #define INPUT_MASK KeyPressMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|PointerMotionMask|StructureNotifyMask
 
-using namespace std;
-
 namespace Magnum { namespace Platform {
 
-AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int&, char**, const string& title, const Vector2i& size): contextHandler(contextHandler), viewportSize(size), flags(Flag::Redraw) {
+AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int&, char**, const std::string& title, const Vector2i& size): contextHandler(contextHandler), viewportSize(size), flags(Flag::Redraw) {
     /* Get default X display */
     display = XOpenDisplay(0);
 

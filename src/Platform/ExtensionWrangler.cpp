@@ -32,7 +32,7 @@ void ExtensionWrangler::initialize(ExperimentalFeatures experimentalFeatures) {
     GLenum err = glewInit();
     if(err != GLEW_OK) {
         Error() << "ExtensionWrangler: cannot initialize GLEW:" << glewGetErrorString(err);
-        exit(1);
+        std::exit(1);
     }
     #else
     static_cast<void>(experimentalFeatures); /* Shut up about unused parameter */

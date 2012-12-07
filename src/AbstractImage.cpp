@@ -19,12 +19,10 @@
 
 #include "TypeTraits.h"
 
-using namespace std;
-
 namespace Magnum {
 
-size_t AbstractImage::pixelSize(Components format, ComponentType type) {
-    size_t size = 0;
+std::size_t AbstractImage::pixelSize(Components format, ComponentType type) {
+    std::size_t size = 0;
     switch(type) {
         #ifndef MAGNUM_TARGET_GLES
         case ComponentType::RGB332:

@@ -21,8 +21,6 @@
 #include "SceneGraph/MatrixTransformation3D.h"
 #include "SceneGraph/Scene.h"
 
-using namespace std;
-
 CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::ObjectTest)
 
 namespace Magnum { namespace SceneGraph { namespace Test {
@@ -121,22 +119,22 @@ void ObjectTest::transformations() {
     Matrix4 initial = Matrix4::rotationX(deg(90.0f)).inverted();
 
     /* Empty list */
-    CORRADE_COMPARE(s.transformations(vector<Object3D*>(), initial), vector<Matrix4>());
+    CORRADE_COMPARE(s.transformations(std::vector<Object3D*>(), initial), std::vector<Matrix4>());
 
     /* Scene alone */
-    CORRADE_COMPARE(s.transformations({&s}, initial), vector<Matrix4>{initial});
+    CORRADE_COMPARE(s.transformations({&s}, initial), std::vector<Matrix4>{initial});
 
     /* One object */
     Object3D first(&s);
     first.rotateZ(deg(30.0f));
     Object3D second(&first);
     second.scale(Vector3(0.5f));
-    CORRADE_COMPARE(s.transformations({&second}, initial), vector<Matrix4>{
+    CORRADE_COMPARE(s.transformations({&second}, initial), std::vector<Matrix4>{
         initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::scaling(Vector3(0.5f))
     });
 
     /* One object and scene */
-    CORRADE_COMPARE(s.transformations({&second, &s}, initial), (vector<Matrix4>{
+    CORRADE_COMPARE(s.transformations({&second, &s}, initial), (std::vector<Matrix4>{
         initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
         initial
     }));
@@ -144,13 +142,13 @@ void ObjectTest::transformations() {
     /* Two objects with foreign joint */
     Object3D third(&first);
     third.translate(Vector3::xAxis(5.0f));
-    CORRADE_COMPARE(s.transformations({&second, &third}, initial), (vector<Matrix4>{
+    CORRADE_COMPARE(s.transformations({&second, &third}, initial), (std::vector<Matrix4>{
         initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
         initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f)),
     }));
 
     /* Three objects with joint as one of them */
-    CORRADE_COMPARE(s.transformations({&second, &third, &first}, initial), (vector<Matrix4>{
+    CORRADE_COMPARE(s.transformations({&second, &third, &first}, initial), (std::vector<Matrix4>{
         initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
         initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f)),
         initial*Matrix4::rotationZ(deg(30.0f)),
@@ -160,7 +158,7 @@ void ObjectTest::transformations() {
         CORRADE_EXPECT_FAIL("Transformations not relative to scene are not yet implemented.");
 
         /* Transformation relative to another object */
-        CORRADE_COMPARE(second.transformations({&third}), vector<Matrix4>{
+        CORRADE_COMPARE(second.transformations({&third}), std::vector<Matrix4>{
             Matrix4::scaling(Vector3(0.5f)).inverted()*Matrix4::translation(Vector3::xAxis(5.0f))
         });
 
@@ -172,17 +170,17 @@ void ObjectTest::transformations() {
         orphan1.scale(Vector3::xScale(3.0f));
         Object3D orphan2(&orphanParent);
         orphan2.translate(Vector3::zAxis(5.0f));
-        CORRADE_COMPARE(orphan1.transformations({&orphan2}), vector<Matrix4>{
+        CORRADE_COMPARE(orphan1.transformations({&orphan2}), std::vector<Matrix4>{
             Matrix4::scaling(Vector3::xScale(3.0f)).inverted()*Matrix4::translation(Vector3::zAxis(5.0f))
         });
     }
 
-    ostringstream o;
+    std::ostringstream o;
     Error::setOutput(&o);
 
     /* Transformation of objects not part of the same scene */
     Object3D orphan;
-    CORRADE_COMPARE(s.transformations({&orphan}), vector<Matrix4>());
+    CORRADE_COMPARE(s.transformations({&orphan}), std::vector<Matrix4>());
     CORRADE_COMPARE(o.str(), "SceneGraph::Object::transformations(): the objects are not part of the same tree\n");
 }
 
@@ -283,7 +281,7 @@ void ObjectTest::setClean() {
 
 void ObjectTest::bulkSetClean() {
     /* Verify it doesn't crash when passed empty list */
-    Object3D::setClean(vector<Object3D*>());
+    Object3D::setClean(std::vector<Object3D*>());
 
     Scene3D scene;
     Object3D a(&scene);
@@ -294,7 +292,7 @@ void ObjectTest::bulkSetClean() {
     CachingObject d(&c);
     d.scale(Vector3(-2.0f));
     Object3D e(&scene);
-    vector<Object3D*> cleanAll{&a, &b, &c, &d, &e};
+    std::vector<Object3D*> cleanAll{&a, &b, &c, &d, &e};
 
     /* All objects should be cleaned */
     CORRADE_VERIFY(a.isDirty());

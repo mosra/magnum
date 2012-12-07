@@ -22,7 +22,6 @@
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::Matrix4Test)
 
-using namespace std;
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
@@ -93,7 +92,7 @@ void Matrix4Test::scaling() {
 }
 
 void Matrix4Test::rotation() {
-    ostringstream o;
+    std::ostringstream o;
     Error::setOutput(&o);
 
     CORRADE_COMPARE(Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f}), Matrix4());
@@ -190,7 +189,7 @@ void Matrix4Test::debug() {
         9.0f, 4.0f, 5.0f, 9.0f
     );
 
-    ostringstream o;
+    std::ostringstream o;
     Debug(&o) << m;
     CORRADE_COMPARE(o.str(), "Matrix(3, 4, 7, 9,\n"
                              "       5, 4, -1, 4,\n"
@@ -207,10 +206,10 @@ void Matrix4Test::configuration() {
         7.0f, -1.0f, 8.0f, 0.0f,
         9.0f, 4.0f, 5.0f, 9.55f
     );
-    string value("3 4 7 9 5 4 -1 4 8 7 8 5 4 3.125 0 9.55");
+    std::string value("3 4 7 9 5 4 -1 4 8 7 8 5 4 3.125 0 9.55");
 
     c.setValue("matrix", m);
-    CORRADE_COMPARE(c.value<std::string>("matrix"), value);
+    CORRADE_COMPARE(c.value("matrix"), value);
     CORRADE_COMPARE(c.value<Matrix4>("matrix"), m);
 }
 

@@ -17,18 +17,16 @@
 
 #include "Math/Vector3.h"
 
-using namespace std;
-
 namespace Magnum { namespace MeshTools {
 
-void flipFaceWinding(vector<std::uint32_t>& indices) {
+void flipFaceWinding(std::vector<std::uint32_t>& indices) {
     CORRADE_ASSERT(!(indices.size()%3), "MeshTools::flipNormals(): index count is not divisible by 3!", );
 
-    for(size_t i = 0; i != indices.size(); i += 3)
-        swap(indices[i+1], indices[i+2]);
+    for(std::size_t i = 0; i != indices.size(); i += 3)
+        std::swap(indices[i+1], indices[i+2]);
 }
 
-void flipNormals(vector<Vector3>& normals) {
+void flipNormals(std::vector<Vector3>& normals) {
     for(Vector3& normal: normals)
         normal = -normal;
 }

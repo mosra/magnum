@@ -30,8 +30,6 @@
 #include "Implementation/State.h"
 #include "DebugMarker.h"
 
-using namespace std;
-
 namespace Magnum {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -202,7 +200,7 @@ Context::Context() {
     _version = static_cast<Version>(_majorVersion*100+_minorVersion*10);
 
     /* Get first future (not supported) version */
-    vector<Version> versions{
+    std::vector<Version> versions{
         #ifndef MAGNUM_TARGET_GLES
         Version::GL300,
         Version::GL310,
@@ -218,17 +216,17 @@ Context::Context() {
         #endif
         Version::None
     };
-    size_t future = 0;
+    std::size_t future = 0;
     while(versions[future] != Version::None && !isVersionSupported(_version))
         ++future;
 
     /* List of extensions from future versions (extensions from current and
        previous versions should be supported automatically, so we don't need
        to check for them) */
-    unordered_map<string, Extension> futureExtensions;
-    for(size_t i = future; i != versions.size(); ++i)
+    std::unordered_map<std::string, Extension> futureExtensions;
+    for(std::size_t i = future; i != versions.size(); ++i)
         for(const Extension& extension: Extension::extensions(versions[i]))
-            futureExtensions.insert(make_pair(extension._string, extension));
+            futureExtensions.insert(std::make_pair(extension._string, extension));
 
     /* Check for presence of extensions in future versions */
     #ifndef MAGNUM_TARGET_GLES
@@ -253,8 +251,8 @@ Context::Context() {
         /* Don't crash when glGetString() returns nullptr */
         const char* e = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
         if(e) {
-            vector<string> extensions = Corrade::Utility::String::split(e, ' ');
-            for(const string& extension: extensions) {
+            std::vector<std::string> extensions = Corrade::Utility::String::split(e, ' ');
+            for(const std::string& extension: extensions) {
                 auto found = futureExtensions.find(extension);
                 if(found != futureExtensions.end()) {
                     _supportedExtensions.push_back(found->second);
@@ -289,7 +287,7 @@ Context::~Context() {
     _current = nullptr;
 }
 
-Version Context::supportedVersion(initializer_list<Version> versions) const {
+Version Context::supportedVersion(std::initializer_list<Version> versions) const {
     for(auto version: versions)
         if(isVersionSupported(version)) return version;
 

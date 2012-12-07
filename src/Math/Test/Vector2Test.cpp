@@ -21,7 +21,6 @@
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::Vector2Test)
 
-using namespace std;
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
@@ -62,7 +61,7 @@ void Vector2Test::scales() {
 }
 
 void Vector2Test::debug() {
-    ostringstream o;
+    std::ostringstream o;
     Debug(&o) << Vector2(0.5f, 15.0f);
     CORRADE_COMPARE(o.str(), "Vector(0.5, 15)\n");
 }
@@ -71,10 +70,10 @@ void Vector2Test::configuration() {
     Configuration c;
 
     Vector2 vec(3.125f, 9.0f);
-    string value("3.125 9");
+    std::string value("3.125 9");
 
     c.setValue("vector", vec);
-    CORRADE_COMPARE(c.value<std::string>("vector"), value);
+    CORRADE_COMPARE(c.value("vector"), value);
     CORRADE_COMPARE(c.value<Vector2>("vector"), vec);
 }
 

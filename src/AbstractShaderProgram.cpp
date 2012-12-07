@@ -25,8 +25,6 @@
 
 #define LINKER_MESSAGE_MAX_LENGTH 1024
 
-using namespace std;
-
 namespace Magnum {
 
 AbstractShaderProgram::Uniform1fImplementation AbstractShaderProgram::uniform1fImplementation = &AbstractShaderProgram::uniformImplementationDefault;
@@ -108,7 +106,7 @@ bool AbstractShaderProgram::attachShader(Shader& shader) {
     return true;
 }
 
-void AbstractShaderProgram::bindAttributeLocation(GLuint location, const string& name) {
+void AbstractShaderProgram::bindAttributeLocation(GLuint location, const std::string& name) {
     CORRADE_ASSERT(state == Initialized, "AbstractShaderProgram: attribute cannot be bound after linking.", );
 
     glBindAttribLocation(_id, location, name.c_str());

@@ -21,7 +21,6 @@
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::RectangularMatrixTest)
 
-using namespace std;
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
@@ -29,7 +28,7 @@ namespace Magnum { namespace Math { namespace Test {
 typedef RectangularMatrix<4, 3, float> Matrix4x3;
 typedef RectangularMatrix<3, 4, float> Matrix3x4;
 typedef RectangularMatrix<2, 2, float> Matrix2;
-typedef RectangularMatrix<2, 2, int32_t> Matrix2i;
+typedef RectangularMatrix<2, 2, std::int32_t> Matrix2i;
 typedef Vector<4, float> Vector4;
 
 RectangularMatrixTest::RectangularMatrixTest() {
@@ -154,8 +153,8 @@ void RectangularMatrixTest::multiplyDivide() {
     CORRADE_COMPARE(-1.5f*vec, multiplied);
     CORRADE_COMPARE(multiplied/-1.5f, vec);
 
-    Math::RectangularMatrix<1, 1, int8_t> vecChar(32);
-    Math::RectangularMatrix<1, 1, int8_t> multipliedChar(-48);
+    Math::RectangularMatrix<1, 1, std::int8_t> vecChar(32);
+    Math::RectangularMatrix<1, 1, std::int8_t> multipliedChar(-48);
     CORRADE_COMPARE(vecChar*-1.5f, multipliedChar);
     CORRADE_COMPARE(multipliedChar/-1.5f, vecChar);
     CORRADE_COMPARE(-1.5f*vecChar, multipliedChar);
@@ -168,14 +167,14 @@ void RectangularMatrixTest::multiplyDivide() {
 }
 
 void RectangularMatrixTest::multiply() {
-    RectangularMatrix<4, 6, int32_t> left(
+    RectangularMatrix<4, 6, std::int32_t> left(
         -5,     27,     10,     33,     0,     -15,
          7,     56,     66,      1,     0,     -24,
          4,     41,      4,      0,     1,      -4,
          9,   -100,     19,    -49,     1,       9
     );
 
-    RectangularMatrix<5, 4, int32_t> right(
+    RectangularMatrix<5, 4, std::int32_t> right(
          1,     -7,      0,    158,
          2,     24,     -3,     40,
          3,    -15,     -2,    -50,
@@ -183,7 +182,7 @@ void RectangularMatrixTest::multiply() {
          5,     30,      4,     18
     );
 
-    RectangularMatrix<5, 6, int32_t> expected(
+    RectangularMatrix<5, 6, std::int32_t> expected(
         1368, -16165,   2550,  -7716,    158,   1575,
          506,  -2725,   2352,  -1870,     37,   -234,
         -578,   4159,  -1918,   2534,    -52,   -127,
@@ -218,7 +217,7 @@ void RectangularMatrixTest::debug() {
         7.0f, -1.0f, 8.0f, 0.0f
     );
 
-    ostringstream o;
+    std::ostringstream o;
     Debug(&o) << m;
     CORRADE_COMPARE(o.str(), "Matrix(3, 4, 7,\n"
                              "       5, 4, -1,\n"
@@ -226,7 +225,7 @@ void RectangularMatrixTest::debug() {
                              "       4, 3, 0)\n");
 
     o.str("");
-    Debug(&o) << "a" << Matrix3x4() << "b" << RectangularMatrix<4, 3, int8_t>();
+    Debug(&o) << "a" << Matrix3x4() << "b" << RectangularMatrix<4, 3, std::int8_t>();
     CORRADE_COMPARE(o.str(), "a Matrix(0, 0, 0,\n"
                              "       0, 0, 0,\n"
                              "       0, 0, 0,\n"
@@ -241,12 +240,12 @@ void RectangularMatrixTest::configuration() {
         4.0f, 4.0f, 7.0f, 3.125f,
         7.0f, -1.0f, 8.0f, 9.55f
     );
-    string value("3 4 7 5 4 -1 8 7 8 4 3.125 9.55");
+    std::string value("3 4 7 5 4 -1 8 7 8 4 3.125 9.55");
 
     Configuration c;
     c.setValue<Matrix3x4>("matrix", m);
 
-    CORRADE_COMPARE(c.value<std::string>("matrix"), value);
+    CORRADE_COMPARE(c.value("matrix"), value);
     CORRADE_COMPARE(c.value<Matrix3x4>("matrix"), m);
 }
 

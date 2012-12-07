@@ -78,7 +78,7 @@ explicit, e.g.:
 float a = normalize<float>('\127');
 
 // b = 1.0f
-float b = normalize<float, int8_t>('\127');
+float b = normalize<float, std::int8_t>('\127');
 @endcode
 
 @todo Signed normalization to [-1.0, 1.0] like in OpenGL?

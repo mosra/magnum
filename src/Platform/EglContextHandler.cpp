@@ -32,7 +32,7 @@ VisualId EglContextHandler::getVisualId(EGLNativeDisplayType nativeDisplay) {
     display = eglGetDisplay(nativeDisplay);
     if(!eglInitialize(display, nullptr, nullptr)) {
         Error() << "Cannot initialize EGL:" << errorString(eglGetError());
-        exit(1);
+        std::exit(1);
     }
 
     #ifndef MAGNUM_TARGET_GLES
@@ -42,7 +42,7 @@ VisualId EglContextHandler::getVisualId(EGLNativeDisplayType nativeDisplay) {
     #endif
     if(!eglBindAPI(api)) {
         Error() << "Cannot bind EGL API:" << errorString(eglGetError());
-        exit(1);
+        std::exit(1);
     }
 
     /* Choose EGL config */
@@ -61,19 +61,19 @@ VisualId EglContextHandler::getVisualId(EGLNativeDisplayType nativeDisplay) {
     EGLint configCount;
     if(!eglChooseConfig(display, attribs, &config, 1, &configCount)) {
         Error() << "Cannot get EGL visual config:" << errorString(eglGetError());
-        exit(1);
+        std::exit(1);
     }
 
     if(!configCount) {
         Error() << "No matching EGL visual config available";
-        exit(1);
+        std::exit(1);
     }
 
     /* Get visual ID */
     EGLint visualId;
     if(!eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID, &visualId)) {
         Error() << "Cannot get native visual ID:" << errorString(eglGetError());
-        exit(1);
+        std::exit(1);
     }
 
     return visualId;
@@ -88,11 +88,11 @@ void EglContextHandler::createContext(EGLNativeWindowType window) {
     };
     if(!eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttributes)) {
         Error() << "Cannot create EGL context:" << errorString(eglGetError());
-        exit(1);
+        std::exit(1);
     }
     if(!(surface = eglCreateWindowSurface(display, config, window, NULL))) {
         Error() << "Cannot create window surface:" << errorString(eglGetError());
-        exit(1);
+        std::exit(1);
     }
 
     /** @bug Fixme: On desktop OpenGL and Mesa EGL implementation OpenGL version is 1.0, which is wrong */

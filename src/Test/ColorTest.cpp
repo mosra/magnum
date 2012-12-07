@@ -19,16 +19,14 @@
 
 #include "Color.h"
 
-using namespace std;
-
 CORRADE_TEST_MAIN(Magnum::Test::ColorTest)
 
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Test {
 
-typedef Magnum::Color3<uint8_t> Color3;
-typedef Magnum::Color4<uint8_t> Color4;
+typedef Magnum::Color3<std::uint8_t> Color3;
+typedef Magnum::Color4<std::uint8_t> Color4;
 typedef Magnum::Color3<float> Color3f;
 typedef Magnum::Color4<float> Color4f;
 
@@ -125,7 +123,7 @@ void ColorTest::hsv() {
     CORRADE_COMPARE(Color3::fromHSV(230.0f, 0.749f, 0.427f), Color3(27, 41, 109));
 
     float hue, saturation, value;
-    tie(hue, saturation, value) = Color3(27, 41, 109).toHSV();
+    std::tie(hue, saturation, value) = Color3(27, 41, 109).toHSV();
     CORRADE_COMPARE(hue, 229.756106f);
     CORRADE_COMPARE(saturation, 0.752294f);
     CORRADE_COMPARE(value, 0.427451f);
@@ -148,12 +146,12 @@ void ColorTest::hsvOverflow() {
 }
 
 void ColorTest::hsvAlpha() {
-    CORRADE_COMPARE(Color4::fromHSV(make_tuple(230.0f, 0.749f, 0.427f), 23), Color4(27, 41, 109, 23));
+    CORRADE_COMPARE(Color4::fromHSV(std::make_tuple(230.0f, 0.749f, 0.427f), 23), Color4(27, 41, 109, 23));
     CORRADE_COMPARE(Color4::fromHSV(230.0f, 0.749f, 0.427f, 23), Color4(27, 41, 109, 23));
 }
 
 void ColorTest::debug() {
-    ostringstream o;
+    std::ostringstream o;
     Debug(&o) << Color3f(0.5f, 0.75f, 1.0f);
     CORRADE_COMPARE(o.str(), "Vector(0.5, 0.75, 1)\n");
 
@@ -166,17 +164,17 @@ void ColorTest::configuration() {
     Configuration c;
 
     Color3f color3(0.5f, 0.75f, 1.0f);
-    string value3("0.5 0.75 1");
+    std::string value3("0.5 0.75 1");
 
     c.setValue("color3", color3);
-    CORRADE_COMPARE(c.value<std::string>("color3"), value3);
+    CORRADE_COMPARE(c.value("color3"), value3);
     CORRADE_COMPARE(c.value<Color3f>("color3"), color3);
 
     Color4f color4(0.5f, 0.75f, 0.0f, 1.0f);
-    string value4("0.5 0.75 0 1");
+    std::string value4("0.5 0.75 0 1");
 
     c.setValue("color4", color4);
-    CORRADE_COMPARE(c.value<std::string>("color4"), value4);
+    CORRADE_COMPARE(c.value("color4"), value4);
     CORRADE_COMPARE(c.value<Color4f>("color4"), color4);
 }
 

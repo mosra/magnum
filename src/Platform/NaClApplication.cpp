@@ -24,7 +24,7 @@
 namespace Magnum { namespace Platform {
 
 NaClApplication::NaClApplication(PP_Instance instance, const Vector2i& size): Instance(instance), Graphics3DClient(this), MouseLock(this), viewportSize(size) {
-    int32_t attributes[] = {
+    std::int32_t attributes[] = {
         PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
         PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
         PP_GRAPHICS3DATTRIB_STENCIL_SIZE, 8,
@@ -38,11 +38,11 @@ NaClApplication::NaClApplication(PP_Instance instance, const Vector2i& size): In
     graphics = new pp::Graphics3D(this, attributes);
     if(graphics->is_null()) {
         Error() << "Platform::NaClApplication::NaClApplication(): cannot create graphics";
-        exit(1);
+        std::exit(1);
     }
     if(!BindGraphics(*graphics)) {
         Error() << "Platform::NaClApplication::NaClApplication(): cannot bind graphics";
-        exit(1);
+        std::exit(1);
     }
 
     fullscreen = new pp::Fullscreen(this);
@@ -195,7 +195,7 @@ void NaClApplication::setMouseLocked(bool enabled) {
     else UnlockMouse();
 }
 
-void NaClApplication::mouseLockCallback(void* applicationInstance, int32_t) {
+void NaClApplication::mouseLockCallback(void* applicationInstance, std::int32_t) {
     NaClApplication* instance = static_cast<NaClApplication*>(applicationInstance);
     instance->flags |= Flag::MouseLocked;
 }

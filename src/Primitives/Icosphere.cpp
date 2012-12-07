@@ -17,11 +17,9 @@
 
 #include "Math/Vector4.h"
 
-using namespace std;
-
 namespace Magnum { namespace Primitives {
 
-Icosphere<0>::Icosphere(): MeshData3D("", Mesh::Primitive::Triangles, new vector<uint32_t>{
+Icosphere<0>::Icosphere(): MeshData3D("", Mesh::Primitive::Triangles, new std::vector<std::uint32_t>{
     1, 2, 6,
     1, 7, 2,
     3, 4, 5,
@@ -42,7 +40,7 @@ Icosphere<0>::Icosphere(): MeshData3D("", Mesh::Primitive::Triangles, new vector
     7, 1, 0,
     3, 9, 8,
     4, 8, 0
-}, {new vector<Point3D>}, {new vector<Vector3>{
+}, {new std::vector<Point3D>}, {new std::vector<Vector3>{
     Vector3(0, -0.525731f, 0.850651f),
     Vector3(0.850651f, 0, 0.525731f),
     Vector3(0.850651f, 0, -0.525731f),

@@ -22,8 +22,6 @@
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::GenerateFlatNormalsTest)
 
-using namespace std;
-
 namespace Magnum { namespace MeshTools { namespace Test {
 
 GenerateFlatNormalsTest::GenerateFlatNormalsTest() {
@@ -32,11 +30,11 @@ GenerateFlatNormalsTest::GenerateFlatNormalsTest() {
 }
 
 void GenerateFlatNormalsTest::wrongIndexCount() {
-    stringstream ss;
+    std::stringstream ss;
     Error::setOutput(&ss);
-    vector<uint32_t> indices;
-    vector<Vector3> normals;
-    tie(indices, normals) = MeshTools::generateFlatNormals({
+    std::vector<std::uint32_t> indices;
+    std::vector<Vector3> normals;
+    std::tie(indices, normals) = MeshTools::generateFlatNormals({
         0, 1
     }, {});
 
@@ -47,9 +45,9 @@ void GenerateFlatNormalsTest::wrongIndexCount() {
 
 void GenerateFlatNormalsTest::generate() {
     /* Two vertices connected by one edge, each winded in another direction */
-    vector<uint32_t> indices;
-    vector<Vector3> normals;
-    tie(indices, normals) = MeshTools::generateFlatNormals({
+    std::vector<std::uint32_t> indices;
+    std::vector<Vector3> normals;
+    std::tie(indices, normals) = MeshTools::generateFlatNormals({
         0, 1, 2,
         1, 2, 3
     }, {
@@ -59,11 +57,11 @@ void GenerateFlatNormalsTest::generate() {
         {1.0f, 0.0f, 0.0f}
     });
 
-    CORRADE_COMPARE(indices, (vector<uint32_t>{
+    CORRADE_COMPARE(indices, (std::vector<std::uint32_t>{
         0, 0, 0,
         1, 1, 1
     }));
-    CORRADE_COMPARE(normals, (vector<Vector3>{
+    CORRADE_COMPARE(normals, (std::vector<Vector3>{
         Vector3::zAxis(),
         -Vector3::zAxis()
     }));

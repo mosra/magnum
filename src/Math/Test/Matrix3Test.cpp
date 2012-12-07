@@ -22,7 +22,6 @@
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::Matrix3Test)
 
-using namespace std;
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
@@ -140,7 +139,7 @@ void Matrix3Test::debug() {
         7.0f, -1.0f, 8.0f
     );
 
-    ostringstream o;
+    std::ostringstream o;
     Debug(&o) << m;
     CORRADE_COMPARE(o.str(), "Matrix(3, 4, 7,\n"
                              "       5, 4, -1,\n"
@@ -155,10 +154,10 @@ void Matrix3Test::configuration() {
         4.0f, 7.0f, 3.125f,
         4.0f, 5.0f, 9.55f
     );
-    string value("5 4 4 8 7 5 4 3.125 9.55");
+    std::string value("5 4 4 8 7 5 4 3.125 9.55");
 
     c.setValue("matrix", m);
-    CORRADE_COMPARE(c.value<std::string>("matrix"), value);
+    CORRADE_COMPARE(c.value("matrix"), value);
     CORRADE_COMPARE(c.value<Matrix3>("matrix"), m);
 }
 

@@ -15,12 +15,10 @@
 
 #include "Math.h"
 
-using namespace std;
-
 namespace Magnum { namespace Math {
 
 std::uint32_t log(std::uint32_t base, std::uint32_t number) {
-    uint32_t log = 0;
+    std::uint32_t log = 0;
     while(number /= base)
         ++log;
     return log;

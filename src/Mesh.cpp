@@ -23,8 +23,6 @@
 #include "Implementation/MeshState.h"
 #include "Implementation/State.h"
 
-using namespace std;
-
 namespace Magnum {
 
 Mesh::CreateImplementation Mesh::createImplementation = &Mesh::createImplementationDefault;

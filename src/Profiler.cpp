@@ -19,25 +19,25 @@
 #include <numeric>
 #include <Utility/Assert.h>
 
-using namespace std;
+#include "Magnum.h"
 
 namespace Magnum {
 
-Profiler::Section Profiler::addSection(const string& name) {
+Profiler::Section Profiler::addSection(const std::string& name) {
     CORRADE_ASSERT(!enabled, "Profiler: cannot add section when profiling is enabled", 0);
     sections.push_back(name);
     return sections.size()-1;
 }
 
-void Profiler::setMeasureDuration(size_t frames) {
+void Profiler::setMeasureDuration(std::size_t frames) {
     CORRADE_ASSERT(!enabled, "Profiler: cannot set measure duration when profiling is enabled", );
     measureDuration = frames;
 }
 
 void Profiler::enable() {
     enabled = true;
-    frameData.assign(measureDuration*sections.size(), chrono::high_resolution_clock::duration::zero());
-    totalData.assign(sections.size(), chrono::high_resolution_clock::duration::zero());
+    frameData.assign(measureDuration*sections.size(), std::chrono::high_resolution_clock::duration::zero());
+    totalData.assign(sections.size(), std::chrono::high_resolution_clock::duration::zero());
     frameCount = 0;
 }
 
@@ -59,14 +59,14 @@ void Profiler::stop() {
 
     save();
 
-    previousTime = chrono::high_resolution_clock::time_point();
+    previousTime = std::chrono::high_resolution_clock::time_point();
 }
 
 void Profiler::save() {
-    auto now = chrono::high_resolution_clock::now();
+    auto now = std::chrono::high_resolution_clock::now();
 
     /* If the profiler is already running, add time to given section */
-    if(previousTime != chrono::high_resolution_clock::time_point())
+    if(previousTime != std::chrono::high_resolution_clock::time_point())
         frameData[currentFrame*sections.size()+currentSection] += now-previousTime;
 
     /* Set current time as previous for next section */
@@ -77,16 +77,16 @@ void Profiler::nextFrame() {
     if(!enabled) return;
 
     /* Next frame index */
-    size_t nextFrame = (currentFrame+1) % measureDuration;
+    std::size_t nextFrame = (currentFrame+1) % measureDuration;
 
     /* Add times of current frame to total */
-    for(size_t i = 0; i != sections.size(); ++i)
+    for(std::size_t i = 0; i != sections.size(); ++i)
         totalData[i] += frameData[currentFrame*sections.size()+i];
 
     /* Subtract times of next frame from total and erase them */
-    for(size_t i = 0; i != sections.size(); ++i) {
+    for(std::size_t i = 0; i != sections.size(); ++i) {
         totalData[i] -= frameData[nextFrame*sections.size()+i];
-        frameData[nextFrame*sections.size()+i] = chrono::high_resolution_clock::duration::zero();
+        frameData[nextFrame*sections.size()+i] = std::chrono::high_resolution_clock::duration::zero();
     }
 
     /* Advance to next frame */
@@ -98,14 +98,14 @@ void Profiler::nextFrame() {
 void Profiler::printStatistics() {
     if(!enabled) return;
 
-    vector<size_t> totalSorted(sections.size());
-    iota(totalSorted.begin(), totalSorted.end(), 0);
+    std::vector<std::size_t> totalSorted(sections.size());
+    std::iota(totalSorted.begin(), totalSorted.end(), 0);
 
-    sort(totalSorted.begin(), totalSorted.end(), [this](size_t i, size_t j){return totalData[i] > totalData[j];});
+    std::sort(totalSorted.begin(), totalSorted.end(), [this](std::size_t i, std::size_t j){return totalData[i] > totalData[j];});
 
-    Corrade::Utility::Debug() << "Statistics for last" << measureDuration << "frames:";
-    for(size_t i = 0; i != sections.size(); ++i)
-        Corrade::Utility::Debug() << ' ' << sections[totalSorted[i]] << chrono::microseconds(totalData[totalSorted[i]]).count()/frameCount << u8"µs";
+    Debug() << "Statistics for last" << measureDuration << "frames:";
+    for(std::size_t i = 0; i != sections.size(); ++i)
+        Debug() << ' ' << sections[totalSorted[i]] << std::chrono::microseconds(totalData[totalSorted[i]]).count()/frameCount << u8"µs";
 }
 
 }

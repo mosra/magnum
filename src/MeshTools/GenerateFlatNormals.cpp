@@ -18,19 +18,17 @@
 #include "Math/Point3D.h"
 #include "MeshTools/Clean.h"
 
-using namespace std;
-
 namespace Magnum { namespace MeshTools {
 
-tuple<vector<std::uint32_t>, vector<Vector3>> generateFlatNormals(const vector<std::uint32_t>& indices, const vector<Point3D>& positions) {
-    CORRADE_ASSERT(!(indices.size()%3), "MeshTools::generateFlatNormals(): index count is not divisible by 3!", (tuple<vector<uint32_t>, vector<Vector3>>()));
+std::tuple<std::vector<std::uint32_t>, std::vector<Vector3>> generateFlatNormals(const std::vector<std::uint32_t>& indices, const std::vector<Point3D>& positions) {
+    CORRADE_ASSERT(!(indices.size()%3), "MeshTools::generateFlatNormals(): index count is not divisible by 3!", (std::tuple<std::vector<std::uint32_t>, std::vector<Vector3>>()));
 
     /* Create normal for every triangle (assuming counterclockwise winding) */
-    vector<uint32_t> normalIndices;
+    std::vector<std::uint32_t> normalIndices;
     normalIndices.reserve(indices.size());
-    vector<Vector3> normals;
+    std::vector<Vector3> normals;
     normals.reserve(indices.size()/3);
-    for(size_t i = 0; i != indices.size(); i += 3) {
+    for(std::size_t i = 0; i != indices.size(); i += 3) {
         Vector3 normal = Vector3::cross(positions[indices[i+2]].xyz()-positions[indices[i+1]].xyz(),
                                         positions[indices[i]].xyz()-positions[indices[i+1]].xyz()).normalized();
 
@@ -43,7 +41,7 @@ tuple<vector<std::uint32_t>, vector<Vector3>> generateFlatNormals(const vector<s
 
     /* Clean duplicate normals and return */
     clean(normalIndices, normals);
-    return make_tuple(normalIndices, normals);
+    return std::make_tuple(normalIndices, normals);
 }
 
 }}

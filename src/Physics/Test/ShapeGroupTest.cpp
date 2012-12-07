@@ -20,8 +20,6 @@
 #include "Physics/LineSegment.h"
 #include "Physics/ShapeGroup.h"
 
-using namespace std;
-
 CORRADE_TEST_MAIN(Magnum::Physics::Test::ShapeGroupTest)
 
 namespace Magnum { namespace Physics { namespace Test {
@@ -50,7 +48,7 @@ void ShapeGroupTest::reference() {
     Physics::Point3D point({1.0f, 2.0f, 3.0f});
     Physics::LineSegment3D segment({2.0f, 1.0f, 30.0f}, {1.0f, -20.0f, 3.0f});
 
-    ShapeGroup3D group = !(ref(point) || ref(segment));
+    ShapeGroup3D group = !(std::ref(point) || std::ref(segment));
 
     group.applyTransformationMatrix(Matrix4::translation(Vector3(1.0f)));
 

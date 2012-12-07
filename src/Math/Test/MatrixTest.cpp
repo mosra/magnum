@@ -21,7 +21,6 @@
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::MatrixTest)
 
-using namespace std;
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
@@ -98,7 +97,7 @@ void MatrixTest::constructZero() {
 }
 
 void MatrixTest::trace() {
-    Matrix<5, int32_t> m(
+    Matrix<5, std::int32_t> m(
         1, 2, 3, 0, 0,
         2, 3, 2, 1, -2,
         1, 1, -20, 1, 0,
@@ -127,7 +126,7 @@ void MatrixTest::ij() {
 }
 
 void MatrixTest::determinant() {
-    Matrix<5, int32_t> m(
+    Matrix<5, std::int32_t> m(
         1, 2, 2, 1, 0,
         2, 3, 2, 1, -2,
         1, 1, 1, 1, 0,
@@ -167,7 +166,7 @@ void MatrixTest::debug() {
         9.0f, 4.0f, 5.0f, 9.0f
     );
 
-    ostringstream o;
+    std::ostringstream o;
     Debug(&o) << m;
     CORRADE_COMPARE(o.str(), "Matrix(3, 4, 7, 9,\n"
                              "       5, 4, -1, 4,\n"
@@ -194,10 +193,10 @@ void MatrixTest::configuration() {
         7.0f, -1.0f, 8.0f, 0.0f,
         9.0f, 4.0f, 5.0f, 9.55f
     );
-    string value("3 4 7 9 5 4 -1 4 8 7 8 5 4 3.125 0 9.55");
+    std::string value("3 4 7 9 5 4 -1 4 8 7 8 5 4 3.125 0 9.55");
 
     c.setValue("matrix", m);
-    CORRADE_COMPARE(c.value<std::string>("matrix"), value);
+    CORRADE_COMPARE(c.value("matrix"), value);
     CORRADE_COMPARE(c.value<Matrix4>("matrix"), m);
 }
 
