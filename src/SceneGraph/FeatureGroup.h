@@ -72,11 +72,12 @@ class FeatureGroup {
 
         /**
          * @brief Add feature to the group
+         * @return Pointer to self (for method chaining)
          *
          * If the features is part of another group, it is removed from it.
          * @see remove(), AbstractGroupedFeature::AbstractGroupedFeature()
          */
-        void add(Feature* feature) {
+        FeatureGroup<dimensions, Feature, T>* add(Feature* feature) {
             /** @todo Assert the same scene for all items? -- can't easily
                 watch when feature object is removed from hierarchy */
 
@@ -87,21 +88,24 @@ class FeatureGroup {
             /* Crossreference the feature and group together */
             features.push_back(feature);
             feature->_group = this;
+            return this;
         }
 
         /**
          * @brief Remove feature from the group
+         * @return Pointer to self (for method chaining)
          *
          * The feature must be part of the group.
          * @see add()
          */
-        void remove(Feature* feature) {
+        FeatureGroup<dimensions, Feature, T>* remove(Feature* feature) {
             CORRADE_ASSERT(feature->_group == this,
-                "SceneGraph::AbstractFeatureGroup::remove(): feature is not part of this group", );
+                "SceneGraph::AbstractFeatureGroup::remove(): feature is not part of this group", this);
 
             /* Remove the feature and reset group pointer */
             features.erase(std::find(features.begin(), features.end(), feature));
             feature->_group = nullptr;
+            return this;
         }
 
     private:
