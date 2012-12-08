@@ -71,8 +71,8 @@ The following specialization are explicitly compiled into SceneGraph library.
 For other specializations you have to use Object.hpp implementation file to
 avoid linker errors. See @ref compilation-speedup-hpp for more information.
 
- - @ref MatrixTransformation2D "Object<MatrixTransformation2D<>>"
- - @ref MatrixTransformation3D "Object<MatrixTransformation3D<>>"
+ - @ref MatrixTransformation2D "Object<MatrixTransformation2D<GLfloat>>"
+ - @ref MatrixTransformation3D "Object<MatrixTransformation3D<GLfloat>>"
 
 @see Scene, AbstractFeature, AbstractTransformation
 */

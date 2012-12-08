@@ -59,8 +59,8 @@ file to avoid linker errors. See also relevant sections in
 @ref Camera3D-explicit-specializations "Camera3D" class documentation or
 @ref compilation-speedup-hpp for more information.
 
- - @ref AbstractCamera "AbstractCamera<2>"
- - @ref AbstractCamera "AbstractCamera<3>"
+ - @ref AbstractCamera "AbstractCamera<2, GLfloat>"
+ - @ref AbstractCamera "AbstractCamera<3, GLfloat>"
 
 @see @ref scenegraph, Drawable, DrawableGroup, AbstractCamera2D, AbstractCamera3D
 */
