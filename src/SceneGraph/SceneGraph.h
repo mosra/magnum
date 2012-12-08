@@ -66,6 +66,20 @@ template<class T = GLfloat> class AbstractTranslationRotation3D;
 template<class T = GLfloat> class AbstractTranslationRotationScaling2D;
 template<class T = GLfloat> class AbstractTranslationRotationScaling3D;
 
+template<std::uint8_t dimensions, class T = GLfloat> class Animable;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+template<class T = GLfloat> using Animable2D = Animable<2, T>;
+template<class T = GLfloat> using Animable3D = Animable<3, T>;
+#endif
+
+enum class AnimationState: std::uint8_t;
+
+template<std::uint8_t dimensions, class T = GLfloat> class AnimableGroup;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+template<class T = GLfloat> using AnimableGroup2D = AnimableGroup<2, T>;
+template<class T = GLfloat> using AnimableGroup3D = AnimableGroup<3, T>;
+#endif
+
 template<class T = GLfloat> class Camera2D;
 template<class T = GLfloat> class Camera3D;
 

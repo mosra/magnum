@@ -1,4 +1,5 @@
 set(MagnumSceneGraph_SRCS
+    Animable.cpp
     Camera.cpp)
 set(MagnumSceneGraph_HEADERS
     AbstractCamera.h
@@ -11,6 +12,9 @@ set(MagnumSceneGraph_HEADERS
     AbstractTranslationRotation3D.h
     AbstractTranslationRotationScaling2D.h
     AbstractTranslationRotationScaling3D.h
+    Animable.h
+    Animable.hpp
+    AnimableGroup.h
     Camera2D.h
     Camera2D.hpp
     Camera3D.h

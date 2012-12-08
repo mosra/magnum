@@ -1,3 +1,4 @@
+corrade_add_test(SceneGraphAnimableTest AnimableTest.cpp LIBRARIES MagnumSceneGraph)
 corrade_add_test(SceneGraphObjectTest ObjectTest.cpp LIBRARIES MagnumSceneGraphTestLib)
 corrade_add_test(SceneGraphCameraTest CameraTest.cpp LIBRARIES MagnumSceneGraph)
 corrade_add_test(SceneGraphSceneTest SceneTest.cpp LIBRARIES MagnumSceneGraph)
