@@ -31,7 +31,7 @@ namespace Magnum { namespace SceneGraph {
 @brief Group of features
 
 See AbstractGroupedFeature for more information.
-@see FeatureGroup2D, FeatureGroup3D
+@see @ref scenegraph, FeatureGroup2D, FeatureGroup3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::uint8_t dimensions, class Feature, class T>

@@ -63,6 +63,9 @@ information.
 
 @section Texture-array Texture arrays
 
+You can create texture arrays by passing @ref Texture::Target "Texture2D::Target::Texture1DArray"
+or @ref Texture::Target "Texture3D::Target::Texture2DArray" to constructor.
+
 It is possible to specify each layer separately using setSubData(), but you
 have to allocate the memory for all layers first, possibly by passing properly
 sized empty Image to setData(). Example: 2D texture array with 16 layers of
@@ -90,13 +93,13 @@ etc.).
 
 @section Texture-rectangle Rectangle textures
 
-If you want to use rectangle textures, set target in constructor to
-`Target::Rectangle` and in shader use `sampler2DRect`. Unlike `sampler2D`,
-which accepts coordinates between 0 and 1, `sampler2DRect` accepts coordinates
-between 0 and `textureSizeInGivenDirection-1`. Note that rectangle textures
-don't support mipmapping and repeating wrapping modes, see @ref Texture::Filter
-"Filter", @ref Texture::Mipmap "Mipmap" and generateMipmap() documentation
-for more information.
+Rectangle texture is created by passing @ref Texture::Target "Texture::Target::Rectangle"
+to constructor. In shader, the texture is used via sampler2DRect`. Unlike
+`sampler2D`, which accepts coordinates between 0 and 1, `sampler2DRect`
+accepts coordinates between 0 and `textureSizeInGivenDirection-1`. Note that
+rectangle textures don't support mipmapping and repeating wrapping modes, see
+@ref Texture::Filter "Filter", @ref Texture::Mipmap "Mipmap" and
+generateMipmap() documentation for more information.
 
 @requires_gl Rectangle textures are not available in OpenGL ES.
 @requires_gl31 Extension @extension{ARB,texture_rectangle} (rectangle textures)

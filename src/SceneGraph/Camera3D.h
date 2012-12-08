@@ -31,7 +31,14 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Camera for three-dimensional scenes
 
-See Drawable documentation for more information.
+See Drawable documentation for introduction. The camera by default displays
+OpenGL unit cube `[(-1, -1, -1); (1, 1, 1)]` with orthographic projection and
+doesn't do any aspect ratio correction. Common setup example:
+@code
+SceneGraph::Camera3D<>* camera = new SceneGraph::Camera3D<>(&cameraObject);
+camera->setPerspective(deg(35.0f), 0.001f, 100.0f)
+      ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
+@endcode
 
 @section Camera3D-explicit-specializations Explicit template specializations
 
@@ -41,7 +48,7 @@ avoid linker errors. See @ref compilation-speedup-hpp for more information.
 
  - @ref Camera3D "Camera3D<GLfloat>"
 
-@see Camera2D, Drawable, DrawableGroup
+@see @ref scenegraph, Camera2D, Drawable, DrawableGroup
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T>
@@ -54,7 +61,8 @@ class MAGNUM_SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3, T> {
          * @brief Constructor
          * @param object    %Object holding this feature
          *
-         * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
+         * Sets orthographic projection to the default OpenGL cube
+         * (range @f$ [-1; 1] @f$ in all directions).
          * @see setOrthographic(), setPerspective()
          */
         inline Camera3D(AbstractObject<3, T>* object): AbstractCamera<3, T>(object), _near(0.0f), _far(0.0f) {}

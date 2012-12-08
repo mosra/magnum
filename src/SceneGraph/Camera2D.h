@@ -26,7 +26,14 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Camera for two-dimensional scenes
 
-See Drawable documentation for more information.
+See Drawable documentation for introduction. The camera by default displays
+OpenGL unit cube `[(-1, -1, -1); (1, 1, 1)]` and doesn't do any aspect ratio
+correction. Common setup example:
+@code
+SceneGraph::Camera2D<>* camera = new SceneGraph::Camera2D<>(&cameraObject);
+camera->setProjection({4.0f/3.0f, 1.0f})
+      ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
+@endcode
 
 @section Camera2D-explicit-specializations Explicit template specializations
 
@@ -36,7 +43,7 @@ avoid linker errors. See @ref compilation-speedup-hpp for more information.
 
  - @ref Camera2D "Camera2D<GLfloat>"
 
-@see Camera3D, Drawable, DrawableGroup
+@see @ref scenegraph, Camera3D, Drawable, DrawableGroup
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T>

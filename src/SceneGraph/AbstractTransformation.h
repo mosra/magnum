@@ -34,12 +34,12 @@ for introduction.
 
 @section AbstractTransformation-subclassing Subclassing
 
-When sublassing, you have to:
+When subclassing, you have to:
 
-- Implement all members described in **Subclass implementation** group above
+- Implement all members listed in **Subclass implementation** group above
 - Provide implicit (parameterless) constructor
 
-@see AbstractTransformation2D, AbstractTransformation3D
+@see @ref scenegraph, AbstractTransformation2D, AbstractTransformation3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::uint8_t dimensions, class T>

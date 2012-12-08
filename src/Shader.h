@@ -30,11 +30,10 @@
 namespace Magnum {
 
 /**
- * @brief %Shader
- *
- * Allows loading and compiling the shader from file or directly from source
- * string. Compiled shaders are then passed to AbstractShaderProgram subclasses
- * for linking and usage.
+@brief %Shader
+
+Allows loading and compiling the shader from file or directly from source
+string. See AbstractShaderProgram for more information.
  */
 class MAGNUM_EXPORT Shader {
     Shader(const Shader& other) = delete;

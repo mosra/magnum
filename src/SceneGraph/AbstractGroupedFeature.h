@@ -44,8 +44,8 @@ class Drawable: public SceneGraph::AbstractGroupedFeature3D<Drawable> {
 typedef SceneGraph::FeatureGroup3D<Drawable> DrawableGroup;
 @endcode
 
-@see AbstractGroupedFeature2D, AbstractGroupedFeature3D, FeatureGroup,
-    FeatureGroup2D, FeatureGroup3D
+@see @ref scenegraph, AbstractGroupedFeature2D, AbstractGroupedFeature3D,
+    FeatureGroup, FeatureGroup2D, FeatureGroup3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::uint8_t dimensions, class Derived, class T>
@@ -62,7 +62,7 @@ class AbstractGroupedFeature: public AbstractFeature<dimensions, T> {
          * @param group     Group this feature belongs to
          *
          * Adds the feature to the object and to group, if specified.
-         * @see FeatureGroup::add(), FeatureGroup::remove()
+         * @see FeatureGroup::add()
          */
         inline AbstractGroupedFeature(AbstractObject<dimensions, T>* object, FeatureGroup<dimensions, Derived, T>* group = nullptr): AbstractFeature<dimensions, T>(object), _group(nullptr) {
             if(group) group->add(static_cast<Derived*>(this));

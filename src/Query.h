@@ -326,9 +326,9 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
 @brief %Query for elapsed time
 
 Queries timestamp after all previous OpenGL calls have been processed. It is
-similar to Query::Target::TimeElapsed query, but this query just retrieves
-timestamp, not time duration between Query::begin() and Query::end() calls.
-Example usage, compared to Query::Target::TimeElapsed:
+similar to @ref Query::Target "Query::Target::TimeElapsed" query, but this
+query just retrieves timestamp, not time duration between Query::begin() and
+Query::end() calls. Example usage, compared to @ref Query::Target "Query::Target::TimeElapsed":
 @code
 Query q1, q2;
 q1.begin(Query::Target::TimeElapsed);

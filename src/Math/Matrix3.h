@@ -30,7 +30,7 @@ namespace Magnum { namespace Math {
 
 Provides functions for transformations in 2D. See Matrix4 for 3D
 transformations. See also @ref matrix-vector for brief introduction.
-@see Magnum::Matrix3
+@see Magnum::Matrix3, SceneGraph::MatrixTransformation2D
 @configurationvalueref{Magnum::Math::Matrix3}
 */
 template<class T> class Matrix3: public Matrix<3, T> {

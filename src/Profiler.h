@@ -50,7 +50,7 @@ sections.bufferSwap = p.addSection("Buffer swap");
 p.enable();
 
 // Mark sections in draw function
-void MyContext::drawEvent() {
+void MyApplication::drawEvent() {
     p.start();
 
     // ... misc stuff belogning to "Other" section

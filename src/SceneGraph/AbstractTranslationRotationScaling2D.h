@@ -26,7 +26,7 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Base for two-dimensional transformations supporting translation, rotation and scaling
 
-@see AbstractTranslationRotationScaling2D
+@see @ref scenegraph, AbstractTranslationRotationScaling2D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T>

@@ -82,6 +82,9 @@ MyResourceManager manager;
 MeshResourceLoader loader;
 
 manager->setLoader(loader);
+
+// This will now automatically request the mesh from loader by calling load()
+Resource<Mesh> myMesh = manager->get<Mesh>("my-mesh");
 @endcode
 */
 template<class T> class AbstractResourceLoader {

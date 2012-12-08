@@ -123,7 +123,10 @@ class MAGNUM_EXPORT Extension {
 /**
 @brief OpenGL context
 
-Provides access to version and extension information.
+Provides access to version and extension information. Instance available
+through Context::current() is automatically created during construction of
+*Application classes in Platform namespace so you can safely assume that the
+instance is available during whole lifetime of *Application object.
 */
 class MAGNUM_EXPORT Context {
     Context(const Context&) = delete;

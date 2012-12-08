@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractCamera, enum AspectRatioPolicy, alias Magnum::SceneGraph::AbstractCamera2D, Magnum::SceneGraph::AbstractCamera3D
+ * @brief Class Magnum::SceneGraph::AbstractCamera, enum Magnum::SceneGraph::AspectRatioPolicy, alias Magnum::SceneGraph::AbstractCamera2D, Magnum::SceneGraph::AbstractCamera3D
  */
 
 #include "Math/Matrix3.h"
@@ -62,7 +62,7 @@ file to avoid linker errors. See also relevant sections in
  - @ref AbstractCamera "AbstractCamera<2>"
  - @ref AbstractCamera "AbstractCamera<3>"
 
-@see Drawable, DrawableGroup, AbstractCamera2D, AbstractCamera3D
+@see @ref scenegraph, Drawable, DrawableGroup, AbstractCamera2D, AbstractCamera3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::uint8_t dimensions, class T>

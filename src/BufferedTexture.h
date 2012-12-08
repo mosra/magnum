@@ -30,13 +30,35 @@ namespace Magnum {
 @brief Buffered texture
 
 This texture is, unlike classic textures such as Texture or CubeMapTexture,
-used as simple data source, without any unneccessary interpolation and
-wrapping methods. Texture data are stored in buffer and after binding the
-buffer to the texture using setBuffer(), you can fill the buffer at any time
-using data setting functions in Buffer itself.
+used as simple data source, without any unnecessary interpolation and
+wrapping methods.
 
-When using buffered texture in the shader, use `samplerBuffer` and fetch the
-data using integer coordinates in `texelFetch()`.
+@section BufferedTexture-usage Usage
+
+%Texture data are stored in buffer and after binding the buffer to the texture
+using setBuffer(), you can fill the buffer at any time using data setting
+functions in Buffer itself.
+
+Note that the buffer is not managed (e.g. deleted on destruction) by the
+texture, so you have to manage it on your own. On the other hand it allows you
+to use one buffer for more textures or store more than one data in it.
+
+Example usage:
+@code
+Buffer* buffer;
+BufferedTexture texture;
+texture.setBuffer(buffer);
+
+constexpr static Vector3 data[] = {
+    // ...
+};
+buffer.setData(data, Buffer::Usage::StaticDraw);
+@endcode
+
+The texture is bound to layer specified by shader via bind(). In shader, the
+texture is used via `samplerBuffer`.  Unlike in classic textures, coordinates
+for buffered textures are integer coordinates passed to `texelFetch()`. See
+also AbstractShaderProgram documentation for more information.
 
 @section BufferedTexture-performance-optimization Performance optimizations
 If extension @extension{EXT,direct_state_access} is available, setBuffer()

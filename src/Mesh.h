@@ -61,7 +61,7 @@ static constexpr Point3D positions[30] = {
 };
 buffer->setData(positions, Buffer::Usage::StaticDraw);
 
-mesh->setPrimitve(Mesh::Primitive::Triangles)
+mesh->setPrimitive(Mesh::Primitive::Triangles)
     ->setVertexCount(30)
     ->addVertexBuffer(buffer, MyShader::Position());
 @endcode
@@ -95,7 +95,9 @@ mesh->addVertexBuffer(buffer, MyShader::Color(Type::UsignedByte, MyShader::Color
 
 @section Mesh-drawing Rendering meshes
 
-Basic workflow is to set up respective shader (see @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation" for more infromation) and call Mesh::draw().
+Basic workflow is to set up respective shader (see
+@ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
+for more infromation) and call Mesh::draw().
 
 @section Mesh-performance-optimization Performance optimizations
 

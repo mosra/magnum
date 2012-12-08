@@ -26,7 +26,7 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief %Drawable
 
-Adds drawing function to object. Each %Drawable is part of some DrawableGroup
+Adds drawing feature to object. Each %Drawable is part of some DrawableGroup
 and the whole group is drawn with particular camera using AbstractCamera::draw().
 
 @section Drawable-usage Usage
@@ -52,30 +52,34 @@ class DrawableObject: public Object3D, SceneGraph::Drawable3D<> {
 
 Then you add these objects to your scene and some drawable group and transform
 them as you like. You can also use DrawableGroup::add() and
-DrawableGroup::remove() for that.
+DrawableGroup::remove().
 @code
 Scene3D scene;
-SceneGraph::DrawableGroup3D<> group;
+SceneGraph::DrawableGroup3D<> drawables;
 
-(new DrawableObject(&scene, &group))
+(new DrawableObject(&scene, &drawables))
     ->translate(Vector3::yAxis(-0.3f))
     ->rotateX(deg(30.0f));
-(new AnotherDrawableObject(&scene, &group))
+(new AnotherDrawableObject(&scene, &drawables))
     ->translate(Vector3::zAxis(0.5f));
 // ...
 @endcode
 
 The last thing you need is Camera attached to some object (thus using its
-transformation) and with it you can perform drawing in your draw event:
+transformation) and with it you can perform drawing in your draw event
+implementation. See Camera2D and Camera3D documentation for more information.
 @code
 Camera3D<> camera(&cameraObject);
 
 void MyApplication::drawEvent() {
-    camera.draw(&group);
+    camera.draw(drawables);
+
+    swapBuffers();
+    // ...
 }
 @endcode
 
-@see Drawable2D, Drawable3D, DrawableGroup2D, DrawableGroup3D
+@see @ref scenegraph, Drawable2D, Drawable3D, DrawableGroup2D, DrawableGroup3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::uint8_t dimensions, class T>
@@ -136,7 +140,7 @@ typedef Drawable<3, T = GLfloat> Drawable3D;
 @brief Group of drawables
 
 See Drawable for more information.
-@see DrawableGroup2D, DrawableGroup3D
+@see @ref scenegraph, DrawableGroup2D, DrawableGroup3D
 @todoc Remove workaround when Doxygen supports alias template
 */
 #if !defined(CORRADE_GCC46_COMPATIBILITY) && !defined(DOXYGEN_GENERATING_OUTPUT)

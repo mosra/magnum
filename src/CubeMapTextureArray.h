@@ -59,11 +59,11 @@ for(std::size_t i = 0; i != 16; ++i) {
 @endcode
 
 The texture is bound to layer specified by shader via bind(). In shader, the
-texture is used via `samplerCubeArray`. Unlike classic textures, coordinates
-for cube map texture arrays is signed four-part vector. First three parts
-define vector from the center of the cube which intersects with one of the six
-sides of the cube map, fourth part is layer in the array. See also
-AbstractShaderProgram for more information.
+texture is used via `samplerCubeArray`. Unlike in classic textures,
+coordinates for cube map texture arrays is signed four-part vector. First
+three parts define vector from the center of the cube which intersects with
+one of the six sides of the cube map, fourth part is layer in the array. See
+also AbstractShaderProgram for more information.
 
 @see CubeMapTexture::setSeamless()
 @requires_gl40 Extension @extension{ARB,texture_cube_map_array}

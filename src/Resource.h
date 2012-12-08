@@ -65,6 +65,7 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, ResourceState value);
 /**
 @brief Key for accessing resource
 
+See ResourceManager for more information.
 @see ResourceManager::referenceCount(), ResourceManager::state(),
     ResourceManager::get(), ResourceManager::set(), Resource::key()
 */

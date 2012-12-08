@@ -41,6 +41,20 @@ you have to manage it on your own. On the other hand it allows you to use
 one index buffer for more meshes (with different vertex data in each mesh, for
 example) or store more than only index data in one buffer.
 
+Example usage -- creating a cube mesh, assigning vertex buffer with
+interleaved vertex attributes and compressed index buffer for use with
+Shaders::PhongShader:
+@code
+Buffer *vertexBuffer, *indexBuffer;
+Mesh* mesh;
+
+Primitives::Cube cube;
+MeshTools::interleave(mesh, vertexBuffer, Buffer::Usage::StaticDraw, *cube.positions(0), *cube.normals(0));
+MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *cube.indices());
+mesh->setPrimitive(plane.primitive())
+    ->addInterleavedVertexBuffer(vertexBuffer, 0, Shaders::PhongShader::Position(), Shaders::PhongShader::Normal());
+@endcode
+
 @section IndexedMesh-drawing Rendering meshes
 
 From user point-of-view the operation is the same as for
@@ -50,7 +64,8 @@ From user point-of-view the operation is the same as for
 
 If @extension{APPLE,vertex_array_object} is supported, next to
 @ref Mesh-performance-optimization "optimizations in Mesh itself" the index
-buffer is bound on object construction instead of in every draw() call.
+buffer is bound on object construction instead of binding it in every draw()
+call.
 */
 class MAGNUM_EXPORT IndexedMesh: public Mesh {
     friend class Context;
