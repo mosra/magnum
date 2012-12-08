@@ -23,13 +23,15 @@ namespace Magnum {
 
 void Timeline::start() {
     running = true;
-    previousFrameTime = high_resolution_clock::now();
+    _startTime = high_resolution_clock::now();
+    _previousFrameTime = _startTime;
     _previousFrameDuration = 0;
 }
 
 void Timeline::stop() {
     running = false;
-    previousFrameTime = high_resolution_clock::time_point();
+    _startTime = high_resolution_clock::time_point();
+    _previousFrameTime = _startTime;
     _previousFrameDuration = 0;
 }
 
@@ -37,16 +39,20 @@ void Timeline::nextFrame() {
     if(!running) return;
 
     auto now = high_resolution_clock::now();
-    std::uint32_t duration = duration_cast<microseconds>(now-previousFrameTime).count();
+    std::uint32_t duration = duration_cast<microseconds>(now-_previousFrameTime).count();
     _previousFrameDuration = duration/1e6f;
 
     if(_previousFrameDuration < _minimalFrameTime) {
         Corrade::Utility::sleep(_minimalFrameTime*1000 - duration/1000);
         now = high_resolution_clock::now();
-        _previousFrameDuration = duration_cast<microseconds>(now-previousFrameTime).count()/1e6f;
+        _previousFrameDuration = duration_cast<microseconds>(now-_previousFrameTime).count()/1e6f;
     }
 
-    previousFrameTime = now;
+    _previousFrameTime = now;
+}
+
+GLfloat Timeline::previousFrameTime() const {
+    return duration_cast<microseconds>(_previousFrameTime-_startTime).count()/1e6f;
 }
 
 }

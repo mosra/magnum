@@ -98,7 +98,7 @@ class MAGNUM_EXPORT Timeline {
         /**
          * @brief Start timeline
          *
-         * Sets previous frame duration to `0`.
+         * Sets previous frame time and duration to `0`.
          * @see stop(), previousFrameDuration()
          */
         void start();
@@ -120,13 +120,26 @@ class MAGNUM_EXPORT Timeline {
          */
         void nextFrame();
 
-        /** @brief Duration of previous frame (in seconds) */
+        /**
+         * @brief Time at previous frame (in seconds)
+         *
+         * Returns time elapsed since start() was called. If the timeline is
+         * stopped, the function returns `0.0f`.
+         */
+        GLfloat previousFrameTime() const;
+
+        /**
+         * @brief Duration of previous frame (in seconds)
+         *
+         * If the timeline is stopped, the function returns `0.0f`.
+         */
         inline constexpr GLfloat previousFrameDuration() const {
             return _previousFrameDuration;
         }
 
     private:
-        std::chrono::high_resolution_clock::time_point previousFrameTime;
+        std::chrono::high_resolution_clock::time_point _startTime;
+        std::chrono::high_resolution_clock::time_point _previousFrameTime;
         GLfloat _minimalFrameTime;
         GLfloat _previousFrameDuration;
 
