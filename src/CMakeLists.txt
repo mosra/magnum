@@ -71,6 +71,7 @@ set(Magnum_HEADERS
     Profiler.h
     Query.h
     Renderbuffer.h
+    Renderer.h
     Resource.h
     ResourceManager.h
     Shader.h
