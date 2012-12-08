@@ -79,6 +79,32 @@ void MyApplication::drawEvent() {
 }
 @endcode
 
+@section Drawable-performance Using drawable groups to improve performance
+
+You can organize your drawables to multiple groups to minimize OpenGL state
+changes - for example put all objects using the same shader, the same light
+setup etc into one group, then put all transparent into another and set common
+parameters once for whole group instead of setting them again in each draw()
+implementation. Example:
+@code
+Shaders::PhongShader* shader;
+SceneGraph::DrawableGroup3D<> phongObjects, transparentObjects;
+
+void MyApplication::drawEvent() {
+    shader->setProjectionMatrix(camera->projectionMatrix())
+          ->setLightPosition(lightPosition)
+          ->setLightColor(lightColor)
+          ->setAmbientColor(ambientColor);
+    camera.draw(phongObjects);
+
+    Renderer::setFeature(Renderer::Feature::Blending, true);
+    camera.draw(transparentObjects);
+    Renderer::setFeature(Renderer::Feature::Blending, false);
+
+    // ...
+}
+@endcode
+
 @see @ref scenegraph, Drawable2D, Drawable3D, DrawableGroup2D, DrawableGroup3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
