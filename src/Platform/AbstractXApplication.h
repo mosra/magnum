@@ -297,6 +297,7 @@ class AbstractXApplication {
 };
 
 /** @hideinitializer
+@brief Entry point for X11-based applications
 @param className Class name
 
 Can be used as equivalent to the following code to achieve better portability,
