@@ -27,7 +27,8 @@ namespace Magnum { namespace Platform {
 /**
 @brief X/EGL application
 
-Uses EglContextHandler.
+Creates window with double-buffered OpenGL ES 2 context. Uses
+EglContextHandler.
 
 @section XEglApplication-usage Usage
 
@@ -49,8 +50,6 @@ class XEglApplication: public AbstractXApplication {
          * @param argv      Arguments of `main()` function
          * @param title     Window title
          * @param size      Window size
-         *
-         * Creates window with double-buffered OpenGL ES 2 context.
          */
         inline XEglApplication(int& argc, char** argv, const std::string& title = "Magnum X/EGL application", const Vector2i& size = Vector2i(800, 600)): AbstractXApplication(new EglContextHandler, argc, argv, title, size) {}
 };

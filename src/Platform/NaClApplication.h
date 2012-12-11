@@ -44,7 +44,8 @@ namespace Magnum { namespace Platform {
 @brief NaCl application
 
 Application running in [Google Chrome Native Client](https://developers.google.com/native-client/).
-Supports keyboard and mouse handling.
+Creates double-buffered RGBA canvas with depth and stencil buffers. Supports
+keyboard and mouse handling.
 
 @section NaClApplication-usage Usage
 
@@ -69,8 +70,6 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
          * @brief Constructor
          * @param instance  Module instance
          * @param size      Rendering size
-         *
-         * Creates double-buffered RGBA canvas with depth and stencil buffers.
          */
         explicit NaClApplication(PP_Instance instance, const Vector2i& size = Vector2i(640, 480));
 

@@ -35,8 +35,9 @@ namespace Platform {
 /** @nosubgrouping
 @brief GLUT application
 
-Supports keyboard handling for limited subset of keys, mouse handling with
-support for changing cursor and mouse tracking and warping.
+Creates double-buffered RGBA window with depth and stencil buffers. Supports
+keyboard handling for limited subset of keys, mouse handling with support for
+changing cursor and mouse tracking and warping.
 
 @section GlutApplication-usage Usage
 
@@ -58,8 +59,6 @@ class GlutApplication {
          * @param argv      Arguments of `main()` function
          * @param title     Window title
          * @param size      Window size
-         *
-         * Creates double-buffered RGBA window with depth and stencil buffers.
          */
         GlutApplication(int& argc, char** argv, const std::string& title = "Magnum GLUT application", const Vector2i& size = Vector2i(800, 600));
 
