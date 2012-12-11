@@ -121,6 +121,27 @@ namespace GL {
         _extension(GL,ARB,shader_atomic_counters,       GL300, GL420) // #114
         _extension(GL,ARB,shader_image_load_store,      GL300, GL420) // #115
         _extension(GL,ARB,texture_storage,              GL210, GL420) // #117
+        _extension(GL,ARB,arrays_of_arrays,             GL210, GL430) // #120
+        _extension(GL,ARB,clear_buffer_object,          GL210, GL430) // #121
+        _extension(GL,ARB,compute_shader,               GL420, GL430) // #122
+        _extension(GL,ARB,copy_image,                   GL210, GL430) // #123
+        _extension(GL,ARB,texture_view,                 GL210, GL430) // #124
+        _extension(GL,ARB,vertex_attrib_binding,        GL210, GL430) // #125
+        _extension(GL,ARB,ES3_compatibility,            GL330, GL430) // #127
+        _extension(GL,ARB,explicit_uniform_location,    GL210, GL430) // #128
+        _extension(GL,ARB,fragment_layer_viewport,      GL300, GL430) // #129
+        _extension(GL,ARB,framebuffer_no_attachments,   GL210, GL430) // #130
+        _extension(GL,ARB,internalformat_query2,        GL210, GL430) // #131
+        _extension(GL,ARB,invalidate_subdata,           GL210, GL430) // #132
+        _extension(GL,ARB,multi_draw_indirect,          GL310, GL430) // #133
+        _extension(GL,ARB,program_interface_query,      GL210, GL430) // #134
+        _extension(GL,ARB,robust_buffer_access_behavior,GL210, GL430) // #135
+        _extension(GL,ARB,shader_image_size,            GL420, GL430) // #136
+        _extension(GL,ARB,shader_storage_buffer_object, GL400, GL430) // #137
+        _extension(GL,ARB,stencil_texturing,            GL210, GL430) // #138
+        _extension(GL,ARB,texture_buffer_range,         GL210, GL430) // #139
+        _extension(GL,ARB,texture_query_levels,         GL300, GL430) // #140
+        _extension(GL,ARB,texture_storage_multisample,  GL210, GL430) // #141
     } namespace EXT {
         _extension(GL,EXT,texture_filter_anisotropic,   GL210,  None) // #187
         _extension(GL,EXT,framebuffer_object,           GL210, GL300) // #310
@@ -142,6 +163,8 @@ namespace GL {
         _extension(GL,GREMEDY,string_marker,            GL210,  None) // #311
     } namespace INTEL {
         /* INTEL_map_texture not supported */                         // #429
+    } namespace KHR {
+        _extension(GL,KHR,debug,                        GL210, GL430) // #119
     } namespace NV {
         _extension(GL,NV,half_float,                    GL210, GL300) // #283
         _extension(GL,NV,primitive_restart,             GL210, GL310) // #285
@@ -150,6 +173,9 @@ namespace GL {
         /* NV_draw_texture not supported */                           // #430
     }
 }
+
+/* IMPORTANT: if this line is > 185 (54 + size), don't forget to update array size in Context.h */
+
 #undef _extension
 #endif
 #endif

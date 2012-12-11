@@ -155,7 +155,29 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,shader_atomic_counters),
         _extension(GL,ARB,shader_image_load_store),
         _extension(GL,ARB,texture_storage)};
-    static const std::vector<Extension> extensions430;
+    static const std::vector<Extension> extensions430{
+        _extension(GL,ARB,arrays_of_arrays),
+        _extension(GL,ARB,ES3_compatibility),
+        _extension(GL,ARB,clear_buffer_object),
+        _extension(GL,ARB,compute_shader),
+        _extension(GL,ARB,copy_image),
+        _extension(GL,KHR,debug),
+        _extension(GL,ARB,explicit_uniform_location),
+        _extension(GL,ARB,fragment_layer_viewport),
+        _extension(GL,ARB,framebuffer_no_attachments),
+        _extension(GL,ARB,internalformat_query2),
+        _extension(GL,ARB,invalidate_subdata),
+        _extension(GL,ARB,multi_draw_indirect),
+        _extension(GL,ARB,program_interface_query),
+        _extension(GL,ARB,robust_buffer_access_behavior),
+        _extension(GL,ARB,shader_image_size),
+        _extension(GL,ARB,shader_storage_buffer_object),
+        _extension(GL,ARB,stencil_texturing),
+        _extension(GL,ARB,texture_buffer_range),
+        _extension(GL,ARB,texture_query_levels),
+        _extension(GL,ARB,texture_storage_multisample),
+        _extension(GL,ARB,texture_view),
+        _extension(GL,ARB,vertex_attrib_binding)};
     #undef _extension
     #else
     static const std::vector<Extension> extensions;
