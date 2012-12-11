@@ -23,6 +23,8 @@
 #  Shaders       - Library with stock shaders
 #  GlxApplication - GLX application (depends on X11 libraries)
 #  XEglApplication - X/EGL application (depends on EGL and X11 libraries)
+#  WindowlessGlxApplication - Windowless GLX application (depends on X11
+#   libraries)
 #  GlutApplication - GLUT application (depends on GLUT library)
 #  Sdl2Application - SDL2 application (depends on SDL2 library)
 #  NaClApplication - NaCl application (only if targetting Google Chrome
@@ -148,6 +150,16 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             find_package(X11)
             if(EGL_FOUND AND X11_FOUND)
                 set(_MAGNUM_${_COMPONENT}_LIBRARIES ${EGL_LIBRARY} ${X11_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY})
+            else()
+                unset(MAGNUM_${_COMPONENT}_LIBRARY)
+            endif()
+        endif()
+
+        # GLX application dependencies
+        if(${component} STREQUAL WindowlessGlxApplication)
+            find_package(X11)
+            if(X11_FOUND)
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${X11_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()

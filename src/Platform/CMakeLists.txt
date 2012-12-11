@@ -71,12 +71,26 @@ if(WITH_XEGLAPPLICATION)
     install(TARGETS MagnumXEglApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
-# Abstract X application
-if(NEED_ABSTRACTXAPPLICATION)
+if(WITH_WINDOWLESSGLXAPPLICATION OR NEED_ABSTRACTXAPPLICATION)
     find_package(X11)
     if(NOT X11_FOUND)
         message(FATAL_ERROR "X11 library, required by some contexts, was not found. Set WITH_*X*APPLICATION to OFF to skip building them.")
     endif()
+endif()
+
+# Windowless GLX application
+if(WITH_WINDOWLESSGLXAPPLICATION)
+    add_library(MagnumWindowlessGlxApplication STATIC
+        WindowlessGlxApplication.cpp
+        $<TARGET_OBJECTS:MagnumPlatformExtensionWrangler>)
+    # X11 macros are a mess, disable warnings for C-style casts
+    set_target_properties(MagnumWindowlessGlxApplication PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
+    install(FILES WindowlessGlxApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(TARGETS MagnumWindowlessGlxApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+endif()
+
+# Abstract X application
+if(NEED_ABSTRACTXAPPLICATION)
     add_library(MagnumAbstractXApplication OBJECT AbstractXApplication.cpp)
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumAbstractXApplication PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
