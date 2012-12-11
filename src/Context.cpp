@@ -239,7 +239,7 @@ Context::Context() {
         Version::None
     };
     std::size_t future = 0;
-    while(versions[future] != Version::None && !isVersionSupported(_version))
+    while(versions[future] != Version::None && isVersionSupported(versions[future]))
         ++future;
 
     /* List of extensions from future versions (extensions from current and
