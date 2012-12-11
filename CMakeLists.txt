@@ -15,6 +15,8 @@ cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" OFF "NOT WITH_
 cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" OFF "NOT WITH_EVERYTHING;NOT WITH_PHYSICS" ON)
 cmake_dependent_option(WITH_SHADERS "Build Shaders library" OFF "NOT WITH_EVERYTHING;NOT WITH_PHYSICS" ON)
 
+cmake_dependent_option(WITH_MAGNUMINFO "Build magnum-info utility" OFF "NOT WITH_EVERYTHING" ON)
+
 option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
 cmake_dependent_option(WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "NOT WITH_MAGNUMINFO" ON)
 cmake_dependent_option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF "TARGET_GLES" OFF)
@@ -56,6 +58,7 @@ if(TARGET_GLES2)
 endif()
 
 # Installation paths
+set(MAGNUM_BINARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/bin)
 set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
 set(MAGNUM_CMAKE_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
