@@ -15,6 +15,7 @@
 
 #include "ColorTest.h"
 
+#include <sstream>
 #include <Utility/Configuration.h>
 
 #include "Color.h"

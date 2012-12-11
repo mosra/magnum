@@ -15,6 +15,7 @@
 
 #include "Vector3Test.h"
 
+#include <sstream>
 #include <Utility/Configuration.h>
 
 #include "Vector3.h"

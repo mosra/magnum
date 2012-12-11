@@ -15,6 +15,7 @@
 
 #include "MeshTest.h"
 
+#include <sstream>
 #include <Utility/Configuration.h>
 
 #include "Mesh.h"

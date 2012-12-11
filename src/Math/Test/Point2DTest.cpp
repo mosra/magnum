@@ -15,6 +15,7 @@
 
 #include "Point2DTest.h"
 
+#include <sstream>
 #include <Utility/Configuration.h>
 
 #include "Point2D.h"

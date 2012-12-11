@@ -15,6 +15,7 @@
 
 #include "Vector4Test.h"
 
+#include <sstream>
 #include <Utility/Configuration.h>
 
 #include "Vector4.h"

@@ -15,6 +15,7 @@
 
 #include "Vector2Test.h"
 
+#include <sstream>
 #include <Utility/Configuration.h>
 
 #include "Vector2.h"

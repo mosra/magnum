@@ -534,15 +534,19 @@ template<std::size_t cols, std::size_t rows, class T> struct ConfigurationValue<
     /** @brief Reads elements separated with whitespace */
     static Magnum::Math::RectangularMatrix<cols, rows, T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
         Magnum::Math::RectangularMatrix<cols, rows, T> result;
-        std::istringstream in(stringValue);
 
-        for(std::size_t row = 0; row != rows; ++row) {
-            for(std::size_t col = 0; col != cols; ++col) {
-                std::string num;
-                in >> num;
-                result(col, row) = ConfigurationValue<T>::fromString(num, flags);
+        std::size_t oldpos = 0, pos = std::string::npos, i = 0;
+        do {
+            pos = stringValue.find(' ', oldpos);
+            std::string part = stringValue.substr(oldpos, pos-oldpos);
+
+            if(!part.empty()) {
+                result(i%cols, i/cols) = ConfigurationValue<T>::fromString(part, flags);
+                ++i;
             }
-        }
+
+            oldpos = pos+1;
+        } while(pos != std::string::npos);
 
         return result;
     }

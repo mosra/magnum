@@ -15,6 +15,8 @@
 
 #include "AnimableTest.h"
 
+#include <sstream>
+
 #include "SceneGraph/Animable.h"
 #include "SceneGraph/AnimableGroup.h"
 #include "SceneGraph/MatrixTransformation3D.h"

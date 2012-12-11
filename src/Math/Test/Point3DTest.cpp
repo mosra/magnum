@@ -15,6 +15,7 @@
 
 #include "Point3DTest.h"
 
+#include <sstream>
 #include <Utility/Configuration.h>
 
 #include "Point3D.h"

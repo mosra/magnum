@@ -15,6 +15,7 @@
 
 #include "TypeTraitsTest.h"
 
+#include <sstream>
 #include <Utility/Configuration.h>
 
 #include "TypeTraits.h"

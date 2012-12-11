@@ -15,6 +15,7 @@
 
 #include "Matrix4Test.h"
 
+#include <sstream>
 #include <Utility/Configuration.h>
 
 #include "Constants.h"

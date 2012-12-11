@@ -15,6 +15,7 @@
 
 #include "RectangularMatrixTest.h"
 
+#include <sstream>
 #include <Utility/Configuration.h>
 
 #include "RectangularMatrix.h"

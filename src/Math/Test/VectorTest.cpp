@@ -15,6 +15,7 @@
 
 #include "VectorTest.h"
 
+#include <sstream>
 #include <Utility/Configuration.h>
 
 #include "Constants.h"
