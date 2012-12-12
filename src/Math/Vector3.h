@@ -20,6 +20,7 @@
  */
 
 #include "Vector2.h"
+#include "Swizzle.h"
 
 namespace Magnum { namespace Math {
 
@@ -98,9 +99,8 @@ template<class T> class Vector3: public Vector<3, T> {
          * @f]
          */
         inline constexpr static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
-            return Vector3<T>(a[1]*b[2]-a[2]*b[1],
-                              a[2]*b[0]-a[0]*b[2],
-                              a[0]*b[1]-a[1]*b[0]);
+            return swizzle<'y', 'z', 'x'>(a)*swizzle<'z', 'x', 'y'>(b) -
+                   swizzle<'z', 'x', 'y'>(a)*swizzle<'y', 'z', 'x'>(b);
         }
 
         /** @copydoc Vector::Vector() */
