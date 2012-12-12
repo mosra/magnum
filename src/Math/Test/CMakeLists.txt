@@ -16,4 +16,6 @@ corrade_add_test(MathMatrixTest MatrixTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathMatrix3Test Matrix3Test.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathMatrix4Test Matrix4Test.cpp LIBRARIES MagnumMathTestLib)
 
+corrade_add_test(MathSwizzleTest SwizzleTest.cpp LIBRARIES MagnumMathTestLib)
+
 set_target_properties(MathVectorTest MathMatrix4Test PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)

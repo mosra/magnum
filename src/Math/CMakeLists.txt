@@ -10,6 +10,7 @@ set(MagnumMath_HEADERS
     Point2D.h
     Point3D.h
     RectangularMatrix.h
+    Swizzle.h
     Vector.h
     Vector2.h
     Vector3.h

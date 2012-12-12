@@ -22,28 +22,13 @@ CORRADE_TEST_MAIN(Magnum::Test::SwizzleTest)
 namespace Magnum { namespace Test {
 
 SwizzleTest::SwizzleTest() {
-    addTests(&SwizzleTest::xyzw,
-             &SwizzleTest::rgba,
-             &SwizzleTest::constants,
-             &SwizzleTest::fromSmall,
+    addTests(&SwizzleTest::rgba,
              &SwizzleTest::type,
              &SwizzleTest::defaultType);
 }
 
-void SwizzleTest::xyzw() {
-    CORRADE_COMPARE((swizzle<'z', 'x', 'w', 'y'>(Vector4i(2, 4, 5, 7))), Vector4i(5, 2, 7, 4));
-}
-
 void SwizzleTest::rgba() {
     CORRADE_COMPARE((swizzle<'b', 'r', 'a', 'g'>(Vector4i(2, 4, 5, 7))), Vector4i(5, 2, 7, 4));
-}
-
-void SwizzleTest::constants() {
-    CORRADE_COMPARE((swizzle<'1', 'w', '0', 'g'>(Vector4i(2, 4, 5, 7))), Vector4i(1, 7, 0, 4));
-}
-
-void SwizzleTest::fromSmall() {
-    CORRADE_COMPARE((swizzle<'g', 'x', 'r'>(Vector2i(1, 2))), Vector3i(2, 1, 1));
 }
 
 void SwizzleTest::type() {

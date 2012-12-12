@@ -15,38 +15,24 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-/** @file
+/** @file /Swizzle.h
  * @brief Function Magnum::swizzle()
  */
 
+#include "Math/Swizzle.h"
 #include "Color.h"
 
 namespace Magnum {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-namespace Implementation {
-    template<std::size_t size, std::size_t position> struct ComponentAtPosition {
-        static_assert(size > position, "Swizzle parameter out of range of base vector");
-
-        template<class T> inline constexpr static T value(const Math::Vector<size, T>& vector) { return vector[position]; }
-    };
-
-    template<std::size_t size, char component> struct Component {};
-    template<std::size_t size> struct Component<size, 'x'>: public ComponentAtPosition<size, 0> {};
-    template<std::size_t size> struct Component<size, 'y'>: public ComponentAtPosition<size, 1> {};
-    template<std::size_t size> struct Component<size, 'z'>: public ComponentAtPosition<size, 2> {};
-    template<std::size_t size> struct Component<size, 'w'>: public ComponentAtPosition<size, 3> {};
+namespace Math { namespace Implementation {
     template<std::size_t size> struct Component<size, 'r'>: public ComponentAtPosition<size, 0> {};
     template<std::size_t size> struct Component<size, 'g'>: public ComponentAtPosition<size, 1> {};
     template<std::size_t size> struct Component<size, 'b'>: public ComponentAtPosition<size, 2> {};
     template<std::size_t size> struct Component<size, 'a'>: public ComponentAtPosition<size, 3> {};
-    template<std::size_t size> struct Component<size, '0'> {
-        template<class T> inline constexpr static T value(const Math::Vector<size, T>&) { return T(0); }
-    };
-    template<std::size_t size> struct Component<size, '1'> {
-        template<class T> inline constexpr static T value(const Math::Vector<size, T>&) { return T(1); }
-    };
+}}
 
+namespace Implementation {
     template<std::size_t size, class T> struct TypeForSize {
         typedef Math::Vector<size, typename T::Type> Type;
     };
@@ -76,11 +62,11 @@ unlimited, but must be at least one. If the resulting vector is two, three or
 four-component, corresponding Math::Vector2, Math::Vector3, Math::Vector4,
 Color3 or Color4 specialization is returned.
 
-@see @ref matrix-vector-component-access, Vector4::xyz(), Color4::rgb(),
-    Vector4::xy(), Vector3::xy()
+@see @ref matrix-vector-component-access, Math::swizzle(), Vector4::xyz(),
+    Color4::rgb(), Vector4::xy(), Vector3::xy()
 */
 template<char ...components, class T> inline constexpr typename Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector) {
-    return {Implementation::Component<T::Size, components>::value(vector)...};
+    return {Math::Implementation::Component<T::Size, components>::value(vector)...};
 }
 
 }
