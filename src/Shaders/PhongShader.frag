@@ -3,13 +3,22 @@
 #define color gl_FragColor
 #endif
 
-uniform lowp vec3 diffuseColor;
 #ifndef GL_ES
-uniform lowp vec3 ambientColor = vec3(0.0, 0.0, 0.0);
-uniform lowp vec3 specularColor = vec3(1.0, 1.0, 1.0);
-uniform lowp vec3 lightColor = vec3(1.0, 1.0, 1.0);
-uniform mediump float shininess = 80.0;
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 4) uniform vec3 diffuseColor;
+layout(location = 5) uniform vec3 ambientColor = vec3(0.0, 0.0, 0.0);
+layout(location = 6) uniform vec3 specularColor = vec3(1.0, 1.0, 1.0);
+layout(location = 7) uniform vec3 lightColor = vec3(1.0, 1.0, 1.0);
+layout(location = 8) uniform float shininess = 80.0;
 #else
+uniform vec3 diffuseColor;
+uniform vec3 ambientColor = vec3(0.0, 0.0, 0.0);
+uniform vec3 specularColor = vec3(1.0, 1.0, 1.0);
+uniform vec3 lightColor = vec3(1.0, 1.0, 1.0);
+uniform float shininess = 80.0;
+#endif
+#else
+uniform lowp vec3 diffuseColor;
 uniform lowp vec3 ambientColor;
 uniform lowp vec3 specularColor;
 uniform lowp vec3 lightColor;

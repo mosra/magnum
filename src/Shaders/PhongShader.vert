@@ -3,10 +3,17 @@
 #define out varying
 #endif
 
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 0) uniform mat4 transformationMatrix;
+layout(location = 1) uniform mat4 projectionMatrix;
+layout(location = 2) uniform mat3 normalMatrix;
+layout(location = 3) uniform vec3 light;
+#else
 uniform highp mat4 transformationMatrix;
 uniform highp mat4 projectionMatrix;
 uniform mediump mat3 normalMatrix;
 uniform highp vec3 light;
+#endif
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = 0) in highp vec4 position;

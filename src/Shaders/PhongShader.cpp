@@ -52,15 +52,21 @@ PhongShader::PhongShader() {
 
     link();
 
-    ambientColorUniform = uniformLocation("ambientColor");
-    diffuseColorUniform = uniformLocation("diffuseColor");
-    specularColorUniform = uniformLocation("specularColor");
-    shininessUniform = uniformLocation("shininess");
-    transformationMatrixUniform = uniformLocation("transformationMatrix");
-    projectionMatrixUniform = uniformLocation("projectionMatrix");
-    normalMatrixUniform = uniformLocation("normalMatrix");
-    lightUniform = uniformLocation("light");
-    lightColorUniform = uniformLocation("lightColor");
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>()) {
+    #else
+    {
+    #endif
+        transformationMatrixUniform = uniformLocation("transformationMatrix");
+        projectionMatrixUniform = uniformLocation("projectionMatrix");
+        normalMatrixUniform = uniformLocation("normalMatrix");
+        lightUniform = uniformLocation("light");
+        diffuseColorUniform = uniformLocation("diffuseColor");
+        ambientColorUniform = uniformLocation("ambientColor");
+        specularColorUniform = uniformLocation("specularColor");
+        lightColorUniform = uniformLocation("lightColor");
+        shininessUniform = uniformLocation("shininess");
+    }
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES

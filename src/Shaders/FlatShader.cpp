@@ -65,8 +65,14 @@ template<std::uint8_t dimensions> FlatShader<dimensions>::FlatShader() {
 
     link();
 
-    transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
-    colorUniform = uniformLocation("color");
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>()) {
+    #else
+    {
+    #endif
+        transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+        colorUniform = uniformLocation("color");
+    }
 }
 
 template class FlatShader<2>;

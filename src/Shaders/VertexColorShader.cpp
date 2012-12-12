@@ -66,7 +66,13 @@ template<std::uint8_t dimensions> VertexColorShader<dimensions>::VertexColorShad
 
     link();
 
-    transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>()) {
+    #else
+    {
+    #endif
+        transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+    }
 }
 
 template class VertexColorShader<2>;

@@ -3,7 +3,11 @@
 #define out varying
 #endif
 
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 0) uniform mat3 transformationProjectionMatrix;
+#else
 uniform highp mat3 transformationProjectionMatrix;
+#endif
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = 0) in highp vec3 position;

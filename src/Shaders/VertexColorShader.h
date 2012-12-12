@@ -55,7 +55,7 @@ template<std::uint8_t dimensions> class MAGNUM_SHADERS_EXPORT VertexColorShader:
         }
 
     private:
-        GLint transformationProjectionMatrixUniform;
+        GLint transformationProjectionMatrixUniform = 0;
 };
 
 /** @brief 2D vertex color shader */

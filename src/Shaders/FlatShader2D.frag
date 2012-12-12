@@ -2,7 +2,11 @@
 #define fragmentColor gl_FragColor
 #endif
 
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 1) uniform vec3 color;
+#else
 uniform lowp vec3 color;
+#endif
 
 #ifdef NEW_GLSL
 out lowp vec4 fragmentColor;
