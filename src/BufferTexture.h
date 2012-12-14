@@ -1,5 +1,5 @@
-#ifndef Magnum_BufferedTexture_h
-#define Magnum_BufferedTexture_h
+#ifndef Magnum_BufferTexture_h
+#define Magnum_BufferTexture_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -17,7 +17,7 @@
 
 #ifndef MAGNUM_TARGET_GLES
 /** @file
- * @brief Class Magnum::BufferedTexture
+ * @brief Class Magnum::BufferTexture
  */
 #endif
 
@@ -27,13 +27,13 @@
 namespace Magnum {
 
 /**
-@brief Buffered texture
+@brief %Buffer texture
 
 This texture is, unlike classic textures such as Texture or CubeMapTexture,
 used as simple data source, without any unnecessary interpolation and
 wrapping methods.
 
-@section BufferedTexture-usage Usage
+@section BufferTexture-usage Usage
 
 %Texture data are stored in buffer and after binding the buffer to the texture
 using setBuffer(), you can fill the buffer at any time using data setting
@@ -46,7 +46,7 @@ to use one buffer for more textures or store more than one data in it.
 Example usage:
 @code
 Buffer* buffer;
-BufferedTexture texture;
+BufferTexture texture;
 texture.setBuffer(buffer);
 
 constexpr static Vector3 data[] = {
@@ -57,10 +57,10 @@ buffer.setData(data, Buffer::Usage::StaticDraw);
 
 The texture is bound to layer specified by shader via bind(). In shader, the
 texture is used via `samplerBuffer`.  Unlike in classic textures, coordinates
-for buffered textures are integer coordinates passed to `texelFetch()`. See
-also AbstractShaderProgram documentation for more information.
+for buffer textures are integer coordinates passed to `texelFetch()`. See also
+AbstractShaderProgram documentation for more information.
 
-@section BufferedTexture-performance-optimization Performance optimizations
+@section BufferTexture-performance-optimization Performance optimizations
 If extension @extension{EXT,direct_state_access} is available, setBuffer()
 uses DSA function to avoid unnecessary calls to @fn_gl{ActiveTexture} and
 @fn_gl{BindTexture}. See @ref AbstractTexture-performance-optimization
@@ -70,13 +70,13 @@ documentation for more information.
 @requires_gl31 Extension @extension{ARB,texture_buffer_object}
 @requires_gl Texture buffers are not available in OpenGL ES.
 */
-class MAGNUM_EXPORT BufferedTexture: private AbstractTexture {
+class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
     friend class Context;
 
-    BufferedTexture(const BufferedTexture& other) = delete;
-    BufferedTexture(BufferedTexture&& other) = delete;
-    BufferedTexture& operator=(const BufferedTexture& other) = delete;
-    BufferedTexture& operator=(BufferedTexture&& other) = delete;
+    BufferTexture(const BufferTexture& other) = delete;
+    BufferTexture(BufferTexture&& other) = delete;
+    BufferTexture& operator=(const BufferTexture& other) = delete;
+    BufferTexture& operator=(BufferTexture&& other) = delete;
 
     public:
         /**
@@ -194,7 +194,7 @@ class MAGNUM_EXPORT BufferedTexture: private AbstractTexture {
             RGBA32F = GL_RGBA32F
         };
 
-        inline BufferedTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
+        inline BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
 
         /** @copydoc AbstractTexture::bind() */
         inline void bind(GLint layer) { AbstractTexture::bind(layer); }
@@ -217,7 +217,7 @@ class MAGNUM_EXPORT BufferedTexture: private AbstractTexture {
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
 
-        typedef void(BufferedTexture::*SetBufferImplementation)(InternalFormat, Buffer*);
+        typedef void(BufferTexture::*SetBufferImplementation)(InternalFormat, Buffer*);
         void MAGNUM_LOCAL setBufferImplementationDefault(InternalFormat internalFormat, Buffer* buffer);
         void MAGNUM_LOCAL setBufferImplementationDSA(InternalFormat internalFormat, Buffer* buffer);
         static SetBufferImplementation setBufferImplementation;

@@ -13,7 +13,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "BufferedTexture.h"
+#include "BufferTexture.h"
 
 #ifndef MAGNUM_TARGET_GLES
 #include "Buffer.h"
@@ -22,22 +22,22 @@
 
 namespace Magnum {
 
-BufferedTexture::SetBufferImplementation BufferedTexture::setBufferImplementation = &BufferedTexture::setBufferImplementationDefault;
+BufferTexture::SetBufferImplementation BufferTexture::setBufferImplementation = &BufferTexture::setBufferImplementationDefault;
 
-void BufferedTexture::initializeContextBasedFunctionality(Context* context) {
+void BufferTexture::initializeContextBasedFunctionality(Context* context) {
     if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-        Debug() << "BufferedTexture: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
+        Debug() << "BufferTexture: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
 
-        setBufferImplementation = &BufferedTexture::setBufferImplementationDSA;
+        setBufferImplementation = &BufferTexture::setBufferImplementationDSA;
     }
 }
 
-void BufferedTexture::setBufferImplementationDefault(BufferedTexture::InternalFormat internalFormat, Buffer* buffer) {
+void BufferTexture::setBufferImplementationDefault(BufferTexture::InternalFormat internalFormat, Buffer* buffer) {
     bindInternal();
     glTexBuffer(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer->id());
 }
 
-void BufferedTexture::setBufferImplementationDSA(BufferedTexture::InternalFormat internalFormat, Buffer* buffer) {
+void BufferTexture::setBufferImplementationDSA(BufferTexture::InternalFormat internalFormat, Buffer* buffer) {
     glTextureBufferEXT(id(), GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer->id());
 }
 

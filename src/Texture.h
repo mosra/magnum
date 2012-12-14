@@ -200,7 +200,7 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          * @brief Set texture data
          * @param mipLevel          Mip level
          * @param internalFormat    Internal texture format
-         * @param image             Image, BufferedImage or for example
+         * @param image             Image, ImageWrapper, BufferImage or
          *      Trade::ImageData of the same dimension count
          * @return Pointer to self (for method chaining)
          *
@@ -222,8 +222,8 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          * @brief Set texture subdata
          * @param mipLevel          Mip level
          * @param offset            Offset where to put data in the texture
-         * @param image             Image, BufferedImage or for example
-         *      Trade::ImageData
+         * @param image             Image, ImageWrapper, BufferImage or
+         *      Trade::ImageData of the same or one less dimension count
          * @return Pointer to self (for method chaining)
          *
          * Sets texture subdata from given image. The image is not deleted

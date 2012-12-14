@@ -113,8 +113,8 @@ class CubeMapTextureArray: public AbstractTexture {
          * @brief Set texture subdata from 3D image
          * @param mipLevel      Mip level
          * @param offset        Offset where to put data in the texture
-         * @param image         Three-dimensional Image, BufferedImage or for
-         *      example Trade::ImageData
+         * @param image         Image3D, ImageWrapper3D, BufferImage3D or
+         *      Trade::ImageData3D
          * @return Pointer to self (for method chaining)
          *
          * Sets texture subdata from given image. The image is not deleted
@@ -138,8 +138,8 @@ class CubeMapTextureArray: public AbstractTexture {
          * @param coordinate    Coordinate
          * @param mipLevel      Mip level
          * @param offset        Offset where to put data in the texture
-         * @param image         Two-dimensional Image, BufferedImage or for
-         *      example Trade::ImageData
+         * @param image         Image2D, ImageWrapper2D, BufferImage2D or
+         *      Trade::ImageData2D
          * @return Pointer to self (for method chaining)
          *
          * Sets texture subdata from given image. The image is not deleted

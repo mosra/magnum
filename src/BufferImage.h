@@ -1,5 +1,5 @@
-#ifndef Magnum_BufferedImage_h
-#define Magnum_BufferedImage_h
+#ifndef Magnum_BufferImage_h
+#define Magnum_BufferImage_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -17,7 +17,7 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 /** @file
- * @brief Class Magnum::BufferedImage, typedef Magnum::BufferedImage1D, Magnum::BufferedImage2D, Magnum::BufferedImage3D
+ * @brief Class Magnum::BufferImage, typedef Magnum::BufferImage1D, Magnum::BufferImage2D, Magnum::BufferImage3D
  */
 #endif
 
@@ -30,14 +30,14 @@ namespace Magnum {
 
 #ifndef MAGNUM_TARGET_GLES2
 /**
-@brief %Buffered image
+@brief %Buffer image
 
 Stores image data in GPU memory. Interchangeable with Image, ImageWrapper or
 Trade::ImageData.
-@see BufferedImage1D, BufferedImage2D, BufferedImage3D, Buffer
+@see BufferImage1D, BufferImage2D, BufferImage3D, Buffer
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 */
-template<std::uint8_t dimensions> class MAGNUM_EXPORT BufferedImage: public AbstractImage {
+template<std::uint8_t dimensions> class MAGNUM_EXPORT BufferImage: public AbstractImage {
     public:
         const static std::uint8_t Dimensions = dimensions; /**< @brief %Image dimension count */
 
@@ -49,7 +49,7 @@ template<std::uint8_t dimensions> class MAGNUM_EXPORT BufferedImage: public Abst
          * Dimensions and buffer are empty, call setData() to fill the image
          * with data.
          */
-        inline BufferedImage(Format format, Type type): AbstractImage(format, type) {
+        inline BufferImage(Format format, Type type): AbstractImage(format, type) {
             _buffer.setTargetHint(Buffer::Target::PixelPack);
         }
 
@@ -93,14 +93,14 @@ template<std::uint8_t dimensions> class MAGNUM_EXPORT BufferedImage: public Abst
         Buffer _buffer;
 };
 
-/** @brief One-dimensional buffered image */
-typedef BufferedImage<1> BufferedImage1D;
+/** @brief One-dimensional buffer image */
+typedef BufferImage<1> BufferImage1D;
 
-/** @brief Two-dimensional buffered image */
-typedef BufferedImage<2> BufferedImage2D;
+/** @brief Two-dimensional buffer image */
+typedef BufferImage<2> BufferImage2D;
 
-/** @brief Three-dimensional buffered image */
-typedef BufferedImage<3> BufferedImage3D;
+/** @brief Three-dimensional buffer image */
+typedef BufferImage<3> BufferImage3D;
 #endif
 
 }

@@ -37,7 +37,7 @@ targeted for wrapping data which are either stored in stack/constant memory
 same properties for each frame, such as video stream. Thus it is not possible
 to change image properties, only data pointer.
 
-Interchangeable with Image, BufferedImage or Trade::ImageData.
+Interchangeable with Image, BufferImage or Trade::ImageData.
 @see ImageWrapper1D, ImageWrapper2D, ImageWrapper3D
 */
 template<std::uint8_t dimensions> class ImageWrapper: public AbstractImage {

@@ -30,7 +30,7 @@ namespace Magnum {
 /**
 @brief Non-templated base for one-, two- or three-dimensional images
 
-See Image, ImageWrapper, BufferedImage, Trade::ImageData documentation for
+See Image, ImageWrapper, BufferImage, Trade::ImageData documentation for
 more information.
 */
 class MAGNUM_EXPORT AbstractImage {

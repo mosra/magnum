@@ -700,7 +700,7 @@ class MAGNUM_EXPORT Framebuffer {
          * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
          */
-        static void read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, BufferedImage2D* image, Buffer::Usage usage);
+        static void read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, BufferImage2D* image, Buffer::Usage usage);
         #endif
 
         /*@}*/

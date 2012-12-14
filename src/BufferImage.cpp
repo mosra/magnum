@@ -13,21 +13,21 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "BufferedImage.h"
+#include "BufferImage.h"
 
 namespace Magnum {
 
 #ifndef MAGNUM_TARGET_GLES2
-template<std::uint8_t dimensions> void BufferedImage<dimensions>::setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, const GLvoid* data, Buffer::Usage usage) {
+template<std::uint8_t dimensions> void BufferImage<dimensions>::setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, const GLvoid* data, Buffer::Usage usage) {
     _format = format;
     _type = type;
     _size = size;
     _buffer.setData(pixelSize(format, type)*size.product(), data, usage);
 }
 
-template class BufferedImage<1>;
-template class BufferedImage<2>;
-template class BufferedImage<3>;
+template class BufferImage<1>;
+template class BufferImage<2>;
+template class BufferImage<3>;
 #endif
 
 }

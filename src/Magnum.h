@@ -134,14 +134,14 @@ template<class T> class Array3D;
 class Buffer;
 
 #ifndef MAGNUM_TARGET_GLES2
-template<std::uint8_t> class BufferedImage;
-typedef BufferedImage<1> BufferedImage1D;
-typedef BufferedImage<2> BufferedImage2D;
-typedef BufferedImage<3> BufferedImage3D;
+template<std::uint8_t> class BufferImage;
+typedef BufferImage<1> BufferImage1D;
+typedef BufferImage<2> BufferImage2D;
+typedef BufferImage<3> BufferImage3D;
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-class BufferedTexture;
+class BufferTexture;
 #endif
 
 template<class T = GLfloat> class Color3;

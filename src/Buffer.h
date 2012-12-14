@@ -167,7 +167,7 @@ class MAGNUM_EXPORT Buffer {
             ShaderStorage = GL_SHADER_STORAGE_BUFFER,
 
             /**
-             * Source for texel fetches. See BufferedTexture.
+             * Source for texel fetches. See BufferTexture.
              * @requires_gl31 Extension @extension{ARB,texture_buffer_object}
              * @requires_gl Texture buffers are not available in OpenGL ES.
              */

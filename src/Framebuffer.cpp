@@ -15,7 +15,7 @@
 
 #include "Framebuffer.h"
 
-#include "BufferedImage.h"
+#include "BufferImage.h"
 #include "Image.h"
 
 namespace Magnum {
@@ -52,7 +52,7 @@ void Framebuffer::read(const Vector2i& offset, const Vector2i& size, AbstractIma
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-void Framebuffer::read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, BufferedImage2D* image, Buffer::Usage usage) {
+void Framebuffer::read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, BufferImage2D* image, Buffer::Usage usage) {
     /* If the buffer doesn't have sufficient size, resize it */
     /** @todo Explicitly reset also when buffer usage changes */
     if(image->size() != size || image->format() != format || image->type() != type)

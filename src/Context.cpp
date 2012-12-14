@@ -23,7 +23,7 @@
 #include "AbstractShaderProgram.h"
 #include "AbstractTexture.h"
 #include "Buffer.h"
-#include "BufferedTexture.h"
+#include "BufferTexture.h"
 #include "Extensions.h"
 #include "IndexedMesh.h"
 #include "Mesh.h"
@@ -296,7 +296,7 @@ Context::Context() {
     AbstractTexture::initializeContextBasedFunctionality(this);
     Buffer::initializeContextBasedFunctionality(this);
     #ifndef MAGNUM_TARGET_GLES
-    BufferedTexture::initializeContextBasedFunctionality(this);
+    BufferTexture::initializeContextBasedFunctionality(this);
     #endif
     DebugMarker::initializeContextBasedFunctionality(this);
     IndexedMesh::initializeContextBasedFunctionality(this);
