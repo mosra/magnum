@@ -22,7 +22,9 @@
 #include <Utility/ConfigurationValue.h>
 
 #include "Math/MathTypeTraits.h"
-#include "AbstractImage.h"
+#include "Magnum.h"
+
+#include "magnumVisibility.h"
 
 namespace Magnum {
 
@@ -67,15 +69,6 @@ template<class T> struct TypeTraits: Math::MathTypeTraits<T> {
      * vertex indices, like GLfloat or GLint.
      */
     inline constexpr static Type indexType();
-
-    /**
-     * @brief OpenGL type ID for pixel data
-     *
-     * Implemented only in types which can be used for image data, like
-     * GLubyte. This function is not present for types unusable for image data,
-     * like GLdouble and Matrix3.
-     */
-    inline constexpr static AbstractImage::Type imageType();
 
     /**
      * @brief Size of plain OpenGL type
@@ -182,7 +175,6 @@ template<> struct TypeTraits<GLubyte>: Math::MathTypeTraits<std::uint8_t> {
     /* Can not be used for attributes */
     inline constexpr static Type type() { return Type::UnsignedByte; }
     inline constexpr static Type indexType() { return Type::UnsignedByte; }
-    inline constexpr static AbstractImage::Type imageType() { return AbstractImage::Type::UnsignedByte; }
     inline constexpr static std::size_t size() { return sizeof(GLubyte); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -191,9 +183,6 @@ template<> struct TypeTraits<GLbyte>: Math::MathTypeTraits<std::int8_t> {
     /* Can not be used for attributes */
     inline constexpr static Type type() { return Type::Byte; }
     /* Can not be used for indices */
-    #ifndef MAGNUM_TARGET_GLES2
-    inline constexpr static AbstractImage::Type imageType() { return AbstractImage::Type::Byte; }
-    #endif
     inline constexpr static std::size_t size() { return sizeof(GLbyte); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -202,7 +191,6 @@ template<> struct TypeTraits<GLushort>: Math::MathTypeTraits<std::uint16_t> {
     /* Can not be used for attributes */
     inline constexpr static Type type() { return Type::UnsignedShort; }
     inline constexpr static Type indexType() { return Type::UnsignedShort; }
-    inline constexpr static AbstractImage::Type imageType() { return AbstractImage::Type::UnsignedShort; }
     inline constexpr static std::size_t size() { return sizeof(GLushort); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -211,9 +199,6 @@ template<> struct TypeTraits<GLshort>: Math::MathTypeTraits<std::int16_t> {
     /* Can not be used for attributes */
     inline constexpr static Type type() { return Type::Short; }
     /* Can not be used for indices */
-    #ifndef MAGNUM_TARGET_GLES2
-    inline constexpr static AbstractImage::Type imageType() { return AbstractImage::Type::Short; }
-    #endif
     inline constexpr static std::size_t size() { return sizeof(GLshort); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -222,7 +207,6 @@ template<> struct TypeTraits<GLuint>: Math::MathTypeTraits<std::uint32_t> {
     typedef GLuint AttributeType;
     inline constexpr static Type type() { return Type::UnsignedInt; }
     inline constexpr static Type indexType() { return Type::UnsignedInt; }
-    inline constexpr static AbstractImage::Type imageType() { return AbstractImage::Type::UnsignedInt; }
     inline constexpr static std::size_t size() { return sizeof(GLuint); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -231,9 +215,6 @@ template<> struct TypeTraits<GLint>: Math::MathTypeTraits<std::int32_t> {
     typedef GLint AttributeType;
     inline constexpr static Type type() { return Type::Int; }
     /* Can not be used for indices */
-    #ifndef MAGNUM_TARGET_GLES2
-    inline constexpr static AbstractImage::Type imageType() { return AbstractImage::Type::Int; }
-    #endif
     inline constexpr static std::size_t size() { return sizeof(GLint); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -242,7 +223,6 @@ template<> struct TypeTraits<GLfloat>: Math::MathTypeTraits<float> {
     typedef GLfloat AttributeType;
     inline constexpr static Type type() { return Type::Float; }
     /* Can not be used for indices */
-    inline constexpr static AbstractImage::Type imageType() { return AbstractImage::Type::Float; }
     inline constexpr static std::size_t size() { return sizeof(GLfloat); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -252,7 +232,6 @@ template<> struct TypeTraits<GLdouble>: Math::MathTypeTraits<double> {
     typedef GLdouble AttributeType;
     inline constexpr static Type type() { return Type::Double; }
     /* Can not be used for indices */
-    /* Can not be used for images */
     inline constexpr static std::size_t size() { return sizeof(GLdouble); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -264,7 +243,6 @@ namespace Implementation {
         inline constexpr static Type type() { return TypeTraits<T>::type(); }
         /* Might be used for attributes, see below */
         /* Can not be used for indices */
-        /* Can not be used for images */
         inline constexpr static std::size_t size() { return sizeof(T); }
         inline constexpr static std::size_t count() { return vectorSize; }
     };
@@ -311,7 +289,6 @@ namespace Implementation {
         inline constexpr static Type type() { return TypeTraits<T>::type(); }
         /* Might be used for attributes, see below */
         /* Can not be used for indices */
-        /* Can not be used for images */
         inline constexpr static std::size_t size() { return sizeof(T); }
         inline constexpr static std::size_t count() { return rows; }
         inline constexpr static std::size_t vectors() { return cols; }

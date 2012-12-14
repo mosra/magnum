@@ -25,7 +25,6 @@
 #include "AbstractImage.h"
 #include "Buffer.h"
 #include "DimensionTraits.h"
-#include "TypeTraits.h"
 
 namespace Magnum {
 
@@ -73,23 +72,6 @@ template<std::uint8_t dimensions> class MAGNUM_EXPORT BufferedImage: public Abst
 
         /** @brief %Image buffer */
         inline Buffer* buffer() { return &_buffer; }
-
-        /**
-         * @brief Set image data
-         * @param size              %Image size
-         * @param format            Format of pixel data. Data type is
-         *      detected from passed data array.
-         * @param data              %Image data
-         * @param usage             %Image buffer usage
-         *
-         * Updates the image buffer with given data. The data are not deleted
-         * after filling the buffer.
-         *
-         * @see setData(const Math::Vector<Dimensions, GLsizei>&, Format, Type, const GLvoid*, Buffer::Usage)
-         */
-        template<class T> inline void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, const T* data, Buffer::Usage usage) {
-            setData(size, format, TypeTraits<T>::imageType(), data, usage);
-        }
 
         /**
          * @brief Set image data

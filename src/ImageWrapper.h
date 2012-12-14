@@ -22,7 +22,6 @@
 #include "Math/Vector3.h"
 #include "AbstractImage.h"
 #include "DimensionTraits.h"
-#include "TypeTraits.h"
 
 namespace Magnum {
 
@@ -44,19 +43,6 @@ Interchangeable with Image, BufferedImage or Trade::ImageData.
 template<std::uint8_t dimensions> class ImageWrapper: public AbstractImage {
     public:
         const static std::uint8_t Dimensions = dimensions; /**< @brief %Image dimension count */
-
-        /**
-         * @brief Constructor
-         * @param size              %Image size
-         * @param format            Format of pixel data. Data type is
-         *      detected from passed data array.
-         * @param data              %Image data with proper size
-         *
-         * Note that the image data are not copied on construction, but they
-         * are deleted on class destruction.
-         */
-        template<class T> inline ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, T* data): AbstractImage(format, TypeTraits<T>::imageType()), _size(size), _data(data) {}
-
         /**
          * @brief Constructor
          * @param size              %Image size

@@ -22,7 +22,6 @@
 #include "Math/Vector3.h"
 #include "AbstractImage.h"
 #include "DimensionTraits.h"
-#include "TypeTraits.h"
 
 namespace Magnum {
 
@@ -36,18 +35,6 @@ BufferedImage or Trade::ImageData.
 template<std::uint8_t dimensions> class Image: public AbstractImage {
     public:
         const static std::uint8_t Dimensions = dimensions; /**< @brief %Image dimension count */
-
-        /**
-         * @brief Constructor
-         * @param size              %Image size
-         * @param format            Format of pixel data. Data type is
-         *      detected from passed data array.
-         * @param data              %Image data with proper size
-         *
-         * Note that the image data are not copied on construction, but they
-         * are deleted on class destruction.
-         */
-        template<class T> inline Image(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, T* data): AbstractImage(format, TypeTraits<T>::imageType()), _size(size), _data(data) {}
 
         /**
          * @brief Constructor
@@ -80,20 +67,6 @@ template<std::uint8_t dimensions> class Image: public AbstractImage {
         /** @brief Pointer to raw data */
         inline void* data() { return _data; }
         inline const void* data() const { return _data; } /**< @overload */
-
-        /**
-         * @brief Set image data
-         * @param size              %Image size
-         * @param format            Format of pixel data. Data type is
-         *      detected from passed data array.
-         * @param data              %Image data
-         *
-         * Deletes previous data and replaces them with new. Note that the
-         * data are not copied, but they are deleted on destruction.
-         */
-        template<class T> inline void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, T* data) {
-            setData(size, format, TypeTraits<T>::imageType(), data);
-        }
 
         /**
          * @brief Set image data
