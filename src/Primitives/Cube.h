@@ -26,7 +26,7 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 3D cube primitive
 
-2x2x2 cube. Non-indexed triangle mesh with flat normals.
+2x2x2 cube. Indexed triangle mesh with flat normals.
 */
 class Cube: public Trade::MeshData3D {
     public:
