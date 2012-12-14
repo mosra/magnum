@@ -24,7 +24,7 @@
 #include "AbstractImage.h"
 #include "Buffer.h"
 #include "CubeMapTexture.h"
-#include "Color.h"
+#include "Texture.h"
 #include "Renderbuffer.h"
 
 namespace Magnum {

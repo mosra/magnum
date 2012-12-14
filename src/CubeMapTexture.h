@@ -19,7 +19,7 @@
  * @brief Class Magnum::CubeMapTexture
  */
 
-#include "Texture.h"
+#include "AbstractTexture.h"
 
 namespace Magnum {
 

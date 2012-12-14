@@ -21,7 +21,7 @@
  */
 #endif
 
-#include "Texture.h"
+#include "AbstractTexture.h"
 
 #ifndef MAGNUM_TARGET_GLES
 namespace Magnum {
