@@ -11,12 +11,14 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CO
 
 # Files shared between main library and unit test library
 set(Magnum_SRCS
+    AbstractFramebuffer.cpp
     AbstractImage.cpp
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
     Buffer.cpp
     Context.cpp
     DebugMarker.cpp
+    DefaultFramebuffer.cpp
     Framebuffer.cpp
     Image.cpp
     IndexedMesh.cpp
@@ -50,6 +52,7 @@ if(NOT TARGET_GLES2)
 endif()
 
 set(Magnum_HEADERS
+    AbstractFramebuffer.h
     AbstractImage.h
     AbstractResourceLoader.h
     AbstractShaderProgram.h
@@ -60,6 +63,7 @@ set(Magnum_HEADERS
     Context.h
     CubeMapTexture.h
     DebugMarker.h
+    DefaultFramebuffer.h
     DimensionTraits.h
     Extensions.h
     Framebuffer.h

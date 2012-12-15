@@ -122,6 +122,7 @@ using Math::deg;
 using Math::rad;
 
 /* Forward declarations for all types in root namespace */
+class AbstractFramebuffer;
 class AbstractImage;
 class AbstractShaderProgram;
 class AbstractTexture;
@@ -156,6 +157,7 @@ class CubeMapTextureArray;
 #endif
 
 /* DebugMarker forward declaration is not needed */
+/* DefaultFramebuffer is available only through global instance */
 /* DimensionTraits forward declaration is not needed */
 
 class Extension;

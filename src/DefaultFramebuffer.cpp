@@ -13,24 +13,24 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Framebuffer.h"
-
-#include "BufferImage.h"
-#include "Image.h"
+#include "DefaultFramebuffer.h"
 
 namespace Magnum {
 
-void Framebuffer::mapForDraw(std::initializer_list<std::int8_t> colorAttachments) {
-    GLenum* attachments = new GLenum[colorAttachments.size()];
-    for(auto it = colorAttachments.begin(); it != colorAttachments.end(); ++it)
-        attachments[it-colorAttachments.begin()] = *it + GL_COLOR_ATTACHMENT0;
+DefaultFramebuffer defaultFramebuffer;
+
+DefaultFramebuffer::DefaultFramebuffer() { _id = 0; }
+
+#ifndef MAGNUM_TARGET_GLES2
+void DefaultFramebuffer::mapForDraw(std::initializer_list<DrawAttachment> attachments) {
+    GLenum* _attachments = new GLenum[attachments.size()];
+    for(auto it = attachments.begin(); it != attachments.end(); ++it)
+        _attachments[it-attachments.begin()] = static_cast<GLenum>(*it);
 
     bind(Target::Draw);
-    /** @todo Re-enable when extension wrangler is available for ES2 */
-    #ifndef MAGNUM_TARGET_GLES2
-    glDrawBuffers(colorAttachments.size(), attachments);
-    #endif
-    delete[] attachments;
+    glDrawBuffers(attachments.size(), _attachments);
+    delete[] _attachments;
 }
+#endif
 
 }
