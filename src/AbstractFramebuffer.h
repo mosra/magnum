@@ -34,6 +34,8 @@ See DefaultFramebuffer and Framebuffer for more information.
 @todo @extension{ARB,viewport_array}
 */
 class MAGNUM_EXPORT AbstractFramebuffer {
+    friend class Context;
+
     AbstractFramebuffer(const AbstractFramebuffer& other) = delete;
     AbstractFramebuffer(AbstractFramebuffer&& other) = delete;
     AbstractFramebuffer& operator=(const AbstractFramebuffer& other) = delete;
@@ -208,7 +210,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @see @fn_gl{Viewport}
          */
         inline void setViewport(const Vector2i& position, const Vector2i& size) {
-            bind(Target::ReadDraw);
+            bind(drawTarget);
             glViewport(position.x(), position.y(), size.x(), size.y());
         }
 
@@ -220,7 +222,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *      Renderer::setClearStencil(), @fn_gl{Clear}
          */
         inline void clear(ClearMask mask) {
-            bind(Target::ReadDraw);
+            bind(drawTarget);
             glClear(static_cast<GLbitfield>(mask));
         }
 
@@ -254,8 +256,13 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
+        static Target readTarget, drawTarget;
+
         GLuint _id;
     #endif
+
+    private:
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
 };
 
 inline AbstractFramebuffer::~AbstractFramebuffer() {}

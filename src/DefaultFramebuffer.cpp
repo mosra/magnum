@@ -27,7 +27,7 @@ void DefaultFramebuffer::mapForDraw(std::initializer_list<DrawAttachment> attach
     for(auto it = attachments.begin(); it != attachments.end(); ++it)
         _attachments[it-attachments.begin()] = static_cast<GLenum>(*it);
 
-    bind(Target::Draw);
+    bind(drawTarget);
     glDrawBuffers(attachments.size(), _attachments);
     delete[] _attachments;
 }

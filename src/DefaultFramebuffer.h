@@ -186,7 +186,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
         inline void mapForRead(ReadAttachment attachment) {
-            bind(Target::Read);
+            bind(readTarget);
             /** @todo Get some extension wrangler instead to avoid undeclared glReadBuffer() on ES2 */
             #ifndef MAGNUM_TARGET_GLES2
             glReadBuffer(static_cast<GLenum>(attachment));

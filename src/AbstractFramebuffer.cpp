@@ -16,12 +16,19 @@
 #include "AbstractFramebuffer.h"
 
 #include "BufferImage.h"
+#include "Context.h"
+#include "Extensions.h"
 #include "Image.h"
 
 namespace Magnum {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+AbstractFramebuffer::Target AbstractFramebuffer::readTarget = AbstractFramebuffer::Target::ReadDraw;
+AbstractFramebuffer::Target AbstractFramebuffer::drawTarget = AbstractFramebuffer::Target::ReadDraw;
+#endif
+
 void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, Image2D* image) {
-    bind(Target::ReadDraw);
+    bind(readTarget);
     char* data = new char[AbstractImage::pixelSize(format, type)*size.product()];
     glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), data);
     image->setData(size, format, type, data);
@@ -29,7 +36,7 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Abs
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, BufferImage2D* image, Buffer::Usage usage) {
-    bind(Target::ReadDraw);
+    bind(readTarget);
     /* If the buffer doesn't have sufficient size, resize it */
     /** @todo Explicitly reset also when buffer usage changes */
     if(image->size() != size || image->format() != format || image->type() != type)
@@ -39,5 +46,18 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Abs
     glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), nullptr);
 }
 #endif
+
+void AbstractFramebuffer::initializeContextBasedFunctionality(Context* context) {
+    #ifndef MAGNUM_TARGET_GLES
+    if(context->isExtensionSupported<Extensions::GL::EXT::framebuffer_blit>()) {
+        Debug() << "AbstractFramebuffer: using" << Extensions::GL::EXT::framebuffer_blit::string() << "features";
+
+        readTarget = Target::Read;
+        drawTarget = Target::Draw;
+    }
+    #else
+    static_cast<void>(context);
+    #endif
+}
 
 }
