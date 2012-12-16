@@ -27,7 +27,54 @@ namespace Magnum {
 /**
 @brief %Framebuffer
 
-@see DefaultFramebuffer
+Unlike DefaultFramebuffer, which is used for on-screen rendering, this class
+is used for off-screen rendering, usable either in windowless applications,
+texture generation or for various post-processing effects.
+
+@section Framebuffer-usage Example usage
+
+See @ref DefaultFramebuffer-usage "DefaultFramebuffer documentation" for
+introduction. Imagine you have shader with multiple outputs (e.g. for deferred
+rendering). You want to render them off-screen to textures and then use the
+textures for actual on-screen rendering. First you need to create the
+framebuffer with the same viewport as default framebuffer and attach textures
+and renderbuffers to desired outputs:
+@code
+Framebuffer framebuffer(defaultFramebuffer.viewportPosition(), defaultFramebuffer.viewportSize());
+Texture2D color, normal;
+Renderbuffer depthStencil;
+
+// configure the textures and allocate texture memory...
+
+framebuffer.attachTexture2D(Framebuffer::Target::Draw, 0, &color);
+framebuffer.attachTexture2D(Framebuffer::Target::Draw, 1, &normal);
+framebuffer.attachRenderbuffer(Framebuffer::Target::Draw, Framebuffer::DepthStencilAttachment::DepthStencil, &depthStencil);
+@endcode
+
+Then you need to map outputs of your shader to color attachments in the
+framebuffer:
+@code
+framebuffer.mapForDraw({{MyShader::ColorOutput, 0},
+                        {MyShader::NormalOutput, 1}});
+@endcode
+
+The actual @ref Platform::GlutApplication::drawEvent() "drawEvent()" might
+look like this. First you clear all buffers you need, perform drawing to
+off-screen framebuffer, then bind the default and render the textures on
+screen:
+@code
+void drawEvent() {
+    defaultFramebuffer.clear(AbstractFramebuffer::Clear::Color)
+    framebuffer.clear(AbstractFramebuffer::Clear::Color|AbstractFramebuffer::Clear::Depth|AbstractFramebuffer::Clear::Stencil);
+
+    framebuffer.bind(AbstractFramebuffer::Target::Draw);
+    // ...
+
+    defaultFramebuffer.bind(AbstractFramebuffer::Target::Draw);
+    // ...
+}
+@endcode
+
 @requires_gl30 %Extension @extension{EXT,framebuffer_object}
 */
 class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {

@@ -26,7 +26,37 @@ namespace Magnum {
 /**
 @brief Default framebuffer
 
-@see @ref defaultFramebuffer, Framebuffer
+Default framebuffer, i.e. the actual screen surface. It is automatically
+created when Context is created and it is available through global variable
+@ref defaultFramebuffer. It is by default mapped to whole screen surface.
+
+@section DefaultFramebuffer-usage Usage
+
+When you are using only the default framebuffer, the usage is simple. You
+must ensure that it is properly resized when application surface is resized,
+i.e. you must pass the new size in your @ref Platform::GlutApplication::viewportEvent() "viewportEvent()"
+implementation, for example:
+@code
+void viewportEvent(const Vector2i& size) {
+    defaultFramebuffer.setViewport({}, size);
+
+    // ...
+}
+@endcode
+
+Next thing you probably want is to clear all used buffers before performing
+any drawing in your @ref Platform::GlutApplication::drawEvent() "drawEvent()"
+implementation, for example:
+@code
+void drawEvent() {
+    defaultFramebuffer.clear(AbstractFramebuffer::Clear::Color|AbstractFramebuffer::Clear::Depth);
+
+    // ...
+}
+@endcode
+
+See Framebuffer documentation for more involved usage, usage of non-default or
+multiple framebuffers.
 */
 class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
     friend class Context;

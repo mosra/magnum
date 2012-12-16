@@ -57,22 +57,28 @@ typedef Attribute<0, Point3D> Position;
 typedef Attribute<1, Vector3> Normal;
 typedef Attribute<2, Vector2> TextureCoordinates;
 @endcode
-   @todoc Output attribute location (for bindFragmentDataLocationIndexed(),
-        referenced also from Framebuffer::mapDefaultForDraw() / Framebuffer::mapForDraw())
-
+ - **Output attribute locations**, if desired, for example:
+@code
+enum: GLuint {
+    ColorOutput = 0,
+    NormalOutput = 1
+};
+@endcode
  - **Layers for texture uniforms** to which the textures will be bound before
    rendering, for example:
 @code
-static const GLint DiffuseTextureLayer = 0;
-static const GLint SpecularTextureLayer = 1;
+enum: GLint {
+    DiffuseTextureLayer = 0,
+    SpecularTextureLayer = 1
+};
 @endcode
  - **Uniform locations** for setting uniform data (see below) (private
-   constants), for example:
+   variables), for example:
 @code
-static const GLint TransformationUniform = 0;
-static const GLint ProjectionUniform = 1;
-static const GLint DiffuseTextureUniform = 2;
-static const GLint SpecularTextureUniform = 3;
+GLint TransformationUniform = 0,
+    ProjectionUniform = 1,
+    DiffuseTextureUniform = 2,
+    SpecularTextureUniform = 3;
 @endcode
  - **Constructor**, which attaches particular shaders, links the program and
    gets uniform locations, for example:
@@ -112,12 +118,13 @@ layout(location = 0) in vec4 position;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 textureCoordinates;
 @endcode
+
 Similarly for ouput attributes, you can also specify blend equation color
 index for them (see Framebuffer::BlendFunction for more information about
 using color input index):
 @code
 layout(location = 0, index = 0) out vec4 color;
-layout(location = 1, index = 1) out vec4 ambient;
+layout(location = 1, index = 1) out vec3 normal;
 @endcode
 
 If you don't have the required extension, you can use functions
@@ -131,8 +138,8 @@ bindAttributeLocation(Position::Location, "position");
 bindAttributeLocation(Normal::Location, "normal");
 bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
 
-bindFragmentDataLocationIndexed(0, 0, "color");
-bindFragmentDataLocationIndexed(1, 1, "ambient");
+bindFragmentDataLocationIndexed(ColorOutput, 0, "color");
+bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
 
 // Link...
 @endcode
@@ -198,11 +205,14 @@ setUniform(SpecularTextureUniform, SpecularTextureLayer);
 
 @section AbstractShaderProgram-rendering-workflow Rendering workflow
 
-Basic workflow with %AbstractShaderProgram subclasses is to instance the class
-and configuring attribute binding in meshes (see @ref Mesh-configuration "Mesh documentation"
-for more information) at the beginning, then in draw event setting uniforms
-and marking the shader for use, binding required textures to their respective
-layers using AbstractTexture::bind(GLint) and calling Mesh::draw(). Example:
+Basic workflow with %AbstractShaderProgram subclasses is: instance shader
+class, configure attribute binding in meshes (see @ref Mesh-configuration "Mesh documentation"
+for more information) and map shader outputs to framebuffer attachments if
+needed (see @ref Framebuffer-usage "Framebuffer documentation" for more
+information). In each draw event set uniforms, mark the shader for use, bind
+specific framebuffer (if needed) and bind required textures to their
+respective layers using AbstractTexture::bind(GLint). Then call Mesh::draw().
+Example:
 @code
 shader->setTransformation(transformation)
     ->setProjection(projection)

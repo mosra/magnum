@@ -95,7 +95,8 @@ mesh->addVertexBuffer(buffer, MyShader::Color(Type::UsignedByte, MyShader::Color
 
 @section Mesh-drawing Rendering meshes
 
-Basic workflow is to set up respective shader (see
+Basic workflow is: bind specific framebuffer for drawing (if needed), set up
+respective shader and bind required textures (see
 @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
 for more infromation) and call Mesh::draw().
 

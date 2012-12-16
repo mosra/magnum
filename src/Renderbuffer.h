@@ -29,8 +29,8 @@ namespace Magnum {
 /**
 @brief %Renderbuffer
 
-Attachable to Framebuffer as render target.
-
+Attachable to framebuffer as render target, see Framebuffer documentation
+for more information.
 @requires_gl30 %Extension @extension{EXT,framebuffer_object}
 */
 class Renderbuffer {
