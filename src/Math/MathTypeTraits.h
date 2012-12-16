@@ -120,18 +120,6 @@ template<class T> struct MathTypeTraitsFloatingPoint {
     }
 };
 
-template<std::size_t> struct MathTypeTraitsLong {};
-
-template<> struct MathTypeTraitsLong<4> {
-    typedef std::uint32_t UnsignedType;
-    typedef std::int32_t Type;
-};
-
-template<> struct MathTypeTraitsLong<8> {
-    typedef std::uint64_t UnsignedType;
-    typedef std::int64_t Type;
-};
-
 }
 
 template<> struct MathTypeTraits<std::uint8_t>: Implementation::MathTypeTraitsIntegral<std::uint8_t> {
