@@ -95,9 +95,9 @@ MagnumInfo::MagnumInfo(int& argc, char** argv): WindowlessGlxApplication(argc, a
             if(c->isExtensionSupported(extension))
                 d << "SUPPORTED";
             else if(c->isVersionSupported(extension.requiredVersion()))
-                d << "    -    ";
+                d << "    -";
             else
-                d << "   ---   ";
+                d << "   ---";
         }
 
         Debug() << "";
