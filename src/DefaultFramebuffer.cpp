@@ -15,6 +15,11 @@
 
 #include "DefaultFramebuffer.h"
 
+#include "Context.h"
+
+#include "Implementation/State.h"
+#include "Implementation/FramebufferState.h"
+
 namespace Magnum {
 
 DefaultFramebuffer defaultFramebuffer;
@@ -27,10 +32,30 @@ void DefaultFramebuffer::mapForDraw(std::initializer_list<DrawAttachment> attach
     for(auto it = attachments.begin(); it != attachments.end(); ++it)
         _attachments[it-attachments.begin()] = static_cast<GLenum>(*it);
 
-    bind(drawTarget);
+    bindInternal(drawTarget);
     glDrawBuffers(attachments.size(), _attachments);
     delete[] _attachments;
 }
 #endif
+
+void DefaultFramebuffer::mapForRead(ReadAttachment attachment) {
+    bindInternal(readTarget);
+    /** @todo Get some extension wrangler instead to avoid undeclared glReadBuffer() on ES2 */
+    #ifndef MAGNUM_TARGET_GLES2
+    glReadBuffer(static_cast<GLenum>(attachment));
+    #else
+    static_cast<void>(attachment);
+    #endif
+}
+
+void DefaultFramebuffer::initializeContextBasedFunctionality(Context* context) {
+    Implementation::FramebufferState* state = context->state()->framebuffer;
+
+    /* Initial framebuffer size */
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    defaultFramebuffer._viewportPosition = state->viewportPosition = {viewport[0], viewport[1]};
+    defaultFramebuffer._viewportSize = state->viewportSize = {viewport[2], viewport[3]};
+}
 
 }

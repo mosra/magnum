@@ -25,11 +25,13 @@
 #include "AbstractTexture.h"
 #include "Buffer.h"
 #include "BufferTexture.h"
+#include "DebugMarker.h"
+#include "DefaultFramebuffer.h"
 #include "Extensions.h"
 #include "IndexedMesh.h"
 #include "Mesh.h"
+
 #include "Implementation/State.h"
-#include "DebugMarker.h"
 
 namespace Magnum {
 
@@ -301,6 +303,7 @@ Context::Context() {
     BufferTexture::initializeContextBasedFunctionality(this);
     #endif
     DebugMarker::initializeContextBasedFunctionality(this);
+    DefaultFramebuffer::initializeContextBasedFunctionality(this);
     IndexedMesh::initializeContextBasedFunctionality(this);
     Mesh::initializeContextBasedFunctionality(this);
 }

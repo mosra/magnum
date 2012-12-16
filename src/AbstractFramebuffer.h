@@ -34,8 +34,9 @@ See DefaultFramebuffer and Framebuffer for more information.
 
 @section AbstractFramebuffer-performance-optimization Performance optimizations
 
-The engine tracks currently bound framebuffer to avoid unnecessary calls to
-@fn_gl{BindFramebuffer}.
+The engine tracks currently bound framebuffer and current viewport to avoid
+unnecessary calls to @fn_gl{BindFramebuffer} and @fn_gl{Viewport} when
+switching framebuffers.
 
 @todo @extension{ARB,viewport_array}
 */
@@ -156,21 +157,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @requires_gl30 %Extension @extension{EXT,framebuffer_blit}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
          */
-        inline static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Vector2i& sourceBottomLeft, const Vector2i& sourceTopRight, const Vector2i& destinationBottomLeft, const Vector2i& destinationTopRight, BlitMask mask, BlitFilter filter) {
-            source.bind(AbstractFramebuffer::Target::Read);
-            destination.bind(AbstractFramebuffer::Target::Draw);
-            /** @todo Get some extension wrangler instead to avoid undeclared glBlitFramebuffer() on ES2 */
-            #ifndef MAGNUM_TARGET_GLES2
-            glBlitFramebuffer(sourceBottomLeft.x(), sourceBottomLeft.y(), sourceTopRight.x(), sourceTopRight.y(), destinationBottomLeft.x(), destinationBottomLeft.y(), destinationTopRight.x(), destinationTopRight.y(), static_cast<GLbitfield>(mask), static_cast<GLenum>(filter));
-            #else
-            static_cast<void>(sourceBottomLeft);
-            static_cast<void>(sourceTopRight);
-            static_cast<void>(destinationBottomLeft);
-            static_cast<void>(destinationTopRight);
-            static_cast<void>(mask);
-            static_cast<void>(filter);
-            #endif
-        }
+        static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Vector2i& sourceBottomLeft, const Vector2i& sourceTopRight, const Vector2i& destinationBottomLeft, const Vector2i& destinationTopRight, BlitMask mask, BlitFilter filter);
 
         /**
          * @brief Copy block of pixels
@@ -199,24 +186,31 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         virtual ~AbstractFramebuffer() = 0;
 
         /**
-         * @brief Bind framebuffer
+         * @brief Bind framebuffer for rendering
          *
-         * @see DefaultFramebuffer::mapForRead(), Framebuffer::mapForRead(),
-         *      DefaultFramebuffer::mapForDraw(), Framebuffer::mapForDraw(),
-         *      @fn_gl{BindFramebuffer}
+         * Binds the framebuffer and updates viewport to saved dimensions.
+         * @see setViewport(), DefaultFramebuffer::mapForRead(),
+         *      Framebuffer::mapForRead(), DefaultFramebuffer::mapForDraw(),
+         *      Framebuffer::mapForDraw(), @fn_gl{BindFramebuffer},
+         *      @fn_gl{Viewport}
          */
         void bind(Target target);
+
+        /** @brief Viewport position */
+        inline Vector2i viewportPosition() const { return _viewportPosition; }
+
+        /** @brief Viewport size */
+        inline Vector2i viewportSize() const { return _viewportSize; }
 
         /**
          * @brief Set viewport size
          *
-         * Call when window size changes.
-         * @see @fn_gl{BindFramebuffer}, @fn_gl{Viewport}
+         * Saves the viewport size to be used at later time in bind(). If the
+         * framebuffer is currently bound, updates the viewport to given
+         * dimensions.
+         * @see @fn_gl{Viewport}
          */
-        inline void setViewport(const Vector2i& position, const Vector2i& size) {
-            bind(drawTarget);
-            glViewport(position.x(), position.y(), size.x(), size.y());
-        }
+        void setViewport(const Vector2i& position, const Vector2i& size);
 
         /**
          * @brief Clear specified buffers in framebuffer
@@ -226,10 +220,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *      Renderer::setClearStencil(), @fn_gl{BindFramebuffer},
          *      @fn_gl{Clear}
          */
-        inline void clear(ClearMask mask) {
-            bind(drawTarget);
-            glClear(static_cast<GLbitfield>(mask));
-        }
+        void clear(ClearMask mask);
 
         /**
          * @brief Read block of pixels from framebuffer to image
@@ -261,9 +252,13 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
+        void MAGNUM_LOCAL bindInternal(Target target);
+        void MAGNUM_LOCAL setViewportInternal();
+
         static Target readTarget, drawTarget;
 
         GLuint _id;
+        Vector2i _viewportPosition, _viewportSize;
     #endif
 
     private:

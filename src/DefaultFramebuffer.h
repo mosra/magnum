@@ -29,6 +29,8 @@ namespace Magnum {
 @see @ref defaultFramebuffer, Framebuffer
 */
 class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
+    friend class Context;
+
     public:
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -185,15 +187,10 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @see mapForDraw(), @fn_gl{BindFramebuffer}, @fn_gl{ReadBuffer}
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
-        inline void mapForRead(ReadAttachment attachment) {
-            bind(readTarget);
-            /** @todo Get some extension wrangler instead to avoid undeclared glReadBuffer() on ES2 */
-            #ifndef MAGNUM_TARGET_GLES2
-            glReadBuffer(static_cast<GLenum>(attachment));
-            #else
-            static_cast<void>(attachment);
-            #endif
-        }
+        void mapForRead(ReadAttachment attachment);
+
+    private:
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
 };
 
 /** @brief Default framebuffer instance */

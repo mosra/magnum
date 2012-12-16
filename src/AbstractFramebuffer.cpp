@@ -31,6 +31,12 @@ AbstractFramebuffer::Target AbstractFramebuffer::drawTarget = AbstractFramebuffe
 #endif
 
 void AbstractFramebuffer::bind(Target target) {
+    bindInternal(target);
+    setViewportInternal();
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+void AbstractFramebuffer::bindInternal(Target target) {
     Implementation::FramebufferState* state = Context::current()->state()->framebuffer;
 
     /* If already bound, done, otherwise update tracked state */
@@ -47,9 +53,57 @@ void AbstractFramebuffer::bind(Target target) {
 
     glBindFramebuffer(static_cast<GLenum>(target), _id);
 }
+#endif
+
+void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Vector2i& sourceBottomLeft, const Vector2i& sourceTopRight, const Vector2i& destinationBottomLeft, const Vector2i& destinationTopRight, AbstractFramebuffer::BlitMask mask, AbstractFramebuffer::BlitFilter filter) {
+    source.bindInternal(AbstractFramebuffer::Target::Read);
+    destination.bindInternal(AbstractFramebuffer::Target::Draw);
+    /** @todo Get some extension wrangler instead to avoid undeclared glBlitFramebuffer() on ES2 */
+    #ifndef MAGNUM_TARGET_GLES2
+    glBlitFramebuffer(sourceBottomLeft.x(), sourceBottomLeft.y(), sourceTopRight.x(), sourceTopRight.y(), destinationBottomLeft.x(), destinationBottomLeft.y(), destinationTopRight.x(), destinationTopRight.y(), static_cast<GLbitfield>(mask), static_cast<GLenum>(filter));
+    #else
+    static_cast<void>(sourceBottomLeft);
+    static_cast<void>(sourceTopRight);
+    static_cast<void>(destinationBottomLeft);
+    static_cast<void>(destinationTopRight);
+    static_cast<void>(mask);
+    static_cast<void>(filter);
+    #endif
+}
+
+void AbstractFramebuffer::setViewport(const Vector2i& position, const Vector2i& size) {
+    _viewportPosition = position;
+    _viewportSize = size;
+
+    /* Update the viewport if the framebuffer is currently bound */
+    if(Context::current()->state()->framebuffer->drawBinding == _id)
+        setViewportInternal();
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+void AbstractFramebuffer::setViewportInternal() {
+    Implementation::FramebufferState* state = Context::current()->state()->framebuffer;
+
+    CORRADE_INTERNAL_ASSERT(state->drawBinding == _id);
+
+    /* Already up-to-date, nothing to do */
+    if(state->viewportPosition == _viewportPosition && state->viewportSize == _viewportSize)
+        return;
+
+    /* Update the state and viewport */
+    state->viewportPosition = _viewportPosition;
+    state->viewportSize = _viewportSize;
+    glViewport(_viewportPosition.x(), _viewportPosition.y(), _viewportSize.x(), _viewportSize.y());
+}
+#endif
+
+void AbstractFramebuffer::clear(ClearMask mask) {
+    bindInternal(drawTarget);
+    glClear(static_cast<GLbitfield>(mask));
+}
 
 void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, Image2D* image) {
-    bind(readTarget);
+    bindInternal(readTarget);
     char* data = new char[AbstractImage::pixelSize(format, type)*size.product()];
     glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), data);
     image->setData(size, format, type, data);
@@ -57,7 +111,7 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Abs
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, BufferImage2D* image, Buffer::Usage usage) {
-    bind(readTarget);
+    bindInternal(readTarget);
     /* If the buffer doesn't have sufficient size, resize it */
     /** @todo Explicitly reset also when buffer usage changes */
     if(image->size() != size || image->format() != format || image->type() != type)
