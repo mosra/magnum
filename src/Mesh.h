@@ -754,6 +754,8 @@ namespace Corrade { namespace Utility {
 
 /** @configurationvalue{Magnum::Mesh} */
 template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::Mesh::Primitive> {
+    ConfigurationValue() = delete;
+
     /**
      * @brief Writes enum value as string
      *

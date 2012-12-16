@@ -51,20 +51,26 @@ template<std::size_t byte> struct SizeTraits {
     typedef T SizeType;
 };
 #else
-template<std::size_t byte> struct SizeTraits: public SizeTraits<byte - 1> {};
+template<std::size_t byte> struct SizeTraits: public SizeTraits<byte - 1> {
+    SizeTraits() = delete;
+};
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> struct SizeTraits<0> {
+    SizeTraits() = delete;
     typedef GLubyte SizeType;
 };
 template<> struct SizeTraits<1> {
+    SizeTraits() = delete;
     typedef GLushort SizeType;
 };
 template<> struct SizeTraits<2> {
+    SizeTraits() = delete;
     typedef GLuint SizeType;
 };
 template<> struct SizeTraits<4> {
+    SizeTraits() = delete;
     /* We don't have size type to store 2^32 values */
 };
 #endif
@@ -146,6 +152,8 @@ Useful mainly for computing template parameter value, e.g. in conjunction with
 SizeTraits class.
 */
 template<std::uint32_t base, std::uint32_t exponent> struct Pow {
+    Pow() = delete;
+
     /** @brief Value of the power */
     enum: std::uint32_t {
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -158,6 +166,8 @@ template<std::uint32_t base, std::uint32_t exponent> struct Pow {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::uint32_t base> struct Pow<base, 0> {
+    Pow() = delete;
+
     enum: std::uint32_t { value = 1 };
 };
 #endif
@@ -171,6 +181,8 @@ Useful mainly for computing template parameter value, e.g. in conjunction with
 SizeTraits class.
 */
 template<std::uint32_t base, std::uint32_t number> struct Log {
+    Log() = delete;
+
     /** @brief Value of the logarithm */
     enum: std::uint32_t {
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -182,10 +194,11 @@ template<std::uint32_t base, std::uint32_t number> struct Log {
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint32_t base> struct Log<base, 1>: public Log<base, 0> {};
 template<std::uint32_t base> struct Log<base, 0> {
+    Log() = delete;
     enum: std::uint32_t { value = 0 };
 };
+template<std::uint32_t base> struct Log<base, 1>: public Log<base, 0> {};
 #endif
 
 }

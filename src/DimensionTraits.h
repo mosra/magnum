@@ -37,6 +37,8 @@ namespace Math {
 
 /** @brief Matrix, point and vector specializations for given dimension count */
 template<std::uint8_t dimensions, class T = GLfloat> struct DimensionTraits {
+    DimensionTraits() = delete;
+
     #ifdef DOXYGEN_GENERATING_OUTPUT
     /**
      * @brief Vector type
@@ -66,21 +68,29 @@ template<std::uint8_t dimensions, class T = GLfloat> struct DimensionTraits {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* One dimension */
 template<class T> struct DimensionTraits<1, T> {
+    DimensionTraits() = delete;
+
     typedef Math::Vector<1, T> VectorType;
 };
 
 /* Two dimensions - integral */
 template<class T> struct DimensionTraits<2, T> {
+    DimensionTraits() = delete;
+
     typedef Math::Vector2<T> VectorType;
 };
 
 /* Two dimensions - floating-point */
 template<> struct DimensionTraits<2, float> {
+    DimensionTraits() = delete;
+
     typedef Math::Vector2<float> VectorType;
     typedef Math::Point2D<float> PointType;
     typedef Math::Matrix3<float> MatrixType;
 };
 template<> struct DimensionTraits<2, double> {
+    DimensionTraits() = delete;
+
     typedef Math::Vector2<double> VectorType;
     typedef Math::Point2D<double> PointType;
     typedef Math::Matrix3<double> MatrixType;
@@ -88,16 +98,22 @@ template<> struct DimensionTraits<2, double> {
 
 /* Three dimensions - integral */
 template<class T> struct DimensionTraits<3, T> {
+    DimensionTraits() = delete;
+
     typedef Math::Vector3<T> VectorType;
 };
 
 /* Three dimensions - floating-point */
 template<> struct DimensionTraits<3, float> {
+    DimensionTraits() = delete;
+
     typedef Math::Vector3<float> VectorType;
     typedef Math::Point3D<float> PointType;
     typedef Math::Matrix4<float> MatrixType;
 };
 template<> struct DimensionTraits<3, double> {
+    DimensionTraits() = delete;
+
     typedef Math::Vector3<double> VectorType;
     typedef Math::Point3D<double> PointType;
     typedef Math::Matrix4<double> MatrixType;

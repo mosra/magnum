@@ -31,6 +31,8 @@ http://elonen.iki.fi/code/misc-notes/python-gaussj/index.html.
 */
 class GaussJordan {
     public:
+        GaussJordan() = delete;
+
         /**
          * @brief Eliminate transposed matrices in place
          * @param a     Transposed left side of augmented matrix

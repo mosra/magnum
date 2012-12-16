@@ -517,6 +517,8 @@ namespace Corrade { namespace Utility {
 
 /** @configurationvalue{Magnum::Math::RectangularMatrix} */
 template<std::size_t cols, std::size_t rows, class T> struct ConfigurationValue<Magnum::Math::RectangularMatrix<cols, rows, T>> {
+    ConfigurationValue() = delete;
+
     /** @brief Writes elements separated with spaces */
     static std::string toString(const Magnum::Math::RectangularMatrix<cols, rows, T>& value, ConfigurationValueFlags flags) {
         std::string output;

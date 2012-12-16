@@ -46,6 +46,8 @@ sense, it has empty implementation for unknown types or types which don't
 support given feature, thus forcing the compilation stop with an error.
 */
 template<class T> struct MathTypeTraits {
+    MathTypeTraits() = delete;
+
     /*
      * The following values are implemented as inline functions, not as
      * static const variables, because the compiler will inline the return
@@ -101,6 +103,8 @@ template<class T> struct MathTypeTraits {
 namespace Implementation {
 
 template<class T> struct MathTypeTraitsIntegral {
+    MathTypeTraitsIntegral() = delete;
+
     inline constexpr static T epsilon() { return 1; }
 
     inline constexpr static bool equals(T a, T b) {
@@ -109,6 +113,8 @@ template<class T> struct MathTypeTraitsIntegral {
 };
 
 template<class T> struct MathTypeTraitsFloatingPoint {
+    MathTypeTraitsFloatingPoint() = delete;
+
     inline static bool equals(T a, T b) {
         return std::abs(a - b) < MathTypeTraits<T>::epsilon();
     }

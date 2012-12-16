@@ -36,9 +36,9 @@ Access to global renderer configuration.
 @todo @extension{ARB,viewport_array}
 */
 class MAGNUM_EXPORT Renderer {
-    Renderer() = delete;
-
     public:
+        Renderer() = delete;
+
         /**
          * @brief Affected polygon facing for culling, stencil operations and masks
          *

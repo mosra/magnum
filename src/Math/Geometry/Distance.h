@@ -28,6 +28,8 @@ namespace Magnum { namespace Math { namespace Geometry {
 /** @brief Functions for computing distances */
 class Distance {
     public:
+        Distance() = delete;
+
         /**
          * @brief %Distance of line and point in 2D
          * @param a         First point of the line

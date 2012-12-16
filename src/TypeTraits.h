@@ -86,7 +86,9 @@ template<class T> struct TypeTraits: Math::MathTypeTraits<T> {
     inline constexpr static std::size_t count();
 };
 #else
-template<class T> struct TypeTraits {};
+template<class T> struct TypeTraits {
+    TypeTraits() = delete;
+};
 #endif
 
 /** @brief OpenGL plain types */
@@ -124,6 +126,8 @@ type = TypeTraits<GLubyte>::imageType();
 @endcode
 */
 template<Type T> class TypeOf {
+    TypeOf() = delete;
+
     #ifdef DOXYGEN_GENERATING_OUTPUT
     typedef U Type; /**< @brief Type */
     #endif
@@ -137,6 +141,8 @@ time, this class alows to get some information also at runtime with tiny
 performance loss.
 */
 struct MAGNUM_EXPORT TypeInfo {
+    TypeInfo() = delete;
+
     /**
      * @brief Size of given type
      *
@@ -160,15 +166,39 @@ struct MAGNUM_EXPORT TypeInfo {
 /** @todo Using Vector3 for textures? */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<> struct TypeOf<Type::UnsignedByte> { typedef GLubyte Type; };
-template<> struct TypeOf<Type::Byte> { typedef GLbyte Type; };
-template<> struct TypeOf<Type::UnsignedShort> { typedef GLushort Type; };
-template<> struct TypeOf<Type::Short> { typedef GLshort Type; };
-template<> struct TypeOf<Type::UnsignedInt> { typedef GLuint Type; };
-template<> struct TypeOf<Type::Int> { typedef GLint Type; };
-template<> struct TypeOf<Type::Float> { typedef GLfloat Type; };
+template<> struct TypeOf<Type::UnsignedByte> {
+    TypeOf() = delete;
+    typedef GLubyte Type;
+};
+template<> struct TypeOf<Type::Byte> {
+    TypeOf() = delete;
+    typedef GLbyte Type;
+};
+template<> struct TypeOf<Type::UnsignedShort> {
+    TypeOf() = delete;
+    typedef GLushort Type;
+};
+template<> struct TypeOf<Type::Short> {
+    TypeOf() = delete;
+    typedef GLshort Type;
+};
+template<> struct TypeOf<Type::UnsignedInt> {
+    TypeOf() = delete;
+    typedef GLuint Type;
+};
+template<> struct TypeOf<Type::Int> {
+    TypeOf() = delete;
+    typedef GLint Type;
+};
+template<> struct TypeOf<Type::Float> {
+    TypeOf() = delete;
+    typedef GLfloat Type;
+};
 #ifndef MAGNUM_TARGET_GLES
-template<> struct TypeOf<Type::Double> { typedef GLdouble Type; };
+template<> struct TypeOf<Type::Double> {
+    TypeOf() = delete;
+    typedef GLdouble Type;
+};
 #endif
 
 template<> struct TypeTraits<GLubyte>: Math::MathTypeTraits<std::uint8_t> {
@@ -239,6 +269,8 @@ template<> struct TypeTraits<GLdouble>: Math::MathTypeTraits<double> {
 
 namespace Implementation {
     template<std::size_t vectorSize, class T> struct VectorTypeTraits {
+        VectorTypeTraits() = delete;
+
         /* Might be used for attributes, see below */
         inline constexpr static Type type() { return TypeTraits<T>::type(); }
         /* Might be used for attributes, see below */
@@ -286,6 +318,8 @@ template<class T> struct TypeTraits<Color4<T>>: TypeTraits<Math::Vector<4, T>> {
 
 namespace Implementation {
     template<std::size_t cols, std::size_t rows, class T> struct MatrixTypeTraits {
+        MatrixTypeTraits() = delete;
+
         inline constexpr static Type type() { return TypeTraits<T>::type(); }
         /* Might be used for attributes, see below */
         /* Can not be used for indices */
@@ -332,6 +366,8 @@ namespace Corrade { namespace Utility {
 
 /** @configurationvalue{Magnum::TypeInfo} */
 template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::Type> {
+    ConfigurationValue() = delete;
+
     /**
      * @brief Writes enum value as string
      *

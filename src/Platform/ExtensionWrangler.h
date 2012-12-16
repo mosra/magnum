@@ -24,6 +24,8 @@ namespace Magnum { namespace Platform {
 /** @brief %Extension wrangler interface */
 class ExtensionWrangler {
     public:
+        ExtensionWrangler() = delete;
+
         /** @brief Whether to enable or disable experimental features */
         enum class ExperimentalFeatures {
             Disable,

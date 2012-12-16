@@ -26,6 +26,8 @@ namespace Magnum { namespace Math { namespace Geometry {
 /** @brief Functions for computing intersections */
 class Intersection {
     public:
+        Intersection() = delete;
+
         /**
          * @brief %Intersection of a plane and line
          * @param planePosition Plane position

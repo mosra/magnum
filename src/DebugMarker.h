@@ -41,6 +41,8 @@ class MAGNUM_EXPORT DebugMarker {
     friend class Context;
 
     public:
+        DebugMarker() = delete;
+
         /** @brief Put string mark into OpenGL command stream */
         inline static void mark(const std::string& string) {
             markImplementation(string);
