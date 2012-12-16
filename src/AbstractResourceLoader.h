@@ -91,7 +91,7 @@ template<class T> class AbstractResourceLoader {
     friend class Implementation::ResourceManagerData<T>;
 
     public:
-        inline AbstractResourceLoader(): manager(nullptr), _requestedCount(0), _loadedCount(0), _notFoundCount(0) {}
+        inline explicit AbstractResourceLoader(): manager(nullptr), _requestedCount(0), _loadedCount(0), _notFoundCount(0) {}
 
         inline virtual ~AbstractResourceLoader() {
             if(manager) manager->_loader = nullptr;

@@ -35,7 +35,7 @@ namespace Magnum { namespace Physics {
 template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Line: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Line(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b): _a(a), _transformedA(a), _b(b), _transformedB(b) {}
+        inline explicit Line(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b): _a(a), _transformedA(a), _b(b), _transformedB(b) {}
 
         inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::Line;

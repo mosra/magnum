@@ -57,7 +57,7 @@ class AbstractXApplication {
          *
          * Creates window with double-buffered OpenGL ES 2 context.
          */
-        AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int& argc, char** argv, const std::string& title = "Magnum X application", const Vector2i& size = Vector2i(800, 600));
+        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int& argc, char** argv, const std::string& title = "Magnum X application", const Vector2i& size = Vector2i(800, 600));
 
         /**
          * @brief Destructor

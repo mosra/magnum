@@ -62,7 +62,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * `Matrix m(Matrix::Identity);`. Optional parameter @p value allows
          * you to specify value on diagonal.
          */
-        inline Matrix(IdentityType = Identity, T value = T(1)) {
+        inline /*implicit*/ Matrix(IdentityType = Identity, T value = T(1)) {
             for(std::size_t i = 0; i != size; ++i)
                 (*this)(i, i) = value;
         }
@@ -77,9 +77,9 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * @todoc Remove workaround when Doxygen supports uniform initialization
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> inline constexpr Matrix(T first, U... next): RectangularMatrix<size, size, T>(first, next...) {}
+        template<class ...U> inline constexpr /*implicit*/ Matrix(T first, U... next): RectangularMatrix<size, size, T>(first, next...) {}
         #else
-        template<class ...U> inline constexpr Matrix(T first, U... next);
+        template<class ...U> inline constexpr /*implicit*/ Matrix(T first, U... next);
         #endif
 
         /** @brief Copy constructor */

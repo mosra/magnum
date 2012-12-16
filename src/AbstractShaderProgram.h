@@ -455,7 +455,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * Creates one OpenGL shader program.
          * @see @fn_gl{CreateProgram}
          */
-        inline AbstractShaderProgram(): state(Initialized) {
+        inline explicit AbstractShaderProgram(): state(Initialized) {
             _id = glCreateProgram();
         }
 

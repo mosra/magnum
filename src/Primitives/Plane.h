@@ -31,7 +31,7 @@ namespace Magnum { namespace Primitives {
 class Plane: public Trade::MeshData3D {
     public:
         /** @brief Constructor */
-        Plane();
+        explicit Plane();
 };
 
 }}

@@ -512,7 +512,7 @@ class Renderbuffer {
          * Generates new OpenGL renderbuffer.
          * @see @fn_gl{GenRenderbuffers}
          */
-        inline Renderbuffer() {
+        inline explicit Renderbuffer() {
             glGenRenderbuffers(1, &renderbuffer);
         }
 

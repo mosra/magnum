@@ -115,7 +115,7 @@ template<std::uint8_t dimensions, class T = GLfloat>
 class Drawable: public AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T> {
     public:
         /** @copydoc AbstractGroupedFeature::AbstractGroupedFeature() */
-        inline Drawable(AbstractObject<dimensions, T>* object, DrawableGroup<dimensions, T>* group = nullptr): AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>(object, group) {}
+        inline explicit Drawable(AbstractObject<dimensions, T>* object, DrawableGroup<dimensions, T>* group = nullptr): AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>(object, group) {}
 
         /**
          * @brief Draw the object using given camera

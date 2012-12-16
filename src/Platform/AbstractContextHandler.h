@@ -33,6 +33,8 @@ template<class Display, class VisualId, class Window> class AbstractContextHandl
          */
         virtual VisualId getVisualId(Display nativeDisplay) = 0;
 
+        explicit AbstractContextHandler() = default;
+
         /**
          * @brief Destructor
          *

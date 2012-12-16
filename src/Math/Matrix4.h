@@ -177,7 +177,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
         inline constexpr explicit Matrix4(typename Matrix<4, T>::ZeroType): Matrix<4, T>(Matrix<4, T>::Zero) {}
 
         /** @copydoc Matrix::Matrix(IdentityType, T) */
-        inline constexpr Matrix4(typename Matrix<4, T>::IdentityType = (Matrix<4, T>::Identity), T value = T(1)): Matrix<4, T>(
+        inline constexpr /*implicit*/ Matrix4(typename Matrix<4, T>::IdentityType = (Matrix<4, T>::Identity), T value = T(1)): Matrix<4, T>(
             value, T(0), T(0), T(0),
             T(0), value, T(0), T(0),
             T(0), T(0), value, T(0),
@@ -186,9 +186,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
 
         /** @copydoc Matrix::Matrix */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> inline constexpr Matrix4(T first, U... next): Matrix<4, T>(first, next...) {}
+        template<class ...U> inline constexpr /*implicit*/ Matrix4(T first, U... next): Matrix<4, T>(first, next...) {}
         #else
-        template<class ...U> inline constexpr Matrix4(T first, U... next) {}
+        template<class ...U> inline constexpr /*implicit*/ Matrix4(T first, U... next) {}
         #endif
 
         /** @brief Copy constructor */

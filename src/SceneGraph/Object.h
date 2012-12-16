@@ -105,7 +105,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          * @brief Constructor
          * @param parent    Parent object
          */
-        inline Object(Object<Transformation>* parent = nullptr): counter(0xFFFFu), flags(Flag::Dirty) {
+        inline explicit Object(Object<Transformation>* parent = nullptr): counter(0xFFFFu), flags(Flag::Dirty) {
             setParent(parent);
         }
 

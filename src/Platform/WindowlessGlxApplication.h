@@ -55,7 +55,7 @@ class WindowlessGlxApplication {
          * Creates window with double-buffered OpenGL 3.2 core context or
          * OpenGL ES 2.0 context, if targetting OpenGL ES.
          */
-        WindowlessGlxApplication(int& argc, char** argv);
+        explicit WindowlessGlxApplication(int& argc, char** argv);
 
         ~WindowlessGlxApplication();
 

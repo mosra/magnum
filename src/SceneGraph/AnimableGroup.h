@@ -43,7 +43,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup: public FeatureGroup<dimensions, An
         /**
          * @brief Constructor
          */
-        inline AnimableGroup(): _runningCount(0), wakeUp(false) {}
+        inline explicit AnimableGroup(): _runningCount(0), wakeUp(false) {}
 
         /**
          * @brief Count of running animations

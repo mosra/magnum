@@ -51,7 +51,7 @@ class GlxApplication: public AbstractXApplication {
          * @param title     Window title
          * @param size      Window size
          */
-        inline GlxApplication(int& argc, char** argv, const std::string& title = "Magnum GLX application", const Vector2i& size = Vector2i(800, 600)): AbstractXApplication(new GlxContextHandler, argc, argv, title, size) {}
+        inline explicit GlxApplication(int& argc, char** argv, const std::string& title = "Magnum GLX application", const Vector2i& size = Vector2i(800, 600)): AbstractXApplication(new GlxContextHandler, argc, argv, title, size) {}
 };
 
 }}

@@ -164,7 +164,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             #endif
         };
 
-        MAGNUM_LOCAL DefaultFramebuffer();
+        explicit MAGNUM_LOCAL DefaultFramebuffer();
 
         #ifndef MAGNUM_TARGET_GLES2
         /**

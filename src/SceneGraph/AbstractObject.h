@@ -59,6 +59,7 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractObject
         /** @brief Feature object type */
         typedef AbstractFeature<dimensions, T> FeatureType;
 
+        explicit AbstractObject() = default;
         inline virtual ~AbstractObject() {}
 
         /** @brief Whether this object has features */

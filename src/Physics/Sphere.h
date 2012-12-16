@@ -37,7 +37,7 @@ applying transformation, the scale factor is averaged from all axes.
 template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Sphere: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Sphere(const typename DimensionTraits<dimensions>::VectorType& position, float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
+        inline explicit Sphere(const typename DimensionTraits<dimensions>::VectorType& position, float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
 
         inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::Sphere;

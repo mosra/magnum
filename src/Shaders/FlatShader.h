@@ -40,7 +40,7 @@ template<std::uint8_t dimensions> class MAGNUM_SHADERS_EXPORT FlatShader: public
         /** @brief Vertex position */
         typedef Attribute<0, typename DimensionTraits<dimensions>::PointType> Position;
 
-        FlatShader();
+        explicit FlatShader();
 
         /**
          * @brief Set transformation and projection matrix

@@ -72,20 +72,20 @@ template<class T> class Vector2: public Vector<2, T> {
         inline constexpr static Vector2<T> yScale(T scale) { return Vector2<T>(T(1), scale); }
 
         /** @copydoc Vector::Vector() */
-        inline constexpr Vector2() {}
+        inline constexpr /*implicit*/ Vector2() {}
 
         /** @copydoc Vector::Vector(T) */
         inline constexpr explicit Vector2(T value): Vector<2, T>(value, value) {}
-
-        /** @brief Copy constructor */
-        inline constexpr Vector2(const RectangularMatrix<1, 2, T>& other): Vector<2, T>(other) {}
 
         /**
          * @brief Constructor
          * @param x     X component
          * @param y     Y component
          */
-        inline constexpr Vector2(T x, T y): Vector<2, T>(x, y) {}
+        inline constexpr /*implicit*/ Vector2(T x, T y): Vector<2, T>(x, y) {}
+
+        /** @brief Copy constructor */
+        inline constexpr Vector2(const RectangularMatrix<1, 2, T>& other): Vector<2, T>(other) {}
 
         inline T& x() { return (*this)[0]; }                /**< @brief X component */
         inline constexpr T x() const { return (*this)[0]; } /**< @overload */

@@ -97,7 +97,7 @@ class CubeMapTexture: public AbstractTexture {
          * Creates one cube map OpenGL texture.
          * @see @def_gl{TEXTURE_CUBE_MAP}
          */
-        inline CubeMapTexture(): AbstractTexture(GL_TEXTURE_CUBE_MAP) {}
+        inline explicit CubeMapTexture(): AbstractTexture(GL_TEXTURE_CUBE_MAP) {}
 
         /**
          * @copydoc Texture::setWrapping()

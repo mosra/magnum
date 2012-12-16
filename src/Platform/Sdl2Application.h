@@ -65,7 +65,7 @@ class Sdl2Application {
          * @param title     Window title
          * @param size      Window size
          */
-        Sdl2Application(int argc, char** argv, const std::string& title = "Magnum SDL2 application", const Vector2i& size = Vector2i(800, 600));
+        explicit Sdl2Application(int argc, char** argv, const std::string& title = "Magnum SDL2 application", const Vector2i& size = Vector2i(800, 600));
 
         /**
          * @brief Destructor

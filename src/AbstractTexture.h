@@ -974,7 +974,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * Creates one OpenGL texture.
          * @see @fn_gl{GenTextures}
          */
-        inline AbstractTexture(GLenum target): _target(target) {
+        inline explicit AbstractTexture(GLenum target): _target(target) {
             glGenTextures(1, &_id);
         }
 

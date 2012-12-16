@@ -43,7 +43,7 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShapeGroup: 
          *
          * Marks the group as dirty.
          */
-        inline ObjectShapeGroup(): dirty(true) {}
+        inline explicit ObjectShapeGroup(): dirty(true) {}
 
         /**
          * @brief Whether the group is dirty

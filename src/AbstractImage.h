@@ -436,7 +436,7 @@ class MAGNUM_EXPORT AbstractImage {
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
          */
-        inline AbstractImage(Format format, Type type): _format(format), _type(type) {}
+        inline explicit AbstractImage(Format format, Type type): _format(format), _type(type) {}
 
         /** @brief Destructor */
         virtual ~AbstractImage() = 0;

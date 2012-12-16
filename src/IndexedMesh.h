@@ -80,7 +80,7 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          * @see setPrimitive(), setVertexCount(), setIndexBuffer(),
          *      setIndexCount(), setIndexType()
          */
-        inline IndexedMesh(Primitive primitive = Primitive::Triangles): Mesh(primitive), _indexBuffer(nullptr), _indexCount(0), _indexType(Type::UnsignedShort) {}
+        inline explicit IndexedMesh(Primitive primitive = Primitive::Triangles): Mesh(primitive), _indexBuffer(nullptr), _indexCount(0), _indexType(Type::UnsignedShort) {}
 
         /**
          * @brief Set index buffer

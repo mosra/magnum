@@ -54,6 +54,7 @@ class AbstractTransformation {
         /** @brief Dimension count */
         static const std::uint8_t Dimensions = dimensions;
 
+        explicit AbstractTransformation() = default;
         virtual ~AbstractTransformation() = 0;
 
         #ifdef DOXYGEN_GENERATING_OUTPUT

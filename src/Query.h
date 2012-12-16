@@ -40,7 +40,7 @@ class MAGNUM_EXPORT AbstractQuery {
          * Generates one OpenGL query.
          * @see @fn_gl{GenQueries}
          */
-        inline AbstractQuery() {
+        inline explicit AbstractQuery() {
             /** @todo Get some extension wrangler instead to avoid undeclared glGenQueries() on ES2 */
             #ifndef MAGNUM_TARGET_GLES2
             glGenQueries(1, &_id);
@@ -153,7 +153,7 @@ class MAGNUM_EXPORT Query: public AbstractQuery {
             #endif
         };
 
-        inline Query(): target(nullptr) {}
+        inline explicit Query(): target(nullptr) {}
 
         inline ~Query() { delete target; }
 
@@ -284,7 +284,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
         };
         #endif
 
-        inline SampleQuery(): target(nullptr) {}
+        inline explicit SampleQuery(): target(nullptr) {}
 
         inline ~SampleQuery() { delete target; }
 
@@ -358,6 +358,8 @@ Using this query results in fewer OpenGL calls when doing more measures.
 */
 class TimeQuery: public AbstractQuery {
     public:
+        explicit TimeQuery() = default;
+
         /**
          * @brief Query timestamp
          *

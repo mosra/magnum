@@ -43,7 +43,7 @@ template<std::uint8_t dimensions> class MAGNUM_SHADERS_EXPORT VertexColorShader:
         /** @brief Vertex color */
         typedef Attribute<1, Color3<>> Color;
 
-        VertexColorShader();
+        explicit VertexColorShader();
 
         /**
          * @brief Set transformation and projection matrix

@@ -211,7 +211,7 @@ class Color3: public Math::Vector3<T> {
          *
          * All components are set to zero.
          */
-        inline constexpr Color3() {}
+        inline constexpr /*implicit*/ Color3() {}
 
         /**
          * @brief Gray constructor
@@ -219,16 +219,16 @@ class Color3: public Math::Vector3<T> {
          */
         inline constexpr explicit Color3(T rgb): Math::Vector3<T>(rgb) {}
 
-        /** @brief Copy constructor */
-        inline constexpr Color3(const Math::RectangularMatrix<1, 3, T>& other): Math::Vector3<T>(other) {}
-
         /**
          * @brief Constructor
          * @param r     R value
          * @param g     G value
          * @param b     B value
          */
-        inline constexpr Color3(T r, T g, T b): Math::Vector3<T>(r, g, b) {}
+        inline constexpr /*implicit*/ Color3(T r, T g, T b): Math::Vector3<T>(r, g, b) {}
+
+        /** @brief Copy constructor */
+        inline constexpr Color3(const Math::RectangularMatrix<1, 3, T>& other): Math::Vector3<T>(other) {}
 
         inline T& r() { return Math::Vector3<T>::x(); }                 /**< @brief R component */
         inline constexpr T r() const { return Math::Vector3<T>::x(); }  /**< @overload */
@@ -343,7 +343,7 @@ class Color4: public Math::Vector4<T> {
          * RGB components are set to zero, A component is set to 1.0 for
          * floating-point types and maximum positive value for integral types.
          */
-        inline constexpr Color4(): Math::Vector4<T>(T(0), T(0), T(0), Implementation::defaultAlpha<T>()) {}
+        inline constexpr /*implicit*/ Color4(): Math::Vector4<T>(T(0), T(0), T(0), Implementation::defaultAlpha<T>()) {}
 
         /**
          * @copydoc Color3::Color3(T)
@@ -351,9 +351,6 @@ class Color4: public Math::Vector4<T> {
          *      and maximum positive value for integral types.
          */
         inline constexpr explicit Color4(T rgb, T alpha = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb, rgb, rgb, alpha) {}
-
-        /** @brief Copy constructor */
-        inline constexpr Color4(const Math::RectangularMatrix<1, 4, T>& other): Math::Vector4<T>(other) {}
 
         /**
          * @brief Constructor
@@ -363,7 +360,7 @@ class Color4: public Math::Vector4<T> {
          * @param a     A value, defaults to 1.0 for floating-point types and
          *      maximum positive value for integral types.
          */
-        inline constexpr Color4(T r, T g, T b, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(r, g, b, a) {}
+        inline constexpr /*implicit*/ Color4(T r, T g, T b, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(r, g, b, a) {}
 
         /**
          * @brief Constructor
@@ -372,7 +369,10 @@ class Color4: public Math::Vector4<T> {
          */
         /* Not marked as explicit, because conversion from Color3 to Color4
            is fairly common, nearly always with A set to 1 */
-        inline constexpr Color4(const Math::Vector3<T>& rgb, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
+        inline constexpr /*implicit*/ Color4(const Math::Vector3<T>& rgb, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
+
+        /** @brief Copy constructor */
+        inline constexpr Color4(const Math::RectangularMatrix<1, 4, T>& other): Math::Vector4<T>(other) {}
 
         inline T& r() { return Math::Vector4<T>::x(); }                 /**< @brief R component */
         inline constexpr T r() const { return Math::Vector4<T>::x(); }  /**< @overload */

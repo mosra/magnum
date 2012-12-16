@@ -148,7 +148,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
          * adds the feature to the object and also to group, if specified.
          * @see setRepeated(), AnimableGroup::add()
          */
-        Animable(AbstractObject<dimensions, T>* object, GLfloat duration, AnimableGroup<dimensions, T>* group = nullptr);
+        explicit Animable(AbstractObject<dimensions, T>* object, GLfloat duration, AnimableGroup<dimensions, T>* group = nullptr);
 
         /** @brief Animation duration */
         inline GLfloat duration() const { return _duration; }

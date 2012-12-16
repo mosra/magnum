@@ -39,10 +39,7 @@ template<class T> class Point3D: public Vector4<T> {
          *
          * X, Y and Z components are set to zero, W is set to one.
          */
-        inline constexpr Point3D(): Vector4<T>(T(0), T(0), T(0), T(1)) {}
-
-        /** @brief Copy constructor */
-        inline constexpr Point3D(const RectangularMatrix<1, 4, T>& other): Vector4<T>(other) {}
+        inline constexpr /*implicit*/ Point3D(): Vector4<T>(T(0), T(0), T(0), T(1)) {}
 
         /**
          * @brief Constructor
@@ -51,14 +48,17 @@ template<class T> class Point3D: public Vector4<T> {
          * @param z     Z component
          * @param w     W component
          */
-        inline constexpr Point3D(T x, T y, T z, T w = T(1)): Vector4<T>(x, y, z, w) {}
+        inline constexpr /*implicit*/ Point3D(T x, T y, T z, T w = T(1)): Vector4<T>(x, y, z, w) {}
 
         /**
          * @brief Constructor
          * @param xyz   Three-component vector
          * @param w     W component
          */
-        inline constexpr Point3D(const Vector3<T>& xyz, T w = T(1)): Vector4<T>(xyz, w) {}
+        inline constexpr /*implicit*/ Point3D(const Vector3<T>& xyz, T w = T(1)): Vector4<T>(xyz, w) {}
+
+        /** @brief Copy constructor */
+        inline constexpr Point3D(const RectangularMatrix<1, 4, T>& other): Vector4<T>(other) {}
 
         /**
          * @brief Vector part of the point

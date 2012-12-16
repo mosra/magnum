@@ -31,7 +31,7 @@ namespace Magnum { namespace Primitives {
 class Cube: public Trade::MeshData3D {
     public:
         /** @brief Constructor */
-        Cube();
+        explicit Cube();
 };
 
 }}

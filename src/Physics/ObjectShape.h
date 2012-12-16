@@ -42,7 +42,7 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShape: publi
          * Creates empty object shape.
          * @see setShape()
          */
-        ObjectShape(SceneGraph::AbstractObject<dimensions>* object, ObjectShapeGroup<dimensions>* group = nullptr);
+        explicit ObjectShape(SceneGraph::AbstractObject<dimensions>* object, ObjectShapeGroup<dimensions>* group = nullptr);
 
         /**
          * @brief Destructor

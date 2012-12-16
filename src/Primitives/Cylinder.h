@@ -58,7 +58,7 @@ class Cylinder: public Capsule {
          * If texture coordinates are generated, vertices of one segment are
          * duplicated for texture wrapping.
          */
-        Cylinder(std::uint32_t rings, std::uint32_t segments, GLfloat length, Flags flags = Flags());
+        explicit Cylinder(std::uint32_t rings, std::uint32_t segments, GLfloat length, Flags flags = Flags());
 
     private:
         void capVertexRing(GLfloat y, GLfloat textureCoordsV, const Vector3& normal);

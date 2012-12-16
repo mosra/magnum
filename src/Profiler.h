@@ -105,7 +105,7 @@ class MAGNUM_EXPORT Profiler {
         static const Section otherSection = 0;
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        Profiler(): enabled(false), measureDuration(60), currentFrame(0), frameCount(0), sections{"Other"}, currentSection(otherSection) {}
+        explicit Profiler(): enabled(false), measureDuration(60), currentFrame(0), frameCount(0), sections{"Other"}, currentSection(otherSection) {}
         #endif
 
         /**

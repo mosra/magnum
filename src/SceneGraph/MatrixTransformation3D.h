@@ -162,7 +162,7 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
 
     protected:
         /* Allow construction only from Object */
-        inline MatrixTransformation3D() {}
+        inline explicit MatrixTransformation3D() = default;
 
     private:
         Math::Matrix4<T> _transformation;

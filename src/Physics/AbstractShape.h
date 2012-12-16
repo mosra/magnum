@@ -93,7 +93,7 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT AbstractShape {
         typedef typename Implementation::ShapeDimensionTraits<dimensions>::Type Type;
         #endif
 
-        /** @brief Destructor */
+        explicit AbstractShape() = default;
         virtual inline ~AbstractShape() {}
 
         /** @brief Shape type */

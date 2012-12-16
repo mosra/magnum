@@ -39,10 +39,7 @@ template<class T> class Point2D: public Vector3<T> {
          *
          * X and Y components are set to zero, Z is set to one.
          */
-        inline constexpr Point2D(): Vector3<T>(T(0), T(0), T(1)) {}
-
-        /** @brief Copy constructor */
-        inline constexpr Point2D(const RectangularMatrix<1, 3, T>& other): Vector3<T>(other) {}
+        inline constexpr /*implicit*/ Point2D(): Vector3<T>(T(0), T(0), T(1)) {}
 
         /**
          * @brief Constructor
@@ -50,14 +47,17 @@ template<class T> class Point2D: public Vector3<T> {
          * @param y     Y component
          * @param z     Z component
          */
-        inline constexpr Point2D(T x, T y, T z = T(1)): Vector3<T>(x, y, z) {}
+        inline constexpr /*implicit*/ Point2D(T x, T y, T z = T(1)): Vector3<T>(x, y, z) {}
 
         /**
          * @brief Constructor
          * @param xy    Two-component vector
          * @param z     Z component
          */
-        inline constexpr Point2D(const Vector2<T>& xy, T z = T(1)): Vector3<T>(xy, z) {}
+        inline constexpr /*implicit*/ Point2D(const Vector2<T>& xy, T z = T(1)): Vector3<T>(xy, z) {}
+
+        /** @brief Copy constructor */
+        inline constexpr Point2D(const RectangularMatrix<1, 3, T>& other): Vector3<T>(other) {}
 
         /**
          * @brief Vector part of the point

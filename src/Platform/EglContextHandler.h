@@ -51,6 +51,7 @@ Used in XEglApplication.
 */
 class EglContextHandler: public AbstractContextHandler<EGLNativeDisplayType, VisualId, EGLNativeWindowType> {
     public:
+        explicit EglContextHandler() = default;
         ~EglContextHandler();
 
         VisualId getVisualId(EGLNativeDisplayType nativeDisplay) override;

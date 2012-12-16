@@ -113,7 +113,7 @@ template<class Base> struct SizeBasedCall: public Base {
      * @brief Constructor
      * @param size          Data size
      */
-    SizeBasedCall(std::size_t size): size(size) {}
+    explicit SizeBasedCall(std::size_t size): size(size) {}
 
     /**
      * @brief Functor

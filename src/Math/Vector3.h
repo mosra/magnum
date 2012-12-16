@@ -104,13 +104,10 @@ template<class T> class Vector3: public Vector<3, T> {
         }
 
         /** @copydoc Vector::Vector() */
-        inline constexpr Vector3() {}
+        inline constexpr /*implicit*/ Vector3() {}
 
         /** @copydoc Vector::Vector(T) */
         inline constexpr explicit Vector3(T value): Vector<3, T>(value, value, value) {}
-
-        /** @brief Copy constructor */
-        inline constexpr Vector3(const RectangularMatrix<1, 3, T>& other): Vector<3, T>(other) {}
 
         /**
          * @brief Constructor
@@ -118,14 +115,17 @@ template<class T> class Vector3: public Vector<3, T> {
          * @param y     Y component
          * @param z     Z component
          */
-        inline constexpr Vector3(T x, T y, T z): Vector<3, T>(x, y, z) {}
+        inline constexpr /*implicit*/ Vector3(T x, T y, T z): Vector<3, T>(x, y, z) {}
 
         /**
          * @brief Constructor
          * @param xy    Two-component vector
          * @param z     Z component
          */
-        inline constexpr Vector3(const Vector2<T>& xy, T z): Vector<3, T>(xy[0], xy[1], z) {}
+        inline constexpr /*implicit*/ Vector3(const Vector2<T>& xy, T z): Vector<3, T>(xy[0], xy[1], z) {}
+
+        /** @brief Copy constructor */
+        inline constexpr Vector3(const RectangularMatrix<1, 3, T>& other): Vector<3, T>(other) {}
 
         inline T& x() { return (*this)[0]; }                /**< @brief X component */
         inline constexpr T x() const { return (*this)[0]; } /**< @overload */

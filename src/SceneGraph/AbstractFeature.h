@@ -132,7 +132,7 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractFeature
          * @brief Constructor
          * @param object    %Object holding this feature
          */
-        inline AbstractFeature(AbstractObject<dimensions, T>* object) {
+        inline explicit AbstractFeature(AbstractObject<dimensions, T>* object) {
             object->Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>::insert(this);
         }
 

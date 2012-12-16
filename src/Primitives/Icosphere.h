@@ -38,7 +38,7 @@ from Blender.
 template<> class Icosphere<0>: public Trade::MeshData3D {
     public:
         /** @brief Constructor */
-        Icosphere();
+        explicit Icosphere();
 };
 
 /**
@@ -54,7 +54,7 @@ template<std::size_t subdivisions> class Icosphere {
 #endif
     public:
         /** @brief Constructor */
-        Icosphere() {
+        explicit Icosphere() {
             for(std::size_t i = 0; i != subdivisions; ++i)
                 MeshTools::subdivide(*indices(), *normals(0), [](const Vector3& a, const Vector3& b) {
                     return (a+b).normalized();

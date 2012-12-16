@@ -78,7 +78,7 @@ class MAGNUM_EXPORT Timeline {
          * Creates stopped timeline.
          * @see start()
          */
-        inline constexpr Timeline(): _minimalFrameTime(0), _previousFrameDuration(0), running(false) {}
+        inline constexpr explicit Timeline(): _minimalFrameTime(0), _previousFrameDuration(0), running(false) {}
 
         /** @brief Minimal frame time (in seconds) */
         inline constexpr GLfloat minimalFrameTime() const {

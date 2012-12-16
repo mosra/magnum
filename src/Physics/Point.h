@@ -34,7 +34,7 @@ namespace Magnum { namespace Physics {
 template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Point: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Point(const typename DimensionTraits<dimensions>::VectorType& position): _position(position), _transformedPosition(position) {}
+        inline explicit Point(const typename DimensionTraits<dimensions>::VectorType& position): _position(position), _transformedPosition(position) {}
 
         inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::Point;

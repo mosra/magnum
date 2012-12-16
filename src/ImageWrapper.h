@@ -53,7 +53,7 @@ template<std::uint8_t dimensions> class ImageWrapper: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        inline ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, GLvoid* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
+        inline explicit ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, GLvoid* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
 
         /**
          * @brief Constructor
@@ -64,7 +64,7 @@ template<std::uint8_t dimensions> class ImageWrapper: public AbstractImage {
          * Dimensions and data pointer are set to zero, call setData() to fill
          * the image with data.
          */
-        inline ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type): AbstractImage(format, type), _size(size), _data(nullptr) {}
+        inline explicit ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type): AbstractImage(format, type), _size(size), _data(nullptr) {}
 
         /** @brief %Image size */
         inline typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }

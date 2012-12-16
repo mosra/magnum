@@ -36,6 +36,8 @@ template<class T = GLfloat>
 #endif
 class AbstractTranslationRotation3D: public AbstractTransformation<3, T> {
     public:
+        explicit AbstractTranslationRotation3D() = default;
+
         /**
          * @brief Translate object
          * @param vector            Translation vector

@@ -51,7 +51,7 @@ class XEglApplication: public AbstractXApplication {
          * @param title     Window title
          * @param size      Window size
          */
-        inline XEglApplication(int& argc, char** argv, const std::string& title = "Magnum X/EGL application", const Vector2i& size = Vector2i(800, 600)): AbstractXApplication(new EglContextHandler, argc, argv, title, size) {}
+        inline explicit XEglApplication(int& argc, char** argv, const std::string& title = "Magnum X/EGL application", const Vector2i& size = Vector2i(800, 600)): AbstractXApplication(new EglContextHandler, argc, argv, title, size) {}
 };
 
 }}

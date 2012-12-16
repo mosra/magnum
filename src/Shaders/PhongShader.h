@@ -38,7 +38,7 @@ class MAGNUM_SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
         typedef Attribute<0, Point3D> Position; /**< @brief Vertex position */
         typedef Attribute<1, Vector3> Normal;   /**< @brief Normal direction */
 
-        PhongShader();
+        explicit PhongShader();
 
         /**
          * @brief Set ambient color

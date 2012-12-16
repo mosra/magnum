@@ -35,13 +35,10 @@ homogeneous three-dimensional coordinates.
 template<class T> class Vector4: public Vector<4, T> {
     public:
         /** @copydoc Vector::Vector() */
-        inline constexpr Vector4() {}
+        inline constexpr /*implicit*/ Vector4() {}
 
         /** @copydoc Vector::Vector(T) */
         inline constexpr explicit Vector4(T value): Vector<4, T>(value, value, value, value) {}
-
-        /** @brief Copy constructor */
-        inline constexpr Vector4(const RectangularMatrix<1, 4, T>& other): Vector<4, T>(other) {}
 
         /**
          * @brief Constructor
@@ -50,14 +47,17 @@ template<class T> class Vector4: public Vector<4, T> {
          * @param z     Z component
          * @param w     W component
          */
-        inline constexpr Vector4(T x, T y, T z, T w): Vector<4, T>(x, y, z, w) {}
+        inline constexpr /*implicit*/ Vector4(T x, T y, T z, T w): Vector<4, T>(x, y, z, w) {}
 
         /**
          * @brief Constructor
          * @param xyz   Three-component vector
          * @param w     W component
          */
-        inline constexpr Vector4(const Vector3<T>& xyz, T w): Vector<4, T>(xyz[0], xyz[1], xyz[2], w) {}
+        inline constexpr /*implicit*/ Vector4(const Vector3<T>& xyz, T w): Vector<4, T>(xyz[0], xyz[1], xyz[2], w) {}
+
+        /** @brief Copy constructor */
+        inline constexpr Vector4(const RectangularMatrix<1, 4, T>& other): Vector<4, T>(other) {}
 
         inline T& x() { return (*this)[0]; }                /**< @brief X component */
         inline constexpr T x() const { return (*this)[0]; } /**< @overload */

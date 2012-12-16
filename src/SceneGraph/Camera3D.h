@@ -65,7 +65,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3, T> {
          * (range @f$ [-1; 1] @f$ in all directions).
          * @see setOrthographic(), setPerspective()
          */
-        inline Camera3D(AbstractObject<3, T>* object): AbstractCamera<3, T>(object), _near(0.0f), _far(0.0f) {}
+        inline explicit Camera3D(AbstractObject<3, T>* object): AbstractCamera<3, T>(object), _near(0.0f), _far(0.0f) {}
 
         /**
          * @brief Set orthographic projection

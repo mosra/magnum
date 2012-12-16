@@ -131,7 +131,7 @@ class MatrixTransformation2D: public AbstractTranslationRotationScaling2D<T> {
 
     protected:
         /* Allow construction only from Object */
-        inline MatrixTransformation2D() {}
+        inline explicit MatrixTransformation2D() = default;
 
     private:
         Math::Matrix3<T> _transformation;

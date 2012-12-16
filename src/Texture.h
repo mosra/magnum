@@ -169,7 +169,7 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          *
          * Creates one OpenGL texture.
          */
-        inline Texture(Target target = DataHelper<Dimensions>::target()): AbstractTexture(static_cast<GLenum>(target)) {}
+        inline explicit Texture(Target target = DataHelper<Dimensions>::target()): AbstractTexture(static_cast<GLenum>(target)) {}
 
         /** @brief %Texture target */
         inline constexpr Target target() const { return static_cast<Target>(_target); }

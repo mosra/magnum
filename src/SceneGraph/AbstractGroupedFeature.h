@@ -64,7 +64,7 @@ class AbstractGroupedFeature: public AbstractFeature<dimensions, T> {
          * Adds the feature to the object and to group, if specified.
          * @see FeatureGroup::add()
          */
-        inline AbstractGroupedFeature(AbstractObject<dimensions, T>* object, FeatureGroup<dimensions, Derived, T>* group = nullptr): AbstractFeature<dimensions, T>(object), _group(nullptr) {
+        inline explicit AbstractGroupedFeature(AbstractObject<dimensions, T>* object, FeatureGroup<dimensions, Derived, T>* group = nullptr): AbstractFeature<dimensions, T>(object), _group(nullptr) {
             if(group) group->add(static_cast<Derived*>(this));
         }
 

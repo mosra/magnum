@@ -120,7 +120,7 @@ class Resource {
          * Creates empty resource. Resources are acquired from the manager by
          * calling ResourceManager::get().
          */
-        inline Resource(): manager(nullptr), lastCheck(0), _state(ResourceState::Final), data(nullptr) {}
+        inline explicit Resource(): manager(nullptr), lastCheck(0), _state(ResourceState::Final), data(nullptr) {}
 
         /** @brief Copy constructor */
         inline Resource(const Resource<T, U>& other): manager(other.manager), _key(other._key), lastCheck(other.lastCheck), _state(other._state), data(other.data) {

@@ -365,7 +365,7 @@ class MAGNUM_EXPORT Mesh {
          * @see setPrimitive(), setVertexCount(), @fn_gl{GenVertexArrays} (if
          *      @extension{APPLE,vertex_array_object} is available)
          */
-        inline Mesh(Primitive primitive = Primitive::Triangles): _primitive(primitive), _vertexCount(0) {
+        inline explicit Mesh(Primitive primitive = Primitive::Triangles): _primitive(primitive), _vertexCount(0) {
             (this->*createImplementation)();
         }
 

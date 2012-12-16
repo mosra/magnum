@@ -38,7 +38,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * Generates new OpenGL framebuffer.
          * @see @fn_gl{GenFramebuffers}
          */
-        Framebuffer(const Vector2i& viewportPosition, const Vector2i& viewportSize);
+        explicit Framebuffer(const Vector2i& viewportPosition, const Vector2i& viewportSize);
 
         /**
          * @brief Destructor

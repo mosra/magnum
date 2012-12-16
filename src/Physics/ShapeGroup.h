@@ -91,7 +91,7 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT ShapeGroup: public
 
     public:
         /** @brief Default constructor */
-        inline ShapeGroup(): operation(Implementation::GroupOperation::AlwaysFalse), a(nullptr), b(nullptr) {}
+        inline explicit ShapeGroup(): operation(Implementation::GroupOperation::AlwaysFalse), a(nullptr), b(nullptr) {}
 
         /** @brief Move constructor */
         ShapeGroup(ShapeGroup&& other);

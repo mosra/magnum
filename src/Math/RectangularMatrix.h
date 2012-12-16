@@ -116,7 +116,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /** @brief Zero-filled matrix constructor */
-        inline constexpr RectangularMatrix(): _data() {}
+        inline constexpr /*implicit*/ RectangularMatrix(): _data() {}
 
         /**
          * @brief Initializer-list constructor
@@ -127,7 +127,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @todoc Remove workaround when Doxygen supports uniform initialization
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> inline constexpr RectangularMatrix(T first, U... next): _data{first, next...} {
+        template<class ...U> inline constexpr /*implicit*/ RectangularMatrix(T first, U... next): _data{first, next...} {
             static_assert(sizeof...(next)+1 == cols*rows, "Improper number of arguments passed to RectangularMatrix constructor");
         }
         #else

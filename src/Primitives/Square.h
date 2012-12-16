@@ -31,7 +31,7 @@ namespace Magnum { namespace Primitives {
 class Square: public Trade::MeshData2D {
     public:
         /** @brief Constructor */
-        Square();
+        explicit Square();
 };
 
 }}

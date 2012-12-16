@@ -182,7 +182,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
             blit(source, destination, bottomLeft, topRight, bottomLeft, topRight, mask, BlitFilter::NearestNeighbor);
         }
 
-        AbstractFramebuffer() = default;
+        explicit AbstractFramebuffer() = default;
         virtual ~AbstractFramebuffer() = 0;
 
         /**

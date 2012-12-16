@@ -143,7 +143,7 @@ class MAGNUM_EXPORT Context {
          * @see @fn_gl{Get} with @def_gl{MAJOR_VERSION}, @def_gl{MINOR_VERSION},
          *      @fn_gl{GetString} with @def_gl{EXTENSIONS}
          */
-        Context();
+        explicit Context();
 
         ~Context();
 

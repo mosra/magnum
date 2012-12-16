@@ -49,7 +49,7 @@ template<std::uint8_t dimensions> class MAGNUM_EXPORT BufferImage: public Abstra
          * Dimensions and buffer are empty, call setData() to fill the image
          * with data.
          */
-        inline BufferImage(Format format, Type type): AbstractImage(format, type) {
+        inline explicit BufferImage(Format format, Type type): AbstractImage(format, type) {
             _buffer.setTargetHint(Buffer::Target::PixelPack);
         }
 

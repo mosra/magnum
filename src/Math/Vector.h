@@ -69,7 +69,7 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
         }
 
         /** @brief Default constructor */
-        inline constexpr Vector() {}
+        inline constexpr /*implicit*/ Vector() {}
 
         /** @todo Creating Vector from combination of vector and scalar types */
 
@@ -79,9 +79,9 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          * @param next  Next values
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> inline constexpr Vector(T first, U... next): RectangularMatrix<1, size, T>(first, next...) {}
+        template<class ...U> inline constexpr /*implicit*/ Vector(T first, U... next): RectangularMatrix<1, size, T>(first, next...) {}
         #else
-        template<class ...U> inline constexpr Vector(T first, U... next);
+        template<class ...U> inline constexpr /*implicit*/ Vector(T first, U... next);
         #endif
 
         /**

@@ -31,7 +31,7 @@ namespace Magnum { namespace Physics {
 class MAGNUM_PHYSICS_EXPORT Plane: public AbstractShape<3> {
     public:
         /** @brief Constructor */
-        inline Plane(const Vector3& position, const Vector3& normal): _position(position), _transformedPosition(position), _normal(normal), _transformedNormal(normal) {}
+        inline explicit Plane(const Vector3& position, const Vector3& normal): _position(position), _transformedPosition(position), _normal(normal), _transformedNormal(normal) {}
 
         inline Type type() const override { return Type::Plane; }
 

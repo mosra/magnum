@@ -104,7 +104,7 @@ class MAGNUM_PHYSICS_EXPORT DebugDrawResourceManager: public ResourceManager<Abs
          */
         template<std::uint8_t dimensions> static SceneGraph::Drawable<dimensions>* createDebugRenderer(ObjectShape<dimensions>* shape, ResourceKey options = ResourceKey());
 
-        DebugDrawResourceManager();
+        explicit DebugDrawResourceManager();
         ~DebugDrawResourceManager();
 
     private:

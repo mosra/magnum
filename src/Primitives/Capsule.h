@@ -53,7 +53,7 @@ class Capsule: public Trade::MeshData3D {
          * If texture coordinates are generated, vertices of one segment are
          * duplicated for texture wrapping.
          */
-        Capsule(std::uint32_t hemisphereRings, std::uint32_t cylinderRings, std::uint32_t segments, GLfloat length, TextureCoords textureCoords = TextureCoords::DontGenerate);
+        explicit Capsule(std::uint32_t hemisphereRings, std::uint32_t cylinderRings, std::uint32_t segments, GLfloat length, TextureCoords textureCoords = TextureCoords::DontGenerate);
 
     private:
         Capsule(std::uint32_t segments, TextureCoords textureCoords);

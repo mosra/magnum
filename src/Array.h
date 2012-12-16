@@ -45,7 +45,7 @@ template<std::uint8_t dimensions, class T> class Array {
          *
          * Sets all components to their default-constructed values
          */
-        inline constexpr Array(): _data() {}
+        inline constexpr /*implicit*/ Array(): _data() {}
 
         /**
          * @brief Initializer-list constructor
@@ -53,19 +53,19 @@ template<std::uint8_t dimensions, class T> class Array {
          * @param next      Next values
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> inline constexpr Array(T first, T second, U... next): _data{first, second, next...} {
+        template<class ...U> inline constexpr /*implicit*/ Array(T first, T second, U... next): _data{first, second, next...} {
             static_assert(sizeof...(next)+2 == dimensions, "Improper number of arguments passed to Array constructor");
         }
-        template<class U = T> inline constexpr Array(typename std::enable_if<std::is_same<T, U>::value && dimensions == 1, U>::type first): _data{first} {}
+        template<class U = T> inline constexpr /*implicit*/ Array(typename std::enable_if<std::is_same<T, U>::value && dimensions == 1, U>::type first): _data{first} {}
         #else
-        template<class ...U> inline constexpr Array(T first, U... next);
+        template<class ...U> inline constexpr /*implicit*/ Array(T first, U... next);
         #endif
 
         /**
          * @brief Constructor
          * @param value Value for all fields
          */
-        template<class U, class = typename std::enable_if<std::is_same<T, U>::value && dimensions != 1, U>::type> inline Array(U value) {
+        template<class U, class = typename std::enable_if<std::is_same<T, U>::value && dimensions != 1, U>::type> inline /*implicit*/ Array(U value) {
             for(std::uint8_t i = 0; i != dimensions; ++i)
                 _data[i] = value;
         }
@@ -104,13 +104,13 @@ template<std::uint8_t dimensions, class T> class Array {
 template<class T> class Array1D: public Array<1, T> {
     public:
         /** @copydoc Array::Array() */
-        inline constexpr Array1D() = default;
+        inline constexpr /*implicit*/ Array1D() = default;
 
         /**
          * @brief Constructor
          * @param x     X component
          */
-        inline constexpr Array1D(T x): Array<1, T>(x) {}
+        inline constexpr /*implicit*/ Array1D(T x): Array<1, T>(x) {}
 
         /** @brief Copy constructor */
         inline constexpr Array1D(const Array<1, T>& other): Array<1, T>(other) {}
@@ -126,17 +126,17 @@ template<class T> class Array1D: public Array<1, T> {
 template<class T> class Array2D: public Array<2, T> {
     public:
         /** @copydoc Array::Array() */
-        inline constexpr Array2D() = default;
+        inline constexpr /*implicit*/ Array2D() = default;
 
         /**
          * @brief Constructor
          * @param x     X component
          * @param y     Y component
          */
-        inline constexpr Array2D(T x, T y): Array<2, T>(x, y) {}
+        inline constexpr /*implicit*/ Array2D(T x, T y): Array<2, T>(x, y) {}
 
         /** @copydoc Array::Array(U) */
-        inline constexpr Array2D(T value): Array<2, T>(value, value) {}
+        inline constexpr /*implicit*/ Array2D(T value): Array<2, T>(value, value) {}
 
         /** @brief Copy constructor */
         inline constexpr Array2D(const Array<2, T>& other): Array<2, T>(other) {}
@@ -154,7 +154,7 @@ template<class T> class Array2D: public Array<2, T> {
 template<class T> class Array3D: public Array<3, T> {
     public:
         /** @copydoc Array::Array() */
-        inline constexpr Array3D() {}
+        inline constexpr /*implicit*/ Array3D() {}
 
         /**
          * @brief Constructor
@@ -162,10 +162,10 @@ template<class T> class Array3D: public Array<3, T> {
          * @param y     Y component
          * @param z     Z component
          */
-        inline constexpr Array3D(T x, T y, T z): Array<3, T>(x, y, z) {}
+        inline constexpr /*implicit*/ Array3D(T x, T y, T z): Array<3, T>(x, y, z) {}
 
         /** @copydoc Array::Array(U) */
-        inline constexpr Array3D(T value): Array<3, T>(value, value, value) {}
+        inline constexpr /*implicit*/ Array3D(T value): Array<3, T>(value, value, value) {}
 
         /** @brief Copy constructor */
         inline constexpr Array3D(const Array<3, T>& other): Array<3, T>(other) {}

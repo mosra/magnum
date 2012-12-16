@@ -39,6 +39,7 @@ GlxApplication.
 */
 class GlxContextHandler: public AbstractContextHandler<Display*, VisualID, Window> {
     public:
+        explicit GlxContextHandler() = default;
         ~GlxContextHandler();
 
         VisualID getVisualId(Display* nativeDisplay) override;

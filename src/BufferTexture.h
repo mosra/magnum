@@ -194,7 +194,7 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
             RGBA32F = GL_RGBA32F
         };
 
-        inline BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
+        inline explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
 
         /** @copydoc AbstractTexture::bind() */
         inline void bind(GLint layer) { AbstractTexture::bind(layer); }

@@ -135,7 +135,7 @@ class MAGNUM_EXPORT Shader {
          * beginning. Sources can be added with addSource() or addFile().
          * @see fromData(), fromFile(), @fn_gl{CreateShader}
          */
-        Shader(Version version, Type type);
+        explicit Shader(Version version, Type type);
 
         /**
          * @brief Destructor

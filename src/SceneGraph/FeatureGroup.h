@@ -42,6 +42,8 @@ class FeatureGroup {
     friend class AbstractGroupedFeature<dimensions, Feature, T>;
 
     public:
+        explicit FeatureGroup() = default;
+
         /**
          * @brief Destructor
          *
