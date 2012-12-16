@@ -31,6 +31,12 @@ namespace Magnum {
 @brief Base for default and named framebuffers
 
 See DefaultFramebuffer and Framebuffer for more information.
+
+@section AbstractFramebuffer-performance-optimization Performance optimizations
+
+The engine tracks currently bound framebuffer to avoid unnecessary calls to
+@fn_gl{BindFramebuffer}.
+
 @todo @extension{ARB,viewport_array}
 */
 class MAGNUM_EXPORT AbstractFramebuffer {
@@ -199,15 +205,13 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *      DefaultFramebuffer::mapForDraw(), Framebuffer::mapForDraw(),
          *      @fn_gl{BindFramebuffer}
          */
-        inline void bind(Target target) {
-            glBindFramebuffer(static_cast<GLenum>(target), _id);
-        }
+        void bind(Target target);
 
         /**
          * @brief Set viewport size
          *
          * Call when window size changes.
-         * @see @fn_gl{Viewport}
+         * @see @fn_gl{BindFramebuffer}, @fn_gl{Viewport}
          */
         inline void setViewport(const Vector2i& position, const Vector2i& size) {
             bind(drawTarget);
@@ -219,7 +223,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @param mask              Which buffers to clear
          *
          * @see Renderer::setClearColor(), Renderer::setClearDepth(),
-         *      Renderer::setClearStencil(), @fn_gl{Clear}
+         *      Renderer::setClearStencil(), @fn_gl{BindFramebuffer},
+         *      @fn_gl{Clear}
          */
         inline void clear(ClearMask mask) {
             bind(drawTarget);
@@ -234,7 +239,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @param type              Data type of pixel data
          * @param image             %Image where to put the data
          *
-         * @see @fn_gl{ReadPixels}
+         * @see @fn_gl{BindFramebuffer}, @fn_gl{ReadPixels}
          */
         void read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, Image2D* image);
 
@@ -248,7 +253,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @param image             %Buffer image where to put the data
          * @param usage             %Buffer usage
          *
-         * @see Buffer::bind(Target), @fn_gl{ReadPixels}
+         * @see @fn_gl{BindFramebuffer}, @fn_gl{ReadPixels}
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
          */
         void read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, BufferImage2D* image, Buffer::Usage usage);

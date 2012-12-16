@@ -48,14 +48,14 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * Deletes associated OpenGL framebuffer.
          * @see @fn_gl{DeleteFramebuffers}
          */
-        inline ~Framebuffer() { glDeleteFramebuffers(1, &_id); }
+        ~Framebuffer();
 
         /**
          * @brief Map given color attachments of current framebuffer for drawing
          * @param colorAttachments  Color attachment IDs. If any value is -1,
          *      given output is not used.
          *
-         * @see mapForRead(), bind(), @fn_gl{DrawBuffers}
+         * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffers}
          * @requires_gles30 %Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
          */
         void mapForDraw(std::initializer_list<std::int8_t> colorAttachments);
@@ -64,7 +64,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @brief Map given color attachment of current framebuffer for reading
          * @param colorAttachment   Color attachment ID
          *
-         * @see mapForDraw(), bind(), @fn_gl{ReadBuffer}
+         * @see mapForDraw(), @fn_gl{BindFramebuffer}, @fn_gl{ReadBuffer}
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
         inline void mapForRead(std::uint8_t colorAttachment) {
@@ -105,7 +105,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @param depthStencilAttachment Depth/stencil attachment
          * @param renderbuffer      %Renderbuffer
          *
-         * @see bind(), @fn_gl{FramebufferRenderbuffer}
+         * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferRenderbuffer}
          */
         inline void attachRenderbuffer(Target target, DepthStencilAttachment depthStencilAttachment, Renderbuffer* renderbuffer) {
             bind(target);
@@ -118,7 +118,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @param colorAttachment   Color attachment ID (number between 0 and 15)
          * @param renderbuffer      %Renderbuffer
          *
-         * @see bind(), @fn_gl{FramebufferRenderbuffer}
+         * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferRenderbuffer}
          */
         inline void attachRenderbuffer(Target target, std::uint8_t colorAttachment, Renderbuffer* renderbuffer) {
             bind(target);
@@ -133,7 +133,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @param texture           1D texture
          * @param mipLevel          Mip level
          *
-         * @see bind(), @fn_gl{FramebufferTexture}
+         * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
          * @requires_gl Only 2D and 3D textures are available in OpenGL ES.
          */
         inline void attachTexture1D(Target target, DepthStencilAttachment depthStencilAttachment, Texture1D* texture, GLint mipLevel) {
@@ -149,7 +149,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @param texture           1D texture
          * @param mipLevel          Mip level
          *
-         * @see bind(), @fn_gl{FramebufferTexture}
+         * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
          * @requires_gl Only 2D and 3D textures are available in OpenGL ES.
          */
         inline void attachTexture1D(Target target, std::uint8_t colorAttachment, Texture1D* texture, GLint mipLevel) {
@@ -167,7 +167,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @param mipLevel          Mip level. For rectangle textures it
          *      should be always 0.
          *
-         * @see attachCubeMapTexture(), bind(), @fn_gl{FramebufferTexture}
+         * @see attachCubeMapTexture(), @fn_gl{BindFramebuffer},
+         *      @fn_gl{FramebufferTexture}
          */
         inline void attachTexture2D(Target target, DepthStencilAttachment depthStencilAttachment, Texture2D* texture, GLint mipLevel) {
             /** @todo Check for texture target compatibility */
@@ -183,7 +184,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @param mipLevel          Mip level. For rectangle textures it
          *      should be always 0.
          *
-         * @see attachCubeMapTexture(), bind(), @fn_gl{FramebufferTexture}
+         * @see attachCubeMapTexture(), @fn_gl{BindFramebuffer},
+         *      @fn_gl{FramebufferTexture}
          */
         inline void attachTexture2D(Target target, std::uint8_t colorAttachment, Texture2D* texture, GLint mipLevel) {
             /** @todo Check for texture target compatibility */
@@ -199,7 +201,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @param coordinate        Cube map coordinate
          * @param mipLevel          Mip level
          *
-         * @see attachTexture2D(), bind(), @fn_gl{FramebufferTexture}
+         * @see attachTexture2D(), @fn_gl{BindFramebuffer},
+         *      @fn_gl{FramebufferTexture}
          */
         inline void attachCubeMapTexture(Target target, DepthStencilAttachment depthStencilAttachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -215,7 +218,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @param coordinate        Cube map coordinate
          * @param mipLevel          Mip level
          *
-         * @see attachTexture2D(), bind(), @fn_gl{FramebufferTexture}
+         * @see attachTexture2D(), @fn_gl{BindFramebuffer},
+         *      @fn_gl{FramebufferTexture}
          */
         inline void attachCubeMapTexture(Target target, std::uint8_t colorAttachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, GLint mipLevel) {
             /** @todo Check for internal format compatibility */
@@ -231,7 +235,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @param mipLevel          Mip level
          * @param layer             Layer of 2D image within a 3D texture
          *
-         * @see bind(), @fn_gl{FramebufferTexture}
+         * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
          * @requires_es_extension %Extension @es_extension{OES,texture_3D}
          */
         inline void attachTexture3D(Target target, DepthStencilAttachment depthStencilAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {
@@ -256,7 +260,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @param mipLevel          Mip level
          * @param layer             Layer of 2D image within a 3D texture.
          *
-         * @see bind(), @fn_gl{FramebufferTexture}
+         * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
          * @requires_es_extension %Extension @es_extension{OES,texture_3D}
          */
         inline void attachTexture3D(Target target, std::uint8_t colorAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {

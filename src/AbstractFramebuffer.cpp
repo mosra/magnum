@@ -20,12 +20,33 @@
 #include "Extensions.h"
 #include "Image.h"
 
+#include "Implementation/FramebufferState.h"
+#include "Implementation/State.h"
+
 namespace Magnum {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 AbstractFramebuffer::Target AbstractFramebuffer::readTarget = AbstractFramebuffer::Target::ReadDraw;
 AbstractFramebuffer::Target AbstractFramebuffer::drawTarget = AbstractFramebuffer::Target::ReadDraw;
 #endif
+
+void AbstractFramebuffer::bind(Target target) {
+    Implementation::FramebufferState* state = Context::current()->state()->framebuffer;
+
+    /* If already bound, done, otherwise update tracked state */
+    if(target == Target::Read) {
+        if(state->readBinding == _id) return;
+        state->readBinding = _id;
+    } else if(target == Target::Draw) {
+        if(state->drawBinding == _id) return;
+        state->drawBinding = _id;
+    } else if(target == Target::ReadDraw) {
+        if(state->readBinding == _id && state->drawBinding == _id) return;
+        state->readBinding = state->drawBinding = _id;
+    } else CORRADE_INTERNAL_ASSERT(false);
+
+    glBindFramebuffer(static_cast<GLenum>(target), _id);
+}
 
 void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, Image2D* image) {
     bind(readTarget);

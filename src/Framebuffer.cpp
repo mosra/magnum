@@ -16,9 +16,22 @@
 #include "Framebuffer.h"
 
 #include "BufferImage.h"
+#include "Context.h"
 #include "Image.h"
 
+#include "Implementation/State.h"
+#include "Implementation/FramebufferState.h"
+
 namespace Magnum {
+
+Framebuffer::~Framebuffer() {
+    /* If bound, remove itself from state */
+    Implementation::FramebufferState* state = Context::current()->state()->framebuffer;
+    if(state->readBinding == _id) state->readBinding = 0;
+    if(state->drawBinding == _id) state->drawBinding = 0;
+
+    glDeleteFramebuffers(1, &_id);
+}
 
 void Framebuffer::mapForDraw(std::initializer_list<std::int8_t> colorAttachments) {
     GLenum* attachments = new GLenum[colorAttachments.size()];

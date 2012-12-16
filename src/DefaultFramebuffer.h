@@ -171,7 +171,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *      @ref DrawAttachment "Attachment::None", given output is not
          *      used.
          *
-         * @see mapForRead(), bind(), @fn_gl{DrawBuffers}
+         * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffers}
          * @requires_gles30 Draw attachments for default framebuffer are
          *      available only in OpenGL ES 3.0.
          */
@@ -182,7 +182,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @brief Map given attachment for reading
          * @param attachment        Attachment
          *
-         * @see mapForDraw(), bind(), @fn_gl{ReadBuffer}
+         * @see mapForDraw(), @fn_gl{BindFramebuffer}, @fn_gl{ReadBuffer}
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
         inline void mapForRead(ReadAttachment attachment) {
