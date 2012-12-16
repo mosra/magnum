@@ -31,9 +31,15 @@ namespace Magnum {
 
 Attachable to framebuffer as render target, see Framebuffer documentation
 for more information.
+
+@section Renderbuffer-performance-optimization Performance optimizations
+
+The engine tracks currently bound renderbuffer to avoid unnecessary calls to
+@fn_gl{BindRenderbuffer} in setStorage().
+
 @requires_gl30 %Extension @extension{EXT,framebuffer_object}
 */
-class Renderbuffer {
+class MAGNUM_EXPORT Renderbuffer {
     Renderbuffer(const Renderbuffer& other) = delete;
     Renderbuffer(Renderbuffer&& other) = delete;
     Renderbuffer& operator=(const Renderbuffer& other) = delete;
@@ -513,7 +519,7 @@ class Renderbuffer {
          * @see @fn_gl{GenRenderbuffers}
          */
         inline explicit Renderbuffer() {
-            glGenRenderbuffers(1, &renderbuffer);
+            glGenRenderbuffers(1, &_id);
         }
 
         /**
@@ -522,36 +528,24 @@ class Renderbuffer {
          * Deletes associated OpenGL renderbuffer.
          * @see @fn_gl{DeleteRenderbuffers}
          */
-        inline ~Renderbuffer() {
-            glDeleteRenderbuffers(1, &renderbuffer);
-        }
+        ~Renderbuffer();
 
         /** @brief OpenGL internal renderbuffer ID */
-        inline GLuint id() const { return renderbuffer; }
-
-        /**
-         * @brief Bind renderbuffer
-         *
-         * @see @fn_gl{BindRenderbuffer}
-         */
-        inline void bind() {
-            glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
-        }
+        inline GLuint id() const { return _id; }
 
         /**
          * @brief Set renderbuffer storage
          * @param internalFormat    Internal format
          * @param size              Renderbuffer size
          *
-         * @see bind(), @fn_gl{RenderbufferStorage}
+         * @see @fn_gl{BindRenderbuffer}, @fn_gl{RenderbufferStorage}
          */
-        inline void setStorage(InternalFormat internalFormat, const Vector2i& size) {
-            bind();
-            glRenderbufferStorage(GL_RENDERBUFFER, GLenum(internalFormat), size.x(), size.y());
-        }
+        void setStorage(InternalFormat internalFormat, const Vector2i& size);
 
     private:
-        GLuint renderbuffer;
+        void MAGNUM_LOCAL bind();
+
+        GLuint _id;
 };
 
 }

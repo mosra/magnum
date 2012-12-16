@@ -21,9 +21,9 @@
 namespace Magnum { namespace Implementation {
 
 struct FramebufferState {
-    inline FramebufferState(): readBinding(0), drawBinding(0) {}
+    inline FramebufferState(): readBinding(0), drawBinding(0), renderbufferBinding(0) {}
 
-    GLuint readBinding, drawBinding;
+    GLuint readBinding, drawBinding, renderbufferBinding;
     Vector2i viewportPosition, viewportSize;
 };
 
