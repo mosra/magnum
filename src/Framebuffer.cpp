@@ -42,17 +42,29 @@ Framebuffer::~Framebuffer() {
     glDeleteFramebuffers(1, &_id);
 }
 
-void Framebuffer::mapForDraw(std::initializer_list<std::int8_t> colorAttachments) {
-    GLenum* attachments = new GLenum[colorAttachments.size()];
-    for(auto it = colorAttachments.begin(); it != colorAttachments.end(); ++it)
-        attachments[it-colorAttachments.begin()] = *it + GL_COLOR_ATTACHMENT0;
+void Framebuffer::mapForDraw(std::initializer_list<std::pair<GLuint, std::int8_t>> attachments) {
+    /* Max attachment location */
+    std::size_t max = 0;
+    for(const auto& attachment: attachments)
+        if(attachment.first > max) max = attachment.first;
 
-    bindInternal(Target::Draw);
+    /* Create linear array from associative */
+    GLenum* _attachments = new GLenum[max+1];
+    std::fill_n(_attachments, max, GL_NONE);
+    for(const auto& attachment: attachments)
+        _attachments[attachment.first] = attachment.second < 0 ? GL_NONE : GL_COLOR_ATTACHMENT0 + attachment.second;
+
+    bindInternal(drawTarget);
     /** @todo Re-enable when extension wrangler is available for ES2 */
     #ifndef MAGNUM_TARGET_GLES2
-    glDrawBuffers(colorAttachments.size(), attachments);
+    glDrawBuffers(max+1, _attachments);
     #endif
-    delete[] attachments;
+    delete[] _attachments;
+}
+
+void Framebuffer::mapForDraw(std::int8_t attachment) {
+    bindInternal(drawTarget);
+    glDrawBuffer(static_cast<GLenum>(attachment));
 }
 
 void Framebuffer::mapForRead(std::uint8_t colorAttachment) {

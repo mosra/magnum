@@ -27,14 +27,26 @@ DefaultFramebuffer defaultFramebuffer;
 DefaultFramebuffer::DefaultFramebuffer() { _id = 0; }
 
 #ifndef MAGNUM_TARGET_GLES2
-void DefaultFramebuffer::mapForDraw(std::initializer_list<DrawAttachment> attachments) {
-    GLenum* _attachments = new GLenum[attachments.size()];
-    for(auto it = attachments.begin(); it != attachments.end(); ++it)
-        _attachments[it-attachments.begin()] = static_cast<GLenum>(*it);
+void DefaultFramebuffer::mapForDraw(std::initializer_list<std::pair<GLuint, DrawAttachment>> attachments) {
+    /* Max attachment location */
+    std::size_t max = 0;
+    for(const auto& attachment: attachments)
+        if(attachment.first > max) max = attachment.first;
+
+    /* Create linear array from associative */
+    GLenum* _attachments = new GLenum[max+1];
+    std::fill_n(_attachments, max, GL_NONE);
+    for(const auto& attachment: attachments)
+        _attachments[attachment.first] = static_cast<GLenum>(attachment.second);
 
     bindInternal(drawTarget);
-    glDrawBuffers(attachments.size(), _attachments);
+    glDrawBuffers(max+1, _attachments);
     delete[] _attachments;
+}
+
+void DefaultFramebuffer::mapForDraw(DrawAttachment attachment) {
+    bindInternal(drawTarget);
+    glDrawBuffer(static_cast<GLenum>(attachment));
 }
 #endif
 

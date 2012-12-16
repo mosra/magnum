@@ -168,21 +168,38 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @brief Map given attachments for drawing
-         * @param attachments       Attachments. If any value is
-         *      @ref DrawAttachment "Attachment::None", given output is not
-         *      used.
+         * @brief Map shader outputs to buffer attachment
          *
+         * @p attachments is list of shader outputs mapped to framebuffer
+         * buffer attachments. Shader outputs which are not listed are not
+         * used, you can achieve the same by passing @ref DrawAttachment "DrawAttachment::None"
+         * as attachment. Example usage:
+         * @code
+         * framebuffer.mapForDraw({{MyShader::ColorOutput, DefaultFramebuffer::DrawAttachment::BackLeft},
+         *                         {MyShader::NormalOutput, DefaultFramebuffer::DrawAttachment::None}});
+         * @endcode
          * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffers}
          * @requires_gles30 Draw attachments for default framebuffer are
          *      available only in OpenGL ES 3.0.
          */
-        void mapForDraw(std::initializer_list<DrawAttachment> attachments);
+        void mapForDraw(std::initializer_list<std::pair<GLuint, DrawAttachment>> attachments);
+
+        /**
+         * @brief Map shader output to buffer attachment
+         * @param attachment        Buffer attachment
+         *
+         * Similar to above function, can be used in cases when shader has
+         * only one (unnamed) output.
+         * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffer}
+         * @requires_gles30 Draw attachments for default framebuffer are
+         *      available only in OpenGL ES 3.0.
+         */
+        void mapForDraw(DrawAttachment attachment);
         #endif
 
         /**
          * @brief Map given attachment for reading
-         * @param attachment        Attachment
+         * @param attachment        Buffer attachment
          *
          * @see mapForDraw(), @fn_gl{BindFramebuffer}, @fn_gl{ReadBuffer}
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}

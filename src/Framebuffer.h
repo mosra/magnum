@@ -49,23 +49,40 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
         ~Framebuffer();
 
         /**
-         * @brief Map given color attachments of current framebuffer for drawing
-         * @param colorAttachments  Color attachment IDs. If any value is -1,
-         *      given output is not used.
+         * @brief Map shader output to color attachment
          *
+         * @p attachments is list of shader outputs mapped to framebuffer
+         * color attachment IDs. Shader outputs which are not listed are not
+         * used, you can achieve the same by passing `-1` as color attachment
+         * ID. Example usage:
+         * @code
+         * framebuffer.mapForDraw({{MyShader::ColorOutput, 0},
+         *                         {MyShader::NormalOutput, 1}});
+         * @endcode
          * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffers}
          * @requires_gles30 %Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
          */
-        void mapForDraw(std::initializer_list<std::int8_t> colorAttachments);
+        void mapForDraw(std::initializer_list<std::pair<GLuint, std::int8_t>> attachments);
 
         /**
-         * @brief Map given color attachment of current framebuffer for reading
-         * @param colorAttachment   Color attachment ID
+         * @brief Map shader output to color attachment
+         * @param attachment        Color attachment ID
+         *
+         * Similar to above function, can be used in cases when shader has
+         * only one (unnamed) output.
+         * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffer}
+         * @requires_gles30 %Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
+         */
+        void mapForDraw(std::int8_t attachment);
+
+        /**
+         * @brief Map given color attachment for reading
+         * @param attachment        Color attachment ID
          *
          * @see mapForDraw(), @fn_gl{BindFramebuffer}, @fn_gl{ReadBuffer}
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
-        void mapForRead(std::uint8_t colorAttachment);
+        void mapForRead(std::uint8_t attachment);
 
         /**
          * @brief Attachment for depth/stencil part of fragment shader output
