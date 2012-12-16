@@ -79,7 +79,7 @@ class MAGNUM_EXPORT Renderer {
 
             /**
              * Depth clamping. If enabled, ignores near and far clipping plane.
-             * @requires_gl32 Extension @extension{ARB,depth_clamp}
+             * @requires_gl32 %Extension @extension{ARB,depth_clamp}
              * @requires_gl Depth clamping is not available in OpenGL ES.
              */
             DepthClamp = GL_DEPTH_CLAMP,
@@ -146,7 +146,7 @@ class MAGNUM_EXPORT Renderer {
          * @overload
          *
          * @see @fn_gl{ClearDepth}
-         * @requires_gl41 Extension @extension{ARB,ES2_compatibility}
+         * @requires_gl41 %Extension @extension{ARB,ES2_compatibility}
          * @todo Call double version if the extension is not available
          */
         inline static void setClearDepth(GLfloat depth) { glClearDepthf(depth); }
@@ -451,7 +451,7 @@ class MAGNUM_EXPORT Renderer {
              * Second source color (@f$ RGB = (R_{s1}, G_{s1}, B_{s1}); A = A_{s1} @f$)
              *
              * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+             * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
              *      OpenGL ES.
              */
@@ -468,7 +468,7 @@ class MAGNUM_EXPORT Renderer {
              * One minus second source color (@f$ RGB = (1.0 - R_{s1}, 1.0 - G_{s1}, 1.0 - B_{s1}); A = 1.0 - A_{s1} @f$)
              *
              * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+             * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
              *      OpenGL ES.
              */
@@ -490,7 +490,7 @@ class MAGNUM_EXPORT Renderer {
              * Second source alpha (@f$ RGB = (A_{s1}, A_{s1}, A_{s1}); A = A_{s1} @f$)
              *
              * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+             * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
              *      OpenGL ES.
              */
@@ -507,7 +507,7 @@ class MAGNUM_EXPORT Renderer {
              * One minus second source alpha (@f$ RGB = (1.0 - A_{s1}, 1.0 - A_{s1}, 1.0 - A_{s1}); A = 1.0 - A_{s1} @f$)
              *
              * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+             * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
              *      OpenGL ES.
              */

@@ -66,7 +66,7 @@ one of the six sides of the cube map, fourth part is layer in the array. See
 also AbstractShaderProgram for more information.
 
 @see CubeMapTexture::setSeamless()
-@requires_gl40 Extension @extension{ARB,texture_cube_map_array}
+@requires_gl40 %Extension @extension{ARB,texture_cube_map_array}
 @requires_gl Cube map texture arrays are not available in OpenGL ES.
 */
 class CubeMapTextureArray: public AbstractTexture {

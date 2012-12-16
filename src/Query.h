@@ -78,7 +78,8 @@ class MAGNUM_EXPORT AbstractQuery {
          * Note that this function is blocking until the result is available.
          * See resultAvailable().
          * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT}
-         * @requires_gl33 Extension @extension{ARB,timer_query} (result type `GLuint64` and `GLint64`)
+         * @requires_gl33 %Extension @extension{ARB,timer_query} (result
+         *      type `GLuint64` and `GLint64`)
          * @requires_gl Result types @c GLint, @c GLuint64 and @c GLint64 are
          *      not available in OpenGL ES.
          */
@@ -119,7 +120,7 @@ if(!q.resultAvailable()) {
 // ...or block until the result is available
 GLuint primitiveCount = q.result<GLuint>();
 @endcode
-@requires_gl30 Extension @extension{EXT,transform_feedback}
+@requires_gl30 %Extension @extension{EXT,transform_feedback}
 @requires_gles30 Only sample queries are available on OpenGL ES 2.0.
 */
 class MAGNUM_EXPORT Query: public AbstractQuery {
@@ -144,7 +145,7 @@ class MAGNUM_EXPORT Query: public AbstractQuery {
 
             /**
              * Elapsed time
-             * @requires_gl33 Extension @extension{ARB,timer_query}
+             * @requires_gl33 %Extension @extension{ARB,timer_query}
              * @requires_gl Only transform feedback query is available in
              *      OpenGL ES.
              */
@@ -227,7 +228,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
 
             /**
              * Whether any samples passed from fragment shader
-             * @requires_gl33 Extension @extension{ARB,occlusion_query2}
+             * @requires_gl33 %Extension @extension{ARB,occlusion_query2}
              */
             #ifndef MAGNUM_TARGET_GLES2
             AnySamplesPassed = GL_ANY_SAMPLES_PASSED,
@@ -240,7 +241,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
              *
              * An implementation may choose a less precise version of the
              * test at the expense of some false positives.
-             * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+             * @requires_gl43 %Extension @extension{ARB,ES3_compatibility}
              */
             #ifndef MAGNUM_TARGET_GLES2
             AnySamplesPassedConservative = GL_ANY_SAMPLES_PASSED_CONSERVATIVE
@@ -253,7 +254,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
         /**
          * @brief Conditional render mode
          *
-         * @requires_gl30 Extension @extension{NV,conditional_render}
+         * @requires_gl30 %Extension @extension{NV,conditional_render}
          * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
         enum class ConditionalRenderMode: GLenum {
@@ -298,7 +299,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
          * @brief Begin conditional rendering based on result value
          *
          * @see @fn_gl{BeginConditionalRender}
-         * @requires_gl30 Extension @extension{NV,conditional_render}
+         * @requires_gl30 %Extension @extension{NV,conditional_render}
          * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
         inline void beginConditionalRender(ConditionalRenderMode mode) {
@@ -309,7 +310,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
          * @brief End conditional render
          *
          * @see @fn_gl{EndConditionalRender}
-         * @requires_gl30 Extension @extension{NV,conditional_render}
+         * @requires_gl30 %Extension @extension{NV,conditional_render}
          * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
         inline void endConditionalRender() {
@@ -352,7 +353,7 @@ GLuint timeElapsed1 = tmp-q1.result<GLuint>();
 GLuint timeElapsed2 = q3.result<GLuint>()-tmp;
 @endcode
 Using this query results in fewer OpenGL calls when doing more measures.
-@requires_gl33 Extension @extension{ARB,timer_query}
+@requires_gl33 %Extension @extension{ARB,timer_query}
 @requires_gl Timer query is not available in OpenGL ES.
 */
 class TimeQuery: public AbstractQuery {

@@ -47,28 +47,28 @@ class MAGNUM_EXPORT Shader {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Tessellation control shader
-             * @requires_gl40 Extension @extension{ARB,tessellation_shader}
+             * @requires_gl40 %Extension @extension{ARB,tessellation_shader}
              * @requires_gl Tessellation shaders are not available in OpenGL ES.
              */
             TessellationControl = GL_TESS_CONTROL_SHADER,
 
             /**
              * Tessellation evaluation shader
-             * @requires_gl40 Extension @extension{ARB,tessellation_shader}
+             * @requires_gl40 %Extension @extension{ARB,tessellation_shader}
              * @requires_gl Tessellation shaders are not available in OpenGL ES.
              */
             TessellationEvaluation = GL_TESS_EVALUATION_SHADER,
 
             /**
              * Geometry shader
-             * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+             * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
              * @requires_gl Geometry shaders are not available in OpenGL ES.
              */
             Geometry = GL_GEOMETRY_SHADER,
 
             /**
              * Compute shader
-             * @requires_gl43 Extension @extension{ARB,compute_shader}
+             * @requires_gl43 %Extension @extension{ARB,compute_shader}
              * @requires_gl Compute shaders are not available in OpenGL ES.
              */
             Compute = GL_COMPUTE_SHADER,

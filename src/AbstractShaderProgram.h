@@ -168,7 +168,7 @@ GLint transformationUniform = uniformLocation("transformation");
 GLint projectionUniform = uniformLocation("projection");
 @endcode
 
-@requires_gl43 Extension @extension{ARB,explicit_uniform_location} for
+@requires_gl43 %Extension @extension{ARB,explicit_uniform_location} for
     explicit uniform location instead of using uniformLocation().
 @requires_gl Explicit uniform location is not supported in OpenGL ES. Use
     uniformLocation() instead.
@@ -191,7 +191,7 @@ setUniform(DiffuseTextureUniform, DiffuseTextureLayer);
 setUniform(SpecularTextureUniform, SpecularTextureLayer);
 @endcode
 
-@requires_gl42 Extension @extension{ARB,shading_language_420pack} for explicit
+@requires_gl42 %Extension @extension{ARB,shading_language_420pack} for explicit
     texture layer binding instead of using setUniform(GLint, GLint).
 @requires_gl Explicit texture layer binding is not supported in OpenGL ES. Use
     setUniform(GLint, GLint) instead.
@@ -485,7 +485,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @note This function should be called after attachShader() calls and
          *      before link().
          * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_BINARY_RETRIEVABLE_HINT}
-         * @requires_gl41 Extension @extension{ARB,get_program_binary}
+         * @requires_gl41 %Extension @extension{ARB,get_program_binary}
          * @requires_gles30 Always allowed in OpenGL ES 2.0.
          */
         inline void setRetrievableBinary(bool enabled) {
@@ -500,7 +500,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @note This function should be called after attachShader() calls and
          *      before link().
          * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_SEPARABLE}
-         * @requires_gl41 Extension @extension{ARB,separate_shader_objects}
+         * @requires_gl41 %Extension @extension{ARB,separate_shader_objects}
          * @requires_es_extension %Extension @es_extension{EXT,separate_shader_objects}
          */
         inline void setSeparable(bool enabled) {
@@ -562,7 +562,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
          * @see @fn_gl{BindFragDataLocationIndexed}
-         * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+         * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
          * @requires_gl Multiple blend function inputs are not available in
          *      OpenGL ES.
          */
@@ -576,7 +576,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * The same as bindFragmentDataLocationIndexed(), but with `index` set
          * to `0`.
          * @see @fn_gl{BindFragDataLocation}
-         * @requires_gl30 Extension @extension{EXT,gpu_shader4}
+         * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
          * @requires_gl Use explicit location specification in OpenGL ES 3.0
          *      instead.
          */
@@ -659,7 +659,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl30 Extension @extension{EXT,gpu_shader4}
+         * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
         inline void setUniform(GLint location, GLuint value) {
@@ -668,7 +668,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl30 Extension @extension{EXT,gpu_shader4}
+         * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
         inline void setUniform(GLint location, const Math::Vector<2, GLuint>& value) {
@@ -677,7 +677,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl30 Extension @extension{EXT,gpu_shader4}
+         * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
         inline void setUniform(GLint location, const Math::Vector<3, GLuint>& value) {
@@ -686,7 +686,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl30 Extension @extension{EXT,gpu_shader4}
+         * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
         inline void setUniform(GLint location, const Math::Vector<4, GLuint>& value) {
@@ -697,7 +697,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, GLdouble value) {
@@ -706,7 +706,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::Vector<2, GLdouble>& value) {
@@ -715,7 +715,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::Vector<3, GLdouble>& value) {
@@ -724,7 +724,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::Vector<4, GLdouble>& value) {
@@ -800,7 +800,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::Matrix<2, GLdouble>& value) {
@@ -809,7 +809,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::Matrix<3, GLdouble>& value) {
@@ -818,7 +818,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::Matrix<4, GLdouble>& value) {
@@ -827,7 +827,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<2, 3, GLdouble>& value) {
@@ -836,7 +836,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<3, 2, GLdouble>& value) {
@@ -845,7 +845,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<2, 4, GLdouble>& value) {
@@ -854,7 +854,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<4, 2, GLdouble>& value) {
@@ -863,7 +863,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<3, 4, GLdouble>& value) {
@@ -872,7 +872,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
         inline void setUniform(GLint location, const Math::RectangularMatrix<4, 3, GLdouble>& value) {

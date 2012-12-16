@@ -21,7 +21,7 @@
 
 namespace Magnum { namespace Platform {
 
-/** @brief Extension wrangler interface */
+/** @brief %Extension wrangler interface */
 class ExtensionWrangler {
     public:
         /** @brief Whether to enable or disable experimental features */

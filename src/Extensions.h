@@ -30,7 +30,7 @@ Each extension is `struct` named hierarchically by prefix, vendor and
 extension name, for example `GL::APPLE::vertex_array_object`. Each struct has
 the same public methods as Extension class (requiredVersion(), coreVersion()
 and string(), but these structs are better suited for compile-time decisions
-rather than Extension instances. See Context::isExtensionSupported() for
+rather than %Extension instances. See Context::isExtensionSupported() for
 example usage.
 
 @see MAGNUM_ASSERT_EXTENSION_SUPPORTED()

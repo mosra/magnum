@@ -97,7 +97,7 @@ class MAGNUM_EXPORT Buffer {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Used for storing atomic counters.
-             * @requires_gl42 Extension @extension{ARB,shader_atomic_counters}
+             * @requires_gl42 %Extension @extension{ARB,shader_atomic_counters}
              * @requires_gl Atomic counters are not available in OpenGL ES.
              */
             AtomicCounter = GL_ATOMIC_COUNTER_BUFFER,
@@ -106,7 +106,7 @@ class MAGNUM_EXPORT Buffer {
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * Source for copies. See copy().
-             * @requires_gl31 Extension @extension{ARB,copy_buffer}
+             * @requires_gl31 %Extension @extension{ARB,copy_buffer}
              * @requires_gles30 Buffer copying is not available in OpenGL ES
              *      2.0.
              */
@@ -114,7 +114,7 @@ class MAGNUM_EXPORT Buffer {
 
             /**
              * Target for copies. See copy().
-             * @requires_gl31 Extension @extension{ARB,copy_buffer}
+             * @requires_gl31 %Extension @extension{ARB,copy_buffer}
              * @requires_gles30 Buffer copying is not available in OpenGL ES
              *      2.0.
              */
@@ -124,14 +124,14 @@ class MAGNUM_EXPORT Buffer {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Indirect compute dispatch commands.
-             * @requires_gl43 Extension @extension{ARB,compute_shader}
+             * @requires_gl43 %Extension @extension{ARB,compute_shader}
              * @requires_gl Compute shaders are not available in OpenGL ES.
              */
             DispatchIndirect = GL_DISPATCH_INDIRECT_BUFFER,
 
             /**
              * Used for supplying arguments for indirect drawing.
-             * @requires_gl40 Extension @extension{ARB,draw_indirect}
+             * @requires_gl40 %Extension @extension{ARB,draw_indirect}
              * @requires_gl Indirect drawing not available in OpenGL ES.
              */
             DrawIndirect = GL_DRAW_INDIRECT_BUFFER,
@@ -161,14 +161,14 @@ class MAGNUM_EXPORT Buffer {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Used for shader storage.
-             * @requires_gl43 Extension @extension{ARB,shader_storage_buffer_object}
+             * @requires_gl43 %Extension @extension{ARB,shader_storage_buffer_object}
              * @requires_gl Shader storage is not available in OpenGL ES.
              */
             ShaderStorage = GL_SHADER_STORAGE_BUFFER,
 
             /**
              * Source for texel fetches. See BufferTexture.
-             * @requires_gl31 Extension @extension{ARB,texture_buffer_object}
+             * @requires_gl31 %Extension @extension{ARB,texture_buffer_object}
              * @requires_gl Texture buffers are not available in OpenGL ES.
              */
             Texture = GL_TEXTURE_BUFFER,
@@ -177,7 +177,7 @@ class MAGNUM_EXPORT Buffer {
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * Target for transform feedback.
-             * @requires_gl30 Extension @extension{EXT,transform_feedback}
+             * @requires_gl30 %Extension @extension{EXT,transform_feedback}
              * @requires_gles30 Transform feedback is not available in OpenGL
              *      ES 2.0.
              */
@@ -185,7 +185,7 @@ class MAGNUM_EXPORT Buffer {
 
             /**
              * Used for storing uniforms.
-             * @requires_gl31 Extension @extension{ARB,uniform_buffer_object}
+             * @requires_gl31 %Extension @extension{ARB,uniform_buffer_object}
              * @requires_gles30 Uniform buffers are not available in OpenGL ES
              *      2.0.
              */
@@ -293,7 +293,7 @@ class MAGNUM_EXPORT Buffer {
          * buffers aren't already bound somewhere, they are bound to
          * `Target::CopyRead` and `Target::CopyWrite` before the copy is
          * performed.
-         * @requires_gl31 Extension @extension{ARB,copy_buffer}
+         * @requires_gl31 %Extension @extension{ARB,copy_buffer}
          * @requires_gles30 Buffer copying is not available in OpenGL ES 2.0.
          * @see @fn_gl{BindBuffer} and @fn_gl{CopyBufferSubData} or
          *      @fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}

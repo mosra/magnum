@@ -67,7 +67,7 @@ uses DSA function to avoid unnecessary calls to @fn_gl{ActiveTexture} and
 "relevant section in AbstractTexture documentation" and respective function
 documentation for more information.
 
-@requires_gl31 Extension @extension{ARB,texture_buffer_object}
+@requires_gl31 %Extension @extension{ARB,texture_buffer_object}
 @requires_gl Texture buffers are not available in OpenGL ES.
 */
 class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
@@ -147,7 +147,7 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
 
             /**
              * RGB, each component non-normalized unsigned int.
-             * @requires_gl40 Extension @extension{ARB,texture_buffer_object_rgb32}
+             * @requires_gl40 %Extension @extension{ARB,texture_buffer_object_rgb32}
              */
             RGB32UI = GL_RGB32UI,
 
@@ -162,7 +162,7 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
 
             /**
              * RGB, each component non-normalized signed int.
-             * @requires_gl40 Extension @extension{ARB,texture_buffer_object_rgb32}
+             * @requires_gl40 %Extension @extension{ARB,texture_buffer_object_rgb32}
              */
             RGB32I = GL_RGB32I,
 
@@ -186,7 +186,7 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
 
             /**
              * RGB, each component float.
-             * @requires_gl40 Extension @extension{ARB,texture_buffer_object_rgb32}
+             * @requires_gl40 %Extension @extension{ARB,texture_buffer_object_rgb32}
              */
             RGB32F = GL_RGB32F,
 

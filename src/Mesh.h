@@ -155,10 +155,10 @@ class MAGNUM_EXPORT Mesh {
          * @brief Provoking vertex
          *
          * @see setProvokingVertex()
-         * @requires_gl OpenGL ES behaves always like
-         *      <tt>ProvokingMode::%LastVertexConvention</tt>.
-         * @requires_gl32 Extension @extension{ARB,provoking_vertex}. Older
+         * @requires_gl32 %Extension @extension{ARB,provoking_vertex}. Older
          *      versions behave always like
+         *      <tt>ProvokingMode::%LastVertexConvention</tt>.
+         * @requires_gl OpenGL ES behaves always like
          *      <tt>ProvokingMode::%LastVertexConvention</tt>.
          */
         enum class ProvokingVertex: GLenum {
@@ -174,9 +174,9 @@ class MAGNUM_EXPORT Mesh {
          *
          * Initial value is <tt>ProvokingMode::%LastVertexConvention</tt>.
          * @see @fn_gl{ProvokingVertex}
-         * @requires_gl OpenGL ES behaves always like the default.
-         * @requires_gl32 Extension @extension{ARB,provoking_vertex}. Older
+         * @requires_gl32 %Extension @extension{ARB,provoking_vertex}. Older
          *      versions behave always like the default.
+         * @requires_gl OpenGL ES behaves always like the default.
          */
         inline static void setProvokingVertex(ProvokingVertex mode) {
             glProvokingVertex(static_cast<GLenum>(mode));

@@ -138,10 +138,13 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Constructor
          *
+         * Constructed automatically, see class documentation for more
+         * information.
          * @see @fn_gl{Get} with @def_gl{MAJOR_VERSION}, @def_gl{MINOR_VERSION},
          *      @fn_gl{GetString} with @def_gl{EXTENSIONS}
          */
         Context();
+
         ~Context();
 
         /** @brief Current context */
