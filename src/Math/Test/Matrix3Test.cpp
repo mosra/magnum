@@ -41,6 +41,7 @@ Matrix3Test::Matrix3Test() {
              &Matrix3Test::rotationScalingPart,
              &Matrix3Test::rotationPart,
              &Matrix3Test::vectorParts,
+             &Matrix3Test::invertedEuclidean,
              &Matrix3Test::debug,
              &Matrix3Test::configuration);
 }
@@ -171,6 +172,33 @@ void Matrix3Test::vectorParts() {
     CORRADE_COMPARE(m.right(), Vector2::xAxis(15.0f));
     CORRADE_COMPARE(m.up(), Vector2::yAxis(-3.0f));
     CORRADE_COMPARE(m.translation(), Vector2(-5.0f, 12.0f));
+}
+
+void Matrix3Test::invertedEuclidean() {
+    std::ostringstream o;
+    Error::setOutput(&o);
+
+    Matrix3 m(
+        3.0f, 5.0f, 8.0f,
+        4.0f, 4.0f, 7.0f,
+        7.0f, -1.0f, 8.0f
+    );
+    CORRADE_COMPARE(m.invertedEuclidean(), Matrix3());
+    CORRADE_COMPARE(o.str(), "Math::Matrix3::invertedEuclidean(): unexpected values on last row\n");
+
+    o.str("");
+    CORRADE_COMPARE(Matrix3::scaling(Vector2(2.0f)).invertedEuclidean(), Matrix3());
+    CORRADE_COMPARE(o.str(), "Math::Matrix3::invertedEuclidean(): the matrix doesn't represent Euclidean transformation\n");
+
+    Matrix3 actual = Matrix3::rotation(deg(-74.0f))*
+                     Matrix3::reflection(Vector2(0.5f, -2.0f).normalized())*
+                     Matrix3::translation({2.0f, -3.0f});
+    Matrix3 expected = Matrix3::translation({-2.0f, 3.0f})*
+                       Matrix3::reflection(Vector2(0.5f, -2.0f).normalized())*
+                       Matrix3::rotation(deg(74.0f));
+
+    CORRADE_COMPARE(actual.invertedEuclidean(), expected);
+    CORRADE_COMPARE(actual.invertedEuclidean(), actual.inverted());
 }
 
 void Matrix3Test::debug() {

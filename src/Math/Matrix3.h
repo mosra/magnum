@@ -186,6 +186,24 @@ template<class T> class Matrix3: public Matrix<3, T> {
         inline Vector2<T>& translation() { return (*this)[2].xy(); }
         inline constexpr Vector2<T> translation() const { return (*this)[2].xy(); } /**< @overload */
 
+        /**
+         * @brief Inverted Euclidean transformation matrix
+         *
+         * Assumes that the matrix represents Euclidean transformation (i.e.
+         * only rotation and translation, no scaling) and creates inverted
+         * matrix from transposed rotation part and negated translation part.
+         * Significantly faster than the general algorithm in inverted().
+         * @see rotationScaling() const, translation() const
+         */
+        inline Matrix3<T> invertedEuclidean() const {
+            CORRADE_ASSERT((*this)(0, 2) == T(0) && (*this)(1, 2) == T(0) && (*this)(2, 2) == T(1),
+                "Math::Matrix3::invertedEuclidean(): unexpected values on last row", {});
+            Matrix<2, T> inverseRotation = rotationScaling().transposed();
+            CORRADE_ASSERT((inverseRotation*rotationScaling() == Matrix<2, T>()),
+                "Math::Matrix3::invertedEuclidean(): the matrix doesn't represent Euclidean transformation", {});
+            return from(inverseRotation, inverseRotation*-translation());
+        }
+
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline Point2D<T> operator*(const Point2D<T>& other) const {
             return Matrix<3, T>::operator*(other);

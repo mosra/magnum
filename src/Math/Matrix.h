@@ -137,6 +137,8 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * Computed using Cramer's rule: @f[
          *      A^{-1} = \frac{1}{\det(A)} Adj(A)
          * @f]
+         *
+         * @see Matrix3::invertedEuclidean(), Matrix4::invertedEuclidean()
          */
         Matrix<size, T> inverted() const {
             Matrix<size, T> out(Zero);
