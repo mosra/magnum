@@ -17,13 +17,14 @@ cmake_dependent_option(WITH_SHADERS "Build Shaders library" OFF "NOT WITH_EVERYT
 
 cmake_dependent_option(WITH_MAGNUMINFO "Build magnum-info utility" OFF "NOT WITH_EVERYTHING" ON)
 
-option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
-cmake_dependent_option(WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "NOT WITH_MAGNUMINFO" ON)
-cmake_dependent_option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF "TARGET_GLES" OFF)
-cmake_dependent_option(WITH_GLUTAPPLICATION "Build GlutApplication library" OFF "NOT TARGET_GLES" OFF)
-option(WITH_SDL2APPLICATION "Build Sdl2Application library" OFF)
 if(${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
     option(WITH_NACLAPPLICATION "Build NaClApplication library" OFF)
+else()
+    option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
+    cmake_dependent_option(WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "NOT WITH_MAGNUMINFO" ON)
+    cmake_dependent_option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF "TARGET_GLES" OFF)
+    cmake_dependent_option(WITH_GLUTAPPLICATION "Build GlutApplication library" OFF "NOT TARGET_GLES" OFF)
+    option(WITH_SDL2APPLICATION "Build Sdl2Application library" OFF)
 endif()
 option(BUILD_TESTS "Build unit tests." OFF)
 
