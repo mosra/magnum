@@ -119,6 +119,20 @@ class MatrixTransformation2D: public AbstractTranslationRotationScaling2D<T> {
         }
 
         /**
+         * @brief Reflect object
+         * @param normal    Normal of the line through which to reflect
+         *      (normalized)
+         * @param type      Transformation type
+         * @return Pointer to self (for method chaining)
+         *
+         * Same as calling transform() with Matrix3::reflection().
+         */
+        inline MatrixTransformation2D<T>* reflect(const Math::Vector2<T>& normal, TransformationType type = TransformationType::Global) {
+            transform(Math::Matrix3<T>::reflection(normal), type);
+            return this;
+        }
+
+        /**
          * @brief Move object in stacking order
          * @param under     Sibling object under which to move or `nullptr`,
          *      if you want to move it above all.

@@ -160,6 +160,20 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
             return this;
         }
 
+        /**
+         * @brief Reflect object
+         * @param normal    Normal of the plane through which to reflect
+         *      (normalized)
+         * @param type      Transformation type
+         * @return Pointer to self (for method chaining)
+         *
+         * Same as calling transform() with Matrix4::reflection().
+         */
+        inline MatrixTransformation3D<T>* reflect(const Math::Vector3<T>& normal, TransformationType type = TransformationType::Global) {
+            transform(Math::Matrix4<T>::reflection(normal), type);
+            return this;
+        }
+
     protected:
         /* Allow construction only from Object */
         inline explicit MatrixTransformation3D() = default;
