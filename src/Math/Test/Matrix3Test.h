@@ -28,6 +28,7 @@ class Matrix3Test: public Corrade::TestSuite::Tester {
         void translation();
         void scaling();
         void rotation();
+        void fromParts();
         void rotationScalingPart();
         void rotationPart();
         void vectorParts();

@@ -39,6 +39,7 @@ Matrix4Test::Matrix4Test() {
              &Matrix4Test::rotationX,
              &Matrix4Test::rotationY,
              &Matrix4Test::rotationZ,
+             &Matrix4Test::fromParts,
              &Matrix4Test::rotationScalingPart,
              &Matrix4Test::rotationPart,
              &Matrix4Test::vectorParts,
@@ -133,6 +134,32 @@ void Matrix4Test::rotationZ() {
                     0.0f,        0.0f,        0.0f, 1.0f);
     CORRADE_COMPARE(Matrix4::rotation(rad(Math::Constants<float>::pi()/7), Vector3::zAxis()), matrix);
     CORRADE_COMPARE(Matrix4::rotationZ(rad(Math::Constants<float>::pi()/7)), matrix);
+}
+
+void Matrix4Test::fromParts() {
+    Matrix3 rotationScaling(
+        3.0f, 5.0f, 8.0f,
+        4.0f, 4.0f, 7.0f,
+        7.0f, -1.0f, 8.0f
+    );
+
+    Vector3 translation(9.0f, 4.0f, 5.0f);
+
+    Matrix4 expected(
+        3.0f, 5.0f, 8.0f, 0.0f,
+        4.0f, 4.0f, 7.0f, 0.0f,
+        7.0f, -1.0f, 8.0f, 0.0f,
+        9.0f, 4.0f, 5.0f, 1.0f
+    );
+    CORRADE_COMPARE(Matrix4::from(rotationScaling, translation), expected);
+
+    Matrix4 expectedNoTranslation(
+        3.0f, 5.0f, 8.0f, 0.0f,
+        4.0f, 4.0f, 7.0f, 0.0f,
+        7.0f, -1.0f, 8.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
+    CORRADE_COMPARE(Matrix4::from(rotationScaling), expectedNoTranslation);
 }
 
 void Matrix4Test::rotationScalingPart() {

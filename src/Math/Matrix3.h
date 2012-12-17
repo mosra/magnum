@@ -83,6 +83,23 @@ template<class T> class Matrix3: public Matrix<3, T> {
             );
         }
 
+        /**
+         * @brief Create matrix from rotation/scaling part and translation part
+         * @param rotationScaling   Rotation/scaling part (upper-left 2x2
+         *      matrix)
+         * @param translation       Translation part (first two elements of
+         *      third column)
+         *
+         * @see rotationScaling() const, translation() const
+         */
+        static Matrix3<T> from(const Matrix<2, T>& rotationScaling, const Vector2<T>& translation = Vector2<T>()) {
+            return from(
+                Vector3<T>(rotationScaling[0], T(0)),
+                Vector3<T>(rotationScaling[1], T(0)),
+                Vector3<T>(translation, T(1))
+            );
+        }
+
         /** @copydoc Matrix::Matrix(ZeroType) */
         inline constexpr explicit Matrix3(typename Matrix<3, T>::ZeroType): Matrix<3, T>(Matrix<3, T>::Zero) {}
 
@@ -107,7 +124,8 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief 2D rotation and scaling part of the matrix
          *
          * Upper-left 2x2 part of the matrix.
-         * @see rotation() const, rotation(T), Matrix4::rotationScaling() const
+         * @see from(const Matrix<2, T>&, const Vector2&), rotation() const,
+         *      rotation(T), Matrix4::rotationScaling() const
          */
         inline Matrix<2, T> rotationScaling() const {
             return Matrix<2, T>::from(

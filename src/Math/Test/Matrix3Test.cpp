@@ -36,6 +36,7 @@ Matrix3Test::Matrix3Test() {
              &Matrix3Test::translation,
              &Matrix3Test::scaling,
              &Matrix3Test::rotation,
+             &Matrix3Test::fromParts,
              &Matrix3Test::rotationScalingPart,
              &Matrix3Test::rotationPart,
              &Matrix3Test::vectorParts,
@@ -93,6 +94,29 @@ void Matrix3Test::rotation() {
     );
 
     CORRADE_COMPARE(Matrix3::rotation(deg(15.0f)), matrix);
+}
+
+void Matrix3Test::fromParts() {
+    Matrix2 rotationScaling(
+        3.0f, 5.0f,
+        4.0f, 4.0f
+    );
+
+    Vector2 translation(7.0f, -1.0f);
+
+    Matrix3 expected(
+        3.0f, 5.0f, 0.0f,
+        4.0f, 4.0f, 0.0f,
+        7.0f, -1.0f, 1.0f
+    );
+    CORRADE_COMPARE(Matrix3::from(rotationScaling, translation), expected);
+
+    Matrix3 expectedNoRotation(
+        3.0f, 5.0f, 0.0f,
+        4.0f, 4.0f, 0.0f,
+        0.0f, 0.0f, 1.0f
+    );
+    CORRADE_COMPARE(Matrix3::from(rotationScaling), expectedNoRotation);
 }
 
 void Matrix3Test::rotationScalingPart() {

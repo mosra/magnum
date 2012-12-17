@@ -173,6 +173,24 @@ template<class T> class Matrix4: public Matrix<4, T> {
             );
         }
 
+        /**
+         * @brief Create matrix from rotation/scaling part and translation part
+         * @param rotationScaling   Rotation/scaling part (upper-left 3x3
+         *      matrix)
+         * @param translation       Translation part (first three elements of
+         *      fourth column)
+         *
+         * @see rotationScaling() const, translation() const
+         */
+        static Matrix4<T> from(const Matrix<3, T>& rotationScaling, const Vector3<T>& translation = Vector3<T>()) {
+            return from(
+                Vector4<T>(rotationScaling[0], T(0)),
+                Vector4<T>(rotationScaling[1], T(0)),
+                Vector4<T>(rotationScaling[2], T(0)),
+                Vector4<T>(translation, T(1))
+            );
+        }
+
         /** @copydoc Matrix::Matrix(ZeroType) */
         inline constexpr explicit Matrix4(typename Matrix<4, T>::ZeroType): Matrix<4, T>(Matrix<4, T>::Zero) {}
 
@@ -198,8 +216,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D rotation and scaling part of the matrix
          *
          * Upper-left 3x3 part of the matrix.
-         * @see rotation() const, rotation(T, const Vector3&),
-         *      Matrix3::rotationScaling() const
+         * @see from(const Matrix<3, T>&, const Vector3&), rotation() const,
+         *      rotation(T, const Vector3&), Matrix3::rotationScaling() const
          */
         inline Matrix<3, T> rotationScaling() const {
             /* Not Matrix3, because it is for affine 2D transformations */
@@ -223,7 +241,6 @@ template<class T> class Matrix4: public Matrix<4, T> {
                 (*this)[1].xyz().normalized(),
                 (*this)[2].xyz().normalized());
         }
-
 
         /**
          * @brief Right-pointing 3D vector
