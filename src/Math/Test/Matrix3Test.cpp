@@ -36,6 +36,7 @@ Matrix3Test::Matrix3Test() {
              &Matrix3Test::translation,
              &Matrix3Test::scaling,
              &Matrix3Test::rotation,
+             &Matrix3Test::reflection,
              &Matrix3Test::fromParts,
              &Matrix3Test::rotationScalingPart,
              &Matrix3Test::rotationPart,
@@ -96,6 +97,27 @@ void Matrix3Test::rotation() {
     CORRADE_COMPARE(Matrix3::rotation(deg(15.0f)), matrix);
 }
 
+void Matrix3Test::reflection() {
+    std::ostringstream o;
+    Error::setOutput(&o);
+
+    Vector2 normal(-1.0f, 2.0f);
+
+    CORRADE_COMPARE(Matrix3::reflection(normal), Matrix3());
+    CORRADE_COMPARE(o.str(), "Math::Matrix3::reflection(): normal must be normalized\n");
+
+    Matrix3 actual = Matrix3::reflection(normal.normalized());
+    Matrix3 expected(
+        0.6f,  0.8f, 0.0f,
+        0.8f, -0.6f, 0.0f,
+        0.0f,  0.0f, 1.0f
+    );
+
+    CORRADE_COMPARE(actual*actual, Matrix3());
+    CORRADE_COMPARE(actual*normal, -normal);
+    CORRADE_COMPARE(actual, expected);
+}
+
 void Matrix3Test::fromParts() {
     Matrix2 rotationScaling(
         3.0f, 5.0f,
@@ -109,14 +131,8 @@ void Matrix3Test::fromParts() {
         4.0f, 4.0f, 0.0f,
         7.0f, -1.0f, 1.0f
     );
-    CORRADE_COMPARE(Matrix3::from(rotationScaling, translation), expected);
 
-    Matrix3 expectedNoRotation(
-        3.0f, 5.0f, 0.0f,
-        4.0f, 4.0f, 0.0f,
-        0.0f, 0.0f, 1.0f
-    );
-    CORRADE_COMPARE(Matrix3::from(rotationScaling), expectedNoRotation);
+    CORRADE_COMPARE(Matrix3::from(rotationScaling, translation), expected);
 }
 
 void Matrix3Test::rotationScalingPart() {

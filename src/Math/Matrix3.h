@@ -84,6 +84,19 @@ template<class T> class Matrix3: public Matrix<3, T> {
         }
 
         /**
+         * @brief 2D reflection matrix
+         * @param normal    Normal of the line through which to reflect
+         *      (normalized)
+         *
+         * @see Matrix4::reflection()
+         */
+        static Matrix3<T> reflection(const Vector2<T>& normal) {
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(normal.dot(), T(1)),
+                           "Math::Matrix3::reflection(): normal must be normalized", {});
+            return from(Matrix<2, T>() - T(2)*normal*normal.transposed(), {});
+        }
+
+        /**
          * @brief Create matrix from rotation/scaling part and translation part
          * @param rotationScaling   Rotation/scaling part (upper-left 2x2
          *      matrix)
@@ -92,7 +105,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          *
          * @see rotationScaling() const, translation() const
          */
-        static Matrix3<T> from(const Matrix<2, T>& rotationScaling, const Vector2<T>& translation = Vector2<T>()) {
+        static Matrix3<T> from(const Matrix<2, T>& rotationScaling, const Vector2<T>& translation) {
             return from(
                 Vector3<T>(rotationScaling[0], T(0)),
                 Vector3<T>(rotationScaling[1], T(0)),
@@ -167,7 +180,8 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief 2D translation part of the matrix
          *
          * First two elements of third column.
-         * @see translation(const Vector2&), Matrix4::translation()
+         * @see from(const Matrix<2, T>&, const Vector2&),
+         *      translation(const Vector2&), Matrix4::translation()
          */
         inline Vector2<T>& translation() { return (*this)[2].xy(); }
         inline constexpr Vector2<T> translation() const { return (*this)[2].xy(); } /**< @overload */

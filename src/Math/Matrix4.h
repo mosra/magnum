@@ -32,8 +32,6 @@ Provides functions for transformations in 3D. See Matrix3 for 2D
 transformations. See also @ref matrix-vector for brief introduction.
 @see Magnum::Matrix4, SceneGraph::MatrixTransformation3D
 @configurationvalueref{Magnum::Math::Matrix4}
-@todo Shearing
-@todo Reflection
  */
 template<class T> class Matrix4: public Matrix<4, T> {
     public:
@@ -174,6 +172,19 @@ template<class T> class Matrix4: public Matrix<4, T> {
         }
 
         /**
+         * @brief 3D reflection matrix
+         * @param normal    Normal of the plane through which to reflect
+         *      (normalized)
+         *
+         * @see Matrix3::reflection()
+         */
+        static Matrix4<T> reflection(const Vector3<T>& normal) {
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(normal.dot(), T(1)),
+                           "Math::Matrix4::reflection(): normal must be normalized", {});
+            return from(Matrix<3, T>() - T(2)*normal*normal.transposed(), {});
+        }
+
+        /**
          * @brief Create matrix from rotation/scaling part and translation part
          * @param rotationScaling   Rotation/scaling part (upper-left 3x3
          *      matrix)
@@ -182,7 +193,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * @see rotationScaling() const, translation() const
          */
-        static Matrix4<T> from(const Matrix<3, T>& rotationScaling, const Vector3<T>& translation = Vector3<T>()) {
+        static Matrix4<T> from(const Matrix<3, T>& rotationScaling, const Vector3<T>& translation) {
             return from(
                 Vector4<T>(rotationScaling[0], T(0)),
                 Vector4<T>(rotationScaling[1], T(0)),
@@ -273,7 +284,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D translation part of the matrix
          *
          * First three elements of fourth column.
-         * @see translation(const Vector3&), Matrix3::translation()
+         * @see from(const Matrix<3, T>&, const Vector3&),
+         *      translation(const Vector3&), Matrix3::translation()
          */
         inline Vector3<T>& translation() { return (*this)[3].xyz(); }
         inline constexpr Vector3<T> translation() const { return (*this)[3].xyz(); } /**< @overload */

@@ -39,6 +39,7 @@ Matrix4Test::Matrix4Test() {
              &Matrix4Test::rotationX,
              &Matrix4Test::rotationY,
              &Matrix4Test::rotationZ,
+             &Matrix4Test::reflection,
              &Matrix4Test::fromParts,
              &Matrix4Test::rotationScalingPart,
              &Matrix4Test::rotationPart,
@@ -136,6 +137,28 @@ void Matrix4Test::rotationZ() {
     CORRADE_COMPARE(Matrix4::rotationZ(rad(Math::Constants<float>::pi()/7)), matrix);
 }
 
+void Matrix4Test::reflection() {
+    std::ostringstream o;
+    Error::setOutput(&o);
+
+    Vector3 normal(-1.0f, 2.0f, 2.0f);
+
+    CORRADE_COMPARE(Matrix4::reflection(normal), Matrix4());
+    CORRADE_COMPARE(o.str(), "Math::Matrix4::reflection(): normal must be normalized\n");
+
+    Matrix4 actual = Matrix4::reflection(normal.normalized());
+    Matrix4 expected(
+        0.777778f,  0.444444f,  0.444444f, 0.0f,
+        0.444444f,  0.111111f, -0.888889f, 0.0f,
+        0.444444f, -0.888889f,  0.111111f, 0.0f,
+        0.0f,       0.0f,       0.0f,      1.0f
+    );
+
+    CORRADE_COMPARE(actual*actual, Matrix4());
+    CORRADE_COMPARE(actual*normal, -normal);
+    CORRADE_COMPARE(actual, expected);
+}
+
 void Matrix4Test::fromParts() {
     Matrix3 rotationScaling(
         3.0f, 5.0f, 8.0f,
@@ -151,15 +174,8 @@ void Matrix4Test::fromParts() {
         7.0f, -1.0f, 8.0f, 0.0f,
         9.0f, 4.0f, 5.0f, 1.0f
     );
-    CORRADE_COMPARE(Matrix4::from(rotationScaling, translation), expected);
 
-    Matrix4 expectedNoTranslation(
-        3.0f, 5.0f, 8.0f, 0.0f,
-        4.0f, 4.0f, 7.0f, 0.0f,
-        7.0f, -1.0f, 8.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
-    );
-    CORRADE_COMPARE(Matrix4::from(rotationScaling), expectedNoTranslation);
+    CORRADE_COMPARE(Matrix4::from(rotationScaling, translation), expected);
 }
 
 void Matrix4Test::rotationScalingPart() {
