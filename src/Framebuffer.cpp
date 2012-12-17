@@ -17,6 +17,7 @@
 
 #include "BufferImage.h"
 #include "Context.h"
+#include "Extensions.h"
 #include "Image.h"
 #include "Renderbuffer.h"
 #include "Texture.h"
@@ -25,6 +26,13 @@
 #include "Implementation/FramebufferState.h"
 
 namespace Magnum {
+
+Framebuffer::RenderbufferImplementation Framebuffer::renderbufferImplementation = &Framebuffer::renderbufferImplementationDefault;
+#ifndef MAGNUM_TARGET_GLES
+Framebuffer::Texture1DImplementation Framebuffer::texture1DImplementation = &Framebuffer::texture1DImplementationDefault;
+#endif
+Framebuffer::Texture2DImplementation Framebuffer::texture2DImplementation = &Framebuffer::texture2DImplementationDefault;
+Framebuffer::Texture3DImplementation Framebuffer::texture3DImplementation = &Framebuffer::texture3DImplementationDefault;
 
 Framebuffer::Framebuffer(const Vector2i& viewportPosition, const Vector2i& viewportSize) {
     _viewportPosition = viewportPosition;
@@ -54,103 +62,84 @@ void Framebuffer::mapForDraw(std::initializer_list<std::pair<GLuint, std::int8_t
     for(const auto& attachment: attachments)
         _attachments[attachment.first] = attachment.second < 0 ? GL_NONE : GL_COLOR_ATTACHMENT0 + attachment.second;
 
-    bindInternal(drawTarget);
-    /** @todo Re-enable when extension wrangler is available for ES2 */
-    #ifndef MAGNUM_TARGET_GLES2
-    glDrawBuffers(max+1, _attachments);
-    #endif
+    (this->*drawBuffersImplementation)(max+1, _attachments);
     delete[] _attachments;
 }
 
-void Framebuffer::mapForDraw(std::int8_t attachment) {
-    bindInternal(drawTarget);
-    glDrawBuffer(static_cast<GLenum>(attachment));
+void Framebuffer::attachTexture2D(DepthStencilAttachment depthStencilAttachment, Texture2D* texture, GLint mipLevel) {
+    /** @todo Check for texture target compatibility */
+    (this->*texture2DImplementation)(GLenum(depthStencilAttachment), GLenum(texture->target()), texture->id(), mipLevel);
 }
 
-void Framebuffer::mapForRead(std::uint8_t colorAttachment) {
-    bindInternal(Target::Read);
-    /** @todo Get some extension wrangler instead to avoid undeclared glReadBuffer() on ES2 */
-    #ifndef MAGNUM_TARGET_GLES2
-    glReadBuffer(GL_COLOR_ATTACHMENT0 + colorAttachment);
+void Framebuffer::attachTexture2D(std::uint8_t colorAttachment, Texture2D* texture, GLint mipLevel) {
+    /** @todo Check for texture target compatibility */
+    (this->*texture2DImplementation)(GL_COLOR_ATTACHMENT0 + colorAttachment, GLenum(texture->target()), texture->id(), mipLevel);
+}
+
+void Framebuffer::initializeContextBasedFunctionality(Context* context) {
+    #ifndef MAGNUM_TARGET_GLES
+    if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+        Debug() << "Framebuffer: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
+
+        renderbufferImplementation = &Framebuffer::renderbufferImplementationDSA;
+        texture1DImplementation = &Framebuffer::texture1DImplementationDSA;
+        texture2DImplementation = &Framebuffer::texture2DImplementationDSA;
+        texture3DImplementation = &Framebuffer::texture3DImplementationDSA;
+    }
     #else
-    static_cast<void>(colorAttachment);
+    static_cast<void>(context);
     #endif
 }
 
-void Framebuffer::attachRenderbuffer(Target target, DepthStencilAttachment depthStencilAttachment, Renderbuffer* renderbuffer) {
-    bindInternal(target);
-    glFramebufferRenderbuffer(static_cast<GLenum>(target), static_cast<GLenum>(depthStencilAttachment), GL_RENDERBUFFER, renderbuffer->id());
-}
-
-void Framebuffer::attachRenderbuffer(Target target, std::uint8_t colorAttachment, Renderbuffer* renderbuffer) {
-    bindInternal(target);
-    glFramebufferRenderbuffer(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, GL_RENDERBUFFER, renderbuffer->id());
+void Framebuffer::renderbufferImplementationDefault(GLenum attachment, Renderbuffer* renderbuffer) {
+    bindInternal(drawTarget);
+    glFramebufferRenderbuffer(static_cast<GLenum>(drawTarget), attachment, GL_RENDERBUFFER, renderbuffer->id());
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Framebuffer::attachTexture1D(Target target, DepthStencilAttachment depthStencilAttachment, Texture1D* texture, GLint mipLevel) {
-    /** @todo Check for texture target compatibility */
-    bindInternal(target);
-    glFramebufferTexture1D(static_cast<GLenum>(target), static_cast<GLenum>(depthStencilAttachment), static_cast<GLenum>(texture->target()), texture->id(), mipLevel);
+void Framebuffer::renderbufferImplementationDSA(GLenum attachment, Renderbuffer* renderbuffer) {
+    glNamedFramebufferRenderbufferEXT(_id, attachment, GL_RENDERBUFFER, renderbuffer->id());
 }
 
-void Framebuffer::attachTexture1D(Target target, std::uint8_t colorAttachment, Texture1D* texture, GLint mipLevel) {
-    /** @todo Check for texture target compatibility */
-    bindInternal(target);
-    glFramebufferTexture1D(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, static_cast<GLenum>(texture->target()), texture->id(), mipLevel);
+void Framebuffer::texture1DImplementationDefault(GLenum attachment, Texture1D* texture, GLint mipLevel) {
+    bindInternal(drawTarget);
+    glFramebufferTexture1D(static_cast<GLenum>(drawTarget), attachment, static_cast<GLenum>(texture->target()), texture->id(), mipLevel);
+}
+
+void Framebuffer::texture1DImplementationDSA(GLenum attachment, Texture1D* texture, GLint mipLevel) {
+    glNamedFramebufferTexture1DEXT(_id, attachment, GLenum(texture->target()), texture->id(), mipLevel);
 }
 #endif
 
-void Framebuffer::attachTexture2D(Target target, DepthStencilAttachment depthStencilAttachment, Texture2D* texture, GLint mipLevel) {
+void Framebuffer::texture2DImplementationDefault(GLenum attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel) {
+    bindInternal(drawTarget);
+    glFramebufferTexture2D(static_cast<GLenum>(drawTarget), attachment, textureTarget, textureId, mipLevel);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void Framebuffer::texture2DImplementationDSA(GLenum attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel) {
+    glNamedFramebufferTexture2DEXT(_id, attachment, textureTarget, textureId, mipLevel);
+}
+#endif
+
+void Framebuffer::texture3DImplementationDefault(GLenum attachment, Texture3D* texture, GLint mipLevel, GLint layer) {
     /** @todo Check for texture target compatibility */
-    bindInternal(target);
-    glFramebufferTexture2D(static_cast<GLenum>(target), static_cast<GLenum>(depthStencilAttachment), static_cast<GLenum>(texture->target()), texture->id(), mipLevel);
-}
-
-void Framebuffer::attachTexture2D(Target target, std::uint8_t colorAttachment, Texture2D* texture, GLint mipLevel) {
-    /** @todo Check for texture target compatibility */
-    bindInternal(target);
-    glFramebufferTexture2D(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, static_cast<GLenum>(texture->target()), texture->id(), mipLevel);
-}
-
-void Framebuffer::attachCubeMapTexture(Target target, DepthStencilAttachment depthStencilAttachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, GLint mipLevel) {
-    /** @todo Check for internal format compatibility */
-    bindInternal(target);
-    glFramebufferTexture2D(static_cast<GLenum>(target), static_cast<GLenum>(depthStencilAttachment), static_cast<GLenum>(coordinate), texture->id(), mipLevel);
-}
-
-void Framebuffer::attachCubeMapTexture(Target target, std::uint8_t colorAttachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, GLint mipLevel) {
-    /** @todo Check for internal format compatibility */
-    bindInternal(target);
-    glFramebufferTexture2D(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, static_cast<GLenum>(coordinate), texture->id(), mipLevel);
-}
-
-void Framebuffer::attachTexture3D(Target target, DepthStencilAttachment depthStencilAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {
-    /** @todo Check for texture target compatibility */
-    bindInternal(target);
+    bindInternal(drawTarget);
     /** @todo Get some extension wrangler for glFramebufferTexture3D() (extension only) */
     #ifndef MAGNUM_TARGET_GLES
-    glFramebufferTexture3D(static_cast<GLenum>(target), static_cast<GLenum>(depthStencilAttachment), static_cast<GLenum>(texture->target()), texture->id(), mipLevel, layer);
+    glFramebufferTexture3D(static_cast<GLenum>(drawTarget), attachment, static_cast<GLenum>(texture->target()), texture->id(), mipLevel, layer);
     #else
-    static_cast<void>(depthStencilAttachment);
+    static_cast<void>(attachment);
     static_cast<void>(texture);
     static_cast<void>(mipLevel);
     static_cast<void>(layer);
     #endif
 }
 
-void Framebuffer::attachTexture3D(Target target, std::uint8_t colorAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {
-    /** @todo Check for texture target compatibility */
-    bindInternal(target);
-    /** @todo Get some extension wrangler for glFramebufferTexture3D() (extension only) */
-    #ifndef MAGNUM_TARGET_GLES
-    glFramebufferTexture3D(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, static_cast<GLenum>(texture->target()), texture->id(), mipLevel, layer);
-    #else
-    static_cast<void>(colorAttachment);
-    static_cast<void>(texture);
-    static_cast<void>(mipLevel);
-    static_cast<void>(layer);
-    #endif
+#ifndef MAGNUM_TARGET_GLES
+void Framebuffer::texture3DImplementationDSA(GLenum attachment, Texture3D* texture, GLint mipLevel, GLint layer) {
+    glNamedFramebufferTexture3DEXT(_id, attachment, GLenum(texture->target()), texture->id(), mipLevel, layer);
 }
+#endif
 
 }

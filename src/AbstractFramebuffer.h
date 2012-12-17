@@ -255,7 +255,17 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         void MAGNUM_LOCAL bindInternal(Target target);
         void MAGNUM_LOCAL setViewportInternal();
 
-        static Target readTarget, drawTarget;
+        static MAGNUM_LOCAL Target readTarget;
+        static MAGNUM_LOCAL Target drawTarget;
+
+        typedef void(AbstractFramebuffer::*DrawBuffersImplementation)(GLsizei, const GLenum*);
+        static MAGNUM_LOCAL DrawBuffersImplementation drawBuffersImplementation;
+
+        typedef void(AbstractFramebuffer::*DrawBufferImplementation)(GLenum);
+        static DrawBufferImplementation drawBufferImplementation;
+
+        typedef void(AbstractFramebuffer::*ReadBufferImplementation)(GLenum);
+        static ReadBufferImplementation readBufferImplementation;
 
         GLuint _id;
         Vector2i _viewportPosition, _viewportSize;
@@ -263,6 +273,21 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+
+        void MAGNUM_LOCAL drawBuffersImplementationDefault(GLsizei count, const GLenum* buffers);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL drawBuffersImplementationDSA(GLsizei count, const GLenum* buffers);
+        #endif
+
+        void MAGNUM_LOCAL drawBufferImplementationDefault(GLenum buffer);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL drawBufferImplementationDSA(GLenum buffer);
+        #endif
+
+        void MAGNUM_LOCAL readBufferImplementationDefault(GLenum buffer);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL readBufferImplementationDSA(GLenum buffer);
+        #endif
 };
 
 inline AbstractFramebuffer::~AbstractFramebuffer() {}

@@ -25,6 +25,10 @@
 
 namespace Magnum {
 
+AbstractFramebuffer::DrawBuffersImplementation AbstractFramebuffer::drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDefault;
+AbstractFramebuffer::DrawBufferImplementation AbstractFramebuffer::drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDefault;
+AbstractFramebuffer::ReadBufferImplementation AbstractFramebuffer::readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDefault;
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 AbstractFramebuffer::Target AbstractFramebuffer::readTarget = AbstractFramebuffer::Target::ReadDraw;
 AbstractFramebuffer::Target AbstractFramebuffer::drawTarget = AbstractFramebuffer::Target::ReadDraw;
@@ -130,9 +134,66 @@ void AbstractFramebuffer::initializeContextBasedFunctionality(Context* context) 
         readTarget = Target::Read;
         drawTarget = Target::Draw;
     }
+
+    if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+        Debug() << "AbstractFramebuffer: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
+
+        drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDSA;
+        drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDSA;
+        readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDSA;
+    }
     #else
     static_cast<void>(context);
     #endif
 }
+
+void AbstractFramebuffer::drawBuffersImplementationDefault(GLsizei count, const GLenum* buffers) {
+    /** @todo Re-enable when extension wrangler is available for ES2 */
+    #ifndef MAGNUM_TARGET_GLES2
+    bindInternal(drawTarget);
+    glDrawBuffers(count, buffers);
+    #else
+    static_cast<void>(count);
+    static_cast<void>(buffers);
+    #endif
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::drawBuffersImplementationDSA(GLsizei count, const GLenum* buffers) {
+    glFramebufferDrawBuffersEXT(_id, count, buffers);
+}
+#endif
+
+void AbstractFramebuffer::drawBufferImplementationDefault(GLenum buffer) {
+    /** @todo Re-enable when extension wrangler is available for ES2 */
+    #ifndef MAGNUM_TARGET_GLES2
+    bindInternal(drawTarget);
+    glDrawBuffer(buffer);
+    #else
+    static_cast<void>(buffer);
+    #endif
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::drawBufferImplementationDSA(GLenum buffer) {
+    glFramebufferDrawBufferEXT(_id, buffer);
+}
+#endif
+
+void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
+    /** @todo Get some extension wrangler instead to avoid undeclared glReadBuffer() on ES2 */
+    #ifndef MAGNUM_TARGET_GLES2
+    bindInternal(readTarget);
+    glReadBuffer(buffer);
+    #else
+    static_cast<void>(buffer);
+    #endif
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::readBufferImplementationDSA(GLenum buffer) {
+    glFramebufferReadBufferEXT(_id, buffer);
+}
+#endif
 
 }

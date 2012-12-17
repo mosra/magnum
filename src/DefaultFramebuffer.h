@@ -57,6 +57,15 @@ void drawEvent() {
 
 See Framebuffer documentation for more involved usage, usage of non-default or
 multiple framebuffers.
+
+@section DefaultFramebuffer-performance-optimization Performance optimizations
+
+See also @ref AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
+
+If extension @extension{EXT,direct_state_access} is available, functions
+mapForDraw() and mapForRead() use DSA to avoid unnecessary calls to
+@fn_gl{BindFramebuffer}. See their respective documentation for more
+information.
 */
 class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
     friend class Context;
@@ -208,7 +217,12 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * framebuffer.mapForDraw({{MyShader::ColorOutput, DefaultFramebuffer::DrawAttachment::BackLeft},
          *                         {MyShader::NormalOutput, DefaultFramebuffer::DrawAttachment::None}});
          * @endcode
-         * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffers}
+         *
+         * If @extension{EXT,direct_state_access} is not available and the
+         * framebufferbuffer is not currently bound, it is bound before the
+         * operation.
+         * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffers} or
+         *      @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access}
          * @requires_gles30 Draw attachments for default framebuffer are
          *      available only in OpenGL ES 3.0.
          */
@@ -220,21 +234,34 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *
          * Similar to above function, can be used in cases when shader has
          * only one (unnamed) output.
-         * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffer}
+         *
+         * If @extension{EXT,direct_state_access} is not available and the
+         * framebufferbuffer is not currently bound, it is bound before the
+         * operation.
+         * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffer} or
+         *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access}
          * @requires_gles30 Draw attachments for default framebuffer are
          *      available only in OpenGL ES 3.0.
          */
-        void mapForDraw(DrawAttachment attachment);
+        inline void mapForDraw(DrawAttachment attachment) {
+            (this->*drawBufferImplementation)(static_cast<GLenum>(attachment));
+        }
         #endif
 
         /**
          * @brief Map given attachment for reading
          * @param attachment        Buffer attachment
          *
-         * @see mapForDraw(), @fn_gl{BindFramebuffer}, @fn_gl{ReadBuffer}
+         * If @extension{EXT,direct_state_access} is not available and the
+         * framebufferbuffer is not currently bound, it is bound before the
+         * operation.
+         * @see mapForDraw(), @fn_gl{BindFramebuffer}, @fn_gl{ReadBuffer} or
+         *      @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
-        void mapForRead(ReadAttachment attachment);
+        inline void mapForRead(ReadAttachment attachment) {
+            (this->*readBufferImplementation)(static_cast<GLenum>(attachment));
+        }
 
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);

@@ -16,11 +16,14 @@
 #include "Renderbuffer.h"
 
 #include "Context.h"
+#include "Extensions.h"
 
 #include "Implementation/State.h"
 #include "Implementation/FramebufferState.h"
 
 namespace Magnum {
+
+Renderbuffer::StorageImplementation Renderbuffer::storageImplementation = &Renderbuffer::storageImplementationDefault;
 
 Renderbuffer::~Renderbuffer() {
     /* If bound, remove itself from state */
@@ -28,11 +31,6 @@ Renderbuffer::~Renderbuffer() {
     if(binding == _id) binding = 0;
 
     glDeleteRenderbuffers(1, &_id);
-}
-
-void Renderbuffer::setStorage(Renderbuffer::InternalFormat internalFormat, const Vector2i& size) {
-    bind();
-    glRenderbufferStorage(GL_RENDERBUFFER, GLenum(internalFormat), size.x(), size.y());
 }
 
 void Renderbuffer::bind() {
@@ -43,5 +41,28 @@ void Renderbuffer::bind() {
     binding = _id;
     glBindRenderbuffer(GL_RENDERBUFFER, _id);
 }
+
+void Renderbuffer::initializeContextBasedFunctionality(Context* context) {
+    #ifndef MAGNUM_TARGET_GLES
+    if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+        Debug() << "Renderbuffer: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
+
+        storageImplementation = &Renderbuffer::storageImplementationDSA;
+    }
+    #else
+    static_cast<void>(context);
+    #endif
+}
+
+void Renderbuffer::storageImplementationDefault(Renderbuffer::InternalFormat internalFormat, const Vector2i& size) {
+    bind();
+    glRenderbufferStorage(GL_RENDERBUFFER, GLenum(internalFormat), size.x(), size.y());
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void Renderbuffer::storageImplementationDSA(Renderbuffer::InternalFormat internalFormat, const Vector2i& size) {
+    glNamedRenderbufferStorageEXT(_id, GLenum(internalFormat), size.x(), size.y());
+}
+#endif
 
 }

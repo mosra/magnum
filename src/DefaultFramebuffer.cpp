@@ -39,26 +39,10 @@ void DefaultFramebuffer::mapForDraw(std::initializer_list<std::pair<GLuint, Draw
     for(const auto& attachment: attachments)
         _attachments[attachment.first] = static_cast<GLenum>(attachment.second);
 
-    bindInternal(drawTarget);
-    glDrawBuffers(max+1, _attachments);
+    (this->*drawBuffersImplementation)(max+1, _attachments);
     delete[] _attachments;
 }
-
-void DefaultFramebuffer::mapForDraw(DrawAttachment attachment) {
-    bindInternal(drawTarget);
-    glDrawBuffer(static_cast<GLenum>(attachment));
-}
 #endif
-
-void DefaultFramebuffer::mapForRead(ReadAttachment attachment) {
-    bindInternal(readTarget);
-    /** @todo Get some extension wrangler instead to avoid undeclared glReadBuffer() on ES2 */
-    #ifndef MAGNUM_TARGET_GLES2
-    glReadBuffer(static_cast<GLenum>(attachment));
-    #else
-    static_cast<void>(attachment);
-    #endif
-}
 
 void DefaultFramebuffer::initializeContextBasedFunctionality(Context* context) {
     Implementation::FramebufferState* state = context->state()->framebuffer;

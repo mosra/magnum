@@ -19,7 +19,6 @@
  * @brief Class Magnum::Renderbuffer
  */
 
-#include "Math/Vector2.h"
 #include "Magnum.h"
 
 #include "magnumVisibility.h"
@@ -37,9 +36,15 @@ for more information.
 The engine tracks currently bound renderbuffer to avoid unnecessary calls to
 @fn_gl{BindRenderbuffer} in setStorage().
 
+If extension @extension{EXT,direct_state_access} is available, function
+setStorage() uses DSA to avoid unnecessary calls to @fn_gl{BindFramebuffer}.
+See its documentation for more information.
+
 @requires_gl30 %Extension @extension{EXT,framebuffer_object}
 */
 class MAGNUM_EXPORT Renderbuffer {
+    friend class Context;
+
     Renderbuffer(const Renderbuffer& other) = delete;
     Renderbuffer(Renderbuffer&& other) = delete;
     Renderbuffer& operator=(const Renderbuffer& other) = delete;
@@ -538,11 +543,26 @@ class MAGNUM_EXPORT Renderbuffer {
          * @param internalFormat    Internal format
          * @param size              Renderbuffer size
          *
-         * @see @fn_gl{BindRenderbuffer}, @fn_gl{RenderbufferStorage}
+         * If @extension{EXT,direct_state_access} is not available and the
+         * framebufferbuffer is not currently bound, it is bound before the
+         * operation.
+         * @see @fn_gl{BindRenderbuffer}, @fn_gl{RenderbufferStorage} or
+         *      @fn_gl_extension{NamedRenderbufferStorage,EXT,direct_state_access}
          */
-        void setStorage(InternalFormat internalFormat, const Vector2i& size);
+        inline void setStorage(InternalFormat internalFormat, const Vector2i& size) {
+            (this->*storageImplementation)(internalFormat, size);
+        }
 
     private:
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+
+        typedef void(Renderbuffer::*StorageImplementation)(InternalFormat, const Vector2i&);
+        void MAGNUM_LOCAL storageImplementationDefault(InternalFormat internalFormat, const Vector2i& size);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL storageImplementationDSA(InternalFormat internalFormat, const Vector2i& size);
+        #endif
+        static StorageImplementation storageImplementation;
+
         void MAGNUM_LOCAL bind();
 
         GLuint _id;
