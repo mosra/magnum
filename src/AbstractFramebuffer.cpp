@@ -57,6 +57,25 @@ void AbstractFramebuffer::bindInternal(Target target) {
 
     glBindFramebuffer(static_cast<GLenum>(target), _id);
 }
+
+AbstractFramebuffer::Target AbstractFramebuffer::bindInternal() {
+    Implementation::FramebufferState* state = Context::current()->state()->framebuffer;
+
+    /* Return target to which the framebuffer is already bound */
+    if(state->readBinding == _id && state->drawBinding == _id)
+        return Target::ReadDraw;
+    if(state->readBinding == _id)
+        return Target::Read;
+    if(state->drawBinding == _id)
+        return Target::Draw;
+
+    /* Or bind it, if not already */
+    state->readBinding = _id;
+    if(readTarget == Target::ReadDraw) state->drawBinding = _id;
+
+    glBindFramebuffer(GLenum(readTarget), _id);
+    return readTarget;
+}
 #endif
 
 void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Vector2i& sourceBottomLeft, const Vector2i& sourceTopRight, const Vector2i& destinationBottomLeft, const Vector2i& destinationTopRight, AbstractFramebuffer::BlitMask mask, AbstractFramebuffer::BlitFilter filter) {

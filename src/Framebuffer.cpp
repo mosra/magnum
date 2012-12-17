@@ -92,8 +92,7 @@ void Framebuffer::initializeContextBasedFunctionality(Context* context) {
 }
 
 void Framebuffer::renderbufferImplementationDefault(GLenum attachment, Renderbuffer* renderbuffer) {
-    bindInternal(drawTarget);
-    glFramebufferRenderbuffer(static_cast<GLenum>(drawTarget), attachment, GL_RENDERBUFFER, renderbuffer->id());
+    glFramebufferRenderbuffer(GLenum(bindInternal()), attachment, GL_RENDERBUFFER, renderbuffer->id());
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -102,8 +101,7 @@ void Framebuffer::renderbufferImplementationDSA(GLenum attachment, Renderbuffer*
 }
 
 void Framebuffer::texture1DImplementationDefault(GLenum attachment, Texture1D* texture, GLint mipLevel) {
-    bindInternal(drawTarget);
-    glFramebufferTexture1D(static_cast<GLenum>(drawTarget), attachment, static_cast<GLenum>(texture->target()), texture->id(), mipLevel);
+    glFramebufferTexture1D(GLenum(bindInternal()), attachment, static_cast<GLenum>(texture->target()), texture->id(), mipLevel);
 }
 
 void Framebuffer::texture1DImplementationDSA(GLenum attachment, Texture1D* texture, GLint mipLevel) {
@@ -112,8 +110,7 @@ void Framebuffer::texture1DImplementationDSA(GLenum attachment, Texture1D* textu
 #endif
 
 void Framebuffer::texture2DImplementationDefault(GLenum attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel) {
-    bindInternal(drawTarget);
-    glFramebufferTexture2D(static_cast<GLenum>(drawTarget), attachment, textureTarget, textureId, mipLevel);
+    glFramebufferTexture2D(GLenum(bindInternal()), attachment, textureTarget, textureId, mipLevel);
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -124,10 +121,9 @@ void Framebuffer::texture2DImplementationDSA(GLenum attachment, GLenum textureTa
 
 void Framebuffer::texture3DImplementationDefault(GLenum attachment, Texture3D* texture, GLint mipLevel, GLint layer) {
     /** @todo Check for texture target compatibility */
-    bindInternal(drawTarget);
     /** @todo Get some extension wrangler for glFramebufferTexture3D() (extension only) */
     #ifndef MAGNUM_TARGET_GLES
-    glFramebufferTexture3D(static_cast<GLenum>(drawTarget), attachment, static_cast<GLenum>(texture->target()), texture->id(), mipLevel, layer);
+    glFramebufferTexture3D(GLenum(bindInternal()), attachment, static_cast<GLenum>(texture->target()), texture->id(), mipLevel, layer);
     #else
     static_cast<void>(attachment);
     static_cast<void>(texture);

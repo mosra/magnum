@@ -253,6 +253,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
         void MAGNUM_LOCAL bindInternal(Target target);
+        Target MAGNUM_LOCAL bindInternal();
         void MAGNUM_LOCAL setViewportInternal();
 
         static MAGNUM_LOCAL Target readTarget;
