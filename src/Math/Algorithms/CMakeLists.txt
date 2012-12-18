@@ -1,5 +1,6 @@
 set(MagnumMathAlgorithms_HEADERS
-    GaussJordan.h)
+    GaussJordan.h
+    GramSchmidt.h)
 install(FILES ${MagnumMathAlgorithms_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Math/Algorithms)
 
 if(BUILD_TESTS)
