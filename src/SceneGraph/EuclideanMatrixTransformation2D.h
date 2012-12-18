@@ -20,6 +20,7 @@
  */
 
 #include "Math/Matrix3.h"
+#include "Math/Algorithms/GramSchmidt.h"
 #include "AbstractTranslationRotation2D.h"
 #include "Object.h"
 
@@ -75,13 +76,34 @@ class EuclideanMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
             return this;
         }
 
+        /**
+         * @brief Normalize rotation part
+         * @return Pointer to self (for method chaining)
+         *
+         * Normalizes the rotation part using Math::Algorithms::gramSchmidt()
+         * to prevent rounding errors when rotating the object subsequently.
+         */
+        EuclideanMatrixTransformation2D<T>* normalizeRotation() {
+            setTransformation(Math::Matrix3<T>::from(
+                Math::Algorithms::gramSchmidt(_transformation.rotationScaling()),
+                _transformation.translation()));
+            return this;
+        }
+
         /** @copydoc AbstractTranslationRotation2D::translate() */
         inline EuclideanMatrixTransformation2D<T>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix3<T>::translation(vector), type);
             return this;
         }
 
-        /** @copydoc AbstractTranslationRotation2D::rotate() */
+        /**
+         * @brief Rotate object
+         * @param angle     Angle in radians, counterclockwise
+         * @param type      Transformation type
+         * @return Pointer to self (for method chaining)
+         *
+         * @see deg(), rad(), normalizeRotation()
+         */
         inline EuclideanMatrixTransformation2D<T>* rotate(T angle, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix3<T>::rotation(angle), type);
             return this;

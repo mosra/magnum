@@ -20,6 +20,7 @@
  */
 
 #include "Math/Matrix4.h"
+#include "Math/Algorithms/GramSchmidt.h"
 #include "AbstractTranslationRotation3D.h"
 #include "Object.h"
 
@@ -75,13 +76,36 @@ class EuclideanMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
             return this;
         }
 
+        /**
+         * @brief Normalize rotation part
+         * @return Pointer to self (for method chaining)
+         *
+         * Normalizes the rotation part using Math::Algorithms::gramSchmidt()
+         * to prevent rounding errors when rotating the object subsequently.
+         */
+        EuclideanMatrixTransformation3D<T>* normalizeRotation() {
+            setTransformation(Math::Matrix4<T>::from(
+                Math::Algorithms::gramSchmidt(_transformation.rotationScaling()),
+                _transformation.translation()));
+            return this;
+        }
+
         /** @copydoc AbstractTranslationRotation3D::translate() */
         inline EuclideanMatrixTransformation3D<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::translation(vector), type);
             return this;
         }
 
-        /** @copydoc AbstractTranslationRotation3D::rotate() */
+        /**
+         * @brief Rotate object
+         * @param angle             Angle in radians, counterclockwise
+         * @param normalizedAxis    Normalized rotation axis
+         * @param type              Transformation type
+         * @return Pointer to self (for method chaining)
+         *
+         * @see deg(), rad(), Vector3::xAxis(), Vector3::yAxis(),
+         *      Vector3::zAxis(), normalizeRotation()
+         */
         inline EuclideanMatrixTransformation3D<T>* rotate(T angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::rotation(angle, normalizedAxis), type);
             return this;
@@ -93,7 +117,7 @@ class EuclideanMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
-         * @see deg(), rad()
+         * @see deg(), rad(), normalizeRotation()
          */
         inline EuclideanMatrixTransformation3D<T>* rotateX(T angle, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::rotationX(angle), type);
@@ -106,7 +130,7 @@ class EuclideanMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
-         * @see deg(), rad()
+         * @see deg(), rad(), normalizeRotation()
          */
         inline EuclideanMatrixTransformation3D<T>* rotateY(T angle, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::rotationY(angle), type);
@@ -119,7 +143,7 @@ class EuclideanMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
-         * @see deg(), rad()
+         * @see deg(), rad(), normalizeRotation()
          */
         inline EuclideanMatrixTransformation3D<T>* rotateZ(T angle, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::rotationZ(angle), type);
