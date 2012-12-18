@@ -73,6 +73,8 @@ avoid linker errors. See @ref compilation-speedup-hpp for more information.
 
  - @ref MatrixTransformation2D "Object<MatrixTransformation2D<GLfloat>>"
  - @ref MatrixTransformation3D "Object<MatrixTransformation3D<GLfloat>>"
+ - @ref EuclideanMatrixTransformation2D "Object<EuclideanMatrixTransformation2D<GLfloat>>"
+ - @ref EuclideanMatrixTransformation3D "Object<EuclideanMatrixTransformation3D<GLfloat>>"
 
 @see Scene, AbstractFeature, AbstractTransformation
 */

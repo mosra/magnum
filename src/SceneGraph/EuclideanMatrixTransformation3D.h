@@ -1,5 +1,5 @@
-#ifndef Magnum_SceneGraph_MatrixTransformation3D_h
-#define Magnum_SceneGraph_MatrixTransformation3D_h
+#ifndef Magnum_SceneGraph_EuclideanMatrixTransformation3D_h
+#define Magnum_SceneGraph_EuclideanMatrixTransformation3D_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,27 +16,30 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::MatrixTransformation3D
+ * @brief Class Magnum::SceneGraph::EuclideanMatrixTransformation3D
  */
 
 #include "Math/Matrix4.h"
-#include "AbstractTranslationRotationScaling3D.h"
+#include "AbstractTranslationRotation3D.h"
 #include "Object.h"
 
 namespace Magnum { namespace SceneGraph {
 
 /**
-@brief Three-dimensional transformation implemented using matrices
+@brief Three-dimensional euclidean transformation implemented using matrices
 
-Uses Math::Matrix4 as underlying type.
-@see @ref scenegraph, EuclideanMatrixTransformation3D, MatrixTransformation2D
+Unlike MatrixTransformation3D this class allows only rotation, reflection and
+translation (no scaling or setting arbitrary transformations). This allows to
+use Matrix4::invertedEuclidean() for faster computation of inverse
+transformations.
+@see @ref scenegraph, EuclideanMatrixTransformation2D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T>
 #else
 template<class T = GLfloat>
 #endif
-class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
+class EuclideanMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
     public:
         /** @brief Transformation matrix type */
         typedef typename DimensionTraits<3, T>::MatrixType DataType;
@@ -55,7 +58,7 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
         }
 
         inline static Math::Matrix4<T> inverted(const Math::Matrix4<T>& transformation) {
-            return transformation.inverted();
+            return transformation.invertedEuclidean();
         }
 
         inline Math::Matrix4<T> transformation() const {
@@ -64,47 +67,22 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
         #endif
 
         /**
-         * @brief Set transformation
+         * @brief Reset transformation to default
          * @return Pointer to self (for method chaining)
          */
-        MatrixTransformation3D<T>* setTransformation(const Math::Matrix4<T>& transformation) {
-            /* Setting transformation is forbidden for the scene */
-            /** @todo Assert for this? */
-            /** @todo Do this in some common code so we don't need to include Object? */
-            if(!static_cast<Object<MatrixTransformation3D<T>>*>(this)->isScene()) {
-                _transformation = transformation;
-                static_cast<Object<MatrixTransformation3D<T>>*>(this)->setDirty();
-            }
-
+        inline EuclideanMatrixTransformation3D<T>* resetTransformation() {
+            setTransformation({});
             return this;
         }
 
-        /**
-         * @brief Multiply transformation
-         * @param transformation    Transformation
-         * @param type              Transformation type
-         * @return Pointer to self (for method chaining)
-         */
-        inline MatrixTransformation3D<T>* transform(const Math::Matrix4<T>& transformation, TransformationType type = TransformationType::Global) {
-            setTransformation(type == TransformationType::Global ?
-                transformation*_transformation : _transformation*transformation);
-            return this;
-        }
-
-        /**
-         * @copydoc AbstractTranslationRotationScaling3D::translate()
-         * Same as calling transform() with Matrix4::translation().
-         */
-        inline MatrixTransformation3D<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) override {
+        /** @copydoc AbstractTranslationRotation3D::translate() */
+        inline EuclideanMatrixTransformation3D<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::translation(vector), type);
             return this;
         }
 
-        /**
-         * @copydoc AbstractTranslationRotationScaling3D::rotate()
-         * Same as calling transform() with Matrix4::rotation().
-         */
-        inline MatrixTransformation3D<T>* rotate(T angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) override {
+        /** @copydoc AbstractTranslationRotation3D::rotate() */
+        inline EuclideanMatrixTransformation3D<T>* rotate(T angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::rotation(angle, normalizedAxis), type);
             return this;
         }
@@ -115,10 +93,9 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
-         * Same as calling transform() with Matrix4::rotationX().
          * @see deg(), rad()
          */
-        inline MatrixTransformation3D<T>* rotateX(T angle, TransformationType type = TransformationType::Global) override {
+        inline EuclideanMatrixTransformation3D<T>* rotateX(T angle, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::rotationX(angle), type);
             return this;
         }
@@ -129,10 +106,9 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
-         * Same as calling transform() with Matrix4::rotationY().
          * @see deg(), rad()
          */
-        inline MatrixTransformation3D<T>* rotateY(T angle, TransformationType type = TransformationType::Global) override {
+        inline EuclideanMatrixTransformation3D<T>* rotateY(T angle, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::rotationY(angle), type);
             return this;
         }
@@ -143,20 +119,10 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
-         * Same as calling transform() with Matrix4::rotationZ().
          * @see deg(), rad()
          */
-        inline MatrixTransformation3D<T>* rotateZ(T angle, TransformationType type = TransformationType::Global) override {
+        inline EuclideanMatrixTransformation3D<T>* rotateZ(T angle, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::rotationZ(angle), type);
-            return this;
-        }
-
-        /**
-         * @copydoc AbstractTranslationRotationScaling3D::scale()
-         * Same as calling transform() with Matrix4::scaling().
-         */
-        inline MatrixTransformation3D<T>* scale(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) override {
-            transform(Math::Matrix4<T>::scaling(vector), type);
             return this;
         }
 
@@ -169,16 +135,31 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
          *
          * Same as calling transform() with Matrix4::reflection().
          */
-        inline MatrixTransformation3D<T>* reflect(const Math::Vector3<T>& normal, TransformationType type = TransformationType::Global) {
+        inline EuclideanMatrixTransformation3D<T>* reflect(const Math::Vector3<T>& normal, TransformationType type = TransformationType::Global) {
             transform(Math::Matrix4<T>::reflection(normal), type);
             return this;
         }
 
     protected:
         /* Allow construction only from Object */
-        inline explicit MatrixTransformation3D() = default;
+        inline explicit EuclideanMatrixTransformation3D() = default;
 
     private:
+        inline void setTransformation(const Math::Matrix4<T>& transformation) {
+            /* Setting transformation is forbidden for the scene */
+            /** @todo Assert for this? */
+            /** @todo Do this in some common code so we don't need to include Object? */
+            if(!static_cast<Object<EuclideanMatrixTransformation3D<T>>*>(this)->isScene()) {
+                _transformation = transformation;
+                static_cast<Object<EuclideanMatrixTransformation3D<T>>*>(this)->setDirty();
+            }
+        }
+
+        inline void transform(const Math::Matrix4<T>& transformation, TransformationType type) {
+            setTransformation(type == TransformationType::Global ?
+                transformation*_transformation : _transformation*transformation);
+        }
+
         Math::Matrix4<T> _transformation;
 };
 

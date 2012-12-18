@@ -89,6 +89,9 @@ template<class T = GLfloat> using Drawable2D = Drawable<2, T>;
 template<class T = GLfloat> using Drawable3D = Drawable<3, T>;
 #endif
 
+template<class T = GLfloat> class EuclideanMatrixTransformation2D;
+template<class T = GLfloat> class EuclideanMatrixTransformation3D;
+
 template<std::uint8_t dimensions, class Feature, class T = GLfloat> class FeatureGroup;
 #ifndef CORRADE_GCC46_COMPATIBILITY
 template<class Feature, class T = GLfloat> using FeatureGroup2D = FeatureGroup<2, Feature, T>;

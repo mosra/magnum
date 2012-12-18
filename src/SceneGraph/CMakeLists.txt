@@ -1,6 +1,8 @@
 set(MagnumSceneGraph_SRCS
     Animable.cpp
-    Camera.cpp)
+    Camera.cpp
+    EuclideanMatrixTransformation2D.cpp
+    EuclideanMatrixTransformation3D.cpp)
 set(MagnumSceneGraph_HEADERS
     AbstractCamera.h
     AbstractCamera.hpp
@@ -20,6 +22,8 @@ set(MagnumSceneGraph_HEADERS
     Camera3D.h
     Camera3D.hpp
     Drawable.h
+    EuclideanMatrixTransformation2D.h
+    EuclideanMatrixTransformation3D.h
     FeatureGroup.h
     MatrixTransformation2D.h
     MatrixTransformation3D.h
