@@ -38,6 +38,7 @@ VectorTest::VectorTest() {
              &VectorTest::dotSelf,
              &VectorTest::length,
              &VectorTest::normalized,
+             &VectorTest::projected,
              &VectorTest::sum,
              &VectorTest::product,
              &VectorTest::min,
@@ -91,6 +92,14 @@ void VectorTest::length() {
 
 void VectorTest::normalized() {
     CORRADE_COMPARE(Vector4(1.0f, 1.0f, 1.0f, 1.0f).normalized(), Vector4(0.5f, 0.5f, 0.5f, 0.5f));
+}
+
+void VectorTest::projected() {
+    Vector3 line(1.0f, -1.0f, 0.5f);
+    Vector3 projected = Vector3(1.0f, 2.0f, 3.0f).projected(line);
+
+    CORRADE_COMPARE(projected, Vector3(0.222222f, -0.222222f, 0.111111f));
+    CORRADE_COMPARE(projected.normalized(), line.normalized());
 }
 
 void VectorTest::sum() {

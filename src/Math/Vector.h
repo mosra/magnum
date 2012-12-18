@@ -224,6 +224,15 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
             return *this/length();
         }
 
+        /**
+         * @brief Vector projected onto another
+         *
+         * Returns vector projected onto line defined by @p other.
+         */
+        inline Vector<size, T> projected(const Vector<size, T>& other) const {
+            return other*dot(*this, other)/other.dot();
+        }
+
         /** @brief Sum of values in the vector */
         T sum() const {
             T out(0);

@@ -30,6 +30,7 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void dotSelf();
         void length();
         void normalized();
+        void projected();
         void sum();
         void product();
         void min();
