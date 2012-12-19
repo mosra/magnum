@@ -80,9 +80,6 @@ class FeatureGroup {
          * @see remove(), AbstractGroupedFeature::AbstractGroupedFeature()
          */
         FeatureGroup<dimensions, Feature, T>* add(Feature* feature) {
-            /** @todo Assert the same scene for all items? -- can't easily
-                watch when feature object is removed from hierarchy */
-
             /* Remove from previous group */
             if(feature->_group)
                 feature->_group->remove(feature);

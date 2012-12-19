@@ -37,7 +37,6 @@ void IndexedMesh::draw() {
 
     bind();
 
-    /** @todo Start at given index */
     glDrawElements(static_cast<GLenum>(primitive()), _indexCount, static_cast<GLenum>(_indexType), nullptr);
 
     unbind();

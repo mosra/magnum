@@ -32,8 +32,6 @@ template<std::size_t subdivisions> class Icosphere;
 @brief 3D icosphere primitive with zero subdivisions
 
 Indexed triangle mesh with normals.
-@todo Use own computed (and more precise) icosahedron data, not these stolen
-from Blender.
 */
 template<> class Icosphere<0>: public Trade::MeshData3D {
     public:

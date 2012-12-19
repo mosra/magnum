@@ -92,7 +92,6 @@ void Mesh::draw() {
 
     bind();
 
-    /** @todo Start at given index */
     glDrawArrays(static_cast<GLenum>(_primitive), 0, _vertexCount);
 
     unbind();

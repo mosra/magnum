@@ -228,7 +228,6 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @requires_gl Only 2D and 3D textures are available in OpenGL ES.
          */
         inline void attachTexture1D(DepthStencilAttachment depthStencilAttachment, Texture1D* texture, GLint mipLevel) {
-            /** @todo Check for texture target compatibility */
             (this->*texture1DImplementation)(GLenum(depthStencilAttachment), texture, mipLevel);
         }
 
@@ -246,7 +245,6 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @requires_gl Only 2D and 3D textures are available in OpenGL ES.
          */
         inline void attachTexture1D(std::uint8_t colorAttachment, Texture1D* texture, GLint mipLevel) {
-            /** @todo Check for texture target compatibility */
             (this->*texture1DImplementation)(GL_COLOR_ATTACHMENT0 + colorAttachment, texture, mipLevel);
         }
         #endif
