@@ -103,15 +103,13 @@ int Sdl2Application::exec() {
                 case SDL_KEYUP: {
                     KeyEvent e(static_cast<KeyEvent::Key>(event.key.keysym.sym), fixedModifiers(event.key.keysym.mod));
                     event.type == SDL_KEYDOWN ? keyPressEvent(e) : keyReleaseEvent(e);
-                    break;
-                }
+                } break;
 
                 case SDL_MOUSEBUTTONDOWN:
                 case SDL_MOUSEBUTTONUP: {
                     MouseEvent e(static_cast<MouseEvent::Button>(event.button.button), {event.button.x, event.button.y});
                     event.type == SDL_MOUSEBUTTONDOWN ? mousePressEvent(e) : mouseReleaseEvent(e);
-                    break;
-                }
+                } break;
 
                 case SDL_MOUSEWHEEL:
                     if(event.wheel.y != 0) {
