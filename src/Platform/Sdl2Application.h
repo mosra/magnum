@@ -170,7 +170,8 @@ class Sdl2Application::InputEvent {
         /**
          * @brief %Modifier
          *
-         * @see Modifiers, KeyEvent::modifiers()
+         * @see Modifiers, KeyEvent::modifiers(), MouseEvent::modifiers(),
+         *      MouseMoveEvent::modifiers()
          */
         enum class Modifier: Uint16 {
             Shift = KMOD_SHIFT,         /**< Shift */
@@ -185,7 +186,8 @@ class Sdl2Application::InputEvent {
         /**
          * @brief Set of modifiers
          *
-         * @see KeyEvent::modifiers()
+         * @see KeyEvent::modifiers(), MouseEvent::modifiers(),
+         *      MouseMoveEvent::modifiers()
          */
         typedef Corrade::Containers::EnumSet<Modifier, Uint16> Modifiers;
 

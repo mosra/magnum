@@ -136,7 +136,8 @@ macro is also aliased to MAGNUM_APPLICATION_MAIN() to save you typing.
 
 Example application, which targets both embedded Linux (using plain X and EGL)
 and desktop (using SDL2 toolkit). Thanks to static polymorphism most of the
-functions will work on both without changes:
+functions will work on both without changes, the main difference will be in
+particular *Event class implementations:
 @code
 #ifndef MAGNUM_TARGET_GLES
 #include <Platform/Sdl2Application.h>
@@ -165,7 +166,7 @@ class MyApplication: public ApplicationBase {
             // ...
         }
 
-        void keyPressEvent(Key key, Modifiers modifiers, const Vector2i& position) {
+        void keyPressEvent(KeyEvent& event) override {
             // ...
         }
 };
