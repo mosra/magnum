@@ -35,7 +35,7 @@ GlutApplication::GlutApplication(int& argc, char** argv, const std::string& titl
     glutReshapeFunc(staticViewportEvent);
     glutSpecialFunc(staticKeyEvent);
     glutMouseFunc(staticMouseEvent);
-    glutMotionFunc(staticMouseMotionEvent);
+    glutMotionFunc(staticMouseMoveEvent);
     glutDisplayFunc(staticDrawEvent);
 
     ExtensionWrangler::initialize();
@@ -45,6 +45,24 @@ GlutApplication::GlutApplication(int& argc, char** argv, const std::string& titl
 
 GlutApplication::~GlutApplication() {
     delete c;
+}
+
+void GlutApplication::staticKeyEvent(int key, int x, int y){
+    KeyEvent e(static_cast<KeyEvent::Key>(key), {x, y});
+    instance->keyPressEvent(e);
+}
+
+void GlutApplication::staticMouseEvent(int button, int state, int x, int y) {
+    MouseEvent e(static_cast<MouseEvent::Button>(button), {x, y});
+    if(state == GLUT_DOWN)
+        instance->mousePressEvent(e);
+    else
+        instance->mouseReleaseEvent(e);
+}
+
+void GlutApplication::staticMouseMoveEvent(int x, int y) {
+    MouseMoveEvent e({x, y});
+    instance->mouseMoveEvent(e);
 }
 
 }}

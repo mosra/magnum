@@ -261,7 +261,8 @@ class NaClApplication::InputEvent {
          * @brief Set event as accepted
          *
          * If the event is ignored (i.e., not set as accepted), it is
-         * propagated to the browser. By default is each event ignored.
+         * propagated elsewhere (e.g. to the browser). By default is each
+         * event ignored.
          */
         inline void setAccepted(bool accepted = true) { _accepted = accepted; }
 

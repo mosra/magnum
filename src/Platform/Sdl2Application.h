@@ -100,11 +100,7 @@ class Sdl2Application {
 
         /** @{ @name Keyboard handling */
 
-        /**
-         * @brief Key press event
-         *
-         * Called when an key is pressed. Default implementation does nothing.
-         */
+        /** @copydoc GlutApplication::keyPressEvent() */
         virtual void keyPressEvent(KeyEvent& event);
 
         /**
@@ -134,20 +130,10 @@ class Sdl2Application {
         void setMouseLocked(bool enabled);
 
     protected:
-        /**
-         * @brief Mouse press event
-         *
-         * Called when mouse button is pressed. Default implementation does
-         * nothing.
-         */
+        /** @copydoc GlutApplication::mousePressEvent() */
         virtual void mousePressEvent(MouseEvent& event);
 
-        /**
-         * @brief Mouse release event
-         *
-         * Called when mouse button is released. Default implementation does
-         * nothing.
-         */
+        /** @copydoc GlutApplication::mouseReleaseEvent() */
         virtual void mouseReleaseEvent(MouseEvent& event);
 
         /**
@@ -205,15 +191,10 @@ class Sdl2Application::InputEvent {
 
         inline virtual ~InputEvent() {}
 
-        /**
-         * @brief Set event as accepted
-         *
-         * If the event is ignored (i.e., not set as accepted), it might be
-         * propagated elsewhere. By default is each event ignored.
-         */
+        /** @copydoc GlutApplication::InputEvent::setAccepted() */
         inline void setAccepted(bool accepted = true) { _accepted = accepted; }
 
-        /** @brief Whether the event is accepted */
+        /** @copydoc GlutApplication::InputEvent::isAccepted() */
         inline bool isAccepted() { return _accepted; }
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -404,10 +385,12 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
 };
 
 /** @hideinitializer
+@brief Entry point for SDL2-based applications
 @param className Class name
 
-Can be used as equivalent to the following code to achieve better portability,
-see @ref portability-applications for more information.
+Can be used with Sdl2Application subclasses as equivalent to the following
+code to achieve better portability, see @ref portability-applications for more
+information.
 @code
 int main(int argc, char** argv) {
     className app(argc, argv);

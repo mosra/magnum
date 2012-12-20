@@ -53,6 +53,11 @@ MAGNUM_GLUTAPPLICATION_MAIN(MyApplication)
 */
 class GlutApplication {
     public:
+        class InputEvent;
+        class KeyEvent;
+        class MouseEvent;
+        class MouseMoveEvent;
+
         /**
          * @brief Constructor
          * @param argc      Count of arguments of `main()` function
@@ -79,9 +84,9 @@ class GlutApplication {
         /**
          * @brief Viewport event
          *
-         * Called when viewport size changes. You should pass the new size to
-         * Framebuffer::setViewport() (and SceneGraph::AbstractCamera::setViewport(),
-         * if using scene graph).
+         * Called when window size changes. You should pass the new size to
+         * DefaultFramebuffer::setViewport() and possibly elsewhere (cameras,
+         * other framebuffers...).
          */
         virtual void viewportEvent(const Vector2i& size) = 0;
 
@@ -119,11 +124,144 @@ class GlutApplication {
 
         /** @{ @name Keyboard handling */
 
+        /**
+         * @brief Key press event
+         *
+         * Called when an key is pressed. Default implementation does nothing.
+         */
+        virtual void keyPressEvent(KeyEvent& event);
+
+        /*@}*/
+
+        /** @{ @name Mouse handling */
+
+    public:
+        /**
+         * @brief Mouse cursor
+         *
+         * @see setMouseCursor()
+         */
+        enum class MouseCursor: int {
+            Default = GLUT_CURSOR_INHERIT,  /**< Default cursor provided by parent window */
+            None = GLUT_CURSOR_NONE         /**< No cursor */
+        };
+
+        /**
+         * @brief Enable or disable mouse tracking
+         *
+         * When mouse tracking is enabled, mouseMoveEvent() is called even
+         * when no button is pressed. Mouse tracking is disabled by default.
+         */
+        inline void setMouseTracking(bool enabled) {
+            glutPassiveMotionFunc(enabled ? staticMouseMoveEvent : nullptr);
+        }
+
+        /** @brief Set mouse cursor */
+        inline void setMouseCursor(MouseCursor cursor) {
+            glutSetCursor(static_cast<int>(cursor));
+        }
+
+        /** @brief Warp mouse cursor to given coordinates */
+        inline void warpMouseCursor(const Vector2i& position) {
+            glutWarpPointer(position.x(), position.y());
+        }
+
+    protected:
+        /**
+         * @brief Mouse press event
+         *
+         * Called when mouse button is pressed. Default implementation does
+         * nothing.
+         */
+        virtual void mousePressEvent(MouseEvent& event);
+
+        /**
+         * @brief Mouse release event
+         *
+         * Called when mouse button is released. Default implementation does
+         * nothing.
+         */
+        virtual void mouseReleaseEvent(MouseEvent& event);
+
+        /**
+         * @brief Mouse move event
+         *
+         * Called when any mouse button is pressed and mouse is moved. Default
+         * implementation does nothing.
+         * @see setMouseTracking()
+         */
+        virtual void mouseMoveEvent(MouseMoveEvent& event);
+
+        /*@}*/
+
+    private:
+        inline static void staticViewportEvent(int x, int y) {
+            instance->viewportEvent({x, y});
+        }
+
+        static void staticKeyEvent(int key, int x, int y);
+
+        static void staticMouseEvent(int button, int state, int x, int y);
+
+        static void staticMouseMoveEvent(int x, int y);
+
+        inline static void staticDrawEvent() {
+            instance->drawEvent();
+        }
+
+        static GlutApplication* instance;
+
+        Context* c;
+};
+
+/**
+@brief Base for input events
+
+@see KeyEvent, MouseEvent, MouseMoveEvent, keyPressEvent(), mousePressEvent(),
+    mouseReleaseEvent(), mouseMoveEvent()
+*/
+class GlutApplication::InputEvent {
+    InputEvent(const InputEvent& other) = delete;
+    InputEvent(InputEvent&& other) = delete;
+    InputEvent& operator=(const InputEvent& other) = delete;
+    InputEvent& operator=(InputEvent&& other) = delete;
+
+    public:
+        inline virtual ~InputEvent() {}
+
+        /**
+         * @brief Set event as accepted
+         *
+         * If the event is ignored (i.e., not set as accepted), it might be
+         * propagated elsewhere. By default is each event ignored.
+         */
+        inline void setAccepted(bool accepted = true) { _accepted = accepted; }
+
+        /** @brief Whether the event is accepted */
+        inline bool isAccepted() { return _accepted; }
+
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    protected:
+        inline InputEvent(): _accepted(false) {}
+    #endif
+
+    private:
+        bool _accepted;
+};
+
+/**
+@brief Key event
+
+@see keyPressEvent()
+*/
+class GlutApplication::KeyEvent: public GlutApplication::InputEvent {
+    friend class GlutApplication;
+
     public:
         /**
          * @brief Key
          *
-         * @see keyPressEvent()
+         * @see key()
          */
         enum class Key: int {
             Up = GLUT_KEY_UP,               /**< Up arrow */
@@ -148,27 +286,34 @@ class GlutApplication {
             PageDown = GLUT_KEY_PAGE_DOWN   /**< Page down */
         };
 
-    protected:
-        /**
-         * @brief Key press event
-         * @param key       Key pressed
-         * @param position  Cursor position
-         *
-         * Called when an key is pressed. Default implementation does nothing.
-         */
-        virtual void keyPressEvent(Key key, const Vector2i& position);
+        /** @brief Key */
+        inline Key key() const { return _key; }
 
-        /*@}*/
+        /** @brief Position */
+        inline Vector2i position() const { return _position; }
 
-        /** @{ @name Mouse handling */
+    private:
+        inline KeyEvent(Key key, const Vector2i& position): _key(key), _position(position) {}
+
+        const Key _key;
+        const Vector2i _position;
+};
+
+/**
+@brief Mouse event
+
+@see MouseMoveEvent, mousePressEvent(), mouseReleaseEvent()
+*/
+class GlutApplication::MouseEvent: public GlutApplication::InputEvent {
+    friend class GlutApplication;
 
     public:
         /**
          * @brief Mouse button
          *
-         * @see mousePressEvent(), mouseReleaseEvent()
+         * @see button()
          */
-        enum class MouseButton: int {
+        enum class Button: int {
             Left = GLUT_LEFT_BUTTON,        /**< Left button */
             Middle = GLUT_MIDDLE_BUTTON,    /**< Middle button */
             Right = GLUT_RIGHT_BUTTON,      /**< Right button */
@@ -176,98 +321,44 @@ class GlutApplication {
             WheelDown = 4                   /**< Wheel down */
         };
 
-        /**
-         * @brief Mouse cursor
-         *
-         * @see setMouseCursor()
-         */
-        enum class MouseCursor: int {
-            Default = GLUT_CURSOR_INHERIT,  /**< Default cursor provided by parent window */
-            None = GLUT_CURSOR_NONE         /**< No cursor */
-        };
+        /** @brief Button */
+        inline Button button() const { return _button; }
 
-        /**
-         * @brief Enable or disable mouse tracking
-         *
-         * When mouse tracking is enabled, mouseMoveEvent() is called even
-         * when no button is pressed. Mouse tracking is disabled by default.
-         */
-        inline void setMouseTracking(bool enabled) {
-            glutPassiveMotionFunc(enabled ? staticMouseMotionEvent : nullptr);
-        }
-
-        /** @brief Set mouse cursor */
-        inline void setMouseCursor(MouseCursor cursor) {
-            glutSetCursor(static_cast<int>(cursor));
-        }
-
-        /** @brief Warp mouse cursor to given coordinates */
-        inline void warpMouseCursor(const Vector2i& position) {
-            glutWarpPointer(position.x(), position.y());
-        }
-
-    protected:
-        /**
-         * @brief Mouse press event
-         *
-         * Called when mouse button is pressed. Default implementation does
-         * nothing.
-         */
-        virtual void mousePressEvent(MouseButton button, const Vector2i& position);
-
-        /**
-         * @brief Mouse release event
-         *
-         * Called when mouse button is released. Default implementation does
-         * nothing.
-         */
-        virtual void mouseReleaseEvent(MouseButton button, const Vector2i& position);
-
-        /**
-         * @brief Mouse motion event
-         *
-         * Called when any mouse button is pressed and mouse is moved. Default
-         * implementation does nothing.
-         * @see setMouseTracking()
-         */
-        virtual void mouseMotionEvent(const Vector2i& position);
-
-        /*@}*/
+        /** @brief Position */
+        inline Vector2i position() const { return _position; }
 
     private:
-        inline static void staticViewportEvent(int x, int y) {
-            instance->viewportEvent({x, y});
-        }
+        inline MouseEvent(Button button, const Vector2i& position): _button(button), _position(position) {}
 
-        inline static void staticKeyEvent(int key, int x, int y) {
-            instance->keyPressEvent(static_cast<Key>(key), {x, y});
-        }
+        const Button _button;
+        const Vector2i _position;
+};
 
-        inline static void staticMouseEvent(int button, int state, int x, int y) {
-            if(state == GLUT_DOWN)
-                instance->mousePressEvent(static_cast<MouseButton>(button), {x, y});
-            else
-                instance->mouseReleaseEvent(static_cast<MouseButton>(button), {x, y});
-        }
+/**
+@brief Mouse move event
 
-        inline static void staticMouseMotionEvent(int x, int y) {
-            instance->mouseMotionEvent({x, y});
-        }
+@see MouseEvent, mouseMoveEvent()
+*/
+class GlutApplication::MouseMoveEvent: public GlutApplication::InputEvent {
+    friend class GlutApplication;
 
-        inline static void staticDrawEvent() {
-            instance->drawEvent();
-        }
+    public:
+        /** @brief Position */
+        inline Vector2i position() const { return _position; }
 
-        static GlutApplication* instance;
+    private:
+        inline MouseMoveEvent(const Vector2i& position): _position(position) {}
 
-        Context* c;
+        const Vector2i _position;
 };
 
 /** @hideinitializer
+@brief Entry point for GLUT-based applications
 @param className Class name
 
-Can be used as equivalent to the following code to achieve better portability,
-see @ref portability-applications for more information.
+Can be with GlutApplication subclasses used as equivalent to the following
+code to achieve better portability, see @ref portability-applications for more
+information.
 @code
 int main(int argc, char** argv) {
     className app(argc, argv);
@@ -292,10 +383,10 @@ When no other application header is included this macro is also aliased to
 #endif
 
 /* Implementations for inline functions with unused parameters */
-inline void GlutApplication::keyPressEvent(Key, const Vector2i&) {}
-inline void GlutApplication::mousePressEvent(MouseButton, const Vector2i&) {}
-inline void GlutApplication::mouseReleaseEvent(MouseButton, const Vector2i&) {}
-inline void GlutApplication::mouseMotionEvent(const Vector2i&) {}
+inline void GlutApplication::keyPressEvent(KeyEvent&) {}
+inline void GlutApplication::mousePressEvent(MouseEvent&) {}
+inline void GlutApplication::mouseReleaseEvent(MouseEvent&) {}
+inline void GlutApplication::mouseMoveEvent(MouseMoveEvent&) {}
 
 }}
 

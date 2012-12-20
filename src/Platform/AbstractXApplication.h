@@ -300,8 +300,9 @@ class AbstractXApplication {
 @brief Entry point for X11-based applications
 @param className Class name
 
-Can be used as equivalent to the following code to achieve better portability,
-see @ref portability-applications for more information.
+Can be used with AbstractXApplication subclasses as equivalent to the
+following code to achieve better portability, see @ref portability-applications
+for more information.
 @code
 int main(int argc, char** argv) {
     className app(argc, argv);
