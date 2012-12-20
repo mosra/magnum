@@ -47,6 +47,11 @@ Supports keyboard and mouse handling.
 */
 class AbstractXApplication {
     public:
+        class InputEvent;
+        class KeyEvent;
+        class MouseEvent;
+        class MouseMoveEvent;
+
         /**
          * @brief Constructor
          * @param contextHandler OpenGL context handler
@@ -94,12 +99,70 @@ class AbstractXApplication {
 
         /** @{ @name Keyboard handling */
 
+    protected:
+        /** @copydoc Sdl2Application::keyPressEvent() */
+        virtual void keyPressEvent(KeyEvent& event);
+
+        /** @copydoc Sdl2Application::keyReleaseEvent() */
+        virtual void keyReleaseEvent(KeyEvent& event);
+
+        /*@}*/
+
+        /** @{ @name Mouse handling */
+
+    protected:
+        /** @copydoc Sdl2Application::mousePressEvent() */
+        virtual void mousePressEvent(MouseEvent& event);
+
+        /** @copydoc Sdl2Application::mouseReleaseEvent() */
+        virtual void mouseReleaseEvent(MouseEvent& event);
+
+        /** @copydoc Sdl2Application::mouseMoveEvent() */
+        virtual void mouseMoveEvent(MouseMoveEvent& event);
+
+        /*@}*/
+
+    private:
+        enum class Flag: unsigned int {
+            Redraw = 1 << 0,
+            Exit = 1 << 1
+        };
+
+        typedef Corrade::Containers::EnumSet<Flag, unsigned int> Flags;
+        CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
+
+        Display* display;
+        Window window;
+        Atom deleteWindow;
+
+        AbstractContextHandler<Display*, VisualID, Window>* contextHandler;
+
+        Context* c;
+
+        /** @todo Get this from the created window */
+        Vector2i viewportSize;
+
+        Flags flags;
+};
+
+/**
+@brief Base for input events
+
+@see KeyEvent, MouseEvent, MouseMoveEvent, keyPressEvent(), keyReleaseEvent(),
+    mousePressEvent(), mouseReleaseEvent(), mouseMoveEvent()
+*/
+class AbstractXApplication::InputEvent {
+    InputEvent(const InputEvent& other) = delete;
+    InputEvent(InputEvent&& other) = delete;
+    InputEvent& operator=(const InputEvent& other) = delete;
+    InputEvent& operator=(InputEvent&& other) = delete;
+
+    public:
     public:
         /**
          * @brief %Modifier
          *
-         * @see Modifiers, keyPressEvent(), keyReleaseEvent(),
-         *      mousePressEvent(), mouseReleaseEvent(), mouseMotionEvent()
+         * @see Modifiers, modifiers()
          */
         enum class Modifier: unsigned int {
             Shift = ShiftMask,          /**< Shift */
@@ -118,14 +181,44 @@ class AbstractXApplication {
         /**
          * @brief Set of modifiers
          *
-         * @see keyPressEvent(), keyReleaseEvent()
+         * @see modifiers()
          */
         typedef Corrade::Containers::EnumSet<Modifier, unsigned int> Modifiers;
 
+        inline virtual ~InputEvent() {}
+
+        /** @copydoc GlutApplication::InputEvent::setAccepted() */
+        inline void setAccepted(bool accepted = true) { _accepted = accepted; }
+
+        /** @copydoc GlutApplication::InputEvent::isAccepted() */
+        inline bool isAccepted() { return _accepted; }
+
+        /** @brief Modifiers */
+        inline Modifiers modifiers() const { return _modifiers; }
+
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    protected:
+        inline InputEvent(Modifiers modifiers): _modifiers(modifiers), _accepted(false) {}
+    #endif
+
+    private:
+        Modifiers _modifiers;
+        bool _accepted;
+};
+
+/**
+@brief Key event
+
+@see keyPressEvent(), keyReleaseEvent()
+*/
+class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
+    friend class AbstractXApplication;
+
+    public:
         /**
          * @brief Key
          *
-         * @see keyPressEvent(), keyReleaseEvent()
+         * @see key()
          */
         enum class Key: KeySym {
             Enter = XK_Return,          /**< Enter */
@@ -200,38 +293,34 @@ class AbstractXApplication {
             Z = XK_z                    /**< Small letter Z */
         };
 
-    protected:
-        /**
-         * @brief Key press event
-         * @param key       Key pressed
-         * @param modifiers Active modifiers
-         * @param position  Cursor position
-         *
-         * Called when an key is pressed. Default implementation does nothing.
-         */
-        virtual void keyPressEvent(Key key, Modifiers modifiers, const Vector2i& position);
+        /** @brief Key */
+        inline Key key() const { return _key; }
 
-        /**
-         * @brief Key press event
-         * @param key       Key released
-         * @param modifiers Active modifiers
-         * @param position  Cursor position
-         *
-         * Called when an key is released. Default implementation does nothing.
-         */
-        virtual void keyReleaseEvent(Key key, Modifiers modifiers, const Vector2i& position);
+        /** @brief Position */
+        inline Vector2i position() const { return _position; }
 
-        /*@}*/
+    private:
+        inline KeyEvent(Key key, Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _key(key), _position(position) {}
 
-        /** @{ @name Mouse handling */
+        const Key _key;
+        const Vector2i _position;
+};
+
+/**
+@brief Mouse event
+
+@see MouseMoveEvent, mousePressEvent(), mouseReleaseEvent()
+*/
+class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent {
+    friend class AbstractXApplication;
 
     public:
         /**
          * @brief Mouse button
          *
-         * @see mousePressEvent(), mouseReleaseEvent()
+         * @see button()
          */
-        enum class MouseButton: unsigned int {
+        enum class Button: unsigned int {
             Left = Button1,         /**< Left button */
             Middle = Button2,       /**< Middle button */
             Right = Button3,        /**< Right button */
@@ -239,61 +328,35 @@ class AbstractXApplication {
             WheelDown = Button5     /**< Wheel down */
         };
 
-    protected:
-        /**
-         * @brief Mouse press event
-         * @param button    Button pressed
-         * @param modifiers Active modifiers
-         * @param position  Cursor position
-         *
-         * Called when mouse button is pressed. Default implementation does
-         * nothing.
-         */
-        virtual void mousePressEvent(MouseButton button, Modifiers modifiers, const Vector2i& position);
+        /** @brief Button */
+        inline Button button() const { return _button; }
 
-        /**
-         * @brief Mouse release event
-         * @param button    Button released
-         * @param modifiers Active modifiers
-         * @param position  Cursor position
-         *
-         * Called when mouse button is released. Default implementation does
-         * nothing.
-         */
-        virtual void mouseReleaseEvent(MouseButton button, Modifiers modifiers, const Vector2i& position);
-
-        /**
-         * @brief Mouse motion event
-         * @param modifiers Active modifiers
-         * @param position  Cursor position
-         *
-         * Called when mouse is moved.
-         */
-        virtual void mouseMotionEvent(Modifiers modifiers, const Vector2i& position);
-
-        /*@}*/
+        /** @brief Position */
+        inline Vector2i position() const { return _position; }
 
     private:
-        enum class Flag: unsigned int {
-            Redraw = 1 << 0,
-            Exit = 1 << 1
-        };
+        inline MouseEvent(Button button, Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _button(button), _position(position) {}
 
-        typedef Corrade::Containers::EnumSet<Flag, unsigned int> Flags;
-        CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
+        const Button _button;
+        const Vector2i _position;
+};
 
-        Display* display;
-        Window window;
-        Atom deleteWindow;
+/**
+@brief Mouse move event
 
-        AbstractContextHandler<Display*, VisualID, Window>* contextHandler;
+@see MouseEvent, mouseMoveEvent()
+*/
+class AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEvent {
+    friend class AbstractXApplication;
 
-        Context* c;
+    public:
+        /** @brief Position */
+        inline Vector2i position() const { return _position; }
 
-        /** @todo Get this from the created window */
-        Vector2i viewportSize;
+    private:
+        inline MouseMoveEvent(Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _position(position) {}
 
-        Flags flags;
+        const Vector2i _position;
 };
 
 /** @hideinitializer
@@ -326,15 +389,15 @@ When no other application header is included this macro is also aliased to
 #endif
 #endif
 
-CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Modifiers)
+CORRADE_ENUMSET_OPERATORS(AbstractXApplication::InputEvent::Modifiers)
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Flags)
 
 /* Implementations for inline functions with unused parameters */
-inline void AbstractXApplication::keyPressEvent(Key, Modifiers, const Vector2i&) {}
-inline void AbstractXApplication::keyReleaseEvent(Key, Modifiers, const Vector2i&) {}
-inline void AbstractXApplication::mousePressEvent(MouseButton, Modifiers, const Vector2i&) {}
-inline void AbstractXApplication::mouseReleaseEvent(MouseButton, Modifiers, const Vector2i&) {}
-inline void AbstractXApplication::mouseMotionEvent(Modifiers, const Vector2i&) {}
+inline void AbstractXApplication::keyPressEvent(KeyEvent&) {}
+inline void AbstractXApplication::keyReleaseEvent(KeyEvent&) {}
+inline void AbstractXApplication::mousePressEvent(MouseEvent&) {}
+inline void AbstractXApplication::mouseReleaseEvent(MouseEvent&) {}
+inline void AbstractXApplication::mouseMoveEvent(MouseMoveEvent&) {}
 
 }}
 

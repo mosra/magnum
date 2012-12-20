@@ -116,22 +116,21 @@ int AbstractXApplication::exec() {
 
                 /* Key/mouse events */
                 case KeyPress:
-                    keyPressEvent(static_cast<Key>(XLookupKeysym(&event.xkey, 0)), static_cast<Modifier>(event.xkey.state), {event.xkey.x, event.xkey.y});
-                    break;
-                case KeyRelease:
-                    keyReleaseEvent(static_cast<Key>(XLookupKeysym(&event.xkey, 0)), static_cast<Modifier>(event.xkey.state), {event.xkey.x, event.xkey.y});
-                    break;
+                case KeyRelease: {
+                    KeyEvent e(static_cast<KeyEvent::Key>(XLookupKeysym(&event.xkey, 0)), static_cast<InputEvent::Modifier>(event.xkey.state), {event.xkey.x, event.xkey.y});
+                    event.type == KeyPress ? keyPressEvent(e) : keyReleaseEvent(e);
+                } break;
                 case ButtonPress:
-                    mousePressEvent(static_cast<MouseButton>(event.xbutton.button), static_cast<Modifier>(event.xkey.state), {event.xbutton.x, event.xbutton.y});
-                    break;
-                case ButtonRelease:
-                    mouseReleaseEvent(static_cast<MouseButton>(event.xbutton.button), static_cast<Modifier>(event.xkey.state), {event.xbutton.x, event.xbutton.y});
-                    break;
+                case ButtonRelease: {
+                    MouseEvent e(static_cast<MouseEvent::Button>(event.xbutton.button), static_cast<InputEvent::Modifier>(event.xkey.state), {event.xbutton.x, event.xbutton.y});
+                    event.type == ButtonPress ? mousePressEvent(e) : mouseReleaseEvent(e);
+                } break;
 
                 /* Mouse move events */
-                case MotionNotify:
-                    mouseMotionEvent(static_cast<Modifier>(event.xmotion.state), {event.xmotion.x, event.xmotion.y});
-                    break;
+                case MotionNotify: {
+                    MouseMoveEvent e(static_cast<InputEvent::Modifier>(event.xmotion.state), {event.xmotion.x, event.xmotion.y});
+                    mouseMoveEvent(e);
+                } break;
             }
         }
 
