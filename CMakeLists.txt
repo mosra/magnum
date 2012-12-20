@@ -8,7 +8,7 @@ option(TARGET_GLES "Build for OpenGL ES instead of desktop OpenGL" OFF)
 cmake_dependent_option(TARGET_GLES2 "Build for OpenGL ES 2" ON "TARGET_GLES" OFF)
 
 # Parts of the library
-option(WITH_EVERYTHING "Build everything (doesn't include contexts)" ON)
+option(WITH_EVERYTHING "Build everything (doesn't include *Application libraries)" ON)
 cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" OFF "NOT WITH_EVERYTHING;NOT WITH_PHYSICS" ON)
 cmake_dependent_option(WITH_PHYSICS "Build Physics library" OFF "NOT WITH_EVERYTHING" ON)
 cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" OFF "NOT WITH_EVERYTHING;NOT WITH_PHYSICS" ON)

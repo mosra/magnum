@@ -63,25 +63,29 @@ By default the engine is built with everything except
 @ref Platform "application libraries". Using `WITH_*` CMake parameters you can
 specify which parts will be built and which not:
 
- - `WITH_EVERYTHING` - Defaults to `ON`, builds everything except window
-   contexts. If set to `OFF`, only the main library is built and you can
-   select additional libraries with the following:
+ - `WITH_EVERYTHING` - Defaults to `ON`, builds everything except application
+   libraries. If set to `OFF`, only the main library is built and you can
+   select additional components with the following:
  - `WITH_MESHTOOLS` - MeshTools library.
  - `WITH_PHYSICS` - Physics library.
  - `WITH_PRIMITIVES` - Primitives library.
  - `WITH_SCENEGRAPH` - SceneGraph library.
  - `WITH_SHADERS` - Shaders library.
+ - `WITH_MAGNUMINFO` - `magnum-info` executable, provides information about
+   Magnum engine and OpenGL capabilities.
 
 None of the application libraries is built by default, regardless to
 `WITH_EVERYTHING` is enabled or not:
 
- - `WITH_XEGLAPPLICATION` - X/EGL application, available only if targeting
+ - `WITH_XEGLAPPLICATION` - XEglApplication, available only if targeting
    OpenGL ES (see above). Requires **X11** and **EGL** libraries.
- - `WITH_GLXAPPLICATION` - GLX application. Requires **X11** and **GLX**
+ - `WITH_GLXAPPLICATION` - GlxApplication. Requires **X11** and **GLX**
    libraries.
- - `WITH_GLUTAPPLICATION` - GLUT application, available only if targeting
+ - `WITH_WINDOWLESSGLXAPPLICATION` - Windowless GLX application. Requires
+   **X11** and **GLX** libraries.
+ - `WITH_GLUTAPPLICATION` - GlutApplication, available only if targeting
    desktop OpenGL. Requires **GLUT** library.
- - `WITH_SDL2APPLICATION` - SDL2 application. Requires **SDL2** library.
+ - `WITH_SDL2APPLICATION` - Sdl2Application. Requires **SDL2** library.
 
 @subsection building-tests Building and running unit tests
 

@@ -155,7 +155,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             endif()
         endif()
 
-        # GLX application dependencies
+        # Windowless GLX application dependencies
         if(${component} STREQUAL WindowlessGlxApplication)
             find_package(X11)
             if(X11_FOUND)
