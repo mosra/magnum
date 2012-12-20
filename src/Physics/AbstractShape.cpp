@@ -31,7 +31,9 @@ template class AbstractShape<2>;
 template class AbstractShape<3>;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, AbstractShape2D::Type value) {
+namespace Implementation {
+
+Debug operator<<(Debug debug, ShapeDimensionTraits<2>::Type value) {
     switch(value) {
         #define _val(value) case AbstractShape2D::Type::value: return debug << "AbstractShape2D::Type::" #value;
         _val(Point)
@@ -48,7 +50,7 @@ Debug operator<<(Debug debug, AbstractShape2D::Type value) {
     return debug << "AbstractShape2D::Type::(unknown)";
 }
 
-Debug operator<<(Debug debug, AbstractShape3D::Type value) {
+Debug operator<<(Debug debug, ShapeDimensionTraits<3>::Type value) {
     switch(value) {
         #define _val(value) case AbstractShape3D::Type::value: return debug << "AbstractShape3D::Type::" #value;
         _val(Point)
@@ -64,6 +66,8 @@ Debug operator<<(Debug debug, AbstractShape3D::Type value) {
     }
 
     return debug << "AbstractShape2D::Type::(unknown)";
+}
+
 }
 #endif
 

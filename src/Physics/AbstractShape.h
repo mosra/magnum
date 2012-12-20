@@ -56,6 +56,9 @@ namespace Implementation {
             Plane
         };
     };
+
+    Debug MAGNUM_PHYSICS_EXPORT operator<<(Debug debug, ShapeDimensionTraits<2>::Type value);
+    Debug MAGNUM_PHYSICS_EXPORT operator<<(Debug debug, ShapeDimensionTraits<3>::Type value);
 }
 #endif
 
@@ -118,17 +121,15 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT AbstractShape {
         virtual bool collides(const AbstractShape<dimensions>* other) const;
 };
 
+
 /** @brief Abstract two-dimensional shape */
 typedef AbstractShape<2> AbstractShape2D;
 
 /** @brief Abstract three-dimensional shape */
 typedef AbstractShape<3> AbstractShape3D;
 
+#ifdef DOXYGEN_GENERATING_OUTPUT
 /** @debugoperator{Magnum::Physics::AbstractShape} */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-Debug MAGNUM_PHYSICS_EXPORT operator<<(Debug debug, AbstractShape2D::Type value);
-Debug MAGNUM_PHYSICS_EXPORT operator<<(Debug debug, AbstractShape3D::Type value);
-#else
 template<std::uint8_t dimensions> Debug operator<<(Debug debug, typename AbstractShape<dimensions>::Type value);
 #endif
 
