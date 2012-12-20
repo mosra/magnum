@@ -1,5 +1,5 @@
-#ifndef Magnum_Profiler_h
-#define Magnum_Profiler_h
+#ifndef Magnum_DebugTools_Profiler_h
+#define Magnum_DebugTools_Profiler_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Profiler
+ * @brief Class Magnum::DebugTools::Profiler
  */
 
 #include <chrono>
@@ -24,22 +24,22 @@
 #include <string>
 #include <vector>
 
-#include "magnumVisibility.h"
+#include "magnumDebugToolsVisibility.h"
 
-namespace Magnum {
+namespace Magnum { namespace DebugTools {
 
 /**
-@brief Measuring elapsed time in each frame
+@brief %Profiler
 
 Measures time passed during specified sections of each frame. It's meant to be
 used in rendering and event loops (e.g. Platform::GlutApplication::drawEvent()),
 but it's possible to use it standalone elsewhere. Example usage:
 @code
-Profiler p;
+DebugTools::Profiler p;
 
 // Register named sections
 struct {
-    Profiler::Section ai, physics, draw, bufferSwap;
+    DebugTools::Profiler::Section ai, physics, draw, bufferSwap;
 } sections;
 sections.ai = p.addSection("AI");
 sections.physics = p.addSection("Physics");
@@ -88,7 +88,7 @@ stop it again using stop(), if you are not interested in profiling the rest.
 @todo Some unit testing
 @todo More time intervals
 */
-class MAGNUM_EXPORT Profiler {
+class MAGNUM_DEBUGTOOLS_EXPORT Profiler {
     public:
         /**
          * @brief Section ID
@@ -201,6 +201,6 @@ class MAGNUM_EXPORT Profiler {
         Section currentSection;
 };
 
-}
+}}
 
 #endif

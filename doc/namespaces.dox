@@ -47,6 +47,15 @@ Various matrix and vector algorithms.
 Functions for computing intersections, distances, areas and volumes.
 */
 
+/** @dir DebugTools
+ * @brief Namespace Magnum::DebugTools
+ */
+/** @namespace Magnum::DebugTools
+@brief %Debug tools
+
+Debugging helpers, renderers and profilers.
+*/
+
 /** @dir MeshTools
  * @brief Namespace Magnum::MeshTools
  */

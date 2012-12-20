@@ -21,7 +21,7 @@
 
 #include "Magnum.h"
 
-namespace Magnum {
+namespace Magnum { namespace DebugTools {
 
 Profiler::Section Profiler::addSection(const std::string& name) {
     CORRADE_ASSERT(!enabled, "Profiler: cannot add section when profiling is enabled", 0);
@@ -108,4 +108,4 @@ void Profiler::printStatistics() {
         Debug() << ' ' << sections[totalSorted[i]] << std::chrono::microseconds(totalData[totalSorted[i]]).count()/frameCount << u8"µs";
 }
 
-}
+}}

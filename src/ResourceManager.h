@@ -15,7 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-/** @file
+/** @file /ResourceManager.h
  * @brief Class Magnum::ResourceManager, enum Magnum::ResourceDataState, Magnum::ResourcePolicy
  */
 

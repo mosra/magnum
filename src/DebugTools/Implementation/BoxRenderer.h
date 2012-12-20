@@ -1,5 +1,5 @@
-#ifndef Magnum_Physics_Implementation_BoxRenderer_h
-#define Magnum_Physics_Implementation_BoxRenderer_h
+#ifndef Magnum_DebugTools_Implementation_BoxRenderer_h
+#define Magnum_DebugTools_Implementation_BoxRenderer_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -21,16 +21,16 @@
 
 #include "corradeCompatibility.h"
 
-namespace Magnum { namespace Physics { namespace Implementation {
+namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<std::uint8_t dimensions> class BoxRenderer: public AbstractBoxRenderer<dimensions> {
     public:
-        inline BoxRenderer(Box<dimensions>& box): box(box) {}
+        inline BoxRenderer(Physics::Box<dimensions>& box): box(box) {}
 
-        void draw(Resource<Options>& options, const typename DimensionTraits<dimensions>::MatrixType& transformation, typename SceneGraph::AbstractCamera<dimensions>* camera) override;
+        void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& transformation, typename SceneGraph::AbstractCamera<dimensions>* camera) override;
 
     private:
-        Box<dimensions>& box;
+        Physics::Box<dimensions>& box;
 };
 
 }}}

@@ -175,7 +175,6 @@ typedef ImageWrapper<3> ImageWrapper3D;
 
 class IndexedMesh;
 class Mesh;
-class Profiler;
 class Query;
 class Renderbuffer;
 

@@ -1,5 +1,5 @@
-#ifndef Magnum_Physics_Implementation_AbstractDebugRenderer_h
-#define Magnum_Physics_Implementation_AbstractDebugRenderer_h
+#ifndef Magnum_DebugTools_Implementation_AbstractShapeRenderer_h
+#define Magnum_DebugTools_Implementation_AbstractShapeRenderer_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -19,18 +19,17 @@
 #include "ResourceManager.h"
 #include "SceneGraph/SceneGraph.h"
 #include "Shaders/Shaders.h"
+#include "DebugTools/DebugTools.h"
 
-namespace Magnum { namespace Physics { namespace Implementation {
+namespace Magnum { namespace DebugTools { namespace Implementation {
 
-struct Options;
-
-template<std::uint8_t dimensions> class AbstractDebugRenderer {
+template<std::uint8_t dimensions> class AbstractShapeRenderer {
     public:
-        AbstractDebugRenderer(ResourceKey shader, ResourceKey mesh);
+        AbstractShapeRenderer(ResourceKey shader, ResourceKey mesh);
 
-        virtual ~AbstractDebugRenderer();
+        virtual ~AbstractShapeRenderer();
 
-        virtual void draw(Resource<Options>& options, const typename DimensionTraits<dimensions>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions>* camera) = 0;
+        virtual void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions>* camera) = 0;
 
     protected:
         Resource<AbstractShaderProgram, Shaders::FlatShader<dimensions>> shader;

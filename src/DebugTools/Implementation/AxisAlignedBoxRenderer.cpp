@@ -16,13 +16,14 @@
 #include "AxisAlignedBoxRenderer.h"
 
 #include "Mesh.h"
-#include "Physics/DebugDrawResourceManager.h"
+#include "DebugTools/ResourceManager.h"
+#include "DebugTools/ShapeRenderer.h"
 #include "SceneGraph/AbstractCamera.h"
 #include "Shaders/FlatShader.h"
 
-namespace Magnum { namespace Physics { namespace Implementation {
+namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<std::uint8_t dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(Resource<Options>& options, const typename DimensionTraits<dimensions>::MatrixType&, typename SceneGraph::AbstractCamera<dimensions>* camera) {
+template<std::uint8_t dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType&, typename SceneGraph::AbstractCamera<dimensions>* camera) {
     typename DimensionTraits<dimensions>::MatrixType transformation =
         DimensionTraits<dimensions>::MatrixType::translation(axisAlignedBox.transformedPosition())*
         DimensionTraits<dimensions>::MatrixType::scaling(axisAlignedBox.transformedSize());

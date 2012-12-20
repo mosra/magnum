@@ -23,7 +23,6 @@ set(Magnum_SRCS
     Image.cpp
     IndexedMesh.cpp
     Mesh.cpp
-    Profiler.cpp
     Query.cpp
     Renderbuffer.cpp
     Resource.cpp
@@ -72,7 +71,6 @@ set(Magnum_HEADERS
     IndexedMesh.h
     Magnum.h
     Mesh.h
-    Profiler.h
     Query.h
     Renderbuffer.h
     Renderer.h
@@ -139,6 +137,10 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h DESTINATION ${MAGNUM
 add_subdirectory(Platform)
 add_subdirectory(Math)
 add_subdirectory(Trade)
+
+if(WITH_DEBUGTOOLS)
+    add_subdirectory(DebugTools)
+endif()
 
 if(WITH_MESHTOOLS)
     add_subdirectory(MeshTools)

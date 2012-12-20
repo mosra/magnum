@@ -16,12 +16,12 @@
 #include "AbstractBoxRenderer.h"
 
 #include "Buffer.h"
-#include "Physics/DebugDrawResourceManager.h"
+#include "DebugTools/ResourceManager.h"
 #include "Primitives/Cube.h"
 #include "Primitives/Square.h"
 #include "Shaders/FlatShader.h"
 
-namespace Magnum { namespace Physics { namespace Implementation {
+namespace Magnum { namespace DebugTools { namespace Implementation {
 
 namespace {
     template<std::uint8_t> struct BoxMesh {};
@@ -55,10 +55,10 @@ namespace {
     };
 }
 
-template<std::uint8_t dimensions> AbstractBoxRenderer<dimensions>::AbstractBoxRenderer(): AbstractDebugRenderer<dimensions>(BoxMesh<dimensions>::shader(), BoxMesh<dimensions>::key()), buffer(DebugDrawResourceManager::instance()->get<Buffer>(BoxMesh<dimensions>::key())) {
+template<std::uint8_t dimensions> AbstractBoxRenderer<dimensions>::AbstractBoxRenderer(): AbstractShapeRenderer<dimensions>(BoxMesh<dimensions>::shader(), BoxMesh<dimensions>::key()), buffer(ResourceManager::instance()->get<Buffer>(BoxMesh<dimensions>::key())) {
     if(!this->mesh) {
-        DebugDrawResourceManager::instance()->set(this->buffer.key(), new Buffer, ResourceDataState::Final, ResourcePolicy::Manual);
-        DebugDrawResourceManager::instance()->set<Mesh>(this->mesh.key(), BoxMesh<dimensions>::mesh(buffer), ResourceDataState::Final, ResourcePolicy::Manual);
+        ResourceManager::instance()->set(this->buffer.key(), new Buffer, ResourceDataState::Final, ResourcePolicy::Manual);
+        ResourceManager::instance()->set<Mesh>(this->mesh.key(), BoxMesh<dimensions>::mesh(buffer), ResourceDataState::Final, ResourcePolicy::Manual);
     }
 }
 

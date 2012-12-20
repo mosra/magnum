@@ -9,11 +9,12 @@ cmake_dependent_option(TARGET_GLES2 "Build for OpenGL ES 2" ON "TARGET_GLES" OFF
 
 # Parts of the library
 option(WITH_EVERYTHING "Build everything (doesn't include *Application libraries)" ON)
-cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" OFF "NOT WITH_EVERYTHING;NOT WITH_PHYSICS" ON)
-cmake_dependent_option(WITH_PHYSICS "Build Physics library" OFF "NOT WITH_EVERYTHING" ON)
-cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" OFF "NOT WITH_EVERYTHING;NOT WITH_PHYSICS" ON)
-cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" OFF "NOT WITH_EVERYTHING;NOT WITH_PHYSICS" ON)
-cmake_dependent_option(WITH_SHADERS "Build Shaders library" OFF "NOT WITH_EVERYTHING;NOT WITH_PHYSICS" ON)
+cmake_dependent_option(WITH_DEBUGTOOLS "Build DebugTools library" OFF "NOT WITH_EVERYTHING" ON)
+cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" OFF "NOT WITH_EVERYTHING;NOT WITH_DEBUGTOOLS" ON)
+cmake_dependent_option(WITH_PHYSICS "Build Physics library" OFF "NOT WITH_EVERYTHING;NOT WITH_DEBUGTOOLS" ON)
+cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" OFF "NOT WITH_EVERYTHING;NOT WITH_DEBUGTOOLS" ON)
+cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" OFF "NOT WITH_EVERYTHING;NOT WITH_DEBUGTOOLS" ON)
+cmake_dependent_option(WITH_SHADERS "Build Shaders library" OFF "NOT WITH_EVERYTHING;NOT WITH_DEBUGTOOLS" ON)
 
 cmake_dependent_option(WITH_MAGNUMINFO "Build magnum-info utility" OFF "NOT WITH_EVERYTHING" ON)
 

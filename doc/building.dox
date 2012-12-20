@@ -66,6 +66,8 @@ specify which parts will be built and which not:
  - `WITH_EVERYTHING` - Defaults to `ON`, builds everything except application
    libraries. If set to `OFF`, only the main library is built and you can
    select additional components with the following:
+ - `WITH_DEBUGTOOLS` - DebugTools library. Enables also building of MeshTools,
+   Physics, Primitives, SceneGraph and Shaders libraries.
  - `WITH_MESHTOOLS` - MeshTools library.
  - `WITH_PHYSICS` - Physics library.
  - `WITH_PRIMITIVES` - Primitives library.

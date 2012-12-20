@@ -15,11 +15,11 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <cstdint>
-
 /** @file
  * @brief Forward declarations for Magnum::Physics namespace
  */
+
+#include <cstdint>
 
 namespace Magnum { namespace Physics {
 
@@ -38,8 +38,6 @@ typedef Box<3> Box3D;
 template<std::uint8_t> class Capsule;
 typedef Capsule<2> Capsule2D;
 typedef Capsule<3> Capsule3D;
-
-class DebugDrawResourceManager;
 
 template<std::uint8_t> class Line;
 typedef Line<2> Line2D;

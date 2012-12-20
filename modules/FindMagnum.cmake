@@ -15,9 +15,10 @@
 # components. The base library depends on Corrade, OpenGL and GLEW
 # libraries. Additional dependencies are specified by the components. The
 # optional components are:
+#  DebugTools    - DebugTools library (depends on MeshTools, Physics,
+#                  Primitives, SceneGraph and Shaders components)
 #  MeshTools     - MeshTools library
-#  Physics       - Physics library (depends on Primitives, SceneGraph and
-#                  Shaders components)
+#  Physics       - Physics library
 #  Primitives    - Library with stock geometric primitives (static)
 #  SceneGraph    - Scene graph library
 #  Shaders       - Library with stock shaders
@@ -164,6 +165,11 @@ foreach(component ${Magnum_FIND_COMPONENTS})
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
         endif()
+    endif()
+
+    # DebugTools library
+    if(${component} STREQUAL DebugTools)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Profiler.h)
     endif()
 
     # Mesh tools library

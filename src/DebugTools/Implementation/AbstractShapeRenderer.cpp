@@ -13,20 +13,20 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractDebugRenderer.h"
+#include "AbstractShapeRenderer.h"
 
 #include "AbstractShaderProgram.h"
 #include "Mesh.h"
-#include "Physics/DebugDrawResourceManager.h"
+#include "DebugTools/ResourceManager.h"
 #include "Shaders/FlatShader.h"
 
-namespace Magnum { namespace Physics { namespace Implementation {
+namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<std::uint8_t dimensions> AbstractDebugRenderer<dimensions>::AbstractDebugRenderer(ResourceKey shader, ResourceKey mesh): shader(DebugDrawResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader<dimensions>>(shader)), mesh(DebugDrawResourceManager::instance()->get<Mesh>(mesh)) {}
+template<std::uint8_t dimensions> AbstractShapeRenderer<dimensions>::AbstractShapeRenderer(ResourceKey shader, ResourceKey mesh): shader(ResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader<dimensions>>(shader)), mesh(ResourceManager::instance()->get<Mesh>(mesh)) {}
 
-template<std::uint8_t dimensions> AbstractDebugRenderer<dimensions>::~AbstractDebugRenderer() {}
+template<std::uint8_t dimensions> AbstractShapeRenderer<dimensions>::~AbstractShapeRenderer() {}
 
-template class AbstractDebugRenderer<2>;
-template class AbstractDebugRenderer<3>;
+template class AbstractShapeRenderer<2>;
+template class AbstractShapeRenderer<3>;
 
 }}}

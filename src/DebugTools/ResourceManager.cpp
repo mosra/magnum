@@ -1,5 +1,3 @@
-#ifndef Magnum_Physics_Implementation_AbstractBoxRenderer_h
-#define Magnum_Physics_Implementation_AbstractBoxRenderer_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,22 +13,26 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractDebugRenderer.h"
+#define MAGNUM_RESOURCEMANAGER_DEFINE_INTERNALINSTANCE
 
-#include "corradeCompatibility.h"
+#include "ResourceManager.h"
 
-namespace Magnum { namespace Physics { namespace Implementation {
+#include "Buffer.h"
+#include "Mesh.h"
+#include "Shaders/FlatShader.h"
+#include "ShapeRenderer.h"
 
-template<std::uint8_t dimensions> class AbstractBoxRenderer: public AbstractDebugRenderer<dimensions> {
-    public:
-        AbstractBoxRenderer();
+namespace Magnum {
 
-        ~AbstractBoxRenderer();
+template class ResourceManager<AbstractShaderProgram, Buffer, Mesh, DebugTools::ShapeRendererOptions>;
 
-    protected:
-        Resource<Buffer> buffer;
-};
+namespace DebugTools {
 
-}}}
+ResourceManager::ResourceManager() {
+    setFallback(new ShapeRendererOptions);
+    set<AbstractShaderProgram>("shader2d", new Shaders::FlatShader<2>, ResourceDataState::Final, ResourcePolicy::Resident);
+}
 
-#endif
+ResourceManager::~ResourceManager() {}
+
+}}

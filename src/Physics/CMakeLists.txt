@@ -3,26 +3,19 @@ set(MagnumPhysics_SRCS
     AxisAlignedBox.cpp
     Box.cpp
     Capsule.cpp
-    DebugDrawResourceManager.cpp
     Line.cpp
     Plane.cpp
     Point.cpp
     ObjectShape.cpp
     ObjectShapeGroup.cpp
     ShapeGroup.cpp
-    Sphere.cpp
-
-    Implementation/AbstractBoxRenderer.cpp
-    Implementation/AbstractDebugRenderer.cpp
-    Implementation/AxisAlignedBoxRenderer.cpp
-    Implementation/BoxRenderer.cpp)
+    Sphere.cpp)
 
 set(MagnumPhysics_HEADERS
     AbstractShape.h
     AxisAlignedBox.h
     Box.h
     Capsule.h
-    DebugDrawResourceManager.h
     Line.h
     LineSegment.h
     ObjectShape.h

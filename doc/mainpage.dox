@@ -13,7 +13,7 @@ Features:
   @ref Framebuffer "framebuffer" and @ref AbstractQuery "occlusion queries".
 - @ref MeshTools "Mesh tools" for cleaning, optimizing and generating meshes,
   utility classes for @ref Color.h "color conversion", @ref Timeline "timeline"
-  and @ref Profiler "profiling".
+  and @ref DebugTools::Profiler "profiling".
 - Hierarchical @ref SceneGraph "scene graph" which supports transformation
   caching for better performance, @ref Physics "physics library" for collision
   detection and rigid body dynamics.
