@@ -114,8 +114,15 @@ template<std::uint8_t dimensions, class T = GLfloat>
 #endif
 class Drawable: public AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T> {
     public:
-        /** @copydoc AbstractGroupedFeature::AbstractGroupedFeature() */
-        inline explicit Drawable(AbstractObject<dimensions, T>* object, DrawableGroup<dimensions, T>* group = nullptr): AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>(object, group) {}
+        /**
+         * @brief Constructor
+         * @param object    %Object this drawable belongs to
+         * @param drawables Group this drawable belongs to
+         *
+         * Adds the feature to the object and also to the group, if specified.
+         * Otherwise you can use DrawableGroup::add().
+         */
+        inline explicit Drawable(AbstractObject<dimensions, T>* object, DrawableGroup<dimensions, T>* drawables = nullptr): AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>(object, drawables) {}
 
         /**
          * @brief Draw the object using given camera
