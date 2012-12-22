@@ -66,7 +66,11 @@ namespace Math {
 
     template<class T> constexpr T deg(T value);
     template<class T> constexpr T rad(T value);
-    template<class T> struct Constants;
+    template<class T> class Constants;
+
+    namespace Geometry {
+        template<class> class Rectangle;
+    }
 }
 
 /* Bring debugging facility from Corrade::Utility namespace */
@@ -116,6 +120,12 @@ typedef Math::Matrix4<GLfloat> Matrix4;
 /** @brief Floating-point constants */
 /* Using float instead of GLfloat to not break KDevelop autocompletion */
 typedef Math::Constants<float> Constants;
+
+/** @brief Floating-point rectangle */
+typedef Math::Geometry::Rectangle<GLfloat> Rectangle;
+
+/** @brief Integer rectangle */
+typedef Math::Geometry::Rectangle<GLint> Rectanglei;
 
 /* Copying angle converters from Math namespace */
 using Math::deg;
