@@ -20,6 +20,7 @@ typedefs etc. In this case a header with forward declarations is usually
 available, each namespace has its own:
 
  - Magnum.h
+ - DebugTools/DebugTools.h
  - Physics/Physics.h
  - SceneGraph/SceneGraph.h
  - Shaders/Shaders.h
