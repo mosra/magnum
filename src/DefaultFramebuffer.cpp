@@ -50,8 +50,7 @@ void DefaultFramebuffer::initializeContextBasedFunctionality(Context* context) {
     /* Initial framebuffer size */
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
-    defaultFramebuffer._viewportPosition = state->viewportPosition = {viewport[0], viewport[1]};
-    defaultFramebuffer._viewportSize = state->viewportSize = {viewport[2], viewport[3]};
+    defaultFramebuffer._viewport = state->viewport = Rectanglei::fromSize({viewport[0], viewport[1]}, {viewport[2], viewport[3]});
 }
 
 }

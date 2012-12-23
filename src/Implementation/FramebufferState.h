@@ -15,7 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Math/Vector2.h"
+#include "Math/Geometry/Rectangle.h"
 #include "Magnum.h"
 
 namespace Magnum { namespace Implementation {
@@ -24,7 +24,7 @@ struct FramebufferState {
     inline FramebufferState(): readBinding(0), drawBinding(0), renderbufferBinding(0) {}
 
     GLuint readBinding, drawBinding, renderbufferBinding;
-    Vector2i viewportPosition, viewportSize;
+    Rectanglei viewport;
 };
 
 }}

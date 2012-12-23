@@ -78,25 +78,22 @@ AbstractFramebuffer::Target AbstractFramebuffer::bindInternal() {
 }
 #endif
 
-void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Vector2i& sourceBottomLeft, const Vector2i& sourceTopRight, const Vector2i& destinationBottomLeft, const Vector2i& destinationTopRight, AbstractFramebuffer::BlitMask mask, AbstractFramebuffer::BlitFilter filter) {
+void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& sourceRectangle, const Rectanglei& destinationRectangle, AbstractFramebuffer::BlitMask mask, AbstractFramebuffer::BlitFilter filter) {
     source.bindInternal(AbstractFramebuffer::Target::Read);
     destination.bindInternal(AbstractFramebuffer::Target::Draw);
     /** @todo Get some extension wrangler instead to avoid undeclared glBlitFramebuffer() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
-    glBlitFramebuffer(sourceBottomLeft.x(), sourceBottomLeft.y(), sourceTopRight.x(), sourceTopRight.y(), destinationBottomLeft.x(), destinationBottomLeft.y(), destinationTopRight.x(), destinationTopRight.y(), static_cast<GLbitfield>(mask), static_cast<GLenum>(filter));
+    glBlitFramebuffer(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), static_cast<GLbitfield>(mask), static_cast<GLenum>(filter));
     #else
-    static_cast<void>(sourceBottomLeft);
-    static_cast<void>(sourceTopRight);
-    static_cast<void>(destinationBottomLeft);
-    static_cast<void>(destinationTopRight);
+    static_cast<void>(sourceRectangle);
+    static_cast<void>(destinationRectangle);
     static_cast<void>(mask);
     static_cast<void>(filter);
     #endif
 }
 
-void AbstractFramebuffer::setViewport(const Vector2i& position, const Vector2i& size) {
-    _viewportPosition = position;
-    _viewportSize = size;
+void AbstractFramebuffer::setViewport(const Rectanglei& rectangle) {
+    _viewport = rectangle;
 
     /* Update the viewport if the framebuffer is currently bound */
     if(Context::current()->state()->framebuffer->drawBinding == _id)
@@ -110,13 +107,12 @@ void AbstractFramebuffer::setViewportInternal() {
     CORRADE_INTERNAL_ASSERT(state->drawBinding == _id);
 
     /* Already up-to-date, nothing to do */
-    if(state->viewportPosition == _viewportPosition && state->viewportSize == _viewportSize)
+    if(state->viewport == _viewport)
         return;
 
     /* Update the state and viewport */
-    state->viewportPosition = _viewportPosition;
-    state->viewportSize = _viewportSize;
-    glViewport(_viewportPosition.x(), _viewportPosition.y(), _viewportSize.x(), _viewportSize.y());
+    state->viewport = _viewport;
+    glViewport(_viewport.left(), _viewport.bottom(), _viewport.width(), _viewport.height());
 }
 #endif
 

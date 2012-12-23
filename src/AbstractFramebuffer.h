@@ -21,7 +21,7 @@
 
 #include <Containers/EnumSet.h>
 
-#include "Math/Vector2.h"
+#include "Math/Geometry/Rectangle.h"
 #include "AbstractImage.h"
 #include "Buffer.h"
 
@@ -139,11 +139,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @brief Copy block of pixels
          * @param source            Source framebuffer
          * @param destination       Destination framebuffer
-         * @param sourceBottomLeft  Bottom left coordinates of source rectangle
-         * @param sourceTopRight    Top right coordinates of source rectangle
-         * @param destinationBottomLeft Bottom left coordinates of destination rectangle
-         * @param destinationTopRight Top right coordinates of destination
-         *      rectangle
+         * @param sourceRectangle   Source rectangle
+         * @param destinationRectangle Destination rectangle
          * @param mask              Which buffers to perform blit operation on
          * @param filter            Interpolation filter
          *
@@ -157,16 +154,13 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @requires_gl30 %Extension @extension{EXT,framebuffer_blit}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
          */
-        static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Vector2i& sourceBottomLeft, const Vector2i& sourceTopRight, const Vector2i& destinationBottomLeft, const Vector2i& destinationTopRight, BlitMask mask, BlitFilter filter);
+        static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& sourceRectangle, const Rectanglei& destinationRectangle, BlitMask mask, BlitFilter filter);
 
         /**
          * @brief Copy block of pixels
          * @param source            Source framebuffer
          * @param destination       Destination framebuffer
-         * @param bottomLeft        Bottom left coordinates of source and
-         *      destination rectangle
-         * @param topRight          Top right coordinates of source and
-         *      destination rectangle
+         * @param rectangle         Source and destination rectangle
          * @param mask              Which buffers to perform blit operation on
          *
          * Convenience alternative to above function when source rectangle is
@@ -178,8 +172,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @requires_gl30 %Extension @extension{EXT,framebuffer_blit}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
          */
-        inline static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Vector2i& bottomLeft, const Vector2i& topRight, BlitMask mask) {
-            blit(source, destination, bottomLeft, topRight, bottomLeft, topRight, mask, BlitFilter::NearestNeighbor);
+        inline static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& rectangle, BlitMask mask) {
+            blit(source, destination, rectangle, rectangle, mask, BlitFilter::NearestNeighbor);
         }
 
         explicit AbstractFramebuffer() = default;
@@ -196,21 +190,18 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          */
         void bind(Target target);
 
-        /** @brief Viewport position */
-        inline Vector2i viewportPosition() const { return _viewportPosition; }
-
-        /** @brief Viewport size */
-        inline Vector2i viewportSize() const { return _viewportSize; }
+        /** @brief Viewport rectangle */
+        inline Rectanglei viewport() const { return _viewport; }
 
         /**
-         * @brief Set viewport size
+         * @brief Set viewport
          *
-         * Saves the viewport size to be used at later time in bind(). If the
+         * Saves the viewport to be used at later time in bind(). If the
          * framebuffer is currently bound, updates the viewport to given
-         * dimensions.
+         * rectangle.
          * @see @fn_gl{Viewport}
          */
-        void setViewport(const Vector2i& position, const Vector2i& size);
+        void setViewport(const Rectanglei& rectangle);
 
         /**
          * @brief Clear specified buffers in framebuffer
@@ -231,6 +222,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @param image             %Image where to put the data
          *
          * @see @fn_gl{BindFramebuffer}, @fn_gl{ReadPixels}
+         * @todo Read size, format & type from image?
          */
         void read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, Image2D* image);
 
@@ -246,6 +238,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *
          * @see @fn_gl{BindFramebuffer}, @fn_gl{ReadPixels}
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
+         * @todo Read size, format & type from image?
          */
         void read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, BufferImage2D* image, Buffer::Usage usage);
         #endif
@@ -269,7 +262,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         static ReadBufferImplementation readBufferImplementation;
 
         GLuint _id;
-        Vector2i _viewportPosition, _viewportSize;
+        Rectanglei _viewport;
     #endif
 
     private:

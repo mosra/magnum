@@ -34,9 +34,8 @@ Framebuffer::Texture1DImplementation Framebuffer::texture1DImplementation = &Fra
 Framebuffer::Texture2DImplementation Framebuffer::texture2DImplementation = &Framebuffer::texture2DImplementationDefault;
 Framebuffer::Texture3DImplementation Framebuffer::texture3DImplementation = &Framebuffer::texture3DImplementationDefault;
 
-Framebuffer::Framebuffer(const Vector2i& viewportPosition, const Vector2i& viewportSize) {
-    _viewportPosition = viewportPosition;
-    _viewportSize = viewportSize;
+Framebuffer::Framebuffer(const Rectanglei& viewport) {
+    _viewport = viewport;
 
     glGenFramebuffers(1, &_id);
 }
