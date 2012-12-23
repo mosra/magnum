@@ -24,6 +24,7 @@ available, each namespace has its own:
  - Physics/Physics.h
  - SceneGraph/SceneGraph.h
  - Shaders/Shaders.h
+ - Text/Text.h
 
 @section compilation-speedup-templates Templates
 
