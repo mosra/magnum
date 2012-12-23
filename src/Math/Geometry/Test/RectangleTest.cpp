@@ -15,6 +15,8 @@
 
 #include "RectangleTest.h"
 
+#include <sstream>
+
 #include "Rectangle.h"
 
 CORRADE_TEST_MAIN(Magnum::Math::Geometry::Test::RectangleTest)
@@ -28,7 +30,8 @@ RectangleTest::RectangleTest() {
     addTests(&RectangleTest::access,
              &RectangleTest::compare,
              &RectangleTest::construct,
-             &RectangleTest::size);
+             &RectangleTest::size,
+             &RectangleTest::debug);
 }
 
 void RectangleTest::access() {
@@ -56,8 +59,8 @@ void RectangleTest::compare() {
 }
 
 void RectangleTest::construct() {
-    CORRADE_VERIFY(Rectanglei() == Rectanglei({0, 0}, {0, 0}));
-    CORRADE_VERIFY(Rectanglei::fromSize({3, 5}, {23, 78}) == Rectanglei({3, 5}, {26, 83}));
+    CORRADE_COMPARE(Rectanglei(), Rectanglei({0, 0}, {0, 0}));
+    CORRADE_COMPARE(Rectanglei::fromSize({3, 5}, {23, 78}), Rectanglei({3, 5}, {26, 83}));
 }
 
 void RectangleTest::size() {
@@ -66,6 +69,13 @@ void RectangleTest::size() {
     CORRADE_COMPARE(rect.size(), Vector2i(13, 7));
     CORRADE_COMPARE(rect.width(), 13);
     CORRADE_COMPARE(rect.height(), 7);
+}
+
+void RectangleTest::debug() {
+    std::ostringstream o;
+    Corrade::Utility::Debug(&o) << Rectanglei({34, 23}, {47, 30});
+
+    CORRADE_COMPARE(o.str(), "Rectangle({34, 23}, {47, 30})\n");
 }
 
 }}}}

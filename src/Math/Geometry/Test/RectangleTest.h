@@ -27,6 +27,8 @@ class RectangleTest: public Corrade::TestSuite::Tester {
         void compare();
         void construct();
         void size();
+
+        void debug();
 };
 
 }}}}
