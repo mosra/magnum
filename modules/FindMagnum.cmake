@@ -22,6 +22,7 @@
 #  Primitives    - Library with stock geometric primitives (static)
 #  SceneGraph    - Scene graph library
 #  Shaders       - Library with stock shaders
+#  TextureTools  - TextureTools library
 #  GlxApplication - GLX application (depends on X11 libraries)
 #  XEglApplication - X/EGL application (depends on EGL and X11 libraries)
 #  WindowlessGlxApplication - Windowless GLX application (depends on X11
@@ -195,6 +196,11 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     # Shaders library
     if(${component} STREQUAL Shaders)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES PhongShader.h)
+    endif()
+
+    # TextureTools library
+    if(${component} STREQUAL TextureTools)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Atlas.h)
     endif()
 
     # Try to find the includes

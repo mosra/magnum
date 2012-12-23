@@ -104,6 +104,15 @@ Collision detection system and rigid body objects. See @ref collision-detection
 for introduction.
 */
 
+/** @dir TextureTools
+ * @brief Namespace Magnum::TextureTools
+ */
+/** @namespace Magnum::TextureTools
+@brief %Texture tools
+
+Tools for generating, compressing and optimizing textures.
+*/
+
 /** @dir Trade
  * @brief Namespace Magnum::Trade
  */

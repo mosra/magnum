@@ -162,6 +162,10 @@ if(WITH_SHADERS)
     add_subdirectory(Shaders)
 endif()
 
+if(WITH_TEXTURETOOLS)
+    add_subdirectory(TextureTools)
+endif()
+
 if(BUILD_TESTS)
     enable_testing()
 

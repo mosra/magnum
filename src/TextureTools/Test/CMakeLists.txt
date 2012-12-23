@@ -1,0 +1,1 @@
+corrade_add_test(TextureToolsAtlasTest AtlasTest.cpp LIBRARIES MagnumTextureTools)
