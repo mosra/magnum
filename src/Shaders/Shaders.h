@@ -33,6 +33,10 @@ typedef FlatShader<3> FlatShader3D;
 
 class PhongShader;
 
+template<std::uint8_t> class TextShader;
+typedef TextShader<2> TextShader2D;
+typedef TextShader<3> TextShader3D;
+
 template<std::uint8_t> class VertexColorShader;
 typedef VertexColorShader<2> VertexColorShader2D;
 typedef VertexColorShader<3> VertexColorShader3D;
