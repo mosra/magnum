@@ -9,6 +9,7 @@ set(MagnumShaders_SRCS
     VertexColorShader.cpp
     ${MagnumShaders_RCS})
 set(MagnumShaders_HEADERS
+    AbstractTextShader.h
     FlatShader.h
     PhongShader.h
     Shaders.h

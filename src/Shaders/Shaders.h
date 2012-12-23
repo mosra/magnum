@@ -23,6 +23,10 @@
 
 namespace Magnum { namespace Shaders {
 
+template<std::uint8_t> class AbstractTextShader;
+typedef AbstractTextShader<2> AbstractTextShader2D;
+typedef AbstractTextShader<3> AbstractTextShader3D;
+
 template<std::uint8_t> class FlatShader;
 typedef FlatShader<2> FlatShader2D;
 typedef FlatShader<3> FlatShader3D;
