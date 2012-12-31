@@ -83,12 +83,35 @@ GLfloat AbstractTexture::maxSupportedAnisotropy() {
     return value;
 }
 
-AbstractTexture::~AbstractTexture() {
+void AbstractTexture::destroy() {
+    /* Moved out */
+    if(!_id) return;
+
     /* Remove all bindings */
     for(GLuint& binding: Context::current()->state()->texture->bindings)
         if(binding == _id) binding = 0;
 
     glDeleteTextures(1, &_id);
+}
+
+void AbstractTexture::move() {
+    _id = 0;
+}
+
+AbstractTexture::~AbstractTexture() { destroy(); }
+
+AbstractTexture::AbstractTexture(AbstractTexture&& other): _target(other._target), _id(other._id) {
+    other.move();
+}
+
+AbstractTexture& AbstractTexture::operator=(AbstractTexture&& other) {
+    destroy();
+
+    _target = other._target;
+    _id = other._id;
+
+    other.move();
+    return *this;
 }
 
 void AbstractTexture::bind(GLint layer) {

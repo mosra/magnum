@@ -55,14 +55,14 @@ can optimize the data to match your settings.
 
 @todo Add glPixelStore encapsulation
 @todo Texture copying
+@todo Move constructor/assignment - how to avoid creation of empty texture and
+    then deleting it immediately?
 */
 class MAGNUM_EXPORT AbstractTexture {
     friend class Context;
 
     AbstractTexture(const AbstractTexture& other) = delete;
-    AbstractTexture(AbstractTexture&& other) = delete;
     AbstractTexture& operator=(const AbstractTexture& other) = delete;
-    AbstractTexture& operator=(AbstractTexture&& other) = delete;
 
     public:
         /**
@@ -986,6 +986,12 @@ class MAGNUM_EXPORT AbstractTexture {
          */
         virtual ~AbstractTexture() = 0;
 
+        /** @brief Move constructor */
+        AbstractTexture(AbstractTexture&& other);
+
+        /** @brief Move assignment */
+        AbstractTexture& operator=(AbstractTexture&& other);
+
         /** @brief OpenGL texture ID */
         inline GLuint id() const { return _id; }
 
@@ -1109,7 +1115,7 @@ class MAGNUM_EXPORT AbstractTexture {
         /* Unlike bind() this also sets the binding layer as active */
         void MAGNUM_LOCAL bindInternal();
 
-        const GLenum _target;
+        GLenum _target;
         #endif
 
     private:
@@ -1183,6 +1189,9 @@ class MAGNUM_EXPORT AbstractTexture {
         void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint mipLevel, const Vector3i& offset, const Vector3i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
         void MAGNUM_LOCAL subImageImplementationDSA(GLenum target, GLint mipLevel, const Vector3i& offset, const Vector3i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
         static SubImage3DImplementation subImage3DImplementation;
+
+        void MAGNUM_LOCAL destroy();
+        void MAGNUM_LOCAL move();
 
         GLuint _id;
 };
