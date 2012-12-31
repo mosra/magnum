@@ -51,6 +51,9 @@ void RectangleTest::access() {
     CORRADE_COMPARE(crect.top(), 30);
     CORRADE_COMPARE(crect.left(), 34);
     CORRADE_COMPARE(crect.right(), 47);
+
+    CORRADE_COMPARE(rect.topLeft(), Vector2i(34, 30));
+    CORRADE_COMPARE(rect.bottomRight(), Vector2i(47, 23));
 }
 
 void RectangleTest::compare() {

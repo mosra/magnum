@@ -85,6 +85,12 @@ template<class T> class Rectangle {
         inline Vector2<T>& bottomLeft() { return _bottomLeft; }
         inline constexpr Vector2<T> bottomLeft() const { return _bottomLeft; } /**< @overload */
 
+        /** @brief Bottom right corner */
+        inline constexpr Vector2<T> bottomRight() const { return {_topRight.x(), _bottomLeft.y()}; } /**< @overload */
+
+        /** @brief Top left corner */
+        inline constexpr Vector2<T> topLeft() const { return {_bottomLeft.x(), _topRight.y()}; } /**< @overload */
+
         /** @brief Top right corner */
         inline Vector2<T>& topRight() { return _topRight; }
         inline constexpr Vector2<T> topRight() const { return _topRight; } /**< @overload */
