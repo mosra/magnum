@@ -43,6 +43,21 @@ template<class T> class Rectangle {
         }
 
         /**
+         * @brief %Rectangle from another of different type
+         *
+         * Performs only default casting on the values, no rounding or
+         * anything else. Example usage:
+         * @code
+         * Rectangle<float> floatingPoint({1.3f, 2.7f}, {-15.0f, 7.0f});
+         * auto integral = Rectangle<std::int8_t>::from(floatingPoint);
+         * // integral == {{1, 2}, {-15, 7}}
+         * @endcode
+         */
+        template<class U> inline constexpr static Rectangle<T> from(const Rectangle<U>& other) {
+            return {Vector2<T>::from(other.bottomLeft()), Vector2<T>::from(other.topRight())};
+        }
+
+        /**
          * @brief Default constructor
          *
          * Construct zero-area rectangle positioned at origin.

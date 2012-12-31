@@ -23,7 +23,8 @@ CORRADE_TEST_MAIN(Magnum::Math::Geometry::Test::RectangleTest)
 
 namespace Magnum { namespace Math { namespace Geometry { namespace Test {
 
-typedef Rectangle<std::int32_t> Rectanglei;
+typedef Geometry::Rectangle<float> Rectangle;
+typedef Geometry::Rectangle<std::int32_t> Rectanglei;
 typedef Vector2<std::int32_t> Vector2i;
 
 RectangleTest::RectangleTest() {
@@ -61,6 +62,8 @@ void RectangleTest::compare() {
 void RectangleTest::construct() {
     CORRADE_COMPARE(Rectanglei(), Rectanglei({0, 0}, {0, 0}));
     CORRADE_COMPARE(Rectanglei::fromSize({3, 5}, {23, 78}), Rectanglei({3, 5}, {26, 83}));
+    CORRADE_COMPARE(Rectanglei::from(Rectangle({1.3f, 2.7f}, {-15.0f, 7.0f})),
+                    Rectanglei({1, 2}, {-15, 7}));
 }
 
 void RectangleTest::size() {
