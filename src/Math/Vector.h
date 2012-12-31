@@ -365,7 +365,10 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
         return *this;                                                       \
     }                                                                       \
                                                                             \
-    inline Type<T> normalized() const { return Math::Vector<size, T>::normalized(); }
+    inline Type<T> normalized() const { return Math::Vector<size, T>::normalized(); } \
+    inline Type<T> projected(const Math::Vector<size, T>& other) const {    \
+        return Math::Vector<size, T>::projected(other);                     \
+    }
 
 #define MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Type, size)          \
     template<class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Type<T>>::type operator*(U number, const Type<T>& vector) { \
