@@ -155,19 +155,19 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
         /**
          * @brief Multiply vector component-wise
          *
-         * @see operator*=(const Vector<size, T>&)
+         * @see operator*=(const Vector<size, U>&)
          */
-        inline Vector<size, T> operator*(const Vector<size, T>& other) const {
+        template<class U> inline Vector<size, T> operator*(const Vector<size, U>& other) const {
             return Vector<size, T>(*this)*=other;
         }
 
         /**
          * @brief Multiply vector component-wise and assign
          *
-         * More efficient than operator*(const Vector<size, T>&) const,
+         * More efficient than operator*(const Vector<size, U>&) const,
          * because it does the computation in-place.
          */
-        Vector<size, T>& operator*=(const Vector<size, T>& other) {
+        template<class U> Vector<size, T>& operator*=(const Vector<size, U>& other) {
             for(std::size_t i = 0; i != size; ++i)
                 (*this)[i] *= other[i];
 
@@ -177,19 +177,19 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
         /**
          * @brief Divide vector component-wise
          *
-         * @see operator/=(const Vector<size, T>&)
+         * @see operator/=(const Vector<size, U>&)
          */
-        inline Vector<size, T> operator/(const Vector<size, T>& other) const {
+        template<class U> inline Vector<size, T> operator/(const Vector<size, U>& other) const {
             return Vector<size, T>(*this)/=other;
         }
 
         /**
          * @brief Divide vector component-wise and assign
          *
-         * More efficient than operator/(const Vector<size, T>&) const,
+         * More efficient than operator/(const Vector<size, U>&) const,
          * because it does the computation in-place.
          */
-        Vector<size, T>& operator/=(const Vector<size, T>& other) {
+        template<class U> Vector<size, T>& operator/=(const Vector<size, U>& other) {
             for(std::size_t i = 0; i != size; ++i)
                 (*this)[i] /= other[i];
 
@@ -350,17 +350,17 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
     template<std::size_t otherCols> inline Math::RectangularMatrix<otherCols, size, T> operator*(const Math::RectangularMatrix<otherCols, 1, T>& other) const { \
         return Math::Vector<size, T>::operator*(other);    \
     }                                                                       \
-    inline Type<T> operator*(const Math::Vector<size, T>& other) const {    \
+    template<class U> inline Type<T> operator*(const Math::Vector<size, U>& other) const { \
         return Math::Vector<size, T>::operator*(other);                     \
     }                                                                       \
-    inline Type<T>& operator*=(const Math::Vector<size, T>& other) {        \
+    template<class U> inline Type<T>& operator*=(const Math::Vector<size, U>& other) { \
         Math::Vector<size, T>::operator*=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    inline Type<T> operator/(const Math::Vector<size, T>& other) const {    \
+    template<class U> inline Type<T> operator/(const Math::Vector<size, U>& other) const { \
         return Math::Vector<size, T>::operator/(other);                     \
     }                                                                       \
-    inline Type<T>& operator/=(const Math::Vector<size, T>& other) {        \
+    template<class U> inline Type<T>& operator/=(const Math::Vector<size, U>& other) { \
         Math::Vector<size, T>::operator/=(other);                           \
         return *this;                                                       \
     }                                                                       \
