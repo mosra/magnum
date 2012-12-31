@@ -30,7 +30,7 @@ set(MagnumPhysics_HEADERS
 
 add_library(MagnumPhysics SHARED ${MagnumPhysics_SRCS})
 
-target_link_libraries(MagnumPhysics Magnum MagnumPrimitives MagnumSceneGraph MagnumShaders)
+target_link_libraries(MagnumPhysics Magnum MagnumSceneGraph)
 
 install(TARGETS MagnumPhysics DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumPhysics_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Physics)
