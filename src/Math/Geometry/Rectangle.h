@@ -27,9 +27,9 @@ namespace Magnum { namespace Math { namespace Geometry {
 @brief %Rectangle
 
 Helper class for storing axis-aligned rectangles consisting of bottom left and
-top right corner positions. Bottom left position is inclusive, while top right
-position is exclusive.
-@see Magnum::Rectanglei
+top right corner positions with origin in bottom left. Bottom/left positions
+are inclusive, while top/right positions are exclusive.
+@see Magnum::Rectangle, Magnum::Rectanglei
 */
 template<class T> class Rectangle {
     public:

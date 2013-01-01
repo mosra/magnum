@@ -28,7 +28,7 @@ namespace Magnum { namespace Math {
 @tparam T   Data type
 
 See @ref matrix-vector for brief introduction.
-@see Magnum::Vector2
+@see Magnum::Vector2, Magnum::Vector2i, Magnum::Vector2ui
 @configurationvalueref{Magnum::Math::Vector2}
 */
 template<class T> class Vector2: public Vector<2, T> {
