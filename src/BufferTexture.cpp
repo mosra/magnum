@@ -23,23 +23,35 @@
 namespace Magnum {
 
 BufferTexture::SetBufferImplementation BufferTexture::setBufferImplementation = &BufferTexture::setBufferImplementationDefault;
+BufferTexture::SetBufferRangeImplementation BufferTexture::setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDefault;
 
 void BufferTexture::initializeContextBasedFunctionality(Context* context) {
     if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         Debug() << "BufferTexture: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
 
         setBufferImplementation = &BufferTexture::setBufferImplementationDSA;
+        setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDSA;
     }
 }
 
-void BufferTexture::setBufferImplementationDefault(BufferTexture::InternalFormat internalFormat, Buffer* buffer) {
+void BufferTexture::setBufferImplementationDefault(InternalFormat internalFormat, Buffer* buffer) {
     bindInternal();
     glTexBuffer(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer->id());
 }
 
-void BufferTexture::setBufferImplementationDSA(BufferTexture::InternalFormat internalFormat, Buffer* buffer) {
+void BufferTexture::setBufferImplementationDSA(InternalFormat internalFormat, Buffer* buffer) {
     glTextureBufferEXT(id(), GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer->id());
 }
+
+void BufferTexture::setBufferRangeImplementationDefault(InternalFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size) {
+    bindInternal();
+    glTexBufferRange(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer->id(), offset, size);
+}
+
+void BufferTexture::setBufferRangeImplementationDSA(InternalFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size) {
+    glTextureBufferRangeEXT(id(), GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer->id(), offset, size);
+}
+
 
 }
 #endif

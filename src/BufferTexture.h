@@ -62,7 +62,7 @@ AbstractShaderProgram documentation for more information.
 
 @section BufferTexture-performance-optimization Performance optimizations
 If extension @extension{EXT,direct_state_access} is available, setBuffer()
-uses DSA function to avoid unnecessary calls to @fn_gl{ActiveTexture} and
+functions use DSA to avoid unnecessary calls to @fn_gl{ActiveTexture} and
 @fn_gl{BindTexture}. See @ref AbstractTexture-performance-optimization
 "relevant section in AbstractTexture documentation" and respective function
 documentation for more information.
@@ -214,6 +214,24 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
             (this->*setBufferImplementation)(internalFormat, buffer);
         }
 
+        /**
+         * @brief Set texture buffer
+         * @param internalFormat    Internal format
+         * @param buffer            %Buffer
+         * @param offset            Offset
+         * @param size              Data size
+         *
+         * Binds range of given buffer to this texture. The buffer itself can
+         * be then filled with data of proper format at any time using Buffer
+         * own data setting functions.
+         * @requires_gl43 %Extension @extension{ARB,texture_buffer_range}
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBuffer}
+         *      or @fn_gl_extension{TextureBufferRange,EXT,direct_state_access}
+         */
+        inline void setBuffer(InternalFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size) {
+            (this->*setBufferRangeImplementation)(internalFormat, buffer, offset, size);
+        }
+
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
 
@@ -221,6 +239,11 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
         void MAGNUM_LOCAL setBufferImplementationDefault(InternalFormat internalFormat, Buffer* buffer);
         void MAGNUM_LOCAL setBufferImplementationDSA(InternalFormat internalFormat, Buffer* buffer);
         static SetBufferImplementation setBufferImplementation;
+
+        typedef void(BufferTexture::*SetBufferRangeImplementation)(InternalFormat, Buffer*, GLintptr, GLsizeiptr);
+        void MAGNUM_LOCAL setBufferRangeImplementationDefault(InternalFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size);
+        void MAGNUM_LOCAL setBufferRangeImplementationDSA(InternalFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size);
+        static SetBufferRangeImplementation setBufferRangeImplementation;
 };
 
 }
