@@ -49,8 +49,8 @@ template<std::uint8_t dimensions> class MAGNUM_SHADERS_EXPORT TextShader: public
         }
 
     private:
-        GLint transformationProjectionMatrixUniform = 0,
-            colorUniform = 1;
+        GLint transformationProjectionMatrixUniform,
+            colorUniform;
 };
 
 /** @brief Two-dimensional text shader */

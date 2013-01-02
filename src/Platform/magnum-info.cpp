@@ -14,6 +14,7 @@
 */
 
 #include <Utility/Debug.h>
+#include <corradeCompatibility.h>
 
 #include "Context.h"
 #include "Platform/WindowlessGlxApplication.h"

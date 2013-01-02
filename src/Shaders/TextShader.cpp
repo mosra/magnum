@@ -37,7 +37,7 @@ namespace {
     };
 }
 
-template<std::uint8_t dimensions> TextShader<dimensions>::TextShader() {
+template<std::uint8_t dimensions> TextShader<dimensions>::TextShader(): transformationProjectionMatrixUniform(0), colorUniform(1) {
     Corrade::Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES

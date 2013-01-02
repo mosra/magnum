@@ -503,7 +503,7 @@ class MAGNUM_EXPORT Renderbuffer {
              * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil}
              */
             #ifdef MAGNUM_TARGET_GLES2
-            Depth24Stencil8 = GL_DEPTH24_STENCIL8_OES,
+            Depth24Stencil8 = GL_DEPTH24_STENCIL8_OES
             #else
             Depth24Stencil8 = GL_DEPTH24_STENCIL8,
 
@@ -513,7 +513,7 @@ class MAGNUM_EXPORT Renderbuffer {
              * @requires_gles30 Only integral depth textures are available in
              *      OpenGL ES 2.0.
              */
-            Depth32FStencil8 = GL_DEPTH32F_STENCIL8,
+            Depth32FStencil8 = GL_DEPTH32F_STENCIL8
             #endif
         };
 

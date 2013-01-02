@@ -61,8 +61,8 @@ template<std::uint8_t dimensions> class MAGNUM_SHADERS_EXPORT FlatShader: public
         }
 
     private:
-        GLint transformationProjectionMatrixUniform = 0,
-            colorUniform = 1;
+        GLint transformationProjectionMatrixUniform,
+            colorUniform;
 };
 
 /** @brief 2D flat shader */

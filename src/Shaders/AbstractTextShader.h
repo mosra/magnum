@@ -39,7 +39,7 @@ template<std::uint8_t dimensions> class AbstractTextShader: public AbstractShade
         typedef Attribute<1, Vector2> TextureCoordinates;
 
         enum: GLint {
-            FontTextureLayer = 16, /**< @brief Layer for font texture */
+            FontTextureLayer = 16   /**< @brief Layer for font texture */
         };
 
         ~AbstractTextShader() = 0;

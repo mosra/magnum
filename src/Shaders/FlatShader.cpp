@@ -36,7 +36,7 @@ namespace {
     };
 }
 
-template<std::uint8_t dimensions> FlatShader<dimensions>::FlatShader() {
+template<std::uint8_t dimensions> FlatShader<dimensions>::FlatShader(): transformationProjectionMatrixUniform(0), colorUniform(1) {
     Corrade::Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES

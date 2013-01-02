@@ -123,15 +123,15 @@ class MAGNUM_SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
         }
 
     private:
-        GLint transformationMatrixUniform = 0,
-            projectionMatrixUniform = 1,
-            normalMatrixUniform = 2,
-            lightUniform = 3,
-            diffuseColorUniform = 4,
-            ambientColorUniform = 5,
-            specularColorUniform = 6,
-            lightColorUniform = 7,
-            shininessUniform = 8;
+        GLint transformationMatrixUniform,
+            projectionMatrixUniform,
+            normalMatrixUniform,
+            lightUniform,
+            diffuseColorUniform,
+            ambientColorUniform,
+            specularColorUniform,
+            lightColorUniform,
+            shininessUniform;
 };
 
 }}
