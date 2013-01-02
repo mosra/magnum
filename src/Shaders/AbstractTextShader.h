@@ -38,9 +38,18 @@ template<std::uint8_t dimensions> class AbstractTextShader: public AbstractShade
         /** @brief Texture coordinates */
         typedef Attribute<1, Vector2> TextureCoordinates;
 
+        /** @todoc Remove when Doxygen is sane */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
         enum: GLint {
+        #else
+        static const GLint
+        #endif
             FontTextureLayer = 16   /**< @brief Layer for font texture */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
         };
+        #else
+        ;
+        #endif
 
         ~AbstractTextShader() = 0;
 };
