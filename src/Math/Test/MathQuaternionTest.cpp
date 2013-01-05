@@ -31,6 +31,7 @@ class QuaternionTest: public Corrade::TestSuite::Tester {
         void normalized();
         void conjugated();
         void inverted();
+        void invertedNormalized();
 
         void debug();
 };
@@ -46,6 +47,7 @@ QuaternionTest::QuaternionTest() {
              &QuaternionTest::normalized,
              &QuaternionTest::conjugated,
              &QuaternionTest::inverted,
+             &QuaternionTest::invertedNormalized,
              &QuaternionTest::debug);
 }
 
@@ -92,6 +94,23 @@ void QuaternionTest::inverted() {
     CORRADE_COMPARE(a*inverted, Quaternion());
     CORRADE_COMPARE(inverted*a, Quaternion());
     CORRADE_COMPARE(inverted, Quaternion({-1.0f, -3.0f, 2.0f}, -4.0f)/30.0f);
+}
+
+void QuaternionTest::invertedNormalized() {
+    Quaternion a = Quaternion({1.0f, 3.0f, -2.0f}, -4.0f);
+
+    std::ostringstream o;
+    Corrade::Utility::Error::setOutput(&o);
+    Quaternion notInverted = a.invertedNormalized();
+    CORRADE_COMPARE(notInverted.vector(), Vector3());
+    CORRADE_COMPARE(notInverted.scalar(), std::numeric_limits<float>::quiet_NaN());
+    CORRADE_COMPARE(o.str(), "Math::Quaternion::invertedNormalized(): quaternion must be normalized\n");
+
+    Quaternion aNormalized = a.normalized();
+    Quaternion inverted = aNormalized.invertedNormalized();
+    CORRADE_COMPARE(aNormalized*inverted, Quaternion());
+    CORRADE_COMPARE(inverted*aNormalized.normalized(), Quaternion());
+    CORRADE_COMPARE(inverted, Quaternion({-1.0f, -3.0f, 2.0f}, -4.0f)/std::sqrt(30.0f));
 }
 
 void QuaternionTest::debug() {

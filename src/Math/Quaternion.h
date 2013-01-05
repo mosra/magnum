@@ -20,6 +20,7 @@
  */
 
 #include <cmath>
+#include <Utility/Assert.h>
 #include <Utility/Debug.h>
 
 #include "Vector3.h"
@@ -134,11 +135,24 @@ template<class T> class Quaternion {
         /**
          * @brief Inverted quaternion
          *
-         * If the quaternion is already normalized, this function is
-         * equivalent to conjugated().
+         * See invertedNormalized() which is faster for normalized
+         * quaternions.
          */
         inline Quaternion<T> inverted() const {
             return conjugated()/lengthSquared();
+        }
+
+        /**
+         * @brief Inverted normalized quaternion
+         *
+         * Equivalent to conjugated(). Assumes that the quaternion is
+         * normalized.
+         */
+        inline Quaternion<T> invertedNormalized() const {
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(lengthSquared(), T(1)),
+                           "Math::Quaternion::invertedNormalized(): quaternion must be normalized",
+                           Quaternion({}, std::numeric_limits<T>::quiet_NaN()));
+            return conjugated();
         }
 
     private:
