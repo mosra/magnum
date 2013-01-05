@@ -19,8 +19,7 @@
 
 #include "Buffer.h"
 #include "Mesh.h"
-#include "Shaders/FlatShader.h"
-#include "ShapeRenderer.h"
+#include "DebugTools/ShapeRenderer.h"
 
 namespace Magnum {
 
@@ -30,7 +29,6 @@ namespace DebugTools {
 
 ResourceManager::ResourceManager() {
     setFallback(new ShapeRendererOptions);
-    set<AbstractShaderProgram>("shader2d", new Shaders::FlatShader<2>, ResourceDataState::Final, ResourcePolicy::Resident);
 }
 
 ResourceManager::~ResourceManager() {}

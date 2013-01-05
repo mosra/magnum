@@ -16,55 +16,71 @@
 #include "AbstractBoxRenderer.h"
 
 #include "Buffer.h"
+#include "IndexedMesh.h"
 #include "DebugTools/ResourceManager.h"
+#include "MeshTools/CompressIndices.h"
 #include "Primitives/Cube.h"
 #include "Primitives/Square.h"
 #include "Shaders/FlatShader.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-namespace {
-    template<std::uint8_t> struct BoxMesh {};
+AbstractBoxRenderer<2>::AbstractBoxRenderer() {
+    /* Shader */
+    shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader2D>("FlatShader2D");
+    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(),
+        new Shaders::FlatShader2D, ResourceDataState::Final, ResourcePolicy::Resident);
 
-    template<> struct BoxMesh<2> {
-        static ResourceKey shader() { return {"shader2d"}; }
-        static ResourceKey key() { return {"box2d"}; }
+    /* Mesh and vertex buffer */
+    mesh = ResourceManager::instance()->get<Mesh>("box2d");
+    buffer = ResourceManager::instance()->get<Buffer>("box2d");
+    if(mesh) return;
 
-        static Mesh* mesh(Buffer* buffer) {
-            Primitives::Square square;
-            Mesh* mesh = new Mesh;
-            buffer->setData(*square.positions(0), Buffer::Usage::StaticDraw);
-            return mesh->setPrimitive(square.primitive())
-                ->setVertexCount(square.positions(0)->size())
-                ->addVertexBuffer(buffer, Shaders::FlatShader<2>::Position());
-        }
-    };
+    /* Create the mesh */
+    Primitives::Square square;
+    Buffer* buffer = new Buffer(Buffer::Target::Array);
+    Mesh* mesh = new Mesh;
 
-    template<> struct BoxMesh<3> {
-        static ResourceKey shader() { return {"shader3d"}; }
-        static ResourceKey key() { return {"box3d"}; }
+    buffer->setData(*square.positions(0), Buffer::Usage::StaticDraw);
+    ResourceManager::instance()->set(this->buffer.key(), buffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
-        static Mesh* mesh(Buffer* buffer) {
-            Primitives::Cube cube;
-            Mesh* mesh = new Mesh;
-            buffer->setData(*cube.positions(0), Buffer::Usage::StaticDraw);
-            return mesh->setPrimitive(cube.primitive())
-                ->setVertexCount(cube.positions(0)->size())
-                ->addVertexBuffer(buffer, Shaders::FlatShader<2>::Position());
-        }
-    };
+    mesh->setPrimitive(square.primitive())
+        ->setVertexCount(square.positions(0)->size())
+        ->addVertexBuffer(buffer, Shaders::FlatShader2D::Position());
+    ResourceManager::instance()->set(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
-template<std::uint8_t dimensions> AbstractBoxRenderer<dimensions>::AbstractBoxRenderer(): AbstractShapeRenderer<dimensions>(BoxMesh<dimensions>::shader(), BoxMesh<dimensions>::key()), buffer(ResourceManager::instance()->get<Buffer>(BoxMesh<dimensions>::key())) {
-    if(!this->mesh) {
-        ResourceManager::instance()->set(this->buffer.key(), new Buffer, ResourceDataState::Final, ResourcePolicy::Manual);
-        ResourceManager::instance()->set<Mesh>(this->mesh.key(), BoxMesh<dimensions>::mesh(buffer), ResourceDataState::Final, ResourcePolicy::Manual);
-    }
+AbstractBoxRenderer<3>::AbstractBoxRenderer() {
+    /* Shader */
+    shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader3D>("FlatShader3D");
+    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(),
+        new Shaders::FlatShader3D, ResourceDataState::Final, ResourcePolicy::Resident);
+
+    /* Mesh and vertex buffer */
+    mesh = ResourceManager::instance()->get<Mesh>("box3d");
+    vertexBuffer = ResourceManager::instance()->get<Buffer>("box3d-vertices");
+    indexBuffer = ResourceManager::instance()->get<Buffer>("box3d-indices");
+    if(mesh) return;
+
+    /* Create the mesh */
+    Primitives::Cube cube;
+    Buffer* vertexBuffer = new Buffer(Buffer::Target::Array);
+    Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
+    IndexedMesh* mesh = new IndexedMesh;
+
+    vertexBuffer->setData(*cube.positions(0), Buffer::Usage::StaticDraw);
+    ResourceManager::instance()->set(this->vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
+
+    MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *cube.indices());
+    ResourceManager::instance()->set(this->indexBuffer.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
+
+    mesh->setPrimitive(cube.primitive())
+        ->setVertexCount(cube.positions(0)->size())
+        ->addVertexBuffer(vertexBuffer, Shaders::FlatShader3D::Position());
+    ResourceManager::instance()->set<Mesh>(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
-template<std::uint8_t dimensions> AbstractBoxRenderer<dimensions>::~AbstractBoxRenderer() {}
-
-template class AbstractBoxRenderer<2>;
-template class AbstractBoxRenderer<3>;
+AbstractBoxRenderer<2>::~AbstractBoxRenderer() {}
+AbstractBoxRenderer<3>::~AbstractBoxRenderer() {}
 
 }}}

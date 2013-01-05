@@ -16,24 +16,16 @@
 */
 
 #include "DimensionTraits.h"
-#include "ResourceManager.h"
 #include "SceneGraph/SceneGraph.h"
-#include "Shaders/Shaders.h"
 #include "DebugTools/DebugTools.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<std::uint8_t dimensions> class AbstractShapeRenderer {
     public:
-        AbstractShapeRenderer(ResourceKey shader, ResourceKey mesh);
-
         virtual ~AbstractShapeRenderer();
 
         virtual void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions>* camera) = 0;
-
-    protected:
-        Resource<AbstractShaderProgram, Shaders::FlatShader<dimensions>> shader;
-        Resource<Mesh> mesh;
 };
 
 }}}

@@ -22,8 +22,6 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<std::uint8_t dimensions> AbstractShapeRenderer<dimensions>::AbstractShapeRenderer(ResourceKey shader, ResourceKey mesh): shader(ResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader<dimensions>>(shader)), mesh(ResourceManager::instance()->get<Mesh>(mesh)) {}
-
 template<std::uint8_t dimensions> AbstractShapeRenderer<dimensions>::~AbstractShapeRenderer() {}
 
 template class AbstractShapeRenderer<2>;

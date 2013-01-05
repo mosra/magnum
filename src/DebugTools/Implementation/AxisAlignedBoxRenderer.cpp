@@ -28,7 +28,7 @@ template<std::uint8_t dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(
         DimensionTraits<dimensions>::MatrixType::translation(axisAlignedBox.transformedPosition())*
         DimensionTraits<dimensions>::MatrixType::scaling(axisAlignedBox.transformedSize());
     this->shader->setTransformationProjectionMatrix(camera->projectionMatrix()*camera->cameraMatrix()*transformation)
-        ->setColor(options->color)
+        ->setColor(options->color())
         ->use();
     this->mesh->draw();
 }

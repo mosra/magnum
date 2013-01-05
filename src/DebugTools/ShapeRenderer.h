@@ -39,22 +39,38 @@ namespace Implementation {
 
 See ShapeRenderer documentation for more information.
 */
-struct ShapeRendererOptions {
-    Color3<> color;             /**< @brief Color */
+class ShapeRendererOptions {
+    public:
+        /** @brief Color of rendered shape */
+        inline constexpr Color3<> color() const { return _color; }
+
+        /**
+         * @brief Set color of rendered shape
+         * @return Pointer to self (for method chaining)
+         *
+         * Default is black.
+         */
+        inline ShapeRendererOptions* setColor(const Color3<>& color) {
+            _color = color;
+            return this;
+        }
+
+    private:
+        Color3<> _color;
 };
 
 /**
 @brief Shape renderer
 
-Creates renderers for object collision shape.
+Visualizes collision shape.
 
 @section ShapeRenderer-usage Basic usage
 
 ResourceManager must be instanced for the whole lifetime of debug
-renderers. You can specify options via Options struct - add it to the manager
-and then create debug renderer with the same options key. This way you can
-easily share the same options with more renderers. If no options for given key
-exist, default is used.
+renderers. You can specify options via ShapeRendererOptions struct - add it to
+the manager and then create debug renderer with the same options key. This way
+you can easily share the same options with more renderers. If no options for
+given key exist, default is used.
 
 Example code:
 @code
@@ -66,14 +82,13 @@ DebugTools::ResourceManager manager;
 SceneGraph::DrawableGroup2D debugDrawables;
 
 // Create some options
-auto o = new DebugTools::ShapeRendererOptions {
-    {1.0f, 0.0f, 0.0f} // Red color
-};
-manager->set<DebugTools::ShapeRendererOptions>("red", o, ResourceDataState::Final, ResourcePolicy::Persistent);
+DebugTools::ResourceManager::instance()->set<DebugTools::ShapeRendererOptions>("red",
+    (new DebugTools::ShapeRendererOptions())->setColor({1.0f, 0.0f, 0.0f}),
+    ResourceDataState::Final, ResourcePolicy::Persistent);
 
 // Create debug renderer for given shape, use "red" options for it
 Physics::ObjectShape2D* shape;
-debugDrawables.add(new DebugTools::ShapeRenderer2D(shape, "red", debugDrawables));
+new DebugTools::ShapeRenderer2D(shape, "red", debugDrawables);
 @endcode
 
 @see ShapeRenderer2D, ShapeRenderer3D
@@ -92,8 +107,8 @@ template<std::uint8_t dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: 
          *      information.
          * @param drawables Drawable group
          *
-         * @attention @p shape must be available for the whole lifetime of
-         *      this class
+         * The renderer is automatically added to shape's object features,
+         * @p shape must be available for the whole lifetime of the renderer.
          */
         explicit ShapeRenderer(Physics::ObjectShape<dimensions>* shape, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions>* drawables = nullptr);
 

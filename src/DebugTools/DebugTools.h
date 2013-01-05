@@ -25,8 +25,11 @@ namespace Magnum { namespace DebugTools {
 
 class Profiler;
 class ResourceManager;
+
 template<std::uint8_t> class ShapeRenderer;
-struct ShapeRendererOptions;
+typedef ShapeRenderer<2> ShapeRenderer2D;
+typedef ShapeRenderer<3> ShapeRenderer3D;
+class ShapeRendererOptions;
 
 }}
 

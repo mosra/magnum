@@ -18,7 +18,7 @@ set(MagnumDebugTools_HEADERS
 
 add_library(MagnumDebugTools SHARED ${MagnumDebugTools_SRCS})
 
-target_link_libraries(MagnumDebugTools Magnum MagnumPhysics MagnumPrimitives MagnumSceneGraph MagnumShaders)
+target_link_libraries(MagnumDebugTools Magnum MagnumMeshTools MagnumPhysics MagnumPrimitives MagnumSceneGraph MagnumShaders)
 
 install(TARGETS MagnumDebugTools DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumDebugTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/DebugTools)
