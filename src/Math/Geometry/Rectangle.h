@@ -131,7 +131,7 @@ template<class T> class Rectangle {
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Rectangle<T>& value) {
     debug << "Rectangle({";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
-    debug << value.left() << ", " << value.bottom() << "}, {" << value.right() << ", " << value.top() <<"})";
+    debug << value.left() << ", " << value.bottom() << "}, {" << value.right() << ", " << value.top() << "})";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
     return debug;
 }
