@@ -79,7 +79,7 @@ template<class T> class Quaternion {
          *
          * @see operator*=(T)
          */
-        inline constexpr Quaternion<T> operator*(T scalar) const {
+        inline Quaternion<T> operator*(T scalar) const {
             return Quaternion<T>(*this)*=scalar;
         }
 
@@ -88,7 +88,7 @@ template<class T> class Quaternion {
          *
          * @see operator/=(T)
          */
-        inline constexpr Quaternion<T> operator/(T scalar) const {
+        inline Quaternion<T> operator/(T scalar) const {
             return Quaternion<T>(*this)/=scalar;
         }
 
@@ -97,7 +97,7 @@ template<class T> class Quaternion {
          *
          * The computation is *not* done in-place.
          */
-        inline constexpr Quaternion<T> operator*(const Quaternion<T>& other) const {
+        inline Quaternion<T> operator*(const Quaternion<T>& other) const {
             return {_scalar*other._vector + other._scalar*_vector + Vector3<T>::cross(_vector, other._vector),
                     _scalar*other._scalar - Vector3<T>::dot(_vector, other._vector)};
         }
@@ -112,22 +112,22 @@ template<class T> class Quaternion {
         }
 
         /** @brief %Quaternion length squared */
-        inline constexpr T lengthSquared() const {
+        inline T lengthSquared() const {
             return _vector.dot() + _scalar*_scalar;
         }
 
         /** @brief %Quaternion length */
-        inline constexpr T length() const {
+        inline T length() const {
             return std::sqrt(lengthSquared());
         }
 
         /** @brief Normalized quaternion */
-        inline constexpr Quaternion<T> normalized() const {
+        inline Quaternion<T> normalized() const {
             return (*this)/length();
         }
 
         /** @brief Conjugated quaternion */
-        inline constexpr Quaternion<T> conjugated() const {
+        inline Quaternion<T> conjugated() const {
             return {-_vector, _scalar};
         }
 
@@ -137,7 +137,7 @@ template<class T> class Quaternion {
          * If the quaternion is already normalized, this function is
          * equivalent to conjugated().
          */
-        inline constexpr Quaternion<T> inverted() const {
+        inline Quaternion<T> inverted() const {
             return conjugated()/lengthSquared();
         }
 
