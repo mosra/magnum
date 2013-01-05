@@ -138,7 +138,8 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          *      A^{-1} = \frac{1}{\det(A)} Adj(A)
          * @f]
          *
-         * @see Matrix3::invertedEuclidean(), Matrix4::invertedEuclidean()
+         * See Matrix3::invertedEuclidean() and Matrix4::invertedEuclidean()
+         * which are faster alternatives for particular matrix types.
          */
         Matrix<size, T> inverted() const {
             Matrix<size, T> out(Zero);
