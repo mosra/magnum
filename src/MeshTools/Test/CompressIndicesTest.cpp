@@ -13,17 +13,23 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "CompressIndicesTest.h"
-
+#include <TestSuite/Tester.h>
 #include <Utility/Endianness.h>
 
 #include "MeshTools/CompressIndices.h"
 
-CORRADE_TEST_MAIN(Magnum::MeshTools::Test::CompressIndicesTest)
-
 using Corrade::Utility::Endianness;
 
 namespace Magnum { namespace MeshTools { namespace Test {
+
+class CompressIndicesTest: public Corrade::TestSuite::Tester {
+    public:
+        CompressIndicesTest();
+
+        void compressChar();
+        void compressShort();
+        void compressInt();
+};
 
 CompressIndicesTest::CompressIndicesTest() {
     addTests(&CompressIndicesTest::compressChar,
@@ -98,3 +104,5 @@ void CompressIndicesTest::compressInt() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::CompressIndicesTest)

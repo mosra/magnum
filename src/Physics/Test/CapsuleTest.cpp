@@ -13,16 +13,23 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "CapsuleTest.h"
-
 #include "Math/Constants.h"
 #include "Physics/Capsule.h"
 #include "Physics/Point.h"
 #include "Physics/Sphere.h"
 
-CORRADE_TEST_MAIN(Magnum::Physics::Test::CapsuleTest)
+#include "ShapeTestBase.h"
 
 namespace Magnum { namespace Physics { namespace Test {
+
+class CapsuleTest: public Corrade::TestSuite::Tester, ShapeTestBase {
+    public:
+        CapsuleTest();
+
+        void applyTransformation();
+        void collisionPoint();
+        void collisionSphere();
+};
 
 CapsuleTest::CapsuleTest() {
     addTests(&CapsuleTest::applyTransformation,
@@ -75,3 +82,5 @@ void CapsuleTest::collisionSphere() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Physics::Test::CapsuleTest)

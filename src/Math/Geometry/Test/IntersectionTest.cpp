@@ -13,15 +13,19 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "IntersectionTest.h"
-
+#include <TestSuite/Tester.h>
 #include <limits>
 
-#include "Intersection.h"
-
-CORRADE_TEST_MAIN(Magnum::Math::Geometry::Test::IntersectionTest)
+#include "Math/Geometry/Intersection.h"
 
 namespace Magnum { namespace Math { namespace Geometry { namespace Test {
+
+class IntersectionTest: public Corrade::TestSuite::Tester {
+    public:
+        IntersectionTest();
+
+        void planeLine();
+};
 
 typedef Magnum::Math::Vector3<float> Vector3;
 
@@ -51,3 +55,5 @@ void IntersectionTest::planeLine() {
 }
 
 }}}}
+
+CORRADE_TEST_MAIN(Magnum::Math::Geometry::Test::IntersectionTest)

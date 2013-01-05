@@ -13,14 +13,20 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "GaussJordanTest.h"
+#include <TestSuite/Tester.h>
 
-#include "Math/Algorithms/GaussJordan.h"
 #include "Math/Matrix.h"
-
-CORRADE_TEST_MAIN(Magnum::Math::Algorithms::Test::GaussJordanTest)
+#include "Math/Algorithms/GaussJordan.h"
 
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
+
+class GaussJordanTest: public Corrade::TestSuite::Tester {
+    public:
+        explicit GaussJordanTest();
+
+        void singular();
+        void invert();
+};
 
 typedef Matrix<4, float> Matrix4;
 
@@ -59,3 +65,5 @@ void GaussJordanTest::invert() {
 }
 
 }}}}
+
+CORRADE_TEST_MAIN(Magnum::Math::Algorithms::Test::GaussJordanTest)

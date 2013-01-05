@@ -13,13 +13,22 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "MathTest.h"
+#include <TestSuite/Tester.h>
 
-#include "Math.h"
-
-CORRADE_TEST_MAIN(Magnum::Math::Test::MathTest)
+#include "Math/Math.h"
 
 namespace Magnum { namespace Math { namespace Test {
+
+class MathTest: public Corrade::TestSuite::Tester {
+    public:
+        MathTest();
+
+        void normalize();
+        void denormalize();
+        void clamp();
+        void pow();
+        void log();
+};
 
 MathTest::MathTest() {
     addTests(&MathTest::normalize,
@@ -97,3 +106,5 @@ void MathTest::log() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Math::Test::MathTest)

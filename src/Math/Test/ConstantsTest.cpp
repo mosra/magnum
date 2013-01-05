@@ -13,14 +13,20 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "ConstantsTest.h"
+#include <TestSuite/Tester.h>
 
-#include "Constants.h"
-#include "Math.h"
-
-CORRADE_TEST_MAIN(Magnum::Math::Test::ConstantsTest)
+#include "Math/Constants.h"
+#include "Math/Math.h"
 
 namespace Magnum { namespace Math { namespace Test {
+
+class ConstantsTest: public Corrade::TestSuite::Tester {
+    public:
+        ConstantsTest();
+
+        void constants();
+        void degrad();
+};
 
 ConstantsTest::ConstantsTest() {
     addTests(&ConstantsTest::constants,
@@ -42,3 +48,5 @@ void ConstantsTest::degrad() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Math::Test::ConstantsTest)

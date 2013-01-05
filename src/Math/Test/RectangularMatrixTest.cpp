@@ -13,18 +13,36 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "RectangularMatrixTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 #include <Utility/Configuration.h>
 
-#include "RectangularMatrix.h"
-
-CORRADE_TEST_MAIN(Magnum::Math::Test::RectangularMatrixTest)
+#include "Math/RectangularMatrix.h"
 
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
+
+class RectangularMatrixTest: public Corrade::TestSuite::Tester {
+    public:
+        RectangularMatrixTest();
+
+        void construct();
+        void constructFromVectors();
+        void constructFrom();
+        void constructZero();
+        void data();
+
+        void negative();
+        void addSubtract();
+        void multiplyDivide();
+        void multiply();
+
+        void transposed();
+
+        void debug();
+        void configuration();
+};
 
 typedef RectangularMatrix<4, 3, float> Matrix4x3;
 typedef RectangularMatrix<3, 4, float> Matrix3x4;
@@ -251,3 +269,5 @@ void RectangularMatrixTest::configuration() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Math::Test::RectangularMatrixTest)

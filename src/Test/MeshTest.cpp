@@ -13,18 +13,23 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "MeshTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 #include <Utility/Configuration.h>
 
 #include "Mesh.h"
 
-CORRADE_TEST_MAIN(Magnum::Test::MeshTest)
-
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Test {
+
+class MeshTest: public Corrade::TestSuite::Tester {
+    public:
+        MeshTest();
+
+        void debug();
+        void configuration();
+};
 
 MeshTest::MeshTest() {
     addTests(&MeshTest::debug,
@@ -46,3 +51,5 @@ void MeshTest::configuration() {
 }
 
 }}
+
+CORRADE_TEST_MAIN(Magnum::Test::MeshTest)

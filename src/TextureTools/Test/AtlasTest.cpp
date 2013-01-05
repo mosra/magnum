@@ -13,16 +13,22 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AtlasTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 
 #include "Math/Geometry/Rectangle.h"
 #include "TextureTools/Atlas.h"
 
-CORRADE_TEST_MAIN(Magnum::TextureTools::Test::AtlasTest)
-
 namespace Magnum { namespace TextureTools { namespace Test {
+
+class AtlasTest: public Corrade::TestSuite::Tester {
+    public:
+        explicit AtlasTest();
+
+        void create();
+        void createEmpty();
+        void createTooSmall();
+};
 
 AtlasTest::AtlasTest() {
     addTests(&AtlasTest::create,
@@ -63,3 +69,5 @@ void AtlasTest::createTooSmall() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::TextureTools::Test::AtlasTest)

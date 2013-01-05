@@ -13,18 +13,40 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "ColorTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 #include <Utility/Configuration.h>
 
 #include "Color.h"
 
-CORRADE_TEST_MAIN(Magnum::Test::ColorTest)
-
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Test {
+
+class ColorTest: public Corrade::TestSuite::Tester {
+    public:
+        ColorTest();
+
+        void access();
+
+        void fromDenormalized();
+        void fromNormalized();
+
+        void fromHue();
+        void fromSaturation();
+        void fromValue();
+
+        void hue();
+        void saturation();
+        void value();
+
+        void hsv();
+        void hsvOverflow();
+        void hsvAlpha();
+
+        void debug();
+        void configuration();
+};
 
 typedef Magnum::Color3<std::uint8_t> Color3;
 typedef Magnum::Color4<std::uint8_t> Color4;
@@ -180,3 +202,5 @@ void ColorTest::configuration() {
 }
 
 }}
+
+CORRADE_TEST_MAIN(Magnum::Test::ColorTest)

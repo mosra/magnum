@@ -13,19 +13,38 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "VectorTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 #include <Utility/Configuration.h>
 
-#include "Constants.h"
-#include "Vector.h"
-
-CORRADE_TEST_MAIN(Magnum::Math::Test::VectorTest)
+#include "Math/Constants.h"
+#include "Math/Vector.h"
 
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
+
+class VectorTest: public Corrade::TestSuite::Tester {
+    public:
+        VectorTest();
+
+        void construct();
+        void compareComponentWise();
+        void dot();
+        void multiplyDivideComponentWise();
+        void dotSelf();
+        void length();
+        void normalized();
+        void projected();
+        void sum();
+        void product();
+        void min();
+        void max();
+        void angle();
+
+        void debug();
+        void configuration();
+};
 
 typedef Vector<4, float> Vector4;
 typedef Vector<3, float> Vector3;
@@ -151,3 +170,5 @@ void VectorTest::configuration() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Math::Test::VectorTest)

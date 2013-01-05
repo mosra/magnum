@@ -13,16 +13,21 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "GenerateFlatNormalsTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 
 #include "Math/Point3D.h"
 #include "MeshTools/GenerateFlatNormals.h"
 
-CORRADE_TEST_MAIN(Magnum::MeshTools::Test::GenerateFlatNormalsTest)
-
 namespace Magnum { namespace MeshTools { namespace Test {
+
+class GenerateFlatNormalsTest: public Corrade::TestSuite::Tester {
+    public:
+        GenerateFlatNormalsTest();
+
+        void wrongIndexCount();
+        void generate();
+};
 
 GenerateFlatNormalsTest::GenerateFlatNormalsTest() {
     addTests(&GenerateFlatNormalsTest::wrongIndexCount,
@@ -68,3 +73,5 @@ void GenerateFlatNormalsTest::generate() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::GenerateFlatNormalsTest)

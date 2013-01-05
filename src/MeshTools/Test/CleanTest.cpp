@@ -13,13 +13,35 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "CleanTest.h"
+#include <TestSuite/Tester.h>
 
 #include "MeshTools/Clean.h"
 
-CORRADE_TEST_MAIN(Magnum::MeshTools::Test::CleanTest)
-
 namespace Magnum { namespace MeshTools { namespace Test {
+
+class CleanTest: public Corrade::TestSuite::Tester {
+    public:
+        CleanTest();
+
+        void cleanMesh();
+
+    private:
+        class Vector1 {
+            public:
+                static const std::size_t Size = 1;
+                typedef std::int32_t Type;
+
+                Vector1(): data(0) {}
+                Vector1(Type i): data(i) {}
+                Type operator[](std::size_t) const { return data; }
+                Type& operator[](std::size_t) { return data; }
+                bool operator==(Vector1 i) const { return i.data == data; }
+                Vector1 operator-(Vector1 i) const { return data-i.data; }
+
+            private:
+                Type data;
+        };
+};
 
 CleanTest::CleanTest() {
     addTests(&CleanTest::cleanMesh);
@@ -36,3 +58,5 @@ void CleanTest::cleanMesh() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::CleanTest)

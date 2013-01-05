@@ -16,8 +16,7 @@
 /* Less precision */
 #define FLOAT_EQUALITY_PRECISION 1.0e-5
 
-#include "CapsuleTest.h"
-
+#include <TestSuite/Tester.h>
 #include <TestSuite/Compare/Container.h>
 
 #include "Math/Point3D.h"
@@ -25,9 +24,15 @@
 
 using Corrade::TestSuite::Compare::Container;
 
-CORRADE_TEST_MAIN(Magnum::Primitives::Test::CapsuleTest)
-
 namespace Magnum { namespace Primitives { namespace Test {
+
+class CapsuleTest: public Corrade::TestSuite::Tester {
+    public:
+        CapsuleTest();
+
+        void withoutTextureCoords();
+        void withTextureCoords();
+};
 
 CapsuleTest::CapsuleTest() {
     addTests(&CapsuleTest::withoutTextureCoords,
@@ -175,3 +180,5 @@ void CapsuleTest::withTextureCoords() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Primitives::Test::CapsuleTest)

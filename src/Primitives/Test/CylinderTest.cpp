@@ -13,8 +13,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "CylinderTest.h"
-
+#include <TestSuite/Tester.h>
 #include <TestSuite/Compare/Container.h>
 
 #include "Math/Point3D.h"
@@ -22,9 +21,15 @@
 
 using Corrade::TestSuite::Compare::Container;
 
-CORRADE_TEST_MAIN(Magnum::Primitives::Test::CylinderTest)
-
 namespace Magnum { namespace Primitives { namespace Test {
+
+class CylinderTest: public Corrade::TestSuite::Tester {
+    public:
+        CylinderTest();
+
+        void withoutAnything();
+        void withTextureCoordsAndCaps();
+};
 
 CylinderTest::CylinderTest() {
     addTests(&CylinderTest::withoutAnything,
@@ -173,3 +178,5 @@ void CylinderTest::withTextureCoordsAndCaps() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Primitives::Test::CylinderTest)

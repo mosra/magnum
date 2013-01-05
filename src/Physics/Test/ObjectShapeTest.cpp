@@ -13,7 +13,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "ObjectShapeTest.h"
+#include <TestSuite/Tester.h>
 
 #include "Physics/ObjectShapeGroup.h"
 #include "Physics/ObjectShape.h"
@@ -21,9 +21,14 @@
 #include "SceneGraph/MatrixTransformation3D.h"
 #include "SceneGraph/Scene.h"
 
-CORRADE_TEST_MAIN(Magnum::Physics::Test::ObjectShapeTest)
-
 namespace Magnum { namespace Physics { namespace Test {
+
+class ObjectShapeTest: public Corrade::TestSuite::Tester {
+    public:
+        ObjectShapeTest();
+
+        void clean();
+};
 
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
@@ -74,3 +79,5 @@ void ObjectShapeTest::clean() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Physics::Test::ObjectShapeTest)

@@ -13,18 +13,23 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "TypeTraitsTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 #include <Utility/Configuration.h>
 
 #include "TypeTraits.h"
 
-CORRADE_TEST_MAIN(Magnum::Test::TypeTraitsTest)
-
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Test {
+
+class TypeTraitsTest: public Corrade::TestSuite::Tester {
+    public:
+        TypeTraitsTest();
+
+        void debug();
+        void configuration();
+};
 
 TypeTraitsTest::TypeTraitsTest() {
     addTests(&TypeTraitsTest::debug,
@@ -46,3 +51,5 @@ void TypeTraitsTest::configuration() {
 }
 
 }}
+
+CORRADE_TEST_MAIN(Magnum::Test::TypeTraitsTest)

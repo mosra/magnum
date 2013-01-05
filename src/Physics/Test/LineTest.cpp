@@ -13,15 +13,20 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "LineTest.h"
+#include <TestSuite/Tester.h>
 
 #include "Math/Constants.h"
 #include "Math/Matrix4.h"
 #include "Physics/Line.h"
 
-CORRADE_TEST_MAIN(Magnum::Physics::Test::LineTest)
-
 namespace Magnum { namespace Physics { namespace Test {
+
+class LineTest: public Corrade::TestSuite::Tester {
+    public:
+        LineTest();
+
+        void applyTransformation();
+};
 
 LineTest::LineTest() {
     addTests(&LineTest::applyTransformation);
@@ -35,3 +40,5 @@ void LineTest::applyTransformation() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Physics::Test::LineTest)

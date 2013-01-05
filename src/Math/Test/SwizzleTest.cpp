@@ -13,13 +13,20 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "SwizzleTest.h"
+#include <TestSuite/Tester.h>
 
 #include "Math/Swizzle.h"
 
-CORRADE_TEST_MAIN(Magnum::Math::Test::SwizzleTest)
-
 namespace Magnum { namespace Math { namespace Test {
+
+class SwizzleTest: public Corrade::TestSuite::Tester {
+    public:
+        SwizzleTest();
+
+        void components();
+        void constants();
+        void sizes();
+};
 
 typedef Vector<4, std::int32_t> Vector4i;
 
@@ -47,3 +54,5 @@ void SwizzleTest::sizes() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Math::Test::SwizzleTest)

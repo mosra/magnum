@@ -13,18 +13,24 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Point2DTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 #include <Utility/Configuration.h>
 
-#include "Point2D.h"
-
-CORRADE_TEST_MAIN(Magnum::Math::Test::Point2DTest)
+#include "Math/Point2D.h"
 
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
+
+class Point2DTest: public Corrade::TestSuite::Tester {
+    public:
+        Point2DTest();
+
+        void construct();
+        void debug();
+        void configuration();
+};
 
 typedef Math::Point2D<float> Point2D;
 
@@ -58,3 +64,5 @@ void Point2DTest::configuration() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Math::Test::Point2DTest)

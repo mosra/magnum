@@ -13,16 +13,22 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "FlipNormalsTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 
 #include "Math/Vector3.h"
 #include "MeshTools/FlipNormals.h"
 
-CORRADE_TEST_MAIN(Magnum::MeshTools::Test::FlipNormalsTest)
-
 namespace Magnum { namespace MeshTools { namespace Test {
+
+class FlipNormalsTest: public Corrade::TestSuite::Tester {
+    public:
+        FlipNormalsTest();
+
+        void wrongIndexCount();
+        void flipFaceWinding();
+        void flipNormals();
+};
 
 FlipNormalsTest::FlipNormalsTest() {
     addTests(&FlipNormalsTest::wrongIndexCount,
@@ -61,3 +67,5 @@ void FlipNormalsTest::flipNormals() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::FlipNormalsTest)

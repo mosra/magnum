@@ -13,19 +13,25 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "InterleaveTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 
 #include "Utility/Endianness.h"
 #include "Utility/Debug.h"
 #include "MeshTools/Interleave.h"
 
-CORRADE_TEST_MAIN(Magnum::MeshTools::Test::InterleaveTest)
-
 using Corrade::Utility::Endianness;
 
 namespace Magnum { namespace MeshTools { namespace Test {
+
+class InterleaveTest: public Corrade::TestSuite::Tester {
+    public:
+        InterleaveTest();
+
+        void attributeCount();
+        void stride();
+        void write();
+};
 
 InterleaveTest::InterleaveTest() {
     addTests(&InterleaveTest::attributeCount,
@@ -80,3 +86,5 @@ void InterleaveTest::write() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::InterleaveTest)

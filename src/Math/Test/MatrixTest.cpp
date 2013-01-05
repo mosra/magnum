@@ -13,18 +13,31 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "MatrixTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 #include <Utility/Configuration.h>
 
-#include "Matrix.h"
-
-CORRADE_TEST_MAIN(Magnum::Math::Test::MatrixTest)
+#include "Math/Matrix.h"
 
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
+
+class MatrixTest: public Corrade::TestSuite::Tester {
+    public:
+        MatrixTest();
+
+        void construct();
+        void constructIdentity();
+        void constructZero();
+        void trace();
+        void ij();
+        void determinant();
+        void inverted();
+
+        void debug();
+        void configuration();
+};
 
 typedef Matrix<4, float> Matrix4;
 typedef Matrix<3, float> Matrix3;
@@ -202,3 +215,5 @@ void MatrixTest::configuration() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Math::Test::MatrixTest)

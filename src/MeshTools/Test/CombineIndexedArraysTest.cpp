@@ -13,15 +13,20 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "CombineIndexedArraysTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 
 #include "MeshTools/CombineIndexedArrays.h"
 
-CORRADE_TEST_MAIN(Magnum::MeshTools::Test::CombineIndexedArraysTest)
-
 namespace Magnum { namespace MeshTools { namespace Test {
+
+class CombineIndexedArraysTest: public Corrade::TestSuite::Tester {
+    public:
+        CombineIndexedArraysTest();
+
+        void wrongIndexCount();
+        void combine();
+};
 
 CombineIndexedArraysTest::CombineIndexedArraysTest() {
     addTests(&CombineIndexedArraysTest::wrongIndexCount,
@@ -57,3 +62,5 @@ void CombineIndexedArraysTest::combine() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::CombineIndexedArraysTest)

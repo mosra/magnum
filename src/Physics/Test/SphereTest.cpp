@@ -13,16 +13,25 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "SphereTest.h"
-
 #include "Math/Constants.h"
 #include "Physics/LineSegment.h"
 #include "Physics/Point.h"
 #include "Physics/Sphere.h"
 
-CORRADE_TEST_MAIN(Magnum::Physics::Test::SphereTest)
+#include "ShapeTestBase.h"
 
 namespace Magnum { namespace Physics { namespace Test {
+
+class SphereTest: public Corrade::TestSuite::Tester, ShapeTestBase {
+    public:
+        SphereTest();
+
+        void applyTransformation();
+        void collisionPoint();
+        void collisionLine();
+        void collisionLineSegment();
+        void collisionSphere();
+};
 
 SphereTest::SphereTest() {
     addTests(&SphereTest::applyTransformation,
@@ -102,3 +111,5 @@ void SphereTest::collisionSphere() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Physics::Test::SphereTest)

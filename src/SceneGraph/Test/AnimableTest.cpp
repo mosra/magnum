@@ -13,17 +13,28 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AnimableTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 
 #include "SceneGraph/Animable.h"
 #include "SceneGraph/AnimableGroup.h"
 #include "SceneGraph/MatrixTransformation3D.h"
 
-CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::AnimableTest)
-
 namespace Magnum { namespace SceneGraph { namespace Test {
+
+class AnimableTest: public Corrade::TestSuite::Tester {
+    public:
+        AnimableTest();
+
+        void state();
+        void step();
+        void duration();
+        void repeat();
+        void stop();
+        void pause();
+
+        void debug();
+};
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
 
@@ -304,3 +315,5 @@ void AnimableTest::debug() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::AnimableTest)

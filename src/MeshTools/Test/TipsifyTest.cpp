@@ -13,13 +13,23 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "TipsifyTest.h"
+#include <TestSuite/Tester.h>
 
 #include "MeshTools/Tipsify.h"
 
-CORRADE_TEST_MAIN(Magnum::MeshTools::Test::TipsifyTest)
-
 namespace Magnum { namespace MeshTools { namespace Test {
+
+class TipsifyTest: public Corrade::TestSuite::Tester {
+    public:
+        TipsifyTest();
+
+        void buildAdjacency();
+        void tipsify();
+
+    private:
+        std::vector<std::uint32_t> indices;
+        std::size_t vertexCount;
+};
 
 /*
 
@@ -136,3 +146,5 @@ void TipsifyTest::tipsify() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::TipsifyTest)

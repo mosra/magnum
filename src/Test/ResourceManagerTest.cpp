@@ -13,9 +13,8 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "ResourceManagerTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 
 #include "AbstractResourceLoader.h"
 #include "ResourceManager.h"
@@ -24,9 +23,21 @@
 
 using namespace Corrade::Utility;
 
-CORRADE_TEST_MAIN(Magnum::Test::ResourceManagerTest)
-
 namespace Magnum { namespace Test {
+
+class ResourceManagerTest: public Corrade::TestSuite::Tester {
+    public:
+        ResourceManagerTest();
+
+        void state();
+        void stateFallback();
+        void stateDisallowed();
+        void basic();
+        void residentPolicy();
+        void referenceCountedPolicy();
+        void manualPolicy();
+        void loader();
+};
 
 class Data {
     public:
@@ -239,3 +250,5 @@ void ResourceManagerTest::loader() {
 }
 
 }}
+
+CORRADE_TEST_MAIN(Magnum::Test::ResourceManagerTest)

@@ -13,7 +13,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "CameraTest.h"
+#include <TestSuite/Tester.h>
 
 #include "Math/Constants.h"
 #include "SceneGraph/AbstractCamera.hpp" /* only for aspectRatioFix(), so it doesn't have to be exported */
@@ -24,9 +24,21 @@
 #include "SceneGraph/MatrixTransformation3D.h"
 #include "SceneGraph/Scene.h"
 
-CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::CameraTest)
-
 namespace Magnum { namespace SceneGraph { namespace Test {
+
+class CameraTest: public Corrade::TestSuite::Tester {
+    public:
+        CameraTest();
+
+        void fixAspectRatio();
+        void defaultProjection2D();
+        void defaultProjection3D();
+        void projection2D();
+        void orthographic();
+        void perspective();
+        void projectionSizeViewport();
+        void draw();
+};
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D<>> Object2D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
@@ -209,3 +221,5 @@ void CameraTest::draw() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::CameraTest)

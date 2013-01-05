@@ -13,16 +13,22 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "ShapeGroupTest.h"
+#include <TestSuite/Tester.h>
 
 #include "Math/Matrix4.h"
 #include "Physics/Point.h"
 #include "Physics/LineSegment.h"
 #include "Physics/ShapeGroup.h"
 
-CORRADE_TEST_MAIN(Magnum::Physics::Test::ShapeGroupTest)
-
 namespace Magnum { namespace Physics { namespace Test {
+
+class ShapeGroupTest: public Corrade::TestSuite::Tester {
+    public:
+        ShapeGroupTest();
+
+        void copy();
+        void reference();
+};
 
 ShapeGroupTest::ShapeGroupTest() {
     addTests(&ShapeGroupTest::copy,
@@ -57,3 +63,5 @@ void ShapeGroupTest::reference() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Physics::Test::ShapeGroupTest)

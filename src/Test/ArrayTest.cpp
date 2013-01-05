@@ -13,13 +13,21 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "ArrayTest.h"
+#include <TestSuite/Tester.h>
 
 #include "Array.h"
 
-CORRADE_TEST_MAIN(Magnum::Test::ArrayTest)
-
 namespace Magnum { namespace Test {
+
+class ArrayTest: public Corrade::TestSuite::Tester {
+    public:
+        ArrayTest();
+
+        void construct();
+        void constexprConstruct();
+        void equality();
+        void access();
+};
 
 typedef Magnum::Array1D<int> Array1D;
 typedef Magnum::Array2D<int> Array2D;
@@ -90,3 +98,5 @@ void ArrayTest::access() {
 }
 
 }}
+
+CORRADE_TEST_MAIN(Magnum::Test::ArrayTest)

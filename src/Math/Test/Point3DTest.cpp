@@ -13,18 +13,24 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Point3DTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 #include <Utility/Configuration.h>
 
-#include "Point3D.h"
-
-CORRADE_TEST_MAIN(Magnum::Math::Test::Point3DTest)
+#include "Math/Point3D.h"
 
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
+
+class Point3DTest: public Corrade::TestSuite::Tester {
+    public:
+        Point3DTest();
+
+        void construct();
+        void debug();
+        void configuration();
+};
 
 typedef Math::Point3D<float> Point3D;
 
@@ -58,3 +64,5 @@ void Point3DTest::configuration() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Math::Test::Point3DTest)

@@ -13,8 +13,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "UVSphereTest.h"
-
+#include <TestSuite/Tester.h>
 #include <TestSuite/Compare/Container.h>
 
 #include "Math/Point3D.h"
@@ -22,9 +21,15 @@
 
 using Corrade::TestSuite::Compare::Container;
 
-CORRADE_TEST_MAIN(Magnum::Primitives::Test::UVSphereTest)
-
 namespace Magnum { namespace Primitives { namespace Test {
+
+class UVSphereTest: public Corrade::TestSuite::Tester {
+    public:
+        UVSphereTest();
+
+        void withoutTextureCoords();
+        void withTextureCoords();
+};
 
 UVSphereTest::UVSphereTest() {
     addTests(&UVSphereTest::withoutTextureCoords,
@@ -112,3 +117,5 @@ void UVSphereTest::withTextureCoords() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Primitives::Test::UVSphereTest)

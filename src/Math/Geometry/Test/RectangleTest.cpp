@@ -13,15 +13,24 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "RectangleTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 
-#include "Rectangle.h"
-
-CORRADE_TEST_MAIN(Magnum::Math::Geometry::Test::RectangleTest)
+#include "Math/Geometry/Rectangle.h"
 
 namespace Magnum { namespace Math { namespace Geometry { namespace Test {
+
+class RectangleTest: public Corrade::TestSuite::Tester {
+    public:
+        RectangleTest();
+
+        void access();
+        void compare();
+        void construct();
+        void size();
+
+        void debug();
+};
 
 typedef Geometry::Rectangle<float> Rectangle;
 typedef Geometry::Rectangle<std::int32_t> Rectanglei;
@@ -85,3 +94,5 @@ void RectangleTest::debug() {
 }
 
 }}}}
+
+CORRADE_TEST_MAIN(Magnum::Math::Geometry::Test::RectangleTest)

@@ -13,14 +13,19 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "PointTest.h"
+#include <TestSuite/Tester.h>
 
 #include "Math/Matrix4.h"
 #include "Physics/Point.h"
 
-CORRADE_TEST_MAIN(Magnum::Physics::Test::PointTest)
-
 namespace Magnum { namespace Physics { namespace Test {
+
+class PointTest: public Corrade::TestSuite::Tester {
+    public:
+        PointTest();
+
+        void applyTransformation();
+};
 
 PointTest::PointTest() {
     addTests(&PointTest::applyTransformation);
@@ -33,3 +38,5 @@ void PointTest::applyTransformation() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Physics::Test::PointTest)

@@ -13,15 +13,20 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AxisAlignedBoxTest.h"
+#include <TestSuite/Tester.h>
 
 #include "Math/Constants.h"
 #include "Math/Matrix4.h"
 #include "Physics/AxisAlignedBox.h"
 
-CORRADE_TEST_MAIN(Magnum::Physics::Test::AxisAlignedBoxTest)
-
 namespace Magnum { namespace Physics { namespace Test {
+
+class AxisAlignedBoxTest: public Corrade::TestSuite::Tester {
+    public:
+        AxisAlignedBoxTest();
+
+        void applyTransformation();
+};
 
 AxisAlignedBoxTest::AxisAlignedBoxTest() {
     addTests(&AxisAlignedBoxTest::applyTransformation);
@@ -40,3 +45,5 @@ void AxisAlignedBoxTest::applyTransformation() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Physics::Test::AxisAlignedBoxTest)

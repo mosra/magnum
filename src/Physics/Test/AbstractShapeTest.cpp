@@ -13,16 +13,19 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractShapeTest.h"
-
 #include <sstream>
-#include <Utility/Debug.h>
+#include <TestSuite/Tester.h>
 
 #include "Physics/AbstractShape.h"
 
-CORRADE_TEST_MAIN(Magnum::Physics::Test::AbstractShapeTest)
-
 namespace Magnum { namespace Physics { namespace Test {
+
+class AbstractShapeTest: public Corrade::TestSuite::Tester {
+    public:
+        AbstractShapeTest();
+
+        void debug();
+};
 
 AbstractShapeTest::AbstractShapeTest() {
     addTests(&AbstractShapeTest::debug);
@@ -39,3 +42,5 @@ void AbstractShapeTest::debug() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Physics::Test::AbstractShapeTest)

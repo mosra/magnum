@@ -13,17 +13,26 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "ObjectTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 
 #include "Math/Constants.h"
 #include "SceneGraph/MatrixTransformation3D.h"
 #include "SceneGraph/Scene.h"
 
-CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::ObjectTest)
-
 namespace Magnum { namespace SceneGraph { namespace Test {
+
+class ObjectTest: public Corrade::TestSuite::Tester {
+    public:
+        ObjectTest();
+
+        void parenting();
+        void scene();
+        void absoluteTransformation();
+        void transformations();
+        void setClean();
+        void bulkSetClean();
+};
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
@@ -312,3 +321,5 @@ void ObjectTest::bulkSetClean() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::ObjectTest)

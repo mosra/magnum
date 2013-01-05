@@ -13,15 +13,24 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "MathTypeTraitsTest.h"
-
 #include <limits>
+#include <TestSuite/Tester.h>
 
-#include "MathTypeTraits.h"
-
-CORRADE_TEST_MAIN(Magnum::Math::Test::MathTypeTraitsTest)
+#include "Math/MathTypeTraits.h"
 
 namespace Magnum { namespace Math { namespace Test {
+
+class MathTypeTraitsTest: public Corrade::TestSuite::Tester {
+    public:
+        MathTypeTraitsTest();
+
+        void equalsFloatingPoint();
+        void equalsIntegral();
+
+    private:
+        template<class T> void _equalsFloatingPoint();
+        template<class T> void _equalsIntegral();
+};
 
 MathTypeTraitsTest::MathTypeTraitsTest() {
     addTests(&MathTypeTraitsTest::equalsIntegral,
@@ -63,3 +72,5 @@ template<class T> void MathTypeTraitsTest::_equalsFloatingPoint() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Math::Test::MathTypeTraitsTest)

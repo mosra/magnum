@@ -13,16 +13,23 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "DistanceTest.h"
-
 #include <limits>
+#include <TestSuite/Tester.h>
 
-#include "Constants.h"
-#include "Distance.h"
-
-CORRADE_TEST_MAIN(Magnum::Math::Geometry::Test::DistanceTest)
+#include "Math/Constants.h"
+#include "Math/Geometry/Distance.h"
 
 namespace Magnum { namespace Math { namespace Geometry { namespace Test {
+
+class DistanceTest: public Corrade::TestSuite::Tester {
+    public:
+        DistanceTest();
+
+        void linePoint2D();
+        void linePoint3D();
+        void lineSegmentPoint2D();
+        void lineSegmentPoint3D();
+};
 
 typedef Magnum::Math::Vector2<float> Vector2;
 typedef Magnum::Math::Vector3<float> Vector3;
@@ -122,3 +129,5 @@ void DistanceTest::lineSegmentPoint3D() {
 }
 
 }}}}
+
+CORRADE_TEST_MAIN(Magnum::Math::Geometry::Test::DistanceTest)

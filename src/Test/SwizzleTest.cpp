@@ -13,13 +13,20 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "SwizzleTest.h"
+#include <TestSuite/Tester.h>
 
 #include "Swizzle.h"
 
-CORRADE_TEST_MAIN(Magnum::Test::SwizzleTest)
-
 namespace Magnum { namespace Test {
+
+class SwizzleTest: public Corrade::TestSuite::Tester {
+    public:
+        SwizzleTest();
+
+        void rgba();
+        void type();
+        void defaultType();
+};
 
 SwizzleTest::SwizzleTest() {
     addTests(&SwizzleTest::rgba,
@@ -52,3 +59,5 @@ void SwizzleTest::defaultType() {
 }
 
 }}
+
+CORRADE_TEST_MAIN(Magnum::Test::SwizzleTest)

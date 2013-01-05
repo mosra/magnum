@@ -13,13 +13,18 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "GramSchmidtTest.h"
+#include <TestSuite/Tester.h>
 
 #include "Math/Algorithms/GramSchmidt.h"
 
-CORRADE_TEST_MAIN(Magnum::Math::Algorithms::Test::GramSchmidtTest)
-
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
+
+class GramSchmidtTest: public Corrade::TestSuite::Tester {
+    public:
+        GramSchmidtTest();
+
+        void test();
+};
 
 typedef Matrix<3, float> Matrix3;
 typedef Vector<3, float> Vector3;
@@ -58,3 +63,5 @@ void GramSchmidtTest::test() {
 }
 
 }}}}
+
+CORRADE_TEST_MAIN(Magnum::Math::Algorithms::Test::GramSchmidtTest)

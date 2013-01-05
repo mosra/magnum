@@ -13,16 +13,23 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "PlaneTest.h"
-
 #include "Math/Constants.h"
 #include "Physics/LineSegment.h"
 #include "Physics/Point.h"
 #include "Physics/Plane.h"
 
-CORRADE_TEST_MAIN(Magnum::Physics::Test::PlaneTest)
+#include "ShapeTestBase.h"
 
 namespace Magnum { namespace Physics { namespace Test {
+
+class PlaneTest: public Corrade::TestSuite::Tester, ShapeTestBase {
+    public:
+        PlaneTest();
+
+        void applyTransformation();
+        void collisionLine();
+        void collisionLineSegment();
+};
 
 PlaneTest::PlaneTest() {
     addTests(&PlaneTest::applyTransformation,
@@ -76,3 +83,5 @@ void PlaneTest::collisionLineSegment() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Physics::Test::PlaneTest)

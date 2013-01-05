@@ -13,14 +13,19 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "BoxTest.h"
+#include <TestSuite/Tester.h>
 
 #include "Math/Matrix4.h"
 #include "Physics/Box.h"
 
-CORRADE_TEST_MAIN(Magnum::Physics::Test::BoxTest)
-
 namespace Magnum { namespace Physics { namespace Test {
+
+class BoxTest: public Corrade::TestSuite::Tester {
+    public:
+        BoxTest();
+
+        void applyTransformation();
+};
 
 BoxTest::BoxTest() {
     addTests(&BoxTest::applyTransformation);
@@ -34,3 +39,5 @@ void BoxTest::applyTransformation() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Physics::Test::BoxTest)

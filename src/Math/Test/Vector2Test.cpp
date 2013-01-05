@@ -13,18 +13,28 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Vector2Test.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 #include <Utility/Configuration.h>
 
-#include "Vector2.h"
-
-CORRADE_TEST_MAIN(Magnum::Math::Test::Vector2Test)
+#include "Math/Vector2.h"
 
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Math { namespace Test {
+
+class Vector2Test: public Corrade::TestSuite::Tester {
+    public:
+        Vector2Test();
+
+        void construct();
+        void access();
+        void axes();
+        void scales();
+
+        void debug();
+        void configuration();
+};
 
 typedef Math::Vector2<float> Vector2;
 
@@ -79,3 +89,5 @@ void Vector2Test::configuration() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Math::Test::Vector2Test)
