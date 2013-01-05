@@ -75,8 +75,9 @@ void QuaternionTest::length() {
 }
 
 void QuaternionTest::normalized() {
-    CORRADE_COMPARE(Quaternion({1.0f, 3.0f, -2.0f}, -4.0f).normalized(),
-                    Quaternion({1.0f, 3.0f, -2.0f}, -4.0f)/std::sqrt(30.0f));
+    Quaternion normalized = Quaternion({1.0f, 3.0f, -2.0f}, -4.0f).normalized();
+    CORRADE_COMPARE(normalized.length(), 1.0f);
+    CORRADE_COMPARE(normalized, Quaternion({1.0f, 3.0f, -2.0f}, -4.0f)/std::sqrt(30.0f));
 }
 
 void QuaternionTest::conjugated() {
