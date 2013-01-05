@@ -416,6 +416,7 @@ class MAGNUM_EXPORT Mesh {
 
         /**
          * @brief Add buffer with non-interleaved vertex attributes for use with given shader
+         * @return Pointer to self (for method chaining)
          *
          * Attribute list is combination of
          * @ref AbstractShaderProgram::Attribute "attribute definitions"
@@ -469,6 +470,7 @@ class MAGNUM_EXPORT Mesh {
 
         /**
          * @brief Add buffer with interleaved vertex attributes for use with given shader
+         * @return Pointer to self (for method chaining)
          *
          * Parameter @p offset is offset of the interleaved array from the
          * beginning, attribute list is combination of
@@ -530,6 +532,7 @@ class MAGNUM_EXPORT Mesh {
 
         /**
          * @brief Add buffer with interleaved vertex attributes for use with given shader
+         * @return Pointer to self (for method chaining)
          *
          * See addInterleavedVertexBuffer() for more information.
          */
