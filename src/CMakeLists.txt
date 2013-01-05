@@ -103,6 +103,7 @@ add_library(MagnumObjects OBJECT ${Magnum_SRCS})
 # Files shared between main library and math unit test library
 set(MagnumMath_SRCS
     Math/Math.cpp
+    Math/Quaternion.cpp
     Math/RectangularMatrix.cpp
     Math/Vector.cpp)
 add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})

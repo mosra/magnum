@@ -9,6 +9,7 @@ set(MagnumMath_HEADERS
     Matrix4.h
     Point2D.h
     Point3D.h
+    Quaternion.h
     RectangularMatrix.h
     Swizzle.h
     Vector.h
