@@ -5,5 +5,6 @@ namespace Magnum {
 - @subpage matrix-vector - @copybrief matrix-vector
 - @subpage scenegraph - @copybrief scenegraph
 - @subpage collision-detection - @copybrief collision-detection
+- @subpage debug-tools - @copybrief debug-tools
 */
 }

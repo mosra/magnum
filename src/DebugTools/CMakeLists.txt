@@ -1,4 +1,5 @@
 set(MagnumDebugTools_SRCS
+    ObjectRenderer.cpp
     Profiler.cpp
     ResourceManager.cpp
     ShapeRenderer.cpp
@@ -10,6 +11,7 @@ set(MagnumDebugTools_SRCS
 
 set(MagnumDebugTools_HEADERS
     DebugTools.h
+    ObjectRenderer.h
     Profiler.h
     ResourceManager.h
     ShapeRenderer.h

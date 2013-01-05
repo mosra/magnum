@@ -23,6 +23,11 @@
 
 namespace Magnum { namespace DebugTools {
 
+template<std::uint8_t> class ObjectRenderer;
+typedef ObjectRenderer<2> ObjectRenderer2D;
+typedef ObjectRenderer<3> ObjectRenderer3D;
+class ObjectRendererOptions;
+
 class Profiler;
 class ResourceManager;
 

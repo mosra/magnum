@@ -1,0 +1,56 @@
+namespace Magnum {
+/** @page debug-tools Debugging helpers
+
+@brief Convenience classes to help you during development.
+
+@tableofcontents
+
+DebugTools library provides various helper classes to help you with
+prototyping and debugging applications without the need to write too much
+common code. They probably have no usage in production code, but can be useful
+in development.
+
+@section debug-tools-renderers Debug renderers
+
+%Debug renderers provide a way to visualize objects and object features in
+@ref scenegraph "scene graph" without the need to mess around with meshes and
+shaders. They are implemented as object features, so you can attach any number
+of them to any object.
+
+Basic usage involves instancing DebugTools::ResourceManager and keeping it for
+for the whole lifetime of debug renderers. Next you need some SceneGraph::DrawableGroup
+instance. You can use the same group as for the rest of your scene, but
+preferrably use dedicated one for debug renderers, so you can easily enable or
+disable debug rendering.
+
+Next step is to create configuration for your debug renderers and create
+particular debug renderer. The configuration is managed using the resource
+manager - you create configuration instance, add it to the manager and then
+reference it using particular resource key. This way you can easily share the
+same options with more renderers. If no options are specified or resource with
+given key doesn't exist, default fallback is used.
+
+Example usage: visualizing object position, rotation and scaling using
+DebugTools::ObjectRenderer:
+@code
+// Global instance of debug resource manager, drawable group for the renderers
+DebugTools::ResourceManager manager;
+SceneGraph::DrawableGroup3D debugDrawables;
+
+// Create renderer options which will be referenced later by "my" resource key
+DebugTools::ResourceManager::instance()->set<DebugTools::ObjectRendererOptions>("my",
+    (new DebugTools::ObjectRendererOptions())->setSize(0.3f),
+    ResourceDataState::Final, ResourcePolicy::Persistent);
+
+// Create debug renderer for given object, use "my" options for it. The
+// renderer is automatically added to the object features and also to
+// specified drawable group.
+Object3D* object;
+new DebugTools::ObjectRenderer2D(object, "my", debugDrawables);
+@endcode
+
+See DebugTools::ObjectRenderer and DebugTools::ShapeRenderer for more
+information.
+
+*/
+}
