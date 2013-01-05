@@ -23,17 +23,9 @@
 namespace Magnum { namespace Shaders {
 
 namespace {
-    template<std::uint8_t dimensions> struct ShaderName {};
-
-    template<> struct ShaderName<2> {
-        constexpr static const char* vertex() { return "VertexColorShader2D.vert"; }
-        constexpr static const char* fragment() { return "VertexColorShader2D.frag"; }
-    };
-
-    template<> struct ShaderName<3> {
-        constexpr static const char* vertex() { return "VertexColorShader3D.vert"; }
-        constexpr static const char* fragment() { return "VertexColorShader3D.frag"; }
-    };
+    template<std::uint8_t> constexpr const char* vertexShaderName();
+    template<> constexpr const char* vertexShaderName<2>() { return "VertexColorShader2D.vert"; }
+    template<> constexpr const char* vertexShaderName<3>() { return "VertexColorShader3D.vert"; }
 }
 
 template<std::uint8_t dimensions> VertexColorShader<dimensions>::VertexColorShader(): transformationProjectionMatrixUniform(0) {
@@ -47,12 +39,12 @@ template<std::uint8_t dimensions> VertexColorShader<dimensions>::VertexColorShad
 
     Shader vertexShader(v, Shader::Type::Vertex);
     vertexShader.addSource(rs.get("compatibility.glsl"));
-    vertexShader.addSource(rs.get(ShaderName<dimensions>::vertex()));
+    vertexShader.addSource(rs.get(vertexShaderName<dimensions>()));
     attachShader(vertexShader);
 
     Shader fragmentShader(v, Shader::Type::Fragment);
     fragmentShader.addSource(rs.get("compatibility.glsl"));
-    fragmentShader.addSource(rs.get(ShaderName<dimensions>::fragment()));
+    fragmentShader.addSource(rs.get("VertexColorShader.frag"));
     attachShader(fragmentShader);
 
     #ifndef MAGNUM_TARGET_GLES
