@@ -113,6 +113,17 @@ template<class T> class Quaternion {
         }
 
         /**
+         * @brief Negated quaternion
+         *
+         * @f[
+         *      -q = [-\boldsymbol q_V, -q_S]
+         * @f]
+         */
+        inline Quaternion<T> operator-() const {
+            return {-_vector, -_scalar};
+        }
+
+        /**
          * @brief Multiply with scalar and assign
          *
          * The computation is done in-place.

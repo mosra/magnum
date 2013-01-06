@@ -27,6 +27,7 @@ class QuaternionTest: public Corrade::TestSuite::Tester {
         explicit QuaternionTest();
 
         void construct();
+        void negated();
         void multiplyDivideScalar();
         void multiply();
         void length();
@@ -45,6 +46,7 @@ typedef Math::Vector3<float> Vector3;
 
 QuaternionTest::QuaternionTest() {
     addTests(&QuaternionTest::construct,
+             &QuaternionTest::negated,
              &QuaternionTest::multiplyDivideScalar,
              &QuaternionTest::multiply,
              &QuaternionTest::length,
@@ -63,6 +65,10 @@ void QuaternionTest::construct() {
     CORRADE_COMPARE(q.scalar(), -4.0f);
 
     CORRADE_COMPARE(Quaternion(), Quaternion({0.0f, 0.0f, 0.0f}, {1.0f}));
+}
+
+void QuaternionTest::negated() {
+    CORRADE_COMPARE(-Quaternion({1.0f, 2.0f, -3.0f}, -4.0f), Quaternion({-1.0f, -2.0f, 3.0f}, 4.0f));
 }
 
 void QuaternionTest::multiplyDivideScalar() {
@@ -141,6 +147,9 @@ void QuaternionTest::matrix() {
     Quaternion q = Quaternion::fromRotation(angle, axis);
     Matrix<3, float> expected = Matrix4<float>::rotation(angle, axis).rotationScaling();
     CORRADE_COMPARE(q.matrix(), expected);
+
+    /* Verify that negated quaternion gives the same rotation */
+    CORRADE_COMPARE((-q).matrix(), expected);
 }
 
 void QuaternionTest::debug() {

@@ -221,7 +221,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             return *this;
         }
 
-        /** @brief Negative matrix */
+        /** @brief Negated matrix */
         RectangularMatrix<cols, rows, T> operator-() const {
             RectangularMatrix<cols, rows, T> out;
 
