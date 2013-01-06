@@ -23,6 +23,7 @@
 #include <Utility/Assert.h>
 #include <Utility/Debug.h>
 
+#include "Math/Math.h"
 #include "Math/MathTypeTraits.h"
 #include "Math/Vector3.h"
 
@@ -31,6 +32,20 @@ namespace Magnum { namespace Math {
 /** @brief %Quaternion */
 template<class T> class Quaternion {
     public:
+        /**
+         * @brief Create quaternion from rotation
+         * @param angle             Rotation angle (counterclockwise, in radians)
+         * @param normalizedAxis    Normalized rotation axis
+         *
+         * Assumes that the rotation axis is normalized.
+         */
+        inline static Quaternion<T> fromRotation(T angle, const Vector3<T>& normalizedAxis) {
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedAxis.dot(), T(1)),
+                           "Math::Quaternion::fromRotation(): axis must be normalized", {});
+
+            return {normalizedAxis*std::sin(angle/2), std::cos(angle/2)};
+        }
+
         /** @brief Default constructor */
         inline constexpr Quaternion(): _scalar(T(1)) {}
 
@@ -52,6 +67,30 @@ template<class T> class Quaternion {
 
         /** @brief %Scalar part */
         inline constexpr T scalar() const { return _scalar; }
+
+        /**
+         * @brief Rotation angle of unit quaternion
+         *
+         * Assumes that the quaternion is normalized.
+         */
+        inline T rotationAngle() const {
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(lengthSquared(), T(1)),
+                           "Math::Quaternion::rotationAngle(): quaternion must be normalized",
+                           std::numeric_limits<T>::quiet_NaN());
+            return T(2)*std::acos(_scalar);
+        }
+
+        /**
+         * @brief Rotation axis of unit quaternion
+         *
+         * Assumes that the quaternion is normalized.
+         */
+        inline Vector3<T> rotationAxis() const {
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(lengthSquared(), T(1)),
+                           "Math::Quaternion::rotationAxis(): quaternion must be normalized",
+                           {});
+            return _vector/std::sqrt(1-pow<2>(_scalar));
+        }
 
         /**
          * @brief Multiply with scalar and assign

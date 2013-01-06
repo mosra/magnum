@@ -16,6 +16,7 @@
 #include <sstream>
 #include <TestSuite/Tester.h>
 
+#include "Math/Constants.h"
 #include "Math/Quaternion.h"
 
 namespace Magnum { namespace Math { namespace Test {
@@ -32,6 +33,7 @@ class QuaternionTest: public Corrade::TestSuite::Tester {
         void conjugated();
         void inverted();
         void invertedNormalized();
+        void rotation();
 
         void debug();
 };
@@ -48,6 +50,7 @@ QuaternionTest::QuaternionTest() {
              &QuaternionTest::conjugated,
              &QuaternionTest::inverted,
              &QuaternionTest::invertedNormalized,
+             &QuaternionTest::rotation,
              &QuaternionTest::debug);
 }
 
@@ -111,6 +114,22 @@ void QuaternionTest::invertedNormalized() {
     CORRADE_COMPARE(aNormalized*inverted, Quaternion());
     CORRADE_COMPARE(inverted*aNormalized.normalized(), Quaternion());
     CORRADE_COMPARE(inverted, Quaternion({-1.0f, -3.0f, 2.0f}, -4.0f)/std::sqrt(30.0f));
+}
+
+void QuaternionTest::rotation() {
+    float angle = deg(120.0f);
+    Vector3 axis(1.0f/Constants<float>::sqrt3());
+    Quaternion q = Quaternion::fromRotation(angle, axis);
+    CORRADE_COMPARE(q, Quaternion(Vector3(0.5f, 0.5f, 0.5f), 0.5f));
+    CORRADE_COMPARE(q.rotationAngle(), angle);
+    CORRADE_COMPARE(q.rotationAxis(), axis);
+    CORRADE_COMPARE(q.rotationAxis().length(), 1.0f);
+
+    /* Verify negative angle */
+    Quaternion q2 = Quaternion::fromRotation(deg(-120.0f), axis);
+    CORRADE_COMPARE(q2, Quaternion(Vector3(-0.5f, -0.5f, -0.5f), 0.5f));
+    CORRADE_COMPARE(q2.rotationAngle(), deg(120.0f));
+    CORRADE_COMPARE(q2.rotationAxis(), -axis);
 }
 
 void QuaternionTest::debug() {
