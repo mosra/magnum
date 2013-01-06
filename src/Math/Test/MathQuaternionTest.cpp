@@ -17,6 +17,7 @@
 #include <TestSuite/Tester.h>
 
 #include "Math/Constants.h"
+#include "Math/Matrix4.h"
 #include "Math/Quaternion.h"
 
 namespace Magnum { namespace Math { namespace Test {
@@ -34,6 +35,7 @@ class QuaternionTest: public Corrade::TestSuite::Tester {
         void inverted();
         void invertedNormalized();
         void rotation();
+        void matrix();
 
         void debug();
 };
@@ -51,6 +53,7 @@ QuaternionTest::QuaternionTest() {
              &QuaternionTest::inverted,
              &QuaternionTest::invertedNormalized,
              &QuaternionTest::rotation,
+             &QuaternionTest::matrix,
              &QuaternionTest::debug);
 }
 
@@ -130,6 +133,14 @@ void QuaternionTest::rotation() {
     CORRADE_COMPARE(q2, Quaternion(Vector3(-0.5f, -0.5f, -0.5f), 0.5f));
     CORRADE_COMPARE(q2.rotationAngle(), deg(120.0f));
     CORRADE_COMPARE(q2.rotationAxis(), -axis);
+}
+
+void QuaternionTest::matrix() {
+    float angle = deg(37.0f);
+    Vector3 axis(1.0f/Constants<float>::sqrt3());
+    Quaternion q = Quaternion::fromRotation(angle, axis);
+    Matrix<3, float> expected = Matrix4<float>::rotation(angle, axis).rotationScaling();
+    CORRADE_COMPARE(q.matrix(), expected);
 }
 
 void QuaternionTest::debug() {

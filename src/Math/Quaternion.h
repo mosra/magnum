@@ -25,6 +25,7 @@
 
 #include "Math/Math.h"
 #include "Math/MathTypeTraits.h"
+#include "Math/Matrix.h"
 #include "Math/Vector3.h"
 
 namespace Magnum { namespace Math {
@@ -90,6 +91,25 @@ template<class T> class Quaternion {
                            "Math::Quaternion::rotationAxis(): quaternion must be normalized",
                            {});
             return _vector/std::sqrt(1-pow<2>(_scalar));
+        }
+
+        /**
+         * @brief Convert quaternion to rotation matrix
+         *
+         * @see Matrix4::from(const Matrix<3, T>&, const Vector3<T>&)
+         */
+        Matrix<3, T> matrix() const {
+            return { /* Column-major! */
+                T(1) - 2*pow<2>(_vector.y()) - 2*pow<2>(_vector.z()),
+                    2*_vector.x()*_vector.y() + 2*_vector.z()*_scalar,
+                        2*_vector.x()*_vector.z() - 2*_vector.y()*_scalar,
+                2*_vector.x()*_vector.y() - 2*_vector.z()*_scalar,
+                    T(1) - 2*pow<2>(_vector.x()) - 2*pow<2>(_vector.z()),
+                        2*_vector.y()*_vector.z() + 2*_vector.x()*_scalar,
+                2*_vector.x()*_vector.z() + 2*_vector.y()*_scalar,
+                    2*_vector.y()*_vector.z() - 2*_vector.x()*_scalar,
+                        T(1) - 2*pow<2>(_vector.x()) - 2*pow<2>(_vector.y())
+            };
         }
 
         /**
