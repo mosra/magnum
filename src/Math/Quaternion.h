@@ -121,6 +121,28 @@ template<class T> class Quaternion {
         }
 
         /**
+         * @brief Add and assign quaternion
+         *
+         * The computation is done in-place. @f[
+         *      p + q = [\boldsymbol p_V + \boldsymbol q_V, p_S + q_S]
+         * @f]
+         */
+        inline Quaternion<T>& operator+=(const Quaternion<T>& other) {
+            _vector += other._vector;
+            _scalar += other._scalar;
+            return *this;
+        }
+
+        /**
+         * @brief Add quaternion
+         *
+         * @see operator+=()
+         */
+        inline Quaternion<T> operator+(const Quaternion<T>& other) const {
+            return Quaternion<T>(*this)+=other;
+        }
+
+        /**
          * @brief Negated quaternion
          *
          * @f[
@@ -129,6 +151,28 @@ template<class T> class Quaternion {
          */
         inline Quaternion<T> operator-() const {
             return {-_vector, -_scalar};
+        }
+
+        /**
+         * @brief Subtract and assign quaternion
+         *
+         * The computation is done in-place. @f[
+         *      p - q = [\boldsymbol p_V - \boldsymbol q_V, p_S - q_S]
+         * @f]
+         */
+        inline Quaternion<T>& operator-=(const Quaternion<T>& other) {
+            _vector -= other._vector;
+            _scalar -= other._scalar;
+            return *this;
+        }
+
+        /**
+         * @brief Subtract quaternion
+         *
+         * @see operator-=()
+         */
+        inline Quaternion<T> operator-(const Quaternion<T>& other) const {
+            return Quaternion<T>(*this)-=other;
         }
 
         /**
