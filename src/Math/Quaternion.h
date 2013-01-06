@@ -34,6 +34,22 @@ namespace Magnum { namespace Math {
 template<class T> class Quaternion {
     public:
         /**
+         * @brief Linear interpolation of two quaternions
+         * @param normalizedA   First quaternion
+         * @param normalizedB   Second quaternion
+         * @param t             Interpolation phase (from range @f$ [0; 1] @f$)
+         *
+         * Expects that both quaternions are normalized. @f[
+         *      q_{LERP} = \frac{(1 - t) q_A + t q_B}{|(1 - t) q_A + t q_B|}
+         * @f]
+         */
+        inline static Quaternion<T> lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.lengthSquared(), T(1)) && MathTypeTraits<T>::equals(normalizedB.lengthSquared(), T(1)),
+                           "Math::Quaternion::lerp(): quaternions must be normalized", Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
+            return ((T(1) - t)*normalizedA + t*normalizedB).normalized();
+        }
+
+        /**
          * @brief Create quaternion from rotation
          * @param angle             Rotation angle (counterclockwise, in radians)
          * @param normalizedAxis    Normalized rotation axis
