@@ -47,6 +47,19 @@ template<class T> class Quaternion {
         }
 
         /**
+         * @brief Angle between normalized quaternions (in radians)
+         *
+         * Expects that both quaternions are normalized. @f[
+         * \theta = acos \left(\frac{p \cdot q}{|p| \cdot |q|} \right)
+         * @f]
+         */
+        inline static T angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
+                           "Math::Quaternion::angle(): quaternions must be normalized", std::numeric_limits<T>::quiet_NaN());
+            return std::acos(dot(normalizedA, normalizedB));
+        }
+
+        /**
          * @brief Linear interpolation of two quaternions
          * @param normalizedA   First quaternion
          * @param normalizedB   Second quaternion

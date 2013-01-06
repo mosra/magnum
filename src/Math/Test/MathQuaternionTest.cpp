@@ -39,6 +39,7 @@ class QuaternionTest: public Corrade::TestSuite::Tester {
         void inverted();
         void invertedNormalized();
         void rotation();
+        void angle();
         void matrix();
         void lerp();
 
@@ -62,6 +63,7 @@ QuaternionTest::QuaternionTest() {
              &QuaternionTest::inverted,
              &QuaternionTest::invertedNormalized,
              &QuaternionTest::rotation,
+             &QuaternionTest::angle,
              &QuaternionTest::matrix,
              &QuaternionTest::lerp,
              &QuaternionTest::debug);
@@ -170,6 +172,22 @@ void QuaternionTest::rotation() {
     CORRADE_COMPARE(q2, Quaternion(Vector3(-0.5f, -0.5f, -0.5f), 0.5f));
     CORRADE_COMPARE(q2.rotationAngle(), deg(120.0f));
     CORRADE_COMPARE(q2.rotationAxis(), -axis);
+}
+
+void QuaternionTest::angle() {
+    std::ostringstream o;
+    Corrade::Utility::Error::setOutput(&o);
+    CORRADE_COMPARE(Quaternion::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(), {{4.0f, -3.0f, 2.0f}, -1.0f}),
+                    std::numeric_limits<Vector3::Type>::quiet_NaN());
+    CORRADE_COMPARE(o.str(), "Math::Quaternion::angle(): quaternions must be normalized\n");
+
+    o.str("");
+    CORRADE_COMPARE(Quaternion::angle({{1.0f, 2.0f, -3.0f}, -4.0f}, Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized()),
+                    std::numeric_limits<Vector3::Type>::quiet_NaN());
+    CORRADE_COMPARE(o.str(), "Math::Quaternion::angle(): quaternions must be normalized\n");
+
+    CORRADE_COMPARE(Quaternion::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(), Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized()),
+                    rad(1.704528f));
 }
 
 void QuaternionTest::matrix() {

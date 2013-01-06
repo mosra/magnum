@@ -140,12 +140,17 @@ void VectorTest::max() {
 void VectorTest::angle() {
     std::ostringstream o;
     Error::setOutput(&o);
-    /* Both vectors must be normalized, otherwise NaN is returned */
-    CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f}), std::numeric_limits<Vector3::Type>::quiet_NaN());
+    CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f}),
+                    std::numeric_limits<Vector3::Type>::quiet_NaN());
     CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized\n");
-    CORRADE_COMPARE(Vector3::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized()), std::numeric_limits<Vector3::Type>::quiet_NaN());
 
-    CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), Vector3(1.0f, -2.0f, 3.0f).normalized()), rad(1.162514f));
+    o.str("");
+    CORRADE_COMPARE(Vector3::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized()),
+                    std::numeric_limits<Vector3::Type>::quiet_NaN());
+    CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized\n");
+
+    CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), Vector3(1.0f, -2.0f, 3.0f).normalized()),
+                    rad(1.162514f));
 }
 
 void VectorTest::debug() {
