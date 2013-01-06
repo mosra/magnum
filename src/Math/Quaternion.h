@@ -23,8 +23,8 @@
 #include <Utility/Assert.h>
 #include <Utility/Debug.h>
 
-#include "Vector3.h"
-#include "MathTypeTraits.h"
+#include "Math/MathTypeTraits.h"
+#include "Math/Vector3.h"
 
 namespace Magnum { namespace Math {
 
