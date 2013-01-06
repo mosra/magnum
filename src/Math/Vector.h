@@ -57,10 +57,9 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
         /**
          * @brief Angle between normalized vectors (in radians)
          *
-         * @f[
-         * \phi = acos \left(\frac{a \cdot b}{|a| \cdot |b|} \right)
+         * Expects that both vectors are normalized. @f[
+         * \theta = acos \left(\frac{a \cdot b}{|a| \cdot |b|} \right)
          * @f]
-         * @attention Both vectors must be normalized.
          */
         inline static T angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
@@ -200,10 +199,9 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          * @brief Dot product of the vector
          *
          * Should be used instead of length() for comparing vector length with
-         * other values, because it doesn't compute the square root, just the
-         * dot product: @f$ a \cdot a < length \cdot length @f$ is faster
-         * than @f$ \sqrt{a \cdot a} < length @f$.
-         *
+         * other values, because it doesn't compute the square root. @f[
+         *      |a|^2 = a \cdot a
+         * @f]
          * @see dot(const Vector<size, T>&, const Vector<size, T>&)
          */
         inline T dot() const {
@@ -225,9 +223,11 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
         }
 
         /**
-         * @brief Vector projected onto another
+         * @brief %Vector projected onto another
          *
-         * Returns vector projected onto line defined by @p other.
+         * Returns vector projected onto line defined by @p other. @f[
+         *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b
+         * @f]
          */
         inline Vector<size, T> projected(const Vector<size, T>& other) const {
             return other*dot(*this, other)/other.dot();

@@ -86,8 +86,8 @@ template<class T> class Matrix3: public Matrix<3, T> {
         /**
          * @brief 2D reflection matrix
          * @param normal    Normal of the line through which to reflect
-         *      (normalized)
          *
+         * Expects that the normal is normalized.
          * @see Matrix4::reflection()
          */
         static Matrix3<T> reflection(const Vector2<T>& normal) {

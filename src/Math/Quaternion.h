@@ -38,7 +38,9 @@ template<class T> class Quaternion {
          * @param angle             Rotation angle (counterclockwise, in radians)
          * @param normalizedAxis    Normalized rotation axis
          *
-         * Assumes that the rotation axis is normalized.
+         * Expects that the rotation axis is normalized. @f[
+         *      q = [\boldsymbol a \cdot sin \frac \theta 2, cos \frac \theta 2]
+         * @f]
          */
         inline static Quaternion<T> fromRotation(T angle, const Vector3<T>& normalizedAxis) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedAxis.dot(), T(1)),
@@ -72,7 +74,10 @@ template<class T> class Quaternion {
         /**
          * @brief Rotation angle of unit quaternion
          *
-         * Assumes that the quaternion is normalized.
+         * Expects that the quaternion is normalized. @f[
+         *      \theta = 2 \cdot acos q_S
+         * @f]
+         * @see rotationAxis(), fromRotation()
          */
         inline T rotationAngle() const {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(lengthSquared(), T(1)),
@@ -84,7 +89,10 @@ template<class T> class Quaternion {
         /**
          * @brief Rotation axis of unit quaternion
          *
-         * Assumes that the quaternion is normalized.
+         * Expects that the quaternion is normalized. @f[
+         *      \boldsymbol a = \frac{\boldsymbol q_V}{\sqrt{1 - q_S^2}}
+         * @f]
+         * @see rotationAngle(), fromRotation()
          */
         inline Vector3<T> rotationAxis() const {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(lengthSquared(), T(1)),
@@ -126,22 +134,13 @@ template<class T> class Quaternion {
         /**
          * @brief Multiply with scalar and assign
          *
-         * The computation is done in-place.
+         * The computation is done in-place. @f[
+         *      q \cdot a = [\boldsymbol q_V \cdot a, q_S \cdot a]
+         * @f]
          */
         inline Quaternion<T>& operator*=(T number) {
             _vector *= number;
             _scalar *= number;
-            return *this;
-        }
-
-        /**
-         * @brief Divide with scalar and assign
-         *
-         * The computation is done in-place.
-         */
-        inline Quaternion<T>& operator/=(T number) {
-            _vector /= number;
-            _scalar /= number;
             return *this;
         }
 
@@ -152,6 +151,19 @@ template<class T> class Quaternion {
          */
         inline Quaternion<T> operator*(T scalar) const {
             return Quaternion<T>(*this)*=scalar;
+        }
+
+        /**
+         * @brief Divide with scalar and assign
+         *
+         * The computation is done in-place. @f[
+         *      \frac q a = [\frac {\boldsymbol q_V} a, \frac {q_S} a]
+         * @f]
+         */
+        inline Quaternion<T>& operator/=(T number) {
+            _vector /= number;
+            _scalar /= number;
+            return *this;
         }
 
         /**
@@ -166,7 +178,10 @@ template<class T> class Quaternion {
         /**
          * @brief Multiply with quaternion
          *
-         * The computation is *not* done in-place.
+         * @f[
+         *      p q = [p_S \boldsymbol q_V + q_S \boldsymbol p_V + \boldsymbol p_V \times \boldsymbol q_V,
+         *             p_S q_S - \boldsymbol p_V \cdot \boldsymbol q_V]
+         * @f]
          */
         inline Quaternion<T> operator*(const Quaternion<T>& other) const {
             return {_scalar*other._vector + other._scalar*_vector + Vector3<T>::cross(_vector, other._vector),
@@ -174,30 +189,38 @@ template<class T> class Quaternion {
         }
 
         /**
-         * @brief Multiply with quaternion and assign
+         * @brief %Quaternion length squared
          *
-         * @see operator*(const Quaternion<T>&) const
+         * Should be used instead of length() for comparing quaternion length
+         * with other values, because it doesn't compute the square root. @f[
+         *      |q|^2 = \boldsymbol q_V \cdot \boldsymbol q_V + q_S q_S
+         * @f]
          */
-        inline Quaternion<T>& operator*=(const Quaternion<T>& other) {
-            return (*this = *this * other);
-        }
-
-        /** @brief %Quaternion length squared */
         inline T lengthSquared() const {
             return _vector.dot() + _scalar*_scalar;
         }
 
-        /** @brief %Quaternion length */
+        /**
+         * @brief %Quaternion length
+         *
+         * @see lengthSquared()
+         */
         inline T length() const {
             return std::sqrt(lengthSquared());
         }
 
-        /** @brief Normalized quaternion */
+        /** @brief Normalized quaternion (of length 1) */
         inline Quaternion<T> normalized() const {
             return (*this)/length();
         }
 
-        /** @brief Conjugated quaternion */
+        /**
+         * @brief Conjugated quaternion
+         *
+         * @f[
+         *      q^* = [-\boldsymbol q_V, q_S]
+         * @f]
+         */
         inline Quaternion<T> conjugated() const {
             return {-_vector, _scalar};
         }
@@ -206,7 +229,9 @@ template<class T> class Quaternion {
          * @brief Inverted quaternion
          *
          * See invertedNormalized() which is faster for normalized
-         * quaternions.
+         * quaternions. @f[
+         *      q^{-1} = \frac{q^*}{|q|^2} = \frac{[-\boldsymbol q_V, q_S]}{|q|^2}
+         * @f]
          */
         inline Quaternion<T> inverted() const {
             return conjugated()/lengthSquared();
@@ -215,8 +240,10 @@ template<class T> class Quaternion {
         /**
          * @brief Inverted normalized quaternion
          *
-         * Equivalent to conjugated(). Assumes that the quaternion is
-         * normalized.
+         * Equivalent to conjugated(). Expects that the quaternion is
+         * normalized. @f[
+         *      q^{-1} = q^* = [-\boldsymbol q_V, q_S] ~~~~~ |q| = 1
+         * @f]
          */
         inline Quaternion<T> invertedNormalized() const {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(lengthSquared(), T(1)),

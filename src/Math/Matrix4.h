@@ -72,12 +72,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @param angle             Rotation angle (counterclockwise, in radians)
          * @param normalizedAxis    Normalized rotation axis
          *
-         * If possible, use faster alternatives like rotationX(), rotationY()
-         * and rotationZ().
+         * Expects that the rotation axis is normalized. If possible, use
+         * faster alternatives like rotationX(), rotationY() and rotationZ().
          * @see rotation() const, Matrix3::rotation(T), Vector3::xAxis(),
          *      Vector3::yAxis(), Vector3::zAxis(), deg(), rad()
-         * @attention Assertion fails on non-normalized rotation vector and
-         *      identity matrix is returned.
          */
         static Matrix4<T> rotation(T angle, const Vector3<T>& normalizedAxis) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedAxis.dot(), T(1)),
@@ -174,8 +172,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
         /**
          * @brief 3D reflection matrix
          * @param normal    Normal of the plane through which to reflect
-         *      (normalized)
          *
+         * Expects that the normal is normalized.
          * @see Matrix3::reflection()
          */
         static Matrix4<T> reflection(const Vector3<T>& normal) {
@@ -293,7 +291,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
         /**
          * @brief Inverted Euclidean transformation matrix
          *
-         * Assumes that the matrix represents Euclidean transformation (i.e.
+         * Expects that the matrix represents Euclidean transformation (i.e.
          * only rotation and translation, no scaling) and creates inverted
          * matrix from transposed rotation part and negated translation part.
          * Significantly faster than the general algorithm in inverted().

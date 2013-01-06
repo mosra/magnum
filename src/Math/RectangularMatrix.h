@@ -63,6 +63,10 @@ template<std::size_t size, class T> class Vector;
 
 See @ref matrix-vector for brief introduction. See also Matrix (square) and
 Vector.
+
+The data are stored in column-major order, to reflect that, all indices in
+math formulas are in reverse order (i.e. @f$ \boldsymbol A_{ji} @f$ instead
+of @f$ \boldsymbol A_{ij} @f$).
 */
 template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
     static_assert(cols != 0 && rows != 0, "Matrix cannot have zero elements");
@@ -200,6 +204,20 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /**
+         * @brief Add and assign matrix
+         *
+         * The computation is done in-place. @f[
+         *      \boldsymbol A_{ji} = \boldsymbol A_{ji} + \boldsymbol B_{ji}
+         * @f]
+         */
+        RectangularMatrix<cols, rows, T>& operator+=(const RectangularMatrix<cols, rows, T>& other) {
+            for(std::size_t i = 0; i != cols*rows; ++i)
+                _data[i] += other._data[i];
+
+            return *this;
+        }
+
+        /**
          * @brief Add matrix
          *
          * @see operator+=()
@@ -209,19 +227,12 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /**
-         * @brief Add and assign matrix
+         * @brief Negated matrix
          *
-         * More efficient than operator+(), because it does the computation
-         * in-place.
+         * The computation is done in-place. @f[
+         *      \boldsymbol A_{ji} = -\boldsymbol A_{ji}
+         * @f]
          */
-        RectangularMatrix<cols, rows, T>& operator+=(const RectangularMatrix<cols, rows, T>& other) {
-            for(std::size_t i = 0; i != cols*rows; ++i)
-                _data[i] += other._data[i];
-
-            return *this;
-        }
-
-        /** @brief Negated matrix */
         RectangularMatrix<cols, rows, T> operator-() const {
             RectangularMatrix<cols, rows, T> out;
 
@@ -232,25 +243,26 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /**
-         * @brief Subtract matrix
-         *
-         * @see operator-=()
-         */
-        inline RectangularMatrix<cols, rows, T> operator-(const RectangularMatrix<cols, rows, T>& other) const {
-            return RectangularMatrix<cols, rows, T>(*this)-=other;
-        }
-
-        /**
          * @brief Subtract and assign matrix
          *
-         * More efficient than operator-(), because it does the computation
-         * in-place.
+         * The computation is done in-place. @f[
+         *      \boldsymbol A_{ji} = \boldsymbol A_{ji} - \boldsymbol B_{ji}
+         * @f]
          */
         RectangularMatrix<cols, rows, T>& operator-=(const RectangularMatrix<cols, rows, T>& other) {
             for(std::size_t i = 0; i != cols*rows; ++i)
                 _data[i] -= other._data[i];
 
             return *this;
+        }
+
+        /**
+         * @brief Subtract matrix
+         *
+         * @see operator-=()
+         */
+        inline RectangularMatrix<cols, rows, T> operator-(const RectangularMatrix<cols, rows, T>& other) const {
+            return RectangularMatrix<cols, rows, T>(*this)-=other;
         }
 
         /**
@@ -269,8 +281,9 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /**
          * @brief Multiply matrix with number and assign
          *
-         * More efficient than operator*(U), because it does the computation
-         * in-place.
+         * The computation is done in-place. @f[
+         *      \boldsymbol A_{ji} = a \boldsymbol A_{ji}
+         * @f]
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>&>::type operator*=(U number) {
@@ -299,8 +312,9 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /**
          * @brief Divide matrix with number and assign
          *
-         * More efficient than operator/(), because it does the computation
-         * in-place.
+         * The computation is done in-place. @f[
+         *      \boldsymbol A_{ji} = \frac{\boldsymbol A_{ji}} a
+         * @f]
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>&>::type operator/=(U number) {
@@ -313,7 +327,13 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             return *this;
         }
 
-        /** @brief Multiply matrix */
+        /**
+         * @brief Multiply matrix
+         *
+         * @f[
+         *      (\boldsymbol {AB})_{ji} = \sum_{k=0}^{m-1} \boldsymbol A_{ki} \boldsymbol B_{jk}
+         * @f]
+         */
         template<std::size_t size> RectangularMatrix<size, rows, T> operator*(const RectangularMatrix<size, cols, T>& other) const {
             RectangularMatrix<size, rows, T> out;
 
@@ -329,7 +349,9 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @brief Multiply vector
          *
          * Internally the same as multiplying with one-column matrix, but
-         * returns vector.
+         * returns vector. @f[
+         *      (\boldsymbol {Aa})_i = \sum_{k=0}^{m-1} \boldsymbol A_{ki} \boldsymbol a_k
+         * @f]
          */
         Vector<rows, T> operator*(const Vector<rows, T>& other) const {
             return operator*(static_cast<RectangularMatrix<1, rows, T>>(other));

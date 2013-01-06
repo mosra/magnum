@@ -94,6 +94,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * @brief Cross product
          *
          * @f[
+         * \boldsymbol a \times \boldsymbol b =
          * \begin{pmatrix} c_0 \\ c_1 \\ c_2 \end{pmatrix} =
          * \begin{pmatrix}a_1b_2 - a_2b_1 \\ a_2b_0 - a_0b_2 \\ a_0b_1 - a_1b_0 \end{pmatrix}
          * @f]
