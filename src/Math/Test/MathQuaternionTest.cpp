@@ -32,6 +32,7 @@ class QuaternionTest: public Corrade::TestSuite::Tester {
         void multiplyDivideScalar();
         void multiply();
         void dot();
+        void dotSelf();
         void length();
         void normalized();
         void conjugated();
@@ -54,6 +55,7 @@ QuaternionTest::QuaternionTest() {
              &QuaternionTest::multiplyDivideScalar,
              &QuaternionTest::multiply,
              &QuaternionTest::dot,
+             &QuaternionTest::dotSelf,
              &QuaternionTest::length,
              &QuaternionTest::normalized,
              &QuaternionTest::conjugated,
@@ -107,6 +109,10 @@ void QuaternionTest::dot() {
     Quaternion b({-0.5f, 1.5f, 3.0f}, 12.0f);
 
     CORRADE_COMPARE(Quaternion::dot(a, b), -50.0f);
+}
+
+void QuaternionTest::dotSelf() {
+    CORRADE_COMPARE(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).dot(), 30.0f);
 }
 
 void QuaternionTest::length() {
