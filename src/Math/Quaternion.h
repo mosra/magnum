@@ -138,9 +138,9 @@ template<class T> class Quaternion {
          *      q \cdot a = [\boldsymbol q_V \cdot a, q_S \cdot a]
          * @f]
          */
-        inline Quaternion<T>& operator*=(T number) {
-            _vector *= number;
-            _scalar *= number;
+        inline Quaternion<T>& operator*=(T scalar) {
+            _vector *= scalar;
+            _scalar *= scalar;
             return *this;
         }
 
@@ -160,9 +160,9 @@ template<class T> class Quaternion {
          *      \frac q a = [\frac {\boldsymbol q_V} a, \frac {q_S} a]
          * @f]
          */
-        inline Quaternion<T>& operator/=(T number) {
-            _vector /= number;
-            _scalar /= number;
+        inline Quaternion<T>& operator/=(T scalar) {
+            _vector /= scalar;
+            _scalar /= scalar;
             return *this;
         }
 
@@ -248,7 +248,7 @@ template<class T> class Quaternion {
         inline Quaternion<T> invertedNormalized() const {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(lengthSquared(), T(1)),
                            "Math::Quaternion::invertedNormalized(): quaternion must be normalized",
-                           Quaternion({}, std::numeric_limits<T>::quiet_NaN()));
+                           Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
             return conjugated();
         }
 
