@@ -56,7 +56,7 @@ template<class T> class Quaternion {
         inline static T angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
                            "Math::Quaternion::angle(): quaternions must be normalized", std::numeric_limits<T>::quiet_NaN());
-            return std::acos(dot(normalizedA, normalizedB));
+            return angleInternal(normalizedA, normalizedB);
         }
 
         /**
@@ -74,6 +74,26 @@ template<class T> class Quaternion {
                            "Math::Quaternion::lerp(): quaternions must be normalized",
                            Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
             return ((T(1) - t)*normalizedA + t*normalizedB).normalized();
+        }
+
+        /**
+         * @brief Spherical linear interpolation of two quaternions
+         * @param normalizedA   First quaternion
+         * @param normalizedB   Second quaternion
+         * @param t             Interpolation phase (from range @f$ [0; 1] @f$)
+         *
+         * Expects that both quaternions are normalized. @f[
+         *      q_{SLERP} = \frac{sin((1 - t) \theta) q_A + sin(t \theta) q_B}{sin \theta}
+         *      ~~~~~~~~~~
+         *      \theta = acos \left( \frac{q_A \cdot q_B}{|q_A| \cdot |q_B|} \right)
+         * @f]
+         */
+        inline static Quaternion<T> slerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
+                           "Math::Quaternion::slerp(): quaternions must be normalized",
+                           Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
+            T a = angleInternal(normalizedA, normalizedB);
+            return (std::sin((T(1) - t)*a)*normalizedA + std::sin(t*a)*normalizedB)/std::sin(a);
         }
 
         /**
@@ -344,6 +364,11 @@ template<class T> class Quaternion {
         }
 
     private:
+        /* Used in angle() and slerp() (no assertions) */
+        inline static T angleInternal(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
+            return std::acos(dot(normalizedA, normalizedB));
+        }
+
         Vector3<T> _vector;
         T _scalar;
 };
