@@ -200,7 +200,7 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          *
          * Should be used instead of length() for comparing vector length with
          * other values, because it doesn't compute the square root. @f[
-         *      |a|^2 = a \cdot a
+         *      a \cdot a = \sum_{i=0}^{n-1} a_i^2
          * @f]
          * @see dot(const Vector<size, T>&, const Vector<size, T>&)
          */
@@ -211,6 +211,9 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
         /**
          * @brief %Vector length
          *
+         * @f[
+         *      |a| = \sqrt{a \cdot a}
+         * @f]
          * @see dot() const
          */
         inline T length() const {

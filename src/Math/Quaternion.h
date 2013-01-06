@@ -34,6 +34,19 @@ namespace Magnum { namespace Math {
 template<class T> class Quaternion {
     public:
         /**
+         * @brief Dot product
+         *
+         * @f[
+         * p \cdot q = \boldsymbol p_V \cdot \boldsymbol q_V + p_S q_S
+         * @f]
+         * @see dot() const
+         */
+        inline static T dot(const Quaternion<T>& a, const Quaternion<T>& b) {
+            /** @todo Use four-component SIMD implementation when available */
+            return Vector3<T>::dot(a.vector(), b.vector()) + a.scalar()*b.scalar();
+        }
+
+        /**
          * @brief Linear interpolation of two quaternions
          * @param normalizedA   First quaternion
          * @param normalizedB   Second quaternion
@@ -44,7 +57,7 @@ template<class T> class Quaternion {
          * @f]
          */
         inline static Quaternion<T> lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.lengthSquared(), T(1)) && MathTypeTraits<T>::equals(normalizedB.lengthSquared(), T(1)),
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
                            "Math::Quaternion::lerp(): quaternions must be normalized", Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
             return ((T(1) - t)*normalizedA + t*normalizedB).normalized();
         }
@@ -96,7 +109,7 @@ template<class T> class Quaternion {
          * @see rotationAxis(), fromRotation()
          */
         inline T rotationAngle() const {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(lengthSquared(), T(1)),
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
                            "Math::Quaternion::rotationAngle(): quaternion must be normalized",
                            std::numeric_limits<T>::quiet_NaN());
             return T(2)*std::acos(_scalar);
@@ -111,7 +124,7 @@ template<class T> class Quaternion {
          * @see rotationAngle(), fromRotation()
          */
         inline Vector3<T> rotationAxis() const {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(lengthSquared(), T(1)),
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
                            "Math::Quaternion::rotationAxis(): quaternion must be normalized",
                            {});
             return _vector/std::sqrt(1-pow<2>(_scalar));
@@ -249,24 +262,28 @@ template<class T> class Quaternion {
         }
 
         /**
-         * @brief %Quaternion length squared
+         * @brief Dot product of the quaternion
          *
          * Should be used instead of length() for comparing quaternion length
          * with other values, because it doesn't compute the square root. @f[
-         *      |q|^2 = \boldsymbol q_V \cdot \boldsymbol q_V + q_S q_S
+         *      q \cdot q = \boldsymbol q_V \cdot \boldsymbol q_V + q_S^2
          * @f]
+         * @see dot(const Quaternion<T>&, const Quaternion<T>&)
          */
-        inline T lengthSquared() const {
-            return _vector.dot() + _scalar*_scalar;
+        inline T dot() const {
+            return dot(*this, *this);
         }
 
         /**
          * @brief %Quaternion length
          *
-         * @see lengthSquared()
+         * @f[
+         *      |q| = \sqrt{q \cdot q}
+         * @f]
+         * @see dot() const
          */
         inline T length() const {
-            return std::sqrt(lengthSquared());
+            return std::sqrt(dot());
         }
 
         /** @brief Normalized quaternion (of length 1) */
@@ -290,11 +307,11 @@ template<class T> class Quaternion {
          *
          * See invertedNormalized() which is faster for normalized
          * quaternions. @f[
-         *      q^{-1} = \frac{q^*}{|q|^2} = \frac{[-\boldsymbol q_V, q_S]}{|q|^2}
+         *      q^{-1} = \frac{q^*}{|q|^2} = \frac{[-\boldsymbol q_V, q_S]}{q \cdot q}
          * @f]
          */
         inline Quaternion<T> inverted() const {
-            return conjugated()/lengthSquared();
+            return conjugated()/dot();
         }
 
         /**
@@ -306,7 +323,7 @@ template<class T> class Quaternion {
          * @f]
          */
         inline Quaternion<T> invertedNormalized() const {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(lengthSquared(), T(1)),
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
                            "Math::Quaternion::invertedNormalized(): quaternion must be normalized",
                            Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
             return conjugated();
