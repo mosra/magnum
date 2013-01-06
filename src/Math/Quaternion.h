@@ -50,7 +50,7 @@ template<class T> class Quaternion {
          * @brief Angle between normalized quaternions (in radians)
          *
          * Expects that both quaternions are normalized. @f[
-         * \theta = acos \left(\frac{p \cdot q}{|p| \cdot |q|} \right)
+         *      \theta = acos \left( \frac{p \cdot q}{|p| \cdot |q|} \right)
          * @f]
          */
         inline static T angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
@@ -71,7 +71,8 @@ template<class T> class Quaternion {
          */
         inline static Quaternion<T> lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
-                           "Math::Quaternion::lerp(): quaternions must be normalized", Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
+                           "Math::Quaternion::lerp(): quaternions must be normalized",
+                           Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
             return ((T(1) - t)*normalizedA + t*normalizedB).normalized();
         }
 

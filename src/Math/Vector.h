@@ -41,7 +41,7 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          * @brief Dot product
          *
          * @f[
-         * a \cdot b = \sum_{i=0}^{n-1} a_ib_i
+         *      a \cdot b = \sum_{i=0}^{n-1} a_ib_i
          * @f]
          * @see dot() const
          */
@@ -58,7 +58,7 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          * @brief Angle between normalized vectors (in radians)
          *
          * Expects that both vectors are normalized. @f[
-         * \theta = acos \left(\frac{a \cdot b}{|a| \cdot |b|} \right)
+         *      \theta = acos \left( \frac{a \cdot b}{|a| \cdot |b|} \right)
          * @f]
          */
         inline static T angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
