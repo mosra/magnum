@@ -257,6 +257,27 @@ template<class T> class Quaternion {
         T _scalar;
 };
 
+/** @relates Quaternion
+@brief Multiply scalar with quaternion
+
+Same as Quaternion::operator*(T) const.
+*/
+template<class T> inline Quaternion<T> operator*(T scalar, const Quaternion<T>& quaternion) {
+    return quaternion*scalar;
+}
+
+/** @relates Quaternion
+@brief Divide quaternion with number and invert
+
+@f[
+    \frac a q = [\frac a {\boldsymbol q_V}, \frac a {q_S}]
+@f]
+@see Quaternion::operator/()
+*/
+template<class T> inline Quaternion<T> operator/(T scalar, const Quaternion<T>& quaternion) {
+    return {scalar/quaternion.vector(), scalar/quaternion.scalar()};
+}
+
 /** @debugoperator{Magnum::Math::Geometry::Rectangle} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Quaternion<T>& value) {
     debug << "Quaternion({";

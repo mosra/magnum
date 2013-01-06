@@ -76,7 +76,10 @@ void QuaternionTest::multiplyDivideScalar() {
     Quaternion b({-1.5f, -4.5f, 3.0f}, 6.0f);
 
     CORRADE_COMPARE(a*-1.5f, b);
+    CORRADE_COMPARE(-1.5f*a, b);
     CORRADE_COMPARE(b/-1.5f, a);
+
+    CORRADE_COMPARE(2.0f/a, Quaternion({2.0f, 0.666666f, -1.0f}, -0.5f));
 }
 
 void QuaternionTest::multiply() {

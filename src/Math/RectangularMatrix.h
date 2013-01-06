@@ -385,7 +385,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 /** @relates RectangularMatrix
 @brief Multiply number with matrix
 
-@see RectangularMatrix::operator*(U) const
+Same as RectangularMatrix::operator*(U) const.
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::size_t cols, std::size_t rows, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>>::type operator*(U number, const RectangularMatrix<cols, rows, T>& matrix) {
@@ -398,11 +398,9 @@ template<std::size_t cols, std::size_t rows, class T, class U> inline Rectangula
 /** @relates RectangularMatrix
 @brief Divide matrix with number and invert
 
-Example:
-@code
-RectangularMatrix<2, 3, float> mat(1.0f, 2.0f, -4.0f, 8.0f, -1.0f, 0.5f);
-RectangularMatrix<2, 3, float> another = 1.0f/mat; // {1.0f, 0.5f, -0.25f, 0.128f, -1.0f, 2.0f}
-@endcode
+@f[
+    \boldsymbol B_{ji} = \frac a {\boldsymbol A_{ji}}
+@f]
 @see RectangularMatrix::operator/()
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
