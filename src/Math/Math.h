@@ -28,13 +28,6 @@
 
 namespace Magnum { namespace Math {
 
-/**
-@todo Quaternions:
- - interpolation between rotations (=> animation, continuous collision detection)
- - better rotation representation (4 floats instead of 9/16 floats when using
-   matrices)
-*/
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<std::uint32_t exponent> struct Pow {
