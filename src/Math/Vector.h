@@ -67,6 +67,20 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
             return std::acos(dot(normalizedA, normalizedB));
         }
 
+        /**
+         * @brief Linear interpolation of two vectors
+         * @param a     First vector
+         * @param b     Second vector
+         * @param t     Interpolation phase (from range @f$ [0; 1] @f$)
+         *
+         * The interpolation is done as in following: @f[
+         *      v_{LERP} = (1 - t) \boldsymbol v_A + t \boldsymbol v_B
+         * @f]
+         */
+        inline static Vector<size, T> lerp(const Vector<size, T>& a, const Vector<size, T>& b, T t) {
+            return (T(1) - t)*a + t*b;
+        }
+
         /** @brief Default constructor */
         inline constexpr /*implicit*/ Vector() {}
 
@@ -345,6 +359,9 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
     }                                                                       \
     template<class U> inline constexpr static Type<T> from(const Math::Vector<size, U>& other) { \
         return Math::Vector<size, T>::from(other);                          \
+    }                                                                       \
+    inline static const Type<T> lerp(const Math::Vector<size, T>& a, const Math::Vector<size, T>& b, T t) { \
+        return Math::Vector<size, T>::lerp(a, b, t);                        \
     }                                                                       \
                                                                             \
     inline Type<T>& operator=(const Type<T>& other) {                       \

@@ -41,6 +41,7 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void min();
         void max();
         void angle();
+        void lerp();
 
         void debug();
         void configuration();
@@ -63,6 +64,7 @@ VectorTest::VectorTest() {
              &VectorTest::min,
              &VectorTest::max,
              &VectorTest::angle,
+             &VectorTest::lerp,
              &VectorTest::debug,
              &VectorTest::configuration);
 }
@@ -151,6 +153,13 @@ void VectorTest::angle() {
 
     CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), Vector3(1.0f, -2.0f, 3.0f).normalized()),
                     rad(1.162514f));
+}
+
+void VectorTest::lerp() {
+    Vector3 a(-1.0f, 2.0f, 3.0f);
+    Vector3 b(3.0f, -2.0f, 11.0f);
+
+    CORRADE_COMPARE(Vector3::lerp(a, b, 0.25f), Vector3(0.0f, 1.0f, 5.0f));
 }
 
 void VectorTest::debug() {
