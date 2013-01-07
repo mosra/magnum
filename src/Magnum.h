@@ -64,6 +64,8 @@ namespace Math {
     template<class> class Matrix3;
     template<class> class Matrix4;
 
+    template<class> class Quaternion;
+
     template<class T> constexpr T deg(T value);
     template<class T> constexpr T rad(T value);
     template<class T> class Constants;
@@ -116,6 +118,9 @@ typedef Math::Matrix3<GLfloat> Matrix3;
 
 /** @brief 4x4 floating-point matrix */
 typedef Math::Matrix4<GLfloat> Matrix4;
+
+/** @brief Quaternion */
+typedef Math::Quaternion<GLfloat> Quaternion;
 
 /** @brief Floating-point constants */
 /* Using float instead of GLfloat to not break KDevelop autocompletion */
