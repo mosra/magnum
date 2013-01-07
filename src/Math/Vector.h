@@ -152,6 +152,20 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
         }
 
         /**
+         * @brief Multiply vector component-wise and assign
+         *
+         * The computation is done in-place. @f[
+         *      \boldsymbol a_i = \boldsymbol a_i \boldsymbol b_i
+         * @f]
+         */
+        template<class U> Vector<size, T>& operator*=(const Vector<size, U>& other) {
+            for(std::size_t i = 0; i != size; ++i)
+                (*this)[i] *= other[i];
+
+            return *this;
+        }
+
+        /**
          * @brief Multiply vector component-wise
          *
          * @see operator*=(const Vector<size, U>&)
@@ -161,14 +175,15 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
         }
 
         /**
-         * @brief Multiply vector component-wise and assign
+         * @brief Divide vector component-wise and assign
          *
-         * More efficient than operator*(const Vector<size, U>&) const,
-         * because it does the computation in-place.
+         * The computation is done in-place. @f[
+         *      \boldsymbol a_i = \frac{\boldsymbol a_i}{\boldsymbol b_i}
+         * @f]
          */
-        template<class U> Vector<size, T>& operator*=(const Vector<size, U>& other) {
+        template<class U> Vector<size, T>& operator/=(const Vector<size, U>& other) {
             for(std::size_t i = 0; i != size; ++i)
-                (*this)[i] *= other[i];
+                (*this)[i] /= other[i];
 
             return *this;
         }
@@ -180,19 +195,6 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          */
         template<class U> inline Vector<size, T> operator/(const Vector<size, U>& other) const {
             return Vector<size, T>(*this)/=other;
-        }
-
-        /**
-         * @brief Divide vector component-wise and assign
-         *
-         * More efficient than operator/(const Vector<size, U>&) const,
-         * because it does the computation in-place.
-         */
-        template<class U> Vector<size, T>& operator/=(const Vector<size, U>& other) {
-            for(std::size_t i = 0; i != size; ++i)
-                (*this)[i] /= other[i];
-
-            return *this;
         }
 
         /**

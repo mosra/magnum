@@ -117,10 +117,10 @@ template<class T> class Quaternion {
         }
 
         /** @brief Default constructor */
-        inline constexpr Quaternion(): _scalar(T(1)) {}
+        inline constexpr /*implicit*/ Quaternion(): _scalar(T(1)) {}
 
         /** @brief Create quaternion from vector and scalar */
-        inline constexpr Quaternion(const Vector3<T>& vector, T scalar): _vector(vector), _scalar(scalar) {}
+        inline constexpr /*implicit*/ Quaternion(const Vector3<T>& vector, T scalar): _vector(vector), _scalar(scalar) {}
 
         /** @brief Equality comparison */
         inline bool operator==(const Quaternion<T>& other) const {
