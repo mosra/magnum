@@ -75,8 +75,13 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,direct_state_access),
         _extension(GL,GREMEDY,string_marker)};
     static const std::vector<Extension> extensions300{
+        /**
+         * @todo Remove as it doesn't have all functionality present in GL 3.0
+         *      and leave only ARB_map_buffer_range?
+         */
         _extension(GL,APPLE,flush_buffer_range),
         _extension(GL,APPLE,vertex_array_object),
+        _extension(GL,ARB,map_buffer_range), // replaces APPLE_flush_buffer_range
         _extension(GL,ARB,color_buffer_float),
         _extension(GL,ARB,half_float_pixel),
         _extension(GL,ARB,texture_float),

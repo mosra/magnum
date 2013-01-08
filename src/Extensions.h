@@ -70,6 +70,7 @@ namespace GL {
         _extension(GL,ARB,draw_instanced,               GL210, GL310) // #44
         _extension(GL,ARB,geometry_shader4,             GL210, GL320) // #47
         _extension(GL,ARB,instanced_arrays,             GL210, GL330) // #49
+        _extension(GL,ARB,map_buffer_range,             GL210, GL300) // #50
         _extension(GL,ARB,texture_buffer_object,        GL210, GL310) // #51
         _extension(GL,ARB,texture_rg,                   GL210, GL300) // #53
         _extension(GL,ARB,uniform_buffer_object,        GL210, GL310) // #57
