@@ -29,6 +29,10 @@ Buffer::CopyImplementation Buffer::copyImplementation = &Buffer::copyImplementat
 #endif
 Buffer::SetDataImplementation Buffer::setDataImplementation = &Buffer::setDataImplementationDefault;
 Buffer::SetSubDataImplementation Buffer::setSubDataImplementation = &Buffer::setSubDataImplementationDefault;
+Buffer::MapImplementation Buffer::mapImplementation = &Buffer::mapImplementationDefault;
+Buffer::MapRangeImplementation Buffer::mapRangeImplementation = &Buffer::mapRangeImplementationDefault;
+Buffer::FlushMappedRangeImplementation Buffer::flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDefault;
+Buffer::UnmapImplementation Buffer::unmapImplementation = &Buffer::unmapImplementationDefault;
 
 void Buffer::initializeContextBasedFunctionality(Context* context) {
     #ifndef MAGNUM_TARGET_GLES
@@ -38,6 +42,10 @@ void Buffer::initializeContextBasedFunctionality(Context* context) {
         copyImplementation = &Buffer::copyImplementationDSA;
         setDataImplementation = &Buffer::setDataImplementationDSA;
         setSubDataImplementation = &Buffer::setSubDataImplementationDSA;
+        mapImplementation = &Buffer::mapImplementationDSA;
+        mapRangeImplementation = &Buffer::mapRangeImplementationDSA;
+        flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDSA;
+        unmapImplementation = &Buffer::unmapImplementationDSA;
     }
     #else
     static_cast<void>(context);
@@ -111,6 +119,46 @@ void Buffer::setSubDataImplementationDefault(GLintptr offset, GLsizeiptr size, c
 #ifndef MAGNUM_TARGET_GLES
 void Buffer::setSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
     glNamedBufferSubDataEXT(_id, offset, size, data);
+}
+#endif
+
+void* Buffer::mapImplementationDefault(MapAccess access) {
+    return glMapBuffer(static_cast<GLenum>(bindInternal(_targetHint)), GLenum(access));
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void* Buffer::mapImplementationDSA(MapAccess access) {
+    return glMapNamedBufferEXT(_id, GLenum(access));
+}
+#endif
+
+void* Buffer::mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access) {
+    return glMapBufferRange(static_cast<GLenum>(bindInternal(_targetHint)), offset, length, GLenum(access));
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void* Buffer::mapRangeImplementationDSA(GLintptr offset, GLsizeiptr length, MapFlags access) {
+    return glMapNamedBufferRangeEXT(_id, offset, length, GLenum(access));
+}
+#endif
+
+void Buffer::flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr length) {
+    glFlushMappedBufferRange(static_cast<GLenum>(bindInternal(_targetHint)), offset, length);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void Buffer::flushMappedRangeImplementationDSA(GLintptr offset, GLsizeiptr length) {
+    glFlushMappedNamedBufferRangeEXT(_id, offset, length);
+}
+#endif
+
+bool Buffer::unmapImplementationDefault() {
+    return glUnmapBuffer(static_cast<GLenum>(bindInternal(_targetHint)));
+}
+
+#ifndef MAGNUM_TARGET_GLES
+bool Buffer::unmapImplementationDSA() {
+    return glUnmapNamedBufferEXT(_id);
 }
 #endif
 
