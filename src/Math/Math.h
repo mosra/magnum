@@ -28,6 +28,14 @@
 
 namespace Magnum { namespace Math {
 
+/**
+@todo Vector/scalar overloaded functions (...SIMD):
+ - min(), max() (component-wise)
+ - abs()
+ - sin(), cos()...
+ - clamp(), lerp()
+*/
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<std::uint32_t exponent> struct Pow {

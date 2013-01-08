@@ -40,6 +40,7 @@ data updates.
 Default way to set or update buffer data with setData() or setSubData() is to
 explicitly specify data size and pass the pointer to it:
 @code
+Buffer buffer;
 Vector3* data = new Vector3[200];
 buffer.setData(200*sizeof(Vector3), data, Buffer::Usage::StaticDraw);
 @endcode
@@ -265,7 +266,7 @@ class MAGNUM_EXPORT Buffer {
             /**
              * Updated frequently as output from OpenGL command and used
              * frequently for drawing or copying to other images.
-             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::DynamicCopy"
+             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::DynamicDraw"
              *      is available in OpenGL ES 2.0.
              */
             DynamicCopy = GL_DYNAMIC_COPY
@@ -293,10 +294,10 @@ class MAGNUM_EXPORT Buffer {
          * buffers aren't already bound somewhere, they are bound to
          * `Target::CopyRead` and `Target::CopyWrite` before the copy is
          * performed.
-         * @requires_gl31 %Extension @extension{ARB,copy_buffer}
-         * @requires_gles30 Buffer copying is not available in OpenGL ES 2.0.
          * @see @fn_gl{BindBuffer} and @fn_gl{CopyBufferSubData} or
          *      @fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}
+         * @requires_gl31 %Extension @extension{ARB,copy_buffer}
+         * @requires_gles30 %Buffer copying is not available in OpenGL ES 2.0.
          */
         inline static void copy(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
             copyImplementation(read, write, readOffset, writeOffset, size);

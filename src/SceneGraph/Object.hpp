@@ -148,6 +148,8 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     /* Remember object count for later */
     std::size_t objectCount = objects.size();
 
+    /** @bug What if there is one objects twice in the list */
+
     /* Create initial list of joints from original objects */
     std::vector<Object<Transformation>*> jointObjects(objects.size());
     for(std::size_t i = 0; i != jointObjects.size(); ++i) {
