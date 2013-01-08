@@ -195,7 +195,6 @@ const std::vector<Extension>& Extension::extensions(Version version) {
     #undef _extension
     #else
     static const std::vector<Extension> extensions;
-    static const std::vector<Extension> extensionsES200;
     static const std::vector<Extension> extensionsES300;
     #endif
 
@@ -214,7 +213,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         /* case Version::GLES300: */
         case Version::GL430: return extensions430;
         #else
-        case Version::GLES200: return extensionsES200;
+        case Version::GLES200: return empty;
         case Version::GLES300: return extensionsES300;
         #endif
     }
