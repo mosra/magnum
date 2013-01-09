@@ -47,6 +47,9 @@ MagnumInfo::MagnumInfo(int& argc, char** argv): WindowlessGlxApplication(argc, a
         #ifdef MAGNUM_TARGET_GLES2
         d << "MAGNUM_TARGET_GLES2";
         #endif
+        #ifdef MAGNUM_TARGET_DESKTOP_GLES
+        d << "MAGNUM_TARGET_DESKTOP_GLES";
+        #endif
         #ifdef MAGNUM_TARGET_NACL
         d << "MAGNUM_TARGET_NACL";
         #endif

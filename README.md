@@ -53,6 +53,9 @@ installed using these four commands:
     make
     make install
 
+See Doxygen documentation for more information about enabling or disabling
+additional features and targeting different platforms such as OpenGL ES.
+
 Building and running unit tests
 -------------------------------
 

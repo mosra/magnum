@@ -119,13 +119,13 @@ add_library(Magnum SHARED
 set(Magnum_LIBS
     ${CORRADE_UTILITY_LIBRARY}
     ${CORRADE_PLUGINMANAGER_LIBRARY})
-if(NOT TARGET_GLES)
-    set(Magnum_LIBS ${Magnum_LIBS}
-        ${OPENGL_gl_LIBRARY}
-        ${GLEW_LIBRARY})
+if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
+    set(Magnum_LIBS ${Magnum_LIBS} ${OPENGL_gl_LIBRARY})
 else()
-    set(Magnum_LIBS ${Magnum_LIBS}
-        ${OPENGLES2_LIBRARY})
+    set(Magnum_LIBS ${Magnum_LIBS} ${OPENGLES2_LIBRARY})
+endif()
+if(NOT TARGET_GLES)
+    set(Magnum_LIBS ${Magnum_LIBS} ${GLEW_LIBRARY})
 endif()
 target_link_libraries(Magnum ${Magnum_LIBS})
 

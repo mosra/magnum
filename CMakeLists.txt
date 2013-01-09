@@ -6,6 +6,7 @@ include(CMakeDependentOption)
 
 option(TARGET_GLES "Build for OpenGL ES instead of desktop OpenGL" OFF)
 cmake_dependent_option(TARGET_GLES2 "Build for OpenGL ES 2" ON "TARGET_GLES" OFF)
+cmake_dependent_option(TARGET_DESKTOP_GLES "Build for OpenGL ES on desktop" OFF "TARGET_GLES" OFF)
 
 # Parts of the library
 option(WITH_EVERYTHING "Build everything (doesn't include *Application libraries)" ON)
@@ -46,11 +47,13 @@ endif()
 
 # Check dependencies
 find_package(Corrade REQUIRED)
-if(NOT TARGET_GLES)
+if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
     find_package(OpenGL REQUIRED)
-    find_package(GLEW REQUIRED)
 else()
     find_package(OpenGLES2 REQUIRED)
+endif()
+if(NOT TARGET_GLES)
+    find_package(GLEW REQUIRED)
 endif()
 
 # Configuration variables (saved later to corradeConfigure.h)
@@ -59,6 +62,9 @@ if(TARGET_GLES)
 endif()
 if(TARGET_GLES2)
     set(MAGNUM_TARGET_GLES2 1)
+endif()
+if(TARGET_DESKTOP_GLES)
+    set(MAGNUM_TARGET_DESKTOP_GLES 1)
 endif()
 
 # Installation paths
