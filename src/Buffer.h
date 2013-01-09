@@ -324,10 +324,10 @@ class MAGNUM_EXPORT Buffer {
             /**
              * Map buffer for writing only.
              */
-            WriteOnly = GL_WRITE_ONLY
-
-            #ifndef MAGNUM_TARGET_GLES
-            ,
+            #ifdef MAGNUM_TARGET_GLES
+            WriteOnly = GL_WRITE_ONLY_OES
+            #else
+            WriteOnly = GL_WRITE_ONLY,
 
             /**
              * Map buffer for both reading and writing.
@@ -347,35 +347,59 @@ class MAGNUM_EXPORT Buffer {
          */
         enum class MapFlag: GLbitfield {
             /** Map buffer for reading. */
+            #ifndef MAGNUM_TARGET_GLES2
             Read = GL_MAP_READ_BIT,
+            #else
+            Read = GL_MAP_READ_BIT_EXT,
+            #endif
 
             /** Map buffer for writing. */
+            #ifndef MAGNUM_TARGET_GLES2
             Write = GL_MAP_WRITE_BIT,
+            #else
+            Write = GL_MAP_WRITE_BIT_EXT,
+            #endif
 
             /**
              * Previous contents of the entire buffer may be discarded. May
              * not be used in combination with @ref MapFlag "MapFlag::Read".
              */
+            #ifndef MAGNUM_TARGET_GLES2
             InvalidateBuffer = GL_MAP_INVALIDATE_BUFFER_BIT,
+            #else
+            InvalidateBuffer = GL_MAP_INVALIDATE_BUFFER_BIT_EXT,
+            #endif
 
             /**
              * Previous contents of mapped range may be discarded. May not
              * be used in combination with @ref MapFlag "MapFlag::Read".
              */
+            #ifndef MAGNUM_TARGET_GLES2
             InvalidateRange = GL_MAP_INVALIDATE_RANGE_BIT,
+            #else
+            InvalidateRange = GL_MAP_INVALIDATE_RANGE_BIT_EXT,
+            #endif
 
             /**
              * Only one or more discrete subranges of the mapping will be
              * modified. See flushMappedRange() for more information. May only
              * be used in conjuction with @ref MapFlag "MapFlag::Write".
              */
+            #ifndef MAGNUM_TARGET_GLES2
             FlushExplicit = GL_MAP_FLUSH_EXPLICIT_BIT,
+            #else
+            FlushExplicit = GL_MAP_FLUSH_EXPLICIT_BIT_EXT,
+            #endif
 
             /**
              * No pending operations on the buffer should be synchronized
              * before mapping.
              */
+            #ifndef MAGNUM_TARGET_GLES2
             Unsynchronized = GL_MAP_UNSYNCHRONIZED_BIT
+            #else
+            Unsynchronized = GL_MAP_UNSYNCHRONIZED_BIT_EXT
+            #endif
         };
 
         /**

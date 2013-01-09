@@ -123,7 +123,13 @@ void Buffer::setSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, const
 #endif
 
 void* Buffer::mapImplementationDefault(MapAccess access) {
+    /** @todo Re-enable when extension wrangler is available for ES */
+    #ifndef MAGNUM_TARGET_GLES
     return glMapBuffer(static_cast<GLenum>(bindInternal(_targetHint)), GLenum(access));
+    #else
+    static_cast<void>(access);
+    return nullptr;
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -133,7 +139,15 @@ void* Buffer::mapImplementationDSA(MapAccess access) {
 #endif
 
 void* Buffer::mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access) {
+    /** @todo Re-enable when extension wrangler is available for ES */
+    #ifndef MAGNUM_TARGET_GLES2
     return glMapBufferRange(static_cast<GLenum>(bindInternal(_targetHint)), offset, length, GLenum(access));
+    #else
+    static_cast<void>(offset);
+    static_cast<void>(length);
+    static_cast<void>(access);
+    return nullptr;
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -143,7 +157,13 @@ void* Buffer::mapRangeImplementationDSA(GLintptr offset, GLsizeiptr length, MapF
 #endif
 
 void Buffer::flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr length) {
+    /** @todo Re-enable when extension wrangler is available for ES */
+    #ifndef MAGNUM_TARGET_GLES2
     glFlushMappedBufferRange(static_cast<GLenum>(bindInternal(_targetHint)), offset, length);
+    #else
+    static_cast<void>(offset);
+    static_cast<void>(length);
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -153,7 +173,12 @@ void Buffer::flushMappedRangeImplementationDSA(GLintptr offset, GLsizeiptr lengt
 #endif
 
 bool Buffer::unmapImplementationDefault() {
+    /** @todo Re-enable when extension wrangler is available for ES */
+    #ifndef MAGNUM_TARGET_GLES2
     return glUnmapBuffer(static_cast<GLenum>(bindInternal(_targetHint)));
+    #else
+    return false;
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
