@@ -194,8 +194,45 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,vertex_attrib_binding)};
     #undef _extension
     #else
-    static const std::vector<Extension> extensions;
-    static const std::vector<Extension> extensionsES300;
+    static const std::vector<Extension> extensions{
+        _extension(GL,APPLE,texture_format_BGRA8888),
+        _extension(GL,EXT,texture_filter_anisotropic),
+        _extension(GL,EXT,texture_format_BGRA8888),
+        _extension(GL,EXT,read_format_bgra),
+        _extension(GL,EXT,debug_marker),
+        _extension(GL,EXT,separate_shader_objects),
+        _extension(GL,EXT,sRGB),
+        _extension(GL,NV,read_buffer_front),
+        _extension(GL,NV,read_stencil),
+        _extension(GL,OES,depth32),
+        _extension(GL,OES,mapbuffer),
+        _extension(GL,OES,stencil1),
+        _extension(GL,OES,stencil4),
+        _extension(GL,OES,texture_3D)};
+    static const std::vector<Extension> extensionsES300{
+        _extension(GL,ANGLE,framebuffer_blit),
+        _extension(GL,APPLE,framebuffer_multisample),
+        _extension(GL,ARM,rgba8),
+        _extension(GL,EXT,texture_type_2_10_10_10_REV),
+        _extension(GL,EXT,blend_minmax),
+        _extension(GL,EXT,occlusion_query_boolean),
+        _extension(GL,EXT,texture_rg),
+        _extension(GL,EXT,map_buffer_range),
+        _extension(GL,NV,draw_buffers),
+        _extension(GL,NV,read_buffer),
+        _extension(GL,NV,read_depth),
+        _extension(GL,NV,read_depth_stencil),
+        _extension(GL,OES,depth24),
+        _extension(GL,OES,rgb8_rgba8),
+        _extension(GL,OES,texture_half_float_linear),
+        _extension(GL,OES,texture_float_linear),
+        _extension(GL,OES,texture_half_float),
+        _extension(GL,OES,texture_float),
+        _extension(GL,OES,vertex_half_float),
+        _extension(GL,OES,packed_depth_stencil),
+        _extension(GL,OES,depth_texture),
+        _extension(GL,OES,vertex_array_object),
+        _extension(GL,OES,required_internalformat)};
     #endif
 
     switch(version) {

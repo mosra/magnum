@@ -41,7 +41,6 @@ example usage.
 */
 namespace Extensions {
 
-#ifndef MAGNUM_TARGET_GLES
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define _extension(prefix, vendor, extension, _requiredVersion, _coreVersion) \
     struct extension {                                                      \
@@ -54,6 +53,7 @@ namespace Extensions {
 /* IMPORTANT: don't forget to add new extensions also in Context.cpp */
 
 namespace GL {
+    #ifndef MAGNUM_TARGET_GLES
     #line 1
     namespace AMD {
         _extension(GL,AMD,vertex_shader_layer,          GL210,  None) // #417
@@ -173,12 +173,56 @@ namespace GL {
         _extension(GL,NV,conditional_render,            GL210, GL300) // #346
         /* NV_draw_texture not supported */                           // #430
     }
+    /* IMPORTANT: if this line is > 188 (57 + size), don't forget to update array size in Context.h */
+    #else
+    #line 1
+    namespace ANGLE {
+        _extension(GL,ANGLE,framebuffer_blit,       GLES200, GLES300) // #83
+    } namespace APPLE {
+        _extension(GL,APPLE,framebuffer_multisample, GLES200, GLES300) // #78
+        _extension(GL,APPLE,texture_format_BGRA8888, GLES200,   None) // #79
+    } namespace ARM {
+        _extension(GL,ARM,rgba8,                    GLES200, GLES300) // #82
+    } namespace EXT {
+        _extension(GL,EXT,texture_filter_anisotropic, GLES200,  None) // #41
+        _extension(GL,EXT,texture_type_2_10_10_10_REV, GLES200, GLES300) // #42
+        _extension(GL,EXT,texture_format_BGRA8888,  GLES200,    None) // #51
+        _extension(GL,EXT,blend_minmax,             GLES200, GLES300) // #65
+        _extension(GL,EXT,read_format_bgra,         GLES200,    None) // #66
+        _extension(GL,EXT,debug_marker,             GLES200,    None) // #99
+        _extension(GL,EXT,occlusion_query_boolean,  GLES200, GLES300) // #100
+        _extension(GL,EXT,separate_shader_objects,  GLES200,    None) // #101
+        _extension(GL,EXT,texture_rg,               GLES200, GLES300) // #103
+        _extension(GL,EXT,sRGB,                     GLES200,    None) // #105
+        _extension(GL,EXT,map_buffer_range,         GLES200, GLES300) // #121
+    } namespace NV {
+        _extension(GL,NV,draw_buffers,              GLES200, GLES300) // #91
+        _extension(GL,NV,read_buffer,               GLES200, GLES300) // #93
+        _extension(GL,NV,read_buffer_front,         GLES200,    None) // #93
+        _extension(GL,NV,read_depth,                GLES200, GLES300) // #94
+        _extension(GL,NV,read_stencil,              GLES200,    None) // #94
+        _extension(GL,NV,read_depth_stencil,        GLES200, GLES300) // #94
+    } namespace OES {
+        _extension(GL,OES,depth24,                  GLES200, GLES300) // #24
+        _extension(GL,OES,depth32,                  GLES200,    None) // #25
+        _extension(GL,OES,mapbuffer,                GLES200,    None) // #29
+        _extension(GL,OES,rgb8_rgba8,               GLES200, GLES300) // #30
+        _extension(GL,OES,stencil1,                 GLES200,    None) // #31
+        _extension(GL,OES,stencil4,                 GLES200,    None) // #32
+        _extension(GL,OES,texture_3D,               GLES200,    None) // #34
+        _extension(GL,OES,texture_half_float_linear, GLES200, GLES300) // #35
+        _extension(GL,OES,texture_float_linear,     GLES200, GLES300) // #35
+        _extension(GL,OES,texture_half_float,       GLES200, GLES300) // #36
+        _extension(GL,OES,texture_float,            GLES200, GLES300) // #36
+        _extension(GL,OES,vertex_half_float,        GLES200, GLES300) // #38
+        _extension(GL,OES,packed_depth_stencil,     GLES200, GLES300) // #43
+        _extension(GL,OES,depth_texture,            GLES200, GLES300) // #44
+        _extension(GL,OES,vertex_array_object,      GLES200, GLES300) // #71
+        _extension(GL,OES,required_internalformat,  GLES200, GLES300) // #?
+    }
+    #endif
 }
-
-/* IMPORTANT: if this line is > 185 (54 + size), don't forget to update array size in Context.h */
-
 #undef _extension
-#endif
 #endif
 
 }
