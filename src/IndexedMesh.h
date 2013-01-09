@@ -62,7 +62,8 @@ From user point-of-view the operation is the same as for
 
 @section IndexedMesh-performance-optimization Performance optimizations
 
-If @extension{APPLE,vertex_array_object} is supported, next to
+If @extension{APPLE,vertex_array_object}, OpenGL ES 3.0 or
+@es_extension{OES,vertex_array_object} on OpenGL ES 2.0 is supported, next to
 @ref Mesh-performance-optimization "optimizations in Mesh itself" the index
 buffer is bound on object construction instead of binding it in every draw()
 call.

@@ -102,10 +102,11 @@ for more infromation) and call Mesh::draw().
 
 @section Mesh-performance-optimization Performance optimizations
 
-If @extension{APPLE,vertex_array_object} is supported, VAOs are used instead
-of binding the buffers and specifying vertex attribute pointers in each
-draw() call. The engine tracks currently bound VAO to avoid unnecessary calls
-to @fn_gl{BindVertexArray}.
+If @extension{APPLE,vertex_array_object}, OpenGL ES 3.0 or
+@es_extension{OES,vertex_array_object} on OpenGL ES 2.0 is supported, VAOs are
+used instead of binding the buffers and specifying vertex attribute pointers
+in each draw() call. The engine tracks currently bound VAO to avoid
+unnecessary calls to @fn_gl{BindVertexArray}.
 
 If extension @extension{EXT,direct_state_access} and VAOs are available,
 DSA functions are used for specifying attribute locations to avoid unnecessary
@@ -113,6 +114,7 @@ calls to @fn_gl{BindBuffer} and @fn_gl{BindVertexArray}. See documentation of
 addVertexBuffer(), addInterleavedVertexBuffer(), addVertexBufferStride() for
 more information.
 
+@see IndexedMesh
 @todo Support for indirect draw buffer (OpenGL 4.0, @extension{ARB,draw_indirect})
 @todo Redo in a way that allows glMultiDrawArrays, glDrawArraysInstanced etc.
 @todo Allow unbinding all vertex buffers with some function (not as side effect),

@@ -111,9 +111,9 @@ class MAGNUM_EXPORT AbstractImage {
 
             /**
              * Floating-point BGRA.
-             * @requires_es_extension %Extension @es_extension{EXT,read_format_bgra},
-             *      for framebuffer reading, extension @es_extension{APPLE,texture_format_BGRA8888}
-             *      for texture data.
+             * @requires_es_extension %Extension @es_extension{EXT,read_format_bgra}
+             *      for framebuffer reading, extension @es_extension{APPLE,texture_format_BGRA8888} or
+             *      @es_extension{EXT,texture_format_BGRA8888} for texture data.
              */
             #ifndef MAGNUM_TARGET_GLES
             BGRA = GL_BGRA,
@@ -268,7 +268,7 @@ class MAGNUM_EXPORT AbstractImage {
             /**
              * Each component half float. For framebuffer reading only.
              * @requires_gl30 %Extension @extension{NV,half_float} / @extension{ARB,half_float_pixel}
-             * @requires_gles30 %Extension @es_extension{OES,texture_float},
+             * @requires_gles30 %Extension @es_extension2{OES,texture_half_float,OES_texture_float},
              *      for texture data only.
              */
             #ifndef MAGNUM_TARGET_GLES2

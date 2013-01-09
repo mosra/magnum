@@ -117,7 +117,7 @@ class MAGNUM_EXPORT Renderbuffer {
             /**
              * RGBA, each component normalized unsigned byte.
              * @requires_gles30 %Extension @es_extension{ARM,rgba8} or
-             *      @es_extension{OES,required_internalformat} and @es_extension{OES,rgb8_rgba8}
+             *      @es_extension{OES,rgb8_rgba8}
              */
             #ifndef MAGNUM_TARGET_GLES2
             RGBA8 = GL_RGBA8,

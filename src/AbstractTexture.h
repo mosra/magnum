@@ -72,7 +72,17 @@ class MAGNUM_EXPORT AbstractTexture {
          */
         enum class Filter: GLint {
             NearestNeighbor = GL_NEAREST,   /**< Nearest neighbor filtering */
-            LinearInterpolation = GL_LINEAR /**< Linear interpolation filtering */
+
+            /**
+             * Linear interpolation filtering.
+             * @requires_gles30 %Extension @es_extension{OES,texture_float_linear} /
+             *      @es_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
+             *      for linear interpolation of textures with
+             *      @ref Magnum::AbstractTexture::InternalFormat "InternalFormat::HalfFloat"
+             *      / @ref Magnum::AbstractTexture::InternalFormat "InternalFormat::Float"
+             *      in OpenGL ES 2.0.
+             */
+            LinearInterpolation = GL_LINEAR
         };
 
         /**
@@ -91,6 +101,12 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * Linear interpolation of nearest mip levels. **Unavailable on
              * rectangle textures.**
+             * @requires_gles30 %Extension @es_extension{OES,texture_float_linear} /
+             *      @es_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
+             *      for linear interpolation of textures with
+             *      @ref Magnum::AbstractTexture::InternalFormat "InternalFormat::HalfFloat"
+             *      / @ref Magnum::AbstractTexture::InternalFormat "InternalFormat::Float"
+             *      in OpenGL ES 2.0.
              */
             LinearInterpolation = GL_NEAREST_MIPMAP_LINEAR & ~GL_NEAREST
         };
@@ -622,6 +638,7 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * RGB, each component normalized unsigned 10bit.
              * @requires_es_extension %Extension @es_extension{OES,required_internalformat}
+             *      and @es_extension{EXT,texture_type_2_10_10_10_REV}
              */
             #ifndef MAGNUM_TARGET_GLES
             RGB10 = GL_RGB10,
@@ -904,7 +921,7 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * Depth component, 32bit.
              * @requires_es_extension %Extension @es_extension{OES,required_internalformat},
-             *      @es_extension{OES,depth_texture} and @es_extension{OES,depth24}
+             *      @es_extension{OES,depth_texture} and @es_extension{OES,depth32}
              */
             #ifndef MAGNUM_TARGET_GLES2
             DepthComponent32 = GL_DEPTH_COMPONENT32,

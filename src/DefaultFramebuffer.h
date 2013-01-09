@@ -186,7 +186,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
             /**
              * Read from front framebuffer.
-             * @requires_es_extension %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
+             * @requires_es_extension %Extension @es_extension2{NV,read_buffer_front,GL_NV_read_buffer}
              */
             Front = GL_FRONT
 
