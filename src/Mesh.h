@@ -117,8 +117,6 @@ more information.
 @see IndexedMesh
 @todo Support for indirect draw buffer (OpenGL 4.0, @extension{ARB,draw_indirect})
 @todo Redo in a way that allows glMultiDrawArrays, glDrawArraysInstanced etc.
-@todo Allow unbinding all vertex buffers with some function (not as side effect),
-    similarly to unbinding index buffer in IndexedMesh
  */
 class MAGNUM_EXPORT Mesh {
     friend class IndexedMesh;
@@ -394,6 +392,8 @@ class MAGNUM_EXPORT Mesh {
          * @return Pointer to self (for method chaining)
          *
          * Default is @ref Primitive "Primitive::Triangles".
+         * @see setVertexCount(), addVertexBuffer(),
+         *      addInterleavedVertexBuffer(), addVertexBufferStride()
          */
         inline Mesh* setPrimitive(Primitive primitive) {
             _primitive = primitive;
@@ -408,11 +408,8 @@ class MAGNUM_EXPORT Mesh {
          * @return Pointer to self (for method chaining)
          *
          * Default is zero.
-         * @attention All bound attributes are reset after calling this
-         *      function, so if your mesh has any vertex attributes, be sure
-         *      to call addVertexBuffer()/addInterleavedVertexBuffer()
-         *      afterwards.
-         * @see MeshTools::interleave()
+         * @see setPrimitive(), addVertexBuffer(), addInterleavedVertexBuffer(),
+         *      addVertexBufferStride(), MeshTools::interleave()
          */
         Mesh* setVertexCount(GLsizei vertexCount);
 
@@ -457,8 +454,9 @@ class MAGNUM_EXPORT Mesh {
          *      mesh and delete it afterwards.
          *
          * @see addInterleavedVertexBuffer(), addVertexBufferStride(),
-         *      @fn_gl{BindVertexArray}, @fn_gl{EnableVertexAttribArray},
-         *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer} or
+         *      setPrimitive(), setVertexCount(), @fn_gl{BindVertexArray},
+         *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
+         *      @fn_gl{VertexAttribPointer} or
          *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
          *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access}
          *      if @extension{APPLE,vertex_array_object} is available
@@ -520,9 +518,10 @@ class MAGNUM_EXPORT Mesh {
          *      mesh, you must ensure it will exist for whole lifetime of the
          *      mesh and delete it afterwards.
          *
-         * @see addVertexBufferStride(), addVertexBuffer(),
-         *      @fn_gl{BindVertexArray}, @fn_gl{EnableVertexAttribArray},
-         *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer} or
+         * @see addVertexBufferStride(), addVertexBuffer(), setPrimitive(),
+         *      setVertexCount(), @fn_gl{BindVertexArray},
+         *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
+         *      @fn_gl{VertexAttribPointer} or
          *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
          *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access}
          *      if @extension{APPLE,vertex_array_object} is available

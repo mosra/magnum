@@ -77,13 +77,6 @@ Mesh& Mesh::operator=(Mesh&& other) {
 
 Mesh* Mesh::setVertexCount(GLsizei vertexCount) {
     _vertexCount = vertexCount;
-    attributes.clear();
-    #ifndef MAGNUM_TARGET_GLES2
-    integerAttributes.clear();
-    #ifndef MAGNUM_TARGET_GLES
-    longAttributes.clear();
-    #endif
-    #endif
     return this;
 }
 

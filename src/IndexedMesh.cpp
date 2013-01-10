@@ -67,8 +67,7 @@ void IndexedMesh::bindIndexBufferImplementationDefault() {}
 
 void IndexedMesh::bindIndexBufferImplementationVAO() {
     bindVAO(vao);
-    if(_indexBuffer) _indexBuffer->bind(Buffer::Target::ElementArray);
-    else Buffer::unbind(Buffer::Target::ElementArray);
+    _indexBuffer->bind(Buffer::Target::ElementArray);
 }
 
 void IndexedMesh::bindIndexedImplementationDefault() {

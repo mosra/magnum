@@ -76,22 +76,17 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          * @brief Constructor
          * @param primitive     Primitive type
          *
-         * Creates indexed mesh with no index buffer, zero vertex count and
-         * zero index count.
-         * @see setPrimitive(), setVertexCount(), setIndexBuffer(),
-         *      setIndexCount(), setIndexType()
+         * Creates indexed mesh with zero vertex count, zero index count and
+         * no vertex or index buffers.
          */
         inline explicit IndexedMesh(Primitive primitive = Primitive::Triangles): Mesh(primitive), _indexBuffer(nullptr), _indexCount(0), _indexType(Type::UnsignedShort) {}
 
         /**
          * @brief Set index buffer
          *
-         * By default there is no index buffer. Parameter @p buffer can be
-         * `nullptr`, in that case current index buffer is unbound from the
-         * mesh.
-         * @see MeshTools::compressIndices(), @fn_gl{BindVertexArray},
-         *      @fn_gl{BindBuffer} (if @extension{APPLE,vertex_array_object}
-         *      is available)
+         * @see setIndexCount(), setIndexType(), MeshTools::compressIndices(),
+         *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
+         *      @extension{APPLE,vertex_array_object} is available)
          */
         IndexedMesh* setIndexBuffer(Buffer* buffer);
 
@@ -103,7 +98,7 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          * @return Pointer to self (for method chaining)
          *
          * Default is zero.
-         * @see MeshTools::compressIndices()
+         * @see setIndexBuffer(), setIndexType(), MeshTools::compressIndices()
          */
         inline IndexedMesh* setIndexCount(GLsizei count) {
             _indexCount = count;
@@ -118,7 +113,7 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          * @return Pointer to self (for method chaining)
          *
          * Default is @ref Type "Type::UnsignedShort".
-         * @see MeshTools::compressIndices()
+         * @see setIndexBuffer(), setIndexCount(), MeshTools::compressIndices()
          */
         inline IndexedMesh* setIndexType(Type type) {
             _indexType = type;
