@@ -86,7 +86,7 @@ Font::Font(FontRenderer& renderer, const std::string& fontFile, GLfloat size, co
     }
 
     /* Set texture data */
-    _texture.setData(0, Texture2D::InternalFormat::R8, &image);
+    _texture.setImage(0, Texture2D::InternalFormat::R8, &image);
 }
 
 void Font::create(FontRenderer& renderer, const std::string& fontFile) {

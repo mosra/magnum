@@ -51,8 +51,8 @@ Image2D positiveX({256, 256}, Image2D::Components::RGBA, Image2D::ComponentType:
 CubeMapTexture texture;
 texture.setMagnificationFilter(Texture2D::Filter::Linear)
     // ...
-    ->setData(CubeMapTexture::Coordinate::PositiveX, 0, Texture2D::Format::RGBA8, &positiveX)
-    ->setData(CubeMapTexture::Coordinate::NegativeX, 0, Texture2D::Format::RGBA8, &negativeX)
+    ->setImage(CubeMapTexture::Coordinate::PositiveX, 0, Texture2D::Format::RGBA8, &positiveX)
+    ->setImage(CubeMapTexture::Coordinate::NegativeX, 0, Texture2D::Format::RGBA8, &negativeX)
     // ...
 @endcode
 
@@ -108,22 +108,22 @@ class CubeMapTexture: public AbstractTexture {
         }
 
         /**
-         * @copydoc Texture::setData(GLint, InternalFormat, Image*)
+         * @copydoc Texture::setImage(GLint, InternalFormat, Image*)
          * @param coordinate    Coordinate
          * @return Pointer to self (for method chaining)
          */
-        template<class Image> inline CubeMapTexture* setData(Coordinate coordinate, GLint mipLevel, InternalFormat internalFormat, Image* image) {
-            DataHelper<2>::set(this, static_cast<GLenum>(coordinate), mipLevel, internalFormat, image);
+        template<class Image> inline CubeMapTexture* setImage(Coordinate coordinate, GLint level, InternalFormat internalFormat, Image* image) {
+            DataHelper<2>::set(this, static_cast<GLenum>(coordinate), level, internalFormat, image);
             return this;
         }
 
         /**
-         * @copydoc Texture::setSubData(GLint, const typename DimensionTraits<Dimensions, GLint>::VectorType&, Image*)
+         * @copydoc Texture::setSubImage(GLint, const typename DimensionTraits<Dimensions, GLint>::VectorType&, Image*)
          * @param coordinate    Coordinate
          * @return Pointer to self (for method chaining)
          */
-        template<class Image> inline CubeMapTexture* setSubData(Coordinate coordinate, GLint mipLevel, const Vector2i& offset, const Image* image) {
-            DataHelper<2>::setSub(this, static_cast<GLenum>(coordinate), mipLevel, offset, image);
+        template<class Image> inline CubeMapTexture* setSubImage(Coordinate coordinate, GLint level, const Vector2i& offset, const Image* image) {
+            DataHelper<2>::setSub(this, static_cast<GLenum>(coordinate), level, offset, image);
             return this;
         }
 

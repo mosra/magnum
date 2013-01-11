@@ -45,7 +45,7 @@ class MAGNUM_EXPORT AbstractImage {
          *
          * Note that some formats can be used only for framebuffer reading
          * (using Framebuffer::read()) and some only for texture data (using
-         * Texture::setData() and others).
+         * Texture::setImage() and others).
          */
 
         /**

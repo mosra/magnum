@@ -44,7 +44,7 @@ texture.setMagnificationFilter(Texture2D::Filter::Linear)
     ->setMinificationFilter(Texture2D::Filter::Linear, Texture2D::Mipmap::Linear)
     ->setWrapping(Texture2D::Wrapping::ClampToEdge)
     ->setMaxAnisotropy(Texture2D::maxSupportedAnisotropy)
-    ->setData(0, Texture2D::Format::RGBA8, &image)
+    ->setImage(0, Texture2D::Format::RGBA8, &image)
     ->generateMipmap();
 @endcode
 
@@ -66,9 +66,9 @@ information.
 You can create texture arrays by passing @ref Texture::Target "Texture2D::Target::Texture1DArray"
 or @ref Texture::Target "Texture3D::Target::Texture2DArray" to constructor.
 
-It is possible to specify each layer separately using setSubData(), but you
+It is possible to specify each layer separately using setSubImage(), but you
 have to allocate the memory for all layers first, possibly by passing properly
-sized empty Image to setData(). Example: 2D texture array with 16 layers of
+sized empty Image to setImage(). Example: 2D texture array with 16 layers of
 64x64 images:
 @code
 Image3D dummy({64, 64, 16}, Image3D::Components::RGBA, Image3D::ComponentType::UnsignedByte, nullptr);
@@ -76,12 +76,12 @@ Image3D dummy({64, 64, 16}, Image3D::Components::RGBA, Image3D::ComponentType::U
 Texture3D texture(Texture3D::Target::Texture2DArray);
 texture.setMagnificationFilter(Texture2D::Filter::Linear)
     // ...
-    ->setData(0, Texture2D::Format::RGBA8, &dummy);
+    ->setImage(0, Texture2D::Format::RGBA8, &dummy);
 
 for(std::size_t i = 0; i != 16; ++i) {
     void* data = ...;
     Image2D image({64, 64}, Image3D::Components::RGBA, Image3D::ComponentType::UnsignedByte, image);
-    texture->setSubData(0, Vector3i::zAxis(i), image);
+    texture->setSubImage(0, Vector3i::zAxis(i), image);
 }
 
 // ...
@@ -198,38 +198,39 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
         }
 
         /**
-         * @brief Set texture data
-         * @param mipLevel          Mip level
+         * @brief Set image data
+         * @param level             Mip level
          * @param internalFormat    Internal texture format
          * @param image             Image, ImageWrapper, BufferImage or
          *      Trade::ImageData of the same dimension count
          * @return Pointer to self (for method chaining)
          *
-         * Sets texture data from given image. The image is not deleted
-         * afterwards. If @extension{EXT,direct_state_access} is not available,
-         * the texture is bound to some layer before the operation.
+         * The image is not deleted afterwards.
+         *
+         * If @extension{EXT,direct_state_access} is not available, the
+         * texture is bound to some layer before the operation.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexImage1D}/
          *      @fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
          *      @fn_gl_extension{TextureImage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}
          */
-        template<class Image> inline Texture<Dimensions>* setData(GLint mipLevel, InternalFormat internalFormat, Image* image) {
-            DataHelper<Dimensions>::set(this, _target, mipLevel, internalFormat, image);
+        template<class Image> inline Texture<Dimensions>* setImage(GLint level, InternalFormat internalFormat, Image* image) {
+            DataHelper<Dimensions>::set(this, _target, level, internalFormat, image);
             return this;
         }
 
         /**
-         * @brief Set texture subdata
-         * @param mipLevel          Mip level
+         * @brief Set image subdata
+         * @param level             Mip level
          * @param offset            Offset where to put data in the texture
          * @param image             Image, ImageWrapper, BufferImage or
          *      Trade::ImageData of the same or one less dimension count
          * @return Pointer to self (for method chaining)
          *
-         * Sets texture subdata from given image. The image is not deleted
-         * afterwards. The image can have either the same dimension count or
-         * have one dimension less, but at least one dimension.
+         * The image is not deleted afterwards. The image can have either the
+         * same dimension count or have one dimension less, but at least one
+         * dimension.
          *
          * If the image has one dimension less than the texture, the image is
          * taken as if it had the last dimension equal to 1. It can be used
@@ -244,8 +245,8 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access}
          */
-        template<class Image> inline Texture<Dimensions>* setSubData(GLint mipLevel, const typename DimensionTraits<Dimensions, GLint>::VectorType& offset, Image* image) {
-            DataHelper<Dimensions>::setSub(this, _target, mipLevel, offset, image);
+        template<class Image> inline Texture<Dimensions>* setSubImage(GLint level, const typename DimensionTraits<Dimensions, GLint>::VectorType& offset, Image* image) {
+            DataHelper<Dimensions>::setSub(this, _target, level, offset, image);
             return this;
         }
 
