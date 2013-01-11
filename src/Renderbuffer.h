@@ -54,7 +54,7 @@ class MAGNUM_EXPORT Renderbuffer {
         /**
          * @brief Internal format
          *
-         * @see @ref Texture::setData() "setData()"
+         * @see setStorage()
          * @todo RGB, RGB8 ES only (ES3 + @es_extension{OES,rgb8_rgba8})
          */
         enum class InternalFormat: GLenum {
