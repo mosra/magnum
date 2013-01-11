@@ -57,7 +57,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2, T> {
          * @param object    %Object holding this feature
          *
          * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
-         * @see setOrthographic()
+         * @see setProjection()
          */
         inline explicit Camera2D(AbstractObject<2, T>* object): AbstractCamera<2, T>(object) {}
 
