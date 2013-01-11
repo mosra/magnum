@@ -2,7 +2,7 @@
 #define __gl3_h_
 
 /*
- * gl3.h last updated on $Date: 2012-09-12 10:13:02 -0700 (Wed, 12 Sep 2012) $
+ * gl3.h last updated on $Date: 2012-10-03 07:52:40 -0700 (Wed, 03 Oct 2012) $
  */
 
 #include <GLES3/gl3platform.h>
@@ -796,7 +796,7 @@ typedef struct __GLsync *GLsync;
 #define GL_TEXTURE_IMMUTABLE_FORMAT                      0x912F
 #define GL_MAX_ELEMENT_INDEX                             0x8D6B
 #define GL_NUM_SAMPLE_COUNTS                             0x9380
-#define GL_TEXTURE_IMMUTABLE_LEVELS                      0x8D63
+#define GL_TEXTURE_IMMUTABLE_LEVELS                      0x82DF
 
 /*-------------------------------------------------------------------------
  * Entrypoint definitions

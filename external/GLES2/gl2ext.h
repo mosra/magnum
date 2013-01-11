@@ -1,7 +1,7 @@
 #ifndef __gl2ext_h_
 #define __gl2ext_h_
 
-/* $Revision: 19436 $ on $Date:: 2012-10-10 10:37:04 -0700 #$ */
+/* $Revision: 20040 $ on $Date:: 2013-01-03 01:43:00 -0800 #$ */
 
 #ifdef __cplusplus
 extern "C" {
@@ -1167,6 +1167,7 @@ typedef void (GL_APIENTRYP PFNGLRENDERBUFFERSTORAGEMULTISAMPLEANGLEPROC) (GLenum
 #endif
 
 #ifndef GL_ANGLE_instanced_arrays
+#define GL_ANGLE_instanced_arrays 1
 #ifdef GL_GLEXT_PROTOTYPES
 GL_APICALL void GL_APIENTRY glDrawArraysInstancedANGLE (GLenum mode, GLint first, GLsizei count, GLsizei primcount);
 GL_APICALL void GL_APIENTRY glDrawElementsInstancedANGLE (GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei primcount);
