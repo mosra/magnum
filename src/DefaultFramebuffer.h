@@ -85,32 +85,32 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
             #ifndef MAGNUM_TARGET_GLES
             /**
-             * Write output to back left framebuffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
-             */
-            BackLeft = GL_BACK_LEFT,
-
-            /**
-             * Write output to back right framebuffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
-             */
-            BackRight = GL_BACK_RIGHT,
-
-            /**
-             * Write output to front left framebuffer.
+             * Write output to front left buffer.
              * @requires_gl Stereo rendering is not available in OpenGL ES.
              */
             FrontLeft = GL_FRONT_LEFT,
 
             /**
-             * Write output to front right framebuffer.
+             * Write output to front right buffer.
              * @requires_gl Stereo rendering is not available in OpenGL ES.
              */
             FrontRight = GL_FRONT_RIGHT,
+
+            /**
+             * Write output to back left buffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            BackLeft = GL_BACK_LEFT,
+
+            /**
+             * Write output to back right buffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            BackRight = GL_BACK_RIGHT,
             #endif
 
             /**
-             * Write output to back framebuffer.
+             * Write output to back buffer.
              *
              * On desktop OpenGL, this is equal to @ref DrawAttachment "DrawAttachment::BackLeft".
              */
@@ -121,7 +121,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             #endif
 
             /**
-             * Write output to front framebuffer.
+             * Write output to front buffer.
              *
              * On desktop OpenGL, this is equal to @ref DrawAttachment "DrawAttachment::FrontLeft".
              */
@@ -140,52 +140,52 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
         enum class ReadAttachment: GLenum {
-            /** Don't read from any framebuffer */
+            /** Don't read from any buffer */
             None = GL_NONE,
 
             #ifndef MAGNUM_TARGET_GLES
             /**
-             * Read from back left framebuffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
-             */
-            BackLeft = GL_BACK_LEFT,
-
-            /**
-             * Read from back right framebuffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
-             */
-            BackRight = GL_BACK_RIGHT,
-
-            /**
-             * Read from front left framebuffer.
+             * Read from front left buffer.
              * @requires_gl Stereo rendering is not available in OpenGL ES.
              */
             FrontLeft = GL_FRONT_LEFT,
 
             /**
-             * Read from front right framebuffer.
+             * Read from front right buffer.
              * @requires_gl Stereo rendering is not available in OpenGL ES.
              */
             FrontRight = GL_FRONT_RIGHT,
 
             /**
-             * Read from left framebuffer.
+             * Read from back left buffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            BackLeft = GL_BACK_LEFT,
+
+            /**
+             * Read from back right buffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            BackRight = GL_BACK_RIGHT,
+
+            /**
+             * Read from left buffer.
              * @requires_gl Stereo rendering is not available in OpenGL ES.
              */
             Left = GL_LEFT,
 
             /**
-             * Read from right framebuffer.
+             * Read from right buffer.
              * @requires_gl Stereo rendering is not available in OpenGL ES.
              */
             Right = GL_RIGHT,
             #endif
 
-            /** Read from back framebuffer. */
+            /** Read from back buffer. */
             Back = GL_BACK,
 
             /**
-             * Read from front framebuffer.
+             * Read from front buffer.
              * @requires_es_extension %Extension @es_extension2{NV,read_buffer_front,GL_NV_read_buffer}
              */
             Front = GL_FRONT
@@ -194,7 +194,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             ,
 
             /**
-             * Read from front and back framebuffer.
+             * Read from front and back buffer.
              * @requires_gl In OpenGL ES you must specify either
              *      @ref Magnum::DefaultFramebuffer::ReadAttachment "ReadAttachment::Front"
              *      or @ref Magnum::DefaultFramebuffer::ReadAttachment "ReadAttachment::Back".
@@ -209,9 +209,9 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
         /**
          * @brief Map shader outputs to buffer attachment
          *
-         * @p attachments is list of shader outputs mapped to framebuffer
-         * buffer attachments. Shader outputs which are not listed are not
-         * used, you can achieve the same by passing @ref DrawAttachment "DrawAttachment::None"
+         * @p attachments is list of shader outputs mapped to buffer
+         * attachments. %Shader outputs which are not listed are not used, you
+         * can achieve the same by passing @ref DrawAttachment "DrawAttachment::None"
          * as attachment. Example usage:
          * @code
          * framebuffer.mapForDraw({{MyShader::ColorOutput, DefaultFramebuffer::DrawAttachment::BackLeft},
@@ -230,7 +230,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
         /**
          * @brief Map shader output to buffer attachment
-         * @param attachment        Buffer attachment
+         * @param attachment        %Buffer attachment
          *
          * Similar to above function, can be used in cases when shader has
          * only one (unnamed) output.
@@ -250,7 +250,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
         /**
          * @brief Map given attachment for reading
-         * @param attachment        Buffer attachment
+         * @param attachment        %Buffer attachment
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the

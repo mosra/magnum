@@ -46,16 +46,16 @@ Renderbuffer depthStencil;
 
 // configure the textures and allocate texture memory...
 
-framebuffer.attachTexture2D(0, &color);
-framebuffer.attachTexture2D(1, &normal);
-framebuffer.attachRenderbuffer(Framebuffer::DepthStencilAttachment::DepthStencil, &depthStencil);
+framebuffer.attachTexture2D(Framebuffer::ColorAttachment(0), &color);
+framebuffer.attachTexture2D(Framebuffer::ColorAttachment(1), &normal);
+framebuffer.attachRenderbuffer(Framebuffer::BufferAttachment::DepthStencil, &depthStencil);
 @endcode
 
 Then you need to map outputs of your shader to color attachments in the
 framebuffer:
 @code
-framebuffer.mapForDraw({{MyShader::ColorOutput, 0},
-                        {MyShader::NormalOutput, 1}});
+framebuffer.mapForDraw({{MyShader::ColorOutput, Framebuffer::ColorAttachment(0)},
+                        {MyShader::NormalOutput, Framebuffer::ColorAttachment(1)}});
 @endcode
 
 The actual @ref Platform::GlutApplication::drawEvent() "drawEvent()" might
@@ -64,13 +64,13 @@ off-screen framebuffer, then bind the default and render the textures on
 screen:
 @code
 void drawEvent() {
-    defaultFramebuffer.clear(AbstractFramebuffer::Clear::Color)
-    framebuffer.clear(AbstractFramebuffer::Clear::Color|AbstractFramebuffer::Clear::Depth|AbstractFramebuffer::Clear::Stencil);
+    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color)
+    framebuffer.clear(Framebuffer::Clear::Color|Framebuffer::Clear::Depth|Framebuffer::Clear::Stencil);
 
-    framebuffer.bind(AbstractFramebuffer::Target::Draw);
+    framebuffer.bind(Framebuffer::Target::Draw);
     // ...
 
-    defaultFramebuffer.bind(AbstractFramebuffer::Target::Draw);
+    defaultFramebuffer.bind(DefaultFramebuffer::Target::Draw);
     // ...
 }
 @endcode
@@ -92,6 +92,90 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
 
     public:
         /**
+         * @brief Color attachment
+         *
+         * @see Attachment, attachRenderbuffer(), attachTexture1D(),
+         *      attachTexture2D(), attachCubeMapTexture(), attachTexture3D()
+         */
+        class ColorAttachment {
+            friend class Framebuffer;
+
+            public:
+                /**
+                 * @brief Constructor
+                 * @param id        Color attachment id
+                 */
+                inline constexpr explicit ColorAttachment(std::uint8_t id): attachment(GL_COLOR_ATTACHMENT0 + id) {}
+
+                #ifndef DOXYGEN_GENERATING_OUTPUT
+                inline constexpr explicit operator GLenum() const { return attachment; }
+                #endif
+
+            private:
+                GLenum attachment;
+        };
+
+        /**
+         * @brief Draw attachment
+         *
+         * @see mapForDraw()
+         */
+        class DrawAttachment {
+            public:
+                /** @brief No attachment */
+                static const DrawAttachment None;
+
+                /** @brief Color attachment */
+                inline constexpr /*implicit*/ DrawAttachment(Framebuffer::ColorAttachment attachment): attachment(GLenum(attachment)) {}
+
+                #ifndef DOXYGEN_GENERATING_OUTPUT
+                inline constexpr explicit operator GLenum() const { return attachment; }
+                #endif
+
+            private:
+                inline constexpr explicit DrawAttachment(GLenum attachment): attachment(attachment) {}
+
+                GLenum attachment;
+        };
+
+        /**
+         * @brief %Buffer attachment
+         *
+         * @see attachRenderbuffer(), attachTexture1D(), attachTexture2D(),
+         *      attachCubeMapTexture(), attachTexture3D()
+         */
+        class BufferAttachment {
+            public:
+                /** @brief Depth buffer */
+                static const BufferAttachment Depth;
+
+                /** @brief Stencil buffer */
+                static const BufferAttachment Stencil;
+
+                #ifndef MAGNUM_TARGET_GLES2
+                /**
+                 * @brief Both depth and stencil buffer
+                 *
+                 * @requires_gles30 Combined depth and stencil attachment is
+                 *      not available in OpenGL ES 2.0.
+                 */
+                static const BufferAttachment DepthStencil;
+                #endif
+
+                /** @brief Color buffer */
+                inline constexpr /*implicit*/ BufferAttachment(Framebuffer::ColorAttachment attachment): attachment(GLenum(attachment)) {}
+
+                #ifndef DOXYGEN_GENERATING_OUTPUT
+                inline constexpr explicit operator GLenum() const { return attachment; }
+                #endif
+
+            private:
+                inline constexpr explicit BufferAttachment(GLenum attachment): attachment(attachment) {}
+
+                GLenum attachment;
+        };
+
+        /**
          * @brief Constructor
          *
          * Generates new OpenGL framebuffer.
@@ -108,15 +192,15 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
         ~Framebuffer();
 
         /**
-         * @brief Map shader output to color attachment
+         * @brief Map shader output to attachments
          *
          * @p attachments is list of shader outputs mapped to framebuffer
-         * color attachment IDs. Shader outputs which are not listed are not
-         * used, you can achieve the same by passing `-1` as color attachment
-         * ID. Example usage:
+         * color attachment IDs. %Shader outputs which are not listed are not
+         * used, you can achieve the same by passing Framebuffer::DrawAttachment::None
+         * as color attachment ID. Example usage:
          * @code
-         * framebuffer.mapForDraw({{MyShader::ColorOutput, 0},
-         *                         {MyShader::NormalOutput, 1}});
+         * framebuffer.mapForDraw({{MyShader::ColorOutput, Framebuffer::ColorAttachment(0)},
+         *                         {MyShader::NormalOutput, Framebuffer::DrawAttachment::None}});
          * @endcode
          *
          * If @extension{EXT,direct_state_access} is not available and the
@@ -126,11 +210,11 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
          */
-        void mapForDraw(std::initializer_list<std::pair<GLuint, std::int8_t>> attachments);
+        void mapForDraw(std::initializer_list<std::pair<GLuint, DrawAttachment>> attachments);
 
         /**
-         * @brief Map shader output to color attachment
-         * @param attachment        Color attachment ID
+         * @brief Map shader output to attachment
+         * @param attachment        Draw attachment
          *
          * Similar to above function, can be used in cases when shader has
          * only one (unnamed) output.
@@ -142,13 +226,13 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
          */
-        inline void mapForDraw(std::int8_t attachment) {
-            (this->*drawBufferImplementation)(static_cast<GLenum>(GL_COLOR_ATTACHMENT0 + attachment));
+        inline void mapForDraw(DrawAttachment attachment) {
+            (this->*drawBufferImplementation)(GLenum(attachment));
         }
 
         /**
          * @brief Map given color attachment for reading
-         * @param attachment        Color attachment ID
+         * @param attachment        Color attachment
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
@@ -157,35 +241,13 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
-        inline void mapForRead(std::uint8_t attachment) {
-            (this->*readBufferImplementation)(GL_COLOR_ATTACHMENT0 + attachment);
+        inline void mapForRead(ColorAttachment attachment) {
+            (this->*readBufferImplementation)(GLenum(attachment));
         }
 
         /**
-         * @brief Attachment for depth/stencil part of fragment shader output
-         *
-         * @see attachRenderbuffer(), attachTexture1D(), attachTexture2D(),
-         *      attachCubeMapTexture(), attachTexture3D()
-         */
-        enum class DepthStencilAttachment: GLenum {
-            Depth = GL_DEPTH_ATTACHMENT,    /**< Depth output only. */
-
-            Stencil = GL_STENCIL_ATTACHMENT /**< Stencil output only. */
-
-            #ifndef MAGNUM_TARGET_GLES2
-            ,
-            /**
-             * Both depth and stencil output.
-             * @requires_gles30 Combined depth and stencil attachment is not
-             *      available in OpenGL ES 2.0.
-             */
-            DepthStencil = GL_DEPTH_STENCIL_ATTACHMENT
-            #endif
-        };
-
-        /**
-         * @brief Attach renderbuffer to given framebuffer depth/stencil attachment
-         * @param depthStencilAttachment Depth/stencil attachment
+         * @brief Attach renderbuffer to given buffer
+         * @param attachment        %Buffer attachment
          * @param renderbuffer      %Renderbuffer
          *
          * If @extension{EXT,direct_state_access} is not available and the
@@ -194,31 +256,16 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferRenderbuffer} or
          *      @fn_gl_extension{NamedFramebufferRenderbuffer,EXT,direct_state_access}
          */
-        inline void attachRenderbuffer(DepthStencilAttachment depthStencilAttachment, Renderbuffer* renderbuffer) {
-            (this->*renderbufferImplementation)(GLenum(depthStencilAttachment), renderbuffer);
-        }
-
-        /**
-         * @brief Attach renderbuffer to given framebuffer color attachment
-         * @param colorAttachment   Color attachment ID (number between 0 and 15)
-         * @param renderbuffer      %Renderbuffer
-         *
-         * If @extension{EXT,direct_state_access} is not available and the
-         * framebufferbuffer is not currently bound, it is bound before the
-         * operation.
-         * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferRenderbuffer} or
-         *      @fn_gl_extension{NamedFramebufferRenderbuffer,EXT,direct_state_access}
-         */
-        inline void attachRenderbuffer(std::uint8_t colorAttachment, Renderbuffer* renderbuffer) {
-            (this->*renderbufferImplementation)(GL_COLOR_ATTACHMENT0 + colorAttachment, renderbuffer);
+        inline void attachRenderbuffer(BufferAttachment attachment, Renderbuffer* renderbuffer) {
+            (this->*renderbufferImplementation)(attachment, renderbuffer);
         }
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @brief Attach 1D texture to given framebuffer depth/stencil attachment
-         * @param depthStencilAttachment Depth/stencil attachment
+         * @brief Attach 1D texture to given buffer
+         * @param attachment        %Buffer attachment
          * @param texture           1D texture
-         * @param mipLevel          Mip level
+         * @param level             Mip level
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
@@ -227,34 +274,16 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access}
          * @requires_gl Only 2D and 3D textures are available in OpenGL ES.
          */
-        inline void attachTexture1D(DepthStencilAttachment depthStencilAttachment, Texture1D* texture, GLint mipLevel) {
-            (this->*texture1DImplementation)(GLenum(depthStencilAttachment), texture, mipLevel);
-        }
-
-        /**
-         * @brief Attach 1D texture to given framebuffer color attachment
-         * @param colorAttachment   Color attachment ID (number between 0 and 15)
-         * @param texture           1D texture
-         * @param mipLevel          Mip level
-         *
-         * If @extension{EXT,direct_state_access} is not available and the
-         * framebufferbuffer is not currently bound, it is bound before the
-         * operation.
-         * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture} or
-         *      @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access}
-         * @requires_gl Only 2D and 3D textures are available in OpenGL ES.
-         */
-        inline void attachTexture1D(std::uint8_t colorAttachment, Texture1D* texture, GLint mipLevel) {
-            (this->*texture1DImplementation)(GL_COLOR_ATTACHMENT0 + colorAttachment, texture, mipLevel);
+        inline void attachTexture1D(BufferAttachment attachment, Texture1D* texture, GLint level) {
+            (this->*texture1DImplementation)(attachment, texture, level);
         }
         #endif
 
         /**
-         * @brief Attach 2D texture to given framebuffer depth/stencil attachment
-         * @param depthStencilAttachment Depth/stencil attachment
+         * @brief Attach 2D texture to given buffer
+         * @param attachment        %Buffer attachment
          * @param texture           2D texture
-         * @param mipLevel          Mip level. For rectangle textures it
-         *      should be always 0.
+         * @param level             Mip level
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
@@ -262,29 +291,14 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @see attachCubeMapTexture(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
          *      or @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
          */
-        void attachTexture2D(DepthStencilAttachment depthStencilAttachment, Texture2D* texture, GLint mipLevel);
+        void attachTexture2D(BufferAttachment attachment, Texture2D* texture, GLint level);
 
         /**
-         * @brief Attach 2D texture to given framebuffer color attachment
-         * @param colorAttachment   Color attachment ID (number between 0 and 15)
-         * @param texture           2D texture
-         * @param mipLevel          Mip level. For rectangle textures it
-         *      should be always 0.
-         *
-         * If @extension{EXT,direct_state_access} is not available and the
-         * framebufferbuffer is not currently bound, it is bound before the
-         * operation.
-         * @see attachCubeMapTexture(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
-         *      or @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
-         */
-        void attachTexture2D(std::uint8_t colorAttachment, Texture2D* texture, GLint mipLevel);
-
-        /**
-         * @brief Attach cube map texture to given framebuffer depth/stencil attachment
-         * @param depthStencilAttachment Depth/stencil attachment
+         * @brief Attach cube map texture to given buffer
+         * @param attachment        %Buffer attachment
          * @param texture           Cube map texture
          * @param coordinate        Cube map coordinate
-         * @param mipLevel          Mip level
+         * @param level             Mip level
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
@@ -292,32 +306,15 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @see attachTexture2D(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
          *      or @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
          */
-        inline void attachCubeMapTexture(DepthStencilAttachment depthStencilAttachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, GLint mipLevel) {
-            (this->*texture2DImplementation)(GLenum(depthStencilAttachment), GLenum(coordinate), texture->id(), mipLevel);
+        inline void attachCubeMapTexture(BufferAttachment attachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, GLint level) {
+            (this->*texture2DImplementation)(attachment, GLenum(coordinate), texture->id(), level);
         }
 
         /**
-         * @brief Attach cube map texture to given framebuffer color attachment
-         * @param colorAttachment   Color attachment ID (number between 0 and 15)
-         * @param texture           Cube map texture
-         * @param coordinate        Cube map coordinate
-         * @param mipLevel          Mip level
-         *
-         * If @extension{EXT,direct_state_access} is not available and the
-         * framebufferbuffer is not currently bound, it is bound before the
-         * operation.
-         * @see attachTexture2D(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
-         *      or @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
-         */
-        inline void attachCubeMapTexture(std::uint8_t colorAttachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, GLint mipLevel) {
-            (this->*texture2DImplementation)(GL_COLOR_ATTACHMENT0 + colorAttachment, GLenum(coordinate), texture->id(), mipLevel);
-        }
-
-        /**
-         * @brief Attach 3D texture to given framebuffer depth/stencil attachment
-         * @param depthStencilAttachment Depth/stencil attachment
+         * @brief Attach 3D texture to given buffer
+         * @param attachment        %Buffer attachment
          * @param texture           3D texture
-         * @param mipLevel          Mip level
+         * @param level             Mip level
          * @param layer             Layer of 2D image within a 3D texture
          *
          * If @extension{EXT,direct_state_access} is not available and the
@@ -327,58 +324,39 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{NamedFramebufferTexture3D,EXT,direct_state_access}
          * @requires_es_extension %Extension @es_extension{OES,texture_3D}
          */
-        inline void attachTexture3D(DepthStencilAttachment depthStencilAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {
+        inline void attachTexture3D(BufferAttachment attachment, Texture3D* texture, GLint level, GLint layer) {
             /** @todo Check for texture target compatibility */
-            (this->*texture3DImplementation)(GLenum(depthStencilAttachment), texture, mipLevel, layer);
-        }
-
-        /**
-         * @brief Attach 3D texture to given framebuffer color attachment
-         * @param colorAttachment   Color attachment ID (number between 0 and 15)
-         * @param texture           3D texture
-         * @param mipLevel          Mip level
-         * @param layer             Layer of 2D image within a 3D texture.
-         *
-         * If @extension{EXT,direct_state_access} is not available and the
-         * framebufferbuffer is not currently bound, it is bound before the
-         * operation.
-         * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture} or
-         *      @fn_gl_extension{NamedFramebufferTexture3D,EXT,direct_state_access}
-         * @requires_es_extension %Extension @es_extension{OES,texture_3D}
-         */
-        inline void attachTexture3D(std::uint8_t colorAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {
-            /** @todo Check for texture target compatibility */
-            (this->*texture3DImplementation)(GL_COLOR_ATTACHMENT0 + colorAttachment, texture, mipLevel, layer);
+            (this->*texture3DImplementation)(attachment, texture, level, layer);
         }
 
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
 
-        typedef void(Framebuffer::*RenderbufferImplementation)(GLenum, Renderbuffer*);
-        void MAGNUM_LOCAL renderbufferImplementationDefault(GLenum attachment, Renderbuffer* renderbuffer);
+        typedef void(Framebuffer::*RenderbufferImplementation)(BufferAttachment, Renderbuffer*);
+        void MAGNUM_LOCAL renderbufferImplementationDefault(BufferAttachment attachment, Renderbuffer* renderbuffer);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL renderbufferImplementationDSA(GLenum attachment, Renderbuffer* renderbuffer);
+        void MAGNUM_LOCAL renderbufferImplementationDSA(BufferAttachment attachment, Renderbuffer* renderbuffer);
         #endif
         static RenderbufferImplementation renderbufferImplementation;
 
         #ifndef MAGNUM_TARGET_GLES
-        typedef void(Framebuffer::*Texture1DImplementation)(GLenum, Texture1D*, GLint);
-        void MAGNUM_LOCAL texture1DImplementationDefault(GLenum attachment, Texture1D* texture, GLint mipLevel);
-        void MAGNUM_LOCAL texture1DImplementationDSA(GLenum attachment, Texture1D* texture, GLint mipLevel);
+        typedef void(Framebuffer::*Texture1DImplementation)(BufferAttachment, Texture1D*, GLint);
+        void MAGNUM_LOCAL texture1DImplementationDefault(BufferAttachment attachment, Texture1D* texture, GLint level);
+        void MAGNUM_LOCAL texture1DImplementationDSA(BufferAttachment attachment, Texture1D* texture, GLint level);
         static Texture1DImplementation texture1DImplementation;
         #endif
 
-        typedef void(Framebuffer::*Texture2DImplementation)(GLenum, GLenum, GLuint, GLint);
-        void MAGNUM_LOCAL texture2DImplementationDefault(GLenum attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel);
+        typedef void(Framebuffer::*Texture2DImplementation)(BufferAttachment, GLenum, GLuint, GLint);
+        void MAGNUM_LOCAL texture2DImplementationDefault(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL texture2DImplementationDSA(GLenum attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel);
+        void MAGNUM_LOCAL texture2DImplementationDSA(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         #endif
         static MAGNUM_LOCAL Texture2DImplementation texture2DImplementation;
 
-        typedef void(Framebuffer::*Texture3DImplementation)(GLenum, Texture3D*, GLint, GLint);
-        void MAGNUM_LOCAL texture3DImplementationDefault(GLenum attachment, Texture3D* texture, GLint mipLevel, GLint layer);
+        typedef void(Framebuffer::*Texture3DImplementation)(BufferAttachment, Texture3D*, GLint, GLint);
+        void MAGNUM_LOCAL texture3DImplementationDefault(BufferAttachment attachment, Texture3D* texture, GLint level, GLint layer);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL texture3DImplementationDSA(GLenum attachment, Texture3D* texture, GLint mipLevel, GLint layer);
+        void MAGNUM_LOCAL texture3DImplementationDSA(BufferAttachment attachment, Texture3D* texture, GLint level, GLint layer);
         #endif
         static Texture3DImplementation texture3DImplementation;
 };
