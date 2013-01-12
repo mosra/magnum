@@ -19,6 +19,7 @@
 #include FT_FREETYPE_H
 #include <hb-ft.h>
 
+#include "Extensions.h"
 #include "Image.h"
 #include "TextureTools/Atlas.h"
 
@@ -86,10 +87,20 @@ Font::Font(FontRenderer& renderer, const std::string& fontFile, GLfloat size, co
     }
 
     /* Set texture data */
+    #ifndef MAGNUM_TARGET_GLES
     _texture.setImage(0, Texture2D::InternalFormat::R8, &image);
+    #else
+    _texture.setImage(0, Texture2D::InternalFormat::Red, &image);
+    #endif
 }
 
 void Font::create(FontRenderer& renderer, const std::string& fontFile) {
+    #ifndef MAGNUM_TARGET_GLES
+    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);
+    #else
+    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::EXT::texture_rg);
+    #endif
+
     /* Create FreeType font */
     CORRADE_INTERNAL_ASSERT(FT_New_Face(renderer.library(), fontFile.c_str(), 0, &_ftFont) == 0);
     CORRADE_INTERNAL_ASSERT(FT_Set_Char_Size(_ftFont, 0, _size*64, 100, 100) == 0);
