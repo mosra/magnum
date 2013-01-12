@@ -148,6 +148,8 @@ void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attach
     glInvalidateFramebuffer(GLenum(bindInternal()), count, attachments);
     #else
     //glDiscardFramebufferEXT(GLenum(bindInternal()), count, attachments);
+    static_cast<void>(count);
+    static_cast<void>(attachments);
     #endif
 }
 
@@ -157,6 +159,8 @@ void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attach
     glInvalidateSubFramebuffer(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.width(), rectangle.height());
     #else
     //glDiscardSubFramebufferEXT(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.width(), rectangle.height());
+    static_cast<void>(count);
+    static_cast<void>(attachments);
     static_cast<void>(rectangle);
     #endif
 }
