@@ -238,13 +238,25 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             #endif
 
             /** Invalidate color buffer. */
+            #ifndef MAGNUM_TARGET_GLES2
             Color = GL_COLOR,
+            #else
+            Color = GL_COLOR_EXT,
+            #endif
 
             /** Invalidate depth bufer. */
+            #ifndef MAGNUM_TARGET_GLES2
             Depth = GL_DEPTH,
+            #else
+            Depth = GL_DEPTH_EXT,
+            #endif
 
             /** Invalidate stencil buffer. */
+            #ifndef MAGNUM_TARGET_GLES2
             Stencil = GL_STENCIL
+            #else
+            Stencil = GL_STENCIL_EXT
+            #endif
         };
 
         explicit MAGNUM_LOCAL DefaultFramebuffer();
