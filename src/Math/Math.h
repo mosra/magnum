@@ -59,9 +59,18 @@ template<std::uint32_t exponent, class T> inline constexpr T pow(T base) {
 }
 
 /**
+ * @brief Base-2 integral logarithm
+ *
+ * Returns integral logarithm of given number with base `2`.
+ * @see log()
+ */
+std::uint32_t MAGNUM_EXPORT log2(std::uint32_t number);
+
+/**
  * @brief Integral logarithm
  *
  * Returns integral logarithm of given number with given base.
+ * @see log2()
  */
 std::uint32_t MAGNUM_EXPORT log(std::uint32_t base, std::uint32_t number);
 

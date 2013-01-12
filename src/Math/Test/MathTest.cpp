@@ -28,6 +28,7 @@ class MathTest: public Corrade::TestSuite::Tester {
         void clamp();
         void pow();
         void log();
+        void log2();
 };
 
 MathTest::MathTest() {
@@ -35,7 +36,8 @@ MathTest::MathTest() {
              &MathTest::denormalize,
              &MathTest::clamp,
              &MathTest::pow,
-             &MathTest::log);
+             &MathTest::log,
+             &MathTest::log2);
 }
 
 void MathTest::normalize() {
@@ -103,6 +105,10 @@ void MathTest::pow() {
 void MathTest::log() {
     CORRADE_COMPARE(Math::log(2, 256), 8ul);
     CORRADE_COMPARE(Math::log(256, 2), 0ul);
+}
+
+void MathTest::log2() {
+    CORRADE_COMPARE(Math::log2(2153), 11);
 }
 
 }}}
