@@ -95,12 +95,14 @@ class CubeMapTexture: public AbstractTexture {
          * @brief Constructor
          *
          * Creates one cube map OpenGL texture.
-         * @see @def_gl{TEXTURE_CUBE_MAP}
+         * @see @fn_gl{GenTextures} with @def_gl{TEXTURE_CUBE_MAP}
          */
         inline explicit CubeMapTexture(): AbstractTexture(GL_TEXTURE_CUBE_MAP) {}
 
         /**
-         * @copydoc Texture::setWrapping()
+         * @brief Set wrapping
+         *
+         * See Texture::setWrapping() for more information.
          */
         inline CubeMapTexture* setWrapping(const Array3D<Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(this, wrapping);
@@ -108,9 +110,15 @@ class CubeMapTexture: public AbstractTexture {
         }
 
         /**
-         * @copydoc Texture::setImage(GLint, InternalFormat, Image*)
-         * @param coordinate    Coordinate
+         * @brief Set image data
+         * @param coordinate        Coordinate
+         * @param level             Mip level
+         * @param internalFormat    Internal format
+         * @param image             Image, ImageWrapper, BufferImage or
+         *      Trade::ImageData of the same dimension count
          * @return Pointer to self (for method chaining)
+         *
+         * See Texture::setImage() for more information.
          */
         template<class Image> inline CubeMapTexture* setImage(Coordinate coordinate, GLint level, InternalFormat internalFormat, Image* image) {
             DataHelper<2>::set(this, static_cast<GLenum>(coordinate), level, internalFormat, image);
@@ -118,9 +126,15 @@ class CubeMapTexture: public AbstractTexture {
         }
 
         /**
-         * @copydoc Texture::setSubImage(GLint, const typename DimensionTraits<Dimensions, GLint>::VectorType&, Image*)
-         * @param coordinate    Coordinate
+         * @brief Set image subdata
+         * @param coordinate        Coordinate
+         * @param level             Mip level
+         * @param offset            Offset where to put data in the texture
+         * @param image             Image, ImageWrapper, BufferImage or
+         *      Trade::ImageData of the same or one less dimension count
          * @return Pointer to self (for method chaining)
+         *
+         * See Texture::setSubImage() for more information.
          */
         template<class Image> inline CubeMapTexture* setSubImage(Coordinate coordinate, GLint level, const Vector2i& offset, const Image* image) {
             DataHelper<2>::setSub(this, static_cast<GLenum>(coordinate), level, offset, image);
@@ -137,9 +151,7 @@ class CubeMapTexture: public AbstractTexture {
          * @ref Coordinate "Coordinate::PositiveX" is `0` and so on, in the
          * same order as in the enum.
          *
-         * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
-         * is not available, this function does nothing.
-         * @see invalidateImage(), @fn_gl{InvalidateTexSubImage}
+         * See Texture::invalidateSubImage() for more information.
          */
         inline void invalidateSubImage(GLint level, const Vector3i& offset, const Vector3i& size) {
             DataHelper<3>::invalidateSub(this, level, offset, size);

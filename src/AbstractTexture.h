@@ -990,16 +990,11 @@ class MAGNUM_EXPORT AbstractTexture {
          */
         static GLfloat maxSupportedAnisotropy();
 
-        /**
-         * @brief Constructor
-         * @param target    Target, e.g. `GL_TEXTURE_2D`.
-         *
-         * Creates one OpenGL texture.
-         * @see @fn_gl{GenTextures}
-         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
         inline explicit AbstractTexture(GLenum target): _target(target) {
             glGenTextures(1, &_id);
         }
+        #endif
 
         /**
          * @brief Destructor

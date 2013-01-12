@@ -168,6 +168,7 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          *      `Target::Texture3D` based on dimension count.
          *
          * Creates one OpenGL texture.
+         * @see @fn_gl{GenTextures}
          */
         inline explicit Texture(Target target = DataHelper<Dimensions>::target()): AbstractTexture(static_cast<GLenum>(target)) {}
 
@@ -200,7 +201,7 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
         /**
          * @brief Set image data
          * @param level             Mip level
-         * @param internalFormat    Internal texture format
+         * @param internalFormat    Internal format
          * @param image             Image, ImageWrapper, BufferImage or
          *      Trade::ImageData of the same dimension count
          * @return Pointer to self (for method chaining)

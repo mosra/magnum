@@ -85,12 +85,14 @@ class CubeMapTextureArray: public AbstractTexture {
          * @brief Constructor
          *
          * Creates one cube map OpenGL texture.
-         * @see @def_gl{TEXTURE_CUBE_MAP_ARRAY}
+         * @see @fn_gl{GenTextures} with @def_gl{TEXTURE_CUBE_MAP}
          */
         inline explicit CubeMapTextureArray(): AbstractTexture(GL_TEXTURE_CUBE_MAP_ARRAY) {}
 
         /**
-         * @copydoc Texture::setWrapping()
+         * @brief Set wrapping
+         *
+         * See Texture::setWrapping() for more information.
          */
         inline CubeMapTextureArray* setWrapping(const Array3D<Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(this, wrapping);
@@ -98,11 +100,18 @@ class CubeMapTextureArray: public AbstractTexture {
         }
 
         /**
-         * @copydoc Texture::setImage(GLint, InternalFormat, Image*)
+         * @brief Set image data
+         * @param level             Mip level
+         * @param internalFormat    Internal format
+         * @param image             Image, ImageWrapper, BufferImage or
+         *      Trade::ImageData of the same dimension count
+         * @return Pointer to self (for method chaining)
          *
          * Sets texture image data from three-dimensional image for all cube
          * faces for all layers. Each group of 6 2D images is one cube map
          * layer. The images are ordered the same way as Coordinate enum.
+         *
+         * See Texture::setImage() for more information.
          */
         template<class T> inline CubeMapTextureArray* setImage(GLint level, InternalFormat internalFormat, T* image) {
             DataHelper<3>::set(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, internalFormat, image);
@@ -118,12 +127,13 @@ class CubeMapTextureArray: public AbstractTexture {
          * @return Pointer to self (for method chaining)
          *
          * Sets texture image subdata for more than one level/face at once.
-         * The image is not deleted afterwards.
          *
          * Z coordinate of @p offset specifies layer and cube map face. If
          * you want to start at given face in layer *n*, you have to specify
          * Z coordinate as @f$ 6n + i @f$, where i is face index as specified
          * in Coordinate enum.
+         *
+         * See Texture::setSubImage() for more information.
          *
          * @see setSubImage(GLsizei, Coordinate, GLint, const Math::Vector<2, GLint>&, const Image*)
          */
@@ -142,7 +152,7 @@ class CubeMapTextureArray: public AbstractTexture {
          *      Trade::ImageData2D
          * @return Pointer to self (for method chaining)
          *
-         * The image is not deleted afterwards.
+         * See Texture::setSubImage() for more information.
          *
          * @see setSubImage(GLint, const Math::Vector<3, GLint>&, const Image*)
          */
@@ -161,9 +171,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * i.e. @ref Coordinate "Coordinate::PositiveX" is `0` and so on, in
          * the same order as in the enum.
          *
-         * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
-         * is not available, this function does nothing.
-         * @see invalidateImage(), @fn_gl{InvalidateTexSubImage}
+         * See Texture::invalidateSubImage() for more information.
          */
         inline void invalidateSubImage(GLint level, const Vector3i& offset, const Vector3i& size) {
             DataHelper<3>::invalidateSub(this, level, offset, size);
