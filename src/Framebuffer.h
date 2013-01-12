@@ -266,8 +266,10 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * not already.
          * @see @fn_gl{InvalidateFramebuffer} or @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer}
          *      on OpenGL ES 2.0
-         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
-         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}
+         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}. Use
+         *      clear() instead where the extension is not supported.
+         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}.
+         *      Use clear() instead where the extension is not supported.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments);
 
@@ -280,8 +282,10 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * not already.
          * @see @fn_gl{InvalidateSubFramebuffer} or @fn_gles_extension{DiscardSubFramebuffer,EXT,discard_framebuffer}
          *      on OpenGL ES 2.0
-         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
-         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}
+         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}. Use
+         *      clear() instead where the extension is not supported.
+         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}.
+         *      Use clear() instead where the extension is not supported.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Rectanglei& rectangle);
 
