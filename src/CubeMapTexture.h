@@ -127,6 +127,11 @@ class CubeMapTexture: public AbstractTexture {
             return this;
         }
 
+        /** @copydoc Texture::invalidateSubImage() */
+        inline void invalidateSubImage(GLint level, const Vector2i& offset, const Vector2i& size) {
+            DataHelper<2>::invalidateSub(this, level, offset, size);
+        }
+
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline CubeMapTexture* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::BaseLevel) {

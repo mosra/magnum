@@ -1111,6 +1111,21 @@ class MAGNUM_EXPORT AbstractTexture {
             return this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Invalidate texture image
+         * @param level             Mip level
+         *
+         * @see @ref Texture::invalidateSubImage() "invalidateSubImage()",
+         *      @fn_gl{InvalidateTexImage}
+         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
+         * @requires_gl Texture image invalidation is not available in OpenGL ES.
+         */
+        inline void invalidateImage(GLint level) {
+            glInvalidateTexImage(_id, level);
+        }
+        #endif
+
         /**
          * @brief Generate mipmap
          * @return Pointer to self (for method chaining)
@@ -1233,6 +1248,12 @@ template<> struct AbstractTexture::DataHelper<1> {
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type setSub(AbstractTexture* texture, GLenum target, GLint level, const Math::Vector<1, GLint>& offset, Image* image) {
         (texture->*subImage1DImplementation)(target, level, offset, image->size(), image->format(), image->type(), image->data());
     }
+
+    #ifndef MAGNUM_TARGET_GLES
+    inline static void invalidateSub(AbstractTexture* texture, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLint>& size) {
+        glInvalidateTexSubImage(texture->_id, level, offset[0], 0, 0, size[0], 1, 1);
+    }
+    #endif
 };
 #endif
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
@@ -1260,6 +1281,12 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type setSub(AbstractTexture* texture, GLenum target, GLint level, const Vector2i& offset, Image* image) {
         (texture->*subImage2DImplementation)(target, level, offset, Vector2i(image->size(), 1), image->format(), image->type(), image->data());
     }
+
+    #ifndef MAGNUM_TARGET_GLES
+    inline static void invalidateSub(AbstractTexture* texture, GLint level, const Vector2i& offset, const Vector2i& size) {
+        glInvalidateTexSubImage(texture->_id, level, offset.x(), offset.y(), 0, size.x(), size.y(), 1);
+    }
+    #endif
 };
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     enum class Target: GLenum {
@@ -1286,6 +1313,12 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type setSub(AbstractTexture* texture, GLenum target, GLint level, const Vector3i& offset, Image* image) {
         (texture->*subImage3DImplementation)(target, level, offset, Vector3i(image->size(), 1), image->format(), image->type(), image->data());
     }
+
+    #ifndef MAGNUM_TARGET_GLES
+    inline static void invalidateSub(AbstractTexture* texture, GLint level, const Vector3i& offset, const Vector3i& size) {
+        glInvalidateTexSubImage(texture->_id, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z());
+    }
+    #endif
 };
 #endif
 

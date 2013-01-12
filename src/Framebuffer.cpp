@@ -40,6 +40,8 @@ const Framebuffer::BufferAttachment Framebuffer::BufferAttachment::Stencil = Fra
 #ifndef MAGNUM_TARGET_GLES2
 const Framebuffer::BufferAttachment Framebuffer::BufferAttachment::DepthStencil = Framebuffer::BufferAttachment(GL_DEPTH_STENCIL_ATTACHMENT);
 #endif
+const Framebuffer::InvalidationAttachment Framebuffer::InvalidationAttachment::Depth = Framebuffer::InvalidationAttachment(GL_DEPTH_ATTACHMENT);
+const Framebuffer::InvalidationAttachment Framebuffer::InvalidationAttachment::Stencil = Framebuffer::InvalidationAttachment(GL_STENCIL_ATTACHMENT);
 
 Framebuffer::Framebuffer(const Rectanglei& viewport) {
     _viewport = viewport;
@@ -70,6 +72,26 @@ void Framebuffer::mapForDraw(std::initializer_list<std::pair<GLuint, DrawAttachm
 
     (this->*drawBuffersImplementation)(max+1, _attachments);
     delete[] _attachments;
+}
+
+void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments) {
+    GLenum* _attachments = new GLenum[attachments.size()];
+    for(std::size_t i = 0; i != attachments.size(); ++i)
+        _attachments[i] = GLenum(*(attachments.begin()+i));
+
+    invalidateImplementation(attachments.size(), _attachments);
+
+    delete _attachments;
+}
+
+void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Rectanglei& rectangle) {
+    GLenum* _attachments = new GLenum[attachments.size()];
+    for(std::size_t i = 0; i != attachments.size(); ++i)
+        _attachments[i] = GLenum(*(attachments.begin()+i));
+
+    invalidateImplementation(attachments.size(), _attachments, rectangle);
+
+    delete _attachments;
 }
 
 void Framebuffer::attachTexture2D(BufferAttachment attachment, Texture2D* texture, GLint mipLevel) {

@@ -44,6 +44,26 @@ void DefaultFramebuffer::mapForDraw(std::initializer_list<std::pair<GLuint, Draw
 }
 #endif
 
+void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments) {
+    GLenum* _attachments = new GLenum[attachments.size()];
+    for(std::size_t i = 0; i != attachments.size(); ++i)
+        _attachments[i] = GLenum(*(attachments.begin()+i));
+
+    invalidateImplementation(attachments.size(), _attachments);
+
+    delete _attachments;
+}
+
+void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Rectanglei& rectangle) {
+    GLenum* _attachments = new GLenum[attachments.size()];
+    for(std::size_t i = 0; i != attachments.size(); ++i)
+        _attachments[i] = GLenum(*(attachments.begin()+i));
+
+    invalidateImplementation(attachments.size(), _attachments, rectangle);
+
+    delete _attachments;
+}
+
 void DefaultFramebuffer::initializeContextBasedFunctionality(Context* context) {
     Implementation::FramebufferState* state = context->state()->framebuffer;
 

@@ -207,6 +207,10 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @brief Clear specified buffers in framebuffer
          * @param mask              Which buffers to clear
          *
+         * To improve performance you can also use
+         * DefaultFramebuffer::invalidate() / Framebuffer::invalidate() instead
+         * of clearing given buffer if you will not use it anymore or fully
+         * overwrite it later.
          * @see Renderer::setClearColor(), Renderer::setClearDepth(),
          *      Renderer::setClearStencil(), @fn_gl{BindFramebuffer},
          *      @fn_gl{Clear}
@@ -260,6 +264,9 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 
         typedef void(AbstractFramebuffer::*ReadBufferImplementation)(GLenum);
         static ReadBufferImplementation readBufferImplementation;
+
+        void MAGNUM_LOCAL invalidateImplementation(GLsizei count, GLenum* attachments);
+        void MAGNUM_LOCAL invalidateImplementation(GLsizei count, GLenum* attachments, const Rectanglei& rectangle);
 
         GLuint _id;
         Rectanglei _viewport;

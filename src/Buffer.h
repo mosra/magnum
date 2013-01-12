@@ -580,6 +580,32 @@ class MAGNUM_EXPORT Buffer {
             setSubData(offset, data.size()*sizeof(T), data.data());
         }
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Invalidate buffer data
+         *
+         * @see @fn_gl{InvalidateBufferData}
+         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
+         * @requires_gl Buffer data invalidation is not available in OpenGL ES.
+         */
+        inline void invalidateData() {
+            glInvalidateBufferData(_id);
+        }
+
+        /**
+         * @brief Invalidate buffer subdata
+         * @param offset    Offset into the buffer
+         * @param length    Length of the invalidated range
+         *
+         * @see @fn_gl{InvalidateBufferData}
+         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
+         * @requires_gl Buffer data invalidation is not available in OpenGL ES.
+         */
+        inline void invalidateSubData(GLintptr offset, GLsizeiptr length) {
+            glInvalidateBufferSubData(_id, offset, length);
+        }
+        #endif
+
         /**
          * @brief Map buffer to client memory
          * @param access    Access

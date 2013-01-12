@@ -209,8 +209,8 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          *
          * If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some layer before the operation.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexImage1D}/
-         *      @fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
+         * @see setSubImage(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{TexImage1D}/@fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
          *      @fn_gl_extension{TextureImage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}
@@ -239,9 +239,9 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          *
          * If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some layer before the operation.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexSubImage1D}/
-         *      @fn_gl{TexSubImage2D}/@fn_gl{TexSubImage3D} or
-         *      @fn_gl_extension{TextureSubImage1D,EXT,direct_state_access}/
+         * @see setImage(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{TexSubImage1D}/@fn_gl{TexSubImage2D}/@fn_gl{TexSubImage3D}
+         *      or @fn_gl_extension{TextureSubImage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access}
          */
@@ -249,6 +249,22 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
             DataHelper<Dimensions>::setSub(this, _target, level, offset, image);
             return this;
         }
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Invalidate texture subimage
+         * @param level             Mip level
+         * @param offset            Offset into the texture
+         * @param size              Size of invalidated data
+         *
+         * @see invalidateImage(), @fn_gl{InvalidateTexSubImage}
+         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
+         * @requires_gl Texture image invalidation is not available in OpenGL ES.
+         */
+        inline void invalidateSubImage(GLint level, const typename DimensionTraits<Dimensions, GLint>::VectorType& offset, const typename DimensionTraits<Dimensions, GLint>::VectorType& size) {
+            DataHelper<dimensions>::invalidateSub(this, level, offset, size);
+        }
+        #endif
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT

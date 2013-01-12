@@ -151,6 +151,13 @@ class CubeMapTextureArray: public AbstractTexture {
             return this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES
+        /** @copydoc Texture::invalidateSubImage() */
+        inline void invalidateSubImage(GLint level, const Vector2i& offset, const Vector2i& size) {
+            DataHelper<2>::invalidateSub(this, level, offset, size);
+        }
+        #endif
+
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline CubeMapTextureArray* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::BaseLevel) {

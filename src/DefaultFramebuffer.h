@@ -203,6 +203,50 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             #endif
         };
 
+        /**
+         * @brief Invalidation attachment
+         *
+         * @see invalidate()
+         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
+         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}
+         */
+        enum class InvalidationAttachment: GLenum {
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Invalidate front left buffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            FrontLeft = GL_FRONT_LEFT,
+
+            /**
+             * Invalidate front right buffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            FrontRight = GL_FRONT_RIGHT,
+
+            /**
+             * Invalidate back left buffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            BackLeft = GL_BACK_LEFT,
+
+            /**
+             * Invalidate back right buffer.
+             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             */
+            BackRight = GL_BACK_RIGHT,
+            #endif
+
+            /** Invalidate color buffer. */
+            Color = GL_COLOR,
+
+            /** Invalidate depth bufer. */
+            Depth = GL_DEPTH,
+
+            /** Invalidate stencil buffer. */
+            Stencil = GL_STENCIL
+        };
+
         explicit MAGNUM_LOCAL DefaultFramebuffer();
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -262,6 +306,33 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
         inline void mapForRead(ReadAttachment attachment) {
             (this->*readBufferImplementation)(static_cast<GLenum>(attachment));
         }
+
+        /**
+         * @brief Invalidate framebuffer
+         * @param attachments       Attachments to invalidate
+         *
+         * The framebuffer is bound to some target before the operation, if
+         * not already.
+         * @see @fn_gl{InvalidateFramebuffer} or @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer}
+         *      on OpenGL ES 2.0
+         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
+         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}
+         */
+        void invalidate(std::initializer_list<InvalidationAttachment> attachments);
+
+        /**
+         * @brief Invalidate framebuffer rectangle
+         * @param attachments       Attachments to invalidate
+         * @param rectangle         %Rectangle to invalidate
+         *
+         * The framebuffer is bound to some target before the operation, if
+         * not already.
+         * @see @fn_gl{InvalidateSubFramebuffer} or @fn_gles_extension{DiscardSubFramebuffer,EXT,discard_framebuffer}
+         *      on OpenGL ES 2.0
+         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
+         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}
+         */
+        void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Rectanglei& rectangle);
 
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);

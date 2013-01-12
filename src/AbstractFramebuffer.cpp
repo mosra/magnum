@@ -141,6 +141,27 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Abs
 }
 #endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attachments) {
+    /** @todo Re-enable when extension wrangler is available for ES2 */
+    #ifndef MAGNUM_TARGET_GLES2
+    glInvalidateFramebuffer(GLenum(bindInternal()), count, attachments);
+    #else
+    //glDiscardFramebufferEXT(GLenum(bindInternal()), count, attachments);
+    #endif
+}
+
+void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attachments, const Rectanglei& rectangle) {
+    /** @todo Re-enable when extension wrangler is available for ES2 */
+    #ifndef MAGNUM_TARGET_GLES2
+    glInvalidateSubFramebuffer(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.width(), rectangle.height());
+    #else
+    //glDiscardSubFramebufferEXT(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.width(), rectangle.height());
+    static_cast<void>(rectangle);
+    #endif
+}
+#endif
+
 void AbstractFramebuffer::initializeContextBasedFunctionality(Context* context) {
     #ifndef MAGNUM_TARGET_GLES
     if(context->isExtensionSupported<Extensions::GL::EXT::framebuffer_blit>()) {

@@ -176,6 +176,34 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
         };
 
         /**
+         * @brief Invalidation attachment
+         *
+         * @see invalidate()
+         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
+         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}
+         */
+        class InvalidationAttachment {
+            public:
+                /** @brief Invalidate depth buffer */
+                static const InvalidationAttachment Depth;
+
+                /** @brief Invalidate stencil buffer */
+                static const InvalidationAttachment Stencil;
+
+                /** @brief Invalidate color buffer */
+                inline constexpr /*implicit*/ InvalidationAttachment(Framebuffer::ColorAttachment attachment): attachment(GLenum(attachment)) {}
+
+                #ifndef DOXYGEN_GENERATING_OUTPUT
+                inline constexpr explicit operator GLenum() const { return attachment; }
+                #endif
+
+            private:
+                inline constexpr explicit InvalidationAttachment(GLenum attachment): attachment(attachment) {}
+
+                GLenum attachment;
+        };
+
+        /**
          * @brief Constructor
          *
          * Generates new OpenGL framebuffer.
@@ -229,6 +257,33 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
         inline void mapForDraw(DrawAttachment attachment) {
             (this->*drawBufferImplementation)(GLenum(attachment));
         }
+
+        /**
+         * @brief Invalidate framebuffer
+         * @param attachments       Attachments to invalidate
+         *
+         * The framebuffer is bound to some target before the operation, if
+         * not already.
+         * @see @fn_gl{InvalidateFramebuffer} or @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer}
+         *      on OpenGL ES 2.0
+         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
+         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}
+         */
+        void invalidate(std::initializer_list<InvalidationAttachment> attachments);
+
+        /**
+         * @brief Invalidate framebuffer rectangle
+         * @param attachments       Attachments to invalidate
+         * @param rectangle         %Rectangle to invalidate
+         *
+         * The framebuffer is bound to some target before the operation, if
+         * not already.
+         * @see @fn_gl{InvalidateSubFramebuffer} or @fn_gles_extension{DiscardSubFramebuffer,EXT,discard_framebuffer}
+         *      on OpenGL ES 2.0
+         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
+         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}
+         */
+        void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Rectanglei& rectangle);
 
         /**
          * @brief Map given color attachment for reading
