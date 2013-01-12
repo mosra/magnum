@@ -41,15 +41,15 @@ sufficient. Size of the buffer can be computed from index count and type, as
 shown below. Example usage:
 @code
 std::size_t indexCount;
-Type indexType;
+IndexedMesh::IndexType indexType;
 char* data;
 std::tie(indexCount, indexType, data) = MeshTools::compressIndices(indices);
-std::size_t dataSize = indexCount*TypeInfo::sizeOf(indexType);
+std::size_t dataSize = indexCount*IndexedMesh::indexSize(indexType);
 // ...
 delete[] data;
 @endcode
 
-See also compressIndices(IndexedMesh*, Buffer::Usage, const std::vector<std::uint32_t>&),
+See also compressIndices(IndexedMesh*, Buffer*, Buffer::Usage, const std::vector<std::uint32_t>&),
 which writes the compressed data directly into index buffer of given mesh.
 */
 std::tuple<std::size_t, IndexedMesh::IndexType, char*> MAGNUM_MESHTOOLS_EXPORT compressIndices(const std::vector<std::uint32_t>& indices);

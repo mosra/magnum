@@ -92,7 +92,7 @@ class CombineIndexedArrays {
 /**
 @brief Combine indexed arrays
 @param[in,out] indexedArrays Index and attribute arrays
-@return Array with resulting indices
+@return %Array with resulting indices
 
 When you have e.g. vertex, normal and texture array, each indexed with
 different indices, you can use this function to combine them to use the same
@@ -120,13 +120,11 @@ std::vector<std::uint32_t> indices = MeshTools::combineIndexedArrays(
 `positions`, `normals` and `textureCoordinates` will then contain combined
 attributes indexed with `indices`.
 
-@attention All index arrays should have the same size, otherwise zero-length
-    output is generated.
-
-@internal Implementation note: It's done using tuples because it is more clear
-    which parameter is index array and which is attribute array, mainly when
-    both are of the same type.
+The function expects that all arrays have the same size.
 */
+/* Implementation note: It's done using tuples because it is more clear which
+   parameter is index array and which is attribute array, mainly when both are
+   of the same type. */
 template<class ...T> std::vector<std::uint32_t> combineIndexedArrays(const std::tuple<const std::vector<std::uint32_t>&, std::vector<T>&>&... indexedArrays) {
     return Implementation::CombineIndexedArrays()(indexedArrays...);
 }
