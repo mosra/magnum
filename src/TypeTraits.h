@@ -62,15 +62,6 @@ template<class T> struct TypeTraits: Math::MathTypeTraits<T> {
     inline constexpr static Type type();
 
     /**
-     * @brief OpenGL type ID for indices
-     *
-     * Implemented only in types which can be used for vertex indices (all
-     * unsigned types). This function is not present for types unusable for
-     * vertex indices, like GLfloat or GLint.
-     */
-    inline constexpr static Type indexType();
-
-    /**
      * @brief Size of plain OpenGL type
      *
      * Returns sizeof(GLfloat) for GLfloat, but also sizeof(GLfloat) for
@@ -204,7 +195,6 @@ template<> struct TypeOf<Type::Double> {
 template<> struct TypeTraits<GLubyte>: Math::MathTypeTraits<std::uint8_t> {
     /* Can not be used for attributes */
     inline constexpr static Type type() { return Type::UnsignedByte; }
-    inline constexpr static Type indexType() { return Type::UnsignedByte; }
     inline constexpr static std::size_t size() { return sizeof(GLubyte); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -212,7 +202,6 @@ template<> struct TypeTraits<GLubyte>: Math::MathTypeTraits<std::uint8_t> {
 template<> struct TypeTraits<GLbyte>: Math::MathTypeTraits<std::int8_t> {
     /* Can not be used for attributes */
     inline constexpr static Type type() { return Type::Byte; }
-    /* Can not be used for indices */
     inline constexpr static std::size_t size() { return sizeof(GLbyte); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -220,7 +209,6 @@ template<> struct TypeTraits<GLbyte>: Math::MathTypeTraits<std::int8_t> {
 template<> struct TypeTraits<GLushort>: Math::MathTypeTraits<std::uint16_t> {
     /* Can not be used for attributes */
     inline constexpr static Type type() { return Type::UnsignedShort; }
-    inline constexpr static Type indexType() { return Type::UnsignedShort; }
     inline constexpr static std::size_t size() { return sizeof(GLushort); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -228,7 +216,6 @@ template<> struct TypeTraits<GLushort>: Math::MathTypeTraits<std::uint16_t> {
 template<> struct TypeTraits<GLshort>: Math::MathTypeTraits<std::int16_t> {
     /* Can not be used for attributes */
     inline constexpr static Type type() { return Type::Short; }
-    /* Can not be used for indices */
     inline constexpr static std::size_t size() { return sizeof(GLshort); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -236,7 +223,6 @@ template<> struct TypeTraits<GLshort>: Math::MathTypeTraits<std::int16_t> {
 template<> struct TypeTraits<GLuint>: Math::MathTypeTraits<std::uint32_t> {
     typedef GLuint AttributeType;
     inline constexpr static Type type() { return Type::UnsignedInt; }
-    inline constexpr static Type indexType() { return Type::UnsignedInt; }
     inline constexpr static std::size_t size() { return sizeof(GLuint); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -244,7 +230,6 @@ template<> struct TypeTraits<GLuint>: Math::MathTypeTraits<std::uint32_t> {
 template<> struct TypeTraits<GLint>: Math::MathTypeTraits<std::int32_t> {
     typedef GLint AttributeType;
     inline constexpr static Type type() { return Type::Int; }
-    /* Can not be used for indices */
     inline constexpr static std::size_t size() { return sizeof(GLint); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -252,7 +237,6 @@ template<> struct TypeTraits<GLint>: Math::MathTypeTraits<std::int32_t> {
 template<> struct TypeTraits<GLfloat>: Math::MathTypeTraits<float> {
     typedef GLfloat AttributeType;
     inline constexpr static Type type() { return Type::Float; }
-    /* Can not be used for indices */
     inline constexpr static std::size_t size() { return sizeof(GLfloat); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -261,7 +245,6 @@ template<> struct TypeTraits<GLfloat>: Math::MathTypeTraits<float> {
 template<> struct TypeTraits<GLdouble>: Math::MathTypeTraits<double> {
     typedef GLdouble AttributeType;
     inline constexpr static Type type() { return Type::Double; }
-    /* Can not be used for indices */
     inline constexpr static std::size_t size() { return sizeof(GLdouble); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -273,8 +256,6 @@ namespace Implementation {
 
         /* Might be used for attributes, see below */
         inline constexpr static Type type() { return TypeTraits<T>::type(); }
-        /* Might be used for attributes, see below */
-        /* Can not be used for indices */
         inline constexpr static std::size_t size() { return sizeof(T); }
         inline constexpr static std::size_t count() { return vectorSize; }
     };
@@ -320,9 +301,8 @@ namespace Implementation {
     template<std::size_t cols, std::size_t rows, class T> struct MatrixTypeTraits {
         MatrixTypeTraits() = delete;
 
-        inline constexpr static Type type() { return TypeTraits<T>::type(); }
         /* Might be used for attributes, see below */
-        /* Can not be used for indices */
+        inline constexpr static Type type() { return TypeTraits<T>::type(); }
         inline constexpr static std::size_t size() { return sizeof(T); }
         inline constexpr static std::size_t count() { return rows; }
         inline constexpr static std::size_t vectors() { return cols; }

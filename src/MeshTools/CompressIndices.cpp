@@ -16,47 +16,62 @@
 #include "CompressIndices.h"
 
 #include <cstring>
-#include <vector>
 #include <algorithm>
 
-#include "IndexedMesh.h"
-#include "SizeTraits.h"
+#include "Math/Math.h"
 
 namespace Magnum { namespace MeshTools {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-namespace Implementation {
+namespace {
 
-std::tuple<std::size_t, Type, char* > CompressIndices::operator()() const {
-    return SizeBasedCall<Compressor>(*std::max_element(indices.begin(), indices.end()))(indices);
-}
+template<class> constexpr IndexedMesh::IndexType indexType();
+template<> inline constexpr IndexedMesh::IndexType indexType<GLubyte>() { return IndexedMesh::IndexType::UnsignedByte; }
+template<> inline constexpr IndexedMesh::IndexType indexType<GLushort>() { return IndexedMesh::IndexType::UnsignedShort; }
+template<> inline constexpr IndexedMesh::IndexType indexType<GLuint>() { return IndexedMesh::IndexType::UnsignedInt; }
 
-void CompressIndices::operator()(IndexedMesh* mesh, Buffer* buffer, Buffer::Usage usage) const {
-    std::size_t indexCount;
-    Type indexType;
-    char* data;
-    std::tie(indexCount, indexType, data) = operator()();
-
-    mesh->setIndexBuffer(buffer)
-        ->setIndexType(indexType)
-        ->setIndexCount(indices.size());
-    buffer->setData(indexCount*TypeInfo::sizeOf(indexType), data, usage);
-
-    delete[] data;
-}
-
-template<class IndexType> std::tuple<std::size_t, Type, char*> CompressIndices::Compressor::run(const std::vector<std::uint32_t>& indices) {
-    /* Create smallest possible version of index buffer */
-    char* buffer = new char[indices.size()*sizeof(IndexType)];
+template<class T> inline std::tuple<std::size_t, IndexedMesh::IndexType, char*> compress(const std::vector<std::uint32_t>& indices) {
+    char* buffer = new char[indices.size()*sizeof(T)];
     for(std::size_t i = 0; i != indices.size(); ++i) {
-        IndexType index = indices[i];
-        memcpy(buffer+i*sizeof(IndexType), reinterpret_cast<const char*>(&index), sizeof(IndexType));
+        T index = static_cast<T>(indices[i]);
+        std::memcpy(buffer+i*sizeof(T), &index, sizeof(T));
     }
 
-    return std::make_tuple(indices.size(), TypeTraits<IndexType>::indexType(), buffer);
+    return std::make_tuple(indices.size(), indexType<T>(), buffer);
 }
 
 }
 #endif
+
+std::tuple<std::size_t, IndexedMesh::IndexType, char*> compressIndices(const std::vector<std::uint32_t>& indices) {
+    std::size_t size = *std::max_element(indices.begin(), indices.end());
+
+    switch(Math::log(256, size)) {
+        case 0:
+            return compress<GLubyte>(indices);
+        case 1:
+            return compress<GLushort>(indices);
+        case 2:
+        case 3:
+            return compress<GLuint>(indices);
+
+        default:
+            CORRADE_ASSERT(false, "MeshTools::compressIndices(): no type able to index" << size << "elements.", {});
+    }
+}
+
+void compressIndices(IndexedMesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<std::uint32_t>& indices) {
+    std::size_t indexCount;
+    IndexedMesh::IndexType indexType;
+    char* data;
+    std::tie(indexCount, indexType, data) = compressIndices(indices);
+
+    mesh->setIndexBuffer(buffer)
+        ->setIndexType(indexType)
+        ->setIndexCount(indices.size());
+    buffer->setData(indexCount*IndexedMesh::indexSize(indexType), data, usage);
+
+    delete[] data;
+}
 
 }}

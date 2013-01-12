@@ -39,14 +39,14 @@ CompressIndicesTest::CompressIndicesTest() {
 
 void CompressIndicesTest::compressChar() {
     std::size_t indexCount;
-    Type indexType;
+    IndexedMesh::IndexType indexType;
     char* data;
     std::tie(indexCount, indexType, data) = MeshTools::compressIndices(
         std::vector<std::uint32_t>{1, 2, 3, 0, 4});
 
     CORRADE_COMPARE(indexCount, 5);
-    CORRADE_VERIFY(indexType == Type::UnsignedByte);
-    CORRADE_COMPARE(std::vector<char>(data, data+indexCount*TypeInfo::sizeOf(indexType)),
+    CORRADE_VERIFY(indexType == IndexedMesh::IndexType::UnsignedByte);
+    CORRADE_COMPARE(std::vector<char>(data, data+indexCount*IndexedMesh::indexSize(indexType)),
         (std::vector<char>{ 0x01, 0x02, 0x03, 0x00, 0x04 }));
 
     delete[] data;
@@ -54,21 +54,21 @@ void CompressIndicesTest::compressChar() {
 
 void CompressIndicesTest::compressShort() {
     std::size_t indexCount;
-    Type indexType;
+    IndexedMesh::IndexType indexType;
     char* data;
     std::tie(indexCount, indexType, data) = MeshTools::compressIndices(
         std::vector<std::uint32_t>{1, 256, 0, 5});
 
     CORRADE_COMPARE(indexCount, 4);
-    CORRADE_VERIFY(indexType == Type::UnsignedShort);
+    CORRADE_VERIFY(indexType == IndexedMesh::IndexType::UnsignedShort);
     if(!Endianness::isBigEndian()) {
-        CORRADE_COMPARE(std::vector<char>(data, data+indexCount*TypeInfo::sizeOf(indexType)),
+        CORRADE_COMPARE(std::vector<char>(data, data+indexCount*IndexedMesh::indexSize(indexType)),
             (std::vector<char>{ 0x01, 0x00,
                            0x00, 0x01,
                            0x00, 0x00,
                            0x05, 0x00 }));
     } else {
-        CORRADE_COMPARE(std::vector<char>(data, data+indexCount*TypeInfo::sizeOf(indexType)),
+        CORRADE_COMPARE(std::vector<char>(data, data+indexCount*IndexedMesh::indexSize(indexType)),
             (std::vector<char>{ 0x00, 0x01,
                            0x01, 0x00,
                            0x00, 0x00,
@@ -80,21 +80,21 @@ void CompressIndicesTest::compressShort() {
 
 void CompressIndicesTest::compressInt() {
     std::size_t indexCount;
-    Type indexType;
+    IndexedMesh::IndexType indexType;
     char* data;
     std::tie(indexCount, indexType, data) = MeshTools::compressIndices(
         std::vector<std::uint32_t>{65536, 3, 2});
 
     CORRADE_COMPARE(indexCount, 3);
-    CORRADE_VERIFY(indexType == Type::UnsignedInt);
+    CORRADE_VERIFY(indexType == IndexedMesh::IndexType::UnsignedInt);
 
     if(!Endianness::isBigEndian()) {
-        CORRADE_COMPARE(std::vector<char>(data, data+indexCount*TypeInfo::sizeOf(indexType)),
+        CORRADE_COMPARE(std::vector<char>(data, data+indexCount*IndexedMesh::indexSize(indexType)),
             (std::vector<char>{ 0x00, 0x00, 0x01, 0x00,
                            0x03, 0x00, 0x00, 0x00,
                            0x02, 0x00, 0x00, 0x00 }));
     } else {
-        CORRADE_COMPARE(std::vector<char>(data, data+indexCount*TypeInfo::sizeOf(indexType)),
+        CORRADE_COMPARE(std::vector<char>(data, data+indexCount*IndexedMesh::indexSize(indexType)),
             (std::vector<char>{ 0x00, 0x01, 0x00, 0x00,
                            0x00, 0x00, 0x00, 0x03,
                            0x00, 0x00, 0x00, 0x02 }));

@@ -22,33 +22,11 @@
 #include <tuple>
 
 #include "Buffer.h"
-#include "TypeTraits.h"
+#include "IndexedMesh.h"
 
 #include "magnumMeshToolsVisibility.h"
 
 namespace Magnum { namespace MeshTools {
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-namespace Implementation {
-
-class MAGNUM_MESHTOOLS_EXPORT CompressIndices {
-    public:
-        CompressIndices(const std::vector<std::uint32_t>& indices): indices(indices) {}
-
-        std::tuple<std::size_t, Type, char*> operator()() const;
-
-        void operator()(IndexedMesh* mesh, Buffer* buffer, Buffer::Usage usage) const;
-
-    private:
-        struct Compressor {
-            template<class IndexType> static std::tuple<std::size_t, Type, char*> run(const std::vector<std::uint32_t>& indices);
-        };
-
-        const std::vector<std::uint32_t>& indices;
-};
-
-}
-#endif
 
 /**
 @brief Compress vertex indices
@@ -74,9 +52,7 @@ delete[] data;
 See also compressIndices(IndexedMesh*, Buffer::Usage, const std::vector<std::uint32_t>&),
 which writes the compressed data directly into index buffer of given mesh.
 */
-inline std::tuple<std::size_t, Type, char*> compressIndices(const std::vector<std::uint32_t>& indices) {
-    return Implementation::CompressIndices{indices}();
-}
+std::tuple<std::size_t, IndexedMesh::IndexType, char*> MAGNUM_MESHTOOLS_EXPORT compressIndices(const std::vector<std::uint32_t>& indices);
 
 /**
 @brief Compress vertex indices and write them to index buffer
@@ -93,9 +69,7 @@ IndexedMesh::setIndexType() on your own.
 
 @see MeshTools::interleave()
 */
-inline void compressIndices(IndexedMesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<std::uint32_t>& indices) {
-    return Implementation::CompressIndices{indices}(mesh, buffer, usage);
-}
+void MAGNUM_MESHTOOLS_EXPORT compressIndices(IndexedMesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<std::uint32_t>& indices);
 
 }}
 

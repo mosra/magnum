@@ -73,13 +73,32 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
 
     public:
         /**
+         * @brief Index type
+         *
+         * @see setIndexType(), indexSize()
+         */
+        enum class IndexType: GLenum {
+            UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte */
+            UnsignedShort = GL_UNSIGNED_SHORT,  /**< Unsigned short */
+
+            /**
+             * Unsigned int
+             * @requires_gles30 %Extension @es_extension{OES,element_index_uint}
+             */
+            UnsignedInt = GL_UNSIGNED_INT
+        };
+
+        /** @brief Size of given index type */
+        static std::size_t indexSize(IndexType type);
+
+        /**
          * @brief Constructor
          * @param primitive     Primitive type
          *
          * Creates indexed mesh with zero vertex count, zero index count and
          * no vertex or index buffers.
          */
-        inline explicit IndexedMesh(Primitive primitive = Primitive::Triangles): Mesh(primitive), _indexBuffer(nullptr), _indexCount(0), _indexType(Type::UnsignedShort) {}
+        inline explicit IndexedMesh(Primitive primitive = Primitive::Triangles): Mesh(primitive), _indexBuffer(nullptr), _indexCount(0), _indexType(IndexType::UnsignedInt) {}
 
         /**
          * @brief Set index buffer
@@ -106,16 +125,16 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
         }
 
         /** @brief Index type */
-        inline Type indexType() const { return _indexType; }
+        inline IndexType indexType() const { return _indexType; }
 
         /**
          * @brief Set index type
          * @return Pointer to self (for method chaining)
          *
-         * Default is @ref Type "Type::UnsignedShort".
+         * Default is @ref Type "IndexType::UnsignedInt".
          * @see setIndexBuffer(), setIndexCount(), MeshTools::compressIndices()
          */
-        inline IndexedMesh* setIndexType(Type type) {
+        inline IndexedMesh* setIndexType(IndexType type) {
             _indexType = type;
             return this;
         }
@@ -174,7 +193,7 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
 
         Buffer* _indexBuffer;
         GLsizei _indexCount;
-        Type _indexType;
+        IndexType _indexType;
 };
 
 }

@@ -26,6 +26,16 @@ namespace Magnum {
 IndexedMesh::BindIndexBufferImplementation IndexedMesh::bindIndexBufferImplementation = &IndexedMesh::bindIndexBufferImplementationDefault;
 IndexedMesh::BindIndexedImplementation IndexedMesh::bindIndexedImplementation = &IndexedMesh::bindIndexedImplementationDefault;
 
+std::size_t IndexedMesh::indexSize(IndexType type) {
+    switch(type) {
+        case IndexType::UnsignedByte: return 1;
+        case IndexType::UnsignedShort: return 2;
+        case IndexType::UnsignedInt: return 4;
+    }
+
+    CORRADE_INTERNAL_ASSERT(false);
+}
+
 IndexedMesh* IndexedMesh::setIndexBuffer(Buffer* buffer) {
     _indexBuffer = buffer;
     (this->*bindIndexBufferImplementation)();

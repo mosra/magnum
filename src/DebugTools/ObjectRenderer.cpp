@@ -160,7 +160,7 @@ template<std::uint8_t dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Sce
     mesh->setPrimitive(Mesh::Primitive::Lines)
         ->addInterleavedVertexBuffer(vertexBuffer, 0, typename Shaders::VertexColorShader<dimensions>::Position(), typename Shaders::VertexColorShader<dimensions>::Color())
         ->setIndexCount(Renderer<dimensions>::indices.size())
-        ->setIndexType(Type::UnsignedByte)
+        ->setIndexType(IndexedMesh::IndexType::UnsignedByte)
         ->setIndexBuffer(indexBuffer);
     ResourceManager::instance()->set<Mesh>(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
