@@ -25,7 +25,7 @@
 namespace Magnum { namespace Math {
 
 /**
-@brief 4x4 matrix for affine transformations in 3D
+@brief 4x4 matrix for transformations in 3D
 @tparam T   Data type
 
 Provides functions for transformations in 3D. See Matrix3 for 2D
@@ -180,6 +180,61 @@ template<class T> class Matrix4: public Matrix<4, T> {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normal.dot(), T(1)),
                            "Math::Matrix4::reflection(): normal must be normalized", {});
             return from(Matrix<3, T>() - T(2)*normal*normal.transposed(), {});
+        }
+
+        /**
+         * @brief 3D orthographic projection matrix
+         * @param size      Size of the view
+         * @param near      Near clipping plane
+         * @param far       Far clipping plane
+         *
+         * @see perspectiveProjection(), Matrix3::projection()
+         */
+        static Matrix4<T> orthographicProjection(const Vector2<T>& size, T near, T far) {
+            Vector2<T> xyScale = T(2.0)/size;
+            T zScale = T(2.0)/(near-far);
+
+            return Matrix4<T>( /* Column-major! */
+                xyScale.x(),    T(0.0),         T(0.0),         T(0.0),
+                T(0.0),         xyScale.y(),    T(0.0),         T(0.0),
+                T(0.0),         T(0.0),         zScale,         T(0.0),
+                T(0.0),         T(0.0),         near*zScale-1,  T(1.0)
+            );
+        }
+
+        /**
+         * @brief 3D perspective projection matrix
+         * @param size      Size of near clipping plane
+         * @param near      Near clipping plane
+         * @param far       Far clipping plane
+         *
+         * @see orthographicProjection(), Matrix3::projection()
+         */
+        static Matrix4<T> perspectiveProjection(const Vector2<T>& size, T near, T far) {
+            Vector2<T> xyScale = 2*near/size;
+            T zScale = T(1.0)/(near-far);
+
+            return Matrix4<T>( /* Column-major! */
+                xyScale.x(), T(0.0),      T(0.0),               T(0.0),
+                T(0.0),      xyScale.y(), T(0.0),               T(0.0),
+                T(0.0),      T(0.0),      (far+near)*zScale,    T(-1.0),
+                T(0.0),      T(0.0),      (2*far*near)*zScale,  T(0.0)
+            );
+        }
+
+        /**
+         * @brief 3D perspective projection matrix
+         * @param fov           Field of view angle (horizontal, in radians)
+         * @param aspectRatio   Aspect ratio
+         * @param near          Near clipping plane
+         * @param far           Far clipping plane
+         *
+         * @see orthographicProjection(), Matrix3::projection()
+         */
+        static Matrix4<T> perspectiveProjection(T fov, T aspectRatio, T near, T far) {
+            T xyScale = 2*std::tan(fov/2)*near;
+
+            return perspectiveProjection(Vector2<T>(xyScale, xyScale/aspectRatio), near, far);
         }
 
         /**

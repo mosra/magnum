@@ -34,6 +34,7 @@ class Matrix3Test: public Corrade::TestSuite::Tester {
         void scaling();
         void rotation();
         void reflection();
+        void projection();
         void fromParts();
         void rotationScalingPart();
         void rotationPart();
@@ -54,6 +55,7 @@ Matrix3Test::Matrix3Test() {
              &Matrix3Test::scaling,
              &Matrix3Test::rotation,
              &Matrix3Test::reflection,
+             &Matrix3Test::projection,
              &Matrix3Test::fromParts,
              &Matrix3Test::rotationScalingPart,
              &Matrix3Test::rotationPart,
@@ -134,6 +136,14 @@ void Matrix3Test::reflection() {
     CORRADE_COMPARE(actual*actual, Matrix3());
     CORRADE_COMPARE(actual*normal, -normal);
     CORRADE_COMPARE(actual, expected);
+}
+
+void Matrix3Test::projection() {
+    Matrix3 expected(2.0f/4.0f,    0.0f,       0.0f,
+                     0.0f,         2.0f/3.0f,  0.0f,
+                     0.0f,         0.0f,       1.0f);
+
+    CORRADE_COMPARE(Matrix3::projection({4.0f, 3.0f}), expected);
 }
 
 void Matrix3Test::fromParts() {

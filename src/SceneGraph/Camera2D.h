@@ -66,8 +66,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2, T> {
          * @param size      Size of the view
          * @return Pointer to self (for method chaining)
          *
-         * The area of given size will be scaled down to range @f$ [-1; 1] @f$
-         * on all directions.
+         * @see Matrix3::projection()
          */
         Camera2D<T>* setProjection(const Math::Vector2<T>& size);
 

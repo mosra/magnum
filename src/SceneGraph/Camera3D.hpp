@@ -27,37 +27,31 @@ using namespace std;
 namespace Magnum { namespace SceneGraph {
 
 template<class T> Camera3D<T>* Camera3D<T>::setOrthographic(const Math::Vector2<T>& size, T near, T far) {
+    /** @todo Get near/far from the matrix */
     _near = near;
     _far = far;
 
-    Math::Vector2<T> xyScale = T(2.0)/size;
-    T zScale = T(2.0)/(near-far);
-
-    AbstractCamera<3, T>::rawProjectionMatrix = Math::Matrix4<T>(
-        xyScale.x(),    T(0.0),         T(0.0),         T(0.0),
-        T(0.0),         xyScale.y(),    T(0.0),         T(0.0),
-        T(0.0),         T(0.0),         zScale,         T(0.0),
-        T(0.0),         T(0.0),         near*zScale-1,  T(1.0)
-    );
-
+    AbstractCamera<3, T>::rawProjectionMatrix = Math::Matrix4<T>::orthographicProjection(size, near, far);
     AbstractCamera<3, T>::fixAspectRatio();
     return this;
 }
 
-template<class T> Camera3D<T>* Camera3D<T>::setPerspective(T fov, T near, T far) {
+template<class T> Camera3D<T>* Camera3D<T>::setPerspective(const Math::Vector2<T>& size, T near, T far) {
+    /** @todo Get near/far from the matrix */
     _near = near;
     _far = far;
 
-    T xyScale = T(1.0)/tan(fov/2); /* == near/size */
-    T zScale = T(1.0)/(near-far);
+    AbstractCamera<3, T>::rawProjectionMatrix = Math::Matrix4<T>::perspectiveProjection(size, near, far);
+    AbstractCamera<3, T>::fixAspectRatio();
+    return this;
+}
 
-    AbstractCamera<3, T>::rawProjectionMatrix = Matrix4(
-        xyScale,    T(0.0),     T(0.0),                 T(0.0),
-        T(0.0),     xyScale,    T(0.0),                 T(0.0),
-        T(0.0),     T(0.0),     (far+near)*zScale,      T(-1.0),
-        T(0.0),     T(0.0),     (2*far*near)*zScale,    T(0.0)
-    );
+template<class T> Camera3D<T>* Camera3D<T>::setPerspective(T fov, T aspectRatio, T near, T far) {
+    /** @todo Get near/far from the matrix */
+    _near = near;
+    _far = far;
 
+    AbstractCamera<3, T>::rawProjectionMatrix = Math::Matrix4<T>::perspectiveProjection(fov, aspectRatio, near, far);
     AbstractCamera<3, T>::fixAspectRatio();
     return this;
 }

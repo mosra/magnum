@@ -36,7 +36,7 @@ OpenGL unit cube `[(-1, -1, -1); (1, 1, 1)]` with orthographic projection and
 doesn't do any aspect ratio correction. Common setup example:
 @code
 SceneGraph::Camera3D<>* camera = new SceneGraph::Camera3D<>(&cameraObject);
-camera->setPerspective(deg(35.0f), 0.001f, 100.0f)
+camera->setPerspective({}, 0.001f, 100.0f)
       ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
 @endcode
 
@@ -60,35 +60,42 @@ class MAGNUM_SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3, T> {
         /**
          * @brief Constructor
          * @param object    %Object holding this feature
-         *
-         * Sets orthographic projection to the default OpenGL cube
-         * (range @f$ [-1; 1] @f$ in all directions).
-         * @see setOrthographic(), setPerspective()
          */
         inline explicit Camera3D(AbstractObject<3, T>* object): AbstractCamera<3, T>(object), _near(0.0f), _far(0.0f) {}
 
         /**
          * @brief Set orthographic projection
-         * @param size      Size of the view
-         * @param near      Near clipping plane
-         * @param far       Far clipping plane
+         * @param size          Size of the view
+         * @param near          Near clipping plane
+         * @param far           Far clipping plane
          * @return Pointer to self (for method chaining)
          *
-         * The volume of given size will be scaled down to range @f$ [-1; 1] @f$
-         * on all directions.
+         * @see setPerspective(), Matrix4::orthographicProjection()
          */
         Camera3D<T>* setOrthographic(const Math::Vector2<T>& size, T near, T far);
 
         /**
          * @brief Set perspective projection
-         * @param fov       Field of view angle
-         * @param near      Near clipping plane
-         * @param far       Far clipping plane
+         * @param size          Size of near clipping plane
+         * @param near          Near clipping plane
+         * @param far           Far clipping plane
          * @return Pointer to self (for method chaining)
          *
-         * @todo Aspect ratio
+         * @see setOrthographic(), Matrix4::perspectiveProjection()
          */
-        Camera3D<T>* setPerspective(T fov, T near, T far);
+        Camera3D<T>* setPerspective(const Math::Vector2<T>& size, T near, T far);
+
+        /**
+         * @brief Set perspective projection
+         * @param fov           Field of view angle (horizontal, in radians)
+         * @param aspectRatio   Aspect ratio
+         * @param near          Near clipping plane
+         * @param far           Far clipping plane
+         * @return Pointer to self (for method chaining)
+         *
+         * @see setOrthographic(), Matrix4::perspectiveProjection()
+         */
+        Camera3D<T>* setPerspective(T fov, T aspectRatio, T near, T far);
 
         /** @brief Near clipping plane */
         inline T near() const { return _near; }

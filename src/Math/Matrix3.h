@@ -25,7 +25,7 @@
 namespace Magnum { namespace Math {
 
 /**
-@brief 3x3 matrix for affine transformations in 2D
+@brief 3x3 matrix for transformations in 2D
 @tparam T   Data type
 
 Provides functions for transformations in 2D. See Matrix4 for 3D
@@ -94,6 +94,16 @@ template<class T> class Matrix3: public Matrix<3, T> {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normal.dot(), T(1)),
                            "Math::Matrix3::reflection(): normal must be normalized", {});
             return from(Matrix<2, T>() - T(2)*normal*normal.transposed(), {});
+        }
+
+        /**
+         * @brief 2D projection matrix
+         * @param size      Size of the view
+         *
+         * @see Matrix4::orthographicProjection(), Matrix4::perspectiveProjection()
+         */
+        static Matrix3<T> projection(const Vector2<T>& size) {
+            return scaling(2.0f/size);
         }
 
         /**

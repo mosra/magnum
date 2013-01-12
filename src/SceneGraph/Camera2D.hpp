@@ -27,8 +27,7 @@ using namespace std;
 namespace Magnum { namespace SceneGraph {
 
 template<class T> Camera2D<T>* Camera2D<T>::setProjection(const Math::Vector2<T>& size) {
-    /* Scale the volume down so it fits in (-1, 1) in all directions */
-    AbstractCamera<2, T>::rawProjectionMatrix = Math::Matrix3<T>::scaling(2.0f/size);
+    AbstractCamera<2, T>::rawProjectionMatrix = Math::Matrix3<T>::projection(size);
 
     AbstractCamera<2, T>::fixAspectRatio();
     return this;
