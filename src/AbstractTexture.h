@@ -1197,12 +1197,16 @@ class MAGNUM_EXPORT AbstractTexture {
 
         typedef void(AbstractTexture::*Image2DImplementation)(GLenum, GLint, InternalFormat, const Vector2i&, AbstractImage::Format, AbstractImage::Type, const GLvoid*);
         void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint level, InternalFormat internalFormat, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL imageImplementationDSA(GLenum target, GLint level, InternalFormat internalFormat, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
+        #endif
         static Image2DImplementation image2DImplementation;
 
         typedef void(AbstractTexture::*Image3DImplementation)(GLenum, GLint, InternalFormat, const Vector3i&, AbstractImage::Format, AbstractImage::Type, const GLvoid*);
         void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint level, InternalFormat internalFormat, const Vector3i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL imageImplementationDSA(GLenum target, GLint level, InternalFormat internalFormat, const Vector3i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
+        #endif
         static Image3DImplementation image3DImplementation;
 
         #ifndef MAGNUM_TARGET_GLES
@@ -1214,12 +1218,16 @@ class MAGNUM_EXPORT AbstractTexture {
 
         typedef void(AbstractTexture::*SubImage2DImplementation)(GLenum, GLint, const Vector2i&, const Vector2i&, AbstractImage::Format, AbstractImage::Type, const GLvoid*);
         void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint level, const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL subImageImplementationDSA(GLenum target, GLint level, const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
+        #endif
         static SubImage2DImplementation subImage2DImplementation;
 
         typedef void(AbstractTexture::*SubImage3DImplementation)(GLenum, GLint, const Vector3i&, const Vector3i&, AbstractImage::Format, AbstractImage::Type, const GLvoid*);
         void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint level, const Vector3i& offset, const Vector3i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL subImageImplementationDSA(GLenum target, GLint level, const Vector3i& offset, const Vector3i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
+        #endif
         static SubImage3DImplementation subImage3DImplementation;
 
         void MAGNUM_LOCAL destroy();
