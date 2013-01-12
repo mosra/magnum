@@ -187,6 +187,7 @@ namespace GL {
         _extension(GL,EXT,texture_filter_anisotropic, GLES200,  None) // #41
         _extension(GL,EXT,texture_type_2_10_10_10_REV, GLES200, GLES300) // #42
         _extension(GL,EXT,texture_format_BGRA8888,  GLES200,    None) // #51
+        _extension(GL,EXT,discard_framebuffer,      GLES200, GLES300) // #64
         _extension(GL,EXT,blend_minmax,             GLES200, GLES300) // #65
         _extension(GL,EXT,read_format_bgra,         GLES200,    None) // #66
         _extension(GL,EXT,debug_marker,             GLES200,    None) // #99
