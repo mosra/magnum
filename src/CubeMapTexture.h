@@ -51,8 +51,9 @@ Image2D positiveX({256, 256}, Image2D::Components::RGBA, Image2D::ComponentType:
 CubeMapTexture texture;
 texture.setMagnificationFilter(Texture2D::Filter::Linear)
     // ...
-    ->setImage(CubeMapTexture::Coordinate::PositiveX, 0, Texture2D::Format::RGBA8, &positiveX)
-    ->setImage(CubeMapTexture::Coordinate::NegativeX, 0, Texture2D::Format::RGBA8, &negativeX)
+    ->setStorage(Math::log2(256)+1, Texture2D::Format::RGBA8, {256, 256})
+    ->setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, {}, &positiveX)
+    ->setSubImage(CubeMapTexture::Coordinate::NegativeX, 0, {}, &negativeX)
     // ...
 @endcode
 
@@ -106,6 +107,16 @@ class CubeMapTexture: public AbstractTexture {
          */
         inline CubeMapTexture* setWrapping(const Array3D<Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(this, wrapping);
+            return this;
+        }
+
+        /**
+         * @brief Set storage
+         *
+         * See Texture::setStorage() for more information.
+         */
+        inline CubeMapTexture* setStorage(GLsizei levels, InternalFormat internalFormat, const Vector2i& size) {
+            DataHelper<2>::setStorage(this, _target, levels, internalFormat, size);
             return this;
         }
 

@@ -42,16 +42,17 @@ repeated @fn_gl{Get} calls.
 
 If extension @extension{EXT,direct_state_access} is available, bind() uses DSA
 function to avoid unnecessary calls to @fn_gl{ActiveTexture}. Also all texture
-configuration functions use DSA functions to avoid unnecessary calls to
-@fn_gl{ActiveTexture} and @fn_gl{BindTexture}. See respective function
-documentation for more information.
+configuration and data updating functions use DSA functions to avoid
+unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}. See
+respective function documentation for more information.
 
 To achieve least state changes, fully configure each texture in one run --
 method chaining comes in handy -- and try to have often used textures in
-dedicated layers, not occupied by other textures.
-
-Always fully configure the texture before setting the texture data, so OpenGL
-can optimize the data to match your settings.
+dedicated layers, not occupied by other textures. First configure the texture
+and *then* set the data, so OpenGL can optimize them to match the settings. To
+avoid redundant consistency checks and memory reallocations when updating
+texture data, set texture storage at once using @ref Texture::setStorage() "setStorage()"
+and then set data using @ref Texture::setSubImage() "setSubImage()".
 
 You can use functions invalidateImage() and @ref Texture::invalidateSubImage() "invalidateSubImage()"
 if you don't need texture data anymore to avoid unnecessary memory operations
@@ -1188,6 +1189,27 @@ class MAGNUM_EXPORT AbstractTexture {
         static MAGNUM_LOCAL MipmapImplementation mipmapImplementation;
 
         #ifndef MAGNUM_TARGET_GLES
+        typedef void(AbstractTexture::*Storage1DImplementation)(GLenum, GLsizei, InternalFormat, const Math::Vector<1, GLsizei>&);
+        void MAGNUM_LOCAL storageImplementationDefault(GLenum target, GLsizei levels, InternalFormat internalFormat, const Math::Vector<1, GLsizei>& size);
+        void MAGNUM_LOCAL storageImplementationDSA(GLenum target, GLsizei levels, InternalFormat internalFormat, const Math::Vector<1, GLsizei>& size);
+        static Storage1DImplementation storage1DImplementation;
+        #endif
+
+        typedef void(AbstractTexture::*Storage2DImplementation)(GLenum, GLsizei, InternalFormat, const Vector2i&);
+        void MAGNUM_LOCAL storageImplementationDefault(GLenum target, GLsizei levels, InternalFormat internalFormat, const Vector2i& size);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL storageImplementationDSA(GLenum target, GLsizei levels, InternalFormat internalFormat, const Vector2i& size);
+        #endif
+        static Storage2DImplementation storage2DImplementation;
+
+        typedef void(AbstractTexture::*Storage3DImplementation)(GLenum, GLsizei, InternalFormat, const Vector3i&);
+        void MAGNUM_LOCAL storageImplementationDefault(GLenum target, GLsizei levels, InternalFormat internalFormat, const Vector3i& size);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL storageImplementationDSA(GLenum target, GLsizei levels, InternalFormat internalFormat, const Vector3i& size);
+        #endif
+        static Storage3DImplementation storage3DImplementation;
+
+        #ifndef MAGNUM_TARGET_GLES
         typedef void(AbstractTexture::*Image1DImplementation)(GLenum, GLint, InternalFormat, const Math::Vector<1, GLsizei>&, AbstractImage::Format, AbstractImage::Type, const GLvoid*);
         void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint level, InternalFormat internalFormat, const Math::Vector<1, GLsizei>& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
         void MAGNUM_LOCAL imageImplementationDSA(GLenum target, GLint level, InternalFormat internalFormat, const Math::Vector<1, GLsizei>& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data);
@@ -1262,6 +1284,10 @@ template<> struct AbstractTexture::DataHelper<1> {
         (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.x()));
     }
 
+    inline static void setStorage(AbstractTexture* texture, GLenum target, GLsizei levels, InternalFormat internalFormat, const Math::Vector<1, GLsizei>& size) {
+        (texture->*storage1DImplementation)(target, levels, internalFormat, size);
+    }
+
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type set(AbstractTexture* texture, GLenum target, GLint level, InternalFormat internalFormat, Image* image) {
         (texture->*image1DImplementation)(target, level, internalFormat, image->size(), image->format(), image->type(), image->data());
     }
@@ -1288,6 +1314,10 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
     inline constexpr static Target target() { return Target::Texture2D; }
 
     static void setWrapping(AbstractTexture* texture, const Array2D<Wrapping>& wrapping);
+
+    inline static void setStorage(AbstractTexture* texture, GLenum target, GLsizei levels, InternalFormat internalFormat, const Vector2i& size) {
+        (texture->*storage2DImplementation)(target, levels, internalFormat, size);
+    }
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type set(AbstractTexture* texture, GLenum target, GLint level, InternalFormat internalFormat, Image* image) {
         (texture->*image2DImplementation)(target, level, internalFormat, image->size(), image->format(), image->type(), image->data());
@@ -1318,6 +1348,10 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     inline constexpr static Target target() { return Target::Texture3D; }
 
     static void setWrapping(AbstractTexture* texture, const Array3D<Wrapping>& wrapping);
+
+    inline static void setStorage(AbstractTexture* texture, GLenum target, GLsizei levels, InternalFormat internalFormat, const Vector3i& size) {
+        (texture->*storage3DImplementation)(target, levels, internalFormat, size);
+    }
 
     template<class Image> inline static typename std::enable_if<Image::Dimensions == 3, void>::type set(AbstractTexture* texture, GLenum target, GLint level, InternalFormat internalFormat, Image* image) {
         (texture->*image3DImplementation)(target, level, internalFormat, image->size(), image->format(), image->type(), image->data());

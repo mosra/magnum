@@ -33,6 +33,14 @@ AbstractTexture::ParameterfvImplementation AbstractTexture::parameterfvImplement
 AbstractTexture::MipmapImplementation AbstractTexture::mipmapImplementation =
     &AbstractTexture::mipmapImplementationDefault;
 #ifndef MAGNUM_TARGET_GLES
+AbstractTexture::Storage1DImplementation AbstractTexture::storage1DImplementation =
+    &AbstractTexture::storageImplementationDefault;
+#endif
+AbstractTexture::Storage2DImplementation AbstractTexture::storage2DImplementation =
+    &AbstractTexture::storageImplementationDefault;
+AbstractTexture::Storage3DImplementation AbstractTexture::storage3DImplementation =
+    &AbstractTexture::storageImplementationDefault;
+#ifndef MAGNUM_TARGET_GLES
 AbstractTexture::Image1DImplementation AbstractTexture::image1DImplementation =
     &AbstractTexture::imageImplementationDefault;
 #endif
@@ -209,6 +217,9 @@ void AbstractTexture::initializeContextBasedFunctionality(Context* context) {
         parameterfImplementation = &AbstractTexture::parameterImplementationDSA;
         parameterfvImplementation = &AbstractTexture::parameterImplementationDSA;
         mipmapImplementation = &AbstractTexture::mipmapImplementationDSA;
+        storage1DImplementation = &AbstractTexture::storageImplementationDSA;
+        storage2DImplementation = &AbstractTexture::storageImplementationDSA;
+        storage3DImplementation = &AbstractTexture::storageImplementationDSA;
         image1DImplementation = &AbstractTexture::imageImplementationDSA;
         image2DImplementation = &AbstractTexture::imageImplementationDSA;
         image3DImplementation = &AbstractTexture::imageImplementationDSA;
@@ -256,6 +267,64 @@ void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLf
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLfloat* values) {
     glTextureParameterfvEXT(_id, _target, parameter, values);
+}
+
+void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels, AbstractTexture::InternalFormat internalFormat, const Math::Vector< 1, GLsizei >& size) {
+    bindInternal();
+    /** @todo Re-enable when extension wrangler is available for ES2 */
+    #ifndef MAGNUM_TARGET_GLES2
+    glTexStorage1D(target, levels, GLenum(internalFormat), size[0]);
+    #else
+    //glTexStorage2DEXT(target, levels, GLenum(internalFormat), size.x(), size.y());
+    static_cast<void>(target);
+    static_cast<void>(levels);
+    static_cast<void>(internalFormat);
+    static_cast<void>(size);
+    #endif
+}
+
+void AbstractTexture::storageImplementationDSA(GLenum target, GLsizei levels, AbstractTexture::InternalFormat internalFormat, const Math::Vector< 1, GLsizei >& size) {
+    glTextureStorage1DEXT(_id, target, levels, GLenum(internalFormat), size[0]);
+}
+#endif
+
+void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels, AbstractTexture::InternalFormat internalFormat, const Vector2i& size) {
+    bindInternal();
+    /** @todo Re-enable when extension wrangler is available for ES2 */
+    #ifndef MAGNUM_TARGET_GLES2
+    glTexStorage2D(target, levels, GLenum(internalFormat), size.x(), size.y());
+    #else
+    //glTexStorage2DEXT(target, levels, GLenum(internalFormat), size.x(), size.y());
+    static_cast<void>(target);
+    static_cast<void>(levels);
+    static_cast<void>(internalFormat);
+    static_cast<void>(size);
+    #endif
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::storageImplementationDSA(GLenum target, GLsizei levels, AbstractTexture::InternalFormat internalFormat, const Vector2i& size) {
+    glTextureStorage2DEXT(_id, target, levels, GLenum(internalFormat), size.x(), size.y());
+}
+#endif
+
+void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels, AbstractTexture::InternalFormat internalFormat, const Vector3i& size) {
+    bindInternal();
+    /** @todo Re-enable when extension wrangler is available for ES2 */
+    #ifndef MAGNUM_TARGET_GLES2
+    glTexStorage3D(target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
+    #else
+    //glTexStorage3DEXT(target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
+    static_cast<void>(target);
+    static_cast<void>(levels);
+    static_cast<void>(internalFormat);
+    static_cast<void>(size);
+    #endif
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::storageImplementationDSA(GLenum target, GLsizei levels, AbstractTexture::InternalFormat internalFormat, const Vector3i& size) {
+    glTextureStorage3DEXT(_id, target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
 }
 
 void AbstractTexture::imageImplementationDefault(GLenum target, GLint level, InternalFormat internalFormat, const Math::Vector<1, GLsizei>& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data) {

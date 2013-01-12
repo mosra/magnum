@@ -34,24 +34,24 @@ See CubeMapTexture documentation for introduction.
 @section CubeMapTextureArray-usage Usage
 
 Common usage is to specify each layer and face separately using setSubImage().
-You have to allocate the memory for all layers and faces first, possibly by
-passing properly sized empty Image to setImage(). Example: array with 16
-layers of cube map faces, each face consisting of six 64x64 images:
+You have to allocate the memory for all layers and faces first either by
+calling setStorage() or by passing properly sized empty Image to setImage().
+Example: array with 16 layers of cube map faces, each face consisting of six
+64x64 images:
 @code
 Image3D dummy({64, 64, 16*6}, Image3D::Components::RGBA, Image3D::ComponentType::UnsignedByte, nullptr);
 
 CubeMapTextureArray texture;
 texture.setMagnificationFilter(CubeMapTextureArray::Filter::Linear)
     // ...
-    ->setImage(0, CubeMapTextureArray::Format::RGBA8, &dummy);
+    ->setStorage(Math::log2(64)+1, CubeMapTextureArray::Format::RGBA8, {64, 64, 16});
 
 for(std::size_t i = 0; i != 16; ++i) {
     void* dataPositiveX = ...;
     Image2D imagePositiveX({64, 64}, Image3D::Components::RGBA, Image3D::ComponentType::UnsignedByte, imagePositiveX);
     // ...
-
-    texture->setSubImage(i, CubeMapTextureArray::Coordinate::PositiveX, 0, imagePositiveX);
-    texture->setSubImage(i, CubeMapTextureArray::Coordinate::NegativeX, 0, imageNegativeX);
+    texture->setSubImage(i, CubeMapTextureArray::Coordinate::PositiveX, 0, {}, imagePositiveX);
+    texture->setSubImage(i, CubeMapTextureArray::Coordinate::NegativeX, 0, {}, imageNegativeX);
     // ...
 }
 
@@ -96,6 +96,16 @@ class CubeMapTextureArray: public AbstractTexture {
          */
         inline CubeMapTextureArray* setWrapping(const Array3D<Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(this, wrapping);
+            return this;
+        }
+
+        /**
+         * @brief Set storage
+         *
+         * See Texture::setStorage() for more information.
+         */
+        inline CubeMapTextureArray* setStorage(GLsizei levels, InternalFormat internalFormat, const Vector3i& size) {
+            DataHelper<3>::setStorage(this, _target, levels, internalFormat, size);
             return this;
         }
 

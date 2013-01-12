@@ -44,17 +44,18 @@ texture.setMagnificationFilter(Texture2D::Filter::Linear)
     ->setMinificationFilter(Texture2D::Filter::Linear, Texture2D::Mipmap::Linear)
     ->setWrapping(Texture2D::Wrapping::ClampToEdge)
     ->setMaxAnisotropy(Texture2D::maxSupportedAnisotropy)
-    ->setImage(0, Texture2D::Format::RGBA8, &image)
+    ->setStorage(Math::log2(4096)+1, Texture2D::Format::RGBA8, {4096, 4096})
+    ->setSubImage(0, {}, &image)
     ->generateMipmap();
 @endcode
 
 @attention Don't forget to fully configure the texture before use. Note that
     default configuration (if setMinificationFilter() is not called with
     another value) is to use mipmaps, so be sure to either call setMinificationFilter(),
-    explicitly set all mip levels or call generateMipmap(). If using rectangle
-    texture, you must also call setWrapping(), because the initial value is
-    not supported on rectangle textures. See also setMagnificationFilter() and
-    setBorderColor().
+    explicitly specify all mip levels with setStorage() and setImage() or call
+    generateMipmap(). If using rectangle texture, you must also call
+    setWrapping(), because the initial value is not supported on rectangle
+    textures. See also setMagnificationFilter() and setBorderColor().
 
 The texture is bound to layer specified by shader via bind(). In shader, the
 texture is used via `sampler1D`, `sampler2D` or `sampler3D` depending on
@@ -67,16 +68,14 @@ You can create texture arrays by passing @ref Texture::Target "Texture2D::Target
 or @ref Texture::Target "Texture3D::Target::Texture2DArray" to constructor.
 
 It is possible to specify each layer separately using setSubImage(), but you
-have to allocate the memory for all layers first, possibly by passing properly
-sized empty Image to setImage(). Example: 2D texture array with 16 layers of
-64x64 images:
+have to allocate the memory for all layers first either by calling setStorage()
+or by passing properly sized empty Image to setImage(). Example: 2D texture
+array with 16 layers of 64x64 images:
 @code
-Image3D dummy({64, 64, 16}, Image3D::Components::RGBA, Image3D::ComponentType::UnsignedByte, nullptr);
-
 Texture3D texture(Texture3D::Target::Texture2DArray);
 texture.setMagnificationFilter(Texture2D::Filter::Linear)
     // ...
-    ->setImage(0, Texture2D::Format::RGBA8, &dummy);
+    ->setStorage(levels, Texture2D::Format::RGBA8, {64, 64,16});
 
 for(std::size_t i = 0; i != 16; ++i) {
     void* data = ...;
@@ -199,6 +198,33 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
         }
 
         /**
+         * @brief Set storage
+         * @param levels            Mip level count
+         * @param internalFormat    Internal format
+         * @param size              Size of largest mip level
+         * @return Pointer to self (for method chaining)
+         *
+         * Specifies entire structure of a texture at once, removing the need
+         * for additional consistency checks and memory reallocations when
+         * updating the data later. After calling this function the texture
+         * is immutable and calling setStorage() or setImage() is not allowed.
+         *
+         * If @extension{EXT,direct_state_access} is not available, the
+         * texture is bound to some layer before the operation.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{TexStorage1D}/@fn_gl{TexStorage2D}/@fn_gl{TexStorage3D}
+         *      or @fn_gl_extension{TextureStorage1D,EXT,direct_state_access}/
+         *      @fn_gl_extension{TextureStorage2D,EXT,direct_state_access}/
+         *      @fn_gl_extension{TextureStorage3D,EXT,direct_state_access}
+         * @requires_gl42 %Extension @extension{ARB,texture_storage}
+         * @requires_gles30 %Extension @es_extension{EXT,texture_storage}
+         */
+        inline Texture<Dimensions>* setStorage(GLsizei levels, InternalFormat internalFormat, const typename DimensionTraits<Dimensions, GLint>::VectorType& size) {
+            DataHelper<Dimensions>::setStorage(this, _target, levels, internalFormat, size);
+            return this;
+        }
+
+        /**
          * @brief Set image data
          * @param level             Mip level
          * @param internalFormat    Internal format
@@ -208,9 +234,13 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          *
          * The image is not deleted afterwards.
          *
+         * For better performance when generating mipmaps using
+         * generateMipmap() or calling setImage() more than once use
+         * setStorage() and setSubImage() instead.
+         *
          * If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some layer before the operation.
-         * @see setSubImage(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexImage1D}/@fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
          *      @fn_gl_extension{TextureImage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
@@ -240,8 +270,8 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          *
          * If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some layer before the operation.
-         * @see setImage(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexSubImage1D}/@fn_gl{TexSubImage2D}/@fn_gl{TexSubImage3D}
+         * @see setStorage(), setImage(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
+         *      and @fn_gl{TexSubImage1D}/@fn_gl{TexSubImage2D}/@fn_gl{TexSubImage3D}
          *      or @fn_gl_extension{TextureSubImage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access}
