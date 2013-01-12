@@ -225,6 +225,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,NV,read_depth),
         _extension(GL,NV,read_depth_stencil),
         _extension(GL,OES,depth24),
+        _extension(GL,OES,element_index_uint),
         _extension(GL,OES,rgb8_rgba8),
         _extension(GL,OES,texture_half_float_linear),
         _extension(GL,OES,texture_float_linear),

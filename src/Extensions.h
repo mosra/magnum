@@ -207,6 +207,7 @@ namespace GL {
     } namespace OES {
         _extension(GL,OES,depth24,                  GLES200, GLES300) // #24
         _extension(GL,OES,depth32,                  GLES200,    None) // #25
+        _extension(GL,OES,element_index_uint,       GLES200, GLES300) // #26
         _extension(GL,OES,mapbuffer,                GLES200,    None) // #29
         _extension(GL,OES,rgb8_rgba8,               GLES200, GLES300) // #30
         _extension(GL,OES,stencil1,                 GLES200,    None) // #31
