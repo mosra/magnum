@@ -195,6 +195,7 @@ namespace GL {
         _extension(GL,EXT,separate_shader_objects,  GLES200,    None) // #101
         _extension(GL,EXT,texture_rg,               GLES200, GLES300) // #103
         _extension(GL,EXT,sRGB,                     GLES200,    None) // #105
+        _extension(GL,EXT,texture_storage,          GLES200, GLES300) // #108
         _extension(GL,EXT,map_buffer_range,         GLES200, GLES300) // #121
     } namespace NV {
         _extension(GL,NV,draw_buffers,              GLES200, GLES300) // #91

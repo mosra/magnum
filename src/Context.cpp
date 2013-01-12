@@ -218,6 +218,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,blend_minmax),
         _extension(GL,EXT,occlusion_query_boolean),
         _extension(GL,EXT,texture_rg),
+        _extension(GL,EXT,texture_storage),
         _extension(GL,EXT,map_buffer_range),
         _extension(GL,NV,draw_buffers),
         _extension(GL,NV,read_buffer),
