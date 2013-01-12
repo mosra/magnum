@@ -27,7 +27,6 @@ set(Magnum_SRCS
     Renderbuffer.cpp
     Resource.cpp
     Shader.cpp
-    SizeTraits.cpp
     Timeline.cpp
     TypeTraits.cpp
 
@@ -77,7 +76,6 @@ set(Magnum_HEADERS
     Resource.h
     ResourceManager.h
     Shader.h
-    SizeTraits.h
     Swizzle.h
     Texture.h
     Timeline.h
