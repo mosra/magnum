@@ -29,6 +29,8 @@ Buffer::CopyImplementation Buffer::copyImplementation = &Buffer::copyImplementat
 #endif
 Buffer::SetDataImplementation Buffer::setDataImplementation = &Buffer::setDataImplementationDefault;
 Buffer::SetSubDataImplementation Buffer::setSubDataImplementation = &Buffer::setSubDataImplementationDefault;
+Buffer::InvalidateImplementation Buffer::invalidateImplementation = &Buffer::invalidateImplementationNoOp;
+Buffer::InvalidateSubImplementation Buffer::invalidateSubImplementation = &Buffer::invalidateSubImplementationNoOp;
 Buffer::MapImplementation Buffer::mapImplementation = &Buffer::mapImplementationDefault;
 Buffer::MapRangeImplementation Buffer::mapRangeImplementation = &Buffer::mapRangeImplementationDefault;
 Buffer::FlushMappedRangeImplementation Buffer::flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDefault;
@@ -46,6 +48,13 @@ void Buffer::initializeContextBasedFunctionality(Context* context) {
         mapRangeImplementation = &Buffer::mapRangeImplementationDSA;
         flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDSA;
         unmapImplementation = &Buffer::unmapImplementationDSA;
+    }
+
+    if(context->isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>()) {
+        Debug() << "Buffer: using" << Extensions::GL::ARB::invalidate_subdata::string() << "features";
+
+        invalidateImplementation = &Buffer::invalidateImplementationARB;
+        invalidateSubImplementation = &Buffer::invalidateSubImplementationARB;
     }
     #else
     static_cast<void>(context);
@@ -119,6 +128,22 @@ void Buffer::setSubDataImplementationDefault(GLintptr offset, GLsizeiptr size, c
 #ifndef MAGNUM_TARGET_GLES
 void Buffer::setSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
     glNamedBufferSubDataEXT(_id, offset, size, data);
+}
+#endif
+
+void Buffer::invalidateImplementationNoOp() {}
+
+#ifndef MAGNUM_TARGET_GLES
+void Buffer::invalidateImplementationARB() {
+    glInvalidateBufferData(_id);
+}
+#endif
+
+void Buffer::invalidateSubImplementationNoOp(GLintptr, GLsizeiptr) {}
+
+#ifndef MAGNUM_TARGET_GLES
+void Buffer::invalidateSubImplementationARB(GLintptr offset, GLsizeiptr length) {
+    glInvalidateBufferSubData(_id, offset, length);
 }
 #endif
 

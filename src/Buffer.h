@@ -102,6 +102,12 @@ copy(), setData(), setSubData(), map(), flushMappedRange() and unmap() use DSA
 functions to avoid unnecessary calls to @fn_gl{BindBuffer}. See their
 respective documentation for more information.
 
+You can use functions invalidateData() and invalidateSubData() if you don't
+need buffer data anymore to avoid unnecessary memory operations performed by
+OpenGL in order to preserve the data. If running on OpenGL ES or extension
+@extension{ARB,invalidate_subdata} is not available, these functions do
+nothing.
+
 @todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
 @todo BindBufferRange/BindBufferOffset/BindBufferBase for transform feedback (3.0, @extension{EXT,transform_feedback})
  */
@@ -363,6 +369,7 @@ class MAGNUM_EXPORT Buffer {
             /**
              * Previous contents of the entire buffer may be discarded. May
              * not be used in combination with @ref MapFlag "MapFlag::Read".
+             * @see invalidateData()
              */
             #ifndef MAGNUM_TARGET_GLES2
             InvalidateBuffer = GL_MAP_INVALIDATE_BUFFER_BIT,
@@ -373,6 +380,7 @@ class MAGNUM_EXPORT Buffer {
             /**
              * Previous contents of mapped range may be discarded. May not
              * be used in combination with @ref MapFlag "MapFlag::Read".
+             * @see invalidateSubData()
              */
             #ifndef MAGNUM_TARGET_GLES2
             InvalidateRange = GL_MAP_INVALIDATE_RANGE_BIT,
@@ -584,12 +592,12 @@ class MAGNUM_EXPORT Buffer {
         /**
          * @brief Invalidate buffer data
          *
-         * @see @fn_gl{InvalidateBufferData}
-         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
-         * @requires_gl Buffer data invalidation is not available in OpenGL ES.
+         * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
+         * is not available, this function does nothing.
+         * @see @ref MapFlag "MapFlag::InvalidateBuffer", @fn_gl{InvalidateBufferData}
          */
         inline void invalidateData() {
-            glInvalidateBufferData(_id);
+            (this->*invalidateImplementation)();
         }
 
         /**
@@ -597,12 +605,12 @@ class MAGNUM_EXPORT Buffer {
          * @param offset    Offset into the buffer
          * @param length    Length of the invalidated range
          *
-         * @see @fn_gl{InvalidateBufferData}
-         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
-         * @requires_gl Buffer data invalidation is not available in OpenGL ES.
+         * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
+         * is not available, this function does nothing.
+         * @see @ref MapFlag "MapFlag::InvalidateRange", @fn_gl{InvalidateBufferData}
          */
         inline void invalidateSubData(GLintptr offset, GLsizeiptr length) {
-            glInvalidateBufferSubData(_id, offset, length);
+            (this->*invalidateSubImplementation)(offset, length);
         }
         #endif
 
@@ -713,6 +721,20 @@ class MAGNUM_EXPORT Buffer {
         void MAGNUM_LOCAL setSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data);
         #endif
         static SetSubDataImplementation setSubDataImplementation;
+
+        typedef void(Buffer::*InvalidateImplementation)();
+        void MAGNUM_LOCAL invalidateImplementationNoOp();
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL invalidateImplementationARB();
+        #endif
+        static InvalidateImplementation invalidateImplementation;
+
+        typedef void(Buffer::*InvalidateSubImplementation)(GLintptr, GLsizeiptr);
+        void MAGNUM_LOCAL invalidateSubImplementationNoOp(GLintptr offset, GLsizeiptr length);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL invalidateSubImplementationARB(GLintptr offset, GLsizeiptr length);
+        #endif
+        static InvalidateSubImplementation invalidateSubImplementation;
 
         typedef void*(Buffer::*MapImplementation)(MapAccess);
         void MAGNUM_LOCAL * mapImplementationDefault(MapAccess access);

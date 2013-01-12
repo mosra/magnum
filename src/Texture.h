@@ -250,21 +250,19 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
             return this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Invalidate texture subimage
          * @param level             Mip level
          * @param offset            Offset into the texture
          * @param size              Size of invalidated data
          *
+         * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
+         * is not available, this function does nothing.
          * @see invalidateImage(), @fn_gl{InvalidateTexSubImage}
-         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
-         * @requires_gl Texture image invalidation is not available in OpenGL ES.
          */
         inline void invalidateSubImage(GLint level, const typename DimensionTraits<Dimensions, GLint>::VectorType& offset, const typename DimensionTraits<Dimensions, GLint>::VectorType& size) {
             DataHelper<dimensions>::invalidateSub(this, level, offset, size);
         }
-        #endif
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT

@@ -49,6 +49,9 @@ AbstractTexture::SubImage2DImplementation AbstractTexture::subImage2DImplementat
 AbstractTexture::SubImage3DImplementation AbstractTexture::subImage3DImplementation =
     &AbstractTexture::subImageImplementationDefault;
 
+AbstractTexture::InvalidateImplementation AbstractTexture::invalidateImplementation = &AbstractTexture::invalidateImplementationNoOp;
+AbstractTexture::InvalidateSubImplementation AbstractTexture::invalidateSubImplementation = &AbstractTexture::invalidateSubImplementationNoOp;
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 
 /* Check correctness of binary OR in setMinificationFilter(). If nobody fucks
@@ -213,6 +216,13 @@ void AbstractTexture::initializeContextBasedFunctionality(Context* context) {
         subImage2DImplementation = &AbstractTexture::subImageImplementationDSA;
         subImage3DImplementation = &AbstractTexture::subImageImplementationDSA;
     }
+
+    if(context->isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>()) {
+        Debug() << "AbstractTexture: using" << Extensions::GL::ARB::invalidate_subdata::string() << "features";
+
+        invalidateImplementation = &AbstractTexture::invalidateImplementationARB;
+        invalidateSubImplementation = &AbstractTexture::invalidateSubImplementationARB;
+    }
     #endif
 }
 
@@ -332,6 +342,22 @@ void AbstractTexture::subImageImplementationDefault(GLenum target, GLint level, 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::subImageImplementationDSA(GLenum target, GLint level, const Vector3i& offset, const Vector3i& size, AbstractImage::Format format, AbstractImage::Type type, const GLvoid* data) {
     glTextureSubImage3DEXT(_id, target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), static_cast<GLenum>(format), static_cast<GLenum>(type), data);
+}
+#endif
+
+void AbstractTexture::invalidateImplementationNoOp(GLint) {}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::invalidateImplementationARB(GLint level) {
+    glInvalidateTexImage(_id, level);
+}
+#endif
+
+void AbstractTexture::invalidateSubImplementationNoOp(GLint, const Vector3i&, const Vector3i&) {}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::invalidateSubImplementationARB(GLint level, const Vector3i& offset, const Vector3i& size) {
+    glInvalidateTexSubImage(_id, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z());
 }
 #endif
 

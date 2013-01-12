@@ -53,6 +53,12 @@ dedicated layers, not occupied by other textures.
 Always fully configure the texture before setting the texture data, so OpenGL
 can optimize the data to match your settings.
 
+You can use functions invalidateImage() and @ref Texture::invalidateSubImage() "invalidateSubImage()"
+if you don't need texture data anymore to avoid unnecessary memory operations
+performed by OpenGL in order to preserve the data. If running on OpenGL ES or
+extension @extension{ARB,invalidate_subdata} is not available, these functions
+do nothing.
+
 @todo Add glPixelStore encapsulation
 @todo Texture copying
 @todo Move constructor/assignment - how to avoid creation of empty texture and
@@ -1111,20 +1117,18 @@ class MAGNUM_EXPORT AbstractTexture {
             return this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Invalidate texture image
          * @param level             Mip level
          *
+         * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
+         * is not available, this function does nothing.
          * @see @ref Texture::invalidateSubImage() "invalidateSubImage()",
          *      @fn_gl{InvalidateTexImage}
-         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
-         * @requires_gl Texture image invalidation is not available in OpenGL ES.
          */
         inline void invalidateImage(GLint level) {
-            glInvalidateTexImage(_id, level);
+            (this->*invalidateImplementation)(level);
         }
-        #endif
 
         /**
          * @brief Generate mipmap
@@ -1230,6 +1234,20 @@ class MAGNUM_EXPORT AbstractTexture {
         #endif
         static SubImage3DImplementation subImage3DImplementation;
 
+        typedef void(AbstractTexture::*InvalidateImplementation)(GLint);
+        void MAGNUM_LOCAL invalidateImplementationNoOp(GLint level);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL invalidateImplementationARB(GLint level);
+        #endif
+        static InvalidateImplementation invalidateImplementation;
+
+        typedef void(AbstractTexture::*InvalidateSubImplementation)(GLint, const Vector3i&, const Vector3i&);
+        void MAGNUM_LOCAL invalidateSubImplementationNoOp(GLint level, const Vector3i& offset, const Vector3i& size);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL invalidateSubImplementationARB(GLint level, const Vector3i& offset, const Vector3i& size);
+        #endif
+        static InvalidateSubImplementation invalidateSubImplementation;
+
         void MAGNUM_LOCAL destroy();
         void MAGNUM_LOCAL move();
 
@@ -1257,11 +1275,9 @@ template<> struct AbstractTexture::DataHelper<1> {
         (texture->*subImage1DImplementation)(target, level, offset, image->size(), image->format(), image->type(), image->data());
     }
 
-    #ifndef MAGNUM_TARGET_GLES
     inline static void invalidateSub(AbstractTexture* texture, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLint>& size) {
-        glInvalidateTexSubImage(texture->_id, level, offset[0], 0, 0, size[0], 1, 1);
+        (texture->*invalidateSubImplementation)(level, {offset[0], 0, 0}, {size[0], 1, 1});
     }
-    #endif
 };
 #endif
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
@@ -1290,11 +1306,9 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
         (texture->*subImage2DImplementation)(target, level, offset, Vector2i(image->size(), 1), image->format(), image->type(), image->data());
     }
 
-    #ifndef MAGNUM_TARGET_GLES
     inline static void invalidateSub(AbstractTexture* texture, GLint level, const Vector2i& offset, const Vector2i& size) {
-        glInvalidateTexSubImage(texture->_id, level, offset.x(), offset.y(), 0, size.x(), size.y(), 1);
+        (texture->*invalidateSubImplementation)(level, {offset, 0}, {size, 1});
     }
-    #endif
 };
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     enum class Target: GLenum {
@@ -1322,11 +1336,9 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
         (texture->*subImage3DImplementation)(target, level, offset, Vector3i(image->size(), 1), image->format(), image->type(), image->data());
     }
 
-    #ifndef MAGNUM_TARGET_GLES
     inline static void invalidateSub(AbstractTexture* texture, GLint level, const Vector3i& offset, const Vector3i& size) {
-        glInvalidateTexSubImage(texture->_id, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z());
+        (texture->*invalidateSubImplementation)(level, offset, size);
     }
-    #endif
 };
 #endif
 
