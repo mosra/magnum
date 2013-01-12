@@ -152,9 +152,21 @@ class CubeMapTextureArray: public AbstractTexture {
         }
 
         #ifndef MAGNUM_TARGET_GLES
-        /** @copydoc Texture::invalidateSubImage() */
-        inline void invalidateSubImage(GLint level, const Vector2i& offset, const Vector2i& size) {
-            DataHelper<2>::invalidateSub(this, level, offset, size);
+        /**
+         * @brief Invalidate texture subimage
+         * @param level             Mip level
+         * @param offset            Offset into the texture
+         * @param size              Size of invalidated data
+         *
+         * Z coordinate is equivalent to layer * 6 + number of texture face,
+         * i.e. @ref Coordinate "Coordinate::PositiveX" is `0` and so on, in
+         * the same order as in the enum.
+         * @see invalidateImage(), @fn_gl{InvalidateTexSubImage}
+         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
+         * @requires_gl Texture image invalidation is not available in OpenGL ES.
+         */
+        inline void invalidateSubImage(GLint level, const Vector3i& offset, const Vector3i& size) {
+            DataHelper<3>::invalidateSub(this, level, offset, size);
         }
         #endif
 
