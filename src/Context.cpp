@@ -180,7 +180,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,fragment_layer_viewport),         // done
         _extension(GL,ARB,framebuffer_no_attachments),
         _extension(GL,ARB,internalformat_query2),
-        _extension(GL,ARB,invalidate_subdata),
+        _extension(GL,ARB,invalidate_subdata),              // done
         _extension(GL,ARB,multi_draw_indirect),
         _extension(GL,ARB,program_interface_query),
         _extension(GL,ARB,robust_buffer_access_behavior),   // done
