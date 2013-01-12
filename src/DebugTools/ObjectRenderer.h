@@ -53,7 +53,8 @@ class ObjectRendererOptions {
 /**
 @brief Object renderer
 
-Visualizes object position, rotation and scale using colored axes.
+Visualizes object position, rotation and scale using colored axes. See
+@ref debug-tools-renderers for more information.
 
 @section ObjectRenderer-usage Basic usage
 

@@ -62,25 +62,12 @@ class ShapeRendererOptions {
 /**
 @brief Shape renderer
 
-Visualizes collision shape.
+Visualizes collision shape. See @ref debug-tools-renderers for more information.
 
 @section ShapeRenderer-usage Basic usage
 
-ResourceManager must be instanced for the whole lifetime of debug
-renderers. You can specify options via ShapeRendererOptions struct - add it to
-the manager and then create debug renderer with the same options key. This way
-you can easily share the same options with more renderers. If no options for
-given key exist, default is used.
-
 Example code:
 @code
-// Instance the manager at first
-DebugTools::ResourceManager manager;
-
-// Group of drawables, preferrably dedicated for debug renderers, so you can
-// easily enable or disable debug draw
-SceneGraph::DrawableGroup2D debugDrawables;
-
 // Create some options
 DebugTools::ResourceManager::instance()->set<DebugTools::ShapeRendererOptions>("red",
     (new DebugTools::ShapeRendererOptions())->setColor({1.0f, 0.0f, 0.0f}),
