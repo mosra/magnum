@@ -29,14 +29,20 @@ class InterleaveTest: public Corrade::TestSuite::Tester {
         InterleaveTest();
 
         void attributeCount();
+        void attributeCountGaps();
         void stride();
+        void strideGaps();
         void write();
+        void writeGaps();
 };
 
 InterleaveTest::InterleaveTest() {
     addTests(&InterleaveTest::attributeCount,
+             &InterleaveTest::attributeCountGaps,
              &InterleaveTest::stride,
-             &InterleaveTest::write);
+             &InterleaveTest::strideGaps,
+             &InterleaveTest::write,
+             &InterleaveTest::writeGaps);
 }
 
 void InterleaveTest::attributeCount() {
@@ -50,10 +56,22 @@ void InterleaveTest::attributeCount() {
         std::vector<std::int8_t>{3, 4, 5})), std::size_t(3));
 }
 
+void InterleaveTest::attributeCountGaps() {
+    CORRADE_COMPARE((Implementation::Interleave::attributeCount(std::vector<std::int8_t>{0, 1, 2}, 3,
+        std::vector<std::int8_t>{3, 4, 5}, 5)), std::size_t(3));
+
+    /* No arrays from which to get size */
+    CORRADE_COMPARE(Implementation::Interleave::attributeCount(3, 5), ~std::size_t(0));
+}
+
 void InterleaveTest::stride() {
     CORRADE_COMPARE(Implementation::Interleave::stride(std::vector<std::int8_t>()), std::size_t(1));
     CORRADE_COMPARE(Implementation::Interleave::stride(std::vector<std::int32_t>()), std::size_t(4));
     CORRADE_COMPARE((Implementation::Interleave::stride(std::vector<std::int8_t>(), std::vector<std::int32_t>())), std::size_t(5));
+}
+
+void InterleaveTest::strideGaps() {
+    CORRADE_COMPARE((Implementation::Interleave::stride(2, std::vector<std::int8_t>(), 1, std::vector<std::int32_t>(), 12)), std::size_t(20));
 }
 
 void InterleaveTest::write() {
@@ -79,6 +97,35 @@ void InterleaveTest::write() {
             0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x06,
             0x01, 0x00, 0x00, 0x00, 0x04, 0x00, 0x07,
             0x02, 0x00, 0x00, 0x00, 0x05, 0x00, 0x08
+        }));
+    }
+
+    delete[] data;
+}
+
+void InterleaveTest::writeGaps() {
+    std::size_t attributeCount;
+    std::size_t stride;
+    char* data;
+    std::tie(attributeCount, stride, data) = MeshTools::interleave(
+        std::vector<std::int8_t>{0, 1, 2}, 3,
+        std::vector<std::int32_t>{3, 4, 5},
+        std::vector<std::int16_t>{6, 7, 8}, 2);
+
+    CORRADE_COMPARE(attributeCount, std::size_t(3));
+    CORRADE_COMPARE(stride, std::size_t(12));
+    std::size_t size = attributeCount*stride;
+    if(!Endianness::isBigEndian()) {
+        CORRADE_COMPARE(std::vector<char>(data, data+size), (std::vector<char>{
+            0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00,
+            0x01, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00,
+            0x02, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00
+        }));
+    } else {
+        CORRADE_COMPARE(std::vector<char>(data, data+size), (std::vector<char>{
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x06, 0x00, 0x00,
+            0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x07, 0x00, 0x00,
+            0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x08, 0x00, 0x00
         }));
     }
 
