@@ -87,4 +87,44 @@ void IndexedMesh::bindIndexedImplementationDefault() {
 
 void IndexedMesh::bindIndexedImplementationVAO() {}
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+Debug operator<<(Debug debug, IndexedMesh::IndexType value) {
+    switch(value) {
+        #define _c(value) case IndexedMesh::IndexType::value: return debug << "IndexedMesh::IndexType::" #value;
+        _c(UnsignedByte)
+        _c(UnsignedShort)
+        _c(UnsignedInt)
+        #undef _c
+    }
+
+    return debug << "IndexedMesh::IndexType::(invalid)";
 }
+#endif
+
+}
+
+namespace Corrade { namespace Utility {
+
+std::string ConfigurationValue<Magnum::IndexedMesh::IndexType>::toString(Magnum::IndexedMesh::IndexType value, ConfigurationValueFlags) {
+    switch(value) {
+        #define _c(value) case Magnum::IndexedMesh::IndexType::value: return #value;
+        _c(UnsignedByte)
+        _c(UnsignedShort)
+        _c(UnsignedInt)
+        #undef _c
+    }
+
+    return "";
+}
+
+Magnum::IndexedMesh::IndexType ConfigurationValue<Magnum::IndexedMesh::IndexType>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
+    #define _c(value) if(stringValue == #value) return Magnum::IndexedMesh::IndexType::value;
+    _c(UnsignedByte)
+    _c(UnsignedShort)
+    _c(UnsignedInt)
+    #undef _c
+
+    return Magnum::IndexedMesh::IndexType::UnsignedInt;
+}
+
+}}

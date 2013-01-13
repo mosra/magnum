@@ -196,6 +196,32 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
         IndexType _indexType;
 };
 
+/** @debugoperator{Magnum::IndexedMesh} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, IndexedMesh::IndexType value);
+
 }
+
+namespace Corrade { namespace Utility {
+
+/** @configurationvalue{Magnum::IndexedMesh} */
+template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::IndexedMesh::IndexType> {
+    ConfigurationValue() = delete;
+
+    /**
+     * @brief Write enum value as string
+     *
+     * If the value is invalid, returns empty string.
+     */
+    static std::string toString(Magnum::IndexedMesh::IndexType value, ConfigurationValueFlags);
+
+    /**
+     * @brief Read enum value as string
+     *
+     * If the value is invalid, returns @ref Magnum::IndexedMesh::IndexType "IndexedMesh::IndexType::UnsignedInt".
+     */
+    static Magnum::IndexedMesh::IndexType fromString(const std::string& stringValue, ConfigurationValueFlags);
+};
+
+}}
 
 #endif
