@@ -18,7 +18,7 @@
 #include <cstring>
 #include <algorithm>
 
-#include "Math/Math.h"
+#include "Math/Functions.h"
 
 namespace Magnum { namespace MeshTools {
 

@@ -13,7 +13,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Math.h"
+#include "Functions.h"
 
 namespace Magnum { namespace Math {
 

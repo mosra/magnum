@@ -15,13 +15,13 @@
 
 #include <TestSuite/Tester.h>
 
-#include "Math/Math.h"
+#include "Math/Functions.h"
 
 namespace Magnum { namespace Math { namespace Test {
 
-class MathTest: public Corrade::TestSuite::Tester {
+class FunctionsTest: public Corrade::TestSuite::Tester {
     public:
-        MathTest();
+        FunctionsTest();
 
         void normalize();
         void denormalize();
@@ -31,16 +31,16 @@ class MathTest: public Corrade::TestSuite::Tester {
         void log2();
 };
 
-MathTest::MathTest() {
-    addTests(&MathTest::normalize,
-             &MathTest::denormalize,
-             &MathTest::clamp,
-             &MathTest::pow,
-             &MathTest::log,
-             &MathTest::log2);
+FunctionsTest::FunctionsTest() {
+    addTests(&FunctionsTest::normalize,
+             &FunctionsTest::denormalize,
+             &FunctionsTest::clamp,
+             &FunctionsTest::pow,
+             &FunctionsTest::log,
+             &FunctionsTest::log2);
 }
 
-void MathTest::normalize() {
+void FunctionsTest::normalize() {
     /* Range for signed and unsigned */
     CORRADE_COMPARE((Math::normalize<float, std::int8_t>(-128)), 0.0f);
     CORRADE_COMPARE((Math::normalize<float, std::int8_t>(127)), 1.0f);
@@ -63,7 +63,7 @@ void MathTest::normalize() {
     CORRADE_COMPARE((Math::normalize<double, std::uint64_t>(std::numeric_limits<std::uint64_t>::max())), 1.0);
 }
 
-void MathTest::denormalize() {
+void FunctionsTest::denormalize() {
     /* Range for signed and unsigned */
     CORRADE_COMPARE(Math::denormalize<std::int8_t>(0.0f), -128);
     CORRADE_COMPARE(Math::denormalize<std::int8_t>(1.0f), 127);
@@ -90,27 +90,27 @@ void MathTest::denormalize() {
 //     }
 }
 
-void MathTest::clamp() {
+void FunctionsTest::clamp() {
     CORRADE_COMPARE(Math::clamp(0.5f, -1.0f, 5.0f), 0.5f);
     CORRADE_COMPARE(Math::clamp(-1.6f, -1.0f, 5.0f), -1.0f);
     CORRADE_COMPARE(Math::clamp(9.5f, -1.0f, 5.0f), 5.0f);
 }
 
-void MathTest::pow() {
+void FunctionsTest::pow() {
     CORRADE_COMPARE(Math::pow<10>(2ul), 1024ul);
     CORRADE_COMPARE(Math::pow<0>(3ul), 1ul);
     CORRADE_COMPARE(Math::pow<2>(2.0f), 4.0f);
 }
 
-void MathTest::log() {
+void FunctionsTest::log() {
     CORRADE_COMPARE(Math::log(2, 256), 8ul);
     CORRADE_COMPARE(Math::log(256, 2), 0ul);
 }
 
-void MathTest::log2() {
+void FunctionsTest::log2() {
     CORRADE_COMPARE(Math::log2(2153), 11);
 }
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Math::Test::MathTest)
+CORRADE_TEST_MAIN(Magnum::Math::Test::FunctionsTest)

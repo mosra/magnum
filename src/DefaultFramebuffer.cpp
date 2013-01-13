@@ -19,6 +19,7 @@
 
 #include "Implementation/State.h"
 #include "Implementation/FramebufferState.h"
+#include "Extensions.h"
 
 namespace Magnum {
 

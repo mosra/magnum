@@ -1,5 +1,5 @@
 corrade_add_test(MathConstantsTest ConstantsTest.cpp)
-corrade_add_test(MathTest MathTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathFunctionsTest FunctionsTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathMathTypeTraitsTest MathTypeTraitsTest.cpp)
 
 corrade_add_test(MathRectangularMatrixTest RectangularMatrixTest.cpp LIBRARIES MagnumMathTestLib)

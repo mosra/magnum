@@ -21,8 +21,8 @@
 
 #include <tuple>
 
+#include "Math/Functions.h"
 #include "Math/MathTypeTraits.h"
-#include "Math/Math.h"
 #include "Math/Vector4.h"
 #include "Magnum.h"
 

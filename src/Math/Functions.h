@@ -1,5 +1,5 @@
-#ifndef Magnum_Math_Math_h
-#define Magnum_Math_Math_h
+#ifndef Magnum_Math_Functions_h
+#define Magnum_Math_Functions_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -23,7 +23,7 @@
 #include "magnumVisibility.h"
 
 /** @file
- * @brief Math utilities
+ * @brief Functions usable with scalar and vector types
  */
 
 namespace Magnum { namespace Math {

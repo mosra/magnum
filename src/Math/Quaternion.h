@@ -23,7 +23,7 @@
 #include <Utility/Assert.h>
 #include <Utility/Debug.h>
 
-#include "Math/Math.h"
+#include "Math/Functions.h"
 #include "Math/MathTypeTraits.h"
 #include "Math/Matrix.h"
 #include "Math/Vector3.h"

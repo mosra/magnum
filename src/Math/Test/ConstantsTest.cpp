@@ -16,7 +16,7 @@
 #include <TestSuite/Tester.h>
 
 #include "Math/Constants.h"
-#include "Math/Math.h"
+#include "Math/Functions.h"
 
 namespace Magnum { namespace Math { namespace Test {
 
