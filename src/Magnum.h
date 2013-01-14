@@ -20,8 +20,10 @@
  */
 
 #include <cstdint>
+#include <corradeConfigure.h>
 
-#include "corradeConfigure.h"
+#include "Math/Math.h"
+
 #include "magnumConfigure.h"
 
 #ifndef MAGNUM_TARGET_GLES
@@ -56,23 +58,9 @@ namespace Corrade {
 namespace Magnum {
 
 namespace Math {
-    template<class> class Vector2;
-    template<class> class Vector3;
-    template<class> class Vector4;
-    template<class> class Point2D;
-    template<class> class Point3D;
-    template<class> class Matrix3;
-    template<class> class Matrix4;
-
-    template<class> class Quaternion;
-
     template<class T> constexpr T deg(T value);
     template<class T> constexpr T rad(T value);
     template<class T> class Constants;
-
-    namespace Geometry {
-        template<class> class Rectangle;
-    }
 }
 
 /* Bring debugging facility from Corrade::Utility namespace */

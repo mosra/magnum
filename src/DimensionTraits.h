@@ -23,18 +23,6 @@
 
 namespace Magnum {
 
-namespace Math {
-    template<std::size_t, class> class Vector;
-    template<class> class Vector2;
-    template<class> class Vector3;
-
-    template<class> class Point2D;
-    template<class> class Point3D;
-
-    template<class> class Matrix3;
-    template<class> class Matrix4;
-}
-
 /** @brief Matrix, point and vector specializations for given dimension count */
 template<std::uint8_t dimensions, class T = GLfloat> struct DimensionTraits {
     DimensionTraits() = delete;

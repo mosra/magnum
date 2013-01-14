@@ -31,12 +31,6 @@
 
 namespace Magnum {
 
-namespace Math {
-    template<std::size_t, std::size_t, class> class RectangularMatrix;
-    template<std::size_t, class> class Matrix;
-    template<std::size_t, class> class Vector;
-}
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<class> struct Attribute;

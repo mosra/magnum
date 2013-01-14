@@ -1,6 +1,7 @@
 set(MagnumMath_HEADERS
     Constants.h
     Functions.h
+    Math.h
     MathTypeTraits.h
     Matrix.h
     Matrix3.h

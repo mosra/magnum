@@ -19,6 +19,7 @@ some types it can be too cumbersome -- e.g. too many template parameters,
 typedefs etc. In this case a header with forward declarations is usually
 available, each namespace has its own:
 
+ - Math/Math.h
  - Magnum.h
  - DebugTools/DebugTools.h
  - Physics/Physics.h
