@@ -75,14 +75,18 @@ std::uint32_t MAGNUM_EXPORT log2(std::uint32_t number);
 std::uint32_t MAGNUM_EXPORT log(std::uint32_t base, std::uint32_t number);
 
 /**
-@brief Normalize floating-point value
+@brief Normalize integral value
 
-Converts integral value from full range of given (signed/unsigned) integral
-type to value in range @f$ [0, 1] @f$.
+Converts integral value from full range of given *unsigned* integral type to
+value in range @f$ [0, 1] @f$ or from *signed* integral to range @f$ [-1, 1] @f$.
+
+@note For best precision, `FloatingPoint` type should be always larger that
+    resulting `Integral` type (e.g. `double` to `std::int32_t`, `long double`
+    to `std::int64_t`).
 
 @attention To ensure the integral type is correctly detected when using
-literals, this function should be called with both template parameters
-explicit, e.g.:
+    literals, this function should be called with both template parameters
+    explicit, e.g.:
 @code
 // Even if this is character literal, integral type is 32bit, thus a != 1.0f
 float a = normalize<float>('\127');
@@ -91,32 +95,43 @@ float a = normalize<float>('\127');
 float b = normalize<float, std::int8_t>('\127');
 @endcode
 
-@todo Signed normalization to [-1.0, 1.0] like in OpenGL?
+@see denormalize()
 */
-template<class FloatingPoint, class Integral> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value, FloatingPoint>::type normalize(Integral value) {
-    return (FloatingPoint(value)-FloatingPoint(std::numeric_limits<Integral>::min()))/
-        (FloatingPoint(std::numeric_limits<Integral>::max()) - FloatingPoint(std::numeric_limits<Integral>::min()));
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class FloatingPoint, class Integral> inline constexpr FloatingPoint normalize(Integral value);
+#else
+template<class FloatingPoint, class Integral> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value && std::is_unsigned<Integral>::value, FloatingPoint>::type normalize(Integral value) {
+    return value/FloatingPoint(std::numeric_limits<Integral>::max());
 }
+
+template<class FloatingPoint, class Integral> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value && std::is_signed<Integral>::value, FloatingPoint>::type normalize(Integral value) {
+    return std::max(value/FloatingPoint(std::numeric_limits<Integral>::max()), FloatingPoint(-1));
+}
+#endif
 
 /**
 @brief Denormalize floating-point value
 
 Converts floating-point value in range @f$ [0, 1] @f$ to full range of given
+unsigned integral type or range @f$ [-1, 1] @f$ to full range of given signed
 integral type.
 
 @note For best precision, `FloatingPoint` type should be always larger that
-resulting `Integral` type (e.g. `double` to `std::int32_t`, `long double` to
-`std::int64_t`).
+    resulting `Integral` type (e.g. `double` to `std::int32_t`, `long double`
+    to `std::int64_t`).
 
-@todo Signed normalization to [-1.0, 1.0] like in OpenGL?
-@todo Stable behavior (working/broken) for long double and long long
-    (currently fails in Debug builds, but passes in Release on GCC 4.7)
+@see normalize()
 */
-template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value, Integral>::type denormalize(FloatingPoint value) {
-    return             std::numeric_limits<Integral>::min() +
-        round(FloatingPoint(value*std::numeric_limits<Integral>::max()) -
-        FloatingPoint(value*std::numeric_limits<Integral>::min()));
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class Integral, class FloatingPoint> inline constexpr typename Integral denormalize(FloatingPoint value);
+#else
+template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value && std::is_unsigned<Integral>::value, Integral>::type denormalize(FloatingPoint value) {
+    return value*std::numeric_limits<Integral>::max();
 }
+template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value && std::is_signed<Integral>::value, Integral>::type denormalize(FloatingPoint value) {
+    return value*std::numeric_limits<Integral>::max();
+}
+#endif
 
 /** @brief Clamp value */
 template<class T> inline T clamp(T value, T min, T max) {
