@@ -427,7 +427,7 @@ template<std::size_t cols, std::size_t rows, class T> Corrade::Utility::Debug op
             debug << typename MathTypeTraits<T>::NumericType(value[col][row]);
         }
     }
-    debug << ')';
+    debug << ")";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
     return debug;
 }

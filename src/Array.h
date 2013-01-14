@@ -186,7 +186,7 @@ template<std::uint8_t dimensions, class T> Corrade::Utility::Debug operator<<(Co
         if(i != 0) debug << ", ";
         debug << value[i];
     }
-    debug << ')';
+    debug << ")";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
     return debug;
 }

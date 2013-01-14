@@ -105,7 +105,7 @@ void Profiler::printStatistics() {
 
     Debug() << "Statistics for last" << measureDuration << "frames:";
     for(std::size_t i = 0; i != sections.size(); ++i)
-        Debug() << ' ' << sections[totalSorted[i]] << std::chrono::microseconds(totalData[totalSorted[i]]).count()/frameCount << u8"µs";
+        Debug() << " " << sections[totalSorted[i]] << std::chrono::microseconds(totalData[totalSorted[i]]).count()/frameCount << u8"µs";
 }
 
 }}

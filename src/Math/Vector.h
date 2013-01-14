@@ -326,7 +326,7 @@ template<std::size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::
         if(i != 0) debug << ", ";
         debug << typename MathTypeTraits<T>::NumericType(value[i]);
     }
-    debug << ')';
+    debug << ")";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
     return debug;
 }
