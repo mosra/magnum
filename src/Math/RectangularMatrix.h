@@ -424,7 +424,7 @@ template<std::size_t cols, std::size_t rows, class T> Corrade::Utility::Debug op
         if(row != 0) debug << ",\n       ";
         for(std::size_t col = 0; col != cols; ++col) {
             if(col != 0) debug << ", ";
-            debug << typename MathTypeTraits<T>::NumericType(value[col][row]);
+            debug << value[col][row];
         }
     }
     debug << ")";

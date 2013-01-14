@@ -57,14 +57,6 @@ template<class T> struct MathTypeTraits {
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     /**
-     * @brief Corresponding numeric type large at least as 32bit integer
-     *
-     * Usable e.g. to prevent conversion of `char` to characters when printing
-     * numeric types to output.
-     */
-    typedef U NumericType;
-
-    /**
      * @brief Corresponding floating-point type for normalization
      *
      * If the type is not already floating-point, defines smallest larger
@@ -123,49 +115,39 @@ template<class T> struct MathTypeTraitsFloatingPoint {
 }
 
 template<> struct MathTypeTraits<std::uint8_t>: Implementation::MathTypeTraitsIntegral<std::uint8_t> {
-    typedef std::uint32_t NumericType;
     typedef float FloatingPointType;
 };
 template<> struct MathTypeTraits<std::int8_t>: Implementation::MathTypeTraitsIntegral<std::int8_t> {
-    typedef std::int32_t NumericType;
     typedef float FloatingPointType;
 };
 
 template<> struct MathTypeTraits<std::uint16_t>: Implementation::MathTypeTraitsIntegral<std::uint16_t> {
-    typedef std::uint32_t NumericType;
     typedef float FloatingPointType;
 };
 template<> struct MathTypeTraits<std::int16_t>: Implementation::MathTypeTraitsIntegral<std::int16_t> {
-    typedef std::int32_t NumericType;
     typedef float FloatingPointType;
 };
 
 template<> struct MathTypeTraits<std::uint32_t>: Implementation::MathTypeTraitsIntegral<std::uint32_t> {
-    typedef std::uint32_t NumericType;
     typedef double FloatingPointType;
 };
 template<> struct MathTypeTraits<std::int32_t>: Implementation::MathTypeTraitsIntegral<std::int32_t> {
-    typedef std::int32_t NumericType;
     typedef double FloatingPointType;
 };
 
 template<> struct MathTypeTraits<std::uint64_t>: Implementation::MathTypeTraitsIntegral<std::uint64_t> {
-    typedef std::uint64_t NumericType;
     typedef long double FloatingPointType;
 };
 template<> struct MathTypeTraits<std::int64_t>: Implementation::MathTypeTraitsIntegral<std::int64_t> {
-    typedef std::int64_t NumericType;
     typedef long double FloatingPointType;
 };
 
 template<> struct MathTypeTraits<float>: Implementation::MathTypeTraitsFloatingPoint<float> {
-    typedef float NumericType;
     typedef float FloatingPointType;
 
     inline constexpr static float epsilon() { return FLOAT_EQUALITY_PRECISION; }
 };
 template<> struct MathTypeTraits<double>: Implementation::MathTypeTraitsFloatingPoint<double> {
-    typedef float NumericType;
     typedef double FloatingPointType;
 
     inline constexpr static double epsilon() { return DOUBLE_EQUALITY_PRECISION; }
