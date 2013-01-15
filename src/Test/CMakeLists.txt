@@ -4,6 +4,5 @@ corrade_add_test(MeshTest MeshTest.cpp LIBRARIES Magnum)
 corrade_add_test(IndexedMeshTest IndexedMeshTest.cpp LIBRARIES Magnum)
 corrade_add_test(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(SwizzleTest SwizzleTest.cpp LIBRARIES MagnumMathTestLib)
-corrade_add_test(TypeTraitsTest TypeTraitsTest.cpp LIBRARIES Magnum)
 
 set_target_properties(ResourceManagerTest PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)

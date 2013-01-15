@@ -16,7 +16,7 @@
 */
 
 /** @file /TypeTraits.h
- * @brief Enum Magnum::Type, class Magnum::TypeOf, Magnum::TypeInfo, Magnum::TypeTraits
+ * @brief Class Magnum::TypeTraits
  */
 
 #include <Utility/ConfigurationValue.h>
@@ -49,13 +49,6 @@ template<class T> struct TypeTraits: Math::MathTypeTraits<T> {
     typedef U AttributeType;
 
     /**
-     * @brief OpenGL plain type ID
-     *
-     * Returns e.g. Type::UnsignedInt for GLuint.
-     */
-    inline constexpr static Type type();
-
-    /**
      * @brief Size of plain OpenGL type
      *
      * Returns sizeof(GLfloat) for GLfloat, but also sizeof(GLfloat) for
@@ -76,161 +69,45 @@ template<class T> struct TypeTraits {
 };
 #endif
 
-/** @brief OpenGL plain types */
-enum class Type: GLenum {
-    UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte (char) */
-    Byte = GL_BYTE,                     /**< Byte (char) */
-    UnsignedShort = GL_UNSIGNED_SHORT,  /**< Unsigned short */
-    Short = GL_SHORT,                   /**< Short */
-    UnsignedInt = GL_UNSIGNED_INT,      /**< Unsigned int */
-    Int = GL_INT,                       /**< Int */
-    Float = GL_FLOAT                    /**< Float */
-
-    #ifndef MAGNUM_TARGET_GLES
-    ,
-    /**
-     * Double
-     * @requires_gl Only floats are available in OpenGL ES.
-     */
-    Double = GL_DOUBLE
-    #endif
-};
-
-/** @debugoperator{Magnum::TypeInfo} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, Type value);
-
-/**
-@brief Class for converting Type enum values to types
-
-When you want to use TypeTraits on type specified only as enum value, you can
-use this class to convert it into type, for example these two statements
-are equivalent:
-@code
-type = TypeTraits<TypeOf<Type::UnsignedByte>::Type>::imageType();
-type = TypeTraits<GLubyte>::imageType();
-@endcode
-*/
-template<Type T> class TypeOf {
-    TypeOf() = delete;
-
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    typedef U Type; /**< @brief Type */
-    #endif
-};
-
-/**
-@brief Functor for runtime information about given type
-
-TypeTraits alone allows to get information about given type only at compile
-time, this class alows to get some information also at runtime with tiny
-performance loss.
-*/
-struct MAGNUM_EXPORT TypeInfo {
-    TypeInfo() = delete;
-
-    /**
-     * @brief Size of given type
-     *
-     * These two lines provide the same information, one at compile time,
-     * one at runtime:
-     * @code
-     * std::size_t size = TypeTraits<TypeOf<Type::UnsignedByte>::size();
-     * std::size_t size = TypeInfo::sizeOf(Type::UnsignedByte);
-     * @endcode
-     */
-    static std::size_t sizeOf(Type type);
-
-    /**
-     * @brief Whether the type is integral
-     * @return true for (un)signed byte, short and integer, false otherwise.
-     */
-    static bool isIntegral(Type type);
-};
-
-/** @todo Other texture types, referenced in glTexImage2D function manual */
-/** @todo Using Vector3 for textures? */
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<> struct TypeOf<Type::UnsignedByte> {
-    TypeOf() = delete;
-    typedef GLubyte Type;
-};
-template<> struct TypeOf<Type::Byte> {
-    TypeOf() = delete;
-    typedef GLbyte Type;
-};
-template<> struct TypeOf<Type::UnsignedShort> {
-    TypeOf() = delete;
-    typedef GLushort Type;
-};
-template<> struct TypeOf<Type::Short> {
-    TypeOf() = delete;
-    typedef GLshort Type;
-};
-template<> struct TypeOf<Type::UnsignedInt> {
-    TypeOf() = delete;
-    typedef GLuint Type;
-};
-template<> struct TypeOf<Type::Int> {
-    TypeOf() = delete;
-    typedef GLint Type;
-};
-template<> struct TypeOf<Type::Float> {
-    TypeOf() = delete;
-    typedef GLfloat Type;
-};
-#ifndef MAGNUM_TARGET_GLES
-template<> struct TypeOf<Type::Double> {
-    TypeOf() = delete;
-    typedef GLdouble Type;
-};
-#endif
-
 template<> struct TypeTraits<GLubyte>: Math::MathTypeTraits<std::uint8_t> {
     /* Can not be used for attributes */
-    inline constexpr static Type type() { return Type::UnsignedByte; }
     inline constexpr static std::size_t size() { return sizeof(GLubyte); }
     inline constexpr static std::size_t count() { return 1; }
 };
 
 template<> struct TypeTraits<GLbyte>: Math::MathTypeTraits<std::int8_t> {
     /* Can not be used for attributes */
-    inline constexpr static Type type() { return Type::Byte; }
     inline constexpr static std::size_t size() { return sizeof(GLbyte); }
     inline constexpr static std::size_t count() { return 1; }
 };
 
 template<> struct TypeTraits<GLushort>: Math::MathTypeTraits<std::uint16_t> {
     /* Can not be used for attributes */
-    inline constexpr static Type type() { return Type::UnsignedShort; }
     inline constexpr static std::size_t size() { return sizeof(GLushort); }
     inline constexpr static std::size_t count() { return 1; }
 };
 
 template<> struct TypeTraits<GLshort>: Math::MathTypeTraits<std::int16_t> {
     /* Can not be used for attributes */
-    inline constexpr static Type type() { return Type::Short; }
     inline constexpr static std::size_t size() { return sizeof(GLshort); }
     inline constexpr static std::size_t count() { return 1; }
 };
 
 template<> struct TypeTraits<GLuint>: Math::MathTypeTraits<std::uint32_t> {
     typedef GLuint AttributeType;
-    inline constexpr static Type type() { return Type::UnsignedInt; }
     inline constexpr static std::size_t size() { return sizeof(GLuint); }
     inline constexpr static std::size_t count() { return 1; }
 };
 
 template<> struct TypeTraits<GLint>: Math::MathTypeTraits<std::int32_t> {
     typedef GLint AttributeType;
-    inline constexpr static Type type() { return Type::Int; }
     inline constexpr static std::size_t size() { return sizeof(GLint); }
     inline constexpr static std::size_t count() { return 1; }
 };
 
 template<> struct TypeTraits<GLfloat>: Math::MathTypeTraits<float> {
     typedef GLfloat AttributeType;
-    inline constexpr static Type type() { return Type::Float; }
     inline constexpr static std::size_t size() { return sizeof(GLfloat); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -238,7 +115,6 @@ template<> struct TypeTraits<GLfloat>: Math::MathTypeTraits<float> {
 #ifndef MAGNUM_TARGET_GLES
 template<> struct TypeTraits<GLdouble>: Math::MathTypeTraits<double> {
     typedef GLdouble AttributeType;
-    inline constexpr static Type type() { return Type::Double; }
     inline constexpr static std::size_t size() { return sizeof(GLdouble); }
     inline constexpr static std::size_t count() { return 1; }
 };
@@ -249,7 +125,6 @@ namespace Implementation {
         VectorTypeTraits() = delete;
 
         /* Might be used for attributes, see below */
-        inline constexpr static Type type() { return TypeTraits<T>::type(); }
         inline constexpr static std::size_t size() { return sizeof(T); }
         inline constexpr static std::size_t count() { return vectorSize; }
     };
@@ -296,7 +171,6 @@ namespace Implementation {
         MatrixTypeTraits() = delete;
 
         /* Might be used for attributes, see below */
-        inline constexpr static Type type() { return TypeTraits<T>::type(); }
         inline constexpr static std::size_t size() { return sizeof(T); }
         inline constexpr static std::size_t count() { return rows; }
         inline constexpr static std::size_t vectors() { return cols; }
@@ -335,28 +209,5 @@ template<class T> struct TypeTraits<Math::Matrix4<T>>: TypeTraits<Math::Matrix<4
 #endif
 
 }
-
-namespace Corrade { namespace Utility {
-
-/** @configurationvalue{Magnum::TypeInfo} */
-template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::Type> {
-    ConfigurationValue() = delete;
-
-    /**
-     * @brief Writes enum value as string
-     *
-     * If the value is invalid, returns empty string.
-     */
-    static std::string toString(Magnum::Type value, ConfigurationValueFlags);
-
-    /**
-     * @brief Reads enum value as string
-     *
-     * If the value is invalid, returns @ref Magnum::Type "Magnum::Type::Float".
-     */
-    static Magnum::Type fromString(const std::string& stringValue, ConfigurationValueFlags);
-};
-
-}}
 
 #endif

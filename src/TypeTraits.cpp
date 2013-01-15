@@ -16,7 +16,6 @@
 #include "TypeTraits.h"
 
 #include <type_traits>
-#include <Utility/Debug.h>
 
 namespace Magnum {
 
@@ -34,97 +33,4 @@ static_assert(std::is_same<GLdouble, double>::value, "GLdouble is not the same a
 #endif
 #endif
 
-std::size_t TypeInfo::sizeOf(Type type) {
-    switch(type) {
-        #define val(type) case Type::type: return TypeTraits<TypeOf<Type::type>::Type>::size();
-        val(UnsignedByte)
-        val(Byte)
-        val(UnsignedShort)
-        val(Short)
-        val(UnsignedInt)
-        val(Int)
-        #ifndef MAGNUM_TARGET_GLES
-        val(Double)
-        #endif
-        val(Float)
-        #undef val
-
-        default: return 0;
-    }
 }
-
-bool TypeInfo::isIntegral(Type type) {
-    switch(type) {
-        case Type::UnsignedByte:
-        case Type::Byte:
-        case Type::UnsignedShort:
-        case Type::Short:
-        case Type::UnsignedInt:
-        case Type::Int:
-            return true;
-        default:
-            return false;
-    }
-}
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, Type value) {
-    switch(value) {
-        #define _c(value) case Type::value: return debug << "Type::" #value;
-        _c(UnsignedByte)
-        _c(Byte)
-        _c(UnsignedShort)
-        _c(Short)
-        _c(UnsignedInt)
-        _c(Int)
-        _c(Float)
-        #ifndef MAGNUM_TARGET_GLES
-        _c(Double)
-        #endif
-        #undef _c
-    }
-
-    return debug << "Type::(invalid)";
-}
-#endif
-
-}
-
-namespace Corrade { namespace Utility {
-
-std::string ConfigurationValue<Magnum::Type>::toString(Magnum::Type value, ConfigurationValueFlags) {
-    switch(value) {
-        #define _c(value) case Magnum::Type::value: return #value;
-        _c(UnsignedByte)
-        _c(Byte)
-        _c(UnsignedShort)
-        _c(Short)
-        _c(UnsignedInt)
-        _c(Int)
-        _c(Float)
-        #ifndef MAGNUM_TARGET_GLES
-        _c(Double)
-        #endif
-        #undef _c
-    }
-
-    return "";
-}
-
-Magnum::Type ConfigurationValue<Magnum::Type>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
-    #define _c(value) if(stringValue == #value) return Magnum::Type::value;
-        _c(UnsignedByte)
-        _c(Byte)
-        _c(UnsignedShort)
-        _c(Short)
-        _c(UnsignedInt)
-        _c(Int)
-        #ifndef MAGNUM_TARGET_GLES
-        _c(Double)
-        #endif
-    #undef _c
-
-    return Magnum::Type::Float;
-}
-
-}}
