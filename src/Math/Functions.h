@@ -39,12 +39,16 @@ namespace Magnum { namespace Math {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<std::uint32_t exponent> struct Pow {
-        template<class T> inline constexpr T operator()(T base) const {
-            return base*Pow<exponent-1>()(base);
+        Pow() = delete;
+
+        template<class T> inline constexpr static T pow(T base) {
+            return base*Pow<exponent-1>::pow(base);
         }
     };
     template<> struct Pow<0> {
-        template<class T> inline constexpr T operator()(T) const { return 1; }
+        Pow() = delete;
+
+        template<class T> inline constexpr static T pow(T) { return 1; }
     };
 }
 #endif
@@ -55,7 +59,7 @@ namespace Implementation {
  * Returns integral power of base to the exponent.
  */
 template<std::uint32_t exponent, class T> inline constexpr T pow(T base) {
-    return Implementation::Pow<exponent>()(base);
+    return Implementation::Pow<exponent>::pow(base);
 }
 
 /**
