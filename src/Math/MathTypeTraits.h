@@ -32,6 +32,14 @@
 #define DOUBLE_EQUALITY_PRECISION 1.0e-12
 #endif
 
+/**
+@brief Precision when testing long doubles for equality
+@todo some proper value please
+*/
+#ifndef LONG_DOUBLE_EQUALITY_PRECISION
+#define LONG_DOUBLE_EQUALITY_PRECISION 1.0e-18
+#endif
+
 namespace Magnum { namespace Math {
 
 /**
@@ -151,6 +159,11 @@ template<> struct MathTypeTraits<double>: Implementation::MathTypeTraitsFloating
     typedef double FloatingPointType;
 
     inline constexpr static double epsilon() { return DOUBLE_EQUALITY_PRECISION; }
+};
+template<> struct MathTypeTraits<long double>: Implementation::MathTypeTraitsFloatingPoint<long double> {
+    typedef long double FloatingPointType;
+
+    inline constexpr static long double epsilon() { return LONG_DOUBLE_EQUALITY_PRECISION; }
 };
 #endif
 
