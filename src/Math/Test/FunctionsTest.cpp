@@ -40,6 +40,8 @@ class FunctionsTest: public Corrade::TestSuite::Tester {
 };
 
 typedef Math::Vector3<float> Vector3;
+typedef Math::Vector3<std::uint8_t> Vector3ub;
+typedef Math::Vector3<std::int8_t> Vector3b;
 typedef Math::Vector3<std::int32_t> Vector3i;
 
 FunctionsTest::FunctionsTest() {
@@ -90,6 +92,8 @@ void FunctionsTest::normalizeUnsigned() {
 
     CORRADE_COMPARE((Math::normalize<float, std::uint16_t>(8192)), 0.125002f);
     CORRADE_COMPARE((Math::normalize<float, std::uint16_t>(49152)), 0.750011f);
+
+    CORRADE_COMPARE(Math::normalize<Vector3>(Vector3ub(0, 127, 255)), Vector3(0.0f, 0.498039f, 1.0f));
 }
 
 void FunctionsTest::normalizeSigned() {
@@ -111,6 +115,8 @@ void FunctionsTest::normalizeSigned() {
 
     CORRADE_COMPARE((Math::normalize<float, std::int16_t>(16384)), 0.500015f);
     CORRADE_COMPARE((Math::normalize<float, std::int16_t>(-16384)), -0.500015f);
+
+    CORRADE_COMPARE(Math::normalize<Vector3>(Vector3b(0, -127, 64)), Vector3(0.0f, -1.0f, 0.503937f));
 }
 
 void FunctionsTest::denormalizeUnsigned() {
@@ -128,6 +134,8 @@ void FunctionsTest::denormalizeUnsigned() {
 
     CORRADE_COMPARE(Math::denormalize<std::uint16_t>(0.33f), 21626);
     CORRADE_COMPARE(Math::denormalize<std::uint16_t>(0.66f), 43253);
+
+    CORRADE_COMPARE(Math::denormalize<Vector3ub>(Vector3(0.0f, 0.5f, 1.0f)), Vector3ub(0, 127, 255));
 }
 
 void FunctionsTest::denormalizeSigned() {
@@ -149,6 +157,8 @@ void FunctionsTest::denormalizeSigned() {
 
     CORRADE_COMPARE(Math::denormalize<std::int16_t>(-0.33f), -10813);
     CORRADE_COMPARE(Math::denormalize<std::int16_t>(0.66f), 21626);
+
+    CORRADE_COMPARE(Math::denormalize<Vector3b>(Vector3(0.0f, -1.0f, 0.5f)), Vector3b(0, -127, 63));
 }
 
 void FunctionsTest::renormalizeUnsinged() {

@@ -144,9 +144,9 @@ template<std::size_t size, class T> Vector<size, T> clamp(const Vector<size, T>&
 Converts integral value from full range of given *unsigned* integral type to
 value in range @f$ [0, 1] @f$ or from *signed* integral to range @f$ [-1, 1] @f$.
 
-@note For best precision, `FloatingPoint` type should be always larger that
-    resulting `Integral` type (e.g. `double` to `std::int32_t`, `long double`
-    to `std::int64_t`).
+@note For best precision, resulting `FloatingPoint` type should be always
+    larger that `Integral` type (e.g. `double` from `std::int32_t`, `long double`
+    from `std::int64_t` and similarly for vector types).
 
 @attention To ensure the integral type is correctly detected when using
     literals, this function should be called with both template parameters
@@ -162,14 +162,27 @@ float b = normalize<float, std::int8_t>('\127');
 @see denormalize()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class FloatingPoint, class Integral> inline constexpr FloatingPoint normalize(Integral value);
+template<class FloatingPoint, class Integral> inline FloatingPoint normalize(const Integral& value);
 #else
-template<class FloatingPoint, class Integral> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value && std::is_unsigned<Integral>::value, FloatingPoint>::type normalize(Integral value) {
+template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_arithmetic<Integral>::value && std::is_unsigned<Integral>::value, FloatingPoint>::type normalize(Integral value) {
+    static_assert(std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value,
+                  "Math::normalize(): normalization must be done from integral to floating-point type");
     return value/FloatingPoint(std::numeric_limits<Integral>::max());
 }
-
-template<class FloatingPoint, class Integral> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value && std::is_signed<Integral>::value, FloatingPoint>::type normalize(Integral value) {
-    return std::max(value/FloatingPoint(std::numeric_limits<Integral>::max()), FloatingPoint(-1));
+template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_arithmetic<Integral>::value && std::is_signed<Integral>::value, FloatingPoint>::type normalize(Integral value) {
+    static_assert(std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value,
+                  "Math::normalize(): normalization must be done from integral to floating-point type");
+    return Math::max(value/FloatingPoint(std::numeric_limits<Integral>::max()), FloatingPoint(-1));
+}
+template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_unsigned<typename Integral::Type>::value, FloatingPoint>::type normalize(const Integral& value) {
+    static_assert(std::is_floating_point<typename FloatingPoint::Type>::value && std::is_integral<typename Integral::Type>::value,
+                  "Math::normalize(): normalization must be done from integral to floating-point type");
+    return FloatingPoint::from(value)/typename FloatingPoint::Type(std::numeric_limits<typename Integral::Type>::max());
+}
+template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_signed<typename Integral::Type>::value, FloatingPoint>::type normalize(const Integral& value) {
+    static_assert(std::is_floating_point<typename FloatingPoint::Type>::value && std::is_integral<typename Integral::Type>::value,
+                  "Math::normalize(): normalization must be done from integral to floating-point type");
+    return Math::max(FloatingPoint::from(value)/typename FloatingPoint::Type(std::numeric_limits<typename Integral::Type>::max()), FloatingPoint(-1));
 }
 #endif
 
@@ -182,15 +195,25 @@ integral type.
 
 @note For best precision, `FloatingPoint` type should be always larger that
     resulting `Integral` type (e.g. `double` to `std::int32_t`, `long double`
-    to `std::int64_t`).
+    to `std::int64_t` and similarly for vector types).
+
+@attention Return value for floating point numbers outside the normalized
+    range is undefined.
 
 @see normalize()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class Integral, class FloatingPoint> inline constexpr typename Integral denormalize(FloatingPoint value);
+template<class Integral, class FloatingPoint> inline Integral denormalize(const FloatingPoint& value);
 #else
-template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value, Integral>::type denormalize(FloatingPoint value) {
+template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_arithmetic<FloatingPoint>::value, Integral>::type denormalize(FloatingPoint value) {
+    static_assert(std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value,
+                  "Math::denormalize(): denormalization must be done from floating-point to integral type");
     return value*std::numeric_limits<Integral>::max();
+}
+template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_arithmetic<typename Integral::Type>::value, Integral>::type denormalize(const FloatingPoint& value) {
+    static_assert(std::is_floating_point<typename FloatingPoint::Type>::value && std::is_integral<typename Integral::Type>::value,
+                  "Math::denormalize(): denormalization must be done from floating-point to integral type");
+    return Integral::from(value*std::numeric_limits<typename Integral::Type>::max());
 }
 #endif
 
