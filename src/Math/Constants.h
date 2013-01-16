@@ -71,16 +71,16 @@ Usable for entering e.g. rotation:
 Matrix4::rotation(deg(30.0f), Vector3::yAxis());
 @endcode
 
-This function (and also rad()) is available also in Magnum namespace itself.
-@see Constants, rad()
- */
+@see Magnum::deg(), Constants, rad()
+*/
 template<class T> inline constexpr T deg(T value) { return value*Constants<T>::pi()/180; }
 
 /**
- * @brief Angle in radians
- *
- * See deg() for more information.
- */
+@brief Angle in radians
+
+See deg() for more information.
+@see Magnum::rad()
+*/
 template<class T> inline constexpr T rad(T value) { return value; }
 
 }}

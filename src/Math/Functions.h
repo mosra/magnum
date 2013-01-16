@@ -30,14 +30,6 @@
 
 namespace Magnum { namespace Math {
 
-/**
-@todo Vector/scalar overloaded functions (...SIMD):
- - min(), max() (component-wise)
- - abs()
- - sin(), cos()...
- - clamp(), lerp()
-*/
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<std::uint32_t exponent> struct Pow {
@@ -186,7 +178,7 @@ template<class FloatingPoint, class Integral> inline constexpr typename std::ena
 @brief Denormalize floating-point value
 
 Converts floating-point value in range @f$ [0, 1] @f$ to full range of given
-unsigned integral type or range @f$ [-1, 1] @f$ to full range of given signed
+*unsigned* integral type or range @f$ [-1, 1] @f$ to full range of given *signed*
 integral type.
 
 @note For best precision, `FloatingPoint` type should be always larger that

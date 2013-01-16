@@ -120,7 +120,7 @@ std::vector<std::uint32_t> indices = MeshTools::combineIndexedArrays(
 `positions`, `normals` and `textureCoordinates` will then contain combined
 attributes indexed with `indices`.
 
-The function expects that all arrays have the same size.
+@attention The function expects that all arrays have the same size.
 */
 /* Implementation note: It's done using tuples because it is more clear which
    parameter is index array and which is attribute array, mainly when both are
