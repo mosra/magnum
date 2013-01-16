@@ -16,6 +16,7 @@
 #include <TestSuite/Tester.h>
 
 #include "Math/Functions.h"
+#include "Math/Vector3.h"
 
 namespace Magnum { namespace Math { namespace Test {
 
@@ -23,29 +24,55 @@ class FunctionsTest: public Corrade::TestSuite::Tester {
     public:
         FunctionsTest();
 
+        void min();
+        void max();
+        void clamp();
         void normalizeUnsigned();
         void normalizeSigned();
         void denormalizeUnsigned();
         void denormalizeSigned();
         void renormalizeUnsinged();
         void renormalizeSinged();
-        void clamp();
+
         void pow();
         void log();
         void log2();
 };
 
+typedef Math::Vector3<float> Vector3;
+typedef Math::Vector3<std::int32_t> Vector3i;
+
 FunctionsTest::FunctionsTest() {
-    addTests(&FunctionsTest::normalizeUnsigned,
+    addTests(&FunctionsTest::min,
+             &FunctionsTest::max,
+             &FunctionsTest::clamp,
+             &FunctionsTest::normalizeUnsigned,
              &FunctionsTest::normalizeSigned,
              &FunctionsTest::denormalizeUnsigned,
              &FunctionsTest::denormalizeSigned,
              &FunctionsTest::renormalizeUnsinged,
              &FunctionsTest::renormalizeSinged,
-             &FunctionsTest::clamp,
              &FunctionsTest::pow,
              &FunctionsTest::log,
              &FunctionsTest::log2);
+}
+
+void FunctionsTest::min() {
+    CORRADE_COMPARE(Math::min(5, 9), 5);
+    CORRADE_COMPARE(Math::min(Vector3i(5, -3, 2), Vector3i(9, -5, 18)), Vector3i(5, -5, 2));
+}
+
+void FunctionsTest::max() {
+    CORRADE_COMPARE(Math::max(5, 9), 9);
+    CORRADE_COMPARE(Math::max(Vector3i(5, -3, 2), Vector3i(9, -5, 18)), Vector3i(9, -3, 18));
+}
+
+void FunctionsTest::clamp() {
+    CORRADE_COMPARE(Math::clamp(0.5f, -1.0f, 5.0f), 0.5f);
+    CORRADE_COMPARE(Math::clamp(-1.6f, -1.0f, 5.0f), -1.0f);
+    CORRADE_COMPARE(Math::clamp(9.5f, -1.0f, 5.0f), 5.0f);
+
+    CORRADE_COMPARE(Math::clamp(Vector3(0.5f, -1.6f, 9.5f), -1.0f, 5.0f), Vector3(0.5f, -1.0f, 5.0f));
 }
 
 void FunctionsTest::normalizeUnsigned() {
@@ -154,12 +181,6 @@ void FunctionsTest::renormalizeSinged() {
     CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<std::int64_t>(-1.0l)), -1.0l);
     CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<std::int64_t>(0.0l)), 0.0l);
     CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<std::int64_t>(1.0l)), 1.0l);
-}
-
-void FunctionsTest::clamp() {
-    CORRADE_COMPARE(Math::clamp(0.5f, -1.0f, 5.0f), 0.5f);
-    CORRADE_COMPARE(Math::clamp(-1.6f, -1.0f, 5.0f), -1.0f);
-    CORRADE_COMPARE(Math::clamp(9.5f, -1.0f, 5.0f), 5.0f);
 }
 
 void FunctionsTest::pow() {

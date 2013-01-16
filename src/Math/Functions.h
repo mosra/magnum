@@ -20,6 +20,8 @@
 #include <limits>
 #include <algorithm>
 
+#include "Math/Vector.h"
+
 #include "magnumVisibility.h"
 
 /** @file
@@ -79,6 +81,73 @@ std::uint32_t MAGNUM_EXPORT log2(std::uint32_t number);
 std::uint32_t MAGNUM_EXPORT log(std::uint32_t base, std::uint32_t number);
 
 /**
+@{ @name Scalar/vector functions
+
+These functions are overloaded for both scalar and vector types. Scalar
+versions function exactly as their possible STL equivalents, vector overloads
+perform the operations component-wise.
+*/
+
+/**
+@brief Minimum
+
+@see min(), clamp()
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> inline T min(T a, T b);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type min(T a, T b) {
+    return std::min(a, b);
+}
+template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size, T>& a, const Vector<size, T>& b) {
+    Vector<size, T> out;
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = std::min(a[i], b[i]);
+    return out;
+}
+#endif
+
+/**
+@brief Maximum
+
+@see max(), clamp()
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> inline T max(const T& a, const T& b);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type max(T a, T b) {
+    return std::max(a, b);
+}
+template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& a, const Vector<size, T>& b) {
+    Vector<size, T> out;
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = std::max(a[i], b[i]);
+    return out;
+}
+#endif
+
+/**
+@brief Clamp value
+
+Values smaller than @p min are set to @p min, values larger than @p max are
+set to @p max.
+@see min(), max()
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T, class U> inline T clamp(const T& value, U min, U max);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type clamp(T value, T min, T max) {
+    return std::min(std::max(value, min), max);
+}
+template<std::size_t size, class T> Vector<size, T> clamp(const Vector<size, T>& value, T min, T max) {
+    Vector<size, T> out;
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = std::min(std::max(value[i], min), max);
+    return out;
+}
+#endif
+
+/**
 @brief Normalize integral value
 
 Converts integral value from full range of given *unsigned* integral type to
@@ -134,10 +203,7 @@ template<class Integral, class FloatingPoint> inline constexpr typename std::ena
 }
 #endif
 
-/** @brief Clamp value */
-template<class T> inline T clamp(T value, T min, T max) {
-    return std::min(std::max(value, min), max);
-}
+/*@}*/
 
 }}
 
