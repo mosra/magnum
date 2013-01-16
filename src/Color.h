@@ -58,7 +58,7 @@ template<class T> inline typename std::enable_if<std::is_floating_point<T>::valu
     }
 }
 template<class T> inline typename std::enable_if<std::is_integral<T>::value, Color3<T>>::type fromHSV(typename Color3<T>::HSV hsv) {
-    return Color3<T>::fromNormalized(fromHSV<typename Color3<T>::FloatingPointType>(hsv));
+    return Math::denormalize<Color3<T>>(fromHSV<typename Color3<T>::FloatingPointType>(hsv));
 }
 
 /* Internal hue computing function */
@@ -95,10 +95,10 @@ template<class T> inline T value(typename std::enable_if<std::is_floating_point<
 
 /* Hue, saturation, value for integral types */
 template<class T> inline typename Color3<T>::FloatingPointType hue(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type color) {
-    return hue<typename Color3<T>::FloatingPointType>(Color3<typename Color3<T>::FloatingPointType>::fromDenormalized(color));
+    return hue<typename Color3<T>::FloatingPointType>(Math::normalize<Color3<typename Color3<T>::FloatingPointType>>(color));
 }
 template<class T> inline typename Color3<T>::FloatingPointType saturation(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type& color) {
-    return saturation<typename Color3<T>::FloatingPointType>(Color3<typename Color3<T>::FloatingPointType>::fromDenormalized(color));
+    return saturation<typename Color3<T>::FloatingPointType>(Math::normalize<Color3<typename Color3<T>::FloatingPointType>>(color));
 }
 template<class T> inline typename Color3<T>::FloatingPointType value(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type color) {
     return Math::normalize<typename Color3<T>::FloatingPointType>(color.max());
@@ -112,7 +112,7 @@ template<class T> inline typename Color3<T>::HSV toHSV(typename std::enable_if<s
     return typename Color3<T>::HSV(hue<typename Color3<T>::FloatingPointType>(color, max, delta), max != T(0) ? delta/max : T(0), max);
 }
 template<class T> inline typename Color3<T>::HSV toHSV(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type color) {
-    return toHSV<typename Color3<T>::FloatingPointType>(Color3<typename Color3<T>::FloatingPointType>::fromDenormalized(color));
+    return toHSV<typename Color3<T>::FloatingPointType>(Math::normalize<Color3<typename Color3<T>::FloatingPointType>>(color));
 }
 
 /* Default alpha value */
@@ -140,7 +140,6 @@ range @f$ [0.0, 1.0] @f$.
 @see Color4
 
 @todo Hue in degrees so users can use deg()
-@todo Signed normalization to [-1.0, 1.0] like in OpenGL?
 */
 /* Not using template specialization because some internal functions are
    impossible to explicitly instantiate */
@@ -161,36 +160,6 @@ class Color3: public Math::Vector3<T> {
          * range @f$ [0.0, 1.0] @f$.
          */
         typedef std::tuple<FloatingPointType, FloatingPointType, FloatingPointType> HSV;
-
-        /**
-         * @brief Create integral color from floating-point color
-         *
-         * E.g. `{0.294118, 0.45098, 0.878431}` is converted to
-         * `{75, 115, 224}`, if resulting type is `std::uint8_t`.
-         *
-         * @note This function is enabled only if source type is floating-point
-         *      and destination type is integral.
-         */
-        template<class U> inline constexpr static typename std::enable_if<std::is_integral<T>::value && std::is_floating_point<U>::value, Color3<T>>::type fromNormalized(const Color3<U>& color) {
-            return Color3<T>(Math::denormalize<T>(color.r()),
-                             Math::denormalize<T>(color.g()),
-                             Math::denormalize<T>(color.b()));
-        }
-
-        /**
-         * @brief Create floating-point color from integral color
-         *
-         * E.g. `{75, 115, 224}` is converted to
-         * `{0.294118, 0.45098, 0.878431}`, if source type is `std::uint8_t`.
-         *
-         * @note This function is enabled only if source type is integral
-         *      and destination type is floating-point.
-         */
-        template<class U> inline constexpr static typename std::enable_if<std::is_floating_point<T>::value && std::is_integral<U>::value, Color3<T>>::type fromDenormalized(const Color3<U>& color) {
-            return Color3<T>(Math::normalize<T>(color.r()),
-                             Math::normalize<T>(color.g()),
-                             Math::normalize<T>(color.b()));
-        }
 
         /**
          * @brief Create RGB color from HSV representation
@@ -307,22 +276,6 @@ class Color4: public Math::Vector4<T> {
 
         /** @copydoc Color3::HSV */
         typedef typename Color3<T>::HSV HSV;
-
-        /** @copydoc Color3::fromNormalized() */
-        template<class U> inline constexpr static typename std::enable_if<std::is_integral<T>::value && std::is_floating_point<U>::value, Color4<T>>::type fromNormalized(const Color4<U>& color) {
-            return Color4<T>(Math::denormalize<T>(color.r()),
-                             Math::denormalize<T>(color.g()),
-                             Math::denormalize<T>(color.b()),
-                             Math::denormalize<T>(color.a()));
-        }
-
-        /** @copydoc Color3::fromDenormalized() */
-        template<class U> inline constexpr static typename std::enable_if<std::is_floating_point<T>::value && std::is_integral<U>::value, Color4<T>>::type fromDenormalized(const Color4<U>& color) {
-            return Color4<T>(Math::normalize<T>(color.r()),
-                             Math::normalize<T>(color.g()),
-                             Math::normalize<T>(color.b()),
-                             Math::normalize<T>(color.a()));
-        }
 
         /**
          * @copydoc Color3::fromHSV()

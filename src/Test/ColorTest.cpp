@@ -29,9 +29,6 @@ class ColorTest: public Corrade::TestSuite::Tester {
 
         void access();
 
-        void fromDenormalized();
-        void fromNormalized();
-
         void fromHue();
         void fromSaturation();
         void fromValue();
@@ -55,9 +52,6 @@ typedef Magnum::Color4<float> Color4f;
 
 ColorTest::ColorTest() {
     addTests(&ColorTest::access,
-
-             &ColorTest::fromDenormalized,
-             &ColorTest::fromNormalized,
 
              &ColorTest::fromHue,
              &ColorTest::fromSaturation,
@@ -97,14 +91,6 @@ void ColorTest::access() {
     CORRADE_COMPARE(cc4.g(), 98);
     CORRADE_COMPARE(cc4.b(), 51);
     CORRADE_COMPARE(cc4.a(), 22);
-}
-
-void ColorTest::fromDenormalized() {
-    CORRADE_COMPARE(Color3f::fromDenormalized(Color3(75, 115, 224)), Color3f(0.294118, 0.45098, 0.878431));
-}
-
-void ColorTest::fromNormalized() {
-    CORRADE_COMPARE(Color3::fromNormalized(Color3f(0.294118, 0.45098, 0.878431)), Color3(75, 114, 223));
 }
 
 void ColorTest::fromHue() {
