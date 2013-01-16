@@ -129,10 +129,7 @@ integral type.
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class Integral, class FloatingPoint> inline constexpr typename Integral denormalize(FloatingPoint value);
 #else
-template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value && std::is_unsigned<Integral>::value, Integral>::type denormalize(FloatingPoint value) {
-    return value*std::numeric_limits<Integral>::max();
-}
-template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value && std::is_signed<Integral>::value, Integral>::type denormalize(FloatingPoint value) {
+template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value, Integral>::type denormalize(FloatingPoint value) {
     return value*std::numeric_limits<Integral>::max();
 }
 #endif
