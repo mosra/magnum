@@ -18,7 +18,6 @@
 #include <cmath>
 #include <type_traits>
 #include <limits>
-#include <algorithm>
 
 #include "Math/Vector.h"
 

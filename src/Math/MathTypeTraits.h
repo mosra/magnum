@@ -100,26 +100,18 @@ template<class T> struct MathTypeTraits {
  */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+
+/* Integral scalar types */
 namespace Implementation {
+    template<class T> struct MathTypeTraitsIntegral {
+        MathTypeTraitsIntegral() = delete;
 
-template<class T> struct MathTypeTraitsIntegral {
-    MathTypeTraitsIntegral() = delete;
+        inline constexpr static T epsilon() { return 1; }
 
-    inline constexpr static T epsilon() { return 1; }
-
-    inline constexpr static bool equals(T a, T b) {
-        return a == b;
-    }
-};
-
-template<class T> struct MathTypeTraitsFloatingPoint {
-    MathTypeTraitsFloatingPoint() = delete;
-
-    inline static bool equals(T a, T b) {
-        return std::abs(a - b) < MathTypeTraits<T>::epsilon();
-    }
-};
-
+        inline constexpr static bool equals(T a, T b) {
+            return a == b;
+        }
+    };
 }
 
 template<> struct MathTypeTraits<std::uint8_t>: Implementation::MathTypeTraitsIntegral<std::uint8_t> {
@@ -128,27 +120,35 @@ template<> struct MathTypeTraits<std::uint8_t>: Implementation::MathTypeTraitsIn
 template<> struct MathTypeTraits<std::int8_t>: Implementation::MathTypeTraitsIntegral<std::int8_t> {
     typedef float FloatingPointType;
 };
-
 template<> struct MathTypeTraits<std::uint16_t>: Implementation::MathTypeTraitsIntegral<std::uint16_t> {
     typedef float FloatingPointType;
 };
 template<> struct MathTypeTraits<std::int16_t>: Implementation::MathTypeTraitsIntegral<std::int16_t> {
     typedef float FloatingPointType;
 };
-
 template<> struct MathTypeTraits<std::uint32_t>: Implementation::MathTypeTraitsIntegral<std::uint32_t> {
     typedef double FloatingPointType;
 };
 template<> struct MathTypeTraits<std::int32_t>: Implementation::MathTypeTraitsIntegral<std::int32_t> {
     typedef double FloatingPointType;
 };
-
 template<> struct MathTypeTraits<std::uint64_t>: Implementation::MathTypeTraitsIntegral<std::uint64_t> {
     typedef long double FloatingPointType;
 };
 template<> struct MathTypeTraits<std::int64_t>: Implementation::MathTypeTraitsIntegral<std::int64_t> {
     typedef long double FloatingPointType;
 };
+
+/* Floating-point scalar types */
+namespace Implementation {
+    template<class T> struct MathTypeTraitsFloatingPoint {
+        MathTypeTraitsFloatingPoint() = delete;
+
+        inline static bool equals(T a, T b) {
+            return std::abs(a - b) < MathTypeTraits<T>::epsilon();
+        }
+    };
+}
 
 template<> struct MathTypeTraits<float>: Implementation::MathTypeTraitsFloatingPoint<float> {
     typedef float FloatingPointType;
