@@ -21,6 +21,8 @@
 
 #include "Magnum.h"
 
+using namespace std::chrono;
+
 namespace Magnum { namespace DebugTools {
 
 Profiler::Section Profiler::addSection(const std::string& name) {
@@ -36,8 +38,8 @@ void Profiler::setMeasureDuration(std::size_t frames) {
 
 void Profiler::enable() {
     enabled = true;
-    frameData.assign(measureDuration*sections.size(), std::chrono::high_resolution_clock::duration::zero());
-    totalData.assign(sections.size(), std::chrono::high_resolution_clock::duration::zero());
+    frameData.assign(measureDuration*sections.size(), high_resolution_clock::duration::zero());
+    totalData.assign(sections.size(), high_resolution_clock::duration::zero());
     frameCount = 0;
 }
 
@@ -59,14 +61,14 @@ void Profiler::stop() {
 
     save();
 
-    previousTime = std::chrono::high_resolution_clock::time_point();
+    previousTime = high_resolution_clock::time_point();
 }
 
 void Profiler::save() {
-    auto now = std::chrono::high_resolution_clock::now();
+    auto now = high_resolution_clock::now();
 
     /* If the profiler is already running, add time to given section */
-    if(previousTime != std::chrono::high_resolution_clock::time_point())
+    if(previousTime != high_resolution_clock::time_point())
         frameData[currentFrame*sections.size()+currentSection] += now-previousTime;
 
     /* Set current time as previous for next section */
@@ -86,7 +88,7 @@ void Profiler::nextFrame() {
     /* Subtract times of next frame from total and erase them */
     for(std::size_t i = 0; i != sections.size(); ++i) {
         totalData[i] -= frameData[nextFrame*sections.size()+i];
-        frameData[nextFrame*sections.size()+i] = std::chrono::high_resolution_clock::duration::zero();
+        frameData[nextFrame*sections.size()+i] = high_resolution_clock::duration::zero();
     }
 
     /* Advance to next frame */
@@ -105,7 +107,7 @@ void Profiler::printStatistics() {
 
     Debug() << "Statistics for last" << measureDuration << "frames:";
     for(std::size_t i = 0; i != sections.size(); ++i)
-        Debug() << " " << sections[totalSorted[i]] << std::chrono::microseconds(totalData[totalSorted[i]]).count()/frameCount << u8"µs";
+        Debug() << " " << sections[totalSorted[i]] << duration_cast<microseconds>(totalData[totalSorted[i]]).count()/frameCount << u8"µs";
 }
 
 }}
