@@ -102,6 +102,7 @@ template<std::uint8_t dimensions, class T> void AnimableGroup<dimensions, T>::st
                 animable->previousState = AnimationState::Stopped;
                 animable->currentState = AnimationState::Stopped;
                 --_runningCount;
+                animable->animationStopped();
                 continue;
             }
 
