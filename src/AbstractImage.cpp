@@ -115,6 +115,7 @@ std::size_t AbstractImage::pixelSize(Format format, Type type) {
             CORRADE_INTERNAL_ASSERT(false);
     }
 
+    CORRADE_INTERNAL_ASSERT(false);
     return 0;
 }
 
