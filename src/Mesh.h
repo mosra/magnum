@@ -632,7 +632,7 @@ class MAGNUM_EXPORT Mesh {
                 attributes.push_back({
                     buffer,
                     location+i,
-                    Implementation::Attribute<T>::size(attribute.dataOptions()),
+                    Implementation::Attribute<T>::components(attribute.dataOptions()),
                     static_cast<GLenum>(attribute.dataType()),
                     !!(attribute.dataOptions() & AbstractShaderProgram::Attribute<location, T>::DataOption::Normalized),
                     offset,
@@ -648,7 +648,7 @@ class MAGNUM_EXPORT Mesh {
             integerAttributes.push_back({
                 buffer,
                 location,
-                Implementation::Attribute<T>::size(),
+                Implementation::Attribute<T>::components(),
                 static_cast<GLenum>(attribute.dataType()),
                 offset,
                 stride
@@ -663,7 +663,7 @@ class MAGNUM_EXPORT Mesh {
                 longAttributes.push_back({
                     buffer,
                     location+i,
-                    Implementation::Attribute<T>::size(),
+                    Implementation::Attribute<T>::components(),
                     static_cast<GLenum>(attribute.dataType()),
                     offset,
                     stride
