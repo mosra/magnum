@@ -144,10 +144,19 @@ class OneShotAnimable: public SceneGraph::Animable<3> {
         }
 
         GLfloat time;
+        std::string stateChanges;
 
     protected:
         void animationStep(GLfloat time, GLfloat) override {
             this->time = time;
+        }
+
+        void animationStarted() override {
+            stateChanges += "started;";
+        }
+
+        void animationStopped() override {
+            stateChanges += "stopped;";
         }
 };
 
@@ -199,12 +208,14 @@ void AnimableTest::duration() {
        running and animationStep() is called */
     group.step(1.0f, 0.5f);
     CORRADE_COMPARE(animable.state(), AnimationState::Running);
+    CORRADE_COMPARE(animable.stateChanges, "started;");
     CORRADE_COMPARE(animable.time, 0.0f);
 
     /* Next animation step is out of duration and repeat is not enabled,
        animationStep() shouldn't be called and animation should be stopped */
     group.step(12.75f, 0.5f);
     CORRADE_COMPARE(animable.state(), AnimationState::Stopped);
+    CORRADE_COMPARE(animable.stateChanges, "started;stopped;");
     CORRADE_COMPARE(animable.time, 0.0f);
 }
 
