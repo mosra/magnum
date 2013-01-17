@@ -599,8 +599,10 @@ std::size_t Attribute<GLfloat>::size(GLint components, DataType dataType) {
         case DataType::Int:
         case DataType::Float:
             return 4*components;
+        #ifndef MAGNUM_TARGET_GLES
         case DataType::Double:
             return 8*components;
+        #endif
     }
 
     CORRADE_INTERNAL_ASSERT(false);
@@ -624,7 +626,7 @@ std::size_t Attribute<GLint>::size(GLint components, DataType dataType) {
     return 0;
 }
 
-
+#ifndef MAGNUM_TARGET_GLES
 std::size_t Attribute<GLdouble>::size(GLint components, DataType dataType) {
     switch(dataType) {
         case DataType::Double:
@@ -634,6 +636,7 @@ std::size_t Attribute<GLdouble>::size(GLint components, DataType dataType) {
     CORRADE_INTERNAL_ASSERT(false);
     return 0;
 }
+#endif
 
 std::size_t Attribute<Math::Vector<4, GLfloat>>::size(GLint components, DataType dataType) {
     switch(dataType) {
@@ -648,13 +651,17 @@ std::size_t Attribute<Math::Vector<4, GLfloat>>::size(GLint components, DataType
         case DataType::Int:
         case DataType::Float:
             return 4*components;
+        #ifndef MAGNUM_TARGET_GLES
         case DataType::Double:
             return 8*components;
+        #endif
 
+        #ifndef MAGNUM_TARGET_GLES2
         case DataType::UnsignedInt2101010REV:
         case DataType::Int2101010REV:
             CORRADE_INTERNAL_ASSERT(components == 4);
             return 4;
+        #endif
     }
 
     CORRADE_INTERNAL_ASSERT(false);

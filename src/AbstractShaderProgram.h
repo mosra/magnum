@@ -1163,7 +1163,7 @@ template<> struct Attribute<Math::Vector<4, GLfloat>> {
         return options & DataOption::BGRA ? GL_BGRA : 4;
     }
     #else
-    inline constexpr static GLint components(DataOptions) { return 4; }
+    inline constexpr static GLint components(DataOptions = {}) { return 4; }
     #endif
 
     static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
