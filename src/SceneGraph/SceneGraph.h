@@ -27,6 +27,8 @@
 
 namespace Magnum { namespace SceneGraph {
 
+/** @todoc remove when doxygen is sane again */
+#ifndef DOXYGEN_GENERATING_OUTPUT
 enum class AspectRatioPolicy: std::uint8_t;
 
 template<std::uint8_t dimensions, class T = GLfloat> class AbstractCamera;
@@ -111,6 +113,7 @@ template<class T = GLfloat> class MatrixTransformation3D;
 
 template<class Transformation> class Object;
 template<class Transformation> class Scene;
+#endif
 
 }}
 

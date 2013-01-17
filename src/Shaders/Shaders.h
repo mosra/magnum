@@ -23,6 +23,8 @@
 
 namespace Magnum { namespace Shaders {
 
+/** @todoc remove when doxygen is sane again */
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::uint8_t> class AbstractTextShader;
 typedef AbstractTextShader<2> AbstractTextShader2D;
 typedef AbstractTextShader<3> AbstractTextShader3D;
@@ -40,6 +42,7 @@ typedef TextShader<3> TextShader3D;
 template<std::uint8_t> class VertexColorShader;
 typedef VertexColorShader<2> VertexColorShader2D;
 typedef VertexColorShader<3> VertexColorShader3D;
+#endif
 
 }}
 

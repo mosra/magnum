@@ -302,6 +302,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
         std::uint16_t repeats;
 };
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Two-dimensional drawable
 
@@ -309,15 +310,8 @@ Convenience alternative to <tt>%Animable<2, T></tt>. See Animable for more
 information.
 @note Not available on GCC < 4.7. Use <tt>%Animable<2, T></tt> instead.
 @see Animable3D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using Animable2D = Animable<2, T>;
-#endif
-#else
-typedef Animable<2, T = GLfloat> Animable2D;
-#endif
 
 /**
 @brief Three-dimensional animable
@@ -326,14 +320,8 @@ Convenience alternative to <tt>%Animable<3, T></tt>. See Animable for more
 information.
 @note Not available on GCC < 4.7. Use <tt>%Animable<3, T></tt> instead.
 @see Animable2D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using Animable3D = Animable<3, T>;
-#endif
-#else
-typedef Animable<3, T = GLfloat> Animable3D;
 #endif
 
 }}

@@ -67,6 +67,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup: public FeatureGroup<dimensions, An
         bool wakeUp;
 };
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Two-dimensional drawable
 
@@ -74,15 +75,8 @@ Convenience alternative to <tt>%AnimableGroup<2, T></tt>. See Animable for
 more information.
 @note Not available on GCC < 4.7. Use <tt>%AnimableGroup<2, T></tt> instead.
 @see AnimableGroup3D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using AnimableGroup2D = AnimableGroup<2, T>;
-#endif
-#else
-typedef AnimableGroup<2, T = GLfloat> AnimableGroup2D;
-#endif
 
 /**
 @brief Three-dimensional animable
@@ -91,14 +85,8 @@ Convenience alternative to <tt>%AnimableGroup<3, T></tt>. See Animable for
 more information.
 @note Not available on GCC < 4.7. Use <tt>%AnimableGroup<3, T></tt> instead.
 @see AnimableGroup2D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using AnimableGroup3D = AnimableGroup<3, T>;
-#endif
-#else
-typedef AnimableGroup<3, T = GLfloat> AnimableGroup3D;
 #endif
 
 }}

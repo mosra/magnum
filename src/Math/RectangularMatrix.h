@@ -32,7 +32,10 @@ namespace Magnum { namespace Math {
 
 /** @todo Properly test all constexpr */
 
+/** @todoc Remove `ifndef` when Doxygen is sane again */
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::size_t, std::size_t, class> class RectangularMatrix;
+#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
@@ -53,7 +56,10 @@ namespace Implementation {
 }
 #endif
 
+/** @todoc Remove `ifndef` when Doxygen is sane again */
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::size_t size, class T> class Vector;
+#endif
 
 /**
 @brief Rectangular matrix
@@ -128,15 +134,10 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @param next  Next values
          *
          * Note that the values are in column-major order.
-         * @todoc Remove workaround when Doxygen supports uniform initialization
          */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> inline constexpr /*implicit*/ RectangularMatrix(T first, U... next): _data{first, next...} {
             static_assert(sizeof...(next)+1 == cols*rows, "Improper number of arguments passed to RectangularMatrix constructor");
         }
-        #else
-        template<class ...U> inline constexpr RectangularMatrix(T first, U... next);
-        #endif
 
         /** @brief Copy constructor */
         inline constexpr RectangularMatrix(const RectangularMatrix<cols, rows, T>&) = default;

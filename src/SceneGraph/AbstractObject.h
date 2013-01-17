@@ -179,6 +179,7 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractObject
         /*@}*/
 };
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base for two-dimensional objects
 
@@ -186,15 +187,8 @@ Convenience alternative to <tt>%AbstractObject<2, T></tt>. See AbstractObject
 for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractObject<2, T></tt> instead.
 @see AbstractObject3D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using AbstractObject2D = AbstractObject<2, T>;
-#endif
-#else
-typedef AbstractObject<2, T = GLfloat> AbstractObject2D;
-#endif
 
 /**
 @brief Base for three-dimensional objects
@@ -203,14 +197,8 @@ Convenience alternative to <tt>%AbstractObject<3, T></tt>. See AbstractObject
 for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractObject<3, T></tt> instead.
 @see AbstractObject2D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using AbstractObject3D = AbstractObject<3, T>;
-#endif
-#else
-typedef AbstractObject<3, T = GLfloat> AbstractObject3D;
 #endif
 
 }}

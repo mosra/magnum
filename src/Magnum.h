@@ -57,6 +57,8 @@ namespace Corrade {
 
 namespace Magnum {
 
+/** @todoc Remove `ifndef` when Doxygen is sane again */
+#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Math {
     template<class T> constexpr T deg(T value);
     template<class T> constexpr T rad(T value);
@@ -67,6 +69,7 @@ namespace Math {
 using Corrade::Utility::Debug;
 using Corrade::Utility::Warning;
 using Corrade::Utility::Error;
+#endif
 
 /** @brief Two-component floating-point vector */
 typedef Math::Vector2<GLfloat> Vector2;
@@ -124,6 +127,8 @@ typedef Math::Geometry::Rectangle<GLint> Rectanglei;
 using Math::deg;
 using Math::rad;
 
+/** @todoc Remove `ifndef` when Doxygen is sane again */
+#ifndef DOXYGEN_GENERATING_OUTPUT
 /* Forward declarations for all types in root namespace */
 class AbstractFramebuffer;
 class AbstractImage;
@@ -198,6 +203,7 @@ typedef Texture<2> Texture2D;
 typedef Texture<3> Texture3D;
 
 class Timeline;
+#endif
 
 }
 

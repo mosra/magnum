@@ -163,6 +163,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
 
 template<std::uint8_t dimensions, class T> inline AbstractCamera<dimensions, T>::~AbstractCamera() {}
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base for two-dimensional cameras
 
@@ -170,15 +171,8 @@ Convenience alternative to <tt>%AbstractCamera<2, T></tt>. See AbstractCamera
 for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractCamera<2, T></tt> instead.
 @see AbstractCamera3D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using AbstractCamera2D = AbstractCamera<2, T>;
-#endif
-#else
-typedef AbstractCamera<2, T = GLfloat> AbstractCamera2D;
-#endif
 
 /**
 @brief Base for three-dimensional cameras
@@ -187,14 +181,8 @@ Convenience alternative to <tt>%AbstractCamera<3, T></tt>. See AbstractCamera
 for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractCamera<3, T></tt> instead.
 @see AbstractCamera2D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using AbstractCamera3D = AbstractCamera<3, T>;
-#endif
-#else
-typedef AbstractCamera<3, T = GLfloat> AbstractCamera3D;
 #endif
 
 }}

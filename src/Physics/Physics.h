@@ -23,6 +23,8 @@
 
 namespace Magnum { namespace Physics {
 
+/** @todoc remove when doxygen is sane again */
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::uint8_t> class AbstractShape;
 typedef AbstractShape<2> AbstractShape2D;
 typedef AbstractShape<3> AbstractShape3D;
@@ -68,6 +70,7 @@ typedef ShapeGroup<3> ShapeGroup3D;
 template<std::uint8_t> class Sphere;
 typedef Sphere<2> Sphere2D;
 typedef Sphere<3> Sphere3D;
+#endif
 
 }}
 

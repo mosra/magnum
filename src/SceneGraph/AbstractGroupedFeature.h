@@ -92,40 +92,28 @@ class AbstractGroupedFeature: public AbstractFeature<dimensions, T> {
         FeatureGroup<dimensions, Derived, T>* _group;
 };
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base for two-dimensional grouped features
 
 Convenience alternative to <tt>%AbstractGroupedFeature<2, Derived, T></tt>. See
 AbstractGroupedFeature for more information.
-@see AbstractGroupedFeature3D
 @note Not available on GCC < 4.7. Use <tt>%AbstractGroupedFeature<2, Derived, T></tt>
     instead.
-@todoc Remove workaround when Doxygen supports alias template
+@see AbstractGroupedFeature3D
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class Derived, class T = GLfloat> using AbstractGroupedFeature2D = AbstractGroupedFeature<2, Derived, T>;
-#endif
-#else
-typedef AbstractGroupedFeature<2, Derived, T = GLfloat> AbstractGroupedFeature2D;
-#endif
 
 /**
 @brief Base for three-dimensional grouped features
 
 Convenience alternative to <tt>%AbstractGroupedFeature<3, Derived, T></tt>. See
 AbstractGroupedFeature for more information.
-@see AbstractGroupedFeature2D
 @note Not available on GCC < 4.7. Use <tt>%AbstractGroupedFeature<3, Derived, T></tt>
     instead.
-@todoc Remove workaround when Doxygen supports alias template
+@see AbstractGroupedFeature2D
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class Derived, class T = GLfloat> using AbstractGroupedFeature3D = AbstractGroupedFeature<3, Derived, T>;
-#endif
-#else
-typedef AbstractGroupedFeature<3, Derived, T = GLfloat> AbstractGroupedFeature3D;
 #endif
 
 }}

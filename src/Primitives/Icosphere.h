@@ -26,7 +26,10 @@
 
 namespace Magnum { namespace Primitives {
 
+/** @todoc Remove `ifndef` when Doxygen is sane again */
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::size_t subdivisions> class Icosphere;
+#endif
 
 /**
 @brief 3D icosphere primitive with zero subdivisions

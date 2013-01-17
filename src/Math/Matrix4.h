@@ -267,11 +267,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
         ) {}
 
         /** @copydoc Matrix::Matrix */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> inline constexpr /*implicit*/ Matrix4(T first, U... next): Matrix<4, T>(first, next...) {}
-        #else
-        template<class ...U> inline constexpr /*implicit*/ Matrix4(T first, U... next) {}
-        #endif
 
         /** @brief Copy constructor */
         inline constexpr Matrix4(const RectangularMatrix<4, 4, T>& other): Matrix<4, T>(other) {}

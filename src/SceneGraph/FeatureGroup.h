@@ -111,6 +111,7 @@ class FeatureGroup {
         std::vector<Feature*> features;
 };
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base for two-dimensional object features
 
@@ -119,15 +120,8 @@ AbstractGroupedFeature for more information.
 @note Not available on GCC < 4.7. Use <tt>%FeatureGroup<2, Feature, T></tt>
     instead.
 @see FeatureGroup3D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class Feature, class T = GLfloat> using FeatureGroup2D = FeatureGroup<2, Feature, T>;
-#endif
-#else
-typedef FeatureGroup<2, Feature, T = GLfloat> FeatureGroup2D;
-#endif
 
 /**
 @brief Base for three-dimensional object features
@@ -137,14 +131,8 @@ AbstractGroupedFeature for more information.
 @note Not available on GCC < 4.7. Use <tt>%FeatureGroup<3, Feature, T></tt>
     instead.
 @see FeatureGroup2D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class Feature, class T = GLfloat> using FeatureGroup3D = FeatureGroup<3, Feature, T>;
-#endif
-#else
-typedef FeatureGroup<3, Feature, T = GLfloat> FeatureGroup3D;
 #endif
 
 }}

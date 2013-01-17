@@ -23,6 +23,8 @@
 
 namespace Magnum { namespace Math {
 
+/** @todoc Remove `ifndef` when Doxygen is sane again */
+#ifndef DOXYGEN_GENERATING_OUTPUT
 /* Class Constants used only statically */
 
 template<std::size_t, class> class Matrix;
@@ -44,6 +46,7 @@ template<class> class Vector4;
 namespace Geometry {
     template<class> class Rectangle;
 }
+#endif
 
 }}
 

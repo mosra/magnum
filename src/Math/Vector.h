@@ -91,20 +91,16 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          * @param first First value
          * @param next  Next values
          */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> inline constexpr /*implicit*/ Vector(T first, U... next): RectangularMatrix<1, size, T>(first, next...) {}
-        #else
-        template<class ...U> inline constexpr /*implicit*/ Vector(T first, U... next);
-        #endif
 
         /**
          * @brief Constructor
          * @param value Value for all fields
          */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class U> inline explicit Vector(typename std::enable_if<std::is_same<T, U>::value && size != 1, U>::type value) {
-        #else
+        #ifdef DOXYGEN_GENERATING_OUTPUT
         inline explicit Vector(T value) {
+        #else
+        template<class U> inline explicit Vector(typename std::enable_if<std::is_same<T, U>::value && size != 1, U>::type value) {
         #endif
             for(std::size_t i = 0; i != size; ++i)
                 (*this)[i] = value;

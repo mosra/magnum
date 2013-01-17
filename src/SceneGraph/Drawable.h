@@ -135,6 +135,7 @@ class Drawable: public AbstractGroupedFeature<dimensions, Drawable<dimensions, T
         virtual void draw(const typename DimensionTraits<dimensions, T>::MatrixType& transformationMatrix, AbstractCamera<dimensions, T>* camera) = 0;
 };
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Two-dimensional drawable
 
@@ -142,15 +143,8 @@ Convenience alternative to <tt>%Drawable<2, T></tt>. See Drawable for more
 information.
 @note Not available on GCC < 4.7. Use <tt>%Drawable<2, T></tt> instead.
 @see Drawable3D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using Drawable2D = Drawable<2, T>;
-#endif
-#else
-typedef Drawable<2, T = GLfloat> Drawable2D;
-#endif
 
 /**
 @brief Three-dimensional drawable
@@ -159,14 +153,8 @@ Convenience alternative to <tt>%Drawable<3, T></tt>. See Drawable for more
 information.
 @note Not available on GCC < 4.7. Use <tt>%Drawable<3, T></tt> instead.
 @see Drawable2D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using Drawable3D = Drawable<3, T>;
-#endif
-#else
-typedef Drawable<3, T = GLfloat> Drawable3D;
 #endif
 
 /**
@@ -174,9 +162,8 @@ typedef Drawable<3, T = GLfloat> Drawable3D;
 
 See Drawable for more information.
 @see @ref scenegraph, DrawableGroup2D, DrawableGroup3D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#if !defined(CORRADE_GCC46_COMPATIBILITY) && !defined(DOXYGEN_GENERATING_OUTPUT)
+#ifndef CORRADE_GCC46_COMPATIBILITY
 template<std::uint8_t dimensions, class T = GLfloat> using DrawableGroup = FeatureGroup<dimensions, Drawable<dimensions, T>, T>;
 #else
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -187,6 +174,7 @@ template<std::uint8_t dimensions, class T = GLfloat>
 class DrawableGroup: public FeatureGroup<dimensions, Drawable<dimensions, T>, T> {};
 #endif
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Group of two-dimensional drawables
 
@@ -194,15 +182,8 @@ Convenience alternative to <tt>%DrawableGroup<2, T></tt>. See Drawable for
 more information.
 @note Not available on GCC < 4.7. Use <tt>%Drawable<2, T></tt> instead.
 @see DrawableGroup3D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using DrawableGroup2D = DrawableGroup<2, T>;
-#endif
-#else
-typedef DrawableGroup<2, T = GLfloat> DrawableGroup2D;
-#endif
 
 /**
 @brief Group of three-dimensional drawables
@@ -211,14 +192,8 @@ Convenience alternative to <tt>%DrawableGroup<3, T></tt>. See Drawable for
 more information.
 @note Not available on GCC < 4.7. Use <tt>%Drawable<3, T></tt> instead.
 @see DrawableGroup2D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using DrawableGroup3D = DrawableGroup<3, T>;
-#endif
-#else
-typedef DrawableGroup<3, T = GLfloat> DrawableGroup3D;
 #endif
 
 }}

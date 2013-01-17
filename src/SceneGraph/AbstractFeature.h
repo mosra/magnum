@@ -284,6 +284,7 @@ template<std::uint8_t dimensions, class T> inline AbstractFeature<dimensions, T>
 template<std::uint8_t dimensions, class T> inline void AbstractFeature<dimensions, T>::clean(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
 template<std::uint8_t dimensions, class T> inline void AbstractFeature<dimensions, T>::cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base for two-dimensional features
 
@@ -291,15 +292,8 @@ Convenience alternative to <tt>%AbstractFeature<2, T></tt>. See AbstractFeature
 for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractFeature<2, T></tt> instead.
 @see AbstractFeature3D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using AbstractFeature2D = AbstractFeature<2, T>;
-#endif
-#else
-typedef AbstractFeature<2, T = GLfloat> AbstractFeature2D;
-#endif
 
 /**
 @brief Base for three-dimensional features
@@ -308,14 +302,8 @@ Convenience alternative to <tt>%AbstractFeature<3, T></tt>. See AbstractFeature
 for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractFeature<3, T></tt> instead.
 @see AbstractFeature2D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using AbstractFeature3D = AbstractFeature<3, T>;
-#endif
-#else
-typedef AbstractFeature<2, T = GLfloat> AbstractFeature3D;
 #endif
 
 }}

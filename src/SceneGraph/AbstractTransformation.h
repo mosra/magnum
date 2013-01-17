@@ -139,6 +139,7 @@ enum class TransformationType: std::uint8_t {
 
 template<std::uint8_t dimensions, class T> inline AbstractTransformation<dimensions, T>::~AbstractTransformation() {}
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base for two-dimensional transformations
 
@@ -147,15 +148,8 @@ AbstractTransformation for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractTransformation<2, T></tt>
     instead.
 @see AbstractTransformation3D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using AbstractTransformation2D = AbstractTransformation<2, T>;
-#endif
-#else
-typedef AbstractTransformation<2, T = GLfloat> AbstractTransformation2D;
-#endif
 
 /**
 @brief Base for three-dimensional transformations
@@ -165,14 +159,8 @@ AbstractTransformation for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractTransformation<3, T></tt>
     instead.
 @see AbstractTransformation2D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = GLfloat> using AbstractTransformation3D = AbstractTransformation<3, T>;
-#endif
-#else
-typedef AbstractTransformation<3, T = GLfloat> AbstractTransformation3D;
 #endif
 
 }}
