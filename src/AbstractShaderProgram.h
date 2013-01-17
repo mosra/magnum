@@ -23,7 +23,6 @@
 #include <Containers/EnumSet.h>
 
 #include "Magnum.h"
-#include "TypeTraits.h"
 
 #include "magnumVisibility.h"
 
@@ -34,6 +33,7 @@ namespace Magnum {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<class> struct Attribute;
+    template<class> struct AttributeTraits;
 }
 #endif
 
@@ -266,7 +266,7 @@ mesh.draw();
 
 Only types listed here (and their subclasses and specializations, such as
 @ref Matrix3 or Color4) can be used for setting uniforms and specifying
-vertex attributes. See also TypeTraits::AttributeType.
+vertex attributes.
 
 @section AbstractShaderProgram-performance-optimization Performance optimizations
 
@@ -329,7 +329,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
                  * Type used in shader code.
                  * @see DataType
                  */
-                typedef typename TypeTraits<T>::AttributeType Type;
+                typedef typename Implementation::AttributeTraits<T>::AttributeType Type;
 
                 /**
                  * @brief Data type
@@ -1260,6 +1260,57 @@ template<class T> struct Attribute<Color4<T>>: public Attribute<Math::Vector4<T>
 
 template<class T> struct Attribute<Math::Matrix3<T>>: public Attribute<Math::Matrix<3, T>> {};
 template<class T> struct Attribute<Math::Matrix4<T>>: public Attribute<Math::Matrix<4, T>> {};
+
+/* Types allowed as GLSL attributes */
+template<> struct AttributeTraits<GLuint> { typedef GLuint AttributeType; };
+template<> struct AttributeTraits<GLint> { typedef GLint AttributeType; };
+template<> struct AttributeTraits<GLfloat> { typedef GLfloat AttributeType; };
+#ifndef MAGNUM_TARGET_GLES
+template<> struct AttributeTraits<GLdouble> { typedef GLdouble AttributeType; };
+#endif
+
+/* Only some vectors can be used as attributes */
+template<class> struct VectorAttributeTraits {};
+template<> struct VectorAttributeTraits<GLuint> { typedef GLuint AttributeType; };
+template<> struct VectorAttributeTraits<GLint> { typedef GLint AttributeType; };
+template<> struct VectorAttributeTraits<GLfloat> { typedef GLfloat AttributeType; };
+#ifndef MAGNUM_TARGET_GLES
+template<> struct VectorAttributeTraits<GLdouble> { typedef GLdouble AttributeType; };
+#endif
+
+template<class T> struct AttributeTraits<Math::Vector<2, T>>: VectorAttributeTraits<T> {};
+template<class T> struct AttributeTraits<Math::Vector<3, T>>: VectorAttributeTraits<T> {};
+template<class T> struct AttributeTraits<Math::Vector<4, T>>: VectorAttributeTraits<T> {};
+
+template<class T> struct AttributeTraits<Math::Vector2<T>>: AttributeTraits<Math::Vector<2, T>> {};
+template<class T> struct AttributeTraits<Math::Vector3<T>>: AttributeTraits<Math::Vector<3, T>> {};
+template<class T> struct AttributeTraits<Math::Vector4<T>>: AttributeTraits<Math::Vector<4, T>> {};
+template<class T> struct AttributeTraits<Math::Point2D<T>>: AttributeTraits<Math::Vector<3, T>> {};
+template<class T> struct AttributeTraits<Math::Point3D<T>>: AttributeTraits<Math::Vector<4, T>> {};
+template<class T> struct AttributeTraits<Color3<T>>: AttributeTraits<Math::Vector<3, T>> {};
+template<class T> struct AttributeTraits<Color4<T>>: AttributeTraits<Math::Vector<4, T>> {};
+
+/* Only some floating-point matrices can be used as attributes */
+template<class> struct MatrixAttributeTraits {};
+template<> struct MatrixAttributeTraits<GLfloat> { typedef GLfloat AttributeType; };
+#ifndef MAGNUM_TARGET_GLES
+template<> struct MatrixAttributeTraits<GLdouble> { typedef GLdouble AttributeType; };
+#endif
+
+template<class T> struct AttributeTraits<Math::RectangularMatrix<2, 2, T>>: MatrixAttributeTraits<T> {};
+template<class T> struct AttributeTraits<Math::RectangularMatrix<3, 3, T>>: MatrixAttributeTraits<T> {};
+template<class T> struct AttributeTraits<Math::RectangularMatrix<4, 4, T>>: MatrixAttributeTraits<T> {};
+#ifndef MAGNUM_TARGET_GLES2
+template<class T> struct AttributeTraits<Math::RectangularMatrix<2, 3, T>>: MatrixAttributeTraits<T> {};
+template<class T> struct AttributeTraits<Math::RectangularMatrix<3, 2, T>>: MatrixAttributeTraits<T> {};
+template<class T> struct AttributeTraits<Math::RectangularMatrix<2, 4, T>>: MatrixAttributeTraits<T> {};
+template<class T> struct AttributeTraits<Math::RectangularMatrix<4, 2, T>>: MatrixAttributeTraits<T> {};
+template<class T> struct AttributeTraits<Math::RectangularMatrix<3, 4, T>>: MatrixAttributeTraits<T> {};
+template<class T> struct AttributeTraits<Math::RectangularMatrix<4, 3, T>>: MatrixAttributeTraits<T> {};
+#endif
+
+template<class T> struct AttributeTraits<Math::Matrix3<T>>: MatrixAttributeTraits<T> {};
+template<class T> struct AttributeTraits<Math::Matrix4<T>>: MatrixAttributeTraits<T> {};
 
 }
 #endif

@@ -21,9 +21,9 @@
 
 #include <vector>
 #include <Utility/Assert.h>
+#include <Utility/ConfigurationValue.h>
 
 #include "AbstractShaderProgram.h"
-#include "TypeTraits.h"
 
 namespace Magnum {
 
@@ -627,7 +627,7 @@ class MAGNUM_EXPORT Mesh {
         }
         inline void addInterleavedVertexBufferInternal(Buffer*, GLsizei, GLintptr) {}
 
-        template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename TypeTraits<T>::AttributeType, GLfloat>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
+        template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::AttributeTraits<T>::AttributeType, GLfloat>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
             for(GLuint i = 0; i != Implementation::Attribute<T>::vectorCount(); ++i) {
                 attributes.push_back({
                     buffer,
@@ -644,7 +644,7 @@ class MAGNUM_EXPORT Mesh {
         }
 
         #ifndef MAGNUM_TARGET_GLES2
-        template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_integral<typename TypeTraits<T>::AttributeType>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
+        template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_integral<typename Implementation::AttributeTraits<T>::AttributeType>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
             integerAttributes.push_back({
                 buffer,
                 location,
@@ -658,7 +658,7 @@ class MAGNUM_EXPORT Mesh {
         }
 
         #ifndef MAGNUM_TARGET_GLES
-        template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename TypeTraits<T>::AttributeType, GLdouble>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
+        template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::AttributeTraits<T>::AttributeType, GLdouble>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
             for(GLuint i = 0; i != Implementation::Attribute<T>::vectorCount(); ++i) {
                 longAttributes.push_back({
                     buffer,
