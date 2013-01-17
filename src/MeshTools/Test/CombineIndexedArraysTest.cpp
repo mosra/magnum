@@ -16,6 +16,7 @@
 #include <sstream>
 #include <TestSuite/Tester.h>
 
+#include "Magnum.h"
 #include "MeshTools/CombineIndexedArrays.h"
 
 namespace Magnum { namespace MeshTools { namespace Test {

@@ -17,8 +17,6 @@
 
 #include <Utility/Assert.h>
 
-#include "TypeTraits.h"
-
 namespace Magnum {
 
 std::size_t AbstractImage::pixelSize(Format format, Type type) {

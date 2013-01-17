@@ -28,7 +28,6 @@ set(Magnum_SRCS
     Resource.cpp
     Shader.cpp
     Timeline.cpp
-    TypeTraits.cpp
 
     Implementation/BufferState.cpp
     Implementation/State.cpp
@@ -79,7 +78,6 @@ set(Magnum_HEADERS
     Swizzle.h
     Texture.h
     Timeline.h
-    TypeTraits.h
 
     magnumVisibility.h)
 
