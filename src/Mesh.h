@@ -597,7 +597,7 @@ class MAGNUM_EXPORT Mesh {
             addVertexAttribute(buffer, attribute, offset, 0);
 
             /* Add size of this attribute array to offset for next attribute */
-            addVertexBufferInternal(buffer, offset+TypeTraits<T>::count()*TypeTraits<T>::size()*_vertexCount, attributes...);
+            addVertexBufferInternal(buffer, offset+attribute.dataSize()*_vertexCount, attributes...);
         }
         template<class ...T> inline void addVertexBufferInternal(Buffer* buffer, GLintptr offset, GLintptr gap, const T&... attributes) {
             /* Add the gap to offset for next attribute */
@@ -606,8 +606,8 @@ class MAGNUM_EXPORT Mesh {
         inline void addVertexBufferInternal(Buffer*, GLintptr) {}
 
         /* Computing stride of interleaved vertex attributes */
-        template<GLuint location, class T, class ...U> inline static GLsizei strideOfInterleaved(const AbstractShaderProgram::Attribute<location, T>&, const U&... attributes) {
-            return TypeTraits<T>::count()*TypeTraits<T>::size() + strideOfInterleaved(attributes...);
+        template<GLuint location, class T, class ...U> inline static GLsizei strideOfInterleaved(const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
+            return attribute.dataSize() + strideOfInterleaved(attributes...);
         }
         template<class ...T> inline static GLsizei strideOfInterleaved(GLintptr gap, const T&... attributes) {
             return gap + strideOfInterleaved(attributes...);
@@ -619,7 +619,7 @@ class MAGNUM_EXPORT Mesh {
             addVertexAttribute(buffer, attribute, offset, stride);
 
             /* Add size of this attribute to offset for next attribute */
-            addInterleavedVertexBufferInternal(buffer, offset+TypeTraits<T>::count()*TypeTraits<T>::size(), stride, attributes...);
+            addInterleavedVertexBufferInternal(buffer, offset+attribute.dataSize(), stride, attributes...);
         }
         template<class ...T> inline void addInterleavedVertexBufferInternal(Buffer* buffer, GLintptr offset, GLsizei stride, GLintptr gap, const T&... attributes) {
             /* Add the gap to offset for next attribute */

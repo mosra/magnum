@@ -436,6 +436,11 @@ class MAGNUM_EXPORT AbstractShaderProgram {
                 /** @brief Type of passed data */
                 inline constexpr DataType dataType() const { return _dataType; }
 
+                /** @brief Size of passed data */
+                inline std::size_t dataSize() const {
+                    return Implementation::Attribute<T>::size(Implementation::Attribute<T>::components(), _dataType);
+                }
+
                 /** @brief Data options */
                 inline constexpr DataOptions dataOptions() const { return _dataOptions; }
 
@@ -1093,24 +1098,25 @@ template<> struct Attribute<GLfloat> {
 
     static const DataType DefaultDataType = DataType::Float;
 
-    inline constexpr static GLint components(DataOptions) { return 1; }
+    inline constexpr static GLint components(DataOptions = {}) { return 1; }
+    static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
     inline constexpr static std::size_t vectorCount() { return 1; }
 };
 
 CORRADE_ENUMSET_OPERATORS(Attribute<GLfloat>::DataOptions)
 
 template<std::size_t vectorSize> struct Attribute<Math::Vector<vectorSize, GLfloat>>: public Attribute<GLfloat> {
-    inline constexpr static GLint components(DataOptions) { return vectorSize; }
+    inline constexpr static GLint components(DataOptions = {}) { return vectorSize; }
     inline constexpr static std::size_t vectorCount() { return 1; }
 };
 
 template<std::size_t cols, std::size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, GLfloat>>: public Attribute<GLfloat> {
-    inline constexpr static GLint components(DataOptions) { return rows; }
+    inline constexpr static GLint components(DataOptions = {}) { return rows; }
     inline constexpr static std::size_t vectorCount() { return cols; }
 };
 
 template<std::size_t matrixSize> struct Attribute<Math::Matrix<matrixSize, GLfloat>>: public Attribute<GLfloat> {
-    inline constexpr static GLint components(DataOptions) { return matrixSize; }
+    inline constexpr static GLint components(DataOptions = {}) { return matrixSize; }
     inline constexpr static std::size_t vectorCount() { return matrixSize; }
 };
 
@@ -1153,13 +1159,14 @@ template<> struct Attribute<Math::Vector<4, GLfloat>> {
     static const DataType DefaultDataType = DataType::Float;
 
     #ifndef MAGNUM_TARGET_GLES
-    inline constexpr static GLint components(DataOptions options) {
+    inline constexpr static GLint components(DataOptions options = {}) {
         return options & DataOption::BGRA ? GL_BGRA : 4;
     }
     #else
     inline constexpr static GLint components(DataOptions) { return 4; }
     #endif
 
+    static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
     inline constexpr static std::size_t vectorCount() { return 1; }
 };
 
@@ -1183,6 +1190,7 @@ template<> struct Attribute<GLint> {
     static const DataType DefaultDataType = DataType::Int;
 
     inline constexpr static GLint components() { return 1; }
+    static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
 
 template<> struct Attribute<GLuint> {
@@ -1194,6 +1202,9 @@ template<> struct Attribute<GLuint> {
     static const DataType DefaultDataType = DataType::UnsignedInt;
 
     inline constexpr static GLint components() { return 1; }
+    inline static std::size_t size(GLint components, DataType dataType) {
+        return Attribute<GLint>::size(components, dataType);
+    }
 };
 
 template<std::size_t size> struct Attribute<Math::Vector<size, GLint>>: public Attribute<GLint> {
@@ -1218,6 +1229,7 @@ template<> struct Attribute<GLdouble> {
 
     inline constexpr static GLint components() { return 1; }
     inline constexpr static std::size_t vectorCount() { return 1; }
+    static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
 
 template<std::size_t cols, std::size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, GLdouble>>: public Attribute<GLdouble> {

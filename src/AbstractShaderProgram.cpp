@@ -568,4 +568,85 @@ void AbstractShaderProgram::uniformImplementationDSA(GLint location, const Math:
 }
 #endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
+
+std::size_t Attribute<GLfloat>::size(GLint components, DataType dataType) {
+    switch(dataType) {
+        case DataType::UnsignedByte:
+        case DataType::Byte:
+            return components;
+        case DataType::UnsignedShort:
+        case DataType::Short:
+        case DataType::HalfFloat:
+            return 2*components;
+        case DataType::UnsignedInt:
+        case DataType::Int:
+        case DataType::Float:
+            return 4*components;
+        case DataType::Double:
+            return 8*components;
+    }
+
+    CORRADE_INTERNAL_ASSERT(false);
+    return 0;
+}
+
+std::size_t Attribute<GLint>::size(GLint components, DataType dataType) {
+    switch(dataType) {
+        case DataType::UnsignedByte:
+        case DataType::Byte:
+            return components;
+        case DataType::UnsignedShort:
+        case DataType::Short:
+            return 2*components;
+        case DataType::UnsignedInt:
+        case DataType::Int:
+            return 4*components;
+    }
+
+    CORRADE_INTERNAL_ASSERT(false);
+    return 0;
+}
+
+
+std::size_t Attribute<GLdouble>::size(GLint components, DataType dataType) {
+    switch(dataType) {
+        case DataType::Double:
+            return 8*components;
+    }
+
+    CORRADE_INTERNAL_ASSERT(false);
+    return 0;
+}
+
+std::size_t Attribute<Math::Vector<4, GLfloat>>::size(GLint components, DataType dataType) {
+    switch(dataType) {
+        case DataType::UnsignedByte:
+        case DataType::Byte:
+            return components;
+        case DataType::UnsignedShort:
+        case DataType::Short:
+        case DataType::HalfFloat:
+            return 2*components;
+        case DataType::UnsignedInt:
+        case DataType::Int:
+        case DataType::Float:
+            return 4*components;
+        case DataType::Double:
+            return 8*components;
+
+        case DataType::UnsignedInt2101010REV:
+        case DataType::Int2101010REV:
+            CORRADE_INTERNAL_ASSERT(components == 4);
+            return 4;
+    }
+
+    CORRADE_INTERNAL_ASSERT(false);
+    return 0;
+}
+
+}
+#endif
+
 }
