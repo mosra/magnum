@@ -1134,8 +1134,8 @@ template<> struct Attribute<Math::Vector<4, GLfloat>> {
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         ,
-        UnsignedAlpha2RGB10 = GL_UNSIGNED_INT_2_10_10_10_REV,
-        Alpha2RGB10 = GL_INT_2_10_10_10_REV
+        UnsignedInt2101010REV = GL_UNSIGNED_INT_2_10_10_10_REV,
+        Int2101010REV = GL_INT_2_10_10_10_REV
         #endif
     };
 
