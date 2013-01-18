@@ -424,6 +424,16 @@ template<class... Types> class ResourceManager: private Implementation::Resource
             this->Implementation::ResourceManagerData<T>::set(key, data, state, policy);
         }
 
+        /**
+         * @brief Set resource data
+         *
+         * Same as above function with state set to @ref ResourceDataState "ResourceDataState::Final"
+         * and policy to @ref ResourcePolicy "ResourcePolicy::Resident".
+         */
+        template<class T> inline void set(ResourceKey key, T* data) {
+            this->Implementation::ResourceManagerData<T>::set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);
+        }
+
         /** @brief Fallback for not found resources */
         template<class T> inline T* fallback() {
             return this->Implementation::ResourceManagerData<T>::fallback();
