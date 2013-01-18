@@ -15,6 +15,7 @@
 
 #include "TgaImporterTest.h"
 
+#include <sstream>
 #include <Utility/Debug.h>
 #include <Math/Vector2.h>
 #include <Trade/ImageData.h>
@@ -112,12 +113,12 @@ void TgaImporterTest::bits24() {
     CORRADE_VERIFY(importer.open(in));
     auto image = importer.image2D(0);
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_VERIFY(image->components() == AbstractImage::Components::BGR);
+    CORRADE_COMPARE(image->format(), Trade::ImageData2D::Format::BGR);
     #else
-    CORRADE_VERIFY(image->components() == AbstractImage::Components::RGB);
+    CORRADE_COMPARE(image->format(), Trade::ImageData2D::Format::RGB);
     #endif
     CORRADE_COMPARE(image->size(), Math::Vector2<GLsizei>(2, 3));
-    CORRADE_VERIFY(image->type() == TypeTraits<GLubyte>::imageType());
+    CORRADE_COMPARE(image->type(), Trade::ImageData2D::Type::UnsignedByte);
     CORRADE_COMPARE(std::string(static_cast<const char*>(image->data()), 2*3*3), std::string(pixels, 2*3*3));
 }
 
@@ -139,12 +140,12 @@ void TgaImporterTest::bits32() {
     CORRADE_VERIFY(importer.open(in));
     auto image = importer.image2D(0);
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_VERIFY(image->components() == AbstractImage::Components::BGRA);
+    CORRADE_COMPARE(image->format(), Trade::ImageData2D::Format::BGRA);
     #else
-    CORRADE_VERIFY(image->components() == AbstractImage::Components::RGBA);
+    CORRADE_COMPARE(image->format(), Trade::ImageData2D::Format::RGBA);
     #endif
     CORRADE_COMPARE(image->size(), Math::Vector2<GLsizei>(2, 3));
-    CORRADE_VERIFY(image->type() == TypeTraits<GLubyte>::imageType());
+    CORRADE_COMPARE(image->type(), Trade::ImageData2D::Type::UnsignedByte);
     CORRADE_COMPARE(std::string(static_cast<const char*>(image->data()), 2*3*3), std::string(pixels, 2*3*3));
 }
 

@@ -74,35 +74,35 @@ bool TgaImporter::open(std::istream& in, const std::string& name) {
         return false;
     }
 
-    AbstractImage::Components components;
+    ImageData2D::Format format;
     switch(header.bpp) {
         case 24:
             #ifndef MAGNUM_TARGET_GLES
-            components = AbstractImage::Components::BGR;
+            format = ImageData2D::Format::BGR;
             #else
-            components = AbstractImage::Components::RGB;
+            format = ImageData2D::Format::RGB;
             #endif
             break;
         case 32:
             #ifndef MAGNUM_TARGET_GLES
-            components = AbstractImage::Components::BGRA;
+            format = ImageData2D::Format::BGRA;
             #else
-            components = AbstractImage::Components::RGBA;
+            format = ImageData2D::Format::RGBA;
             #endif
             break;
         default:
-            Error() << "TgaImporter: unsupported bits-per-pixel:" << int(header.bpp);
+            Error() << "TgaImporter: unsupported bits-per-pixel:" << header.bpp;
             return false;
     }
 
     std::size_t size = header.width*header.height*header.bpp/8;
-    GLubyte* buffer = new GLubyte[size];
-    in.read(reinterpret_cast<char*>(buffer), size);
+    char* buffer = new char[size];
+    in.read(buffer, size);
 
     Math::Vector2<GLsizei> dimensions(header.width, header.height);
 
     #ifdef MAGNUM_TARGET_GLES
-    if(components == AbstractImage::Components::RGB) {
+    if(format == AbstractImage::Components::RGB) {
         Math::Vector3<GLubyte>* data = reinterpret_cast<Math::Vector3<GLubyte>*>(buffer);
         std::transform(data, data + dimensions.product(), data,
             [](Math::Vector3<GLubyte> pixel) { return swizzle<'b', 'g', 'r'>(pixel); });
@@ -113,7 +113,7 @@ bool TgaImporter::open(std::istream& in, const std::string& name) {
     }
     #endif
 
-    _image = new ImageData2D(name, dimensions, components, buffer);
+    _image = new ImageData2D(name, dimensions, format, ImageData2D::Type::UnsignedByte, buffer);
     return true;
 }
 
