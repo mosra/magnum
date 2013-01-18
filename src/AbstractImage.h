@@ -456,6 +456,12 @@ class MAGNUM_EXPORT AbstractImage {
 
 inline AbstractImage::~AbstractImage() {}
 
+/** @debugoperator{Magnum::AbstractImage} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, AbstractImage::Format value);
+
+/** @debugoperator{Magnum::AbstractImage} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, AbstractImage::Type value);
+
 }
 
 #endif

@@ -119,4 +119,87 @@ std::size_t AbstractImage::pixelSize(Format format, Type type) {
     return 0;
 }
 
+Debug operator<<(Debug debug, AbstractImage::Format value) {
+    switch(value) {
+        #define _c(value) case AbstractImage::Format::value: return debug << "AbstractImage::Format::" #value;
+        _c(Red)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(Green)
+        _c(Blue)
+        #endif
+        _c(RG)
+        _c(RGB)
+        _c(RGBA)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(BGR)
+        #endif
+        _c(BGRA)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(RedInteger)
+        _c(GreenInteger)
+        _c(BlueInteger)
+        _c(RGInteger)
+        _c(RGBInteger)
+        _c(RGBAInteger)
+        _c(BGRInteger)
+        _c(BGRAInteger)
+        #endif
+        _c(DepthComponent)
+        _c(StencilIndex)
+        _c(DepthStencil)
+        #undef _c
+    }
+
+    return debug << "AbstractImage::Format::(invalid)";
+}
+
+Debug operator<<(Debug debug, AbstractImage::Type value) {
+    switch(value) {
+        #define _c(value) case AbstractImage::Type::value: return debug << "AbstractImage::Type::" #value;
+        _c(UnsignedByte)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(Byte)
+        #endif
+        _c(UnsignedShort)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(Short)
+        #endif
+        _c(UnsignedInt)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(Int)
+        #endif
+        _c(HalfFloat)
+        _c(Float)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(UnsignedByte332)
+        _c(UnsignedByte233Rev)
+        #endif
+        _c(UnsignedShort565)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(UnsignedShort565Rev)
+        #endif
+        _c(UnsignedShort4444)
+        _c(UnsignedShort4444Rev)
+        _c(UnsignedShort5551)
+        _c(UnsignedShort1555Rev)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(UnsignedInt8888)
+        _c(UnsignedInt8888Rev)
+        _c(UnsignedInt1010102)
+        #endif
+        _c(UnsignedInt2101010Rev)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(UnsignedInt10F11F11FRev)
+        _c(UnsignedInt5999Rev)
+        #endif
+        _c(UnsignedInt248)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(Float32UnsignedInt248Rev)
+        #endif
+        #undef _c
+    }
+
+    return debug << "AbstractImage::Type::(invalid)";
+}
+
 }
