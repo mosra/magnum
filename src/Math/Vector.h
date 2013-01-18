@@ -76,6 +76,8 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          * The interpolation is done as in following: @f[
          *      v_{LERP} = (1 - t) \boldsymbol v_A + t \boldsymbol v_B
          * @f]
+         * @todo http://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
+         *      (when SIMD is in place)
          */
         inline static Vector<size, T> lerp(const Vector<size, T>& a, const Vector<size, T>& b, T t) {
             return (T(1) - t)*a + t*b;

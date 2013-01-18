@@ -38,15 +38,6 @@
 #endif
 #endif
 
-/**
- * @todo Link to libGL / libGLES based on which windowcontext is used in app
- *      and whether GLES is enabled or not -- this allows us to use glx with
- *      ES on nvidia/intel. Using libGL and EGL on nvidia is whole another
- *      problem, though. How about windows? It won't allow unlinked DLLs, so
- *      probably always link Magnum itself to GL library there. How about unit
- *      tests not needing any of GL? -- different testing library?
- */
-
 namespace Corrade {
     namespace Utility {
         class Debug;

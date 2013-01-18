@@ -131,7 +131,7 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          * @brief Set index type
          * @return Pointer to self (for method chaining)
          *
-         * Default is @ref Type "IndexType::UnsignedInt".
+         * Default is @ref IndexType "IndexType::UnsignedInt".
          * @see setIndexBuffer(), setIndexCount(), MeshTools::compressIndices()
          */
         inline IndexedMesh* setIndexType(IndexType type) {
