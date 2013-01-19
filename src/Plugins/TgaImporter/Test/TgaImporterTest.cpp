@@ -13,10 +13,8 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "TgaImporterTest.h"
-
 #include <sstream>
-#include <Utility/Debug.h>
+#include <TestSuite/Tester.h>
 #include <Math/Vector2.h>
 #include <Trade/ImageData.h>
 
@@ -24,9 +22,20 @@
 
 using namespace Corrade::Utility;
 
-CORRADE_TEST_MAIN(Magnum::Trade::TgaImporter::Test::TgaImporterTest)
-
 namespace Magnum { namespace Trade { namespace TgaImporter { namespace Test {
+
+class TgaImporterTest: public Corrade::TestSuite::Tester {
+    public:
+        TgaImporterTest();
+
+        void openInexistent();
+        void openShort();
+        void paletted();
+        void nonRgb();
+        void bits16();
+        void bits24();
+        void bits32();
+};
 
 TgaImporterTest::TgaImporterTest() {
     addTests(&TgaImporterTest::openInexistent,
@@ -150,3 +159,5 @@ void TgaImporterTest::bits32() {
 }
 
 }}}}
+
+CORRADE_TEST_MAIN(Magnum::Trade::TgaImporter::Test::TgaImporterTest)
