@@ -21,7 +21,6 @@ set(Magnum_SRCS
     DefaultFramebuffer.cpp
     Framebuffer.cpp
     Image.cpp
-    IndexedMesh.cpp
     Mesh.cpp
     Query.cpp
     Renderbuffer.cpp

@@ -80,29 +80,6 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          * no vertex or index buffers.
          */
         inline explicit IndexedMesh(Primitive primitive = Primitive::Triangles): Mesh(primitive) {}
-
-        /**
-         * @brief Draw the mesh
-         *
-         * Expects an active shader with all uniforms set. See
-         * @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
-         * for more information.
-         * @see @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
-         *      @fn_gl{VertexAttribPointer}, @fn_gl{DisableVertexAttribArray}
-         *      or @fn_gl{BindVertexArray} (if @extension{APPLE,vertex_array_object}
-         *      is available), @fn_gl{DrawElements}
-         */
-        void draw() override;
-
-    private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
-
-        void MAGNUM_LOCAL bind();
-
-        typedef void(IndexedMesh::*BindIndexedImplementation)();
-        void MAGNUM_LOCAL bindIndexedImplementationDefault();
-        void MAGNUM_LOCAL bindIndexedImplementationVAO();
-        static MAGNUM_LOCAL BindIndexedImplementation bindIndexedImplementation;
 };
 
 }

@@ -29,7 +29,6 @@
 #include "DefaultFramebuffer.h"
 #include "Extensions.h"
 #include "Framebuffer.h"
-#include "IndexedMesh.h"
 #include "Mesh.h"
 #include "Renderbuffer.h"
 
@@ -355,7 +354,6 @@ Context::Context() {
     DebugMarker::initializeContextBasedFunctionality(this);
     DefaultFramebuffer::initializeContextBasedFunctionality(this);
     Framebuffer::initializeContextBasedFunctionality(this);
-    IndexedMesh::initializeContextBasedFunctionality(this);
     Mesh::initializeContextBasedFunctionality(this);
     Renderbuffer::initializeContextBasedFunctionality(this);
 }

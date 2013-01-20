@@ -119,7 +119,6 @@ more information.
 @todo Redo in a way that allows glMultiDrawArrays, glDrawArraysInstanced etc.
  */
 class MAGNUM_EXPORT Mesh {
-    friend class IndexedMesh;
     friend class Context;
 
     Mesh(const Mesh& other) = delete;
@@ -396,7 +395,7 @@ class MAGNUM_EXPORT Mesh {
          * @see @fn_gl{DeleteVertexArrays} (if
          *      @extension{APPLE,vertex_array_object} is available)
          */
-        virtual ~Mesh();
+        ~Mesh();
 
         /** @brief Move assignment */
         Mesh& operator=(Mesh&& other);
@@ -614,9 +613,9 @@ class MAGNUM_EXPORT Mesh {
          * @see @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
          *      @fn_gl{VertexAttribPointer}, @fn_gl{DisableVertexAttribArray}
          *      or @fn_gl{BindVertexArray} (if @extension{APPLE,vertex_array_object}
-         *      is available), @fn_gl{DrawArrays}
+         *      is available), @fn_gl{DrawArrays} or @fn_gl{DrawElements}
          */
-        virtual void draw();
+        void draw();
 
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -731,12 +730,6 @@ class MAGNUM_EXPORT Mesh {
         #endif
 
         static void MAGNUM_LOCAL bindVAO(GLuint vao);
-
-        void MAGNUM_LOCAL bind();
-
-        inline void unbind() {
-            (this->*unbindImplementation)();
-        }
 
         void MAGNUM_LOCAL vertexAttribPointer(const Attribute& attribute);
         #ifndef MAGNUM_TARGET_GLES2

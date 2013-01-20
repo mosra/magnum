@@ -94,13 +94,18 @@ Mesh& Mesh::operator=(Mesh&& other) {
 }
 
 void Mesh::draw() {
-    if(!_vertexCount) return;
+    /* Nothing to draw */
+    if(!_vertexCount && !_indexCount) return;
 
-    bind();
+    (this->*bindImplementation)();
 
-    glDrawArrays(static_cast<GLenum>(_primitive), 0, _vertexCount);
+    /* Non-indexed mesh */
+    if(!_indexCount) glDrawArrays(static_cast<GLenum>(_primitive), 0, _vertexCount);
 
-    unbind();
+    /* Indexed mesh */
+    else glDrawElements(static_cast<GLenum>(_primitive), _indexCount, static_cast<GLenum>(_indexType), nullptr);
+
+    (this->*unbindImplementation)();
 }
 
 void Mesh::bindVAO(GLuint vao) {
@@ -111,10 +116,6 @@ void Mesh::bindVAO(GLuint vao) {
     #else
     static_cast<void>(vao);
     #endif
-}
-
-void Mesh::bind() {
-    (this->*bindImplementation)();
 }
 
 void Mesh::vertexAttribPointer(const Attribute& attribute) {
@@ -247,6 +248,7 @@ void Mesh::bindIndexBufferImplementationVAO(Buffer* buffer) {
 }
 
 void Mesh::bindImplementationDefault() {
+    /* Specify vertex attributes */
     for(const Attribute& attribute: attributes)
         vertexAttribPointer(attribute);
 
@@ -259,6 +261,12 @@ void Mesh::bindImplementationDefault() {
         vertexAttribPointer(attribute);
     #endif
     #endif
+
+    /* Bind index buffer, if the mesh is indexed */
+    if(_indexCount) {
+        if(_indexBuffer) _indexBuffer->bind(Buffer::Target::ElementArray);
+        else Buffer::unbind(Buffer::Target::ElementArray);
+    }
 }
 
 void Mesh::bindImplementationVAO() {
