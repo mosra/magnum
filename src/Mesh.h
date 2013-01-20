@@ -588,8 +588,9 @@ class MAGNUM_EXPORT Mesh {
          *          mesh->vertexCount(), Shaders::PhongShader::Normal());
          * @endcode
          *
-         * @attention Non-zero vertex count must be set before calling this
-         *      function.
+         * @attention The actual vertex count must be set before calling this
+         *      function, otherwise vertex data positions in the buffer will
+         *      be miscalculated.
          * @attention The buffer passed as parameter is not managed by the
          *      mesh, you must ensure it will exist for whole lifetime of the
          *      mesh and delete it afterwards.

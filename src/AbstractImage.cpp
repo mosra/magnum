@@ -119,6 +119,7 @@ std::size_t AbstractImage::pixelSize(Format format, Type type) {
     return 0;
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug operator<<(Debug debug, AbstractImage::Format value) {
     switch(value) {
         #define _c(value) case AbstractImage::Format::value: return debug << "AbstractImage::Format::" #value;
@@ -201,5 +202,6 @@ Debug operator<<(Debug debug, AbstractImage::Type value) {
 
     return debug << "AbstractImage::Type::(invalid)";
 }
+#endif
 
 }
