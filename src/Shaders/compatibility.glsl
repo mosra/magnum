@@ -4,7 +4,7 @@
 
 /* On NVidia and GLSL 1.20 layout qualifiers result in parsing error, even if
    the extension is defined as supported */
-#if !defined(GL_ES) && __VERSION__ >= 120
+#if !defined(GL_ES) && __VERSION__ >= 130
 
 #ifdef GL_ARB_explicit_attrib_location
     #extension GL_ARB_explicit_attrib_location: enable
