@@ -660,9 +660,9 @@ class MAGNUM_EXPORT Mesh {
                     offset,
                     stride
                 });
-            }
 
-            (this->*attributePointerImplementation)(attributes.back());
+                (this->*attributePointerImplementation)(attributes.back());
+            }
         }
 
         #ifndef MAGNUM_TARGET_GLES2
