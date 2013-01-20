@@ -37,6 +37,16 @@ Mesh::AttributeLPointerImplementation Mesh::attributeLPointerImplementation = &M
 Mesh::BindImplementation Mesh::bindImplementation = &Mesh::bindImplementationDefault;
 Mesh::UnbindImplementation Mesh::unbindImplementation = &Mesh::unbindImplementationDefault;
 
+std::size_t Mesh::indexSize(IndexType type) {
+    switch(type) {
+        case IndexType::UnsignedByte: return 1;
+        case IndexType::UnsignedShort: return 2;
+        case IndexType::UnsignedInt: return 4;
+    }
+
+    CORRADE_INTERNAL_ASSERT(false);
+}
+
 Mesh::~Mesh() {
     /* Remove current vao from the state */
     GLuint& current = Context::current()->state()->mesh->currentVAO;
@@ -271,6 +281,18 @@ Debug operator<<(Debug debug, Mesh::Primitive value) {
 
     return debug << "Mesh::Primitive::(invalid)";
 }
+
+Debug operator<<(Debug debug, Mesh::IndexType value) {
+    switch(value) {
+        #define _c(value) case Mesh::IndexType::value: return debug << "Mesh::IndexType::" #value;
+        _c(UnsignedByte)
+        _c(UnsignedShort)
+        _c(UnsignedInt)
+        #undef _c
+    }
+
+    return debug << "Mesh::IndexType::(invalid)";
+}
 #endif
 
 }
@@ -304,6 +326,28 @@ Magnum::Mesh::Primitive ConfigurationValue<Magnum::Mesh::Primitive>::fromString(
     #undef _c
 
     return Magnum::Mesh::Primitive::Points;
+}
+
+std::string ConfigurationValue<Magnum::Mesh::IndexType>::toString(Magnum::Mesh::IndexType value, ConfigurationValueFlags) {
+    switch(value) {
+        #define _c(value) case Magnum::Mesh::IndexType::value: return #value;
+        _c(UnsignedByte)
+        _c(UnsignedShort)
+        _c(UnsignedInt)
+        #undef _c
+    }
+
+    return "";
+}
+
+Magnum::Mesh::IndexType ConfigurationValue<Magnum::Mesh::IndexType>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
+    #define _c(value) if(stringValue == #value) return Magnum::Mesh::IndexType::value;
+    _c(UnsignedByte)
+    _c(UnsignedShort)
+    _c(UnsignedInt)
+    #undef _c
+
+    return Magnum::Mesh::IndexType::UnsignedInt;
 }
 
 }}

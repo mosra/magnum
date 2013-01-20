@@ -27,27 +27,45 @@ class MeshTest: public Corrade::TestSuite::Tester {
     public:
         MeshTest();
 
-        void debug();
-        void configuration();
+        void debugPrimitive();
+        void debugIndexType();
+        void configurationPrimitive();
+        void configurationIndexType();
 };
 
 MeshTest::MeshTest() {
-    addTests(&MeshTest::debug,
-             &MeshTest::configuration);
+    addTests(&MeshTest::debugPrimitive,
+             &MeshTest::debugIndexType,
+             &MeshTest::configurationPrimitive,
+             &MeshTest::configurationIndexType);
 }
 
-void MeshTest::debug() {
+void MeshTest::debugPrimitive() {
     std::ostringstream o;
     Debug(&o) << Mesh::Primitive::TriangleFan;
     CORRADE_COMPARE(o.str(), "Mesh::Primitive::TriangleFan\n");
 }
 
-void MeshTest::configuration() {
+void MeshTest::debugIndexType() {
+    std::ostringstream o;
+    Debug(&o) << Mesh::IndexType::UnsignedShort;
+    CORRADE_COMPARE(o.str(), "Mesh::IndexType::UnsignedShort\n");
+}
+
+void MeshTest::configurationPrimitive() {
     Configuration c;
 
     c.setValue("primitive", Mesh::Primitive::LineStrip);
     CORRADE_COMPARE(c.value<std::string>("primitive"), "LineStrip");
     CORRADE_COMPARE(c.value<Mesh::Primitive>("primitive"), Mesh::Primitive::LineStrip);
+}
+
+void MeshTest::configurationIndexType() {
+    Configuration c;
+
+    c.setValue("type", Mesh::IndexType::UnsignedByte);
+    CORRADE_COMPARE(c.value<std::string>("type"), "UnsignedByte");
+    CORRADE_COMPARE(c.value<Mesh::IndexType>("type"), Mesh::IndexType::UnsignedByte);
 }
 
 }}

@@ -73,25 +73,6 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
 
     public:
         /**
-         * @brief Index type
-         *
-         * @see setIndexType(), indexSize()
-         */
-        enum class IndexType: GLenum {
-            UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte */
-            UnsignedShort = GL_UNSIGNED_SHORT,  /**< Unsigned short */
-
-            /**
-             * Unsigned int
-             * @requires_gles30 %Extension @es_extension{OES,element_index_uint}
-             */
-            UnsignedInt = GL_UNSIGNED_INT
-        };
-
-        /** @brief Size of given index type */
-        static std::size_t indexSize(IndexType type);
-
-        /**
          * @brief Constructor
          * @param primitive     Primitive type
          *
@@ -196,32 +177,6 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
         IndexType _indexType;
 };
 
-/** @debugoperator{Magnum::IndexedMesh} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, IndexedMesh::IndexType value);
-
 }
-
-namespace Corrade { namespace Utility {
-
-/** @configurationvalue{Magnum::IndexedMesh} */
-template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::IndexedMesh::IndexType> {
-    ConfigurationValue() = delete;
-
-    /**
-     * @brief Write enum value as string
-     *
-     * If the value is invalid, returns empty string.
-     */
-    static std::string toString(Magnum::IndexedMesh::IndexType value, ConfigurationValueFlags);
-
-    /**
-     * @brief Read enum value as string
-     *
-     * If the value is invalid, returns @ref Magnum::IndexedMesh::IndexType "IndexedMesh::IndexType::UnsignedInt".
-     */
-    static Magnum::IndexedMesh::IndexType fromString(const std::string& stringValue, ConfigurationValueFlags);
-};
-
-}}
 
 #endif

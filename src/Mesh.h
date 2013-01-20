@@ -359,6 +359,25 @@ class MAGNUM_EXPORT Mesh {
         };
 
         /**
+         * @brief Index type
+         *
+         * @see setIndexType(), indexSize()
+         */
+        enum class IndexType: GLenum {
+            UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte */
+            UnsignedShort = GL_UNSIGNED_SHORT,  /**< Unsigned short */
+
+            /**
+             * Unsigned int
+             * @requires_gles30 %Extension @es_extension{OES,element_index_uint}
+             */
+            UnsignedInt = GL_UNSIGNED_INT
+        };
+
+        /** @brief Size of given index type */
+        static std::size_t indexSize(IndexType type);
+
+        /**
          * @brief Constructor
          * @param primitive     Primitive type
          *
@@ -753,6 +772,9 @@ class MAGNUM_EXPORT Mesh {
 /** @debugoperator{Magnum::Mesh} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::Primitive value);
 
+/** @debugoperator{Magnum::Mesh} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::IndexType value);
+
 }
 
 namespace Corrade { namespace Utility {
@@ -774,6 +796,25 @@ template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::Mesh::Primitive> {
      * If the value is invalid, returns @ref Magnum::Mesh::Primitive "Mesh::Primitive::Points".
      */
     static Magnum::Mesh::Primitive fromString(const std::string& stringValue, ConfigurationValueFlags);
+};
+
+/** @configurationvalue{Magnum::Mesh} */
+template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::Mesh::IndexType> {
+    ConfigurationValue() = delete;
+
+    /**
+     * @brief Write enum value as string
+     *
+     * If the value is invalid, returns empty string.
+     */
+    static std::string toString(Magnum::Mesh::IndexType value, ConfigurationValueFlags);
+
+    /**
+     * @brief Read enum value as string
+     *
+     * If the value is invalid, returns @ref Magnum::IndexedMesh::IndexType "IndexedMesh::IndexType::UnsignedInt".
+     */
+    static Magnum::Mesh::IndexType fromString(const std::string& stringValue, ConfigurationValueFlags);
 };
 
 }}
