@@ -1,5 +1,5 @@
 corrade_add_resource(MagnumShaders_RCS MagnumShaders
-    FlatShader2D.vert FlatShader2D.frag
+    FlatShader2D.vert FlatShader3D.vert FlatShader.frag
     PhongShader.vert PhongShader.frag
     TextShader2D.vert TextShader2D.frag
     VertexColorShader2D.vert VertexColorShader3D.vert VertexColorShader.frag
