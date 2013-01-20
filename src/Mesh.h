@@ -430,7 +430,10 @@ class MAGNUM_EXPORT Mesh {
          * @see setPrimitive(), addVertexBuffer(), addInterleavedVertexBuffer(),
          *      addVertexBufferStride(), MeshTools::interleave()
          */
-        Mesh* setVertexCount(GLsizei vertexCount);
+        inline Mesh* setVertexCount(GLsizei vertexCount) {
+            _vertexCount = vertexCount;
+            return this;
+        }
 
         /**
          * @brief Add buffer with non-interleaved vertex attributes for use with given shader

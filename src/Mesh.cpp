@@ -85,11 +85,6 @@ Mesh& Mesh::operator=(Mesh&& other) {
     return *this;
 }
 
-Mesh* Mesh::setVertexCount(GLsizei vertexCount) {
-    _vertexCount = vertexCount;
-    return this;
-}
-
 void Mesh::draw() {
     if(!_vertexCount) return;
 
