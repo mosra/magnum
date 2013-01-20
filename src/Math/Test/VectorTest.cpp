@@ -160,6 +160,11 @@ void VectorTest::lerp() {
     Vector3 b(3.0f, -2.0f, 11.0f);
 
     CORRADE_COMPARE(Vector3::lerp(a, b, 0.25f), Vector3(0.0f, 1.0f, 5.0f));
+
+    typedef Math::Vector<3, std::int32_t> Vector3ub;
+    Vector3ub c(0, 128, 64);
+    Vector3ub d(16, 0, 32);
+    CORRADE_COMPARE(Vector3ub::lerp(c, d, 0.25f), Vector3ub(4, 96, 56));
 }
 
 void VectorTest::debug() {

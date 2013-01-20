@@ -79,8 +79,8 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          * @todo http://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
          *      (when SIMD is in place)
          */
-        inline static Vector<size, T> lerp(const Vector<size, T>& a, const Vector<size, T>& b, T t) {
-            return (T(1) - t)*a + t*b;
+        template<class U> inline static Vector<size, T> lerp(const Vector<size, T>& a, const Vector<size, T>& b, U t) {
+            return (U(1) - t)*a + t*b;
         }
 
         /** @brief Default constructor */
@@ -358,7 +358,7 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
     template<class U> inline constexpr static Type<T> from(const Math::Vector<size, U>& other) { \
         return Math::Vector<size, T>::from(other);                          \
     }                                                                       \
-    inline static const Type<T> lerp(const Math::Vector<size, T>& a, const Math::Vector<size, T>& b, T t) { \
+    template<class U> inline static const Type<T> lerp(const Math::Vector<size, T>& a, const Math::Vector<size, T>& b, U t) { \
         return Math::Vector<size, T>::lerp(a, b, t);                        \
     }                                                                       \
                                                                             \
