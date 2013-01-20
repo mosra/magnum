@@ -42,7 +42,8 @@ PhongShader::PhongShader(): transformationMatrixUniform(0), projectionMatrixUnif
     attachShader(fragmentShader);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>()) {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||
+        Context::current()->version() == Version::GL210) {
     #else
     if(!Context::current()->isVersionSupported(Version::GLES300)) {
     #endif
