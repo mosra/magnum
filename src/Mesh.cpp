@@ -20,6 +20,7 @@
 #include "Buffer.h"
 #include "Context.h"
 #include "Extensions.h"
+#include "Implementation/BufferState.h"
 #include "Implementation/MeshState.h"
 #include "Implementation/State.h"
 
@@ -244,6 +245,11 @@ void Mesh::bindIndexBufferImplementationDefault(Buffer* buffer) {
 
 void Mesh::bindIndexBufferImplementationVAO(Buffer* buffer) {
     bindVAO(vao);
+
+    /* Reset ElementArray binding to force explicit glBindBuffer call later */
+    /** @todo Do this cleaner way */
+    Context::current()->state()->buffer->bindings[Implementation::BufferState::indexForTarget(Buffer::Target::ElementArray)] = 0;
+
     buffer->bind(Buffer::Target::ElementArray);
 }
 
