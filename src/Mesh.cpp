@@ -113,8 +113,6 @@ void Mesh::bindVAO(GLuint vao) {
 }
 
 void Mesh::bind() {
-    CORRADE_ASSERT((_vertexCount != 0) || !attributes.empty(), "Mesh: attributes are bound but vertex count is zero", );
-
     (this->*bindImplementation)();
 }
 
@@ -187,7 +185,9 @@ void Mesh::destroyImplementationVAO() {
     #endif
 }
 
-void Mesh::attributePointerImplementationDefault(const Attribute&) {}
+void Mesh::attributePointerImplementationDefault(const Attribute& attribute) {
+    attributes.push_back(attribute);
+}
 
 void Mesh::attributePointerImplementationVAO(const Attribute& attribute) {
     bindVAO(vao);
@@ -202,7 +202,9 @@ void Mesh::attributePointerImplementationDSA(const Attribute& attribute) {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-void Mesh::attributePointerImplementationDefault(const IntegerAttribute&) {}
+void Mesh::attributePointerImplementationDefault(const IntegerAttribute& attribute) {
+    integerAttributes.push_back(attribute);
+}
 
 void Mesh::attributePointerImplementationVAO(const IntegerAttribute& attribute) {
     bindVAO(vao);
@@ -217,7 +219,9 @@ void Mesh::attributePointerImplementationDSA(const IntegerAttribute& attribute) 
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void Mesh::attributePointerImplementationDefault(const LongAttribute&) {}
+void Mesh::attributePointerImplementationDefault(const LongAttribute& attribute) {
+    longAttributes.push_back(attribute);
+}
 
 void Mesh::attributePointerImplementationVAO(const LongAttribute& attribute) {
     bindVAO(vao);
