@@ -47,8 +47,18 @@ template<> void createDebugMesh(ShapeRenderer<2>* renderer, Physics::AbstractSha
     }
 }
 
-template<> void createDebugMesh(ShapeRenderer<3>*, Physics::AbstractShape<3>* shape) {
+template<> void createDebugMesh(ShapeRenderer<3>* renderer, Physics::AbstractShape<3>* shape) {
     switch(shape->type()) {
+        case Physics::AbstractShape3D::Type::AxisAlignedBox:
+            renderer->renderers.push_back(new Implementation::AxisAlignedBoxRenderer<3>(*static_cast<Physics::AxisAlignedBox3D*>(shape)));
+        case Physics::AbstractShape3D::Type::Box:
+            renderer->renderers.push_back(new Implementation::BoxRenderer<3>(*static_cast<Physics::Box3D*>(shape)));
+            break;
+        case Physics::AbstractShape3D::Type::ShapeGroup: {
+            Physics::ShapeGroup3D* group = static_cast<Physics::ShapeGroup3D*>(shape);
+            if(group->first()) createDebugMesh(renderer, group->first());
+            if(group->second()) createDebugMesh(renderer, group->second());
+        } break;
         default:
             Warning() << "DebugTools::ShapeRenderer3D::createShapeRenderer(): type" << shape->type() << "not implemented";
     }
