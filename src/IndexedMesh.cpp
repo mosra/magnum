@@ -24,12 +24,6 @@ namespace Magnum {
 IndexedMesh::BindIndexBufferImplementation IndexedMesh::bindIndexBufferImplementation = &IndexedMesh::bindIndexBufferImplementationDefault;
 IndexedMesh::BindIndexedImplementation IndexedMesh::bindIndexedImplementation = &IndexedMesh::bindIndexedImplementationDefault;
 
-IndexedMesh* IndexedMesh::setIndexBuffer(Buffer* buffer) {
-    _indexBuffer = buffer;
-    (this->*bindIndexBufferImplementation)();
-    return this;
-}
-
 void IndexedMesh::draw() {
     if(!_indexCount) return;
 
@@ -41,8 +35,6 @@ void IndexedMesh::draw() {
 }
 
 void IndexedMesh::bind() {
-    CORRADE_ASSERT(!_indexCount || _indexBuffer, "IndexedMesh: index buffer must be added if index count is non-zero", );
-
     Mesh::bind();
     (this->*bindIndexedImplementation)();
 }
@@ -61,11 +53,13 @@ void IndexedMesh::initializeContextBasedFunctionality(Context* context) {
     #endif
 }
 
-void IndexedMesh::bindIndexBufferImplementationDefault() {}
+void IndexedMesh::bindIndexBufferImplementationDefault(Buffer* buffer) {
+    _indexBuffer = buffer;
+}
 
-void IndexedMesh::bindIndexBufferImplementationVAO() {
+void IndexedMesh::bindIndexBufferImplementationVAO(Buffer* buffer) {
     bindVAO(vao);
-    _indexBuffer->bind(Buffer::Target::ElementArray);
+    buffer->bind(Buffer::Target::ElementArray);
 }
 
 void IndexedMesh::bindIndexedImplementationDefault() {

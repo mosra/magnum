@@ -83,12 +83,16 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
 
         /**
          * @brief Set index buffer
+         * @return Pointer to self (for method chaining)
          *
          * @see setIndexCount(), setIndexType(), MeshTools::compressIndices(),
          *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
          *      @extension{APPLE,vertex_array_object} is available)
          */
-        IndexedMesh* setIndexBuffer(Buffer* buffer);
+        inline IndexedMesh* setIndexBuffer(Buffer* buffer) {
+            (this->*bindIndexBufferImplementation)(buffer);
+            return this;
+        }
 
         /**
          * @brief Draw the mesh
@@ -140,10 +144,10 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
 
         void MAGNUM_LOCAL bind();
 
-        typedef void(IndexedMesh::*BindIndexBufferImplementation)();
-        void MAGNUM_LOCAL bindIndexBufferImplementationDefault();
-        void MAGNUM_LOCAL bindIndexBufferImplementationVAO();
-        static MAGNUM_LOCAL BindIndexBufferImplementation bindIndexBufferImplementation;
+        typedef void(IndexedMesh::*BindIndexBufferImplementation)(Buffer*);
+        void MAGNUM_LOCAL bindIndexBufferImplementationDefault(Buffer* buffer);
+        void MAGNUM_LOCAL bindIndexBufferImplementationVAO(Buffer* buffer);
+        static BindIndexBufferImplementation bindIndexBufferImplementation;
 
         typedef void(IndexedMesh::*BindIndexedImplementation)();
         void MAGNUM_LOCAL bindIndexedImplementationDefault();
