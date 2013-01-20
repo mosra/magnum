@@ -130,21 +130,25 @@ class MAGNUM_EXPORT AbstractImage {
              */
             RedInteger = GL_RED_INTEGER,
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Integer green channel.
              * @requires_gl30 %Extension @extension{EXT,texture_integer}
-             * @requires_gles30 Only floating-point image data are available
-             *      in OpenGL ES 2.0.
+             * @requires_gl Only @ref Format "Format::RedInteger" is available
+             *      in OpenGL ES 3.0, only floating-point image data are
+             *      available in OpenGL ES 2.0.
              */
             GreenInteger = GL_GREEN_INTEGER,
 
             /**
              * Integer blue channel.
              * @requires_gl30 %Extension @extension{EXT,texture_integer}
-             * @requires_gles30 Only floating-point image data are available
-             *      in OpenGL ES 2.0.
+             * @requires_gl Only @ref Format "Format::RedInteger" is available
+             *      in OpenGL ES 3.0, only floating-point image data are
+             *      available in OpenGL ES 2.0.
              */
             BlueInteger = GL_BLUE_INTEGER,
+            #endif
 
             /**
              * Integer red and green channel.
@@ -171,21 +175,25 @@ class MAGNUM_EXPORT AbstractImage {
              */
             RGBAInteger = GL_RGBA_INTEGER,
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Integer BGR.
              * @requires_gl30 %Extension @extension{EXT,texture_integer}
-             * @requires_gles30 Only floating-point image data are available
-             *      in OpenGL ES 2.0.
+             * @requires_gl Only @ref Format "Format::RGBInteger" is available
+             *      in OpenGL ES 3.0, only floating-point image data are
+             *      available in OpenGL ES 2.0.
              */
             BGRInteger = GL_BGR_INTEGER,
 
             /**
              * Integer BGRA.
              * @requires_gl30 %Extension @extension{EXT,texture_integer}
-             * @requires_gles30 Only floating-point image data are available
-             *      in OpenGL ES 2.0.
+             * @requires_gl Only @ref Format "Format::RGBAInteger" is
+             *      available in OpenGL ES 3.0, only floating-point image data
+             *      are available in OpenGL ES 2.0.
              */
             BGRAInteger = GL_BGRA_INTEGER,
+            #endif
             #endif
 
             /**

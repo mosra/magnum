@@ -103,7 +103,7 @@ std::size_t AbstractImage::pixelSize(Format format, Type type) {
         case Format::RGBAInteger:
         #endif
         case Format::BGRA:
-        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
         case Format::BGRAInteger:
         #endif
             return 4*size;
