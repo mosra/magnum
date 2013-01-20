@@ -20,7 +20,6 @@
 
 #include "Math/Point2D.h"
 #include "Math/Point3D.h"
-#include "IndexedMesh.h"
 #include "Swizzle.h"
 #include "MeshTools/CompressIndices.h"
 #include "MeshTools/Interleave.h"
@@ -139,8 +138,8 @@ template<std::uint8_t dimensions> std::tuple<std::vector<typename DimensionTrait
     return std::make_tuple(std::move(positionsXD), std::move(textureCoordinates), std::move(indices));
 }
 
-template<std::uint8_t dimensions> IndexedMesh TextRenderer<dimensions>::render(Font& font, GLfloat size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage) {
-    IndexedMesh mesh;
+template<std::uint8_t dimensions> Mesh TextRenderer<dimensions>::render(Font& font, GLfloat size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage) {
+    Mesh mesh;
 
     std::vector<typename DimensionTraits<dimensions>::PointType> positions;
     std::vector<Vector2> textureCoordinates;
@@ -150,7 +149,9 @@ template<std::uint8_t dimensions> IndexedMesh TextRenderer<dimensions>::render(F
     MeshTools::interleave(&mesh, vertexBuffer, usage, positions, textureCoordinates);
     MeshTools::compressIndices(&mesh, indexBuffer, usage, indices);
     mesh.setPrimitive(Mesh::Primitive::Triangles)
-        ->addInterleavedVertexBuffer(vertexBuffer, 0, typename Shaders::AbstractTextShader<dimensions>::Position(), typename Shaders::AbstractTextShader<dimensions>::TextureCoordinates());
+        ->addInterleavedVertexBuffer(vertexBuffer, 0,
+            typename Shaders::AbstractTextShader<dimensions>::Position(),
+            typename Shaders::AbstractTextShader<dimensions>::TextureCoordinates());
 
     return mesh;
 }

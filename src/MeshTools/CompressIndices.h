@@ -22,7 +22,7 @@
 #include <tuple>
 
 #include "Buffer.h"
-#include "IndexedMesh.h"
+#include "Mesh.h"
 
 #include "magnumMeshToolsVisibility.h"
 
@@ -41,18 +41,18 @@ sufficient. Size of the buffer can be computed from index count and type, as
 shown below. Example usage:
 @code
 std::size_t indexCount;
-IndexedMesh::IndexType indexType;
+Mesh::IndexType indexType;
 char* data;
 std::tie(indexCount, indexType, data) = MeshTools::compressIndices(indices);
-std::size_t dataSize = indexCount*IndexedMesh::indexSize(indexType);
+std::size_t dataSize = indexCount*Mesh::indexSize(indexType);
 // ...
 delete[] data;
 @endcode
 
-See also compressIndices(IndexedMesh*, Buffer*, Buffer::Usage, const std::vector<std::uint32_t>&),
+See also compressIndices(Mesh*, Buffer*, Buffer::Usage, const std::vector<std::uint32_t>&),
 which writes the compressed data directly into index buffer of given mesh.
 */
-std::tuple<std::size_t, IndexedMesh::IndexType, char*> MAGNUM_MESHTOOLS_EXPORT compressIndices(const std::vector<std::uint32_t>& indices);
+std::tuple<std::size_t, Mesh::IndexType, char*> MAGNUM_MESHTOOLS_EXPORT compressIndices(const std::vector<std::uint32_t>& indices);
 
 /**
 @brief Compress vertex indices and write them to index buffer
@@ -63,13 +63,12 @@ std::tuple<std::size_t, IndexedMesh::IndexType, char*> MAGNUM_MESHTOOLS_EXPORT c
 
 The same as compressIndices(const std::vector<std::uint32_t>&), but this
 function writes the output to given index buffer and updates index count and
-type in the mesh accordingly, so you don't have to call
-IndexedMesh::setIndexBuffer(), IndexedMesh::setIndexCount() and
-IndexedMesh::setIndexType() on your own.
+type in the mesh accordingly, so you don't have to call Mesh::setIndexBuffer(),
+Mesh::setIndexCount() and Mesh::setIndexType() on your own.
 
 @see MeshTools::interleave()
 */
-void MAGNUM_MESHTOOLS_EXPORT compressIndices(IndexedMesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<std::uint32_t>& indices);
+void MAGNUM_MESHTOOLS_EXPORT compressIndices(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<std::uint32_t>& indices);
 
 }}
 

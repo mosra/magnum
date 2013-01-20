@@ -172,7 +172,6 @@ typedef ImageWrapper<1> ImageWrapper1D;
 typedef ImageWrapper<2> ImageWrapper2D;
 typedef ImageWrapper<3> ImageWrapper3D;
 
-class IndexedMesh;
 class Mesh;
 class Query;
 class Renderbuffer;

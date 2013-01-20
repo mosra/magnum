@@ -16,7 +16,6 @@
 #include "AbstractBoxRenderer.h"
 
 #include "Buffer.h"
-#include "IndexedMesh.h"
 #include "DebugTools/ResourceManager.h"
 #include "MeshTools/CompressIndices.h"
 #include "Primitives/Cube.h"
@@ -66,7 +65,7 @@ AbstractBoxRenderer<3>::AbstractBoxRenderer() {
     Primitives::Cube cube;
     Buffer* vertexBuffer = new Buffer(Buffer::Target::Array);
     Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
-    IndexedMesh* mesh = new IndexedMesh;
+    Mesh* mesh = new Mesh;
 
     vertexBuffer->setData(*cube.positions(0), Buffer::Usage::StaticDraw);
     ResourceManager::instance()->set(this->vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);

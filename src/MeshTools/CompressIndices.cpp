@@ -25,12 +25,12 @@ namespace Magnum { namespace MeshTools {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace {
 
-template<class> constexpr IndexedMesh::IndexType indexType();
-template<> inline constexpr IndexedMesh::IndexType indexType<GLubyte>() { return IndexedMesh::IndexType::UnsignedByte; }
-template<> inline constexpr IndexedMesh::IndexType indexType<GLushort>() { return IndexedMesh::IndexType::UnsignedShort; }
-template<> inline constexpr IndexedMesh::IndexType indexType<GLuint>() { return IndexedMesh::IndexType::UnsignedInt; }
+template<class> constexpr Mesh::IndexType indexType();
+template<> inline constexpr Mesh::IndexType indexType<GLubyte>() { return Mesh::IndexType::UnsignedByte; }
+template<> inline constexpr Mesh::IndexType indexType<GLushort>() { return Mesh::IndexType::UnsignedShort; }
+template<> inline constexpr Mesh::IndexType indexType<GLuint>() { return Mesh::IndexType::UnsignedInt; }
 
-template<class T> inline std::tuple<std::size_t, IndexedMesh::IndexType, char*> compress(const std::vector<std::uint32_t>& indices) {
+template<class T> inline std::tuple<std::size_t, Mesh::IndexType, char*> compress(const std::vector<std::uint32_t>& indices) {
     char* buffer = new char[indices.size()*sizeof(T)];
     for(std::size_t i = 0; i != indices.size(); ++i) {
         T index = static_cast<T>(indices[i]);
@@ -43,7 +43,7 @@ template<class T> inline std::tuple<std::size_t, IndexedMesh::IndexType, char*> 
 }
 #endif
 
-std::tuple<std::size_t, IndexedMesh::IndexType, char*> compressIndices(const std::vector<std::uint32_t>& indices) {
+std::tuple<std::size_t, Mesh::IndexType, char*> compressIndices(const std::vector<std::uint32_t>& indices) {
     std::size_t size = *std::max_element(indices.begin(), indices.end());
 
     switch(Math::log(256, size)) {
@@ -60,16 +60,16 @@ std::tuple<std::size_t, IndexedMesh::IndexType, char*> compressIndices(const std
     }
 }
 
-void compressIndices(IndexedMesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<std::uint32_t>& indices) {
+void compressIndices(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<std::uint32_t>& indices) {
     std::size_t indexCount;
-    IndexedMesh::IndexType indexType;
+    Mesh::IndexType indexType;
     char* data;
     std::tie(indexCount, indexType, data) = compressIndices(indices);
 
     mesh->setIndexBuffer(buffer)
         ->setIndexType(indexType)
         ->setIndexCount(indices.size());
-    buffer->setData(indexCount*IndexedMesh::indexSize(indexType), data, usage);
+    buffer->setData(indexCount*Mesh::indexSize(indexType), data, usage);
 
     delete[] data;
 }

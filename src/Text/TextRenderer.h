@@ -62,7 +62,7 @@ template<std::uint8_t dimensions> class MAGNUM_TEXT_EXPORT TextRenderer {
          * @return Indexed mesh prepared for use with Shaders::AbstractTextShader
          *      subclasses
          */
-        static IndexedMesh render(Font& font, GLfloat size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
+        static Mesh render(Font& font, GLfloat size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
 
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT

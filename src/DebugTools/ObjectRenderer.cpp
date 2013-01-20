@@ -16,7 +16,6 @@
 #include "ObjectRenderer.h"
 
 #include "Buffer.h"
-#include "IndexedMesh.h"
 #include "DebugTools/ResourceManager.h"
 #include "MeshTools/Interleave.h"
 #include "SceneGraph/AbstractCamera.h"
@@ -149,7 +148,7 @@ template<std::uint8_t dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Sce
     /* Create the mesh */
     Buffer* vertexBuffer = new Buffer(Buffer::Target::Array);
     Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
-    IndexedMesh* mesh = new IndexedMesh;
+    Mesh* mesh = new Mesh;
 
     MeshTools::interleave(mesh, vertexBuffer, Buffer::Usage::StaticDraw, Renderer<dimensions>::positions, Renderer<dimensions>::colors);
     ResourceManager::instance()->set(this->vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
@@ -158,9 +157,11 @@ template<std::uint8_t dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Sce
     ResourceManager::instance()->set(this->indexBuffer.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     mesh->setPrimitive(Mesh::Primitive::Lines)
-        ->addInterleavedVertexBuffer(vertexBuffer, 0, typename Shaders::VertexColorShader<dimensions>::Position(), typename Shaders::VertexColorShader<dimensions>::Color())
         ->setIndexCount(Renderer<dimensions>::indices.size())
-        ->setIndexType(IndexedMesh::IndexType::UnsignedByte)
+        ->setIndexType(Mesh::IndexType::UnsignedByte)
+        ->addInterleavedVertexBuffer(vertexBuffer, 0,
+            typename Shaders::VertexColorShader<dimensions>::Position(),
+            typename Shaders::VertexColorShader<dimensions>::Color())
         ->setIndexBuffer(indexBuffer);
     ResourceManager::instance()->set<Mesh>(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }

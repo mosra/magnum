@@ -65,7 +65,6 @@ set(Magnum_HEADERS
     Framebuffer.h
     Image.h
     ImageWrapper.h
-    IndexedMesh.h
     Magnum.h
     Mesh.h
     Query.h

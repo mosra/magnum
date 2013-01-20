@@ -28,75 +28,168 @@
 namespace Magnum {
 
 /**
-@brief Non-indexed mesh
+@brief %Mesh
 
 @section Mesh-configuration Mesh configuration
 
-To properly configure mesh, you have to set primitive either in constructor or
-using setPrimitive() and call setVertexCount(). Then create vertex buffers and
-fill them with vertex data. You can also use MeshTools::interleave() to
-conveniently set vertex count and buffer data. At last assign them to mesh and
-@ref AbstractShaderProgram::Attribute "shader attributes" using
-addVertexBuffer(), addInterleavedVertexBuffer() or addVertexBufferStride().
+You have to specify at least primitive and vertex count using setPrimitive()
+and setVertexCount(). Then fill your vertex buffers with data, add them to the
+mesh and specify @ref AbstractShaderProgram::Attribute "shader attribute" layout
+inside the buffers using addVertexBuffer(), addInterleavedVertexBuffer() or
+addVertexBufferStride(). You can also use MeshTools::interleave() in
+combination with addInterleavedVertexBuffer() to conveniently fill interleaved
+vertex buffer(s). The function itself calls setVertexCount(), so you don't
+have to do it again.
 
-Note that the buffer is not managed (e.g. deleted on destruction) by the mesh,
-so you have to manage it on your own. On the other hand it allows you to use
-one buffer for more meshes (each mesh for example configured for different
-shader) or store more than only vertex data in one buffer.
+If you have indexed mesh, you need to call setIndexCount() instead of
+setVertexCount() and additionaly specify also index type using setIndexType().
+Then fill your index buffer with data and add it to the mesh using
+setIndexBuffer(). You can also use MeshTools::compressIndices() to
+conveniently compress the indices, fill the index buffer and configure the
+mesh instead of calling setIndexCount(), setIndexType() and setIndexBuffer()
+manually.
 
-Example usage -- filling buffer with position data, configuring the mesh and
-assigning the buffer to mesh to use with custom shader:
+Note that neither vertex buffers nor index buffer is managed (e.g. deleted on
+destruction) by the mesh, so you have to manage them on your own. On the other
+hand it allows you to use one buffer for more meshes (each mesh for example
+configured for different shader) or store data for more meshes in one buffer.
+
+If the mesh has non-zero index count, it is treated as indexed mesh, otherwise
+it is treated as non-indexed mesh. If both index and vertex count is zero, the
+mesh is empty and no draw commands are issued when calling draw().
+
+@subsection Mesh-configuration-examples Example mesh configuration
+
+@subsubsection Mesh-configuration-examples-nonindexed Basic non-indexed mesh
+
 @code
+// Custom shader, needing only position data
 class MyShader: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Point3D> Position;
 
     // ...
 };
-Buffer* buffer;
 Mesh* mesh;
+Buffer* vertexBuffer;
 
+// Fill vertex buffer with position data
 static constexpr Point3D positions[30] = {
     // ...
 };
-buffer->setData(positions, Buffer::Usage::StaticDraw);
+vertexBuffer->setData(positions, Buffer::Usage::StaticDraw);
 
+// Set primitive and vertex count, add the buffer and specify its layout
 mesh->setPrimitive(Mesh::Primitive::Triangles)
     ->setVertexCount(30)
-    ->addVertexBuffer(buffer, MyShader::Position());
+    ->addVertexBuffer(vertexBuffer, 0, MyShader::Position());
 @endcode
 
-Example usage -- creating a plane mesh and assigning buffer with interleaved
-vertex attributes for use with Shaders::PhongShader:
+@subsubsection Mesh-configuration-examples-nonindexed-phong Interleaved vertex data
+
 @code
-Buffer* buffer;
+// Non-indexed primitive with positions and normals
+Primitives::Plane plane;
+Mesh* mesh;
+Buffer* vertexBuffer;
+
+// Fill vertex buffer with interleaved position and normal data
+MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw,
+    *plane.positions(0), *plane.normals(0));
+
+// Set primitive and specify layout of interleaved vertex buffer, vertex count
+// has been already set by MeshTools::interleave()
+mesh->setPrimitive(plane.primitive())
+    ->addInterleavedVertexBuffer(buffer, 0,
+        Shaders::PhongShader::Position(),
+        Shaders::PhongShader::Normal());
+@endcode
+
+@subsubsection Mesh-configuration-examples-indexed-phong Indexed mesh
+
+@code
+// Custom shader
+class MyShader: public AbstractShaderProgram {
+    public:
+        typedef Attribute<0, Point3D> Position;
+
+    // ...
+};
+Buffer *vertexBuffer, *indexBuffer;
 Mesh* mesh;
 
-Primitives::Plane plane;
-MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *plane.positions(0), *plane.normals(0));
-mesh->setPrimitive(plane.primitive())
-    ->addInterleavedVertexBuffer(buffer, 0, Shaders::PhongShader::Position(), Shaders::PhongShader::Normal());
+// Fill vertex buffer with position data
+static constexpr Point3D positions[30] = {
+    // ...
+};
+vertexBuffer->setData(positions, Buffer::Usage::StaticDraw);
+
+// Fill index buffer with index data
+static constexpr GLubyte indices[75] = {
+    // ...
+};
+indexBuffer->setData(indices, Buffer::Usage::StaticDraw);
+
+// Set primitive, index count and type, add the buffers
+mesh->setPrimitive(Mesh::Primitive::Triangles)
+    ->setIndexCount(75)
+    ->setIndexType(Mesh::IndexType::UnsignedByte)
+    ->addVertexBuffer(vertexBuffer, 0, MyShader::Position())
+    ->setIndexBuffer(indexBuffer);
 @endcode
 
-Example usage -- passing color attribute as normalized unsigned byte with BGRA
-component ordering (e.g. directly from @ref Trade::TgaImporter "TGA file"):
 @code
+// Indexed primitive
+Primitives::Cube cube;
+Buffer *vertexBuffer, *indexBuffer;
+Mesh* mesh;
+
+// Fill vertex buffer with interleaved position and normal data
+MeshTools::interleave(mesh, vertexBuffer, Buffer::Usage::StaticDraw,
+    *cube.positions(0), *cube.normals(0));
+
+// Fill index buffer with compressed index data
+MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw,
+    *cube.indices());
+
+// Set primitive and specify layout of interleaved vertex buffer. Index count,
+// type and index buffer has been already set by MeshTools::compressIndices().
+mesh->setPrimitive(plane.primitive())
+    ->addInterleavedVertexBuffer(vertexBuffer, 0,
+        Shaders::PhongShader::Position(),
+        Shaders::PhongShader::Normal());
+@endcode
+
+@subsubsection Mesh-configuration-examples-data-options Specific formats of vertex data
+
+@code
+// Custom shader with colors specified as four floating-point values
 class MyShader: public AbstractShaderProgram {
     public:
         typedef Attribute<1, Color4<>> Color;
 
     // ...
 };
-Buffer* buffer;
 Mesh* mesh;
+Buffer* colorBuffer;
 
-mesh->addVertexBuffer(buffer, MyShader::Color(Type::UsignedByte, MyShader::Color::Normalized|MyShader::Color::BGRA));
+// Fill vertex buffer with colors specified as four-byte BGRA (e.g. directly
+// from TGA file)
+GLubyte colors[4*30] = {
+    // ...
+};
+colorBuffer.setData(colors, Buffer::Usage::StaticDraw);
+
+// Specify layout of color buffer -- each component is unsigned byte, we want
+// to normalize them from [0, 255] to [0.0f, 1.0f] and reorder from BGRA
+mesh->addVertexBuffer(colorBuffer, 0,
+    MyShader::Color(MyShader::Color::DataType::UsignedByte, MyShader::Color::DataOption::Normalized|MyShader::Color::DataOption::BGRA));
 @endcode
 
 @section Mesh-drawing Rendering meshes
 
 Basic workflow is: bind specific framebuffer for drawing (if needed), set up
-respective shader and bind required textures (see
+respective shader, bind required textures (see
 @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
 for more infromation) and call Mesh::draw().
 
@@ -114,7 +207,6 @@ calls to @fn_gl{BindBuffer} and @fn_gl{BindVertexArray}. See documentation of
 addVertexBuffer(), addInterleavedVertexBuffer(), addVertexBufferStride() for
 more information.
 
-@see IndexedMesh
 @todo Support for indirect draw buffer (OpenGL 4.0, @extension{ARB,draw_indirect})
 @todo Redo in a way that allows glMultiDrawArrays, glDrawArraysInstanced etc.
  */
@@ -849,7 +941,7 @@ template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::Mesh::IndexType> {
     /**
      * @brief Read enum value as string
      *
-     * If the value is invalid, returns @ref Magnum::IndexedMesh::IndexType "IndexedMesh::IndexType::UnsignedInt".
+     * If the value is invalid, returns @ref Magnum::Mesh::IndexType "Mesh::IndexType::UnsignedInt".
      */
     static Magnum::Mesh::IndexType fromString(const std::string& stringValue, ConfigurationValueFlags);
 };
