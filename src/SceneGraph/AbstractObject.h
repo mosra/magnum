@@ -103,6 +103,13 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractObject
         /** @{ @name Object transformation */
 
         /**
+         * @brief Transformation matrix
+         *
+         * @see Object::transformation()
+         */
+        virtual typename DimensionTraits<dimensions, T>::MatrixType transformationMatrix() const = 0;
+
+        /**
          * @brief Transformation matrix relative to root object
          *
          * @see Object::absoluteTransformation()

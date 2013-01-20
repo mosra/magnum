@@ -202,6 +202,10 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
 
         /** @{ @name Object transformation */
 
+        inline typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType transformationMatrix() const override {
+            return Transformation::toMatrix(Transformation::transformation());
+        }
+
         inline typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType absoluteTransformationMatrix() const override {
             return Transformation::toMatrix(absoluteTransformation());
         }

@@ -110,6 +110,8 @@ void ObjectTest::absoluteTransformation() {
     /* Proper transformation composition */
     Object3D o(&s);
     o.translate(Vector3::xAxis(2.0f));
+    CORRADE_COMPARE(o.transformation(), Matrix4::translation(Vector3::xAxis(2.0f)));
+    CORRADE_COMPARE(o.transformation(), o.transformationMatrix());
     Object3D o2(&o);
     o2.rotateY(deg(90.0f));
     CORRADE_COMPARE(o2.absoluteTransformation(),
