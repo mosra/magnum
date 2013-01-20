@@ -385,9 +385,7 @@ class MAGNUM_EXPORT Mesh {
          * @see setPrimitive(), setVertexCount(), @fn_gl{GenVertexArrays} (if
          *      @extension{APPLE,vertex_array_object} is available)
          */
-        inline explicit Mesh(Primitive primitive = Primitive::Triangles): _primitive(primitive), _vertexCount(0) {
-            (this->*createImplementation)();
-        }
+        explicit Mesh(Primitive primitive = Primitive::Triangles);
 
         /** @brief Move constructor */
         Mesh(Mesh&& other);
@@ -432,6 +430,36 @@ class MAGNUM_EXPORT Mesh {
          */
         inline Mesh* setVertexCount(GLsizei vertexCount) {
             _vertexCount = vertexCount;
+            return this;
+        }
+
+        /** @brief Index count */
+        inline GLsizei indexCount() const { return _indexCount; }
+
+        /**
+         * @brief Set index count
+         * @return Pointer to self (for method chaining)
+         *
+         * Default is zero.
+         * @see setIndexBuffer(), setIndexType(), MeshTools::compressIndices()
+         */
+        inline Mesh* setIndexCount(GLsizei count) {
+            _indexCount = count;
+            return this;
+        }
+
+        /** @brief Index type */
+        inline IndexType indexType() const { return _indexType; }
+
+        /**
+         * @brief Set index type
+         * @return Pointer to self (for method chaining)
+         *
+         * Default is @ref IndexType "IndexType::UnsignedInt".
+         * @see setIndexBuffer(), setIndexCount(), MeshTools::compressIndices()
+         */
+        inline Mesh* setIndexType(IndexType type) {
+            _indexType = type;
             return this;
         }
 
@@ -716,7 +744,7 @@ class MAGNUM_EXPORT Mesh {
         typedef void(Mesh::*CreateImplementation)();
         void MAGNUM_LOCAL createImplementationDefault();
         void MAGNUM_LOCAL createImplementationVAO();
-        static CreateImplementation createImplementation;
+        static MAGNUM_LOCAL CreateImplementation createImplementation;
 
         typedef void(Mesh::*DestroyImplementation)();
         void MAGNUM_LOCAL destroyImplementationDefault();
@@ -762,6 +790,9 @@ class MAGNUM_EXPORT Mesh {
         GLuint vao;
         Primitive _primitive;
         GLsizei _vertexCount;
+        Buffer* _indexBuffer;
+        GLsizei _indexCount;
+        IndexType _indexType;
 
         std::vector<Attribute> attributes;
         #ifndef MAGNUM_TARGET_GLES2

@@ -47,6 +47,10 @@ std::size_t Mesh::indexSize(IndexType type) {
     CORRADE_INTERNAL_ASSERT(false);
 }
 
+Mesh::Mesh(Primitive primitive): _primitive(primitive), _vertexCount(0), _indexBuffer(nullptr), _indexCount(0), _indexType(IndexType::UnsignedInt) {
+    (this->*createImplementation)();
+}
+
 Mesh::~Mesh() {
     /* Remove current vao from the state */
     GLuint& current = Context::current()->state()->mesh->currentVAO;
@@ -55,7 +59,7 @@ Mesh::~Mesh() {
     (this->*destroyImplementation)();
 }
 
-Mesh::Mesh(Mesh&& other): vao(other.vao), _primitive(other._primitive), _vertexCount(other._vertexCount), attributes(std::move(other.attributes))
+Mesh::Mesh(Mesh&& other): vao(other.vao), _primitive(other._primitive), _vertexCount(other._vertexCount), _indexBuffer(other._indexBuffer), _indexCount(other._indexCount), _indexType(other._indexType), attributes(std::move(other.attributes))
     #ifndef MAGNUM_TARGET_GLES2
     , integerAttributes(std::move(other.integerAttributes))
     #ifndef MAGNUM_TARGET_GLES
@@ -72,6 +76,9 @@ Mesh& Mesh::operator=(Mesh&& other) {
     vao = other.vao;
     _primitive = other._primitive;
     _vertexCount = other._vertexCount;
+    _indexBuffer = other._indexBuffer;
+    _indexCount = other._indexCount;
+    _indexType = other._indexType;
     attributes = std::move(other.attributes);
     #ifndef MAGNUM_TARGET_GLES2
     integerAttributes = std::move(other.integerAttributes);

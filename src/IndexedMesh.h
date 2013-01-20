@@ -79,7 +79,7 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          * Creates indexed mesh with zero vertex count, zero index count and
          * no vertex or index buffers.
          */
-        inline explicit IndexedMesh(Primitive primitive = Primitive::Triangles): Mesh(primitive), _indexBuffer(nullptr), _indexCount(0), _indexType(IndexType::UnsignedInt) {}
+        inline explicit IndexedMesh(Primitive primitive = Primitive::Triangles): Mesh(primitive) {}
 
         /**
          * @brief Set index buffer
@@ -89,36 +89,6 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          *      @extension{APPLE,vertex_array_object} is available)
          */
         IndexedMesh* setIndexBuffer(Buffer* buffer);
-
-        /** @brief Index count */
-        inline GLsizei indexCount() const { return _indexCount; }
-
-        /**
-         * @brief Set index count
-         * @return Pointer to self (for method chaining)
-         *
-         * Default is zero.
-         * @see setIndexBuffer(), setIndexType(), MeshTools::compressIndices()
-         */
-        inline IndexedMesh* setIndexCount(GLsizei count) {
-            _indexCount = count;
-            return this;
-        }
-
-        /** @brief Index type */
-        inline IndexType indexType() const { return _indexType; }
-
-        /**
-         * @brief Set index type
-         * @return Pointer to self (for method chaining)
-         *
-         * Default is @ref IndexType "IndexType::UnsignedInt".
-         * @see setIndexBuffer(), setIndexCount(), MeshTools::compressIndices()
-         */
-        inline IndexedMesh* setIndexType(IndexType type) {
-            _indexType = type;
-            return this;
-        }
 
         /**
          * @brief Draw the mesh
@@ -141,6 +111,14 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
         }
         inline IndexedMesh* setVertexCount(GLsizei vertexCount) {
             Mesh::setVertexCount(vertexCount);
+            return this;
+        }
+        inline IndexedMesh* setIndexCount(GLsizei count) {
+            Mesh::setIndexCount(count);
+            return this;
+        }
+        inline IndexedMesh* setIndexType(IndexType type) {
+            Mesh::setIndexType(type);
             return this;
         }
         template<class ...T> inline IndexedMesh* addVertexBuffer(Buffer* buffer, const T&... attributes) {
@@ -171,10 +149,6 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
         void MAGNUM_LOCAL bindIndexedImplementationDefault();
         void MAGNUM_LOCAL bindIndexedImplementationVAO();
         static MAGNUM_LOCAL BindIndexedImplementation bindIndexedImplementation;
-
-        Buffer* _indexBuffer;
-        GLsizei _indexCount;
-        IndexType _indexType;
 };
 
 }
