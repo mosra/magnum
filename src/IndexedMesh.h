@@ -82,19 +82,6 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
         inline explicit IndexedMesh(Primitive primitive = Primitive::Triangles): Mesh(primitive) {}
 
         /**
-         * @brief Set index buffer
-         * @return Pointer to self (for method chaining)
-         *
-         * @see setIndexCount(), setIndexType(), MeshTools::compressIndices(),
-         *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
-         *      @extension{APPLE,vertex_array_object} is available)
-         */
-        inline IndexedMesh* setIndexBuffer(Buffer* buffer) {
-            (this->*bindIndexBufferImplementation)(buffer);
-            return this;
-        }
-
-        /**
          * @brief Draw the mesh
          *
          * Expects an active shader with all uniforms set. See
@@ -107,47 +94,10 @@ class MAGNUM_EXPORT IndexedMesh: public Mesh {
          */
         void draw() override;
 
-        /* Overloads to remove WTF-factor from method chaining order */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline IndexedMesh* setPrimitive(Primitive primitive) {
-            Mesh::setPrimitive(primitive);
-            return this;
-        }
-        inline IndexedMesh* setVertexCount(GLsizei vertexCount) {
-            Mesh::setVertexCount(vertexCount);
-            return this;
-        }
-        inline IndexedMesh* setIndexCount(GLsizei count) {
-            Mesh::setIndexCount(count);
-            return this;
-        }
-        inline IndexedMesh* setIndexType(IndexType type) {
-            Mesh::setIndexType(type);
-            return this;
-        }
-        template<class ...T> inline IndexedMesh* addVertexBuffer(Buffer* buffer, const T&... attributes) {
-            Mesh::addVertexBuffer(buffer, attributes...);
-            return this;
-        }
-        template<class ...T> inline IndexedMesh* addInterleavedVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes) {
-            Mesh::addInterleavedVertexBuffer(buffer, offset, attributes...);
-            return this;
-        }
-        template<GLuint location, class T> inline IndexedMesh* addVertexBufferStride(Buffer* buffer, GLintptr offset, GLsizei stride, const AbstractShaderProgram::Attribute<location, T>& attribute) {
-            Mesh::addVertexBufferStride(buffer, offset, stride, attribute);
-            return this;
-        }
-        #endif
-
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
 
         void MAGNUM_LOCAL bind();
-
-        typedef void(IndexedMesh::*BindIndexBufferImplementation)(Buffer*);
-        void MAGNUM_LOCAL bindIndexBufferImplementationDefault(Buffer* buffer);
-        void MAGNUM_LOCAL bindIndexBufferImplementationVAO(Buffer* buffer);
-        static BindIndexBufferImplementation bindIndexBufferImplementation;
 
         typedef void(IndexedMesh::*BindIndexedImplementation)();
         void MAGNUM_LOCAL bindIndexedImplementationDefault();

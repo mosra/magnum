@@ -34,6 +34,7 @@ Mesh::AttributeIPointerImplementation Mesh::attributeIPointerImplementation = &M
 Mesh::AttributeLPointerImplementation Mesh::attributeLPointerImplementation = &Mesh::attributePointerImplementationDefault;
 #endif
 #endif
+Mesh::BindIndexBufferImplementation Mesh::bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationDefault;
 Mesh::BindImplementation Mesh::bindImplementation = &Mesh::bindImplementationDefault;
 Mesh::UnbindImplementation Mesh::unbindImplementation = &Mesh::unbindImplementationDefault;
 
@@ -159,6 +160,7 @@ void Mesh::initializeContextBasedFunctionality(Context* context) {
             attributeLPointerImplementation = &Mesh::attributePointerImplementationVAO;
         }
 
+        bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationVAO;
         bindImplementation = &Mesh::bindImplementationVAO;
         unbindImplementation = &Mesh::unbindImplementationVAO;
     }
@@ -234,6 +236,15 @@ void Mesh::attributePointerImplementationDSA(const LongAttribute& attribute) {
 }
 #endif
 #endif
+
+void Mesh::bindIndexBufferImplementationDefault(Buffer* buffer) {
+    _indexBuffer = buffer;
+}
+
+void Mesh::bindIndexBufferImplementationVAO(Buffer* buffer) {
+    bindVAO(vao);
+    buffer->bind(Buffer::Target::ElementArray);
+}
 
 void Mesh::bindImplementationDefault() {
     for(const Attribute& attribute: attributes)

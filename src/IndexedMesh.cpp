@@ -21,7 +21,6 @@
 
 namespace Magnum {
 
-IndexedMesh::BindIndexBufferImplementation IndexedMesh::bindIndexBufferImplementation = &IndexedMesh::bindIndexBufferImplementationDefault;
 IndexedMesh::BindIndexedImplementation IndexedMesh::bindIndexedImplementation = &IndexedMesh::bindIndexedImplementationDefault;
 
 void IndexedMesh::draw() {
@@ -45,21 +44,11 @@ void IndexedMesh::initializeContextBasedFunctionality(Context* context) {
     if(context->isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>()) {
         Debug() << "IndexedMesh: using" << Extensions::GL::APPLE::vertex_array_object::string() << "features";
 
-        bindIndexBufferImplementation = &IndexedMesh::bindIndexBufferImplementationVAO;
         bindIndexedImplementation = &IndexedMesh::bindIndexedImplementationVAO;
     }
     #else
     static_cast<void>(context);
     #endif
-}
-
-void IndexedMesh::bindIndexBufferImplementationDefault(Buffer* buffer) {
-    _indexBuffer = buffer;
-}
-
-void IndexedMesh::bindIndexBufferImplementationVAO(Buffer* buffer) {
-    bindVAO(vao);
-    buffer->bind(Buffer::Target::ElementArray);
 }
 
 void IndexedMesh::bindIndexedImplementationDefault() {

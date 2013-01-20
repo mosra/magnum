@@ -593,6 +593,19 @@ class MAGNUM_EXPORT Mesh {
         }
 
         /**
+         * @brief Set index buffer
+         * @return Pointer to self (for method chaining)
+         *
+         * @see setIndexCount(), setIndexType(), MeshTools::compressIndices(),
+         *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
+         *      @extension{APPLE,vertex_array_object} is available)
+         */
+        inline Mesh* setIndexBuffer(Buffer* buffer) {
+            (this->*bindIndexBufferImplementation)(buffer);
+            return this;
+        }
+
+        /**
          * @brief Draw the mesh
          *
          * Expects an active shader with all uniforms set. See
@@ -768,6 +781,11 @@ class MAGNUM_EXPORT Mesh {
         static AttributeLPointerImplementation attributeLPointerImplementation;
         #endif
         #endif
+
+        typedef void(Mesh::*BindIndexBufferImplementation)(Buffer*);
+        void MAGNUM_LOCAL bindIndexBufferImplementationDefault(Buffer* buffer);
+        void MAGNUM_LOCAL bindIndexBufferImplementationVAO(Buffer* buffer);
+        static BindIndexBufferImplementation bindIndexBufferImplementation;
 
         typedef void(Mesh::*BindImplementation)();
         void MAGNUM_LOCAL bindImplementationDefault();
