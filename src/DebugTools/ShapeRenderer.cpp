@@ -68,6 +68,7 @@ template<> void createDebugMesh(ShapeRenderer<3>* renderer, Physics::AbstractSha
 #endif
 
 template<std::uint8_t dimensions> ShapeRenderer<dimensions>::ShapeRenderer(Physics::ObjectShape<dimensions>* shape, ResourceKey options, SceneGraph::DrawableGroup<dimensions>* drawables): SceneGraph::Drawable<dimensions>(shape->object(), drawables), options(ResourceManager::instance()->get<ShapeRendererOptions>(options)) {
+    CORRADE_INTERNAL_ASSERT(shape->shape() != nullptr);
     Implementation::createDebugMesh(this, shape->shape());
 }
 
