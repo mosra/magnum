@@ -38,7 +38,6 @@ template<std::uint8_t dimensions> class ImageData: public AbstractImage {
 
         /**
          * @brief Constructor
-         * @param name              %Image name
          * @param size              %Image size
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
@@ -47,13 +46,10 @@ template<std::uint8_t dimensions> class ImageData: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        inline ImageData(const std::string& name, const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, GLvoid* data): AbstractImage(format, type), _name(name), _size(size), _data(reinterpret_cast<char*>(data)) {}
+        inline ImageData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, GLvoid* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
 
         /** @brief Destructor */
         inline ~ImageData() { delete[] _data; }
-
-        /** @brief %Image name */
-        inline std::string name() const { return _name; }
 
         /** @brief %Image size */
         inline typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
@@ -63,7 +59,6 @@ template<std::uint8_t dimensions> class ImageData: public AbstractImage {
         inline const void* data() const { return _data; } /**< @overload */
 
     private:
-        std::string _name;
         Math::Vector<Dimensions, GLsizei> _size;
         char* _data;
 };

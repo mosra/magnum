@@ -38,7 +38,6 @@ class MeshObjectData3D: public ObjectData3D {
     public:
         /**
          * @brief Constructor
-         * @param name              %Mesh object name
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          * @param instance          Instance ID
@@ -46,7 +45,7 @@ class MeshObjectData3D: public ObjectData3D {
          *
          * Creates object with mesh instance type.
          */
-        inline MeshObjectData3D(const std::string& name, const std::vector<std::uint32_t>& children, const Matrix4& transformation, std::uint32_t instance, std::uint32_t material): ObjectData3D(name, children, transformation, InstanceType::Mesh, instance), _material(material) {}
+        inline MeshObjectData3D(const std::vector<std::uint32_t>& children, const Matrix4& transformation, std::uint32_t instance, std::uint32_t material): ObjectData3D(children, transformation, InstanceType::Mesh, instance), _material(material) {}
 
         /** @brief Material ID */
         inline std::uint32_t material() const { return _material; }

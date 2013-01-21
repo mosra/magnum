@@ -36,14 +36,10 @@ class MAGNUM_EXPORT SceneData {
     public:
         /**
          * @brief Constructor
-         * @param name          Scene name
          * @param children2D    Two-dimensional child objects
          * @param children3D    Three-dimensional child objects
          */
-        inline SceneData(const std::string& name, const std::vector<std::uint32_t>& children2D, const std::vector<std::uint32_t>& children3D): _name(name), _children2D(children2D), _children3D(children3D) {}
-
-        /** @brief Scene name */
-        inline std::string name() const { return _name; }
+        inline SceneData(const std::vector<std::uint32_t>& children2D, const std::vector<std::uint32_t>& children3D): _children2D(children2D), _children3D(children3D) {}
 
         /** @brief Two-dimensional child objects */
         inline const std::vector<std::uint32_t>& children2D() const { return _children2D; }
@@ -52,7 +48,6 @@ class MAGNUM_EXPORT SceneData {
         inline const std::vector<std::uint32_t>& children3D() const { return _children3D; }
 
     private:
-        std::string _name;
         std::vector<std::uint32_t> _children2D,
             _children3D;
 };

@@ -19,7 +19,9 @@
  * @brief Class Magnum::Trade::ObjectData2D
  */
 
-#include "Math/Matrix4.h"
+#include <vector>
+
+#include "Math/Matrix3.h"
 #include "Magnum.h"
 
 namespace Magnum { namespace Trade {
@@ -47,27 +49,22 @@ class ObjectData2D {
 
         /**
          * @brief Constructor
-         * @param name              Object name
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          * @param instanceType      Instance type
          * @param instanceId        Instance ID
          */
-        inline ObjectData2D(const std::string& name, const std::vector<std::uint32_t>& children, const Matrix3& transformation, InstanceType instanceType, std::uint32_t instanceId): _name(name), _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
+        inline ObjectData2D(const std::vector<std::uint32_t>& children, const Matrix3& transformation, InstanceType instanceType, std::uint32_t instanceId): _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
 
         /**
          * @brief Constructor for empty instance
-         * @param name              Object name
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          */
-        inline ObjectData2D(const std::string& name, const std::vector<std::uint32_t>& children, const Matrix3& transformation): _name(name), _children(children), _transformation(transformation), _instanceType(InstanceType::Empty), _instanceId(-1) {}
+        inline ObjectData2D(const std::vector<std::uint32_t>& children, const Matrix3& transformation): _children(children), _transformation(transformation), _instanceType(InstanceType::Empty), _instanceId(-1) {}
 
         /** @brief Destructor */
         inline virtual ~ObjectData2D() {}
-
-        /** @brief %Object name */
-        inline std::string name() const { return _name; }
 
         /** @brief Child objects */
         inline std::vector<std::uint32_t>& children() { return _children; }
@@ -92,7 +89,6 @@ class ObjectData2D {
         inline std::int32_t instanceId() const { return _instanceId; }
 
     private:
-        std::string _name;
         std::vector<std::uint32_t> _children;
         Matrix3 _transformation;
         InstanceType _instanceType;

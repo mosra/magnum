@@ -31,19 +31,6 @@ class MAGNUM_EXPORT LightData {
     LightData(LightData&& other) = delete;
     LightData& operator=(const LightData& other) = delete;
     LightData& operator=(LightData&& other) = delete;
-
-    public:
-        /**
-         * @brief Constructor
-         * @param name      %Light name
-         */
-        inline LightData(const std::string& name): _name(name) {}
-
-        /** @brief %Light name */
-        inline std::string name() const { return _name; }
-
-    private:
-        std::string _name;
 };
 
 }}

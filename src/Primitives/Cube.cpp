@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Primitives {
 
-Cube::Cube(): MeshData3D("", Mesh::Primitive::Triangles, new std::vector<std::uint32_t>{
+Cube::Cube(): MeshData3D(Mesh::Primitive::Triangles, new std::vector<std::uint32_t>{
      0,  1,  2,  0,  2,  3, /* +Z */
      4,  5,  6,  4,  6,  7, /* +X */
      8,  9, 10,  8, 10, 11, /* +Y */

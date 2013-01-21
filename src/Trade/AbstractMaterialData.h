@@ -42,22 +42,17 @@ class AbstractMaterialData {
 
         /**
          * @brief Constructor
-         * @param name      Material name
          * @param type      Material type
          */
-        inline AbstractMaterialData(const std::string& name, Type type): _name(name), _type(type) {}
+        inline AbstractMaterialData(Type type): _type(type) {}
 
         /** @brief Destructor */
         virtual ~AbstractMaterialData() = 0;
-
-        /** @brief Material name */
-        inline std::string name() const { return _name; }
 
         /** @brief Material type */
         inline Type type() const { return _type; }
 
     private:
-        std::string _name;
         Type _type;
 };
 

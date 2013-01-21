@@ -42,7 +42,6 @@ class MAGNUM_EXPORT MeshData3D {
     public:
         /**
          * @brief Constructor
-         * @param name              %Mesh name
          * @param primitive         Primitive
          * @param indices           Array with indices or 0, if this is not
          *      indexed mesh
@@ -52,13 +51,10 @@ class MAGNUM_EXPORT MeshData3D {
          * @param textureCoords2D   Array with two-dimensional texture
          *      coordinate arrays or empty array
          */
-        inline MeshData3D(const std::string& name, Mesh::Primitive primitive, std::vector<std::uint32_t>* indices, std::vector<std::vector<Point3D>*> positions, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D): _name(name), _primitive(primitive), _indices(indices), _positions(positions), _normals(normals), _textureCoords2D(textureCoords2D) {}
+        inline MeshData3D(Mesh::Primitive primitive, std::vector<std::uint32_t>* indices, std::vector<std::vector<Point3D>*> positions, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D): _primitive(primitive), _indices(indices), _positions(positions), _normals(normals), _textureCoords2D(textureCoords2D) {}
 
         /** @brief Destructor */
         ~MeshData3D();
-
-        /** @brief %Mesh name */
-        inline std::string name() const { return _name; }
 
         /** @brief Primitive */
         inline Mesh::Primitive primitive() const { return _primitive; }
@@ -107,7 +103,6 @@ class MAGNUM_EXPORT MeshData3D {
         inline const std::vector<Vector2>* textureCoords2D(std::uint32_t id) const { return _textureCoords2D[id]; } /**< @overload */
 
     private:
-        std::string _name;
         Mesh::Primitive _primitive;
         std::vector<std::uint32_t>* _indices;
         std::vector<std::vector<Point3D>*> _positions;

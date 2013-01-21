@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Primitives {
 
-Square::Square(): MeshData2D("", Mesh::Primitive::TriangleStrip, nullptr, {new std::vector<Point2D>{
+Square::Square(): MeshData2D(Mesh::Primitive::TriangleStrip, nullptr, {new std::vector<Point2D>{
     {1.0f, -1.0f},
     {1.0f, 1.0f},
     {-1.0f, -1.0f},
