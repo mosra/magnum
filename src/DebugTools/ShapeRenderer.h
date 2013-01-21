@@ -90,7 +90,7 @@ template<std::uint8_t dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: 
     public:
         /**
          * @brief Constructor
-         * @param shape     Shape for which to create debug renderer
+         * @param shape     Object for which to create debug renderer
          * @param options   Options resource key. See
          *      @ref ShapeRenderer-usage "class documentation" for more
          *      information.
@@ -98,6 +98,8 @@ template<std::uint8_t dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: 
          *
          * The renderer is automatically added to shape's object features,
          * @p shape must be available for the whole lifetime of the renderer.
+         *
+         * @attention Passed object must have assigned shape.
          */
         explicit ShapeRenderer(Physics::ObjectShape<dimensions>* shape, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions>* drawables = nullptr);
 
