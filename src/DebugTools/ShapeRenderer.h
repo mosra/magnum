@@ -72,9 +72,8 @@ Visualizes collision shape. See @ref debug-tools-renderers for more information.
 Example code:
 @code
 // Create some options
-DebugTools::ResourceManager::instance()->set<DebugTools::ShapeRendererOptions>("red",
-    (new DebugTools::ShapeRendererOptions())->setColor({1.0f, 0.0f, 0.0f}),
-    ResourceDataState::Final, ResourcePolicy::Persistent);
+DebugTools::ResourceManager::instance()->set("red",
+    (new DebugTools::ShapeRendererOptions())->setColor({1.0f, 0.0f, 0.0f}));
 
 // Create debug renderer for given shape, use "red" options for it
 Physics::ObjectShape2D* shape;
