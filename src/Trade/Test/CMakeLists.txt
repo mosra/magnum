@@ -1,0 +1,2 @@
+corrade_add_test(TradeObjectData2DTest ObjectData2DTest.cpp LIBRARIES Magnum)
+corrade_add_test(TradeObjectData3DTest ObjectData3DTest.cpp LIBRARIES Magnum)

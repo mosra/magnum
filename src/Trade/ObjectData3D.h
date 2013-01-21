@@ -96,6 +96,9 @@ class ObjectData3D {
         std::int32_t _instanceId;
 };
 
+/** @debugoperator{Magnum::Trade::ObjectData3D} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, ObjectData3D::InstanceType value);
+
 }}
 
 #endif

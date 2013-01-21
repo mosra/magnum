@@ -14,3 +14,8 @@ set(MagnumTrade_HEADERS
     SceneData.h
     TextureData.h)
 install(FILES ${MagnumTrade_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Trade)
+
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(Test)
+endif()
