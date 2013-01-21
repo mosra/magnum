@@ -44,28 +44,14 @@ class TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         TgaImporter(Corrade::PluginManager::AbstractPluginManager* manager = 0, const std::string& plugin = ""): AbstractImporter(manager, plugin), _image(nullptr) {}
         inline virtual ~TgaImporter() { close(); }
 
-        inline Features features() const { return Feature::OpenFile|Feature::OpenStream; }
+        inline Features features() const override { return Feature::OpenFile|Feature::OpenStream; }
 
-        /**
-         * @brief Open input stream with specific image name
-         *
-         * @see open(std::istream&), ImageData2D::name()
-         */
-        bool open(std::istream& in, const std::string& name);
-        inline bool open(std::istream& in) { return open(in, ""); }
+        bool open(std::istream& in) override;
+        bool open(const std::string& filename) override;
+        void close() override;
 
-        /**
-         * @brief Open file with specific image name
-         *
-         * @see open(const std::string&), ImageData2D::name()
-         */
-        bool open(const std::string& filename, const std::string& name);
-        inline bool open(const std::string& filename) { return open(filename, ""); }
-
-        void close();
-
-        inline std::uint32_t image2DCount() const { return _image ? 1 : 0; }
-        ImageData2D* image2D(std::uint32_t id);
+        std::uint32_t image2DCount() const override { return _image ? 1 : 0; }
+        ImageData2D* image2D(std::uint32_t id) override;
 
         #pragma pack(1)
         /** @brief TGA file header */
