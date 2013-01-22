@@ -56,20 +56,6 @@ template<std::uint8_t dimensions> class MAGNUM_EXPORT BufferImage: public Abstra
         /** @brief %Image size */
         inline typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
 
-        /**
-         * @brief Data
-         *
-         * Binds the buffer to @ref Buffer::Target "pixel unpack
-         * target" and returns nullptr, so it can be used for texture updating
-         * functions the same way as Image::data().
-         *
-         * @see Buffer::bind(Target)
-         */
-        inline void* data() {
-            _buffer.bind(Buffer::Target::PixelUnpack);
-            return nullptr;
-        }
-
         /** @brief %Image buffer */
         inline Buffer* buffer() { return &_buffer; }
 

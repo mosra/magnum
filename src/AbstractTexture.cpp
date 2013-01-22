@@ -15,6 +15,8 @@
 
 #include "AbstractTexture.h"
 
+#include "Buffer.h"
+#include "BufferImage.h"
 #include "Context.h"
 #include "Extensions.h"
 #include "Implementation/State.h"
@@ -431,6 +433,19 @@ void AbstractTexture::invalidateSubImplementationARB(GLint level, const Vector3i
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_TARGET_GLES2
+namespace Implementation {
+    template<std::uint8_t dimensions> GLvoid* ImageHelper<BufferImage<dimensions>>::dataOrPixelUnpackBuffer(BufferImage<dimensions>* image) {
+        image->buffer()->bind(Buffer::Target::PixelUnpack);
+        return nullptr;
+    }
+
+    template class ImageHelper<BufferImage1D>;
+    template class ImageHelper<BufferImage2D>;
+    template class ImageHelper<BufferImage3D>;
+}
+#endif
+
 void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture* texture, const Array2D<Wrapping>& wrapping) {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_ASSERT(texture->_target != GL_TEXTURE_RECTANGLE || ((wrapping.x() == Wrapping::ClampToEdge || wrapping.x() == Wrapping::ClampToBorder) && (wrapping.y() == Wrapping::ClampToEdge || wrapping.y() == Wrapping::ClampToEdge)), "AbstractTexture: rectangle texture wrapping must either clamp to border or to edge", );
