@@ -560,7 +560,7 @@ class MAGNUM_EXPORT Mesh {
          *
          * Attribute list is combination of
          * @ref AbstractShaderProgram::Attribute "attribute definitions"
-         * (specified in implementation of given shader) and offsets between
+         * (specified in implementation of given shader) and gaps between
          * attribute arrays.
          *
          * See @ref Mesh-configuration "class documentation" for simple usage
@@ -574,7 +574,7 @@ class MAGNUM_EXPORT Mesh {
          * Mesh* mesh;
          * Buffer* buffer;
          * mesh->addVertexBuffer(buffer,
-         *     35,                                  // skip other data
+         *     35,                                  // offset of the data
          *     Shaders::PhongShader::Position(),    // position array
          *     sizeof(Vector2)*mesh->vertexCount(), // skip texture coordinate array
          *     Shaders::PhongShader::Normal());     // normal array
@@ -603,10 +603,10 @@ class MAGNUM_EXPORT Mesh {
          *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access}
          *      if @extension{APPLE,vertex_array_object} is available
          */
-        template<class ...T> inline Mesh* addVertexBuffer(Buffer* buffer, const T&... attributes) {
+        template<class ...T> inline Mesh* addVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes) {
             CORRADE_ASSERT(_vertexCount != 0, "Mesh: vertex count must be set before binding attributes", this);
 
-            addVertexBufferInternal(buffer, 0, attributes...);
+            addVertexBufferInternal(buffer, offset, attributes...);
             return this;
         }
 

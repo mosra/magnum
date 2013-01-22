@@ -45,7 +45,7 @@ AbstractBoxRenderer<2>::AbstractBoxRenderer() {
 
     mesh->setPrimitive(square.primitive())
         ->setVertexCount(square.positions(0)->size())
-        ->addVertexBuffer(buffer, Shaders::FlatShader2D::Position());
+        ->addVertexBuffer(buffer, 0, Shaders::FlatShader2D::Position());
     ResourceManager::instance()->set(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
@@ -75,7 +75,7 @@ AbstractBoxRenderer<3>::AbstractBoxRenderer() {
 
     mesh->setPrimitive(cube.primitive())
         ->setVertexCount(cube.positions(0)->size())
-        ->addVertexBuffer(vertexBuffer, Shaders::FlatShader3D::Position());
+        ->addVertexBuffer(vertexBuffer, 0, Shaders::FlatShader3D::Position());
     ResourceManager::instance()->set<Mesh>(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
