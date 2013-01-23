@@ -66,9 +66,8 @@ void compressIndices(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const std:
     char* data;
     std::tie(indexCount, indexType, data) = compressIndices(indices);
 
-    mesh->setIndexBuffer(buffer)
-        ->setIndexType(indexType)
-        ->setIndexCount(indices.size());
+    mesh->setIndexCount(indices.size())
+        ->setIndexBuffer(buffer, 0, indexType);
     buffer->setData(indexCount*Mesh::indexSize(indexType), data, usage);
 
     delete[] data;

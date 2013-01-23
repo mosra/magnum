@@ -42,12 +42,10 @@ vertex buffer(s). The function itself calls setVertexCount(), so you don't
 have to do it again.
 
 If you have indexed mesh, you need to call setIndexCount() instead of
-setVertexCount() and additionaly specify also index type using setIndexType().
-Then fill your index buffer with data and add it to the mesh using
-setIndexBuffer(). You can also use MeshTools::compressIndices() to
+setVertexCount(). Then fill your index buffer with data and specify its layout
+using setIndexBuffer(). You can also use MeshTools::compressIndices() to
 conveniently compress the indices, fill the index buffer and configure the
-mesh instead of calling setIndexCount(), setIndexType() and setIndexBuffer()
-manually.
+mesh instead of calling setIndexCount() and setIndexBuffer() manually.
 
 Note that neither vertex buffers nor index buffer is managed (e.g. deleted on
 destruction) by the mesh, so you have to manage them on your own. On the other
@@ -130,12 +128,11 @@ static constexpr GLubyte indices[75] = {
 };
 indexBuffer->setData(indices, Buffer::Usage::StaticDraw);
 
-// Set primitive, index count and type, add the buffers
+// Set primitive, index count, add the buffers
 mesh->setPrimitive(Mesh::Primitive::Triangles)
     ->setIndexCount(75)
-    ->setIndexType(Mesh::IndexType::UnsignedByte)
     ->addVertexBuffer(vertexBuffer, 0, MyShader::Position())
-    ->setIndexBuffer(indexBuffer);
+    ->setIndexBuffer(indexBuffer, 0, Mesh::IndexType::UnsignedByte);
 @endcode
 
 @code
@@ -152,8 +149,8 @@ MeshTools::interleave(mesh, vertexBuffer, Buffer::Usage::StaticDraw,
 MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw,
     *cube.indices());
 
-// Set primitive and specify layout of interleaved vertex buffer. Index count,
-// type and index buffer has been already set by MeshTools::compressIndices().
+// Set primitive and specify layout of interleaved vertex buffer. Index count
+// and index buffer has been already specified by MeshTools::compressIndices().
 mesh->setPrimitive(plane.primitive())
     ->addInterleavedVertexBuffer(vertexBuffer, 0,
         Shaders::PhongShader::Position(),
@@ -452,7 +449,7 @@ class MAGNUM_EXPORT Mesh {
         /**
          * @brief Index type
          *
-         * @see setIndexType(), indexSize()
+         * @see setIndexBuffer(), indexSize()
          */
         enum class IndexType: GLenum {
             UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte */
@@ -532,25 +529,10 @@ class MAGNUM_EXPORT Mesh {
          * @return Pointer to self (for method chaining)
          *
          * Default is zero.
-         * @see setIndexBuffer(), setIndexType(), MeshTools::compressIndices()
+         * @see setIndexBuffer(), MeshTools::compressIndices()
          */
         inline Mesh* setIndexCount(GLsizei count) {
             _indexCount = count;
-            return this;
-        }
-
-        /** @brief Index type */
-        inline IndexType indexType() const { return _indexType; }
-
-        /**
-         * @brief Set index type
-         * @return Pointer to self (for method chaining)
-         *
-         * Default is @ref IndexType "IndexType::UnsignedInt".
-         * @see setIndexBuffer(), setIndexCount(), MeshTools::compressIndices()
-         */
-        inline Mesh* setIndexType(IndexType type) {
-            _indexType = type;
             return this;
         }
 
@@ -686,16 +668,16 @@ class MAGNUM_EXPORT Mesh {
 
         /**
          * @brief Set index buffer
+         * @param buffer        Index buffer
+         * @param offset        Offset into the buffer
+         * @param type          Index data type
          * @return Pointer to self (for method chaining)
          *
-         * @see setIndexCount(), setIndexType(), MeshTools::compressIndices(),
+         * @see setIndexCount(), MeshTools::compressIndices(),
          *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
          *      @extension{APPLE,vertex_array_object} is available)
          */
-        inline Mesh* setIndexBuffer(Buffer* buffer) {
-            (this->*bindIndexBufferImplementation)(buffer);
-            return this;
-        }
+        Mesh* setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type);
 
         /**
          * @brief Draw the mesh
@@ -871,7 +853,7 @@ class MAGNUM_EXPORT Mesh {
         typedef void(Mesh::*BindIndexBufferImplementation)(Buffer*);
         void MAGNUM_LOCAL bindIndexBufferImplementationDefault(Buffer* buffer);
         void MAGNUM_LOCAL bindIndexBufferImplementationVAO(Buffer* buffer);
-        static BindIndexBufferImplementation bindIndexBufferImplementation;
+        static MAGNUM_LOCAL BindIndexBufferImplementation bindIndexBufferImplementation;
 
         typedef void(Mesh::*BindImplementation)();
         void MAGNUM_LOCAL bindImplementationDefault();
@@ -885,10 +867,10 @@ class MAGNUM_EXPORT Mesh {
 
         GLuint vao;
         Primitive _primitive;
-        GLsizei _vertexCount;
-        Buffer* _indexBuffer;
-        GLsizei _indexCount;
-        IndexType _indexType;
+        GLsizei _vertexCount, _indexCount;
+        GLintptr indexOffset;
+        IndexType indexType;
+        Buffer* indexBuffer;
 
         std::vector<Attribute> attributes;
         #ifndef MAGNUM_TARGET_GLES2

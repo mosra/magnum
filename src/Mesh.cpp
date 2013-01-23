@@ -49,7 +49,7 @@ std::size_t Mesh::indexSize(IndexType type) {
     CORRADE_INTERNAL_ASSERT(false);
 }
 
-Mesh::Mesh(Primitive primitive): _primitive(primitive), _vertexCount(0), _indexBuffer(nullptr), _indexCount(0), _indexType(IndexType::UnsignedInt) {
+Mesh::Mesh(Primitive primitive): _primitive(primitive), _vertexCount(0), _indexCount(0), indexOffset(0), indexType(IndexType::UnsignedInt), indexBuffer(nullptr) {
     (this->*createImplementation)();
 }
 
@@ -61,7 +61,7 @@ Mesh::~Mesh() {
     (this->*destroyImplementation)();
 }
 
-Mesh::Mesh(Mesh&& other): vao(other.vao), _primitive(other._primitive), _vertexCount(other._vertexCount), _indexBuffer(other._indexBuffer), _indexCount(other._indexCount), _indexType(other._indexType), attributes(std::move(other.attributes))
+Mesh::Mesh(Mesh&& other): vao(other.vao), _primitive(other._primitive), _vertexCount(other._vertexCount), _indexCount(other._indexCount), indexOffset(other.indexOffset), indexType(other.indexType), indexBuffer(other.indexBuffer), attributes(std::move(other.attributes))
     #ifndef MAGNUM_TARGET_GLES2
     , integerAttributes(std::move(other.integerAttributes))
     #ifndef MAGNUM_TARGET_GLES
@@ -78,9 +78,10 @@ Mesh& Mesh::operator=(Mesh&& other) {
     vao = other.vao;
     _primitive = other._primitive;
     _vertexCount = other._vertexCount;
-    _indexBuffer = other._indexBuffer;
     _indexCount = other._indexCount;
-    _indexType = other._indexType;
+    indexOffset = other.indexOffset;
+    indexType = other.indexType;
+    indexBuffer = other.indexBuffer;
     attributes = std::move(other.attributes);
     #ifndef MAGNUM_TARGET_GLES2
     integerAttributes = std::move(other.integerAttributes);
@@ -94,6 +95,13 @@ Mesh& Mesh::operator=(Mesh&& other) {
     return *this;
 }
 
+Mesh* Mesh::setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type) {
+    indexOffset = offset;
+    indexType = type;
+    (this->*bindIndexBufferImplementation)(buffer);
+    return this;
+}
+
 void Mesh::draw() {
     /* Nothing to draw */
     if(!_vertexCount && !_indexCount) return;
@@ -104,7 +112,7 @@ void Mesh::draw() {
     if(!_indexCount) glDrawArrays(static_cast<GLenum>(_primitive), 0, _vertexCount);
 
     /* Indexed mesh */
-    else glDrawElements(static_cast<GLenum>(_primitive), _indexCount, static_cast<GLenum>(_indexType), nullptr);
+    else glDrawElements(static_cast<GLenum>(_primitive), _indexCount, static_cast<GLenum>(indexType), reinterpret_cast<GLvoid*>(indexOffset));
 
     (this->*unbindImplementation)();
 }
@@ -240,7 +248,7 @@ void Mesh::attributePointerImplementationDSA(const LongAttribute& attribute) {
 #endif
 
 void Mesh::bindIndexBufferImplementationDefault(Buffer* buffer) {
-    _indexBuffer = buffer;
+    indexBuffer = buffer;
 }
 
 void Mesh::bindIndexBufferImplementationVAO(Buffer* buffer) {
