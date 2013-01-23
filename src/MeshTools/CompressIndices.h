@@ -63,8 +63,8 @@ std::tuple<std::size_t, Mesh::IndexType, char*> MAGNUM_MESHTOOLS_EXPORT compress
 
 The same as compressIndices(const std::vector<std::uint32_t>&), but this
 function writes the output to given buffer, updates index count and specifies
-index buffer in the mesh, so you don't have to call Mesh::setIndexCount()
-and Mesh::setIndexBuffer() on your own.
+index buffer with proper index range in the mesh, so you don't have to call
+Mesh::setIndexCount() and Mesh::setIndexBuffer() on your own.
 
 @see MeshTools::interleave()
 */

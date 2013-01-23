@@ -40,13 +40,8 @@ template<class T> inline std::tuple<std::size_t, Mesh::IndexType, char*> compres
     return std::make_tuple(indices.size(), indexType<T>(), buffer);
 }
 
-}
-#endif
-
-std::tuple<std::size_t, Mesh::IndexType, char*> compressIndices(const std::vector<std::uint32_t>& indices) {
-    std::size_t size = *std::max_element(indices.begin(), indices.end());
-
-    switch(Math::log(256, size)) {
+std::tuple<std::size_t, Mesh::IndexType, char*> compressIndicesInternal(const std::vector<std::uint32_t>& indices, std::uint32_t max) {
+    switch(Math::log(256, max)) {
         case 0:
             return compress<GLubyte>(indices);
         case 1:
@@ -56,18 +51,29 @@ std::tuple<std::size_t, Mesh::IndexType, char*> compressIndices(const std::vecto
             return compress<GLuint>(indices);
 
         default:
-            CORRADE_ASSERT(false, "MeshTools::compressIndices(): no type able to index" << size << "elements.", {});
+            CORRADE_ASSERT(false, "MeshTools::compressIndices(): no type able to index" << max << "elements.", {});
     }
 }
 
+}
+#endif
+
+std::tuple<std::size_t, Mesh::IndexType, char*> compressIndices(const std::vector<std::uint32_t>& indices) {
+    return compressIndicesInternal(indices, *std::max_element(indices.begin(), indices.end()));
+}
+
 void compressIndices(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<std::uint32_t>& indices) {
+    auto minmax = std::minmax_element(indices.begin(), indices.end());
+
+    /** @todo Performance hint when range can be represented by smaller value? */
+
     std::size_t indexCount;
     Mesh::IndexType indexType;
     char* data;
-    std::tie(indexCount, indexType, data) = compressIndices(indices);
+    std::tie(indexCount, indexType, data) = compressIndicesInternal(indices, *minmax.second);
 
     mesh->setIndexCount(indices.size())
-        ->setIndexBuffer(buffer, 0, indexType);
+        ->setIndexBuffer(buffer, 0, indexType, *minmax.first, *minmax.second);
     buffer->setData(indexCount*Mesh::indexSize(indexType), data, usage);
 
     delete[] data;
