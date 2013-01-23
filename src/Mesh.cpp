@@ -49,7 +49,12 @@ std::size_t Mesh::indexSize(IndexType type) {
     CORRADE_INTERNAL_ASSERT(false);
 }
 
-Mesh::Mesh(Primitive primitive): _primitive(primitive), _vertexCount(0), _indexCount(0), indexOffset(0), indexType(IndexType::UnsignedInt), indexBuffer(nullptr) {
+Mesh::Mesh(Primitive primitive): _primitive(primitive), _vertexCount(0), _indexCount(0)
+    #ifndef MAGNUM_TARGET_GLES2
+    , indexStart(0), indexEnd(0)
+    #endif
+    , indexOffset(0), indexType(IndexType::UnsignedInt), indexBuffer(nullptr)
+{
     (this->*createImplementation)();
 }
 
@@ -61,7 +66,11 @@ Mesh::~Mesh() {
     (this->*destroyImplementation)();
 }
 
-Mesh::Mesh(Mesh&& other): vao(other.vao), _primitive(other._primitive), _vertexCount(other._vertexCount), _indexCount(other._indexCount), indexOffset(other.indexOffset), indexType(other.indexType), indexBuffer(other.indexBuffer), attributes(std::move(other.attributes))
+Mesh::Mesh(Mesh&& other): vao(other.vao), _primitive(other._primitive), _vertexCount(other._vertexCount), _indexCount(other._indexCount)
+    #ifndef MAGNUM_TARGET_GLES2
+    , indexStart(other.indexStart), indexEnd(other.indexEnd)
+    #endif
+    , indexOffset(other.indexOffset), indexType(other.indexType), indexBuffer(other.indexBuffer), attributes(std::move(other.attributes))
     #ifndef MAGNUM_TARGET_GLES2
     , integerAttributes(std::move(other.integerAttributes))
     #ifndef MAGNUM_TARGET_GLES
@@ -79,6 +88,10 @@ Mesh& Mesh::operator=(Mesh&& other) {
     _primitive = other._primitive;
     _vertexCount = other._vertexCount;
     _indexCount = other._indexCount;
+    #ifndef MAGNUM_TARGET_GLES2
+    indexStart = other.indexStart;
+    indexEnd = other.indexEnd;
+    #endif
     indexOffset = other.indexOffset;
     indexType = other.indexType;
     indexBuffer = other.indexBuffer;
@@ -95,9 +108,16 @@ Mesh& Mesh::operator=(Mesh&& other) {
     return *this;
 }
 
-Mesh* Mesh::setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type) {
+Mesh* Mesh::setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type, GLuint start, GLuint end) {
     indexOffset = offset;
     indexType = type;
+    #ifndef MAGNUM_TARGET_GLES2
+    indexStart = start;
+    indexEnd = end;
+    #else
+    static_cast<void>(start);
+    static_cast<void>(end);
+    #endif
     (this->*bindIndexBufferImplementation)(buffer);
     return this;
 }
@@ -109,10 +129,18 @@ void Mesh::draw() {
     (this->*bindImplementation)();
 
     /* Non-indexed mesh */
-    if(!_indexCount) glDrawArrays(static_cast<GLenum>(_primitive), 0, _vertexCount);
+    if(!_indexCount)
+        glDrawArrays(static_cast<GLenum>(_primitive), 0, _vertexCount);
 
-    /* Indexed mesh */
-    else glDrawElements(static_cast<GLenum>(_primitive), _indexCount, static_cast<GLenum>(indexType), reinterpret_cast<GLvoid*>(indexOffset));
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Indexed mesh with specified range */
+    else if(indexEnd)
+        glDrawRangeElements(static_cast<GLenum>(_primitive), indexStart, indexEnd, _indexCount, static_cast<GLenum>(indexType), reinterpret_cast<GLvoid*>(indexOffset));
+    #endif
+
+    /* Indexed mesh without specified range */
+    else
+        glDrawElements(static_cast<GLenum>(_primitive), _indexCount, static_cast<GLenum>(indexType), reinterpret_cast<GLvoid*>(indexOffset));
 
     (this->*unbindImplementation)();
 }

@@ -117,7 +117,7 @@ Buffer *vertexBuffer, *indexBuffer;
 Mesh* mesh;
 
 // Fill vertex buffer with position data
-static constexpr Point3D positions[30] = {
+static constexpr Point3D positions[300] = {
     // ...
 };
 vertexBuffer->setData(positions, Buffer::Usage::StaticDraw);
@@ -128,11 +128,11 @@ static constexpr GLubyte indices[75] = {
 };
 indexBuffer->setData(indices, Buffer::Usage::StaticDraw);
 
-// Set primitive, index count, add the buffers
+// Set primitive, index count, specify the buffers
 mesh->setPrimitive(Mesh::Primitive::Triangles)
     ->setIndexCount(75)
     ->addVertexBuffer(vertexBuffer, 0, MyShader::Position())
-    ->setIndexBuffer(indexBuffer, 0, Mesh::IndexType::UnsignedByte);
+    ->setIndexBuffer(indexBuffer, 0, Mesh::IndexType::UnsignedByte, 176, 229);
 @endcode
 
 @code
@@ -203,6 +203,10 @@ DSA functions are used for specifying attribute locations to avoid unnecessary
 calls to @fn_gl{BindBuffer} and @fn_gl{BindVertexArray}. See documentation of
 addVertexBuffer(), addInterleavedVertexBuffer(), addVertexBufferStride() for
 more information.
+
+If index range is specified in setIndexBuffer(), range-based version of
+drawing commands are used on desktop OpenGL and OpenGL ES 3.0. See also draw()
+for more information.
 
 @todo Support for indirect draw buffer (OpenGL 4.0, @extension{ARB,draw_indirect})
 @todo Redo in a way that allows glMultiDrawArrays, glDrawArraysInstanced etc.
@@ -671,13 +675,39 @@ class MAGNUM_EXPORT Mesh {
          * @param buffer        Index buffer
          * @param offset        Offset into the buffer
          * @param type          Index data type
+         * @param start         Minimum array index contained in the buffer
+         * @param end           Maximum array index contained in the buffer
          * @return Pointer to self (for method chaining)
          *
+         * The smaller range is specified with @p start and @p end the less
+         * memory operations are needed (and possibly some optimizations),
+         * improving draw performance. Specifying `0` for both parameters
+         * behaves the same as setIndexBuffer(Buffer*, GLintptr, IndexType).
+         * On OpenGL ES 2.0 this function behaves always as
+         * setIndexBuffer(Buffer*, GLintptr, IndexType), as this functionality
+         * is not available there.
          * @see setIndexCount(), MeshTools::compressIndices(),
          *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
          *      @extension{APPLE,vertex_array_object} is available)
          */
-        Mesh* setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type);
+        Mesh* setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type, GLuint start, GLuint end);
+
+        /**
+         * @brief Set index buffer
+         * @param buffer        Index buffer
+         * @param offset        Offset into the buffer
+         * @param type          Index data type
+         * @return Pointer to self (for method chaining)
+         *
+         * Prefer to use setIndexBuffer(Buffer*, GLintptr, IndexType, GLuint, GLuint)
+         * for better performance.
+         * @see setIndexCount(), MeshTools::compressIndices(),
+         *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
+         *      @extension{APPLE,vertex_array_object} is available)
+         */
+        inline Mesh* setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type) {
+            return setIndexBuffer(buffer, offset, type, 0, 0);
+        }
 
         /**
          * @brief Draw the mesh
@@ -688,7 +718,7 @@ class MAGNUM_EXPORT Mesh {
          * @see @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
          *      @fn_gl{VertexAttribPointer}, @fn_gl{DisableVertexAttribArray}
          *      or @fn_gl{BindVertexArray} (if @extension{APPLE,vertex_array_object}
-         *      is available), @fn_gl{DrawArrays} or @fn_gl{DrawElements}
+         *      is available), @fn_gl{DrawArrays} or @fn_gl{DrawElements}/@fn_gl{DrawRangeElements}.
          */
         void draw();
 
@@ -868,6 +898,9 @@ class MAGNUM_EXPORT Mesh {
         GLuint vao;
         Primitive _primitive;
         GLsizei _vertexCount, _indexCount;
+        #ifndef MAGNUM_TARGET_GLES2
+        GLuint indexStart, indexEnd;
+        #endif
         GLintptr indexOffset;
         IndexType indexType;
         Buffer* indexBuffer;
