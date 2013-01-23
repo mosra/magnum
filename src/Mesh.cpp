@@ -277,10 +277,7 @@ void Mesh::bindImplementationDefault() {
     #endif
 
     /* Bind index buffer, if the mesh is indexed */
-    if(_indexCount) {
-        if(_indexBuffer) _indexBuffer->bind(Buffer::Target::ElementArray);
-        else Buffer::unbind(Buffer::Target::ElementArray);
-    }
+    if(_indexCount) indexBuffer->bind(Buffer::Target::ElementArray);
 }
 
 void Mesh::bindImplementationVAO() {
