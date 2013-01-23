@@ -1278,7 +1278,7 @@ class MAGNUM_EXPORT AbstractTexture {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<class Image> struct ImageHelper {
-        inline static GLvoid* dataOrPixelUnpackBuffer(Image* image) {
+        inline static const GLvoid* dataOrPixelUnpackBuffer(Image* image) {
             #ifndef MAGNUM_TARGET_GLES2
             Buffer::unbind(Buffer::Target::PixelUnpack);
             #endif
@@ -1288,7 +1288,7 @@ namespace Implementation {
 
     #ifndef MAGNUM_TARGET_GLES2
     template<std::uint8_t dimensions> struct MAGNUM_EXPORT ImageHelper<BufferImage<dimensions>> {
-        static GLvoid* dataOrPixelUnpackBuffer(BufferImage<dimensions>* image);
+        static const GLvoid* dataOrPixelUnpackBuffer(BufferImage<dimensions>* image);
     };
     #endif
 }

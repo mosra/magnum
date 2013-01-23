@@ -435,7 +435,7 @@ void AbstractTexture::invalidateSubImplementationARB(GLint level, const Vector3i
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES2
 namespace Implementation {
-    template<std::uint8_t dimensions> GLvoid* ImageHelper<BufferImage<dimensions>>::dataOrPixelUnpackBuffer(BufferImage<dimensions>* image) {
+    template<std::uint8_t dimensions> const GLvoid* ImageHelper<BufferImage<dimensions>>::dataOrPixelUnpackBuffer(BufferImage<dimensions>* image) {
         image->buffer()->bind(Buffer::Target::PixelUnpack);
         return nullptr;
     }
