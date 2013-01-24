@@ -19,7 +19,7 @@
  * @brief Class Magnum::Primitives::Plane
  */
 
-#include "Trade/MeshData3D.h"
+#include "Trade/Trade.h"
 
 namespace Magnum { namespace Primitives {
 
@@ -28,10 +28,24 @@ namespace Magnum { namespace Primitives {
 
 2x2 plane as triangle strip, non-indexed with normals in positive Z direction.
 */
-class Plane: public Trade::MeshData3D {
+class Plane {
     public:
-        /** @brief Constructor */
-        explicit Plane();
+        /**
+         * @brief Solid plane
+         *
+         * Non-indexed @ref Mesh::Primitive "TriangleStrip" with normals in
+         * positive Z direction.
+         */
+        static Trade::MeshData3D solid();
+
+        /**
+         * @brief Wireframe plane
+         *
+         * Non-indexed @ref Mesh::Primitive "LineLoop".
+         */
+        static Trade::MeshData3D wireframe();
+
+        Plane() = delete;
 };
 
 }}

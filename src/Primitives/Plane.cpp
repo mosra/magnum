@@ -16,19 +16,31 @@
 #include "Plane.h"
 
 #include "Math/Point3D.h"
+#include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
 
-Plane::Plane(): MeshData3D(Mesh::Primitive::TriangleStrip, nullptr, {new std::vector<Point3D>{
-    {1.0f, -1.0f, 0.0f},
-    {1.0f, 1.0f, 0.0f},
-    {-1.0f, -1.0f, 0.0f},
-    {-1.0f, 1.0f, 0.0f}
-}}, {new std::vector<Vector3>{
-    {0.0f, 0.0f, 1.0f},
-    {0.0f, 0.0f, 1.0f},
-    {0.0f, 0.0f, 1.0f},
-    {0.0f, 0.0f, 1.0f}
-}}, {}) {}
+Trade::MeshData3D Plane::solid() {
+    return Trade::MeshData3D(Mesh::Primitive::TriangleStrip, nullptr, {new std::vector<Point3D>{
+        {1.0f, -1.0f, 0.0f},
+        {1.0f, 1.0f, 0.0f},
+        {-1.0f, -1.0f, 0.0f},
+        {-1.0f, 1.0f, 0.0f}
+    }}, {new std::vector<Vector3>{
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f}
+    }}, {});
+}
+
+Trade::MeshData3D Plane::wireframe() {
+    return Trade::MeshData3D(Mesh::Primitive::LineLoop, nullptr, {new std::vector<Point3D>{
+        {-1.0f, -1.0f, 0.0f},
+        {1.0f, -1.0f, 0.0f},
+        {1.0f, 1.0f, 0.0f},
+        {-1.0f, 1.0f, 0.0f}
+    }}, {}, {});
+}
 
 }}
