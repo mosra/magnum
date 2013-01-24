@@ -47,13 +47,10 @@ class FeatureGroup {
         /**
          * @brief Destructor
          *
-         * Deletes all features belogning to this group.
+         * Removes all features belogning to this group, but not deletes them.
          */
         inline virtual ~FeatureGroup() {
-            for(auto i: features) {
-                i->_group = nullptr;
-                delete i;
-            }
+            for(auto i: features) i->_group = nullptr;
         }
 
         /** @brief Whether the group is empty */
