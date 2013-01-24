@@ -19,19 +19,32 @@
  * @brief Class Magnum::Primitives::Cube
  */
 
-#include "Trade/MeshData3D.h"
+#include "Trade/Trade.h"
 
 namespace Magnum { namespace Primitives {
 
 /**
 @brief 3D cube primitive
 
-2x2x2 cube. Indexed triangle mesh with flat normals.
+2x2x2 cube.
 */
-class Cube: public Trade::MeshData3D {
+class Cube {
     public:
-        /** @brief Constructor */
-        explicit Cube();
+        /**
+         * @brief Solid cube
+         *
+         * Indexed triangle mesh with flat normals.
+         */
+        static Trade::MeshData3D solid();
+
+        /**
+         * @brief Wireframe cube
+         *
+         * Indexed line mesh.
+         */
+        static Trade::MeshData3D wireframe();
+
+        Cube() = delete;
 };
 
 }}
