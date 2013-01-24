@@ -24,9 +24,10 @@
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<std::uint8_t dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType&, typename SceneGraph::AbstractCamera<dimensions>* camera) {
+    /* Half scale, because the box is 2x2(x2) */
     typename DimensionTraits<dimensions>::MatrixType transformation =
         DimensionTraits<dimensions>::MatrixType::translation(axisAlignedBox.transformedPosition())*
-        DimensionTraits<dimensions>::MatrixType::scaling(axisAlignedBox.transformedSize());
+        DimensionTraits<dimensions>::MatrixType::scaling(axisAlignedBox.transformedSize()/2);
     this->shader->setTransformationProjectionMatrix(camera->projectionMatrix()*camera->cameraMatrix()*transformation)
         ->setColor(options->color())
         ->use();
