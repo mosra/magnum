@@ -30,6 +30,8 @@ class ObjectTest: public Corrade::TestSuite::Tester {
         void scene();
         void absoluteTransformation();
         void transformations();
+        void transformationsRelative();
+        void transformationsOrphan();
         void setClean();
         void bulkSetClean();
 };
@@ -56,6 +58,8 @@ ObjectTest::ObjectTest() {
              &ObjectTest::scene,
              &ObjectTest::absoluteTransformation,
              &ObjectTest::transformations,
+             &ObjectTest::transformationsRelative,
+             &ObjectTest::transformationsOrphan,
              &ObjectTest::setClean,
              &ObjectTest::bulkSetClean);
 }
@@ -164,32 +168,43 @@ void ObjectTest::transformations() {
         initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f)),
         initial*Matrix4::rotationZ(deg(30.0f)),
     }));
+}
 
-    {
-        CORRADE_EXPECT_FAIL("Transformations not relative to scene are not yet implemented.");
+void ObjectTest::transformationsRelative() {
+    CORRADE_EXPECT_FAIL("Transformations not relative to scene are not yet implemented.");
 
-        /* Transformation relative to another object */
-        CORRADE_COMPARE(second.transformations({&third}), std::vector<Matrix4>{
-            Matrix4::scaling(Vector3(0.5f)).inverted()*Matrix4::translation(Vector3::xAxis(5.0f))
-        });
+    Scene3D s;
+    Object3D first(&s);
+    first.rotateZ(deg(30.0f));
+    Object3D second(&first);
+    second.scale(Vector3(0.5f));
+    Object3D third(&first);
+    third.translate(Vector3::xAxis(5.0f));
 
-        /* Transformation relative to another object, not part of any scene (but should work) */
-        Object3D orphanParent1;
-        orphanParent1.rotate(deg(31.0f), Vector3(1.0f).normalized());
-        Object3D orphanParent(&orphanParent1);
-        Object3D orphan1(&orphanParent);
-        orphan1.scale(Vector3::xScale(3.0f));
-        Object3D orphan2(&orphanParent);
-        orphan2.translate(Vector3::zAxis(5.0f));
-        CORRADE_COMPARE(orphan1.transformations({&orphan2}), std::vector<Matrix4>{
-            Matrix4::scaling(Vector3::xScale(3.0f)).inverted()*Matrix4::translation(Vector3::zAxis(5.0f))
-        });
-    }
+    /* Transformation relative to another object */
+    CORRADE_COMPARE(second.transformations({&third}), std::vector<Matrix4>{
+        Matrix4::scaling(Vector3(0.5f)).inverted()*Matrix4::translation(Vector3::xAxis(5.0f))
+    });
 
+    /* Transformation relative to another object, not part of any scene (but should work) */
+    Object3D orphanParent1;
+    orphanParent1.rotate(deg(31.0f), Vector3(1.0f).normalized());
+    Object3D orphanParent(&orphanParent1);
+    Object3D orphan1(&orphanParent);
+    orphan1.scale(Vector3::xScale(3.0f));
+    Object3D orphan2(&orphanParent);
+    orphan2.translate(Vector3::zAxis(5.0f));
+    CORRADE_COMPARE(orphan1.transformations({&orphan2}), std::vector<Matrix4>{
+        Matrix4::scaling(Vector3::xScale(3.0f)).inverted()*Matrix4::translation(Vector3::zAxis(5.0f))
+    });
+}
+
+void ObjectTest::transformationsOrphan() {
     std::ostringstream o;
     Error::setOutput(&o);
 
     /* Transformation of objects not part of the same scene */
+    Scene3D s;
     Object3D orphan;
     CORRADE_COMPARE(s.transformations({&orphan}), std::vector<Matrix4>());
     CORRADE_COMPARE(o.str(), "SceneGraph::Object::transformations(): the objects are not part of the same tree\n");
