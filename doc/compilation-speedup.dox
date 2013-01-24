@@ -26,6 +26,7 @@ available, each namespace has its own:
  - SceneGraph/SceneGraph.h
  - Shaders/Shaders.h
  - Text/Text.h
+ - Trade/Trade.h
 
 @section compilation-speedup-templates Templates
 

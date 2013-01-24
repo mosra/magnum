@@ -12,7 +12,8 @@ set(MagnumTrade_HEADERS
     ObjectData3D.h
     PhongMaterialData.h
     SceneData.h
-    TextureData.h)
+    TextureData.h
+    Trade.h)
 install(FILES ${MagnumTrade_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Trade)
 
 if(BUILD_TESTS)

@@ -22,27 +22,11 @@
 #include <Containers/EnumSet.h>
 #include <PluginManager/Plugin.h>
 
+#include "Trade/Trade.h"
+
 #include "magnumVisibility.h"
 
 namespace Magnum { namespace Trade {
-
-/** @todoc Remove `ifndef` when Doxygen is sane again */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class AbstractMaterialData;
-class CameraData;
-template<std::uint8_t> class ImageData;
-class LightData;
-class MeshData2D;
-class MeshData3D;
-class ObjectData2D;
-class ObjectData3D;
-class SceneData;
-class TextureData;
-#endif
-
-typedef ImageData<1> ImageData1D;
-typedef ImageData<2> ImageData2D;
-typedef ImageData<3> ImageData3D;
 
 /**
 @brief Base for importer plugins
