@@ -26,7 +26,7 @@
 
 namespace Magnum { namespace SceneGraph {
 
-template<std::uint8_t dimensions, class T> Animable<dimensions, T>::Animable(AbstractObject<dimensions, T>* object, GLfloat duration, AnimableGroup<dimensions, T>* group): AbstractGroupedFeature<dimensions, Animable<dimensions, T>, T>(object, group), _duration(duration), startTime(std::numeric_limits<GLfloat>::infinity()), pauseTime(-std::numeric_limits<GLfloat>::infinity()), previousState(AnimationState::Stopped), currentState(AnimationState::Stopped), _repeated(false), _repeatCount(0), repeats(0) {}
+template<std::uint8_t dimensions, class T> Animable<dimensions, T>::Animable(AbstractObject<dimensions, T>* object, AnimableGroup<dimensions, T>* group): AbstractGroupedFeature<dimensions, Animable<dimensions, T>, T>(object, group), _duration(0.0f), startTime(std::numeric_limits<GLfloat>::infinity()), pauseTime(-std::numeric_limits<GLfloat>::infinity()), previousState(AnimationState::Stopped), currentState(AnimationState::Stopped), _repeated(false), _repeatCount(0), repeats(0) {}
 
 template<std::uint8_t dimensions, class T> Animable<dimensions, T>* Animable<dimensions, T>::setState(AnimationState state) {
     if(currentState == state) return this;

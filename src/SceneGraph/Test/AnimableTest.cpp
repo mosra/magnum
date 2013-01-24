@@ -51,7 +51,9 @@ AnimableTest::AnimableTest() {
 void AnimableTest::state() {
     class StateTrackingAnimable: public SceneGraph::Animable<3> {
         public:
-            StateTrackingAnimable(AbstractObject<3>* object, AnimableGroup<3>* group = nullptr): SceneGraph::Animable<3>(object, 1.0f, group) {}
+            StateTrackingAnimable(AbstractObject<3>* object, AnimableGroup<3>* group = nullptr): SceneGraph::Animable<3>(object, group) {
+                setDuration(1.0f);
+            }
 
             std::string trackedState;
 
@@ -139,7 +141,8 @@ void AnimableTest::state() {
 
 class OneShotAnimable: public SceneGraph::Animable<3> {
     public:
-        OneShotAnimable(AbstractObject<3>* object, AnimableGroup<3>* group = nullptr): SceneGraph::Animable<3>(object, 10.0f, group), time(-1.0f) {
+        OneShotAnimable(AbstractObject<3>* object, AnimableGroup<3>* group = nullptr): SceneGraph::Animable<3>(object, group), time(-1.0f) {
+            setDuration(10.0f);
             setState(AnimationState::Running);
         }
 
@@ -163,7 +166,7 @@ class OneShotAnimable: public SceneGraph::Animable<3> {
 void AnimableTest::step() {
     class InifiniteAnimable: public SceneGraph::Animable<3> {
         public:
-            InifiniteAnimable(AbstractObject<3>* object, AnimableGroup<3>* group = nullptr): SceneGraph::Animable<3>(object, 0.0f, group), time(-1.0f), delta(0.0f) {}
+            InifiniteAnimable(AbstractObject<3>* object, AnimableGroup<3>* group = nullptr): SceneGraph::Animable<3>(object, group), time(-1.0f), delta(0.0f) {}
 
             GLfloat time, delta;
 
@@ -222,7 +225,8 @@ void AnimableTest::duration() {
 void AnimableTest::repeat() {
     class RepeatingAnimable: public SceneGraph::Animable<3> {
         public:
-            RepeatingAnimable(AbstractObject<3>* object, AnimableGroup<3>* group = nullptr): SceneGraph::Animable<3>(object, 10.0f, group), time(-1.0f) {
+            RepeatingAnimable(AbstractObject<3>* object, AnimableGroup<3>* group = nullptr): SceneGraph::Animable<3>(object, group), time(-1.0f) {
+                setDuration(10.0f);
                 setState(AnimationState::Running);
                 setRepeated(true);
             }

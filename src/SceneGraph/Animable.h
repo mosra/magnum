@@ -60,8 +60,8 @@ which takes care of running the animations.
 
 First thing is add Animable feature to some object and implement
 animationStep(). You can do it conveniently using multiple inheritance (see
-@ref scenegraph-features for introduction). You need to pass animation
-duration to constructor, animationStep() provides both absolute animation
+@ref scenegraph-features for introduction). Override animationStep() to
+implement your animation, the function provides both absolute animation
 time and time delta. Example:
 @code
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
@@ -69,7 +69,8 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 
 class AnimableObject: public Object3D, SceneGraph::Animable3D<> {
     public:
-        AnimableObject(Object* parent = nullptr, SceneGraph::DrawableGroup3D<>* group = nullptr): Object3D(parent), SceneGraph::Animable3D<>(this, 10.0f, group) {
+        AnimableObject(Object* parent = nullptr, SceneGraph::DrawableGroup3D<>* group = nullptr): Object3D(parent), SceneGraph::Animable3D<>(this, group) {
+            setDuration(10.0f);
             // ...
         }
 
@@ -141,15 +142,13 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
         /**
          * @brief Constructor
          * @param object    %Object this animable belongs to
-         * @param duration  Duration of the animation cycle in seconds. Set to
-         *      0 for infinite non-repeating animation.
          * @param group     Group this animable belongs to
          *
-         * Creates stopped non-repeating animation with specified duration,
+         * Creates stopped non-repeating animation with infinite duration,
          * adds the feature to the object and also to group, if specified.
-         * @see setRepeated(), AnimableGroup::add()
+         * @see setDuration(), setState(), setRepeated(), AnimableGroup::add()
          */
-        explicit Animable(AbstractObject<dimensions, T>* object, GLfloat duration, AnimableGroup<dimensions, T>* group = nullptr);
+        explicit Animable(AbstractObject<dimensions, T>* object, AnimableGroup<dimensions, T>* group = nullptr);
 
         /** @brief Animation duration */
         inline GLfloat duration() const { return _duration; }
@@ -213,6 +212,19 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
         const AnimableGroup<dimensions, T>* group() const;
 
     protected:
+        /**
+         * @brief Set animation duration
+         * @return Pointer to self (for method chaining)
+         *
+         * Sets duration of the animation cycle in seconds. Set to `0.0f` for
+         * infinite non-repeating animation. Default is `0.0f`.
+         */
+        /* Protected so only animation implementer can change it */
+        inline Animable<dimensions, T>* setDuration(GLfloat duration) {
+            _duration = duration;
+            return this;
+        }
+
         /**
          * @brief Perform animation step
          * @param time      Time from start of the animation
@@ -294,7 +306,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
         inline virtual void animationStopped() {}
 
     private:
-        const GLfloat _duration;
+        GLfloat _duration;
         GLfloat startTime, pauseTime;
         AnimationState previousState;
         AnimationState currentState;
