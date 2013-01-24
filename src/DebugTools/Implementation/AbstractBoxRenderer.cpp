@@ -21,6 +21,8 @@
 #include "Primitives/Cube.h"
 #include "Primitives/Square.h"
 #include "Shaders/FlatShader.h"
+#include "Trade/MeshData2D.h"
+#include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
@@ -36,7 +38,7 @@ AbstractBoxRenderer<2>::AbstractBoxRenderer() {
     if(mesh) return;
 
     /* Create the mesh */
-    Primitives::Square square;
+    Trade::MeshData2D square = Primitives::Square::wireframe();
     Buffer* buffer = new Buffer(Buffer::Target::Array);
     Mesh* mesh = new Mesh;
 
@@ -62,7 +64,7 @@ AbstractBoxRenderer<3>::AbstractBoxRenderer() {
     if(mesh) return;
 
     /* Create the mesh */
-    Primitives::Cube cube;
+    Trade::MeshData3D cube = Primitives::Cube::wireframe();
     Buffer* vertexBuffer = new Buffer(Buffer::Target::Array);
     Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
     Mesh* mesh = new Mesh;
