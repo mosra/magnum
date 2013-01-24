@@ -30,7 +30,7 @@ namespace Magnum { namespace Text {
 
 namespace {
 
-std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<std::uint32_t>> renderInternal(Font& font, GLfloat size, const std::string& text) {
+std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<std::uint32_t>, Rectangle> renderInternal(Font& font, GLfloat size, const std::string& text) {
     /* Prepare HarfBuzz buffer */
     hb_buffer_t *buffer = hb_buffer_create();
     hb_buffer_set_unicode_funcs(buffer, hb_icu_get_unicode_funcs());
@@ -106,10 +106,14 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<std::uint32_t
         cursorPosition += advance;
     }
 
+    /* Rendered rectangle */
+    Rectangle rectangle;
+    if(glyphCount) rectangle = {positions[1], positions[positions.size()-2]};
+
     /* Destroy HarfBuzz buffer */
     hb_buffer_destroy(buffer);
 
-    return std::make_tuple(std::move(positions), std::move(texcoords), std::move(indices));
+    return std::make_tuple(std::move(positions), std::move(texcoords), std::move(indices), rectangle);
 }
 
 template<std::uint8_t dimensions> typename DimensionTraits<dimensions>::PointType point(const Vector2& vec);
@@ -124,10 +128,11 @@ template<> inline Point3D point<3>(const Vector2& vec) {
 
 }
 
-template<std::uint8_t dimensions> std::tuple<std::vector<typename DimensionTraits<dimensions>::PointType>, std::vector<Vector2>, std::vector<std::uint32_t>> TextRenderer<dimensions>::render(Font& font, GLfloat size, const std::string& text) {
+template<std::uint8_t dimensions> std::tuple<std::vector<typename DimensionTraits<dimensions>::PointType>, std::vector<Vector2>, std::vector<std::uint32_t>, Rectangle> TextRenderer<dimensions>::render(Font& font, GLfloat size, const std::string& text) {
     std::vector<Vector2> positions, textureCoordinates;
     std::vector<std::uint32_t> indices;
-    std::tie(positions, textureCoordinates, indices) = renderInternal(font, size, text);
+    Rectangle rectangle;
+    std::tie(positions, textureCoordinates, indices, rectangle) = renderInternal(font, size, text);
 
     /* Create PointXD from Vector2 */
     std::vector<typename DimensionTraits<dimensions>::PointType> positionsXD;
@@ -135,16 +140,17 @@ template<std::uint8_t dimensions> std::tuple<std::vector<typename DimensionTrait
     for(const Vector2& position: positions)
         positionsXD.push_back(point<dimensions>(position));
 
-    return std::make_tuple(std::move(positionsXD), std::move(textureCoordinates), std::move(indices));
+    return std::make_tuple(std::move(positionsXD), std::move(textureCoordinates), std::move(indices), rectangle);
 }
 
-template<std::uint8_t dimensions> Mesh TextRenderer<dimensions>::render(Font& font, GLfloat size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage) {
+template<std::uint8_t dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimensions>::render(Font& font, GLfloat size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage) {
     Mesh mesh;
 
     std::vector<typename DimensionTraits<dimensions>::PointType> positions;
     std::vector<Vector2> textureCoordinates;
     std::vector<std::uint32_t> indices;
-    std::tie(positions, textureCoordinates, indices) = render(font, size, text);
+    Rectangle rectangle;
+    std::tie(positions, textureCoordinates, indices, rectangle) = render(font, size, text);
 
     MeshTools::interleave(&mesh, vertexBuffer, usage, positions, textureCoordinates);
     MeshTools::compressIndices(&mesh, indexBuffer, usage, indices);
@@ -153,7 +159,7 @@ template<std::uint8_t dimensions> Mesh TextRenderer<dimensions>::render(Font& fo
             typename Shaders::AbstractTextShader<dimensions>::Position(),
             typename Shaders::AbstractTextShader<dimensions>::TextureCoordinates());
 
-    return mesh;
+    return std::make_tuple(std::move(mesh), rectangle);
 }
 
 template class TextRenderer<2>;

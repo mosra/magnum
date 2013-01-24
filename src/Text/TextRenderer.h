@@ -47,9 +47,11 @@ template<std::uint8_t dimensions> class MAGNUM_TEXT_EXPORT TextRenderer {
          * @param font          %Font to use
          * @param size          %Font size
          * @param text          %Text to render
-         * @return Tuple with vertex positions, texture coordinates and indices
+         *
+         * Returns tuple with vertex positions, texture coordinates, indices
+         * and rectangle spanning the rendered text.
          */
-        static std::tuple<std::vector<typename DimensionTraits<dimensions>::PointType>, std::vector<Vector2>, std::vector<std::uint32_t>> render(Font& font, GLfloat size, const std::string& text);
+        static std::tuple<std::vector<typename DimensionTraits<dimensions>::PointType>, std::vector<Vector2>, std::vector<std::uint32_t>, Rectangle> render(Font& font, GLfloat size, const std::string& text);
 
         /**
          * @brief Render text
@@ -59,10 +61,11 @@ template<std::uint8_t dimensions> class MAGNUM_TEXT_EXPORT TextRenderer {
          * @param vertexBuffer  %Buffer where to store vertices
          * @param indexBuffer   %Buffer where to store indices
          * @param usage         Usage of vertex and index buffer
-         * @return Indexed mesh prepared for use with Shaders::AbstractTextShader
-         *      subclasses
+         *
+         * Returns mesh prepared for use with Shaders::AbstractTextShader
+         * subclasses and rectangle spanning the rendered text.
          */
-        static Mesh render(Font& font, GLfloat size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
+        static std::tuple<Mesh, Rectangle> render(Font& font, GLfloat size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
 
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT
