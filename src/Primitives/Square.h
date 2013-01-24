@@ -19,19 +19,32 @@
  * @brief Class Magnum::Primitives::Square
  */
 
-#include "Trade/MeshData2D.h"
+#include "Trade/Trade.h"
 
 namespace Magnum { namespace Primitives {
 
 /**
 @brief 2D square primitive
 
-2x2 square as triangle strip, non-indexed.
+2x2 square.
 */
-class Square: public Trade::MeshData2D {
+class Square {
     public:
-        /** @brief Constructor */
-        explicit Square();
+        /**
+         * @brief Solid square
+         *
+         * Non-indexed @ref Mesh::Primitive "TriangleStrip".
+         */
+        static Trade::MeshData2D solid();
+
+        /**
+         * @brief Wireframe square
+         *
+         * Non-indexed @ref Mesh::Primitive "LineLoop."
+         */
+        static Trade::MeshData2D wireframe();
+
+        Square() = delete;
 };
 
 }}
