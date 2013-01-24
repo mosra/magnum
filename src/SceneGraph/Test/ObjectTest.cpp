@@ -32,6 +32,7 @@ class ObjectTest: public Corrade::TestSuite::Tester {
         void transformations();
         void transformationsRelative();
         void transformationsOrphan();
+        void transformationsDuplicate();
         void setClean();
         void bulkSetClean();
 };
@@ -60,6 +61,7 @@ ObjectTest::ObjectTest() {
              &ObjectTest::transformations,
              &ObjectTest::transformationsRelative,
              &ObjectTest::transformationsOrphan,
+             &ObjectTest::transformationsDuplicate,
              &ObjectTest::setClean,
              &ObjectTest::bulkSetClean);
 }
@@ -208,6 +210,23 @@ void ObjectTest::transformationsOrphan() {
     Object3D orphan;
     CORRADE_COMPARE(s.transformations({&orphan}), std::vector<Matrix4>());
     CORRADE_COMPARE(o.str(), "SceneGraph::Object::transformations(): the objects are not part of the same tree\n");
+}
+
+void ObjectTest::transformationsDuplicate() {
+    Scene3D s;
+    Object3D first(&s);
+    first.rotateZ(deg(30.0f));
+    Object3D second(&first);
+    second.scale(Vector3(0.5f));
+    Object3D third(&first);
+    third.translate(Vector3::xAxis(5.0f));
+
+    Matrix4 firstExpected = Matrix4::rotationZ(deg(30.0f));
+    Matrix4 secondExpected = Matrix4::rotationZ(deg(30.0f))*Matrix4::scaling(Vector3(0.5f));
+    Matrix4 thirdExpected = Matrix4::rotationZ(deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f));
+    CORRADE_COMPARE(s.transformations({&second, &third, &second, &first, &third}), (std::vector<Matrix4>{
+        secondExpected, thirdExpected, secondExpected, firstExpected, thirdExpected
+    }));
 }
 
 void ObjectTest::setClean() {
