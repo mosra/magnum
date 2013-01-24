@@ -80,9 +80,9 @@ class AnimableObject: public Object3D, SceneGraph::Animable3D<> {
 @endcode
 
 Then add the object to your scene and some animation group. You can also use
-AnimableGroup::add() and AnimableGroup::remove(). The animation is initially
-in stopped state and without repeat, see setState(), setRepeated() and
-setRepeatCount() for more information.
+AnimableGroup::add() and AnimableGroup::remove() instead of passing the group
+in the constructor. The animation is initially in stopped state and without
+repeat, see setState(), setRepeated() and setRepeatCount() for more information.
 @code
 Scene3D scene;
 SceneGraph::AnimableGroup3D<> animables;
@@ -113,15 +113,16 @@ void MyApplication::drawEvent() {
 
 AnimableGroup is optimized for case when no animation is running - it just
 puts itself to rest and waits until some animation changes its state to
-running again. If you put animations which are not pernamently running to
-separate group, they will not be traversed when calling AnimableGroup::step(),
-saving precious frame time.
+@ref AnimationState "AnimationState::Running" again. If you put animations
+which are not pernamently running to separate group, they will not be always
+traversed when calling AnimableGroup::step(), saving precious frame time.
 
 @section Animable-explicit-specializations Explicit template specializations
 
 The following specialization are explicitly compiled into %SceneGraph library.
-For other specializations you have to use Animable.hpp implementation file to
-avoid linker errors. See also @ref compilation-speedup-hpp for more information.
+For other specializations (e.g. using `double` type) you have to use
+Animable.hpp implementation file to avoid linker errors. See also
+@ref compilation-speedup-hpp for more information.
 
  - @ref Animable "Animable<2, GLfloat>", @ref AnimableGroup "AnimableGroup<2, GLfloat>"
  - @ref Animable "Animable<3, GLfloat>", @ref AnimableGroup "AnimableGroup<3, GLfloat>"

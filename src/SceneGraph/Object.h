@@ -68,8 +68,9 @@ for(Object* child = o->firstChild(); child; child = child->nextSibling()) {
 @section Object-explicit-specializations Explicit template specializations
 
 The following specialization are explicitly compiled into SceneGraph library.
-For other specializations you have to use Object.hpp implementation file to
-avoid linker errors. See @ref compilation-speedup-hpp for more information.
+For other specializations (e.g. using `double` type or special transformation
+class) you have to use Object.hpp implementation file to avoid linker errors.
+See @ref compilation-speedup-hpp for more information.
 
  - @ref MatrixTransformation2D "Object<MatrixTransformation2D<GLfloat>>"
  - @ref MatrixTransformation3D "Object<MatrixTransformation3D<GLfloat>>"

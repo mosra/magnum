@@ -53,8 +53,9 @@ instantiatable, use Camera2D or Camera3D subclasses instead.
 @section AbstractCamera-explicit-specializations Explicit template specializations
 
 The following specialization are explicitly compiled into SceneGraph library.
-For other specializations you have to use AbstractCamera.hpp implementation
-file to avoid linker errors. See also relevant sections in
+For other specializations (e.g. using `double` type) you have to use
+AbstractCamera.hpp implementation file to avoid linker errors. See also
+relevant sections in
 @ref Camera2D-explicit-specializations "Camera2D" and
 @ref Camera3D-explicit-specializations "Camera3D" class documentation or
 @ref compilation-speedup-hpp for more information.
