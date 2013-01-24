@@ -144,20 +144,36 @@ template<class Transformation> std::vector<typename DimensionTraits<Transformati
     return transformationMatrices;
 }
 
+/*
+Computing absolute transformations for given list of objects
+
+The goal is to compute absolute transformation only once for each object
+involved. Objects contained in the subtree specified by `object` list are
+divided into two groups:
+ - "joints", which are either part of `object` list or they have more than one
+   child in the subtree
+ - "non-joints", i.e. paths between joints
+
+Then for all joints their transformation (relative to parent joint) is
+computed and recursively concatenated together. Resulting transformations for
+joints which were originally in `object` list is then returned.
+*/
 template<class Transformation> std::vector<typename Transformation::DataType> Object<Transformation>::transformations(std::vector<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation) const {
+    CORRADE_ASSERT(objects.size() < 0xFFFFu, "SceneGraph::Object::transformations(): too large scene", {});
+
     /* Remember object count for later */
     std::size_t objectCount = objects.size();
 
     /** @bug What if there is one objects twice in the list */
 
-    /* Create initial list of joints from original objects */
-    std::vector<Object<Transformation>*> jointObjects(objects.size());
-    for(std::size_t i = 0; i != jointObjects.size(); ++i) {
-        jointObjects[i] = static_cast<Object<Transformation>*>(objects[i]);
-        CORRADE_INTERNAL_ASSERT(jointObjects[i]->counter == 0xFFFFu);
-        jointObjects[i]->counter = i;
-        jointObjects[i]->flags |= Flag::Joint;
+    /* Mark all original objects as joints and create initial list of joints
+       from them */
+    for(std::size_t i = 0; i != objects.size(); ++i) {
+        CORRADE_INTERNAL_ASSERT(objects[i]->counter == 0xFFFFu);
+        objects[i]->counter = i;
+        objects[i]->flags |= Flag::Joint;
     }
+    std::vector<Object<Transformation>*> jointObjects(objects);
 
     /* Scene object */
     const Scene<Transformation>* scene = this->scene();
@@ -186,6 +202,8 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
             /* If not already marked as joint, mark it as such and add it to
                list of joint objects */
             if(!(parent->flags & Flag::Joint)) {
+                CORRADE_ASSERT(jointObjects.size() < 0xFFFFu,
+                               "SceneGraph::Object::transformations(): too large scene", {});
                 CORRADE_INTERNAL_ASSERT(parent->counter == 0xFFFFu);
                 parent->counter = jointObjects.size();
                 parent->flags |= Flag::Joint;
@@ -198,8 +216,6 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
         /* Cycle if reached end */
         if(it == objects.end()) it = objects.begin();
     }
-
-    CORRADE_ASSERT(objects.size() < 0xFFFFu, "SceneGraph::Object::transformations(): too large scene", {});
 
     /* Array of absolute transformations in joints */
     std::vector<typename Transformation::DataType> jointTransformations(jointObjects.size());
