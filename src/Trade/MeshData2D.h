@@ -35,9 +35,7 @@ type.
 */
 class MAGNUM_EXPORT MeshData2D {
     MeshData2D(const MeshData2D& other) = delete;
-    MeshData2D(MeshData2D&& other) = delete;
     MeshData2D& operator=(const MeshData2D& other) = delete;
-    MeshData2D& operator=(MeshData2D&& other) = delete;
 
     public:
         /**
@@ -52,8 +50,14 @@ class MAGNUM_EXPORT MeshData2D {
          */
         inline MeshData2D(Mesh::Primitive primitive, std::vector<std::uint32_t>* indices, std::vector<std::vector<Point2D>*> positions, std::vector<std::vector<Vector2>*> textureCoords2D): _primitive(primitive), _indices(indices), _positions(positions), _textureCoords2D(textureCoords2D) {}
 
+        /** @brief Move constructor */
+        MeshData2D(MeshData2D&&) = default;
+
         /** @brief Destructor */
         ~MeshData2D();
+
+        /** @brief Move assignment */
+        MeshData2D& operator=(MeshData2D&&) = default;
 
         /** @brief Primitive */
         inline Mesh::Primitive primitive() const { return _primitive; }

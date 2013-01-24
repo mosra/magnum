@@ -35,9 +35,7 @@ type.
 */
 class MAGNUM_EXPORT MeshData3D {
     MeshData3D(const MeshData3D& other) = delete;
-    MeshData3D(MeshData3D&& other) = delete;
     MeshData3D& operator=(const MeshData3D& other) = delete;
-    MeshData3D& operator=(MeshData3D&& other) = delete;
 
     public:
         /**
@@ -53,8 +51,14 @@ class MAGNUM_EXPORT MeshData3D {
          */
         inline MeshData3D(Mesh::Primitive primitive, std::vector<std::uint32_t>* indices, std::vector<std::vector<Point3D>*> positions, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D): _primitive(primitive), _indices(indices), _positions(positions), _normals(normals), _textureCoords2D(textureCoords2D) {}
 
+        /** @brief Move constructor */
+        MeshData3D(MeshData3D&&) = default;
+
         /** @brief Destructor */
         ~MeshData3D();
+
+        /** @brief Move assignment */
+        MeshData3D& operator=(MeshData3D&&) = default;
 
         /** @brief Primitive */
         inline Mesh::Primitive primitive() const { return _primitive; }
