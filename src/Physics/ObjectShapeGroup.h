@@ -22,8 +22,8 @@
 #include <cstdint>
 #include <vector>
 
+#include "Physics/ObjectShape.h"
 #include "SceneGraph/FeatureGroup.h"
-#include "Physics.h"
 
 #include "magnumPhysicsVisibility.h"
 
@@ -92,8 +92,5 @@ See ObjectShape for more information.
 typedef ObjectShapeGroup<3> ObjectShapeGroup3D;
 
 }}
-
-/* Make the definition complete */
-#include "ObjectShape.h"
 
 #endif

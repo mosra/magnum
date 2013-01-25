@@ -30,6 +30,14 @@ template<std::uint8_t dimensions> ObjectShape<dimensions>::~ObjectShape() {
     delete _shape;
 }
 
+template<std::uint8_t dimensions> ObjectShapeGroup<dimensions>* ObjectShape<dimensions>::group() {
+    return static_cast<ObjectShapeGroup<dimensions>*>(SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>>::group());
+}
+
+template<std::uint8_t dimensions> const ObjectShapeGroup<dimensions>* ObjectShape<dimensions>::group() const {
+    return static_cast<const ObjectShapeGroup<dimensions>*>(SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>>::group());
+}
+
 template<std::uint8_t dimensions> void ObjectShape<dimensions>::markDirty() {
     group()->setDirty();
 }

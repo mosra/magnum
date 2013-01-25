@@ -20,7 +20,7 @@
  */
 
 #include "SceneGraph/AbstractGroupedFeature.h"
-#include "ObjectShapeGroup.h"
+#include "Physics/Physics.h"
 
 #include "magnumPhysicsVisibility.h"
 
@@ -106,14 +106,8 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShape: publi
          *
          * If the shape doesn't belong to any group, returns `nullptr`.
          */
-        inline ObjectShapeGroup<dimensions>* group() {
-            return static_cast<ObjectShapeGroup<dimensions>*>(SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>>::group());
-        }
-
-        /** @overload */
-        inline const ObjectShapeGroup<dimensions>* group() const {
-            return static_cast<const ObjectShapeGroup<dimensions>*>(SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>>::group());
-        }
+        ObjectShapeGroup<dimensions>* group();
+        const ObjectShapeGroup<dimensions>* group() const; /**< @overload */
 
     protected:
         /** Marks also the group as dirty */
