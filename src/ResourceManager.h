@@ -157,7 +157,7 @@ namespace Implementation {
 
                 /* Cannot change resource with already final state */
                 CORRADE_ASSERT(it == _data.end() || it->second.state != ResourceDataState::Final,
-                    "ResourceManager::set(): cannot change already final resource", );
+                    "ResourceManager::set(): cannot change already final resource" << key, );
 
                 /* If nothing is referencing reference-counted resource, we're done */
                 if(policy == ResourcePolicy::ReferenceCounted && (it == _data.end() || it->second.referenceCount == 0)) {

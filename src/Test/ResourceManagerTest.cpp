@@ -162,7 +162,7 @@ void ResourceManagerTest::basic() {
     Error::setOutput(&out);
     rm.set(answerKey, new std::int32_t(43), ResourceDataState::Mutable, ResourcePolicy::Resident);
     CORRADE_COMPARE(*theAnswer, 42);
-    CORRADE_COMPARE(out.str(), "ResourceManager::set(): cannot change already final resource\n");
+    CORRADE_COMPARE(out.str(), "ResourceManager::set(): cannot change already final resource " + answerKey.hexString() + '\n');
 
     /* But non-final can be changed */
     rm.set(questionKey, new std::int32_t(20), ResourceDataState::Final, ResourcePolicy::Resident);
