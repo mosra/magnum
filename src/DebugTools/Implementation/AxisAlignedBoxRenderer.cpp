@@ -18,19 +18,18 @@
 #include "Mesh.h"
 #include "DebugTools/ShapeRenderer.h"
 #include "Physics/AxisAlignedBox.h"
-#include "SceneGraph/AbstractCamera.h"
 #include "Shaders/FlatShader.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<std::uint8_t dimensions> AxisAlignedBoxRenderer<dimensions>::AxisAlignedBoxRenderer(Physics::AxisAlignedBox<dimensions>& axisAlignedBox): axisAlignedBox(axisAlignedBox) {}
 
-template<std::uint8_t dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType&, typename SceneGraph::AbstractCamera<dimensions>* camera) {
+template<std::uint8_t dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
     /* Half scale, because the box is 2x2(x2) */
     typename DimensionTraits<dimensions>::MatrixType transformation =
         DimensionTraits<dimensions>::MatrixType::translation(axisAlignedBox.transformedPosition())*
         DimensionTraits<dimensions>::MatrixType::scaling(axisAlignedBox.transformedSize()/2);
-    this->shader->setTransformationProjectionMatrix(camera->projectionMatrix()*camera->cameraMatrix()*transformation)
+    this->shader->setTransformationProjectionMatrix(projectionMatrix*transformation)
         ->setColor(options->color())
         ->use();
     this->mesh->draw();

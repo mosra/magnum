@@ -18,15 +18,14 @@
 #include "Mesh.h"
 #include "DebugTools/ShapeRenderer.h"
 #include "Physics/Box.h"
-#include "SceneGraph/AbstractCamera.h"
 #include "Shaders/FlatShader.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<std::uint8_t dimensions> BoxRenderer<dimensions>::BoxRenderer(Physics::Box<dimensions>& box): box(box) {}
 
-template<std::uint8_t dimensions> void BoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType&, typename SceneGraph::AbstractCamera<dimensions>* camera) {
-    this->shader->setTransformationProjectionMatrix(camera->projectionMatrix()*camera->cameraMatrix()*box.transformedTransformation()*
+template<std::uint8_t dimensions> void BoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
+    this->shader->setTransformationProjectionMatrix(projectionMatrix*box.transformedTransformation()*
         DimensionTraits<dimensions>::MatrixType::scaling(typename DimensionTraits<dimensions>::VectorType(0.5f)))
         ->setColor(options->color())
         ->use();

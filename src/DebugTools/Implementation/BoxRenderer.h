@@ -27,7 +27,7 @@ template<std::uint8_t dimensions> class BoxRenderer: public AbstractBoxRenderer<
     public:
         BoxRenderer(Physics::Box<dimensions>& box);
 
-        void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& transformation, typename SceneGraph::AbstractCamera<dimensions>* camera) override;
+        void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) override;
 
     private:
         Physics::Box<dimensions>& box;

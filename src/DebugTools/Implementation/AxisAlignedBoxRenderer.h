@@ -27,7 +27,7 @@ template<std::uint8_t dimensions> class AxisAlignedBoxRenderer: public AbstractB
     public:
         AxisAlignedBoxRenderer(Physics::AxisAlignedBox<dimensions>& axisAlignedBox);
 
-        void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& transformation, typename SceneGraph::AbstractCamera<dimensions>* camera) override;
+        void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) override;
 
     private:
         Physics::AxisAlignedBox<dimensions>& axisAlignedBox;

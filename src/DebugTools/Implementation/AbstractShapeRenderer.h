@@ -34,7 +34,7 @@ template<std::uint8_t dimensions> class AbstractShapeRenderer {
         AbstractShapeRenderer(ResourceKey mesh, ResourceKey vertexBuffer, ResourceKey indexBuffer);
         virtual ~AbstractShapeRenderer();
 
-        virtual void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions>* camera) = 0;
+        virtual void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) = 0;
 
     protected:
         /* Call only if the mesh resource isn't already present */

@@ -21,6 +21,7 @@
 #include "Physics/Box.h"
 #include "Physics/ObjectShape.h"
 #include "Physics/ShapeGroup.h"
+#include "SceneGraph/AbstractCamera.h"
 
 #include "Implementation/AxisAlignedBoxRenderer.h"
 #include "Implementation/BoxRenderer.h"
@@ -76,8 +77,9 @@ template<std::uint8_t dimensions> ShapeRenderer<dimensions>::~ShapeRenderer() {
     for(auto i: renderers) delete i;
 }
 
-template<std::uint8_t dimensions> void ShapeRenderer<dimensions>::draw(const typename DimensionTraits<dimensions>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions>* camera) {
-    for(auto i: renderers) i->draw(options, transformationMatrix, camera);
+template<std::uint8_t dimensions> void ShapeRenderer<dimensions>::draw(const typename DimensionTraits<dimensions>::MatrixType&, SceneGraph::AbstractCamera<dimensions>* camera) {
+    typename DimensionTraits<dimensions>::MatrixType projectionMatrix = camera->projectionMatrix()*camera->cameraMatrix();
+    for(auto i: renderers) i->draw(options, projectionMatrix);
 }
 
 template class ShapeRenderer<2>;
