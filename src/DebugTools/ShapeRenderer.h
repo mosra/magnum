@@ -48,6 +48,8 @@ See ShapeRenderer documentation for more information.
 */
 class ShapeRendererOptions {
     public:
+        inline constexpr ShapeRendererOptions(): _pointSize(0.25f) {}
+
         /** @brief Color of rendered shape */
         inline constexpr Color3<> color() const { return _color; }
 
@@ -62,8 +64,24 @@ class ShapeRendererOptions {
             return this;
         }
 
+        /** @brief Point size */
+        inline constexpr GLfloat pointSize() const { return _pointSize; }
+
+        /**
+         * @brief Set point size
+         * @return Pointer to self (for method chaining)
+         *
+         * Size of rendered crosshairs, representing Physics::Point shapes.
+         * Default is `0.25f`.
+         */
+        inline ShapeRendererOptions* pointSize(GLfloat size) {
+            _pointSize = size;
+            return this;
+        }
+
     private:
         Color3<> _color;
+        GLfloat _pointSize;
 };
 
 /**
