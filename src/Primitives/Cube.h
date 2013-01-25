@@ -33,14 +33,14 @@ class Cube {
         /**
          * @brief Solid cube
          *
-         * Indexed triangle mesh with flat normals.
+         * Indexed @ref Mesh::Primitive "Triangles" with flat normals.
          */
         static Trade::MeshData3D solid();
 
         /**
          * @brief Wireframe cube
          *
-         * Indexed line mesh.
+         * Indexed @ref Mesh::Primitive "Lines".
          */
         static Trade::MeshData3D wireframe();
 

@@ -25,6 +25,7 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 template<std::uint8_t dimensions> BoxRenderer<dimensions>::BoxRenderer(Physics::Box<dimensions>& box): box(box) {}
 
 template<std::uint8_t dimensions> void BoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
+    /* Half scale, because the box is 2x2(x2) */
     this->shader->setTransformationProjectionMatrix(projectionMatrix*box.transformedTransformation()*
         DimensionTraits<dimensions>::MatrixType::scaling(typename DimensionTraits<dimensions>::VectorType(0.5f)))
         ->setColor(options->color())

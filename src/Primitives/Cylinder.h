@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Primitives::UVSphere
+ * @brief Class Magnum::Primitives::Cylinder
  */
 
 #include <Containers/EnumSet.h>
@@ -28,8 +28,8 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 3D cylinder primitive
 
-Indexed triangle mesh with normals, optional 2D texture coordinates and
-optional capped ends.
+Indexed @ref Mesh::Primitive "Triangles" with normals, optional 2D texture
+coordinates and optional capped ends.
 */
 class Cylinder: public Capsule {
     public:

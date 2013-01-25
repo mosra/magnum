@@ -15,6 +15,10 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+/** @file
+ * @brief Class Magnum::DebugTools::ObjectRenderer, Magnum::DebugTools::ObjectRendererOptions, typedef Magnum::DebugTools::ObjectRenderer2D, Magnum::DebugTools::ObjectRenderer3D
+ */
+
 #include "Resource.h"
 #include "SceneGraph/Drawable.h"
 #include "Shaders/Shaders.h"

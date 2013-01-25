@@ -15,6 +15,10 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+/** @file
+ * @brief Class Magnum::DebugTools::ShapeRenderer, Magnum::DebugTools::ShapeRendererOptions, typedef Magnum::DebugTools::ShapeRenderer2D, Magnum::DebugTools::ShapeRenderer3D
+ */
+
 #include "Color.h"
 #include "Resource.h"
 #include "SceneGraph/Drawable.h"
@@ -65,7 +69,8 @@ class ShapeRendererOptions {
 /**
 @brief Shape renderer
 
-Visualizes collision shape. See @ref debug-tools-renderers for more information.
+Visualizes collision shapes using wireframe primitives. See
+@ref debug-tools-renderers for more information.
 
 @section ShapeRenderer-usage Basic usage
 

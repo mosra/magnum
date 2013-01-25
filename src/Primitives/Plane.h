@@ -26,7 +26,7 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 3D plane primitive
 
-2x2 plane as triangle strip, non-indexed with normals in positive Z direction.
+2x2 plane.
 */
 class Plane {
     public:

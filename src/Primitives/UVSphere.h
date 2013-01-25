@@ -26,7 +26,8 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 3D UV sphere primitive
 
-Indexed triangle mesh with normals and optional 2D texture coordinates.
+Indexed @ref Mesh::Primitive "Triangles" with normals and optional 2D texture
+coordinates.
 */
 class UVSphere: public Capsule {
     public:

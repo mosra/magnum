@@ -34,7 +34,7 @@ template<std::size_t subdivisions> class Icosphere;
 /**
 @brief 3D icosphere primitive with zero subdivisions
 
-Indexed triangle mesh with normals.
+Indexed @ref Mesh::Primitive "Triangles" with normals.
 */
 template<> class Icosphere<0>: public Trade::MeshData3D {
     public:
@@ -46,7 +46,7 @@ template<> class Icosphere<0>: public Trade::MeshData3D {
 @brief 3D icosphere primitive
 @tparam subdivisions     Number of subdivisions
 
-Indexed triangle mesh with normals.
+Indexed @ref Mesh::Primitive "Triangles" with normals.
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::size_t subdivisions> class Icosphere: public Icosphere<0> {

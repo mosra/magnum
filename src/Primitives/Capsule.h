@@ -26,7 +26,7 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 3D capsule primitive
 
-%Cylinder along Y axis with hemispheres instead of caps. Indexed triangle mesh
+%Cylinder along Y axis with hemispheres instead of caps. Indexed @ref Mesh::Primitive "Triangles"
 with normals and optional 2D texture coordinates.
 */
 class Capsule: public Trade::MeshData3D {
