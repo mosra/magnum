@@ -38,5 +38,9 @@ cannot be later rebound to @ref Buffer::Target "Target::Element". However,
 internally (e.g. for setting data or copying). To avoid this, set target hint
 to desired target, either in constructor or using Buffer::setTargetHint().
 
+@subsection best-practices-powervr PowerVR hardware
+
+- [PowerVR Performance Recommendations](http://www.imgtec.com/powervr/insider/docs/PowerVR.Performance%20Recommendations.1.0.28.External.pdf) [PDF]
+
 */
 }
