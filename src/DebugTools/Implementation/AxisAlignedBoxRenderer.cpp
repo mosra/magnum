@@ -16,7 +16,6 @@
 #include "AxisAlignedBoxRenderer.h"
 
 #include "Mesh.h"
-#include "DebugTools/ResourceManager.h"
 #include "DebugTools/ShapeRenderer.h"
 #include "Physics/AxisAlignedBox.h"
 #include "SceneGraph/AbstractCamera.h"

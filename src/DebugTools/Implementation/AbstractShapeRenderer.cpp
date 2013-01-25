@@ -28,9 +28,9 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 
 namespace {
 
-template<std::uint8_t dimensions> ResourceKey shaderName();
-template<> inline ResourceKey shaderName<2>() { return ResourceKey("FlatShader2D"); }
-template<> inline ResourceKey shaderName<3>() { return ResourceKey("FlatShader3D"); }
+template<std::uint8_t dimensions> ResourceKey shaderKey();
+template<> inline ResourceKey shaderKey<2>() { return ResourceKey("FlatShader2D"); }
+template<> inline ResourceKey shaderKey<3>() { return ResourceKey("FlatShader3D"); }
 
 template<std::uint8_t dimensions> void create(typename MeshData<dimensions>::Type&, Resource<Mesh>&, Resource<Buffer>&, Resource<Buffer>&);
 
@@ -79,12 +79,12 @@ template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource,
 }
 
 template<std::uint8_t dimensions> AbstractShapeRenderer<dimensions>::AbstractShapeRenderer(ResourceKey meshKey, ResourceKey vertexBufferKey, ResourceKey indexBufferKey) {
-    shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader<dimensions>>(shaderName<dimensions>());
+    shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader<dimensions>>(shaderKey<dimensions>());
     mesh = ResourceManager::instance()->get<Mesh>(meshKey);
     vertexBuffer = ResourceManager::instance()->get<Buffer>(vertexBufferKey);
     indexBuffer = ResourceManager::instance()->get<Buffer>(indexBufferKey);
 
-    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shaderName<dimensions>(),
+    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shaderKey<dimensions>(),
         new Shaders::FlatShader<dimensions>, ResourceDataState::Final, ResourcePolicy::Resident);
 }
 

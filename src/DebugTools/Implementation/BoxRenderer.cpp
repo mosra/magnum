@@ -16,7 +16,6 @@
 #include "BoxRenderer.h"
 
 #include "Mesh.h"
-#include "DebugTools/ResourceManager.h"
 #include "DebugTools/ShapeRenderer.h"
 #include "Physics/Box.h"
 #include "SceneGraph/AbstractCamera.h"
