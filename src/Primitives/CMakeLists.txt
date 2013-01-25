@@ -1,5 +1,6 @@
 set(MagnumPrimitives_SRCS
     Capsule.cpp
+    Crosshair.cpp
     Cube.cpp
     Cylinder.cpp
     Icosphere.cpp
@@ -8,6 +9,7 @@ set(MagnumPrimitives_SRCS
     UVSphere.cpp)
 set(MagnumPrimitives_HEADERS
     Capsule.h
+    Crosshair.h
     Cube.h
     Cylinder.h
     Icosphere.h
