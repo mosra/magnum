@@ -34,7 +34,7 @@ template<> inline ResourceKey shaderKey<3>() { return ResourceKey("FlatShader3D"
 
 template<std::uint8_t dimensions> void create(typename MeshData<dimensions>::Type&, Resource<Mesh>&, Resource<Buffer>&, Resource<Buffer>&);
 
-template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource, Resource<Buffer>& indexBufferResource, Resource<Buffer>& vertexBufferResource) {
+template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource, Resource<Buffer>& vertexBufferResource, Resource<Buffer>& indexBufferResource) {
     /* Vertex buffer */
     Buffer* buffer = new Buffer(Buffer::Target::Array);
     buffer->setData(*data.positions(0), Buffer::Usage::StaticDraw);
@@ -55,7 +55,7 @@ template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource,
     }
 }
 
-template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource, Resource<Buffer>& indexBufferResource, Resource<Buffer>& vertexBufferResource) {
+template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource, Resource<Buffer>& vertexBufferResource, Resource<Buffer>& indexBufferResource) {
     /* Vertex buffer */
     Buffer* vertexBuffer = new Buffer(Buffer::Target::Array);
     vertexBuffer->setData(*data.positions(0), Buffer::Usage::StaticDraw);
