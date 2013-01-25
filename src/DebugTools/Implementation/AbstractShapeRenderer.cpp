@@ -47,8 +47,9 @@ template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource,
         ->addVertexBuffer(buffer, 0, Shaders::FlatShader2D::Position());
     ResourceManager::instance()->set(meshResource.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 
-    /* Index buffer, if present */
+    /* Index buffer, if needed, if not, resource key doesn't have to be set */
     if(data.indices()) {
+        CORRADE_INTERNAL_ASSERT(indexBufferResource.key() != ResourceKey());
         Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
         MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *data.indices());
         ResourceManager::instance()->set(indexBufferResource.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
@@ -68,8 +69,9 @@ template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource,
         ->addVertexBuffer(vertexBuffer, 0, Shaders::FlatShader3D::Position());
     ResourceManager::instance()->set(meshResource.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 
-    /* Index buffer, if needed */
+    /* Index buffer, if needed, if not, resource key doesn't have to be set */
     if(data.indices()) {
+        CORRADE_INTERNAL_ASSERT(indexBufferResource.key() != ResourceKey());
         Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
         MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *data.indices());
         ResourceManager::instance()->set(indexBufferResource.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
