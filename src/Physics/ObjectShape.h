@@ -65,6 +65,25 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShape: publi
             return this;
         }
 
+        /**
+         * @brief Set shape
+         * @return Pointer to self (for method chaining)
+         *
+         * Convenience overload for setShape(AbstractShape*), allowing you to
+         * use e.g. ShapeGroup operators:
+         * @code
+         * Physics::ObjectShape3D* shape;
+         * shape->setShape(Physics::Sphere3D({}, 0.75f) || Physics::AxisAlignedBox3D({}, {3.0f, 1.5f, 2.0f}));
+         * @endcode
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class T> inline ObjectShape<dimensions>* setShape(T&& shape) {
+        #else
+        template<class T> inline typename std::enable_if<std::is_base_of<Physics::AbstractShape<dimensions>, T>::value, ObjectShape<dimensions>*>::type setShape(T&& shape) {
+        #endif
+            return setShape(new T(std::move(shape)));
+        }
+
         inline ObjectShapeGroup<dimensions>* group() {
             return static_cast<ObjectShapeGroup<dimensions>*>(SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>>::group());
         }
