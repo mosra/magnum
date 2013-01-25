@@ -35,6 +35,7 @@ template<> void createDebugMesh(ShapeRenderer<2>* renderer, Physics::AbstractSha
     switch(shape->type()) {
         case Physics::AbstractShape2D::Type::AxisAlignedBox:
             renderer->renderers.push_back(new Implementation::AxisAlignedBoxRenderer<2>(*static_cast<Physics::AxisAlignedBox2D*>(shape)));
+            break;
         case Physics::AbstractShape2D::Type::Box:
             renderer->renderers.push_back(new Implementation::BoxRenderer<2>(*static_cast<Physics::Box2D*>(shape)));
             break;
@@ -52,6 +53,7 @@ template<> void createDebugMesh(ShapeRenderer<3>* renderer, Physics::AbstractSha
     switch(shape->type()) {
         case Physics::AbstractShape3D::Type::AxisAlignedBox:
             renderer->renderers.push_back(new Implementation::AxisAlignedBoxRenderer<3>(*static_cast<Physics::AxisAlignedBox3D*>(shape)));
+            break;
         case Physics::AbstractShape3D::Type::Box:
             renderer->renderers.push_back(new Implementation::BoxRenderer<3>(*static_cast<Physics::Box3D*>(shape)));
             break;
