@@ -24,30 +24,16 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<std::uint8_t dimensions> class AbstractBoxRenderer {};
+template<std::uint8_t dimensions> class AbstractBoxRenderer;
 
 template<> class AbstractBoxRenderer<2>: public AbstractShapeRenderer<2> {
     public:
         AbstractBoxRenderer();
-
-        ~AbstractBoxRenderer();
-
-    protected:
-        Resource<Mesh> mesh;
-        Resource<AbstractShaderProgram, Shaders::FlatShader2D> shader;
-        Resource<Buffer> buffer;
 };
 
 template<> class AbstractBoxRenderer<3>: public AbstractShapeRenderer<3> {
     public:
         AbstractBoxRenderer();
-
-        ~AbstractBoxRenderer();
-
-    protected:
-        Resource<Mesh> mesh;
-        Resource<AbstractShaderProgram, Shaders::FlatShader3D> shader;
-        Resource<Buffer> vertexBuffer, indexBuffer;
 };
 
 }}}

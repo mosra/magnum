@@ -25,7 +25,7 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<std::uint8_t dimensions> class AxisAlignedBoxRenderer: public AbstractBoxRenderer<dimensions> {
     public:
-        inline AxisAlignedBoxRenderer(Physics::AxisAlignedBox<dimensions>& axisAlignedBox): axisAlignedBox(axisAlignedBox) {}
+        AxisAlignedBoxRenderer(Physics::AxisAlignedBox<dimensions>& axisAlignedBox);
 
         void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& transformation, typename SceneGraph::AbstractCamera<dimensions>* camera) override;
 

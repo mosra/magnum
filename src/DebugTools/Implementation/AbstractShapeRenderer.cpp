@@ -16,13 +16,83 @@
 #include "AbstractShapeRenderer.h"
 
 #include "AbstractShaderProgram.h"
+#include "Buffer.h"
 #include "Mesh.h"
 #include "DebugTools/ResourceManager.h"
+#include "MeshTools/CompressIndices.h"
 #include "Shaders/FlatShader.h"
+#include "Trade/MeshData2D.h"
+#include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+namespace {
+
+template<std::uint8_t dimensions> ResourceKey shaderName();
+template<> inline ResourceKey shaderName<2>() { return ResourceKey("FlatShader2D"); }
+template<> inline ResourceKey shaderName<3>() { return ResourceKey("FlatShader3D"); }
+
+template<std::uint8_t dimensions> void create(typename MeshData<dimensions>::Type&, Resource<Mesh>&, Resource<Buffer>&, Resource<Buffer>&);
+
+template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource, Resource<Buffer>& indexBufferResource, Resource<Buffer>& vertexBufferResource) {
+    /* Vertex buffer */
+    Buffer* buffer = new Buffer(Buffer::Target::Array);
+    buffer->setData(*data.positions(0), Buffer::Usage::StaticDraw);
+    ResourceManager::instance()->set(vertexBufferResource.key(), buffer, ResourceDataState::Final, ResourcePolicy::Manual);
+
+    /* Mesh configuration */
+    Mesh* mesh = new Mesh;
+    mesh->setPrimitive(data.primitive())
+        ->setVertexCount(data.positions(0)->size())
+        ->addVertexBuffer(buffer, 0, Shaders::FlatShader2D::Position());
+    ResourceManager::instance()->set(meshResource.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
+
+    /* Index buffer, if present */
+    if(data.indices()) {
+        Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
+        MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *data.indices());
+        ResourceManager::instance()->set(indexBufferResource.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
+    }
+}
+
+template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource, Resource<Buffer>& indexBufferResource, Resource<Buffer>& vertexBufferResource) {
+    /* Vertex buffer */
+    Buffer* vertexBuffer = new Buffer(Buffer::Target::Array);
+    vertexBuffer->setData(*data.positions(0), Buffer::Usage::StaticDraw);
+    ResourceManager::instance()->set(vertexBufferResource.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
+
+    /* Mesh configuration */
+    Mesh* mesh = new Mesh;
+    mesh->setPrimitive(data.primitive())
+        ->setVertexCount(data.positions(0)->size())
+        ->addVertexBuffer(vertexBuffer, 0, Shaders::FlatShader3D::Position());
+    ResourceManager::instance()->set(meshResource.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
+
+    /* Index buffer, if needed */
+    if(data.indices()) {
+        Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
+        MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *data.indices());
+        ResourceManager::instance()->set(indexBufferResource.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
+    }
+}
+
+}
+
+template<std::uint8_t dimensions> AbstractShapeRenderer<dimensions>::AbstractShapeRenderer(ResourceKey meshKey, ResourceKey vertexBufferKey, ResourceKey indexBufferKey) {
+    shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader<dimensions>>(shaderName<dimensions>());
+    mesh = ResourceManager::instance()->get<Mesh>(meshKey);
+    vertexBuffer = ResourceManager::instance()->get<Buffer>(vertexBufferKey);
+    indexBuffer = ResourceManager::instance()->get<Buffer>(indexBufferKey);
+
+    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shaderName<dimensions>(),
+        new Shaders::FlatShader<dimensions>, ResourceDataState::Final, ResourcePolicy::Resident);
+}
+
 template<std::uint8_t dimensions> AbstractShapeRenderer<dimensions>::~AbstractShapeRenderer() {}
+
+template<std::uint8_t dimensions> void AbstractShapeRenderer<dimensions>::createResources(typename MeshData<dimensions>::Type data) {
+    create<dimensions>(data, this->mesh, this->vertexBuffer, this->indexBuffer);
+}
 
 template class AbstractShapeRenderer<2>;
 template class AbstractShapeRenderer<3>;

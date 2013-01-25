@@ -25,7 +25,7 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<std::uint8_t dimensions> class BoxRenderer: public AbstractBoxRenderer<dimensions> {
     public:
-        inline BoxRenderer(Physics::Box<dimensions>& box): box(box) {}
+        BoxRenderer(Physics::Box<dimensions>& box);
 
         void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& transformation, typename SceneGraph::AbstractCamera<dimensions>* camera) override;
 

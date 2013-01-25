@@ -15,73 +15,22 @@
 
 #include "AbstractBoxRenderer.h"
 
-#include "Buffer.h"
-#include "DebugTools/ResourceManager.h"
-#include "MeshTools/CompressIndices.h"
 #include "Primitives/Cube.h"
 #include "Primitives/Square.h"
-#include "Shaders/FlatShader.h"
 #include "Trade/MeshData2D.h"
 #include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-AbstractBoxRenderer<2>::AbstractBoxRenderer() {
-    /* Shader */
-    shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader2D>("FlatShader2D");
-    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(),
-        new Shaders::FlatShader2D, ResourceDataState::Final, ResourcePolicy::Resident);
-
-    /* Mesh and vertex buffer */
-    mesh = ResourceManager::instance()->get<Mesh>("box2d");
-    buffer = ResourceManager::instance()->get<Buffer>("box2d");
-    if(mesh) return;
-
-    /* Create the mesh */
-    Trade::MeshData2D square = Primitives::Square::wireframe();
-    Buffer* buffer = new Buffer(Buffer::Target::Array);
-    Mesh* mesh = new Mesh;
-
-    buffer->setData(*square.positions(0), Buffer::Usage::StaticDraw);
-    ResourceManager::instance()->set(this->buffer.key(), buffer, ResourceDataState::Final, ResourcePolicy::Manual);
-
-    mesh->setPrimitive(square.primitive())
-        ->setVertexCount(square.positions(0)->size())
-        ->addVertexBuffer(buffer, 0, Shaders::FlatShader2D::Position());
-    ResourceManager::instance()->set(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
+AbstractBoxRenderer<2>::AbstractBoxRenderer(): AbstractShapeRenderer<2>("box2d", "box2d-vertices", "box2d-indices") {
+    if(!mesh) this->createResources(Primitives::Square::wireframe());
 }
 
-AbstractBoxRenderer<3>::AbstractBoxRenderer() {
-    /* Shader */
-    shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader3D>("FlatShader3D");
-    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(),
-        new Shaders::FlatShader3D, ResourceDataState::Final, ResourcePolicy::Resident);
-
-    /* Mesh and vertex buffer */
-    mesh = ResourceManager::instance()->get<Mesh>("box3d");
-    vertexBuffer = ResourceManager::instance()->get<Buffer>("box3d-vertices");
-    indexBuffer = ResourceManager::instance()->get<Buffer>("box3d-indices");
-    if(mesh) return;
-
-    /* Create the mesh */
-    Trade::MeshData3D cube = Primitives::Cube::wireframe();
-    Buffer* vertexBuffer = new Buffer(Buffer::Target::Array);
-    Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
-    Mesh* mesh = new Mesh;
-
-    vertexBuffer->setData(*cube.positions(0), Buffer::Usage::StaticDraw);
-    ResourceManager::instance()->set(this->vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
-
-    MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *cube.indices());
-    ResourceManager::instance()->set(this->indexBuffer.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
-
-    mesh->setPrimitive(cube.primitive())
-        ->setVertexCount(cube.positions(0)->size())
-        ->addVertexBuffer(vertexBuffer, 0, Shaders::FlatShader3D::Position());
-    ResourceManager::instance()->set<Mesh>(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
+AbstractBoxRenderer<3>::AbstractBoxRenderer(): AbstractShapeRenderer<3>("box3d", "box3d-vertices", "box3d-indices") {
+    if(!mesh) this->createResources(Primitives::Cube::wireframe());
 }
 
-AbstractBoxRenderer<2>::~AbstractBoxRenderer() {}
-AbstractBoxRenderer<3>::~AbstractBoxRenderer() {}
+template class AbstractBoxRenderer<2>;
+template class AbstractBoxRenderer<3>;
 
 }}}

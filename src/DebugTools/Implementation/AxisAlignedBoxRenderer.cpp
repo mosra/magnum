@@ -23,6 +23,8 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+template<std::uint8_t dimensions> AxisAlignedBoxRenderer<dimensions>::AxisAlignedBoxRenderer(Physics::AxisAlignedBox<dimensions>& axisAlignedBox): axisAlignedBox(axisAlignedBox) {}
+
 template<std::uint8_t dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType&, typename SceneGraph::AbstractCamera<dimensions>* camera) {
     /* Half scale, because the box is 2x2(x2) */
     typename DimensionTraits<dimensions>::MatrixType transformation =
