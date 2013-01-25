@@ -22,7 +22,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-AbstractBoxRenderer<2>::AbstractBoxRenderer(): AbstractShapeRenderer<2>("box2d", "box2d-vertices", "box2d-indices") {
+AbstractBoxRenderer<2>::AbstractBoxRenderer(): AbstractShapeRenderer<2>("box2d", "box2d-vertices", {}) {
     if(!mesh) this->createResources(Primitives::Square::wireframe());
 }
 
