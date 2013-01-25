@@ -21,7 +21,6 @@
 
 #include <string>
 
-#include "Math/Point3D.h"
 #include "Mesh.h"
 
 namespace Magnum { namespace Trade {

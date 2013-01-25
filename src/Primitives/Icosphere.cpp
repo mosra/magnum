@@ -15,7 +15,7 @@
 
 #include "Icosphere.h"
 
-#include "Math/Vector4.h"
+#include "Math/Point3D.h"
 
 namespace Magnum { namespace Primitives {
 
@@ -41,18 +41,18 @@ Icosphere<0>::Icosphere(): MeshData3D(Mesh::Primitive::Triangles, new std::vecto
     3, 9, 8,
     4, 8, 0
 }, {new std::vector<Point3D>}, {new std::vector<Vector3>{
-    Vector3(0, -0.525731f, 0.850651f),
-    Vector3(0.850651f, 0, 0.525731f),
-    Vector3(0.850651f, 0, -0.525731f),
-    Vector3(-0.850651f, 0, -0.525731f),
-    Vector3(-0.850651f, 0, 0.525731f),
-    Vector3(-0.525731f, 0.850651f, 0),
-    Vector3(0.525731f, 0.850651f, 0),
-    Vector3(0.525731f, -0.850651f, 0),
-    Vector3(-0.525731f, -0.850651f, 0),
-    Vector3(0, -0.525731f, -0.850651f),
-    Vector3(0, 0.525731f, -0.850651f),
-    Vector3(0, 0.525731f, 0.850651f)
+    {0.0f, -0.525731f, 0.850651f},
+    {0.850651f, 0.0f, 0.525731f},
+    {0.850651f, 0.0f, -0.525731f},
+    {-0.850651f, 0.0f, -0.525731f},
+    {-0.850651f, 0.0f, 0.525731f},
+    {-0.525731f, 0.850651f, 0.0f},
+    {0.525731f, 0.850651f, 0.0f},
+    {0.525731f, -0.850651f, 0.0f},
+    {-0.525731f, -0.850651f, 0.0f},
+    {0.0f, -0.525731f, -0.850651f},
+    {0.0f, 0.525731f, -0.850651f},
+    {0.0f, 0.525731f, 0.850651f}
 }}, {}) {
     positions(0)->assign(normals(0)->begin(), normals(0)->end());
 }

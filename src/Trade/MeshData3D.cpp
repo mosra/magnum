@@ -15,6 +15,8 @@
 
 #include "MeshData3D.h"
 
+#include "Math/Point3D.h"
+
 namespace Magnum { namespace Trade {
 
 MeshData3D::~MeshData3D() {
