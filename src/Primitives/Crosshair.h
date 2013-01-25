@@ -21,6 +21,8 @@
 
 #include "Trade/Trade.h"
 
+#include "Primitives/magnumPrimitivesVisibility.h"
+
 namespace Magnum { namespace Primitives {
 
 /**
@@ -29,7 +31,7 @@ namespace Magnum { namespace Primitives {
 2x2 wireframe crosshair (two crossed lines), non-indexed
 @ref Mesh::Primitive "Lines".
 */
-class Crosshair2D {
+class MAGNUM_PRIMITIVES_EXPORT Crosshair2D {
     public:
         /** @brief Wireframe crosshair */
         static Trade::MeshData2D wireframe();
@@ -43,7 +45,7 @@ class Crosshair2D {
 2x2x2 wireframe crosshair (three crossed lines), non-indexed
 @ref Mesh::Primitive "Lines".
 */
-class Crosshair3D {
+class MAGNUM_PRIMITIVES_EXPORT Crosshair3D {
     public:
         /** @brief Wireframe crosshair */
         static Trade::MeshData3D wireframe();

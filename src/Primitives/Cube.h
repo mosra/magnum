@@ -21,6 +21,8 @@
 
 #include "Trade/Trade.h"
 
+#include "Primitives/magnumPrimitivesVisibility.h"
+
 namespace Magnum { namespace Primitives {
 
 /**
@@ -28,7 +30,7 @@ namespace Magnum { namespace Primitives {
 
 2x2x2 cube.
 */
-class Cube {
+class MAGNUM_PRIMITIVES_EXPORT Cube {
     public:
         /**
          * @brief Solid cube

@@ -21,6 +21,8 @@
 
 #include "Trade/MeshData3D.h"
 
+#include "Primitives/magnumPrimitivesVisibility.h"
+
 namespace Magnum { namespace Primitives {
 
 /**
@@ -53,7 +55,7 @@ class Capsule: public Trade::MeshData3D {
          * If texture coordinates are generated, vertices of one segment are
          * duplicated for texture wrapping.
          */
-        explicit Capsule(std::uint32_t hemisphereRings, std::uint32_t cylinderRings, std::uint32_t segments, GLfloat length, TextureCoords textureCoords = TextureCoords::DontGenerate);
+        explicit MAGNUM_PRIMITIVES_EXPORT Capsule(std::uint32_t hemisphereRings, std::uint32_t cylinderRings, std::uint32_t segments, GLfloat length, TextureCoords textureCoords = TextureCoords::DontGenerate);
 
     private:
         Capsule(std::uint32_t segments, TextureCoords textureCoords);

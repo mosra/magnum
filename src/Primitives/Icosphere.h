@@ -24,11 +24,13 @@
 #include "MeshTools/Clean.h"
 #include "Trade/MeshData3D.h"
 
+#include "Primitives/magnumPrimitivesVisibility.h"
+
 namespace Magnum { namespace Primitives {
 
 /** @todoc Remove `ifndef` when Doxygen is sane again */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::size_t subdivisions> class Icosphere;
+template<std::size_t subdivisions> class MAGNUM_PRIMITIVES_EXPORT Icosphere;
 #endif
 
 /**
