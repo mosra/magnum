@@ -32,7 +32,8 @@ namespace Magnum { namespace Physics {
 /**
 @brief Group of object shapes
 
-@see ObjectShapeGroup2D, ObjectShapeGroup3D
+See ObjectShape for more information.
+@see @ref scenegraph, ObjectShapeGroup2D, ObjectShapeGroup3D
 */
 template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShapeGroup: public SceneGraph::FeatureGroup<dimensions, ObjectShape<dimensions>> {
     friend class ObjectShape<dimensions>;
@@ -74,10 +75,20 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShapeGroup: 
         bool dirty;
 };
 
-/** @brief Group of two-dimensional shaped objects */
+/**
+@brief Group of two-dimensional shaped objects
+
+See ObjectShape for more information.
+@see ObjectShapeGroup3D
+*/
 typedef ObjectShapeGroup<2> ObjectShapeGroup2D;
 
-/** @brief Group of three-dimensional shaped objects */
+/**
+@brief Group of three-dimensional shaped objects
+
+See ObjectShape for more information.
+@see ObjectShapeGroup2D
+*/
 typedef ObjectShapeGroup<3> ObjectShapeGroup3D;
 
 }}

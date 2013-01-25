@@ -77,7 +77,7 @@ See @ref compilation-speedup-hpp for more information.
  - @ref EuclideanMatrixTransformation2D "Object<EuclideanMatrixTransformation2D<GLfloat>>"
  - @ref EuclideanMatrixTransformation3D "Object<EuclideanMatrixTransformation3D<GLfloat>>"
 
-@see Scene, AbstractFeature, AbstractTransformation
+@see Scene, AbstractFeature, AbstractTransformation, DebugTools::ObjectRenderer
 */
 template<class Transformation> class Object: public AbstractObject<Transformation::Dimensions, typename Transformation::Type>, public Transformation
     #ifndef DOXYGEN_GENERATING_OUTPUT

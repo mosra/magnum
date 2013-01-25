@@ -26,7 +26,7 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief %Drawable
 
-Adds drawing feature to object. Each %Drawable is part of some DrawableGroup
+Adds drawing function to the object. Each %Drawable is part of some DrawableGroup
 and the whole group is drawn with particular camera using AbstractCamera::draw().
 
 @section Drawable-usage Usage

@@ -250,9 +250,9 @@ class MAGNUM_EXPORT Mesh {
          * @see setProvokingVertex()
          * @requires_gl32 %Extension @extension{ARB,provoking_vertex}. Older
          *      versions behave always like
-         *      <tt>ProvokingMode::%LastVertexConvention</tt>.
+         *      @ref Magnum::Mesh::ProvokingVertex "ProvokingVertex::LastVertexConvention".
          * @requires_gl OpenGL ES behaves always like
-         *      <tt>ProvokingMode::%LastVertexConvention</tt>.
+         *      @ref Magnum::Mesh::ProvokingVertex "ProvokingVertex::LastVertexConvention".
          */
         enum class ProvokingVertex: GLenum {
             /** @brief Use first vertex of each polygon. */
@@ -265,7 +265,7 @@ class MAGNUM_EXPORT Mesh {
         /**
          * @brief Set provoking vertex
          *
-         * Initial value is <tt>ProvokingMode::%LastVertexConvention</tt>.
+         * Initial value is @ref ProvokingVertex "ProvokingVertex::LastVertexConvention".
          * @see @fn_gl{ProvokingVertex}
          * @requires_gl32 %Extension @extension{ARB,provoking_vertex}. Older
          *      versions behave always like the default.
@@ -281,9 +281,8 @@ class MAGNUM_EXPORT Mesh {
          * @brief Polygon mode
          *
          * @see setPolygonMode()
-         * @requires_gl OpenGL ES behaves always like
-         *      <tt>PolygonMode::%Fill</tt>. See setPrimitive() for possible
-         *      workaround.
+         * @requires_gl OpenGL ES behaves always like @ref Magnum::Mesh::PolygonMode "PolygonMode::Fill".
+         *      See setPrimitive() for possible workaround.
          */
         enum class PolygonMode: GLenum {
             /**
@@ -308,7 +307,7 @@ class MAGNUM_EXPORT Mesh {
         /**
          * @brief Set polygon drawing mode
          *
-         * Initial value is `PolygonMode::%Fill`.
+         * Initial value is @ref PolygonMode "PolygonMode::Fill".
          * @see @fn_gl{PolygonMode}
          * @requires_gl OpenGL ES behaves always like the default. See
          *      setPrimitive() for possible workaround.
@@ -332,13 +331,15 @@ class MAGNUM_EXPORT Mesh {
 
             /**
              * Offset lines.
-             * @requires_gl Only <tt>PolygonOffset::%Fill</tt> is supported.
+             * @requires_gl Only @ref Magnum::Mesh::PolygonOffsetMode "PolygonOffsetMode::Fill"
+             *      is available in OpenGL ES.
              */
             Line = GL_POLYGON_OFFSET_LINE,
 
             /**
              * Offset points.
-             * @requires_gl Only <tt>PolygonOffset::%Fill</tt> is supported.
+             * @requires_gl Only @ref Magnum::Mesh::PolygonOffsetMode "PolygonOffsetMode::Fill"
+             *      is available in OpenGL ES.
              */
             Point = GL_POLYGON_OFFSET_POINT
             #endif

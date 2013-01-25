@@ -208,8 +208,13 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
             return this;
         }
 
+        /**
+         * @brief %Animable group containing this animable
+         *
+         * If the animable doesn't belong to any group, returns `nullptr`.
+         */
         AnimableGroup<dimensions, T>* group();
-        const AnimableGroup<dimensions, T>* group() const;
+        const AnimableGroup<dimensions, T>* group() const; /**< @overload */
 
     protected:
         /**
