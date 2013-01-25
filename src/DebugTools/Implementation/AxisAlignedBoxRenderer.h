@@ -17,7 +17,7 @@
 
 #include "AbstractBoxRenderer.h"
 
-#include "Physics/AxisAlignedBox.h"
+#include "Physics/Physics.h"
 
 #include "corradeCompatibility.h"
 

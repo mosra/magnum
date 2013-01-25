@@ -17,7 +17,7 @@
 
 #include "AbstractBoxRenderer.h"
 
-#include "Physics/Box.h"
+#include "Physics/Physics.h"
 
 #include "corradeCompatibility.h"
 
