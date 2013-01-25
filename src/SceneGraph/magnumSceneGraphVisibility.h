@@ -21,10 +21,10 @@
     #else
         #define MAGNUM_SCENEGRAPH_EXPORT __declspec(dllimport)
     #endif
-    #define SCENEGRAPH_LOCAL
+    #define MAGNUM_SCENEGRAPH_LOCAL
 #else
     #define MAGNUM_SCENEGRAPH_EXPORT __attribute__ ((visibility ("default")))
-    #define SCENEGRAPH_LOCAL __attribute__ ((visibility ("hidden")))
+    #define MAGNUM_SCENEGRAPH_LOCAL __attribute__ ((visibility ("hidden")))
 #endif
 
 #endif

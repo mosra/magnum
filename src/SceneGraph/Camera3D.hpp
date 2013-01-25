@@ -22,8 +22,6 @@
 #include "AbstractCamera.hpp"
 #include "Camera3D.h"
 
-using namespace std;
-
 namespace Magnum { namespace SceneGraph {
 
 template<class T> Camera3D<T>* Camera3D<T>::setOrthographic(const Math::Vector2<T>& size, T near, T far) {

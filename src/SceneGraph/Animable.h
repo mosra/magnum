@@ -28,7 +28,7 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Animation state
 
-@see Animatable::setState()
+@see Animable::setState()
 */
 enum class AnimationState: std::uint8_t {
     /**
