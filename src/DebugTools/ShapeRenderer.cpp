@@ -20,11 +20,13 @@
 #include "Physics/AxisAlignedBox.h"
 #include "Physics/Box.h"
 #include "Physics/ObjectShape.h"
+#include "Physics/Point.h"
 #include "Physics/ShapeGroup.h"
 #include "SceneGraph/AbstractCamera.h"
 
 #include "Implementation/AxisAlignedBoxRenderer.h"
 #include "Implementation/BoxRenderer.h"
+#include "Implementation/PointRenderer.h"
 
 namespace Magnum { namespace DebugTools {
 
@@ -38,6 +40,9 @@ template<> void createDebugMesh(ShapeRenderer<2>* renderer, Physics::AbstractSha
             break;
         case Physics::AbstractShape2D::Type::Box:
             renderer->renderers.push_back(new Implementation::BoxRenderer<2>(*static_cast<Physics::Box2D*>(shape)));
+            break;
+        case Physics::AbstractShape2D::Type::Point:
+            renderer->renderers.push_back(new Implementation::PointRenderer<2>(*static_cast<Physics::Point2D*>(shape)));
             break;
         case Physics::AbstractShape2D::Type::ShapeGroup: {
             Physics::ShapeGroup2D* group = static_cast<Physics::ShapeGroup2D*>(shape);
@@ -56,6 +61,9 @@ template<> void createDebugMesh(ShapeRenderer<3>* renderer, Physics::AbstractSha
             break;
         case Physics::AbstractShape3D::Type::Box:
             renderer->renderers.push_back(new Implementation::BoxRenderer<3>(*static_cast<Physics::Box3D*>(shape)));
+            break;
+        case Physics::AbstractShape3D::Type::Point:
+            renderer->renderers.push_back(new Implementation::PointRenderer<3>(*static_cast<Physics::Point3D*>(shape)));
             break;
         case Physics::AbstractShape3D::Type::ShapeGroup: {
             Physics::ShapeGroup3D* group = static_cast<Physics::ShapeGroup3D*>(shape);

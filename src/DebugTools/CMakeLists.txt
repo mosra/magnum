@@ -7,7 +7,8 @@ set(MagnumDebugTools_SRCS
     Implementation/AbstractBoxRenderer.cpp
     Implementation/AbstractShapeRenderer.cpp
     Implementation/AxisAlignedBoxRenderer.cpp
-    Implementation/BoxRenderer.cpp)
+    Implementation/BoxRenderer.cpp
+    Implementation/PointRenderer.cpp)
 
 set(MagnumDebugTools_HEADERS
     DebugTools.h
