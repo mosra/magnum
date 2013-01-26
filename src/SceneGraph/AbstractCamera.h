@@ -76,9 +76,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
          * @brief Constructor
          * @param object        Object holding the camera
          */
-        inline explicit AbstractCamera(AbstractObject<dimensions, T>* object): AbstractFeature<dimensions, T>(object), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {
-            AbstractFeature<dimensions, T>::setCachedTransformations(AbstractFeature<dimensions, T>::CachedTransformation::InvertedAbsolute);
-        }
+        explicit AbstractCamera(AbstractObject<dimensions, T>* object);
 
         virtual ~AbstractCamera() = 0;
 
@@ -161,8 +159,6 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
 
         Vector2i _viewport;
 };
-
-template<std::uint8_t dimensions, class T> inline AbstractCamera<dimensions, T>::~AbstractCamera() {}
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**

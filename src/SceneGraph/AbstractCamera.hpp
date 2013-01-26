@@ -63,6 +63,12 @@ template<std::uint8_t dimensions, class T> typename DimensionTraits<dimensions, 
 }
 #endif
 
+template<std::uint8_t dimensions, class T> AbstractCamera<dimensions, T>::AbstractCamera(AbstractObject<dimensions, T>* object): AbstractFeature<dimensions, T>(object), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {
+    AbstractFeature<dimensions, T>::setCachedTransformations(AbstractFeature<dimensions, T>::CachedTransformation::InvertedAbsolute);
+}
+
+template<std::uint8_t dimensions, class T> AbstractCamera<dimensions, T>::~AbstractCamera() {}
+
 template<std::uint8_t dimensions, class T> AbstractCamera<dimensions, T>* AbstractCamera<dimensions, T>::setAspectRatioPolicy(AspectRatioPolicy policy) {
     _aspectRatioPolicy = policy;
     fixAspectRatio();

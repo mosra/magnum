@@ -25,6 +25,8 @@
 #include "DimensionTraits.h"
 #include "SceneGraph.h"
 
+#include "SceneGraph/magnumSceneGraphVisibility.h"
+
 namespace Magnum { namespace SceneGraph {
 
 /**
@@ -46,7 +48,7 @@ for(AbstractFeature* feature = o->firstFeature(); feature; feature = feature->ne
 @see AbstractObject2D, AbstractObject3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class T> class AbstractObject: private Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>
+template<std::uint8_t dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractObject: private Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>
 #else
 template<std::uint8_t dimensions, class T = GLfloat> class AbstractObject
 #endif
@@ -59,8 +61,8 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractObject
         /** @brief Feature object type */
         typedef AbstractFeature<dimensions, T> FeatureType;
 
-        explicit AbstractObject() = default;
-        inline virtual ~AbstractObject() {}
+        explicit AbstractObject();
+        virtual ~AbstractObject();
 
         /** @brief Whether this object has features */
         inline bool hasFeatures() const {

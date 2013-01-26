@@ -62,7 +62,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3, T> {
          * @brief Constructor
          * @param object    %Object holding this feature
          */
-        inline explicit Camera3D(AbstractObject<3, T>* object): AbstractCamera<3, T>(object), _near(0.0f), _far(0.0f) {}
+        explicit Camera3D(AbstractObject<3, T>* object);
 
         /**
          * @brief Set orthographic projection

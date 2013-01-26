@@ -150,6 +150,8 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
          */
         explicit Animable(AbstractObject<dimensions, T>* object, AnimableGroup<dimensions, T>* group = nullptr);
 
+        ~Animable();
+
         /** @brief Animation duration */
         inline GLfloat duration() const { return _duration; }
 

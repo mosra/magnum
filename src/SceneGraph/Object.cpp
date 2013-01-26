@@ -1,5 +1,3 @@
-#ifndef Magnum_SceneGraph_Camera2D_hpp
-#define Magnum_SceneGraph_Camera2D_hpp
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,26 +13,13 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-/** @file
- * @brief @ref compilation-speedup-hpp "Template implementation" for Camera2D.h
- */
-
-#include "AbstractCamera.hpp"
-#include "Camera2D.h"
-
-using namespace std;
+#include "Object.hpp"
 
 namespace Magnum { namespace SceneGraph {
 
-template<class T> Camera2D<T>::Camera2D(AbstractObject<2, T>* object): AbstractCamera<2, T>(object) {}
-
-template<class T> Camera2D<T>* Camera2D<T>::setProjection(const Math::Vector2<T>& size) {
-    AbstractCamera<2, T>::rawProjectionMatrix = Math::Matrix3<T>::projection(size);
-
-    AbstractCamera<2, T>::fixAspectRatio();
-    return this;
-}
+template class AbstractObject<2>;
+template class AbstractObject<3>;
+template class AbstractTransformation<2>;
+template class AbstractTransformation<3>;
 
 }}
-
-#endif

@@ -19,6 +19,7 @@
  * @brief @ref compilation-speedup-hpp "Template implementation" for Object.h
  */
 
+#include "AbstractTransformation.h"
 #include "Object.h"
 
 #include <algorithm>
@@ -27,6 +28,12 @@
 #include "Scene.h"
 
 namespace Magnum { namespace SceneGraph {
+
+template<std::uint8_t dimensions, class T> AbstractObject<dimensions, T>::AbstractObject() {}
+template<std::uint8_t dimensions, class T> AbstractObject<dimensions, T>::~AbstractObject() {}
+
+template<std::uint8_t dimensions, class T> inline AbstractTransformation<dimensions, T>::AbstractTransformation() {}
+template<std::uint8_t dimensions, class T> inline AbstractTransformation<dimensions, T>::~AbstractTransformation() {}
 
 template<class Transformation> Scene<Transformation>* Object<Transformation>::scene() {
     return static_cast<Scene<Transformation>*>(sceneObject());

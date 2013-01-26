@@ -24,6 +24,8 @@
 
 namespace Magnum { namespace SceneGraph {
 
+template<class T> Camera3D<T>::Camera3D(AbstractObject<3, T>* object): AbstractCamera<3, T>(object) {}
+
 template<class T> Camera3D<T>* Camera3D<T>::setOrthographic(const Math::Vector2<T>& size, T near, T far) {
     /** @todo Get near/far from the matrix */
     _near = near;

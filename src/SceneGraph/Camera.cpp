@@ -19,10 +19,10 @@
 namespace Magnum { namespace SceneGraph {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera<2, GLfloat>;
-template class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera<3, GLfloat>;
-template class MAGNUM_SCENEGRAPH_EXPORT Camera2D<GLfloat>;
-template class MAGNUM_SCENEGRAPH_EXPORT Camera3D<GLfloat>;
+template class AbstractCamera<2, GLfloat>;
+template class AbstractCamera<3, GLfloat>;
+template class Camera2D<GLfloat>;
+template class Camera3D<GLfloat>;
 #endif
 
 }}

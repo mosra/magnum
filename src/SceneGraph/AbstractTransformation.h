@@ -24,6 +24,8 @@
 #include "DimensionTraits.h"
 #include "SceneGraph.h"
 
+#include "SceneGraph/magnumSceneGraphVisibility.h"
+
 namespace Magnum { namespace SceneGraph {
 
 /**
@@ -46,7 +48,7 @@ template<std::uint8_t dimensions, class T>
 #else
 template<std::uint8_t dimensions, class T = GLfloat>
 #endif
-class AbstractTransformation {
+class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation {
     public:
         /** @brief Underlying floating-point type */
         typedef T Type;
@@ -54,7 +56,7 @@ class AbstractTransformation {
         /** @brief Dimension count */
         static const std::uint8_t Dimensions = dimensions;
 
-        explicit AbstractTransformation() = default;
+        explicit AbstractTransformation();
         virtual ~AbstractTransformation() = 0;
 
         #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -136,8 +138,6 @@ enum class TransformationType: std::uint8_t {
     /** Local transformation, applied before all other transformations. */
     Local = 0x01
 };
-
-template<std::uint8_t dimensions, class T> inline AbstractTransformation<dimensions, T>::~AbstractTransformation() {}
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**
