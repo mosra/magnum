@@ -41,7 +41,7 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          * @brief Dot product
          *
          * @f[
-         *      a \cdot b = \sum_{i=0}^{n-1} a_ib_i
+         *      \boldsymbol a \cdot \boldsymbol b = \sum_{i=0}^{n-1} \boldsymbol a_i \boldsymbol b_i
          * @f]
          * @see dot() const
          */
@@ -58,7 +58,7 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          * @brief Angle between normalized vectors (in radians)
          *
          * Expects that both vectors are normalized. @f[
-         *      \theta = acos \left( \frac{a \cdot b}{|a| \cdot |b|} \right)
+         *      \theta = acos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| \cdot |\boldsymbol b|} \right) = acos (\boldsymbol a \cdot \boldsymbol b)
          * @f]
          */
         inline static T angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
@@ -74,7 +74,7 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          * @param t     Interpolation phase (from range @f$ [0; 1] @f$)
          *
          * The interpolation is done as in following: @f[
-         *      v_{LERP} = (1 - t) \boldsymbol v_A + t \boldsymbol v_B
+         *      \boldsymbol v_{LERP} = (1 - t) \boldsymbol v_A + t \boldsymbol v_B
          * @f]
          * @todo http://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
          *      (when SIMD is in place)
@@ -83,22 +83,19 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
             return (U(1) - t)*a + t*b;
         }
 
-        /** @brief Default constructor */
+        /** @brief Construct zero-filled vector */
         inline constexpr /*implicit*/ Vector() {}
 
         /** @todo Creating Vector from combination of vector and scalar types */
 
         /**
-         * @brief Initializer-list constructor
+         * @brief Construct vector from values
          * @param first First value
          * @param next  Next values
          */
         template<class ...U> inline constexpr /*implicit*/ Vector(T first, U... next): RectangularMatrix<1, size, T>(first, next...) {}
 
-        /**
-         * @brief Constructor
-         * @param value Value for all fields
-         */
+        /** @brief Construct vector with one value for all fields */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         inline explicit Vector(T value) {
         #else
@@ -183,7 +180,7 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          * @see operator*=(const Vector<size, U>&)
          */
         template<class U> inline Vector<size, T> operator*(const Vector<size, U>& other) const {
-            return Vector<size, T>(*this)*=other;
+            return Vector<size, T>(*this) *= other;
         }
 
         /**
@@ -206,7 +203,7 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          * @see operator/=(const Vector<size, U>&)
          */
         template<class U> inline Vector<size, T> operator/(const Vector<size, U>& other) const {
-            return Vector<size, T>(*this)/=other;
+            return Vector<size, T>(*this) /= other;
         }
 
         /**
@@ -214,7 +211,7 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          *
          * Should be used instead of length() for comparing vector length with
          * other values, because it doesn't compute the square root. @f[
-         *      a \cdot a = \sum_{i=0}^{n-1} a_i^2
+         *      \boldsymbol a \cdot \boldsymbol a = \sum_{i=0}^{n-1} \boldsymbol a_i^2
          * @f]
          * @see dot(const Vector<size, T>&, const Vector<size, T>&)
          */
@@ -226,7 +223,7 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
          * @brief %Vector length
          *
          * @f[
-         *      |a| = \sqrt{a \cdot a}
+         *      |\boldsymbol a| = \sqrt{\boldsymbol a \cdot \boldsymbol a}
          * @f]
          * @see dot() const
          */

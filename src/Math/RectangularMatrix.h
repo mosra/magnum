@@ -388,10 +388,10 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 
 Same as RectangularMatrix::operator*(U) const.
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::size_t cols, std::size_t rows, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>>::type operator*(U number, const RectangularMatrix<cols, rows, T>& matrix) {
-#else
+#ifdef DOXYGEN_GENERATING_OUTPUT
 template<std::size_t cols, std::size_t rows, class T, class U> inline RectangularMatrix<cols, rows, T> operator*(U number, const RectangularMatrix<cols, rows, T>& matrix) {
+#else
+template<std::size_t cols, std::size_t rows, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>>::type operator*(U number, const RectangularMatrix<cols, rows, T>& matrix) {
 #endif
     return matrix*number;
 }
@@ -402,12 +402,12 @@ template<std::size_t cols, std::size_t rows, class T, class U> inline Rectangula
 @f[
     \boldsymbol B_{ji} = \frac a {\boldsymbol A_{ji}}
 @f]
-@see RectangularMatrix::operator/()
+@see RectangularMatrix::operator/(U) const
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::size_t cols, std::size_t rows, class T, class U> typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>>::type operator/(U number, const RectangularMatrix<cols, rows, T>& matrix) {
-#else
+#ifdef DOXYGEN_GENERATING_OUTPUT
 template<std::size_t cols, std::size_t rows, class T, class U> RectangularMatrix<cols, rows, T> operator/(U number, const RectangularMatrix<cols, rows, T>& matrix) {
+#else
+template<std::size_t cols, std::size_t rows, class T, class U> typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>>::type operator/(U number, const RectangularMatrix<cols, rows, T>& matrix) {
 #endif
     RectangularMatrix<cols, rows, T> out;
 
