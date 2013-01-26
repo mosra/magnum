@@ -79,21 +79,6 @@ template<std::size_t size, class T> class Vector {
         }
 
         /**
-         * @brief %Vector from another of different type
-         *
-         * Performs only default casting on the values, no rounding or
-         * anything else. Example usage:
-         * @code
-         * Vector<4, float> floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
-         * Vector<4, std::int8_t> integral(Vector<4, std::int8_t>::from(floatingPoint));
-         * // integral == {1, 2, -15, 7}
-         * @endcode
-         */
-        template<class U> inline constexpr static Vector<size, T> from(const Vector<size, U>& other) {
-            return from(typename Implementation::GenerateSequence<size>::Type(), other);
-        }
-
-        /**
          * @brief Dot product
          *
          * @f[
@@ -162,6 +147,19 @@ template<std::size_t size, class T> class Vector {
             for(std::size_t i = 0; i != size; ++i)
                 _data[i] = value;
         }
+
+        /**
+         * @brief Construct vector from another of different type
+         *
+         * Performs only default casting on the values, no rounding or
+         * anything else. Example usage:
+         * @code
+         * Vector<4, float> floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
+         * Vector<4, std::int8_t> integral(floatingPoint);
+         * // integral == {1, 2, -15, 7}
+         * @endcode
+         */
+        template<class U> inline constexpr explicit Vector(const Vector<size, U>& other): Vector(typename Implementation::GenerateSequence<size>::Type(), other) {}
 
         /** @brief Copy constructor */
         inline constexpr Vector(const Vector<size, T>&) = default;
@@ -500,10 +498,8 @@ template<std::size_t size, class T> class Vector {
         }
 
     private:
-        /* Implementation for from(const Vector<size, U>&) */
-        template<class U, std::size_t ...sequence> inline constexpr static Vector<sizeof...(sequence), T> from(Implementation::Sequence<sequence...>, const Vector<sizeof...(sequence), U>& vector) {
-            return {T(vector.data()[sequence])...};
-        }
+        /* Implementation for Vector<size, T>::Vector(const Vector<size, U>&) */
+        template<class U, std::size_t ...sequence> inline constexpr explicit Vector(Implementation::Sequence<sequence...>, const Vector<sizeof...(sequence), U>& vector): _data{T(vector.data()[sequence])...} {}
 
         T _data[size];
 };
@@ -580,9 +576,6 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
     }                                                                       \
     inline constexpr static const Type<T>& from(const T* data) {            \
         return *reinterpret_cast<const Type<T>*>(data);                     \
-    }                                                                       \
-    template<class U> inline constexpr static Type<T> from(const Math::Vector<size, U>& other) { \
-        return Math::Vector<size, T>::from(other);                          \
     }                                                                       \
     template<class U> inline static const Type<T> lerp(const Math::Vector<size, T>& a, const Math::Vector<size, T>& b, U t) { \
         return Math::Vector<size, T>::lerp(a, b, t);                        \

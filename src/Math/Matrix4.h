@@ -253,6 +253,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
         /** @brief %Matrix from column vectors */
         inline constexpr /*implicit*/ Matrix4(const Vector4<T>& first, const Vector4<T>& second, const Vector4<T>& third, const Vector4<T>& fourth): Matrix<4, T>(first, second, third, fourth) {}
 
+        /** @copydoc Matrix::Matrix(const RectangularMatrix<cols, rows, U>&) */
+        template<class U> inline constexpr explicit Matrix4(const RectangularMatrix<4, 4, U>& other): Matrix<4, T>(other) {}
+
         /** @brief Copy constructor */
         inline constexpr Matrix4(const RectangularMatrix<4, 4, T>& other): Matrix<4, T>(other) {}
 

@@ -62,21 +62,6 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             return *reinterpret_cast<const RectangularMatrix<cols, rows, T>*>(data);
         }
 
-        /**
-         * @brief %Matrix from another of different type
-         *
-         * Performs only default casting on the values, no rounding or
-         * anything else. Example usage:
-         * @code
-         * RectangularMatrix<4, 1, float> floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
-         * RectangularMatrix<4, 1, std::int8_t> integral(RectangularMatrix<4, 1, std::int8_t>::from(floatingPoint));
-         * // integral == {1, 2, -15, 7}
-         * @endcode
-         */
-        template<class U> inline constexpr static RectangularMatrix<cols, rows, T> from(const RectangularMatrix<cols, rows, U>& other) {
-            return from(typename Implementation::GenerateSequence<cols>::Type(), other);
-        }
-
         /** @brief Construct zero-filled matrix */
         inline constexpr /*implicit*/ RectangularMatrix() {}
 
@@ -90,6 +75,19 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         template<class ...U> inline constexpr /*implicit*/ RectangularMatrix(const Vector<rows, T>& first, const U&... next): _data{first, next...} {
             static_assert(sizeof...(next)+1 == cols, "Improper number of arguments passed to RectangularMatrix constructor");
         }
+
+        /**
+         * @brief Construct matrix from another of different type
+         *
+         * Performs only default casting on the values, no rounding or
+         * anything else. Example usage:
+         * @code
+         * RectangularMatrix<4, 1, float> floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
+         * RectangularMatrix<4, 1, std::int8_t> integral(floatingPoint);
+         * // integral == {1, 2, -15, 7}
+         * @endcode
+         */
+        template<class U> inline constexpr explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other): RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), other) {}
 
         /** @brief Copy constructor */
         inline constexpr RectangularMatrix(const RectangularMatrix<cols, rows, T>&) = default;
@@ -310,10 +308,8 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
     private:
-        /* Implementation for RectangularMatrix<cols, rows, T>::from(const RectangularMatrix<cols, rows, U>&) */
-        template<class U, std::size_t c, std::size_t ...sequence> inline constexpr static Math::RectangularMatrix<c, sizeof...(sequence), T> from(Implementation::Sequence<sequence...>, const Math::RectangularMatrix<c, sizeof...(sequence), U>& matrix) {
-            return {Vector<sizeof...(sequence), T>::from(matrix[sequence])...};
-        }
+        /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
+        template<class U, std::size_t ...sequence> inline constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix): _data{Vector<rows, T>(matrix[sequence])...} {}
 
         Vector<rows, T> _data[cols];
 };
@@ -414,9 +410,6 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
     }                                                                       \
     inline constexpr static const __VA_ARGS__& from(const T* data) {        \
         return *reinterpret_cast<const __VA_ARGS__*>(data);                 \
-    }                                                                       \
-    template<class U> inline constexpr static RectangularMatrix<cols, rows, T> from(const Math::RectangularMatrix<cols, rows, U>& other) { \
-        return Math::RectangularMatrix<cols, rows, T>::from(other);         \
     }                                                                       \
                                                                             \
     inline __VA_ARGS__& operator=(const Math::RectangularMatrix<cols, rows, T>& other) { \

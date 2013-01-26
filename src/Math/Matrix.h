@@ -74,6 +74,9 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          */
         template<class ...U> inline constexpr /*implicit*/ Matrix(const Vector<size, T>& first, const U&... next): RectangularMatrix<size, size, T>(first, next...) {}
 
+        /** @copydoc RectangularMatrix::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
+        template<class U> inline constexpr explicit Matrix(const RectangularMatrix<size, size, U>& other): RectangularMatrix<size, size, T>(other) {}
+
         /** @brief Copy constructor */
         inline constexpr Matrix(const RectangularMatrix<size, size, T>& other): RectangularMatrix<size, size, T>(other) {}
 

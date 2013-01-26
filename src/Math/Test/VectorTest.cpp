@@ -109,8 +109,8 @@ void VectorTest::constructConversion() {
     Vector4 floatingPointRounded(1.0f, 2.0f, -15.0f, 7.0f);
     Vector4i integral(1, 2, -15, 7);
 
-    CORRADE_COMPARE(Vector4i::from(floatingPoint), integral);
-    CORRADE_COMPARE(Vector4::from(integral), floatingPointRounded);
+    CORRADE_COMPARE(Vector4i(floatingPoint), integral);
+    CORRADE_COMPARE(Vector4(integral), floatingPointRounded);
 }
 
 void VectorTest::data() {

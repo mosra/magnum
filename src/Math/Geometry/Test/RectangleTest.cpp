@@ -74,8 +74,7 @@ void RectangleTest::compare() {
 void RectangleTest::construct() {
     CORRADE_COMPARE(Rectanglei(), Rectanglei({0, 0}, {0, 0}));
     CORRADE_COMPARE(Rectanglei::fromSize({3, 5}, {23, 78}), Rectanglei({3, 5}, {26, 83}));
-    CORRADE_COMPARE(Rectanglei::from(Rectangle({1.3f, 2.7f}, {-15.0f, 7.0f})),
-                    Rectanglei({1, 2}, {-15, 7}));
+    CORRADE_COMPARE(Rectanglei(Rectangle({1.3f, 2.7f}, {-15.0f, 7.0f})), Rectanglei({1, 2}, {-15, 7}));
 }
 
 void RectangleTest::size() {

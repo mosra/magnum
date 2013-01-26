@@ -32,6 +32,8 @@ are inclusive, while top/right positions are exclusive.
 @see Magnum::Rectangle, Magnum::Rectanglei
 */
 template<class T> class Rectangle {
+    template<class> friend class Rectangle;
+
     public:
         /**
          * Create rectangle from position and size
@@ -43,33 +45,32 @@ template<class T> class Rectangle {
         }
 
         /**
-         * @brief %Rectangle from another of different type
-         *
-         * Performs only default casting on the values, no rounding or
-         * anything else. Example usage:
-         * @code
-         * Rectangle<float> floatingPoint({1.3f, 2.7f}, {-15.0f, 7.0f});
-         * auto integral = Rectangle<std::int8_t>::from(floatingPoint);
-         * // integral == {{1, 2}, {-15, 7}}
-         * @endcode
-         */
-        template<class U> inline constexpr static Rectangle<T> from(const Rectangle<U>& other) {
-            return {Vector2<T>::from(other.bottomLeft()), Vector2<T>::from(other.topRight())};
-        }
-
-        /**
-         * @brief Default constructor
+         * @brief Construct zero rectangle
          *
          * Construct zero-area rectangle positioned at origin.
          */
         inline constexpr Rectangle() = default;
 
-        /**
-         * @brief Constructor
-         * @param bottomLeft    Bottom left rectangle corner
-         * @param topRight      Top right rectangle corner
-         */
+        /** @brief Construct rectangle from two corners */
         inline constexpr Rectangle(const Vector2<T>& bottomLeft, const Vector2<T>& topRight): _bottomLeft(bottomLeft), _topRight(topRight) {}
+
+        /**
+         * @brief Construct rectangle from another of different type
+         *
+         * Performs only default casting on the values, no rounding or
+         * anything else. Example usage:
+         * @code
+         * Rectangle<float> floatingPoint({1.3f, 2.7f}, {-15.0f, 7.0f});
+         * Rectangle<std::int8_t> integral(floatingPoint); // {{1, 2}, {-15, 7}}
+         * @endcode
+         */
+        template<class U> inline constexpr explicit Rectangle(const Rectangle<U>& other): _bottomLeft(other._bottomLeft), _topRight(other._topRight) {}
+
+        /** @brief Copy constructor */
+        inline constexpr Rectangle(const Rectangle<T>&) = default;
+
+        /** @brief Assignment operator */
+        inline Rectangle<T>& operator=(const Rectangle<T>&) = default;
 
         /** @brief Equality operator */
         inline constexpr bool operator==(const Rectangle<T>& other) const {

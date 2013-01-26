@@ -108,8 +108,8 @@ void RectangularMatrixTest::constructConversion() {
     Matrix2i integral(Vector2i(  1, 2),
                       Vector2i(-15, 7));
 
-    CORRADE_COMPARE(Matrix2i::from(floatingPoint), integral);
-    CORRADE_COMPARE(Matrix2::from(integral), floatingPointRounded);
+    CORRADE_COMPARE(Matrix2i(floatingPoint), integral);
+    CORRADE_COMPARE(Matrix2(integral), floatingPointRounded);
 }
 
 void RectangularMatrixTest::constructFromVectors() {

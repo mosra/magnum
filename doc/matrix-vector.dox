@@ -99,10 +99,10 @@ RectangularMatrix<2, 3, int>::from(mat) *= 2; // mat == { 4, 8, 12, 2, 6, 10 }
 Note that unlike constructors, this function has no way to check whether the
 array is long enough to contain all elements, so use with caution.
 
-You can also convert between data types:
+You can also *explicitly* convert between data types:
 @code
 Vector4<float> floating(1.3f, 2.7f, -15.0f, 7.0f);
-Vector4<int> integral(Vector4<int>::from(floating)); // {1, 2, -15, 7}
+Vector4<int> integral(floating); // {1, 2, -15, 7}
 @endcode
 
 @section matrix-vector-component-access Accessing matrix and vector components

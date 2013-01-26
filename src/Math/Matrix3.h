@@ -128,6 +128,9 @@ template<class T> class Matrix3: public Matrix<3, T> {
         /** @brief %Matrix from column vectors */
         inline constexpr /*implicit*/ Matrix3(const Vector3<T>& first, const Vector3<T>& second, const Vector3<T>& third): Matrix<3, T>(first, second, third) {}
 
+        /** @copydoc Matrix::Matrix(const RectangularMatrix<cols, rows, U>&) */
+        template<class U> inline constexpr explicit Matrix3(const RectangularMatrix<3, 3, U>& other): Matrix<3, T>(other) {}
+
         /** @brief Copy constructor */
         inline constexpr Matrix3(const RectangularMatrix<3, 3, T>& other): Matrix<3, T>(other) {}
 

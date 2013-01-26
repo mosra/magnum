@@ -177,12 +177,12 @@ template<class FloatingPoint, class Integral> inline typename std::enable_if<std
 template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_unsigned<typename Integral::Type>::value, FloatingPoint>::type normalize(const Integral& value) {
     static_assert(std::is_floating_point<typename FloatingPoint::Type>::value && std::is_integral<typename Integral::Type>::value,
                   "Math::normalize(): normalization must be done from integral to floating-point type");
-    return FloatingPoint::from(value)/typename FloatingPoint::Type(std::numeric_limits<typename Integral::Type>::max());
+    return FloatingPoint(value)/typename FloatingPoint::Type(std::numeric_limits<typename Integral::Type>::max());
 }
 template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_signed<typename Integral::Type>::value, FloatingPoint>::type normalize(const Integral& value) {
     static_assert(std::is_floating_point<typename FloatingPoint::Type>::value && std::is_integral<typename Integral::Type>::value,
                   "Math::normalize(): normalization must be done from integral to floating-point type");
-    return Math::max(FloatingPoint::from(value)/typename FloatingPoint::Type(std::numeric_limits<typename Integral::Type>::max()), FloatingPoint(-1));
+    return Math::max(FloatingPoint(value)/typename FloatingPoint::Type(std::numeric_limits<typename Integral::Type>::max()), FloatingPoint(-1));
 }
 #endif
 
@@ -213,7 +213,7 @@ template<class Integral, class FloatingPoint> inline typename std::enable_if<std
 template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_arithmetic<typename Integral::Type>::value, Integral>::type denormalize(const FloatingPoint& value) {
     static_assert(std::is_floating_point<typename FloatingPoint::Type>::value && std::is_integral<typename Integral::Type>::value,
                   "Math::denormalize(): denormalization must be done from floating-point to integral type");
-    return Integral::from(value*std::numeric_limits<typename Integral::Type>::max());
+    return Integral(value*std::numeric_limits<typename Integral::Type>::max());
 }
 #endif
 

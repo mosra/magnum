@@ -84,6 +84,9 @@ template<class T> class Vector2: public Vector<2, T> {
          */
         inline constexpr /*implicit*/ Vector2(T x, T y): Vector<2, T>(x, y) {}
 
+        /** @copydoc Vector::Vector(const Vector<size, U>&) */
+        template<class U> inline constexpr explicit Vector2(const Vector<2, U>& other): Vector<2, T>(other) {}
+
         /** @brief Copy constructor */
         inline constexpr Vector2(const Vector<2, T>& other): Vector<2, T>(other) {}
 

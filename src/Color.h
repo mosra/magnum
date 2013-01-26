@@ -195,6 +195,9 @@ class Color3: public Math::Vector3<T> {
          */
         inline constexpr /*implicit*/ Color3(T r, T g, T b): Math::Vector3<T>(r, g, b) {}
 
+        /** @copydoc Math::Vector::Vector(const Vector<size, U>&) */
+        template<class U> inline constexpr explicit Color3(const Math::Vector<3, U>& other): Math::Vector3<T>(other) {}
+
         /** @brief Copy constructor */
         inline constexpr Color3(const Math::Vector<3, T>& other): Math::Vector3<T>(other) {}
 
@@ -321,6 +324,9 @@ class Color4: public Math::Vector4<T> {
         /* Not marked as explicit, because conversion from Color3 to Color4
            is fairly common, nearly always with A set to 1 */
         inline constexpr /*implicit*/ Color4(const Math::Vector3<T>& rgb, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
+
+        /** @copydoc Math::Vector::Vector(const Vector<size, U>&) */
+        template<class U> inline constexpr explicit Color4(const Math::Vector<4, U>& other): Math::Vector4<T>(other) {}
 
         /** @brief Copy constructor */
         inline constexpr Color4(const Math::Vector<4, T>& other): Math::Vector4<T>(other) {}

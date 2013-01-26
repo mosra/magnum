@@ -80,9 +80,9 @@ Font::Font(FontRenderer& renderer, const std::string& fontFile, GLfloat size, co
         /* Save character texture position and texture coordinates for given character index */
         glyphs.insert({charIndices[i], std::make_tuple(
             Rectangle::fromSize(Vector2(glyph->bitmap_left, glyph->bitmap_top-charPositions[i].height())/size,
-                                Vector2::from(charPositions[i].size())/size),
-            Rectangle(Vector2::from(charPositions[i].bottomLeft())/atlasSize,
-                      Vector2::from(charPositions[i].topRight())/atlasSize)
+                                Vector2(charPositions[i].size())/size),
+            Rectangle(Vector2(charPositions[i].bottomLeft())/atlasSize,
+                      Vector2(charPositions[i].topRight())/atlasSize)
         )});
     }
 

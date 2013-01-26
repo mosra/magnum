@@ -50,7 +50,7 @@ template<std::uint8_t dimensions, class T> typename DimensionTraits<dimensions, 
     if(projectionScale.x() == 0 || projectionScale.y() == 0 || viewport.x() == 0 || viewport.y() == 0 || aspectRatioPolicy == AspectRatioPolicy::NotPreserved)
         return {};
 
-    Math::Vector2<T> relativeAspectRatio = Math::Vector2<T>::from(viewport)*projectionScale;
+    Math::Vector2<T> relativeAspectRatio = Math::Vector2<T>(viewport)*projectionScale;
 
     /* Extend on larger side = scale larger side down
        Clip on smaller side = scale smaller side up */

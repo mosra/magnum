@@ -57,6 +57,9 @@ template<class T> class Point3D: public Vector4<T> {
          */
         inline constexpr /*implicit*/ Point3D(const Vector3<T>& xyz, T w = T(1)): Vector4<T>(xyz, w) {}
 
+        /** @copydoc Vector::Vector(const Vector<size, U>&) */
+        template<class U> inline constexpr explicit Point3D(const Vector<4, U>& other): Vector4<T>(other) {}
+
         /** @brief Copy constructor */
         inline constexpr Point3D(const Vector<4, T>& other): Vector4<T>(other) {}
 
