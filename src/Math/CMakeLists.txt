@@ -1,4 +1,5 @@
 set(MagnumMath_HEADERS
+    BoolVector.h
     Constants.h
     Functions.h
     Math.h
