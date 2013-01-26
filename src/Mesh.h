@@ -210,6 +210,8 @@ for more information.
 
 @todo Support for indirect draw buffer (OpenGL 4.0, @extension{ARB,draw_indirect})
 @todo Redo in a way that allows glMultiDrawArrays, glDrawArraysInstanced etc.
+@todo test vertex specification & drawing
+@todo How to glDrawElementsBaseVertex()/vertex offset -- in draw()?
  */
 class MAGNUM_EXPORT Mesh {
     friend class Context;

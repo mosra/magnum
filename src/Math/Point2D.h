@@ -57,7 +57,7 @@ template<class T> class Point2D: public Vector3<T> {
         inline constexpr /*implicit*/ Point2D(const Vector2<T>& xy, T z = T(1)): Vector3<T>(xy, z) {}
 
         /** @brief Copy constructor */
-        inline constexpr Point2D(const RectangularMatrix<1, 3, T>& other): Vector3<T>(other) {}
+        inline constexpr Point2D(const Vector<3, T>& other): Vector3<T>(other) {}
 
         /**
          * @brief Vector part of the point
@@ -69,7 +69,6 @@ template<class T> class Point2D: public Vector3<T> {
         inline constexpr Vector2<T> vector() const { return Vector3<T>::xy(); } /**< @overload */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Point2D, 3)
-        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 3, Point2D<T>)
 };
 
 MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Point2D, 3)

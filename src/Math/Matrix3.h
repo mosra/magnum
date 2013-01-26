@@ -43,11 +43,9 @@ template<class T> class Matrix3: public Matrix<3, T> {
          *      Vector2::xAxis(), Vector2::yAxis()
          */
         inline constexpr static Matrix3<T> translation(const Vector2<T>& vector) {
-            return Matrix3<T>( /* Column-major! */
-                T(1), T(0), T(0),
-                T(0), T(1), T(0),
-                vector.x(), vector.y(), T(1)
-            );
+            return {{      T(1),       T(0), T(0)},
+                    {      T(0),       T(1), T(0)},
+                    {vector.x(), vector.y(), T(1)}};
         }
 
         /**
@@ -58,11 +56,9 @@ template<class T> class Matrix3: public Matrix<3, T> {
          *      Vector2::xScale(), Vector2::yScale()
          */
         inline constexpr static Matrix3<T> scaling(const Vector2<T>& vector) {
-            return Matrix3<T>( /* Column-major! */
-                vector.x(), T(0), T(0),
-                T(0), vector.y(), T(0),
-                T(0), T(0), T(1)
-            );
+            return {{vector.x(),       T(0), T(0)},
+                    {      T(0), vector.y(), T(0)},
+                    {      T(0),       T(0), T(1)}};
         }
 
         /**
@@ -76,11 +72,9 @@ template<class T> class Matrix3: public Matrix<3, T> {
             T sine = std::sin(angle);
             T cosine = std::cos(angle);
 
-            return Matrix3<T>( /* Column-major! */
-                cosine, sine, T(0),
-                -sine, cosine, T(0),
-                T(0), T(0), T(1)
-            );
+            return {{ cosine,   sine, T(0)},
+                    {  -sine, cosine, T(0)},
+                    {   T(0),   T(0), T(1)}};
         }
 
         /**
@@ -93,7 +87,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
         static Matrix3<T> reflection(const Vector2<T>& normal) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normal.dot(), T(1)),
                            "Math::Matrix3::reflection(): normal must be normalized", {});
-            return from(Matrix<2, T>() - T(2)*normal*normal.transposed(), {});
+            return from(Matrix<2, T>() - T(2)*normal*RectangularMatrix<1, 2, T>(normal).transposed(), {});
         }
 
         /**
@@ -116,11 +110,9 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @see rotationScaling() const, translation() const
          */
         static Matrix3<T> from(const Matrix<2, T>& rotationScaling, const Vector2<T>& translation) {
-            return from(
-                Vector3<T>(rotationScaling[0], T(0)),
-                Vector3<T>(rotationScaling[1], T(0)),
-                Vector3<T>(translation, T(1))
-            );
+            return {{rotationScaling[0], T(0)},
+                    {rotationScaling[1], T(0)},
+                    {       translation, T(1)}};
         }
 
         /** @copydoc Matrix::Matrix(ZeroType) */
@@ -128,13 +120,13 @@ template<class T> class Matrix3: public Matrix<3, T> {
 
         /** @copydoc Matrix::Matrix(IdentityType, T) */
         inline constexpr /*implicit*/ Matrix3(typename Matrix<3, T>::IdentityType = (Matrix<3, T>::Identity), T value = T(1)): Matrix<3, T>(
-            value, T(0), T(0),
-            T(0), value, T(0),
-            T(0), T(0), value
+            Vector<3, T>(value,  T(0),  T(0)),
+            Vector<3, T>( T(0), value,  T(0)),
+            Vector<3, T>( T(0),  T(0), value)
         ) {}
 
-        /** @copydoc Matrix::Matrix */
-        template<class ...U> inline constexpr /*implicit*/ Matrix3(T first, U... next): Matrix<3, T>(first, next...) {}
+        /** @brief %Matrix from column vectors */
+        inline constexpr /*implicit*/ Matrix3(const Vector3<T>& first, const Vector3<T>& second, const Vector3<T>& third): Matrix<3, T>(first, second, third) {}
 
         /** @brief Copy constructor */
         inline constexpr Matrix3(const RectangularMatrix<3, 3, T>& other): Matrix<3, T>(other) {}
@@ -147,9 +139,8 @@ template<class T> class Matrix3: public Matrix<3, T> {
          *      rotation(T), Matrix4::rotationScaling() const
          */
         inline Matrix<2, T> rotationScaling() const {
-            return Matrix<2, T>::from(
-                (*this)[0].xy(),
-                (*this)[1].xy());
+            return {(*this)[0].xy(),
+                    (*this)[1].xy()};
         }
 
         /**
@@ -159,9 +150,8 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @see rotationScaling() const, rotation(T), Matrix4::rotation() const
          */
         inline Matrix<2, T> rotation() const {
-            return Matrix<2, T>::from(
-                (*this)[0].xy().normalized(),
-                (*this)[1].xy().normalized());
+            return {(*this)[0].xy().normalized(),
+                    (*this)[1].xy().normalized()};
         }
 
         /**
@@ -202,7 +192,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @see rotationScaling() const, translation() const
          */
         inline Matrix3<T> invertedEuclidean() const {
-            CORRADE_ASSERT((*this)(0, 2) == T(0) && (*this)(1, 2) == T(0) && (*this)(2, 2) == T(1),
+            CORRADE_ASSERT((*this)[0][2] == T(0) && (*this)[1][2] == T(0) && (*this)[2][2] == T(1),
                 "Math::Matrix3::invertedEuclidean(): unexpected values on last row", {});
             Matrix<2, T> inverseRotation = rotationScaling().transposed();
             CORRADE_ASSERT((inverseRotation*rotationScaling() == Matrix<2, T>()),
@@ -216,9 +206,11 @@ template<class T> class Matrix3: public Matrix<3, T> {
         }
         #endif
 
+        MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(3, 3, Matrix3<T>)
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix3, Vector3, 3)
-        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(3, 3, Matrix3<T>)
 };
+
+MAGNUM_MATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(Matrix3, 3)
 
 /** @debugoperator{Magnum::Math::Matrix3} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Matrix3<T>& value) {

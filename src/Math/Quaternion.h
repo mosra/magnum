@@ -174,16 +174,16 @@ template<class T> class Quaternion {
          * @see Matrix4::from(const Matrix<3, T>&, const Vector3<T>&)
          */
         Matrix<3, T> matrix() const {
-            return { /* Column-major! */
-                T(1) - 2*pow<2>(_vector.y()) - 2*pow<2>(_vector.z()),
+            return {
+                Vector<3, T>(T(1) - 2*pow<2>(_vector.y()) - 2*pow<2>(_vector.z()),
                     2*_vector.x()*_vector.y() + 2*_vector.z()*_scalar,
-                        2*_vector.x()*_vector.z() - 2*_vector.y()*_scalar,
-                2*_vector.x()*_vector.y() - 2*_vector.z()*_scalar,
+                        2*_vector.x()*_vector.z() - 2*_vector.y()*_scalar),
+                Vector<3, T>(2*_vector.x()*_vector.y() - 2*_vector.z()*_scalar,
                     T(1) - 2*pow<2>(_vector.x()) - 2*pow<2>(_vector.z()),
-                        2*_vector.y()*_vector.z() + 2*_vector.x()*_scalar,
-                2*_vector.x()*_vector.z() + 2*_vector.y()*_scalar,
+                        2*_vector.y()*_vector.z() + 2*_vector.x()*_scalar),
+                Vector<3, T>(2*_vector.x()*_vector.z() + 2*_vector.y()*_scalar,
                     2*_vector.y()*_vector.z() - 2*_vector.x()*_scalar,
-                        T(1) - 2*pow<2>(_vector.x()) - 2*pow<2>(_vector.y())
+                        T(1) - 2*pow<2>(_vector.x()) - 2*pow<2>(_vector.y()))
             };
         }
 

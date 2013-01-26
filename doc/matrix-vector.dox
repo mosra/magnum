@@ -14,9 +14,9 @@ easier.
 
 %Magnum has three main matrix and vector classes: RectangularMatrix, (square)
 Matrix and Vector. To achieve greatest code reuse, %Matrix is internally
-square %RectangularMatrix and %Vector is internally one-column
-%RectangularMatrix. Both vectors and matrices can have arbitrary size (known
-at compile time) and can store any meaningful type.
+square %RectangularMatrix and %RectangularMatrix is internally array of one or
+more %Vector instances. Both vectors and matrices can have arbitrary size
+(known at compile time) and can store any arithmetic type.
 
 Each subclass brings some specialization to its superclass and for most common
 vector and matrix sizes there are specialized classes Matrix3 and Matrix4,
@@ -50,14 +50,15 @@ Color4<float> black1;           // {0.0f, 0.0f, 0.0f, 1.0f}
 Color4<unsigned char> black2;   // {0, 0, 0, 255}
 @endcode
 
-Most common and most efficient way to create matrix or vector is to pass
-values of all components to the constructor.
+Most common and most efficient way to create vector is to pass all values to
+constructor, matrix is created by passing all column vectors to the
+constructor.
 @code
-Matrix3<int> mat(0, 1, 2,
-                 3, 4, 5,
-                 6, 7, 8); // column-major (see explanation why below)
-
 Vector3<int> vec(0, 1, 2);
+
+Matrix3<int> mat({0, 1, 2},
+                 {3, 4, 5},
+                 {6, 7, 8});
 @endcode
 All constructors check number of passed arguments and the errors are catched
 at compile time.
@@ -83,8 +84,8 @@ same row count; vectors from vector and scalar:
 @code
 RectangularMatrix<2, 3, int> a;
 Vector3<int> b, c;
-Matrix3<int> mat = Matrix3<int>::from(b, a, c);
-Vector<8, int> vec = Vector<8, int>::from(1, b, 2, c);
+Matrix3<int> mat(a, b);
+Vector<8, int> vec(1, b, 2, c);
 @endcode
 
 It is also possible to create them from an C-style array. The function does
@@ -113,14 +114,10 @@ directly:
 RectangularMatrix<3, 2, int> a;
 a[2] /= 2;      // third column (column major indexing, see explanation below)
 a[0][1] = 5;    // first column, second element
-a(0, 1) += 3;   // first column, second element (preferred)
 
 Vector<3, int> b;
 b[1] = 1;       // second element
 @endcode
-For accessing matrix element prefer round bracket operator, as it is possibly
-faster than the double square brackets (but never slower) and isn't prone to
-compiler mis-optimizations.
 
 Fixed-size vector subclasses have functions for accessing named components
 and subparts:
@@ -152,23 +149,19 @@ implications and it may differ from what is common in mathematics:
 @code
 RectangularMatrix<2, 3, int> mat; // two columns, three rows
 @endcode
-- Order of components in matrix constructors is also column-major, so the
-  elements passed in constructor doesn't need to be reordered internally
-  before putting them into data array:
+- Order of components in matrix constructors is also column-major, further
+  emphasized by requirement that you have to pass directly column vectors:
 @code
-Matrix3<int> mat(0, 1, 2,
-                 3, 4, 5,
-                 6, 7, 8); // first column is {0, 1, 2}
+Matrix3<int> mat({0, 1, 2},
+                 {3, 4, 5},
+                 {6, 7, 8}); // first column is {0, 1, 2}
 @endcode
-- Element accessing order is also column-major. It costs virtually no time to
-  return reference to portion of data array as column vector, thus the bracket
-  operator is accessing columns. Returned vector has also its own bracket
-  operator, which is indexing rows. To avoid confusion, first parameter of
-  round bracket operator is thus also column index.
+- Element accessing order is also column-major, thus the bracket operator is
+  accessing columns. Returned vector has also its own bracket operator, which
+  is then indexing rows.
 @code
 mat[0] *= 2;    // first column
-mat[2][0] = 5;  // first element of first column vector
-mat(2, 0) += 3; // first element of first column
+mat[2][0] = 5;  // first element of first column
 @endcode
 - Various algorithms which commonly operate on matrix rows (such as
   @ref Algorithms::GaussJordan "Gauss-Jordan elimination") have faster

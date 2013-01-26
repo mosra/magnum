@@ -44,7 +44,7 @@ class Distance {
          * @see linePointSquared(const Vector2&, const Vector2&, const Vector2&)
          */
         template<class T> inline static T linePoint(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
-            return std::abs(Matrix<2, T>::from(b - a, a - point).determinant())/(b - a).length();
+            return std::abs(Matrix<2, T>(b - a, a - point).determinant())/(b - a).length();
         }
 
         /**
@@ -59,7 +59,7 @@ class Distance {
          */
         template<class T> inline static T linePointSquared(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
             Vector2<T> bMinusA = b - a;
-            return Math::pow<2>(Matrix<2, T>::from(bMinusA, a - point).determinant())/bMinusA.dot();
+            return Math::pow<2>(Matrix<2, T>(bMinusA, a - point).determinant())/bMinusA.dot();
         }
 
         /**
@@ -134,7 +134,7 @@ class Distance {
                 return std::sqrt(pointDistanceB);
 
             /* Between A and B */
-            return std::abs(Matrix<2, T>::from(bMinusA, -pointMinusA).determinant())/std::sqrt(bDistanceA);
+            return std::abs(Matrix<2, T>(bMinusA, -pointMinusA).determinant())/std::sqrt(bDistanceA);
         }
 
         /**
@@ -160,7 +160,7 @@ class Distance {
                 return pointDistanceB;
 
             /* Between A and B */
-            return Math::pow<2>(Matrix<2, T>::from(bMinusA, -pointMinusA).determinant())/bDistanceA;
+            return Math::pow<2>(Matrix<2, T>(bMinusA, -pointMinusA).determinant())/bDistanceA;
         }
 
         /**

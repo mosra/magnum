@@ -22,7 +22,6 @@
 #include <tuple>
 
 #include "Math/Functions.h"
-#include "Math/MathTypeTraits.h"
 #include "Math/Vector4.h"
 #include "Magnum.h"
 
@@ -197,7 +196,7 @@ class Color3: public Math::Vector3<T> {
         inline constexpr /*implicit*/ Color3(T r, T g, T b): Math::Vector3<T>(r, g, b) {}
 
         /** @brief Copy constructor */
-        inline constexpr Color3(const Math::RectangularMatrix<1, 3, T>& other): Math::Vector3<T>(other) {}
+        inline constexpr Color3(const Math::Vector<3, T>& other): Math::Vector3<T>(other) {}
 
         inline T& r() { return Math::Vector3<T>::x(); }                 /**< @brief R component */
         inline constexpr T r() const { return Math::Vector3<T>::x(); }  /**< @overload */
@@ -252,7 +251,6 @@ class Color3: public Math::Vector3<T> {
         }
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Color3, 3)
-        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 3, Color3<T>)
 };
 
 MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Color3, 3)
@@ -325,7 +323,7 @@ class Color4: public Math::Vector4<T> {
         inline constexpr /*implicit*/ Color4(const Math::Vector3<T>& rgb, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
 
         /** @brief Copy constructor */
-        inline constexpr Color4(const Math::RectangularMatrix<1, 4, T>& other): Math::Vector4<T>(other) {}
+        inline constexpr Color4(const Math::Vector<4, T>& other): Math::Vector4<T>(other) {}
 
         inline T& r() { return Math::Vector4<T>::x(); }                 /**< @brief R component */
         inline constexpr T r() const { return Math::Vector4<T>::x(); }  /**< @overload */
@@ -366,7 +364,6 @@ class Color4: public Math::Vector4<T> {
         }
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Color4, 4)
-        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 4, Color4<T>)
 };
 
 MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Color4, 4)

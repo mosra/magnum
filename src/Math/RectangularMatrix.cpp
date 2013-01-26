@@ -18,21 +18,6 @@
 namespace Magnum { namespace Math {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<1, 2, float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<1, 3, float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<1, 4, float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<1, 2, int>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<1, 3, int>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<1, 4, int>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<1, 2, unsigned int>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<1, 3, unsigned int>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<1, 4, unsigned int>&);
-#ifndef MAGNUM_TARGET_GLES
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<1, 2, double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<1, 3, double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<1, 4, double>&);
-#endif
-
 template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<2, 2, float>&);
 template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<3, 3, float>&);
 template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<4, 4, float>&);
@@ -63,21 +48,6 @@ template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnu
 namespace Corrade { namespace Utility {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<1, 2, float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<1, 3, float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<1, 4, float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<1, 2, int>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<1, 3, int>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<1, 4, int>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<1, 2, unsigned int>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<1, 3, unsigned int>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<1, 4, unsigned int>>;
-#ifndef MAGNUM_TARGET_GLES
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<1, 2, double>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<1, 3, double>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<1, 4, double>>;
-#endif
-
 template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 2, float>>;
 template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 3, float>>;
 template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 4, float>>;

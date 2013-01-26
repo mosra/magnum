@@ -35,3 +35,25 @@ template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnu
 #endif
 
 }}
+
+namespace Corrade { namespace Utility {
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template struct ConfigurationValue<Magnum::Math::Vector<2, float>>;
+template struct ConfigurationValue<Magnum::Math::Vector<3, float>>;
+template struct ConfigurationValue<Magnum::Math::Vector<4, float>>;
+template struct ConfigurationValue<Magnum::Math::Vector<2, int>>;
+template struct ConfigurationValue<Magnum::Math::Vector<3, int>>;
+template struct ConfigurationValue<Magnum::Math::Vector<4, int>>;
+template struct ConfigurationValue<Magnum::Math::Vector<2, unsigned int>>;
+template struct ConfigurationValue<Magnum::Math::Vector<3, unsigned int>>;
+template struct ConfigurationValue<Magnum::Math::Vector<4, unsigned int>>;
+#ifndef MAGNUM_TARGET_GLES
+template struct ConfigurationValue<Magnum::Math::Vector<2, double>>;
+template struct ConfigurationValue<Magnum::Math::Vector<3, double>>;
+template struct ConfigurationValue<Magnum::Math::Vector<4, double>>;
+#endif
+#endif
+
+}}
+

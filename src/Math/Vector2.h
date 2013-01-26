@@ -85,7 +85,7 @@ template<class T> class Vector2: public Vector<2, T> {
         inline constexpr /*implicit*/ Vector2(T x, T y): Vector<2, T>(x, y) {}
 
         /** @brief Copy constructor */
-        inline constexpr Vector2(const RectangularMatrix<1, 2, T>& other): Vector<2, T>(other) {}
+        inline constexpr Vector2(const Vector<2, T>& other): Vector<2, T>(other) {}
 
         inline T& x() { return (*this)[0]; }                /**< @brief X component */
         inline constexpr T x() const { return (*this)[0]; } /**< @overload */
@@ -93,7 +93,6 @@ template<class T> class Vector2: public Vector<2, T> {
         inline constexpr T y() const { return (*this)[1]; } /**< @overload */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector2, 2)
-        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 2, Vector2<T>)
 };
 
 MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Vector2, 2)

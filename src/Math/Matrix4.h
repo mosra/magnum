@@ -43,12 +43,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *      Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()
          */
         inline constexpr static Matrix4<T> translation(const Vector3<T>& vector) {
-            return Matrix4<T>( /* Column-major! */
-                T(1), T(0), T(0), T(0),
-                T(0), T(1), T(0), T(0),
-                T(0), T(0), T(1), T(0),
-                vector.x(), vector.y(), vector.z(), T(1)
-            );
+            return {{      T(1),       T(0),       T(0), T(0)},
+                    {      T(0),       T(1),       T(0), T(0)},
+                    {      T(0),       T(0),       T(1), T(0)},
+                    {vector.x(), vector.y(), vector.z(), T(1)}};
         }
 
         /**
@@ -59,12 +57,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *      Vector3::xScale(), Vector3::yScale(), Vector3::zScale()
          */
         inline constexpr static Matrix4<T> scaling(const Vector3<T>& vector) {
-            return Matrix4<T>( /* Column-major! */
-                vector.x(), T(0), T(0), T(0),
-                T(0), vector.y(), T(0), T(0),
-                T(0), T(0), vector.z(), T(0),
-                T(0), T(0), T(0), T(1)
-            );
+            return {{vector.x(),       T(0),       T(0), T(0)},
+                    {      T(0), vector.y(),       T(0), T(0)},
+                    {      T(0),       T(0), vector.z(), T(0)},
+                    {      T(0),       T(0),       T(0), T(1)}};
         }
 
         /**
@@ -92,21 +88,21 @@ template<class T> class Matrix4: public Matrix<4, T> {
             T yz = normalizedAxis.y()*normalizedAxis.z();
             T zz = normalizedAxis.z()*normalizedAxis.z();
 
-            return Matrix4<T>( /* Column-major! */
-                cosine + xx*oneMinusCosine,
+            return {
+                {cosine + xx*oneMinusCosine,
                     xy*oneMinusCosine + normalizedAxis.z()*sine,
                         xz*oneMinusCosine - normalizedAxis.y()*sine,
-                           T(0),
-                xy*oneMinusCosine - normalizedAxis.z()*sine,
+                           T(0)},
+                {xy*oneMinusCosine - normalizedAxis.z()*sine,
                     cosine + yy*oneMinusCosine,
                         yz*oneMinusCosine + normalizedAxis.x()*sine,
-                           T(0),
-                xz*oneMinusCosine + normalizedAxis.y()*sine,
+                           T(0)},
+                {xz*oneMinusCosine + normalizedAxis.y()*sine,
                     yz*oneMinusCosine - normalizedAxis.x()*sine,
                         cosine + zz*oneMinusCosine,
-                           T(0),
-                T(0), T(0), T(0), T(1)
-            );
+                           T(0)},
+                {T(0), T(0), T(0), T(1)}
+            };
         }
 
         /**
@@ -121,12 +117,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
             T sine = std::sin(angle);
             T cosine = std::cos(angle);
 
-            return Matrix4<T>( /* Column-major! */
-                T(1), T(0), T(0), T(0),
-                T(0), cosine, sine, T(0),
-                T(0), -sine, cosine, T(0),
-                T(0), T(0), T(0), T(1)
-            );
+            return {{T(1),   T(0),   T(0), T(0)},
+                    {T(0), cosine,   sine, T(0)},
+                    {T(0),  -sine, cosine, T(0)},
+                    {T(0),   T(0),   T(0), T(1)}};
         }
 
         /**
@@ -141,12 +135,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
             T sine = std::sin(angle);
             T cosine = std::cos(angle);
 
-            return Matrix4<T>( /* Column-major! */
-                cosine, T(0), -sine, T(0),
-                T(0), T(1), T(0), T(0),
-                sine, T(0), cosine, T(0),
-                T(0), T(0), T(0), T(1)
-            );
+            return {{cosine, T(0),  -sine, T(0)},
+                    {  T(0), T(1),   T(0), T(0)},
+                    {  sine, T(0), cosine, T(0)},
+                    {  T(0), T(0),   T(0), T(1)}};
         }
 
         /**
@@ -161,12 +153,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
             T sine = std::sin(angle);
             T cosine = std::cos(angle);
 
-            return Matrix4<T>( /* Column-major! */
-                cosine, sine, T(0), T(0),
-                -sine, cosine, T(0), T(0),
-                T(0), T(0), T(1), T(0),
-                T(0), T(0), T(0), T(1)
-            );
+            return {{cosine,   sine, T(0), T(0)},
+                    { -sine, cosine, T(0), T(0)},
+                    {  T(0),   T(0), T(1), T(0)},
+                    {  T(0),   T(0), T(0), T(1)}};
         }
 
         /**
@@ -179,7 +169,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
         static Matrix4<T> reflection(const Vector3<T>& normal) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normal.dot(), T(1)),
                            "Math::Matrix4::reflection(): normal must be normalized", {});
-            return from(Matrix<3, T>() - T(2)*normal*normal.transposed(), {});
+            return from(Matrix<3, T>() - T(2)*normal*RectangularMatrix<1, 3, T>(normal).transposed(), {});
         }
 
         /**
@@ -194,12 +184,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
             Vector2<T> xyScale = T(2.0)/size;
             T zScale = T(2.0)/(near-far);
 
-            return Matrix4<T>( /* Column-major! */
-                xyScale.x(),    T(0.0),         T(0.0),         T(0.0),
-                T(0.0),         xyScale.y(),    T(0.0),         T(0.0),
-                T(0.0),         T(0.0),         zScale,         T(0.0),
-                T(0.0),         T(0.0),         near*zScale-1,  T(1.0)
-            );
+            return {{xyScale.x(),        T(0),             T(0), T(0)},
+                    {       T(0), xyScale.y(),             T(0), T(0)},
+                    {       T(0),        T(0),           zScale, T(0)},
+                    {       T(0),        T(0), near*zScale-T(1), T(1)}};
         }
 
         /**
@@ -214,12 +202,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
             Vector2<T> xyScale = 2*near/size;
             T zScale = T(1.0)/(near-far);
 
-            return Matrix4<T>( /* Column-major! */
-                xyScale.x(), T(0.0),      T(0.0),               T(0.0),
-                T(0.0),      xyScale.y(), T(0.0),               T(0.0),
-                T(0.0),      T(0.0),      (far+near)*zScale,    T(-1.0),
-                T(0.0),      T(0.0),      (2*far*near)*zScale,  T(0.0)
-            );
+            return {{xyScale.x(),        T(0),                 T(0),  T(0)},
+                    {       T(0), xyScale.y(),                 T(0),  T(0)},
+                    {       T(0),        T(0),    (far+near)*zScale, T(-1)},
+                    {       T(0),        T(0), T(2)*far*near*zScale,  T(0)}};
         }
 
         /**
@@ -247,12 +233,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @see rotationScaling() const, translation() const
          */
         static Matrix4<T> from(const Matrix<3, T>& rotationScaling, const Vector3<T>& translation) {
-            return from(
-                Vector4<T>(rotationScaling[0], T(0)),
-                Vector4<T>(rotationScaling[1], T(0)),
-                Vector4<T>(rotationScaling[2], T(0)),
-                Vector4<T>(translation, T(1))
-            );
+            return {{rotationScaling[0], T(0)},
+                    {rotationScaling[1], T(0)},
+                    {rotationScaling[2], T(0)},
+                    {       translation, T(1)}};
         }
 
         /** @copydoc Matrix::Matrix(ZeroType) */
@@ -260,14 +244,14 @@ template<class T> class Matrix4: public Matrix<4, T> {
 
         /** @copydoc Matrix::Matrix(IdentityType, T) */
         inline constexpr /*implicit*/ Matrix4(typename Matrix<4, T>::IdentityType = (Matrix<4, T>::Identity), T value = T(1)): Matrix<4, T>(
-            value, T(0), T(0), T(0),
-            T(0), value, T(0), T(0),
-            T(0), T(0), value, T(0),
-            T(0), T(0), T(0), value
+            Vector<4, T>(value,  T(0),  T(0),  T(0)),
+            Vector<4, T>( T(0), value,  T(0),  T(0)),
+            Vector<4, T>( T(0),  T(0), value,  T(0)),
+            Vector<4, T>( T(0),  T(0),  T(0), value)
         ) {}
 
-        /** @copydoc Matrix::Matrix */
-        template<class ...U> inline constexpr /*implicit*/ Matrix4(T first, U... next): Matrix<4, T>(first, next...) {}
+        /** @brief %Matrix from column vectors */
+        inline constexpr /*implicit*/ Matrix4(const Vector4<T>& first, const Vector4<T>& second, const Vector4<T>& third, const Vector4<T>& fourth): Matrix<4, T>(first, second, third, fourth) {}
 
         /** @brief Copy constructor */
         inline constexpr Matrix4(const RectangularMatrix<4, 4, T>& other): Matrix<4, T>(other) {}
@@ -281,10 +265,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
          */
         inline Matrix<3, T> rotationScaling() const {
             /* Not Matrix3, because it is for affine 2D transformations */
-            return Matrix<3, T>::from(
-                (*this)[0].xyz(),
-                (*this)[1].xyz(),
-                (*this)[2].xyz());
+            return {(*this)[0].xyz(),
+                    (*this)[1].xyz(),
+                    (*this)[2].xyz()};
         }
 
         /**
@@ -296,10 +279,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
          */
         inline Matrix<3, T> rotation() const {
             /* Not Matrix3, because it is for affine 2D transformations */
-            return Matrix<3, T>::from(
-                (*this)[0].xyz().normalized(),
-                (*this)[1].xyz().normalized(),
-                (*this)[2].xyz().normalized());
+            return {(*this)[0].xyz().normalized(),
+                    (*this)[1].xyz().normalized(),
+                    (*this)[2].xyz().normalized()};
         }
 
         /**
@@ -349,7 +331,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @see rotationScaling() const, translation() const
          */
         inline Matrix4<T> invertedEuclidean() const {
-            CORRADE_ASSERT((*this)(0, 3) == T(0) && (*this)(1, 3) == T(0) && (*this)(2, 3) == T(0) && (*this)(3, 3) == T(1),
+            CORRADE_ASSERT((*this)[0][3] == T(0) && (*this)[1][3] == T(0) && (*this)[2][3] == T(0) && (*this)[3][3] == T(1),
                 "Math::Matrix4::invertedEuclidean(): unexpected values on last row", {});
             Matrix<3, T> inverseRotation = rotationScaling().transposed();
             CORRADE_ASSERT((inverseRotation*rotationScaling() == Matrix<3, T>()),
@@ -363,9 +345,11 @@ template<class T> class Matrix4: public Matrix<4, T> {
         }
         #endif
 
+        MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(4, 4, Matrix4<T>)
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix4, Vector4, 4)
-        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(4, 4, Matrix4<T>)
 };
+
+MAGNUM_MATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(Matrix4, 4)
 
 /** @debugoperator{Magnum::Math::Matrix4} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Matrix4<T>& value) {

@@ -29,6 +29,7 @@ class GaussJordanTest: public Corrade::TestSuite::Tester {
 };
 
 typedef Matrix<4, float> Matrix4;
+typedef Vector<4, float> Vector4;
 
 GaussJordanTest::GaussJordanTest() {
     addTests(&GaussJordanTest::singular,
@@ -36,25 +37,25 @@ GaussJordanTest::GaussJordanTest() {
 }
 
 void GaussJordanTest::singular() {
-    Matrix4 a(1.0f, 2.0f, 3.0f, 4.0f,
-              2.0f, 3.0f, -7.0f, 11.0f,
-              2.0f, 4.0f, 6.0f, 8.0f,
-              1.0f, 2.0f, 7.0f, 40.0f);
+    Matrix4 a(Vector4(1.0f, 2.0f,  3.0f,  4.0f),
+              Vector4(2.0f, 3.0f, -7.0f, 11.0f),
+              Vector4(2.0f, 4.0f,  6.0f,  8.0f),
+              Vector4(1.0f, 2.0f,  7.0f, 40.0f));
     RectangularMatrix<4, 1, float> t;
 
     CORRADE_VERIFY(!GaussJordan::inPlaceTransposed(a, t));
 }
 
 void GaussJordanTest::invert() {
-    Matrix4 a(3.0f, 5.0f, 8.0f, 4.0f,
-              4.0f, 4.0f, 7.0f, 3.0f,
-              7.0f, -1.0f, 8.0f, 0.0f,
-              9.0f, 4.0f, 5.0f, 9.0f);
+    Matrix4 a(Vector4(3.0f,  5.0f, 8.0f, 4.0f),
+              Vector4(4.0f,  4.0f, 7.0f, 3.0f),
+              Vector4(7.0f, -1.0f, 8.0f, 0.0f),
+              Vector4(9.0f,  4.0f, 5.0f, 9.0f));
 
-    Matrix4 expectedInverse(-60/103.0f, 71/103.0f,  -4/103.0f,   3/103.0f,
-                            -66/103.0f, 109/103.0f, -25/103.0f, -7/103.0f,
-                            177/412.0f, -97/206.0f,  53/412.0f, -7/206.0f,
-                            259/412.0f, -185/206.0f, 31/412.0f,  27/206.0f);
+    Matrix4 expectedInverse(Vector4(-60/103.0f,   71/103.0f,  -4/103.0f,  3/103.0f),
+                            Vector4(-66/103.0f,  109/103.0f, -25/103.0f, -7/103.0f),
+                            Vector4(177/412.0f,  -97/206.0f,  53/412.0f, -7/206.0f),
+                            Vector4(259/412.0f, -185/206.0f,  31/412.0f, 27/206.0f));
 
     Matrix4 a2(a);
     Matrix4 inverse(Matrix4::Identity);

@@ -34,11 +34,9 @@ GramSchmidtTest::GramSchmidtTest() {
 }
 
 void GramSchmidtTest::test() {
-    Matrix3 m(
-        3.0f, 5.0f, 8.0f,
-        4.0f, 4.0f, 7.0f,
-        7.0f, -1.0f, 8.0f
-    );
+    Matrix3 m(Vector3(3.0f,  5.0f, 8.0f),
+              Vector3(4.0f,  4.0f, 7.0f),
+              Vector3(7.0f, -1.0f, 8.0f));
 
     Matrix3 normalized = Algorithms::gramSchmidt(m);
 
@@ -56,9 +54,9 @@ void GramSchmidtTest::test() {
     CORRADE_COMPARE(Vector3::dot(normalized[1], normalized[2]), 0.0f);
 
     /* Just to be sure */
-    Matrix3 expected( 0.303046f,  0.505076f,  0.808122f,
-                      0.928316f, -0.348119f, -0.130544f,
-                     -0.215388f, -0.789754f,  0.574367f);
+    Matrix3 expected(Vector3( 0.303046f,  0.505076f,  0.808122f),
+                     Vector3( 0.928316f, -0.348119f, -0.130544f),
+                     Vector3(-0.215388f, -0.789754f,  0.574367f));
     CORRADE_COMPARE(normalized, expected);
 }
 

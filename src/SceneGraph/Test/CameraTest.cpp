@@ -75,27 +75,27 @@ void CameraTest::fixAspectRatio() {
     CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::NotPreserved, projectionScale, size)), Matrix4());
 
     /* Clip */
-    Matrix4 expectedClip(1.0f, 0.0f,      0.0f, 0.0f,
-                         0.0f, 4.0f/3.0f, 0.0f, 0.0f,
-                         0.0f, 0.0f,      1.0f, 0.0f,
-                         0.0f, 0.0f,      0.0f, 1.0f);
+    Matrix4 expectedClip({1.0f,      0.0f, 0.0f, 0.0f},
+                         {0.0f, 4.0f/3.0f, 0.0f, 0.0f},
+                         {0.0f,      0.0f, 1.0f, 0.0f},
+                         {0.0f,      0.0f, 0.0f, 1.0f});
     CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Clip, Vector2(0.5f), size)), expectedClip);
-    Matrix4 expectedClipRectangle(1.0f, 0.0f, 0.0f, 0.0f,
-                                  0.0f, 2.0f, 0.0f, 0.0f,
-                                  0.0f, 0.0f, 1.0f, 0.0f,
-                                  0.0f, 0.0f, 0.0f, 1.0f);
+    Matrix4 expectedClipRectangle({1.0f, 0.0f, 0.0f, 0.0f},
+                                  {0.0f, 2.0f, 0.0f, 0.0f},
+                                  {0.0f, 0.0f, 1.0f, 0.0f},
+                                  {0.0f, 0.0f, 0.0f, 1.0f});
     CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Clip, projectionScale, size)), expectedClipRectangle);
 
     /* Extend */
-    Matrix4 expectedExtend(3.0f/4.0f, 0.0f, 0.0f, 0.0f,
-                           0.0f,      1.0f, 0.0f, 0.0f,
-                           0.0f,      0.0f, 1.0f, 0.0f,
-                           0.0f,      0.0f, 0.0f, 1.0f);
+    Matrix4 expectedExtend({3.0f/4.0f, 0.0f, 0.0f, 0.0f},
+                           {     0.0f, 1.0f, 0.0f, 0.0f},
+                           {     0.0f, 0.0f, 1.0f, 0.0f},
+                           {     0.0f, 0.0f, 0.0f, 1.0f});
     CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Extend, Vector2(0.5f), size)), expectedExtend);
-    Matrix4 expectedExtendRectangle(0.5f, 0.0f, 0.0f, 0.0f,
-                                    0.0f, 1.0f, 0.0f, 0.0f,
-                                    0.0f, 0.0f, 1.0f, 0.0f,
-                                    0.0f, 0.0f, 0.0f, 1.0f);
+    Matrix4 expectedExtendRectangle({0.5f, 0.0f, 0.0f, 0.0f},
+                                    {0.0f, 1.0f, 0.0f, 0.0f},
+                                    {0.0f, 0.0f, 1.0f, 0.0f},
+                                    {0.0f, 0.0f, 0.0f, 1.0f});
     CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Extend, projectionScale, size)), expectedExtendRectangle);
 }
 

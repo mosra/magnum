@@ -76,7 +76,7 @@ template<std::size_t size, std::size_t cols, class T> bool GaussJordan::inPlaceT
         /* Find max pivot */
         std::size_t rowMax = row;
         for(std::size_t row2 = row+1; row2 != size; ++row2)
-            if(std::abs(a(row2, row)) > std::abs(a(rowMax, row)))
+            if(std::abs(a[row2][row]) > std::abs(a[rowMax][row]))
                 rowMax = row2;
 
         /* Swap the rows */
@@ -84,12 +84,12 @@ template<std::size_t size, std::size_t cols, class T> bool GaussJordan::inPlaceT
         std::swap(t[row], t[rowMax]);
 
         /* Singular */
-        if(MathTypeTraits<T>::equals(a(row, row), 0))
+        if(MathTypeTraits<T>::equals(a[row][row], T(0)))
             return false;
 
         /* Eliminate column */
         for(std::size_t row2 = row+1; row2 != size; ++row2) {
-            T c = a(row2, row)/a(row, row);
+            T c = a[row2][row]/a[row][row];
 
             a[row2] -= a[row]*c;
             t[row2] -= t[row]*c;
@@ -98,10 +98,10 @@ template<std::size_t size, std::size_t cols, class T> bool GaussJordan::inPlaceT
 
     /* Backsubstitute */
     for(std::size_t row = size; row != 0; --row) {
-        T c = T(1)/a(row-1, row-1);
+        T c = T(1)/a[row-1][row-1];
 
         for(std::size_t row2 = 0; row2 != row-1; ++row2)
-            t[row2] -= t[row-1]*a(row2, row-1)*c;
+            t[row2] -= t[row-1]*a[row2][row-1]*c;
 
         /* Normalize the row */
         t[row-1] *= c;

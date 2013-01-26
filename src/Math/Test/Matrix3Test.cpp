@@ -70,17 +70,13 @@ void Matrix3Test::constructIdentity() {
     Matrix3 identity2(Matrix3::Identity);
     Matrix3 identity3(Matrix3::Identity, 4.0f);
 
-    Matrix3 identityExpected(
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f
-    );
+    Matrix3 identityExpected({1.0f, 0.0f, 0.0f},
+                             {0.0f, 1.0f, 0.0f},
+                             {0.0f, 0.0f, 1.0f});
 
-    Matrix3 identity3Expected(
-        4.0f, 0.0f, 0.0f,
-        0.0f, 4.0f, 0.0f,
-        0.0f, 0.0f, 4.0f
-    );
+    Matrix3 identity3Expected({4.0f, 0.0f, 0.0f},
+                              {0.0f, 4.0f, 0.0f},
+                              {0.0f, 0.0f, 4.0f});
 
     CORRADE_COMPARE(identity, identityExpected);
     CORRADE_COMPARE(identity2, identityExpected);
@@ -88,31 +84,25 @@ void Matrix3Test::constructIdentity() {
 }
 
 void Matrix3Test::translation() {
-    Matrix3 matrix(
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        3.0f, 1.0f, 1.0f
-    );
+    Matrix3 matrix({1.0f, 0.0f, 0.0f},
+                   {0.0f, 1.0f, 0.0f},
+                   {3.0f, 1.0f, 1.0f});
 
     CORRADE_COMPARE(Matrix3::translation({3.0f, 1.0f}), matrix);
 }
 
 void Matrix3Test::scaling() {
-    Matrix3 matrix(
-        3.0f, 0.0f, 0.0f,
-        0.0f, 1.5f, 0.0f,
-        0.0f, 0.0f, 1.0f
-    );
+    Matrix3 matrix({3.0f, 0.0f, 0.0f},
+                   {0.0f, 1.5f, 0.0f},
+                   {0.0f, 0.0f, 1.0f});
 
     CORRADE_COMPARE(Matrix3::scaling({3.0f, 1.5f}), matrix);
 }
 
 void Matrix3Test::rotation() {
-    Matrix3 matrix(
-        0.965926f, 0.258819f, 0.0f,
-        -0.258819f, 0.965926f, 0.0f,
-        0.0f, 0.0f, 1.0f
-    );
+    Matrix3 matrix({ 0.965926f, 0.258819f, 0.0f},
+                   {-0.258819f, 0.965926f, 0.0f},
+                   {      0.0f,      0.0f, 1.0f});
 
     CORRADE_COMPARE(Matrix3::rotation(deg(15.0f)), matrix);
 }
@@ -127,11 +117,9 @@ void Matrix3Test::reflection() {
     CORRADE_COMPARE(o.str(), "Math::Matrix3::reflection(): normal must be normalized\n");
 
     Matrix3 actual = Matrix3::reflection(normal.normalized());
-    Matrix3 expected(
-        0.6f,  0.8f, 0.0f,
-        0.8f, -0.6f, 0.0f,
-        0.0f,  0.0f, 1.0f
-    );
+    Matrix3 expected({0.6f,  0.8f, 0.0f},
+                     {0.8f, -0.6f, 0.0f},
+                     {0.0f,  0.0f, 1.0f});
 
     CORRADE_COMPARE(actual*actual, Matrix3());
     CORRADE_COMPARE(actual*normal, -normal);
@@ -139,50 +127,40 @@ void Matrix3Test::reflection() {
 }
 
 void Matrix3Test::projection() {
-    Matrix3 expected(2.0f/4.0f,    0.0f,       0.0f,
-                     0.0f,         2.0f/3.0f,  0.0f,
-                     0.0f,         0.0f,       1.0f);
+    Matrix3 expected({2.0f/4.0f,      0.0f, 0.0f},
+                     {     0.0f, 2.0f/3.0f, 0.0f},
+                     {     0.0f,      0.0f, 1.0f});
 
     CORRADE_COMPARE(Matrix3::projection({4.0f, 3.0f}), expected);
 }
 
 void Matrix3Test::fromParts() {
-    Matrix2 rotationScaling(
-        3.0f, 5.0f,
-        4.0f, 4.0f
-    );
+    Matrix2 rotationScaling(Vector2(3.0f, 5.0f),
+                            Vector2(4.0f, 4.0f));
 
     Vector2 translation(7.0f, -1.0f);
 
-    Matrix3 expected(
-        3.0f, 5.0f, 0.0f,
-        4.0f, 4.0f, 0.0f,
-        7.0f, -1.0f, 1.0f
-    );
+    Matrix3 expected({3.0f,  5.0f, 0.0f},
+                     {4.0f,  4.0f, 0.0f},
+                     {7.0f, -1.0f, 1.0f});
 
     CORRADE_COMPARE(Matrix3::from(rotationScaling, translation), expected);
 }
 
 void Matrix3Test::rotationScalingPart() {
-    Matrix3 m(
-        3.0f, 5.0f, 8.0f,
-        4.0f, 4.0f, 7.0f,
-        7.0f, -1.0f, 8.0f
-    );
+    Matrix3 m({3.0f,  5.0f, 8.0f},
+              {4.0f,  4.0f, 7.0f},
+              {7.0f, -1.0f, 8.0f});
 
-    Matrix2 expected(
-        3.0f, 5.0f,
-        4.0f, 4.0f
-    );
+    Matrix2 expected(Vector2(3.0f, 5.0f),
+                     Vector2(4.0f, 4.0f));
 
     CORRADE_COMPARE(m.rotationScaling(), expected);
 }
 
 void Matrix3Test::rotationPart() {
-    Matrix2 expectedRotationPart(
-        0.965926f, 0.258819f,
-        -0.258819f, 0.965926f
-    );
+    Matrix2 expectedRotationPart(Vector2( 0.965926f, 0.258819f),
+                                 Vector2(-0.258819f, 0.965926f));
 
     Matrix3 rotation = Matrix3::rotation(deg(15.0f));
     CORRADE_COMPARE(rotation.rotation(), expectedRotationPart);
@@ -192,9 +170,9 @@ void Matrix3Test::rotationPart() {
 }
 
 void Matrix3Test::vectorParts() {
-    Matrix3 m(15.0f, 0.0f, 0.0f,
-              0.0f, -3.0f, 0.0f,
-              -5.0f, 12.0f, 1.0f);
+    Matrix3 m({15.0f,  0.0f, 0.0f},
+              { 0.0f, -3.0f, 0.0f},
+              {-5.0f, 12.0f, 1.0f});
 
     CORRADE_COMPARE(m.right(), Vector2::xAxis(15.0f));
     CORRADE_COMPARE(m.up(), Vector2::yAxis(-3.0f));
@@ -205,11 +183,9 @@ void Matrix3Test::invertedEuclidean() {
     std::ostringstream o;
     Error::setOutput(&o);
 
-    Matrix3 m(
-        3.0f, 5.0f, 8.0f,
-        4.0f, 4.0f, 7.0f,
-        7.0f, -1.0f, 8.0f
-    );
+    Matrix3 m({3.0f,  5.0f, 8.0f},
+              {4.0f,  4.0f, 7.0f},
+              {7.0f, -1.0f, 8.0f});
     CORRADE_COMPARE(m.invertedEuclidean(), Matrix3());
     CORRADE_COMPARE(o.str(), "Math::Matrix3::invertedEuclidean(): unexpected values on last row\n");
 
@@ -229,11 +205,9 @@ void Matrix3Test::invertedEuclidean() {
 }
 
 void Matrix3Test::debug() {
-    Matrix3 m(
-        3.0f, 5.0f, 8.0f,
-        4.0f, 4.0f, 7.0f,
-        7.0f, -1.0f, 8.0f
-    );
+    Matrix3 m({3.0f,  5.0f, 8.0f},
+              {4.0f,  4.0f, 7.0f},
+              {7.0f, -1.0f, 8.0f});
 
     std::ostringstream o;
     Debug(&o) << m;
@@ -245,11 +219,9 @@ void Matrix3Test::debug() {
 void Matrix3Test::configuration() {
     Configuration c;
 
-    Matrix3 m(
-        5.0f, 8.0f, 4.0f,
-        4.0f, 7.0f, 3.125f,
-        4.0f, 5.0f, 9.55f
-    );
+    Matrix3 m({5.0f, 8.0f,   4.0f},
+              {4.0f, 7.0f, 3.125f},
+              {4.0f, 5.0f,  9.55f});
     std::string value("5 4 4 8 7 5 4 3.125 9.55");
 
     c.setValue("matrix", m);

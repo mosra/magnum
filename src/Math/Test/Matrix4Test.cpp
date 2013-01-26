@@ -80,19 +80,15 @@ void Matrix4Test::constructIdentity() {
     Matrix4 identity2(Matrix4::Identity);
     Matrix4 identity3(Matrix4::Identity, 4.0f);
 
-    Matrix4 identityExpected(
-        1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
-    );
+    Matrix4 identityExpected({1.0f, 0.0f, 0.0f, 0.0f},
+                             {0.0f, 1.0f, 0.0f, 0.0f},
+                             {0.0f, 0.0f, 1.0f, 0.0f},
+                             {0.0f, 0.0f, 0.0f, 1.0f});
 
-    Matrix4 identity3Expected(
-        4.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 4.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 4.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 4.0f
-    );
+    Matrix4 identity3Expected({4.0f, 0.0f, 0.0f, 0.0f},
+                              {0.0f, 4.0f, 0.0f, 0.0f},
+                              {0.0f, 0.0f, 4.0f, 0.0f},
+                              {0.0f, 0.0f, 0.0f, 4.0f});
 
     CORRADE_COMPARE(identity, identityExpected);
     CORRADE_COMPARE(identity2, identityExpected);
@@ -100,23 +96,19 @@ void Matrix4Test::constructIdentity() {
 }
 
 void Matrix4Test::translation() {
-    Matrix4 matrix(
-        1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        3.0f, 1.0f, 2.0f, 1.0f
-    );
+    Matrix4 matrix({1.0f, 0.0f, 0.0f, 0.0f},
+                   {0.0f, 1.0f, 0.0f, 0.0f},
+                   {0.0f, 0.0f, 1.0f, 0.0f},
+                   {3.0f, 1.0f, 2.0f, 1.0f});
 
     CORRADE_COMPARE(Matrix4::translation({3.0f, 1.0f, 2.0f}), matrix);
 }
 
 void Matrix4Test::scaling() {
-    Matrix4 matrix(
-        3.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.5f, 0.0f, 0.0f,
-        0.0f, 0.0f, 2.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
-    );
+    Matrix4 matrix({3.0f, 0.0f, 0.0f, 0.0f},
+                   {0.0f, 1.5f, 0.0f, 0.0f},
+                   {0.0f, 0.0f, 2.0f, 0.0f},
+                   {0.0f, 0.0f, 0.0f, 1.0f});
 
     CORRADE_COMPARE(Matrix4::scaling({3.0f, 1.5f, 2.0f}), matrix);
 }
@@ -128,38 +120,36 @@ void Matrix4Test::rotation() {
     CORRADE_COMPARE(Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f}), Matrix4());
     CORRADE_COMPARE(o.str(), "Math::Matrix4::rotation(): axis must be normalized\n");
 
-    Matrix4 matrix(
-         0.35612214f, -0.80181062f,   0.47987163f, 0.0f,
-         0.47987163f,  0.59757638f,   0.6423595f,  0.0f,
-        -0.80181062f,  0.0015183985f, 0.59757638f, 0.0f,
-         0.0f,         0.0f,          0.0f,        1.0f
-    );
+    Matrix4 matrix({ 0.35612214f,  -0.80181062f, 0.47987163f, 0.0f},
+                   { 0.47987163f,   0.59757638f,  0.6423595f, 0.0f},
+                   {-0.80181062f, 0.0015183985f, 0.59757638f, 0.0f},
+                   {        0.0f,          0.0f,        0.0f, 1.0f});
     CORRADE_COMPARE(Matrix4::rotation(deg(-74.0f), Vector3(-1.0f, 2.0f, 2.0f).normalized()), matrix);
 }
 
 void Matrix4Test::rotationX() {
-    Matrix4 matrix(1.0f,  0.0f,        0.0f,        0.0f,
-                   0.0f,  0.90096887f, 0.43388374f, 0.0f,
-                   0.0f, -0.43388374f, 0.90096887f, 0.0f,
-                   0.0f,  0.0f,        0.0f,        1.0f);
+    Matrix4 matrix({1.0f,         0.0f,        0.0f, 0.0f},
+                   {0.0f,  0.90096887f, 0.43388374f, 0.0f},
+                   {0.0f, -0.43388374f, 0.90096887f, 0.0f},
+                   {0.0f,         0.0f,        0.0f, 1.0f});
     CORRADE_COMPARE(Matrix4::rotation(rad(Math::Constants<float>::pi()/7), Vector3::xAxis()), matrix);
     CORRADE_COMPARE(Matrix4::rotationX(rad(Math::Constants<float>::pi()/7)), matrix);
 }
 
 void Matrix4Test::rotationY() {
-    Matrix4 matrix(0.90096887f, 0.0f, -0.43388374f, 0.0f,
-                   0.0f,        1.0f,  0.0f,        0.0f,
-                   0.43388374f, 0.0f,  0.90096887f, 0.0f,
-                   0.0f,        0.0f,  0.0f,        1.0f);
+    Matrix4 matrix({0.90096887f, 0.0f, -0.43388374f, 0.0f},
+                   {       0.0f, 1.0f,         0.0f, 0.0f},
+                   {0.43388374f, 0.0f,  0.90096887f, 0.0f},
+                   {       0.0f, 0.0f,         0.0f, 1.0f});
     CORRADE_COMPARE(Matrix4::rotation(rad(Math::Constants<float>::pi()/7), Vector3::yAxis()), matrix);
     CORRADE_COMPARE(Matrix4::rotationY(rad(Math::Constants<float>::pi()/7)), matrix);
 }
 
 void Matrix4Test::rotationZ() {
-    Matrix4 matrix( 0.90096887f, 0.43388374f, 0.0f, 0.0f,
-                   -0.43388374f, 0.90096887f, 0.0f, 0.0f,
-                    0.0f,        0.0f,        1.0f, 0.0f,
-                    0.0f,        0.0f,        0.0f, 1.0f);
+    Matrix4 matrix({ 0.90096887f, 0.43388374f, 0.0f, 0.0f},
+                   {-0.43388374f, 0.90096887f, 0.0f, 0.0f},
+                   {        0.0f,        0.0f, 1.0f, 0.0f},
+                   {        0.0f,        0.0f, 0.0f, 1.0f});
     CORRADE_COMPARE(Matrix4::rotation(rad(Math::Constants<float>::pi()/7), Vector3::zAxis()), matrix);
     CORRADE_COMPARE(Matrix4::rotationZ(rad(Math::Constants<float>::pi()/7)), matrix);
 }
@@ -174,12 +164,10 @@ void Matrix4Test::reflection() {
     CORRADE_COMPARE(o.str(), "Math::Matrix4::reflection(): normal must be normalized\n");
 
     Matrix4 actual = Matrix4::reflection(normal.normalized());
-    Matrix4 expected(
-        0.777778f,  0.444444f,  0.444444f, 0.0f,
-        0.444444f,  0.111111f, -0.888889f, 0.0f,
-        0.444444f, -0.888889f,  0.111111f, 0.0f,
-        0.0f,       0.0f,       0.0f,      1.0f
-    );
+    Matrix4 expected({0.777778f,  0.444444f,  0.444444f, 0.0f},
+                     {0.444444f,  0.111111f, -0.888889f, 0.0f},
+                     {0.444444f, -0.888889f,  0.111111f, 0.0f},
+                     {     0.0f,       0.0f,       0.0f, 1.0f});
 
     CORRADE_COMPARE(actual*actual, Matrix4());
     CORRADE_COMPARE(actual*normal, -normal);
@@ -187,73 +175,59 @@ void Matrix4Test::reflection() {
 }
 
 void Matrix4Test::orthographicProjection() {
-    Matrix4 expected(0.4f,   0.0f,   0.0f,       0.0f,
-                     0.0f,   0.5f,   0.0f,       0.0f,
-                     0.0f,   0.0f,   -0.25f,     0.0f,
-                     0.0f,   0.0f,   -1.25f,     1.0f);
+    Matrix4 expected({0.4f, 0.0f,   0.0f, 0.0f},
+                     {0.0f, 0.5f,   0.0f, 0.0f},
+                     {0.0f, 0.0f, -0.25f, 0.0f},
+                     {0.0f, 0.0f, -1.25f, 1.0f});
     CORRADE_COMPARE(Matrix4::orthographicProjection({5.0f, 4.0f}, 1, 9), expected);
 }
 
 void Matrix4Test::perspectiveProjection() {
-    Matrix4 expected(4.0f,  0.0f,       0.0f,         0.0f,
-                     0.0f,  7.111111f,  0.0f,         0.0f,
-                     0.0f,  0.0f,      -1.9411764f,  -1.0f,
-                     0.0f,  0.0f,      -94.1176452f,  0.0f);
-
+    Matrix4 expected({4.0f,      0.0f,         0.0f,  0.0f},
+                     {0.0f, 7.111111f,         0.0f,  0.0f},
+                     {0.0f,      0.0f,  -1.9411764f, -1.0f},
+                     {0.0f,      0.0f, -94.1176452f,  0.0f});
     CORRADE_COMPARE(Matrix4::perspectiveProjection({16.0f, 9.0f}, 32.0f, 100), expected);
 }
 
 void Matrix4Test::perspectiveProjectionFov() {
-    Matrix4 expected(4.1652994f, 0.0f,      0.0f,         0.0f,
-                     0.0f,       9.788454f, 0.0f,         0.0f,
-                     0.0f,       0.0f,     -1.9411764f,  -1.0f,
-                     0.0f,       0.0f,     -94.1176452f,  0.0f);
-
+    Matrix4 expected({4.1652994f,      0.0f,         0.0f,  0.0f},
+                     {      0.0f, 9.788454f,         0.0f,  0.0f},
+                     {      0.0f,      0.0f,  -1.9411764f, -1.0f},
+                     {      0.0f,      0.0f, -94.1176452f,  0.0f});
     CORRADE_COMPARE(Matrix4::perspectiveProjection(deg(27.0f), 2.35f, 32.0f, 100), expected);
 }
 
 void Matrix4Test::fromParts() {
-    Matrix3 rotationScaling(
-        3.0f, 5.0f, 8.0f,
-        4.0f, 4.0f, 7.0f,
-        7.0f, -1.0f, 8.0f
-    );
+    Matrix3 rotationScaling(Vector3(3.0f,  5.0f, 8.0f),
+                            Vector3(4.0f,  4.0f, 7.0f),
+                            Vector3(7.0f, -1.0f, 8.0f));
 
     Vector3 translation(9.0f, 4.0f, 5.0f);
 
-    Matrix4 expected(
-        3.0f, 5.0f, 8.0f, 0.0f,
-        4.0f, 4.0f, 7.0f, 0.0f,
-        7.0f, -1.0f, 8.0f, 0.0f,
-        9.0f, 4.0f, 5.0f, 1.0f
-    );
-
+    Matrix4 expected({3.0f,  5.0f, 8.0f, 0.0f},
+                     {4.0f,  4.0f, 7.0f, 0.0f},
+                     {7.0f, -1.0f, 8.0f, 0.0f},
+                     {9.0f,  4.0f, 5.0f, 1.0f});
     CORRADE_COMPARE(Matrix4::from(rotationScaling, translation), expected);
 }
 
 void Matrix4Test::rotationScalingPart() {
-    Matrix4 m(
-        3.0f, 5.0f, 8.0f, 4.0f,
-        4.0f, 4.0f, 7.0f, 3.0f,
-        7.0f, -1.0f, 8.0f, 0.0f,
-        9.0f, 4.0f, 5.0f, 9.0f
-    );
+    Matrix4 m({3.0f,  5.0f, 8.0f, 4.0f},
+              {4.0f,  4.0f, 7.0f, 3.0f},
+              {7.0f, -1.0f, 8.0f, 0.0f},
+              {9.0f,  4.0f, 5.0f, 9.0f});
 
-    Matrix3 expected(
-        3.0f, 5.0f, 8.0f,
-        4.0f, 4.0f, 7.0f,
-        7.0f, -1.0f, 8.0f
-    );
-
+    Matrix3 expected(Vector3(3.0f, 5.0f, 8.0f),
+                     Vector3(4.0f, 4.0f, 7.0f),
+                     Vector3(7.0f, -1.0f, 8.0f));
     CORRADE_COMPARE(m.rotationScaling(), expected);
 }
 
 void Matrix4Test::rotationPart() {
-    Matrix3 expectedRotationPart(
-        0.35612214f,  -0.80181062f, 0.47987163f,
-        0.47987163f,  0.59757638f,  0.6423595f,
-        -0.80181062f, 0.0015183985f, 0.59757638f
-    );
+    Matrix3 expectedRotationPart(Vector3( 0.35612214f,  -0.80181062f, 0.47987163f),
+                                 Vector3( 0.47987163f,   0.59757638f,  0.6423595f),
+                                 Vector3(-0.80181062f, 0.0015183985f, 0.59757638f));
 
     Matrix4 rotation = Matrix4::rotation(deg(-74.0f), Vector3(-1.0f, 2.0f, 2.0f).normalized());
     CORRADE_COMPARE(rotation.rotation().determinant(), 1.0f);
@@ -267,10 +241,10 @@ void Matrix4Test::rotationPart() {
 }
 
 void Matrix4Test::vectorParts() {
-    Matrix4 m(-1.0f, 0.0f, 0.0f, 0.0f,
-              0.0f, 12.0f, 0.0f, 0.0f,
-              0.0f, 0.0f, 35.0f, 0.0f,
-              -5.0f, 12.0f, 0.5f, 1.0f);
+    Matrix4 m({-1.0f,  0.0f,  0.0f, 0.0f},
+              { 0.0f, 12.0f,  0.0f, 0.0f},
+              { 0.0f,  0.0f, 35.0f, 0.0f},
+              {-5.0f, 12.0f,  0.5f, 1.0f});
 
     CORRADE_COMPARE(m.right(), Vector3::xAxis(-1.0f));
     CORRADE_COMPARE(m.up(), Vector3::yAxis(12.0f));
@@ -282,12 +256,10 @@ void Matrix4Test::invertedEuclidean() {
     std::ostringstream o;
     Error::setOutput(&o);
 
-    Matrix4 m(
-        3.0f, 5.0f, 8.0f, 4.0f,
-        4.0f, 4.0f, 7.0f, 3.0f,
-        7.0f, -1.0f, 8.0f, 0.0f,
-        9.0f, 4.0f, 5.0f, 9.0f
-    );
+    Matrix4 m({3.0f,  5.0f, 8.0f, 4.0f},
+              {4.0f,  4.0f, 7.0f, 3.0f},
+              {7.0f, -1.0f, 8.0f, 0.0f},
+              {9.0f,  4.0f, 5.0f, 9.0f});
     CORRADE_COMPARE(m.invertedEuclidean(), Matrix4());
     CORRADE_COMPARE(o.str(), "Math::Matrix4::invertedEuclidean(): unexpected values on last row\n");
 
@@ -307,12 +279,10 @@ void Matrix4Test::invertedEuclidean() {
 }
 
 void Matrix4Test::debug() {
-    Matrix4 m(
-        3.0f, 5.0f, 8.0f, 4.0f,
-        4.0f, 4.0f, 7.0f, 3.0f,
-        7.0f, -1.0f, 8.0f, 0.0f,
-        9.0f, 4.0f, 5.0f, 9.0f
-    );
+    Matrix4 m({3.0f,  5.0f, 8.0f, 4.0f},
+              {4.0f,  4.0f, 7.0f, 3.0f},
+              {7.0f, -1.0f, 8.0f, 0.0f},
+              {9.0f,  4.0f, 5.0f, 9.0f});
 
     std::ostringstream o;
     Debug(&o) << m;
@@ -325,12 +295,10 @@ void Matrix4Test::debug() {
 void Matrix4Test::configuration() {
     Configuration c;
 
-    Matrix4 m(
-        3.0f, 5.0f, 8.0f, 4.0f,
-        4.0f, 4.0f, 7.0f, 3.125f,
-        7.0f, -1.0f, 8.0f, 0.0f,
-        9.0f, 4.0f, 5.0f, 9.55f
-    );
+    Matrix4 m({3.0f,  5.0f, 8.0f,   4.0f},
+              {4.0f,  4.0f, 7.0f, 3.125f},
+              {7.0f, -1.0f, 8.0f,   0.0f},
+              {9.0f,  4.0f, 5.0f,  9.55f});
     std::string value("3 4 7 9 5 4 -1 4 8 7 8 5 4 3.125 0 9.55");
 
     c.setValue("matrix", m);
