@@ -74,7 +74,7 @@ class ShapeRendererOptions {
          * Size of rendered crosshairs, representing Physics::Point shapes.
          * Default is `0.25f`.
          */
-        inline ShapeRendererOptions* pointSize(GLfloat size) {
+        inline ShapeRendererOptions* setPointSize(GLfloat size) {
             _pointSize = size;
             return this;
         }
