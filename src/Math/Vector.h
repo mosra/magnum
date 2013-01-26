@@ -138,7 +138,10 @@ template<std::size_t size, class T> class Vector {
             static_assert(sizeof...(next)+1 == size, "Improper number of arguments passed to Vector constructor");
         }
 
-        /** @brief Construct vector with one value for all fields */
+        /**
+         * @brief Construct vector with one value for all fields
+         * @todo Fix this to be actually usable (not only in subclasses)
+         */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         inline explicit Vector(T value) {
         #else

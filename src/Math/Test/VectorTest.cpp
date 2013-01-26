@@ -30,6 +30,7 @@ class VectorTest: public Corrade::TestSuite::Tester {
 
         void constructFromData();
         void constructDefault();
+        void constructOneValue();
         void constructConversion();
         void data();
 
@@ -66,6 +67,7 @@ typedef Vector<4, std::int32_t> Vector4i;
 VectorTest::VectorTest() {
     addTests(&VectorTest::constructFromData,
              &VectorTest::constructDefault,
+             &VectorTest::constructOneValue,
              &VectorTest::constructConversion,
              &VectorTest::data,
 
@@ -102,6 +104,12 @@ void VectorTest::constructFromData() {
 
 void VectorTest::constructDefault() {
     CORRADE_COMPARE(Vector4(), Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+}
+
+void VectorTest::constructOneValue() {
+    CORRADE_EXPECT_FAIL("Constructing Vector from one value is broken.");
+    CORRADE_VERIFY(false);
+//     CORRADE_COMPARE(Vector4(7.25f), Vector4(7.25f, 7.25f, 7.25f, 7.25f));
 }
 
 void VectorTest::constructConversion() {
