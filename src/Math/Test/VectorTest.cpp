@@ -28,18 +28,30 @@ class VectorTest: public Corrade::TestSuite::Tester {
     public:
         VectorTest();
 
-        void construct();
-        void compareComponentWise();
-        void dot();
+        void constructFromData();
+        void constructDefault();
+        void constructConversion();
+        void data();
+
+        void negative();
+        void addSubtract();
+        void multiplyDivide();
         void multiplyDivideComponentWise();
+
+        void compare();
+        void compareComponentWise();
+
+        void dot();
         void dotSelf();
         void length();
         void normalized();
-        void projected();
+
         void sum();
         void product();
         void min();
         void max();
+
+        void projected();
         void angle();
         void lerp();
 
@@ -47,33 +59,76 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void configuration();
 };
 
-typedef Vector<4, float> Vector4;
 typedef Vector<3, float> Vector3;
+typedef Vector<4, float> Vector4;
+typedef Vector<4, std::int32_t> Vector4i;
 
 VectorTest::VectorTest() {
-    addTests(&VectorTest::construct,
-             &VectorTest::compareComponentWise,
-             &VectorTest::dot,
+    addTests(&VectorTest::constructFromData,
+             &VectorTest::constructDefault,
+             &VectorTest::constructConversion,
+             &VectorTest::data,
+
+             &VectorTest::negative,
+             &VectorTest::addSubtract,
+             &VectorTest::multiplyDivide,
              &VectorTest::multiplyDivideComponentWise,
+
+             &VectorTest::compare,
+             &VectorTest::compareComponentWise,
+
+             &VectorTest::dot,
              &VectorTest::dotSelf,
              &VectorTest::length,
              &VectorTest::normalized,
-             &VectorTest::projected,
+
              &VectorTest::sum,
              &VectorTest::product,
              &VectorTest::min,
              &VectorTest::max,
+
+             &VectorTest::projected,
              &VectorTest::angle,
              &VectorTest::lerp,
+
              &VectorTest::debug,
              &VectorTest::configuration);
 }
 
-void VectorTest::construct() {
-    CORRADE_COMPARE(Vector4(), Vector4(0.0f, 0.0f, 0.0f, 0.0f));
-
+void VectorTest::constructFromData() {
     float data[] = { 1.0f, 2.0f, 3.0f, 4.0f };
     CORRADE_COMPARE(Vector4::from(data), Vector4(1.0f, 2.0f, 3.0f, 4.0f));
+}
+
+void VectorTest::constructDefault() {
+    CORRADE_COMPARE(Vector4(), Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+}
+
+void VectorTest::constructConversion() {
+    Vector4 floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
+    Vector4 floatingPointRounded(1.0f, 2.0f, -15.0f, 7.0f);
+    Vector4i integral(1, 2, -15, 7);
+
+    CORRADE_COMPARE(Vector4i::from(floatingPoint), integral);
+    CORRADE_COMPARE(Vector4::from(integral), floatingPointRounded);
+}
+
+void VectorTest::data() {
+    Vector4 vector(4.0f, 5.0f, 6.0f, 7.0f);
+    vector[2] = 1.0f;
+    vector[3] = 1.5f;
+
+    CORRADE_COMPARE(vector[2], 1.0f);
+    CORRADE_COMPARE(vector[3], 1.5f);
+    CORRADE_COMPARE(vector, Vector4(4.0f, 5.0f, 1.0f, 1.5f));
+}
+
+void VectorTest::compare() {
+    CORRADE_VERIFY(Vector4(1.0f, -3.5f, 5.0f, -10.0f) == Vector4(1.0f + MathTypeTraits<float>::epsilon()/2, -3.5f, 5.0f, -10.0f));
+    CORRADE_VERIFY(Vector4(1.0f, -1.0f, 5.0f, -10.0f) != Vector4(1.0f, -1.0f + MathTypeTraits<float>::epsilon()*2, 5.0f, -10.0f));
+
+    CORRADE_VERIFY(Vector4i(1, -3, 5, -10) == Vector4i(1, -3, 5, -10));
+    CORRADE_VERIFY(Vector4i(1, -3, 5, -10) != Vector4i(1, -2, 5, -10));
 }
 
 void VectorTest::compareComponentWise() {
@@ -90,8 +145,38 @@ void VectorTest::compareComponentWise() {
     CORRADE_VERIFY(!(Vector4(1.1f, -1.0f, 3.0f, 7.0f) > Vector4(1.0f, -2.0f, -5.0f, 7.0f)));
 }
 
-void VectorTest::dot() {
-    CORRADE_COMPARE(Vector4::dot({1.0f, 0.5f, 0.75f, 1.5f}, {2.0f, 4.0f, 1.0f, 7.0f}), 15.25f);
+void VectorTest::negative() {
+    CORRADE_COMPARE(-Vector4(1.0f, -3.0f, 5.0f, -10.0f), Vector4(-1.0f, 3.0f, -5.0f, 10.0f));
+}
+
+void VectorTest::addSubtract() {
+    Vector4 a(1.0f, -3.0f, 5.0f, -10.0f);
+    Vector4 b(7.5f, 33.0f, -15.0f, 0.0f);
+    Vector4 c(8.5f, 30.0f, -10.0f, -10.0f);
+
+    CORRADE_COMPARE(a + b, c);
+    CORRADE_COMPARE(c - b, a);
+}
+
+void VectorTest::multiplyDivide() {
+    Vector4 vector(1.0f, 2.0f, 3.0f, 4.0f);
+    Vector4 multiplied(-1.5f, -3.0f, -4.5f, -6.0f);
+
+    CORRADE_COMPARE(vector*-1.5f, multiplied);
+    CORRADE_COMPARE(-1.5f*vector, multiplied);
+    CORRADE_COMPARE(multiplied/-1.5f, vector);
+
+    Math::Vector<1, std::int8_t> vectorChar(32);
+    Math::Vector<1, std::int8_t> multipliedChar(-48);
+    CORRADE_COMPARE(vectorChar*-1.5f, multipliedChar);
+    CORRADE_COMPARE(multipliedChar/-1.5f, vectorChar);
+    CORRADE_COMPARE(-1.5f*vectorChar, multipliedChar);
+
+    /* Divide vector with number and inverse */
+    Vector4 divisor(1.0f, 2.0f, -4.0f, 8.0f);
+    Vector4 result(1.0f, 0.5f, -0.25f, 0.125f);
+    CORRADE_COMPARE(1.0f/divisor, result);
+    CORRADE_COMPARE(-1550.0f/multipliedChar, vectorChar);
 }
 
 void VectorTest::multiplyDivideComponentWise() {
@@ -101,6 +186,10 @@ void VectorTest::multiplyDivideComponentWise() {
 
     CORRADE_COMPARE(vec*multiplier, multiplied);
     CORRADE_COMPARE(multiplied/multiplier, vec);
+}
+
+void VectorTest::dot() {
+    CORRADE_COMPARE(Vector4::dot({1.0f, 0.5f, 0.75f, 1.5f}, {2.0f, 4.0f, 1.0f, 7.0f}), 15.25f);
 }
 
 void VectorTest::dotSelf() {
@@ -113,14 +202,6 @@ void VectorTest::length() {
 
 void VectorTest::normalized() {
     CORRADE_COMPARE(Vector4(1.0f, 1.0f, 1.0f, 1.0f).normalized(), Vector4(0.5f, 0.5f, 0.5f, 0.5f));
-}
-
-void VectorTest::projected() {
-    Vector3 line(1.0f, -1.0f, 0.5f);
-    Vector3 projected = Vector3(1.0f, 2.0f, 3.0f).projected(line);
-
-    CORRADE_COMPARE(projected, Vector3(0.222222f, -0.222222f, 0.111111f));
-    CORRADE_COMPARE(projected.normalized(), line.normalized());
 }
 
 void VectorTest::sum() {
@@ -137,6 +218,14 @@ void VectorTest::min() {
 
 void VectorTest::max() {
     CORRADE_COMPARE(Vector3(1.0f, -2.0f, 3.0f).max(), 3.0f);
+}
+
+void VectorTest::projected() {
+    Vector3 line(1.0f, -1.0f, 0.5f);
+    Vector3 projected = Vector3(1.0f, 2.0f, 3.0f).projected(line);
+
+    CORRADE_COMPARE(projected, Vector3(0.222222f, -0.222222f, 0.111111f));
+    CORRADE_COMPARE(projected.normalized(), line.normalized());
 }
 
 void VectorTest::angle() {
