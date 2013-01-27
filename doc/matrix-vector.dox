@@ -131,6 +131,17 @@ xyz.xy() *= 5;
 @endcode
 Color3 and Color4 name their components `rgba` instead of `xyzw`.
 
+Matrix3 and Matrix4 have functions for accessing properties of given 2D/3D
+transformation:
+@code
+Matrix4<float> a = Matrix4<float>::translation(Vector3::yAxis(4.0f));
+Vector3<float> translation = a.translation();
+
+Matrix3<float> b = Matrix3<float>::rotation(deg(15.f));
+Matrix<2, float> rotationScaling = b.rotationScaling();
+Vector2<float> up = b.up();
+@endcode
+
 For more involved operations with components there is the swizzle() function:
 @code
 Vector4<int> original(-1, 2, 3, 4);
