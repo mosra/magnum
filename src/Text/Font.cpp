@@ -34,8 +34,8 @@ Font::Font(FontRenderer& renderer, const std::string& fontFile, GLfloat size): _
     #endif
 
     /* Create FreeType font */
-    CORRADE_INTERNAL_ASSERT(FT_New_Face(renderer.library(), fontFile.c_str(), 0, &_ftFont) == 0);
-    CORRADE_INTERNAL_ASSERT(FT_Set_Char_Size(_ftFont, 0, _size*64, 100, 100) == 0);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_New_Face(renderer.library(), fontFile.c_str(), 0, &_ftFont) == 0);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Set_Char_Size(_ftFont, 0, _size*64, 100, 100) == 0);
 
     /* Create Harfbuzz font */
     _hbFont = hb_ft_font_create(_ftFont, nullptr);
@@ -69,7 +69,7 @@ void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
     std::vector<Vector2i> charSizes;
     charSizes.reserve(charIndices.size());
     for(FT_UInt c: charIndices) {
-        CORRADE_INTERNAL_ASSERT(FT_Load_Glyph(_ftFont, c, FT_LOAD_DEFAULT) == 0);
+        CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Load_Glyph(_ftFont, c, FT_LOAD_DEFAULT) == 0);
         charSizes.push_back((Vector2i(_ftFont->glyph->metrics.width, _ftFont->glyph->metrics.height))/64);
     }
 
@@ -84,8 +84,8 @@ void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
         /* Load and render glyph */
         /** @todo B&W only */
         FT_GlyphSlot glyph = _ftFont->glyph;
-        CORRADE_INTERNAL_ASSERT(FT_Load_Glyph(_ftFont, charIndices[i], FT_LOAD_DEFAULT) == 0);
-        CORRADE_INTERNAL_ASSERT(FT_Render_Glyph(glyph, FT_RENDER_MODE_NORMAL) == 0);
+        CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Load_Glyph(_ftFont, charIndices[i], FT_LOAD_DEFAULT) == 0);
+        CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Render_Glyph(glyph, FT_RENDER_MODE_NORMAL) == 0);
 
         /* Copy rendered bitmap to texture image */
         const FT_Bitmap& bitmap = glyph->bitmap;
@@ -96,12 +96,12 @@ void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
                 pixmap[yout*atlasSize.x() + xout] = bitmap.buffer[(bitmap.rows-yin-1)*bitmap.width + xin];
 
         /* Save character texture position and texture coordinates for given character index */
-        glyphs.insert({charIndices[i], std::make_tuple(
+        CORRADE_INTERNAL_ASSERT_OUTPUT(glyphs.insert({charIndices[i], std::make_tuple(
             Rectangle::fromSize(Vector2(glyph->bitmap_left, glyph->bitmap_top-charPositions[i].height())/_size,
                                 Vector2(charPositions[i].size())/_size),
             Rectangle(Vector2(charPositions[i].bottomLeft())/atlasSize,
                       Vector2(charPositions[i].topRight())/atlasSize)
-        )});
+        )}).second);
     }
 
     /* Set texture data */

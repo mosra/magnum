@@ -75,7 +75,7 @@ buffer again.
 Vector3* data = static_cast<Vector3*>(buffer.map(0, 200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::InvalidateBuffer));
 for(std::size_t i = 0; i != 200; ++i)
     data[i] = ...;
-CORRADE_INTERNAL_ASSERT(buffer.unmap());
+CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
 @endcode
 If you are updating only a few discrete portions of the buffer, you can use
 @ref MapFlag "MapFlag::FlushExplicit" and flushMappedRange() to reduce number
@@ -86,7 +86,7 @@ for(std::size_t i: {7, 27, 56, 128}) {
     data[i] = ...;
     buffer.flushMappedRange(i*sizeof(Vector3), sizeof(Vector3));
 }
-CORRADE_INTERNAL_ASSERT(buffer.unmap());
+CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
 @endcode
 
 @section Buffer-performance-optimization Performance optimizations

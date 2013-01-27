@@ -22,7 +22,7 @@
 namespace Magnum { namespace Text {
 
 FontRenderer::FontRenderer() {
-    CORRADE_INTERNAL_ASSERT(FT_Init_FreeType(&_library) == 0);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Init_FreeType(&_library) == 0);
 }
 
 FontRenderer::~FontRenderer() {
