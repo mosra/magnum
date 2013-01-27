@@ -140,17 +140,11 @@ void VectorTest::compare() {
 }
 
 void VectorTest::compareComponentWise() {
-    CORRADE_VERIFY(Vector4(1.0f, -2.0f, -5.0f, 7.0f) < Vector4(1.1f, -1.0f, 3.0f, 8.0f));
-    CORRADE_VERIFY(!(Vector4(1.0f, -2.0f, -5.0f, 7.0f) < Vector4(1.1f, -1.0f, 3.0f, 7.0f)));
-
-    CORRADE_VERIFY(Vector4(1.0f, -2.0f, -5.0f, 7.0f) <= Vector4(1.1f, -1.0f, 3.0f, 7.0f));
-    CORRADE_VERIFY(!(Vector4(1.0f, -2.0f, -5.0f, 7.0f) <= Vector4(1.0f, -2.0f, -5.0f, 6.0f)));
-
-    CORRADE_VERIFY(Vector4(1.1f, -1.0f, 3.0f, 7.0f) >= Vector4(1.0f, -2.0f, -5.0f, 7.0f));
-    CORRADE_VERIFY(!(Vector4(1.0f, -2.0f, -5.0f, 6.0f) >= Vector4(1.0f, -2.0f, -5.0f, 7.0f)));
-
-    CORRADE_VERIFY(Vector4(1.1f, -1.0f, 3.0f, 8.0f) > Vector4(1.0f, -2.0f, -5.0f, 7.0f));
-    CORRADE_VERIFY(!(Vector4(1.1f, -1.0f, 3.0f, 7.0f) > Vector4(1.0f, -2.0f, -5.0f, 7.0f)));
+    typedef BoolVector<3> BoolVector3;
+    CORRADE_COMPARE(Vector3(1.0f, -1.0f, 5.0f) < Vector3(1.1f, -1.0f, 3.0f), BoolVector3(0x1));
+    CORRADE_COMPARE(Vector3(1.0f, -1.0f, 5.0f) <= Vector3(1.1f, -1.0f, 3.0f), BoolVector3(0x3));
+    CORRADE_COMPARE(Vector3(1.0f, -1.0f, 5.0f) >= Vector3(1.1f, -1.0f, 3.0f), BoolVector3(0x6));
+    CORRADE_COMPARE(Vector3(1.0f, -1.0f, 5.0f) > Vector3(1.1f, -1.0f, 3.0f), BoolVector3(0x4));
 }
 
 void VectorTest::negative() {

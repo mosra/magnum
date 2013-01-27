@@ -25,6 +25,7 @@
 #include <Utility/Debug.h>
 #include <Utility/ConfigurationValue.h>
 
+#include "Math/BoolVector.h"
 #include "Math/MathTypeTraits.h"
 
 #include "magnumVisibility.h"
@@ -201,52 +202,44 @@ template<std::size_t size, class T> class Vector {
             return !operator==(other);
         }
 
-        /**
-         * @brief Component-wise less than
-         * @return `True` if all components are smaller than their
-         *      counterparts in @p other, `false` otherwise
-         */
-        inline bool operator<(const Vector<size, T>& other) const {
-            for(std::size_t i = 0; i != size; ++i)
-                if(_data[i] >= other._data[i]) return false;
+        /** @brief Component-wise less than */
+        inline BoolVector<size> operator<(const Vector<size, T>& other) const {
+            BoolVector<size> out;
 
-            return true;
+            for(std::size_t i = 0; i != size; ++i)
+                out.set(i, _data[i] < other._data[i]);
+
+            return out;
         }
 
-        /**
-         * @brief Component-wise less than or equal
-         * @return `True` if all components are smaller than or equal to their
-         *      counterparts in @p other, `false` otherwise
-         */
-        inline bool operator<=(const Vector<size, T>& other) const {
-            for(std::size_t i = 0; i != size; ++i)
-                if(_data[i] > other._data[i]) return false;
+        /** @brief Component-wise less than or equal */
+        inline BoolVector<size> operator<=(const Vector<size, T>& other) const {
+            BoolVector<size> out;
 
-            return true;
+            for(std::size_t i = 0; i != size; ++i)
+                out.set(i, _data[i] <= other._data[i]);
+
+            return out;
         }
 
-        /**
-         * @brief Component-wise greater than or equal
-         * @return `True` if all components are larger than or equal to their
-         *      counterparts in @p other, `false` otherwise
-         */
-        inline bool operator>=(const Vector<size, T>& other) const {
-            for(std::size_t i = 0; i != size; ++i)
-                if(_data[i] < other._data[i]) return false;
+        /** @brief Component-wise greater than or equal */
+        inline BoolVector<size> operator>=(const Vector<size, T>& other) const {
+            BoolVector<size> out;
 
-            return true;
+            for(std::size_t i = 0; i != size; ++i)
+                out.set(i, _data[i] >= other._data[i]);
+
+            return out;
         }
 
-        /**
-         * @brief Component-wise greater than
-         * @return `True` if all components are larger than their
-         *      counterparts in @p other, `false` otherwise
-         */
-        inline bool operator>(const Vector<size, T>& other) const {
-            for(std::size_t i = 0; i != size; ++i)
-                if(_data[i] <= other._data[i]) return false;
+        /** @brief Component-wise greater than */
+        inline BoolVector<size> operator>(const Vector<size, T>& other) const {
+            BoolVector<size> out;
 
-            return true;
+            for(std::size_t i = 0; i != size; ++i)
+                out.set(i, _data[i] > other._data[i]);
+
+            return out;
         }
 
         /**
