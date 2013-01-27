@@ -131,6 +131,13 @@ xyz.xy() *= 5;
 @endcode
 Color3 and Color4 name their components `rgba` instead of `xyzw`.
 
+For more involved operations with components there is the swizzle() function:
+@code
+Vector4<int> original(-1, 2, 3, 4);
+Vector4<int> bgra = swizzle<'b', 'g', 'r', 'a'>(original); // { 3, 2, -1, 4 }
+Vector<6, int> w10xyz = swizzle<'w', '1', '0', 'x', 'y', 'z'>(original); // { 4, 1, 0, -1, 2, 3 }
+@endcode
+
 Matrix3 and Matrix4 have functions for accessing properties of given 2D/3D
 transformation:
 @code
@@ -140,13 +147,6 @@ Vector3<float> translation = a.translation();
 Matrix3<float> b = Matrix3<float>::rotation(deg(15.f));
 Matrix<2, float> rotationScaling = b.rotationScaling();
 Vector2<float> up = b.up();
-@endcode
-
-For more involved operations with components there is the swizzle() function:
-@code
-Vector4<int> original(-1, 2, 3, 4);
-Vector4<int> bgra = swizzle<'b', 'g', 'r', 'a'>(original); // { 3, 2, -1, 4 }
-Vector<6, int> w10xyz = swizzle<'w', '1', '0', 'x', 'y', 'z'>(original); // { 4, 1, 0, -1, 2, 3 }
 @endcode
 
 @section matrix-vector-column-major Matrices are column-major and vectors are columns

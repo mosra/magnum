@@ -50,9 +50,6 @@ class MAGNUM_TEXT_EXPORT Font {
          * @param renderer      %Font renderer
          * @param fontFile      %Font file
          * @param size          %Font size
-         *
-         * Creates font with no prerendered characters. See prerender() for
-         * more information.
          */
         explicit Font(FontRenderer& renderer, const std::string& fontFile, GLfloat size);
 
