@@ -54,6 +54,15 @@ class MAGNUM_TEXT_EXPORT Font {
         explicit Font(FontRenderer& renderer, const std::string& fontFile, GLfloat size);
 
         /**
+         * @brief Create font from memory
+         * @param renderer      %Font renderer
+         * @param data          %Font data
+         * @param size          %Font data size
+         * @param size          %Font size
+         */
+        explicit Font(FontRenderer& renderer, const unsigned char* data, std::size_t dataSize, GLfloat size);
+
+        /**
          * @brief Prerender given character set
          * @param characters    Characters to render
          * @param atlasSize     Size of resulting atlas
@@ -93,6 +102,7 @@ class MAGNUM_TEXT_EXPORT Font {
         inline hb_font_t* font() { return _hbFont; }
 
     private:
+        void MAGNUM_TEXT_LOCAL finishConstruction();
         void MAGNUM_TEXT_LOCAL destroy();
         void MAGNUM_TEXT_LOCAL move();
 

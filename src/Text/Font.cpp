@@ -27,18 +27,28 @@
 namespace Magnum { namespace Text {
 
 Font::Font(FontRenderer& renderer, const std::string& fontFile, GLfloat size): _size(size) {
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_New_Face(renderer.library(), fontFile.c_str(), 0, &_ftFont) == 0);
+
+    finishConstruction();
+}
+
+Font::Font(FontRenderer& renderer, const unsigned char* data, std::size_t dataSize, GLfloat size): _size(size) {
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_New_Memory_Face(renderer.library(), data, dataSize, 0, &_ftFont) == 0);
+
+    finishConstruction();
+}
+
+void Font::finishConstruction() {
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Set_Char_Size(_ftFont, 0, _size*64, 100, 100) == 0);
+
+    /* Create Harfbuzz font */
+    _hbFont = hb_ft_font_create(_ftFont, nullptr);
+
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);
     #else
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::EXT::texture_rg);
     #endif
-
-    /* Create FreeType font */
-    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_New_Face(renderer.library(), fontFile.c_str(), 0, &_ftFont) == 0);
-    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Set_Char_Size(_ftFont, 0, _size*64, 100, 100) == 0);
-
-    /* Create Harfbuzz font */
-    _hbFont = hb_ft_font_create(_ftFont, nullptr);
 
     /* Set up the texture */
     _texture.setWrapping(Texture2D::Wrapping::ClampToEdge)
