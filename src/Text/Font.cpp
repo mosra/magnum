@@ -15,6 +15,7 @@
 
 #include "Font.h"
 
+#include <algorithm>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include <hb-ft.h>
@@ -49,7 +50,6 @@ void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
     glyphs.clear();
 
     /** @bug Crash when atlas is too small */
-    /** @todo Get rid of duplicate characters */
 
     /* Get character codes from string */
     /** @todo proper UTF-8 decoding */
@@ -60,6 +60,10 @@ void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
     charIndices.push_back(0);
     for(std::uint32_t charCode: charCodes)
         charIndices.push_back(FT_Get_Char_Index(_ftFont, charCode));
+
+    /* Remove duplicates (e.g. uppercase and lowercase mapped to same glyph) */
+    std::sort(charIndices.begin(), charIndices.end());
+    charIndices.erase(std::unique(charIndices.begin(), charIndices.end()), charIndices.end());
 
     /* Sizes of all characters */
     std::vector<Vector2i> charSizes;
