@@ -54,7 +54,14 @@ template<class T> class Point2D: public Vector3<T> {
          * @param xy    Two-component vector
          * @param z     Z component
          */
-        inline constexpr /*implicit*/ Point2D(const Vector2<T>& xy, T z = T(1)): Vector3<T>(xy, z) {}
+        inline constexpr /*implicit*/ Point2D(const Vector2<T>& xy, T z): Vector3<T>(xy, z) {}
+
+        /**
+         * @brief Construct 2D point from 2D vector
+         *
+         * Z component is set to `1`.
+         */
+        inline constexpr explicit Point2D(const Vector2<T>& xy): Vector3<T>(xy, T(1)) {}
 
         /** @copydoc Vector::Vector(const Vector<size, U>&) */
         template<class U> inline constexpr explicit Point2D(const Vector<3, U>& other): Vector3<T>(other) {}

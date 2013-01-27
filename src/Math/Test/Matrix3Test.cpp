@@ -48,6 +48,7 @@ class Matrix3Test: public Corrade::TestSuite::Tester {
 typedef Math::Matrix3<float> Matrix3;
 typedef Math::Matrix<2, float> Matrix2;
 typedef Math::Vector2<float> Vector2;
+typedef Math::Point2D<float> Point2D;
 
 Matrix3Test::Matrix3Test() {
     addTests(&Matrix3Test::constructIdentity,
@@ -122,7 +123,7 @@ void Matrix3Test::reflection() {
                      {0.0f,  0.0f, 1.0f});
 
     CORRADE_COMPARE(actual*actual, Matrix3());
-    CORRADE_COMPARE(actual*normal, -normal);
+    CORRADE_COMPARE((actual*Point2D(normal)).vector(), -normal);
     CORRADE_COMPARE(actual, expected);
 }
 

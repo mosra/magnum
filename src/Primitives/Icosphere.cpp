@@ -54,7 +54,8 @@ Icosphere<0>::Icosphere(): MeshData3D(Mesh::Primitive::Triangles, new std::vecto
     {0.0f, 0.525731f, -0.850651f},
     {0.0f, 0.525731f, 0.850651f}
 }}, {}) {
-    positions(0)->assign(normals(0)->begin(), normals(0)->end());
+    positions(0)->reserve(normals(0)->size());
+    for(auto i: *normals(0)) positions(0)->push_back(Point3D(i));
 }
 
 }}
