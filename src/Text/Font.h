@@ -46,24 +46,25 @@ class MAGNUM_TEXT_EXPORT Font {
 
     public:
         /**
-         * @brief Empty font constructor
+         * @brief Create font from file
          * @param renderer      %Font renderer
          * @param fontFile      %Font file
          * @param size          %Font size
          *
-         * Creates font with no prerendered characters.
+         * Creates font with no prerendered characters. See prerender() for
+         * more information.
          */
         Font(FontRenderer& renderer, const std::string& fontFile, GLfloat size);
 
         /**
-         * @brief Create font for given character set
-         * @param renderer      %Font renderer
-         * @param fontFile      %Font file
-         * @param size          %Font size
+         * @brief Prerender given character set
          * @param characters    Characters to render
          * @param atlasSize     Size of resulting atlas
+         *
+         * Creates new atlas with prerendered characters, replacing the
+         * previous one (if any).
          */
-        Font(FontRenderer& renderer, const std::string& fontFile, GLfloat size, const std::string& characters, const Vector2i& atlasSize);
+        void prerender(const std::string& characters, const Vector2i& atlasSize);
 
         ~Font();
 
@@ -95,7 +96,6 @@ class MAGNUM_TEXT_EXPORT Font {
         inline hb_font_t* font() { return _hbFont; }
 
     private:
-        void MAGNUM_TEXT_LOCAL create(FontRenderer& renderer, const std::string& fontFile);
         void MAGNUM_TEXT_LOCAL destroy();
         void MAGNUM_TEXT_LOCAL move();
 
