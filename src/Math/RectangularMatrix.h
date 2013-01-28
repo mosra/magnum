@@ -41,6 +41,8 @@ of @f$ \boldsymbol A_{ij} @f$).
 template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
     static_assert(cols != 0 && rows != 0, "RectangularMatrix cannot have zero elements");
 
+    template<std::size_t, std::size_t, class> friend class RectangularMatrix;
+
     public:
         typedef T Type;                         /**< @brief Data type */
         const static std::size_t Cols = cols;   /**< @brief %Matrix column count */
@@ -279,7 +281,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             for(std::size_t col = 0; col != size; ++col)
                 for(std::size_t row = 0; row != rows; ++row)
                     for(std::size_t pos = 0; pos != cols; ++pos)
-                        out[col][row] += (*this)[pos][row]*other[col][pos];
+                        out[col][row] += _data[pos][row]*other._data[col][pos];
 
             return out;
         }
@@ -302,7 +304,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 
             for(std::size_t col = 0; col != cols; ++col)
                 for(std::size_t row = 0; row != rows; ++row)
-                    out[row][col] = (*this)[col][row];
+                    out[row][col] = _data[col][row];
 
             return out;
         }
