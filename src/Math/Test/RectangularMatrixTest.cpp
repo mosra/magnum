@@ -31,6 +31,7 @@ class RectangularMatrixTest: public Corrade::TestSuite::Tester {
         void constructDefault();
         void constructConversion();
         void constructFromVectors();
+        void constructFromDiagonal();
         void data();
 
         void compare();
@@ -41,6 +42,7 @@ class RectangularMatrixTest: public Corrade::TestSuite::Tester {
         void multiply();
 
         void transposed();
+        void diagonal();
 
         void debug();
         void configuration();
@@ -60,6 +62,7 @@ RectangularMatrixTest::RectangularMatrixTest() {
              &RectangularMatrixTest::constructDefault,
              &RectangularMatrixTest::constructConversion,
              &RectangularMatrixTest::constructFromVectors,
+             &RectangularMatrixTest::constructFromDiagonal,
              &RectangularMatrixTest::data,
 
              &RectangularMatrixTest::compare,
@@ -70,6 +73,7 @@ RectangularMatrixTest::RectangularMatrixTest() {
              &RectangularMatrixTest::multiply,
 
              &RectangularMatrixTest::transposed,
+             &RectangularMatrixTest::diagonal,
 
              &RectangularMatrixTest::debug,
              &RectangularMatrixTest::configuration);
@@ -122,6 +126,21 @@ void RectangularMatrixTest::constructFromVectors() {
                        Vector4(9.0f, 10.0f, 11.0f, 12.0f));
 
     CORRADE_COMPARE(actual, expected);
+}
+
+void RectangularMatrixTest::constructFromDiagonal() {
+    Vector3 diagonal(-1.0f, 5.0f, 11.0f);
+
+    Matrix3x4 expectedA(Vector4(-1.0f, 0.0f,  0.0f, 0.0f),
+                        Vector4( 0.0f, 5.0f,  0.0f, 0.0f),
+                        Vector4( 0.0f, 0.0f, 11.0f, 0.0f));
+    CORRADE_COMPARE(Matrix3x4::fromDiagonal(diagonal), expectedA);
+
+    Matrix4x3 expectedB(Vector3(-1.0f, 0.0f,  0.0f),
+                        Vector3( 0.0f, 5.0f,  0.0f),
+                        Vector3( 0.0f, 0.0f, 11.0f),
+                        Vector3( 0.0f, 0.0f,  0.0f));
+    CORRADE_COMPARE(Matrix4x3::fromDiagonal(diagonal), expectedB);
 }
 
 void RectangularMatrixTest::data() {
@@ -250,6 +269,21 @@ void RectangularMatrixTest::transposed() {
                          Vector4(3.0f, 7.0f, 11.0f, 15.0f));
 
     CORRADE_COMPARE(original.transposed(), transposed);
+}
+
+void RectangularMatrixTest::diagonal() {
+    Vector3 diagonal(-1.0f, 5.0f, 11.0f);
+
+    Matrix4x3 a(Vector3(-1.0f,  1.0f,  3.0f),
+                Vector3( 4.0f,  5.0f,  7.0f),
+                Vector3( 8.0f,  9.0f, 11.0f),
+                Vector3(12.0f, 13.0f, 15.0f));
+    CORRADE_COMPARE(a.diagonal(), diagonal);
+
+    Matrix3x4 b(Vector4(-1.0f, 4.0f,  8.0f, 12.0f),
+                Vector4( 1.0f, 5.0f,  9.0f, 13.0f),
+                Vector4( 3.0f, 7.0f, 11.0f, 15.0f));
+    CORRADE_COMPARE(b.diagonal(), diagonal);
 }
 
 void RectangularMatrixTest::debug() {

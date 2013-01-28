@@ -49,6 +49,13 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         const static std::size_t Rows = rows;   /**< @brief %Matrix row count */
 
         /**
+         * @brief Size of matrix diagonal
+         *
+         * @see fromDiagonal(), diagonal()
+         */
+        const static std::size_t DiagonalSize = (cols < rows ? cols : rows);
+
+        /**
          * @brief %Matrix from array
          * @return Reference to the data as if it was Matrix, thus doesn't
          *      perform any copying.
@@ -62,6 +69,20 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /** @overload */
         inline constexpr static const RectangularMatrix<cols, rows, T>& from(const T* data) {
             return *reinterpret_cast<const RectangularMatrix<cols, rows, T>*>(data);
+        }
+
+        /**
+         * @brief Construct diagonal matrix
+         *
+         * @see diagonal()
+         */
+        inline static RectangularMatrix<cols, rows, T> fromDiagonal(const Vector<DiagonalSize, T>& diagonal) {
+            RectangularMatrix<cols, rows, T> out;
+
+            for(std::size_t i = 0; i != DiagonalSize; ++i)
+                out[i][i] = diagonal[i];
+
+            return out;
         }
 
         /** @brief Construct zero-filled matrix */
@@ -305,6 +326,20 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             for(std::size_t col = 0; col != cols; ++col)
                 for(std::size_t row = 0; row != rows; ++row)
                     out[row][col] = _data[col][row];
+
+            return out;
+        }
+
+        /**
+         * @brief Values on diagonal
+         *
+         * @see fromDiagonal()
+         */
+        Vector<DiagonalSize, T> diagonal() const {
+            Vector<DiagonalSize, T> out;
+
+            for(std::size_t i = 0; i != DiagonalSize; ++i)
+                out[i] = _data[i][i];
 
             return out;
         }
