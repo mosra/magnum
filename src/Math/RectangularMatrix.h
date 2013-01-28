@@ -205,19 +205,6 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /**
-         * @brief Multiply matrix with number
-         *
-         * @see operator*=(U), operator*(U, const RectangularMatrix<cols, rows, T>&)
-         */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>>::type operator*(U number) const {
-        #else
-        template<class U> inline RectangularMatrix<cols, rows, T> operator*(U number) const {
-        #endif
-            return RectangularMatrix<cols, rows, T>(*this)*=number;
-        }
-
-        /**
          * @brief Multiply matrix with number and assign
          *
          * The computation is done column-wise in-place. @f[
@@ -236,16 +223,16 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /**
-         * @brief Divide matrix with number
+         * @brief Multiply matrix with number
          *
-         * @see operator/=(), operator/(U, const RectangularMatrix<cols, rows, T>&)
+         * @see operator*=(U), operator*(U, const RectangularMatrix<cols, rows, T>&)
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>>::type operator/(U number) const {
+        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>>::type operator*(U number) const {
         #else
-        template<class U> inline RectangularMatrix<cols, rows, T> operator/(U number) const {
+        template<class U> inline RectangularMatrix<cols, rows, T> operator*(U number) const {
         #endif
-            return RectangularMatrix<cols, rows, T>(*this)/=number;
+            return RectangularMatrix<cols, rows, T>(*this)*=number;
         }
 
         /**
@@ -264,6 +251,19 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
                 _data[i] /= number;
 
             return *this;
+        }
+
+        /**
+         * @brief Divide matrix with number
+         *
+         * @see operator/=(), operator/(U, const RectangularMatrix<cols, rows, T>&)
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>>::type operator/(U number) const {
+        #else
+        template<class U> inline RectangularMatrix<cols, rows, T> operator/(U number) const {
+        #endif
+            return RectangularMatrix<cols, rows, T>(*this)/=number;
         }
 
         /**
