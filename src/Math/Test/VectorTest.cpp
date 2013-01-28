@@ -20,8 +20,6 @@
 #include "Math/Constants.h"
 #include "Math/Vector.h"
 
-using namespace Corrade::Utility;
-
 namespace Magnum { namespace Math { namespace Test {
 
 class VectorTest: public Corrade::TestSuite::Tester {
@@ -269,7 +267,7 @@ void VectorTest::debug() {
 }
 
 void VectorTest::configuration() {
-    Configuration c;
+    Corrade::Utility::Configuration c;
 
     Vector4 vec(3.0f, 3.125f, 9.0f, 9.55f);
     std::string value("3 3.125 9 9.55");

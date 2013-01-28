@@ -87,7 +87,7 @@ void RectangleTest::size() {
 
 void RectangleTest::debug() {
     std::ostringstream o;
-    Corrade::Utility::Debug(&o) << Rectanglei({34, 23}, {47, 30});
+    Debug(&o) << Rectanglei({34, 23}, {47, 30});
 
     CORRADE_COMPARE(o.str(), "Rectangle({34, 23}, {47, 30})\n");
 }

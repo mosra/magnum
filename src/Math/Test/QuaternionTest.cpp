@@ -250,7 +250,7 @@ void QuaternionTest::slerp() {
 void QuaternionTest::debug() {
     std::ostringstream o;
 
-    Corrade::Utility::Debug(&o) << Quaternion({1.0f, 2.0f, 3.0f}, -4.0f);
+    Debug(&o) << Quaternion({1.0f, 2.0f, 3.0f}, -4.0f);
     CORRADE_COMPARE(o.str(), "Quaternion({1, 2, 3}, -4)\n");
 }
 

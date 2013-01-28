@@ -17,7 +17,7 @@
 
 #include <Utility/Debug.h>
 
-using namespace Corrade::Utility;
+#include "Magnum.h"
 
 namespace Magnum { namespace Trade {
 

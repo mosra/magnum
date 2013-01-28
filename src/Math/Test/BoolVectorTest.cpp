@@ -156,7 +156,7 @@ void BoolVectorTest::bitAndOrXor() {
 void BoolVectorTest::debug() {
     std::ostringstream o;
 
-    Corrade::Utility::Debug(&o) << BoolVector19(0x25, 0x53, 0x02);
+    Debug(&o) << BoolVector19(0x25, 0x53, 0x02);
 
     CORRADE_COMPARE(o.str(), "BoolVector(10100100 11001010 010)\n");
 }

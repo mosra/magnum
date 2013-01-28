@@ -19,8 +19,6 @@
 
 #include "Mesh.h"
 
-using namespace Corrade::Utility;
-
 namespace Magnum { namespace Test {
 
 class MeshTest: public Corrade::TestSuite::Tester {
@@ -53,7 +51,7 @@ void MeshTest::debugIndexType() {
 }
 
 void MeshTest::configurationPrimitive() {
-    Configuration c;
+    Corrade::Utility::Configuration c;
 
     c.setValue("primitive", Mesh::Primitive::LineStrip);
     CORRADE_COMPARE(c.value<std::string>("primitive"), "LineStrip");
@@ -61,7 +59,7 @@ void MeshTest::configurationPrimitive() {
 }
 
 void MeshTest::configurationIndexType() {
-    Configuration c;
+    Corrade::Utility::Configuration c;
 
     c.setValue("type", Mesh::IndexType::UnsignedByte);
     CORRADE_COMPARE(c.value<std::string>("type"), "UnsignedByte");

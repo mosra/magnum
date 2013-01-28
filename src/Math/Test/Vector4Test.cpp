@@ -19,8 +19,6 @@
 
 #include "Math/Vector4.h"
 
-using namespace Corrade::Utility;
-
 namespace Magnum { namespace Math { namespace Test {
 
 class Vector4Test: public Corrade::TestSuite::Tester {
@@ -84,7 +82,7 @@ void Vector4Test::debug() {
 }
 
 void Vector4Test::configuration() {
-    Configuration c;
+    Corrade::Utility::Configuration c;
 
     Vector4 vec(3.0f, 3.125f, 9.0f, 9.55f);
     std::string value("3 3.125 9 9.55");

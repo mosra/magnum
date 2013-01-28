@@ -90,7 +90,7 @@ class ResourceKey: public Corrade::Utility::MurmurHash2::Digest {
 };
 
 /** @debugoperator{Magnum::ResourceKey} */
-inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const ResourceKey& value) {
+inline Debug operator<<(Debug debug, const ResourceKey& value) {
     return debug << static_cast<const Corrade::Utility::HashDigest<sizeof(std::size_t)>&>(value);
 }
 

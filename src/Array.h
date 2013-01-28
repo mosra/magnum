@@ -23,6 +23,8 @@
 #include <type_traits>
 #include <Utility/Debug.h>
 
+#include "Magnum.h"
+
 namespace Magnum {
 
 /**
@@ -179,30 +181,30 @@ template<class T> class Array3D: public Array<3, T> {
 };
 
 /** @debugoperator{Magnum::Array} */
-template<std::uint8_t dimensions, class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Array<dimensions, T>& value) {
+template<std::uint8_t dimensions, class T> Debug operator<<(Debug debug, const Array<dimensions, T>& value) {
     debug << "Array(";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
+    debug.setFlag(Debug::SpaceAfterEachValue, false);
     for(std::uint8_t i = 0; i != dimensions; ++i) {
         if(i != 0) debug << ", ";
         debug << value[i];
     }
     debug << ")";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
+    debug.setFlag(Debug::SpaceAfterEachValue, true);
     return debug;
 }
 
 /** @debugoperator{Magnum::Array1D} */
-template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Array1D<T>& value) {
+template<class T> inline Debug operator<<(Debug debug, const Array1D<T>& value) {
     return debug << static_cast<const Array<1, T>&>(value);
 }
 
 /** @debugoperator{Magnum::Array2D} */
-template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Array2D<T>& value) {
+template<class T> inline Debug operator<<(Debug debug, const Array2D<T>& value) {
     return debug << static_cast<const Array<2, T>&>(value);
 }
 
 /** @debugoperator{Magnum::Array3D} */
-template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Array3D<T>& value) {
+template<class T> inline Debug operator<<(Debug debug, const Array3D<T>& value) {
     return debug << static_cast<const Array<3, T>&>(value);
 }
 

@@ -19,8 +19,6 @@
 
 #include "Math/Matrix.h"
 
-using namespace Corrade::Utility;
-
 namespace Magnum { namespace Math { namespace Test {
 
 class MatrixTest: public Corrade::TestSuite::Tester {
@@ -182,7 +180,7 @@ void MatrixTest::debug() {
 }
 
 void MatrixTest::configuration() {
-    Configuration c;
+    Corrade::Utility::Configuration c;
 
     Matrix4 m(Vector4(3.0f,  5.0f, 8.0f,   4.0f),
               Vector4(4.0f,  4.0f, 7.0f, 3.125f),

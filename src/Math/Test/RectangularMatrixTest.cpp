@@ -19,8 +19,6 @@
 
 #include "Math/RectangularMatrix.h"
 
-using namespace Corrade::Utility;
-
 namespace Magnum { namespace Math { namespace Test {
 
 class RectangularMatrixTest: public Corrade::TestSuite::Tester {
@@ -314,7 +312,7 @@ void RectangularMatrixTest::configuration() {
                 Vector4(7.0f, -1.0f, 8.0f,  9.55f));
     std::string value("3 4 7 5 4 -1 8 7 8 4 3.125 9.55");
 
-    Configuration c;
+    Corrade::Utility::Configuration c;
     c.setValue<Matrix3x4>("matrix", m);
 
     CORRADE_COMPARE(c.value("matrix"), value);

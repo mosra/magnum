@@ -19,8 +19,6 @@
 
 #include "Color.h"
 
-using namespace Corrade::Utility;
-
 namespace Magnum { namespace Test {
 
 class ColorTest: public Corrade::TestSuite::Tester {
@@ -170,7 +168,7 @@ void ColorTest::debug() {
 }
 
 void ColorTest::configuration() {
-    Configuration c;
+    Corrade::Utility::Configuration c;
 
     Color3f color3(0.5f, 0.75f, 1.0f);
     std::string value3("0.5 0.75 1");

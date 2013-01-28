@@ -21,8 +21,6 @@
 
 #include "corradeCompatibility.h"
 
-using namespace Corrade::Utility;
-
 namespace Magnum { namespace Test {
 
 class ResourceManagerTest: public Corrade::TestSuite::Tester {

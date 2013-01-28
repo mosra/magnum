@@ -20,8 +20,6 @@
 #include "Math/Constants.h"
 #include "Math/Matrix3.h"
 
-using namespace Corrade::Utility;
-
 namespace Magnum { namespace Math { namespace Test {
 
 class Matrix3Test: public Corrade::TestSuite::Tester {
@@ -218,7 +216,7 @@ void Matrix3Test::debug() {
 }
 
 void Matrix3Test::configuration() {
-    Configuration c;
+    Corrade::Utility::Configuration c;
 
     Matrix3 m({5.0f, 8.0f,   4.0f},
               {4.0f, 7.0f, 3.125f},

@@ -19,8 +19,6 @@
 
 #include "Math/Point2D.h"
 
-using namespace Corrade::Utility;
-
 namespace Magnum { namespace Math { namespace Test {
 
 class Point2DTest: public Corrade::TestSuite::Tester {
@@ -53,7 +51,7 @@ void Point2DTest::debug() {
 }
 
 void Point2DTest::configuration() {
-    Configuration c;
+    Corrade::Utility::Configuration c;
 
     Point2D vec(3.0f, 3.125f, 9.55f);
     std::string value("3 3.125 9.55");
