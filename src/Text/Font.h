@@ -57,7 +57,7 @@ class MAGNUM_TEXT_EXPORT Font {
          * @brief Create font from memory
          * @param renderer      %Font renderer
          * @param data          %Font data
-         * @param size          %Font data size
+         * @param dataSize      %Font data size
          * @param size          %Font size
          */
         explicit Font(FontRenderer& renderer, const unsigned char* data, std::size_t dataSize, GLfloat size);
