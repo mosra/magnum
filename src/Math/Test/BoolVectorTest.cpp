@@ -26,7 +26,10 @@ class BoolVectorTest: public Corrade::TestSuite::Tester {
 
         void constructDefault();
         void constructOneValue();
+        void constructOneElement();
         void data();
+
+        void constExpressions();
 
         void compare();
         void compareUndefined();
@@ -49,7 +52,10 @@ typedef Math::BoolVector<19> BoolVector19;
 BoolVectorTest::BoolVectorTest() {
     addTests(&BoolVectorTest::constructDefault,
              &BoolVectorTest::constructOneValue,
+             &BoolVectorTest::constructOneElement,
              &BoolVectorTest::data,
+
+             &BoolVectorTest::constExpressions,
 
              &BoolVectorTest::compare,
              &BoolVectorTest::compareUndefined,
@@ -68,8 +74,15 @@ void BoolVectorTest::constructDefault() {
 }
 
 void BoolVectorTest::constructOneValue() {
-    CORRADE_COMPARE(BoolVector19::from(false), BoolVector19(0x00, 0x00, 0x00));
-    CORRADE_COMPARE(BoolVector19::from(true), BoolVector19(0xff, 0xff, 0x07));
+    CORRADE_COMPARE(BoolVector19(false), BoolVector19(0x00, 0x00, 0x00));
+    CORRADE_COMPARE(BoolVector19(true), BoolVector19(0xff, 0xff, 0x07));
+}
+
+void BoolVectorTest::constructOneElement() {
+    typedef BoolVector<1> BoolVector1;
+
+    BoolVector1 a = 0x01;
+    CORRADE_COMPARE(a, BoolVector1(0x01));
 }
 
 void BoolVectorTest::data() {
@@ -87,6 +100,30 @@ void BoolVectorTest::data() {
     CORRADE_VERIFY(a[15]);
 
     CORRADE_COMPARE(a, BoolVector19(0x08, 0x83, 0x04));
+}
+
+void BoolVectorTest::constExpressions() {
+    /* Default constructor */
+    constexpr BoolVector19 a;
+    CORRADE_COMPARE(a, BoolVector19(0x00, 0x00, 0x00));
+
+    /* Value constructor */
+    constexpr BoolVector19 b(0xa5, 0x5f, 0x07);
+    CORRADE_COMPARE(b, BoolVector19(0xa5, 0x5f, 0x07));
+
+    /* One-value constructor */
+    constexpr BoolVector19 c(true);
+    CORRADE_COMPARE(c, BoolVector19(0xff, 0xff, 0x07));
+
+    /* Copy constructor */
+    constexpr BoolVector19 d(b);
+    CORRADE_COMPARE(d, BoolVector19(0xa5, 0x5f, 0x07));
+
+    /* Data access, pointer chasings, i.e. *(b.data()[3]), are not possible */
+    constexpr bool e = b[2];
+    constexpr std::uint8_t f = *b.data();
+    CORRADE_COMPARE(e, true);
+    CORRADE_COMPARE(f, 0xa5);
 }
 
 void BoolVectorTest::compare() {

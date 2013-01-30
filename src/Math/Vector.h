@@ -32,22 +32,6 @@
 
 namespace Magnum { namespace Math {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-namespace Implementation {
-    template<std::size_t ...> struct Sequence {};
-
-    /* E.g. GenerateSequence<3>::Type is Sequence<0, 1, 2> */
-    template<std::size_t N, std::size_t ...sequence> struct GenerateSequence:
-        GenerateSequence<N-1, N-1, sequence...> {};
-
-    template<std::size_t ...sequence> struct GenerateSequence<0, sequence...> {
-        typedef Sequence<sequence...> Type;
-    };
-
-    template<class T> inline constexpr T repeat(T value, std::size_t) { return value; }
-}
-#endif
-
 /**
 @brief %Vector
 @tparam size    %Vector size

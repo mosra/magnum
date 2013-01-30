@@ -24,6 +24,22 @@
 
 namespace Magnum { namespace Math {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
+    template<std::size_t ...> struct Sequence {};
+
+    /* E.g. GenerateSequence<3>::Type is Sequence<0, 1, 2> */
+    template<std::size_t N, std::size_t ...sequence> struct GenerateSequence:
+        GenerateSequence<N-1, N-1, sequence...> {};
+
+    template<std::size_t ...sequence> struct GenerateSequence<0, sequence...> {
+        typedef Sequence<sequence...> Type;
+    };
+
+    template<class T> inline constexpr T repeat(T value, std::size_t) { return value; }
+}
+#endif
+
 /**
 @brief %Vector storing boolean values
 @tparam size    Bit count
@@ -40,23 +56,26 @@ template<std::size_t size> class BoolVector {
         static const std::size_t Size = size;               /**< @brief %Vector size */
         static const std::size_t DataSize = (size-1)/8+1;   /**< @brief %Vector storage size */
 
-        /** @brief Construct boolean with one value for all elements */
-        inline static BoolVector<size> from(bool value) {
-            BoolVector<size> out;
-
-            for(std::size_t i = 0; i != size; ++i)
-                out._data[i] = (value ? FullSegmentMask : 0);
-
-            return out;
-        }
-
         /** @brief Construct zero-filled boolean vector */
         inline constexpr BoolVector(): _data() {}
 
-        /** @brief Construct boolean vector from given values */
-        template<class ...U> inline constexpr BoolVector(std::uint8_t first, U... next): _data{first, std::uint8_t(next)...} {
-            static_assert(sizeof...(next)+1 == DataSize, "Improper number of arguments passed to BoolVector constructor");
-        }
+        /**
+         * @brief Construct boolean vector from segment values
+         * @param first Value for first 8bit segment
+         * @param next  Values for next Bbit segments
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class ...T> inline constexpr /*implicit*/ BoolVector(std::uint8_t first, T... next);
+        #else
+        template<class ...T, class U = typename std::enable_if<sizeof...(T)+1 == DataSize, bool>::type> inline constexpr /*implicit*/ BoolVector(std::uint8_t first, T... next): _data{first, std::uint8_t(next)...} {}
+        #endif
+
+        /** @brief Construct boolean vector with one value for all fields */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        inline explicit BoolVector(T value);
+        #else
+        template<class T, class U = typename std::enable_if<std::is_same<bool, T>::value && size != 1, bool>::type> inline constexpr explicit BoolVector(T value): BoolVector(typename Implementation::GenerateSequence<DataSize>::Type(), value ? FullSegmentMask : 0) {}
+        #endif
 
         /** @brief Copy constructor */
         inline constexpr BoolVector(const BoolVector<size>&) = default;
@@ -210,6 +229,9 @@ template<std::size_t size> class BoolVector {
             FullSegmentMask = 0xFF,
             LastSegmentMask = (1 << size%8) - 1
         };
+
+        /* Implementation for Vector<size, T>::Vector(U) */
+        template<std::size_t ...sequence> inline constexpr explicit BoolVector(Implementation::Sequence<sequence...>, std::uint8_t value): _data{Implementation::repeat(value, sequence)...} {}
 
         std::uint8_t _data[(size-1)/8+1];
 };
