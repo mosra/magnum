@@ -455,9 +455,9 @@ template<std::size_t size, class T> class Vector {
 
         /** @brief Sum of values in the vector */
         T sum() const {
-            T out(0);
+            T out(_data[0]);
 
-            for(std::size_t i = 0; i != size; ++i)
+            for(std::size_t i = 1; i != size; ++i)
                 out += _data[i];
 
             return out;
