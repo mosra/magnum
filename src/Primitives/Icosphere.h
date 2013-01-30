@@ -64,7 +64,8 @@ template<std::size_t subdivisions> class Icosphere {
                 });
 
             MeshTools::clean(*indices(), *normals(0));
-            positions(0)->assign(normals(0)->begin(), normals(0)->end());
+            positions(0)->reserve(normals(0)->size());
+            for(auto i: *normals(0)) positions(0)->push_back(Point3D(i));
         }
 };
 
