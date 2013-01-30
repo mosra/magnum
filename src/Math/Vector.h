@@ -43,6 +43,8 @@ namespace Implementation {
     template<std::size_t ...sequence> struct GenerateSequence<0, sequence...> {
         typedef Sequence<sequence...> Type;
     };
+
+    template<class T> inline constexpr T repeat(T value, std::size_t) { return value; }
 }
 #endif
 
@@ -145,11 +147,8 @@ template<std::size_t size, class T> class Vector {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         inline explicit Vector(T value);
         #else
-        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> inline explicit Vector(U value) {
+        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> inline constexpr explicit Vector(U value): Vector(typename Implementation::GenerateSequence<size>::Type(), value) {}
         #endif
-            for(std::size_t i = 0; i != size; ++i)
-                _data[i] = value;
-        }
 
         /**
          * @brief Construct vector from another of different type
@@ -515,6 +514,9 @@ template<std::size_t size, class T> class Vector {
     private:
         /* Implementation for Vector<size, T>::Vector(const Vector<size, U>&) */
         template<class U, std::size_t ...sequence> inline constexpr explicit Vector(Implementation::Sequence<sequence...>, const Vector<sizeof...(sequence), U>& vector): _data{T(vector.data()[sequence])...} {}
+
+        /* Implementation for Vector<size, T>::Vector(U) */
+        template<std::size_t ...sequence> inline constexpr explicit Vector(Implementation::Sequence<sequence...>, T value): _data{Implementation::repeat(value, sequence)...} {}
 
         T _data[size];
 };
