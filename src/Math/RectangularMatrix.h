@@ -23,8 +23,6 @@
 
 namespace Magnum { namespace Math {
 
-/** @todo Properly test all constexpr */
-
 /**
 @brief Rectangular matrix
 @tparam cols    Column count
@@ -125,8 +123,8 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * @see operator[]
          */
-        inline T* data() { return reinterpret_cast<T*>(_data); }
-        inline constexpr const T* data() const { return reinterpret_cast<const T*>(_data); } /**< @overload */
+        inline T* data() { return _data[0].data(); }
+        inline constexpr const T* data() const { return _data[0].data(); } /**< @overload */
 
         /**
          * @brief %Matrix column
