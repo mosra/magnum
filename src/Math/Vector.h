@@ -197,7 +197,7 @@ template<std::size_t size, class T> class Vector {
         }
 
         /** @brief Non-equality comparison */
-        inline constexpr bool operator!=(const Vector<size, T>& other) const {
+        inline bool operator!=(const Vector<size, T>& other) const {
             return !operator==(other);
         }
 

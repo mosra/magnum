@@ -161,7 +161,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @see Vector::operator<(), Vector::operator<=(), Vector::operator>=(),
          *      Vector::operator>()
          */
-        inline constexpr bool operator!=(const RectangularMatrix<cols, rows, T>& other) const {
+        inline bool operator!=(const RectangularMatrix<cols, rows, T>& other) const {
             return !operator==(other);
         }
 
