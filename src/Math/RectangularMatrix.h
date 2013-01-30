@@ -344,6 +344,66 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             return out;
         }
 
+        /** @brief Sum of values in the matrix */
+        T sum() const {
+            T out(_data[0].sum());
+
+            for(std::size_t i = 1; i != cols; ++i)
+                out += _data[i].sum();
+
+            return out;
+        }
+
+        /** @brief Product of values in the matrix */
+        T product() const {
+            T out(_data[0].product());
+
+            for(std::size_t i = 1; i != cols; ++i)
+                out *= _data[i].product();
+
+            return out;
+        }
+
+        /** @brief Minimal value in the matrix */
+        T min() const {
+            T out(_data[0].min());
+
+            for(std::size_t i = 1; i != cols; ++i)
+                out = std::min(out, _data[i].min());
+
+            return out;
+        }
+
+        /** @brief Minimal absolute value in the matrix */
+        T minAbs() const {
+            T out(_data[0].minAbs());
+
+            for(std::size_t i = 1; i != cols; ++i)
+                out = std::min(out, _data[i].minAbs());
+
+            return out;
+        }
+
+        /** @brief Maximal value in the matrix */
+        T max() const {
+            T out(_data[0].max());
+
+            for(std::size_t i = 1; i != cols; ++i)
+                out = std::max(out, _data[i].max());
+
+            return out;
+        }
+
+        /** @brief Maximal absolute value in the matrix */
+        T maxAbs() const {
+            T out(_data[0].maxAbs());
+
+            for(std::size_t i = 1; i != cols; ++i)
+                out = std::max(out, _data[i].maxAbs());
+
+            return out;
+        }
+
     private:
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
         template<class U, std::size_t ...sequence> inline constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix): _data{Vector<rows, T>(matrix[sequence])...} {}
