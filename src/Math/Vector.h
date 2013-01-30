@@ -483,12 +483,32 @@ template<std::size_t size, class T> class Vector {
             return out;
         }
 
+        /** @brief Minimal absolute value in the vector */
+        T minAbs() const {
+            T out(std::abs(_data[0]));
+
+            for(std::size_t i = 1; i != size; ++i)
+                out = std::min(out, std::abs(_data[i]));
+
+            return out;
+        }
+
         /** @brief Maximal value in the vector */
         T max() const {
             T out(_data[0]);
 
             for(std::size_t i = 1; i != size; ++i)
                 out = std::max(out, _data[i]);
+
+            return out;
+        }
+
+        /** @brief Maximal absolute value in the vector */
+        T maxAbs() const {
+            T out(std::abs(_data[0]));
+
+            for(std::size_t i = 1; i != size; ++i)
+                out = std::max(out, std::abs(_data[i]));
 
             return out;
         }
