@@ -135,18 +135,17 @@ template<std::size_t size, class T> class Vector {
          * @param first First value
          * @param next  Next values
          */
-        template<class ...U> inline constexpr /*implicit*/ Vector(T first, U... next): _data{first, next...} {
-            static_assert(sizeof...(next)+1 == size, "Improper number of arguments passed to Vector constructor");
-        }
-
-        /**
-         * @brief Construct vector with one value for all fields
-         * @todo Fix this to be actually usable (not only in subclasses)
-         */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        inline explicit Vector(T value) {
+        template<class ...U> inline constexpr /*implicit*/ Vector(T first, U... next);
         #else
-        template<class U> inline explicit Vector(typename std::enable_if<std::is_same<T, U>::value && size != 1, U>::type value) {
+        template<class ...U, class V = typename std::enable_if<sizeof...(U)+1 == size, T>::type> inline constexpr /*implicit*/ Vector(T first, U... next): _data{first, next...} {}
+        #endif
+
+        /** @brief Construct vector with one value for all fields */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        inline explicit Vector(T value);
+        #else
+        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> inline explicit Vector(U value) {
         #endif
             for(std::size_t i = 0; i != size; ++i)
                 _data[i] = value;

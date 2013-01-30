@@ -29,6 +29,7 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void constructFromData();
         void constructDefault();
         void constructOneValue();
+        void constructOneComponent();
         void constructConversion();
         void data();
 
@@ -68,6 +69,7 @@ VectorTest::VectorTest() {
     addTests(&VectorTest::constructFromData,
              &VectorTest::constructDefault,
              &VectorTest::constructOneValue,
+             &VectorTest::constructOneComponent,
              &VectorTest::constructConversion,
              &VectorTest::data,
 
@@ -109,9 +111,15 @@ void VectorTest::constructDefault() {
 }
 
 void VectorTest::constructOneValue() {
-    CORRADE_EXPECT_FAIL("Constructing Vector from one value is broken.");
-    CORRADE_VERIFY(false);
-//     CORRADE_COMPARE(Vector4(7.25f), Vector4(7.25f, 7.25f, 7.25f, 7.25f));
+    CORRADE_COMPARE(Vector4(7.25f), Vector4(7.25f, 7.25f, 7.25f, 7.25f));
+}
+
+void VectorTest::constructOneComponent() {
+    typedef Vector<1, float> Vector1;
+
+    /* Implicit constructor must work */
+    Vector1 vec = 1;
+    CORRADE_COMPARE(vec, Vector1(1));
 }
 
 void VectorTest::constructConversion() {
