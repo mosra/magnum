@@ -33,6 +33,8 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void constructConversion();
         void data();
 
+        void constExpressions();
+
         void negative();
         void addSubtract();
         void multiplyDivide();
@@ -72,6 +74,8 @@ VectorTest::VectorTest() {
              &VectorTest::constructOneComponent,
              &VectorTest::constructConversion,
              &VectorTest::data,
+
+             &VectorTest::constExpressions,
 
              &VectorTest::negative,
              &VectorTest::addSubtract,
@@ -139,6 +143,34 @@ void VectorTest::data() {
     CORRADE_COMPARE(vector[2], 1.0f);
     CORRADE_COMPARE(vector[3], 1.5f);
     CORRADE_COMPARE(vector, Vector4(4.0f, 5.0f, 1.0f, 1.5f));
+}
+
+void VectorTest::constExpressions() {
+    /* Default constructor */
+    constexpr Vector4 a;
+    CORRADE_COMPARE(a, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+
+    /* Value constructor */
+    constexpr Vector4 b(1.0f, 3.5f, 4.0f, -2.7f);
+    CORRADE_COMPARE(b, Vector4(1.0f, 3.5f, 4.0f, -2.7f));
+
+    /* One-value constructor */
+    constexpr Vector4 c(7.0f);
+    CORRADE_COMPARE(c, Vector4(7.0f, 7.0f, 7.0f, 7.0f));
+
+    /* Conversion constructor */
+    constexpr Vector4i d(b);
+    CORRADE_COMPARE(d, Vector4i(1, 3, 4, -2));
+
+    /* Copy constructor */
+    constexpr Vector4 e(b);
+    CORRADE_COMPARE(e, Vector4(1.0f, 3.5f, 4.0f, -2.7f));
+
+    /* Data access, pointer chasings, i.e. *(b.data()[3]), are not possible */
+    constexpr float f = b[3];
+    constexpr float g = *b.data();
+    CORRADE_COMPARE(f, -2.7f);
+    CORRADE_COMPARE(g, 1.0f);
 }
 
 void VectorTest::compare() {
