@@ -213,11 +213,13 @@ void VectorTest::product() {
 }
 
 void VectorTest::min() {
+    /* Check also that initial value isn't initialized to 0 */
     CORRADE_COMPARE(Vector3(1.0f, -2.0f, 3.0f).min(), -2.0f);
 }
 
 void VectorTest::max() {
-    CORRADE_COMPARE(Vector3(1.0f, -2.0f, 3.0f).max(), 3.0f);
+    /* Check also that initial value isn't initialized to 0 */
+    CORRADE_COMPARE(Vector3(-1.0f, -2.0f, -3.0f).max(), -1.0f);
 }
 
 void VectorTest::projected() {
