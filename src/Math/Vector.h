@@ -73,13 +73,8 @@ template<std::size_t size, class T> class Vector {
          * @f]
          * @see dot() const
          */
-        static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
-            T out(0);
-
-            for(std::size_t i = 0; i != size; ++i)
-                out += a[i]*b[i];
-
-            return out;
+        inline static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
+            return (a*b).sum();
         }
 
         /**
