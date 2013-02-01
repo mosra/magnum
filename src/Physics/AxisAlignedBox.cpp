@@ -21,8 +21,8 @@
 namespace Magnum { namespace Physics {
 
 template<std::uint8_t dimensions> void AxisAlignedBox<dimensions>::applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
-    _transformedPosition = (matrix*typename DimensionTraits<dimensions>::PointType(_position)).vector();
-    _transformedSize = matrix.rotationScaling()*_size;
+    _transformedMin = (matrix*typename DimensionTraits<dimensions>::PointType(_min)).vector();
+    _transformedMax = (matrix*typename DimensionTraits<dimensions>::PointType(_max)).vector();
 }
 
 template class AxisAlignedBox<2>;

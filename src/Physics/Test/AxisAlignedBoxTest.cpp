@@ -35,13 +35,9 @@ AxisAlignedBoxTest::AxisAlignedBoxTest() {
 void AxisAlignedBoxTest::applyTransformation() {
     Physics::AxisAlignedBox3D box({-1.0f, -2.0f, -3.0f}, {1.0f, 2.0f, 3.0f});
 
-    box.applyTransformationMatrix(Matrix4::scaling({2.0f, -1.0f, 1.5f}));
-    CORRADE_COMPARE(box.transformedPosition(), Vector3(-2.0f, 2.0f, -4.5f));
-    CORRADE_COMPARE(box.transformedSize(), Vector3(2.0f, -2.0f, 4.5f));
-
-    box.applyTransformationMatrix(Matrix4::translation(Vector3(1.0f))*Matrix4::rotation(deg(90.0f), Vector3::xAxis()));
-    CORRADE_COMPARE(box.transformedPosition(), Vector3(0.0f, 4.0f, -1.0f));
-    CORRADE_COMPARE(box.transformedSize(), Vector3(1.0f, -3.0f, 2.0f));
+    box.applyTransformationMatrix(Matrix4::translation(Vector3(1.0f))*Matrix4::scaling({2.0f, -1.0f, 1.5f}));
+    CORRADE_COMPARE(box.transformedMin(), Vector3(-1.0f, 3.0f, -3.5f));
+    CORRADE_COMPARE(box.transformedMax(), Vector3(3.0f, -1.0f, 5.5f));
 }
 
 }}}

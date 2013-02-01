@@ -34,7 +34,7 @@ namespace Magnum { namespace Physics {
 template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT AxisAlignedBox: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline explicit AxisAlignedBox(const typename DimensionTraits<dimensions>::VectorType& position, const typename DimensionTraits<dimensions>::VectorType& size): _position(position), _transformedPosition(position), _size(size), _transformedSize(size) {}
+        inline explicit AxisAlignedBox(const typename DimensionTraits<dimensions>::VectorType& min, const typename DimensionTraits<dimensions>::VectorType& max): _min(min), _max(max), _transformedMin(min), _transformedMax(max) {}
 
         inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::AxisAlignedBox;
@@ -42,37 +42,37 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT AxisAlignedBox: pu
 
         void applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) override;
 
-        /** @brief Position */
-        inline typename DimensionTraits<dimensions>::VectorType position() const {
-            return _position;
+        /** @brief Minimal coordinates */
+        inline typename DimensionTraits<dimensions>::VectorType min() const {
+            return _min;
         }
 
-        /** @brief Set position */
-        inline void setPosition(const typename DimensionTraits<dimensions>::VectorType& position) {
-            _position = position;
+        /** @brief Set minimal coordinates */
+        inline void setMin(const typename DimensionTraits<dimensions>::VectorType& min) {
+            _min = min;
         }
 
-        /** @brief Size */
-        inline typename DimensionTraits<dimensions>::VectorType size() const { return _size; }
+        /** @brief Maximal coordinates */
+        inline typename DimensionTraits<dimensions>::VectorType max() const { return _max; }
 
-        /** @brief Set size */
-        inline void setSize(const typename DimensionTraits<dimensions>::VectorType& size) {
-            _size = size;
+        /** @brief Set maximal coordinates */
+        inline void setMax(const typename DimensionTraits<dimensions>::VectorType& max) {
+            _max = max;
         }
 
-        /** @brief Transformed position */
-        inline typename DimensionTraits<dimensions>::VectorType transformedPosition() const {
-            return _transformedPosition;
+        /** @brief Transformed minimal coordinates */
+        inline typename DimensionTraits<dimensions>::VectorType transformedMin() const {
+            return _transformedMin;
         }
 
-        /** @brief Transformed size */
-        inline typename DimensionTraits<dimensions>::VectorType transformedSize() const {
-            return _transformedSize;
+        /** @brief Transformed maximal coordinates */
+        inline typename DimensionTraits<dimensions>::VectorType transformedMax() const {
+            return _transformedMax;
         }
 
     private:
-        typename DimensionTraits<dimensions>::VectorType _position, _transformedPosition,
-            _size, _transformedSize;
+        typename DimensionTraits<dimensions>::VectorType _min, _max,
+            _transformedMin, _transformedMax;
 };
 
 /** @brief Two-dimensional axis-aligned box */

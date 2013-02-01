@@ -27,8 +27,8 @@ template<std::uint8_t dimensions> AxisAlignedBoxRenderer<dimensions>::AxisAligne
 template<std::uint8_t dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
     /* Half scale, because the box is 2x2(x2) */
     typename DimensionTraits<dimensions>::MatrixType transformation =
-        DimensionTraits<dimensions>::MatrixType::translation(axisAlignedBox.transformedPosition())*
-        DimensionTraits<dimensions>::MatrixType::scaling(axisAlignedBox.transformedSize()/2);
+        DimensionTraits<dimensions>::MatrixType::translation((axisAlignedBox.transformedMin()+axisAlignedBox.transformedMax())/2)*
+        DimensionTraits<dimensions>::MatrixType::scaling((axisAlignedBox.transformedMax()-axisAlignedBox.transformedMin())/2);
     this->shader->setTransformationProjectionMatrix(projectionMatrix*transformation)
         ->setColor(options->color())
         ->use();
