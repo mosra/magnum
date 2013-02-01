@@ -15,6 +15,7 @@
 
 #include "ObjectShapeGroup.h"
 
+#include "Physics/AbstractShape.h"
 #include "ObjectShape.h"
 
 namespace Magnum { namespace Physics {
@@ -30,6 +31,18 @@ template<std::uint8_t dimensions> void ObjectShapeGroup<dimensions>::setClean() 
     }
 
     dirty = false;
+}
+
+template<std::uint8_t dimensions> ObjectShape<dimensions>* ObjectShapeGroup<dimensions>::firstCollision(const ObjectShape<dimensions>* shape) {
+    /* Nothing to test with, done */
+    if(!shape->shape()) return nullptr;
+
+    setClean();
+    for(std::size_t i = 0; i != this->size(); ++i)
+        if((*this)[i] != shape && (*this)[i]->shape() && (*this)[i]->shape()->collides(shape->shape()))
+            return (*this)[i];
+
+    return nullptr;
 }
 
 template class ObjectShapeGroup<2>;

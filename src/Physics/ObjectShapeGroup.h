@@ -71,6 +71,15 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShapeGroup: 
          */
         void setClean();
 
+        /**
+         * @brief First collision of given shape with other shapes in the group
+         *
+         * Returns first shape colliding with given one. If there aren't any
+         * collisions, returns `nullptr`. Calls setClean() before the
+         * operation.
+         */
+        ObjectShape<dimensions>* firstCollision(const ObjectShape<dimensions>* shape);
+
     private:
         bool dirty;
 };
