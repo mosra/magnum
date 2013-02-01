@@ -46,7 +46,7 @@ void ObjectShapeTest::clean() {
 
     Object3D a(&scene);
     ObjectShape3D* shape = new ObjectShape3D(&a, &group);
-    shape->setShape(new Physics::Point3D({1.0f, -2.0f, 3.0f}));
+    shape->setShape(Physics::Point3D({1.0f, -2.0f, 3.0f}));
     a.scale(Vector3(-2.0f));
 
     Object3D b(&scene);

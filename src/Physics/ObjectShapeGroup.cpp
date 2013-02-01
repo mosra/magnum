@@ -16,7 +16,7 @@
 #include "ObjectShapeGroup.h"
 
 #include "Physics/AbstractShape.h"
-#include "ObjectShape.h"
+#include "Physics/ObjectShape.h"
 
 namespace Magnum { namespace Physics {
 
