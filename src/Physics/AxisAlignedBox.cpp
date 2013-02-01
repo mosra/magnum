@@ -17,12 +17,25 @@
 
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
+#include "Physics/Point.h"
 
 namespace Magnum { namespace Physics {
 
 template<std::uint8_t dimensions> void AxisAlignedBox<dimensions>::applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
     _transformedMin = (matrix*typename DimensionTraits<dimensions>::PointType(_min)).vector();
     _transformedMax = (matrix*typename DimensionTraits<dimensions>::PointType(_max)).vector();
+}
+
+template<std::uint8_t dimensions> bool AxisAlignedBox<dimensions>::collides(const AbstractShape<dimensions>* other) const {
+    if(other->type() == AbstractShape<dimensions>::Type::Point)
+        return *this % *static_cast<const Point<dimensions>*>(other);
+
+    return AbstractShape<dimensions>::collides(other);
+}
+
+template<std::uint8_t dimensions> bool AxisAlignedBox<dimensions>::operator%(const Point<dimensions>& other) const {
+    return (other.transformedPosition() >= _transformedMin).all() &&
+           (other.transformedPosition() < _transformedMax).all();
 }
 
 template class AxisAlignedBox<2>;

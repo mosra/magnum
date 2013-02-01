@@ -20,7 +20,8 @@
  */
 
 #include "Math/Vector3.h"
-#include "AbstractShape.h"
+#include "Physics/AbstractShape.h"
+#include "Physics/Physics.h"
 
 #include "corradeCompatibility.h"
 
@@ -41,6 +42,8 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT AxisAlignedBox: pu
         }
 
         void applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) override;
+
+        bool collides(const AbstractShape<dimensions>* other) const override;
 
         /** @brief Minimal coordinates */
         inline typename DimensionTraits<dimensions>::VectorType min() const {
@@ -70,6 +73,9 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT AxisAlignedBox: pu
             return _transformedMax;
         }
 
+        /** @brief Collision with point */
+        bool operator%(const Point<dimensions>& other) const;
+
     private:
         typename DimensionTraits<dimensions>::VectorType _min, _max,
             _transformedMin, _transformedMax;
@@ -80,6 +86,9 @@ typedef AxisAlignedBox<2> AxisAlignedBox2D;
 
 /** @brief Three-dimensional axis-aligned box */
 typedef AxisAlignedBox<3> AxisAlignedBox3D;
+
+/** @collisionoperator{Point,AxisAlignedBox} */
+template<std::uint8_t dimensions> inline bool operator%(const Point<dimensions>& a, const AxisAlignedBox<dimensions>& b) { return b % a; }
 
 }}
 
