@@ -80,9 +80,9 @@ class AbstractXApplication {
         /** @brief Exit application main loop */
         inline void exit() { flags |= Flag::Exit; }
 
+    protected:
         /** @{ @name Drawing functions */
 
-    protected:
         /** @copydoc GlutApplication::viewportEvent() */
         virtual void viewportEvent(const Vector2i& size) = 0;
 
@@ -99,7 +99,6 @@ class AbstractXApplication {
 
         /** @{ @name Keyboard handling */
 
-    protected:
         /** @copydoc Sdl2Application::keyPressEvent() */
         virtual void keyPressEvent(KeyEvent& event);
 
@@ -110,7 +109,6 @@ class AbstractXApplication {
 
         /** @{ @name Mouse handling */
 
-    protected:
         /** @copydoc Sdl2Application::mousePressEvent() */
         virtual void mousePressEvent(MouseEvent& event);
 
@@ -144,6 +142,8 @@ class AbstractXApplication {
 
         Flags flags;
 };
+
+CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Flags)
 
 /**
 @brief Base for input events
@@ -205,6 +205,8 @@ class AbstractXApplication::InputEvent {
         Modifiers _modifiers;
         bool _accepted;
 };
+
+CORRADE_ENUMSET_OPERATORS(AbstractXApplication::InputEvent::Modifiers)
 
 /**
 @brief Key event
@@ -388,9 +390,6 @@ When no other application header is included this macro is also aliased to
 #undef MAGNUM_APPLICATION_MAIN
 #endif
 #endif
-
-CORRADE_ENUMSET_OPERATORS(AbstractXApplication::InputEvent::Modifiers)
-CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Flags)
 
 /* Implementations for inline functions with unused parameters */
 inline void AbstractXApplication::keyPressEvent(KeyEvent&) {}
