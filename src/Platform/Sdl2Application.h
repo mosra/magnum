@@ -80,6 +80,9 @@ class Sdl2Application {
          */
         int exec();
 
+        /** @brief Exit application main loop */
+        inline void exit() { flags |= Flag::Exit; }
+
     protected:
 
         /** @{ @name Drawing functions */
@@ -94,7 +97,7 @@ class Sdl2Application {
         inline void swapBuffers() { SDL_GL_SwapWindow(window); }
 
         /** @copydoc GlutApplication::redraw() */
-        inline void redraw() { _redraw = true; }
+        inline void redraw() { flags |= Flag::Redraw; }
 
         /*@}*/
 
@@ -146,13 +149,23 @@ class Sdl2Application {
         /*@}*/
 
     private:
+        enum class Flag: std::uint8_t {
+            Redraw = 1 << 0,
+            Exit = 1 << 1
+        };
+
+        typedef Corrade::Containers::EnumSet<Flag, unsigned int> Flags;
+        CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
+
         SDL_Window* window;
         SDL_GLContext context;
 
         Context* c;
 
-        bool _redraw;
+        Flags flags;
 };
+
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Flags)
 
 /**
 @brief Base for input events

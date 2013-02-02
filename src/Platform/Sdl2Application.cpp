@@ -40,7 +40,7 @@ Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
 
 }
 
-Sdl2Application::Sdl2Application(int, char**, const std::string& name, const Vector2i& size): _redraw(true) {
+Sdl2Application::Sdl2Application(int, char**, const std::string& name, const Vector2i& size): flags(Flag::Redraw) {
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         Error() << "Cannot initialize SDL.";
         std::exit(1);
@@ -83,7 +83,7 @@ Sdl2Application::~Sdl2Application() {
 }
 
 int Sdl2Application::exec() {
-    for(;;) {
+    while(!(flags & Flag::Exit)) {
         SDL_Event event;
 
         while(SDL_PollEvent(&event)) {
@@ -92,10 +92,10 @@ int Sdl2Application::exec() {
                     switch(event.window.event) {
                         case SDL_WINDOWEVENT_RESIZED:
                             viewportEvent({event.window.data1, event.window.data2});
-                            _redraw = true;
+                            flags |= Flag::Redraw;
                             break;
                         case SDL_WINDOWEVENT_EXPOSED:
-                            _redraw = true;
+                            flags |= Flag::Redraw;
                             break;
                     } break;
 
@@ -127,8 +127,8 @@ int Sdl2Application::exec() {
             }
         }
 
-        if(_redraw) {
-            _redraw = false;
+        if(flags & Flag::Redraw) {
+            flags &= ~Flag::Redraw;
             drawEvent();
         } else Corrade::Utility::sleep(5);
     }
