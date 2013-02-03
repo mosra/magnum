@@ -22,7 +22,8 @@
 #  Primitives    - Library with stock geometric primitives (static)
 #  SceneGraph    - Scene graph library
 #  Shaders       - Library with stock shaders
-#  Text          - Text rendering library
+#  Text          - Text rendering library (depends on TextureTools component,
+#                  HarfBuzz and FreeType library)
 #  TextureTools  - TextureTools library
 #  GlxApplication - GLX application (depends on X11 libraries)
 #  XEglApplication - X/EGL application (depends on EGL and X11 libraries)
@@ -208,6 +209,13 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     # Text library
     if(${component} STREQUAL Text)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Font.h)
+
+        # Dependencies
+        find_package(FreeType)
+        find_package(HarfBuzz)
+        if(NOT FREETYPE_FOUND OR NOT HARFBUZZ_FOUND)
+            unset(MAGNUM_${_COMPONENT}_LIBRARY)
+        endif()
     endif()
 
     # TextureTools library
