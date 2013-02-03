@@ -17,7 +17,7 @@ set(MagnumText_HEADERS
 
 add_library(MagnumText SHARED ${MagnumText_SRCS})
 
-target_link_libraries(MagnumText Magnum MagnumMeshTools MagnumTextureTools ${FREETYPE_LIBRARIES} ${HARFBUZZ_LIBRARIES})
+target_link_libraries(MagnumText Magnum MagnumTextureTools ${FREETYPE_LIBRARIES} ${HARFBUZZ_LIBRARIES})
 
 install(TARGETS MagnumText DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumText_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Text)
