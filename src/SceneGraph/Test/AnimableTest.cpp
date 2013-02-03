@@ -266,6 +266,21 @@ void AnimableTest::repeat() {
     group.step(33.0f, 0.5f);
     CORRADE_COMPARE(animable.state(), AnimationState::Stopped);
     CORRADE_COMPARE(animable.time, 4.5f);
+
+    /* Starting the animation again, should be repeatable again */
+    animable.setState(AnimationState::Running);
+
+    /* Three animation repeats */
+    group.step(1.0f, 0.5f);
+    CORRADE_COMPARE(animable.state(), AnimationState::Running);
+    group.step(11.5f, 0.5f);
+    CORRADE_COMPARE(animable.state(), AnimationState::Running);
+    group.step(25.5f, 0.5f);
+    CORRADE_COMPARE(animable.state(), AnimationState::Running);
+
+    /* Should be stopped now */
+    group.step(33.0f, 0.5f);
+    CORRADE_COMPARE(animable.state(), AnimationState::Stopped);
 }
 
 void AnimableTest::stop() {

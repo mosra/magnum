@@ -80,10 +80,12 @@ template<std::uint8_t dimensions, class T> void AnimableGroup<dimensions, T>::st
             CORRADE_INTERNAL_ASSERT(animable->previousState == animable->currentState);
             continue;
 
-        /* The animation was started recently, set start time to previous frame time */
+        /* The animation was started recently, set start time to previous frame
+           time, reset repeat count */
         } else if(animable->previousState == AnimationState::Stopped) {
             animable->previousState = AnimationState::Running;
             animable->startTime = time;
+            animable->repeats = 0;
             ++_runningCount;
             animable->animationStarted();
 
