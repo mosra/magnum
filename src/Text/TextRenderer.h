@@ -66,14 +66,6 @@ template<std::uint8_t dimensions> class MAGNUM_TEXT_EXPORT TextRenderer {
          * subclasses and rectangle spanning the rendered text.
          */
         static std::tuple<Mesh, Rectangle> render(Font& font, GLfloat size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
-
-    private:
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        struct Vertex {
-            typename DimensionTraits<dimensions>::PointType position;
-            Vector2 textureCoordinates;
-        };
-        #endif
 };
 
 /** @brief Two-dimensional text renderer */
