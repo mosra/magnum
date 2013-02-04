@@ -26,7 +26,7 @@ class GramSchmidtTest: public Corrade::TestSuite::Tester {
         void test();
 };
 
-typedef Matrix<3, float> Matrix3;
+typedef RectangularMatrix<3, 3, float> Matrix3;
 typedef Vector<3, float> Vector3;
 
 GramSchmidtTest::GramSchmidtTest() {
