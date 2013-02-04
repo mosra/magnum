@@ -15,7 +15,6 @@
 
 #include <TestSuite/Tester.h>
 
-#include "Math/Matrix.h"
 #include "Math/Algorithms/GaussJordan.h"
 
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
@@ -28,7 +27,7 @@ class GaussJordanTest: public Corrade::TestSuite::Tester {
         void invert();
 };
 
-typedef Matrix<4, float> Matrix4;
+typedef RectangularMatrix<4, 4, float> Matrix4;
 typedef Vector<4, float> Vector4;
 
 GaussJordanTest::GaussJordanTest() {
@@ -58,11 +57,11 @@ void GaussJordanTest::invert() {
                             Vector4(259/412.0f, -185/206.0f,  31/412.0f, 27/206.0f));
 
     Matrix4 a2(a);
-    Matrix4 inverse(Matrix4::Identity);
+    Matrix4 inverse = Matrix4::fromDiagonal(Vector4(1.0f));
     CORRADE_VERIFY(GaussJordan::inPlace(a2, inverse));
 
     CORRADE_COMPARE(inverse, expectedInverse);
-    CORRADE_COMPARE(a*inverse, Matrix4());
+    CORRADE_COMPARE(a*inverse, Matrix4::fromDiagonal(Vector4(1.0f)));
 }
 
 }}}}
