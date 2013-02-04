@@ -39,6 +39,28 @@ namespace Magnum { namespace Text {
 @brief %Font
 
 Contains font with characters prerendered into texture atlas.
+
+@section Font-usage Usage
+
+You need to maintain instance of FontRenderer during the lifetime of all Font
+instances. The font can be created either from file or from memory location of
+format supported by [FreeType](http://www.freetype.org/) library. Next step is
+to prerender all the glyphs which will be used in text rendering later.
+@code
+Text::FontRenderer fontRenderer;
+
+Text::Font font(fontRenderer, "MyFont.ttf", 48.0f);
+font.prerender("abcdefghijklmnopqrstuvwxyz"
+               "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+               "0123456789 ", Vector2i(512));
+@endcode
+See TextRenderer for information about text rendering.
+
+@section Font-extensions Required OpenGL functionality
+
+%Font texture uses one-component internal format, which requires
+@extension{ARB,texture_rg} (also part of OpenGL ES 3.0 or available as
+@es_extension{EXT,texture_rg} in ES 2.0).
 */
 class MAGNUM_TEXT_EXPORT Font {
     Font(const Font&) = delete;
@@ -69,6 +91,8 @@ class MAGNUM_TEXT_EXPORT Font {
          *
          * Creates new atlas with prerendered characters, replacing the
          * previous one (if any).
+         * @attention @p atlasSize must be large enough to contain all
+         *      rendered glyphs.
          */
         void prerender(const std::string& characters, const Vector2i& atlasSize);
 

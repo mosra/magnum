@@ -29,9 +29,10 @@ typedef FT_LibraryRec_* FT_Library;
 namespace Magnum { namespace Text {
 
 /**
-@brief Font renderer
+@brief %Font renderer
 
-Contains global instance of font renderer used by Font class.
+Contains global instance of font renderer. See Font class documentation for
+more information.
 */
 class MAGNUM_TEXT_EXPORT FontRenderer {
     public:

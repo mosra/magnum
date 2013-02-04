@@ -25,7 +25,10 @@ namespace Magnum { namespace Text {
 
 class Font;
 class FontRenderer;
-/* TextRenderer used only statically */
+
+template<std::uint8_t> class TextRenderer;
+typedef TextRenderer<2> TextRenderer2D;
+typedef TextRenderer<3> TextRenderer3D;
 
 }}
 

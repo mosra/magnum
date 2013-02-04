@@ -20,6 +20,8 @@
 
 #include "Math/Point2D.h"
 #include "Math/Point3D.h"
+#include "Context.h"
+#include "Extensions.h"
 #include "Mesh.h"
 #include "Swizzle.h"
 #include "Shaders/AbstractTextShader.h"
@@ -240,6 +242,94 @@ template<std::uint8_t dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimen
         ->setIndexBuffer(indexBuffer, 0, indexType, 0, vertexCount);
 
     return std::make_tuple(std::move(mesh), rectangle);
+}
+
+template<std::uint8_t dimensions> TextRenderer<dimensions>::TextRenderer(Font& font, const GLfloat size): font(font), size(size), _capacity(0), vertexBuffer(Buffer::Target::Array), indexBuffer(Buffer::Target::ElementArray) {
+    #ifndef MAGNUM_TARGET_GLES
+    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::map_buffer_range);
+    #else
+    #ifdef MAGNUM_TARGET_GLES2
+    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::EXT::map_buffer_range);
+    #endif
+    #endif
+
+    _mesh.setPrimitive(Mesh::Primitive::Triangles)
+        ->addInterleavedVertexBuffer(&vertexBuffer, 0,
+            typename Shaders::AbstractTextShader<dimensions>::Position(),
+            typename Shaders::AbstractTextShader<dimensions>::TextureCoordinates());
+}
+
+template<std::uint8_t dimensions> void TextRenderer<dimensions>::reserve(const uint32_t glyphCount, const Buffer::Usage vertexBufferUsage, const Buffer::Usage indexBufferUsage) {
+    _capacity = glyphCount;
+
+    const std::uint32_t vertexCount = glyphCount*4;
+    const std::uint32_t indexCount = glyphCount*6;
+
+    /* Allocate vertex buffer, reset vertex count */
+    vertexBuffer.setData(vertexCount*sizeof(Vertex<dimensions>), nullptr, vertexBufferUsage);
+    _mesh.setVertexCount(0);
+
+    /* Allocate index buffer, reset index count and reconfigure buffer binding */
+    Mesh::IndexType indexType;
+    std::size_t indicesSize;
+    if(vertexCount < 255) {
+        indexType = Mesh::IndexType::UnsignedByte;
+        indicesSize = indexCount*sizeof(GLushort);
+    } else if(vertexCount < 65535) {
+        indexType = Mesh::IndexType::UnsignedShort;
+        indicesSize = indexCount*sizeof(GLushort);
+    } else {
+        indexType = Mesh::IndexType::UnsignedInt;
+        indicesSize = indexCount*sizeof(GLuint);
+    }
+    indexBuffer.setData(indicesSize, nullptr, indexBufferUsage);
+    _mesh.setIndexCount(0)
+        ->setIndexBuffer(&indexBuffer, 0, indexType, 0, vertexCount);
+
+    /* Prefill index buffer */
+    void* indices = indexBuffer.map(0, indicesSize, Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write);
+    if(vertexCount < 255)
+        createIndices<GLubyte>(indices, glyphCount);
+    else if(vertexCount < 65535)
+        createIndices<GLushort>(indices, glyphCount);
+    else
+        createIndices<GLuint>(indices, glyphCount);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(indexBuffer.unmap());
+}
+
+template<std::uint8_t dimensions> void TextRenderer<dimensions>::render(const std::string& text) {
+    TextLayouter layouter(font, size, text);
+
+    CORRADE_ASSERT(layouter.glyphCount() <= _capacity, "Text::TextRenderer::render(): capacity" << _capacity << "too small to render" << layouter.glyphCount() << "glyphs", );
+
+    /* Render all glyphs */
+    Vertex<dimensions>* const vertices = static_cast<Vertex<dimensions>*>(vertexBuffer.map(0, layouter.glyphCount()*4*sizeof(Vertex<dimensions>),
+        Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write));
+    Vector2 cursorPosition;
+    for(std::uint32_t i = 0; i != layouter.glyphCount(); ++i) {
+        /* Position of the texture in the resulting glyph, texture coordinates */
+        Rectangle quadPosition, textureCoordinates;
+        Vector2 advance;
+        std::tie(quadPosition, textureCoordinates, advance) = layouter.renderGlyph(cursorPosition, i);
+
+        if(i == 0)
+            _rectangle.bottomLeft() = quadPosition.bottomLeft();
+        else if(i == layouter.glyphCount()-1)
+            _rectangle.topRight() = quadPosition.topRight();
+
+        const std::size_t vertex = i*4;
+        vertices[vertex]   = {point<dimensions>(quadPosition.topLeft()), textureCoordinates.topLeft()};
+        vertices[vertex+1] = {point<dimensions>(quadPosition.bottomLeft()), textureCoordinates.bottomLeft()};
+        vertices[vertex+2] = {point<dimensions>(quadPosition.topRight()), textureCoordinates.topRight()};
+        vertices[vertex+3] = {point<dimensions>(quadPosition.bottomRight()), textureCoordinates.bottomRight()};
+
+        /* Advance cursor position to next character */
+        cursorPosition += advance;
+    }
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vertexBuffer.unmap());
+
+    /* Update index count */
+    _mesh.setIndexCount(layouter.glyphCount()*6);
 }
 
 template class TextRenderer<2>;
