@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::Algorithms::GaussJordan
+ * @brief Function Magnum::Math::Algorithms::gaussJordanInPlaceTransposed(), Magnum::Math::Algorithms::gaussJordanInPlace()
  */
 
 #include "Math/RectangularMatrix.h"
@@ -24,54 +24,25 @@
 namespace Magnum { namespace Math { namespace Algorithms {
 
 /**
-@brief Gauss-Jordan elimination
+@brief In-place Gauss-Jordan elimination on transposed matrices
+@param a     Transposed left side of augmented matrix
+@param t     Transposed right side of augmented matrix
+@return True if @p a is regular, false if @p a is singular (and thus the
+    system cannot be solved).
+
+As Gauss-Jordan elimination works on rows and matrices in OpenGL are
+column-major, it is more efficient to operate on transposed matrices and treat
+columns as rows. See also gaussJordanInPlace() which works with non-transposed matrices.
+
+The function eliminates matrix @p a and solves @p t in place. For efficiency
+reasons, only pure Gaussian elimination is done on @p a and the final
+backsubstitution is done only on @p t, as @p a would always end with identity
+matrix anyway.
 
 Based on ultra-compact Python code by Jarno Elonen,
 http://elonen.iki.fi/code/misc-notes/python-gaussj/index.html.
 */
-class GaussJordan {
-    public:
-        GaussJordan() = delete;
-
-        /**
-         * @brief Eliminate transposed matrices in place
-         * @param a     Transposed left side of augmented matrix
-         * @param t     Transposed right side of augmented matrix
-         * @return True if @p a is regular, false if @p a is singular (and
-         *      thus the system cannot be solved).
-         *
-         * As Gauss-Jordan elimination works on rows and matrices in OpenGL
-         * are column-major, it is more efficient to operate on transposed
-         * matrices and treat columns as rows. See also inPlace() which works
-         * with non-transposed matrices.
-         *
-         * The function eliminates matrix @p a and solves @p t in place. For
-         * efficiency reasons, only pure Gaussian elimination is done on @p a
-         * and the final backsubstitution is done only on @p t, as @p a would
-         * always end with identity matrix anyway.
-         */
-        template<std::size_t size, std::size_t rows, class T> static bool inPlaceTransposed(RectangularMatrix<size, size, T>& a, RectangularMatrix<size, rows, T>& t);
-
-        /**
-         * @brief Eliminate in place
-         *
-         * Transposes the matrices, calls inPlaceTransposed() on them and then
-         * transposes them back.
-         */
-        template<std::size_t size, std::size_t cols, class T> static bool inPlace(RectangularMatrix<size, size, T>& a, RectangularMatrix<cols, size, T>& t) {
-            a = a.transposed();
-            RectangularMatrix<size, cols, T> tTransposed = t.transposed();
-
-            bool ret = inPlaceTransposed(a, tTransposed);
-
-            a = a.transposed();
-            t = tTransposed.transposed();
-
-            return ret;
-        }
-};
-
-template<std::size_t size, std::size_t cols, class T> bool GaussJordan::inPlaceTransposed(RectangularMatrix<size, size, T>& a, RectangularMatrix<size, cols, T>& t) {
+template<std::size_t size, std::size_t rows, class T> bool gaussJordanInPlaceTransposed(RectangularMatrix<size, size, T>& a, RectangularMatrix<size, rows, T>& t) {
     for(std::size_t row = 0; row != size; ++row) {
         /* Find max pivot */
         std::size_t rowMax = row;
@@ -108,6 +79,24 @@ template<std::size_t size, std::size_t cols, class T> bool GaussJordan::inPlaceT
     }
 
     return true;
+}
+
+/**
+@brief In-place Gauss-Jordan elimination
+
+Transposes the matrices, calls gaussJordanInPlaceTransposed() on them and then
+transposes them back.
+*/
+template<std::size_t size, std::size_t cols, class T> bool gaussJordanInPlace(RectangularMatrix<size, size, T>& a, RectangularMatrix<cols, size, T>& t) {
+    a = a.transposed();
+    RectangularMatrix<size, cols, T> tTransposed = t.transposed();
+
+    bool ret = gaussJordanInPlaceTransposed(a, tTransposed);
+
+    a = a.transposed();
+    t = tTransposed.transposed();
+
+    return ret;
 }
 
 }}}

@@ -42,7 +42,7 @@ void GaussJordanTest::singular() {
               Vector4(1.0f, 2.0f,  7.0f, 40.0f));
     RectangularMatrix<4, 1, float> t;
 
-    CORRADE_VERIFY(!GaussJordan::inPlaceTransposed(a, t));
+    CORRADE_VERIFY(!gaussJordanInPlaceTransposed(a, t));
 }
 
 void GaussJordanTest::invert() {
@@ -58,7 +58,7 @@ void GaussJordanTest::invert() {
 
     Matrix4 a2(a);
     Matrix4 inverse = Matrix4::fromDiagonal(Vector4(1.0f));
-    CORRADE_VERIFY(GaussJordan::inPlace(a2, inverse));
+    CORRADE_VERIFY(gaussJordanInPlace(a2, inverse));
 
     CORRADE_COMPARE(inverse, expectedInverse);
     CORRADE_COMPARE(a*inverse, Matrix4::fromDiagonal(Vector4(1.0f)));
