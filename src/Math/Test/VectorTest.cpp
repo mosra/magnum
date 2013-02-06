@@ -56,6 +56,7 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void maxAbs();
 
         void projected();
+        void projectedOntoNormalized();
         void angle();
         void lerp();
 
@@ -98,6 +99,7 @@ VectorTest::VectorTest() {
              &VectorTest::maxAbs,
 
              &VectorTest::projected,
+             &VectorTest::projectedOntoNormalized,
              &VectorTest::angle,
              &VectorTest::lerp,
 
@@ -284,6 +286,22 @@ void VectorTest::projected() {
 
     CORRADE_COMPARE(projected, Vector3(0.222222f, -0.222222f, 0.111111f));
     CORRADE_COMPARE(projected.normalized(), line.normalized());
+}
+
+void VectorTest::projectedOntoNormalized() {
+    std::ostringstream o;
+    Error::setOutput(&o);
+
+    Vector3 vector(1.0f, 2.0f, 3.0f);
+    Vector3 line(1.0f, -1.0f, 0.5f);
+    Vector3 projected = vector.projectedOntoNormalized(line);
+    CORRADE_VERIFY(projected != projected);
+    CORRADE_COMPARE(o.str(), "Math::Vector::projectedOntoNormalized(): line must be normalized\n");
+
+    projected = vector.projectedOntoNormalized(line.normalized());
+    CORRADE_COMPARE(projected, Vector3(0.222222f, -0.222222f, 0.111111f));
+    CORRADE_COMPARE(projected.normalized(), line.normalized());
+    CORRADE_COMPARE(projected, vector.projected(line));
 }
 
 void VectorTest::angle() {

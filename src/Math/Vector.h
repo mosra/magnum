@@ -420,14 +420,29 @@ template<std::size_t size, class T> class Vector {
         }
 
         /**
-         * @brief %Vector projected onto another
+         * @brief %Vector projected onto line
          *
-         * Returns vector projected onto line defined by @p other. @f[
+         * Returns vector projected onto @p line. @f[
          *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b
          * @f]
+         * @see projectedOntoNormalized()
          */
-        inline Vector<size, T> projected(const Vector<size, T>& other) const {
-            return other*dot(*this, other)/other.dot();
+        inline Vector<size, T> projected(const Vector<size, T>& line) const {
+            return line*dot(*this, line)/line.dot();
+        }
+
+        /**
+         * @brief %Vector projected onto normalized line
+         *
+         * Slightly faster alternative to projected(), expects @p line to be
+         * normalized. @f[
+         *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b =
+         *          (\boldsymbol a \cdot \boldsymbol b) \boldsymbol b
+         * @f]
+         */
+        inline Vector<size, T> projectedOntoNormalized(const Vector<size, T>& line) const {
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(line.dot(), T(1)), "Math::Vector::projectedOntoNormalized(): line must be normalized", (Vector<size, T>(std::numeric_limits<T>::quiet_NaN())));
+            return line*dot(*this, line);
         }
 
         /** @brief Sum of values in the vector */
