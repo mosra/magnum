@@ -175,7 +175,7 @@ mat[0] *= 2;    // first column
 mat[2][0] = 5;  // first element of first column
 @endcode
 - Various algorithms which commonly operate on matrix rows (such as
-  @ref Algorithms::GaussJordan "Gauss-Jordan elimination") have faster
+  @ref Algorithms::gaussJordanInPlace() "Gauss-Jordan elimination") have faster
   alternatives which operate on columns. It's then up to user decision to
   operate with transposed matrices or use the slower non-transposed
   alternative of the algorithm.

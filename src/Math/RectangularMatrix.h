@@ -73,6 +73,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @brief Construct diagonal matrix
          *
          * @see diagonal()
+         * @todo make this constexpr
          */
         inline static RectangularMatrix<cols, rows, T> fromDiagonal(const Vector<DiagonalSize, T>& diagonal) {
             RectangularMatrix<cols, rows, T> out;

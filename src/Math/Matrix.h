@@ -61,6 +61,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * You can also explicitly call this constructor with
          * `Matrix m(Matrix::Identity);`. Optional parameter @p value allows
          * you to specify value on diagonal.
+         * @todo use constexpr fromDiagonal() for this when it's done
          */
         inline /*implicit*/ Matrix(IdentityType = Identity, T value = T(1)) {
             for(std::size_t i = 0; i != size; ++i)

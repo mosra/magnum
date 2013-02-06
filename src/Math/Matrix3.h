@@ -119,6 +119,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
         inline constexpr explicit Matrix3(typename Matrix<3, T>::ZeroType): Matrix<3, T>(Matrix<3, T>::Zero) {}
 
         /** @copydoc Matrix::Matrix(IdentityType, T) */
+        /** @todo Use constexpr implementation in Matrix, when done */
         inline constexpr /*implicit*/ Matrix3(typename Matrix<3, T>::IdentityType = (Matrix<3, T>::Identity), T value = T(1)): Matrix<3, T>(
             Vector<3, T>(value,  T(0),  T(0)),
             Vector<3, T>( T(0), value,  T(0)),
