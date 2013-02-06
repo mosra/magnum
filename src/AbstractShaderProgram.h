@@ -1207,12 +1207,12 @@ template<> struct Attribute<GLuint> {
     }
 };
 
-template<std::size_t size> struct Attribute<Math::Vector<size, GLint>>: public Attribute<GLint> {
-    inline constexpr static GLint components() { return size; }
+template<std::size_t size_> struct Attribute<Math::Vector<size_, GLint>>: public Attribute<GLint> {
+    inline constexpr static GLint components() { return size_; }
 };
 
-template<std::size_t size> struct Attribute<Math::Vector<size, GLuint>>: public Attribute<GLuint> {
-    inline constexpr static GLint components() { return size; }
+template<std::size_t size_> struct Attribute<Math::Vector<size_, GLuint>>: public Attribute<GLuint> {
+    inline constexpr static GLint components() { return size_; }
 };
 
 #ifndef MAGNUM_TARGET_GLES
@@ -1237,14 +1237,14 @@ template<std::size_t cols, std::size_t rows> struct Attribute<Math::RectangularM
     inline constexpr static std::size_t vectorCount() { return cols; }
 };
 
-template<std::size_t size> struct Attribute<Math::Matrix<size, GLdouble>>: public Attribute<GLdouble> {
-    inline constexpr static GLint components() { return size; }
-    inline constexpr static std::size_t vectorCount() { return size; }
+template<std::size_t size_> struct Attribute<Math::Matrix<size_, GLdouble>>: public Attribute<GLdouble> {
+    inline constexpr static GLint components() { return size_; }
+    inline constexpr static std::size_t vectorCount() { return size_; }
 };
 
-template<std::size_t size> struct Attribute<Math::Vector<size, GLdouble>>: public Attribute<GLdouble> {
-    inline constexpr static GLint components() { return size; }
-    inline constexpr static std::size_t vectorCount() { return size; }
+template<std::size_t size_> struct Attribute<Math::Vector<size_, GLdouble>>: public Attribute<GLdouble> {
+    inline constexpr static GLint components() { return size_; }
+    inline constexpr static std::size_t vectorCount() { return size_; }
 };
 #endif
 
