@@ -16,12 +16,35 @@
 */
 
 /** @file
- * @brief Function Magnum::Math::Algorithms::gramSchmidtOrthonormalizeInPlace(), Magnum::Math::Algorithms::gramSchmidtOrthonormalize()
+ * @brief Function Magnum::Math::Algorithms::gramSchmidtOrthogonalizeInPlace(), Magnum::Math::Algorithms::gramSchmidtOrthogonalize(), Magnum::Math::Algorithms::gramSchmidtOrthonormalizeInPlace(), Magnum::Math::Algorithms::gramSchmidtOrthonormalize()
  */
 
 #include "Math/RectangularMatrix.h"
 
 namespace Magnum { namespace Math { namespace Algorithms {
+
+/**
+@brief In-place Gram-Schmidt matrix orthogonalization
+@param[in,out] matrix   Matrix to perform orthogonalization on
+*/
+template<std::size_t cols, std::size_t rows, class T> void gramSchmidtOrthogonalizeInPlace(RectangularMatrix<cols, rows, T>& matrix) {
+    static_assert(cols <= rows, "Unsupported matrix aspect ratio");
+    for(std::size_t i = 0; i != cols; ++i) {
+        for(std::size_t j = i+1; j != cols; ++j)
+            matrix[j] -= matrix[j].projected(matrix[i]);
+    }
+}
+
+/**
+@brief Gram-Schmidt matrix orthogonalization
+
+Unlike gramSchmidtOrthogonalizeInPlace() returns the modified matrix instead
+of performing the orthogonalization in-place.
+*/
+template<std::size_t cols, std::size_t rows, class T> RectangularMatrix<cols, rows, T> gramSchmidtOrthogonalize(RectangularMatrix<cols, rows, T> matrix) {
+    gramSchmidtOrthogonalizeInPlace(matrix);
+    return matrix;
+}
 
 /**
 @brief In-place Gram-Schmidt matrix orthonormalization
