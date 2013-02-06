@@ -1185,6 +1185,13 @@ class MAGNUM_EXPORT AbstractTexture {
         #endif
         static ParameterfvImplementation parameterfvImplementation;
 
+        #ifndef MAGNUM_TARGET_GLES
+        typedef void(AbstractTexture::*GetLevelParameterivImplementation)(GLenum, GLint, GLenum, GLint*);
+        void MAGNUM_LOCAL getLevelParameterImplementationDefault(GLenum target, GLint level, GLenum parameter, GLint* values);
+        void MAGNUM_LOCAL getLevelParameterImplementationDSA(GLenum target, GLint level, GLenum parameter, GLint* values);
+        static MAGNUM_LOCAL GetLevelParameterivImplementation getLevelParameterivImplementation;
+        #endif
+
         typedef void(AbstractTexture::*MipmapImplementation)();
         void MAGNUM_LOCAL mipmapImplementationDefault();
         #ifndef MAGNUM_TARGET_GLES

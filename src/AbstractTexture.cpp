@@ -32,6 +32,10 @@ AbstractTexture::ParameterfImplementation AbstractTexture::parameterfImplementat
     &AbstractTexture::parameterImplementationDefault;
 AbstractTexture::ParameterfvImplementation AbstractTexture::parameterfvImplementation =
     &AbstractTexture::parameterImplementationDefault;
+#ifndef MAGNUM_TARGET_GLES
+AbstractTexture::GetLevelParameterivImplementation AbstractTexture::getLevelParameterivImplementation =
+    &AbstractTexture::getLevelParameterImplementationDefault;
+#endif
 AbstractTexture::MipmapImplementation AbstractTexture::mipmapImplementation =
     &AbstractTexture::mipmapImplementationDefault;
 #ifndef MAGNUM_TARGET_GLES
@@ -218,6 +222,7 @@ void AbstractTexture::initializeContextBasedFunctionality(Context* context) {
         parameteriImplementation = &AbstractTexture::parameterImplementationDSA;
         parameterfImplementation = &AbstractTexture::parameterImplementationDSA;
         parameterfvImplementation = &AbstractTexture::parameterImplementationDSA;
+        getLevelParameterivImplementation = &AbstractTexture::getLevelParameterImplementationDSA;
         mipmapImplementation = &AbstractTexture::mipmapImplementationDSA;
         storage1DImplementation = &AbstractTexture::storageImplementationDSA;
         storage2DImplementation = &AbstractTexture::storageImplementationDSA;
@@ -270,7 +275,20 @@ void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLf
 void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLfloat* values) {
     glTextureParameterfvEXT(_id, _target, parameter, values);
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::getLevelParameterImplementationDefault(GLenum target, GLint level, GLenum parameter, GLint* values) {
+    bindInternal();
+    glGetTexLevelParameteriv(target, level, parameter, values);
+}
+
+void AbstractTexture::getLevelParameterImplementationDSA(GLenum target, GLint level, GLenum parameter, GLint* values) {
+    glGetTextureLevelParameterivEXT(_id, target, level, parameter, values);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels, AbstractTexture::InternalFormat internalFormat, const Math::Vector< 1, GLsizei >& size) {
     bindInternal();
     /** @todo Re-enable when extension wrangler is available for ES2 */
