@@ -85,7 +85,7 @@ class EuclideanMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
          */
         EuclideanMatrixTransformation2D<T>* normalizeRotation() {
             setTransformation(Math::Matrix3<T>::from(
-                Math::Algorithms::gramSchmidt(_transformation.rotationScaling()),
+                Math::Algorithms::gramSchmidtOrthonormalize(_transformation.rotationScaling()),
                 _transformation.translation()));
             return this;
         }

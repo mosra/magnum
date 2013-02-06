@@ -23,22 +23,22 @@ class GramSchmidtTest: public Corrade::TestSuite::Tester {
     public:
         GramSchmidtTest();
 
-        void test();
+        void orthonormalize();
 };
 
 typedef RectangularMatrix<3, 3, float> Matrix3;
 typedef Vector<3, float> Vector3;
 
 GramSchmidtTest::GramSchmidtTest() {
-    addTests(&GramSchmidtTest::test);
+    addTests(&GramSchmidtTest::orthonormalize);
 }
 
-void GramSchmidtTest::test() {
+void GramSchmidtTest::orthonormalize() {
     Matrix3 m(Vector3(3.0f,  5.0f, 8.0f),
               Vector3(4.0f,  4.0f, 7.0f),
               Vector3(7.0f, -1.0f, 8.0f));
 
-    Matrix3 normalized = Algorithms::gramSchmidt(m);
+    Matrix3 normalized = Algorithms::gramSchmidtOrthonormalize(m);
 
     /* Verify the first vector is in direction of first original */
     CORRADE_COMPARE(normalized[0], m[0].normalized());

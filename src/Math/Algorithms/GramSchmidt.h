@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Function Magnum::Math::Algorithms::gramSchmidtInPlace(), Magnum::Math::Algorithms::gramSchmidt()
+ * @brief Function Magnum::Math::Algorithms::gramSchmidtOrthonormalizeInPlace(), Magnum::Math::Algorithms::gramSchmidtOrthonormalize()
  */
 
 #include "Math/RectangularMatrix.h"
@@ -24,26 +24,26 @@
 namespace Magnum { namespace Math { namespace Algorithms {
 
 /**
-@brief Gram-Schmidt matrix orthonormalization
+@brief In-place Gram-Schmidt matrix orthonormalization
 @param[in,out] matrix   Matrix to perform orthonormalization on
 */
-template<std::size_t cols, std::size_t rows, class T> void gramSchmidtInPlace(RectangularMatrix<cols, rows, T>& matrix) {
+template<std::size_t cols, std::size_t rows, class T> void gramSchmidtOrthonormalizeInPlace(RectangularMatrix<cols, rows, T>& matrix) {
     static_assert(cols <= rows, "Unsupported matrix aspect ratio");
     for(std::size_t i = 0; i != cols; ++i) {
         matrix[i] = matrix[i].normalized();
         for(std::size_t j = i+1; j != cols; ++j)
-            matrix[j] -= matrix[j].projected(matrix[i]);
+            matrix[j] -= matrix[j].projectedOntoNormalized(matrix[i]);
     }
 }
 
 /**
 @brief Gram-Schmidt matrix orthonormalization
 
-Unlike gramSchmidtInPlace() returns the modified matrix instead of performing
-the orthonormalization in-place.
+Unlike gramSchmidtOrthonormalizeInPlace() returns the modified matrix instead
+of performing the orthonormalization in-place.
 */
-template<std::size_t cols, std::size_t rows, class T> RectangularMatrix<cols, rows, T> gramSchmidt(RectangularMatrix<cols, rows, T> matrix) {
-    gramSchmidtInPlace(matrix);
+template<std::size_t cols, std::size_t rows, class T> RectangularMatrix<cols, rows, T> gramSchmidtOrthonormalize(RectangularMatrix<cols, rows, T> matrix) {
+    gramSchmidtOrthonormalizeInPlace(matrix);
     return matrix;
 }
 
