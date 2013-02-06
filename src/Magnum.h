@@ -53,7 +53,7 @@ namespace Magnum {
 namespace Math {
     template<class T> constexpr T deg(T value);
     template<class T> constexpr T rad(T value);
-    template<class T> class Constants;
+    template<class T> struct Constants;
 }
 
 /* Bring debugging facility from Corrade::Utility namespace */

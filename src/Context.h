@@ -30,7 +30,7 @@ namespace Magnum {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    class State;
+    struct State;
 }
 #endif
 

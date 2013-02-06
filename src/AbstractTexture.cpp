@@ -458,9 +458,9 @@ namespace Implementation {
         return nullptr;
     }
 
-    template class ImageHelper<BufferImage1D>;
-    template class ImageHelper<BufferImage2D>;
-    template class ImageHelper<BufferImage3D>;
+    template struct ImageHelper<BufferImage1D>;
+    template struct ImageHelper<BufferImage2D>;
+    template struct ImageHelper<BufferImage3D>;
 }
 #endif
 
