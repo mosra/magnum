@@ -102,7 +102,12 @@ AbstractGroupedFeature for more information.
     instead.
 @see AbstractGroupedFeature3D
 */
-template<class Derived, class T = GLfloat> using AbstractGroupedFeature2D = AbstractGroupedFeature<2, Derived, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class Derived, class T = GLfloat>
+#else
+template<class Derived, class T>
+#endif
+using AbstractGroupedFeature2D = AbstractGroupedFeature<2, Derived, T>;
 
 /**
 @brief Base for three-dimensional grouped features
@@ -113,7 +118,12 @@ AbstractGroupedFeature for more information.
     instead.
 @see AbstractGroupedFeature2D
 */
-template<class Derived, class T = GLfloat> using AbstractGroupedFeature3D = AbstractGroupedFeature<3, Derived, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class Derived, class T = GLfloat>
+#else
+template<class Derived, class T>
+#endif
+using AbstractGroupedFeature3D = AbstractGroupedFeature<3, Derived, T>;
 #endif
 
 }}

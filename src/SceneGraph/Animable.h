@@ -331,7 +331,12 @@ information.
 @note Not available on GCC < 4.7. Use <tt>%Animable<2, T></tt> instead.
 @see Animable3D
 */
-template<class T = GLfloat> using Animable2D = Animable<2, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = GLfloat>
+#else
+template<class T>
+#endif
+using Animable2D = Animable<2, T>;
 
 /**
 @brief Three-dimensional animable
@@ -341,7 +346,12 @@ information.
 @note Not available on GCC < 4.7. Use <tt>%Animable<3, T></tt> instead.
 @see Animable2D
 */
-template<class T = GLfloat> using Animable3D = Animable<3, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = GLfloat>
+#else
+template<class T>
+#endif
+using Animable3D = Animable<3, T>;
 #endif
 
 }}

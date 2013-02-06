@@ -293,7 +293,12 @@ for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractFeature<2, T></tt> instead.
 @see AbstractFeature3D
 */
-template<class T = GLfloat> using AbstractFeature2D = AbstractFeature<2, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = GLfloat>
+#else
+template<class T>
+#endif
+using AbstractFeature2D = AbstractFeature<2, T>;
 
 /**
 @brief Base for three-dimensional features
@@ -303,7 +308,12 @@ for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractFeature<3, T></tt> instead.
 @see AbstractFeature2D
 */
-template<class T = GLfloat> using AbstractFeature3D = AbstractFeature<3, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = GLfloat>
+#else
+template<class T>
+#endif
+using AbstractFeature3D = AbstractFeature<3, T>;
 #endif
 
 }}

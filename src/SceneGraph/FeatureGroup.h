@@ -118,7 +118,12 @@ AbstractGroupedFeature for more information.
     instead.
 @see FeatureGroup3D
 */
-template<class Feature, class T = GLfloat> using FeatureGroup2D = FeatureGroup<2, Feature, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class Feature, class T = GLfloat>
+#else
+template<class Feature, class T>
+#endif
+using FeatureGroup2D = FeatureGroup<2, Feature, T>;
 
 /**
 @brief Base for three-dimensional object features
@@ -129,7 +134,12 @@ AbstractGroupedFeature for more information.
     instead.
 @see FeatureGroup2D
 */
-template<class Feature, class T = GLfloat> using FeatureGroup3D = FeatureGroup<3, Feature, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class Feature, class T = GLfloat>
+#else
+template<class Feature, class T>
+#endif
+using FeatureGroup3D = FeatureGroup<3, Feature, T>;
 #endif
 
 }}

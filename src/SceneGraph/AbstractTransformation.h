@@ -149,7 +149,12 @@ AbstractTransformation for more information.
     instead.
 @see AbstractTransformation3D
 */
-template<class T = GLfloat> using AbstractTransformation2D = AbstractTransformation<2, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = GLfloat>
+#else
+template<class T>
+#endif
+using AbstractTransformation2D = AbstractTransformation<2, T>;
 
 /**
 @brief Base for three-dimensional transformations
@@ -160,7 +165,12 @@ AbstractTransformation for more information.
     instead.
 @see AbstractTransformation2D
 */
-template<class T = GLfloat> using AbstractTransformation3D = AbstractTransformation<3, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = GLfloat>
+#else
+template<class T>
+#endif
+using AbstractTransformation3D = AbstractTransformation<3, T>;
 #endif
 
 }}

@@ -144,7 +144,12 @@ information.
 @note Not available on GCC < 4.7. Use <tt>%Drawable<2, T></tt> instead.
 @see Drawable3D
 */
-template<class T = GLfloat> using Drawable2D = Drawable<2, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = GLfloat>
+#else
+template<class T>
+#endif
+using Drawable2D = Drawable<2, T>;
 
 /**
 @brief Three-dimensional drawable
@@ -154,7 +159,12 @@ information.
 @note Not available on GCC < 4.7. Use <tt>%Drawable<3, T></tt> instead.
 @see Drawable2D
 */
-template<class T = GLfloat> using Drawable3D = Drawable<3, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = GLfloat>
+#else
+template<class T>
+#endif
+using Drawable3D = Drawable<3, T>;
 #endif
 
 /**
@@ -164,12 +174,17 @@ See Drawable for more information.
 @see @ref scenegraph, DrawableGroup2D, DrawableGroup3D
 */
 #ifndef CORRADE_GCC46_COMPATIBILITY
-template<std::uint8_t dimensions, class T = GLfloat> using DrawableGroup = FeatureGroup<dimensions, Drawable<dimensions, T>, T>;
-#else
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class T>
-#else
+#ifdef DOXYGEN_GENERATING_OUTPUT
 template<std::uint8_t dimensions, class T = GLfloat>
+#else
+template<std::uint8_t dimensions, class T>
+#endif
+using DrawableGroup = FeatureGroup<dimensions, Drawable<dimensions, T>, T>;
+#else
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<std::uint8_t dimensions, class T = GLfloat>
+#else
+template<std::uint8_t dimensions, class T>
 #endif
 class DrawableGroup: public FeatureGroup<dimensions, Drawable<dimensions, T>, T> {};
 #endif
@@ -183,7 +198,12 @@ more information.
 @note Not available on GCC < 4.7. Use <tt>%Drawable<2, T></tt> instead.
 @see DrawableGroup3D
 */
-template<class T = GLfloat> using DrawableGroup2D = DrawableGroup<2, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = GLfloat>
+#else
+template<class T>
+#endif
+using DrawableGroup2D = DrawableGroup<2, T>;
 
 /**
 @brief Group of three-dimensional drawables
@@ -193,7 +213,12 @@ more information.
 @note Not available on GCC < 4.7. Use <tt>%Drawable<3, T></tt> instead.
 @see DrawableGroup2D
 */
-template<class T = GLfloat> using DrawableGroup3D = DrawableGroup<3, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = GLfloat>
+#else
+template<class T>
+#endif
+using DrawableGroup3D = DrawableGroup<3, T>;
 #endif
 
 }}

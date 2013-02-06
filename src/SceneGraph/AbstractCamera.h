@@ -169,7 +169,12 @@ for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractCamera<2, T></tt> instead.
 @see AbstractCamera3D
 */
-template<class T = GLfloat> using AbstractCamera2D = AbstractCamera<2, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = GLfloat>
+#else
+template<class T>
+#endif
+using AbstractCamera2D = AbstractCamera<2, T>;
 
 /**
 @brief Base for three-dimensional cameras
@@ -179,7 +184,12 @@ for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractCamera<3, T></tt> instead.
 @see AbstractCamera2D
 */
-template<class T = GLfloat> using AbstractCamera3D = AbstractCamera<3, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = GLfloat>
+#else
+template<class T>
+#endif
+using AbstractCamera3D = AbstractCamera<3, T>;
 #endif
 
 }}

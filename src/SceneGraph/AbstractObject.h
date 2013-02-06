@@ -197,7 +197,12 @@ for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractObject<2, T></tt> instead.
 @see AbstractObject3D
 */
-template<class T = GLfloat> using AbstractObject2D = AbstractObject<2, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = GLfloat>
+#else
+template<class T>
+#endif
+using AbstractObject2D = AbstractObject<2, T>;
 
 /**
 @brief Base for three-dimensional objects
@@ -207,7 +212,12 @@ for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractObject<3, T></tt> instead.
 @see AbstractObject2D
 */
-template<class T = GLfloat> using AbstractObject3D = AbstractObject<3, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = GLfloat>
+#else
+template<class T>
+#endif
+using AbstractObject3D = AbstractObject<3, T>;
 #endif
 
 }}

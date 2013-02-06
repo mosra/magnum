@@ -76,7 +76,12 @@ more information.
 @note Not available on GCC < 4.7. Use <tt>%AnimableGroup<2, T></tt> instead.
 @see AnimableGroup3D
 */
-template<class T = GLfloat> using AnimableGroup2D = AnimableGroup<2, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = GLfloat>
+#else
+template<class T>
+#endif
+using AnimableGroup2D = AnimableGroup<2, T>;
 
 /**
 @brief Three-dimensional animable
@@ -86,7 +91,12 @@ more information.
 @note Not available on GCC < 4.7. Use <tt>%AnimableGroup<3, T></tt> instead.
 @see AnimableGroup2D
 */
-template<class T = GLfloat> using AnimableGroup3D = AnimableGroup<3, T>;
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = GLfloat>
+#else
+template<class T>
+#endif
+using AnimableGroup3D = AnimableGroup<3, T>;
 #endif
 
 }}
