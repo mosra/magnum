@@ -58,7 +58,6 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void projected();
         void projectedOntoNormalized();
         void angle();
-        void lerp();
 
         void debug();
         void configuration();
@@ -101,7 +100,6 @@ VectorTest::VectorTest() {
              &VectorTest::projected,
              &VectorTest::projectedOntoNormalized,
              &VectorTest::angle,
-             &VectorTest::lerp,
 
              &VectorTest::debug,
              &VectorTest::configuration);
@@ -318,18 +316,6 @@ void VectorTest::angle() {
 
     CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), Vector3(1.0f, -2.0f, 3.0f).normalized()),
                     rad(1.162514f));
-}
-
-void VectorTest::lerp() {
-    Vector3 a(-1.0f, 2.0f, 3.0f);
-    Vector3 b(3.0f, -2.0f, 11.0f);
-
-    CORRADE_COMPARE(Vector3::lerp(a, b, 0.25f), Vector3(0.0f, 1.0f, 5.0f));
-
-    typedef Math::Vector<3, std::int32_t> Vector3ub;
-    Vector3ub c(0, 128, 64);
-    Vector3ub d(16, 0, 32);
-    CORRADE_COMPARE(Vector3ub::lerp(c, d, 0.25f), Vector3ub(4, 96, 56));
 }
 
 void VectorTest::debug() {

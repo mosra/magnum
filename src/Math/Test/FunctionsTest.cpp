@@ -28,6 +28,7 @@ class FunctionsTest: public Corrade::TestSuite::Tester {
         void max();
         void abs();
         void clamp();
+        void lerp();
         void normalizeUnsigned();
         void normalizeSigned();
         void denormalizeUnsigned();
@@ -50,6 +51,7 @@ FunctionsTest::FunctionsTest() {
              &FunctionsTest::max,
              &FunctionsTest::abs,
              &FunctionsTest::clamp,
+             &FunctionsTest::lerp,
              &FunctionsTest::normalizeUnsigned,
              &FunctionsTest::normalizeSigned,
              &FunctionsTest::denormalizeUnsigned,
@@ -83,6 +85,23 @@ void FunctionsTest::clamp() {
     CORRADE_COMPARE(Math::clamp(9.5f, -1.0f, 5.0f), 5.0f);
 
     CORRADE_COMPARE(Math::clamp(Vector3(0.5f, -1.6f, 9.5f), -1.0f, 5.0f), Vector3(0.5f, -1.0f, 5.0f));
+}
+
+void FunctionsTest::lerp() {
+    /* Floating-point / integral scalar */
+    CORRADE_COMPARE(Math::lerp(2.0f, 5.0f, 0.5f), 3.5f);
+    CORRADE_COMPARE(Math::lerp(2, 5, 0.5f), 3);
+
+    /* Floating-point vector */
+    Vector3 a(-1.0f, 2.0f, 3.0f);
+    Vector3 b(3.0f, -2.0f, 11.0f);
+    CORRADE_COMPARE(Math::lerp(a, b, 0.25f), Vector3(0.0f, 1.0f, 5.0f));
+
+    /* Integer vector */
+    typedef Math::Vector<3, std::int32_t> Vector3ub;
+    Vector3ub c(0, 128, 64);
+    Vector3ub d(16, 0, 32);
+    CORRADE_COMPARE(Math::lerp(c, d, 0.25f), Vector3ub(4, 96, 56));
 }
 
 void FunctionsTest::normalizeUnsigned() {

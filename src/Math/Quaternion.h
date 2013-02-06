@@ -72,6 +72,7 @@ template<class T> class Quaternion {
          * Expects that both quaternions are normalized. @f[
          *      q_{LERP} = \frac{(1 - t) q_A + t q_B}{|(1 - t) q_A + t q_B|}
          * @f]
+         * @see slerp(), Math::lerp()
          */
         inline static Quaternion<T> lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
@@ -91,6 +92,7 @@ template<class T> class Quaternion {
          *      ~~~~~~~~~~
          *      \theta = acos \left( \frac{q_A \cdot q_B}{|q_A| \cdot |q_B|} \right)
          * @f]
+         * @see lerp()
          */
         inline static Quaternion<T> slerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),

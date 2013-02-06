@@ -90,22 +90,6 @@ template<std::size_t size, class T> class Vector {
             return std::acos(dot(normalizedA, normalizedB));
         }
 
-        /**
-         * @brief Linear interpolation of two vectors
-         * @param a     First vector
-         * @param b     Second vector
-         * @param t     Interpolation phase (from range @f$ [0; 1] @f$)
-         *
-         * The interpolation is done as in following: @f[
-         *      \boldsymbol v_{LERP} = (1 - t) \boldsymbol v_A + t \boldsymbol v_B
-         * @f]
-         * @todo http://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
-         *      (when SIMD is in place)
-         */
-        template<class U> inline static Vector<size, T> lerp(const Vector<size, T>& a, const Vector<size, T>& b, U t) {
-            return (U(1) - t)*a + t*b;
-        }
-
         /** @brief Construct zero-filled vector */
         inline constexpr /*implicit*/ Vector(): _data() {}
 
@@ -587,9 +571,6 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
     }                                                                       \
     inline constexpr static const Type<T>& from(const T* data) {            \
         return *reinterpret_cast<const Type<T>*>(data);                     \
-    }                                                                       \
-    template<class U> inline static const Type<T> lerp(const Math::Vector<size, T>& a, const Math::Vector<size, T>& b, U t) { \
-        return Math::Vector<size, T>::lerp(a, b, t);                        \
     }                                                                       \
                                                                             \
     inline Type<T>& operator=(const Type<T>& other) {                       \

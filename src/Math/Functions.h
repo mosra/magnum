@@ -154,6 +154,30 @@ template<std::size_t size, class T> Vector<size, T> clamp(const Vector<size, T>&
 #endif
 
 /**
+@brief Linear interpolation of two values
+@param a     First value
+@param b     Second value
+@param t     Interpolation phase (from range @f$ [0; 1] @f$)
+
+The interpolation for vectors is done as in following, similarly for scalars: @f[
+    \boldsymbol v_{LERP} = (1 - t) \boldsymbol v_A + t \boldsymbol v_B
+@f]
+@see Quaternion::lerp()
+@todo http://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
+    (when SIMD is in place)
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T, class U> inline T lerp(const T& a, const T& b, U t);
+#else
+template<class T, class U> inline T lerp(T a, T b, U t) {
+    return (U(1) - t)*a + t*b;
+}
+template<std::size_t size, class T, class U> inline Vector<size, T> lerp(const Vector<size, T>& a, const Vector<size, T>& b, U t) {
+    return (U(1) - t)*a + t*b;
+}
+#endif
+
+/**
 @brief Normalize integral value
 
 Converts integral value from full range of given *unsigned* integral type to
