@@ -45,7 +45,7 @@ template<std::uint8_t dimensions> ObjectShape<dimensions>* ObjectShapeGroup<dime
     return nullptr;
 }
 
-template class ObjectShapeGroup<2>;
-template class ObjectShapeGroup<3>;
+template class MAGNUM_PHYSICS_EXPORT ObjectShapeGroup<2>;
+template class MAGNUM_PHYSICS_EXPORT ObjectShapeGroup<3>;
 
 }}

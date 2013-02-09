@@ -53,7 +53,7 @@ template<std::uint8_t dimensions> bool Capsule<dimensions>::operator%(const Sphe
         Math::pow<2>(transformedRadius()+other.transformedRadius());
 }
 
-template class Capsule<2>;
-template class Capsule<3>;
+template class MAGNUM_PHYSICS_EXPORT Capsule<2>;
+template class MAGNUM_PHYSICS_EXPORT Capsule<3>;
 
 }}

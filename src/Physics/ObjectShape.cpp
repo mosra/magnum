@@ -46,7 +46,7 @@ template<std::uint8_t dimensions> void ObjectShape<dimensions>::clean(const type
     if(_shape) _shape->applyTransformationMatrix(absoluteTransformationMatrix);
 }
 
-template class ObjectShape<2>;
-template class ObjectShape<3>;
+template class MAGNUM_PHYSICS_EXPORT ObjectShape<2>;
+template class MAGNUM_PHYSICS_EXPORT ObjectShape<3>;
 
 }}

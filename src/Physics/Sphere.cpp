@@ -78,7 +78,7 @@ template<std::uint8_t dimensions> bool Sphere<dimensions>::operator%(const Spher
         Math::pow<2>(transformedRadius()+other.transformedRadius());
 }
 
-template class Sphere<2>;
-template class Sphere<3>;
+template class MAGNUM_PHYSICS_EXPORT Sphere<2>;
+template class MAGNUM_PHYSICS_EXPORT Sphere<3>;
 
 }}

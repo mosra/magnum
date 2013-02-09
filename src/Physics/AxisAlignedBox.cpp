@@ -38,7 +38,7 @@ template<std::uint8_t dimensions> bool AxisAlignedBox<dimensions>::operator%(con
            (other.transformedPosition() < _transformedMax).all();
 }
 
-template class AxisAlignedBox<2>;
-template class AxisAlignedBox<3>;
+template class MAGNUM_PHYSICS_EXPORT AxisAlignedBox<2>;
+template class MAGNUM_PHYSICS_EXPORT AxisAlignedBox<3>;
 
 }}
