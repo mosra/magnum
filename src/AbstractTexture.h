@@ -1308,6 +1308,8 @@ template<> struct AbstractTexture::DataHelper<1> {
 
     inline constexpr static Target target() { return Target::Texture1D; }
 
+    static Math::Vector<1, GLint> imageSize(AbstractTexture* texture, GLenum target, GLint level);
+
     inline static void setWrapping(AbstractTexture* texture, const Array1D<Wrapping>& wrapping) {
         (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.x()));
     }
@@ -1340,6 +1342,10 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
     };
 
     inline constexpr static Target target() { return Target::Texture2D; }
+
+    #ifndef MAGNUM_TARGET_GLES
+    static Vector2i imageSize(AbstractTexture* texture, GLenum target, GLint level);
+    #endif
 
     static void setWrapping(AbstractTexture* texture, const Array2D<Wrapping>& wrapping);
 
@@ -1374,6 +1380,10 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     };
 
     inline constexpr static Target target() { return Target::Texture3D; }
+
+    #ifndef MAGNUM_TARGET_GLES
+    static Vector3i imageSize(AbstractTexture* texture, GLenum target, GLint level);
+    #endif
 
     static void setWrapping(AbstractTexture* texture, const Array3D<Wrapping>& wrapping);
 

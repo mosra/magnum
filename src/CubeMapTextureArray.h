@@ -100,6 +100,17 @@ class CubeMapTextureArray: public AbstractTexture {
         }
 
         /**
+         * @brief %Image size in given mip level
+         * @param coordinate        Coordinate
+         * @param level             Mip level
+         *
+         * See Texture::imageSize() for more information.
+         */
+        inline Vector3i imageSize(Coordinate coordinate, GLint level) {
+            return DataHelper<3>::imageSize(this, GL_TEXTURE_CUBE_MAP_POSITIVE_X + static_cast<GLenum>(coordinate), level);
+        }
+
+        /**
          * @brief Set storage
          *
          * See Texture::setStorage() for more information.

@@ -464,6 +464,29 @@ namespace Implementation {
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES
+Math::Vector<1, GLint> AbstractTexture::DataHelper<1>::imageSize(AbstractTexture* texture, GLenum target, GLint level) {
+    Math::Vector<1, GLint> value;
+    (texture->*getLevelParameterivImplementation)(target, level, GL_TEXTURE_WIDTH, &value[0]);
+    return value;
+}
+
+Vector2i AbstractTexture::DataHelper<2>::imageSize(AbstractTexture* texture, GLenum target, GLint level) {
+    Vector2i value;
+    (texture->*getLevelParameterivImplementation)(target, level, GL_TEXTURE_WIDTH, &value[0]);
+    (texture->*getLevelParameterivImplementation)(target, level, GL_TEXTURE_HEIGHT, &value[1]);
+    return value;
+}
+
+Vector3i AbstractTexture::DataHelper<3>::imageSize(AbstractTexture* texture, GLenum target, GLint level) {
+    Vector3i value;
+    (texture->*getLevelParameterivImplementation)(target, level, GL_TEXTURE_WIDTH, &value[0]);
+    (texture->*getLevelParameterivImplementation)(target, level, GL_TEXTURE_HEIGHT, &value[1]);
+    (texture->*getLevelParameterivImplementation)(target, level, GL_TEXTURE_DEPTH, &value[2]);
+    return value;
+}
+#endif
+
 void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture* texture, const Array2D<Wrapping>& wrapping) {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_ASSERT(texture->_target != GL_TEXTURE_RECTANGLE || ((wrapping.x() == Wrapping::ClampToEdge || wrapping.x() == Wrapping::ClampToBorder) && (wrapping.y() == Wrapping::ClampToEdge || wrapping.y() == Wrapping::ClampToEdge)), "AbstractTexture: rectangle texture wrapping must either clamp to border or to edge", );

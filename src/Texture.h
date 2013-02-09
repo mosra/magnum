@@ -174,6 +174,23 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
         /** @brief %Texture target */
         inline constexpr Target target() const { return static_cast<Target>(_target); }
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief %Image size in given mip level
+         *
+         * The result is not cached in any way. If
+         * @extension{EXT,direct_state_access} is not available, the texture
+         * is bound to some layer before the operation.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{GetTexLevelParameter} or @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or @def_gl{TEXTURE_DEPTH}.
+         * @requires_gl %Texture image queries are not available in OpenGL ES.
+         */
+        inline typename DimensionTraits<Dimensions, GLint>::VectorType imageSize(GLint level) {
+            return DataHelper<Dimensions>::imageSize(this, _target, level);
+        }
+        #endif
+
         /**
          * @brief Set wrapping
          * @param wrapping          Wrapping type for all texture dimensions

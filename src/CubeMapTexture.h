@@ -110,6 +110,20 @@ class CubeMapTexture: public AbstractTexture {
             return this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief %Image size in given mip level
+         * @param coordinate        Coordinate
+         * @param level             Mip level
+         *
+         * See Texture::imageSize() for more information.
+         * @requires_gl %Texture image queries are not available in OpenGL ES.
+         */
+        inline Vector2i imageSize(Coordinate coordinate, GLint level) {
+            return DataHelper<2>::imageSize(this, static_cast<GLenum>(coordinate), level);
+        }
+        #endif
+
         /**
          * @brief Set storage
          *
