@@ -69,7 +69,7 @@ template<class Transformation> Object<Transformation>* Object<Transformation>::s
     }
 
     /* Remove the object from old parent children list */
-    if(this->parent()) this->parent()->Corrade::Containers::LinkedList<Object<Transformation>>::cut(this);
+    if(this->parent()) this->parent()->Corrade::Containers::template LinkedList<Object<Transformation>>::cut(this);
 
     /* Add the object to list of new parent */
     if(parent) parent->Corrade::Containers::LinkedList<Object<Transformation>>::insert(this);

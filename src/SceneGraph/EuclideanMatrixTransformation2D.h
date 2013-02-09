@@ -128,7 +128,7 @@ class EuclideanMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
          * @return Pointer to self (for method chaining)
          */
         inline EuclideanMatrixTransformation2D<T>* move(Object<EuclideanMatrixTransformation2D<T>>* under) {
-            static_cast<Object<EuclideanMatrixTransformation2D>*>(this)->Corrade::Containers::LinkedList<Object<EuclideanMatrixTransformation2D<T>>>::move(this, under);
+            static_cast<Object<EuclideanMatrixTransformation2D>*>(this)->Corrade::Containers::template LinkedList<Object<EuclideanMatrixTransformation2D<T>>>::move(this, under);
             return this;
         }
 
