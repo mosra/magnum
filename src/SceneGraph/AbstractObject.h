@@ -55,7 +55,7 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractObject
 {
     friend class Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>;
     friend class Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
-    friend AbstractFeature<dimensions, T>::AbstractFeature(AbstractObject<dimensions, T>*);
+    friend class AbstractFeature<dimensions, T>;
 
     public:
         /** @brief Feature object type */

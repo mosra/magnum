@@ -89,7 +89,7 @@ namespace Implementation {
     };
 
     template<class T> class ResourceManagerData {
-        template<class, class> friend class Resource;
+        template<class, class> friend class Magnum::Resource;
         friend class AbstractResourceLoader<T>;
 
         ResourceManagerData(const ResourceManagerData<T>&) = delete;
