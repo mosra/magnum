@@ -127,7 +127,7 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractObject
          *      Object type, use typesafe Object::transformations() when
          *      possible.
          */
-        virtual std::vector<typename DimensionTraits<dimensions, T>::MatrixType> transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const typename DimensionTraits<dimensions, T>::MatrixType& initialTransformationMatrix = typename DimensionTraits<dimensions, T>::MatrixType()) const = 0;
+        virtual std::vector<typename DimensionTraits<dimensions, T>::MatrixType> transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const typename DimensionTraits<dimensions, T>::MatrixType& initialTransformationMatrix = (typename DimensionTraits<dimensions, T>::MatrixType())) const = 0;
 
         /*@}*/
 
