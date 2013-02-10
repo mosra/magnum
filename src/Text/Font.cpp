@@ -19,6 +19,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include <hb-ft.h>
+#include <Utility/Unicode.h>
 
 #include "Extensions.h"
 #include "Image.h"
@@ -62,8 +63,13 @@ void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
     /** @bug Crash when atlas is too small */
 
     /* Get character codes from string */
-    /** @todo proper UTF-8 decoding */
-    std::vector<std::uint32_t> charCodes(characters.begin(), characters.end());
+    std::vector<std::uint32_t> charCodes;
+    charCodes.reserve(characters.size());
+    for(std::size_t i = 0; i != characters.size(); ) {
+        std::uint32_t codepoint;
+        std::tie(codepoint, i) = Corrade::Utility::Unicode::nextChar(characters, i);
+        charCodes.push_back(codepoint);
+    }
 
     /* Get character indices */
     std::vector<FT_UInt> charIndices;

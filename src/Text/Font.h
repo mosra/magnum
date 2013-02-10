@@ -86,7 +86,7 @@ class MAGNUM_TEXT_EXPORT Font {
 
         /**
          * @brief Prerender given character set
-         * @param characters    Characters to render
+         * @param characters    UTF-8 characters to render
          * @param atlasSize     Size of resulting atlas
          *
          * Creates new atlas with prerendered characters, replacing the
