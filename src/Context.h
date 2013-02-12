@@ -184,7 +184,7 @@ class MAGNUM_EXPORT Context {
         }
 
         /**
-         * @brief Renderer string
+         * @brief %Renderer string
          *
          * @see vendorString(), @fn_gl{GetString} with @def_gl{RENDERER}
          */
