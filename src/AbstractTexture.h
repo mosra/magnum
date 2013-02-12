@@ -1108,12 +1108,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @requires_es_extension %Extension @es_extension2{EXT,texture_filter_anisotropic,texture_filter_anisotropic}
          */
         inline AbstractTexture* setMaxAnisotropy(GLfloat anisotropy) {
-            /** @todo Remove `ifndef` when extension header is available */
-            #ifndef MAGNUM_TARGET_GLES
             (this->*parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
-            #else
-            static_cast<void>(anisotropy);
-            #endif
             return this;
         }
 
