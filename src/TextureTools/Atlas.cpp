@@ -15,6 +15,7 @@
 
 #include "Atlas.h"
 
+#include "Math/Functions.h"
 #include "Math/Geometry/Rectangle.h"
 
 namespace Magnum { namespace TextureTools {
@@ -24,11 +25,8 @@ std::vector<Rectanglei> atlas(const Vector2i& atlasSize, const std::vector<Vecto
 
     /* Size of largest texture */
     Vector2i maxSize;
-    for(const Vector2i& size: sizes) {
-        /** @todo max() for vector types */
-        if(size.x() > maxSize.x()) maxSize.x() = size.x();
-        if(size.y() > maxSize.y()) maxSize.y() = size.y();
-    }
+    for(const Vector2i& size: sizes)
+        maxSize = Math::max(maxSize, size);
 
     std::vector<Rectanglei> atlas;
 
