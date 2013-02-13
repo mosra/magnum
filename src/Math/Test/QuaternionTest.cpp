@@ -27,6 +27,7 @@ class QuaternionTest: public Corrade::TestSuite::Tester {
         explicit QuaternionTest();
 
         void construct();
+        void constructDefault();
         void addSubtract();
         void negated();
         void multiplyDivideScalar();
@@ -52,6 +53,7 @@ typedef Math::Vector3<float> Vector3;
 
 QuaternionTest::QuaternionTest() {
     addTests(&QuaternionTest::construct,
+             &QuaternionTest::constructDefault,
              &QuaternionTest::addSubtract,
              &QuaternionTest::negated,
              &QuaternionTest::multiplyDivideScalar,
@@ -75,7 +77,9 @@ void QuaternionTest::construct() {
     Quaternion q({1.0f, 2.0f, 3.0f}, -4.0f);
     CORRADE_COMPARE(q.vector(), Vector3(1.0f, 2.0f, 3.0f));
     CORRADE_COMPARE(q.scalar(), -4.0f);
+}
 
+void QuaternionTest::constructDefault() {
     CORRADE_COMPARE(Quaternion(), Quaternion({0.0f, 0.0f, 0.0f}, {1.0f}));
 }
 
