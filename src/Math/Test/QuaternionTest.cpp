@@ -45,6 +45,8 @@ class QuaternionTest: public Corrade::TestSuite::Tester {
         void matrix();
         void lerp();
         void slerp();
+        void rotateVector();
+        void rotateVectorNormalized();
 
         void debug();
 };
@@ -72,6 +74,8 @@ QuaternionTest::QuaternionTest() {
              &QuaternionTest::matrix,
              &QuaternionTest::lerp,
              &QuaternionTest::slerp,
+             &QuaternionTest::rotateVector,
+             &QuaternionTest::rotateVectorNormalized,
              &QuaternionTest::debug);
 }
 
@@ -255,6 +259,32 @@ void QuaternionTest::slerp() {
 
     Quaternion slerp = Quaternion::slerp(a, b, 0.35f);
     CORRADE_COMPARE(slerp, Quaternion({0.119165f, 0.0491109f, 0.0491109f}, 0.990442f));
+}
+
+void QuaternionTest::rotateVector() {
+    Quaternion a = Quaternion::fromRotation(deg(23.0f), Vector3::xAxis());
+    Vector3 v(0.0f, -3.6f, 0.7f);
+
+    Vector3 rotated = a.rotateVector(v);
+    CORRADE_COMPARE(Vector3::angle(v.normalized(), rotated.normalized()), deg(23.0f));
+    CORRADE_COMPARE(Vector3::cross(v, rotated).normalized(), Vector3::xAxis());
+    CORRADE_COMPARE(rotated.length(), v.length());
+}
+
+void QuaternionTest::rotateVectorNormalized() {
+    Quaternion a = Quaternion::fromRotation(deg(23.0f), Vector3::xAxis());
+    Vector3 v(0.0f, -3.6f, 0.7f);
+
+    std::ostringstream o;
+    Corrade::Utility::Error::setOutput(&o);
+    Vector3 notRotated = (a*2).rotateVectorNormalized(v);
+    CORRADE_VERIFY(notRotated != notRotated);
+    CORRADE_COMPARE(o.str(), "Math::Quaternion::rotateVectorNormalized(): quaternion must be normalized\n");
+
+    Vector3 rotated = a.rotateVector(v);
+    CORRADE_COMPARE(Vector3::angle(v.normalized(), rotated.normalized()), deg(23.0f));
+    CORRADE_COMPARE(Vector3::cross(v, rotated).normalized(), Vector3::xAxis());
+    CORRADE_COMPARE(rotated.length(), v.length());
 }
 
 void QuaternionTest::debug() {

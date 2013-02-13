@@ -366,7 +366,7 @@ template<class T> class Quaternion {
          *
          * Equivalent to conjugated(). Expects that the quaternion is
          * normalized. @f[
-         *      q^{-1} = q^* = [-\boldsymbol q_V, q_S] ~~~~~ |q| = 1
+         *      q^{-1} = q^* = [-\boldsymbol q_V, q_S]
          * @f]
          */
         inline Quaternion<T> invertedNormalized() const {
@@ -374,6 +374,33 @@ template<class T> class Quaternion {
                            "Math::Quaternion::invertedNormalized(): quaternion must be normalized",
                            Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
             return conjugated();
+        }
+
+        /**
+         * @brief Rotate vector with quaternion
+         *
+         * @f[
+         *      v' = qvq^{-1} = q [\boldsymbol v, 0] q^{-1}
+         * @f]
+         * @see rotateVectorNormalized()
+         */
+        inline Vector3<T> rotateVector(const Vector3<T>& vector) const {
+            return ((*this)*Quaternion<T>(vector)*inverted()).vector();
+        }
+
+        /**
+         * @brief Rotate vector with normalized quaternion
+         *
+         * Faster alternative to rotateVector(), expects that the quaternion is
+         * normalized. @f[
+         *      v' = qvq^{-1} = qvq^* = q [\boldsymbol v, 0] q^*
+         * @f]
+         */
+        inline Vector3<T> rotateVectorNormalized(const Vector3<T>& vector) const {
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
+                           "Math::Quaternion::rotateVectorNormalized(): quaternion must be normalized",
+                           Vector3<T>(std::numeric_limits<T>::quiet_NaN()));
+            return ((*this)*Quaternion<T>(vector)*conjugated()).vector();
         }
 
     private:
