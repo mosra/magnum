@@ -175,16 +175,23 @@ void QuaternionTest::invertedNormalized() {
 }
 
 void QuaternionTest::rotation() {
+    std::ostringstream o;
+    Error::setOutput(&o);
+
     float angle = deg(120.0f);
     Vector3 axis(1.0f/Constants<float>::sqrt3());
-    Quaternion q = Quaternion::fromRotation(angle, axis);
+
+    CORRADE_COMPARE(Quaternion::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f}), Quaternion());
+    CORRADE_COMPARE(o.str(), "Math::Quaternion::rotation(): axis must be normalized\n");
+
+    Quaternion q = Quaternion::rotation(angle, axis);
     CORRADE_COMPARE(q, Quaternion(Vector3(0.5f, 0.5f, 0.5f), 0.5f));
     CORRADE_COMPARE(q.rotationAngle(), angle);
     CORRADE_COMPARE(q.rotationAxis(), axis);
     CORRADE_COMPARE(q.rotationAxis().length(), 1.0f);
 
     /* Verify negative angle */
-    Quaternion q2 = Quaternion::fromRotation(deg(-120.0f), axis);
+    Quaternion q2 = Quaternion::rotation(deg(-120.0f), axis);
     CORRADE_COMPARE(q2, Quaternion(Vector3(-0.5f, -0.5f, -0.5f), 0.5f));
     CORRADE_COMPARE(q2.rotationAngle(), deg(120.0f));
     CORRADE_COMPARE(q2.rotationAxis(), -axis);
@@ -209,7 +216,7 @@ void QuaternionTest::angle() {
 void QuaternionTest::matrix() {
     float angle = deg(37.0f);
     Vector3 axis(1.0f/Constants<float>::sqrt3());
-    Quaternion q = Quaternion::fromRotation(angle, axis);
+    Quaternion q = Quaternion::rotation(angle, axis);
     Matrix<3, float> expected = Matrix4<float>::rotation(angle, axis).rotationScaling();
     CORRADE_COMPARE(q.matrix(), expected);
 
@@ -218,8 +225,8 @@ void QuaternionTest::matrix() {
 }
 
 void QuaternionTest::lerp() {
-    Quaternion a = Quaternion::fromRotation(deg(15.0f), Vector3(1.0f/Constants<float>::sqrt3()));
-    Quaternion b = Quaternion::fromRotation(deg(23.0f), Vector3::xAxis());
+    Quaternion a = Quaternion::rotation(deg(15.0f), Vector3(1.0f/Constants<float>::sqrt3()));
+    Quaternion b = Quaternion::rotation(deg(23.0f), Vector3::xAxis());
 
     std::ostringstream o;
     Corrade::Utility::Error::setOutput(&o);
@@ -240,8 +247,8 @@ void QuaternionTest::lerp() {
 }
 
 void QuaternionTest::slerp() {
-    Quaternion a = Quaternion::fromRotation(deg(15.0f), Vector3(1.0f/Constants<float>::sqrt3()));
-    Quaternion b = Quaternion::fromRotation(deg(23.0f), Vector3::xAxis());
+    Quaternion a = Quaternion::rotation(deg(15.0f), Vector3(1.0f/Constants<float>::sqrt3()));
+    Quaternion b = Quaternion::rotation(deg(23.0f), Vector3::xAxis());
 
     std::ostringstream o;
     Corrade::Utility::Error::setOutput(&o);
@@ -262,7 +269,7 @@ void QuaternionTest::slerp() {
 }
 
 void QuaternionTest::rotateVector() {
-    Quaternion a = Quaternion::fromRotation(deg(23.0f), Vector3::xAxis());
+    Quaternion a = Quaternion::rotation(deg(23.0f), Vector3::xAxis());
     Vector3 v(0.0f, -3.6f, 0.7f);
 
     Vector3 rotated = a.rotateVector(v);
@@ -272,7 +279,7 @@ void QuaternionTest::rotateVector() {
 }
 
 void QuaternionTest::rotateVectorNormalized() {
-    Quaternion a = Quaternion::fromRotation(deg(23.0f), Vector3::xAxis());
+    Quaternion a = Quaternion::rotation(deg(23.0f), Vector3::xAxis());
     Vector3 v(0.0f, -3.6f, 0.7f);
 
     std::ostringstream o;

@@ -70,8 +70,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * Expects that the rotation axis is normalized. If possible, use
          * faster alternatives like rotationX(), rotationY() and rotationZ().
-         * @see rotation() const, Matrix3::rotation(T), Vector3::xAxis(),
-         *      Vector3::yAxis(), Vector3::zAxis(), deg(), rad()
+         * @see rotation() const, Quaternion::rotation(), Matrix3::rotation(T),
+         *      Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis(), deg(), rad()
          */
         static Matrix4<T> rotation(T angle, const Vector3<T>& normalizedAxis) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedAxis.dot(), T(1)),
@@ -111,7 +111,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * Faster than calling `Matrix4::rotation(angle, Vector3::xAxis())`.
          * @see rotation(T, const Vector3&), rotationY(), rotationZ(),
-         *      rotation() const, Matrix3::rotation(T), deg(), rad()
+         *      rotation() const, Quaternion::rotation(), Matrix3::rotation(T),
+         *      deg(), rad()
          */
         static Matrix4<T> rotationX(T angle) {
             T sine = std::sin(angle);
@@ -129,7 +130,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * Faster than calling `Matrix4::rotation(angle, Vector3::yAxis())`.
          * @see rotation(T, const Vector3&), rotationX(), rotationZ(),
-         *      rotation() const, Matrix3::rotation(T), deg(), rad()
+         *      rotation() const, Quaternion::rotation(), Matrix3::rotation(T),
+         *      deg(), rad()
          */
         static Matrix4<T> rotationY(T angle) {
             T sine = std::sin(angle);
@@ -147,7 +149,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * Faster than calling `Matrix4::rotation(angle, Vector3::zAxis())`.
          * @see rotation(T, const Vector3&), rotationX(), rotationY(),
-         *      rotation() const, Matrix3::rotation(T), deg(), rad()
+         *      rotation() const, Quaternion::rotation(), Matrix3::rotation(T),
+         *      deg(), rad()
          */
         static Matrix4<T> rotationZ(T angle) {
             T sine = std::sin(angle);

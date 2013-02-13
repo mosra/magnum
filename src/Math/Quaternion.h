@@ -110,10 +110,11 @@ template<class T> class Quaternion {
          * Expects that the rotation axis is normalized. @f[
          *      q = [\boldsymbol a \cdot sin \frac \theta 2, cos \frac \theta 2]
          * @f]
+         * @see Matrix4::rotation()
          */
-        inline static Quaternion<T> fromRotation(T angle, const Vector3<T>& normalizedAxis) {
+        inline static Quaternion<T> rotation(T angle, const Vector3<T>& normalizedAxis) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedAxis.dot(), T(1)),
-                           "Math::Quaternion::fromRotation(): axis must be normalized", {});
+                           "Math::Quaternion::rotation(): axis must be normalized", {});
 
             return {normalizedAxis*std::sin(angle/2), std::cos(angle/2)};
         }
@@ -153,7 +154,7 @@ template<class T> class Quaternion {
          * Expects that the quaternion is normalized. @f[
          *      \theta = 2 \cdot acos q_S
          * @f]
-         * @see rotationAxis(), fromRotation()
+         * @see rotationAxis(), rotation()
          */
         inline T rotationAngle() const {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
@@ -168,7 +169,7 @@ template<class T> class Quaternion {
          * Expects that the quaternion is normalized. @f[
          *      \boldsymbol a = \frac{\boldsymbol q_V}{\sqrt{1 - q_S^2}}
          * @f]
-         * @see rotationAngle(), fromRotation()
+         * @see rotationAngle(), rotation()
          */
         inline Vector3<T> rotationAxis() const {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
