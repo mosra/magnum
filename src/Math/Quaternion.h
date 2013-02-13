@@ -124,6 +124,13 @@ template<class T> class Quaternion {
         /** @brief Create quaternion from vector and scalar */
         inline constexpr /*implicit*/ Quaternion(const Vector3<T>& vector, T scalar): _vector(vector), _scalar(scalar) {}
 
+        /**
+         * @brief Create quaternion from vector
+         *
+         * Scalar is set to `0`.
+         */
+        inline constexpr explicit Quaternion(const Vector3<T>& vector): _vector(vector), _scalar(T(0)) {}
+
         /** @brief Equality comparison */
         inline bool operator==(const Quaternion<T>& other) const {
             return _vector == other._vector && MathTypeTraits<T>::equals(_scalar, other._scalar);
