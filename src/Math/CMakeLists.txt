@@ -1,6 +1,7 @@
 set(MagnumMath_HEADERS
     BoolVector.h
     Constants.h
+    Dual.h
     Functions.h
     Math.h
     MathTypeTraits.h

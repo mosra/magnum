@@ -27,6 +27,8 @@ namespace Magnum { namespace Math {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* Class Constants used only statically */
 
+template<class T> class Dual;
+
 template<std::size_t, class> class Matrix;
 template<class> class Matrix3;
 template<class> class Matrix4;
