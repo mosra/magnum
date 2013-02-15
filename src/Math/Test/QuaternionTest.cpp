@@ -29,6 +29,7 @@ class QuaternionTest: public Corrade::TestSuite::Tester {
         void construct();
         void constructDefault();
         void constructFromVector();
+        void compare();
 
         void addSubtract();
         void negated();
@@ -62,6 +63,7 @@ QuaternionTest::QuaternionTest() {
     addTests(&QuaternionTest::construct,
              &QuaternionTest::constructDefault,
              &QuaternionTest::constructFromVector,
+             &QuaternionTest::compare,
 
              &QuaternionTest::addSubtract,
              &QuaternionTest::negated,
@@ -100,6 +102,13 @@ void QuaternionTest::constructDefault() {
 
 void QuaternionTest::constructFromVector() {
     CORRADE_COMPARE(Quaternion({1.0f, 2.0f, 3.0f}), Quaternion({1.0f, 2.0f, 3.0f}, 0.0f));
+}
+
+void QuaternionTest::compare() {
+    CORRADE_VERIFY(Quaternion({1.0f+MathTypeTraits<float>::epsilon()/2, 2.0f, 3.0f}, -4.0f) == Quaternion({1.0f, 2.0f, 3.0f}, -4.0f));
+    CORRADE_VERIFY(Quaternion({1.0f+MathTypeTraits<float>::epsilon()*2, 2.0f, 3.0f}, -4.0f) != Quaternion({1.0f, 2.0f, 3.0f}, -4.0f));
+    CORRADE_VERIFY(Quaternion({4.0f, 2.0f, 3.0f}, -1.0f+MathTypeTraits<float>::epsilon()/2) == Quaternion({4.0f, 2.0f, 3.0f}, -1.0f));
+    CORRADE_VERIFY(Quaternion({4.0f, 2.0f, 3.0f}, -1.0f+MathTypeTraits<float>::epsilon()*2) != Quaternion({4.0f, 2.0f, 3.0f}, -1.0f));
 }
 
 void QuaternionTest::addSubtract() {
