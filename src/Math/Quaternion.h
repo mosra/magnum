@@ -119,7 +119,11 @@ template<class T> class Quaternion {
             return {normalizedAxis*std::sin(angle/2), std::cos(angle/2)};
         }
 
-        /** @brief Default constructor */
+        /**
+         * @brief Default constructor
+         *
+         * %Vector part is set to zero, scalar part to `1`.
+         */
         inline constexpr /*implicit*/ Quaternion(): _scalar(T(1)) {}
 
         /** @brief Create quaternion from vector and scalar */
@@ -435,7 +439,7 @@ template<class T> inline Quaternion<T> operator/(T scalar, const Quaternion<T>& 
     return {scalar/quaternion.vector(), scalar/quaternion.scalar()};
 }
 
-/** @debugoperator{Magnum::Math::Geometry::Rectangle} */
+/** @debugoperator{Magnum::Math::Quaternion} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Quaternion<T>& value) {
     debug << "Quaternion({";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);

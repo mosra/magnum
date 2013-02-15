@@ -29,17 +29,21 @@ class QuaternionTest: public Corrade::TestSuite::Tester {
         void construct();
         void constructDefault();
         void constructFromVector();
+
         void addSubtract();
         void negated();
         void multiplyDivideScalar();
         void multiply();
+
         void dot();
         void dotSelf();
         void length();
         void normalized();
+
         void conjugated();
         void inverted();
         void invertedNormalized();
+
         void rotation();
         void angle();
         void matrix();
@@ -58,17 +62,21 @@ QuaternionTest::QuaternionTest() {
     addTests(&QuaternionTest::construct,
              &QuaternionTest::constructDefault,
              &QuaternionTest::constructFromVector,
+
              &QuaternionTest::addSubtract,
              &QuaternionTest::negated,
              &QuaternionTest::multiplyDivideScalar,
              &QuaternionTest::multiply,
+
              &QuaternionTest::dot,
              &QuaternionTest::dotSelf,
              &QuaternionTest::length,
              &QuaternionTest::normalized,
+
              &QuaternionTest::conjugated,
              &QuaternionTest::inverted,
              &QuaternionTest::invertedNormalized,
+
              &QuaternionTest::rotation,
              &QuaternionTest::angle,
              &QuaternionTest::matrix,
@@ -76,6 +84,7 @@ QuaternionTest::QuaternionTest() {
              &QuaternionTest::slerp,
              &QuaternionTest::rotateVector,
              &QuaternionTest::rotateVectorNormalized,
+
              &QuaternionTest::debug);
 }
 
@@ -86,7 +95,7 @@ void QuaternionTest::construct() {
 }
 
 void QuaternionTest::constructDefault() {
-    CORRADE_COMPARE(Quaternion(), Quaternion({0.0f, 0.0f, 0.0f}, {1.0f}));
+    CORRADE_COMPARE(Quaternion(), Quaternion({0.0f, 0.0f, 0.0f}, 1.0f));
 }
 
 void QuaternionTest::constructFromVector() {
@@ -94,12 +103,12 @@ void QuaternionTest::constructFromVector() {
 }
 
 void QuaternionTest::addSubtract() {
-    Quaternion a({1.0f, 3.0f, -2.0f}, -4.0f);
-    Quaternion b({-0.5f, 1.4f, 3.0f}, 12.0f);
-    Quaternion c({0.5f, 4.4f, 1.0f}, 8.0f);
+    Quaternion a({ 1.0f, 3.0f, -2.0f}, -4.0f);
+    Quaternion b({-0.5f, 1.4f,  3.0f}, 12.0f);
+    Quaternion c({ 0.5f, 4.4f,  1.0f},  8.0f);
 
-    CORRADE_COMPARE(a+b, c);
-    CORRADE_COMPARE(c-b, a);
+    CORRADE_COMPARE(a + b, c);
+    CORRADE_COMPARE(c - b, a);
 }
 
 void QuaternionTest::negated() {
@@ -107,8 +116,8 @@ void QuaternionTest::negated() {
 }
 
 void QuaternionTest::multiplyDivideScalar() {
-    Quaternion a({1.0f, 3.0f, -2.0f}, -4.0f);
-    Quaternion b({-1.5f, -4.5f, 3.0f}, 6.0f);
+    Quaternion a({ 1.0f,  3.0f, -2.0f}, -4.0f);
+    Quaternion b({-1.5f, -4.5f,  3.0f},  6.0f);
 
     CORRADE_COMPARE(a*-1.5f, b);
     CORRADE_COMPARE(-1.5f*a, b);
@@ -123,8 +132,8 @@ void QuaternionTest::multiply() {
 }
 
 void QuaternionTest::dot() {
-    Quaternion a({1.0f, 3.0f, -2.0f}, -4.0f);
-    Quaternion b({-0.5f, 1.5f, 3.0f}, 12.0f);
+    Quaternion a({ 1.0f, 3.0f, -2.0f}, -4.0f);
+    Quaternion b({-0.5f, 1.5f,  3.0f}, 12.0f);
 
     CORRADE_COMPARE(Quaternion::dot(a, b), -50.0f);
 }
@@ -144,8 +153,8 @@ void QuaternionTest::normalized() {
 }
 
 void QuaternionTest::conjugated() {
-    CORRADE_COMPARE(Quaternion({1.0f, 3.0f, -2.0f}, -4.0f).conjugated(),
-                    Quaternion({-1.0f, -3.0f, 2.0f}, -4.0f));
+    CORRADE_COMPARE(Quaternion({ 1.0f,  3.0f, -2.0f}, -4.0f).conjugated(),
+                    Quaternion({-1.0f, -3.0f,  2.0f}, -4.0f));
 }
 
 void QuaternionTest::inverted() {
