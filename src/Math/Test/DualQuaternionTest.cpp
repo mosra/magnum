@@ -27,6 +27,7 @@ class DualQuaternionTest: public Corrade::TestSuite::Tester {
 
         void construct();
         void constructDefault();
+        void constructFromVector();
 
         void norm();
 
@@ -49,6 +50,7 @@ typedef Math::Vector3<float> Vector3;
 DualQuaternionTest::DualQuaternionTest() {
     addTests(&DualQuaternionTest::construct,
              &DualQuaternionTest::constructDefault,
+             &DualQuaternionTest::constructFromVector,
 
              &DualQuaternionTest::norm,
 
@@ -71,6 +73,10 @@ void DualQuaternionTest::construct() {
 
 void DualQuaternionTest::constructDefault() {
     CORRADE_COMPARE(DualQuaternion(), DualQuaternion({{0.0f, 0.0f, 0.0f}, 1.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
+}
+
+void DualQuaternionTest::constructFromVector() {
+    CORRADE_COMPARE(DualQuaternion({1.0f, 2.0f, 3.0f}), DualQuaternion({{0.0f, 0.0f, 0.0f}, 1.0f}, {{1.0f, 2.0f, 3.0f}, 0.0f}));
 }
 
 void DualQuaternionTest::norm() {

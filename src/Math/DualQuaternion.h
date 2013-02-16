@@ -85,6 +85,20 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         inline constexpr /*implicit*/ DualQuaternion(const Quaternion<T>& real, const Quaternion<T>& dual): Dual<Quaternion<T>>(real, dual) {}
 
         /**
+         * @brief Construct dual quaternion from vector
+         *
+         * @f[
+         *      \hat q = [\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]
+         * @f]
+         * @todoc Remove workaround when Doxygen is predictable
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        inline constexpr explicit DualQuaternion(const Vector3<T>& vector);
+        #else
+        inline constexpr explicit DualQuaternion(const Vector3<T>& vector): Dual<Quaternion<T>>({}, {vector, T(0)}) {}
+        #endif
+
+        /**
          * @brief Rotation angle of unit dual quaternion
          *
          * Expects that the real part of the quaternion is normalized. @f[
