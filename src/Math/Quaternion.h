@@ -170,7 +170,9 @@ template<class T> class Quaternion {
         /**
          * @brief Rotation axis of unit quaternion
          *
-         * Expects that the quaternion is normalized. @f[
+         * Expects that the quaternion is normalized. Returns either unit-length
+         * vector for valid rotation quaternion or NaN vector for
+         * default-constructed quaternion. @f[
          *      \boldsymbol a = \frac{\boldsymbol q_V}{\sqrt{1 - q_S^2}}
          * @f]
          * @see rotationAngle(), rotation()

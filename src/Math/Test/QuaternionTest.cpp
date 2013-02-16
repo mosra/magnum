@@ -213,6 +213,10 @@ void QuaternionTest::rotation() {
     CORRADE_COMPARE(q2, Quaternion(Vector3(-0.5f, -0.5f, -0.5f), 0.5f));
     CORRADE_COMPARE(q2.rotationAngle(), deg(120.0f));
     CORRADE_COMPARE(q2.rotationAxis(), -axis);
+
+    /* Default-constructed quaternion has zero angle and NaN axis */
+    CORRADE_COMPARE(Quaternion().rotationAngle(), deg(0.0f));
+    CORRADE_VERIFY(Quaternion().rotationAxis() != Quaternion().rotationAxis());
 }
 
 void QuaternionTest::angle() {
