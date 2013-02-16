@@ -39,6 +39,7 @@ class DualQuaternionTest: public Corrade::TestSuite::Tester {
 
         void rotation();
         void translation();
+        void combinedTransformParts();
         void transformPointNormalized();
 
         void debug();
@@ -65,6 +66,7 @@ DualQuaternionTest::DualQuaternionTest() {
 
              &DualQuaternionTest::rotation,
              &DualQuaternionTest::translation,
+             &DualQuaternionTest::combinedTransformParts,
              &DualQuaternionTest::transformPointNormalized,
 
              &DualQuaternionTest::debug);
@@ -141,6 +143,20 @@ void DualQuaternionTest::translation() {
     DualQuaternion q = DualQuaternion::translation(vec);
     CORRADE_COMPARE(q, DualQuaternion({}, {{0.5f, -1.75f, 0.25f}, 0.0f}));
     CORRADE_COMPARE(q.translation(), vec);
+}
+
+void DualQuaternionTest::combinedTransformParts() {
+    Vector3 translation = Vector3(-1.0f, 2.0f, 3.0f);
+    DualQuaternion a = DualQuaternion::translation(translation)*DualQuaternion::rotation(deg(23.0f), Vector3::xAxis());
+    DualQuaternion b = DualQuaternion::rotation(deg(23.0f), Vector3::xAxis())*DualQuaternion::translation(translation);
+
+    CORRADE_COMPARE(a.rotationAxis(), Vector3::xAxis());
+    CORRADE_COMPARE(b.rotationAxis(), Vector3::xAxis());
+    CORRADE_COMPARE(a.rotationAngle(), deg(23.0f));
+    CORRADE_COMPARE(b.rotationAngle(), deg(23.0f));
+
+    CORRADE_COMPARE(a.translation(), translation);
+    CORRADE_COMPARE(b.translation(), Quaternion::rotation(deg(23.0f), Vector3::xAxis()).rotateVectorNormalized(translation));
 }
 
 void DualQuaternionTest::transformPointNormalized() {
