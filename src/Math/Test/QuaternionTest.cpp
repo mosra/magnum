@@ -56,8 +56,11 @@ class QuaternionTest: public Corrade::TestSuite::Tester {
         void debug();
 };
 
+typedef Math::Matrix<3, float> Matrix3;
+typedef Math::Matrix4<float> Matrix4;
 typedef Math::Quaternion<float> Quaternion;
 typedef Math::Vector3<float> Vector3;
+typedef Math::Vector4<float> Vector4;
 
 QuaternionTest::QuaternionTest() {
     addTests(&QuaternionTest::construct,
@@ -239,7 +242,7 @@ void QuaternionTest::matrix() {
     float angle = deg(37.0f);
     Vector3 axis(1.0f/Constants<float>::sqrt3());
     Quaternion q = Quaternion::rotation(angle, axis);
-    Matrix<3, float> expected = Matrix4<float>::rotation(angle, axis).rotationScaling();
+    Matrix3 expected = Matrix4::rotation(angle, axis).rotationScaling();
     CORRADE_COMPARE(q.matrix(), expected);
 
     /* Verify that negated quaternion gives the same rotation */
@@ -292,17 +295,18 @@ void QuaternionTest::slerp() {
 
 void QuaternionTest::rotateVector() {
     Quaternion a = Quaternion::rotation(deg(23.0f), Vector3::xAxis());
-    Vector3 v(0.0f, -3.6f, 0.7f);
+    Matrix4 m = Matrix4::rotationX(deg(23.0f));
+    Vector3 v(5.0f, -3.6f, 0.7f);
 
     Vector3 rotated = a.rotateVector(v);
-    CORRADE_COMPARE(Vector3::angle(v.normalized(), rotated.normalized()), deg(23.0f));
-    CORRADE_COMPARE(Vector3::cross(v, rotated).normalized(), Vector3::xAxis());
-    CORRADE_COMPARE(rotated.length(), v.length());
+    CORRADE_COMPARE(rotated, (m*Vector4(v, 0.0f)).xyz());
+    CORRADE_COMPARE(rotated, Vector3(5.0f, -3.58733f, -0.762279f));
 }
 
 void QuaternionTest::rotateVectorNormalized() {
     Quaternion a = Quaternion::rotation(deg(23.0f), Vector3::xAxis());
-    Vector3 v(0.0f, -3.6f, 0.7f);
+    Matrix4 m = Matrix4::rotationX(deg(23.0f));
+    Vector3 v(5.0f, -3.6f, 0.7f);
 
     std::ostringstream o;
     Corrade::Utility::Error::setOutput(&o);
@@ -310,10 +314,9 @@ void QuaternionTest::rotateVectorNormalized() {
     CORRADE_VERIFY(notRotated != notRotated);
     CORRADE_COMPARE(o.str(), "Math::Quaternion::rotateVectorNormalized(): quaternion must be normalized\n");
 
-    Vector3 rotated = a.rotateVector(v);
-    CORRADE_COMPARE(Vector3::angle(v.normalized(), rotated.normalized()), deg(23.0f));
-    CORRADE_COMPARE(Vector3::cross(v, rotated).normalized(), Vector3::xAxis());
-    CORRADE_COMPARE(rotated.length(), v.length());
+    Vector3 rotated = a.rotateVectorNormalized(v);
+    CORRADE_COMPARE(rotated, (m*Vector4(v, 0.0f)).xyz());
+    CORRADE_COMPARE(rotated, a.rotateVector(v));
 }
 
 void QuaternionTest::debug() {
