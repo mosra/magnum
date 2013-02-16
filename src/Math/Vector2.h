@@ -79,8 +79,10 @@ template<class T> class Vector2: public Vector<2, T> {
 
         /**
          * @brief Constructor
-         * @param x     X component
-         * @param y     Y component
+         *
+         * @f[
+         *      \boldsymbol v = (x, y)^T
+         * @f]
          */
         inline constexpr /*implicit*/ Vector2(T x, T y): Vector<2, T>(x, y) {}
 

@@ -124,17 +124,28 @@ template<class T> class Quaternion {
         /**
          * @brief Default constructor
          *
-         * %Vector part is set to zero, scalar part to `1`.
+         * @f[
+         *      q = [\boldsymbol 0, 1]
+         * @f]
          */
         inline constexpr /*implicit*/ Quaternion(): _scalar(T(1)) {}
 
-        /** @brief Create quaternion from vector and scalar */
+        /**
+         * @brief Construct quaternion from vector and scalar
+         *
+         * @f[
+         *      q = [\boldsymbol v, s]
+         * @f]
+         */
         inline constexpr /*implicit*/ Quaternion(const Vector3<T>& vector, T scalar): _vector(vector), _scalar(scalar) {}
 
         /**
-         * @brief Create quaternion from vector
+         * @brief Construct quaternion from vector
          *
-         * Scalar is set to `0`.
+         * To be used in transformations later. @f[
+         *      q = [\boldsymbol v, 0]
+         * @f]
+         * @see rotateVector(), rotateVectorNormalized()
          */
         inline constexpr explicit Quaternion(const Vector3<T>& vector): _vector(vector), _scalar(T(0)) {}
 
@@ -388,10 +399,10 @@ template<class T> class Quaternion {
         /**
          * @brief Rotate vector with quaternion
          *
-         * @f[
+         * See rotateVectorNormalized(), which is faster for normalized
+         * quaternions. @f[
          *      v' = qvq^{-1} = q [\boldsymbol v, 0] q^{-1}
          * @f]
-         * @see rotateVectorNormalized()
          */
         inline Vector3<T> rotateVector(const Vector3<T>& vector) const {
             return ((*this)*Quaternion<T>(vector)*inverted()).vector();
@@ -404,6 +415,7 @@ template<class T> class Quaternion {
          * normalized. @f[
          *      v' = qvq^{-1} = qvq^* = q [\boldsymbol v, 0] q^*
          * @f]
+         * @see DualQuaternion::transformVectorNormalized()
          */
         inline Vector3<T> rotateVectorNormalized(const Vector3<T>& vector) const {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),

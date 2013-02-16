@@ -64,7 +64,9 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         /**
          * @brief Default constructor
          *
-         * All components set to zero except real scalar part, which is `1`.
+         * @f[
+         *      \hat q = [\boldsymbol 0, 1] + \epsilon [\boldsymbol 0, 0]
+         * @f]
          * @todoc Remove workaround when Doxygen is predictable
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -148,7 +150,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @brief Conjugated dual quaternion
          *
          * Both quaternion and dual conjugation. @f[
-         *      \overline{\hat q^*} = q_0^* - \epsilon q_\epsilon^* = q_0^* + \epsilon [\boldsymbol q_{\epsilon V}, -q_S]
+         *      \overline{\hat q^*} = q_0^* - \epsilon q_\epsilon^* = q_0^* + \epsilon [\boldsymbol q_{V \epsilon}, -q_{S \epsilon}]
          * @f]
          * @see quaternionConjugated(), dualConjugated(), Quaternion::conjugated(),
          *      Dual::conjugated()

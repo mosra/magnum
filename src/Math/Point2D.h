@@ -37,29 +37,36 @@ template<class T> class Point2D: public Vector3<T> {
         /**
          * @brief Default constructor
          *
-         * X and Y components are set to zero, Z is set to one.
+         * @f[
+         *      \boldsymbol p = (0, 0, 1)^T
+         * @f]
          */
         inline constexpr /*implicit*/ Point2D(): Vector3<T>(T(0), T(0), T(1)) {}
 
         /**
          * @brief Constructor
-         * @param x     X component
-         * @param y     Y component
-         * @param z     Z component
+         *
+         * @f[
+         *      \boldsymbol p = (x, y, z)^T
+         * @f]
          */
         inline constexpr /*implicit*/ Point2D(T x, T y, T z = T(1)): Vector3<T>(x, y, z) {}
 
         /**
          * @brief Constructor
-         * @param xy    Two-component vector
-         * @param z     Z component
+         *
+         * @f[
+         *      \boldsymbol p = (v_x, v_y, z)^T
+         * @f]
          */
         inline constexpr /*implicit*/ Point2D(const Vector2<T>& xy, T z): Vector3<T>(xy, z) {}
 
         /**
          * @brief Construct 2D point from 2D vector
          *
-         * Z component is set to `1`.
+         * @f[
+         *      \boldsymbol p = (v_x, v_y, 1)^T
+         * @f]
          */
         inline constexpr explicit Point2D(const Vector2<T>& xy): Vector3<T>(xy, T(1)) {}
 

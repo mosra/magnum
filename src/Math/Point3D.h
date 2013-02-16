@@ -37,30 +37,36 @@ template<class T> class Point3D: public Vector4<T> {
         /**
          * @brief Default constructor
          *
-         * X, Y and Z components are set to zero, W is set to one.
+         * @f[
+         *      \boldsymbol p = (0, 0, 0, 1)^T
+         * @f]
          */
         inline constexpr /*implicit*/ Point3D(): Vector4<T>(T(0), T(0), T(0), T(1)) {}
 
         /**
          * @brief Constructor
-         * @param x     X component
-         * @param y     Y component
-         * @param z     Z component
-         * @param w     W component
+         *
+         * @f[
+         *      \boldsymbol p = (x, y, z, w)^T
+         * @f]
          */
         inline constexpr /*implicit*/ Point3D(T x, T y, T z, T w = T(1)): Vector4<T>(x, y, z, w) {}
 
         /**
          * @brief Constructor
-         * @param xyz   Three-component vector
-         * @param w     W component
+         *
+         * @f[
+         *      \boldsymbol p = (v_x, v_y, v_z, w)^T
+         * @f]
          */
         inline constexpr /*implicit*/ Point3D(const Vector3<T>& xyz, T w): Vector4<T>(xyz, w) {}
 
         /**
          * @brief Construct 3D point from 3D vector
          *
-         * W component is set to `1`.
+         * @f[
+         *      \boldsymbol p = (v_x, v_y, v_z, 1)^T
+         * @f]
          */
         inline constexpr explicit Point3D(const Vector3<T>& xyz): Vector4<T>(xyz, T(1)) {}
 

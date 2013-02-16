@@ -90,7 +90,13 @@ template<std::size_t size, class T> class Vector {
             return std::acos(dot(normalizedA, normalizedB));
         }
 
-        /** @brief Construct zero-filled vector */
+        /**
+         * @brief Default constructor
+         *
+         * @f[
+         *      \boldsymbol v = \boldsymbol 0
+         * @f]
+         */
         inline constexpr /*implicit*/ Vector(): _data() {}
 
         /** @todo Creating Vector from combination of vector and scalar types */
