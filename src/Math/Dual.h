@@ -155,6 +155,33 @@ template<class T> class Dual {
         T _real, _dual;
 };
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#define MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(Type, Underlying)               \
+    inline Type<T> operator-() const {                                      \
+        return Dual<Underlying<T>>::operator-();                            \
+    }                                                                       \
+    inline Type<T>& operator+=(const Dual<Underlying<T>>& other) {          \
+        Dual<Underlying<T>>::operator+=(other);                             \
+        return *this;                                                       \
+    }                                                                       \
+    inline Type<T> operator+(const Dual<Underlying<T>>& other) const {      \
+        return Dual<Underlying<T>>::operator+(other);                       \
+    }                                                                       \
+    inline Type<T>& operator-=(const Dual<Underlying<T>>& other) {          \
+        Dual<Underlying<T>>::operator-=(other);                             \
+        return *this;                                                       \
+    }                                                                       \
+    inline Type<T> operator-(const Dual<Underlying<T>>& other) const {      \
+        return Dual<Underlying<T>>::operator-(other);                       \
+    }                                                                       \
+    inline Type<T> operator*(const Dual<Underlying<T>>& other) const {      \
+        return Dual<Underlying<T>>::operator*(other);                       \
+    }                                                                       \
+    template<class U> inline Type<T> operator/(const Dual<U>& other) const { \
+        return Dual<Underlying<T>>::operator/(other);                       \
+    }
+#endif
+
 /** @debugoperator{Magnum::Math::Dual} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Dual<T>& value) {
     debug << "Dual(";
