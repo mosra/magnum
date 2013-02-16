@@ -42,20 +42,26 @@
 
 namespace Magnum { namespace Math {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
+    template<class T> struct MathTypeTraitsDefault {
+        MathTypeTraitsDefault() = delete;
+
+        inline constexpr static bool equals(T a, T b) {
+            return a == b;
+        }
+    };
+}
+#endif
+
 /**
 @brief Traits class for numeric types
 
 Traits classes are usable for detecting type features at compile time without
 the need for repeated code such as method overloading or template
 specialization for given types.
-
-This class and class methods are specialized only for types where it makes
-sense, it has empty implementation for unknown types or types which don't
-support given feature, thus forcing the compilation stop with an error.
 */
-template<class T> struct MathTypeTraits {
-    MathTypeTraits() = delete;
-
+template<class T> struct MathTypeTraits: Implementation::MathTypeTraitsDefault<T> {
     /*
      * The following values are implemented as inline functions, not as
      * static const variables, because the compiler will inline the return
@@ -77,15 +83,15 @@ template<class T> struct MathTypeTraits {
      *
      * Returns minimal difference between numbers to be considered
      * inequal. Returns 1 for integer types and reasonably small value for
-     * floating-point types.
+     * floating-point types. Not implemented for arbitrary types.
      */
     inline constexpr static T epsilon();
 
     /**
      * @brief Fuzzy compare
      *
-     * Uses equality for integer types and fuzzy compare for floating-point
-     * types (using @ref epsilon value).
+     * Uses fuzzy compare for floating-point types (using epsilon() value),
+     * pure equality comparison everywhere else.
      */
     static bool equals(T a, T b);
     #endif
@@ -100,17 +106,10 @@ template<class T> struct MathTypeTraits {
  */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-
 /* Integral scalar types */
 namespace Implementation {
-    template<class T> struct MathTypeTraitsIntegral {
-        MathTypeTraitsIntegral() = delete;
-
-        inline constexpr static T epsilon() { return 1; }
-
-        inline constexpr static bool equals(T a, T b) {
-            return a == b;
-        }
+    template<class T> struct MathTypeTraitsIntegral: MathTypeTraitsDefault<T> {
+        inline constexpr static T epsilon() { return T(1); }
     };
 }
 
