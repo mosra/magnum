@@ -27,6 +27,8 @@ namespace Magnum { namespace Math {
 
 /** @brief %Dual number */
 template<class T> class Dual {
+    template<class U> friend class Dual;
+
     public:
         /**
          * @brief Default constructor
@@ -134,7 +136,7 @@ template<class T> class Dual {
          *      \frac{\hat a}{\hat b} = \frac{a_0}{b_0} + \epsilon \frac{a_\epsilon b_0 - a_0 b_\epsilon}{b_0^2}
          * @f]
          */
-        inline Dual<T> operator/(const Dual<T>& other) const {
+        template<class U> inline Dual<T> operator/(const Dual<U>& other) const {
             return {_real/other._real, (_dual*other._real - _real*other._dual)/(other._real*other._real)};
         }
 
