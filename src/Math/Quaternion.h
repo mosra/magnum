@@ -33,7 +33,7 @@ namespace Magnum { namespace Math {
 /**
 @brief %Quaternion
 
-@see Magnum::Quaternion
+@see DualQuaternion, Magnum::Quaternion
 */
 template<class T> class Quaternion {
     public:

@@ -28,6 +28,7 @@ namespace Magnum { namespace Math {
 /* Class Constants used only statically */
 
 template<class T> class Dual;
+template<class> class DualQuaternion;
 
 template<std::size_t, class> class Matrix;
 template<class> class Matrix3;

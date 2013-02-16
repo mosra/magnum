@@ -19,5 +19,6 @@ corrade_add_test(MathSwizzleTest SwizzleTest.cpp LIBRARIES MagnumMathTestLib)
 
 corrade_add_test(MathDualTest DualTest.cpp)
 corrade_add_test(MathQuaternionTest QuaternionTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathDualQuaternionTest DualQuaternionTest.cpp LIBRARIES MagnumMathTestLib)
 
 set_target_properties(MathVectorTest MathMatrix3Test MathMatrix4Test MathQuaternionTest PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
