@@ -43,6 +43,7 @@ class Matrix4Test: public Corrade::TestSuite::Tester {
         void rotationPart();
         void vectorParts();
         void invertedEuclidean();
+        void transform();
 
         void debug();
         void configuration();
@@ -55,6 +56,7 @@ typedef Math::Point3D<float> Point3D;
 
 Matrix4Test::Matrix4Test() {
     addTests(&Matrix4Test::constructIdentity,
+
              &Matrix4Test::translation,
              &Matrix4Test::scaling,
              &Matrix4Test::rotation,
@@ -70,6 +72,8 @@ Matrix4Test::Matrix4Test() {
              &Matrix4Test::rotationPart,
              &Matrix4Test::vectorParts,
              &Matrix4Test::invertedEuclidean,
+             &Matrix4Test::transform,
+
              &Matrix4Test::debug,
              &Matrix4Test::configuration);
 }
@@ -169,7 +173,7 @@ void Matrix4Test::reflection() {
                      {     0.0f,       0.0f,       0.0f, 1.0f});
 
     CORRADE_COMPARE(actual*actual, Matrix4());
-    CORRADE_COMPARE((actual*Point3D(normal)).vector(), -normal);
+    CORRADE_COMPARE(actual.transformVector(normal), -normal);
     CORRADE_COMPARE(actual, expected);
 }
 
@@ -275,6 +279,14 @@ void Matrix4Test::invertedEuclidean() {
 
     CORRADE_COMPARE(actual.invertedEuclidean(), expected);
     CORRADE_COMPARE(actual.invertedEuclidean(), actual.inverted());
+}
+
+void Matrix4Test::transform() {
+    Matrix4 a = Matrix4::translation({1.0f, -5.0f, 3.5f})*Matrix4::rotation(deg(90.0f), Vector3::zAxis());
+    Vector3 v(1.0f, -2.0f, 5.5f);
+
+    CORRADE_COMPARE(a.transformVector(v), Vector3(2.0f, 1.0f, 5.5f));
+    CORRADE_COMPARE(a.transformPoint(v), Vector3(3.0f, -4.0f, 9.0f));
 }
 
 void Matrix4Test::debug() {

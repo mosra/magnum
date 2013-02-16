@@ -157,11 +157,11 @@ void DualQuaternionTest::transformPointNormalized() {
     CORRADE_COMPARE(o.str(), "Math::DualQuaternion::transformPointNormalized(): dual quaternion must be normalized\n");
 
     Vector3 transformedA = a.transformPointNormalized(v);
-    CORRADE_COMPARE(transformedA, (m*Vector4(v, 1.0f)).xyz());
+    CORRADE_COMPARE(transformedA, m.transformPoint(v));
     CORRADE_COMPARE(transformedA, Vector3(-1.0f, -1.58733f, 2.237721f));
 
     Vector3 transformedB = b.transformPointNormalized(v);
-    CORRADE_COMPARE(transformedB, (n*Vector4(v, 1.0f)).xyz());
+    CORRADE_COMPARE(transformedB, n.transformPoint(v));
     CORRADE_COMPARE(transformedB, Vector3(-1.0f, -2.918512f, 2.780698f));
 }
 

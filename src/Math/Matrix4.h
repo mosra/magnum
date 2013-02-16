@@ -348,6 +348,31 @@ template<class T> class Matrix4: public Matrix<4, T> {
             return from(inverseRotation, inverseRotation*-translation());
         }
 
+        /**
+         * @brief Transform 3D vector with the matrix
+         *
+         * Translation is not involved in the transformation. @f[
+         *      \boldsymbol v' = \boldsymbol M (v_x, v_y, v_z, 0)^T
+         * @f]
+         * @see transformPoint(), Quaternion::rotateVector(),
+         *      Matrix3::transformVector()
+         */
+        inline Vector3<T> transformVector(const Vector3<T>& vector) const {
+            return ((*this)*Vector4<T>(vector, T(0))).xyz();
+        }
+
+        /**
+         * @brief Transform 3D point with the matrix
+         *
+         * Unlike in transformVector(), translation is also involved. @f[
+         *      \boldsymbol v' = \boldsymbol M (v_x, v_y, v_z, 1)^T
+         * @f]
+         * @see DualQuaternion::transformPointNormalized(), Matrix3::transformPoint()
+         */
+        inline Vector3<T> transformPoint(const Vector3<T>& vector) const {
+            return ((*this)*Vector4<T>(vector, T(1))).xyz();
+        }
+
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline Point3D<T> operator*(const Point3D<T>& other) const {
             return Matrix<4, T>::operator*(other);

@@ -38,6 +38,7 @@ class Matrix3Test: public Corrade::TestSuite::Tester {
         void rotationPart();
         void vectorParts();
         void invertedEuclidean();
+        void transform();
 
         void debug();
         void configuration();
@@ -50,6 +51,7 @@ typedef Math::Point2D<float> Point2D;
 
 Matrix3Test::Matrix3Test() {
     addTests(&Matrix3Test::constructIdentity,
+
              &Matrix3Test::translation,
              &Matrix3Test::scaling,
              &Matrix3Test::rotation,
@@ -60,6 +62,8 @@ Matrix3Test::Matrix3Test() {
              &Matrix3Test::rotationPart,
              &Matrix3Test::vectorParts,
              &Matrix3Test::invertedEuclidean,
+             &Matrix3Test::transform,
+
              &Matrix3Test::debug,
              &Matrix3Test::configuration);
 }
@@ -121,7 +125,7 @@ void Matrix3Test::reflection() {
                      {0.0f,  0.0f, 1.0f});
 
     CORRADE_COMPARE(actual*actual, Matrix3());
-    CORRADE_COMPARE((actual*Point2D(normal)).vector(), -normal);
+    CORRADE_COMPARE(actual.transformVector(normal), -normal);
     CORRADE_COMPARE(actual, expected);
 }
 
@@ -201,6 +205,14 @@ void Matrix3Test::invertedEuclidean() {
 
     CORRADE_COMPARE(actual.invertedEuclidean(), expected);
     CORRADE_COMPARE(actual.invertedEuclidean(), actual.inverted());
+}
+
+void Matrix3Test::transform() {
+    Matrix3 a = Matrix3::translation({1.0f, -5.0f})*Matrix3::rotation(deg(90.0f));
+    Vector2 v(1.0f, -2.0f);
+
+    CORRADE_COMPARE(a.transformVector(v), Vector2(2.0f, 1.0f));
+    CORRADE_COMPARE(a.transformPoint(v), Vector2(3.0f, -4.0f));
 }
 
 void Matrix3Test::debug() {

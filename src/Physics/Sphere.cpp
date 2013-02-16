@@ -40,7 +40,7 @@ namespace {
 }
 
 template<std::uint8_t dimensions> void Sphere<dimensions>::applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
-    _transformedPosition = (matrix*typename DimensionTraits<dimensions>::PointType(_position)).vector();
+    _transformedPosition = matrix.transformPoint(_position);
     float scaling = (matrix.rotationScaling()*unitVector<dimensions>()).length();
     _transformedRadius = scaling*_radius;
 }

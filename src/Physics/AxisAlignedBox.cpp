@@ -22,8 +22,8 @@
 namespace Magnum { namespace Physics {
 
 template<std::uint8_t dimensions> void AxisAlignedBox<dimensions>::applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
-    _transformedMin = (matrix*typename DimensionTraits<dimensions>::PointType(_min)).vector();
-    _transformedMax = (matrix*typename DimensionTraits<dimensions>::PointType(_max)).vector();
+    _transformedMin = matrix.transformPoint(_min);
+    _transformedMax = matrix.transformPoint(_max);
 }
 
 template<std::uint8_t dimensions> bool AxisAlignedBox<dimensions>::collides(const AbstractShape<dimensions>* other) const {

@@ -204,6 +204,30 @@ template<class T> class Matrix3: public Matrix<3, T> {
             return from(inverseRotation, inverseRotation*-translation());
         }
 
+        /**
+         * @brief Transform 2D vector with the matrix
+         *
+         * Translation is not involved in the transformation. @f[
+         *      \boldsymbol v' = \boldsymbol M (v_x, v_y, 0)^T
+         * @f]
+         * @see transformPoint(), Matrix4::transformVector()
+         */
+        inline Vector2<T> transformVector(const Vector2<T>& vector) const {
+            return ((*this)*Vector3<T>(vector, T(0))).xy();
+        }
+
+        /**
+         * @brief Transform 2D point with the matrix
+         *
+         * Unlike in transformVector(), translation is also involved. @f[
+         *      \boldsymbol v' = \boldsymbol M (v_x, v_y, 1)^T
+         * @f]
+         * @see Matrix4::transformPoint()
+         */
+        inline Vector2<T> transformPoint(const Vector2<T>& vector) const {
+            return ((*this)*Vector3<T>(vector, T(1))).xy();
+        }
+
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline Point2D<T> operator*(const Point2D<T>& other) const {
             return Matrix<3, T>::operator*(other);

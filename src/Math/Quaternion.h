@@ -403,7 +403,7 @@ template<class T> class Quaternion {
          * quaternions. @f[
          *      v' = qvq^{-1} = q [\boldsymbol v, 0] q^{-1}
          * @f]
-         * @see DualQuaternion::transformPointNormalized()
+         * @see Matrix4::transformVector(), DualQuaternion::transformPointNormalized()
          */
         inline Vector3<T> rotateVector(const Vector3<T>& vector) const {
             return ((*this)*Quaternion<T>(vector)*inverted()).vector();
@@ -416,7 +416,7 @@ template<class T> class Quaternion {
          * normalized. @f[
          *      v' = qvq^{-1} = qvq^* = q [\boldsymbol v, 0] q^*
          * @f]
-         * @see DualQuaternion::transformPointNormalized()
+         * @see Matrix4::transformVector(), DualQuaternion::transformPointNormalized()
          */
         inline Vector3<T> rotateVectorNormalized(const Vector3<T>& vector) const {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),

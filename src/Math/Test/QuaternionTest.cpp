@@ -299,7 +299,7 @@ void QuaternionTest::rotateVector() {
     Vector3 v(5.0f, -3.6f, 0.7f);
 
     Vector3 rotated = a.rotateVector(v);
-    CORRADE_COMPARE(rotated, (m*Vector4(v, 0.0f)).xyz());
+    CORRADE_COMPARE(rotated, m.transformVector(v));
     CORRADE_COMPARE(rotated, Vector3(5.0f, -3.58733f, -0.762279f));
 }
 
@@ -315,7 +315,7 @@ void QuaternionTest::rotateVectorNormalized() {
     CORRADE_COMPARE(o.str(), "Math::Quaternion::rotateVectorNormalized(): quaternion must be normalized\n");
 
     Vector3 rotated = a.rotateVectorNormalized(v);
-    CORRADE_COMPARE(rotated, (m*Vector4(v, 0.0f)).xyz());
+    CORRADE_COMPARE(rotated, m.transformVector(v));
     CORRADE_COMPARE(rotated, a.rotateVector(v));
 }
 
