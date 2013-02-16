@@ -87,9 +87,10 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         /**
          * @brief Construct dual quaternion from vector
          *
-         * @f[
+         * To be used in transformations later. @f[
          *      \hat q = [\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]
          * @f]
+         * @see transformPointNormalized()
          * @todoc Remove workaround when Doxygen is predictable
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -209,6 +210,21 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(norm(), T(1)),
                            "Math::DualQuaternion::invertedNormalized(): dual quaternion must be normalized", {});
             return quaternionConjugated();
+        }
+
+        /**
+         * @brief Rotate and translate point with normalized dual quaternion
+         *
+         * Expects that the dual quaternion is normalized. @f[
+         *      v' = qv \overline{\hat q^*} = q ([\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]) \overline{\hat q^*}
+         * @f]
+         * @see Quaternion::rotateVectorNormalized()
+         */
+        inline Vector3<T> transformPointNormalized(const Vector3<T>& vector) const {
+            CORRADE_ASSERT(MathTypeTraits<Dual<T>>::equals(norm(), Dual<T>(1)),
+                           "Math::DualQuaternion::transformPointNormalized(): dual quaternion must be normalized",
+                           Vector3<T>(std::numeric_limits<T>::quiet_NaN()));
+            return ((*this)*DualQuaternion<T>(vector)*conjugated()).dual().vector();
         }
 
         MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(DualQuaternion, Quaternion)

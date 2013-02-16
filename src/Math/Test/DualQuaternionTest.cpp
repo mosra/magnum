@@ -18,6 +18,7 @@
 
 #include "Math/Constants.h"
 #include "Math/DualQuaternion.h"
+#include "Math/Matrix4.h"
 
 namespace Magnum { namespace Math { namespace Test {
 
@@ -38,14 +39,17 @@ class DualQuaternionTest: public Corrade::TestSuite::Tester {
 
         void rotation();
         void translation();
+        void transformPointNormalized();
 
         void debug();
 };
 
 typedef Math::Dual<float> Dual;
+typedef Math::Matrix4<float> Matrix4;
 typedef Math::DualQuaternion<float> DualQuaternion;
 typedef Math::Quaternion<float> Quaternion;
 typedef Math::Vector3<float> Vector3;
+typedef Math::Vector4<float> Vector4;
 
 DualQuaternionTest::DualQuaternionTest() {
     addTests(&DualQuaternionTest::construct,
@@ -61,6 +65,7 @@ DualQuaternionTest::DualQuaternionTest() {
 
              &DualQuaternionTest::rotation,
              &DualQuaternionTest::translation,
+             &DualQuaternionTest::transformPointNormalized,
 
              &DualQuaternionTest::debug);
 }
@@ -136,6 +141,28 @@ void DualQuaternionTest::translation() {
     DualQuaternion q = DualQuaternion::translation(vec);
     CORRADE_COMPARE(q, DualQuaternion({}, {{0.5f, -1.75f, 0.25f}, 0.0f}));
     CORRADE_COMPARE(q.translation(), vec);
+}
+
+void DualQuaternionTest::transformPointNormalized() {
+    DualQuaternion a = DualQuaternion::translation({-1.0f, 2.0f, 3.0f})*DualQuaternion::rotation(deg(23.0f), Vector3::xAxis());
+    DualQuaternion b = DualQuaternion::rotation(deg(23.0f), Vector3::xAxis())*DualQuaternion::translation({-1.0f, 2.0f, 3.0f});
+    Matrix4 m = Matrix4::translation({-1.0f, 2.0f, 3.0f})*Matrix4::rotationX(deg(23.0f));
+    Matrix4 n = Matrix4::rotationX(deg(23.0f))*Matrix4::translation({-1.0f, 2.0f, 3.0f});
+    Vector3 v(0.0f, -3.6f, 0.7f);
+
+    std::ostringstream o;
+    Corrade::Utility::Error::setOutput(&o);
+    Vector3 notTransformed = (a*Dual(2)).transformPointNormalized(v);
+    CORRADE_VERIFY(notTransformed != notTransformed);
+    CORRADE_COMPARE(o.str(), "Math::DualQuaternion::transformPointNormalized(): dual quaternion must be normalized\n");
+
+    Vector3 transformedA = a.transformPointNormalized(v);
+    CORRADE_COMPARE(transformedA, (m*Vector4(v, 1.0f)).xyz());
+    CORRADE_COMPARE(transformedA, Vector3(-1.0f, -1.58733f, 2.237721f));
+
+    Vector3 transformedB = b.transformPointNormalized(v);
+    CORRADE_COMPARE(transformedB, (n*Vector4(v, 1.0f)).xyz());
+    CORRADE_COMPARE(transformedB, Vector3(-1.0f, -2.918512f, 2.780698f));
 }
 
 void DualQuaternionTest::debug() {
