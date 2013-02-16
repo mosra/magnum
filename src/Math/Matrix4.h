@@ -39,8 +39,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D translation
          * @param vector    Translation vector
          *
-         * @see translation(), Matrix3::translation(const Vector2&),
-         *      Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()
+         * @see translation(), DualQuaternion::translation(),
+         *      Matrix3::translation(const Vector2&), Vector3::xAxis(),
+         *      Vector3::yAxis(), Vector3::zAxis()
          */
         inline constexpr static Matrix4<T> translation(const Vector3<T>& vector) {
             return {{      T(1),       T(0),       T(0), T(0)},
@@ -70,8 +71,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * Expects that the rotation axis is normalized. If possible, use
          * faster alternatives like rotationX(), rotationY() and rotationZ().
-         * @see rotation() const, Quaternion::rotation(), Matrix3::rotation(T),
-         *      Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis(), deg(), rad()
+         * @see rotation() const, DualQuaternion::rotation(),
+         *      Quaternion::rotation(), Matrix3::rotation(T), Vector3::xAxis(),
+         *      Vector3::yAxis(), Vector3::zAxis(), deg(), rad()
          */
         static Matrix4<T> rotation(T angle, const Vector3<T>& normalizedAxis) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedAxis.dot(), T(1)),

@@ -32,6 +32,36 @@ namespace Magnum { namespace Math {
 template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
     public:
         /**
+         * @brief Rotation dual quaternion
+         * @param angle             Rotation angle (counterclockwise, in radians)
+         * @param normalizedAxis    Normalized rotation axis
+         *
+         * Expects that the rotation axis is normalized. @f[
+         *      \hat q = [\boldsymbol a \cdot sin \frac \theta 2, cos \frac \theta 2] + \epsilon [\boldsymbol 0, 0]
+         * @f]
+         * @see rotationAngle(), rotationAxis(), Quaternion::rotation(),
+         *      Matrix4::rotation(), Vector3::xAxis(), Vector3::yAxis(),
+         *      Vector3::zAxis(), deg(), rad()
+         */
+        inline static DualQuaternion<T> rotation(T angle, const Vector3<T>& normalizedAxis) {
+            return {Quaternion<T>::rotation(angle, normalizedAxis), {{}, T(0)}};
+        }
+
+        /**
+         * @brief Translation dual quaternion
+         * @param vector    Translation vector
+         *
+         * @f[
+         *      \hat q = [\boldsymbol 0, 1] + \epsilon [\frac{\boldsymbol v}{2}, 0]
+         * @f]
+         * @see translation() const, Matrix3::translation(const Vector2&),
+         *      Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()
+         */
+        inline static DualQuaternion<T> translation(const Vector3<T>& vector) {
+            return {{}, {vector/T(2), T(0)}};
+        }
+
+        /**
          * @brief Default constructor
          *
          * All components set to zero except real scalar part, which is `1`.
@@ -51,6 +81,44 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f]
          */
         inline constexpr /*implicit*/ DualQuaternion(const Quaternion<T>& real, const Quaternion<T>& dual): Dual<Quaternion<T>>(real, dual) {}
+
+        /**
+         * @brief Rotation angle of unit dual quaternion
+         *
+         * Expects that the real part of the quaternion is normalized. @f[
+         *      \theta = 2 \cdot acos q_{S 0}
+         * @f]
+         * @see rotationAxis(), rotation(), Quaternion::rotationAngle()
+         */
+        inline T rotationAngle() const {
+            return this->real().rotationAngle();
+        }
+
+        /**
+         * @brief Rotation axis of unit dual quaternion
+         *
+         * Expects that the quaternion is normalized. Returns either unit-length
+         * vector for valid rotation quaternion or NaN vector for
+         * default-constructed quaternion. @f[
+         *      \boldsymbol a = \frac{\boldsymbol q_{V 0}}{\sqrt{1 - q_{S 0}^2}}
+         * @f]
+         * @see rotationAngle(), rotation(), Quaternion::rotationAxis()
+         */
+        inline Vector3<T> rotationAxis() const {
+            return this->real().rotationAxis();
+        }
+
+        /**
+         * @brief Translation part of unit dual quaternion
+         *
+         * @f[
+         *      \boldsymbol a = 2 (q_\epsilon q_0^*)_V
+         * @f]
+         * @see translation(const Vector3&)
+         */
+        inline Vector3<T> translation() const {
+            return (this->dual()*this->real().conjugated()).vector()*T(2);
+        }
 
         /**
          * @brief Quaternion-conjugated dual quaternion

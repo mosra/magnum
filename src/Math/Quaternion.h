@@ -103,14 +103,16 @@ template<class T> class Quaternion {
         }
 
         /**
-         * @brief Create quaternion from rotation
+         * @brief Rotation quaternion
          * @param angle             Rotation angle (counterclockwise, in radians)
          * @param normalizedAxis    Normalized rotation axis
          *
          * Expects that the rotation axis is normalized. @f[
          *      q = [\boldsymbol a \cdot sin \frac \theta 2, cos \frac \theta 2]
          * @f]
-         * @see Matrix4::rotation()
+         * @see rotationAngle(), rotationAxis(), DualQuaternion::rotation(),
+         *      Matrix4::rotation(), Vector3::xAxis(), Vector3::yAxis(),
+         *      Vector3::zAxis(), deg(), rad()
          */
         inline static Quaternion<T> rotation(T angle, const Vector3<T>& normalizedAxis) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedAxis.dot(), T(1)),

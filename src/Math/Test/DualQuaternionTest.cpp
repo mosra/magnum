@@ -16,6 +16,7 @@
 #include <sstream>
 #include <TestSuite/Tester.h>
 
+#include "Math/Constants.h"
 #include "Math/DualQuaternion.h"
 
 namespace Magnum { namespace Math { namespace Test {
@@ -33,6 +34,9 @@ class DualQuaternionTest: public Corrade::TestSuite::Tester {
         void dualConjugated();
         void conjugated();
         void inverted();
+
+        void rotation();
+        void translation();
 
         void debug();
 };
@@ -52,6 +56,9 @@ DualQuaternionTest::DualQuaternionTest() {
              &DualQuaternionTest::dualConjugated,
              &DualQuaternionTest::conjugated,
              &DualQuaternionTest::inverted,
+
+             &DualQuaternionTest::rotation,
+             &DualQuaternionTest::translation,
 
              &DualQuaternionTest::debug);
 }
@@ -100,6 +107,29 @@ void DualQuaternionTest::inverted() {
 
     CORRADE_COMPARE(a*a.inverted(), DualQuaternion());
     CORRADE_COMPARE(a.inverted(), b);
+}
+
+void DualQuaternionTest::rotation() {
+    std::ostringstream o;
+    Error::setOutput(&o);
+
+    float angle = deg(120.0f);
+    Vector3 axis(1.0f/Constants<float>::sqrt3());
+
+    CORRADE_COMPARE(DualQuaternion::rotation(angle, axis*2.0f), DualQuaternion());
+    CORRADE_COMPARE(o.str(), "Math::Quaternion::rotation(): axis must be normalized\n");
+
+    DualQuaternion q = DualQuaternion::rotation(angle, axis);
+    CORRADE_COMPARE(q, DualQuaternion({Vector3(0.5f, 0.5f, 0.5f), 0.5f}, {{}, 0.0f}));
+    CORRADE_COMPARE(q.rotationAngle(), angle);
+    CORRADE_COMPARE(q.rotationAxis(), axis);
+}
+
+void DualQuaternionTest::translation() {
+    Vector3 vec(1.0f, -3.5f, 0.5f);
+    DualQuaternion q = DualQuaternion::translation(vec);
+    CORRADE_COMPARE(q, DualQuaternion({}, {{0.5f, -1.75f, 0.25f}, 0.0f}));
+    CORRADE_COMPARE(q.translation(), vec);
 }
 
 void DualQuaternionTest::debug() {
