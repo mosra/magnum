@@ -31,6 +31,8 @@ class QuaternionTest: public Corrade::TestSuite::Tester {
         void constructFromVector();
         void compare();
 
+        void constExpressions();
+
         void addSubtract();
         void negated();
         void multiplyDivideScalar();
@@ -67,6 +69,8 @@ QuaternionTest::QuaternionTest() {
              &QuaternionTest::constructDefault,
              &QuaternionTest::constructFromVector,
              &QuaternionTest::compare,
+
+             &QuaternionTest::constExpressions,
 
              &QuaternionTest::addSubtract,
              &QuaternionTest::negated,
@@ -112,6 +116,30 @@ void QuaternionTest::compare() {
     CORRADE_VERIFY(Quaternion({1.0f+MathTypeTraits<float>::epsilon()*2, 2.0f, 3.0f}, -4.0f) != Quaternion({1.0f, 2.0f, 3.0f}, -4.0f));
     CORRADE_VERIFY(Quaternion({4.0f, 2.0f, 3.0f}, -1.0f+MathTypeTraits<float>::epsilon()/2) == Quaternion({4.0f, 2.0f, 3.0f}, -1.0f));
     CORRADE_VERIFY(Quaternion({4.0f, 2.0f, 3.0f}, -1.0f+MathTypeTraits<float>::epsilon()*2) != Quaternion({4.0f, 2.0f, 3.0f}, -1.0f));
+}
+
+void QuaternionTest::constExpressions() {
+    /* Default constructor */
+    constexpr Quaternion a;
+    CORRADE_COMPARE(a, Quaternion({0.0f, 0.0f, 0.0f}, 1.0f));
+
+    /* Value constructor */
+    constexpr Quaternion b({1.0f, -3.0f, 7.0f}, 2.5f);
+    CORRADE_COMPARE(b, Quaternion({1.0f, -3.0f, 7.0f}, 2.5f));
+
+    /* Construct from vector */
+    constexpr Quaternion c({2.0f, -3.0f, 1.5f});
+    CORRADE_COMPARE(c, Quaternion({2.0f, -3.0f, 1.5f}, 0.0f));
+
+    /* Copy constructor */
+    constexpr Quaternion d(b);
+    CORRADE_COMPARE(d, Quaternion({1.0f, -3.0f, 7.0f}, 2.5f));
+
+    /* Data access */
+    constexpr Vector3 e = b.vector();
+    constexpr float f = b.scalar();
+    CORRADE_COMPARE(e, Vector3(1.0f, -3.0f, 7.0f));
+    CORRADE_COMPARE(f, 2.5f);
 }
 
 void QuaternionTest::addSubtract() {
