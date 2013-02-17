@@ -218,7 +218,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * Expects that the dual quaternion is normalized. @f[
          *      v' = qv \overline{\hat q^*} = q ([\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]) \overline{\hat q^*}
          * @f]
-         * @see Matrix4::transformPoint(), Quaternion::rotateVectorNormalized()
+         * @see DualQuaternion(const Vector3&), Matrix4::transformPoint(), Quaternion::rotateVectorNormalized()
          */
         inline Vector3<T> transformPointNormalized(const Vector3<T>& vector) const {
             CORRADE_ASSERT(MathTypeTraits<Dual<T>>::equals(norm(), Dual<T>(1)),

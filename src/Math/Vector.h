@@ -395,10 +395,10 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief %Vector length
          *
-         * @f[
+         * See also dot() const which is faster for comparing length with other
+         * values. @f[
          *      |\boldsymbol a| = \sqrt{\boldsymbol a \cdot \boldsymbol a}
          * @f]
-         * @see dot() const
          */
         inline T length() const {
             return std::sqrt(dot());
