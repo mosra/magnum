@@ -33,6 +33,7 @@ class DualTest: public Corrade::TestSuite::Tester {
         void multiplyDivide();
 
         void conjugated();
+        void sqrt();
 
         void debug();
 };
@@ -49,6 +50,7 @@ DualTest::DualTest() {
              &DualTest::multiplyDivide,
 
              &DualTest::conjugated,
+             &DualTest::sqrt,
 
              &DualTest::debug);
 }
@@ -102,6 +104,10 @@ void DualTest::multiplyDivide() {
 
 void DualTest::conjugated() {
     CORRADE_COMPARE(Dual(1.0f, -6.5f).conjugated(), Dual(1.0f, 6.5f));
+}
+
+void DualTest::sqrt() {
+    CORRADE_COMPARE(Math::sqrt(Dual(16.0f, 2.0f)), Dual(4.0f, 0.25f));
 }
 
 void DualTest::debug() {

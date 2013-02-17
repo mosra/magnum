@@ -19,6 +19,7 @@
  * @brief Class Magnum::Math::Dual
  */
 
+#include <cmath>
 #include <Utility/Debug.h>
 
 #include "Math/MathTypeTraits.h"
@@ -189,6 +190,19 @@ template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug deb
     debug << value.real() << ", " << value.dual() << ")";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
     return debug;
+}
+
+/** @relates Dual
+@brief Square root of dual number
+
+@f[
+    \sqrt{\hat a} = \sqrt{a_0} + \epsilon \frac{a_\epsilon}{2 \sqrt{a_0}}
+@f]
+@see Math::sqrt(const T&)
+*/
+template<class T> Dual<T> sqrt(const Dual<T>& dual) {
+    T sqrt0 = std::sqrt(dual.real());
+    return {sqrt0, dual.dual()/(2*sqrt0)};
 }
 
 }}
