@@ -26,6 +26,7 @@ class SwizzleTest: public Corrade::TestSuite::Tester {
         void components();
         void constants();
         void sizes();
+        void constExpressions();
 };
 
 typedef Vector<4, std::int32_t> Vector4i;
@@ -33,7 +34,8 @@ typedef Vector<4, std::int32_t> Vector4i;
 SwizzleTest::SwizzleTest() {
     addTests(&SwizzleTest::components,
              &SwizzleTest::constants,
-             &SwizzleTest::sizes);
+             &SwizzleTest::sizes,
+             &SwizzleTest::constExpressions);
 }
 
 void SwizzleTest::components() {
@@ -51,6 +53,14 @@ void SwizzleTest::sizes() {
         (Math::Vector<1, std::int32_t>(3)));
     CORRADE_COMPARE((swizzle<'z', 'x', 'w', 'y', 'z', 'y', 'x'>(Vector4i(1, 2, 3, 4))),
         (Math::Vector<7, std::int32_t>(3, 1, 4, 2, 3, 2, 1)));
+}
+
+void SwizzleTest::constExpressions() {
+    constexpr auto a = swizzle<'z', 'x', 'w', 'y'>(Vector4i(2, 4, 5, 7));
+    CORRADE_COMPARE(a, Vector4i(5, 2, 7, 4));
+
+    constexpr auto b = swizzle<'1', 'w', '0', 'y'>(Vector4i(2, 4, 5, 7));
+    CORRADE_COMPARE(b, Vector4i(1, 7, 0, 4));
 }
 
 }}}
