@@ -31,6 +31,7 @@ class DualQuaternionTest: public Corrade::TestSuite::Tester {
 
         void lengthSquared();
         void length();
+        void normalized();
 
         void quaternionConjugated();
         void dualConjugated();
@@ -60,6 +61,7 @@ DualQuaternionTest::DualQuaternionTest() {
 
              &DualQuaternionTest::lengthSquared,
              &DualQuaternionTest::length,
+             &DualQuaternionTest::normalized,
 
              &DualQuaternionTest::quaternionConjugated,
              &DualQuaternionTest::dualConjugated,
@@ -101,6 +103,13 @@ void DualQuaternionTest::length() {
 
     DualQuaternion a({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.0f, 3.0f}, 2.0f});
     CORRADE_COMPARE(a.length(), Dual(5.477226f, -0.821584f));
+}
+
+void DualQuaternionTest::normalized() {
+    DualQuaternion a({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.0f, 3.0f}, 2.0f});
+    DualQuaternion b({{0.182574f, 0.365148f, 0.547723f}, -0.730297f}, {{0.118673f, -0.49295f, 0.629881f}, 0.255604f});
+    CORRADE_COMPARE(a.normalized().length(), 1.0f);
+    CORRADE_COMPARE(a.normalized(), b);
 }
 
 void DualQuaternionTest::quaternionConjugated() {

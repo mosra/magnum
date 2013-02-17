@@ -208,6 +208,11 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
             return Math::sqrt(lengthSquared());
         }
 
+        /** @brief Normalized quaternion (of length 1) */
+        inline DualQuaternion<T> normalized() const {
+            return (*this)/length();
+        }
+
         /**
          * @brief Inverted dual quaternion
          *
