@@ -239,14 +239,12 @@ void QuaternionTest::angle() {
 }
 
 void QuaternionTest::matrix() {
-    float angle = deg(37.0f);
-    Vector3 axis(1.0f/Constants<float>::sqrt3());
-    Quaternion q = Quaternion::rotation(angle, axis);
-    Matrix3 expected = Matrix4::rotation(angle, axis).rotationScaling();
-    CORRADE_COMPARE(q.matrix(), expected);
+    Quaternion q = Quaternion::rotation(deg(37.0f), Vector3(1.0f/Constants<float>::sqrt3()));
+    Matrix3 m = Matrix4::rotation(deg(37.0f), Vector3(1.0f/Constants<float>::sqrt3())).rotationScaling();
 
     /* Verify that negated quaternion gives the same rotation */
-    CORRADE_COMPARE((-q).matrix(), expected);
+    CORRADE_COMPARE(q.matrix(), m);
+    CORRADE_COMPARE((-q).matrix(), m);
 }
 
 void QuaternionTest::lerp() {

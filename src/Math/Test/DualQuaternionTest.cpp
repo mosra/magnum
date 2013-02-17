@@ -18,7 +18,6 @@
 
 #include "Math/Constants.h"
 #include "Math/DualQuaternion.h"
-#include "Math/Matrix4.h"
 
 namespace Magnum { namespace Math { namespace Test {
 
@@ -40,6 +39,7 @@ class DualQuaternionTest: public Corrade::TestSuite::Tester {
         void rotation();
         void translation();
         void combinedTransformParts();
+        void matrix();
         void transformPointNormalized();
 
         void debug();
@@ -67,6 +67,7 @@ DualQuaternionTest::DualQuaternionTest() {
              &DualQuaternionTest::rotation,
              &DualQuaternionTest::translation,
              &DualQuaternionTest::combinedTransformParts,
+             &DualQuaternionTest::matrix,
              &DualQuaternionTest::transformPointNormalized,
 
              &DualQuaternionTest::debug);
@@ -157,6 +158,15 @@ void DualQuaternionTest::combinedTransformParts() {
 
     CORRADE_COMPARE(a.translation(), translation);
     CORRADE_COMPARE(b.translation(), Quaternion::rotation(deg(23.0f), Vector3::xAxis()).rotateVectorNormalized(translation));
+}
+
+void DualQuaternionTest::matrix() {
+    DualQuaternion q = DualQuaternion::rotation(deg(23.0f), Vector3::xAxis())*DualQuaternion::translation({-1.0f, 2.0f, 3.0f});
+    Matrix4 m = Matrix4::rotationX(deg(23.0f))*Matrix4::translation({-1.0f, 2.0f, 3.0f});
+
+    /* Verify that negated dual quaternion gives the same transformation */
+    CORRADE_COMPARE(q.matrix(), m);
+    CORRADE_COMPARE((-q).matrix(), m);
 }
 
 void DualQuaternionTest::transformPointNormalized() {

@@ -20,6 +20,7 @@
  */
 
 #include "Math/Dual.h"
+#include "Math/Matrix4.h"
 #include "Math/Quaternion.h"
 
 namespace Magnum { namespace Math {
@@ -135,6 +136,15 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          */
         inline Vector3<T> translation() const {
             return (this->dual()*this->real().conjugated()).vector()*T(2);
+        }
+
+        /**
+         * @brief Convert dual quaternion to transformation matrix
+         *
+         * @see Quaternion::matrix()
+         */
+        Matrix4<T> matrix() const {
+            return Matrix4<T>::from(this->real().matrix(), translation());
         }
 
         /**
