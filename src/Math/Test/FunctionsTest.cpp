@@ -27,6 +27,7 @@ class FunctionsTest: public Corrade::TestSuite::Tester {
         void min();
         void max();
         void abs();
+        void sqrt();
         void clamp();
         void lerp();
         void normalizeUnsigned();
@@ -50,6 +51,7 @@ FunctionsTest::FunctionsTest() {
     addTests(&FunctionsTest::min,
              &FunctionsTest::max,
              &FunctionsTest::abs,
+             &FunctionsTest::sqrt,
              &FunctionsTest::clamp,
              &FunctionsTest::lerp,
              &FunctionsTest::normalizeUnsigned,
@@ -77,6 +79,11 @@ void FunctionsTest::abs() {
     CORRADE_COMPARE(Math::abs(-5), 5);
     CORRADE_COMPARE(Math::abs(5), 5);
     CORRADE_COMPARE(Math::abs(Vector3i(5, -3, 2)), Vector3i(5, 3, 2));
+}
+
+void FunctionsTest::sqrt() {
+    CORRADE_COMPARE(Math::sqrt(16), 4);
+    CORRADE_COMPARE(Math::sqrt(Vector3i(256, 1, 0)), Vector3i(16, 1, 0));
 }
 
 void FunctionsTest::clamp() {

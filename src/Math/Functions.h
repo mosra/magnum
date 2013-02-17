@@ -132,6 +132,21 @@ template<std::size_t size, class T> Vector<size, T> abs(const Vector<size, T>& a
 }
 #endif
 
+/** @brief Square root */
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> inline T sqrt(const T& a);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type sqrt(T a) {
+    return std::sqrt(a);
+}
+template<std::size_t size, class T> Vector<size, T> sqrt(const Vector<size, T>& a) {
+    Vector<size, T> out;
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = std::sqrt(a[i]);
+    return out;
+}
+#endif
+
 /**
 @brief Clamp value
 
