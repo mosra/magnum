@@ -29,6 +29,8 @@ class DualQuaternionTest: public Corrade::TestSuite::Tester {
         void constructDefault();
         void constructFromVector();
 
+        void constExpressions();
+
         void lengthSquared();
         void length();
         void normalized();
@@ -59,6 +61,8 @@ DualQuaternionTest::DualQuaternionTest() {
     addTests(&DualQuaternionTest::construct,
              &DualQuaternionTest::constructDefault,
              &DualQuaternionTest::constructFromVector,
+
+             &DualQuaternionTest::constExpressions,
 
              &DualQuaternionTest::lengthSquared,
              &DualQuaternionTest::length,
@@ -91,6 +95,24 @@ void DualQuaternionTest::constructDefault() {
 
 void DualQuaternionTest::constructFromVector() {
     CORRADE_COMPARE(DualQuaternion({1.0f, 2.0f, 3.0f}), DualQuaternion({{0.0f, 0.0f, 0.0f}, 1.0f}, {{1.0f, 2.0f, 3.0f}, 0.0f}));
+}
+
+void DualQuaternionTest::constExpressions() {
+    /* Default constructor */
+    constexpr DualQuaternion a;
+    CORRADE_COMPARE(a, DualQuaternion({{0.0f, 0.0f, 0.0f}, 1.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
+
+    /* Value constructor */
+    constexpr DualQuaternion b({{1.0f, 2.0f, -3.0f}, -3.5f}, {{4.5f, -7.0f, 2.0f}, 1.0f});
+    CORRADE_COMPARE(b, DualQuaternion({{1.0f, 2.0f, -3.0f}, -3.5f}, {{4.5f, -7.0f, 2.0f}, 1.0f}));
+
+    /* Vector constructor */
+    constexpr DualQuaternion c({1.5f, -5.0f, 3.0f});
+    CORRADE_COMPARE(c, DualQuaternion({{0.0f, 0.0f, 0.0f}, 1.0f}, {{1.5f, -5.0f, 3.0f}, 0.0f}));
+
+    /* Copy constructor */
+    constexpr DualQuaternion d(b);
+    CORRADE_COMPARE(d, DualQuaternion({{1.0f, 2.0f, -3.0f}, -3.5f}, {{4.5f, -7.0f, 2.0f}, 1.0f}));
 }
 
 void DualQuaternionTest::lengthSquared() {
