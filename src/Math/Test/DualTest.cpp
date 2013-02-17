@@ -28,6 +28,8 @@ class DualTest: public Corrade::TestSuite::Tester {
         void constructDefault();
         void compare();
 
+        void constExpressions();
+
         void addSubtract();
         void negated();
         void multiplyDivide();
@@ -44,6 +46,8 @@ DualTest::DualTest() {
     addTests(&DualTest::construct,
              &DualTest::constructDefault,
              &DualTest::compare,
+
+             &DualTest::constExpressions,
 
              &DualTest::addSubtract,
              &DualTest::negated,
@@ -78,6 +82,26 @@ void DualTest::compare() {
     /* Compare to real part only */
     CORRADE_VERIFY(Dual(1.0f, 0.0f) == 1.0f);
     CORRADE_VERIFY(Dual(1.0f, 3.0f) != 1.0f);
+}
+
+void DualTest::constExpressions() {
+    /* Default constructor */
+    constexpr Dual a;
+    CORRADE_COMPARE(a, Dual(0.0f, 0.0f));
+
+    /* Value constructor */
+    constexpr Dual b(2.0f, 3.0f);
+    CORRADE_COMPARE(b, Dual(2.0f, 3.0f));
+
+    /* Copy constructor */
+    constexpr Dual c(b);
+    CORRADE_COMPARE(c, Dual(2.0f, 3.0f));
+
+    /* Data access */
+    constexpr float e = b.real();
+    constexpr float f = b.dual();
+    CORRADE_COMPARE(e, 2.0f);
+    CORRADE_COMPARE(f, 3.0f);
 }
 
 void DualTest::addSubtract() {
