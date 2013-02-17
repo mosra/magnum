@@ -240,10 +240,24 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         }
 
         /**
+         * @brief Rotate and translate point with dual quaternion
+         *
+         * See rotateVectorNormalized(), which is faster for normalized dual
+         * quaternions. @f[
+         *      v' = qv \overline{\hat q^{-1}} = q ([\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]) \overline{\hat q^{-1}}
+         * @f]
+         * @see DualQuaternion(const Vector3&), Matrix4::transformPoint(), Quaternion::rotateVectorNormalized()
+         */
+        inline Vector3<T> transformPoint(const Vector3<T>& vector) const {
+            return ((*this)*DualQuaternion<T>(vector)*inverted().dualConjugated()).dual().vector();
+        }
+
+        /**
          * @brief Rotate and translate point with normalized dual quaternion
          *
-         * Expects that the dual quaternion is normalized. @f[
-         *      v' = qv \overline{\hat q^*} = q ([\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]) \overline{\hat q^*}
+         * Faster alternative to transformPoint(), expects that the dual
+         * quaternion is normalized. @f[
+         *      v' = qv \overline{\hat q^{-1}} = qv \overline{\hat q^*} = q ([\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]) \overline{\hat q^*}
          * @f]
          * @see DualQuaternion(const Vector3&), Matrix4::transformPoint(), Quaternion::rotateVectorNormalized()
          */

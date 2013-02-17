@@ -367,7 +367,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * Unlike in transformVector(), translation is also involved. @f[
          *      \boldsymbol v' = \boldsymbol M (v_x, v_y, v_z, 1)^T
          * @f]
-         * @see DualQuaternion::transformPointNormalized(), Matrix3::transformPoint()
+         * @see DualQuaternion::transformPoint(), Matrix3::transformPoint()
          */
         inline Vector3<T> transformPoint(const Vector3<T>& vector) const {
             return ((*this)*Vector4<T>(vector, T(1))).xyz();

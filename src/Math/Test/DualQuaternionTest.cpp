@@ -42,6 +42,7 @@ class DualQuaternionTest: public Corrade::TestSuite::Tester {
         void translation();
         void combinedTransformParts();
         void matrix();
+        void transformPoint();
         void transformPointNormalized();
 
         void debug();
@@ -72,6 +73,7 @@ DualQuaternionTest::DualQuaternionTest() {
              &DualQuaternionTest::translation,
              &DualQuaternionTest::combinedTransformParts,
              &DualQuaternionTest::matrix,
+             &DualQuaternionTest::transformPoint,
              &DualQuaternionTest::transformPointNormalized,
 
              &DualQuaternionTest::debug);
@@ -185,6 +187,22 @@ void DualQuaternionTest::matrix() {
     /* Verify that negated dual quaternion gives the same transformation */
     CORRADE_COMPARE(q.matrix(), m);
     CORRADE_COMPARE((-q).matrix(), m);
+}
+
+void DualQuaternionTest::transformPoint() {
+    DualQuaternion a = DualQuaternion::translation({-1.0f, 2.0f, 3.0f})*DualQuaternion::rotation(deg(23.0f), Vector3::xAxis());
+    DualQuaternion b = DualQuaternion::rotation(deg(23.0f), Vector3::xAxis())*DualQuaternion::translation({-1.0f, 2.0f, 3.0f});
+    Matrix4 m = Matrix4::translation({-1.0f, 2.0f, 3.0f})*Matrix4::rotationX(deg(23.0f));
+    Matrix4 n = Matrix4::rotationX(deg(23.0f))*Matrix4::translation({-1.0f, 2.0f, 3.0f});
+    Vector3 v(0.0f, -3.6f, 0.7f);
+
+    Vector3 transformedA = (a*Dual(2)).transformPoint(v);
+    CORRADE_COMPARE(transformedA, m.transformPoint(v));
+    CORRADE_COMPARE(transformedA, Vector3(-1.0f, -1.58733f, 2.237721f));
+
+    Vector3 transformedB = (b*Dual(2)).transformPoint(v);
+    CORRADE_COMPARE(transformedB, n.transformPoint(v));
+    CORRADE_COMPARE(transformedB, Vector3(-1.0f, -2.918512f, 2.780698f));
 }
 
 void DualQuaternionTest::transformPointNormalized() {

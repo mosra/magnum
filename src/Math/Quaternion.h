@@ -403,7 +403,7 @@ template<class T> class Quaternion {
          * quaternions. @f[
          *      v' = qvq^{-1} = q [\boldsymbol v, 0] q^{-1}
          * @f]
-         * @see Quaternion(const Vector3&), Matrix4::transformVector(), DualQuaternion::transformPointNormalized()
+         * @see Quaternion(const Vector3&), Matrix4::transformVector(), DualQuaternion::transformPoint()
          */
         inline Vector3<T> rotateVector(const Vector3<T>& vector) const {
             return ((*this)*Quaternion<T>(vector)*inverted()).vector();
