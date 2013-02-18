@@ -35,7 +35,7 @@ namespace Magnum { namespace Math {
 /**
 @brief %Vector
 @tparam size    %Vector size
-@tparam T       Data type
+@tparam T       Underlying data type
 
 See @ref matrix-vector for brief introduction.
 @configurationvalueref{Magnum::Math::Vector}
@@ -46,7 +46,7 @@ template<std::size_t size, class T> class Vector {
     template<std::size_t, class> friend class Vector;
 
     public:
-        typedef T Type;                         /**< @brief Data type */
+        typedef T Type;                         /**< @brief Underlying data type */
         const static std::size_t Size = size;   /**< @brief %Vector size */
 
         /**

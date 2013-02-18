@@ -26,7 +26,7 @@ namespace Magnum { namespace Math {
 
 /**
 @brief 3x3 matrix for transformations in 2D
-@tparam T   Data type
+@tparam T   Underlying data type
 
 Provides functions for transformations in 2D. See Matrix4 for 3D
 transformations. See also @ref matrix-vector for brief introduction.

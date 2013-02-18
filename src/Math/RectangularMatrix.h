@@ -27,7 +27,7 @@ namespace Magnum { namespace Math {
 @brief Rectangular matrix
 @tparam cols    Column count
 @tparam rows    Row count
-@tparam T       Data type
+@tparam T       Underlying data type
 
 See @ref matrix-vector for brief introduction. See also Matrix (square) and
 Vector.
@@ -42,7 +42,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
     template<std::size_t, std::size_t, class> friend class RectangularMatrix;
 
     public:
-        typedef T Type;                         /**< @brief Data type */
+        typedef T Type;                         /**< @brief Underlying data type */
         const static std::size_t Cols = cols;   /**< @brief %Matrix column count */
         const static std::size_t Rows = rows;   /**< @brief %Matrix row count */
 

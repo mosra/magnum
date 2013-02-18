@@ -32,11 +32,14 @@ namespace Magnum { namespace Math {
 
 /**
 @brief %Quaternion
+@tparam T   Underlying data type
 
 @see DualQuaternion, Magnum::Quaternion
 */
 template<class T> class Quaternion {
     public:
+        typedef T Type;                         /**< @brief Underlying data type */
+
         /**
          * @brief Dot product
          *

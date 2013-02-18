@@ -27,11 +27,14 @@ namespace Magnum { namespace Math {
 
 /**
 @brief %Dual quaternion
+@tparam T   Underlying data type
 
 @see Dual, Quaternion
 */
 template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
     public:
+        typedef T Type;                         /**< @brief Underlying data type */
+
         /**
          * @brief Rotation dual quaternion
          * @param angle             Rotation angle (counterclockwise, in radians)

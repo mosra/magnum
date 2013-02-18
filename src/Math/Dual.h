@@ -26,11 +26,16 @@
 
 namespace Magnum { namespace Math {
 
-/** @brief %Dual number */
+/**
+@brief %Dual number
+@tparam T   Underlying data type
+*/
 template<class T> class Dual {
     template<class U> friend class Dual;
 
     public:
+        typedef T Type;                         /**< @brief Underlying data type */
+
         /**
          * @brief Default constructor
          *
