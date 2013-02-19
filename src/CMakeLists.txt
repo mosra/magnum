@@ -175,6 +175,9 @@ if(BUILD_TESTS)
     add_library(MagnumMathTestLib SHARED
         $<TARGET_OBJECTS:MagnumMathObjects>)
     set_target_properties(MagnumMathTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
+    if(WIN32)
+        target_link_libraries(MagnumMathTestLib ${CORRADE_UTILITY_LIBRARY})
+    endif()
 
     add_library(MagnumTestLib SHARED
         $<TARGET_OBJECTS:MagnumObjects>
