@@ -34,7 +34,8 @@ namespace Magnum { namespace Math {
 @brief %Quaternion
 @tparam T   Underlying data type
 
-@see DualQuaternion, Magnum::Quaternion
+Represents 3D rotation.
+@see Magnum::Quaternion, DualQuaternion, Matrix4
 */
 template<class T> class Quaternion {
     public:
@@ -238,7 +239,7 @@ template<class T> class Quaternion {
          * @see operator+=()
          */
         inline Quaternion<T> operator+(const Quaternion<T>& other) const {
-            return Quaternion<T>(*this)+=other;
+            return Quaternion<T>(*this) += other;
         }
 
         /**
@@ -271,7 +272,7 @@ template<class T> class Quaternion {
          * @see operator-=()
          */
         inline Quaternion<T> operator-(const Quaternion<T>& other) const {
-            return Quaternion<T>(*this)-=other;
+            return Quaternion<T>(*this) -= other;
         }
 
         /**
@@ -293,7 +294,7 @@ template<class T> class Quaternion {
          * @see operator*=(T)
          */
         inline Quaternion<T> operator*(T scalar) const {
-            return Quaternion<T>(*this)*=scalar;
+            return Quaternion<T>(*this) *= scalar;
         }
 
         /**
@@ -315,7 +316,7 @@ template<class T> class Quaternion {
          * @see operator/=(T)
          */
         inline Quaternion<T> operator/(T scalar) const {
-            return Quaternion<T>(*this)/=scalar;
+            return Quaternion<T>(*this) /= scalar;
         }
 
         /**

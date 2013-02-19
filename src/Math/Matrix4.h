@@ -25,12 +25,11 @@
 namespace Magnum { namespace Math {
 
 /**
-@brief 4x4 matrix for transformations in 3D
+@brief 4x4 matrix
 @tparam T   Underlying data type
 
-Provides functions for transformations in 3D. See Matrix3 for 2D
-transformations. See also @ref matrix-vector for brief introduction.
-@see Magnum::Matrix4, SceneGraph::MatrixTransformation3D
+Represents 3D transformation. See @ref matrix-vector for brief introduction.
+@see Magnum::Matrix4, DualQuaternion, SceneGraph::MatrixTransformation3D
 @configurationvalueref{Magnum::Math::Matrix4}
  */
 template<class T> class Matrix4: public Matrix<4, T> {
