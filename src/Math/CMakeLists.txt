@@ -1,5 +1,6 @@
 set(MagnumMath_HEADERS
     BoolVector.h
+    Complex.h
     Constants.h
     Dual.h
     DualQuaternion.h
