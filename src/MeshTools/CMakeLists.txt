@@ -41,7 +41,7 @@ if(BUILD_TESTS)
     add_library(MagnumMeshToolsTestLib SHARED
         $<TARGET_OBJECTS:MagnumMeshToolsObjects>
         ${MagnumMeshTools_GracefulAssert_SRCS})
-    set_target_properties(MagnumMeshToolsTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
+    set_target_properties(MagnumMeshToolsTestLib PROPERTIES COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT -DMagnumMeshTools_EXPORTS")
     target_link_libraries(MagnumMeshToolsTestLib Magnum)
 
     add_subdirectory(Test)

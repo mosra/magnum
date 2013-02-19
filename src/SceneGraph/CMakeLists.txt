@@ -61,7 +61,7 @@ if(BUILD_TESTS)
     add_library(MagnumSceneGraphTestLib SHARED
         $<TARGET_OBJECTS:MagnumSceneGraphObjects>
         ${MagnumSceneGraph_GracefulAssert_SRCS})
-    set_target_properties(MagnumSceneGraphTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
+    set_target_properties(MagnumSceneGraphTestLib PROPERTIES COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT -DMagnumSceneGraph_EXPORTS")
     target_link_libraries(MagnumSceneGraphTestLib Magnum)
 
     add_subdirectory(Test)
