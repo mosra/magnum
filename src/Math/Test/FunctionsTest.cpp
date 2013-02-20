@@ -40,8 +40,12 @@ class FunctionsTest: public Corrade::TestSuite::Tester {
         void pow();
         void log();
         void log2();
+        void trigonometric();
 };
 
+typedef Math::Constants<float> Constants;
+typedef Math::Deg<float> Deg;
+typedef Math::Rad<float> Rad;
 typedef Math::Vector3<float> Vector3;
 typedef Math::Vector3<std::uint8_t> Vector3ub;
 typedef Math::Vector3<std::int8_t> Vector3b;
@@ -60,9 +64,11 @@ FunctionsTest::FunctionsTest() {
              &FunctionsTest::denormalizeSigned,
              &FunctionsTest::renormalizeUnsinged,
              &FunctionsTest::renormalizeSinged,
+
              &FunctionsTest::pow,
              &FunctionsTest::log,
-             &FunctionsTest::log2);
+             &FunctionsTest::log2,
+             &FunctionsTest::trigonometric);
 }
 
 void FunctionsTest::min() {
@@ -240,6 +246,15 @@ void FunctionsTest::log() {
 
 void FunctionsTest::log2() {
     CORRADE_COMPARE(Math::log2(2153), 11);
+}
+
+void FunctionsTest::trigonometric() {
+    CORRADE_COMPARE(Math::sin(Deg(30.0f)), 0.5f);
+    CORRADE_COMPARE(Math::sin(Rad(Constants::pi()/6)), 0.5f);
+    CORRADE_COMPARE(Math::cos(Deg(60.0f)), 0.5f);
+    CORRADE_COMPARE(Math::cos(Rad(Constants::pi()/3)), 0.5f);
+    CORRADE_COMPARE(Math::tan(Deg(45.0f)), 1.0f);
+    CORRADE_COMPARE(Math::tan(Rad(Constants::pi()/4)), 1.0f);
 }
 
 }}}

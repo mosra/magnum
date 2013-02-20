@@ -71,6 +71,22 @@ std::uint32_t MAGNUM_EXPORT log2(std::uint32_t number);
  */
 std::uint32_t MAGNUM_EXPORT log(std::uint32_t base, std::uint32_t number);
 
+/** @brief Sine */
+template<class T> inline T sin(Rad<T> angle) { return std::sin(T(angle)); }
+
+/** @brief Cosine */
+template<class T> inline T cos(Rad<T> angle) { return std::cos(T(angle)); }
+
+/** @brief Tangent */
+template<class T> inline T tan(Rad<T> angle) { return std::tan(T(angle)); }
+
+/** @todo Can't trigonometric functions be done with only one overload? */
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T> inline T sin(Deg<T> angle) { return sin(Rad<T>(angle)); }
+template<class T> inline T cos(Deg<T> angle) { return cos(Rad<T>(angle)); }
+template<class T> inline T tan(Deg<T> angle) { return tan(Rad<T>(angle)); }
+#endif
+
 /**
 @{ @name Scalar/vector functions
 
