@@ -50,6 +50,8 @@ class DualQuaternionTest: public Corrade::TestSuite::Tester {
         void debug();
 };
 
+typedef Math::Deg<float> Deg;
+typedef Math::Rad<float> Rad;
 typedef Math::Dual<float> Dual;
 typedef Math::Matrix4<float> Matrix4;
 typedef Math::DualQuaternion<float> DualQuaternion;
@@ -169,15 +171,14 @@ void DualQuaternionTest::rotation() {
     std::ostringstream o;
     Error::setOutput(&o);
 
-    float angle = deg(120.0f);
     Vector3 axis(1.0f/Constants<float>::sqrt3());
 
-    CORRADE_COMPARE(DualQuaternion::rotation(angle, axis*2.0f), DualQuaternion());
+    CORRADE_COMPARE(DualQuaternion::rotation(Deg(120.0f), axis*2.0f), DualQuaternion());
     CORRADE_COMPARE(o.str(), "Math::Quaternion::rotation(): axis must be normalized\n");
 
-    DualQuaternion q = DualQuaternion::rotation(angle, axis);
+    DualQuaternion q = DualQuaternion::rotation(Deg(120.0f), axis);
     CORRADE_COMPARE(q, DualQuaternion({Vector3(0.5f, 0.5f, 0.5f), 0.5f}, {{}, 0.0f}));
-    CORRADE_COMPARE(q.rotationAngle(), angle);
+    CORRADE_COMPARE_AS(q.rotationAngle(), Deg(120.0f), Deg);
     CORRADE_COMPARE(q.rotationAxis(), axis);
 }
 
@@ -190,21 +191,21 @@ void DualQuaternionTest::translation() {
 
 void DualQuaternionTest::combinedTransformParts() {
     Vector3 translation = Vector3(-1.0f, 2.0f, 3.0f);
-    DualQuaternion a = DualQuaternion::translation(translation)*DualQuaternion::rotation(deg(23.0f), Vector3::xAxis());
-    DualQuaternion b = DualQuaternion::rotation(deg(23.0f), Vector3::xAxis())*DualQuaternion::translation(translation);
+    DualQuaternion a = DualQuaternion::translation(translation)*DualQuaternion::rotation(Deg(23.0f), Vector3::xAxis());
+    DualQuaternion b = DualQuaternion::rotation(Deg(23.0f), Vector3::xAxis())*DualQuaternion::translation(translation);
 
     CORRADE_COMPARE(a.rotationAxis(), Vector3::xAxis());
     CORRADE_COMPARE(b.rotationAxis(), Vector3::xAxis());
-    CORRADE_COMPARE(a.rotationAngle(), deg(23.0f));
-    CORRADE_COMPARE(b.rotationAngle(), deg(23.0f));
+    CORRADE_COMPARE_AS(a.rotationAngle(), Deg(23.0f), Rad);
+    CORRADE_COMPARE_AS(b.rotationAngle(), Deg(23.0f), Rad);
 
     CORRADE_COMPARE(a.translation(), translation);
-    CORRADE_COMPARE(b.translation(), Quaternion::rotation(deg(23.0f), Vector3::xAxis()).rotateVectorNormalized(translation));
+    CORRADE_COMPARE(b.translation(), Quaternion::rotation(Deg(23.0f), Vector3::xAxis()).rotateVectorNormalized(translation));
 }
 
 void DualQuaternionTest::matrix() {
-    DualQuaternion q = DualQuaternion::rotation(deg(23.0f), Vector3::xAxis())*DualQuaternion::translation({-1.0f, 2.0f, 3.0f});
-    Matrix4 m = Matrix4::rotationX(deg(23.0f))*Matrix4::translation({-1.0f, 2.0f, 3.0f});
+    DualQuaternion q = DualQuaternion::rotation(Deg(23.0f), Vector3::xAxis())*DualQuaternion::translation({-1.0f, 2.0f, 3.0f});
+    Matrix4 m = Matrix4::rotationX(Deg(23.0f))*Matrix4::translation({-1.0f, 2.0f, 3.0f});
 
     /* Verify that negated dual quaternion gives the same transformation */
     CORRADE_COMPARE(q.matrix(), m);
@@ -212,10 +213,10 @@ void DualQuaternionTest::matrix() {
 }
 
 void DualQuaternionTest::transformPoint() {
-    DualQuaternion a = DualQuaternion::translation({-1.0f, 2.0f, 3.0f})*DualQuaternion::rotation(deg(23.0f), Vector3::xAxis());
-    DualQuaternion b = DualQuaternion::rotation(deg(23.0f), Vector3::xAxis())*DualQuaternion::translation({-1.0f, 2.0f, 3.0f});
-    Matrix4 m = Matrix4::translation({-1.0f, 2.0f, 3.0f})*Matrix4::rotationX(deg(23.0f));
-    Matrix4 n = Matrix4::rotationX(deg(23.0f))*Matrix4::translation({-1.0f, 2.0f, 3.0f});
+    DualQuaternion a = DualQuaternion::translation({-1.0f, 2.0f, 3.0f})*DualQuaternion::rotation(Deg(23.0f), Vector3::xAxis());
+    DualQuaternion b = DualQuaternion::rotation(Deg(23.0f), Vector3::xAxis())*DualQuaternion::translation({-1.0f, 2.0f, 3.0f});
+    Matrix4 m = Matrix4::translation({-1.0f, 2.0f, 3.0f})*Matrix4::rotationX(Deg(23.0f));
+    Matrix4 n = Matrix4::rotationX(Deg(23.0f))*Matrix4::translation({-1.0f, 2.0f, 3.0f});
     Vector3 v(0.0f, -3.6f, 0.7f);
 
     Vector3 transformedA = (a*Dual(2)).transformPoint(v);
@@ -228,10 +229,10 @@ void DualQuaternionTest::transformPoint() {
 }
 
 void DualQuaternionTest::transformPointNormalized() {
-    DualQuaternion a = DualQuaternion::translation({-1.0f, 2.0f, 3.0f})*DualQuaternion::rotation(deg(23.0f), Vector3::xAxis());
-    DualQuaternion b = DualQuaternion::rotation(deg(23.0f), Vector3::xAxis())*DualQuaternion::translation({-1.0f, 2.0f, 3.0f});
-    Matrix4 m = Matrix4::translation({-1.0f, 2.0f, 3.0f})*Matrix4::rotationX(deg(23.0f));
-    Matrix4 n = Matrix4::rotationX(deg(23.0f))*Matrix4::translation({-1.0f, 2.0f, 3.0f});
+    DualQuaternion a = DualQuaternion::translation({-1.0f, 2.0f, 3.0f})*DualQuaternion::rotation(Deg(23.0f), Vector3::xAxis());
+    DualQuaternion b = DualQuaternion::rotation(Deg(23.0f), Vector3::xAxis())*DualQuaternion::translation({-1.0f, 2.0f, 3.0f});
+    Matrix4 m = Matrix4::translation({-1.0f, 2.0f, 3.0f})*Matrix4::rotationX(Deg(23.0f));
+    Matrix4 n = Matrix4::rotationX(Deg(23.0f))*Matrix4::translation({-1.0f, 2.0f, 3.0f});
     Vector3 v(0.0f, -3.6f, 0.7f);
 
     std::ostringstream o;

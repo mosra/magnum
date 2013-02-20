@@ -55,16 +55,16 @@ template<class T> class Quaternion {
         }
 
         /**
-         * @brief Angle between normalized quaternions (in radians)
+         * @brief Angle between normalized quaternions
          *
          * Expects that both quaternions are normalized. @f[
          *      \theta = acos \left( \frac{p \cdot q}{|p| \cdot |q|} \right)
          * @f]
          */
-        inline static T angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
+        inline static Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
-                           "Math::Quaternion::angle(): quaternions must be normalized", std::numeric_limits<T>::quiet_NaN());
-            return angleInternal(normalizedA, normalizedB);
+                           "Math::Quaternion::angle(): quaternions must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
+            return Rad<T>(angleInternal(normalizedA, normalizedB));
         }
 
         /**
@@ -116,13 +116,13 @@ template<class T> class Quaternion {
          * @f]
          * @see rotationAngle(), rotationAxis(), DualQuaternion::rotation(),
          *      Matrix4::rotation(), Vector3::xAxis(), Vector3::yAxis(),
-         *      Vector3::zAxis(), deg(), rad()
+         *      Vector3::zAxis()
          */
-        inline static Quaternion<T> rotation(T angle, const Vector3<T>& normalizedAxis) {
+        inline static Quaternion<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedAxis.dot(), T(1)),
                            "Math::Quaternion::rotation(): axis must be normalized", {});
 
-            return {normalizedAxis*std::sin(angle/2), std::cos(angle/2)};
+            return {normalizedAxis*std::sin(T(angle)/2), std::cos(T(angle)/2)};
         }
 
         /**
@@ -177,11 +177,11 @@ template<class T> class Quaternion {
          * @f]
          * @see rotationAxis(), rotation()
          */
-        inline T rotationAngle() const {
+        inline Rad<T> rotationAngle() const {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
                            "Math::Quaternion::rotationAngle(): quaternion must be normalized",
-                           std::numeric_limits<T>::quiet_NaN());
-            return T(2)*std::acos(_scalar);
+                           Rad<T>(std::numeric_limits<T>::quiet_NaN()));
+            return Rad<T>(T(2)*std::acos(_scalar));
         }
 
         /**

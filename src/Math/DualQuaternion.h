@@ -46,9 +46,9 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f]
          * @see rotationAngle(), rotationAxis(), Quaternion::rotation(),
          *      Matrix4::rotation(), Vector3::xAxis(), Vector3::yAxis(),
-         *      Vector3::zAxis(), deg(), rad()
+         *      Vector3::zAxis()
          */
-        inline static DualQuaternion<T> rotation(T angle, const Vector3<T>& normalizedAxis) {
+        inline static DualQuaternion<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis) {
             return {Quaternion<T>::rotation(angle, normalizedAxis), {{}, T(0)}};
         }
 
@@ -112,7 +112,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f]
          * @see rotationAxis(), rotation(), Quaternion::rotationAngle()
          */
-        inline T rotationAngle() const {
+        inline Math::Rad<T> rotationAngle() const {
             return this->real().rotationAngle();
         }
 
