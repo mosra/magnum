@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::Constants, functions Magnum::Math::deg(), Magnum::Math::rad()
+ * @brief Class Magnum::Math::Constants
  */
 
 namespace Magnum { namespace Math {
@@ -34,7 +34,7 @@ template<class T> struct Constants {
     /**
      * @brief Pi
      *
-     * @see deg(), rad()
+     * @see Deg, Rad
      */
     static inline constexpr T pi();
 
@@ -59,29 +59,6 @@ template<> struct Constants<float> {
     static inline constexpr float sqrt3() { return 1.732050808f; }
 };
 #endif
-
-/**
-@brief Angle in degrees
-
-Function to make angle entering less error-prone. Converts the value to
-radians at compile time. For example `deg(180.0f)` is converted to `3.14f`.
-
-Usable for entering e.g. rotation:
-@code
-Matrix4::rotation(deg(30.0f), Vector3::yAxis());
-@endcode
-
-@see Magnum::deg(), Constants, rad()
-*/
-template<class T> inline constexpr T deg(T value) { return value*Constants<T>::pi()/180; }
-
-/**
-@brief Angle in radians
-
-See deg() for more information.
-@see Magnum::rad()
-*/
-template<class T> inline constexpr T rad(T value) { return value; }
 
 }}
 

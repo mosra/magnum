@@ -51,8 +51,6 @@ namespace Magnum {
 /** @todoc Remove `ifndef` when Doxygen is sane again */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Math {
-    template<class T> constexpr T deg(T value);
-    template<class T> constexpr T rad(T value);
     template<class T> struct Constants;
 
     constexpr Rad<double> operator "" _rad(long double);
@@ -124,10 +122,6 @@ typedef Math::Geometry::Rectangle<GLfloat> Rectangle;
 
 /** @brief Integer rectangle */
 typedef Math::Geometry::Rectangle<GLint> Rectanglei;
-
-/* Copying angle converters from Math namespace */
-using Math::deg;
-using Math::rad;
 
 /* Using angle literals from Math namespace */
 using Math::operator "" _deg;
