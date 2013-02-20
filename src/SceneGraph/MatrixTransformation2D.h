@@ -104,7 +104,7 @@ class MatrixTransformation2D: public AbstractTranslationRotationScaling2D<T> {
          * @copydoc AbstractTranslationRotationScaling2D::rotate()
          * Same as calling transform() with Matrix3::rotation().
          */
-        inline MatrixTransformation2D<T>* rotate(T angle, TransformationType type = TransformationType::Global) override {
+        inline MatrixTransformation2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix3<T>::rotation(angle), type);
             return this;
         }

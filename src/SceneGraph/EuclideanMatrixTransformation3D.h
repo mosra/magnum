@@ -90,7 +90,15 @@ class EuclideanMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
             return this;
         }
 
-        /** @copydoc AbstractTranslationRotation3D::translate() */
+        /**
+         * @brief Translate object
+         * @param vector            Translation vector
+         * @param type              Transformation type
+         * @return Pointer to self (for method chaining)
+         *
+         * @see Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis(),
+         *      Matrix4::translation()
+         */
         inline EuclideanMatrixTransformation3D<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::translation(vector), type);
             return this;
@@ -98,54 +106,55 @@ class EuclideanMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
 
         /**
          * @brief Rotate object
-         * @param angle             Angle in radians, counterclockwise
+         * @param angle             Angle (counterclockwise)
          * @param normalizedAxis    Normalized rotation axis
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
-         * @see deg(), rad(), Vector3::xAxis(), Vector3::yAxis(),
-         *      Vector3::zAxis(), normalizeRotation()
+         * @see rotateX(), rotateY(), rotateZ(), Vector3::xAxis(),
+         *      Vector3::yAxis(), Vector3::zAxis(), normalizeRotation(),
+         *      Matrix4::rotation()
          */
-        inline EuclideanMatrixTransformation3D<T>* rotate(T angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) override {
+        inline EuclideanMatrixTransformation3D<T>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::rotation(angle, normalizedAxis), type);
             return this;
         }
 
         /**
          * @brief Rotate object around X axis
-         * @param angle             Angle in radians, counterclockwise
+         * @param angle             Angle (counterclockwise)
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
-         * @see deg(), rad(), normalizeRotation()
+         * @see normalizeRotation(), Matrix4::rotationX()
          */
-        inline EuclideanMatrixTransformation3D<T>* rotateX(T angle, TransformationType type = TransformationType::Global) override {
+        inline EuclideanMatrixTransformation3D<T>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::rotationX(angle), type);
             return this;
         }
 
         /**
          * @brief Rotate object around Y axis
-         * @param angle             Angle in radians, counterclockwise
+         * @param angle             Angle (counterclockwise)
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
-         * @see deg(), rad(), normalizeRotation()
+         * @see normalizeRotation(), Matrix4::rotationY()
          */
-        inline EuclideanMatrixTransformation3D<T>* rotateY(T angle, TransformationType type = TransformationType::Global) override {
+        inline EuclideanMatrixTransformation3D<T>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::rotationY(angle), type);
             return this;
         }
 
         /**
          * @brief Rotate object around Z axis
-         * @param angle             Angle in radians, counterclockwise
+         * @param angle             Angle (counterclockwise)
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
-         * @see deg(), rad(), normalizeRotation()
+         * @see normalizeRotation(), Matrix4::rotationZ()
          */
-        inline EuclideanMatrixTransformation3D<T>* rotateZ(T angle, TransformationType type = TransformationType::Global) override {
+        inline EuclideanMatrixTransformation3D<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::rotationZ(angle), type);
             return this;
         }
@@ -157,7 +166,7 @@ class EuclideanMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
          * @param type      Transformation type
          * @return Pointer to self (for method chaining)
          *
-         * Same as calling transform() with Matrix4::reflection().
+         * @see Matrix4::reflection()
          */
         inline EuclideanMatrixTransformation3D<T>* reflect(const Math::Vector3<T>& normal, TransformationType type = TransformationType::Global) {
             transform(Math::Matrix4<T>::reflection(normal), type);

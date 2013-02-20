@@ -44,6 +44,7 @@ class Matrix3Test: public Corrade::TestSuite::Tester {
         void configuration();
 };
 
+typedef Math::Deg<float> Deg;
 typedef Math::Matrix3<float> Matrix3;
 typedef Math::Matrix<2, float> Matrix2;
 typedef Math::Vector2<float> Vector2;
@@ -107,7 +108,7 @@ void Matrix3Test::rotation() {
                    {-0.258819f, 0.965926f, 0.0f},
                    {      0.0f,      0.0f, 1.0f});
 
-    CORRADE_COMPARE(Matrix3::rotation(deg(15.0f)), matrix);
+    CORRADE_COMPARE(Matrix3::rotation(Deg(15.0f)), matrix);
 }
 
 void Matrix3Test::reflection() {
@@ -165,7 +166,7 @@ void Matrix3Test::rotationPart() {
     Matrix2 expectedRotationPart(Vector2( 0.965926f, 0.258819f),
                                  Vector2(-0.258819f, 0.965926f));
 
-    Matrix3 rotation = Matrix3::rotation(deg(15.0f));
+    Matrix3 rotation = Matrix3::rotation(Deg(15.0f));
     CORRADE_COMPARE(rotation.rotation(), expectedRotationPart);
 
     Matrix3 rotationTransformed = Matrix3::translation({2.0f, 5.0f})*rotation*Matrix3::scaling(Vector2(9.0f));
@@ -196,19 +197,19 @@ void Matrix3Test::invertedEuclidean() {
     CORRADE_COMPARE(Matrix3::scaling(Vector2(2.0f)).invertedEuclidean(), Matrix3());
     CORRADE_COMPARE(o.str(), "Math::Matrix3::invertedEuclidean(): the matrix doesn't represent Euclidean transformation\n");
 
-    Matrix3 actual = Matrix3::rotation(deg(-74.0f))*
+    Matrix3 actual = Matrix3::rotation(Deg(-74.0f))*
                      Matrix3::reflection(Vector2(0.5f, -2.0f).normalized())*
                      Matrix3::translation({2.0f, -3.0f});
     Matrix3 expected = Matrix3::translation({-2.0f, 3.0f})*
                        Matrix3::reflection(Vector2(0.5f, -2.0f).normalized())*
-                       Matrix3::rotation(deg(74.0f));
+                       Matrix3::rotation(Deg(74.0f));
 
     CORRADE_COMPARE(actual.invertedEuclidean(), expected);
     CORRADE_COMPARE(actual.invertedEuclidean(), actual.inverted());
 }
 
 void Matrix3Test::transform() {
-    Matrix3 a = Matrix3::translation({1.0f, -5.0f})*Matrix3::rotation(deg(90.0f));
+    Matrix3 a = Matrix3::translation({1.0f, -5.0f})*Matrix3::rotation(Deg(90.0f));
     Vector2 v(1.0f, -2.0f);
 
     CORRADE_COMPARE(a.transformVector(v), Vector2(2.0f, 1.0f));

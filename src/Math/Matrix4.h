@@ -70,21 +70,21 @@ template<class T> class Matrix4: public Matrix<4, T> {
 
         /**
          * @brief 3D rotation around arbitrary axis
-         * @param angle             Rotation angle (counterclockwise, in radians)
+         * @param angle             Rotation angle (counterclockwise)
          * @param normalizedAxis    Normalized rotation axis
          *
          * Expects that the rotation axis is normalized. If possible, use
          * faster alternatives like rotationX(), rotationY() and rotationZ().
          * @see rotation() const, DualQuaternion::rotation(),
-         *      Quaternion::rotation(), Matrix3::rotation(T), Vector3::xAxis(),
-         *      Vector3::yAxis(), Vector3::zAxis(), deg(), rad()
+         *      Quaternion::rotation(), Matrix3::rotation(Rad), Vector3::xAxis(),
+         *      Vector3::yAxis(), Vector3::zAxis()
          */
-        static Matrix4<T> rotation(T angle, const Vector3<T>& normalizedAxis) {
+        static Matrix4<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedAxis.dot(), T(1)),
                            "Math::Matrix4::rotation(): axis must be normalized", {});
 
-            T sine = std::sin(angle);
-            T cosine = std::cos(angle);
+            T sine = std::sin(T(angle));
+            T cosine = std::cos(T(angle));
             T oneMinusCosine = T(1) - cosine;
 
             T xx = normalizedAxis.x()*normalizedAxis.x();
@@ -113,16 +113,15 @@ template<class T> class Matrix4: public Matrix<4, T> {
 
         /**
          * @brief 3D rotation around X axis
-         * @param angle Rotation angle (counterclockwise, in radians)
+         * @param angle Rotation angle (counterclockwise)
          *
          * Faster than calling `Matrix4::rotation(angle, Vector3::xAxis())`.
-         * @see rotation(T, const Vector3&), rotationY(), rotationZ(),
-         *      rotation() const, Quaternion::rotation(), Matrix3::rotation(T),
-         *      deg(), rad()
+         * @see rotation(Rad, const Vector3&), rotationY(), rotationZ(),
+         *      rotation() const, Quaternion::rotation(), Matrix3::rotation(Rad)
          */
-        static Matrix4<T> rotationX(T angle) {
-            T sine = std::sin(angle);
-            T cosine = std::cos(angle);
+        static Matrix4<T> rotationX(Rad<T> angle) {
+            T sine = std::sin(T(angle));
+            T cosine = std::cos(T(angle));
 
             return {{T(1),   T(0),   T(0), T(0)},
                     {T(0), cosine,   sine, T(0)},
@@ -132,16 +131,15 @@ template<class T> class Matrix4: public Matrix<4, T> {
 
         /**
          * @brief 3D rotation around Y axis
-         * @param angle Rotation angle (counterclockwise, in radians)
+         * @param angle Rotation angle (counterclockwise)
          *
          * Faster than calling `Matrix4::rotation(angle, Vector3::yAxis())`.
-         * @see rotation(T, const Vector3&), rotationX(), rotationZ(),
-         *      rotation() const, Quaternion::rotation(), Matrix3::rotation(T),
-         *      deg(), rad()
+         * @see rotation(Rad, const Vector3&), rotationX(), rotationZ(),
+         *      rotation() const, Quaternion::rotation(), Matrix3::rotation(Rad)
          */
-        static Matrix4<T> rotationY(T angle) {
-            T sine = std::sin(angle);
-            T cosine = std::cos(angle);
+        static Matrix4<T> rotationY(Rad<T> angle) {
+            T sine = std::sin(T(angle));
+            T cosine = std::cos(T(angle));
 
             return {{cosine, T(0),  -sine, T(0)},
                     {  T(0), T(1),   T(0), T(0)},
@@ -151,16 +149,15 @@ template<class T> class Matrix4: public Matrix<4, T> {
 
         /**
          * @brief 3D rotation matrix around Z axis
-         * @param angle Rotation angle (counterclockwise, in radians)
+         * @param angle Rotation angle (counterclockwise)
          *
          * Faster than calling `Matrix4::rotation(angle, Vector3::zAxis())`.
-         * @see rotation(T, const Vector3&), rotationX(), rotationY(),
-         *      rotation() const, Quaternion::rotation(), Matrix3::rotation(T),
-         *      deg(), rad()
+         * @see rotation(Rad, const Vector3&), rotationX(), rotationY(),
+         *      rotation() const, Quaternion::rotation(), Matrix3::rotation(Rad)
          */
-        static Matrix4<T> rotationZ(T angle) {
-            T sine = std::sin(angle);
-            T cosine = std::cos(angle);
+        static Matrix4<T> rotationZ(Rad<T> angle) {
+            T sine = std::sin(T(angle));
+            T cosine = std::cos(T(angle));
 
             return {{cosine,   sine, T(0), T(0)},
                     { -sine, cosine, T(0), T(0)},

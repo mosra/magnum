@@ -132,7 +132,7 @@ void CameraTest::projectionSizeOrthographic() {
 void CameraTest::projectionSizePerspective() {
     Object3D o;
     Camera3D camera(&o);
-    camera.setPerspective(deg(27.0f), 2.35f, 32.0f, 100);
+    camera.setPerspective(Deg(27.0f), 2.35f, 32.0f, 100);
     CORRADE_COMPARE(camera.projectionSize(), Vector2(0.48015756f, 0.204322f));
 }
 

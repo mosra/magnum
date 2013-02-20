@@ -119,9 +119,9 @@ void ObjectTest::absoluteTransformation() {
     CORRADE_COMPARE(o.transformation(), Matrix4::translation(Vector3::xAxis(2.0f)));
     CORRADE_COMPARE(o.transformation(), o.transformationMatrix());
     Object3D o2(&o);
-    o2.rotateY(deg(90.0f));
+    o2.rotateY(Deg(90.0f));
     CORRADE_COMPARE(o2.absoluteTransformation(),
-        Matrix4::translation(Vector3::xAxis(2.0f))*Matrix4::rotationY(deg(90.0f)));
+        Matrix4::translation(Vector3::xAxis(2.0f))*Matrix4::rotationY(Deg(90.0f)));
     CORRADE_COMPARE(o2.absoluteTransformation(), o2.absoluteTransformationMatrix());
 
     /* Transformation of root object */
@@ -133,7 +133,7 @@ void ObjectTest::absoluteTransformation() {
 void ObjectTest::transformations() {
     Scene3D s;
 
-    Matrix4 initial = Matrix4::rotationX(deg(90.0f)).inverted();
+    Matrix4 initial = Matrix4::rotationX(Deg(90.0f)).inverted();
 
     /* Empty list */
     CORRADE_COMPARE(s.transformations(std::vector<Object3D*>(), initial), std::vector<Matrix4>());
@@ -143,16 +143,16 @@ void ObjectTest::transformations() {
 
     /* One object */
     Object3D first(&s);
-    first.rotateZ(deg(30.0f));
+    first.rotateZ(Deg(30.0f));
     Object3D second(&first);
     second.scale(Vector3(0.5f));
     CORRADE_COMPARE(s.transformations({&second}, initial), std::vector<Matrix4>{
-        initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::scaling(Vector3(0.5f))
+        initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::scaling(Vector3(0.5f))
     });
 
     /* One object and scene */
     CORRADE_COMPARE(s.transformations({&second, &s}, initial), (std::vector<Matrix4>{
-        initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
+        initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
         initial
     }));
 
@@ -160,15 +160,15 @@ void ObjectTest::transformations() {
     Object3D third(&first);
     third.translate(Vector3::xAxis(5.0f));
     CORRADE_COMPARE(s.transformations({&second, &third}, initial), (std::vector<Matrix4>{
-        initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
-        initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f)),
+        initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
+        initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f)),
     }));
 
     /* Three objects with joint as one of them */
     CORRADE_COMPARE(s.transformations({&second, &third, &first}, initial), (std::vector<Matrix4>{
-        initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
-        initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f)),
-        initial*Matrix4::rotationZ(deg(30.0f)),
+        initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
+        initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f)),
+        initial*Matrix4::rotationZ(Deg(30.0f)),
     }));
 }
 
@@ -177,7 +177,7 @@ void ObjectTest::transformationsRelative() {
 
     Scene3D s;
     Object3D first(&s);
-    first.rotateZ(deg(30.0f));
+    first.rotateZ(Deg(30.0f));
     Object3D second(&first);
     second.scale(Vector3(0.5f));
     Object3D third(&first);
@@ -190,7 +190,7 @@ void ObjectTest::transformationsRelative() {
 
     /* Transformation relative to another object, not part of any scene (but should work) */
     Object3D orphanParent1;
-    orphanParent1.rotate(deg(31.0f), Vector3(1.0f).normalized());
+    orphanParent1.rotate(Deg(31.0f), Vector3(1.0f).normalized());
     Object3D orphanParent(&orphanParent1);
     Object3D orphan1(&orphanParent);
     orphan1.scale(Vector3::xScale(3.0f));
@@ -215,15 +215,15 @@ void ObjectTest::transformationsOrphan() {
 void ObjectTest::transformationsDuplicate() {
     Scene3D s;
     Object3D first(&s);
-    first.rotateZ(deg(30.0f));
+    first.rotateZ(Deg(30.0f));
     Object3D second(&first);
     second.scale(Vector3(0.5f));
     Object3D third(&first);
     third.translate(Vector3::xAxis(5.0f));
 
-    Matrix4 firstExpected = Matrix4::rotationZ(deg(30.0f));
-    Matrix4 secondExpected = Matrix4::rotationZ(deg(30.0f))*Matrix4::scaling(Vector3(0.5f));
-    Matrix4 thirdExpected = Matrix4::rotationZ(deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f));
+    Matrix4 firstExpected = Matrix4::rotationZ(Deg(30.0f));
+    Matrix4 secondExpected = Matrix4::rotationZ(Deg(30.0f))*Matrix4::scaling(Vector3(0.5f));
+    Matrix4 thirdExpected = Matrix4::rotationZ(Deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f));
     CORRADE_COMPARE(s.transformations({&second, &third, &second, &first, &third}), (std::vector<Matrix4>{
         secondExpected, thirdExpected, secondExpected, firstExpected, thirdExpected
     }));
@@ -267,7 +267,7 @@ void ObjectTest::setClean() {
     CachingInvertedFeature* childTwoFeature2 = new CachingInvertedFeature(childTwo);
 
     CachingObject* childThree = new CachingObject(childTwo);
-    childThree->rotate(deg(90.0f), Vector3::yAxis());
+    childThree->rotate(Deg(90.0f), Vector3::yAxis());
 
     /* Object is dirty at the beginning */
     CORRADE_VERIFY(scene.isDirty());

@@ -39,7 +39,7 @@ CapsuleTest::CapsuleTest() {
 void CapsuleTest::applyTransformation() {
     Physics::Capsule3D capsule({1.0f, 2.0f, 3.0f}, {-1.0f, -2.0f, -3.0f}, 7.0f);
 
-    capsule.applyTransformationMatrix(Matrix4::rotation(deg(90.0f), Vector3::zAxis()));
+    capsule.applyTransformationMatrix(Matrix4::rotation(Deg(90.0f), Vector3::zAxis()));
     CORRADE_COMPARE(capsule.transformedA(), Vector3(-2.0f, 1.0f, 3.0f));
     CORRADE_COMPARE(capsule.transformedB(), Vector3(2.0f, -1.0f, -3.0f));
     CORRADE_COMPARE(capsule.radius(), 7.0f);

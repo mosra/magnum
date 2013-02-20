@@ -104,49 +104,46 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
          * @copydoc AbstractTranslationRotationScaling3D::rotate()
          * Same as calling transform() with Matrix4::rotation().
          */
-        inline MatrixTransformation3D<T>* rotate(T angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) override {
+        inline MatrixTransformation3D<T>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::rotation(angle, normalizedAxis), type);
             return this;
         }
 
         /**
          * @brief Rotate object around X axis
-         * @param angle             Angle in radians, counterclockwise
+         * @param angle             Angle (counterclockwise)
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
          * Same as calling transform() with Matrix4::rotationX().
-         * @see deg(), rad()
          */
-        inline MatrixTransformation3D<T>* rotateX(T angle, TransformationType type = TransformationType::Global) override {
+        inline MatrixTransformation3D<T>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::rotationX(angle), type);
             return this;
         }
 
         /**
          * @brief Rotate object around Y axis
-         * @param angle             Angle in radians, counterclockwise
+         * @param angle             Angle (counterclockwise)
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
          * Same as calling transform() with Matrix4::rotationY().
-         * @see deg(), rad()
          */
-        inline MatrixTransformation3D<T>* rotateY(T angle, TransformationType type = TransformationType::Global) override {
+        inline MatrixTransformation3D<T>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::rotationY(angle), type);
             return this;
         }
 
         /**
          * @brief Rotate object around Z axis
-         * @param angle             Angle in radians, counterclockwise
+         * @param angle             Angle (counterclockwise)
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
          * Same as calling transform() with Matrix4::rotationZ().
-         * @see deg(), rad()
          */
-        inline MatrixTransformation3D<T>* rotateZ(T angle, TransformationType type = TransformationType::Global) override {
+        inline MatrixTransformation3D<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix4<T>::rotationZ(angle), type);
             return this;
         }

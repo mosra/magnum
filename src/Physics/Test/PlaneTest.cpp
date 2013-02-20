@@ -40,7 +40,7 @@ PlaneTest::PlaneTest() {
 void PlaneTest::applyTransformation() {
     Physics::Plane plane({1.0f, 2.0f, 3.0f}, {Constants::sqrt2(), -Constants::sqrt2(), 0});
 
-    plane.applyTransformationMatrix(Matrix4::rotation(deg(90.0f), Vector3::xAxis()));
+    plane.applyTransformationMatrix(Matrix4::rotation(Deg(90.0f), Vector3::xAxis()));
     CORRADE_COMPARE(plane.transformedPosition(), Vector3(1.0f, -3.0f, 2.0f));
     CORRADE_COMPARE(plane.transformedNormal(), Vector3(Constants::sqrt2(), 0, -Constants::sqrt2()));
 

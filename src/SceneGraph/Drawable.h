@@ -59,7 +59,7 @@ SceneGraph::DrawableGroup3D<> drawables;
 
 (new DrawableObject(&scene, &drawables))
     ->translate(Vector3::yAxis(-0.3f))
-    ->rotateX(deg(30.0f));
+    ->rotateX(30.0_degf);
 (new AnotherDrawableObject(&scene, &drawables))
     ->translate(Vector3::zAxis(0.5f));
 // ...

@@ -98,13 +98,13 @@ class EuclideanMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
 
         /**
          * @brief Rotate object
-         * @param angle     Angle in radians, counterclockwise
+         * @param angle     Angle (counterclockwise)
          * @param type      Transformation type
          * @return Pointer to self (for method chaining)
          *
-         * @see deg(), rad(), normalizeRotation()
+         * @see normalizeRotation(), Matrix3::rotation()
          */
-        inline EuclideanMatrixTransformation2D<T>* rotate(T angle, TransformationType type = TransformationType::Global) override {
+        inline EuclideanMatrixTransformation2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix3<T>::rotation(angle), type);
             return this;
         }
@@ -115,6 +115,8 @@ class EuclideanMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
          *      (normalized)
          * @param type      Transformation type
          * @return Pointer to self (for method chaining)
+         *
+         * @see Matrix3::reflection()
          */
         inline EuclideanMatrixTransformation2D<T>* reflect(const Math::Vector2<T>& normal, TransformationType type = TransformationType::Global) {
             transform(Math::Matrix3<T>::reflection(normal), type);

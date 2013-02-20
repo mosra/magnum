@@ -34,7 +34,7 @@ LineTest::LineTest() {
 
 void LineTest::applyTransformation() {
     Physics::Line3D line({1.0f, 2.0f, 3.0f}, {-1.0f, -2.0f, -3.0f});
-    line.applyTransformationMatrix(Matrix4::rotation(deg(90.0f), Vector3::zAxis()));
+    line.applyTransformationMatrix(Matrix4::rotation(Deg(90.0f), Vector3::zAxis()));
     CORRADE_COMPARE(line.transformedA(), Vector3(-2.0f, 1.0f, 3.0f));
     CORRADE_COMPARE(line.transformedB(), Vector3(2.0f, -1.0f, -3.0f));
 }

@@ -44,7 +44,7 @@ SphereTest::SphereTest() {
 void SphereTest::applyTransformation() {
     Physics::Sphere3D sphere({1.0f, 2.0f, 3.0f}, 7.0f);
 
-    sphere.applyTransformationMatrix(Matrix4::rotation(deg(90.0f), Vector3::yAxis()));
+    sphere.applyTransformationMatrix(Matrix4::rotation(Deg(90.0f), Vector3::yAxis()));
     CORRADE_COMPARE(sphere.transformedPosition(), Vector3(3.0f, 2.0f, -1.0f));
     CORRADE_COMPARE(sphere.transformedRadius(), 7.0f);
 

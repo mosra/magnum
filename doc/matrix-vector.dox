@@ -74,7 +74,7 @@ Vectors are commonly used to specify various axes and scaling coefficients in
 transformations, you can use convenience functions instead of typing out all
 other elements:
 @code
-Matrix4::rotation(deg(5.0f), Vector3::xAxis()); // {1.0f, 0.0f, 0.0f}
+Matrix4::rotation(5.0_degf, Vector3::xAxis());  // {1.0f, 0.0f, 0.0f}
 Matrix3::translation(Vector2::yAxis(2.0f));     // {0.0f, 2.0f}
 Matrix4::scaling(Vector3::zScale(-10.0f));      // {1.0f, 1.0f, -10.0f}
 @endcode
@@ -144,7 +144,7 @@ transformation:
 Matrix4<float> a = Matrix4<float>::translation(Vector3::yAxis(4.0f));
 Vector3<float> translation = a.translation();
 
-Matrix3<float> b = Matrix3<float>::rotation(deg(15.f));
+Matrix3<float> b = Matrix3<float>::rotation(15.0_degf));
 Matrix<2, float> rotationScaling = b.rotationScaling();
 Vector2<float> up = b.up();
 @endcode

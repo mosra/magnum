@@ -49,6 +49,8 @@ class Matrix4Test: public Corrade::TestSuite::Tester {
         void configuration();
 };
 
+typedef Math::Deg<float> Deg;
+typedef Math::Rad<float> Rad;
 typedef Math::Matrix4<float> Matrix4;
 typedef Math::Matrix<3, float> Matrix3;
 typedef Math::Vector3<float> Vector3;
@@ -120,14 +122,14 @@ void Matrix4Test::rotation() {
     std::ostringstream o;
     Error::setOutput(&o);
 
-    CORRADE_COMPARE(Matrix4::rotation(deg(-74.0f), {-1.0f, 2.0f, 2.0f}), Matrix4());
+    CORRADE_COMPARE(Matrix4::rotation(Deg(-74.0f), {-1.0f, 2.0f, 2.0f}), Matrix4());
     CORRADE_COMPARE(o.str(), "Math::Matrix4::rotation(): axis must be normalized\n");
 
     Matrix4 matrix({ 0.35612214f,  -0.80181062f, 0.47987163f, 0.0f},
                    { 0.47987163f,   0.59757638f,  0.6423595f, 0.0f},
                    {-0.80181062f, 0.0015183985f, 0.59757638f, 0.0f},
                    {        0.0f,          0.0f,        0.0f, 1.0f});
-    CORRADE_COMPARE(Matrix4::rotation(deg(-74.0f), Vector3(-1.0f, 2.0f, 2.0f).normalized()), matrix);
+    CORRADE_COMPARE(Matrix4::rotation(Deg(-74.0f), Vector3(-1.0f, 2.0f, 2.0f).normalized()), matrix);
 }
 
 void Matrix4Test::rotationX() {
@@ -135,8 +137,8 @@ void Matrix4Test::rotationX() {
                    {0.0f,  0.90096887f, 0.43388374f, 0.0f},
                    {0.0f, -0.43388374f, 0.90096887f, 0.0f},
                    {0.0f,         0.0f,        0.0f, 1.0f});
-    CORRADE_COMPARE(Matrix4::rotation(rad(Math::Constants<float>::pi()/7), Vector3::xAxis()), matrix);
-    CORRADE_COMPARE(Matrix4::rotationX(rad(Math::Constants<float>::pi()/7)), matrix);
+    CORRADE_COMPARE(Matrix4::rotation(Rad(Math::Constants<float>::pi()/7), Vector3::xAxis()), matrix);
+    CORRADE_COMPARE(Matrix4::rotationX(Rad(Math::Constants<float>::pi()/7)), matrix);
 }
 
 void Matrix4Test::rotationY() {
@@ -144,8 +146,8 @@ void Matrix4Test::rotationY() {
                    {       0.0f, 1.0f,         0.0f, 0.0f},
                    {0.43388374f, 0.0f,  0.90096887f, 0.0f},
                    {       0.0f, 0.0f,         0.0f, 1.0f});
-    CORRADE_COMPARE(Matrix4::rotation(rad(Math::Constants<float>::pi()/7), Vector3::yAxis()), matrix);
-    CORRADE_COMPARE(Matrix4::rotationY(rad(Math::Constants<float>::pi()/7)), matrix);
+    CORRADE_COMPARE(Matrix4::rotation(Rad(Math::Constants<float>::pi()/7), Vector3::yAxis()), matrix);
+    CORRADE_COMPARE(Matrix4::rotationY(Rad(Math::Constants<float>::pi()/7)), matrix);
 }
 
 void Matrix4Test::rotationZ() {
@@ -153,8 +155,8 @@ void Matrix4Test::rotationZ() {
                    {-0.43388374f, 0.90096887f, 0.0f, 0.0f},
                    {        0.0f,        0.0f, 1.0f, 0.0f},
                    {        0.0f,        0.0f, 0.0f, 1.0f});
-    CORRADE_COMPARE(Matrix4::rotation(rad(Math::Constants<float>::pi()/7), Vector3::zAxis()), matrix);
-    CORRADE_COMPARE(Matrix4::rotationZ(rad(Math::Constants<float>::pi()/7)), matrix);
+    CORRADE_COMPARE(Matrix4::rotation(Rad(Math::Constants<float>::pi()/7), Vector3::zAxis()), matrix);
+    CORRADE_COMPARE(Matrix4::rotationZ(Rad(Math::Constants<float>::pi()/7)), matrix);
 }
 
 void Matrix4Test::reflection() {
@@ -232,7 +234,7 @@ void Matrix4Test::rotationPart() {
                                  Vector3( 0.47987163f,   0.59757638f,  0.6423595f),
                                  Vector3(-0.80181062f, 0.0015183985f, 0.59757638f));
 
-    Matrix4 rotation = Matrix4::rotation(deg(-74.0f), Vector3(-1.0f, 2.0f, 2.0f).normalized());
+    Matrix4 rotation = Matrix4::rotation(Deg(-74.0f), Vector3(-1.0f, 2.0f, 2.0f).normalized());
     CORRADE_COMPARE(rotation.rotation().determinant(), 1.0f);
     CORRADE_COMPARE(rotation.rotation()*rotation.rotation().transposed(), Matrix3());
     CORRADE_COMPARE(rotation.rotation(), expectedRotationPart);
@@ -270,19 +272,19 @@ void Matrix4Test::invertedEuclidean() {
     CORRADE_COMPARE(Matrix4::scaling(Vector3(2.0f)).invertedEuclidean(), Matrix4());
     CORRADE_COMPARE(o.str(), "Math::Matrix4::invertedEuclidean(): the matrix doesn't represent Euclidean transformation\n");
 
-    Matrix4 actual = Matrix4::rotation(deg(-74.0f), Vector3(-1.0f, 0.5f, 2.0f).normalized())*
+    Matrix4 actual = Matrix4::rotation(Deg(-74.0f), Vector3(-1.0f, 0.5f, 2.0f).normalized())*
                      Matrix4::reflection(Vector3(0.5f, -2.0f, 2.0f).normalized())*
                      Matrix4::translation({1.0f, 2.0f, -3.0f});
     Matrix4 expected = Matrix4::translation({-1.0f, -2.0f, 3.0f})*
                        Matrix4::reflection(Vector3(0.5f, -2.0f, 2.0f).normalized())*
-                       Matrix4::rotation(deg(74.0f), Vector3(-1.0f, 0.5f, 2.0f).normalized());
+                       Matrix4::rotation(Deg(74.0f), Vector3(-1.0f, 0.5f, 2.0f).normalized());
 
     CORRADE_COMPARE(actual.invertedEuclidean(), expected);
     CORRADE_COMPARE(actual.invertedEuclidean(), actual.inverted());
 }
 
 void Matrix4Test::transform() {
-    Matrix4 a = Matrix4::translation({1.0f, -5.0f, 3.5f})*Matrix4::rotation(deg(90.0f), Vector3::zAxis());
+    Matrix4 a = Matrix4::translation({1.0f, -5.0f, 3.5f})*Matrix4::rotation(Deg(90.0f), Vector3::zAxis());
     Vector3 v(1.0f, -2.0f, 5.5f);
 
     CORRADE_COMPARE(a.transformVector(v), Vector3(2.0f, 1.0f, 5.5f));

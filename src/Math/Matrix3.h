@@ -62,14 +62,13 @@ template<class T> class Matrix3: public Matrix<3, T> {
 
         /**
          * @brief 2D rotation matrix
-         * @param angle     Rotation angle (counterclockwise, in radians)
+         * @param angle     Rotation angle (counterclockwise)
          *
-         * @see rotation() const, Matrix4::rotation(T, const Vector3&), deg(),
-         *      rad()
+         * @see rotation() const, Matrix4::rotation(Rad, const Vector3&)
          */
-        static Matrix3<T> rotation(T angle) {
-            T sine = std::sin(angle);
-            T cosine = std::cos(angle);
+        static Matrix3<T> rotation(Rad<T> angle) {
+            T sine = std::sin(T(angle));
+            T cosine = std::cos(T(angle));
 
             return {{ cosine,   sine, T(0)},
                     {  -sine, cosine, T(0)},

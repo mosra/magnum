@@ -49,13 +49,11 @@ class AbstractTranslationRotation2D: public AbstractTransformation<2, T> {
 
         /**
          * @brief Rotate object
-         * @param angle     Angle in radians, counterclockwise
+         * @param angle     Angle (counterclockwise)
          * @param type      Transformation type
          * @return Pointer to self (for method chaining)
-         *
-         * @see deg(), rad()
          */
-        virtual AbstractTranslationRotation2D<T>* rotate(T angle, TransformationType type = TransformationType::Global) = 0;
+        virtual AbstractTranslationRotation2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) = 0;
 };
 
 }}

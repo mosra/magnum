@@ -41,7 +41,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * Usable for translation or rotation along given axis, for example:
          * @code
          * Matrix4::translation(Vector3::xAxis(5.0f)); // same as Matrix4::translation({5.0f, 0.0f, 0.0f});
-         * Matrix4::rotation(deg(30.0f), Vector3::xAxis()); // same as Matrix::rotation(deg(30.0f), {1.0f, 0.0f, 0.0f});
+         * Matrix4::rotation(30.0_degf, Vector3::xAxis()); // same as Matrix::rotation(30.0_degf, {1.0f, 0.0f, 0.0f});
          * @endcode
          * @see yAxis(), zAxis(), xScale(), Matrix4::right()
          */

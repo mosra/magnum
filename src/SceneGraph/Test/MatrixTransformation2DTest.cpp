@@ -56,23 +56,23 @@ MatrixTransformation2DTest::MatrixTransformation2DTest() {
 }
 
 void MatrixTransformation2DTest::fromMatrix() {
-    Matrix3 m = Matrix3::rotation(deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
+    Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
     CORRADE_COMPARE(MatrixTransformation2D<>::fromMatrix(m), m);
 }
 
 void MatrixTransformation2DTest::toMatrix() {
-    Matrix3 m = Matrix3::rotation(deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
+    Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
     CORRADE_COMPARE(MatrixTransformation2D<>::toMatrix(m), m);
 }
 
 void MatrixTransformation2DTest::compose() {
-    Matrix3 parent = Matrix3::rotation(deg(17.0f));
+    Matrix3 parent = Matrix3::rotation(Deg(17.0f));
     Matrix3 child = Matrix3::translation({1.0f, -0.3f});
     CORRADE_COMPARE(MatrixTransformation2D<>::compose(parent, child), parent*child);
 }
 
 void MatrixTransformation2DTest::inverted() {
-    Matrix3 m = Matrix3::rotation(deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
+    Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
     CORRADE_COMPARE(MatrixTransformation2D<>::inverted(m)*m, Matrix3());
 }
 
@@ -81,15 +81,15 @@ void MatrixTransformation2DTest::setTransformation() {
     Object2D o;
     o.setClean();
     CORRADE_VERIFY(!o.isDirty());
-    o.setTransformation(Matrix3::rotation(deg(17.0f)));
+    o.setTransformation(Matrix3::rotation(Deg(17.0f)));
     CORRADE_VERIFY(o.isDirty());
-    CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(deg(17.0f)));
+    CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f)));
 
     /* Scene cannot be transformed */
     Scene2D s;
     s.setClean();
     CORRADE_VERIFY(!s.isDirty());
-    s.setTransformation(Matrix3::rotation(deg(17.0f)));
+    s.setTransformation(Matrix3::rotation(Deg(17.0f)));
     CORRADE_VERIFY(!s.isDirty());
     CORRADE_COMPARE(s.transformationMatrix(), Matrix3());
 }
@@ -97,28 +97,28 @@ void MatrixTransformation2DTest::setTransformation() {
 void MatrixTransformation2DTest::transform() {
     {
         Object2D o;
-        o.setTransformation(Matrix3::rotation(deg(17.0f)));
+        o.setTransformation(Matrix3::rotation(Deg(17.0f)));
         o.transform(Matrix3::translation({1.0f, -0.3f}));
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(deg(17.0f)));
+        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(Deg(17.0f)));
     } {
         Object2D o;
-        o.setTransformation(Matrix3::rotation(deg(17.0f)));
+        o.setTransformation(Matrix3::rotation(Deg(17.0f)));
         o.transform(Matrix3::translation({1.0f, -0.3f}), TransformationType::Local);
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
+        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
     }
 }
 
 void MatrixTransformation2DTest::translate() {
     {
         Object2D o;
-        o.setTransformation(Matrix3::rotation(deg(17.0f)));
+        o.setTransformation(Matrix3::rotation(Deg(17.0f)));
         o.translate({1.0f, -0.3f});
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(deg(17.0f)));
+        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(Deg(17.0f)));
     } {
         Object2D o;
-        o.setTransformation(Matrix3::rotation(deg(17.0f)));
+        o.setTransformation(Matrix3::rotation(Deg(17.0f)));
         o.translate({1.0f, -0.3f}, TransformationType::Local);
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
+        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
     }
 }
 
@@ -126,41 +126,41 @@ void MatrixTransformation2DTest::rotate() {
     {
         Object2D o;
         o.setTransformation(Matrix3::translation({1.0f, -0.3f}));
-        o.rotate(deg(17.0f));
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
+        o.rotate(Deg(17.0f));
+        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
     } {
         Object2D o;
         o.setTransformation(Matrix3::translation({1.0f, -0.3f}));
-        o.rotate(deg(17.0f), TransformationType::Local);
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(deg(17.0f)));
+        o.rotate(Deg(17.0f), TransformationType::Local);
+        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(Deg(17.0f)));
     }
 }
 
 void MatrixTransformation2DTest::scale() {
     {
         Object2D o;
-        o.setTransformation(Matrix3::rotation(deg(17.0f)));
+        o.setTransformation(Matrix3::rotation(Deg(17.0f)));
         o.scale({1.0f, -0.3f});
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::scaling({1.0f, -0.3f})*Matrix3::rotation(deg(17.0f)));
+        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::scaling({1.0f, -0.3f})*Matrix3::rotation(Deg(17.0f)));
     } {
         Object2D o;
-        o.setTransformation(Matrix3::rotation(deg(17.0f)));
+        o.setTransformation(Matrix3::rotation(Deg(17.0f)));
         o.scale({1.0f, -0.3f}, TransformationType::Local);
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(deg(17.0f))*Matrix3::scaling({1.0f, -0.3f}));
+        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::scaling({1.0f, -0.3f}));
     }
 }
 
 void MatrixTransformation2DTest::reflect() {
     {
         Object2D o;
-        o.setTransformation(Matrix3::rotation(deg(17.0f)));
+        o.setTransformation(Matrix3::rotation(Deg(17.0f)));
         o.reflect(Vector2(-1.0f/Constants::sqrt2()));
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::reflection(Vector2(-1.0f/Constants::sqrt2()))*Matrix3::rotation(deg(17.0f)));
+        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::reflection(Vector2(-1.0f/Constants::sqrt2()))*Matrix3::rotation(Deg(17.0f)));
     } {
         Object2D o;
-        o.setTransformation(Matrix3::rotation(deg(17.0f)));
+        o.setTransformation(Matrix3::rotation(Deg(17.0f)));
         o.reflect(Vector2(-1.0f/Constants::sqrt2()), TransformationType::Local);
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(deg(17.0f))*Matrix3::reflection(Vector2(-1.0f/Constants::sqrt2())));
+        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::reflection(Vector2(-1.0f/Constants::sqrt2())));
     }
 }
 

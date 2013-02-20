@@ -75,7 +75,7 @@ class AnimableObject: public Object3D, SceneGraph::Animable3D<> {
         }
 
         void animationStep(GLfloat time, GLfloat delta) override {
-            rotateX(deg(15.0f)*delta); // rotate at 15 degrees per second
+            rotateX(15.0_degf*delta); // rotate at 15 degrees per second
         }
 }
 @endcode

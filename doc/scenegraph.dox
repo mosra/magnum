@@ -88,7 +88,7 @@ transformation. For convenience you can use method chaining:
 Object3D* next = new Object3D;
 next->setParent(another)
     ->translate(Vector3::yAxis(3.0f))
-    ->rotateY(deg(35.0f));
+    ->rotateY(35.0_degf);
 @endcode
 
 @section scenegraph-features Object features
