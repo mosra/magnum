@@ -31,7 +31,7 @@ namespace Magnum { namespace Math {
 @tparam T   Underlying data type
 */
 template<class T> class Dual {
-    template<class U> friend class Dual;
+    template<class> friend class Dual;
 
     public:
         typedef T Type;                         /**< @brief Underlying data type */
