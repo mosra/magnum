@@ -15,6 +15,7 @@ set(MagnumMath_HEADERS
     Quaternion.h
     RectangularMatrix.h
     Swizzle.h
+    Unit.h
     Vector.h
     Vector2.h
     Vector3.h
