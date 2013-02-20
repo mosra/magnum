@@ -25,6 +25,7 @@
 #include <Utility/Debug.h>
 #include <Utility/ConfigurationValue.h>
 
+#include "Math/Angle.h"
 #include "Math/BoolVector.h"
 #include "Math/MathTypeTraits.h"
 
@@ -78,16 +79,16 @@ template<std::size_t size, class T> class Vector {
         }
 
         /**
-         * @brief Angle between normalized vectors (in radians)
+         * @brief Angle between normalized vectors
          *
          * Expects that both vectors are normalized. @f[
          *      \theta = acos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| \cdot |\boldsymbol b|} \right) = acos (\boldsymbol a \cdot \boldsymbol b)
          * @f]
          */
-        inline static T angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
+        inline static Rad<T> angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
-                           "Math::Vector::angle(): vectors must be normalized", std::numeric_limits<T>::quiet_NaN());
-            return std::acos(dot(normalizedA, normalizedB));
+                           "Math::Vector::angle(): vectors must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
+            return Rad<T>(std::acos(dot(normalizedA, normalizedB)));
         }
 
         /**

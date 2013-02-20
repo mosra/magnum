@@ -63,6 +63,7 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void configuration();
 };
 
+typedef Math::Rad<float> Rad;
 typedef Vector<3, float> Vector3;
 typedef Vector<4, float> Vector4;
 typedef Vector<4, std::int32_t> Vector4i;
@@ -305,17 +306,18 @@ void VectorTest::projectedOntoNormalized() {
 void VectorTest::angle() {
     std::ostringstream o;
     Error::setOutput(&o);
-    CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f}),
-                    std::numeric_limits<Vector3::Type>::quiet_NaN());
+    auto angle = Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f});
+    CORRADE_VERIFY(angle != angle);
     CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized\n");
 
     o.str("");
-    CORRADE_COMPARE(Vector3::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized()),
-                    std::numeric_limits<Vector3::Type>::quiet_NaN());
+    angle = Vector3::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized());
+    CORRADE_VERIFY(angle != angle);
     CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized\n");
 
-    CORRADE_COMPARE(Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), Vector3(1.0f, -2.0f, 3.0f).normalized()),
-                    rad(1.162514f));
+    CORRADE_COMPARE(Vector3::angle(Vector3(2.0f,  3.0f, 4.0f).normalized(),
+                                   Vector3(1.0f, -2.0f, 3.0f).normalized()),
+                    Rad(1.162514f));
 }
 
 void VectorTest::debug() {
