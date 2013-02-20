@@ -54,6 +54,11 @@ namespace Math {
     template<class T> constexpr T deg(T value);
     template<class T> constexpr T rad(T value);
     template<class T> struct Constants;
+
+    constexpr Rad<double> operator "" _rad(long double);
+    constexpr Rad<float> operator "" _radf(long double);
+    constexpr Deg<double> operator "" _deg(long double);
+    constexpr Deg<float> operator "" _degf(long double);
 }
 
 /* Bring debugging facility from Corrade::Utility namespace */
@@ -108,6 +113,12 @@ typedef Math::Quaternion<GLfloat> Quaternion;
 /* Using float instead of GLfloat to not break KDevelop autocompletion */
 typedef Math::Constants<float> Constants;
 
+/** @brief Angle in single-precision degrees */
+typedef Math::Deg<float> Deg;
+
+/** @brief Angle in single-precision radians */
+typedef Math::Rad<float> Rad;
+
 /** @brief Floating-point rectangle */
 typedef Math::Geometry::Rectangle<GLfloat> Rectangle;
 
@@ -117,6 +128,12 @@ typedef Math::Geometry::Rectangle<GLint> Rectanglei;
 /* Copying angle converters from Math namespace */
 using Math::deg;
 using Math::rad;
+
+/* Using angle literals from Math namespace */
+using Math::operator "" _deg;
+using Math::operator "" _degf;
+using Math::operator "" _rad;
+using Math::operator "" _radf;
 
 /** @todoc Remove `ifndef` when Doxygen is sane again */
 #ifndef DOXYGEN_GENERATING_OUTPUT

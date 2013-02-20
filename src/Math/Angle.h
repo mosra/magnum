@@ -108,6 +108,8 @@ std::sin(float(Rad<float>(angleInDegrees)); // required explicit conversion hint
                                             // to user that this case needs special
                                             // attention (i.e., conversion to radians)
 @endcode
+
+@see Magnum::Deg, Magnum::Rad
 */
 template<class T> class Deg: public Unit<Deg, T> {
     public:
@@ -143,7 +145,7 @@ Example usage:
 double cosine = Math::cos(60.0_deg);  // cosine = 0.5
 double cosine = Math::cos(1.047_rad); // cosine = 0.5
 @endcode
-@see operator""_degf(), operator""_rad()
+@see Magnum::operator""_deg(), operator""_degf(), operator""_rad()
 @note Not available on GCC < 4.7. Use Deg::Deg(T) instead.
 */
 inline constexpr Deg<double> operator "" _deg(long double value) { return Deg<double>(value); }
@@ -156,7 +158,7 @@ Example usage:
 float tangent = Math::tan(60.0_degf);  // tangent = 1.732f
 float tangent = Math::tan(1.047_radf); // tangent = 1.732f
 @endcode
-@see operator""_deg(), operator""_radf()
+@see Magnum::operator""_degf(), operator""_deg(), operator""_radf()
 @note Not available on GCC < 4.7. Use Deg::Deg(T) instead.
 */
 inline constexpr Deg<float> operator "" _degf(long double value) { return Deg<float>(value); }
@@ -166,6 +168,7 @@ inline constexpr Deg<float> operator "" _degf(long double value) { return Deg<fl
 @brief Angle in radians
 
 See Deg for more information.
+@see Magnum::Rad
 */
 template<class T> class Rad: public Unit<Rad, T> {
     public:
@@ -197,7 +200,7 @@ template<class T> class Rad: public Unit<Rad, T> {
 @brief Double-precision radian value literal
 
 See operator""_rad() for more information.
-@see operator""_radf(), operator""_deg()
+@see Magnum::operator""_rad(), operator""_radf(), operator""_deg()
 @note Not available on GCC < 4.7. Use Rad::Rad(T) instead.
 */
 inline constexpr Rad<double> operator "" _rad(long double value) { return Rad<double>(value); }
@@ -206,7 +209,7 @@ inline constexpr Rad<double> operator "" _rad(long double value) { return Rad<do
 @brief Single-precision radian value literal
 
 See operator""_degf() for more information.
-@see operator""_rad(), operator""_degf()
+@see Magnum::operator""_radf(), operator""_rad(), operator""_degf()
 @note Not available on GCC < 4.7. Use Rad::Rad(T) instead.
 */
 inline constexpr Rad<float> operator "" _radf(long double value) { return Rad<float>(value); }
