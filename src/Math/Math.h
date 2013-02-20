@@ -42,6 +42,8 @@ template<class> class Quaternion;
 template<std::size_t, std::size_t, class> class RectangularMatrix;
 
 template<template<class> class, class> class Unit;
+template<class> class Deg;
+template<class> class Rad;
 
 template<std::size_t, class> class Vector;
 template<class> class Vector2;

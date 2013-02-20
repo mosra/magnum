@@ -1,4 +1,5 @@
 set(MagnumMath_HEADERS
+    Angle.h
     BoolVector.h
     Complex.h
     Constants.h

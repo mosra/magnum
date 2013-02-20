@@ -98,6 +98,7 @@ add_library(MagnumObjects OBJECT ${Magnum_SRCS})
 
 # Files shared between main library and math unit test library
 set(MagnumMath_SRCS
+    Math/Angle.cpp
     Math/Complex.cpp
     Math/DualQuaternion.cpp
     Math/Functions.cpp
