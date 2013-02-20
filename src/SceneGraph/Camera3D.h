@@ -83,7 +83,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3, T> {
 
         /**
          * @brief Set perspective projection
-         * @param fov           Field of view angle (horizontal, in radians)
+         * @param fov           Field of view angle (horizontal)
          * @param aspectRatio   Aspect ratio
          * @param near          Near clipping plane
          * @param far           Far clipping plane
@@ -91,7 +91,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3, T> {
          *
          * @see setOrthographic(), Matrix4::perspectiveProjection()
          */
-        Camera3D<T>* setPerspective(T fov, T aspectRatio, T near, T far);
+        Camera3D<T>* setPerspective(Math::Rad<T> fov, T aspectRatio, T near, T far);
 
         /** @brief Near clipping plane */
         inline T near() const { return _near; }

@@ -200,7 +200,7 @@ void Matrix4Test::perspectiveProjectionFov() {
                      {      0.0f, 9.788454f,         0.0f,  0.0f},
                      {      0.0f,      0.0f,  -1.9411764f, -1.0f},
                      {      0.0f,      0.0f, -94.1176452f,  0.0f});
-    CORRADE_COMPARE(Matrix4::perspectiveProjection(deg(27.0f), 2.35f, 32.0f, 100), expected);
+    CORRADE_COMPARE(Matrix4::perspectiveProjection(Deg(27.0f), 2.35f, 32.0f, 100), expected);
 }
 
 void Matrix4Test::fromParts() {

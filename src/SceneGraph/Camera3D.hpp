@@ -46,7 +46,7 @@ template<class T> Camera3D<T>* Camera3D<T>::setPerspective(const Math::Vector2<T
     return this;
 }
 
-template<class T> Camera3D<T>* Camera3D<T>::setPerspective(T fov, T aspectRatio, T near, T far) {
+template<class T> Camera3D<T>* Camera3D<T>::setPerspective(Math::Rad<T> fov, T aspectRatio, T near, T far) {
     /** @todo Get near/far from the matrix */
     _near = near;
     _far = far;

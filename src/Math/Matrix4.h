@@ -216,15 +216,15 @@ template<class T> class Matrix4: public Matrix<4, T> {
 
         /**
          * @brief 3D perspective projection matrix
-         * @param fov           Field of view angle (horizontal, in radians)
+         * @param fov           Field of view angle (horizontal)
          * @param aspectRatio   Aspect ratio
          * @param near          Near clipping plane
          * @param far           Far clipping plane
          *
          * @see orthographicProjection(), Matrix3::projection()
          */
-        static Matrix4<T> perspectiveProjection(T fov, T aspectRatio, T near, T far) {
-            T xyScale = 2*std::tan(fov/2)*near;
+        static Matrix4<T> perspectiveProjection(Rad<T> fov, T aspectRatio, T near, T far) {
+            T xyScale = 2*std::tan(T(fov)/2)*near;
 
             return perspectiveProjection(Vector2<T>(xyScale, xyScale/aspectRatio), near, far);
         }
