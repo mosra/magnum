@@ -32,15 +32,16 @@ namespace Implementation {
 
 /* Convert color from HSV */
 template<class T> inline typename std::enable_if<std::is_floating_point<T>::value, Color3<T>>::type fromHSV(typename Color3<T>::HSV hsv) {
-    T hue, saturation, value;
+    Math::Deg<T> hue;
+    T saturation, value;
     std::tie(hue, saturation, value) = hsv;
 
     /* Remove repeats */
-    hue -= int(hue/T(360))*T(360);
-    if(hue < T(0)) hue += T(360);
+    hue -= int(T(hue)/T(360))*Math::Deg<T>(360);
+    if(hue < Math::Deg<T>(0)) hue += Math::Deg<T>(360);
 
-    int h = int(hue/T(60)) % 6;
-    T f = hue/T(60) - h;
+    int h = int(T(hue)/T(60)) % 6;
+    T f = T(hue)/T(60) - h;
 
     T p = value * (T(1) - saturation);
     T q = value * (T(1) - f*saturation);
@@ -61,7 +62,7 @@ template<class T> inline typename std::enable_if<std::is_integral<T>::value, Col
 }
 
 /* Internal hue computing function */
-template<class T> T hue(const Color3<T>& color, T max, T delta) {
+template<class T> Math::Deg<T> hue(const Color3<T>& color, T max, T delta) {
     T deltaInv60 = T(60)/delta;
 
     T hue(0);
@@ -74,11 +75,11 @@ template<class T> T hue(const Color3<T>& color, T max, T delta) {
             hue = (color.r()-color.g())*deltaInv60 + T(240);
     }
 
-    return hue;
+    return Math::Deg<T>(hue);
 }
 
 /* Hue, saturation, value for floating-point types */
-template<class T> inline T hue(typename std::enable_if<std::is_floating_point<T>::value, const Color3<T>&>::type color) {
+template<class T> inline Math::Deg<T> hue(typename std::enable_if<std::is_floating_point<T>::value, const Color3<T>&>::type color) {
     T max = color.max();
     T delta = max - color.min();
     return hue(color, max, delta);
@@ -93,7 +94,7 @@ template<class T> inline T value(typename std::enable_if<std::is_floating_point<
 }
 
 /* Hue, saturation, value for integral types */
-template<class T> inline typename Color3<T>::FloatingPointType hue(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type color) {
+template<class T> inline Math::Deg<typename Color3<T>::FloatingPointType> hue(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type color) {
     return hue<typename Color3<T>::FloatingPointType>(Math::normalize<Color3<typename Color3<T>::FloatingPointType>>(color));
 }
 template<class T> inline typename Color3<T>::FloatingPointType saturation(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type& color) {
@@ -137,8 +138,6 @@ is always in range in range @f$ [0.0, 360.0] @f$, saturation and value in
 range @f$ [0.0, 1.0] @f$.
 
 @see Color4
-
-@todo Hue in degrees so users can use deg()
 */
 /* Not using template specialization because some internal functions are
    impossible to explicitly instantiate */
@@ -158,7 +157,7 @@ class Color3: public Math::Vector3<T> {
          * Hue in range @f$ [0.0, 360.0] @f$, saturation and value in
          * range @f$ [0.0, 1.0] @f$.
          */
-        typedef std::tuple<FloatingPointType, FloatingPointType, FloatingPointType> HSV;
+        typedef std::tuple<Math::Deg<FloatingPointType>, FloatingPointType, FloatingPointType> HSV;
 
         /**
          * @brief Create RGB color from HSV representation
@@ -170,7 +169,7 @@ class Color3: public Math::Vector3<T> {
             return Implementation::fromHSV<T>(hsv);
         }
         /** @overload */
-        inline constexpr static Color3<T> fromHSV(FloatingPointType hue, FloatingPointType saturation, FloatingPointType value) {
+        inline constexpr static Color3<T> fromHSV(Math::Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value) {
             return fromHSV(std::make_tuple(hue, saturation, value));
         }
 
@@ -229,8 +228,8 @@ class Color3: public Math::Vector3<T> {
          *
          * @see saturation(), value(), toHSV(), fromHSV()
          */
-        inline constexpr FloatingPointType hue() const {
-            return Implementation::hue<T>(*this);
+        inline constexpr Math::Deg<FloatingPointType> hue() const {
+            return Math::Deg<FloatingPointType>(Implementation::hue<T>(*this));
         }
 
         /**
@@ -287,7 +286,7 @@ class Color4: public Math::Vector4<T> {
             return Color4<T>(Implementation::fromHSV<T>(hsv), a);
         }
         /** @overload */
-        inline constexpr static Color4<T> fromHSV(FloatingPointType hue, FloatingPointType saturation, FloatingPointType value, T alpha) {
+        inline constexpr static Color4<T> fromHSV(Math::Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value, T alpha) {
             return fromHSV(std::make_tuple(hue, saturation, value), alpha);
         }
 
@@ -355,7 +354,7 @@ class Color4: public Math::Vector4<T> {
         }
 
         /** @copydoc Color3::hue() */
-        inline constexpr FloatingPointType hue() const {
+        inline constexpr Math::Deg<FloatingPointType> hue() const {
             return Implementation::hue<T>(rgb());
         }
 
