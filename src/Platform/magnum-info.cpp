@@ -41,6 +41,9 @@ MagnumInfo::MagnumInfo(int& argc, char** argv): WindowlessGlxApplication(argc, a
     {
         Debug d;
         d << "Compilation flags:";
+        #ifdef CORRADE_GCC46_COMPATIBILITY
+        d << "CORRADE_GCC46_COMPATIBILITY";
+        #endif
         #ifdef MAGNUM_TARGET_GLES
         d << "MAGNUM_TARGET_GLES";
         #endif
@@ -53,8 +56,8 @@ MagnumInfo::MagnumInfo(int& argc, char** argv): WindowlessGlxApplication(argc, a
         #ifdef MAGNUM_TARGET_NACL
         d << "MAGNUM_TARGET_NACL";
         #endif
-        #ifdef CORRADE_GCC46_COMPATIBILITY
-        d << "CORRADE_GCC46_COMPATIBILITY";
+        #ifdef MAGNUM_USE_HARFBUZZ
+        d << "MAGNUM_USE_HARFBUZZ";
         #endif
     }
     Debug() << "";
