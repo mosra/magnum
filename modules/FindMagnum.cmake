@@ -23,7 +23,7 @@
 #  SceneGraph    - Scene graph library
 #  Shaders       - Library with stock shaders
 #  Text          - Text rendering library (depends on TextureTools component,
-#                  HarfBuzz and FreeType library)
+#                  FreeType library and possibly HarfBuzz library)
 #  TextureTools  - TextureTools library
 #  GlxApplication - GLX application (depends on X11 libraries)
 #  XEglApplication - X/EGL application (depends on EGL and X11 libraries)

@@ -122,8 +122,12 @@ class MAGNUM_TEXT_EXPORT Font {
         /** @brief %Font texture atlas */
         inline Texture2D& texture() { return _texture; }
 
-        /** @brief HarfBuzz font handle */
+        /** @brief Font handle */
+        #ifdef MAGNUM_USE_HARFBUZZ
         inline hb_font_t* font() { return _hbFont; }
+        #else
+        inline FT_Face font() { return _ftFont; }
+        #endif
 
     private:
         void MAGNUM_TEXT_LOCAL finishConstruction();
@@ -133,8 +137,10 @@ class MAGNUM_TEXT_EXPORT Font {
         std::unordered_map<std::uint32_t, std::tuple<Rectangle, Rectangle>> glyphs;
         Texture2D _texture;
         FT_Face _ftFont;
-        hb_font_t* _hbFont;
         GLfloat _size;
+        #ifdef MAGNUM_USE_HARFBUZZ
+        hb_font_t* _hbFont;
+        #endif
 };
 
 }}

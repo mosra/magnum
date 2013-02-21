@@ -18,7 +18,9 @@
 #include <algorithm>
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#ifdef MAGNUM_USE_HARFBUZZ
 #include <hb-ft.h>
+#endif
 #include <Utility/Unicode.h>
 
 #include "Extensions.h"
@@ -42,8 +44,10 @@ Font::Font(FontRenderer& renderer, const unsigned char* data, std::size_t dataSi
 void Font::finishConstruction() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Set_Char_Size(_ftFont, 0, _size*64, 100, 100) == 0);
 
+    #ifdef MAGNUM_USE_HARFBUZZ
     /* Create Harfbuzz font */
     _hbFont = hb_ft_font_create(_ftFont, nullptr);
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);
@@ -126,18 +130,26 @@ void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
 void Font::destroy() {
     if(!_ftFont) return;
 
+    #ifdef MAGNUM_USE_HARFBUZZ
     hb_font_destroy(_hbFont);
+    #endif
     FT_Done_Face(_ftFont);
 }
 
 void Font::move() {
+    #ifdef MAGNUM_USE_HARFBUZZ
     _hbFont = nullptr;
+    #endif
     _ftFont = nullptr;
 }
 
 Font::~Font() { destroy(); }
 
-Font::Font(Font&& other): glyphs(std::move(other.glyphs)), _texture(std::move(other._texture)), _ftFont(other._ftFont), _hbFont(other._hbFont), _size(other._size) {
+Font::Font(Font&& other): glyphs(std::move(other.glyphs)), _texture(std::move(other._texture)), _ftFont(other._ftFont), _size(other._size)
+    #ifdef MAGNUM_USE_HARFBUZZ
+    , _hbFont(other._hbFont)
+    #endif
+{
     other.move();
 }
 
@@ -147,7 +159,9 @@ Font& Font::operator=(Font&& other) {
     glyphs = std::move(other.glyphs);
     _texture = std::move(other._texture);
     _ftFont = other._ftFont;
+    #ifdef MAGNUM_USE_HARFBUZZ
     _hbFont = other._hbFont;
+    #endif
     _size = other._size;
 
     other.move();

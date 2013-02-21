@@ -15,7 +15,13 @@
 
 #include "TextRenderer.h"
 
+#ifdef MAGNUM_USE_HARFBUZZ
 #include <hb.h>
+#else
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include <Utility/Unicode.h>
+#endif
 
 #include "Math/Point2D.h"
 #include "Math/Point3D.h"
@@ -36,20 +42,33 @@ class TextLayouter {
 
         ~TextLayouter();
 
-        inline std::uint32_t glyphCount() { return _glyphCount; }
+        inline std::uint32_t glyphCount() {
+            #ifdef MAGNUM_USE_HARFBUZZ
+            return _glyphCount;
+            #else
+            return glyphs.size();
+            #endif
+        }
 
         std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(const Vector2& cursorPosition, const std::uint32_t i);
 
     private:
+        #ifdef MAGNUM_USE_HARFBUZZ
         const Font& font;
-        const GLfloat size;
         hb_buffer_t* buffer;
         hb_glyph_info_t* glyphInfo;
         hb_glyph_position_t* glyphPositions;
         std::uint32_t _glyphCount;
+        #else
+        Font& font;
+        std::vector<FT_UInt> glyphs;
+        #endif
+
+        const GLfloat size;
 };
 
 TextLayouter::TextLayouter(Font& font, const GLfloat size, const std::string& text): font(font), size(size) {
+    #ifdef MAGNUM_USE_HARFBUZZ
     /* Prepare HarfBuzz buffer */
     buffer = hb_buffer_create();
     hb_buffer_set_direction(buffer, HB_DIRECTION_LTR);
@@ -62,23 +81,46 @@ TextLayouter::TextLayouter(Font& font, const GLfloat size, const std::string& te
 
     glyphInfo = hb_buffer_get_glyph_infos(buffer, &_glyphCount);
     glyphPositions = hb_buffer_get_glyph_positions(buffer, &_glyphCount);
+    #else
+    /* Get glyph codes from characters */
+    glyphs.reserve(text.size()+1);
+    for(std::size_t i = 0; i != text.size(); ) {
+        std::uint32_t codepoint;
+        std::tie(codepoint, i) = Corrade::Utility::Unicode::nextChar(text, i);
+        glyphs.push_back(FT_Get_Char_Index(font.font(), codepoint));
+    }
+    #endif
 }
 
 TextLayouter::~TextLayouter() {
+    #ifdef MAGNUM_USE_HARFBUZZ
     /* Destroy HarfBuzz buffer */
     hb_buffer_destroy(buffer);
+    #endif
 }
 
 std::tuple<Rectangle, Rectangle, Vector2> TextLayouter::renderGlyph(const Vector2& cursorPosition, const std::uint32_t i) {
     /* Position of the texture in the resulting glyph, texture coordinates */
     Rectangle texturePosition, textureCoordinates;
+    #ifdef MAGNUM_USE_HARFBUZZ
     std::tie(texturePosition, textureCoordinates) = font[glyphInfo[i].codepoint];
+    #else
+    std::tie(texturePosition, textureCoordinates) = font[glyphs[i]];
+    #endif
 
+    #ifdef MAGNUM_USE_HARFBUZZ
     /* Glyph offset and advance to next glyph in normalized coordinates */
     Vector2 offset = Vector2(glyphPositions[i].x_offset,
                              glyphPositions[i].y_offset)/(64*font.size());
     Vector2 advance = Vector2(glyphPositions[i].x_advance,
                               glyphPositions[i].y_advance)/(64*font.size());
+    #else
+    /* Load glyph */
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Load_Glyph(font.font(), glyphs[i], FT_LOAD_DEFAULT) == 0);
+    const FT_GlyphSlot  slot = font.font()->glyph;
+    Vector2 offset = Vector2(0, 0); /** @todo really? */
+    Vector2 advance = Vector2(slot->advance.x, slot->advance.y)/(64*font.size());
+    #endif
 
     /* Absolute quad position, composed from cursor position, glyph offset
         and texture position, denormalized to requested text size */

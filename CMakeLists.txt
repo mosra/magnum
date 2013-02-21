@@ -21,6 +21,9 @@ cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" OFF "NOT W
 
 cmake_dependent_option(WITH_MAGNUMINFO "Build magnum-info utility" OFF "NOT WITH_EVERYTHING" ON)
 
+# Library features
+cmake_dependent_option(USE_HARFBUZZ "Use HarfBuzz in Text library" ON "WITH_TEXT" OFF)
+
 if(${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
     option(WITH_NACLAPPLICATION "Build NaClApplication library" OFF)
 else()
@@ -65,6 +68,9 @@ if(TARGET_GLES2)
 endif()
 if(TARGET_DESKTOP_GLES)
     set(MAGNUM_TARGET_DESKTOP_GLES 1)
+endif()
+if(USE_HARFBUZZ)
+    set(MAGNUM_USE_HARFBUZZ 1)
 endif()
 
 # Installation paths
