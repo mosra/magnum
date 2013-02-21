@@ -586,7 +586,7 @@ void AbstractShaderProgram::uniformImplementationDSA(GLint location, const Math:
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
-std::size_t Attribute<GLfloat>::size(GLint components, DataType dataType) {
+std::size_t FloatAttribute::size(GLint components, DataType dataType) {
     switch(dataType) {
         case DataType::UnsignedByte:
         case DataType::Byte:
@@ -609,7 +609,8 @@ std::size_t Attribute<GLfloat>::size(GLint components, DataType dataType) {
     return 0;
 }
 
-std::size_t Attribute<GLint>::size(GLint components, DataType dataType) {
+#ifndef MAGNUM_TARGET_GLES2
+std::size_t IntAttribute::size(GLint components, DataType dataType) {
     switch(dataType) {
         case DataType::UnsignedByte:
         case DataType::Byte:
@@ -625,9 +626,10 @@ std::size_t Attribute<GLint>::size(GLint components, DataType dataType) {
     CORRADE_INTERNAL_ASSERT(false);
     return 0;
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
-std::size_t Attribute<GLdouble>::size(GLint components, DataType dataType) {
+std::size_t DoubleAttribute::size(GLint components, DataType dataType) {
     switch(dataType) {
         case DataType::Double:
             return 8*components;
@@ -639,6 +641,10 @@ std::size_t Attribute<GLdouble>::size(GLint components, DataType dataType) {
 #endif
 
 std::size_t Attribute<Math::Vector<4, GLfloat>>::size(GLint components, DataType dataType) {
+    #ifndef MAGNUM_TARGET_GLES
+    if(components == GL_BGRA) components = 4;
+    #endif
+
     switch(dataType) {
         case DataType::UnsignedByte:
         case DataType::Byte:
@@ -666,6 +672,173 @@ std::size_t Attribute<Math::Vector<4, GLfloat>>::size(GLint components, DataType
 
     CORRADE_INTERNAL_ASSERT(false);
     return 0;
+}
+
+Debug operator<<(Debug debug, SizedAttribute<1, 1>::Components value) {
+    switch(value) {
+        case SizedAttribute<1, 1>::Components::One:
+            return debug << "AbstractShaderProgram::Attribute::Components::One";
+    }
+
+    return debug << "AbstractShaderProgram::Attribute::Components::(invalid)";
+}
+
+Debug operator<<(Debug debug, SizedAttribute<1, 2>::Components value) {
+    switch(value) {
+        case SizedAttribute<1, 2>::Components::One:
+            return debug << "AbstractShaderProgram::Attribute::Components::One";
+        case SizedAttribute<1, 2>::Components::Two:
+            return debug << "AbstractShaderProgram::Attribute::Components::Two";
+    }
+
+    return debug << "AbstractShaderProgram::Attribute::Components::(invalid)";
+}
+
+Debug operator<<(Debug debug, SizedAttribute<1, 3>::Components value) {
+    switch(value) {
+        case SizedAttribute<1, 3>::Components::One:
+            return debug << "AbstractShaderProgram::Attribute::Components::One";
+        case SizedAttribute<1, 3>::Components::Two:
+            return debug << "AbstractShaderProgram::Attribute::Components::Two";
+        case SizedAttribute<1, 3>::Components::Three:
+            return debug << "AbstractShaderProgram::Attribute::Components::Three";
+    }
+
+    return debug << "AbstractShaderProgram::Attribute::Components::(invalid)";
+}
+
+Debug operator<<(Debug debug, SizedAttribute<1, 4>::Components value) {
+    switch(value) {
+        case SizedAttribute<1, 4>::Components::One:
+            return debug << "AbstractShaderProgram::Attribute::Components::One";
+        case SizedAttribute<1, 4>::Components::Two:
+            return debug << "AbstractShaderProgram::Attribute::Components::Two";
+        case SizedAttribute<1, 4>::Components::Three:
+            return debug << "AbstractShaderProgram::Attribute::Components::Three";
+        case SizedAttribute<1, 4>::Components::Four:
+            return debug << "AbstractShaderProgram::Attribute::Components::Four";
+    }
+
+    return debug << "AbstractShaderProgram::Attribute::Components::(invalid)";
+}
+
+Debug operator<<(Debug debug, SizedMatrixAttribute<2>::Components value) {
+    switch(value) {
+        case SizedMatrixAttribute<2>::Components::Two:
+            return debug << "AbstractShaderProgram::Attribute::Components::Two";
+    }
+
+    return debug << "AbstractShaderProgram::Attribute::Components::(invalid)";
+}
+
+Debug operator<<(Debug debug, SizedMatrixAttribute<3>::Components value) {
+    switch(value) {
+        case SizedMatrixAttribute<3>::Components::Three:
+            return debug << "AbstractShaderProgram::Attribute::Components::Three";
+    }
+
+    return debug << "AbstractShaderProgram::Attribute::Components::(invalid)";
+}
+
+Debug operator<<(Debug debug, SizedMatrixAttribute<4>::Components value) {
+    switch(value) {
+        case SizedMatrixAttribute<4>::Components::Four:
+            return debug << "AbstractShaderProgram::Attribute::Components::Four";
+    }
+
+    return debug << "AbstractShaderProgram::Attribute::Components::(invalid)";
+}
+
+Debug operator<<(Debug debug, Attribute<Math::Vector<4, GLfloat>>::Components value) {
+    switch(value) {
+        case Attribute<Math::Vector<4, GLfloat>>::Components::One:
+            return debug << "AbstractShaderProgram::Attribute::Components::One";
+        case Attribute<Math::Vector<4, GLfloat>>::Components::Two:
+            return debug << "AbstractShaderProgram::Attribute::Components::Two";
+        case Attribute<Math::Vector<4, GLfloat>>::Components::Three:
+            return debug << "AbstractShaderProgram::Attribute::Components::Three";
+        case Attribute<Math::Vector<4, GLfloat>>::Components::Four:
+            return debug << "AbstractShaderProgram::Attribute::Components::Four";
+        #ifndef MAGNUM_TARGET_GLES
+        case Attribute<Math::Vector<4, GLfloat>>::Components::BGRA:
+            return debug << "AbstractShaderProgram::Attribute::Components::BGRA";
+        #endif
+    }
+
+    return debug << "AbstractShaderProgram::Attribute::Components::(invalid)";
+}
+
+Debug operator<<(Debug debug, FloatAttribute::DataType value) {
+    switch(value) {
+        #define _c(value) case FloatAttribute::DataType::value: return debug << "AbstractShaderProgram::Attribute::DataType::" #value;
+        _c(UnsignedByte)
+        _c(Byte)
+        _c(UnsignedShort)
+        _c(Short)
+        _c(UnsignedInt)
+        _c(Int)
+        _c(HalfFloat)
+        _c(Float)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(Double)
+        #endif
+        #undef _c
+    }
+
+    return debug << "AbstractShaderProgram::Attribute::DataType::(invalid)";
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+Debug operator<<(Debug debug, IntAttribute::DataType value) {
+    switch(value) {
+        #define _c(value) case IntAttribute::DataType::value: return debug << "AbstractShaderProgram::Attribute::DataType::" #value;
+        _c(UnsignedByte)
+        _c(Byte)
+        _c(UnsignedShort)
+        _c(Short)
+        _c(UnsignedInt)
+        _c(Int)
+        #undef _c
+    }
+
+    return debug << "AbstractShaderProgram::Attribute::DataType::(invalid)";
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+Debug operator<<(Debug debug, DoubleAttribute::DataType value) {
+    switch(value) {
+        #define _c(value) case DoubleAttribute::DataType::value: return debug << "AbstractShaderProgram::Attribute::DataType::" #value;
+        _c(Double)
+        #undef _c
+    }
+
+    return debug << "AbstractShaderProgram::Attribute::DataType::(invalid)";
+}
+#endif
+
+Debug operator<<(Debug debug, Attribute<Math::Vector<4, GLfloat>>::DataType value) {
+    switch(value) {
+        #define _c(value) case Attribute<Math::Vector<4, GLfloat>>::DataType::value: return debug << "AbstractShaderProgram::Attribute::DataType::" #value;
+        _c(UnsignedByte)
+        _c(Byte)
+        _c(UnsignedShort)
+        _c(Short)
+        _c(UnsignedInt)
+        _c(Int)
+        _c(HalfFloat)
+        _c(Float)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(Double)
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(UnsignedInt2101010Rev)
+        _c(Int2101010Rev)
+        #endif
+        #undef _c
+    }
+
+    return debug << "AbstractShaderProgram::Attribute::DataType::(invalid)";
 }
 
 }

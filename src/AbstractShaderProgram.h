@@ -33,7 +33,6 @@ namespace Magnum {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<class> struct Attribute;
-    template<class> struct AttributeTraits;
 }
 #endif
 
@@ -330,7 +329,61 @@ class MAGNUM_EXPORT AbstractShaderProgram {
                  * Type used in shader code.
                  * @see DataType
                  */
-                typedef typename Implementation::AttributeTraits<T>::AttributeType Type;
+                typedef typename Implementation::Attribute<T>::Type Type;
+
+                /**
+                 * @brief Component count
+                 *
+                 * Count of components passed to the shader. If passing smaller
+                 * count of components than corresponding type has, unspecified
+                 * components are set to default values (second and third to `0`,
+                 * fourth to `1`).
+                 */
+                #ifdef DOXYGEN_GENERATING_OUTPUT
+                enum class Components: GLint {
+                    /**
+                     * Only first component is specified. Second, third and
+                     * fourth component are set to `0`, `0`, `1`, respectively.
+                     * Only for scalar and vector types, not matrices.
+                     */
+                    One = 1,
+
+                    /**
+                     * First two components are specified. Third and fourth
+                     * component are set to `0`, `1`, respectively. Only for
+                     * two, three and four-component vector types and 2x2, 3x2
+                     * and 4x2 matrix types.
+                     */
+                    Two = 2,
+
+                    /**
+                     * First three components are specified. Fourth component is
+                     * set to `1`. Only for three and four-component vector
+                     * types, 2x3, 3x3 and 4x3 matrix types.
+                     */
+                    Three = 3,
+
+                    /**
+                     * All four components are specified. Only for four-component
+                     * vector types and 2x4, 3x4 and 4x4 matrix types.
+                     */
+                    Four = 4
+
+                    #ifndef MAGNUM_TARGET_GLES
+                    ,
+                    /**
+                     * Four components with BGRA ordering. Only for four-component
+                     * float vector type.
+                     * @requires_gl32 %Extension @extension{ARB,vertex_array_bgra}
+                     * @requires_gl Only RGBA component ordering is supported
+                     *      in OpenGL ES.
+                     */
+                    BGRA = 1 << 1
+                    #endif
+                };
+                #else
+                typedef typename Implementation::Attribute<T>::Components Components;
+                #endif
 
                 /**
                  * @brief Data type
@@ -400,16 +453,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
                      * Normalize integer components. Only for float attribute
                      * types. Default is to not normalize.
                      */
-                    Normalize = 1 << 0,
-
-                    /**
-                     * BGRA component ordering. Default is RGBA. Only for
-                     * four-component float vector attribute type.
-                     * @requires_gl32 %Extension @extension{ARB,vertex_array_bgra}
-                     * @requires_gl Only RGBA component ordering is supported
-                     *      in OpenGL ES.
-                     */
-                    BGRA = 1 << 1
+                    Normalize = 1 << 0
                 };
                 #else
                 typedef typename Implementation::Attribute<T>::DataOption DataOption;
@@ -427,25 +471,42 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
                 /**
                  * @brief Constructor
+                 * @param components    Component count
                  * @param dataType      Type of passed data. Default is the
                  *      same as type used in shader (e.g. DataType::Integer
                  *      for Vector4i).
                  * @param dataOptions   Data options. Default is no options.
                  */
-                inline constexpr Attribute(DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _dataType(dataType), _dataOptions(dataOptions) {}
+                inline constexpr Attribute(Components components, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(components), _dataType(dataType), _dataOptions(dataOptions) {}
+
+                /**
+                 * @brief Constructor
+                 * @param dataType      Type of passed data. Default is the
+                 *      same as type used in shader (e.g. DataType::Integer
+                 *      for Vector4i).
+                 * @param dataOptions   Data options. Default is no options.
+                 *
+                 * Component count is set to the same value as in type used in
+                 * shader (e.g. @ref Components "Components::Three" for Vector3).
+                 */
+                inline constexpr Attribute(DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(Implementation::Attribute<T>::DefaultComponents), _dataType(dataType), _dataOptions(dataOptions) {}
+
+                /** @brief Component count of passed data */
+                inline constexpr Components components() const { return _components; }
 
                 /** @brief Type of passed data */
                 inline constexpr DataType dataType() const { return _dataType; }
 
                 /** @brief Size of passed data */
                 inline std::size_t dataSize() const {
-                    return Implementation::Attribute<T>::size(Implementation::Attribute<T>::components(), _dataType);
+                    return Implementation::Attribute<T>::size(GLint(_components)*Implementation::Attribute<T>::vectorCount(), _dataType);
                 }
 
                 /** @brief Data options */
                 inline constexpr DataOptions dataOptions() const { return _dataOptions; }
 
             private:
+                const Components _components;
                 const DataType _dataType;
                 const DataOptions _dataOptions;
         };
@@ -1065,63 +1126,81 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         State state;
 };
 
+#ifdef DOXYGEN_GENERATING_OUTPUT
+/** @debugoperator{Magnum::AbstractShaderProgram::Attribute} */
+template<class T> Debug operator<<(Debug debug, AbstractShaderProgram::Attribute<T>::Components);
+
+/** @debugoperator{Magnum::AbstractShaderProgram::Attribute} */
+template<class T> Debug operator<<(Debug debug, AbstractShaderProgram::Attribute<T>::DataType);
+#endif
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
-template<class> struct Attribute {};
+/* Base for sized attributes */
+template<std::size_t cols, std::size_t rows> struct SizedAttribute;
 
-template<> struct Attribute<GLfloat> {
-    enum class DataType: GLenum {
-        UnsignedByte = GL_UNSIGNED_BYTE,
-        Byte = GL_BYTE,
-        UnsignedShort = GL_UNSIGNED_SHORT,
-        Short = GL_SHORT,
-        UnsignedInt = GL_UNSIGNED_INT,
-        Int = GL_INT,
-        #ifndef MAGNUM_TARGET_GLES2
-        HalfFloat = GL_HALF_FLOAT,
-        #else
-        HalfFloat = GL_HALF_FLOAT_OES,
-        #endif
-        Float = GL_FLOAT
-
-        #ifndef MAGNUM_TARGET_GLES
-        ,
-        Double = GL_DOUBLE
-        #endif
-    };
-
-    enum class DataOption: std::uint8_t {
-        Normalized = 1 << 0
-    };
-
-    typedef Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
-
-    static const DataType DefaultDataType = DataType::Float;
-
-    inline constexpr static GLint components(DataOptions = {}) { return 1; }
-    static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
-    inline constexpr static std::size_t vectorCount() { return 1; }
-};
-
-CORRADE_ENUMSET_OPERATORS(Attribute<GLfloat>::DataOptions)
-
-template<std::size_t vectorSize> struct Attribute<Math::Vector<vectorSize, GLfloat>>: public Attribute<GLfloat> {
-    inline constexpr static GLint components(DataOptions = {}) { return vectorSize; }
-    inline constexpr static std::size_t vectorCount() { return 1; }
-};
-
-template<std::size_t cols, std::size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, GLfloat>>: public Attribute<GLfloat> {
-    inline constexpr static GLint components(DataOptions = {}) { return rows; }
+/* Vector attribute sizes */
+template<std::size_t cols> struct SizedVectorAttribute {
     inline constexpr static std::size_t vectorCount() { return cols; }
 };
-
-template<std::size_t matrixSize> struct Attribute<Math::Matrix<matrixSize, GLfloat>>: public Attribute<GLfloat> {
-    inline constexpr static GLint components(DataOptions = {}) { return matrixSize; }
-    inline constexpr static std::size_t vectorCount() { return matrixSize; }
+template<> struct SizedAttribute<1, 1>: SizedVectorAttribute<1> {
+    enum class Components: GLint { One = 1 };
+    constexpr static Components DefaultComponents = Components::One;
 };
+template<> struct SizedAttribute<1, 2>: SizedVectorAttribute<1> {
+    enum class Components: GLint { One = 1, Two = 2 };
+    constexpr static Components DefaultComponents = Components::Two;
+};
+template<> struct SizedAttribute<1, 3>: SizedVectorAttribute<1> {
+    enum class Components: GLint { One = 1, Two = 2, Three = 3 };
+    constexpr static Components DefaultComponents = Components::Three;
+};
+template<> struct SizedAttribute<1, 4>: SizedVectorAttribute<1> {
+    enum class Components: GLint { One = 1, Two = 2, Three = 3, Four = 4 };
+    constexpr static Components DefaultComponents = Components::Four;
+};
+Debug MAGNUM_EXPORT operator<<(Debug debug, SizedAttribute<1, 1>::Components value);
+Debug MAGNUM_EXPORT operator<<(Debug debug, SizedAttribute<1, 2>::Components value);
+Debug MAGNUM_EXPORT operator<<(Debug debug, SizedAttribute<1, 3>::Components value);
+Debug MAGNUM_EXPORT operator<<(Debug debug, SizedAttribute<1, 4>::Components value);
 
-template<> struct Attribute<Math::Vector<4, GLfloat>> {
+/* Matrix attribute sizes */
+template<std::size_t rows> struct SizedMatrixAttribute;
+template<> struct SizedMatrixAttribute<2> {
+    enum class Components: GLint { Two   = 2 };
+    constexpr static Components DefaultComponents = Components::Two;
+};
+template<> struct SizedMatrixAttribute<3> {
+    enum class Components: GLint { Three = 3 };
+    constexpr static Components DefaultComponents = Components::Three;
+};
+template<> struct SizedMatrixAttribute<4> {
+    enum class Components: GLint { Four  = 4 };
+    constexpr static Components DefaultComponents = Components::Four;
+};
+Debug MAGNUM_EXPORT operator<<(Debug debug, SizedMatrixAttribute<2>::Components value);
+Debug MAGNUM_EXPORT operator<<(Debug debug, SizedMatrixAttribute<3>::Components value);
+Debug MAGNUM_EXPORT operator<<(Debug debug, SizedMatrixAttribute<4>::Components value);
+template<> struct SizedAttribute<2, 2>: SizedVectorAttribute<2>, SizedMatrixAttribute<2> {};
+template<> struct SizedAttribute<3, 3>: SizedVectorAttribute<3>, SizedMatrixAttribute<3> {};
+template<> struct SizedAttribute<4, 4>: SizedVectorAttribute<4>, SizedMatrixAttribute<4> {};
+#ifndef MAGNUM_TARGET_GLES2
+template<> struct SizedAttribute<2, 3>: SizedVectorAttribute<2>, SizedMatrixAttribute<3> {};
+template<> struct SizedAttribute<3, 2>: SizedVectorAttribute<3>, SizedMatrixAttribute<2> {};
+template<> struct SizedAttribute<2, 4>: SizedVectorAttribute<2>, SizedMatrixAttribute<4> {};
+template<> struct SizedAttribute<4, 2>: SizedVectorAttribute<4>, SizedMatrixAttribute<2> {};
+template<> struct SizedAttribute<3, 4>: SizedVectorAttribute<3>, SizedMatrixAttribute<4> {};
+template<> struct SizedAttribute<4, 3>: SizedVectorAttribute<4>, SizedMatrixAttribute<3> {};
+#endif
+
+/* Base for attributes */
+template<class> struct Attribute;
+
+/* Base for float attributes */
+struct FloatAttribute {
+    typedef GLfloat Type;
+
     enum class DataType: GLenum {
         UnsignedByte = GL_UNSIGNED_BYTE,
         Byte = GL_BYTE,
@@ -1135,46 +1214,31 @@ template<> struct Attribute<Math::Vector<4, GLfloat>> {
         HalfFloat = GL_HALF_FLOAT_OES,
         #endif
         Float = GL_FLOAT
+
         #ifndef MAGNUM_TARGET_GLES
         ,
         Double = GL_DOUBLE
         #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        ,
-        UnsignedInt2101010REV = GL_UNSIGNED_INT_2_10_10_10_REV,
-        Int2101010REV = GL_INT_2_10_10_10_REV
-        #endif
     };
+    constexpr static DataType DefaultDataType = DataType::Float;
 
     enum class DataOption: std::uint8_t {
         Normalized = 1 << 0
-
-        #ifndef MAGNUM_TARGET_GLES
-        ,
-        BGRA = 2 << 0
-        #endif
     };
-
     typedef Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
 
-    static const DataType DefaultDataType = DataType::Float;
-
-    #ifndef MAGNUM_TARGET_GLES
-    inline constexpr static GLint components(DataOptions options = {}) {
-        return options & DataOption::BGRA ? GL_BGRA : 4;
-    }
-    #else
-    inline constexpr static GLint components(DataOptions = {}) { return 4; }
-    #endif
-
     static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
-    inline constexpr static std::size_t vectorCount() { return 1; }
 };
 
-typedef Math::Vector<4, GLfloat> _Vector4;
-CORRADE_ENUMSET_OPERATORS(Attribute<_Vector4>::DataOptions)
+CORRADE_ENUMSET_OPERATORS(FloatAttribute::DataOptions)
 
-template<> struct Attribute<GLint> {
+Debug MAGNUM_EXPORT operator<<(Debug debug, FloatAttribute::DataType value);
+
+#ifndef MAGNUM_TARGET_GLES2
+/* Base for int attributes */
+struct IntAttribute {
+    typedef GLint Type;
+
     enum class DataType: GLenum {
         UnsignedByte = GL_UNSIGNED_BYTE,
         Byte = GL_BYTE,
@@ -1183,135 +1247,148 @@ template<> struct Attribute<GLint> {
         UnsignedInt = GL_UNSIGNED_INT,
         Int = GL_INT
     };
+    constexpr static DataType DefaultDataType = DataType::Int;
 
     enum class DataOption: std::uint8_t {};
-
     typedef Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
 
-    static const DataType DefaultDataType = DataType::Int;
-
-    inline constexpr static GLint components() { return 1; }
     static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
 
-template<> struct Attribute<GLuint> {
-    typedef Attribute<GLint>::DataType DataType;
-    typedef Attribute<GLint>::DataOption DataOption;
+Debug MAGNUM_EXPORT operator<<(Debug debug, IntAttribute::DataType value);
 
+/* Base for unsigned int attributes */
+struct UnsignedIntAttribute {
+    typedef GLuint Type;
+
+    typedef IntAttribute::DataType DataType;
+    constexpr static DataType DefaultDataType = DataType::UnsignedInt;
+
+    typedef IntAttribute::DataOption DataOption;
     typedef Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
 
-    static const DataType DefaultDataType = DataType::UnsignedInt;
-
-    inline constexpr static GLint components() { return 1; }
     inline static std::size_t size(GLint components, DataType dataType) {
-        return Attribute<GLint>::size(components, dataType);
+        return IntAttribute::size(components, dataType);
     }
 };
-
-template<std::size_t size_> struct Attribute<Math::Vector<size_, GLint>>: public Attribute<GLint> {
-    inline constexpr static GLint components() { return size_; }
-};
-
-template<std::size_t size_> struct Attribute<Math::Vector<size_, GLuint>>: public Attribute<GLuint> {
-    inline constexpr static GLint components() { return size_; }
-};
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
-template<> struct Attribute<GLdouble> {
+/* Base for double attributes */
+struct DoubleAttribute {
+    typedef GLdouble Type;
+
     enum class DataType: GLenum {
         Double = GL_DOUBLE
     };
+    constexpr static DataType DefaultDataType = DataType::Double;
 
     enum class DataOption: std::uint8_t {};
-
     typedef Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
 
-    static const DataType DefaultDataType = DataType::Double;
-
-    inline constexpr static GLint components() { return 1; }
-    inline constexpr static std::size_t vectorCount() { return 1; }
     static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
 
-template<std::size_t cols, std::size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, GLdouble>>: public Attribute<GLdouble> {
-    inline constexpr static GLint components() { return rows; }
-    inline constexpr static std::size_t vectorCount() { return cols; }
+Debug MAGNUM_EXPORT operator<<(Debug debug, DoubleAttribute::DataType value);
+#endif
+
+/* Floating-point four-component vector is absolutely special case */
+template<> struct Attribute<Math::Vector<4, GLfloat>> {
+    typedef GLfloat Type;
+
+    enum class Components: GLint {
+        One = 1,
+        Two = 2,
+        Three = 3,
+        Four = 4
+        #ifndef MAGNUM_TARGET_GLES
+        ,
+        BGRA = GL_BGRA
+        #endif
+    };
+    constexpr static Components DefaultComponents = Components::Four;
+
+    enum class DataType: GLenum {
+        UnsignedByte = GL_UNSIGNED_BYTE,
+        Byte = GL_BYTE,
+        UnsignedShort = GL_UNSIGNED_SHORT,
+        Short = GL_SHORT,
+        UnsignedInt = GL_UNSIGNED_INT,
+        Int = GL_INT,
+        #ifndef MAGNUM_TARGET_GLES2
+        HalfFloat = GL_HALF_FLOAT,
+        #else
+        HalfFloat = GL_HALF_FLOAT_OES,
+        #endif
+        Float = GL_FLOAT
+        #ifndef MAGNUM_TARGET_GLES
+        ,
+        Double = GL_DOUBLE
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        ,
+        UnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
+        Int2101010Rev = GL_INT_2_10_10_10_REV
+        #endif
+    };
+    constexpr static DataType DefaultDataType = DataType::Float;
+
+    enum class DataOption: std::uint8_t {
+        Normalized = 1 << 0
+    };
+    typedef Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
+
+    inline constexpr static std::size_t vectorCount() { return 1; }
+
+    static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
 
-template<std::size_t size_> struct Attribute<Math::Matrix<size_, GLdouble>>: public Attribute<GLdouble> {
-    inline constexpr static GLint components() { return size_; }
-    inline constexpr static std::size_t vectorCount() { return size_; }
-};
+typedef Math::Vector<4, GLfloat> _Vector4;
+CORRADE_ENUMSET_OPERATORS(Attribute<_Vector4>::DataOptions)
 
-template<std::size_t size_> struct Attribute<Math::Vector<size_, GLdouble>>: public Attribute<GLdouble> {
-    inline constexpr static GLint components() { return size_; }
-    inline constexpr static std::size_t vectorCount() { return size_; }
-};
-#endif
+Debug MAGNUM_EXPORT operator<<(Debug debug, Attribute<Math::Vector<4, GLfloat>>::Components value);
+Debug MAGNUM_EXPORT operator<<(Debug debug, Attribute<Math::Vector<4, GLfloat>>::DataType value);
 
-template<class T> struct Attribute<Math::Vector2<T>>: public Attribute<Math::Vector<2, T>> {};
-template<class T> struct Attribute<Math::Vector3<T>>: public Attribute<Math::Vector<3, T>> {};
-template<class T> struct Attribute<Math::Vector4<T>>: public Attribute<Math::Vector<4, T>> {};
-
-template<class T> struct Attribute<Math::Point2D<T>>: public Attribute<Math::Vector3<T>> {};
-template<class T> struct Attribute<Math::Point3D<T>>: public Attribute<Math::Vector4<T>> {};
-
-template<class T> struct Attribute<Color3<T>>: public Attribute<Math::Vector3<T>> {};
-template<class T> struct Attribute<Color4<T>>: public Attribute<Math::Vector4<T>> {};
-
-template<class T> struct Attribute<Math::Matrix3<T>>: public Attribute<Math::Matrix<3, T>> {};
-template<class T> struct Attribute<Math::Matrix4<T>>: public Attribute<Math::Matrix<4, T>> {};
-
-/* Types allowed as GLSL attributes */
-template<> struct AttributeTraits<GLuint> { typedef GLuint AttributeType; };
-template<> struct AttributeTraits<GLint> { typedef GLint AttributeType; };
-template<> struct AttributeTraits<GLfloat> { typedef GLfloat AttributeType; };
-#ifndef MAGNUM_TARGET_GLES
-template<> struct AttributeTraits<GLdouble> { typedef GLdouble AttributeType; };
-#endif
-
-/* Only some vectors can be used as attributes */
-template<class> struct VectorAttributeTraits {};
-template<> struct VectorAttributeTraits<GLuint> { typedef GLuint AttributeType; };
-template<> struct VectorAttributeTraits<GLint> { typedef GLint AttributeType; };
-template<> struct VectorAttributeTraits<GLfloat> { typedef GLfloat AttributeType; };
-#ifndef MAGNUM_TARGET_GLES
-template<> struct VectorAttributeTraits<GLdouble> { typedef GLdouble AttributeType; };
-#endif
-
-template<class T> struct AttributeTraits<Math::Vector<2, T>>: VectorAttributeTraits<T> {};
-template<class T> struct AttributeTraits<Math::Vector<3, T>>: VectorAttributeTraits<T> {};
-template<class T> struct AttributeTraits<Math::Vector<4, T>>: VectorAttributeTraits<T> {};
-
-template<class T> struct AttributeTraits<Math::Vector2<T>>: AttributeTraits<Math::Vector<2, T>> {};
-template<class T> struct AttributeTraits<Math::Vector3<T>>: AttributeTraits<Math::Vector<3, T>> {};
-template<class T> struct AttributeTraits<Math::Vector4<T>>: AttributeTraits<Math::Vector<4, T>> {};
-template<class T> struct AttributeTraits<Math::Point2D<T>>: AttributeTraits<Math::Vector<3, T>> {};
-template<class T> struct AttributeTraits<Math::Point3D<T>>: AttributeTraits<Math::Vector<4, T>> {};
-template<class T> struct AttributeTraits<Color3<T>>: AttributeTraits<Math::Vector<3, T>> {};
-template<class T> struct AttributeTraits<Color4<T>>: AttributeTraits<Math::Vector<4, T>> {};
-
-/* Only some floating-point matrices can be used as attributes */
-template<class> struct MatrixAttributeTraits {};
-template<> struct MatrixAttributeTraits<GLfloat> { typedef GLfloat AttributeType; };
-#ifndef MAGNUM_TARGET_GLES
-template<> struct MatrixAttributeTraits<GLdouble> { typedef GLdouble AttributeType; };
-#endif
-
-template<class T> struct AttributeTraits<Math::RectangularMatrix<2, 2, T>>: MatrixAttributeTraits<T> {};
-template<class T> struct AttributeTraits<Math::RectangularMatrix<3, 3, T>>: MatrixAttributeTraits<T> {};
-template<class T> struct AttributeTraits<Math::RectangularMatrix<4, 4, T>>: MatrixAttributeTraits<T> {};
+/* Common float, int, unsigned int and double scalar attributes */
+template<> struct Attribute<GLfloat>: FloatAttribute, SizedAttribute<1, 1> {};
 #ifndef MAGNUM_TARGET_GLES2
-template<class T> struct AttributeTraits<Math::RectangularMatrix<2, 3, T>>: MatrixAttributeTraits<T> {};
-template<class T> struct AttributeTraits<Math::RectangularMatrix<3, 2, T>>: MatrixAttributeTraits<T> {};
-template<class T> struct AttributeTraits<Math::RectangularMatrix<2, 4, T>>: MatrixAttributeTraits<T> {};
-template<class T> struct AttributeTraits<Math::RectangularMatrix<4, 2, T>>: MatrixAttributeTraits<T> {};
-template<class T> struct AttributeTraits<Math::RectangularMatrix<3, 4, T>>: MatrixAttributeTraits<T> {};
-template<class T> struct AttributeTraits<Math::RectangularMatrix<4, 3, T>>: MatrixAttributeTraits<T> {};
+template<> struct Attribute<GLint>: IntAttribute, SizedAttribute<1, 1> {};
+template<> struct Attribute<GLuint>: UnsignedIntAttribute, SizedAttribute<1, 1> {};
+#ifndef MAGNUM_TARGET_GLES
+template<> struct Attribute<GLdouble>: DoubleAttribute, SizedAttribute<1, 1> {};
+#endif
 #endif
 
-template<class T> struct AttributeTraits<Math::Matrix3<T>>: MatrixAttributeTraits<T> {};
-template<class T> struct AttributeTraits<Math::Matrix4<T>>: MatrixAttributeTraits<T> {};
+/* Common float, int, unsigned int and double vector attributes */
+template<std::size_t size_> struct Attribute<Math::Vector<size_, GLfloat>>: FloatAttribute, SizedAttribute<1, size_> {};
+#ifndef MAGNUM_TARGET_GLES2
+template<std::size_t size_> struct Attribute<Math::Vector<size_, GLint>>: IntAttribute, SizedAttribute<1, size_> {};
+template<std::size_t size_> struct Attribute<Math::Vector<size_, GLuint>>: UnsignedIntAttribute, SizedAttribute<1, size_> {};
+#ifndef MAGNUM_TARGET_GLES
+template<std::size_t size_> struct Attribute<Math::Vector<size_, GLdouble>>: DoubleAttribute, SizedAttribute<1, size_> {};
+#endif
+#endif
+template<class T> struct Attribute<Math::Vector2<T>>: Attribute<Math::Vector<2, T>> {};
+template<class T> struct Attribute<Math::Vector3<T>>: Attribute<Math::Vector<3, T>> {};
+template<class T> struct Attribute<Math::Vector4<T>>: Attribute<Math::Vector<4, T>> {};
+template<class T> struct Attribute<Math::Point2D<T>>: Attribute<Math::Vector3<T>> {};
+template<class T> struct Attribute<Math::Point3D<T>>: Attribute<Math::Vector4<T>> {};
+template<class T> struct Attribute<Color3<T>>: Attribute<Math::Vector3<T>> {};
+template<class T> struct Attribute<Color4<T>>: Attribute<Math::Vector4<T>> {};
+
+/* Common float and double rectangular matrix attributes */
+template<std::size_t cols, std::size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, GLfloat>>: FloatAttribute, SizedAttribute<cols, rows> {};
+#ifndef MAGNUM_TARGET_GLES
+template<std::size_t cols, std::size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, GLdouble>>: DoubleAttribute, SizedAttribute<cols, rows> {};
+#endif
+
+/* Common float and double square matrix attributes */
+template<std::size_t size_> struct Attribute<Math::Matrix<size_, GLfloat>>: Attribute<Math::RectangularMatrix<size_, size_, GLfloat>> {};
+#ifndef MAGNUM_TARGET_GLES
+template<std::size_t size_> struct Attribute<Math::Matrix<size_, GLdouble>>: Attribute<Math::RectangularMatrix<size_, size_, GLdouble>> {};
+#endif
+template<class T> struct Attribute<Math::Matrix3<T>>: Attribute<Math::Matrix<3, T>> {};
+template<class T> struct Attribute<Math::Matrix4<T>>: Attribute<Math::Matrix<4, T>> {};
 
 }
 #endif

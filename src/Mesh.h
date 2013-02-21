@@ -163,24 +163,39 @@ mesh->setPrimitive(plane.primitive())
 // Custom shader with colors specified as four floating-point values
 class MyShader: public AbstractShaderProgram {
     public:
+        typedef Attribute<0, Vector3> Position;
         typedef Attribute<1, Color4<>> Color;
 
     // ...
 };
 Mesh* mesh;
-Buffer* colorBuffer;
 
-// Fill vertex buffer with colors specified as four-byte BGRA (e.g. directly
+// Fill position buffer with positions specified as two-component XY (i.e.,
+// no Z component, which is meant to be always 0)
+Buffer* positionBuffer;
+Vector2 positions[30] = {
+    // ...
+};
+
+// Specify layout of positions buffer -- only two components, unspecified Z
+// component will be automatically set to 0
+mesh->addVertexBuffer(positionBuffer, 0,
+    MyShader::Position(MyShader::Position::Components::Two));
+
+// Fill color buffer with colors specified as four-byte BGRA (e.g. directly
 // from TGA file)
+Buffer* colorBuffer;
 GLubyte colors[4*30] = {
     // ...
 };
 colorBuffer.setData(colors, Buffer::Usage::StaticDraw);
 
-// Specify layout of color buffer -- each component is unsigned byte, we want
-// to normalize them from [0, 255] to [0.0f, 1.0f] and reorder from BGRA
-mesh->addVertexBuffer(colorBuffer, 0,
-    MyShader::Color(MyShader::Color::DataType::UsignedByte, MyShader::Color::DataOption::Normalized|MyShader::Color::DataOption::BGRA));
+// Specify layout of color buffer -- BGRA, each component unsigned byte and we
+// want to normalize them from [0, 255] to [0.0f, 1.0f]
+mesh->addVertexBuffer(colorBuffer, 0, MyShader::Color(
+    MyShader::Color::Components::BGRA,
+    MyShader::Color::DataType::UnsignedByte,
+    MyShader::Color::DataOption::Normalized));
 @endcode
 
 @section Mesh-drawing Rendering meshes
@@ -797,25 +812,25 @@ class MAGNUM_EXPORT Mesh {
         }
         inline void addInterleavedVertexBufferInternal(Buffer*, GLsizei, GLintptr) {}
 
-        template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::AttributeTraits<T>::AttributeType, GLfloat>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
+        template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::Type, GLfloat>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
             for(GLuint i = 0; i != Implementation::Attribute<T>::vectorCount(); ++i)
                 (this->*attributePointerImplementation)(Attribute{
                     buffer,
                     location+i,
-                    Implementation::Attribute<T>::components(attribute.dataOptions()),
+                    static_cast<GLint>(attribute.components()),
                     static_cast<GLenum>(attribute.dataType()),
-                    !!(attribute.dataOptions() & AbstractShaderProgram::Attribute<location, T>::DataOption::Normalized),
+                    bool(attribute.dataOptions() & AbstractShaderProgram::Attribute<location, T>::DataOption::Normalized),
                     offset,
                     stride
                 });
         }
 
         #ifndef MAGNUM_TARGET_GLES2
-        template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_integral<typename Implementation::AttributeTraits<T>::AttributeType>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
+        template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_integral<typename Implementation::Attribute<T>::Type>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
             (this->*attributeIPointerImplementation)(IntegerAttribute{
                 buffer,
                 location,
-                Implementation::Attribute<T>::components(),
+                static_cast<GLint>(attribute.components()),
                 static_cast<GLenum>(attribute.dataType()),
                 offset,
                 stride
@@ -823,12 +838,12 @@ class MAGNUM_EXPORT Mesh {
         }
 
         #ifndef MAGNUM_TARGET_GLES
-        template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::AttributeTraits<T>::AttributeType, GLdouble>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
+        template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::Type, GLdouble>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
             for(GLuint i = 0; i != Implementation::Attribute<T>::vectorCount(); ++i)
                 (this->*attributeLPointerImplementation)(LongAttribute{
                     buffer,
                     location+i,
-                    Implementation::Attribute<T>::components(),
+                    static_cast<GLint>(attribute.components()),
                     static_cast<GLenum>(attribute.dataType()),
                     offset,
                     stride
