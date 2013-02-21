@@ -81,8 +81,17 @@ specify which parts will be built and which not:
  - `WITH_PRIMITIVES` - Primitives library.
  - `WITH_SCENEGRAPH` - SceneGraph library.
  - `WITH_SHADERS` - Shaders library.
+ - `WITH_TEXT` - Text library. Enables also building of TextureTools. Requires
+   **FreeType** and possibly **HarfBuzz** library (see below).
+ - `WITH_TEXTURETOOLS` - TextureTools library.
  - `WITH_MAGNUMINFO` - `magnum-info` executable, provides information about
    Magnum engine and OpenGL capabilities.
+
+Some dependencies are optional, although disabling them might reduce some
+functionality:
+
+ - `USE_HARFBUZZ` - Defaults to `ON`, disabling it will result in worse text
+   rendering (no kerning & ligatures) and possible issues with non-Latin text.
 
 None of the application libraries is built by default, regardless to
 `WITH_EVERYTHING` is enabled or not:

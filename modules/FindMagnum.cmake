@@ -23,7 +23,7 @@
 #  SceneGraph    - Scene graph library
 #  Shaders       - Library with stock shaders
 #  Text          - Text rendering library (depends on TextureTools component,
-#                  FreeType library and possibly HarfBuzz library)
+#                  FreeType library and possibly HarfBuzz library, see below)
 #  TextureTools  - TextureTools library
 #  GlxApplication - GLX application (depends on X11 libraries)
 #  XEglApplication - X/EGL application (depends on EGL and X11 libraries)
@@ -40,6 +40,14 @@
 #  MAGNUM_*_FOUND   - Whether the component was found
 #  MAGNUM_*_LIBRARIES - Component library and dependent libraries
 #  MAGNUM_*_INCLUDE_DIRS - Include dirs of module dependencies
+#
+# Features of found Magnum library are exposed in these variables:
+#  MAGNUM_TARGET_GLES   - Defined if compiled for OpenGL ES
+#  MAGNUM_TARGET_GLES2  - Defined if compiled for OpenGL ES 2.0
+#  MAGNUM_TARGET_DESKTOP_GLES - Defined if compiled with OpenGL ES emulation
+#                         on desktop OpenGL
+#  MAGNUM_TARGET_NACL   - Defined if compiled for Google Chrome Native Client
+#  MAGNUM_USE_HARFBUZZ  - Defined if HarfBuzz library is used for text rendering
 #
 # Additionally these variables are defined for internal usage:
 #  MAGNUM_INCLUDE_DIR                   - Root include dir (w/o
