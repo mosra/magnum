@@ -38,7 +38,7 @@ Draws whole mesh with one color.
 template<std::uint8_t dimensions> class MAGNUM_SHADERS_EXPORT FlatShader: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
-        typedef Attribute<0, typename DimensionTraits<dimensions>::PointType> Position;
+        typedef Attribute<0, typename DimensionTraits<dimensions>::VectorType> Position;
 
         explicit FlatShader();
 

@@ -10,16 +10,16 @@ uniform highp mat3 transformationProjectionMatrix;
 #endif
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = 0) in highp vec3 position;
+layout(location = 0) in highp vec2 position;
 layout(location = 1) in mediump vec2 textureCoordinates;
 #else
-in highp vec3 position;
+in highp vec2 position;
 in mediump vec2 textureCoordinates;
 #endif
 
 out vec2 fragmentTextureCoordinates;
 
 void main() {
-    gl_Position.xywz = vec4(transformationProjectionMatrix*position, 0.0);
+    gl_Position.xywz = vec4(transformationProjectionMatrix*vec3(position, 1.0), 0.0);
     fragmentTextureCoordinates = textureCoordinates;
 }

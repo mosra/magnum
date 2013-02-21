@@ -35,7 +35,7 @@ otherwise falls back to GLSL 1.20.
 */
 class MAGNUM_SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
     public:
-        typedef Attribute<0, Point3D> Position; /**< @brief Vertex position */
+        typedef Attribute<0, Vector3> Position; /**< @brief Vertex position */
         typedef Attribute<1, Vector3> Normal;   /**< @brief Normal direction */
 
         explicit PhongShader();

@@ -33,7 +33,7 @@ namespace Magnum { namespace Shaders {
 template<std::uint8_t dimensions> class AbstractTextShader: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
-        typedef Attribute<0, typename DimensionTraits<dimensions>::PointType> Position;
+        typedef Attribute<0, typename DimensionTraits<dimensions>::VectorType> Position;
 
         /** @brief Texture coordinates */
         typedef Attribute<1, Vector2> TextureCoordinates;

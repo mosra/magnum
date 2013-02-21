@@ -38,7 +38,7 @@ Draws vertex-colored mesh.
 template<std::uint8_t dimensions> class MAGNUM_SHADERS_EXPORT VertexColorShader: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
-        typedef Attribute<0, typename DimensionTraits<dimensions>::PointType> Position;
+        typedef Attribute<0, typename DimensionTraits<dimensions>::VectorType> Position;
 
         /** @brief Vertex color */
         typedef Attribute<1, Color3<>> Color;
