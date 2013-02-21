@@ -30,7 +30,7 @@ namespace Magnum { namespace Math {
 
 See @ref matrix-vector for brief introduction. See also Point2D for
 homogeneous two-dimensional coordinates.
-@see Magnum::Vector3, Magnum::Vector3i, Magnum::Vector3ui
+@see Magnum::Vector3, Magnum::Vector3i, Magnum::Vector3ui, Magnum::Vector3d
 @configurationvalueref{Magnum::Math::Vector3}
 */
 template<class T> class Vector3: public Vector<3, T> {

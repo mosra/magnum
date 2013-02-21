@@ -65,13 +65,13 @@ using Corrade::Utility::Warning;
 using Corrade::Utility::Error;
 #endif
 
-/** @brief Two-component floating-point vector */
+/** @brief Two-component float vector */
 typedef Math::Vector2<GLfloat> Vector2;
 
-/** @brief Three-component floating-point vector */
+/** @brief Three-component float vector */
 typedef Math::Vector3<GLfloat> Vector3;
 
-/** @brief Four-component floating-point vector */
+/** @brief Four-component float vector */
 typedef Math::Vector4<GLfloat> Vector4;
 
 /** @brief Two-component signed integer vector */
@@ -92,17 +92,36 @@ typedef Math::Vector3<GLuint> Vector3ui;
 /** @brief Four-component unsigned integer vector */
 typedef Math::Vector4<GLuint> Vector4ui;
 
+#ifndef MAGNUM_TARGET_GLES
+/** @brief Two-component double vector */
+typedef Math::Vector2<GLdouble> Vector2d;
+
+/** @brief Three-component double vector */
+typedef Math::Vector3<GLdouble> Vector3d;
+
+/** @brief Four-component double vector */
+typedef Math::Vector4<GLdouble> Vector4d;
+#endif
+
 /** @brief Two-dimensional floating-point homogeneous coordinates */
 typedef Math::Point2D<GLfloat> Point2D;
 
 /** @brief Three-dimensional floating-point homogeneous coordinates */
 typedef Math::Point3D<GLfloat> Point3D;
 
-/** @brief 3x3 floating-point matrix */
+/** @brief 3x3 float matrix */
 typedef Math::Matrix3<GLfloat> Matrix3;
 
-/** @brief 4x4 floating-point matrix */
+/** @brief 4x4 float matrix */
 typedef Math::Matrix4<GLfloat> Matrix4;
+
+#ifndef MAGNUM_TARGET_GLES
+/** @brief 3x3 double matrix */
+typedef Math::Matrix3<GLdouble> Matrix3d;
+
+/** @brief 4x4 double matrix */
+typedef Math::Matrix4<GLdouble> Matrix4d;
+#endif
 
 /** @brief Quaternion */
 typedef Math::Quaternion<GLfloat> Quaternion;

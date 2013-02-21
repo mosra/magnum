@@ -29,7 +29,7 @@ namespace Magnum { namespace Math {
 @tparam T   Underlying data type
 
 Represents 2D transformation. See @ref matrix-vector for brief introduction.
-@see Magnum::Matrix3, SceneGraph::MatrixTransformation2D
+@see Magnum::Matrix3, Magnum::Matrix3d, SceneGraph::MatrixTransformation2D
 @configurationvalueref{Magnum::Math::Matrix3}
 */
 template<class T> class Matrix3: public Matrix<3, T> {
