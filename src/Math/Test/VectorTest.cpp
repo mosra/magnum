@@ -17,7 +17,6 @@
 #include <TestSuite/Tester.h>
 #include <Utility/Configuration.h>
 
-#include "Math/Constants.h"
 #include "Math/Vector.h"
 
 namespace Magnum { namespace Math { namespace Test {

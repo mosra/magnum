@@ -16,7 +16,6 @@
 #include <sstream>
 #include <TestSuite/Tester.h>
 
-#include "Math/Constants.h"
 #include "Math/Matrix4.h"
 #include "Math/Quaternion.h"
 

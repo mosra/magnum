@@ -15,7 +15,6 @@
 
 #include <TestSuite/Tester.h>
 
-#include "Math/Constants.h"
 #include "SceneGraph/EuclideanMatrixTransformation3D.h"
 #include "SceneGraph/Scene.h"
 

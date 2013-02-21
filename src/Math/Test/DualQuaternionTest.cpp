@@ -16,7 +16,6 @@
 #include <sstream>
 #include <TestSuite/Tester.h>
 
-#include "Math/Constants.h"
 #include "Math/DualQuaternion.h"
 
 namespace Magnum { namespace Math { namespace Test {

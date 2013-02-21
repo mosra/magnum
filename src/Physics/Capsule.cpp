@@ -15,7 +15,6 @@
 
 #include "Capsule.h"
 
-#include "Math/Constants.h"
 #include "Math/Functions.h"
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"

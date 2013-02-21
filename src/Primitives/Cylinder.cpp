@@ -15,7 +15,6 @@
 
 #include "Cylinder.h"
 
-#include "Math/Constants.h"
 #include "Math/Point3D.h"
 
 namespace Magnum { namespace Primitives {

@@ -13,7 +13,6 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Math/Constants.h"
 #include "Physics/LineSegment.h"
 #include "Physics/Point.h"
 #include "Physics/Sphere.h"

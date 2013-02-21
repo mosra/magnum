@@ -15,7 +15,6 @@
 
 #include <TestSuite/Tester.h>
 
-#include "Math/Constants.h"
 #include "Math/Matrix4.h"
 #include "Physics/AxisAlignedBox.h"
 #include "Physics/Point.h"

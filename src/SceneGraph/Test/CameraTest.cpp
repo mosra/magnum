@@ -15,7 +15,6 @@
 
 #include <TestSuite/Tester.h>
 
-#include "Math/Constants.h"
 #include "SceneGraph/AbstractCamera.hpp" /* only for aspectRatioFix(), so it doesn't have to be exported */
 #include "SceneGraph/Camera2D.h"
 #include "SceneGraph/Camera3D.h"
