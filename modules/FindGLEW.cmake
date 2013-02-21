@@ -3,33 +3,41 @@
 # This module defines:
 #
 # GLEW_FOUND                - True if GLEW library is found
-# GLEW_LIBRARY              - GLEW dynamic library
+# GLEW_LIBRARIES            - GLEW libraries
 # GLEW_INCLUDE_DIR          - Include dir
 #
 
-if(GLEW_LIBRARY AND GLEW_INCLUDE_DIR)
+# Include dir
+find_path(GLEW_INCLUDE_DIR
+    NAMES GL/glew.h)
 
-    set(GLEW_FOUND TRUE)
-
+# Library
+if(NOT WIN32)
+    find_library(GLEW_LIBRARY GLEW)
+    set(GLEW_LIBRARIES_ GLEW_LIBRARY)
+    mark_as_advanced(GLEW_LIBRARY)
 else()
+    find_library(GLEW_LIBRARY_DLL glew32)
+    find_library(GLEW_LIBRARY_LIB glew32)
+    set(GLEW_LIBRARIES_ GLEW_LIBRARY_DLL GLEW_LIBRARY_LIB)
+    mark_as_advanced(GLEW_LIBRARY_DLL GLEW_LIBRARY_LIB)
+endif()
 
-    # Library
-    if(NOT WIN32)
-        find_library(GLEW_LIBRARY GLEW)
-    else()
-        find_library(GLEW_LIBRARY glew32)
-    endif()
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args("GLEW" DEFAULT_MSG
+    ${GLEW_LIBRARIES_}
+    GLEW_INCLUDE_DIR)
 
-    # Include dir
-    find_path(GLEW_INCLUDE_DIR
-        NAMES glew.h
-        PATH_SUFFIXES GL
-    )
+if(NOT GLEW_FOUND)
+    return()
+endif()
 
-    include(FindPackageHandleStandardArgs)
-    find_package_handle_standard_args("GLEW" DEFAULT_MSG
-        GLEW_LIBRARY
-        GLEW_INCLUDE_DIR
-    )
+unset(GLEW_LIBRARIES_)
 
+if(NOT WIN32)
+    set(GLEW_LIBRARIES ${GLEW_LIBRARY})
+    mark_as_advanced(GLEW_LIBRARY)
+else()
+    set(GLEW_LIBRARIES ${GLEW_LIBRARY_DLL} ${GLEW_LIBRARY_LIB})
+    mark_as_advanced(GLEW_LIBRARY_DLL GLEW_LIBRARY_LIB)
 endif()

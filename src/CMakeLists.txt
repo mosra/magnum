@@ -124,7 +124,7 @@ else()
     set(Magnum_LIBS ${Magnum_LIBS} ${OPENGLES2_LIBRARY})
 endif()
 if(NOT TARGET_GLES)
-    set(Magnum_LIBS ${Magnum_LIBS} ${GLEW_LIBRARY})
+    set(Magnum_LIBS ${Magnum_LIBS} ${GLEW_LIBRARIES})
 endif()
 target_link_libraries(Magnum ${Magnum_LIBS})
 
