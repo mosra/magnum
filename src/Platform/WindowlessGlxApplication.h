@@ -37,7 +37,7 @@ namespace Magnum { namespace Platform {
 @section WindowlessGlxApplication-usage Usage
 
 Place your code into exec(). The subclass can be then used directly in
-`main()` - see convenience macro MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN().
+`main()` -- see convenience macro MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN().
 @code
 class MyApplication: public Magnum::Platform::WindowlessGlxApplication {
     // implement required methods...

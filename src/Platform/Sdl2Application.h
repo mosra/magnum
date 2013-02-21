@@ -45,7 +45,7 @@ buffer. Supports keyboard and mouse handling.
 @section Sdl2Application-usage Usage
 
 You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen.  The subclass can be then used directly in `main()` - see
+draw on the screen. The subclass can be then used directly in `main()` -- see
 convenience macro MAGNUM_SDL2APPLICATION_MAIN().
 @code
 class MyApplication: public Magnum::Platform::Sdl2Application {

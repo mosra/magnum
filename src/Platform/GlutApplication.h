@@ -42,7 +42,7 @@ changing cursor and mouse tracking and warping.
 @section GlutApplication-usage Usage
 
 You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen. The subclass can be then used directly in `main()` - see
+draw on the screen. The subclass can be then used directly in `main()` -- see
 convenience macro MAGNUM_GLUTAPPLICATION_MAIN().
 @code
 class MyApplication: public Magnum::Platform::GlutApplication {
