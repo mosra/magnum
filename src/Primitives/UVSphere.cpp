@@ -15,7 +15,7 @@
 
 #include "UVSphere.h"
 
-#include "Math/Constants.h"
+#include "Math/Angle.h"
 
 namespace Magnum { namespace Primitives {
 
@@ -23,13 +23,13 @@ UVSphere::UVSphere(std::uint32_t rings, std::uint32_t segments, TextureCoords te
     CORRADE_ASSERT(rings >= 2 && segments >= 3, "UVSphere must have at least two rings and three segments", );
 
     GLfloat textureCoordsVIncrement = 1.0f/rings;
-    GLfloat ringAngleIncrement = Constants::pi()/rings;
+    Rad ringAngleIncrement = Rad(Constants::pi())/rings;
 
     /* Bottom cap vertex */
     capVertex(-1.0f, -1.0f, 0.0f);
 
     /* Vertex rings */
-    hemisphereVertexRings(rings-1, 0.0f, -Constants::pi()/2+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
+    hemisphereVertexRings(rings-1, 0.0f, -Rad(Constants::pi())/2+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
 
     /* Top cap vertex */
     capVertex(1.0f, 1.0f, 1.0f);

@@ -15,6 +15,7 @@
 
 #include "Capsule.h"
 
+#include "Math/Functions.h"
 #include "Math/Point3D.h"
 
 namespace Magnum { namespace Primitives {
@@ -24,13 +25,13 @@ Capsule::Capsule(std::uint32_t hemisphereRings, std::uint32_t cylinderRings, std
 
     GLfloat height = 2.0f+length;
     GLfloat hemisphereTextureCoordsVIncrement = 1.0f/(hemisphereRings*height);
-    GLfloat hemisphereRingAngleIncrement = Constants::pi()/(2*hemisphereRings);
+    Rad hemisphereRingAngleIncrement = Rad(Constants::pi())/(2*hemisphereRings);
 
     /* Bottom cap vertex */
     capVertex(-height/2, -1.0f, 0.0f);
 
     /* Rings of bottom hemisphere */
-    hemisphereVertexRings(hemisphereRings-1, -length/2, -Constants::pi()/2+hemisphereRingAngleIncrement, hemisphereRingAngleIncrement, hemisphereTextureCoordsVIncrement, hemisphereTextureCoordsVIncrement);
+    hemisphereVertexRings(hemisphereRings-1, -length/2, -Rad(Constants::pi())/2+hemisphereRingAngleIncrement, hemisphereRingAngleIncrement, hemisphereTextureCoordsVIncrement, hemisphereTextureCoordsVIncrement);
 
     /* Rings of cylinder */
     cylinderVertexRings(cylinderRings+1, -length/2, length/cylinderRings, 1.0f/height, length/(cylinderRings*height));
@@ -57,18 +58,18 @@ void Capsule::capVertex(GLfloat y, GLfloat normalY, GLfloat textureCoordsV) {
         textureCoords2D(0)->push_back({0.5, textureCoordsV});
 }
 
-void Capsule::hemisphereVertexRings(std::uint32_t count, GLfloat centerY, GLfloat startRingAngle, GLfloat ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement) {
-    GLfloat segmentAngleIncrement = 2*Constants::pi()/segments;
+void Capsule::hemisphereVertexRings(std::uint32_t count, GLfloat centerY, Rad startRingAngle, Rad ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement) {
+    Rad segmentAngleIncrement = 2*Rad(Constants::pi())/segments;
     GLfloat x, y, z;
     for(std::uint32_t i = 0; i != count; ++i) {
-        GLfloat ringAngle = startRingAngle + i*ringAngleIncrement;
-        x = z = std::cos(ringAngle);
-        y = std::sin(ringAngle);
+        Rad ringAngle = startRingAngle + i*ringAngleIncrement;
+        x = z = Math::cos(ringAngle);
+        y = Math::sin(ringAngle);
 
         for(std::uint32_t j = 0; j != segments; ++j) {
-            GLfloat segmentAngle = j*segmentAngleIncrement;
-            positions(0)->push_back({x*std::sin(segmentAngle), centerY+y, z*std::cos(segmentAngle)});
-            normals(0)->push_back({x*std::sin(segmentAngle), y, z*std::cos(segmentAngle)});
+            Rad segmentAngle = j*segmentAngleIncrement;
+            positions(0)->push_back({x*Math::sin(segmentAngle), centerY+y, z*Math::cos(segmentAngle)});
+            normals(0)->push_back({x*Math::sin(segmentAngle), y, z*Math::cos(segmentAngle)});
 
             if(textureCoords == TextureCoords::Generate)
                 textureCoords2D(0)->push_back({j*1.0f/segments, startTextureCoordsV + i*textureCoordsVIncrement});
@@ -84,12 +85,12 @@ void Capsule::hemisphereVertexRings(std::uint32_t count, GLfloat centerY, GLfloa
 }
 
 void Capsule::cylinderVertexRings(std::uint32_t count, GLfloat startY, GLfloat yIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement) {
-    GLfloat segmentAngleIncrement = 2*Constants::pi()/segments;
+    Rad segmentAngleIncrement = 2*Rad(Constants::pi())/segments;
     for(std::uint32_t i = 0; i != count; ++i) {
         for(std::uint32_t j = 0; j != segments; ++j) {
-            GLfloat segmentAngle = j*segmentAngleIncrement;
-            positions(0)->push_back({std::sin(segmentAngle), startY, std::cos(segmentAngle)});
-            normals(0)->push_back({std::sin(segmentAngle), 0.0f, std::cos(segmentAngle)});
+            Rad segmentAngle = j*segmentAngleIncrement;
+            positions(0)->push_back({Math::sin(segmentAngle), startY, Math::cos(segmentAngle)});
+            normals(0)->push_back({Math::sin(segmentAngle), 0.0f, Math::cos(segmentAngle)});
 
             if(textureCoords == TextureCoords::Generate)
                 textureCoords2D(0)->push_back({j*1.0f/segments, startTextureCoordsV + i*textureCoordsVIncrement});

@@ -15,6 +15,7 @@
 
 #include "Cylinder.h"
 
+#include "Math/Functions.h"
 #include "Math/Point3D.h"
 
 namespace Magnum { namespace Primitives {
@@ -47,11 +48,11 @@ Cylinder::Cylinder(std::uint32_t rings, std::uint32_t segments, GLfloat length, 
 }
 
 void Cylinder::capVertexRing(GLfloat y, GLfloat textureCoordsV, const Vector3& normal) {
-    GLfloat segmentAngleIncrement = 2*Constants::pi()/segments;
+    Rad segmentAngleIncrement = 2*Rad(Constants::pi())/segments;
 
     for(std::uint32_t i = 0; i != segments; ++i) {
-        GLfloat segmentAngle = i*segmentAngleIncrement;
-        positions(0)->push_back({std::sin(segmentAngle), y, std::cos(segmentAngle)});
+        Rad segmentAngle = i*segmentAngleIncrement;
+        positions(0)->push_back({Math::sin(segmentAngle), y, Math::cos(segmentAngle)});
         normals(0)->push_back(normal);
 
         if(textureCoords == TextureCoords::Generate)

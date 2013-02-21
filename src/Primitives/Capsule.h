@@ -61,7 +61,7 @@ class Capsule: public Trade::MeshData3D {
         Capsule(std::uint32_t segments, TextureCoords textureCoords);
 
         void capVertex(GLfloat y, GLfloat normalY, GLfloat textureCoordsV);
-        void hemisphereVertexRings(std::uint32_t count, GLfloat centerY, GLfloat startRingAngle, GLfloat ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);
+        void hemisphereVertexRings(std::uint32_t count, GLfloat centerY, Rad startRingAngle, Rad ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);
         void cylinderVertexRings(std::uint32_t count, GLfloat startY, GLfloat yIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);
         void bottomFaceRing();
         void faceRings(std::uint32_t count, std::uint32_t offset = 1);
