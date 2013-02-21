@@ -90,6 +90,10 @@ string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_DESKTOP_GLES" _TARGET_D
 if(NOT _TARGET_DESKTOP_GLES EQUAL -1)
     set(MAGNUM_TARGET_DESKTOP_GLES 1)
 endif()
+string(FIND "${_magnumConfigure}" "#define MAGNUM_USE_HARFBUZZ" _USE_HARFBUZZ)
+if(NOT _USE_HARFBUZZ EQUAL -1)
+    set(MAGNUM_USE_HARFBUZZ 1)
+endif()
 
 if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
     find_package(OpenGL REQUIRED)
@@ -212,9 +216,14 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
         # Dependencies
         find_package(FreeType)
-        find_package(HarfBuzz)
-        if(NOT FREETYPE_FOUND OR NOT HARFBUZZ_FOUND)
+        if(NOT FREETYPE_FOUND)
             unset(MAGNUM_${_COMPONENT}_LIBRARY)
+        endif()
+        if(MAGNUM_USE_HARFBUZZ)
+            find_package(HarfBuzz)
+            if(NOT HARFBUZZ_FOUND)
+                unset(MAGNUM_${_COMPONENT}_LIBRARY)
+            endif()
         endif()
     endif()
 
