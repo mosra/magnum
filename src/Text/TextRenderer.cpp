@@ -16,7 +16,6 @@
 #include "TextRenderer.h"
 
 #include <hb.h>
-#include <hb-icu.h>
 
 #include "Math/Point2D.h"
 #include "Math/Point3D.h"
@@ -53,7 +52,6 @@ class TextLayouter {
 TextLayouter::TextLayouter(Font& font, const GLfloat size, const std::string& text): font(font), size(size) {
     /* Prepare HarfBuzz buffer */
     buffer = hb_buffer_create();
-    hb_buffer_set_unicode_funcs(buffer, hb_icu_get_unicode_funcs());
     hb_buffer_set_direction(buffer, HB_DIRECTION_LTR);
     hb_buffer_set_script(buffer, HB_SCRIPT_LATIN);
     hb_buffer_set_language(buffer, hb_language_from_string("en", 2));
