@@ -352,7 +352,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
                      * @requires_gl30 %Extension @extension{NV,half_float}
                      * @requires_gles30 %Extension @es_extension{OES,vertex_half_float}
                      */
-                    Half = GL_HALF_FLOAT,
+                    HalfFloat = GL_HALF_FLOAT,
 
                     /** Float. Only for float attribute types. */
                     Float = GL_FLOAT,
@@ -375,7 +375,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
                      * @requires_gl33 %Extension @extension{ARB,vertex_type_2_10_10_10_rev}
                      * @requires_gles30 (no extension providing this functionality)
                      */
-                    UnsignedInt2101010REV = GL_UNSIGNED_INT_2_10_10_10_REV,
+                    UnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
 
                     /**
                      * Signed 2.10.10.10 packed integer. Only for
@@ -383,7 +383,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
                      * @requires_gl33 %Extension @extension{ARB,vertex_type_2_10_10_10_rev}
                      * @requires_gles30 (no extension providing this functionality)
                      */
-                    Int2101010REV = GL_INT_2_10_10_10_REV
+                    Int2101010Rev = GL_INT_2_10_10_10_REV
                     #endif
                 };
                 #else

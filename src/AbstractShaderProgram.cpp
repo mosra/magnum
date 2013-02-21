@@ -657,8 +657,8 @@ std::size_t Attribute<Math::Vector<4, GLfloat>>::size(GLint components, DataType
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
-        case DataType::UnsignedInt2101010REV:
-        case DataType::Int2101010REV:
+        case DataType::UnsignedInt2101010Rev:
+        case DataType::Int2101010Rev:
             CORRADE_INTERNAL_ASSERT(components == 4);
             return 4;
         #endif
