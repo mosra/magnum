@@ -21,6 +21,11 @@
 
 #include "AbstractCamera.h"
 
+#ifdef _WIN32 /* I so HATE windows.h */
+#undef near
+#undef far
+#endif
+
 namespace Magnum { namespace SceneGraph {
 
 /**

@@ -22,7 +22,7 @@
 #include "Matrix.h"
 #include "Point3D.h"
 
-#ifdef WIN32 /* I so HATE windows.h */
+#ifdef _WIN32 /* I so HATE windows.h */
 #undef near
 #undef far
 #endif
