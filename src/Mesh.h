@@ -64,7 +64,7 @@ mesh is empty and no draw commands are issued when calling draw().
 // Custom shader, needing only position data
 class MyShader: public AbstractShaderProgram {
     public:
-        typedef Attribute<0, Point3D> Position;
+        typedef Attribute<0, Vector3> Position;
 
     // ...
 };
@@ -72,7 +72,7 @@ Mesh* mesh;
 Buffer* vertexBuffer;
 
 // Fill vertex buffer with position data
-static constexpr Point3D positions[30] = {
+static constexpr Vector3 positions[30] = {
     // ...
 };
 vertexBuffer->setData(positions, Buffer::Usage::StaticDraw);
@@ -109,7 +109,7 @@ mesh->setPrimitive(plane.primitive())
 // Custom shader
 class MyShader: public AbstractShaderProgram {
     public:
-        typedef Attribute<0, Point3D> Position;
+        typedef Attribute<0, Vector3> Position;
 
     // ...
 };
@@ -117,7 +117,7 @@ Buffer *vertexBuffer, *indexBuffer;
 Mesh* mesh;
 
 // Fill vertex buffer with position data
-static constexpr Point3D positions[300] = {
+static constexpr Vector3 positions[300] = {
     // ...
 };
 vertexBuffer->setData(positions, Buffer::Usage::StaticDraw);

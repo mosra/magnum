@@ -33,12 +33,12 @@ template<> struct Renderer<2> {
     inline static ResourceKey indexBuffer() { return {"object2d-indices"}; }
     inline static ResourceKey mesh() { return {"object2d"}; }
 
-    static const std::array<Point2D, 8> positions;
+    static const std::array<Vector2, 8> positions;
     static const std::array<Color3<>, 8> colors;
     static const std::array<std::uint8_t, 12> indices;
 };
 
-const std::array<Point2D, 8> Renderer<2>::positions{{
+const std::array<Vector2, 8> Renderer<2>::positions{{
     { 0.0f,  0.0f},
     { 1.0f,  0.0f}, /* X axis */
     { 0.9f,  0.1f},
@@ -78,12 +78,12 @@ template<> struct Renderer<3> {
     inline static ResourceKey indexBuffer() { return {"object3d-indices"}; }
     inline static ResourceKey mesh() { return {"object3d"}; }
 
-    static const std::array<Point3D, 12> positions;
+    static const std::array<Vector3, 12> positions;
     static const std::array<Color3<>, 12> colors;
     static const std::array<uint8_t, 18> indices;
 };
 
-const std::array<Point3D, 12> Renderer<3>::positions{{
+const std::array<Vector3, 12> Renderer<3>::positions{{
     { 0.0f,  0.0f,  0.0f},
     { 1.0f,  0.0f,  0.0f}, /* X axis */
     { 0.9f,  0.1f,  0.0f},

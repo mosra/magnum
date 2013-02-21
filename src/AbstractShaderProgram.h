@@ -46,7 +46,7 @@ functions and properties:
  - <strong>%Attribute definitions</strong> with location and type for
    configuring meshes, for example:
 @code
-typedef Attribute<0, Point3D> Position;
+typedef Attribute<0, Vector3> Position;
 typedef Attribute<1, Vector3> Normal;
 typedef Attribute<2, Vector2> TextureCoordinates;
 @endcode
@@ -1371,8 +1371,6 @@ template<std::size_t size_> struct Attribute<Math::Vector<size_, GLdouble>>: Dou
 template<class T> struct Attribute<Math::Vector2<T>>: Attribute<Math::Vector<2, T>> {};
 template<class T> struct Attribute<Math::Vector3<T>>: Attribute<Math::Vector<3, T>> {};
 template<class T> struct Attribute<Math::Vector4<T>>: Attribute<Math::Vector<4, T>> {};
-template<class T> struct Attribute<Math::Point2D<T>>: Attribute<Math::Vector3<T>> {};
-template<class T> struct Attribute<Math::Point3D<T>>: Attribute<Math::Vector4<T>> {};
 template<class T> struct Attribute<Color3<T>>: Attribute<Math::Vector3<T>> {};
 template<class T> struct Attribute<Color4<T>>: Attribute<Math::Vector4<T>> {};
 

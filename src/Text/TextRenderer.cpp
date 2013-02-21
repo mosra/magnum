@@ -23,8 +23,6 @@
 #include <Utility/Unicode.h>
 #endif
 
-#include "Math/Point2D.h"
-#include "Math/Point3D.h"
 #include "Context.h"
 #include "Extensions.h"
 #include "Mesh.h"
@@ -151,30 +149,30 @@ template<class T> void createIndices(void* output, const std::uint32_t glyphCoun
     }
 }
 
-template<std::uint8_t dimensions> typename DimensionTraits<dimensions>::PointType point(const Vector2& vec);
+template<std::uint8_t dimensions> typename DimensionTraits<dimensions>::VectorType point(const Vector2& vec);
 
-template<> inline Point2D point<2>(const Vector2& vec) {
-    return swizzle<'x', 'y', '1'>(vec);
+template<> inline Vector2 point<2>(const Vector2& vec) {
+    return vec;
 }
 
-template<> inline Point3D point<3>(const Vector2& vec) {
-    return swizzle<'x', 'y', '0', '1'>(vec);
+template<> inline Vector3 point<3>(const Vector2& vec) {
+    return {vec, 1.0f};
 }
 
 template<std::uint8_t dimensions> struct Vertex {
-    typename DimensionTraits<dimensions>::PointType position;
+    typename DimensionTraits<dimensions>::VectorType position;
     Vector2 texcoords;
 };
 
 }
 
-template<std::uint8_t dimensions> std::tuple<std::vector<typename DimensionTraits<dimensions>::PointType>, std::vector<Vector2>, std::vector<std::uint32_t>, Rectangle> TextRenderer<dimensions>::render(Font& font, GLfloat size, const std::string& text) {
+template<std::uint8_t dimensions> std::tuple<std::vector<typename DimensionTraits<dimensions>::VectorType>, std::vector<Vector2>, std::vector<std::uint32_t>, Rectangle> TextRenderer<dimensions>::render(Font& font, GLfloat size, const std::string& text) {
     TextLayouter layouter(font, size, text);
 
     const std::uint32_t vertexCount = layouter.glyphCount()*4;
 
     /* Output data */
-    std::vector<typename DimensionTraits<dimensions>::PointType> positions;
+    std::vector<typename DimensionTraits<dimensions>::VectorType> positions;
     std::vector<Vector2> texcoords;
     positions.reserve(vertexCount);
     texcoords.reserve(vertexCount);
@@ -210,7 +208,8 @@ template<std::uint8_t dimensions> std::tuple<std::vector<typename DimensionTrait
 
     /* Rendered rectangle */
     Rectangle rectangle;
-    if(layouter.glyphCount()) rectangle = {positions[1].xy(), positions[positions.size()-2].xy()};
+    if(layouter.glyphCount()) rectangle =
+        {swizzle<'x', 'y'>(positions[1]), swizzle<'x', 'y'>(positions[positions.size()-2])};
 
     return std::make_tuple(std::move(positions), std::move(texcoords), std::move(indices), rectangle);
 }
@@ -270,7 +269,8 @@ template<std::uint8_t dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimen
 
     /* Rendered rectangle */
     Rectangle rectangle;
-    if(layouter.glyphCount()) rectangle = {vertices[1].position.xy(), vertices[vertices.size()-2].position.xy()};
+    if(layouter.glyphCount()) rectangle =
+        {swizzle<'x', 'y'>(vertices[1].position), swizzle<'x', 'y'>(vertices[vertices.size()-2].position)};
 
     /* Configure mesh */
     Mesh mesh;
