@@ -62,20 +62,15 @@ void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
 
     /** @bug Crash when atlas is too small */
 
-    /* Get character codes from string */
-    std::vector<std::uint32_t> charCodes;
-    charCodes.reserve(characters.size());
+    /* Get glyph codes from characters */
+    std::vector<FT_UInt> charIndices;
+    charIndices.reserve(characters.size()+1);
+    charIndices.push_back(0);
     for(std::size_t i = 0; i != characters.size(); ) {
         std::uint32_t codepoint;
         std::tie(codepoint, i) = Corrade::Utility::Unicode::nextChar(characters, i);
-        charCodes.push_back(codepoint);
+        charIndices.push_back(FT_Get_Char_Index(_ftFont, codepoint));
     }
-
-    /* Get character indices */
-    std::vector<FT_UInt> charIndices;
-    charIndices.push_back(0);
-    for(std::uint32_t charCode: charCodes)
-        charIndices.push_back(FT_Get_Char_Index(_ftFont, charCode));
 
     /* Remove duplicates (e.g. uppercase and lowercase mapped to same glyph) */
     std::sort(charIndices.begin(), charIndices.end());
