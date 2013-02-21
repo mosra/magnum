@@ -320,8 +320,9 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          */
         template<GLuint location, class T> class Attribute {
             public:
-                /** @brief Location to which the attribute is bound */
-                static const GLuint Location = location;
+                enum: GLuint {
+                    Location = location /**< Location to which the attribute is bound */
+                };
 
                 /**
                  * @brief Type
