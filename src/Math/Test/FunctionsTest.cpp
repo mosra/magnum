@@ -251,10 +251,15 @@ void FunctionsTest::log2() {
 void FunctionsTest::trigonometric() {
     CORRADE_COMPARE(Math::sin(Deg(30.0f)), 0.5f);
     CORRADE_COMPARE(Math::sin(Rad(Constants::pi()/6)), 0.5f);
+    CORRADE_COMPARE_AS(Math::asin(0.5f), Deg(30.0f), Deg);
+
     CORRADE_COMPARE(Math::cos(Deg(60.0f)), 0.5f);
     CORRADE_COMPARE(Math::cos(Rad(Constants::pi()/3)), 0.5f);
+    CORRADE_COMPARE_AS(Math::acos(0.5f), Deg(60.0f), Deg);
+
     CORRADE_COMPARE(Math::tan(Deg(45.0f)), 1.0f);
     CORRADE_COMPARE(Math::tan(Rad(Constants::pi()/4)), 1.0f);
+    CORRADE_COMPARE_AS(Math::atan(1.0f), Deg(45.0f), Deg);
 }
 
 }}}

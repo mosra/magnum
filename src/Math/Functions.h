@@ -87,6 +87,15 @@ template<class T> inline T cos(Deg<T> angle) { return cos(Rad<T>(angle)); }
 template<class T> inline T tan(Deg<T> angle) { return tan(Rad<T>(angle)); }
 #endif
 
+/** @brief Arc sine */
+template<class T> inline Rad<T> asin(T value) { return Rad<T>(std::asin(value)); }
+
+/** @brief Arc cosine */
+template<class T> inline Rad<T> acos(T value) { return Rad<T>(std::acos(value)); }
+
+/** @brief Arc tangent */
+template<class T> inline Rad<T> atan(T value) { return Rad<T>(std::atan(value)); }
+
 /**
 @{ @name Scalar/vector functions
 
