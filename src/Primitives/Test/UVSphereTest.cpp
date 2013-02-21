@@ -16,7 +16,7 @@
 #include <TestSuite/Tester.h>
 #include <TestSuite/Compare/Container.h>
 
-#include "Math/Point3D.h"
+#include "Math/Vector3.h"
 #include "Primitives/UVSphere.h"
 
 using Corrade::TestSuite::Compare::Container;
@@ -39,7 +39,7 @@ UVSphereTest::UVSphereTest() {
 void UVSphereTest::withoutTextureCoords() {
     UVSphere sphere(3, 3);
 
-    CORRADE_COMPARE_AS(*sphere.positions(0), (std::vector<Point3D>{
+    CORRADE_COMPARE_AS(*sphere.positions(0), (std::vector<Vector3>{
         {0.0f, -1.0f, 0.0f},
 
         {0.0f, -0.5f, 0.866025f},
@@ -77,7 +77,7 @@ void UVSphereTest::withoutTextureCoords() {
 void UVSphereTest::withTextureCoords() {
     UVSphere sphere(3, 3, UVSphere::TextureCoords::Generate);
 
-    CORRADE_COMPARE_AS(*sphere.positions(0), (std::vector<Point3D>{
+    CORRADE_COMPARE_AS(*sphere.positions(0), (std::vector<Vector3>{
         {0.0f, -1.0f, 0.0f},
 
         {0.0f, -0.5f, 0.866025f},

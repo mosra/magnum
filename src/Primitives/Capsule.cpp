@@ -16,11 +16,11 @@
 #include "Capsule.h"
 
 #include "Math/Functions.h"
-#include "Math/Point3D.h"
+#include "Math/Vector3.h"
 
 namespace Magnum { namespace Primitives {
 
-Capsule::Capsule(std::uint32_t hemisphereRings, std::uint32_t cylinderRings, std::uint32_t segments, GLfloat length, TextureCoords textureCoords): MeshData3D(Mesh::Primitive::Triangles, new std::vector<std::uint32_t>, {new std::vector<Point3D>()}, {new std::vector<Vector3>()}, textureCoords == TextureCoords::Generate ? std::vector<std::vector<Vector2>*>{new std::vector<Vector2>()} : std::vector<std::vector<Vector2>*>()), segments(segments), textureCoords(textureCoords) {
+Capsule::Capsule(std::uint32_t hemisphereRings, std::uint32_t cylinderRings, std::uint32_t segments, GLfloat length, TextureCoords textureCoords): MeshData3D(Mesh::Primitive::Triangles, new std::vector<std::uint32_t>, {new std::vector<Vector3>()}, {new std::vector<Vector3>()}, textureCoords == TextureCoords::Generate ? std::vector<std::vector<Vector2>*>{new std::vector<Vector2>()} : std::vector<std::vector<Vector2>*>()), segments(segments), textureCoords(textureCoords) {
     CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 3, "Capsule must have at least one hemisphere ring, one cylinder ring and three segments", );
 
     GLfloat height = 2.0f+length;
@@ -48,7 +48,7 @@ Capsule::Capsule(std::uint32_t hemisphereRings, std::uint32_t cylinderRings, std
     topFaceRing();
 }
 
-Capsule::Capsule(std::uint32_t segments, TextureCoords textureCoords): MeshData3D(Mesh::Primitive::Triangles, new std::vector<std::uint32_t>, {new std::vector<Point3D>()}, {new std::vector<Vector3>()}, textureCoords == TextureCoords::Generate ? std::vector<std::vector<Vector2>*>{new std::vector<Vector2>()} : std::vector<std::vector<Vector2>*>()), segments(segments), textureCoords(textureCoords) {}
+Capsule::Capsule(std::uint32_t segments, TextureCoords textureCoords): MeshData3D(Mesh::Primitive::Triangles, new std::vector<std::uint32_t>, {new std::vector<Vector3>()}, {new std::vector<Vector3>()}, textureCoords == TextureCoords::Generate ? std::vector<std::vector<Vector2>*>{new std::vector<Vector2>()} : std::vector<std::vector<Vector2>*>()), segments(segments), textureCoords(textureCoords) {}
 
 void Capsule::capVertex(GLfloat y, GLfloat normalY, GLfloat textureCoordsV) {
     positions(0)->push_back({0.0f, y, 0.0f});
