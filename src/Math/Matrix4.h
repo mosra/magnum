@@ -19,8 +19,8 @@
  * @brief Class Magnum::Math::Matrix4
  */
 
-#include "Matrix.h"
-#include "Point3D.h"
+#include "Math/Matrix.h"
+#include "Math/Vector4.h"
 
 #ifdef _WIN32 /* I so HATE windows.h */
 #undef near
@@ -374,12 +374,6 @@ template<class T> class Matrix4: public Matrix<4, T> {
         inline Vector3<T> transformPoint(const Vector3<T>& vector) const {
             return ((*this)*Vector4<T>(vector, T(1))).xyz();
         }
-
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline Point3D<T> operator*(const Point3D<T>& other) const {
-            return Matrix<4, T>::operator*(other);
-        }
-        #endif
 
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(4, 4, Matrix4<T>)
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix4, Vector4, 4)

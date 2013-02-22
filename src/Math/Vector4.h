@@ -27,8 +27,7 @@ namespace Magnum { namespace Math {
 @brief Four-component vector
 @tparam T   Data type
 
-See @ref matrix-vector for brief introduction. See also Point3D for
-homogeneous three-dimensional coordinates.
+See @ref matrix-vector for brief introduction.
 @see Magnum::Vector4, Magnum::Vector4i, Magnum::Vector4ui, Magnum::Vector4d
 @configurationvalueref{Magnum::Math::Vector4}
 */

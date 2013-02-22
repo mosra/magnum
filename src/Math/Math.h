@@ -34,9 +34,6 @@ template<std::size_t, class> class Matrix;
 template<class> class Matrix3;
 template<class> class Matrix4;
 
-template<class> class Point2D;
-template<class> class Point3D;
-
 template<class> class Quaternion;
 
 template<std::size_t, std::size_t, class> class RectangularMatrix;

@@ -103,12 +103,6 @@ typedef Math::Vector3<GLdouble> Vector3d;
 typedef Math::Vector4<GLdouble> Vector4d;
 #endif
 
-/** @brief Two-dimensional floating-point homogeneous coordinates */
-typedef Math::Point2D<GLfloat> Point2D;
-
-/** @brief Three-dimensional floating-point homogeneous coordinates */
-typedef Math::Point3D<GLfloat> Point3D;
-
 /** @brief 3x3 float matrix */
 typedef Math::Matrix3<GLfloat> Matrix3;
 

@@ -53,7 +53,6 @@ typedef Math::Rad<float> Rad;
 typedef Math::Matrix4<float> Matrix4;
 typedef Math::Matrix<3, float> Matrix3;
 typedef Math::Vector3<float> Vector3;
-typedef Math::Point3D<float> Point3D;
 
 Matrix4Test::Matrix4Test() {
     addTests(&Matrix4Test::constructIdentity,

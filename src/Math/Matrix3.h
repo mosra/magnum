@@ -19,8 +19,8 @@
  * @brief Class Magnum::Math::Matrix3
  */
 
-#include "Matrix.h"
-#include "Point2D.h"
+#include "Math/Matrix.h"
+#include "Math/Vector3.h"
 
 namespace Magnum { namespace Math {
 
@@ -225,12 +225,6 @@ template<class T> class Matrix3: public Matrix<3, T> {
         inline Vector2<T> transformPoint(const Vector2<T>& vector) const {
             return ((*this)*Vector3<T>(vector, T(1))).xy();
         }
-
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline Point2D<T> operator*(const Point2D<T>& other) const {
-            return Matrix<3, T>::operator*(other);
-        }
-        #endif
 
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(3, 3, Matrix3<T>)
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix3, Vector3, 3)

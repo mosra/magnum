@@ -11,8 +11,6 @@ set(MagnumMath_HEADERS
     Matrix.h
     Matrix3.h
     Matrix4.h
-    Point2D.h
-    Point3D.h
     Quaternion.h
     RectangularMatrix.h
     Swizzle.h

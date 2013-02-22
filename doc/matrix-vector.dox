@@ -26,25 +26,20 @@ return the most specialized type known to make subsequent operations more
 convenient - columns of %RectangularMatrix are returned as %Vector, but when
 accessing columns of e.g. %Matrix3, they are returned as %Vector3.
 
-There are also even more specialized subclasses - Point2D, Point3D for
-creating points with homogeneous coordinates and Color3, Color4 for color
-handling and conversion.
+There are also even more specialized subclasses, e.g. Color3 and Color4 for
+color handling and conversion.
 
 @section matrix-vector-construction Constructing matrices and vectors
 
 Default constructors of RectangularMatrix and Vector (and Vector2, Vector3,
 Vector4, Color3) create zero-filled objects. Matrix (and Matrix3, Matrix4) is
-by default constructed as identity matrix. Point2D and Point3D have
-homogeneous component set to one, Color4 has alpha value set to opaque.
+by default constructed as identity matrix. Color4 has alpha value set to opaque.
 @code
 RectangularMatrix<2, 3, int> a; // zero-filled
 Vector<3, int> b;               // zero-filled
 
 Matrix<3, int> identity;                    // diagonal set to 1
 Matrix<3, int> zero(Matrix<3, int>::Zero);  // zero-filled
-
-Point2D<int> c; // {0, 0, 1}
-Point3D<int> d; // {0, 0, 0, 1}
 
 Color4<float> black1;           // {0.0f, 0.0f, 0.0f, 1.0f}
 Color4<unsigned char> black2;   // {0, 0, 0, 255}

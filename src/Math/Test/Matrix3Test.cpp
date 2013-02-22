@@ -47,7 +47,6 @@ typedef Math::Deg<float> Deg;
 typedef Math::Matrix3<float> Matrix3;
 typedef Math::Matrix<2, float> Matrix2;
 typedef Math::Vector2<float> Vector2;
-typedef Math::Point2D<float> Point2D;
 
 Matrix3Test::Matrix3Test() {
     addTests(&Matrix3Test::constructIdentity,
