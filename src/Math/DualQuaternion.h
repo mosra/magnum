@@ -226,7 +226,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f]
          */
         inline DualQuaternion<T> inverted() const {
-            return quaternionConjugated()/pow2(length());
+            return quaternionConjugated()/lengthSquared();
         }
 
         /**
