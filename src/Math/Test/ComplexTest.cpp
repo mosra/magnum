@@ -17,7 +17,7 @@
 #include <TestSuite/Tester.h>
 
 #include "Math/Complex.h"
-#include "Math/Vector2.h"
+#include "Math/Matrix3.h"
 
 namespace Magnum { namespace Math { namespace Test {
 
@@ -47,6 +47,7 @@ class ComplexTest: public Corrade::TestSuite::Tester {
 
         void angle();
         void rotation();
+        void matrix();
 
         void debug();
 };
@@ -74,6 +75,7 @@ ComplexTest::ComplexTest() {
 
              &ComplexTest::angle,
              &ComplexTest::rotation,
+             &ComplexTest::matrix,
 
              &ComplexTest::debug);
 }
@@ -82,6 +84,8 @@ typedef Math::Deg<float> Deg;
 typedef Math::Rad<float> Rad;
 typedef Math::Complex<float> Complex;
 typedef Math::Vector2<float> Vector2;
+typedef Math::Matrix3<float> Matrix3;
+typedef Math::Matrix<2, float> Matrix2;
 
 void ComplexTest::construct() {
     Complex c(0.5f, -3.7f);
@@ -243,6 +247,13 @@ void ComplexTest::rotation() {
 
     /* Default-constructed complex number has zero angle */
     CORRADE_COMPARE_AS(Complex().rotationAngle(), Deg(0.0f), Rad);
+}
+
+void ComplexTest::matrix() {
+    Complex a = Complex::rotation(Deg(37.0f));
+    Matrix2 m = Matrix3::rotation(Deg(37.0f)).rotationScaling();
+
+    CORRADE_COMPARE(a.matrix(), m);
 }
 
 void ComplexTest::debug() {

@@ -23,10 +23,7 @@
 #include <Utility/Assert.h>
 #include <Utility/Debug.h>
 
-#include "Math/Angle.h"
-#include "Math/MathTypeTraits.h"
-
-#include "magnumVisibility.h"
+#include "Math/Matrix.h"
 
 namespace Magnum { namespace Math {
 
@@ -123,6 +120,22 @@ template<class T> class Complex {
          */
         inline Rad<T> rotationAngle() const {
             return Rad<T>(std::atan2(_imaginary, _real));
+        }
+
+        /**
+         * @brief Convert complex number to rotation matrix
+         *
+         * @f[
+         *      M = \begin{pmatrix}
+         *               a & -b \\
+         *               b &  a
+         *          \end{pmatrix}
+         * @f]
+         * @see Matrix3::from(const Matrix<2, T>&, const Vector2<T>&)
+         */
+        Matrix<2, T> matrix() const {
+            return {Vector<2, T>(_real, _imaginary),
+                    Vector<2, T>(-_imaginary, _real)};
         }
 
         /**
