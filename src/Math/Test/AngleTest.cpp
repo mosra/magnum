@@ -92,22 +92,32 @@ void AngleTest::conversion() {
     constexpr Deg a(Rad(1.57079633f));
     CORRADE_COMPARE(float(a), 90.0f);
 
-    constexpr Rad b(Deg(90.0));
+    constexpr Rad b(Deg(90.0f));
     CORRADE_COMPARE(float(b), 1.57079633f);
 }
 
 void AngleTest::debugDeg() {
     std::ostringstream o;
 
-    Debug(&o) << Deg(90.0);
+    Debug(&o) << Deg(90.0f);
     CORRADE_COMPARE(o.str(), "Deg(90)\n");
+
+    /* Verify that this compiles */
+    o.str({});
+    Debug(&o) << Deg(56.0f) - Deg(34.0f);
+    CORRADE_COMPARE(o.str(), "Deg(22)\n");
 }
 
 void AngleTest::debugRad() {
     std::ostringstream o;
 
-    Debug(&o) << Rad(1.5708);
+    Debug(&o) << Rad(1.5708f);
     CORRADE_COMPARE(o.str(), "Rad(1.5708)\n");
+
+    /* Verify that this compiles */
+    o.str({});
+    Debug(&o) << Rad(1.5708f) - Rad(3.1416f);
+    CORRADE_COMPARE(o.str(), "Rad(-1.5708)\n");
 }
 
 }}}

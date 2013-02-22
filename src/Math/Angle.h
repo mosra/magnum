@@ -219,7 +219,7 @@ template<class T> inline constexpr Deg<T>::Deg(Unit<Rad, T> value): Unit<Deg, T>
 template<class T> inline constexpr Rad<T>::Rad(Unit<Deg, T> value): Unit<Rad, T>(T(value)*Math::Constants<T>::pi()/T(180)) {}
 
 /** @debugoperator{Magnum::Math::Rad} */
-template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Rad<T>& value) {
+template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Unit<Rad, T>& value) {
     debug << "Rad(";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
     debug << T(value) << ")";
@@ -228,7 +228,7 @@ template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug deb
 }
 
 /** @debugoperator{Magnum::Math::Deg} */
-template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Deg<T>& value) {
+template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Unit<Deg, T>& value) {
     debug << "Deg(";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
     debug << T(value) << ")";
@@ -238,11 +238,11 @@ template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug deb
 
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Rad<float>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Deg<float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Unit<Rad, float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Unit<Deg, float>&);
 #ifndef MAGNUM_TARGET_GLES
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Rad<double>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Deg<double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Unit<Rad, double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Unit<Deg, double>&);
 #endif
 #endif
 
