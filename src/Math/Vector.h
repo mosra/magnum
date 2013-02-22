@@ -84,6 +84,7 @@ template<std::size_t size, class T> class Vector {
          * Expects that both vectors are normalized. @f[
          *      \theta = acos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| |\boldsymbol b|} \right) = acos (\boldsymbol a \cdot \boldsymbol b)
          * @f]
+         * @see Quaternion::angle(), Complex::angle()
          */
         inline static Rad<T> angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),

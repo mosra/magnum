@@ -59,6 +59,7 @@ template<class T> class Quaternion {
          * Expects that both quaternions are normalized. @f[
          *      \theta = acos \left( \frac{p \cdot q}{|p| |q|} \right) = acos(p \cdot q)
          * @f]
+         * @see Complex::angle(), Vector::angle()
          */
         inline static Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),

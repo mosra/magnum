@@ -23,6 +23,7 @@
 #include <Utility/Assert.h>
 #include <Utility/Debug.h>
 
+#include "Math/Angle.h"
 #include "Math/MathTypeTraits.h"
 
 #include "magnumVisibility.h"
@@ -49,6 +50,20 @@ template<class T> class Complex {
          */
         inline static Complex<T> dot(const Complex<T>& a, const Complex<T>& b) {
             return a*b.conjugated();
+        }
+
+        /**
+         * @brief Angle between normalized complex numbers
+         *
+         * Expects that both complex numbers are normalized. @f[
+         *      \theta = acos \left( \frac{Re(c_0 \cdot c_1))}{|c_0| |c_1|} \right) = acos (a_0 a_1 + b_0 b_1)
+         * @f]
+         * @see Quaternion::angle(), Vector::angle()
+         */
+        inline static Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
+                           "Math::Complex::angle(): complex numbers must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
+            return Rad<T>(std::acos(normalizedA._real*normalizedB._real + normalizedA._imaginary*normalizedB._imaginary));
         }
 
         /**

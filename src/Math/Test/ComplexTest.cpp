@@ -17,6 +17,7 @@
 #include <TestSuite/Tester.h>
 
 #include "Math/Complex.h"
+#include "Math/Vector2.h"
 
 namespace Magnum { namespace Math { namespace Test {
 
@@ -44,6 +45,8 @@ class ComplexTest: public Corrade::TestSuite::Tester {
         void inverted();
         void invertedNormalized();
 
+        void angle();
+
         void debug();
 };
 
@@ -68,10 +71,14 @@ ComplexTest::ComplexTest() {
              &ComplexTest::inverted,
              &ComplexTest::invertedNormalized,
 
+             &ComplexTest::angle,
+
              &ComplexTest::debug);
 }
 
+typedef Math::Rad<float> Rad;
 typedef Math::Complex<float> Complex;
+typedef Math::Vector2<float> Vector2;
 
 void ComplexTest::construct() {
     Complex c(0.5f, -3.7f);
@@ -199,6 +206,26 @@ void ComplexTest::invertedNormalized() {
     CORRADE_COMPARE(a*inverted, Complex());
     CORRADE_COMPARE(inverted*a, Complex());
     CORRADE_COMPARE(inverted, b);
+}
+
+void ComplexTest::angle() {
+    std::ostringstream o;
+    Error::setOutput(&o);
+    auto angle = Complex::angle(Complex(1.5f, -2.0f).normalized(), {-4.0f, 3.5f});
+    CORRADE_VERIFY(angle != angle);
+    CORRADE_COMPARE(o.str(), "Math::Complex::angle(): complex numbers must be normalized\n");
+
+    o.str({});
+    angle = Complex::angle({1.5f, -2.0f}, Complex(-4.0f, 3.5f).normalized());
+    CORRADE_VERIFY(angle != angle);
+    CORRADE_COMPARE(o.str(), "Math::Complex::angle(): complex numbers must be normalized\n");
+
+    /* Verify also that the angle is the same as angle between 2D vectors */
+    angle = Complex::angle(Complex( 1.5f, -2.0f).normalized(),
+                           Complex(-4.0f,  3.5f).normalized());
+    CORRADE_COMPARE(angle, Vector2::angle(Vector2( 1.5f, -2.0f).normalized(),
+                                          Vector2(-4.0f,  3.5f).normalized()));
+    CORRADE_COMPARE(angle, Rad(2.933128f));
 }
 
 void ComplexTest::debug() {

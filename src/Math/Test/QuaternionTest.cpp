@@ -253,7 +253,7 @@ void QuaternionTest::rotation() {
 
 void QuaternionTest::angle() {
     std::ostringstream o;
-    Corrade::Utility::Error::setOutput(&o);
+    Error::setOutput(&o);
     auto angle = Quaternion::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(), {{4.0f, -3.0f, 2.0f}, -1.0f});
     CORRADE_VERIFY(angle != angle);
     CORRADE_COMPARE(o.str(), "Math::Quaternion::angle(): quaternions must be normalized\n");
@@ -263,9 +263,12 @@ void QuaternionTest::angle() {
     CORRADE_VERIFY(angle != angle);
     CORRADE_COMPARE(o.str(), "Math::Quaternion::angle(): quaternions must be normalized\n");
 
-    CORRADE_COMPARE(Quaternion::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(),
-                                      Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized()),
-                    Rad(1.704528f));
+    /* Verify also that the angle is the same as angle between 4D vectors */
+    angle = Quaternion::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(),
+                              Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized());
+    CORRADE_COMPARE(angle, Vector4::angle(Vector4(1.0f, 2.0f, -3.0f, -4.0f).normalized(),
+                                          Vector4(4.0f, -3.0f, 2.0f, -1.0f).normalized()));
+    CORRADE_COMPARE(angle, Rad(1.704528f));
 }
 
 void QuaternionTest::matrix() {
