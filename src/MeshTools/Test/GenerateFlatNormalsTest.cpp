@@ -16,7 +16,7 @@
 #include <sstream>
 #include <TestSuite/Tester.h>
 
-#include "Math/Point3D.h"
+#include "Math/Vector3.h"
 #include "MeshTools/GenerateFlatNormals.h"
 
 namespace Magnum { namespace MeshTools { namespace Test {
