@@ -47,7 +47,7 @@ template<class T> class Complex {
         inline constexpr /*implicit*/ Complex(): _real(T(0)), _imaginary(T(0)) {}
 
         /**
-         * @brief Construct complex from real and imaginary part
+         * @brief Construct complex number from real and imaginary part
          *
          * @f[
          *      c = a + ib
@@ -73,10 +73,10 @@ template<class T> class Complex {
         inline constexpr T imaginary() const { return _imaginary; }
 
         /**
-         * @brief Add and assign complex
+         * @brief Add complex number and assign
          *
          * The computation is done in-place. @f[
-         *      c_0 + c_1 = a_0 + a_1 + i(b_0 + b_1)
+         *      c_0 + c_1 = (a_0 + a_1) + i(b_0 + b_1)
          * @f]
          */
         inline Complex<T>& operator+=(const Complex<T>& other) {
@@ -86,7 +86,7 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief Add complex
+         * @brief Add complex number
          *
          * @see operator+=()
          */
@@ -95,7 +95,7 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief Negated complex
+         * @brief Negated complex number
          *
          * @f[
          *      -c = -a -ib
@@ -106,10 +106,10 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief Subtract and assign complex
+         * @brief Subtract complex number and assign
          *
          * The computation is done in-place. @f[
-         *      c_0 - c_1 = a_0 - a_1 + i(b_0 - b_1)
+         *      c_0 - c_1 = (a_0 - a_1) + i(b_0 - b_1)
          * @f]
          */
         inline Complex<T>& operator-=(const Complex<T>& other) {
@@ -119,7 +119,7 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief Subtract complex
+         * @brief Subtract complex number
          *
          * @see operator-=()
          */

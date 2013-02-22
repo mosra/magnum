@@ -57,7 +57,7 @@ template<class T> class Quaternion {
          * @brief Angle between normalized quaternions
          *
          * Expects that both quaternions are normalized. @f[
-         *      \theta = acos \left( \frac{p \cdot q}{|p| \cdot |q|} \right)
+         *      \theta = acos \left( \frac{p \cdot q}{|p| |q|} \right) = acos(p \cdot q)
          * @f]
          */
         inline static Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
@@ -93,7 +93,7 @@ template<class T> class Quaternion {
          * Expects that both quaternions are normalized. @f[
          *      q_{SLERP} = \frac{sin((1 - t) \theta) q_A + sin(t \theta) q_B}{sin \theta}
          *      ~~~~~~~~~~
-         *      \theta = acos \left( \frac{q_A \cdot q_B}{|q_A| \cdot |q_B|} \right)
+         *      \theta = acos \left( \frac{q_A \cdot q_B}{|q_A| \cdot |q_B|} \right) = acos(q_A \cdot q_B)
          * @f]
          * @see lerp()
          */
@@ -338,7 +338,7 @@ template<class T> class Quaternion {
          * with other values, because it doesn't compute the square root. @f[
          *      q \cdot q = \boldsymbol q_V \cdot \boldsymbol q_V + q_S^2
          * @f]
-         * @see dot(const Quaternion<T>&, const Quaternion<T>&)
+         * @see dot(const Quaternion&, const Quaternion&)
          */
         inline T dot() const {
             return dot(*this, *this);
@@ -377,7 +377,7 @@ template<class T> class Quaternion {
          *
          * See invertedNormalized() which is faster for normalized
          * quaternions. @f[
-         *      q^{-1} = \frac{q^*}{|q|^2} = \frac{[-\boldsymbol q_V, q_S]}{q \cdot q}
+         *      q^{-1} = \frac{q^*}{|q|^2} = \frac{q^*}{q \cdot q}
          * @f]
          */
         inline Quaternion<T> inverted() const {
@@ -389,7 +389,7 @@ template<class T> class Quaternion {
          *
          * Equivalent to conjugated(). Expects that the quaternion is
          * normalized. @f[
-         *      q^{-1} = q^* = [-\boldsymbol q_V, q_S]
+         *      q^{-1} = \frac{q^*}{|q|^2} = q^*
          * @f]
          */
         inline Quaternion<T> invertedNormalized() const {

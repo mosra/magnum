@@ -82,7 +82,7 @@ template<std::size_t size, class T> class Vector {
          * @brief Angle between normalized vectors
          *
          * Expects that both vectors are normalized. @f[
-         *      \theta = acos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| \cdot |\boldsymbol b|} \right) = acos (\boldsymbol a \cdot \boldsymbol b)
+         *      \theta = acos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| |\boldsymbol b|} \right) = acos (\boldsymbol a \cdot \boldsymbol b)
          * @f]
          */
         inline static Rad<T> angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
@@ -141,10 +141,9 @@ template<std::size_t size, class T> class Vector {
 
         /**
          * @brief Raw data
-         * @return One-dimensional array of `size*size` length in column-major
-         *      order.
+         * @return One-dimensional array of `size*size` length.
          *
-         * @see operator[]
+         * @see operator[]()
          */
         inline T* data() { return _data; }
         inline constexpr const T* data() const { return _data; } /**< @overload */
@@ -387,7 +386,7 @@ template<std::size_t size, class T> class Vector {
          * other values, because it doesn't compute the square root. @f[
          *      \boldsymbol a \cdot \boldsymbol a = \sum_{i=0}^{n-1} \boldsymbol a_i^2
          * @f]
-         * @see dot(const Vector<size, T>&, const Vector<size, T>&)
+         * @see dot(const Vector&, const Vector&)
          */
         inline T dot() const {
             return dot(*this, *this);
@@ -400,6 +399,7 @@ template<std::size_t size, class T> class Vector {
          * values. @f[
          *      |\boldsymbol a| = \sqrt{\boldsymbol a \cdot \boldsymbol a}
          * @f]
+         * @todo something like std::hypot() for possibly better precision?
          */
         inline T length() const {
             return std::sqrt(dot());

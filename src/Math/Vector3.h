@@ -113,7 +113,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * @brief Constructor
          *
          * @f[
-         *      \boldsymbol v = (x, y, z)^T
+         *      \boldsymbol v = \begin{pmatrix} x \\ y \\ z \end{pmatrix}
          * @f]
          */
         inline constexpr /*implicit*/ Vector3(T x, T y, T z): Vector<3, T>(x, y, z) {}
@@ -122,7 +122,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * @brief Constructor
          *
          * @f[
-         *      \boldsymbol v = (v_x, v_y, z)^T
+         *      \boldsymbol v = \begin{pmatrix} v_x \\ v_y \\ z \end{pmatrix}
          * @f]
          */
         inline constexpr /*implicit*/ Vector3(const Vector2<T>& xy, T z): Vector<3, T>(xy[0], xy[1], z) {}

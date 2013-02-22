@@ -206,7 +206,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief Transform 2D vector with the matrix
          *
          * Translation is not involved in the transformation. @f[
-         *      \boldsymbol v' = \boldsymbol M (v_x, v_y, 0)^T
+         *      \boldsymbol v' = \boldsymbol M \begin{pmatrix} v_x \\ v_y \\ 0 \end{pmatrix}
          * @f]
          * @see transformPoint(), Matrix4::transformVector()
          */
@@ -218,7 +218,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief Transform 2D point with the matrix
          *
          * Unlike in transformVector(), translation is also involved. @f[
-         *      \boldsymbol v' = \boldsymbol M (v_x, v_y, 1)^T
+         *      \boldsymbol v' = \boldsymbol M \begin{pmatrix} v_x \\ v_y \\ 1 \end{pmatrix}
          * @f]
          * @see Matrix4::transformPoint()
          */

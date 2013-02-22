@@ -43,7 +43,7 @@ template<class T> class Vector4: public Vector<4, T> {
          * @brief Constructor
          *
          * @f[
-         *      \boldsymbol v = (x, y, z, w)^T
+         *      \boldsymbol v = \begin{pmatrix} x \\ y \\ z \\ w \end{pmatrix}
          * @f]
          */
         inline constexpr /*implicit*/ Vector4(T x, T y, T z, T w): Vector<4, T>(x, y, z, w) {}
@@ -52,7 +52,7 @@ template<class T> class Vector4: public Vector<4, T> {
          * @brief Constructor
          *
          * @f[
-         *      \boldsymbol v = (v_x, v_y, v_z, w)^T
+         *      \boldsymbol v = \begin{pmatrix} v_x \\ v_y \\ v_z \\ w \end{pmatrix}
          * @f]
          */
         inline constexpr /*implicit*/ Vector4(const Vector3<T>& xyz, T w): Vector<4, T>(xyz[0], xyz[1], xyz[2], w) {}
