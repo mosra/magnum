@@ -149,7 +149,7 @@ template<class T> class Quaternion {
          * To be used in transformations later. @f[
          *      q = [\boldsymbol v, 0]
          * @f]
-         * @see rotateVector(), rotateVectorNormalized()
+         * @see transformVector(), transformVectorNormalized()
          */
         inline constexpr explicit Quaternion(const Vector3<T>& vector): _vector(vector), _scalar(T(0)) {}
 
@@ -403,28 +403,28 @@ template<class T> class Quaternion {
         /**
          * @brief Rotate vector with quaternion
          *
-         * See rotateVectorNormalized(), which is faster for normalized
+         * See transformVectorNormalized(), which is faster for normalized
          * quaternions. @f[
          *      v' = qvq^{-1} = q [\boldsymbol v, 0] q^{-1}
          * @f]
          * @see Quaternion(const Vector3&), Matrix4::transformVector(), DualQuaternion::transformPoint()
          */
-        inline Vector3<T> rotateVector(const Vector3<T>& vector) const {
+        inline Vector3<T> transformVector(const Vector3<T>& vector) const {
             return ((*this)*Quaternion<T>(vector)*inverted()).vector();
         }
 
         /**
          * @brief Rotate vector with normalized quaternion
          *
-         * Faster alternative to rotateVector(), expects that the quaternion is
+         * Faster alternative to transformVector(), expects that the quaternion is
          * normalized. @f[
          *      v' = qvq^{-1} = qvq^* = q [\boldsymbol v, 0] q^*
          * @f]
          * @see Quaternion(const Vector3&), Matrix4::transformVector(), DualQuaternion::transformPointNormalized()
          */
-        inline Vector3<T> rotateVectorNormalized(const Vector3<T>& vector) const {
+        inline Vector3<T> transformVectorNormalized(const Vector3<T>& vector) const {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
-                           "Math::Quaternion::rotateVectorNormalized(): quaternion must be normalized",
+                           "Math::Quaternion::transformVectorNormalized(): quaternion must be normalized",
                            Vector3<T>(std::numeric_limits<T>::quiet_NaN()));
             return ((*this)*Quaternion<T>(vector)*conjugated()).vector();
         }

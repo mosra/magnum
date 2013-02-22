@@ -51,8 +51,8 @@ class QuaternionTest: public Corrade::TestSuite::Tester {
         void matrix();
         void lerp();
         void slerp();
-        void rotateVector();
-        void rotateVectorNormalized();
+        void transformVector();
+        void transformVectorNormalized();
 
         void debug();
 };
@@ -92,8 +92,8 @@ QuaternionTest::QuaternionTest() {
              &QuaternionTest::matrix,
              &QuaternionTest::lerp,
              &QuaternionTest::slerp,
-             &QuaternionTest::rotateVector,
-             &QuaternionTest::rotateVectorNormalized,
+             &QuaternionTest::transformVector,
+             &QuaternionTest::transformVectorNormalized,
 
              &QuaternionTest::debug);
 }
@@ -320,30 +320,30 @@ void QuaternionTest::slerp() {
     CORRADE_COMPARE(slerp, Quaternion({0.119165f, 0.0491109f, 0.0491109f}, 0.990442f));
 }
 
-void QuaternionTest::rotateVector() {
+void QuaternionTest::transformVector() {
     Quaternion a = Quaternion::rotation(Deg(23.0f), Vector3::xAxis());
     Matrix4 m = Matrix4::rotationX(Deg(23.0f));
     Vector3 v(5.0f, -3.6f, 0.7f);
 
-    Vector3 rotated = a.rotateVector(v);
+    Vector3 rotated = a.transformVector(v);
     CORRADE_COMPARE(rotated, m.transformVector(v));
     CORRADE_COMPARE(rotated, Vector3(5.0f, -3.58733f, -0.762279f));
 }
 
-void QuaternionTest::rotateVectorNormalized() {
+void QuaternionTest::transformVectorNormalized() {
     Quaternion a = Quaternion::rotation(Deg(23.0f), Vector3::xAxis());
     Matrix4 m = Matrix4::rotationX(Deg(23.0f));
     Vector3 v(5.0f, -3.6f, 0.7f);
 
     std::ostringstream o;
     Corrade::Utility::Error::setOutput(&o);
-    Vector3 notRotated = (a*2).rotateVectorNormalized(v);
+    Vector3 notRotated = (a*2).transformVectorNormalized(v);
     CORRADE_VERIFY(notRotated != notRotated);
-    CORRADE_COMPARE(o.str(), "Math::Quaternion::rotateVectorNormalized(): quaternion must be normalized\n");
+    CORRADE_COMPARE(o.str(), "Math::Quaternion::transformVectorNormalized(): quaternion must be normalized\n");
 
-    Vector3 rotated = a.rotateVectorNormalized(v);
+    Vector3 rotated = a.transformVectorNormalized(v);
     CORRADE_COMPARE(rotated, m.transformVector(v));
-    CORRADE_COMPARE(rotated, a.rotateVector(v));
+    CORRADE_COMPARE(rotated, a.transformVector(v));
 }
 
 void QuaternionTest::debug() {

@@ -356,7 +356,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * Translation is not involved in the transformation. @f[
          *      \boldsymbol v' = \boldsymbol M (v_x, v_y, v_z, 0)^T
          * @f]
-         * @see transformPoint(), Quaternion::rotateVector(),
+         * @see transformPoint(), Quaternion::transformVector(),
          *      Matrix3::transformVector()
          */
         inline Vector3<T> transformVector(const Vector3<T>& vector) const {

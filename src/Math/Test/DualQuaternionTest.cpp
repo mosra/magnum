@@ -199,7 +199,7 @@ void DualQuaternionTest::combinedTransformParts() {
     CORRADE_COMPARE_AS(b.rotationAngle(), Deg(23.0f), Rad);
 
     CORRADE_COMPARE(a.translation(), translation);
-    CORRADE_COMPARE(b.translation(), Quaternion::rotation(Deg(23.0f), Vector3::xAxis()).rotateVectorNormalized(translation));
+    CORRADE_COMPARE(b.translation(), Quaternion::rotation(Deg(23.0f), Vector3::xAxis()).transformVector(translation));
 }
 
 void DualQuaternionTest::matrix() {
