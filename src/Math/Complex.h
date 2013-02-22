@@ -171,6 +171,18 @@ template<class T> class Complex {
             return Complex<T>(*this) /= scalar;
         }
 
+        /**
+         * @brief Multiply with complex number
+         *
+         * @f[
+         *      c_0 c_1 = (a_0 + ib_0)(a_1 + ib_1) = (a_0 a_1 - b_0 b_1) + i(a_1 b_0 + a_0 b_1)
+         * @f]
+         */
+        inline Complex<T> operator*(const Complex<T>& other) const {
+            return {_real*other._real - _imaginary*other._imaginary,
+                    _imaginary*other._real + _real*other._imaginary};
+        }
+
     private:
         T _real, _imaginary;
 };
