@@ -69,7 +69,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         /**
          * @brief Default constructor
          *
-         * @f[
+         * Creates unit dual quaternion. @f[
          *      \hat q = [\boldsymbol 0, 1] + \epsilon [\boldsymbol 0, 0]
          * @f]
          * @todoc Remove workaround when Doxygen is predictable
@@ -212,7 +212,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
             return Math::sqrt(lengthSquared());
         }
 
-        /** @brief Normalized quaternion (of length 1) */
+        /** @brief Normalized quaternion (of unit length) */
         inline DualQuaternion<T> normalized() const {
             return (*this)/length();
         }

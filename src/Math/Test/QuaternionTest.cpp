@@ -106,6 +106,7 @@ void QuaternionTest::construct() {
 
 void QuaternionTest::constructDefault() {
     CORRADE_COMPARE(Quaternion(), Quaternion({0.0f, 0.0f, 0.0f}, 1.0f));
+    CORRADE_COMPARE(Quaternion().length(), 1.0f);
 }
 
 void QuaternionTest::constructFromVector() {

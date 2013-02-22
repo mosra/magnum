@@ -92,6 +92,7 @@ void DualQuaternionTest::construct() {
 
 void DualQuaternionTest::constructDefault() {
     CORRADE_COMPARE(DualQuaternion(), DualQuaternion({{0.0f, 0.0f, 0.0f}, 1.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
+    CORRADE_COMPARE(DualQuaternion().length(), 1.0f);
 }
 
 void DualQuaternionTest::constructFromVector() {
@@ -117,15 +118,11 @@ void DualQuaternionTest::constExpressions() {
 }
 
 void DualQuaternionTest::lengthSquared() {
-    CORRADE_COMPARE(DualQuaternion().lengthSquared(), 1.0f);
-
     DualQuaternion a({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.0f, 3.0f}, 2.0f});
     CORRADE_COMPARE(a.lengthSquared(), Dual(30.0f, -9.0f));
 }
 
 void DualQuaternionTest::length() {
-    CORRADE_COMPARE(DualQuaternion().length(), 1.0f);
-
     DualQuaternion a({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.0f, 3.0f}, 2.0f});
     CORRADE_COMPARE(a.length(), Dual(5.477226f, -0.821584f));
 }

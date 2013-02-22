@@ -249,8 +249,14 @@ template<class T> class Matrix4: public Matrix<4, T> {
         /** @copydoc Matrix::Matrix(ZeroType) */
         inline constexpr explicit Matrix4(typename Matrix<4, T>::ZeroType): Matrix<4, T>(Matrix<4, T>::Zero) {}
 
-        /** @copydoc Matrix::Matrix(IdentityType, T) */
-        /** @todo Use constexpr implementation in Matrix, when done */
+        /**
+         * @brief Default constructor
+         *
+         * Creates identity matrix. You can also explicitly call this
+         * constructor with `Matrix4 m(Matrix4::Identity);`. Optional parameter
+         * @p value allows you to specify value on diagonal.
+         * @todo Use constexpr implementation in Matrix, when done
+         */
         inline constexpr /*implicit*/ Matrix4(typename Matrix<4, T>::IdentityType = (Matrix<4, T>::Identity), T value = T(1)): Matrix<4, T>(
             Vector<4, T>(value,  T(0),  T(0),  T(0)),
             Vector<4, T>( T(0), value,  T(0),  T(0)),

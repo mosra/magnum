@@ -52,11 +52,11 @@ template<class T> class Complex {
         /**
          * @brief Default constructor
          *
-         * @f[
-         *      c = 0 + i0
+         * Constructs unit complex number. @f[
+         *      c = 1 + i0
          * @f]
          */
-        inline constexpr /*implicit*/ Complex(): _real(T(0)), _imaginary(T(0)) {}
+        inline constexpr /*implicit*/ Complex(): _real(T(1)), _imaginary(T(0)) {}
 
         /**
          * @brief Construct complex number from real and imaginary part

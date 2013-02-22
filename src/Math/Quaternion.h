@@ -127,7 +127,7 @@ template<class T> class Quaternion {
         /**
          * @brief Default constructor
          *
-         * @f[
+         * Creates unit quaternion. @f[
          *      q = [\boldsymbol 0, 1]
          * @f]
          */
@@ -356,7 +356,7 @@ template<class T> class Quaternion {
             return std::sqrt(dot());
         }
 
-        /** @brief Normalized quaternion (of length 1) */
+        /** @brief Normalized quaternion (of unit length) */
         inline Quaternion<T> normalized() const {
             return (*this)/length();
         }

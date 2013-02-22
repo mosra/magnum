@@ -405,7 +405,7 @@ template<std::size_t size, class T> class Vector {
             return std::sqrt(dot());
         }
 
-        /** @brief Normalized vector (of length 1) */
+        /** @brief Normalized vector (of unit length) */
         inline Vector<size, T> normalized() const {
             return *this/length();
         }

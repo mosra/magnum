@@ -74,7 +74,8 @@ void ComplexTest::construct() {
 }
 
 void ComplexTest::constructDefault() {
-    CORRADE_COMPARE(Complex(), Complex(0.0f, 0.0f));
+    CORRADE_COMPARE(Complex(), Complex(1.0f, 0.0f));
+    CORRADE_COMPARE(Complex().length(), 1.0f);
 }
 
 void ComplexTest::compare() {
@@ -87,7 +88,7 @@ void ComplexTest::compare() {
 void ComplexTest::constExpressions() {
     /* Default constructor */
     constexpr Complex a;
-    CORRADE_COMPARE(a, Complex(0.0f, 0.0f));
+    CORRADE_COMPARE(a, Complex(1.0f, 0.0f));
 
     /* Value constructor */
     constexpr Complex b(2.5f, -5.0f);
