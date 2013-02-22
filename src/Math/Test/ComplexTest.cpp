@@ -35,6 +35,11 @@ class ComplexTest: public Corrade::TestSuite::Tester {
         void multiplyDivideScalar();
         void multiply();
 
+        void dot();
+        void dotSelf();
+        void length();
+        void normalized();
+
         void debug();
 };
 
@@ -49,6 +54,11 @@ ComplexTest::ComplexTest() {
              &ComplexTest::negated,
              &ComplexTest::multiplyDivideScalar,
              &ComplexTest::multiply,
+
+             &ComplexTest::dot,
+             &ComplexTest::dotSelf,
+             &ComplexTest::length,
+             &ComplexTest::normalized,
 
              &ComplexTest::debug);
 }
@@ -126,6 +136,29 @@ void ComplexTest::multiply() {
 
     CORRADE_COMPARE(a*b, c);
     CORRADE_COMPARE(b*a, c);
+}
+
+void ComplexTest::dot() {
+    Complex a(5.0f,  3.0f);
+    Complex b(6.0f, -7.0f);
+
+    CORRADE_COMPARE(Complex::dot(a, b), Complex(9.0f, 53.0f));
+}
+
+void ComplexTest::dotSelf() {
+    CORRADE_COMPARE(Complex(-4.0f, 3.0f).dot(), 25.0f);
+}
+
+void ComplexTest::length() {
+    CORRADE_COMPARE(Complex(-4.0f, 3.0f).length(), 5.0f);
+}
+
+void ComplexTest::normalized() {
+    Complex a(-3.0f, 4.0f);
+    Complex b(-0.6f, 0.8f);
+
+    CORRADE_COMPARE(a.normalized(), b);
+    CORRADE_COMPARE(a.normalized().length(), 1.0f);
 }
 
 void ComplexTest::debug() {

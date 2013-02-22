@@ -38,6 +38,18 @@ template<class T> class Complex {
         typedef T Type;                         /**< @brief Underlying data type */
 
         /**
+         * @brief Dot product
+         *
+         * @f[
+         *      c_0 \cdot c_1 = c_0 \overline{c_1} = (a_0 a_1 + b_0 b_1) + i(a_1 b_0 - a_0 b_1)
+         * @f]
+         * @see dot() const
+         */
+        inline static Complex<T> dot(const Complex<T>& a, const Complex<T>& b) {
+            return a*b.conjugated();
+        }
+
+        /**
          * @brief Default constructor
          *
          * @f[
@@ -181,6 +193,36 @@ template<class T> class Complex {
         inline Complex<T> operator*(const Complex<T>& other) const {
             return {_real*other._real - _imaginary*other._imaginary,
                     _imaginary*other._real + _real*other._imaginary};
+        }
+
+        /**
+         * @brief Dot product of the complex number
+         *
+         * Should be used instead of length() for comparing complex number length
+         * with other values, because it doesn't compute the square root. @f[
+         *      c \cdot c = c \overline c = a^2 + b^2
+         * @f]
+         * @see dot(const Complex&, const Complex&)
+         */
+        inline T dot() const {
+            return _real*_real + _imaginary*_imaginary;
+        }
+
+        /**
+         * @brief %Complex number length
+         *
+         * See also dot() const which is faster for comparing length with other
+         * values. @f[
+         *      |c| = \sqrt{c \overline c} = \sqrt{a^2 + b^2}
+         * @f]
+         */
+        inline T length() const {
+            return std::hypot(_real, _imaginary);
+        }
+
+        /** @brief Normalized complex number (of unit length) */
+        inline Complex<T> normalized() const {
+            return (*this)/length();
         }
 
     private:
