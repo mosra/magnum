@@ -46,6 +46,7 @@ class ComplexTest: public Corrade::TestSuite::Tester {
         void invertedNormalized();
 
         void angle();
+        void rotation();
 
         void debug();
 };
@@ -72,10 +73,12 @@ ComplexTest::ComplexTest() {
              &ComplexTest::invertedNormalized,
 
              &ComplexTest::angle,
+             &ComplexTest::rotation,
 
              &ComplexTest::debug);
 }
 
+typedef Math::Deg<float> Deg;
 typedef Math::Rad<float> Rad;
 typedef Math::Complex<float> Complex;
 typedef Math::Vector2<float> Vector2;
@@ -226,6 +229,20 @@ void ComplexTest::angle() {
     CORRADE_COMPARE(angle, Vector2::angle(Vector2( 1.5f, -2.0f).normalized(),
                                           Vector2(-4.0f,  3.5f).normalized()));
     CORRADE_COMPARE(angle, Rad(2.933128f));
+}
+
+void ComplexTest::rotation() {
+    Complex a = Complex::rotation(Deg(120.0f));
+    CORRADE_COMPARE(a, Complex(-0.5f, 0.8660254f));
+    CORRADE_COMPARE_AS(a.rotationAngle(), Deg(120.0f), Rad);
+
+    /* Verify negative angle */
+    Complex b = Complex::rotation(Deg(-240.0f));
+    CORRADE_COMPARE(b, Complex(-0.5f, 0.8660254f));
+    CORRADE_COMPARE_AS(b.rotationAngle(), Deg(120.0f), Rad);
+
+    /* Default-constructed complex number has zero angle */
+    CORRADE_COMPARE_AS(Complex().rotationAngle(), Deg(0.0f), Rad);
 }
 
 void ComplexTest::debug() {

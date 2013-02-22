@@ -67,6 +67,19 @@ template<class T> class Complex {
         }
 
         /**
+         * @brief Rotation complex number
+         * @param angle             Rotation angle (counterclockwise)
+         *
+         * @f[
+         *      c = cos \theta + i sin \theta
+         * @f]
+         * @see rotationAngle(), Matrix3::rotation(), Quaternion::rotation()
+         */
+        inline static Complex<T> rotation(Rad<T> angle) {
+            return {std::cos(T(angle)), std::sin(T(angle))};
+        }
+
+        /**
          * @brief Default constructor
          *
          * Constructs unit complex number. @f[
@@ -100,6 +113,17 @@ template<class T> class Complex {
 
         /** @brief Imaginary part */
         inline constexpr T imaginary() const { return _imaginary; }
+
+        /**
+         * @brief Rotation angle of complex number
+         *
+         * @f[
+         *      \theta = atan2(b, a)
+         * @f]
+         */
+        inline Rad<T> rotationAngle() const {
+            return Rad<T>(std::atan2(_imaginary, _real));
+        }
 
         /**
          * @brief Add complex number and assign
