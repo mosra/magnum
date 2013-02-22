@@ -18,7 +18,6 @@
 #include <limits>
 
 #include "Math/Matrix4.h"
-#include "Math/Point3D.h"
 #include "Math/Geometry/Intersection.h"
 #include "LineSegment.h"
 

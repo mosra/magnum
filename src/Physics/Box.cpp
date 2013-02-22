@@ -16,7 +16,6 @@
 #include "Box.h"
 
 #include "Math/Matrix4.h"
-#include "Math/Point3D.h"
 
 namespace Magnum { namespace Physics {
 
