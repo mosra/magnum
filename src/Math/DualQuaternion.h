@@ -251,7 +251,8 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * quaternions. @f[
          *      v' = qv \overline{\hat q^{-1}} = q ([\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]) \overline{\hat q^{-1}}
          * @f]
-         * @see DualQuaternion(const Vector3&), Matrix4::transformPoint(), Quaternion::transformVector()
+         * @see DualQuaternion(const Vector3&), dual(), Matrix4::transformPoint(),
+         *      Quaternion::transformVector()
          */
         inline Vector3<T> transformPoint(const Vector3<T>& vector) const {
             return ((*this)*DualQuaternion<T>(vector)*inverted().dualConjugated()).dual().vector();
@@ -264,7 +265,8 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * quaternion is normalized. @f[
          *      v' = qv \overline{\hat q^{-1}} = qv \overline{\hat q^*} = q ([\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]) \overline{\hat q^*}
          * @f]
-         * @see DualQuaternion(const Vector3&), Matrix4::transformPoint(), Quaternion::transformVectorNormalized()
+         * @see DualQuaternion(const Vector3&), dual(), Matrix4::transformPoint(),
+         *      Quaternion::transformVectorNormalized()
          */
         inline Vector3<T> transformPointNormalized(const Vector3<T>& vector) const {
             CORRADE_ASSERT(MathTypeTraits<Dual<T>>::equals(lengthSquared(), Dual<T>(1)),

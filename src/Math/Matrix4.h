@@ -359,11 +359,11 @@ template<class T> class Matrix4: public Matrix<4, T> {
         /**
          * @brief Transform 3D vector with the matrix
          *
-         * Translation is not involved in the transformation. @f[
+         * Unlike in transformVector(), translation is not involved in the
+         * transformation. @f[
          *      \boldsymbol v' = \boldsymbol M \begin{pmatrix} v_x \\ v_y \\ v_z \\ 0 \end{pmatrix}
          * @f]
-         * @see transformPoint(), Quaternion::transformVector(),
-         *      Matrix3::transformVector()
+         * @see Quaternion::transformVector(), Matrix3::transformVector()
          */
         inline Vector3<T> transformVector(const Vector3<T>& vector) const {
             return ((*this)*Vector4<T>(vector, T(0))).xyz();
@@ -372,7 +372,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
         /**
          * @brief Transform 3D point with the matrix
          *
-         * Unlike in transformVector(), translation is also involved. @f[
+         * Unlike in transformVector(), translation is also involved in the
+         * transformation. @f[
          *      \boldsymbol v' = \boldsymbol M \begin{pmatrix} v_x \\ v_y \\ v_z \\ 1 \end{pmatrix}
          * @f]
          * @see DualQuaternion::transformPoint(), Matrix3::transformPoint()

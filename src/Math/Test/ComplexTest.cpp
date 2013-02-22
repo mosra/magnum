@@ -49,6 +49,8 @@ class ComplexTest: public Corrade::TestSuite::Tester {
         void angle();
         void rotation();
         void matrix();
+        void transformVector();
+        void transformVectorNormalized();
 
         void debug();
 };
@@ -78,6 +80,8 @@ ComplexTest::ComplexTest() {
              &ComplexTest::angle,
              &ComplexTest::rotation,
              &ComplexTest::matrix,
+             &ComplexTest::transformVector,
+             &ComplexTest::transformVectorNormalized,
 
              &ComplexTest::debug);
 }
@@ -264,6 +268,32 @@ void ComplexTest::matrix() {
     Matrix2 m = Matrix3::rotation(Deg(37.0f)).rotationScaling();
 
     CORRADE_COMPARE(a.matrix(), m);
+}
+
+void ComplexTest::transformVector() {
+    Complex a = Complex::rotation(Deg(23.0f));
+    Matrix3 m = Matrix3::rotation(Deg(23.0f));
+    Vector2 v(-3.6f, 0.7f);
+
+    Vector2 rotated = a.transformVector(v);
+    CORRADE_COMPARE(rotated, m.transformVector(v));
+    CORRADE_COMPARE(rotated, Vector2(-3.58733f, -0.762279f));
+}
+
+void ComplexTest::transformVectorNormalized() {
+    Complex a = Complex::rotation(Deg(23.0f));
+    Matrix3 m = Matrix3::rotation(Deg(23.0f));
+    Vector2 v(-3.6f, 0.7f);
+
+    std::ostringstream o;
+    Error::setOutput(&o);
+    Vector2 notRotated = (a*2).transformVectorNormalized(v);
+    CORRADE_VERIFY(notRotated != notRotated);
+    CORRADE_COMPARE(o.str(), "Math::Complex::transformVectorNormalized(): complex number must be normalized\n");
+
+    Vector2 rotated = a.transformVectorNormalized(v);
+    CORRADE_COMPARE(rotated, m.transformVector(v));
+    CORRADE_COMPARE(rotated, a.transformVector(v));
 }
 
 void ComplexTest::debug() {

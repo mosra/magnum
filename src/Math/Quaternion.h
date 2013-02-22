@@ -408,7 +408,8 @@ template<class T> class Quaternion {
          * quaternions. @f[
          *      v' = qvq^{-1} = q [\boldsymbol v, 0] q^{-1}
          * @f]
-         * @see Quaternion(const Vector3&), Matrix4::transformVector(), DualQuaternion::transformPoint()
+         * @see Quaternion(const Vector3&), vector(), Matrix4::transformVector(),
+         *      DualQuaternion::transformPoint(), Complex::transformVector()
          */
         inline Vector3<T> transformVector(const Vector3<T>& vector) const {
             return ((*this)*Quaternion<T>(vector)*inverted()).vector();
@@ -417,11 +418,13 @@ template<class T> class Quaternion {
         /**
          * @brief Rotate vector with normalized quaternion
          *
-         * Faster alternative to transformVector(), expects that the quaternion is
-         * normalized. @f[
+         * Faster alternative to transformVector(), expects that the quaternion
+         * is normalized. @f[
          *      v' = qvq^{-1} = qvq^* = q [\boldsymbol v, 0] q^*
          * @f]
-         * @see Quaternion(const Vector3&), Matrix4::transformVector(), DualQuaternion::transformPointNormalized()
+         * @see Quaternion(const Vector3&), vector(), Matrix4::transformVector(),
+         *      DualQuaternion::transformPointNormalized(),
+         *      Complex::transformVectorNormalized()
          */
         inline Vector3<T> transformVectorNormalized(const Vector3<T>& vector) const {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),

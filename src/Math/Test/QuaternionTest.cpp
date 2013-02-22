@@ -340,7 +340,7 @@ void QuaternionTest::transformVectorNormalized() {
     Vector3 v(5.0f, -3.6f, 0.7f);
 
     std::ostringstream o;
-    Corrade::Utility::Error::setOutput(&o);
+    Error::setOutput(&o);
     Vector3 notRotated = (a*2).transformVectorNormalized(v);
     CORRADE_VERIFY(notRotated != notRotated);
     CORRADE_COMPARE(o.str(), "Math::Quaternion::transformVectorNormalized(): quaternion must be normalized\n");

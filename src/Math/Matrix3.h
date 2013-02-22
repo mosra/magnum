@@ -212,10 +212,11 @@ template<class T> class Matrix3: public Matrix<3, T> {
         /**
          * @brief Transform 2D vector with the matrix
          *
-         * Translation is not involved in the transformation. @f[
+         * Unlike in transformPoint(), translation is not involved in the
+         * transformation. @f[
          *      \boldsymbol v' = \boldsymbol M \begin{pmatrix} v_x \\ v_y \\ 0 \end{pmatrix}
          * @f]
-         * @see transformPoint(), Matrix4::transformVector()
+         * @see Complex::transformVector(), Matrix4::transformVector()
          */
         inline Vector2<T> transformVector(const Vector2<T>& vector) const {
             return ((*this)*Vector3<T>(vector, T(0))).xy();
@@ -224,7 +225,8 @@ template<class T> class Matrix3: public Matrix<3, T> {
         /**
          * @brief Transform 2D point with the matrix
          *
-         * Unlike in transformVector(), translation is also involved. @f[
+         * Unlike in transformVector(), translation is also involved in the
+         * transformation. @f[
          *      \boldsymbol v' = \boldsymbol M \begin{pmatrix} v_x \\ v_y \\ 1 \end{pmatrix}
          * @f]
          * @see Matrix4::transformPoint()
