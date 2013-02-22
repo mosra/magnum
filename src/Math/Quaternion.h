@@ -23,7 +23,6 @@
 #include <Utility/Assert.h>
 #include <Utility/Debug.h>
 
-#include "Math/Functions.h"
 #include "Math/MathTypeTraits.h"
 #include "Math/Matrix.h"
 #include "Math/Vector3.h"
@@ -198,7 +197,7 @@ template<class T> class Quaternion {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
                            "Math::Quaternion::rotationAxis(): quaternion must be normalized",
                            {});
-            return _vector/std::sqrt(1-pow<2>(_scalar));
+            return _vector/std::sqrt(1-pow2(_scalar));
         }
 
         /**
@@ -208,15 +207,15 @@ template<class T> class Quaternion {
          */
         Matrix<3, T> matrix() const {
             return {
-                Vector<3, T>(T(1) - 2*pow<2>(_vector.y()) - 2*pow<2>(_vector.z()),
+                Vector<3, T>(T(1) - 2*pow2(_vector.y()) - 2*pow2(_vector.z()),
                     2*_vector.x()*_vector.y() + 2*_vector.z()*_scalar,
                         2*_vector.x()*_vector.z() - 2*_vector.y()*_scalar),
                 Vector<3, T>(2*_vector.x()*_vector.y() - 2*_vector.z()*_scalar,
-                    T(1) - 2*pow<2>(_vector.x()) - 2*pow<2>(_vector.z()),
+                    T(1) - 2*pow2(_vector.x()) - 2*pow2(_vector.z()),
                         2*_vector.y()*_vector.z() + 2*_vector.x()*_scalar),
                 Vector<3, T>(2*_vector.x()*_vector.z() + 2*_vector.y()*_scalar,
                     2*_vector.y()*_vector.z() - 2*_vector.x()*_scalar,
-                        T(1) - 2*pow<2>(_vector.x()) - 2*pow<2>(_vector.y()))
+                        T(1) - 2*pow2(_vector.x()) - 2*pow2(_vector.y()))
             };
         }
 
@@ -430,6 +429,11 @@ template<class T> class Quaternion {
         }
 
     private:
+        /* Used to avoid including Functions.h */
+        inline constexpr static T pow2(T value) {
+            return value*value;
+        }
+
         /* Used in angle() and slerp() (no assertions) */
         inline static T angleInternal(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
             return std::acos(dot(normalizedA, normalizedB));
