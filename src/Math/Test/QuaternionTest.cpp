@@ -257,7 +257,7 @@ void QuaternionTest::angle() {
     CORRADE_VERIFY(angle != angle);
     CORRADE_COMPARE(o.str(), "Math::Quaternion::angle(): quaternions must be normalized\n");
 
-    o.str("");
+    o.str({});
     angle = Quaternion::angle({{1.0f, 2.0f, -3.0f}, -4.0f}, Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized());
     CORRADE_VERIFY(angle != angle);
     CORRADE_COMPARE(o.str(), "Math::Quaternion::angle(): quaternions must be normalized\n");
@@ -288,7 +288,7 @@ void QuaternionTest::lerp() {
     CORRADE_COMPARE(notLerpA.scalar(), std::numeric_limits<float>::quiet_NaN());
     CORRADE_COMPARE(o.str(), "Math::Quaternion::lerp(): quaternions must be normalized\n");
 
-    o.str("");
+    o.str({});
     Quaternion notLerpB = Quaternion::lerp(a, b*-3.0f, 0.35f);
     CORRADE_COMPARE(notLerpB.vector(), Vector3());
     CORRADE_COMPARE(notLerpB.scalar(), std::numeric_limits<float>::quiet_NaN());
@@ -310,7 +310,7 @@ void QuaternionTest::slerp() {
     CORRADE_COMPARE(notSlerpA.scalar(), std::numeric_limits<float>::quiet_NaN());
     CORRADE_COMPARE(o.str(), "Math::Quaternion::slerp(): quaternions must be normalized\n");
 
-    o.str("");
+    o.str({});
     Quaternion notSlerpB = Quaternion::slerp(a, b*-3.0f, 0.35f);
     CORRADE_COMPARE(notSlerpB.vector(), Vector3());
     CORRADE_COMPARE(notSlerpB.scalar(), std::numeric_limits<float>::quiet_NaN());

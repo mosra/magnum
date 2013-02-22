@@ -309,7 +309,7 @@ void VectorTest::angle() {
     CORRADE_VERIFY(angle != angle);
     CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized\n");
 
-    o.str("");
+    o.str({});
     angle = Vector3::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized());
     CORRADE_VERIFY(angle != angle);
     CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized\n");
@@ -324,7 +324,7 @@ void VectorTest::debug() {
     Debug(&o) << Vector4(0.5f, 15.0f, 1.0f, 1.0f);
     CORRADE_COMPARE(o.str(), "Vector(0.5, 15, 1, 1)\n");
 
-    o.str("");
+    o.str({});
     Debug(&o) << "a" << Vector4() << "b" << Vector4();
     CORRADE_COMPARE(o.str(), "a Vector(0, 0, 0, 0) b Vector(0, 0, 0, 0)\n");
 }

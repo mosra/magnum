@@ -163,7 +163,7 @@ void ColorTest::debug() {
     Debug(&o) << Color3f(0.5f, 0.75f, 1.0f);
     CORRADE_COMPARE(o.str(), "Vector(0.5, 0.75, 1)\n");
 
-    o.str("");
+    o.str({});
     Debug(&o) << Color4f(0.5f, 0.75f, 0.0f, 1.0f);
     CORRADE_COMPARE(o.str(), "Vector(0.5, 0.75, 0, 1)\n");
 }

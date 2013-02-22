@@ -191,7 +191,7 @@ void Matrix3Test::invertedEuclidean() {
     CORRADE_COMPARE(m.invertedEuclidean(), Matrix3());
     CORRADE_COMPARE(o.str(), "Math::Matrix3::invertedEuclidean(): unexpected values on last row\n");
 
-    o.str("");
+    o.str({});
     CORRADE_COMPARE(Matrix3::scaling(Vector2(2.0f)).invertedEuclidean(), Matrix3());
     CORRADE_COMPARE(o.str(), "Math::Matrix3::invertedEuclidean(): the matrix doesn't represent Euclidean transformation\n");
 

@@ -36,7 +36,7 @@ void AbstractShapeTest::debug() {
     Debug(&o) << AbstractShape2D::Type::ShapeGroup;
     CORRADE_COMPARE(o.str(), "AbstractShape2D::Type::ShapeGroup\n");
 
-    o.str("");
+    o.str({});
     Debug(&o) << AbstractShape3D::Type::Plane;
     CORRADE_COMPARE(o.str(), "AbstractShape3D::Type::Plane\n");
 }

@@ -132,7 +132,7 @@ void ResourceManagerTest::stateDisallowed() {
     rm.set("data", &d, ResourceDataState::Loading, ResourcePolicy::Resident);
     CORRADE_COMPARE(out.str(), "ResourceManager::set(): data should be null if and only if state is NotFound or Loading\n");
 
-    out.str("");
+    out.str({});
     rm.set<Data>("data", nullptr, ResourceDataState::Final, ResourcePolicy::Resident);
     CORRADE_COMPARE(out.str(), "ResourceManager::set(): data should be null if and only if state is NotFound or Loading\n");
 }

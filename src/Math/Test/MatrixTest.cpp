@@ -168,7 +168,7 @@ void MatrixTest::debug() {
                              "       8, 7, 8, 5,\n"
                              "       4, 3, 0, 9)\n");
 
-    o.str("");
+    o.str({});
     Debug(&o) << "a" << Matrix4() << "b" << Matrix4();
     CORRADE_COMPARE(o.str(), "a Matrix(1, 0, 0, 0,\n"
                              "       0, 1, 0, 0,\n"

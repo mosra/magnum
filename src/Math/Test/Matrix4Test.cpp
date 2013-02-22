@@ -266,7 +266,7 @@ void Matrix4Test::invertedEuclidean() {
     CORRADE_COMPARE(m.invertedEuclidean(), Matrix4());
     CORRADE_COMPARE(o.str(), "Math::Matrix4::invertedEuclidean(): unexpected values on last row\n");
 
-    o.str("");
+    o.str({});
     CORRADE_COMPARE(Matrix4::scaling(Vector3(2.0f)).invertedEuclidean(), Matrix4());
     CORRADE_COMPARE(o.str(), "Math::Matrix4::invertedEuclidean(): the matrix doesn't represent Euclidean transformation\n");
 

@@ -398,7 +398,7 @@ void RectangularMatrixTest::debug() {
                              "       8, 7, 8,\n"
                              "       4, 3, 0)\n");
 
-    o.str("");
+    o.str({});
     Debug(&o) << "a" << Matrix3x4() << "b" << RectangularMatrix<4, 3, std::int8_t>();
     CORRADE_COMPARE(o.str(), "a Matrix(0, 0, 0,\n"
                              "       0, 0, 0,\n"

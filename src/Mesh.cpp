@@ -376,7 +376,7 @@ std::string ConfigurationValue<Magnum::Mesh::Primitive>::toString(Magnum::Mesh::
         #undef _c
     }
 
-    return "";
+    return {};
 }
 
 Magnum::Mesh::Primitive ConfigurationValue<Magnum::Mesh::Primitive>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
@@ -401,7 +401,7 @@ std::string ConfigurationValue<Magnum::Mesh::IndexType>::toString(Magnum::Mesh::
         #undef _c
     }
 
-    return "";
+    return {};
 }
 
 Magnum::Mesh::IndexType ConfigurationValue<Magnum::Mesh::IndexType>::fromString(const std::string& stringValue, ConfigurationValueFlags) {

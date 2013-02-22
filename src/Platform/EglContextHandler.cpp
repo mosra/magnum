@@ -119,7 +119,7 @@ const char* EglContextHandler::errorString(EGLint error) {
         #undef _error
     }
 
-    return "";
+    return {};
 }
 
 }}
