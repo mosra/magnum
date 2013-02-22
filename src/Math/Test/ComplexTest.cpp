@@ -27,6 +27,7 @@ class ComplexTest: public Corrade::TestSuite::Tester {
 
         void construct();
         void constructDefault();
+        void constructFromVector();
         void compare();
 
         void constExpressions();
@@ -55,6 +56,7 @@ class ComplexTest: public Corrade::TestSuite::Tester {
 ComplexTest::ComplexTest() {
     addTests(&ComplexTest::construct,
              &ComplexTest::constructDefault,
+             &ComplexTest::constructFromVector,
              &ComplexTest::compare,
 
              &ComplexTest::constExpressions,
@@ -98,6 +100,14 @@ void ComplexTest::construct() {
 void ComplexTest::constructDefault() {
     CORRADE_COMPARE(Complex(), Complex(1.0f, 0.0f));
     CORRADE_COMPARE(Complex().length(), 1.0f);
+}
+
+void ComplexTest::constructFromVector() {
+    Vector2 vec(1.5f, -3.0f);
+
+    Complex a(vec);
+    CORRADE_COMPARE(a, Complex(1.5f, -3.0f));
+    CORRADE_COMPARE(Vector2(a), vec);
 }
 
 void ComplexTest::compare() {

@@ -24,6 +24,7 @@
 #include <Utility/Debug.h>
 
 #include "Math/Matrix.h"
+#include "Math/Vector2.h"
 
 namespace Magnum { namespace Math {
 
@@ -94,6 +95,16 @@ template<class T> class Complex {
          */
         inline constexpr /*implicit*/ Complex(T real, T imaginary = T(0)): _real(real), _imaginary(imaginary) {}
 
+        /**
+         * @brief Construct complex number from vector
+         *
+         * To be used in transformations later. @f[
+         *      c = v_x + iv_y
+         * @f]
+         * @see operator Vector2(), transformVector(), transformVectorNormalized()
+         */
+        inline constexpr explicit Complex(const Vector2<T>& vector): _real(vector.x()), _imaginary(vector.y()) {}
+
         /** @brief Equality comparison */
         inline bool operator==(const Complex<T>& other) const {
             return MathTypeTraits<T>::equals(_real, other._real) &&
@@ -110,6 +121,17 @@ template<class T> class Complex {
 
         /** @brief Imaginary part */
         inline constexpr T imaginary() const { return _imaginary; }
+
+        /**
+         * @brief Convert complex number to vector
+         *
+         * @f[
+         *      \boldsymbol v = \begin{pmatrix} a \\ b \end{pmatrix}
+         * @f]
+         */
+        inline constexpr explicit operator Vector2<T>() const {
+            return {_real, _imaginary};
+        }
 
         /**
          * @brief Rotation angle of complex number
