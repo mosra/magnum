@@ -32,6 +32,7 @@ namespace Magnum { namespace Physics {
 
 @todo Use quat + position + size instead?
 @see Box2D, Box3D
+@todo Assert for skew
 */
 template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Box: public AbstractShape<dimensions> {
     public:

@@ -32,6 +32,10 @@ namespace Magnum {
 
 See Image, ImageWrapper, BufferImage, Trade::ImageData documentation for
 more information.
+@todo Where to put glClampColor() and glPixelStore() encapsulation? It is
+needed in AbstractFramebuffer::read(), Texture::setImage() etc (i.e. all
+functions operating with images). It also possibly needs to be "stackable" to
+easily revert the state back.
 */
 class MAGNUM_EXPORT AbstractImage {
     AbstractImage(const AbstractImage& other) = delete;

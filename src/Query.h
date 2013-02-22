@@ -355,6 +355,7 @@ GLuint timeElapsed2 = q3.result<GLuint>()-tmp;
 Using this query results in fewer OpenGL calls when doing more measures.
 @requires_gl33 %Extension @extension{ARB,timer_query}
 @requires_gl Timer query is not available in OpenGL ES.
+@todo timestamp with glGet + example usage
 */
 class TimeQuery: public AbstractQuery {
     public:

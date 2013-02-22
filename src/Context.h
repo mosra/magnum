@@ -127,6 +127,8 @@ Provides access to version and extension information. Instance available
 through Context::current() is automatically created during construction of
 *Application classes in Platform namespace so you can safely assume that the
 instance is available during whole lifetime of *Application object.
+@todo @extension{ATI,meminfo}, @extension{NVX,gpu_memory_info}, GPU temperature?
+    (here or where?)
 */
 class MAGNUM_EXPORT Context {
     Context(const Context&) = delete;

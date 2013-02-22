@@ -33,6 +33,7 @@ namespace Magnum { namespace Physics {
 Unlike other elements the capsule doesn't support asymmetric scaling. When
 applying transformation, the scale factor is averaged from all axes.
 @see Capsule2D, Capsule3D
+@todo Assert for asymmetric scaling
 */
 template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Capsule: public AbstractShape<dimensions> {
     public:

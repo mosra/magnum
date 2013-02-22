@@ -63,6 +63,7 @@ performed by OpenGL in order to preserve the data. If running on OpenGL ES or
 extension @extension{ARB,invalidate_subdata} is not available, these functions
 do nothing.
 
+@todo all texture [level] parameters, global texture parameters
 @todo Add glPixelStore encapsulation
 @todo Texture copying
 @todo Move constructor/assignment - how to avoid creation of empty texture and

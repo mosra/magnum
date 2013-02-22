@@ -31,6 +31,7 @@ namespace Magnum { namespace Physics {
 @brief Axis-aligned box
 
 @see AxisAlignedBox2D, AxisAlignedBox3D
+@todo Assert for rotation
 */
 template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT AxisAlignedBox: public AbstractShape<dimensions> {
     public:
