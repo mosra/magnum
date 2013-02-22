@@ -36,14 +36,6 @@ template<std::uint8_t dimensions, class T = GLfloat> struct DimensionTraits {
     typedef U VectorType;
 
     /**
-     * @brief Point type
-     *
-     * Floating-point Math::Point2D or Math::Point3D for 2D or 3D. No point
-     * type defined for one dimension and integral types.
-     */
-    typedef U PointType;
-
-    /**
      * @brief Matrix type
      *
      * Floating-point Math::Matrix3 or Math::Matrix4 for 2D or 3D. No matrix
@@ -73,14 +65,12 @@ template<> struct DimensionTraits<2, float> {
     DimensionTraits() = delete;
 
     typedef Math::Vector2<float> VectorType;
-    typedef Math::Point2D<float> PointType;
     typedef Math::Matrix3<float> MatrixType;
 };
 template<> struct DimensionTraits<2, double> {
     DimensionTraits() = delete;
 
     typedef Math::Vector2<double> VectorType;
-    typedef Math::Point2D<double> PointType;
     typedef Math::Matrix3<double> MatrixType;
 };
 
@@ -96,14 +86,12 @@ template<> struct DimensionTraits<3, float> {
     DimensionTraits() = delete;
 
     typedef Math::Vector3<float> VectorType;
-    typedef Math::Point3D<float> PointType;
     typedef Math::Matrix4<float> MatrixType;
 };
 template<> struct DimensionTraits<3, double> {
     DimensionTraits() = delete;
 
     typedef Math::Vector3<double> VectorType;
-    typedef Math::Point3D<double> PointType;
     typedef Math::Matrix4<double> MatrixType;
 };
 #endif
