@@ -19,6 +19,8 @@
  * @brief Class Magnum::Math::Complex
  */
 
+#include <limits>
+#include <Utility/Assert.h>
 #include <Utility/Debug.h>
 
 #include "Math/MathTypeTraits.h"
@@ -223,6 +225,45 @@ template<class T> class Complex {
         /** @brief Normalized complex number (of unit length) */
         inline Complex<T> normalized() const {
             return (*this)/length();
+        }
+
+        /**
+         * @brief Conjugated complex number
+         *
+         * @f[
+         *      \overline c = a - ib
+         * @f]
+         */
+        inline Complex<T> conjugated() const {
+            return {_real, -_imaginary};
+        }
+
+        /**
+         * @brief Inverted complex number
+         *
+         * See invertedNormalized() which is faster for normalized
+         * complex numbers. @f[
+         *      c^{-1} = \frac{\overline c}{c \overline c} = \frac{\overline c}{a^2 + b^2}
+         * @f]
+         */
+        inline Complex<T> inverted() const {
+            return conjugated()/dot();
+        }
+
+        /**
+         * @brief Inverted normalized complex number
+         *
+         * Equivalent to conjugated(). Expects that the complex number is
+         * normalized. @f[
+         *      c^{-1} = \frac{\overline c}{c \overline c} = \frac{\overline c}{a^2 + b^2} = \overline c
+         * @f]
+         * @see inverted()
+         */
+        inline Complex<T> invertedNormalized() const {
+            CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
+                           "Math::Complex::invertedNormalized(): complex number must be normalized",
+                           Complex<T>(std::numeric_limits<T>::quiet_NaN(), std::numeric_limits<T>::quiet_NaN()));
+            return conjugated();
         }
 
     private:

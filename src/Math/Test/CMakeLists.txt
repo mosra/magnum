@@ -26,6 +26,7 @@ set_target_properties(
     MathVectorTest
     MathMatrix3Test
     MathMatrix4Test
+    MathComplexTest
     MathDualQuaternionTest
     MathQuaternionTest
     PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)

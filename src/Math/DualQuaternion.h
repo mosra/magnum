@@ -236,6 +236,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * normalized. @f[
          *      \hat q^{-1} = \frac{\hat q^*}{||\hat q||^2} = \hat q^*
          * @f]
+         * @see inverted()
          */
         inline DualQuaternion<T> invertedNormalized() const {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(lengthSquared(), T(1)),

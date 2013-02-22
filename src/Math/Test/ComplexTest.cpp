@@ -40,6 +40,10 @@ class ComplexTest: public Corrade::TestSuite::Tester {
         void length();
         void normalized();
 
+        void conjugated();
+        void inverted();
+        void invertedNormalized();
+
         void debug();
 };
 
@@ -59,6 +63,10 @@ ComplexTest::ComplexTest() {
              &ComplexTest::dotSelf,
              &ComplexTest::length,
              &ComplexTest::normalized,
+
+             &ComplexTest::conjugated,
+             &ComplexTest::inverted,
+             &ComplexTest::invertedNormalized,
 
              &ComplexTest::debug);
 }
@@ -160,6 +168,37 @@ void ComplexTest::normalized() {
 
     CORRADE_COMPARE(a.normalized(), b);
     CORRADE_COMPARE(a.normalized().length(), 1.0f);
+}
+
+void ComplexTest::conjugated() {
+    CORRADE_COMPARE(Complex(-3.0f, 4.5f).conjugated(), Complex(-3.0f, -4.5f));
+}
+
+void ComplexTest::inverted() {
+    Complex a(-3.0f, 4.0f);
+    Complex b(-0.12f, -0.16f);
+
+    Complex inverted = a.inverted();
+    CORRADE_COMPARE(a*inverted, Complex());
+    CORRADE_COMPARE(inverted*a, Complex());
+    CORRADE_COMPARE(inverted, b);
+}
+
+void ComplexTest::invertedNormalized() {
+    std::ostringstream o;
+    Error::setOutput(&o);
+
+    Complex a(-0.6f, 0.8f);
+    Complex b(-0.6f, -0.8f);
+
+    Complex notInverted = (a*2).invertedNormalized();
+    CORRADE_VERIFY(notInverted != notInverted);
+    CORRADE_COMPARE(o.str(), "Math::Complex::invertedNormalized(): complex number must be normalized\n");
+
+    Complex inverted = a.invertedNormalized();
+    CORRADE_COMPARE(a*inverted, Complex());
+    CORRADE_COMPARE(inverted*a, Complex());
+    CORRADE_COMPARE(inverted, b);
 }
 
 void ComplexTest::debug() {

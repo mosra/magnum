@@ -391,6 +391,7 @@ template<class T> class Quaternion {
          * normalized. @f[
          *      q^{-1} = \frac{q^*}{|q|^2} = q^*
          * @f]
+         * @see inverted()
          */
         inline Quaternion<T> invertedNormalized() const {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
