@@ -1,0 +1,109 @@
+/*
+    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
+
+    This file is part of Magnum.
+
+    Magnum is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License version 3
+    only, as published by the Free Software Foundation.
+
+    Magnum is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License version 3 for more details.
+*/
+
+#include <array>
+#include <TestSuite/Tester.h>
+
+#include "Math/Matrix3.h"
+#include "Magnum.h"
+#include "MeshTools/Transform.h"
+
+namespace Magnum { namespace MeshTools { namespace Test {
+
+class TransformTest: public Corrade::TestSuite::Tester {
+    public:
+        explicit TransformTest();
+
+        void transformVectors2D();
+        void transformVectors3D();
+
+        void transformPoints2D();
+        void transformPoints3D();
+};
+
+TransformTest::TransformTest() {
+    addTests(&TransformTest::transformVectors2D,
+             &TransformTest::transformVectors3D,
+
+             &TransformTest::transformPoints2D,
+             &TransformTest::transformPoints3D);
+}
+
+constexpr static std::array<Vector2, 2> points2D{{
+    {-3.0f,   4.0f},
+    { 2.5f, -15.0f}
+}};
+
+constexpr static std::array<Vector2, 2> points2DRotated{{
+    {-4.0f, -3.0f},
+    {15.0f,  2.5f}
+}};
+
+constexpr static std::array<Vector2, 2> points2DRotatedTranslated{{
+    {-4.0f, -4.0f},
+    {15.0f,  1.5f}
+}};
+
+constexpr static std::array<Vector3, 2> points3D{{
+    {-3.0f,   4.0f, 34.0f},
+    { 2.5f, -15.0f,  1.5f}
+}};
+
+constexpr static std::array<Vector3, 2> points3DRotated{{
+    {-4.0f, -3.0f, 34.0f},
+    {15.0f,  2.5f,  1.5f}
+}};
+
+constexpr static std::array<Vector3, 2> points3DRotatedTranslated{{
+    {-4.0f, -4.0f, 34.0f},
+    {15.0f,  1.5f,  1.5f}
+}};
+
+void TransformTest::transformVectors2D() {
+    auto matrix = MeshTools::transformVectors(Matrix3::rotation(Deg(90.0f)), points2D);
+    auto complex = MeshTools::transformVectors(Complex::rotation(Deg(90.0f)), points2D);
+
+    CORRADE_COMPARE(matrix, points2DRotated);
+    CORRADE_COMPARE(complex, points2DRotated);
+}
+
+void TransformTest::transformVectors3D() {
+    auto matrix = MeshTools::transformVectors(Matrix4::rotationZ(Deg(90.0f)), points3D);
+    auto complex = MeshTools::transformVectors(Quaternion::rotation(Deg(90.0f), Vector3::zAxis()), points3D);
+
+    CORRADE_COMPARE(matrix, points3DRotated);
+    CORRADE_COMPARE(complex, points3DRotated);
+}
+
+void TransformTest::transformPoints2D() {
+    auto matrix = MeshTools::transformPoints(
+        Matrix3::translation(Vector2::yAxis(-1.0f))*Matrix3::rotation(Deg(90.0f)), points2D);
+
+    CORRADE_COMPARE(matrix, points2DRotatedTranslated);
+}
+
+void TransformTest::transformPoints3D() {
+    auto matrix = MeshTools::transformPoints(
+        Matrix4::translation(Vector3::yAxis(-1.0f))*Matrix4::rotationZ(Deg(90.0f)), points3D);
+    auto complex = MeshTools::transformPoints(
+        DualQuaternion::translation(Vector3::yAxis(-1.0f))*DualQuaternion::rotation(Deg(90.0f), Vector3::zAxis()), points3D);
+
+    CORRADE_COMPARE(matrix, points3DRotatedTranslated);
+    CORRADE_COMPARE(complex, points3DRotatedTranslated);
+}
+
+}}}
+
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::TransformTest)
