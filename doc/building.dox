@@ -182,7 +182,7 @@ You will need [Native Client SDK](https://developers.google.com/native-client/be
 Tested version is `pepper_22`.
 
 Make sure you have `toolchains` Git submodule updated, as
-@ref building-download "explained above". Don't forget to adapt `NACL_PREFIX
+@ref building-download "explained above". Don't forget to adapt `NACL_PREFIX`
 variable in `generic/NaCl-glibc-x86-32.cmake` and `generic/NaCl-glibc-x86-64.cmake`
 to path where your SDK is installed. Default is `/usr/nacl`.  You may need to
 adapt also `NACL_TOOLCHAIN_PATH` so CMake is able to find the compiler.

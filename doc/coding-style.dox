@@ -35,7 +35,7 @@ removing redundant prefixes) is encouraged.
 
 @subsubsection cpp-forward-declarations Forward declarations and forward declaration headers
 
-When an namespace has classes which are commonly forward-declared, consider
+When a namespace has classes which are commonly forward-declared, consider
 making a forward declaration header - it should have the same name as the
 namespace itself and contain foward declarations for all classes, enums and
 copies of all meaningful typedefs. See @ref compilation-forward-declarations
