@@ -117,8 +117,14 @@ typedef Math::Matrix3<GLdouble> Matrix3d;
 typedef Math::Matrix4<GLdouble> Matrix4d;
 #endif
 
-/** @brief Quaternion */
+/** @brief %Complex number */
+typedef Math::Complex<GLfloat> Complex;
+
+/** @brief %Quaternion */
 typedef Math::Quaternion<GLfloat> Quaternion;
+
+/** @brief %Dual quaternion */
+typedef Math::DualQuaternion<GLfloat> DualQuaternion;
 
 /** @brief Floating-point constants */
 /* Using float instead of GLfloat to not break KDevelop autocompletion */

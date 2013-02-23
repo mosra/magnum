@@ -30,7 +30,7 @@ namespace Magnum { namespace Math {
 @tparam T   Underlying data type
 
 Represents 3D rotation and translation.
-@see Dual, Quaternion, Matrix4
+@see Magnum::DualQuaternion, Dual, Quaternion, Matrix4
 */
 template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
     public:

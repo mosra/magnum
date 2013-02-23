@@ -33,6 +33,7 @@ namespace Magnum { namespace Math {
 @tparam T   Data type
 
 Represents 2D rotation.
+@see Magnum::Complex, Matrix3
 */
 template<class T> class Complex {
     public:
