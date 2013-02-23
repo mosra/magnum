@@ -19,7 +19,7 @@
  * @brief Class Magnum::Trade::TgaImporter::TgaImporter
  */
 
-#include "Trade/AbstractImporter.h"
+#include <Trade/AbstractImporter.h>
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifdef _WIN32

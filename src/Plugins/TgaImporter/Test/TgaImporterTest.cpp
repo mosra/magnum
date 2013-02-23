@@ -20,8 +20,6 @@
 
 #include "../TgaImporter.h"
 
-using namespace Corrade::Utility;
-
 namespace Magnum { namespace Trade { namespace TgaImporter { namespace Test {
 
 class TgaImporterTest: public Corrade::TestSuite::Tester {

@@ -18,11 +18,11 @@
 #include <fstream>
 #include <algorithm>
 #include <Utility/Endianness.h>
-
-#include "Math/Vector2.h"
+#include <Math/Vector2.h>
 #include <Swizzle.h>
-#include "Trade/ImageData.h"
-using namespace Corrade::Utility;
+#include <Trade/ImageData.h>
+
+using Corrade::Utility::Endianness;
 
 namespace Magnum { namespace Trade { namespace TgaImporter {
 
@@ -61,8 +61,8 @@ bool TgaImporter::open(std::istream& in) {
     in.read(reinterpret_cast<char*>(&header), sizeof(Header));
 
     /* Convert to machine endian */
-    header.width = Endianness::littleEndian<unsigned short>(header.width);
-    header.height = Endianness::littleEndian<unsigned short>(header.height);
+    header.width = Endianness::littleEndian(header.width);
+    header.height = Endianness::littleEndian(header.height);
 
     if(header.colorMapType != 0) {
         Error() << "TgaImporter: paletted files are not supported";
