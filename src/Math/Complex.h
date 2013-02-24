@@ -306,7 +306,7 @@ template<class T> class Complex {
          * @brief Conjugated complex number
          *
          * @f[
-         *      \overline c = a - ib
+         *      c^* = a - ib
          * @f]
          */
         inline Complex<T> conjugated() const {
@@ -318,7 +318,7 @@ template<class T> class Complex {
          *
          * See invertedNormalized() which is faster for normalized
          * complex numbers. @f[
-         *      c^{-1} = \frac{\overline c}{|c|^2} = \frac{\overline c}{c \cdot c}
+         *      c^{-1} = \frac{c^*}{|c|^2} = \frac{c^*}{c \cdot c}
          * @f]
          */
         inline Complex<T> inverted() const {
@@ -330,7 +330,7 @@ template<class T> class Complex {
          *
          * Equivalent to conjugated(). Expects that the complex number is
          * normalized. @f[
-         *      c^{-1} = \frac{\overline c}{c \overline c} = \frac{\overline c}{a^2 + b^2} = \overline c
+         *      c^{-1} = \frac{c^*}{c \cdot c} = c^*
          * @f]
          * @see inverted()
          */
