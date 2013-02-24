@@ -38,6 +38,7 @@ class DualQuaternionTest: public Corrade::TestSuite::Tester {
         void dualConjugated();
         void conjugated();
         void inverted();
+        void invertedNormalized();
 
         void rotation();
         void translation();
@@ -72,6 +73,7 @@ DualQuaternionTest::DualQuaternionTest() {
              &DualQuaternionTest::dualConjugated,
              &DualQuaternionTest::conjugated,
              &DualQuaternionTest::inverted,
+             &DualQuaternionTest::invertedNormalized,
 
              &DualQuaternionTest::rotation,
              &DualQuaternionTest::translation,
@@ -155,11 +157,27 @@ void DualQuaternionTest::conjugated() {
 }
 
 void DualQuaternionTest::inverted() {
-    DualQuaternion a({{ 1.0f,  2.0f,  3.0f}, -4.0f}, {{ 2.5f, -3.1f,  3.3f},  2.0f});
-    DualQuaternion b({{-0.033333f, -0.066667f, -0.1f}, -0.133333f}, {{-0.087333f, 0.095333f, -0.122f}, 0.050667f});
+    DualQuaternion a({{ 1.0f,  2.0f,  3.0f}, -4.0f}, {{ 2.5f, -3.1f,  3.3f}, 2.0f});
+    DualQuaternion b({{-1.0f, -2.0f, -3.0f}, -4.0f}, {{-2.5f,  3.1f, -3.3f}, 2.0f});
 
     CORRADE_COMPARE(a*a.inverted(), DualQuaternion());
-    CORRADE_COMPARE(a.inverted(), b);
+    CORRADE_COMPARE(a.inverted(), b/Dual(30.0f, -3.6f));
+}
+
+void DualQuaternionTest::invertedNormalized() {
+    DualQuaternion a({{ 1.0f,  2.0f,  3.0f}, -4.0f}, {{ 2.5f, -3.1f,  3.3f}, 2.0f});
+    DualQuaternion b({{-1.0f, -2.0f, -3.0f}, -4.0f}, {{-2.5f,  3.1f, -3.3f}, 2.0f});
+
+    std::ostringstream o;
+    Error::setOutput(&o);
+    CORRADE_COMPARE(a.invertedNormalized(), DualQuaternion());
+    CORRADE_COMPARE(o.str(), "Math::DualQuaternion::invertedNormalized(): dual quaternion must be normalized\n");
+
+    DualQuaternion normalized = a.normalized();
+    DualQuaternion inverted = normalized.invertedNormalized();
+    CORRADE_COMPARE(normalized*inverted, DualQuaternion());
+    CORRADE_COMPARE(inverted*normalized, DualQuaternion());
+    CORRADE_COMPARE(inverted, b/Math::sqrt(Dual(30.0f, -3.6f)));
 }
 
 void DualQuaternionTest::rotation() {
