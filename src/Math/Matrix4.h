@@ -76,9 +76,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * Expects that the rotation axis is normalized. If possible, use
          * faster alternatives like rotationX(), rotationY() and rotationZ().
-         * @see rotation() const, DualQuaternion::rotation(),
-         *      Quaternion::rotation(), Matrix3::rotation(Rad), Vector3::xAxis(),
-         *      Vector3::yAxis(), Vector3::zAxis()
+         * @see rotation() const, Quaternion::rotation(), DualQuaternion::rotation(),
+         *      Matrix3::rotation(Rad), Vector3::xAxis(), Vector3::yAxis(),
+         *      Vector3::zAxis()
          */
         static Matrix4<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis) {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedAxis.dot(), T(1)),

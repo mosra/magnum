@@ -36,6 +36,20 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         typedef T Type;                         /**< @brief Underlying data type */
 
         /**
+         * @brief Rotation dual complex number
+         * @param angle         Rotation angle (counterclockwise)
+         *
+         * @f[
+         *      \hat c = (cos \theta + i sin \theta) + \epsilon (0 + i0)
+         * @f]
+         * @see rotationAngle(), Complex::rotation(), Matrix3::rotation(),
+         *      DualQuaternion::rotation()
+         */
+        inline static DualComplex<T> rotation(Rad<T> angle) {
+            return {Complex<T>::rotation(angle), {{}, {}}};
+        }
+
+        /**
          * @brief Default constructor
          *
          * Creates unit dual complex number. @f[
@@ -57,6 +71,18 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f]
          */
         inline constexpr /*implicit*/ DualComplex(const Complex<T>& real, const Complex<T>& dual): Dual<Complex<T>>(real, dual) {}
+
+        /**
+         * @brief Rotation angle of dual complex number
+         *
+         * @f[
+         *      \theta = atan2(b_0, a_0)
+         * @f]
+         * @see rotation(), Complex::rotationAngle()
+         */
+        inline Rad<T> rotationAngle() const {
+            return this->real().rotationAngle();
+        }
 
         /**
          * @brief Complex-conjugated dual complex number

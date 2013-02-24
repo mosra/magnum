@@ -175,7 +175,7 @@ template<class T> class Quaternion {
          * Expects that the quaternion is normalized. @f[
          *      \theta = 2 \cdot acos q_S
          * @f]
-         * @see rotationAxis(), rotation()
+         * @see rotationAxis(), rotation(), DualQuaternion::rotationAngle()
          */
         inline Rad<T> rotationAngle() const {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),

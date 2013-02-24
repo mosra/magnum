@@ -140,6 +140,7 @@ template<class T> class Complex {
          * @f[
          *      \theta = atan2(b, a)
          * @f]
+         * @see rotation(), DualComplex::rotationAngle()
          */
         inline Rad<T> rotationAngle() const {
             return Rad<T>(std::atan2(_imaginary, _real));

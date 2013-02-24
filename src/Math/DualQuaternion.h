@@ -38,15 +38,15 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
 
         /**
          * @brief Rotation dual quaternion
-         * @param angle             Rotation angle (counterclockwise, in radians)
+         * @param angle             Rotation angle (counterclockwise)
          * @param normalizedAxis    Normalized rotation axis
          *
          * Expects that the rotation axis is normalized. @f[
          *      \hat q = [\boldsymbol a \cdot sin \frac \theta 2, cos \frac \theta 2] + \epsilon [\boldsymbol 0, 0]
          * @f]
          * @see rotationAngle(), rotationAxis(), Quaternion::rotation(),
-         *      Matrix4::rotation(), Vector3::xAxis(), Vector3::yAxis(),
-         *      Vector3::zAxis()
+         *      Matrix4::rotation(), DualComplex::rotation(), Vector3::xAxis(),
+         *      Vector3::yAxis(), Vector3::zAxis()
          */
         inline static DualQuaternion<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis) {
             return {Quaternion<T>::rotation(angle, normalizedAxis), {{}, T(0)}};
