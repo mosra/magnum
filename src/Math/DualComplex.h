@@ -50,6 +50,20 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         }
 
         /**
+         * @brief Translation dual complex number
+         * @param vector    Translation vector
+         *
+         * @f[
+         *      \hat c = (0 + i1) + \epsilon (v_x + iv_y)
+         * @f]
+         * @see translation() const, Matrix3::translation(const Vector2&),
+         *      DualQuaternion::translation(), Vector2::xAxis(), Vector2::yAxis()
+         */
+        inline static DualComplex<T> translation(const Vector2<T>& vector) {
+            return {{}, {vector.x(), vector.y()}};
+        }
+
+        /**
          * @brief Default constructor
          *
          * Creates unit dual complex number. @f[
@@ -82,6 +96,18 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          */
         inline Rad<T> rotationAngle() const {
             return this->real().rotationAngle();
+        }
+
+        /**
+         * @brief Translation part of dual complex number
+         *
+         * @f[
+         *      \boldsymbol a = (c_\epsilon c_0^*)
+         * @f]
+         * @see translation(const Vector2&)
+         */
+        inline Vector2<T> translation() const {
+            return Vector2<T>(this->dual()*this->real().conjugated());
         }
 
         /**

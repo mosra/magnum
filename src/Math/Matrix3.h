@@ -38,8 +38,9 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief 2D translation matrix
          * @param vector    Translation vector
          *
-         * @see translation(), Matrix4::translation(const Vector3&),
-         *      Vector2::xAxis(), Vector2::yAxis()
+         * @see translation(), DualComplex::translation(),
+         *      Matrix4::translation(const Vector3&), Vector2::xAxis(),
+         *      Vector2::yAxis()
          */
         inline constexpr static Matrix3<T> translation(const Vector2<T>& vector) {
             return {{      T(1),       T(0), T(0)},

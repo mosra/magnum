@@ -40,6 +40,7 @@ class DualComplexTest: public Corrade::TestSuite::Tester {
         void invertedNormalized();
 
         void rotation();
+        void translation();
 
         void debug();
 };
@@ -49,6 +50,7 @@ typedef Math::Rad<float> Rad;
 typedef Math::Complex<float> Complex;
 typedef Math::Dual<float> Dual;
 typedef Math::DualComplex<float> DualComplex;
+typedef Math::Vector2<float> Vector2;
 
 DualComplexTest::DualComplexTest() {
     addTests(&DualComplexTest::construct,
@@ -67,6 +69,7 @@ DualComplexTest::DualComplexTest() {
              &DualComplexTest::invertedNormalized,
 
              &DualComplexTest::rotation,
+             &DualComplexTest::translation,
 
              &DualComplexTest::debug);
 }
@@ -159,6 +162,13 @@ void DualComplexTest::rotation() {
     DualComplex a = DualComplex::rotation(Deg(120.0f));
     CORRADE_COMPARE(a, DualComplex({-0.5f, 0.8660254f}, {0.0f, 0.0f}));
     CORRADE_COMPARE_AS(a.rotationAngle(), Deg(120.0f), Rad);
+}
+
+void DualComplexTest::translation() {
+    Vector2 vec(1.5f, -3.5f);
+    DualComplex a = DualComplex::translation(vec);
+    CORRADE_COMPARE(a, DualComplex({}, {1.5f, -3.5f}));
+    CORRADE_COMPARE(a.translation(), vec);
 }
 
 void DualComplexTest::debug() {

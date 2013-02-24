@@ -59,8 +59,9 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f[
          *      \hat q = [\boldsymbol 0, 1] + \epsilon [\frac{\boldsymbol v}{2}, 0]
          * @f]
-         * @see translation() const, Matrix3::translation(const Vector2&),
-         *      Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()
+         * @see translation() const, Matrix4::translation(const Vector3&),
+         *      DualComplex::translation(), Vector3::xAxis(), Vector3::yAxis(),
+         *      Vector3::zAxis()
          */
         inline static DualQuaternion<T> translation(const Vector3<T>& vector) {
             return {{}, {vector/T(2), T(0)}};
