@@ -36,6 +36,8 @@ class DualComplexTest: public Corrade::TestSuite::Tester {
         void complexConjugated();
         void dualConjugated();
         void conjugated();
+        void inverted();
+        void invertedNormalized();
 
         void debug();
 };
@@ -57,6 +59,8 @@ DualComplexTest::DualComplexTest() {
              &DualComplexTest::complexConjugated,
              &DualComplexTest::dualConjugated,
              &DualComplexTest::conjugated,
+             &DualComplexTest::inverted,
+             &DualComplexTest::invertedNormalized,
 
              &DualComplexTest::debug);
 }
@@ -119,6 +123,30 @@ void DualComplexTest::conjugated() {
     DualComplex a({-1.0f,  2.5f}, { 3.0f, -7.5f});
     DualComplex b({-1.0f, -2.5f}, {-3.0f, -7.5f});
     CORRADE_COMPARE(a.conjugated(), b);
+}
+
+void DualComplexTest::inverted() {
+    DualComplex a({-1.0f,  2.5f}, { 3.0f, -7.5f});
+    DualComplex b({-1.0f, -2.5f}, { 3.0f,  7.5f});
+
+    CORRADE_COMPARE(a*a.inverted(), DualComplex());
+    CORRADE_COMPARE(a.inverted(), b/Dual(7.25f, -43.5f));
+}
+
+void DualComplexTest::invertedNormalized() {
+    DualComplex a({-1.0f,  2.5f}, { 3.0f, -7.5f});
+    DualComplex b({-1.0f, -2.5f}, { 3.0f,  7.5f});
+
+    std::ostringstream o;
+    Error::setOutput(&o);
+    CORRADE_COMPARE(a.invertedNormalized(), DualComplex());
+    CORRADE_COMPARE(o.str(), "Math::DualComplex::invertedNormalized(): dual complex number must be normalized\n");
+
+    DualComplex normalized = a.normalized();
+    DualComplex inverted = normalized.invertedNormalized();
+    CORRADE_COMPARE(normalized*inverted, DualComplex());
+    CORRADE_COMPARE(inverted*normalized, DualComplex());
+    CORRADE_COMPARE(inverted, b/Math::sqrt(Dual(7.25f, -43.5f)));
 }
 
 void DualComplexTest::debug() {

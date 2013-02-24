@@ -124,6 +124,33 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
             return (*this)/length();
         }
 
+        /**
+         * @brief Inverted dual complex number
+         *
+         * See invertedNormalized() which is faster for normalized dual complex
+         * numbers. @f[
+         *      \hat c^{-1} = \frac{\hat c^*}{|\hat c|^2}
+         * @f]
+         */
+        inline DualComplex<T> inverted() const {
+            return complexConjugated()/lengthSquared();
+        }
+
+        /**
+         * @brief Inverted normalized dual complex number
+         *
+         * Equivalent to complexConjugated(). Expects that the complex number
+         * is normalized. @f[
+         *      \hat c^{-1} = \frac{\hat c^*}{|\hat c|^2} = \hat c^*
+         * @f]
+         * @see inverted()
+         */
+        inline DualComplex<T> invertedNormalized() const {
+            CORRADE_ASSERT(lengthSquared() == Dual<T>(1),
+                           "Math::DualComplex::invertedNormalized(): dual complex number must be normalized", {});
+            return complexConjugated();
+        }
+
         MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(DualComplex, Complex)
 
     private:
