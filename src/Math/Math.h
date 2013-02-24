@@ -29,6 +29,7 @@ namespace Magnum { namespace Math {
 
 template<class> class Complex;
 template<class> class Dual;
+template<class> class DualComplex;
 template<class> class DualQuaternion;
 
 template<std::size_t, class> class Matrix;

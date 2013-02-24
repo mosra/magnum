@@ -100,6 +100,7 @@ add_library(MagnumObjects OBJECT ${Magnum_SRCS})
 set(MagnumMath_SRCS
     Math/Angle.cpp
     Math/Complex.cpp
+    Math/DualComplex.cpp
     Math/DualQuaternion.cpp
     Math/Functions.cpp
     Math/Quaternion.cpp

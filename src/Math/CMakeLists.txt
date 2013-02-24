@@ -4,6 +4,7 @@ set(MagnumMath_HEADERS
     Complex.h
     Constants.h
     Dual.h
+    DualComplex.h
     DualQuaternion.h
     Functions.h
     Math.h
