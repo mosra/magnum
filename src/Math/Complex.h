@@ -337,7 +337,7 @@ template<class T> class Complex {
         inline Complex<T> invertedNormalized() const {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
                            "Math::Complex::invertedNormalized(): complex number must be normalized",
-                           Complex<T>(std::numeric_limits<T>::quiet_NaN(), std::numeric_limits<T>::quiet_NaN()));
+                           Complex<T>(std::numeric_limits<T>::quiet_NaN(), {}));
             return conjugated();
         }
 
