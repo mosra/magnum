@@ -183,7 +183,7 @@ void ComplexTest::dot() {
     Complex a(5.0f,  3.0f);
     Complex b(6.0f, -7.0f);
 
-    CORRADE_COMPARE(Complex::dot(a, b), Complex(9.0f, 53.0f));
+    CORRADE_COMPARE(Complex::dot(a, b), 9.0f);
 }
 
 void ComplexTest::dotSelf() {
