@@ -94,7 +94,7 @@ template<class T> class Complex {
          *      c = a + ib
          * @f]
          */
-        inline constexpr /*implicit*/ Complex(T real, T imaginary = T(0)): _real(real), _imaginary(imaginary) {}
+        inline constexpr /*implicit*/ Complex(T real, T imaginary): _real(real), _imaginary(imaginary) {}
 
         /**
          * @brief Construct complex number from vector

@@ -97,8 +97,6 @@ void ComplexTest::construct() {
     Complex c(0.5f, -3.7f);
     CORRADE_COMPARE(c.real(), 0.5f);
     CORRADE_COMPARE(c.imaginary(), -3.7f);
-
-    CORRADE_COMPARE(Complex(2.0f), Complex(2.0f, 0.0f));
 }
 
 void ComplexTest::constructDefault() {
