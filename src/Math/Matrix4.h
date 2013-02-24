@@ -308,7 +308,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief Right-pointing 3D vector
          *
          * First three elements of first column.
-         * @see Vector3::xAxis()
+         * @see up(), backward(), Vector3::xAxis(), Matrix3::right()
          */
         inline Vector3<T>& right() { return (*this)[0].xyz(); }
         inline constexpr Vector3<T> right() const { return (*this)[0].xyz(); } /**< @overload */
@@ -317,7 +317,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief Up-pointing 3D vector
          *
          * First three elements of second column.
-         * @see Vector3::yAxis()
+         * @see right(), backward(), Vector3::yAxis(), Matrix3::up()
          */
         inline Vector3<T>& up() { return (*this)[1].xyz(); }
         inline constexpr Vector3<T> up() const { return (*this)[1].xyz(); } /**< @overload */
@@ -326,7 +326,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief Backward-pointing 3D vector
          *
          * First three elements of third column.
-         * @see Vector3::yAxis()
+         * @see right(), up(), Vector3::yAxis()
          */
         inline Vector3<T>& backward() { return (*this)[2].xyz(); }
         inline constexpr Vector3<T> backward() const { return (*this)[2].xyz(); } /**< @overload */
@@ -367,6 +367,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *      \boldsymbol v' = \boldsymbol M \begin{pmatrix} v_x \\ v_y \\ v_z \\ 0 \end{pmatrix}
          * @f]
          * @see Quaternion::transformVector(), Matrix3::transformVector()
+         * @todo extract 3x3 matrix and multiply directly? (benchmark that)
          */
         inline Vector3<T> transformVector(const Vector3<T>& vector) const {
             return ((*this)*Vector4<T>(vector, T(0))).xyz();

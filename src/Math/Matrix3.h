@@ -170,7 +170,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief Right-pointing 2D vector
          *
          * First two elements of first column.
-         * @see Vector2::xAxis()
+         * @see up(), Vector2::xAxis(), Matrix4::right()
          */
         inline Vector2<T>& right() { return (*this)[0].xy(); }
         inline constexpr Vector2<T> right() const { return (*this)[0].xy(); } /**< @overload */
@@ -179,7 +179,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief Up-pointing 2D vector
          *
          * First two elements of second column.
-         * @see Vector2::yAxis()
+         * @see right(), Vector2::yAxis(), Matrix4::up()
          */
         inline Vector2<T>& up() { return (*this)[1].xy(); }
         inline constexpr Vector2<T> up() const { return (*this)[1].xy(); } /**< @overload */
@@ -220,6 +220,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          *      \boldsymbol v' = \boldsymbol M \begin{pmatrix} v_x \\ v_y \\ 0 \end{pmatrix}
          * @f]
          * @see Complex::transformVector(), Matrix4::transformVector()
+         * @todo extract 2x2 matrix and multiply directly? (benchmark that)
          */
         inline Vector2<T> transformVector(const Vector2<T>& vector) const {
             return ((*this)*Vector3<T>(vector, T(0))).xy();

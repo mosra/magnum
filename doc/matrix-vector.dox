@@ -128,8 +128,8 @@ Color3 and Color4 name their components `rgba` instead of `xyzw`.
 
 For more involved operations with components there is the swizzle() function:
 @code
-Vector4<int> original(-1, 2, 3, 4);
-Vector4<int> bgra = swizzle<'b', 'g', 'r', 'a'>(original); // { 3, 2, -1, 4 }
+Vector<4, int> original(-1, 2, 3, 4);
+Vector<4, int> bgra = swizzle<'b', 'g', 'r', 'a'>(original); // { 3, 2, -1, 4 }
 Vector<6, int> w10xyz = swizzle<'w', '1', '0', 'x', 'y', 'z'>(original); // { 4, 1, 0, -1, 2, 3 }
 @endcode
 

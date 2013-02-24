@@ -44,7 +44,7 @@ template<class T> class Quaternion {
          * @brief Dot product
          *
          * @f[
-         * p \cdot q = \boldsymbol p_V \cdot \boldsymbol q_V + p_S q_S
+         *      p \cdot q = \boldsymbol p_V \cdot \boldsymbol q_V + p_S q_S
          * @f]
          * @see dot() const
          */

@@ -212,7 +212,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
             return Math::sqrt(lengthSquared());
         }
 
-        /** @brief Normalized quaternion (of unit length) */
+        /** @brief Normalized dual quaternion (of unit length) */
         inline DualQuaternion<T> normalized() const {
             return (*this)/length();
         }
@@ -220,9 +220,9 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         /**
          * @brief Inverted dual quaternion
          *
-         * See invertedNormalized() which is faster for normalized
-         * dual quaternions. @f[
-         *      \hat q^{-1} = \frac{\hat q^*}{||\hat q||^2}
+         * See invertedNormalized() which is faster for normalized dual
+         * quaternions. @f[
+         *      \hat q^{-1} = \frac{\hat q^*}{|\hat q|^2}
          * @f]
          */
         inline DualQuaternion<T> inverted() const {
@@ -234,7 +234,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *
          * Equivalent to quaternionConjugated(). Expects that the quaternion is
          * normalized. @f[
-         *      \hat q^{-1} = \frac{\hat q^*}{||\hat q||^2} = \hat q^*
+         *      \hat q^{-1} = \frac{\hat q^*}{|\hat q|^2} = \hat q^*
          * @f]
          * @see inverted()
          */
@@ -249,7 +249,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *
          * See transformPointNormalized(), which is faster for normalized dual
          * quaternions. @f[
-         *      v' = qv \overline{\hat q^{-1}} = q ([\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]) \overline{\hat q^{-1}}
+         *      v' = \hat q v \overline{\hat q^{-1}} = \hat q ([\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]) \overline{\hat q^{-1}}
          * @f]
          * @see DualQuaternion(const Vector3&), dual(), Matrix4::transformPoint(),
          *      Quaternion::transformVector()
@@ -263,7 +263,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *
          * Faster alternative to transformPoint(), expects that the dual
          * quaternion is normalized. @f[
-         *      v' = qv \overline{\hat q^{-1}} = qv \overline{\hat q^*} = q ([\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]) \overline{\hat q^*}
+         *      v' = \hat q v \overline{\hat q^{-1}} = \hat q v \overline{\hat q^*} = \hat q ([\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]) \overline{\hat q^*}
          * @f]
          * @see DualQuaternion(const Vector3&), dual(), Matrix4::transformPoint(),
          *      Quaternion::transformVectorNormalized()
