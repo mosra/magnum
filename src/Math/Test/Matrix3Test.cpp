@@ -161,14 +161,32 @@ void Matrix3Test::rotationScalingPart() {
 }
 
 void Matrix3Test::rotationPart() {
+    Matrix3 rotation = Matrix3::rotation(Deg(15.0f));
     Matrix2 expectedRotationPart(Vector2( 0.965926f, 0.258819f),
                                  Vector2(-0.258819f, 0.965926f));
 
-    Matrix3 rotation = Matrix3::rotation(Deg(15.0f));
-    CORRADE_COMPARE(rotation.rotation(), expectedRotationPart);
+    /* For rotation and translation this is the same as rotationScaling() */
+    Matrix3 rotationTranslation = rotation*Matrix3::translation({2.0f, 5.0f});
+    Matrix2 rotationTranslationPart = rotationTranslation.rotation();
+    CORRADE_COMPARE(rotationTranslationPart, rotationTranslation.rotationScaling());
+    CORRADE_COMPARE(rotationTranslationPart, expectedRotationPart);
 
-    Matrix3 rotationTransformed = Matrix3::translation({2.0f, 5.0f})*rotation*Matrix3::scaling(Vector2(9.0f));
-    CORRADE_COMPARE(rotationTransformed.rotation(), expectedRotationPart);
+    /* Test uniform scaling */
+    Matrix3 rotationScaling = rotation*Matrix3::scaling(Vector2(9.0f));
+    Matrix2 rotationScalingPart = rotationScaling.rotation();
+    CORRADE_COMPARE(rotationScalingPart.determinant(), 1.0f);
+    CORRADE_COMPARE(rotationScalingPart*rotationScalingPart.transposed(), Matrix2());
+    CORRADE_COMPARE(rotationScalingPart, expectedRotationPart);
+
+    /* Fails on non-uniform scaling */
+    {
+        CORRADE_EXPECT_FAIL("Assertion on uniform scaling is not implemented yet.");
+        std::ostringstream o;
+        Error::setOutput(&o);
+        Matrix3 rotationScaling2 = rotation*Matrix3::scaling(Vector2::yScale(3.5f));
+        CORRADE_COMPARE(o.str(), "Math::Matrix3::rotation(): the matrix doesn't have uniform scaling\n");
+        CORRADE_COMPARE(rotationScaling2, Matrix3(Matrix3::Zero));
+    }
 }
 
 void Matrix3Test::vectorParts() {

@@ -293,6 +293,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * Normalized upper-left 3x3 part of the matrix.
          * @see rotationScaling() const, rotation(T, const Vector3&),
          *      Matrix3::rotation() const
+         * @todo assert uniform scaling (otherwise this would be garbage)
          */
         inline Matrix<3, T> rotation() const {
             /* Not Matrix3, because it is for affine 2D transformations */
@@ -300,6 +301,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
                     (*this)[1].xyz().normalized(),
                     (*this)[2].xyz().normalized()};
         }
+
+        /** @todo uniform scaling extraction */
 
         /**
          * @brief Right-pointing 3D vector

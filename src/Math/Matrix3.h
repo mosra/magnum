@@ -157,11 +157,14 @@ template<class T> class Matrix3: public Matrix<3, T> {
          *
          * Normalized upper-left 2x2 part of the matrix.
          * @see rotationScaling() const, rotation(T), Matrix4::rotation() const
+         * @todo assert uniform scaling (otherwise this would be garbage)
          */
         inline Matrix<2, T> rotation() const {
             return {(*this)[0].xy().normalized(),
                     (*this)[1].xy().normalized()};
         }
+
+        /** @todo uniform scaling extraction */
 
         /**
          * @brief Right-pointing 2D vector
