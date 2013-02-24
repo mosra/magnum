@@ -279,7 +279,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
 
     private:
         /* Used by Dual operators and dualConjugated() */
-        DualQuaternion<T>(const Dual<Quaternion<T>>& other): Dual<Quaternion<T>>(other) {}
+        inline constexpr DualQuaternion(const Dual<Quaternion<T>>& other): Dual<Quaternion<T>>(other) {}
 };
 
 /** @debugoperator{Magnum::Math::DualQuaternion} */
