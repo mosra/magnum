@@ -95,6 +95,35 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
             return {this->real().conjugated(), {-this->dual().real(), this->dual().imaginary()}};
         }
 
+        /**
+         * @brief %Complex number length squared
+         *
+         * Should be used instead of length() for comparing complex number
+         * length with other values, because it doesn't compute the square root. @f[
+         *      |\hat c|^2 = \sqrt{\hat c^* \hat c}^2 = c_0 \cdot c_0 + \epsilon 2 (c_0 \cdot c_\epsilon)
+         * @f]
+         */
+        inline Dual<T> lengthSquared() const {
+            return {this->real().dot(), T(2)*Complex<T>::dot(this->real(), this->dual())};
+        }
+
+        /**
+         * @brief %Dual quaternion length
+         *
+         * See lengthSquared() which is faster for comparing length with other
+         * values. @f[
+         *      |\hat c| = \sqrt{\hat{c^*} \hat c} = |c_0| + \epsilon \frac{c_0 \cdot c_\epsilon}{|c_0|}
+         * @f]
+         */
+        inline Dual<T> length() const {
+            return Math::sqrt(lengthSquared());
+        }
+
+        /** @brief Normalized dual complex number (of unit length) */
+        inline DualComplex<T> normalized() const {
+            return (*this)/length();
+        }
+
         MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(DualComplex, Complex)
 
     private:

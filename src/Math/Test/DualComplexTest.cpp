@@ -29,6 +29,10 @@ class DualComplexTest: public Corrade::TestSuite::Tester {
 
         void constExpressions();
 
+        void lengthSquared();
+        void length();
+        void normalized();
+
         void complexConjugated();
         void dualConjugated();
         void conjugated();
@@ -37,6 +41,7 @@ class DualComplexTest: public Corrade::TestSuite::Tester {
 };
 
 typedef Math::Complex<float> Complex;
+typedef Math::Dual<float> Dual;
 typedef Math::DualComplex<float> DualComplex;
 
 DualComplexTest::DualComplexTest() {
@@ -44,6 +49,10 @@ DualComplexTest::DualComplexTest() {
              &DualComplexTest::constructDefault,
 
              &DualComplexTest::constExpressions,
+
+             &DualComplexTest::lengthSquared,
+             &DualComplexTest::length,
+             &DualComplexTest::normalized,
 
              &DualComplexTest::complexConjugated,
              &DualComplexTest::dualConjugated,
@@ -60,6 +69,7 @@ void DualComplexTest::construct() {
 
 void DualComplexTest::constructDefault() {
     CORRADE_COMPARE(DualComplex(), DualComplex({1.0f, 0.0f}, {0.0f, 0.0f}));
+    CORRADE_COMPARE(DualComplex().length(), 1.0f);
 }
 
 void DualComplexTest::constExpressions() {
@@ -74,6 +84,23 @@ void DualComplexTest::constExpressions() {
     /* Copy constructor */
     constexpr DualComplex d(b);
     CORRADE_COMPARE(d, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
+}
+
+void DualComplexTest::lengthSquared() {
+    DualComplex a({-1.0f, 3.0f}, {0.5f, -2.0f});
+    CORRADE_COMPARE(a.lengthSquared(), Dual(10.0f, -13.0f));
+}
+
+void DualComplexTest::length() {
+    DualComplex a({-1.0f, 3.0f}, {0.5f, -2.0f});
+    CORRADE_COMPARE(a.length(), Dual(3.162278f, -2.05548f));
+}
+
+void DualComplexTest::normalized() {
+    DualComplex a({-1.0f, 3.0f}, {0.5f, -2.0f});
+    DualComplex b({-0.316228f, 0.948683f}, {-0.0474342f, -0.0158114f});
+    CORRADE_COMPARE(a.normalized().length(), 1.0f);
+    CORRADE_COMPARE(a.normalized(), b);
 }
 
 void DualComplexTest::complexConjugated() {
