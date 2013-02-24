@@ -130,15 +130,21 @@ void ComplexTest::constExpressions() {
     constexpr Complex b(2.5f, -5.0f);
     CORRADE_COMPARE(b, Complex(2.5f, -5.0f));
 
+    /* Vector constructor */
+    constexpr Complex c(Vector2(-1.0f, 2.2f));
+    CORRADE_COMPARE(c, Complex(-1.0f, 2.2f));
+
     /* Copy constructor */
-    constexpr Complex c(b);
-    CORRADE_COMPARE(c, Complex(2.5f, -5.0f));
+    constexpr Complex d(b);
+    CORRADE_COMPARE(d, Complex(2.5f, -5.0f));
 
     /* Data access */
-    constexpr float d = b.real();
-    constexpr float e = c.imaginary();
-    CORRADE_COMPARE(d, 2.5f);
-    CORRADE_COMPARE(e, -5.0f);
+    constexpr float e = b.real();
+    constexpr float f = b.imaginary();
+    constexpr Vector2 g(b);
+    CORRADE_COMPARE(e, 2.5f);
+    CORRADE_COMPARE(f, -5.0f);
+    CORRADE_COMPARE(g, Vector2(2.5f, -5.0f));
 }
 
 void ComplexTest::addSubtract() {
