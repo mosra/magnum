@@ -160,6 +160,7 @@ void DualComplexTest::invertedNormalized() {
 
 void DualComplexTest::rotation() {
     DualComplex a = DualComplex::rotation(Deg(120.0f));
+    CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(a, DualComplex({-0.5f, 0.8660254f}, {0.0f, 0.0f}));
     CORRADE_COMPARE_AS(a.rotationAngle(), Deg(120.0f), Rad);
 }
@@ -167,6 +168,7 @@ void DualComplexTest::rotation() {
 void DualComplexTest::translation() {
     Vector2 vec(1.5f, -3.5f);
     DualComplex a = DualComplex::translation(vec);
+    CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(a, DualComplex({}, {1.5f, -3.5f}));
     CORRADE_COMPARE(a.translation(), vec);
 }
