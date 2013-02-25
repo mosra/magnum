@@ -41,6 +41,7 @@ class DualComplexTest: public Corrade::TestSuite::Tester {
 
         void rotation();
         void translation();
+        void combinedTransformParts();
 
         void debug();
 };
@@ -70,6 +71,7 @@ DualComplexTest::DualComplexTest() {
 
              &DualComplexTest::rotation,
              &DualComplexTest::translation,
+             &DualComplexTest::combinedTransformParts,
 
              &DualComplexTest::debug);
 }
@@ -171,6 +173,17 @@ void DualComplexTest::translation() {
     CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(a, DualComplex({}, {1.5f, -3.5f}));
     CORRADE_COMPARE(a.translation(), vec);
+}
+
+void DualComplexTest::combinedTransformParts() {
+    Vector2 translation = Vector2(-1.5f, 2.75f);
+    DualComplex a = DualComplex::translation(translation)*DualComplex::rotation(Deg(23.0f));
+    DualComplex b = DualComplex::rotation(Deg(23.0f))*DualComplex::translation(translation);
+
+    CORRADE_COMPARE_AS(a.rotationAngle(), Deg(23.0f), Rad);
+    CORRADE_COMPARE_AS(b.rotationAngle(), Deg(23.0f), Rad);
+    CORRADE_COMPARE(a.translation(), translation);
+    CORRADE_COMPARE(b.translation(), Complex::rotation(Deg(23.0f)).transformVector(translation));
 }
 
 void DualComplexTest::debug() {
