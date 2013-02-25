@@ -190,6 +190,7 @@ void DualQuaternionTest::rotation() {
     CORRADE_COMPARE(o.str(), "Math::Quaternion::rotation(): axis must be normalized\n");
 
     DualQuaternion q = DualQuaternion::rotation(Deg(120.0f), axis);
+    CORRADE_COMPARE(q.length(), 1.0f);
     CORRADE_COMPARE(q, DualQuaternion({Vector3(0.5f, 0.5f, 0.5f), 0.5f}, {{}, 0.0f}));
     CORRADE_COMPARE_AS(q.rotationAngle(), Deg(120.0f), Deg);
     CORRADE_COMPARE(q.rotationAxis(), axis);
@@ -198,6 +199,7 @@ void DualQuaternionTest::rotation() {
 void DualQuaternionTest::translation() {
     Vector3 vec(1.0f, -3.5f, 0.5f);
     DualQuaternion q = DualQuaternion::translation(vec);
+    CORRADE_COMPARE(q.length(), 1.0f);
     CORRADE_COMPARE(q, DualQuaternion({}, {{0.5f, -1.75f, 0.25f}, 0.0f}));
     CORRADE_COMPARE(q.translation(), vec);
 }

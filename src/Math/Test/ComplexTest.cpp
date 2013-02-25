@@ -255,6 +255,7 @@ void ComplexTest::angle() {
 
 void ComplexTest::rotation() {
     Complex a = Complex::rotation(Deg(120.0f));
+    CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(a, Complex(-0.5f, 0.8660254f));
     CORRADE_COMPARE_AS(a.rotationAngle(), Deg(120.0f), Rad);
 

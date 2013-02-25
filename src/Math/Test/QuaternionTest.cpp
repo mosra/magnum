@@ -235,6 +235,7 @@ void QuaternionTest::rotation() {
     CORRADE_COMPARE(o.str(), "Math::Quaternion::rotation(): axis must be normalized\n");
 
     Quaternion q = Quaternion::rotation(Deg(120.0f), axis);
+    CORRADE_COMPARE(q.length(), 1.0f);
     CORRADE_COMPARE(q, Quaternion(Vector3(0.5f, 0.5f, 0.5f), 0.5f));
     CORRADE_COMPARE_AS(q.rotationAngle(), Deg(120.0f), Deg);
     CORRADE_COMPARE(q.rotationAxis(), axis);
