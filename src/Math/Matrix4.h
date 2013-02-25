@@ -33,7 +33,8 @@ namespace Magnum { namespace Math {
 @brief 4x4 matrix
 @tparam T   Underlying data type
 
-Represents 3D transformation. See @ref matrix-vector for brief introduction.
+Represents 3D transformation. See @ref matrix-vector and @ref transformations
+for brief introduction.
 @see Magnum::Matrix4, Magnum::Matrix4d, DualQuaternion,
     SceneGraph::MatrixTransformation3D
 @configurationvalueref{Magnum::Math::Matrix4}

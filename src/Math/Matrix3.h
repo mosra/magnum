@@ -28,7 +28,8 @@ namespace Magnum { namespace Math {
 @brief 3x3 matrix
 @tparam T   Underlying data type
 
-Represents 2D transformation. See @ref matrix-vector for brief introduction.
+Represents 2D transformation. See @ref matrix-vector and @ref transformations
+for brief introduction.
 @see Magnum::Matrix3, Magnum::Matrix3d, DualComplex,
     SceneGraph::MatrixTransformation2D
 @configurationvalueref{Magnum::Math::Matrix3}

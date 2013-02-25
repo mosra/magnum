@@ -65,15 +65,6 @@ Matrix3<int> diag(Matrix3<int>::Identity, 2); // diagonal set to 2, zeros elsewh
 Vector3<int> fill(10);    // {10, 10, 10}
 @endcode
 
-Vectors are commonly used to specify various axes and scaling coefficients in
-transformations, you can use convenience functions instead of typing out all
-other elements:
-@code
-Matrix4::rotation(5.0_degf, Vector3::xAxis());  // {1.0f, 0.0f, 0.0f}
-Matrix3::translation(Vector2::yAxis(2.0f));     // {0.0f, 2.0f}
-Matrix4::scaling(Vector3::zScale(-10.0f));      // {1.0f, 1.0f, -10.0f}
-@endcode
-
 It is possible to create matrices from other matrices and vectors with the
 same row count; vectors from vector and scalar:
 @code
@@ -131,17 +122,6 @@ For more involved operations with components there is the swizzle() function:
 Vector<4, int> original(-1, 2, 3, 4);
 Vector<4, int> bgra = swizzle<'b', 'g', 'r', 'a'>(original); // { 3, 2, -1, 4 }
 Vector<6, int> w10xyz = swizzle<'w', '1', '0', 'x', 'y', 'z'>(original); // { 4, 1, 0, -1, 2, 3 }
-@endcode
-
-Matrix3 and Matrix4 have functions for accessing properties of given 2D/3D
-transformation:
-@code
-Matrix4<float> a = Matrix4<float>::translation(Vector3::yAxis(4.0f));
-Vector3<float> translation = a.translation();
-
-Matrix3<float> b = Matrix3<float>::rotation(15.0_degf));
-Matrix<2, float> rotationScaling = b.rotationScaling();
-Vector2<float> up = b.up();
 @endcode
 
 @section matrix-vector-column-major Matrices are column-major and vectors are columns

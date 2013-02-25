@@ -29,7 +29,8 @@ namespace Magnum { namespace Math {
 @brief %Dual quaternion
 @tparam T   Underlying data type
 
-Represents 3D rotation and translation.
+Represents 3D rotation and translation. See @ref transformations for brief
+introduction.
 @see Magnum::DualQuaternion, Dual, Quaternion, Matrix4
 */
 template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
