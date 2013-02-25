@@ -17,6 +17,7 @@
 #include <TestSuite/Tester.h>
 
 #include "Math/DualComplex.h"
+#include "Math/DualQuaternion.h"
 
 namespace Magnum { namespace Math { namespace Test {
 
@@ -28,6 +29,8 @@ class DualComplexTest: public Corrade::TestSuite::Tester {
         void constructDefault();
 
         void constExpressions();
+
+        void multiply();
 
         void lengthSquared();
         void length();
@@ -58,6 +61,8 @@ DualComplexTest::DualComplexTest() {
              &DualComplexTest::constructDefault,
 
              &DualComplexTest::constExpressions,
+
+             &DualComplexTest::multiply,
 
              &DualComplexTest::lengthSquared,
              &DualComplexTest::length,
@@ -101,19 +106,25 @@ void DualComplexTest::constExpressions() {
     CORRADE_COMPARE(d, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
 }
 
+void DualComplexTest::multiply() {
+    DualComplex a({-1.5f,  2.0f}, { 3.0f, -6.5f});
+    DualComplex b({ 2.0f, -7.5f}, {-0.5f,  1.0f});;
+    CORRADE_COMPARE(a*b, DualComplex({12.0f, 15.25f}, {1.75f, -9.0f}));
+}
+
 void DualComplexTest::lengthSquared() {
     DualComplex a({-1.0f, 3.0f}, {0.5f, -2.0f});
-    CORRADE_COMPARE(a.lengthSquared(), Dual(10.0f, -13.0f));
+    CORRADE_COMPARE(a.lengthSquared(), 10.0f);
 }
 
 void DualComplexTest::length() {
     DualComplex a({-1.0f, 3.0f}, {0.5f, -2.0f});
-    CORRADE_COMPARE(a.length(), Dual(3.162278f, -2.05548f));
+    CORRADE_COMPARE(a.length(), 3.162278f);
 }
 
 void DualComplexTest::normalized() {
     DualComplex a({-1.0f, 3.0f}, {0.5f, -2.0f});
-    DualComplex b({-0.316228f, 0.948683f}, {-0.0474342f, -0.0158114f});
+    DualComplex b({-0.316228f, 0.948683f}, {0.5f, -2.0f});
     CORRADE_COMPARE(a.normalized().length(), 1.0f);
     CORRADE_COMPARE(a.normalized(), b);
 }
@@ -137,27 +148,26 @@ void DualComplexTest::conjugated() {
 }
 
 void DualComplexTest::inverted() {
-    DualComplex a({-1.0f,  2.5f}, { 3.0f, -7.5f});
-    DualComplex b({-1.0f, -2.5f}, { 3.0f,  7.5f});
-
+    DualComplex a({-1.0f, 1.5f}, {3.0f, -7.5f});
+    DualComplex b({-0.307692f, -0.461538f}, {4.384616f, -0.923077f});
     CORRADE_COMPARE(a*a.inverted(), DualComplex());
-    CORRADE_COMPARE(a.inverted(), b/Dual(7.25f, -43.5f));
+    CORRADE_COMPARE(a.inverted(), b);
 }
 
 void DualComplexTest::invertedNormalized() {
-    DualComplex a({-1.0f,  2.5f}, { 3.0f, -7.5f});
-    DualComplex b({-1.0f, -2.5f}, { 3.0f,  7.5f});
+    DualComplex a({-0.316228f,  0.9486831f}, {     3.0f,    -2.5f});
+    DualComplex b({-0.316228f, -0.9486831f}, {3.320391f, 2.05548f});
 
     std::ostringstream o;
     Error::setOutput(&o);
-    CORRADE_COMPARE(a.invertedNormalized(), DualComplex());
-    CORRADE_COMPARE(o.str(), "Math::DualComplex::invertedNormalized(): dual complex number must be normalized\n");
+    DualComplex notInverted = DualComplex({-1.0f, -2.5f}, {}).invertedNormalized();
+    CORRADE_VERIFY(notInverted != notInverted);
+    CORRADE_COMPARE(o.str(), "Math::Complex::invertedNormalized(): complex number must be normalized\n");
 
-    DualComplex normalized = a.normalized();
-    DualComplex inverted = normalized.invertedNormalized();
-    CORRADE_COMPARE(normalized*inverted, DualComplex());
-    CORRADE_COMPARE(inverted*normalized, DualComplex());
-    CORRADE_COMPARE(inverted, b/Math::sqrt(Dual(7.25f, -43.5f)));
+    DualComplex inverted = a.invertedNormalized();
+    CORRADE_COMPARE(a*inverted, DualComplex());
+    CORRADE_COMPARE(inverted*a, DualComplex());
+    CORRADE_COMPARE(inverted, b);
 }
 
 void DualComplexTest::rotation() {

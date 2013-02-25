@@ -30,6 +30,8 @@ namespace Magnum { namespace Math {
 
 Represents 2D rotation and translation.
 @see Dual, Complex, Matrix3
+@todo Can this be done similarly as in dual quaternions? It sort of works, but
+    the math beneath is weird.
 */
 template<class T> class DualComplex: public Dual<Complex<T>> {
     public:
@@ -107,7 +109,19 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @see translation(const Vector2&)
          */
         inline Vector2<T> translation() const {
-            return Vector2<T>(this->dual()*this->real().conjugated());
+            return Vector2<T>(this->dual());
+        }
+
+        /**
+         * @brief Multipy with dual complex number
+         *
+         * @f[
+         *      \hat a \hat b = a_0 b_0 + \epsilon (a_0 b_\epsilon + a_\epsilon)
+         * @f]
+         * @todo can this be done similarly to dual quaternions?
+         */
+        inline DualComplex<T> operator*(const DualComplex<T>& other) const {
+            return {this->real()*other.real(), this->real()*other.dual() + this->dual()};
         }
 
         /**
@@ -152,11 +166,12 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          *
          * Should be used instead of length() for comparing complex number
          * length with other values, because it doesn't compute the square root. @f[
-         *      |\hat c|^2 = \sqrt{\hat c^* \hat c}^2 = c_0 \cdot c_0 + \epsilon 2 (c_0 \cdot c_\epsilon)
+         *      |\hat c|^2 = c_0 \cdot c_0 = |c_0|^2
          * @f]
+         * @todo Can this be done similarly to dual quaternins?
          */
-        inline Dual<T> lengthSquared() const {
-            return {this->real().dot(), T(2)*Complex<T>::dot(this->real(), this->dual())};
+        inline T lengthSquared() const {
+            return this->real().dot();
         }
 
         /**
@@ -164,16 +179,24 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          *
          * See lengthSquared() which is faster for comparing length with other
          * values. @f[
-         *      |\hat c| = \sqrt{\hat{c^*} \hat c} = |c_0| + \epsilon \frac{c_0 \cdot c_\epsilon}{|c_0|}
+         *      |\hat c| = \sqrt{c_0 \cdot c_0} = |c_0|
          * @f]
+         * @todo can this be done similarly to dual quaternions?
          */
-        inline Dual<T> length() const {
-            return Math::sqrt(lengthSquared());
+        inline T length() const {
+            return this->real().length();
         }
 
-        /** @brief Normalized dual complex number (of unit length) */
+        /**
+         * @brief Normalized dual complex number (of unit length)
+         *
+         * @f[
+         *      c' = \frac{c_0}{|c_0|}
+         * @f]
+         * @todo can this be done similarly to dual quaternions?
+         */
         inline DualComplex<T> normalized() const {
-            return (*this)/length();
+            return {this->real()/length(), this->dual()};
         }
 
         /**
@@ -181,33 +204,57 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          *
          * See invertedNormalized() which is faster for normalized dual complex
          * numbers. @f[
-         *      \hat c^{-1} = \frac{\hat c^*}{|\hat c|^2}
+         *      \hat c^{-1} = c_0^{-1} - \epsilon c_\epsilon
          * @f]
+         * @todo can this be done similarly to dual quaternions?
          */
         inline DualComplex<T> inverted() const {
-            return complexConjugated()/lengthSquared();
+            return DualComplex<T>(this->real().inverted(), {{}, {}})*DualComplex<T>({}, -this->dual());
         }
 
         /**
          * @brief Inverted normalized dual complex number
          *
-         * Equivalent to complexConjugated(). Expects that the complex number
-         * is normalized. @f[
-         *      \hat c^{-1} = \frac{\hat c^*}{|\hat c|^2} = \hat c^*
+         * Expects that the complex number is normalized. @f[
+         *      \hat c^{-1} = c_0^{-1} - \epsilon c_\epsilon = c_0^* - \epsilon c_\epsilon
          * @f]
          * @see inverted()
+         * @todo can this be done similarly to dual quaternions?
          */
         inline DualComplex<T> invertedNormalized() const {
-            CORRADE_ASSERT(lengthSquared() == Dual<T>(1),
-                           "Math::DualComplex::invertedNormalized(): dual complex number must be normalized", {});
-            return complexConjugated();
+            return DualComplex<T>(this->real().invertedNormalized(), {{}, {}})*DualComplex<T>({}, -this->dual());
         }
 
-        MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(DualComplex, Complex)
+        /* Verbatim copy of DUAL_SUBCLASS_IMPLEMENTATION(), as we need to hide
+           Dual's operator*() and operator/() */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline DualComplex<T> operator-() const {
+            return Dual<Complex<T>>::operator-();
+        }
+        inline DualComplex<T>& operator+=(const Dual<Complex<T>>& other) {
+            Dual<Complex<T>>::operator+=(other);
+            return *this;
+        }
+        inline DualComplex<T> operator+(const Dual<Complex<T>>& other) const {
+            return Dual<Complex<T>>::operator+(other);
+        }
+        inline DualComplex<T>& operator-=(const Dual<Complex<T>>& other) {
+            Dual<Complex<T>>::operator-=(other);
+            return *this;
+        }
+        inline DualComplex<T> operator-(const Dual<Complex<T>>& other) const {
+            return Dual<Complex<T>>::operator-(other);
+        }
+        #endif
 
     private:
         /* Used by Dual operators and dualConjugated() */
         inline constexpr DualComplex(const Dual<Complex<T>>& other): Dual<Complex<T>>(other) {}
+
+        /* Just to be sure nobody uses this, as it wouldn't probably work with
+           our operator*() */
+        using Dual<Complex<T>>::operator*;
+        using Dual<Complex<T>>::operator/;
 };
 
 /** @debugoperator{Magnum::Math::DualQuaternion} */
