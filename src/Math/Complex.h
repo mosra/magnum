@@ -155,7 +155,7 @@ template<class T> class Complex {
          *               b &  a
          *          \end{pmatrix}
          * @f]
-         * @see Matrix3::from(const Matrix<2, T>&, const Vector2<T>&)
+         * @see DualComplex::matrix(), Matrix3::from(const Matrix<2, T>&, const Vector2<T>&)
          */
         Matrix<2, T> matrix() const {
             return {Vector<2, T>(_real, _imaginary),

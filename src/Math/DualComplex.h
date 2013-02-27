@@ -21,6 +21,7 @@
 
 #include "Math/Dual.h"
 #include "Math/Complex.h"
+#include "Math/Matrix3.h"
 
 namespace Magnum { namespace Math {
 
@@ -124,6 +125,15 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          */
         inline Vector2<T> translation() const {
             return Vector2<T>(this->dual());
+        }
+
+        /**
+         * @brief Convert dual complex number to transformation matrix
+         *
+         * @see Complex::matrix()
+         */
+        inline Matrix3<T> matrix() const {
+            return Matrix3<T>::from(this->real().matrix(), translation());
         }
 
         /**
