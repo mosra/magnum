@@ -37,7 +37,7 @@ GenerateFlatNormalsTest::GenerateFlatNormalsTest() {
 void GenerateFlatNormalsTest::wrongIndexCount() {
     std::stringstream ss;
     Error::setOutput(&ss);
-    std::vector<std::uint32_t> indices;
+    std::vector<UnsignedInt> indices;
     std::vector<Vector3> normals;
     std::tie(indices, normals) = MeshTools::generateFlatNormals({
         0, 1
@@ -50,7 +50,7 @@ void GenerateFlatNormalsTest::wrongIndexCount() {
 
 void GenerateFlatNormalsTest::generate() {
     /* Two vertices connected by one edge, each winded in another direction */
-    std::vector<std::uint32_t> indices;
+    std::vector<UnsignedInt> indices;
     std::vector<Vector3> normals;
     std::tie(indices, normals) = MeshTools::generateFlatNormals({
         0, 1, 2,
@@ -62,7 +62,7 @@ void GenerateFlatNormalsTest::generate() {
         {1.0f, 0.0f, 0.0f}
     });
 
-    CORRADE_COMPARE(indices, (std::vector<std::uint32_t>{
+    CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{
         0, 0, 0,
         1, 1, 1
     }));

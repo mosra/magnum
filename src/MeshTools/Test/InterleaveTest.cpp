@@ -48,30 +48,30 @@ InterleaveTest::InterleaveTest() {
 void InterleaveTest::attributeCount() {
     std::stringstream ss;
     Error::setOutput(&ss);
-    CORRADE_COMPARE((Implementation::Interleave::attributeCount(std::vector<std::int8_t>{0, 1, 2},
-        std::vector<std::int8_t>{0, 1, 2, 3, 4, 5})), std::size_t(0));
+    CORRADE_COMPARE((Implementation::Interleave::attributeCount(std::vector<Byte>{0, 1, 2},
+        std::vector<Byte>{0, 1, 2, 3, 4, 5})), std::size_t(0));
     CORRADE_COMPARE(ss.str(), "MeshTools::interleave(): attribute arrays don't have the same length, nothing done.\n");
 
-    CORRADE_COMPARE((Implementation::Interleave::attributeCount(std::vector<std::int8_t>{0, 1, 2},
-        std::vector<std::int8_t>{3, 4, 5})), std::size_t(3));
+    CORRADE_COMPARE((Implementation::Interleave::attributeCount(std::vector<Byte>{0, 1, 2},
+        std::vector<Byte>{3, 4, 5})), std::size_t(3));
 }
 
 void InterleaveTest::attributeCountGaps() {
-    CORRADE_COMPARE((Implementation::Interleave::attributeCount(std::vector<std::int8_t>{0, 1, 2}, 3,
-        std::vector<std::int8_t>{3, 4, 5}, 5)), std::size_t(3));
+    CORRADE_COMPARE((Implementation::Interleave::attributeCount(std::vector<Byte>{0, 1, 2}, 3,
+        std::vector<Byte>{3, 4, 5}, 5)), std::size_t(3));
 
     /* No arrays from which to get size */
     CORRADE_COMPARE(Implementation::Interleave::attributeCount(3, 5), ~std::size_t(0));
 }
 
 void InterleaveTest::stride() {
-    CORRADE_COMPARE(Implementation::Interleave::stride(std::vector<std::int8_t>()), std::size_t(1));
-    CORRADE_COMPARE(Implementation::Interleave::stride(std::vector<std::int32_t>()), std::size_t(4));
-    CORRADE_COMPARE((Implementation::Interleave::stride(std::vector<std::int8_t>(), std::vector<std::int32_t>())), std::size_t(5));
+    CORRADE_COMPARE(Implementation::Interleave::stride(std::vector<Byte>()), std::size_t(1));
+    CORRADE_COMPARE(Implementation::Interleave::stride(std::vector<Int>()), std::size_t(4));
+    CORRADE_COMPARE((Implementation::Interleave::stride(std::vector<Byte>(), std::vector<Int>())), std::size_t(5));
 }
 
 void InterleaveTest::strideGaps() {
-    CORRADE_COMPARE((Implementation::Interleave::stride(2, std::vector<std::int8_t>(), 1, std::vector<std::int32_t>(), 12)), std::size_t(20));
+    CORRADE_COMPARE((Implementation::Interleave::stride(2, std::vector<Byte>(), 1, std::vector<Int>(), 12)), std::size_t(20));
 }
 
 void InterleaveTest::write() {
@@ -79,9 +79,9 @@ void InterleaveTest::write() {
     std::size_t stride;
     char* data;
     std::tie(attributeCount, stride, data) = MeshTools::interleave(
-        std::vector<std::int8_t>{0, 1, 2},
-        std::vector<std::int32_t>{3, 4, 5},
-        std::vector<std::int16_t>{6, 7, 8});
+        std::vector<Byte>{0, 1, 2},
+        std::vector<Int>{3, 4, 5},
+        std::vector<Short>{6, 7, 8});
 
     CORRADE_COMPARE(attributeCount, std::size_t(3));
     CORRADE_COMPARE(stride, std::size_t(7));
@@ -108,9 +108,9 @@ void InterleaveTest::writeGaps() {
     std::size_t stride;
     char* data;
     std::tie(attributeCount, stride, data) = MeshTools::interleave(
-        std::vector<std::int8_t>{0, 1, 2}, 3,
-        std::vector<std::int32_t>{3, 4, 5},
-        std::vector<std::int16_t>{6, 7, 8}, 2);
+        std::vector<Byte>{0, 1, 2}, 3,
+        std::vector<Int>{3, 4, 5},
+        std::vector<Short>{6, 7, 8}, 2);
 
     CORRADE_COMPARE(attributeCount, std::size_t(3));
     CORRADE_COMPARE(stride, std::size_t(12));

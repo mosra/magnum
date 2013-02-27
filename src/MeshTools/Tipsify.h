@@ -19,9 +19,9 @@
  * @brief Function Magnum::MeshTools::tipsify()
  */
 
-#include <cstdint>
 #include <vector>
 
+#include "Types.h"
 #include "magnumMeshToolsVisibility.h"
 
 namespace Magnum { namespace MeshTools {
@@ -31,7 +31,7 @@ namespace Implementation {
 
 class MAGNUM_MESHTOOLS_EXPORT Tipsify {
     public:
-        inline Tipsify(std::vector<std::uint32_t>& indices, std::uint32_t vertexCount): indices(indices), vertexCount(vertexCount) {}
+        inline Tipsify(std::vector<UnsignedInt>& indices, UnsignedInt vertexCount): indices(indices), vertexCount(vertexCount) {}
 
         void operator()(std::size_t cacheSize);
 
@@ -42,11 +42,11 @@ class MAGNUM_MESHTOOLS_EXPORT Tipsify {
          * (used internally).
          * @todo Export only for unit test, hide otherwise
          */
-        void buildAdjacency(std::vector<std::uint32_t>& liveTriangleCount, std::vector<std::uint32_t>& neighborOffset, std::vector<std::uint32_t>& neighbors) const;
+        void buildAdjacency(std::vector<UnsignedInt>& liveTriangleCount, std::vector<UnsignedInt>& neighborOffset, std::vector<UnsignedInt>& neighbors) const;
 
     private:
-        std::vector<std::uint32_t>& indices;
-        const std::uint32_t vertexCount;
+        std::vector<UnsignedInt>& indices;
+        const UnsignedInt vertexCount;
 };
 
 }
@@ -64,7 +64,7 @@ array for beter usage of post-transform vertex cache. Algorithm used:
 for Vertex Locality and Reduced Overdraw, SIGGRAPH 2007,
 http://gfx.cs.princeton.edu/pubs/Sander_2007_%3ETR/index.php*.
 */
-inline void tipsify(std::vector<std::uint32_t>& indices, std::uint32_t vertexCount, std::size_t cacheSize) {
+inline void tipsify(std::vector<UnsignedInt>& indices, UnsignedInt vertexCount, std::size_t cacheSize) {
     Implementation::Tipsify(indices, vertexCount)(cacheSize);
 }
 

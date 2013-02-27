@@ -27,7 +27,7 @@ class TipsifyTest: public Corrade::TestSuite::Tester {
         void tipsify();
 
     private:
-        std::vector<std::uint32_t> indices;
+        std::vector<UnsignedInt> indices;
         std::size_t vertexCount;
 };
 
@@ -75,10 +75,10 @@ TipsifyTest::TipsifyTest(): indices{
 }
 
 void TipsifyTest::buildAdjacency() {
-    std::vector<std::uint32_t> liveTriangleCount, neighborOffset, neighbors;
+    std::vector<UnsignedInt> liveTriangleCount, neighborOffset, neighbors;
     Implementation::Tipsify(indices, vertexCount).buildAdjacency(liveTriangleCount, neighborOffset, neighbors);
 
-    CORRADE_COMPARE(liveTriangleCount, (std::vector<std::uint32_t>{
+    CORRADE_COMPARE(liveTriangleCount, (std::vector<UnsignedInt>{
         1, 3, 3, 2,
         4, 6, 6, 2,
         2, 6, 6, 4,
@@ -86,7 +86,7 @@ void TipsifyTest::buildAdjacency() {
         1, 1, 1
     }));
 
-    CORRADE_COMPARE(neighborOffset, (std::vector<std::uint32_t>{
+    CORRADE_COMPARE(neighborOffset, (std::vector<UnsignedInt>{
         0, 1, 4, 7,
         9, 13, 19, 25,
         27, 29, 35, 41,
@@ -94,7 +94,7 @@ void TipsifyTest::buildAdjacency() {
         54, 55, 56, 57
     }));
 
-    CORRADE_COMPARE(neighbors, (std::vector<std::uint32_t>{
+    CORRADE_COMPARE(neighbors, (std::vector<UnsignedInt>{
         0,
         0, 7, 11,
         2, 7, 13,
@@ -122,7 +122,7 @@ void TipsifyTest::buildAdjacency() {
 void TipsifyTest::tipsify() {
     MeshTools::tipsify(indices, vertexCount, 3);
 
-    CORRADE_COMPARE(indices, (std::vector<std::uint32_t>{
+    CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{
         4, 1, 0,
         9, 5, 4,
         1, 4, 5,

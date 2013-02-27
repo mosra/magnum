@@ -31,15 +31,15 @@ namespace Magnum { namespace MeshTools {
 /**
 @brief Flip face winding
 
-The same as flipNormals(std::vector<std::uint32_t>&, std::vector<Vector3>&),
+The same as flipNormals(std::vector<UnsignedInt>&, std::vector<Vector3>&),
 but flips only face winding.
 */
-void MAGNUM_MESHTOOLS_EXPORT flipFaceWinding(std::vector<std::uint32_t>& indices);
+void MAGNUM_MESHTOOLS_EXPORT flipFaceWinding(std::vector<UnsignedInt>& indices);
 
 /**
 @brief Flip mesh normals
 
-The same as flipNormals(std::vector<std::uint32_t>&, std::vector<Vector3>&),
+The same as flipNormals(std::vector<UnsignedInt>&, std::vector<Vector3>&),
 but flips only normals, not face winding.
 */
 void MAGNUM_MESHTOOLS_EXPORT flipNormals(std::vector<Vector3>& normals);
@@ -56,7 +56,7 @@ flipFaceWinding(), which flip normals or face winding only.
 @attention The function requires the mesh to have triangle faces, thus index
     count must be divisible by 3.
 */
-inline void flipNormals(std::vector<std::uint32_t>& indices, std::vector<Vector3>& normals) {
+inline void flipNormals(std::vector<UnsignedInt>& indices, std::vector<Vector3>& normals) {
     flipFaceWinding(indices);
     flipNormals(normals);
 }

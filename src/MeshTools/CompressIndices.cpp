@@ -26,11 +26,11 @@ namespace Magnum { namespace MeshTools {
 namespace {
 
 template<class> constexpr Mesh::IndexType indexType();
-template<> inline constexpr Mesh::IndexType indexType<GLubyte>() { return Mesh::IndexType::UnsignedByte; }
-template<> inline constexpr Mesh::IndexType indexType<GLushort>() { return Mesh::IndexType::UnsignedShort; }
-template<> inline constexpr Mesh::IndexType indexType<GLuint>() { return Mesh::IndexType::UnsignedInt; }
+template<> inline constexpr Mesh::IndexType indexType<UnsignedByte>() { return Mesh::IndexType::UnsignedByte; }
+template<> inline constexpr Mesh::IndexType indexType<UnsignedShort>() { return Mesh::IndexType::UnsignedShort; }
+template<> inline constexpr Mesh::IndexType indexType<UnsignedInt>() { return Mesh::IndexType::UnsignedInt; }
 
-template<class T> inline std::tuple<std::size_t, Mesh::IndexType, char*> compress(const std::vector<std::uint32_t>& indices) {
+template<class T> inline std::tuple<std::size_t, Mesh::IndexType, char*> compress(const std::vector<UnsignedInt>& indices) {
     char* buffer = new char[indices.size()*sizeof(T)];
     for(std::size_t i = 0; i != indices.size(); ++i) {
         T index = static_cast<T>(indices[i]);
@@ -40,15 +40,15 @@ template<class T> inline std::tuple<std::size_t, Mesh::IndexType, char*> compres
     return std::make_tuple(indices.size(), indexType<T>(), buffer);
 }
 
-std::tuple<std::size_t, Mesh::IndexType, char*> compressIndicesInternal(const std::vector<std::uint32_t>& indices, std::uint32_t max) {
+std::tuple<std::size_t, Mesh::IndexType, char*> compressIndicesInternal(const std::vector<UnsignedInt>& indices, UnsignedInt max) {
     switch(Math::log(256, max)) {
         case 0:
-            return compress<GLubyte>(indices);
+            return compress<UnsignedByte>(indices);
         case 1:
-            return compress<GLushort>(indices);
+            return compress<UnsignedShort>(indices);
         case 2:
         case 3:
-            return compress<GLuint>(indices);
+            return compress<UnsignedInt>(indices);
 
         default:
             CORRADE_ASSERT(false, "MeshTools::compressIndices(): no type able to index" << max << "elements.", {});
@@ -58,11 +58,11 @@ std::tuple<std::size_t, Mesh::IndexType, char*> compressIndicesInternal(const st
 }
 #endif
 
-std::tuple<std::size_t, Mesh::IndexType, char*> compressIndices(const std::vector<std::uint32_t>& indices) {
+std::tuple<std::size_t, Mesh::IndexType, char*> compressIndices(const std::vector<UnsignedInt>& indices) {
     return compressIndicesInternal(indices, *std::max_element(indices.begin(), indices.end()));
 }
 
-void compressIndices(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<std::uint32_t>& indices) {
+void compressIndices(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<UnsignedInt>& indices) {
     auto minmax = std::minmax_element(indices.begin(), indices.end());
 
     /** @todo Performance hint when range can be represented by smaller value? */

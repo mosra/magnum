@@ -20,11 +20,11 @@
 
 namespace Magnum { namespace MeshTools {
 
-std::tuple<std::vector<std::uint32_t>, std::vector<Vector3>> generateFlatNormals(const std::vector<std::uint32_t>& indices, const std::vector<Vector3>& positions) {
-    CORRADE_ASSERT(!(indices.size()%3), "MeshTools::generateFlatNormals(): index count is not divisible by 3!", (std::tuple<std::vector<std::uint32_t>, std::vector<Vector3>>()));
+std::tuple<std::vector<UnsignedInt>, std::vector<Vector3>> generateFlatNormals(const std::vector<UnsignedInt>& indices, const std::vector<Vector3>& positions) {
+    CORRADE_ASSERT(!(indices.size()%3), "MeshTools::generateFlatNormals(): index count is not divisible by 3!", (std::tuple<std::vector<UnsignedInt>, std::vector<Vector3>>()));
 
     /* Create normal for every triangle (assuming counterclockwise winding) */
-    std::vector<std::uint32_t> normalIndices;
+    std::vector<UnsignedInt> normalIndices;
     normalIndices.reserve(indices.size());
     std::vector<Vector3> normals;
     normals.reserve(indices.size()/3);

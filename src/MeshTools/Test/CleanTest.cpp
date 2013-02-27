@@ -29,7 +29,7 @@ class CleanTest: public Corrade::TestSuite::Tester {
         class Vector1 {
             public:
                 static const std::size_t Size = 1;
-                typedef std::int32_t Type;
+                typedef Int Type;
 
                 Vector1(): data(0) {}
                 Vector1(Type i): data(i) {}
@@ -49,12 +49,12 @@ CleanTest::CleanTest() {
 
 void CleanTest::cleanMesh() {
     std::vector<Vector1> positions{1, 2, 1, 4};
-    std::vector<std::uint32_t> indices{0, 1, 2, 1, 2, 3};
+    std::vector<UnsignedInt> indices{0, 1, 2, 1, 2, 3};
     MeshTools::clean(indices, positions);
 
     /* Verify cleanup */
     CORRADE_VERIFY(positions == (std::vector<Vector1>{1, 2, 4}));
-    CORRADE_COMPARE(indices, (std::vector<std::uint32_t>{0, 1, 0, 1, 0, 2}));
+    CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{0, 1, 0, 1, 0, 2}));
 }
 
 }}}

@@ -37,29 +37,29 @@ CombineIndexedArraysTest::CombineIndexedArraysTest() {
 void CombineIndexedArraysTest::wrongIndexCount() {
     std::stringstream ss;
     Error::setOutput(&ss);
-    std::vector<std::uint32_t> array;
-    std::vector<std::uint32_t> result = MeshTools::combineIndexedArrays(
-        std::tuple<const std::vector<std::uint32_t>&, std::vector<std::uint32_t>&>(std::vector<std::uint32_t>{0, 1, 0}, array),
-        std::tuple<const std::vector<std::uint32_t>&, std::vector<std::uint32_t>&>(std::vector<std::uint32_t>{3, 4}, array));
+    std::vector<UnsignedInt> array;
+    std::vector<UnsignedInt> result = MeshTools::combineIndexedArrays(
+        std::tuple<const std::vector<UnsignedInt>&, std::vector<UnsignedInt>&>(std::vector<UnsignedInt>{0, 1, 0}, array),
+        std::tuple<const std::vector<UnsignedInt>&, std::vector<UnsignedInt>&>(std::vector<UnsignedInt>{3, 4}, array));
 
     CORRADE_COMPARE(result.size(), 0);
     CORRADE_COMPARE(ss.str(), "MeshTools::combineIndexedArrays(): index arrays don't have the same length, nothing done.\n");
 }
 
 void CombineIndexedArraysTest::combine() {
-    std::vector<std::uint32_t> array1{ 0, 1 };
-    std::vector<std::uint32_t> array2{ 0, 1, 2, 3, 4 };
-    std::vector<std::uint32_t> array3{ 0, 1, 2, 3, 4, 5, 6, 7 };
+    std::vector<UnsignedInt> array1{ 0, 1 };
+    std::vector<UnsignedInt> array2{ 0, 1, 2, 3, 4 };
+    std::vector<UnsignedInt> array3{ 0, 1, 2, 3, 4, 5, 6, 7 };
 
-    std::vector<std::uint32_t> result = MeshTools::combineIndexedArrays(
-        std::tuple<const std::vector<std::uint32_t>&, std::vector<std::uint32_t>&>(std::vector<std::uint32_t>{0, 1, 0}, array1),
-        std::tuple<const std::vector<std::uint32_t>&, std::vector<std::uint32_t>&>(std::vector<std::uint32_t>{3, 4, 3}, array2),
-        std::tuple<const std::vector<std::uint32_t>&, std::vector<std::uint32_t>&>(std::vector<std::uint32_t>{6, 7, 6}, array3));
+    std::vector<UnsignedInt> result = MeshTools::combineIndexedArrays(
+        std::tuple<const std::vector<UnsignedInt>&, std::vector<UnsignedInt>&>(std::vector<UnsignedInt>{0, 1, 0}, array1),
+        std::tuple<const std::vector<UnsignedInt>&, std::vector<UnsignedInt>&>(std::vector<UnsignedInt>{3, 4, 3}, array2),
+        std::tuple<const std::vector<UnsignedInt>&, std::vector<UnsignedInt>&>(std::vector<UnsignedInt>{6, 7, 6}, array3));
 
-    CORRADE_COMPARE(result, (std::vector<std::uint32_t>{0, 1, 0}));
-    CORRADE_COMPARE(array1, (std::vector<std::uint32_t>{0, 1}));
-    CORRADE_COMPARE(array2, (std::vector<std::uint32_t>{3, 4}));
-    CORRADE_COMPARE(array3, (std::vector<std::uint32_t>{6, 7}));
+    CORRADE_COMPARE(result, (std::vector<UnsignedInt>{0, 1, 0}));
+    CORRADE_COMPARE(array1, (std::vector<UnsignedInt>{0, 1}));
+    CORRADE_COMPARE(array2, (std::vector<UnsignedInt>{3, 4}));
+    CORRADE_COMPARE(array3, (std::vector<UnsignedInt>{6, 7}));
 }
 
 }}}

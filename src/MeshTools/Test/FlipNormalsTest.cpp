@@ -40,18 +40,18 @@ void FlipNormalsTest::wrongIndexCount() {
     std::stringstream ss;
     Error::setOutput(&ss);
 
-    std::vector<std::uint32_t> indices{0, 1};
+    std::vector<UnsignedInt> indices{0, 1};
     MeshTools::flipFaceWinding(indices);
 
     CORRADE_COMPARE(ss.str(), "MeshTools::flipNormals(): index count is not divisible by 3!\n");
 }
 
 void FlipNormalsTest::flipFaceWinding() {
-    std::vector<std::uint32_t> indices{0, 1, 2,
+    std::vector<UnsignedInt> indices{0, 1, 2,
                                        3, 4, 5};
     MeshTools::flipFaceWinding(indices);
 
-    CORRADE_COMPARE(indices, (std::vector<std::uint32_t>{0, 2, 1,
+    CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{0, 2, 1,
                                                          3, 5, 4}));
 }
 

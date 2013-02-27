@@ -33,7 +33,7 @@ class SubdivideTest: public Corrade::TestSuite::Tester {
         class Vector1 {
             public:
                 static const std::size_t Size = 1;
-                typedef std::int32_t Type;
+                typedef Int Type;
 
                 Vector1(): data(0) {}
                 Vector1(Type i): data(i) {}
@@ -59,20 +59,20 @@ void SubdivideTest::wrongIndexCount() {
     Error::setOutput(&ss);
 
     std::vector<Vector1> positions;
-    std::vector<std::uint32_t> indices{0, 1};
+    std::vector<UnsignedInt> indices{0, 1};
     MeshTools::subdivide(indices, positions, interpolator);
     CORRADE_COMPARE(ss.str(), "MeshTools::subdivide(): index count is not divisible by 3!\n");
 }
 
 void SubdivideTest::subdivide() {
     std::vector<Vector1> positions{0, 2, 6, 8};
-    std::vector<std::uint32_t> indices{0, 1, 2, 1, 2, 3};
+    std::vector<UnsignedInt> indices{0, 1, 2, 1, 2, 3};
     MeshTools::subdivide(indices, positions, interpolator);
 
     CORRADE_COMPARE(indices.size(), 24);
 
     CORRADE_VERIFY(positions == (std::vector<Vector1>{0, 2, 6, 8, 1, 4, 3, 4, 7, 5}));
-    CORRADE_COMPARE(indices, (std::vector<std::uint32_t>{4, 5, 6, 7, 8, 9, 0, 4, 6, 4, 1, 5, 6, 5, 2, 1, 7, 9, 7, 2, 8, 9, 8, 3}));
+    CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{4, 5, 6, 7, 8, 9, 0, 4, 6, 4, 1, 5, 6, 5, 2, 1, 7, 9, 7, 2, 8, 9, 8, 3}));
 
     MeshTools::clean(indices, positions);
 

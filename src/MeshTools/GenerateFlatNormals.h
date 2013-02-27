@@ -38,10 +38,10 @@ namespace Magnum { namespace MeshTools {
 For each face generates one normal vector, removes duplicates before
 returning. Example usage:
 @code
-std::vector<std::uint32_t> vertexIndices;
+std::vector<UnsignedInt> vertexIndices;
 std::vector<Vector3> positions;
 
-std::vector<std::uint32_t> normalIndices;
+std::vector<UnsignedInt> normalIndices;
 std::vector<Vector3> normals;
 std::tie(normalIndices, normals) = MeshTools::generateFlatNormals(vertexIndices, positions);
 @endcode
@@ -51,7 +51,7 @@ use the same indices.
 @attention Index count must be divisible by 3, otherwise zero length result
     is generated.
 */
-std::tuple<std::vector<std::uint32_t>, std::vector<Vector3>> MAGNUM_MESHTOOLS_EXPORT generateFlatNormals(const std::vector<std::uint32_t>& indices, const std::vector<Vector3>& positions);
+std::tuple<std::vector<UnsignedInt>, std::vector<Vector3>> MAGNUM_MESHTOOLS_EXPORT generateFlatNormals(const std::vector<UnsignedInt>& indices, const std::vector<Vector3>& positions);
 
 }}
 
