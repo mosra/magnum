@@ -20,11 +20,11 @@
 
 namespace Magnum { namespace Primitives {
 
-Cylinder::Cylinder(std::uint32_t rings, std::uint32_t segments, GLfloat length, Flags flags): Capsule(segments, flags & Flag::GenerateTextureCoords ? TextureCoords::Generate : TextureCoords::DontGenerate) {
+Cylinder::Cylinder(UnsignedInt rings, UnsignedInt segments, Float length, Flags flags): Capsule(segments, flags & Flag::GenerateTextureCoords ? TextureCoords::Generate : TextureCoords::DontGenerate) {
     CORRADE_ASSERT(rings >= 1 && segments >= 3, "Cylinder must have at least one ring and three segments", );
 
-    GLfloat y = length*0.5f;
-    GLfloat textureCoordsV = flags & Flag::CapEnds ? 1.0f/(length+2.0f) : 0.0f;
+    Float y = length*0.5f;
+    Float textureCoordsV = flags & Flag::CapEnds ? 1.0f/(length+2.0f) : 0.0f;
 
     /* Bottom cap */
     if(flags & Flag::CapEnds) {
@@ -47,10 +47,10 @@ Cylinder::Cylinder(std::uint32_t rings, std::uint32_t segments, GLfloat length, 
     if(flags & Flag::CapEnds) topFaceRing();
 }
 
-void Cylinder::capVertexRing(GLfloat y, GLfloat textureCoordsV, const Vector3& normal) {
+void Cylinder::capVertexRing(Float y, Float textureCoordsV, const Vector3& normal) {
     Rad segmentAngleIncrement = 2*Rad(Constants::pi())/segments;
 
-    for(std::uint32_t i = 0; i != segments; ++i) {
+    for(UnsignedInt i = 0; i != segments; ++i) {
         Rad segmentAngle = i*segmentAngleIncrement;
         positions(0)->push_back({Math::sin(segmentAngle), y, Math::cos(segmentAngle)});
         normals(0)->push_back(normal);

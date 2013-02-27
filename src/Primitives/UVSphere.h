@@ -42,7 +42,7 @@ class UVSphere: public Capsule {
          * If texture coordinates are generated, vertices of one segment are
          * duplicated for texture wrapping.
          */
-        explicit MAGNUM_PRIMITIVES_EXPORT UVSphere(std::uint32_t rings, std::uint32_t segments, TextureCoords textureCoords = TextureCoords::DontGenerate);
+        explicit MAGNUM_PRIMITIVES_EXPORT UVSphere(UnsignedInt rings, UnsignedInt segments, TextureCoords textureCoords = TextureCoords::DontGenerate);
 };
 
 }}

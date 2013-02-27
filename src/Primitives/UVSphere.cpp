@@ -19,10 +19,10 @@
 
 namespace Magnum { namespace Primitives {
 
-UVSphere::UVSphere(std::uint32_t rings, std::uint32_t segments, TextureCoords textureCoords): Capsule(segments, textureCoords) {
+UVSphere::UVSphere(UnsignedInt rings, UnsignedInt segments, TextureCoords textureCoords): Capsule(segments, textureCoords) {
     CORRADE_ASSERT(rings >= 2 && segments >= 3, "UVSphere must have at least two rings and three segments", );
 
-    GLfloat textureCoordsVIncrement = 1.0f/rings;
+    Float textureCoordsVIncrement = 1.0f/rings;
     Rad ringAngleIncrement = Rad(Constants::pi())/rings;
 
     /* Bottom cap vertex */

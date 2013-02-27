@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Primitives {
 
-Icosphere<0>::Icosphere(): MeshData3D(Mesh::Primitive::Triangles, new std::vector<std::uint32_t>{
+Icosphere<0>::Icosphere(): MeshData3D(Mesh::Primitive::Triangles, new std::vector<UnsignedInt>{
     1, 2, 6,
     1, 7, 2,
     3, 4, 5,

@@ -21,7 +21,7 @@
 namespace Magnum { namespace Primitives {
 
 Trade::MeshData3D Cube::solid() {
-    return Trade::MeshData3D(Mesh::Primitive::Triangles, new std::vector<std::uint32_t>{
+    return Trade::MeshData3D(Mesh::Primitive::Triangles, new std::vector<UnsignedInt>{
          0,  1,  2,  0,  2,  3, /* +Z */
          4,  5,  6,  4,  6,  7, /* +X */
          8,  9, 10,  8, 10, 11, /* +Y */
@@ -92,7 +92,7 @@ Trade::MeshData3D Cube::solid() {
 }
 
 Trade::MeshData3D Cube::wireframe() {
-    return Trade::MeshData3D(Mesh::Primitive::Lines, new std::vector<std::uint32_t>{
+    return Trade::MeshData3D(Mesh::Primitive::Lines, new std::vector<UnsignedInt>{
         0, 1, 1, 2, 2, 3, 3, 0, /* +Z */
         4, 5, 5, 6, 6, 7, 7, 4, /* -Z */
         1, 5, 2, 6,             /* +X */
