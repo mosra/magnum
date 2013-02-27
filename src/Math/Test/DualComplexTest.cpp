@@ -27,6 +27,7 @@ class DualComplexTest: public Corrade::TestSuite::Tester {
 
         void construct();
         void constructDefault();
+        void constructFromVector();
 
         void constExpressions();
 
@@ -59,6 +60,7 @@ typedef Math::Vector2<float> Vector2;
 DualComplexTest::DualComplexTest() {
     addTests(&DualComplexTest::construct,
              &DualComplexTest::constructDefault,
+             &DualComplexTest::constructFromVector,
 
              &DualComplexTest::constExpressions,
 
@@ -92,6 +94,10 @@ void DualComplexTest::constructDefault() {
     CORRADE_COMPARE(DualComplex().length(), 1.0f);
 }
 
+void DualComplexTest::constructFromVector() {
+    CORRADE_COMPARE(DualComplex(Vector2(1.5f, -3.0f)), DualComplex({1.0f, 0.0f}, {1.5f, -3.0f}));
+}
+
 void DualComplexTest::constExpressions() {
     /* Default constructor */
     constexpr DualComplex a;
@@ -100,6 +106,10 @@ void DualComplexTest::constExpressions() {
     /* Value constructor */
     constexpr DualComplex b({-1.0f, 2.5f}, {3.0f, -7.5f});
     CORRADE_COMPARE(b, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
+
+    /* Vector constructor */
+    constexpr DualComplex c(Vector2(-3.0f, 7.5f));
+    CORRADE_COMPARE(c, DualComplex({}, {-3.0f, 7.5f}));
 
     /* Copy constructor */
     constexpr DualComplex d(b);

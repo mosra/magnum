@@ -89,6 +89,20 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         inline constexpr /*implicit*/ DualComplex(const Complex<T>& real, const Complex<T>& dual): Dual<Complex<T>>(real, dual) {}
 
         /**
+         * @brief Construct dual complex number from vector
+         *
+         * To be used in transformations later. @f[
+         *      \hat c = (0 + i1) + \epsilon(v_x + iv_y)
+         * @f]
+         * @todoc Remove workaround when Doxygen is predictable
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        inline constexpr explicit DualComplex(const Vector2<T>& vector);
+        #else
+        inline constexpr explicit DualComplex(const Vector2<T>& vector): Dual<Complex<T>>({}, Complex<T>(vector)) {}
+        #endif
+
+        /**
          * @brief Rotation angle of dual complex number
          *
          * @f[
