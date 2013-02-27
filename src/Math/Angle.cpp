@@ -18,11 +18,11 @@
 namespace Magnum { namespace Math {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Unit<Rad, float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Unit<Deg, float>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Unit<Rad, Float>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Unit<Deg, Float>&);
 #ifndef MAGNUM_TARGET_GLES
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Unit<Rad, double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Unit<Deg, double>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Unit<Rad, Double>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Unit<Deg, Double>&);
 #endif
 #endif
 

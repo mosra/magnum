@@ -84,12 +84,12 @@ ComplexTest::ComplexTest() {
              &ComplexTest::debug);
 }
 
-typedef Math::Deg<float> Deg;
-typedef Math::Rad<float> Rad;
-typedef Math::Complex<float> Complex;
-typedef Math::Vector2<float> Vector2;
-typedef Math::Matrix3<float> Matrix3;
-typedef Math::Matrix<2, float> Matrix2;
+typedef Math::Deg<Float> Deg;
+typedef Math::Rad<Float> Rad;
+typedef Math::Complex<Float> Complex;
+typedef Math::Vector2<Float> Vector2;
+typedef Math::Matrix3<Float> Matrix3;
+typedef Math::Matrix<2, Float> Matrix2;
 
 void ComplexTest::construct() {
     Complex c(0.5f, -3.7f);
@@ -111,10 +111,10 @@ void ComplexTest::constructFromVector() {
 }
 
 void ComplexTest::compare() {
-    CORRADE_VERIFY(Complex(3.7f, -1.0f+MathTypeTraits<float>::epsilon()/2) == Complex(3.7f, -1.0f));
-    CORRADE_VERIFY(Complex(3.7f, -1.0f+MathTypeTraits<float>::epsilon()*2) != Complex(3.7f, -1.0f));
-    CORRADE_VERIFY(Complex(1.0f+MathTypeTraits<float>::epsilon()/2, 3.7f) == Complex(1.0f, 3.7f));
-    CORRADE_VERIFY(Complex(1.0f+MathTypeTraits<float>::epsilon()*2, 3.7f) != Complex(1.0f, 3.7f));
+    CORRADE_VERIFY(Complex(3.7f, -1.0f+MathTypeTraits<Float>::epsilon()/2) == Complex(3.7f, -1.0f));
+    CORRADE_VERIFY(Complex(3.7f, -1.0f+MathTypeTraits<Float>::epsilon()*2) != Complex(3.7f, -1.0f));
+    CORRADE_VERIFY(Complex(1.0f+MathTypeTraits<Float>::epsilon()/2, 3.7f) == Complex(1.0f, 3.7f));
+    CORRADE_VERIFY(Complex(1.0f+MathTypeTraits<Float>::epsilon()*2, 3.7f) != Complex(1.0f, 3.7f));
 }
 
 void ComplexTest::constExpressions() {
@@ -135,8 +135,8 @@ void ComplexTest::constExpressions() {
     CORRADE_COMPARE(d, Complex(2.5f, -5.0f));
 
     /* Data access */
-    constexpr float e = b.real();
-    constexpr float f = b.imaginary();
+    constexpr Float e = b.real();
+    constexpr Float f = b.imaginary();
     constexpr Vector2 g(b);
     CORRADE_COMPARE(e, 2.5f);
     CORRADE_COMPARE(f, -5.0f);

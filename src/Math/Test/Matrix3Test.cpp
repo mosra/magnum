@@ -43,10 +43,10 @@ class Matrix3Test: public Corrade::TestSuite::Tester {
         void configuration();
 };
 
-typedef Math::Deg<float> Deg;
-typedef Math::Matrix3<float> Matrix3;
-typedef Math::Matrix<2, float> Matrix2;
-typedef Math::Vector2<float> Vector2;
+typedef Math::Deg<Float> Deg;
+typedef Math::Matrix3<Float> Matrix3;
+typedef Math::Matrix<2, Float> Matrix2;
+typedef Math::Vector2<Float> Vector2;
 
 Matrix3Test::Matrix3Test() {
     addTests(&Matrix3Test::constructIdentity,

@@ -48,11 +48,11 @@ class Matrix4Test: public Corrade::TestSuite::Tester {
         void configuration();
 };
 
-typedef Math::Deg<float> Deg;
-typedef Math::Rad<float> Rad;
-typedef Math::Matrix4<float> Matrix4;
-typedef Math::Matrix<3, float> Matrix3;
-typedef Math::Vector3<float> Vector3;
+typedef Math::Deg<Float> Deg;
+typedef Math::Rad<Float> Rad;
+typedef Math::Matrix4<Float> Matrix4;
+typedef Math::Matrix<3, Float> Matrix3;
+typedef Math::Vector3<Float> Vector3;
 
 Matrix4Test::Matrix4Test() {
     addTests(&Matrix4Test::constructIdentity,
@@ -135,8 +135,8 @@ void Matrix4Test::rotationX() {
                    {0.0f,  0.90096887f, 0.43388374f, 0.0f},
                    {0.0f, -0.43388374f, 0.90096887f, 0.0f},
                    {0.0f,         0.0f,        0.0f, 1.0f});
-    CORRADE_COMPARE(Matrix4::rotation(Rad(Math::Constants<float>::pi()/7), Vector3::xAxis()), matrix);
-    CORRADE_COMPARE(Matrix4::rotationX(Rad(Math::Constants<float>::pi()/7)), matrix);
+    CORRADE_COMPARE(Matrix4::rotation(Rad(Math::Constants<Float>::pi()/7), Vector3::xAxis()), matrix);
+    CORRADE_COMPARE(Matrix4::rotationX(Rad(Math::Constants<Float>::pi()/7)), matrix);
 }
 
 void Matrix4Test::rotationY() {
@@ -144,8 +144,8 @@ void Matrix4Test::rotationY() {
                    {       0.0f, 1.0f,         0.0f, 0.0f},
                    {0.43388374f, 0.0f,  0.90096887f, 0.0f},
                    {       0.0f, 0.0f,         0.0f, 1.0f});
-    CORRADE_COMPARE(Matrix4::rotation(Rad(Math::Constants<float>::pi()/7), Vector3::yAxis()), matrix);
-    CORRADE_COMPARE(Matrix4::rotationY(Rad(Math::Constants<float>::pi()/7)), matrix);
+    CORRADE_COMPARE(Matrix4::rotation(Rad(Math::Constants<Float>::pi()/7), Vector3::yAxis()), matrix);
+    CORRADE_COMPARE(Matrix4::rotationY(Rad(Math::Constants<Float>::pi()/7)), matrix);
 }
 
 void Matrix4Test::rotationZ() {
@@ -153,8 +153,8 @@ void Matrix4Test::rotationZ() {
                    {-0.43388374f, 0.90096887f, 0.0f, 0.0f},
                    {        0.0f,        0.0f, 1.0f, 0.0f},
                    {        0.0f,        0.0f, 0.0f, 1.0f});
-    CORRADE_COMPARE(Matrix4::rotation(Rad(Math::Constants<float>::pi()/7), Vector3::zAxis()), matrix);
-    CORRADE_COMPARE(Matrix4::rotationZ(Rad(Math::Constants<float>::pi()/7)), matrix);
+    CORRADE_COMPARE(Matrix4::rotation(Rad(Math::Constants<Float>::pi()/7), Vector3::zAxis()), matrix);
+    CORRADE_COMPARE(Matrix4::rotationZ(Rad(Math::Constants<Float>::pi()/7)), matrix);
 }
 
 void Matrix4Test::reflection() {

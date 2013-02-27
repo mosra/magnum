@@ -27,8 +27,8 @@ class GaussJordanTest: public Corrade::TestSuite::Tester {
         void invert();
 };
 
-typedef RectangularMatrix<4, 4, float> Matrix4;
-typedef Vector<4, float> Vector4;
+typedef RectangularMatrix<4, 4, Float> Matrix4;
+typedef Vector<4, Float> Vector4;
 
 GaussJordanTest::GaussJordanTest() {
     addTests(&GaussJordanTest::singular,
@@ -40,7 +40,7 @@ void GaussJordanTest::singular() {
               Vector4(2.0f, 3.0f, -7.0f, 11.0f),
               Vector4(2.0f, 4.0f,  6.0f,  8.0f),
               Vector4(1.0f, 2.0f,  7.0f, 40.0f));
-    RectangularMatrix<4, 1, float> t;
+    RectangularMatrix<4, 1, Float> t;
 
     CORRADE_VERIFY(!gaussJordanInPlaceTransposed(a, t));
 }

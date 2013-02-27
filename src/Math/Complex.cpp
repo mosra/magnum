@@ -18,9 +18,9 @@
 namespace Magnum { namespace Math {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Complex<float>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Complex<Float>&);
 #ifndef MAGNUM_TARGET_GLES
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Complex<double>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Complex<Double>&);
 #endif
 #endif
 

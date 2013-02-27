@@ -40,7 +40,7 @@ class DualTest: public Corrade::TestSuite::Tester {
         void debug();
 };
 
-typedef Math::Dual<float> Dual;
+typedef Math::Dual<Float> Dual;
 
 DualTest::DualTest() {
     addTests(&DualTest::construct,
@@ -74,10 +74,10 @@ void DualTest::constructDefault() {
 }
 
 void DualTest::compare() {
-    CORRADE_VERIFY(Dual(1.0f, 1.0f+MathTypeTraits<float>::epsilon()/2) == Dual(1.0f, 1.0f));
-    CORRADE_VERIFY(Dual(1.0f, 1.0f+MathTypeTraits<float>::epsilon()*2) != Dual(1.0f, 1.0f));
-    CORRADE_VERIFY(Dual(1.0f+MathTypeTraits<float>::epsilon()/2, 1.0f) == Dual(1.0f, 1.0f));
-    CORRADE_VERIFY(Dual(1.0f+MathTypeTraits<float>::epsilon()*2, 1.0f) != Dual(1.0f, 1.0f));
+    CORRADE_VERIFY(Dual(1.0f, 1.0f+MathTypeTraits<Float>::epsilon()/2) == Dual(1.0f, 1.0f));
+    CORRADE_VERIFY(Dual(1.0f, 1.0f+MathTypeTraits<Float>::epsilon()*2) != Dual(1.0f, 1.0f));
+    CORRADE_VERIFY(Dual(1.0f+MathTypeTraits<Float>::epsilon()/2, 1.0f) == Dual(1.0f, 1.0f));
+    CORRADE_VERIFY(Dual(1.0f+MathTypeTraits<Float>::epsilon()*2, 1.0f) != Dual(1.0f, 1.0f));
 
     /* Compare to real part only */
     CORRADE_VERIFY(Dual(1.0f, 0.0f) == 1.0f);
@@ -98,8 +98,8 @@ void DualTest::constExpressions() {
     CORRADE_COMPARE(c, Dual(2.0f, 3.0f));
 
     /* Data access */
-    constexpr float e = b.real();
-    constexpr float f = b.dual();
+    constexpr Float e = b.real();
+    constexpr Float f = b.dual();
     CORRADE_COMPARE(e, 2.0f);
     CORRADE_COMPARE(f, 3.0f);
 }

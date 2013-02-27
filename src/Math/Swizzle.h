@@ -50,7 +50,7 @@ namespace Implementation {
 
 Creates new vector from given components. Example:
 @code
-Vector4<std::int32_t> original(-1, 2, 3, 4);
+Vector4<Int> original(-1, 2, 3, 4);
 
 auto vec = swizzle<'w', '1', '0', 'x', 'y', 'z'>(original);
 // vec == { 4, 1, 0, -1, 2, 3 }

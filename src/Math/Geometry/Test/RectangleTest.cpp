@@ -32,9 +32,9 @@ class RectangleTest: public Corrade::TestSuite::Tester {
         void debug();
 };
 
-typedef Geometry::Rectangle<float> Rectangle;
-typedef Geometry::Rectangle<std::int32_t> Rectanglei;
-typedef Vector2<std::int32_t> Vector2i;
+typedef Geometry::Rectangle<Float> Rectangle;
+typedef Geometry::Rectangle<Int> Rectanglei;
+typedef Vector2<Int> Vector2i;
 
 RectangleTest::RectangleTest() {
     addTests(&RectangleTest::access,

@@ -60,8 +60,8 @@ template<class T> class Rectangle {
          * Performs only default casting on the values, no rounding or
          * anything else. Example usage:
          * @code
-         * Rectangle<float> floatingPoint({1.3f, 2.7f}, {-15.0f, 7.0f});
-         * Rectangle<std::int8_t> integral(floatingPoint); // {{1, 2}, {-15, 7}}
+         * Rectangle<Float> floatingPoint({1.3f, 2.7f}, {-15.0f, 7.0f});
+         * Rectangle<Byte> integral(floatingPoint); // {{1, 2}, {-15, 7}}
          * @endcode
          */
         template<class U> inline constexpr explicit Rectangle(const Rectangle<U>& other): _bottomLeft(other._bottomLeft), _topRight(other._topRight) {}

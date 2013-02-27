@@ -27,8 +27,8 @@ class GramSchmidtTest: public Corrade::TestSuite::Tester {
         void orthonormalize();
 };
 
-typedef RectangularMatrix<3, 3, float> Matrix3;
-typedef Vector<3, float> Vector3;
+typedef RectangularMatrix<3, 3, Float> Matrix3;
+typedef Vector<3, Float> Vector3;
 
 GramSchmidtTest::GramSchmidtTest() {
     addTests(&GramSchmidtTest::orthogonalize,

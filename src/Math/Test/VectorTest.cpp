@@ -62,10 +62,10 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void configuration();
 };
 
-typedef Math::Rad<float> Rad;
-typedef Vector<3, float> Vector3;
-typedef Vector<4, float> Vector4;
-typedef Vector<4, std::int32_t> Vector4i;
+typedef Math::Rad<Float> Rad;
+typedef Vector<3, Float> Vector3;
+typedef Vector<4, Float> Vector4;
+typedef Vector<4, Int> Vector4i;
 
 VectorTest::VectorTest() {
     addTests(&VectorTest::constructFromData,
@@ -106,7 +106,7 @@ VectorTest::VectorTest() {
 }
 
 void VectorTest::constructFromData() {
-    float data[] = { 1.0f, 2.0f, 3.0f, 4.0f };
+    Float data[] = { 1.0f, 2.0f, 3.0f, 4.0f };
     CORRADE_COMPARE(Vector4::from(data), Vector4(1.0f, 2.0f, 3.0f, 4.0f));
 }
 
@@ -119,7 +119,7 @@ void VectorTest::constructOneValue() {
 }
 
 void VectorTest::constructOneComponent() {
-    typedef Vector<1, float> Vector1;
+    typedef Vector<1, Float> Vector1;
 
     /* Implicit constructor must work */
     Vector1 vec = 1;
@@ -127,12 +127,12 @@ void VectorTest::constructOneComponent() {
 }
 
 void VectorTest::constructConversion() {
-    Vector4 floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
-    Vector4 floatingPointRounded(1.0f, 2.0f, -15.0f, 7.0f);
+    Vector4 FloatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
+    Vector4 FloatingPointRounded(1.0f, 2.0f, -15.0f, 7.0f);
     Vector4i integral(1, 2, -15, 7);
 
-    CORRADE_COMPARE(Vector4i(floatingPoint), integral);
-    CORRADE_COMPARE(Vector4(integral), floatingPointRounded);
+    CORRADE_COMPARE(Vector4i(FloatingPoint), integral);
+    CORRADE_COMPARE(Vector4(integral), FloatingPointRounded);
 }
 
 void VectorTest::data() {
@@ -167,15 +167,15 @@ void VectorTest::constExpressions() {
     CORRADE_COMPARE(e, Vector4(1.0f, 3.5f, 4.0f, -2.7f));
 
     /* Data access, pointer chasings, i.e. *(b.data()[3]), are not possible */
-    constexpr float f = b[3];
-    constexpr float g = *b.data();
+    constexpr Float f = b[3];
+    constexpr Float g = *b.data();
     CORRADE_COMPARE(f, -2.7f);
     CORRADE_COMPARE(g, 1.0f);
 }
 
 void VectorTest::compare() {
-    CORRADE_VERIFY(Vector4(1.0f, -3.5f, 5.0f, -10.0f) == Vector4(1.0f + MathTypeTraits<float>::epsilon()/2, -3.5f, 5.0f, -10.0f));
-    CORRADE_VERIFY(Vector4(1.0f, -1.0f, 5.0f, -10.0f) != Vector4(1.0f, -1.0f + MathTypeTraits<float>::epsilon()*2, 5.0f, -10.0f));
+    CORRADE_VERIFY(Vector4(1.0f, -3.5f, 5.0f, -10.0f) == Vector4(1.0f + MathTypeTraits<Float>::epsilon()/2, -3.5f, 5.0f, -10.0f));
+    CORRADE_VERIFY(Vector4(1.0f, -1.0f, 5.0f, -10.0f) != Vector4(1.0f, -1.0f + MathTypeTraits<Float>::epsilon()*2, 5.0f, -10.0f));
 
     CORRADE_VERIFY(Vector4i(1, -3, 5, -10) == Vector4i(1, -3, 5, -10));
     CORRADE_VERIFY(Vector4i(1, -3, 5, -10) != Vector4i(1, -2, 5, -10));
@@ -210,8 +210,8 @@ void VectorTest::multiplyDivide() {
     CORRADE_COMPARE(-1.5f*vector, multiplied);
     CORRADE_COMPARE(multiplied/-1.5f, vector);
 
-    Math::Vector<1, std::int8_t> vectorChar(32);
-    Math::Vector<1, std::int8_t> multipliedChar(-48);
+    Math::Vector<1, Byte> vectorChar(32);
+    Math::Vector<1, Byte> multipliedChar(-48);
     CORRADE_COMPARE(vectorChar*-1.5f, multipliedChar);
     CORRADE_COMPARE(multipliedChar/-1.5f, vectorChar);
     CORRADE_COMPARE(-1.5f*vectorChar, multipliedChar);

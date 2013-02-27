@@ -31,7 +31,7 @@ namespace Magnum { namespace Math {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    template<std::uint32_t exponent> struct Pow {
+    template<UnsignedInt exponent> struct Pow {
         Pow() = delete;
 
         template<class T> inline constexpr static T pow(T base) {
@@ -51,7 +51,7 @@ namespace Implementation {
  *
  * Returns integral power of base to the exponent.
  */
-template<std::uint32_t exponent, class T> inline constexpr T pow(T base) {
+template<UnsignedInt exponent, class T> inline constexpr T pow(T base) {
     return Implementation::Pow<exponent>::pow(base);
 }
 
@@ -61,7 +61,7 @@ template<std::uint32_t exponent, class T> inline constexpr T pow(T base) {
  * Returns integral logarithm of given number with base `2`.
  * @see log()
  */
-std::uint32_t MAGNUM_EXPORT log2(std::uint32_t number);
+UnsignedInt MAGNUM_EXPORT log2(UnsignedInt number);
 
 /**
  * @brief Integral logarithm
@@ -69,7 +69,7 @@ std::uint32_t MAGNUM_EXPORT log2(std::uint32_t number);
  * Returns integral logarithm of given number with given base.
  * @see log2()
  */
-std::uint32_t MAGNUM_EXPORT log(std::uint32_t base, std::uint32_t number);
+UnsignedInt MAGNUM_EXPORT log(UnsignedInt base, UnsignedInt number);
 
 /** @brief Sine */
 template<class T> inline T sin(Rad<T> angle) { return std::sin(T(angle)); }
@@ -224,18 +224,18 @@ Converts integral value from full range of given *unsigned* integral type to
 value in range @f$ [0, 1] @f$ or from *signed* integral to range @f$ [-1, 1] @f$.
 
 @note For best precision, resulting `FloatingPoint` type should be always
-    larger that `Integral` type (e.g. `double` from `std::int32_t`, `long double`
-    from `std::int64_t` and similarly for vector types).
+    larger that `Integral` type (e.g. Double from Int, LongDouble from Long and
+    similarly for vector types).
 
 @attention To ensure the integral type is correctly detected when using
     literals, this function should be called with both template parameters
     explicit, e.g.:
 @code
 // Literal type is (signed) char, but we assumed unsigned char, a != 1.0f
-float a = normalize<float>('\xFF');
+Float a = normalize<Float>('\xFF');
 
 // b = 1.0f
-float b = normalize<float, std::uint8_t>('\xFF');
+Float b = normalize<Float, UnsignedByte>('\xFF');
 @endcode
 
 @see denormalize()
@@ -273,8 +273,8 @@ Converts floating-point value in range @f$ [0, 1] @f$ to full range of given
 integral type.
 
 @note For best precision, `FloatingPoint` type should be always larger that
-    resulting `Integral` type (e.g. `double` to `std::int32_t`, `long double`
-    to `std::int64_t` and similarly for vector types).
+    resulting `Integral` type (e.g. Double to Int, LongDouble to Long and
+    similarly for vector types).
 
 @attention Return value for floating point numbers outside the normalized
     range is undefined.

@@ -19,8 +19,9 @@
  * @brief Class Magnum::Math::MathTypeTraits
  */
 
-#include <cstdint>
 #include <cmath>
+
+#include "Types.h"
 
 /** @brief Precision when testing floats for equality */
 #ifndef FLOAT_EQUALITY_PRECISION
@@ -113,28 +114,28 @@ namespace Implementation {
     };
 }
 
-template<> struct MathTypeTraits<std::uint8_t>: Implementation::MathTypeTraitsIntegral<std::uint8_t> {
-    typedef float FloatingPointType;
+template<> struct MathTypeTraits<UnsignedByte>: Implementation::MathTypeTraitsIntegral<UnsignedByte> {
+    typedef Float FloatingPointType;
 };
-template<> struct MathTypeTraits<std::int8_t>: Implementation::MathTypeTraitsIntegral<std::int8_t> {
-    typedef float FloatingPointType;
+template<> struct MathTypeTraits<Byte>: Implementation::MathTypeTraitsIntegral<Byte> {
+    typedef Float FloatingPointType;
 };
-template<> struct MathTypeTraits<std::uint16_t>: Implementation::MathTypeTraitsIntegral<std::uint16_t> {
-    typedef float FloatingPointType;
+template<> struct MathTypeTraits<UnsignedShort>: Implementation::MathTypeTraitsIntegral<UnsignedShort> {
+    typedef Float FloatingPointType;
 };
-template<> struct MathTypeTraits<std::int16_t>: Implementation::MathTypeTraitsIntegral<std::int16_t> {
-    typedef float FloatingPointType;
+template<> struct MathTypeTraits<Short>: Implementation::MathTypeTraitsIntegral<Short> {
+    typedef Float FloatingPointType;
 };
-template<> struct MathTypeTraits<std::uint32_t>: Implementation::MathTypeTraitsIntegral<std::uint32_t> {
-    typedef double FloatingPointType;
+template<> struct MathTypeTraits<UnsignedInt>: Implementation::MathTypeTraitsIntegral<UnsignedInt> {
+    typedef Double FloatingPointType;
 };
-template<> struct MathTypeTraits<std::int32_t>: Implementation::MathTypeTraitsIntegral<std::int32_t> {
-    typedef double FloatingPointType;
+template<> struct MathTypeTraits<Int>: Implementation::MathTypeTraitsIntegral<Int> {
+    typedef Double FloatingPointType;
 };
-template<> struct MathTypeTraits<std::uint64_t>: Implementation::MathTypeTraitsIntegral<std::uint64_t> {
+template<> struct MathTypeTraits<UnsignedLong>: Implementation::MathTypeTraitsIntegral<UnsignedLong> {
     typedef long double FloatingPointType;
 };
-template<> struct MathTypeTraits<std::int64_t>: Implementation::MathTypeTraitsIntegral<std::int64_t> {
+template<> struct MathTypeTraits<Long>: Implementation::MathTypeTraitsIntegral<Long> {
     typedef long double FloatingPointType;
 };
 
@@ -149,15 +150,15 @@ namespace Implementation {
     };
 }
 
-template<> struct MathTypeTraits<float>: Implementation::MathTypeTraitsFloatingPoint<float> {
-    typedef float FloatingPointType;
+template<> struct MathTypeTraits<Float>: Implementation::MathTypeTraitsFloatingPoint<Float> {
+    typedef Float FloatingPointType;
 
-    inline constexpr static float epsilon() { return FLOAT_EQUALITY_PRECISION; }
+    inline constexpr static Float epsilon() { return FLOAT_EQUALITY_PRECISION; }
 };
-template<> struct MathTypeTraits<double>: Implementation::MathTypeTraitsFloatingPoint<double> {
-    typedef double FloatingPointType;
+template<> struct MathTypeTraits<Double>: Implementation::MathTypeTraitsFloatingPoint<Double> {
+    typedef Double FloatingPointType;
 
-    inline constexpr static double epsilon() { return DOUBLE_EQUALITY_PRECISION; }
+    inline constexpr static Double epsilon() { return DOUBLE_EQUALITY_PRECISION; }
 };
 template<> struct MathTypeTraits<long double>: Implementation::MathTypeTraitsFloatingPoint<long double> {
     typedef long double FloatingPointType;

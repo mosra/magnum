@@ -39,17 +39,17 @@ conversion less error-prone.
 
 You can enter the value either by using literal:
 @code
-auto degrees = 60.0_degf;       // type is Deg<float>
-auto radians = 1.047_rad;       // type is Rad<double>
+auto degrees = 60.0_degf;       // type is Deg<Float>
+auto radians = 1.047_rad;       // type is Rad<Double>
 @endcode
 
 Or explicitly convert unitless value (such as output from some function) to
 either degrees or radians:
 @code
-double foo();
+Double foo();
 
-Deg<float> degrees(35.0f);
-Rad<double> radians(foo());
+Deg<Float> degrees(35.0f);
+Rad<Double> radians(foo());
 //degrees = 60.0f;              // error, no implicit conversion
 @endcode
 
@@ -65,9 +65,9 @@ It is also possible to compare angles with all comparison operators, but
 comparison of degrees and radians is not possible without explicit conversion
 to common type:
 @code
-Rad<float> angle();
+Rad<Float> angle();
 
-Deg<float> x = angle();         // convert to degrees for easier comparison
+Deg<Float> x = angle();         // convert to degrees for easier comparison
 if(x < 30.0_degf) foo();
 //if(x > 1.57_radf) bar();      // error, both need to be of the same type
 @endcode
@@ -75,11 +75,11 @@ if(x < 30.0_degf) foo();
 It is possible to seamlessly convert between degrees and radians and explicitly
 convert the value back to underlying type:
 @code
-float sine(Rad<float> angle);
-float a = sine(60.0_degf);      // the same as sine(1.047_radf)
-Deg<double> b = 1.047_rad;      // the same as 60.0_deg
-float d = double(b);            // 60.0
-//float e = b;                  // error, no implicit conversion
+Float sine(Rad<Float> angle);
+Float a = sine(60.0_degf);      // the same as sine(1.047_radf)
+Deg<Double> b = 1.047_rad;      // the same as 60.0_deg
+Float d = Double(b);            // 60.0
+//Float e = b;                  // error, no implicit conversion
 @endcode
 
 @section Rad-conversions Requirement of explicit conversion
@@ -88,10 +88,10 @@ The requirement of explicit conversions from and to unitless types helps to
 reduce unit-based errors. Consider following example with implicit conversions
 allowed:
 @code
-float std::sin(float angle);
-float sine(Rad<float> angle);
+Float std::sin(Float angle);
+Float sine(Rad<Float> angle);
 
-float a = 60.0f;                // degrees
+Float a = 60.0f;                // degrees
 sine(a);                        // silent error, sine() expected radians
 
 auto b = 60.0_degf;             // degrees
@@ -101,10 +101,10 @@ std::sin(b);                    // silent error, std::sin() expected radians
 These silent errors are easily avoided by requiring explicit conversions:
 @code
 //sine(angleInDegrees);                     // compilation error
-sine(Deg<float>(angleInDegrees));           // explicitly specifying unit
+sine(Deg<Float>(angleInDegrees));           // explicitly specifying unit
 
 //std::sin(angleInDegrees);                 // compilation error
-std::sin(float(Rad<float>(angleInDegrees)); // required explicit conversion hints
+std::sin(Float(Rad<Float>(angleInDegrees)); // required explicit conversion hints
                                             // to user that this case needs special
                                             // attention (i.e., conversion to radians)
 @endcode
@@ -142,26 +142,26 @@ template<class T> class Deg: public Unit<Deg, T> {
 
 Example usage:
 @code
-double cosine = Math::cos(60.0_deg);  // cosine = 0.5
-double cosine = Math::cos(1.047_rad); // cosine = 0.5
+Double cosine = Math::cos(60.0_deg);  // cosine = 0.5
+Double cosine = Math::cos(1.047_rad); // cosine = 0.5
 @endcode
 @see Magnum::operator""_deg(), operator""_degf(), operator""_rad()
 @note Not available on GCC < 4.7. Use Deg::Deg(T) instead.
 */
-inline constexpr Deg<double> operator "" _deg(long double value) { return Deg<double>(value); }
+inline constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(value); }
 
 /** @relates Deg
 @brief Single-precision degree value literal
 
 Example usage:
 @code
-float tangent = Math::tan(60.0_degf);  // tangent = 1.732f
-float tangent = Math::tan(1.047_radf); // tangent = 1.732f
+Float tangent = Math::tan(60.0_degf);  // tangent = 1.732f
+Float tangent = Math::tan(1.047_radf); // tangent = 1.732f
 @endcode
 @see Magnum::operator""_degf(), operator""_deg(), operator""_radf()
 @note Not available on GCC < 4.7. Use Deg::Deg(T) instead.
 */
-inline constexpr Deg<float> operator "" _degf(long double value) { return Deg<float>(value); }
+inline constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(value); }
 #endif
 
 /**
@@ -203,7 +203,7 @@ See operator""_rad() for more information.
 @see Magnum::operator""_rad(), operator""_radf(), operator""_deg()
 @note Not available on GCC < 4.7. Use Rad::Rad(T) instead.
 */
-inline constexpr Rad<double> operator "" _rad(long double value) { return Rad<double>(value); }
+inline constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(value); }
 
 /** @relates Rad
 @brief Single-precision radian value literal
@@ -212,7 +212,7 @@ See operator""_degf() for more information.
 @see Magnum::operator""_radf(), operator""_rad(), operator""_degf()
 @note Not available on GCC < 4.7. Use Rad::Rad(T) instead.
 */
-inline constexpr Rad<float> operator "" _radf(long double value) { return Rad<float>(value); }
+inline constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(value); }
 #endif
 
 template<class T> inline constexpr Deg<T>::Deg(Unit<Rad, T> value): Unit<Deg, T>(T(180)*T(value)/Math::Constants<T>::pi()) {}
@@ -238,11 +238,11 @@ template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug deb
 
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Unit<Rad, float>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Unit<Deg, float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Unit<Rad, Float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Unit<Deg, Float>&);
 #ifndef MAGNUM_TARGET_GLES
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Unit<Rad, double>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Unit<Deg, double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Unit<Rad, Double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Unit<Deg, Double>&);
 #endif
 #endif
 

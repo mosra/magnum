@@ -121,7 +121,7 @@ void BoolVectorTest::constExpressions() {
 
     /* Data access, pointer chasings, i.e. *(b.data()[3]), are not possible */
     constexpr bool e = b[2];
-    constexpr std::uint8_t f = *b.data();
+    constexpr UnsignedByte f = *b.data();
     CORRADE_COMPARE(e, true);
     CORRADE_COMPARE(f, 0xa5);
 }

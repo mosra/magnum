@@ -50,13 +50,13 @@ class DualQuaternionTest: public Corrade::TestSuite::Tester {
         void debug();
 };
 
-typedef Math::Deg<float> Deg;
-typedef Math::Rad<float> Rad;
-typedef Math::Dual<float> Dual;
-typedef Math::Matrix4<float> Matrix4;
-typedef Math::DualQuaternion<float> DualQuaternion;
-typedef Math::Quaternion<float> Quaternion;
-typedef Math::Vector3<float> Vector3;
+typedef Math::Deg<Float> Deg;
+typedef Math::Rad<Float> Rad;
+typedef Math::Dual<Float> Dual;
+typedef Math::Matrix4<Float> Matrix4;
+typedef Math::DualQuaternion<Float> DualQuaternion;
+typedef Math::Quaternion<Float> Quaternion;
+typedef Math::Vector3<Float> Vector3;
 
 DualQuaternionTest::DualQuaternionTest() {
     addTests(&DualQuaternionTest::construct,
@@ -184,7 +184,7 @@ void DualQuaternionTest::rotation() {
     std::ostringstream o;
     Error::setOutput(&o);
 
-    Vector3 axis(1.0f/Constants<float>::sqrt3());
+    Vector3 axis(1.0f/Constants<Float>::sqrt3());
 
     CORRADE_COMPARE(DualQuaternion::rotation(Deg(120.0f), axis*2.0f), DualQuaternion());
     CORRADE_COMPARE(o.str(), "Math::Quaternion::rotation(): axis must be normalized\n");

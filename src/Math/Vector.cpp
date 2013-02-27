@@ -18,19 +18,19 @@
 namespace Magnum { namespace Math {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<2, float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<3, float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<4, float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<2, int>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<3, int>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<4, int>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<2, unsigned int>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<3, unsigned int>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<4, unsigned int>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<2, Float>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<3, Float>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<4, Float>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<2, Int>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<3, Int>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<4, Int>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<2, UnsignedInt>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<3, UnsignedInt>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<4, UnsignedInt>&);
 #ifndef MAGNUM_TARGET_GLES
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<2, double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<3, double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<4, double>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<2, Double>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<3, Double>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::Vector<4, Double>&);
 #endif
 #endif
 
@@ -39,19 +39,19 @@ template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnu
 namespace Corrade { namespace Utility {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template struct ConfigurationValue<Magnum::Math::Vector<2, float>>;
-template struct ConfigurationValue<Magnum::Math::Vector<3, float>>;
-template struct ConfigurationValue<Magnum::Math::Vector<4, float>>;
-template struct ConfigurationValue<Magnum::Math::Vector<2, int>>;
-template struct ConfigurationValue<Magnum::Math::Vector<3, int>>;
-template struct ConfigurationValue<Magnum::Math::Vector<4, int>>;
-template struct ConfigurationValue<Magnum::Math::Vector<2, unsigned int>>;
-template struct ConfigurationValue<Magnum::Math::Vector<3, unsigned int>>;
-template struct ConfigurationValue<Magnum::Math::Vector<4, unsigned int>>;
+template struct ConfigurationValue<Magnum::Math::Vector<2, Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::Vector<3, Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::Vector<4, Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::Vector<2, Magnum::Int>>;
+template struct ConfigurationValue<Magnum::Math::Vector<3, Magnum::Int>>;
+template struct ConfigurationValue<Magnum::Math::Vector<4, Magnum::Int>>;
+template struct ConfigurationValue<Magnum::Math::Vector<2, Magnum::UnsignedInt>>;
+template struct ConfigurationValue<Magnum::Math::Vector<3, Magnum::UnsignedInt>>;
+template struct ConfigurationValue<Magnum::Math::Vector<4, Magnum::UnsignedInt>>;
 #ifndef MAGNUM_TARGET_GLES
-template struct ConfigurationValue<Magnum::Math::Vector<2, double>>;
-template struct ConfigurationValue<Magnum::Math::Vector<3, double>>;
-template struct ConfigurationValue<Magnum::Math::Vector<4, double>>;
+template struct ConfigurationValue<Magnum::Math::Vector<2, Magnum::Double>>;
+template struct ConfigurationValue<Magnum::Math::Vector<3, Magnum::Double>>;
+template struct ConfigurationValue<Magnum::Math::Vector<4, Magnum::Double>>;
 #endif
 #endif
 

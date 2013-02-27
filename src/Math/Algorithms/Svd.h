@@ -41,8 +41,8 @@ template<class T> T pythagoras(T a, T b) {
 }
 
 template<class T> T smallestDelta();
-template<> inline constexpr float smallestDelta<float>() { return 1.0e-32; }
-template<> inline constexpr double smallestDelta<double>() { return 1.0e-64; }
+template<> inline constexpr Float smallestDelta<Float>() { return 1.0e-32; }
+template<> inline constexpr Double smallestDelta<Double>() { return 1.0e-64; }
 
 }
 #endif
@@ -61,22 +61,22 @@ zero matrices.
 Full @f$ U @f$, @f$ \Sigma @f$ matrices and original @f$ M @f$ matrix can be
 reconstructed from the values as following:
 @code
-RectangularMatrix<cols, rows, double> m;
+RectangularMatrix<cols, rows, Double> m;
 
-RectangularMatrix<cols, rows, double> uPart;
-Vector<cols, double> wDiagonal;
-Matrix<cols, double> v;
+RectangularMatrix<cols, rows, Double> uPart;
+Vector<cols, Double> wDiagonal;
+Matrix<cols, Double> v;
 
 std::tie(uPart, wDiagonal, v) = Math::Algorithms::svd(m);
 
 // Extend U
-Matrix<rows, double> u(Matrix<rows, double>::Zero);
+Matrix<rows, Double> u(Matrix<rows, Double>::Zero);
 for(std::size_t i = 0; i != rows; ++i)
     u[i] = uPart[i];
 
 // Diagonal W
-RectangularMatrix<cols, rows, double> w =
-    RectangularMatrix<cols, rows, double>::fromDiagonal(wDiagonal);
+RectangularMatrix<cols, rows, Double> w =
+    RectangularMatrix<cols, rows, Double>::fromDiagonal(wDiagonal);
 
 // u*w*v.transposed() == m
 @endcode

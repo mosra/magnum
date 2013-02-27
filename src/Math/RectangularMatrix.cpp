@@ -18,28 +18,28 @@
 namespace Magnum { namespace Math {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<2, 2, float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<3, 3, float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<4, 4, float>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<2, 2, Float>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<3, 3, Float>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<4, 4, Float>&);
 #ifndef MAGNUM_TARGET_GLES
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<2, 2, double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<3, 3, double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<4, 4, double>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<2, 2, Double>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<3, 3, Double>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<4, 4, Double>&);
 #endif
 
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<2, 3, float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<3, 2, float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<2, 4, float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<4, 2, float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<3, 4, float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<4, 3, float>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<2, 3, Float>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<3, 2, Float>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<2, 4, Float>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<4, 2, Float>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<3, 4, Float>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<4, 3, Float>&);
 #ifndef MAGNUM_TARGET_GLES
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<2, 3, double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<3, 2, double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<2, 4, double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<4, 2, double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<3, 4, double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<4, 3, double>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<2, 3, Double>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<3, 2, Double>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<2, 4, Double>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<4, 2, Double>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<3, 4, Double>&);
+template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnum::Math::RectangularMatrix<4, 3, Double>&);
 #endif
 #endif
 
@@ -48,28 +48,28 @@ template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Magnu
 namespace Corrade { namespace Utility {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 2, float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 3, float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 4, float>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 2, Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 3, Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 4, Magnum::Float>>;
 #ifndef MAGNUM_TARGET_GLES
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 2, double>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 3, double>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 4, double>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 2, Magnum::Double>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 3, Magnum::Double>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 4, Magnum::Double>>;
 #endif
 
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 3, float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 2, float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 4, float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 2, float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 4, float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 3, float>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 3, Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 2, Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 4, Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 2, Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 4, Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 3, Magnum::Float>>;
 #ifndef MAGNUM_TARGET_GLES
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 3, double>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 2, double>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 4, double>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 2, double>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 4, double>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 3, double>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 3, Magnum::Double>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 2, Magnum::Double>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 4, Magnum::Double>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 2, Magnum::Double>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 4, Magnum::Double>>;
+template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 3, Magnum::Double>>;
 #endif
 #endif
 

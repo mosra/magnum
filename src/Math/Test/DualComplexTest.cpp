@@ -52,13 +52,13 @@ class DualComplexTest: public Corrade::TestSuite::Tester {
         void debug();
 };
 
-typedef Math::Deg<float> Deg;
-typedef Math::Rad<float> Rad;
-typedef Math::Complex<float> Complex;
-typedef Math::Dual<float> Dual;
-typedef Math::DualComplex<float> DualComplex;
-typedef Math::Matrix3<float> Matrix3;
-typedef Math::Vector2<float> Vector2;
+typedef Math::Deg<Float> Deg;
+typedef Math::Rad<Float> Rad;
+typedef Math::Complex<Float> Complex;
+typedef Math::Dual<Float> Dual;
+typedef Math::DualComplex<Float> DualComplex;
+typedef Math::Matrix3<Float> Matrix3;
+typedef Math::Vector2<Float> Vector2;
 
 DualComplexTest::DualComplexTest() {
     addTests(&DualComplexTest::construct,

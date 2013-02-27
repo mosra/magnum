@@ -19,8 +19,9 @@
  * @brief Class Magnum::Math::BoolVector
  */
 
-#include <cstdint>
 #include <Utility/Debug.h>
+
+#include "Types.h"
 
 namespace Magnum { namespace Math {
 
@@ -65,9 +66,9 @@ template<std::size_t size> class BoolVector {
          * @param next  Values for next Bbit segments
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class ...T> inline constexpr /*implicit*/ BoolVector(std::uint8_t first, T... next);
+        template<class ...T> inline constexpr /*implicit*/ BoolVector(UnsignedByte first, T... next);
         #else
-        template<class ...T, class U = typename std::enable_if<sizeof...(T)+1 == DataSize, bool>::type> inline constexpr /*implicit*/ BoolVector(std::uint8_t first, T... next): _data{first, std::uint8_t(next)...} {}
+        template<class ...T, class U = typename std::enable_if<sizeof...(T)+1 == DataSize, bool>::type> inline constexpr /*implicit*/ BoolVector(UnsignedByte first, T... next): _data{first, UnsignedByte(next)...} {}
         #endif
 
         /** @brief Construct boolean vector with one value for all fields */
@@ -89,8 +90,8 @@ template<std::size_t size> class BoolVector {
          *
          * @see operator[](), set()
          */
-        inline std::uint8_t* data() { return _data; }
-        inline constexpr const std::uint8_t* data() const { return _data; } /**< @overload */
+        inline UnsignedByte* data() { return _data; }
+        inline constexpr const UnsignedByte* data() const { return _data; } /**< @overload */
 
         /** @brief Bit at given position */
         inline constexpr bool operator[](std::size_t i) const {
@@ -225,15 +226,15 @@ template<std::size_t size> class BoolVector {
         }
 
     private:
-        enum: std::uint8_t {
+        enum: UnsignedByte {
             FullSegmentMask = 0xFF,
             LastSegmentMask = (1 << size%8) - 1
         };
 
         /* Implementation for Vector<size, T>::Vector(U) */
-        template<std::size_t ...sequence> inline constexpr explicit BoolVector(Implementation::Sequence<sequence...>, std::uint8_t value): _data{Implementation::repeat(value, sequence)...} {}
+        template<std::size_t ...sequence> inline constexpr explicit BoolVector(Implementation::Sequence<sequence...>, UnsignedByte value): _data{Implementation::repeat(value, sequence)...} {}
 
-        std::uint8_t _data[(size-1)/8+1];
+        UnsignedByte _data[(size-1)/8+1];
 };
 
 /** @debugoperator{Magnum::Math::BoolVector} */

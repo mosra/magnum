@@ -27,7 +27,7 @@ class IntersectionTest: public Corrade::TestSuite::Tester {
         void planeLine();
 };
 
-typedef Magnum::Math::Vector3<float> Vector3;
+typedef Math::Vector3<Float> Vector3;
 
 IntersectionTest::IntersectionTest() {
     addTests(&IntersectionTest::planeLine);
@@ -47,11 +47,11 @@ void IntersectionTest::planeLine() {
 
     /* Line lies on the plane */
     CORRADE_COMPARE(Intersection::planeLine(planePosition, planeNormal,
-        Vector3(1.0f, 0.5f, 0.5f), Vector3(0.0f, 1.0f, 0.5f)), std::numeric_limits<float>::quiet_NaN());
+        Vector3(1.0f, 0.5f, 0.5f), Vector3(0.0f, 1.0f, 0.5f)), std::numeric_limits<Float>::quiet_NaN());
 
     /* Line is parallell to the plane */
     CORRADE_COMPARE((Intersection::planeLine(planePosition, planeNormal,
-        Vector3(1.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f))), -std::numeric_limits<float>::infinity());
+        Vector3(1.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f))), -std::numeric_limits<Float>::infinity());
 }
 
 }}}}

@@ -45,16 +45,16 @@ UnitTest::UnitTest() {
 }
 
 template<class> struct Sec_;
-typedef Unit<Sec_, float> Sec;
-typedef Unit<Sec_, double> Secd;
+typedef Unit<Sec_, Float> Sec;
+typedef Unit<Sec_, Double> Secd;
 
 inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, Sec value) {
-    return debug << float(value);
+    return debug << Float(value);
 }
 
 void UnitTest::construct() {
     constexpr Sec a(25.0f);
-    CORRADE_COMPARE(float(a), 25.0f);
+    CORRADE_COMPARE(Float(a), 25.0f);
 }
 
 void UnitTest::constructDefault() {
@@ -69,8 +69,8 @@ void UnitTest::constructConversion() {
 }
 
 void UnitTest::compare() {
-    CORRADE_VERIFY(Sec(25.0f + MathTypeTraits<float>::epsilon()/2) == Sec(25.0f));
-    CORRADE_VERIFY(Sec(25.0f + MathTypeTraits<float>::epsilon()*2) != Sec(25.0f));
+    CORRADE_VERIFY(Sec(25.0f + MathTypeTraits<Float>::epsilon()/2) == Sec(25.0f));
+    CORRADE_VERIFY(Sec(25.0f + MathTypeTraits<Float>::epsilon()*2) != Sec(25.0f));
 
     constexpr bool c = Sec(3.0f) < Sec(3.0f);
     constexpr bool d = Sec(3.0f) <= Sec(3.0f);
@@ -129,7 +129,7 @@ void UnitTest::multiplyDivide() {
     CORRADE_COMPARE(e, b);
     CORRADE_COMPARE(f, a);
 
-    constexpr float g = b/a;
+    constexpr Float g = b/a;
     CORRADE_COMPARE(g, -1.5f);
 }
 

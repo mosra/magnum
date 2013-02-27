@@ -32,10 +32,10 @@ class AngleTest: public Corrade::TestSuite::Tester {
         void debugRad();
 };
 
-typedef Math::Deg<float> Deg;
-typedef Math::Rad<float> Rad;
-typedef Math::Deg<double> Degd;
-typedef Math::Rad<double> Radd;
+typedef Math::Deg<Float> Deg;
+typedef Math::Rad<Float> Rad;
+typedef Math::Deg<Double> Degd;
+typedef Math::Rad<Double> Radd;
 
 AngleTest::AngleTest() {
     addTests(&AngleTest::construct,
@@ -50,14 +50,14 @@ void AngleTest::construct() {
     /* Default constructor */
     constexpr Degd a;
     constexpr Deg m;
-    CORRADE_COMPARE(double(a), 0.0f);
-    CORRADE_COMPARE(float(m), 0.0f);
+    CORRADE_COMPARE(Double(a), 0.0f);
+    CORRADE_COMPARE(Float(m), 0.0f);
 
     /* Value constructor */
     constexpr Deg b(25.0);
     constexpr Radd n(3.14);
-    CORRADE_COMPARE(float(b), 25.0);
-    CORRADE_COMPARE(double(n), 3.14);
+    CORRADE_COMPARE(Float(b), 25.0);
+    CORRADE_COMPARE(Double(n), 3.14);
 
     /* Copy constructor */
     constexpr Deg c(b);
@@ -68,8 +68,8 @@ void AngleTest::construct() {
     /* Conversion operator */
     constexpr Degd d(b);
     constexpr Rad p(n);
-    CORRADE_COMPARE(double(d), 25.0);
-    CORRADE_COMPARE(float(p), 3.14f);
+    CORRADE_COMPARE(Double(d), 25.0);
+    CORRADE_COMPARE(Float(p), 3.14f);
 }
 
 void AngleTest::literals() {
@@ -77,23 +77,23 @@ void AngleTest::literals() {
     constexpr auto b = 25.0_degf;
     CORRADE_VERIFY((std::is_same<decltype(a), const Degd>::value));
     CORRADE_VERIFY((std::is_same<decltype(b), const Deg>::value));
-    CORRADE_COMPARE(double(a), 25.0);
-    CORRADE_COMPARE(float(b), 25.0f);
+    CORRADE_COMPARE(Double(a), 25.0);
+    CORRADE_COMPARE(Float(b), 25.0f);
 
     constexpr auto m = 3.14_rad;
     constexpr auto n = 3.14_radf;
     CORRADE_VERIFY((std::is_same<decltype(m), const Radd>::value));
     CORRADE_VERIFY((std::is_same<decltype(n), const Rad>::value));
-    CORRADE_COMPARE(double(m), 3.14);
-    CORRADE_COMPARE(float(n), 3.14f);
+    CORRADE_COMPARE(Double(m), 3.14);
+    CORRADE_COMPARE(Float(n), 3.14f);
 }
 
 void AngleTest::conversion() {
     constexpr Deg a(Rad(1.57079633f));
-    CORRADE_COMPARE(float(a), 90.0f);
+    CORRADE_COMPARE(Float(a), 90.0f);
 
     constexpr Rad b(Deg(90.0f));
-    CORRADE_COMPARE(float(b), 1.57079633f);
+    CORRADE_COMPARE(Float(b), 1.57079633f);
 }
 
 void AngleTest::debugDeg() {

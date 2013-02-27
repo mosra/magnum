@@ -127,8 +127,8 @@ template<std::size_t size, class T> class Vector {
          * Performs only default casting on the values, no rounding or
          * anything else. Example usage:
          * @code
-         * Vector<4, float> floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
-         * Vector<4, std::int8_t> integral(floatingPoint);
+         * Vector<4, Float> floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
+         * Vector<4, Byte> integral(floatingPoint);
          * // integral == {1, 2, -15, 7}
          * @endcode
          */
@@ -556,19 +556,19 @@ template<std::size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::
 
 /* Explicit instantiation for types used in OpenGL */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, float>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, float>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, float>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, int>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, int>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, int>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, unsigned int>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, unsigned int>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, unsigned int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, Float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, Float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, Float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, Int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, Int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, Int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, UnsignedInt>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, UnsignedInt>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, UnsignedInt>&);
 #ifndef MAGNUM_TARGET_GLES
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, double>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, double>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, Double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, Double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, Double>&);
 #endif
 #endif
 
@@ -689,19 +689,19 @@ template<std::size_t size, class T> struct ConfigurationValue<Magnum::Math::Vect
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* Vectors */
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, float>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, float>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, float>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, int>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, int>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, int>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, unsigned int>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, unsigned int>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, unsigned int>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, Magnum::Float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, Magnum::Float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, Magnum::Float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, Magnum::Int>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, Magnum::Int>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, Magnum::Int>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, Magnum::UnsignedInt>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, Magnum::UnsignedInt>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, Magnum::UnsignedInt>>;
 #ifndef MAGNUM_TARGET_GLES
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, double>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, double>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, double>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, Magnum::Double>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, Magnum::Double>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, Magnum::Double>>;
 #endif
 #endif
 

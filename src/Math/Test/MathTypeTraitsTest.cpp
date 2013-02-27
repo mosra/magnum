@@ -38,19 +38,19 @@ MathTypeTraitsTest::MathTypeTraitsTest() {
 }
 
 void MathTypeTraitsTest::equalsIntegral() {
-    _equalsIntegral<std::uint8_t>();
-    _equalsIntegral<std::int8_t>();
-    _equalsIntegral<std::uint16_t>();
-    _equalsIntegral<std::int16_t>();
-    _equalsIntegral<std::uint32_t>();
-    _equalsIntegral<std::int32_t>();
-    _equalsIntegral<std::uint64_t>();
-    _equalsIntegral<std::int64_t>();
+    _equalsIntegral<UnsignedByte>();
+    _equalsIntegral<Byte>();
+    _equalsIntegral<UnsignedShort>();
+    _equalsIntegral<Short>();
+    _equalsIntegral<UnsignedInt>();
+    _equalsIntegral<Int>();
+    _equalsIntegral<UnsignedLong>();
+    _equalsIntegral<Long>();
 }
 
 void MathTypeTraitsTest::equalsFloatingPoint() {
-    _equalsFloatingPoint<float>();
-    _equalsFloatingPoint<double>();
+    _equalsFloatingPoint<Float>();
+    _equalsFloatingPoint<Double>();
 }
 
 template<class T> void MathTypeTraitsTest::_equalsIntegral() {

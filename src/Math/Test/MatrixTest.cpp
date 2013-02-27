@@ -37,10 +37,10 @@ class MatrixTest: public Corrade::TestSuite::Tester {
         void configuration();
 };
 
-typedef Matrix<4, float> Matrix4;
-typedef Matrix<3, float> Matrix3;
-typedef Vector<4, float> Vector4;
-typedef Vector<3, float> Vector3;
+typedef Matrix<4, Float> Matrix4;
+typedef Matrix<3, Float> Matrix3;
+typedef Vector<4, Float> Vector4;
+typedef Vector<3, Float> Vector3;
 
 MatrixTest::MatrixTest() {
     addTests(&MatrixTest::construct,
@@ -55,7 +55,7 @@ MatrixTest::MatrixTest() {
 }
 
 void MatrixTest::construct() {
-    float m[] = {
+    Float m[] = {
         3.0f,  5.0f, 8.0f, 4.0f,
         4.0f,  4.0f, 7.0f, 3.0f,
         7.0f, -1.0f, 8.0f, 0.0f,
@@ -102,12 +102,12 @@ void MatrixTest::constructZero() {
 }
 
 void MatrixTest::trace() {
-    Matrix<5, std::int32_t> m(
-        Vector<5, std::int32_t>(1, 2,   3,  0,  0),
-        Vector<5, std::int32_t>(2, 3,   2,  1, -2),
-        Vector<5, std::int32_t>(1, 1, -20,  1,  0),
-        Vector<5, std::int32_t>(2, 0,   0, 10,  2),
-        Vector<5, std::int32_t>(3, 1,   0,  1, -2)
+    Matrix<5, Int> m(
+        Vector<5, Int>(1, 2,   3,  0,  0),
+        Vector<5, Int>(2, 3,   2,  1, -2),
+        Vector<5, Int>(1, 1, -20,  1,  0),
+        Vector<5, Int>(2, 0,   0, 10,  2),
+        Vector<5, Int>(3, 1,   0,  1, -2)
     );
 
     CORRADE_COMPARE(m.trace(), -8);
@@ -127,12 +127,12 @@ void MatrixTest::ij() {
 }
 
 void MatrixTest::determinant() {
-    Matrix<5, std::int32_t> m(
-        Vector<5, std::int32_t>(1, 2, 2, 1,  0),
-        Vector<5, std::int32_t>(2, 3, 2, 1, -2),
-        Vector<5, std::int32_t>(1, 1, 1, 1,  0),
-        Vector<5, std::int32_t>(2, 0, 0, 1,  2),
-        Vector<5, std::int32_t>(3, 1, 0, 1, -2)
+    Matrix<5, Int> m(
+        Vector<5, Int>(1, 2, 2, 1,  0),
+        Vector<5, Int>(2, 3, 2, 1, -2),
+        Vector<5, Int>(1, 1, 1, 1,  0),
+        Vector<5, Int>(2, 0, 0, 1,  2),
+        Vector<5, Int>(3, 1, 0, 1, -2)
     );
 
     CORRADE_COMPARE(m.determinant(), -2);

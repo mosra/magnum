@@ -55,14 +55,14 @@ class RectangularMatrixTest: public Corrade::TestSuite::Tester {
         void configuration();
 };
 
-typedef RectangularMatrix<4, 3, float> Matrix4x3;
-typedef RectangularMatrix<3, 4, float> Matrix3x4;
-typedef RectangularMatrix<2, 2, float> Matrix2;
-typedef RectangularMatrix<2, 2, std::int32_t> Matrix2i;
-typedef Vector<4, float> Vector4;
-typedef Vector<3, float> Vector3;
-typedef Vector<2, float> Vector2;
-typedef Vector<2, std::int32_t> Vector2i;
+typedef RectangularMatrix<4, 3, Float> Matrix4x3;
+typedef RectangularMatrix<3, 4, Float> Matrix3x4;
+typedef RectangularMatrix<2, 2, Float> Matrix2;
+typedef RectangularMatrix<2, 2, Int> Matrix2i;
+typedef Vector<4, Float> Vector4;
+typedef Vector<3, Float> Vector3;
+typedef Vector<2, Float> Vector2;
+typedef Vector<2, Int> Vector2i;
 
 RectangularMatrixTest::RectangularMatrixTest() {
     addTests(&RectangularMatrixTest::constructFromData,
@@ -96,7 +96,7 @@ RectangularMatrixTest::RectangularMatrixTest() {
 }
 
 void RectangularMatrixTest::constructFromData() {
-    float m[] = {
+    Float m[] = {
         3.0f, 5.0f, 8.0f, 4.0f,
         4.0f, 4.0f, 7.0f, 3.0f,
         7.0f, -1.0f, 8.0f, 0.0f
@@ -121,15 +121,15 @@ void RectangularMatrixTest::constructDefault() {
 }
 
 void RectangularMatrixTest::constructConversion() {
-    Matrix2 floatingPoint(Vector2(  1.3f, 2.7f),
+    Matrix2 FloatingPoint(Vector2(  1.3f, 2.7f),
                           Vector2(-15.0f, 7.0f));
-    Matrix2 floatingPointRounded(Vector2(1.0f, 2.0f),
+    Matrix2 FloatingPointRounded(Vector2(1.0f, 2.0f),
                                  Vector2(-15.0f, 7.0f));
     Matrix2i integral(Vector2i(  1, 2),
                       Vector2i(-15, 7));
 
-    CORRADE_COMPARE(Matrix2i(floatingPoint), integral);
-    CORRADE_COMPARE(Matrix2(integral), floatingPointRounded);
+    CORRADE_COMPARE(Matrix2i(FloatingPoint), integral);
+    CORRADE_COMPARE(Matrix2(integral), FloatingPointRounded);
 }
 
 void RectangularMatrixTest::constructFromVectors() {
@@ -194,8 +194,8 @@ void RectangularMatrixTest::constExpressions() {
                                  Vector4(7.0f, -1.7f, 8.0f, 0.0f)));
 
     /* Conversion constructor */
-    typedef RectangularMatrix<3, 4, std::int32_t> Matrix3x4i;
-    typedef Vector<4, std::int32_t> Vector4i;
+    typedef RectangularMatrix<3, 4, Int> Matrix3x4i;
+    typedef Vector<4, Int> Vector4i;
     constexpr Matrix3x4i c(b);
     CORRADE_COMPARE(c, Matrix3x4i(Vector4i(3,  5, 8, 4),
                                   Vector4i(4,  4, 7, 3),
@@ -209,8 +209,8 @@ void RectangularMatrixTest::constExpressions() {
 
     /* Data access, pointer chasings, i.e. *(b.data()[1]), are not possible */
     constexpr Vector4 e = b[2];
-    constexpr float f = b[1][2];
-    constexpr float g = *b.data();
+    constexpr Float f = b[1][2];
+    constexpr Float g = *b.data();
     CORRADE_COMPARE(e, Vector4(7.0f, -1.7f, 8.0f, 0.0f));
     CORRADE_COMPARE(f, 7.0f);
     CORRADE_COMPARE(g, 3.0f);
@@ -219,9 +219,9 @@ void RectangularMatrixTest::constExpressions() {
 void RectangularMatrixTest::compare() {
     Matrix2 a(Vector2(1.0f, -3.0f),
               Vector2(5.0f, -10.0f));
-    Matrix2 b(Vector2(1.0f + MathTypeTraits<float>::epsilon()/2, -3.0f),
+    Matrix2 b(Vector2(1.0f + MathTypeTraits<Float>::epsilon()/2, -3.0f),
               Vector2(5.0f, -10.0f));
-    Matrix2 c(Vector2(1.0f, -1.0f + MathTypeTraits<float>::epsilon()*2),
+    Matrix2 c(Vector2(1.0f, -1.0f + MathTypeTraits<Float>::epsilon()*2),
               Vector2(5.0f, -10.0f));
     CORRADE_VERIFY(a == b);
     CORRADE_VERIFY(a != c);
@@ -270,8 +270,8 @@ void RectangularMatrixTest::multiplyDivide() {
     CORRADE_COMPARE(-1.5f*matrix, multiplied);
     CORRADE_COMPARE(multiplied/-1.5f, matrix);
 
-    Math::RectangularMatrix<1, 1, std::int8_t> matrixChar(32);
-    Math::RectangularMatrix<1, 1, std::int8_t> multipliedChar(-48);
+    Math::RectangularMatrix<1, 1, Byte> matrixChar(32);
+    Math::RectangularMatrix<1, 1, Byte> multipliedChar(-48);
     CORRADE_COMPARE(matrixChar*-1.5f, multipliedChar);
     CORRADE_COMPARE(multipliedChar/-1.5f, matrixChar);
     CORRADE_COMPARE(-1.5f*matrixChar, multipliedChar);
@@ -286,27 +286,27 @@ void RectangularMatrixTest::multiplyDivide() {
 }
 
 void RectangularMatrixTest::multiply() {
-    RectangularMatrix<4, 6, std::int32_t> left(
-        Vector<6, std::int32_t>(-5,   27, 10,  33, 0, -15),
-        Vector<6, std::int32_t>( 7,   56, 66,   1, 0, -24),
-        Vector<6, std::int32_t>( 4,   41,  4,   0, 1,  -4),
-        Vector<6, std::int32_t>( 9, -100, 19, -49, 1,   9)
+    RectangularMatrix<4, 6, Int> left(
+        Vector<6, Int>(-5,   27, 10,  33, 0, -15),
+        Vector<6, Int>( 7,   56, 66,   1, 0, -24),
+        Vector<6, Int>( 4,   41,  4,   0, 1,  -4),
+        Vector<6, Int>( 9, -100, 19, -49, 1,   9)
     );
 
-    RectangularMatrix<5, 4, std::int32_t> right(
-        Vector<4, std::int32_t>(1,  -7,  0,  158),
-        Vector<4, std::int32_t>(2,  24, -3,   40),
-        Vector<4, std::int32_t>(3, -15, -2,  -50),
-        Vector<4, std::int32_t>(4,  17, -1, -284),
-        Vector<4, std::int32_t>(5,  30,  4,   18)
+    RectangularMatrix<5, 4, Int> right(
+        Vector<4, Int>(1,  -7,  0,  158),
+        Vector<4, Int>(2,  24, -3,   40),
+        Vector<4, Int>(3, -15, -2,  -50),
+        Vector<4, Int>(4,  17, -1, -284),
+        Vector<4, Int>(5,  30,  4,   18)
     );
 
-    RectangularMatrix<5, 6, std::int32_t> expected(
-       Vector<6, std::int32_t>( 1368, -16165,  2550, -7716,  158,  1575),
-       Vector<6, std::int32_t>(  506,  -2725,  2352, -1870,   37,  -234),
-       Vector<6, std::int32_t>( -578,   4159, -1918,  2534,  -52,  -127),
-       Vector<6, std::int32_t>(-2461,  29419, -4238, 14065, -285, -3020),
-       Vector<6, std::int32_t>(  363,    179,  2388,  -687,   22,  -649)
+    RectangularMatrix<5, 6, Int> expected(
+       Vector<6, Int>( 1368, -16165,  2550, -7716,  158,  1575),
+       Vector<6, Int>(  506,  -2725,  2352, -1870,   37,  -234),
+       Vector<6, Int>( -578,   4159, -1918,  2534,  -52,  -127),
+       Vector<6, Int>(-2461,  29419, -4238, 14065, -285, -3020),
+       Vector<6, Int>(  363,    179,  2388,  -687,   22,  -649)
     );
 
     CORRADE_COMPARE(left*right, expected);
@@ -399,7 +399,7 @@ void RectangularMatrixTest::debug() {
                              "       4, 3, 0)\n");
 
     o.str({});
-    Debug(&o) << "a" << Matrix3x4() << "b" << RectangularMatrix<4, 3, std::int8_t>();
+    Debug(&o) << "a" << Matrix3x4() << "b" << RectangularMatrix<4, 3, Byte>();
     CORRADE_COMPARE(o.str(), "a Matrix(0, 0, 0,\n"
                              "       0, 0, 0,\n"
                              "       0, 0, 0,\n"

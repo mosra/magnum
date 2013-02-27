@@ -36,8 +36,8 @@ class Vector3Test: public Corrade::TestSuite::Tester {
         void configuration();
 };
 
-typedef Math::Vector3<float> Vector3;
-typedef Math::Vector2<float> Vector2;
+typedef Math::Vector3<Float> Vector3;
+typedef Math::Vector2<Float> Vector2;
 
 Vector3Test::Vector3Test() {
     addTests(&Vector3Test::construct,
@@ -52,8 +52,8 @@ Vector3Test::Vector3Test() {
 
 void Vector3Test::construct() {
     CORRADE_COMPARE(Vector3(), Vector3(0.0f, 0.0f, 0.0f));
-    CORRADE_COMPARE(Vector3(1, 2, 3), (Vector<3, float>(1.0f, 2.0f, 3.0f)));
-    CORRADE_COMPARE(Vector3(Vector<2, float>(1.0f, 2.0f), 3), (Vector<3, float>(1.0f, 2.0f, 3.0f)));
+    CORRADE_COMPARE(Vector3(1, 2, 3), (Vector<3, Float>(1.0f, 2.0f, 3.0f)));
+    CORRADE_COMPARE(Vector3(Vector<2, Float>(1.0f, 2.0f), 3), (Vector<3, Float>(1.0f, 2.0f, 3.0f)));
 }
 
 void Vector3Test::access() {

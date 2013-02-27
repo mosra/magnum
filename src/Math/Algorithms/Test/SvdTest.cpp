@@ -27,17 +27,17 @@ class SvdTest: public Corrade::TestSuite::Tester {
         void testFloat();
 };
 
-typedef RectangularMatrix<5, 8, double> Matrix5x8d;
-typedef Matrix<8, double> Matrix8d;
-typedef Matrix<5, double> Matrix5d;
-typedef Vector<8, double> Vector8d;
-typedef Vector<5, double> Vector5d;
+typedef RectangularMatrix<5, 8, Double> Matrix5x8d;
+typedef Matrix<8, Double> Matrix8d;
+typedef Matrix<5, Double> Matrix5d;
+typedef Vector<8, Double> Vector8d;
+typedef Vector<5, Double> Vector5d;
 
-typedef RectangularMatrix<5, 8, float> Matrix5x8f;
-typedef Matrix<8, float> Matrix8f;
-typedef Matrix<5, float> Matrix5f;
-typedef Vector<8, float> Vector8f;
-typedef Vector<5, float> Vector5f;
+typedef RectangularMatrix<5, 8, Float> Matrix5x8f;
+typedef Matrix<8, Float> Matrix8f;
+typedef Matrix<5, Float> Matrix5f;
+typedef Vector<8, Float> Vector8f;
+typedef Vector<5, Float> Vector5f;
 
 constexpr static Matrix5x8d a(
     Vector8d(22.0, 14.0,  -1.0, -3.0,  9.0,  9.0,  2.0,  4.0),

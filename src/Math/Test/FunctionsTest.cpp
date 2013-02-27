@@ -45,13 +45,13 @@ class FunctionsTest: public Corrade::TestSuite::Tester {
         void trigonometric();
 };
 
-typedef Math::Constants<float> Constants;
-typedef Math::Deg<float> Deg;
-typedef Math::Rad<float> Rad;
-typedef Math::Vector3<float> Vector3;
-typedef Math::Vector3<std::uint8_t> Vector3ub;
-typedef Math::Vector3<std::int8_t> Vector3b;
-typedef Math::Vector3<std::int32_t> Vector3i;
+typedef Math::Constants<Float> Constants;
+typedef Math::Deg<Float> Deg;
+typedef Math::Rad<Float> Rad;
+typedef Math::Vector3<Float> Vector3;
+typedef Math::Vector3<UnsignedByte> Vector3ub;
+typedef Math::Vector3<Byte> Vector3b;
+typedef Math::Vector3<Int> Vector3i;
 
 FunctionsTest::FunctionsTest() {
     addTests(&FunctionsTest::min,
@@ -115,131 +115,131 @@ void FunctionsTest::lerp() {
     CORRADE_COMPARE(Math::lerp(a, b, 0.25f), Vector3(0.0f, 1.0f, 5.0f));
 
     /* Integer vector */
-    typedef Math::Vector<3, std::int32_t> Vector3ub;
+    typedef Math::Vector<3, Int> Vector3ub;
     Vector3ub c(0, 128, 64);
     Vector3ub d(16, 0, 32);
     CORRADE_COMPARE(Math::lerp(c, d, 0.25f), Vector3ub(4, 96, 56));
 }
 
 void FunctionsTest::normalizeUnsigned() {
-    CORRADE_COMPARE((Math::normalize<float, std::uint8_t>(0)), 0.0f);
-    CORRADE_COMPARE((Math::normalize<float, std::uint8_t>(255)), 1.0f);
+    CORRADE_COMPARE((Math::normalize<Float, UnsignedByte>(0)), 0.0f);
+    CORRADE_COMPARE((Math::normalize<Float, UnsignedByte>(255)), 1.0f);
 
-    CORRADE_COMPARE((Math::normalize<double, std::uint32_t>(0)), 0.0);
-    CORRADE_COMPARE((Math::normalize<double, std::uint32_t>(std::numeric_limits<std::uint32_t>::max())), 1.0);
+    CORRADE_COMPARE((Math::normalize<Double, UnsignedInt>(0)), 0.0);
+    CORRADE_COMPARE((Math::normalize<Double, UnsignedInt>(std::numeric_limits<UnsignedInt>::max())), 1.0);
 
-    CORRADE_COMPARE((Math::normalize<long double, std::uint64_t>(0)), 0.0);
-    CORRADE_COMPARE((Math::normalize<long double, std::uint64_t>(std::numeric_limits<std::uint64_t>::max())), 1.0);
+    CORRADE_COMPARE((Math::normalize<long double, UnsignedLong>(0)), 0.0);
+    CORRADE_COMPARE((Math::normalize<long double, UnsignedLong>(std::numeric_limits<UnsignedLong>::max())), 1.0);
 
-    CORRADE_COMPARE((Math::normalize<float, std::uint16_t>(0)), 0.0f);
-    CORRADE_COMPARE((Math::normalize<float, std::uint16_t>(std::numeric_limits<std::uint16_t>::max())), 1.0f);
+    CORRADE_COMPARE((Math::normalize<Float, UnsignedShort>(0)), 0.0f);
+    CORRADE_COMPARE((Math::normalize<Float, UnsignedShort>(std::numeric_limits<UnsignedShort>::max())), 1.0f);
 
-    CORRADE_COMPARE((Math::normalize<float, std::uint16_t>(8192)), 0.125002f);
-    CORRADE_COMPARE((Math::normalize<float, std::uint16_t>(49152)), 0.750011f);
+    CORRADE_COMPARE((Math::normalize<Float, UnsignedShort>(8192)), 0.125002f);
+    CORRADE_COMPARE((Math::normalize<Float, UnsignedShort>(49152)), 0.750011f);
 
     CORRADE_COMPARE(Math::normalize<Vector3>(Vector3ub(0, 127, 255)), Vector3(0.0f, 0.498039f, 1.0f));
 }
 
 void FunctionsTest::normalizeSigned() {
-    CORRADE_COMPARE((Math::normalize<float, std::int8_t>(127)), 1.0f);
-    CORRADE_COMPARE((Math::normalize<float, std::int8_t>(0)), 0.0f);
-    CORRADE_COMPARE((Math::normalize<float, std::int8_t>(-128)), -1.0f);
+    CORRADE_COMPARE((Math::normalize<Float, Byte>(127)), 1.0f);
+    CORRADE_COMPARE((Math::normalize<Float, Byte>(0)), 0.0f);
+    CORRADE_COMPARE((Math::normalize<Float, Byte>(-128)), -1.0f);
 
-    CORRADE_COMPARE((Math::normalize<float, std::int16_t>(std::numeric_limits<std::int16_t>::min())), -1.0f);
-    CORRADE_COMPARE((Math::normalize<float, std::int16_t>(0)), 0.0f);
-    CORRADE_COMPARE((Math::normalize<float, std::int16_t>(std::numeric_limits<std::int16_t>::max())), 1.0f);
+    CORRADE_COMPARE((Math::normalize<Float, Short>(std::numeric_limits<Short>::min())), -1.0f);
+    CORRADE_COMPARE((Math::normalize<Float, Short>(0)), 0.0f);
+    CORRADE_COMPARE((Math::normalize<Float, Short>(std::numeric_limits<Short>::max())), 1.0f);
 
-    CORRADE_COMPARE((Math::normalize<double, std::int32_t>(std::numeric_limits<std::int32_t>::min())), -1.0);
-    CORRADE_COMPARE((Math::normalize<double, std::int32_t>(0)), 0.0);
-    CORRADE_COMPARE((Math::normalize<double, std::int32_t>(std::numeric_limits<std::int32_t>::max())), 1.0);
+    CORRADE_COMPARE((Math::normalize<Double, Int>(std::numeric_limits<Int>::min())), -1.0);
+    CORRADE_COMPARE((Math::normalize<Double, Int>(0)), 0.0);
+    CORRADE_COMPARE((Math::normalize<Double, Int>(std::numeric_limits<Int>::max())), 1.0);
 
-    CORRADE_COMPARE((Math::normalize<long double, std::int64_t>(std::numeric_limits<std::int64_t>::min())), -1.0);
-    CORRADE_COMPARE((Math::normalize<long double, std::int64_t>(0)), 0.0);
-    CORRADE_COMPARE((Math::normalize<long double, std::int64_t>(std::numeric_limits<std::int64_t>::max())), 1.0);
+    CORRADE_COMPARE((Math::normalize<long double, Long>(std::numeric_limits<Long>::min())), -1.0);
+    CORRADE_COMPARE((Math::normalize<long double, Long>(0)), 0.0);
+    CORRADE_COMPARE((Math::normalize<long double, Long>(std::numeric_limits<Long>::max())), 1.0);
 
-    CORRADE_COMPARE((Math::normalize<float, std::int16_t>(16384)), 0.500015f);
-    CORRADE_COMPARE((Math::normalize<float, std::int16_t>(-16384)), -0.500015f);
+    CORRADE_COMPARE((Math::normalize<Float, Short>(16384)), 0.500015f);
+    CORRADE_COMPARE((Math::normalize<Float, Short>(-16384)), -0.500015f);
 
     CORRADE_COMPARE(Math::normalize<Vector3>(Vector3b(0, -127, 64)), Vector3(0.0f, -1.0f, 0.503937f));
 }
 
 void FunctionsTest::denormalizeUnsigned() {
-    CORRADE_COMPARE(Math::denormalize<std::uint8_t>(0.0f), 0);
-    CORRADE_COMPARE(Math::denormalize<std::uint8_t>(1.0f), 255);
+    CORRADE_COMPARE(Math::denormalize<UnsignedByte>(0.0f), 0);
+    CORRADE_COMPARE(Math::denormalize<UnsignedByte>(1.0f), 255);
 
-    CORRADE_COMPARE(Math::denormalize<std::uint16_t>(0.0f), 0);
-    CORRADE_COMPARE(Math::denormalize<std::uint16_t>(1.0f), std::numeric_limits<std::uint16_t>::max());
+    CORRADE_COMPARE(Math::denormalize<UnsignedShort>(0.0f), 0);
+    CORRADE_COMPARE(Math::denormalize<UnsignedShort>(1.0f), std::numeric_limits<UnsignedShort>::max());
 
-    CORRADE_COMPARE(Math::denormalize<std::uint32_t>(0.0), 0);
-    CORRADE_COMPARE(Math::denormalize<std::uint32_t>(1.0), std::numeric_limits<std::uint32_t>::max());
+    CORRADE_COMPARE(Math::denormalize<UnsignedInt>(0.0), 0);
+    CORRADE_COMPARE(Math::denormalize<UnsignedInt>(1.0), std::numeric_limits<UnsignedInt>::max());
 
-    CORRADE_COMPARE(Math::denormalize<std::uint64_t>(0.0), 0);
-    CORRADE_COMPARE(Math::denormalize<std::uint64_t>(1.0), std::numeric_limits<std::uint64_t>::max());
+    CORRADE_COMPARE(Math::denormalize<UnsignedLong>(0.0), 0);
+    CORRADE_COMPARE(Math::denormalize<UnsignedLong>(1.0), std::numeric_limits<UnsignedLong>::max());
 
-    CORRADE_COMPARE(Math::denormalize<std::uint16_t>(0.33f), 21626);
-    CORRADE_COMPARE(Math::denormalize<std::uint16_t>(0.66f), 43253);
+    CORRADE_COMPARE(Math::denormalize<UnsignedShort>(0.33f), 21626);
+    CORRADE_COMPARE(Math::denormalize<UnsignedShort>(0.66f), 43253);
 
     CORRADE_COMPARE(Math::denormalize<Vector3ub>(Vector3(0.0f, 0.5f, 1.0f)), Vector3ub(0, 127, 255));
 }
 
 void FunctionsTest::denormalizeSigned() {
-    CORRADE_COMPARE(Math::denormalize<std::int8_t>(-1.0f), -127);
-    CORRADE_COMPARE(Math::denormalize<std::int8_t>(0.0f), 0);
-    CORRADE_COMPARE(Math::denormalize<std::int8_t>(1.0f), 127);
+    CORRADE_COMPARE(Math::denormalize<Byte>(-1.0f), -127);
+    CORRADE_COMPARE(Math::denormalize<Byte>(0.0f), 0);
+    CORRADE_COMPARE(Math::denormalize<Byte>(1.0f), 127);
 
-    CORRADE_COMPARE(Math::denormalize<std::int16_t>(-1.0f), std::numeric_limits<std::int16_t>::min()+1);
-    CORRADE_COMPARE(Math::denormalize<std::int16_t>(0.0f), 0);
-    CORRADE_COMPARE(Math::denormalize<std::int16_t>(1.0f), std::numeric_limits<std::int16_t>::max());
+    CORRADE_COMPARE(Math::denormalize<Short>(-1.0f), std::numeric_limits<Short>::min()+1);
+    CORRADE_COMPARE(Math::denormalize<Short>(0.0f), 0);
+    CORRADE_COMPARE(Math::denormalize<Short>(1.0f), std::numeric_limits<Short>::max());
 
-    CORRADE_COMPARE(Math::denormalize<std::int32_t>(-1.0), std::numeric_limits<std::int32_t>::min()+1);
-    CORRADE_COMPARE(Math::denormalize<std::int32_t>(0.0), 0);
-    CORRADE_COMPARE(Math::denormalize<std::int32_t>(1.0), std::numeric_limits<std::int32_t>::max());
+    CORRADE_COMPARE(Math::denormalize<Int>(-1.0), std::numeric_limits<Int>::min()+1);
+    CORRADE_COMPARE(Math::denormalize<Int>(0.0), 0);
+    CORRADE_COMPARE(Math::denormalize<Int>(1.0), std::numeric_limits<Int>::max());
 
-    CORRADE_COMPARE(Math::denormalize<std::int64_t>(-1.0l), std::numeric_limits<std::int64_t>::min()+1);
-    CORRADE_COMPARE(Math::denormalize<std::int64_t>(0.0l), 0);
-    CORRADE_COMPARE(Math::denormalize<std::int64_t>(1.0l), std::numeric_limits<std::int64_t>::max());
+    CORRADE_COMPARE(Math::denormalize<Long>(-1.0l), std::numeric_limits<Long>::min()+1);
+    CORRADE_COMPARE(Math::denormalize<Long>(0.0l), 0);
+    CORRADE_COMPARE(Math::denormalize<Long>(1.0l), std::numeric_limits<Long>::max());
 
-    CORRADE_COMPARE(Math::denormalize<std::int16_t>(-0.33f), -10813);
-    CORRADE_COMPARE(Math::denormalize<std::int16_t>(0.66f), 21626);
+    CORRADE_COMPARE(Math::denormalize<Short>(-0.33f), -10813);
+    CORRADE_COMPARE(Math::denormalize<Short>(0.66f), 21626);
 
     CORRADE_COMPARE(Math::denormalize<Vector3b>(Vector3(0.0f, -1.0f, 0.5f)), Vector3b(0, -127, 63));
 }
 
 void FunctionsTest::renormalizeUnsinged() {
-    CORRADE_COMPARE(Math::normalize<float>(Math::denormalize<std::uint8_t>(0.0f)), 0.0f);
-    CORRADE_COMPARE(Math::normalize<float>(Math::denormalize<std::uint8_t>(1.0f)), 1.0f);
+    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<UnsignedByte>(0.0f)), 0.0f);
+    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<UnsignedByte>(1.0f)), 1.0f);
 
-    CORRADE_COMPARE(Math::normalize<float>(Math::denormalize<std::uint16_t>(0.0f)), 0.0f);
-    CORRADE_COMPARE(Math::normalize<float>(Math::denormalize<std::uint16_t>(1.0f)), 1.0f);
+    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<UnsignedShort>(0.0f)), 0.0f);
+    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<UnsignedShort>(1.0f)), 1.0f);
 
-    CORRADE_COMPARE(Math::normalize<double>(Math::denormalize<std::uint32_t>(0.0)), 0.0);
-    CORRADE_COMPARE(Math::normalize<double>(Math::denormalize<std::uint32_t>(1.0)), 1.0);
+    CORRADE_COMPARE(Math::normalize<Double>(Math::denormalize<UnsignedInt>(0.0)), 0.0);
+    CORRADE_COMPARE(Math::normalize<Double>(Math::denormalize<UnsignedInt>(1.0)), 1.0);
 
-    CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<std::uint64_t>(0.0l)), 0.0l);
-    CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<std::uint64_t>(1.0l)), 1.0l);
+    CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<UnsignedLong>(0.0l)), 0.0l);
+    CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<UnsignedLong>(1.0l)), 1.0l);
 }
 
 void FunctionsTest::renormalizeSinged() {
-    CORRADE_COMPARE(Math::normalize<float>(Math::denormalize<std::int8_t>(-1.0f)), -1.0f);
-    CORRADE_COMPARE(Math::normalize<float>(Math::denormalize<std::int8_t>(0.0f)), 0.0f);
-    CORRADE_COMPARE(Math::normalize<float>(Math::denormalize<std::int8_t>(1.0f)), 1.0f);
+    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<Byte>(-1.0f)), -1.0f);
+    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<Byte>(0.0f)), 0.0f);
+    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<Byte>(1.0f)), 1.0f);
 
-    CORRADE_COMPARE(Math::normalize<float>(Math::denormalize<std::int16_t>(-1.0f)), -1.0f);
-    CORRADE_COMPARE(Math::normalize<float>(Math::denormalize<std::int16_t>(0.0f)), 0.0f);
-    CORRADE_COMPARE(Math::normalize<float>(Math::denormalize<std::int16_t>(1.0f)), 1.0f);
+    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<Short>(-1.0f)), -1.0f);
+    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<Short>(0.0f)), 0.0f);
+    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<Short>(1.0f)), 1.0f);
 
-    CORRADE_COMPARE(Math::normalize<double>(Math::denormalize<std::int32_t>(-1.0)), -1.0);
-    CORRADE_COMPARE(Math::normalize<double>(Math::denormalize<std::int32_t>(0.0)), 0.0);
-    CORRADE_COMPARE(Math::normalize<double>(Math::denormalize<std::int32_t>(1.0)), 1.0);
+    CORRADE_COMPARE(Math::normalize<Double>(Math::denormalize<Int>(-1.0)), -1.0);
+    CORRADE_COMPARE(Math::normalize<Double>(Math::denormalize<Int>(0.0)), 0.0);
+    CORRADE_COMPARE(Math::normalize<Double>(Math::denormalize<Int>(1.0)), 1.0);
 
-    CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<std::int64_t>(-1.0l)), -1.0l);
-    CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<std::int64_t>(0.0l)), 0.0l);
-    CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<std::int64_t>(1.0l)), 1.0l);
+    CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<Long>(-1.0l)), -1.0l);
+    CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<Long>(0.0l)), 0.0l);
+    CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<Long>(1.0l)), 1.0l);
 }
 
 void FunctionsTest::normalizeTypeDeduction() {
-    CORRADE_COMPARE(Math::normalize<float>('\x7F'), 1.0f);
-    CORRADE_COMPARE((Math::normalize<float, std::int8_t>('\x7F')), 1.0f);
+    CORRADE_COMPARE(Math::normalize<Float>('\x7F'), 1.0f);
+    CORRADE_COMPARE((Math::normalize<Float, Byte>('\x7F')), 1.0f);
 }
 
 void FunctionsTest::pow() {
