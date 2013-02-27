@@ -39,7 +39,7 @@ namespace Implementation {
 
 @see Context, MAGNUM_ASSERT_VERSION_SUPPORTED()
 */
-enum class Version: GLint {
+enum class Version: Int {
     None = 0xFFFF,                  /**< @brief Unspecified */
     #ifndef MAGNUM_TARGET_GLES
     GL210 = 210,                    /**< @brief OpenGL 2.1 / GLSL 1.20 */
@@ -166,7 +166,7 @@ class MAGNUM_EXPORT Context {
          * @see minorVersion(), version(), versionString(),
          *      shadingLanguageVersionString()
          */
-        inline GLint majorVersion() const { return _majorVersion; }
+        inline Int majorVersion() const { return _majorVersion; }
 
         /**
          * @brief Minor OpenGL version (e.g. `3`)
@@ -174,7 +174,7 @@ class MAGNUM_EXPORT Context {
          * @see majorVersion(), version(), versionString(),
          *      shadingLanguageVersionString()
          */
-        inline GLint minorVersion() const { return _minorVersion; }
+        inline Int minorVersion() const { return _minorVersion; }
 
         /**
          * @brief Vendor string
@@ -293,8 +293,8 @@ class MAGNUM_EXPORT Context {
         static Context* _current;
 
         Version _version;
-        GLint _majorVersion;
-        GLint _minorVersion;
+        Int _majorVersion;
+        Int _minorVersion;
 
         std::bitset<128> extensionStatus;
         std::vector<Extension> _supportedExtensions;

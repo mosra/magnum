@@ -39,7 +39,7 @@ void Timeline::nextFrame() {
     if(!running) return;
 
     auto now = high_resolution_clock::now();
-    std::uint32_t duration = duration_cast<microseconds>(now-_previousFrameTime).count();
+    UnsignedInt duration = duration_cast<microseconds>(now-_previousFrameTime).count();
     _previousFrameDuration = duration/1e6f;
 
     if(_previousFrameDuration < _minimalFrameTime) {
@@ -51,7 +51,7 @@ void Timeline::nextFrame() {
     _previousFrameTime = now;
 }
 
-GLfloat Timeline::previousFrameTime() const {
+Float Timeline::previousFrameTime() const {
     return duration_cast<microseconds>(_previousFrameTime-_startTime).count()/1e6f;
 }
 

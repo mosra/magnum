@@ -107,9 +107,9 @@ generateMipmap() documentation for more information.
 @see Texture1D, Texture2D, Texture3D, CubeMapTexture, CubeMapTextureArray
 @todo @extension{AMD,sparse_texture}
  */
-template<std::uint8_t dimensions> class Texture: public AbstractTexture {
+template<UnsignedInt dimensions> class Texture: public AbstractTexture {
     public:
-        static const std::uint8_t Dimensions = dimensions; /**< @brief %Texture dimension count */
+        static const UnsignedInt Dimensions = dimensions; /**< @brief %Texture dimension count */
 
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
@@ -186,7 +186,7 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or @def_gl{TEXTURE_DEPTH}.
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
-        inline typename DimensionTraits<Dimensions, GLint>::VectorType imageSize(GLint level) {
+        inline typename DimensionTraits<Dimensions, Int>::VectorType imageSize(Int level) {
             return DataHelper<Dimensions>::imageSize(this, _target, level);
         }
         #endif
@@ -236,7 +236,7 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          * @requires_gl42 %Extension @extension{ARB,texture_storage}
          * @requires_gles30 %Extension @es_extension{EXT,texture_storage}
          */
-        inline Texture<Dimensions>* setStorage(GLsizei levels, InternalFormat internalFormat, const typename DimensionTraits<Dimensions, GLint>::VectorType& size) {
+        inline Texture<Dimensions>* setStorage(Int levels, InternalFormat internalFormat, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {
             DataHelper<Dimensions>::setStorage(this, _target, levels, internalFormat, size);
             return this;
         }
@@ -263,7 +263,7 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}
          */
-        template<class Image> inline Texture<Dimensions>* setImage(GLint level, InternalFormat internalFormat, Image* image) {
+        template<class Image> inline Texture<Dimensions>* setImage(Int level, InternalFormat internalFormat, Image* image) {
             DataHelper<Dimensions>::set(this, _target, level, internalFormat, image);
             return this;
         }
@@ -293,7 +293,7 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access}
          */
-        template<class Image> inline Texture<Dimensions>* setSubImage(GLint level, const typename DimensionTraits<Dimensions, GLint>::VectorType& offset, Image* image) {
+        template<class Image> inline Texture<Dimensions>* setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, Image* image) {
             DataHelper<Dimensions>::setSub(this, _target, level, offset, image);
             return this;
         }
@@ -308,7 +308,7 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
          * is not available, this function does nothing.
          * @see invalidateImage(), @fn_gl{InvalidateTexSubImage}
          */
-        inline void invalidateSubImage(GLint level, const typename DimensionTraits<Dimensions, GLint>::VectorType& offset, const typename DimensionTraits<Dimensions, GLint>::VectorType& size) {
+        inline void invalidateSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {
             DataHelper<dimensions>::invalidateSub(this, level, offset, size);
         }
 
@@ -327,7 +327,7 @@ template<std::uint8_t dimensions> class Texture: public AbstractTexture {
             AbstractTexture::setBorderColor(color);
             return this;
         }
-        inline Texture<Dimensions>* setMaxAnisotropy(GLfloat anisotropy) {
+        inline Texture<Dimensions>* setMaxAnisotropy(Float anisotropy) {
             AbstractTexture::setMaxAnisotropy(anisotropy);
             return this;
         }

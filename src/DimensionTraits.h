@@ -24,7 +24,7 @@
 namespace Magnum {
 
 /** @brief Matrix, point and vector specializations for given dimension count */
-template<std::uint8_t dimensions, class T = GLfloat> struct DimensionTraits {
+template<UnsignedInt dimensions, class T = Float> struct DimensionTraits {
     DimensionTraits() = delete;
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -61,17 +61,17 @@ template<class T> struct DimensionTraits<2, T> {
 };
 
 /* Two dimensions - floating-point */
-template<> struct DimensionTraits<2, float> {
+template<> struct DimensionTraits<2, Float> {
     DimensionTraits() = delete;
 
-    typedef Math::Vector2<float> VectorType;
-    typedef Math::Matrix3<float> MatrixType;
+    typedef Math::Vector2<Float> VectorType;
+    typedef Math::Matrix3<Float> MatrixType;
 };
-template<> struct DimensionTraits<2, double> {
+template<> struct DimensionTraits<2, Double> {
     DimensionTraits() = delete;
 
-    typedef Math::Vector2<double> VectorType;
-    typedef Math::Matrix3<double> MatrixType;
+    typedef Math::Vector2<Double> VectorType;
+    typedef Math::Matrix3<Double> MatrixType;
 };
 
 /* Three dimensions - integral */
@@ -82,17 +82,17 @@ template<class T> struct DimensionTraits<3, T> {
 };
 
 /* Three dimensions - floating-point */
-template<> struct DimensionTraits<3, float> {
+template<> struct DimensionTraits<3, Float> {
     DimensionTraits() = delete;
 
-    typedef Math::Vector3<float> VectorType;
-    typedef Math::Matrix4<float> MatrixType;
+    typedef Math::Vector3<Float> VectorType;
+    typedef Math::Matrix4<Float> MatrixType;
 };
-template<> struct DimensionTraits<3, double> {
+template<> struct DimensionTraits<3, Double> {
     DimensionTraits() = delete;
 
-    typedef Math::Vector3<double> VectorType;
-    typedef Math::Matrix4<double> MatrixType;
+    typedef Math::Vector3<Double> VectorType;
+    typedef Math::Matrix4<Double> MatrixType;
 };
 #endif
 

@@ -267,7 +267,7 @@ class AbstractImage;
 class AbstractShaderProgram;
 class AbstractTexture;
 
-template<std::uint8_t, class T> class Array;
+template<UnsignedInt, class T> class Array;
 template<class T> class Array1D;
 template<class T> class Array2D;
 template<class T> class Array3D;
@@ -275,7 +275,7 @@ template<class T> class Array3D;
 class Buffer;
 
 #ifndef MAGNUM_TARGET_GLES2
-template<std::uint8_t> class BufferImage;
+template<UnsignedInt> class BufferImage;
 typedef BufferImage<1> BufferImage1D;
 typedef BufferImage<2> BufferImage2D;
 typedef BufferImage<3> BufferImage3D;
@@ -285,10 +285,10 @@ typedef BufferImage<3> BufferImage3D;
 class BufferTexture;
 #endif
 
-template<class T = GLfloat> class Color3;
-template<class T = GLfloat> class Color4;
+template<class T = Float> class Color3;
+template<class T = Float> class Color4;
 
-enum class Version: GLint;
+enum class Version: Int;
 class Context;
 class CubeMapTexture;
 
@@ -303,12 +303,12 @@ class CubeMapTextureArray;
 class Extension;
 class Framebuffer;
 
-template<std::uint8_t> class Image;
+template<UnsignedInt> class Image;
 typedef Image<1> Image1D;
 typedef Image<2> Image2D;
 typedef Image<3> Image3D;
 
-template<std::uint8_t> class ImageWrapper;
+template<UnsignedInt> class ImageWrapper;
 typedef ImageWrapper<1> ImageWrapper1D;
 typedef ImageWrapper<2> ImageWrapper2D;
 typedef ImageWrapper<3> ImageWrapper3D;
@@ -317,16 +317,16 @@ class Mesh;
 class Query;
 class Renderbuffer;
 
-enum class ResourceState: std::uint8_t;
-enum class ResourceDataState: std::uint8_t;
-enum class ResourcePolicy: std::uint8_t;
+enum class ResourceState: UnsignedByte;
+enum class ResourceDataState: UnsignedByte;
+enum class ResourcePolicy: UnsignedByte;
 template<class T, class U = T> class Resource;
 class ResourceKey;
 template<class...> class ResourceManager;
 
 class Shader;
 
-template<std::uint8_t> class Texture;
+template<UnsignedInt> class Texture;
 #ifndef MAGNUM_TARGET_GLES
 typedef Texture<1> Texture1D;
 #endif

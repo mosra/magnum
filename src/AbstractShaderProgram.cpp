@@ -29,16 +29,16 @@
 namespace Magnum {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-static_assert(std::is_same<GLubyte, std::uint8_t>::value, "GLubyte is not the same as std::uint8_t");
-static_assert(std::is_same<GLbyte, std::int8_t>::value, "GLbyte is not the same as std::int8_t");
-static_assert(std::is_same<GLushort, std::uint16_t>::value, "GLushort is not the same as std::uint16_t");
-static_assert(std::is_same<GLshort, std::int16_t>::value, "GLshort is not the same as std::int16_t");
-static_assert(std::is_same<GLuint, std::uint32_t>::value, "GLuint is not the same as std::uint32_t");
-static_assert(std::is_same<GLint, std::int32_t>::value, "GLint is not the same as std::int32_t");
-static_assert(std::is_same<GLsizei, std::int32_t>::value, "GLsizei is not the same as std::int32_t");
-static_assert(std::is_same<GLfloat, float>::value, "GLfloat is not the same as float");
+static_assert(std::is_same<GLubyte, UnsignedByte>::value, "GLubyte is not the same as UnsignedByte");
+static_assert(std::is_same<GLbyte, Byte>::value, "GLbyte is not the same as Byte");
+static_assert(std::is_same<GLushort, UnsignedShort>::value, "GLushort is not the same as UnsignedShort");
+static_assert(std::is_same<GLshort, Short>::value, "GLshort is not the same as Short");
+static_assert(std::is_same<GLuint, UnsignedInt>::value, "GLuint is not the same as UnsignedInt");
+static_assert(std::is_same<GLint, Int>::value, "GLint is not the same as Int");
+static_assert(std::is_same<GLsizei, Int>::value, "GLsizei is not the same as Int");
+static_assert(std::is_same<GLfloat, Float>::value, "GLfloat is not the same as Float");
 #ifndef MAGNUM_TARGET_GLES
-static_assert(std::is_same<GLdouble, double>::value, "GLdouble is not the same as double");
+static_assert(std::is_same<GLdouble, Double>::value, "GLdouble is not the same as Double");
 #endif
 #endif
 
@@ -86,7 +86,7 @@ AbstractShaderProgram::UniformMatrix3x4dvImplementation AbstractShaderProgram::u
 AbstractShaderProgram::UniformMatrix4x3dvImplementation AbstractShaderProgram::uniformMatrix4x3dvImplementation = &AbstractShaderProgram::uniformImplementationDefault;
 #endif
 
-GLint AbstractShaderProgram::maxSupportedVertexAttributeCount() {
+Int AbstractShaderProgram::maxSupportedVertexAttributeCount() {
     GLint& value = Context::current()->state()->shaderProgram->maxSupportedVertexAttributeCount;
 
     /* Get the value, if not already cached */
@@ -121,19 +121,19 @@ bool AbstractShaderProgram::attachShader(Shader& shader) {
     return true;
 }
 
-void AbstractShaderProgram::bindAttributeLocation(GLuint location, const std::string& name) {
+void AbstractShaderProgram::bindAttributeLocation(UnsignedInt location, const std::string& name) {
     CORRADE_ASSERT(state == Initialized, "AbstractShaderProgram: attribute cannot be bound after linking.", );
 
     glBindAttribLocation(_id, location, name.c_str());
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractShaderProgram::bindFragmentDataLocation(GLuint location, const std::string& name) {
+void AbstractShaderProgram::bindFragmentDataLocation(UnsignedInt location, const std::string& name) {
     CORRADE_ASSERT(state == Initialized, "AbstractShaderProgram: fragment data location cannot be bound after linking.", );
 
     glBindFragDataLocation(_id, location, name.c_str());
 }
-void AbstractShaderProgram::bindFragmentDataLocationIndexed(GLuint location, GLuint index, const std::string& name) {
+void AbstractShaderProgram::bindFragmentDataLocationIndexed(UnsignedInt location, UnsignedInt index, const std::string& name) {
     CORRADE_ASSERT(state == Initialized, "AbstractShaderProgram: fragment data location cannot be bound after linking.", );
 
     glBindFragDataLocationIndexed(_id, location, index, name.c_str());
@@ -169,7 +169,7 @@ void AbstractShaderProgram::link() {
     state = status == GL_FALSE ? Failed : Linked;
 }
 
-GLint AbstractShaderProgram::uniformLocation(const std::string& name) {
+Int AbstractShaderProgram::uniformLocation(const std::string& name) {
     /** @todo What if linking just failed (not programmer error?) */
     CORRADE_ASSERT(state == Linked, "AbstractShaderProgram: uniform location cannot be retrieved before linking.", -1);
 
@@ -640,7 +640,7 @@ std::size_t DoubleAttribute::size(GLint components, DataType dataType) {
 }
 #endif
 
-std::size_t Attribute<Math::Vector<4, GLfloat>>::size(GLint components, DataType dataType) {
+std::size_t Attribute<Math::Vector<4, Float>>::size(GLint components, DataType dataType) {
     #ifndef MAGNUM_TARGET_GLES
     if(components == GL_BGRA) components = 4;
     #endif
@@ -749,18 +749,18 @@ Debug operator<<(Debug debug, SizedMatrixAttribute<4>::Components value) {
     return debug << "AbstractShaderProgram::Attribute::Components::(invalid)";
 }
 
-Debug operator<<(Debug debug, Attribute<Math::Vector<4, GLfloat>>::Components value) {
+Debug operator<<(Debug debug, Attribute<Math::Vector<4, Float>>::Components value) {
     switch(value) {
-        case Attribute<Math::Vector<4, GLfloat>>::Components::One:
+        case Attribute<Math::Vector<4, Float>>::Components::One:
             return debug << "AbstractShaderProgram::Attribute::Components::One";
-        case Attribute<Math::Vector<4, GLfloat>>::Components::Two:
+        case Attribute<Math::Vector<4, Float>>::Components::Two:
             return debug << "AbstractShaderProgram::Attribute::Components::Two";
-        case Attribute<Math::Vector<4, GLfloat>>::Components::Three:
+        case Attribute<Math::Vector<4, Float>>::Components::Three:
             return debug << "AbstractShaderProgram::Attribute::Components::Three";
-        case Attribute<Math::Vector<4, GLfloat>>::Components::Four:
+        case Attribute<Math::Vector<4, Float>>::Components::Four:
             return debug << "AbstractShaderProgram::Attribute::Components::Four";
         #ifndef MAGNUM_TARGET_GLES
-        case Attribute<Math::Vector<4, GLfloat>>::Components::BGRA:
+        case Attribute<Math::Vector<4, Float>>::Components::BGRA:
             return debug << "AbstractShaderProgram::Attribute::Components::BGRA";
         #endif
     }
@@ -817,9 +817,9 @@ Debug operator<<(Debug debug, DoubleAttribute::DataType value) {
 }
 #endif
 
-Debug operator<<(Debug debug, Attribute<Math::Vector<4, GLfloat>>::DataType value) {
+Debug operator<<(Debug debug, Attribute<Math::Vector<4, Float>>::DataType value) {
     switch(value) {
-        #define _c(value) case Attribute<Math::Vector<4, GLfloat>>::DataType::value: return debug << "AbstractShaderProgram::Attribute::DataType::" #value;
+        #define _c(value) case Attribute<Math::Vector<4, Float>>::DataType::value: return debug << "AbstractShaderProgram::Attribute::DataType::" #value;
         _c(UnsignedByte)
         _c(Byte)
         _c(UnsignedShort)

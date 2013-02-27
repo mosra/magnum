@@ -33,7 +33,7 @@ namespace Magnum {
  *
  * @see Resource::state(), ResourceManager::state()
  */
-enum class ResourceState: std::uint8_t {
+enum class ResourceState: UnsignedByte {
     /** The resource is not yet loaded (and no fallback is available). */
     NotLoaded,
 

@@ -43,10 +43,10 @@ class ColorTest: public Corrade::TestSuite::Tester {
         void configuration();
 };
 
-typedef Magnum::Color3<std::uint8_t> Color3;
-typedef Magnum::Color4<std::uint8_t> Color4;
-typedef Magnum::Color3<float> Color3f;
-typedef Magnum::Color4<float> Color4f;
+typedef Magnum::Color3<UnsignedByte> Color3;
+typedef Magnum::Color4<UnsignedByte> Color4;
+typedef Magnum::Color3<Float> Color3f;
+typedef Magnum::Color4<Float> Color4f;
 
 ColorTest::ColorTest() {
     addTests(&ColorTest::access,
@@ -130,7 +130,7 @@ void ColorTest::hsv() {
     CORRADE_COMPARE(Color3::fromHSV(Deg(230.0f), 0.749f, 0.427f), Color3(27, 40, 108));
 
     Deg hue;
-    float saturation, value;
+    Float saturation, value;
     std::tie(hue, saturation, value) = Color3(27, 41, 109).toHSV();
     CORRADE_COMPARE(hue, Deg(229.756106f));
     CORRADE_COMPARE(saturation, 0.752294f);

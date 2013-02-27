@@ -37,10 +37,10 @@ need any math operations and fuzzy comparison (e.g. enum values). Unlike
 Math::Vector this class has non-explicit constructor from one value.
 @see Array1D, Array2D, Array3D
 */
-template<std::uint8_t dimensions, class T> class Array {
+template<UnsignedInt dimensions, class T> class Array {
     public:
         typedef T Type;                                     /**< @brief Data type */
-        const static std::uint8_t Dimensions = dimensions;  /**< @brief Dimension count */
+        const static UnsignedInt Dimensions = dimensions;  /**< @brief Dimension count */
 
         /**
          * @brief Default constructor
@@ -68,13 +68,13 @@ template<std::uint8_t dimensions, class T> class Array {
          * @param value Value for all fields
          */
         template<class U, class = typename std::enable_if<std::is_same<T, U>::value && dimensions != 1, U>::type> inline /*implicit*/ Array(U value) {
-            for(std::uint8_t i = 0; i != dimensions; ++i)
+            for(UnsignedInt i = 0; i != dimensions; ++i)
                 _data[i] = value;
         }
 
         /** @brief Equality */
         inline bool operator==(const Array<dimensions, T>& other) const {
-            for(std::uint8_t i = 0; i != dimensions; ++i)
+            for(UnsignedInt i = 0; i != dimensions; ++i)
                 if(_data[i] != other._data[i]) return false;
             return true;
         }
@@ -85,8 +85,8 @@ template<std::uint8_t dimensions, class T> class Array {
         }
 
         /** @brief Value at given position */
-        inline T& operator[](std::uint8_t pos) { return _data[pos]; }
-        inline constexpr T operator[](std::uint8_t pos) const { return _data[pos]; } /**< @overload */
+        inline T& operator[](UnsignedInt pos) { return _data[pos]; }
+        inline constexpr T operator[](UnsignedInt pos) const { return _data[pos]; } /**< @overload */
 
         /**
          * @brief Raw data
@@ -181,10 +181,10 @@ template<class T> class Array3D: public Array<3, T> {
 };
 
 /** @debugoperator{Magnum::Array} */
-template<std::uint8_t dimensions, class T> Debug operator<<(Debug debug, const Array<dimensions, T>& value) {
+template<UnsignedInt dimensions, class T> Debug operator<<(Debug debug, const Array<dimensions, T>& value) {
     debug << "Array(";
     debug.setFlag(Debug::SpaceAfterEachValue, false);
-    for(std::uint8_t i = 0; i != dimensions; ++i) {
+    for(UnsignedInt i = 0; i != dimensions; ++i) {
         if(i != 0) debug << ", ";
         debug << value[i];
     }

@@ -106,7 +106,7 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * See Texture::imageSize() for more information.
          */
-        inline Vector3i imageSize(Coordinate coordinate, GLint level) {
+        inline Vector3i imageSize(Coordinate coordinate, Int level) {
             return DataHelper<3>::imageSize(this, GL_TEXTURE_CUBE_MAP_POSITIVE_X + static_cast<GLenum>(coordinate), level);
         }
 
@@ -115,7 +115,7 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * See Texture::setStorage() for more information.
          */
-        inline CubeMapTextureArray* setStorage(GLsizei levels, InternalFormat internalFormat, const Vector3i& size) {
+        inline CubeMapTextureArray* setStorage(Int levels, InternalFormat internalFormat, const Vector3i& size) {
             DataHelper<3>::setStorage(this, _target, levels, internalFormat, size);
             return this;
         }
@@ -134,7 +134,7 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * See Texture::setImage() for more information.
          */
-        template<class T> inline CubeMapTextureArray* setImage(GLint level, InternalFormat internalFormat, T* image) {
+        template<class T> inline CubeMapTextureArray* setImage(Int level, InternalFormat internalFormat, T* image) {
             DataHelper<3>::set(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, internalFormat, image);
             return this;
         }
@@ -156,9 +156,9 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * See Texture::setSubImage() for more information.
          *
-         * @see setSubImage(GLsizei, Coordinate, GLint, const Math::Vector<2, GLint>&, const Image*)
+         * @see setSubImage(Int, Coordinate, Int, const Math::Vector<2, Int>&, const Image*)
          */
-        template<class Image> inline CubeMapTextureArray* setSubImage(GLint level, const Vector3i& offset, const Image* image) {
+        template<class Image> inline CubeMapTextureArray* setSubImage(Int level, const Vector3i& offset, const Image* image) {
             DataHelper<3>::setSub(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, offset, image, Vector3i(Math::Vector<Image::Dimensions, GLsizei>()));
             return this;
         }
@@ -175,9 +175,9 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * See Texture::setSubImage() for more information.
          *
-         * @see setSubImage(GLint, const Math::Vector<3, GLint>&, const Image*)
+         * @see setSubImage(Int, const Math::Vector<3, Int>&, const Image*)
          */
-        template<class Image> inline CubeMapTextureArray* setSubImage(GLsizei layer, Coordinate coordinate, GLint level, const Vector2i& offset, const Image* image) {
+        template<class Image> inline CubeMapTextureArray* setSubImage(Int layer, Coordinate coordinate, Int level, const Vector2i& offset, const Image* image) {
             DataHelper<3>::setSub(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, Vector3i(offset, layer*6+static_cast<GLsizei>(coordinate)), image, Vector2i(Math::Vector<Image::Dimensions, GLsizei>()));
             return this;
         }
@@ -194,7 +194,7 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * See Texture::invalidateSubImage() for more information.
          */
-        inline void invalidateSubImage(GLint level, const Vector3i& offset, const Vector3i& size) {
+        inline void invalidateSubImage(Int level, const Vector3i& offset, const Vector3i& size) {
             DataHelper<3>::invalidateSub(this, level, offset, size);
         }
 
@@ -212,7 +212,7 @@ class CubeMapTextureArray: public AbstractTexture {
             AbstractTexture::setBorderColor(color);
             return this;
         }
-        inline CubeMapTextureArray* setMaxAnisotropy(GLfloat anisotropy) {
+        inline CubeMapTextureArray* setMaxAnisotropy(Float anisotropy) {
             AbstractTexture::setMaxAnisotropy(anisotropy);
             return this;
         }

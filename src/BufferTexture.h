@@ -197,7 +197,7 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
         inline explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
 
         /** @copydoc AbstractTexture::bind() */
-        inline void bind(GLint layer) { AbstractTexture::bind(layer); }
+        inline void bind(Int layer) { AbstractTexture::bind(layer); }
 
         /**
          * @brief Set texture buffer

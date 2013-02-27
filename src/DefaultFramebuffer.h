@@ -282,7 +282,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @requires_gles30 Draw attachments for default framebuffer are
          *      available only in OpenGL ES 3.0.
          */
-        void mapForDraw(std::initializer_list<std::pair<GLuint, DrawAttachment>> attachments);
+        void mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments);
 
         /**
          * @brief Map shader output to buffer attachment

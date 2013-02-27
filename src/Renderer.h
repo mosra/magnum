@@ -43,9 +43,9 @@ class MAGNUM_EXPORT Renderer {
          * @brief Affected polygon facing for culling, stencil operations and masks
          *
          * @see setFaceCullingMode(),
-         *      setStencilFunction(PolygonFacing, StencilFunction, GLint, GLuint),
+         *      setStencilFunction(PolygonFacing, StencilFunction, Int, UnsignedInt),
          *      setStencilOperation(PolygonFacing, StencilOperation, StencilOperation, StencilOperation),
-         *      setStencilMask(PolygonFacing, GLuint)
+         *      setStencilMask(PolygonFacing, UnsignedInt)
          */
         enum class PolygonFacing: GLenum {
             Front = GL_FRONT,                   /**< Front-facing polygons */
@@ -137,9 +137,9 @@ class MAGNUM_EXPORT Renderer {
          *
          * Initial value is `1.0`.
          * @see @fn_gl{ClearDepth}
-         * @requires_gl See setClearDepth(GLfloat), which is available in OpenGL ES.
+         * @requires_gl See setClearDepth(Float), which is available in OpenGL ES.
          */
-        inline static void setClearDepth(GLdouble depth) { glClearDepth(depth); }
+        inline static void setClearDepth(Double depth) { glClearDepth(depth); }
         #endif
 
         /**
@@ -149,7 +149,7 @@ class MAGNUM_EXPORT Renderer {
          * @requires_gl41 %Extension @extension{ARB,ES2_compatibility}
          * @todo Call double version if the extension is not available
          */
-        inline static void setClearDepth(GLfloat depth) { glClearDepthf(depth); }
+        inline static void setClearDepth(Float depth) { glClearDepthf(depth); }
 
         /**
          * @brief Set clear stencil
@@ -157,7 +157,7 @@ class MAGNUM_EXPORT Renderer {
          * Initial value is `0`.
          * @see @fn_gl{ClearStencil}
          */
-        inline static void setClearStencil(GLint stencil) { glClearStencil(stencil); }
+        inline static void setClearStencil(Int stencil) { glClearStencil(stencil); }
 
         /*@}*/
 
@@ -252,21 +252,21 @@ class MAGNUM_EXPORT Renderer {
          *      Initial value is all `1`s.
          *
          * @attention You have to enable stencil test with setFeature() first.
-         * @see setStencilFunction(StencilFunction, GLint, GLuint),
+         * @see setStencilFunction(StencilFunction, Int, UnsignedInt),
          *      @fn_gl{StencilFuncSeparate}
          */
-        inline static void setStencilFunction(PolygonFacing facing, StencilFunction function, GLint referenceValue, GLuint mask) {
+        inline static void setStencilFunction(PolygonFacing facing, StencilFunction function, Int referenceValue, UnsignedInt mask) {
             glStencilFuncSeparate(static_cast<GLenum>(facing), static_cast<GLenum>(function), referenceValue, mask);
         }
 
         /**
          * @brief Set stencil function
          *
-         * The same as setStencilFunction(PolygonFacing, StencilFunction, GLint, GLuint)
+         * The same as setStencilFunction(PolygonFacing, StencilFunction, Int, UnsignedInt)
          * with `facing` set to `PolygonFacing::FrontAndBack`.
          * @see @fn_gl{StencilFunc}
          */
-        inline static void setStencilFunction(StencilFunction function, GLint referenceValue, GLuint mask) {
+        inline static void setStencilFunction(StencilFunction function, Int referenceValue, UnsignedInt mask) {
             glStencilFunc(static_cast<GLenum>(function), referenceValue, mask);
         }
 
@@ -353,20 +353,20 @@ class MAGNUM_EXPORT Renderer {
          *
          * Set given bit to `0` to disallow writing stencil value for given
          * faces to it. Initial value is all `1`s.
-         * @see setStencilMask(GLuint), @fn_gl{StencilMaskSeparate}
+         * @see setStencilMask(UnsignedInt), @fn_gl{StencilMaskSeparate}
          */
-        inline static void setStencilMask(PolygonFacing facing, GLuint allowBits) {
+        inline static void setStencilMask(PolygonFacing facing, UnsignedInt allowBits) {
             glStencilMaskSeparate(static_cast<GLenum>(facing), allowBits);
         }
 
         /**
          * @brief Mask stencil writes
          *
-         * The same as setStencilMask(PolygonFacing, GLuint) with `facing` set
+         * The same as setStencilMask(PolygonFacing, UnsignedInt) with `facing` set
          * to `PolygonFacing::FrontAndBack`.
          * @see @fn_gl{StencilMask}
          */
-        inline static void setStencilMask(GLuint allowBits) {
+        inline static void setStencilMask(UnsignedInt allowBits) {
             glStencilMask(allowBits);
         }
 

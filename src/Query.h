@@ -72,16 +72,16 @@ class MAGNUM_EXPORT AbstractQuery {
 
         /**
          * @brief Result
-         * @tparam T Result type. Can be either `bool`, `GLuint`,
-         *      `GLint`, `GLuint64` or `GLint64`.
+         * @tparam T Result type. Can be either `bool`, @ref UnsignedInt,
+         *      @ref Int, @ref UnsignedLong or @ref Long.
          *
          * Note that this function is blocking until the result is available.
          * See resultAvailable().
          * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT}
-         * @requires_gl33 %Extension @extension{ARB,timer_query} (result
-         *      type `GLuint64` and `GLint64`)
-         * @requires_gl Result types @c GLint, @c GLuint64 and @c GLint64 are
-         *      not available in OpenGL ES.
+         * @requires_gl33 %Extension @extension{ARB,timer_query} (result type
+         *      UnsignedInt and Long)
+         * @requires_gl Result types Int, UnsignedLong and Long are not
+         *      available in OpenGL ES.
          */
         template<class T> T result();
 
@@ -92,11 +92,11 @@ class MAGNUM_EXPORT AbstractQuery {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> bool MAGNUM_EXPORT AbstractQuery::result<bool>();
-template<> GLuint MAGNUM_EXPORT AbstractQuery::result<GLuint>();
+template<> UnsignedInt MAGNUM_EXPORT AbstractQuery::result<UnsignedInt>();
 #ifndef MAGNUM_TARGET_GLES
-template<> GLint MAGNUM_EXPORT AbstractQuery::result<GLint>();
-template<> GLuint64 MAGNUM_EXPORT AbstractQuery::result<GLuint64>();
-template<> GLint64 MAGNUM_EXPORT AbstractQuery::result<GLint64>();
+template<> Int MAGNUM_EXPORT AbstractQuery::result<Int>();
+template<> UnsignedLong MAGNUM_EXPORT AbstractQuery::result<UnsignedLong>();
+template<> Long MAGNUM_EXPORT AbstractQuery::result<Long>();
 #endif
 #endif
 
@@ -118,7 +118,7 @@ if(!q.resultAvailable()) {
 }
 
 // ...or block until the result is available
-GLuint primitiveCount = q.result<GLuint>();
+UnsignedInt primitiveCount = q.result<UnsignedInt>();
 @endcode
 @requires_gl30 %Extension @extension{EXT,transform_feedback}
 @requires_gles30 Only sample queries are available on OpenGL ES 2.0.
@@ -338,8 +338,8 @@ q1.end();
 q2.begin(Query::Target::TimeElapsed);
 // another rendering...
 q2.end();
-GLuint timeElapsed1 = q1.result<GLuint>();
-GLuint timeElapsed2 = q2.result<GLuint>();
+UnsignedInt timeElapsed1 = q1.result<UnsignedInt>();
+UnsignedInt timeElapsed2 = q2.result<UnsignedInt>();
 @endcode
 @code
 TimeQuery q1, q2, q3;
@@ -348,9 +348,9 @@ q1.timestamp();
 q2.timestamp();
 // another rendering...
 q3.timestamp();
-GLuint tmp = q2.result<GLuint>();
-GLuint timeElapsed1 = tmp-q1.result<GLuint>();
-GLuint timeElapsed2 = q3.result<GLuint>()-tmp;
+UnsignedInt tmp = q2.result<UnsignedInt>();
+UnsignedInt timeElapsed1 = tmp-q1.result<UnsignedInt>();
+UnsignedInt timeElapsed2 = q3.result<UnsignedInt>()-tmp;
 @endcode
 Using this query results in fewer OpenGL calls when doing more measures.
 @requires_gl33 %Extension @extension{ARB,timer_query}

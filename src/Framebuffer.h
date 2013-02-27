@@ -105,7 +105,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
                  * @brief Constructor
                  * @param id        Color attachment id
                  */
-                inline constexpr explicit ColorAttachment(std::uint8_t id): attachment(GL_COLOR_ATTACHMENT0 + id) {}
+                inline constexpr explicit ColorAttachment(UnsignedInt id): attachment(GL_COLOR_ATTACHMENT0 + id) {}
 
                 #ifndef DOXYGEN_GENERATING_OUTPUT
                 inline constexpr explicit operator GLenum() const { return attachment; }
@@ -238,7 +238,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
          */
-        void mapForDraw(std::initializer_list<std::pair<GLuint, DrawAttachment>> attachments);
+        void mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments);
 
         /**
          * @brief Map shader output to attachment
@@ -333,7 +333,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access}
          * @requires_gl Only 2D and 3D textures are available in OpenGL ES.
          */
-        inline void attachTexture1D(BufferAttachment attachment, Texture1D* texture, GLint level) {
+        inline void attachTexture1D(BufferAttachment attachment, Texture1D* texture, Int level) {
             (this->*texture1DImplementation)(attachment, texture, level);
         }
         #endif
@@ -350,7 +350,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @see attachCubeMapTexture(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
          *      or @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
          */
-        void attachTexture2D(BufferAttachment attachment, Texture2D* texture, GLint level);
+        void attachTexture2D(BufferAttachment attachment, Texture2D* texture, Int level);
 
         /**
          * @brief Attach cube map texture to given buffer
@@ -365,7 +365,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @see attachTexture2D(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
          *      or @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
          */
-        inline void attachCubeMapTexture(BufferAttachment attachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, GLint level) {
+        inline void attachCubeMapTexture(BufferAttachment attachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, Int level) {
             (this->*texture2DImplementation)(attachment, GLenum(coordinate), texture->id(), level);
         }
 
@@ -383,7 +383,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{NamedFramebufferTexture3D,EXT,direct_state_access}
          * @requires_es_extension %Extension @es_extension{OES,texture_3D}
          */
-        inline void attachTexture3D(BufferAttachment attachment, Texture3D* texture, GLint level, GLint layer) {
+        inline void attachTexture3D(BufferAttachment attachment, Texture3D* texture, Int level, Int layer) {
             /** @todo Check for texture target compatibility */
             (this->*texture3DImplementation)(attachment, texture, level, layer);
         }

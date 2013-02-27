@@ -144,7 +144,7 @@ range @f$ [0.0, 1.0] @f$.
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T>
 #else
-template<class T = GLfloat>
+template<class T = Float>
 #endif
 class Color3: public Math::Vector3<T> {
     public:
@@ -267,7 +267,7 @@ See Color3 for more information.
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T>
 #else
-template<class T = GLfloat>
+template<class T = Float>
 #endif
 class Color4: public Math::Vector4<T> {
     public:

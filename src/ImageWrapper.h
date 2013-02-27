@@ -40,9 +40,9 @@ to change image properties, only data pointer.
 Interchangeable with Image, BufferImage or Trade::ImageData.
 @see ImageWrapper1D, ImageWrapper2D, ImageWrapper3D
 */
-template<std::uint8_t dimensions> class ImageWrapper: public AbstractImage {
+template<UnsignedInt dimensions> class ImageWrapper: public AbstractImage {
     public:
-        const static std::uint8_t Dimensions = dimensions; /**< @brief %Image dimension count */
+        const static UnsignedInt Dimensions = dimensions; /**< @brief %Image dimension count */
         /**
          * @brief Constructor
          * @param size              %Image size
@@ -53,7 +53,7 @@ template<std::uint8_t dimensions> class ImageWrapper: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        inline explicit ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, GLvoid* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
+        inline explicit ImageWrapper(const typename DimensionTraits<Dimensions, Int>::VectorType& size, Format format, Type type, GLvoid* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
 
         /**
          * @brief Constructor
@@ -64,10 +64,10 @@ template<std::uint8_t dimensions> class ImageWrapper: public AbstractImage {
          * Dimensions and data pointer are set to zero, call setData() to fill
          * the image with data.
          */
-        inline explicit ImageWrapper(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type): AbstractImage(format, type), _size(size), _data(nullptr) {}
+        inline explicit ImageWrapper(const typename DimensionTraits<Dimensions, Int>::VectorType& size, Format format, Type type): AbstractImage(format, type), _size(size), _data(nullptr) {}
 
         /** @brief %Image size */
-        inline typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
+        inline typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
         /** @brief Pointer to raw data */
         inline void* data() { return _data; }
@@ -86,7 +86,7 @@ template<std::uint8_t dimensions> class ImageWrapper: public AbstractImage {
         }
 
     private:
-        Math::Vector<Dimensions, GLsizei> _size;
+        Math::Vector<Dimensions, Int> _size;
         char* _data;
 };
 

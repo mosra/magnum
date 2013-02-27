@@ -381,7 +381,7 @@ class MAGNUM_EXPORT Mesh {
          *      polygon offset for desired polygon modes.
          * @see @fn_gl{PolygonOffset}
          */
-        inline static void setPolygonOffset(GLfloat factor, GLfloat units) {
+        inline static void setPolygonOffset(Float factor, Float units) {
             glPolygonOffset(factor, units);
         }
 
@@ -391,7 +391,7 @@ class MAGNUM_EXPORT Mesh {
          * Initial value is `1.0f`.
          * @see @fn_gl{LineWidth}
          */
-        inline static void setLineWidth(GLfloat width) {
+        inline static void setLineWidth(Float width) {
             glLineWidth(width);
         }
 
@@ -404,7 +404,7 @@ class MAGNUM_EXPORT Mesh {
          * @requires_gl Set directly in vertex shader using @c gl_PointSize
          *      builtin variable.
          */
-        inline static void setPointSize(GLfloat size) {
+        inline static void setPointSize(Float size) {
             glPointSize(size);
         }
 
@@ -528,7 +528,7 @@ class MAGNUM_EXPORT Mesh {
         }
 
         /** @brief Vertex count */
-        inline GLsizei vertexCount() const { return _vertexCount; }
+        inline Int vertexCount() const { return _vertexCount; }
 
         /**
          * @brief Set vertex count
@@ -538,13 +538,13 @@ class MAGNUM_EXPORT Mesh {
          * @see setPrimitive(), addVertexBuffer(), addInterleavedVertexBuffer(),
          *      addVertexBufferStride(), MeshTools::interleave()
          */
-        inline Mesh* setVertexCount(GLsizei vertexCount) {
+        inline Mesh* setVertexCount(Int vertexCount) {
             _vertexCount = vertexCount;
             return this;
         }
 
         /** @brief Index count */
-        inline GLsizei indexCount() const { return _indexCount; }
+        inline Int indexCount() const { return _indexCount; }
 
         /**
          * @brief Set index count
@@ -553,7 +553,7 @@ class MAGNUM_EXPORT Mesh {
          * Default is zero.
          * @see setIndexBuffer(), MeshTools::compressIndices()
          */
-        inline Mesh* setIndexCount(GLsizei count) {
+        inline Mesh* setIndexCount(Int count) {
             _indexCount = count;
             return this;
         }
@@ -637,7 +637,7 @@ class MAGNUM_EXPORT Mesh {
          * Buffer* buffer;
          * mesh->addInterleavedVertexBuffer(buffer,
          *     35,                                  // skip other data
-         *     sizeof(GLfloat),                     // skip vertex weight
+         *     sizeof(Float),                       // skip vertex weight
          *     Shaders::PhongShader::Position(),    // vertex position
          *     sizeof(Vector2),                     // skip texture coordinates
          *     Shaders::PhongShader::Normal());     // vertex normal
@@ -648,14 +648,14 @@ class MAGNUM_EXPORT Mesh {
          * between vertex attributes:
          * @code
          * GLsizei stride =                         // size of one vertex
-         *     sizeof(GLfloat) +
+         *     sizeof(Float) +
          *     sizeof(Shaders::PhongShader::Position::Type) +
          *     sizeof(Vector2) +
          *     sizeof(Shaders::PhongShader::Normal::Type);
          *
-         * mesh->addVertexBufferStride(buffer, 35 + sizeof(GLfloat),
+         * mesh->addVertexBufferStride(buffer, 35 + sizeof(Float),
          *          stride, Shaders::PhongShader::Position());
-         *     ->addVertexBufferStride(buffer, 35 + sizeof(GLfloat) +
+         *     ->addVertexBufferStride(buffer, 35 + sizeof(Float) +
          *          sizeof(Shaders::PhongShader::Position::Type) + sizeof(Vector2),
          *          stride, Shaders::PhongShader::Normal());
          * @endcode
@@ -683,7 +683,7 @@ class MAGNUM_EXPORT Mesh {
          *
          * See addInterleavedVertexBuffer() for more information.
          */
-        template<GLuint location, class T> inline Mesh* addVertexBufferStride(Buffer* buffer, GLintptr offset, GLsizei stride, const AbstractShaderProgram::Attribute<location, T>& attribute) {
+        template<UnsignedInt location, class T> inline Mesh* addVertexBufferStride(Buffer* buffer, GLintptr offset, GLsizei stride, const AbstractShaderProgram::Attribute<location, T>& attribute) {
             addInterleavedVertexBufferInternal(buffer, offset, stride, attribute);
             return this;
         }
@@ -708,7 +708,7 @@ class MAGNUM_EXPORT Mesh {
          *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
          *      @extension{APPLE,vertex_array_object} is available)
          */
-        Mesh* setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type, GLuint start, GLuint end);
+        Mesh* setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end);
 
         /**
          * @brief Set index buffer
@@ -717,7 +717,7 @@ class MAGNUM_EXPORT Mesh {
          * @param type          Index data type
          * @return Pointer to self (for method chaining)
          *
-         * Prefer to use setIndexBuffer(Buffer*, GLintptr, IndexType, GLuint, GLuint)
+         * Prefer to use setIndexBuffer(Buffer*, GLintptr, IndexType, UnsignedInt, UnsignedInt)
          * for better performance.
          * @see setIndexCount(), MeshTools::compressIndices(),
          *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
@@ -778,7 +778,7 @@ class MAGNUM_EXPORT Mesh {
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
 
         /* Adding non-interleaved vertex attributes */
-        template<GLuint location, class T, class ...U> inline void addVertexBufferInternal(Buffer* buffer, GLintptr offset, const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
+        template<UnsignedInt location, class T, class ...U> inline void addVertexBufferInternal(Buffer* buffer, GLintptr offset, const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
             addVertexAttribute(buffer, attribute, offset, 0);
 
             /* Add size of this attribute array to offset for next attribute */
@@ -791,7 +791,7 @@ class MAGNUM_EXPORT Mesh {
         inline void addVertexBufferInternal(Buffer*, GLintptr) {}
 
         /* Computing stride of interleaved vertex attributes */
-        template<GLuint location, class T, class ...U> inline static GLsizei strideOfInterleaved(const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
+        template<UnsignedInt location, class T, class ...U> inline static GLsizei strideOfInterleaved(const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
             return attribute.dataSize() + strideOfInterleaved(attributes...);
         }
         template<class ...T> inline static GLsizei strideOfInterleaved(GLintptr gap, const T&... attributes) {
@@ -800,7 +800,7 @@ class MAGNUM_EXPORT Mesh {
         inline static GLsizei strideOfInterleaved() { return 0; }
 
         /* Adding interleaved vertex attributes */
-        template<GLuint location, class T, class ...U> inline void addInterleavedVertexBufferInternal(Buffer* buffer, GLintptr offset, GLsizei stride, const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
+        template<UnsignedInt location, class T, class ...U> inline void addInterleavedVertexBufferInternal(Buffer* buffer, GLintptr offset, GLsizei stride, const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
             addVertexAttribute(buffer, attribute, offset, stride);
 
             /* Add size of this attribute to offset for next attribute */
@@ -812,8 +812,8 @@ class MAGNUM_EXPORT Mesh {
         }
         inline void addInterleavedVertexBufferInternal(Buffer*, GLsizei, GLintptr) {}
 
-        template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::Type, GLfloat>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
-            for(GLuint i = 0; i != Implementation::Attribute<T>::vectorCount(); ++i)
+        template<UnsignedInt location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::Type, Float>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
+            for(UnsignedInt i = 0; i != Implementation::Attribute<T>::vectorCount(); ++i)
                 (this->*attributePointerImplementation)(Attribute{
                     buffer,
                     location+i,
@@ -826,7 +826,7 @@ class MAGNUM_EXPORT Mesh {
         }
 
         #ifndef MAGNUM_TARGET_GLES2
-        template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_integral<typename Implementation::Attribute<T>::Type>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
+        template<UnsignedInt location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_integral<typename Implementation::Attribute<T>::Type>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
             (this->*attributeIPointerImplementation)(IntegerAttribute{
                 buffer,
                 location,
@@ -838,8 +838,8 @@ class MAGNUM_EXPORT Mesh {
         }
 
         #ifndef MAGNUM_TARGET_GLES
-        template<GLuint location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::Type, GLdouble>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
-            for(GLuint i = 0; i != Implementation::Attribute<T>::vectorCount(); ++i)
+        template<UnsignedInt location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::Type, Double>::value, Buffer*>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
+            for(UnsignedInt i = 0; i != Implementation::Attribute<T>::vectorCount(); ++i)
                 (this->*attributeLPointerImplementation)(LongAttribute{
                     buffer,
                     location+i,
@@ -915,9 +915,9 @@ class MAGNUM_EXPORT Mesh {
 
         GLuint vao;
         Primitive _primitive;
-        GLsizei _vertexCount, _indexCount;
+        Int _vertexCount, _indexCount;
         #ifndef MAGNUM_TARGET_GLES2
-        GLuint indexStart, indexEnd;
+        UnsignedInt indexStart, indexEnd;
         #endif
         GLintptr indexOffset;
         IndexType indexType;

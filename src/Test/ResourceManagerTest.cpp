@@ -45,16 +45,16 @@ class Data {
         inline ~Data() { --count; }
 };
 
-typedef Magnum::ResourceManager<std::int32_t, Data> ResourceManager;
+typedef Magnum::ResourceManager<Int, Data> ResourceManager;
 
-class IntResourceLoader: public AbstractResourceLoader<std::int32_t> {
+class IntResourceLoader: public AbstractResourceLoader<Int> {
     public:
         void load(ResourceKey key) override {
             AbstractResourceLoader::load(key);
         }
 
         void load() {
-            set("hello", new std::int32_t(773), ResourceDataState::Final, ResourcePolicy::Resident);
+            set("hello", new Int(773), ResourceDataState::Final, ResourcePolicy::Resident);
             setNotFound("world");
         }
 };
@@ -143,27 +143,27 @@ void ResourceManagerTest::basic() {
     /* One mutable, one final */
     ResourceKey questionKey("the-question");
     ResourceKey answerKey("the-answer");
-    rm.set(questionKey, new std::int32_t(10), ResourceDataState::Mutable, ResourcePolicy::Resident);
-    rm.set(answerKey, new std::int32_t(42), ResourceDataState::Final, ResourcePolicy::Resident);
-    Resource<std::int32_t> theQuestion = rm.get<std::int32_t>(questionKey);
-    Resource<std::int32_t> theAnswer = rm.get<std::int32_t>(answerKey);
+    rm.set(questionKey, new Int(10), ResourceDataState::Mutable, ResourcePolicy::Resident);
+    rm.set(answerKey, new Int(42), ResourceDataState::Final, ResourcePolicy::Resident);
+    Resource<Int> theQuestion = rm.get<Int>(questionKey);
+    Resource<Int> theAnswer = rm.get<Int>(answerKey);
 
     /* Check basic functionality */
     CORRADE_COMPARE(theQuestion.state(), ResourceState::Mutable);
     CORRADE_COMPARE(theAnswer.state(), ResourceState::Final);
     CORRADE_COMPARE(*theQuestion, 10);
     CORRADE_COMPARE(*theAnswer, 42);
-    CORRADE_COMPARE(rm.count<std::int32_t>(), 2);
+    CORRADE_COMPARE(rm.count<Int>(), 2);
 
     /* Cannot change already final resource */
     std::ostringstream out;
     Error::setOutput(&out);
-    rm.set(answerKey, new std::int32_t(43), ResourceDataState::Mutable, ResourcePolicy::Resident);
+    rm.set(answerKey, new Int(43), ResourceDataState::Mutable, ResourcePolicy::Resident);
     CORRADE_COMPARE(*theAnswer, 42);
     CORRADE_COMPARE(out.str(), "ResourceManager::set(): cannot change already final resource " + answerKey.hexString() + '\n');
 
     /* But non-final can be changed */
-    rm.set(questionKey, new std::int32_t(20), ResourceDataState::Final, ResourcePolicy::Resident);
+    rm.set(questionKey, new Int(20), ResourceDataState::Final, ResourcePolicy::Resident);
     CORRADE_COMPARE(theQuestion.state(), ResourceState::Final);
     CORRADE_COMPARE(*theQuestion, 20);
 }
@@ -235,8 +235,8 @@ void ResourceManagerTest::loader() {
     rm.setLoader(&loader);
 
     Resource<Data> data = rm.get<Data>("data");
-    Resource<std::int32_t> hello = rm.get<std::int32_t>("hello");
-    Resource<std::int32_t> world = rm.get<std::int32_t>("world");
+    Resource<Int> hello = rm.get<Int>("hello");
+    Resource<Int> world = rm.get<Int>("world");
     CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
     CORRADE_COMPARE(hello.state(), ResourceState::Loading);
     CORRADE_COMPARE(world.state(), ResourceState::Loading);

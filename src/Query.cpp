@@ -39,10 +39,10 @@ template<> bool AbstractQuery::result<bool>() {
     #endif
 }
 
-template<> GLuint AbstractQuery::result<GLuint>() {
+template<> UnsignedInt AbstractQuery::result<UnsignedInt>() {
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
-    GLuint result;
+    UnsignedInt result;
     glGetQueryObjectuiv(_id, GL_QUERY_RESULT, &result);
     return result;
     #else
@@ -51,20 +51,20 @@ template<> GLuint AbstractQuery::result<GLuint>() {
 }
 
 #ifndef MAGNUM_TARGET_GLES
-template<> GLint AbstractQuery::result<GLint>() {
-    GLint result;
+template<> Int AbstractQuery::result<Int>() {
+    Int result;
     glGetQueryObjectiv(_id, GL_QUERY_RESULT, &result);
     return result;
 }
 
-template<> GLuint64 AbstractQuery::result<GLuint64>() {
-    GLuint64 result;
+template<> UnsignedLong AbstractQuery::result<UnsignedLong>() {
+    UnsignedLong result;
     glGetQueryObjectui64v(_id, GL_QUERY_RESULT, &result);
     return result;
 }
 
-template<> GLint64 AbstractQuery::result<GLint64>() {
-    GLint64 result;
+template<> Long AbstractQuery::result<Long>() {
+    Long result;
     glGetQueryObjecti64v(_id, GL_QUERY_RESULT, &result);
     return result;
 }

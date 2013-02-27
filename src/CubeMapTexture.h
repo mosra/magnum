@@ -119,7 +119,7 @@ class CubeMapTexture: public AbstractTexture {
          * See Texture::imageSize() for more information.
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
-        inline Vector2i imageSize(Coordinate coordinate, GLint level) {
+        inline Vector2i imageSize(Coordinate coordinate, Int level) {
             return DataHelper<2>::imageSize(this, static_cast<GLenum>(coordinate), level);
         }
         #endif
@@ -129,7 +129,7 @@ class CubeMapTexture: public AbstractTexture {
          *
          * See Texture::setStorage() for more information.
          */
-        inline CubeMapTexture* setStorage(GLsizei levels, InternalFormat internalFormat, const Vector2i& size) {
+        inline CubeMapTexture* setStorage(Int levels, InternalFormat internalFormat, const Vector2i& size) {
             DataHelper<2>::setStorage(this, _target, levels, internalFormat, size);
             return this;
         }
@@ -145,7 +145,7 @@ class CubeMapTexture: public AbstractTexture {
          *
          * See Texture::setImage() for more information.
          */
-        template<class Image> inline CubeMapTexture* setImage(Coordinate coordinate, GLint level, InternalFormat internalFormat, Image* image) {
+        template<class Image> inline CubeMapTexture* setImage(Coordinate coordinate, Int level, InternalFormat internalFormat, Image* image) {
             DataHelper<2>::set(this, static_cast<GLenum>(coordinate), level, internalFormat, image);
             return this;
         }
@@ -161,7 +161,7 @@ class CubeMapTexture: public AbstractTexture {
          *
          * See Texture::setSubImage() for more information.
          */
-        template<class Image> inline CubeMapTexture* setSubImage(Coordinate coordinate, GLint level, const Vector2i& offset, const Image* image) {
+        template<class Image> inline CubeMapTexture* setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, const Image* image) {
             DataHelper<2>::setSub(this, static_cast<GLenum>(coordinate), level, offset, image);
             return this;
         }
@@ -178,7 +178,7 @@ class CubeMapTexture: public AbstractTexture {
          *
          * See Texture::invalidateSubImage() for more information.
          */
-        inline void invalidateSubImage(GLint level, const Vector3i& offset, const Vector3i& size) {
+        inline void invalidateSubImage(Int level, const Vector3i& offset, const Vector3i& size) {
             DataHelper<3>::invalidateSub(this, level, offset, size);
         }
 
@@ -198,7 +198,7 @@ class CubeMapTexture: public AbstractTexture {
             return this;
         }
         #endif
-        inline CubeMapTexture* setMaxAnisotropy(GLfloat anisotropy) {
+        inline CubeMapTexture* setMaxAnisotropy(Float anisotropy) {
             AbstractTexture::setMaxAnisotropy(anisotropy);
             return this;
         }

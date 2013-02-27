@@ -83,11 +83,11 @@ static_assert((filter_or(NearestNeighbor, BaseLevel) == GL_NEAREST) &&
 #undef filter_or
 #endif
 
-GLint AbstractTexture::maxSupportedLayerCount() {
+Int AbstractTexture::maxSupportedLayerCount() {
     return Context::current()->state()->texture->maxSupportedLayerCount;
 }
 
-GLfloat AbstractTexture::maxSupportedAnisotropy() {
+Float AbstractTexture::maxSupportedAnisotropy() {
     GLfloat& value = Context::current()->state()->texture->maxSupportedAnisotropy;
 
     /** @todo Re-enable when extension header is available */
@@ -131,7 +131,7 @@ AbstractTexture& AbstractTexture::operator=(AbstractTexture&& other) {
     return *this;
 }
 
-void AbstractTexture::bind(GLint layer) {
+void AbstractTexture::bind(Int layer) {
     Implementation::TextureState* const textureState = Context::current()->state()->texture;
 
     /* If already bound in given layer, nothing to do */
@@ -453,7 +453,7 @@ void AbstractTexture::invalidateSubImplementationARB(GLint level, const Vector3i
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES2
 namespace Implementation {
-    template<std::uint8_t dimensions> const GLvoid* ImageHelper<BufferImage<dimensions>>::dataOrPixelUnpackBuffer(BufferImage<dimensions>* image) {
+    template<UnsignedInt dimensions> const GLvoid* ImageHelper<BufferImage<dimensions>>::dataOrPixelUnpackBuffer(BufferImage<dimensions>* image) {
         image->buffer()->bind(Buffer::Target::PixelUnpack);
         return nullptr;
     }

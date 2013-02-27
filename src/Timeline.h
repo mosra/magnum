@@ -60,7 +60,7 @@ MyApplication::MyApplication(...): Platform::GlutApplication(...) {
 
 void MyApplication::drawEvent() {
     // Distance of object travelling at speed of 15 units per second
-    GLfloat distance = 15.0f*timeline.previousFrameDuration();
+    Float distance = 15.0f*timeline.previousFrameDuration();
 
     // Move object, draw ...
 
@@ -81,7 +81,7 @@ class MAGNUM_EXPORT Timeline {
         inline constexpr explicit Timeline(): _minimalFrameTime(0), _previousFrameDuration(0), running(false) {}
 
         /** @brief Minimal frame time (in seconds) */
-        inline constexpr GLfloat minimalFrameTime() const {
+        inline constexpr Float minimalFrameTime() const {
             return _minimalFrameTime;
         }
 
@@ -91,7 +91,7 @@ class MAGNUM_EXPORT Timeline {
          * Default value is 0.
          * @see nextFrame()
          */
-        inline void setMinimalFrameTime(GLfloat seconds) {
+        inline void setMinimalFrameTime(Float seconds) {
             _minimalFrameTime = seconds;
         }
 
@@ -126,22 +126,22 @@ class MAGNUM_EXPORT Timeline {
          * Returns time elapsed since start() was called. If the timeline is
          * stopped, the function returns `0.0f`.
          */
-        GLfloat previousFrameTime() const;
+        Float previousFrameTime() const;
 
         /**
          * @brief Duration of previous frame (in seconds)
          *
          * If the timeline is stopped, the function returns `0.0f`.
          */
-        inline constexpr GLfloat previousFrameDuration() const {
+        inline constexpr Float previousFrameDuration() const {
             return _previousFrameDuration;
         }
 
     private:
         std::chrono::high_resolution_clock::time_point _startTime;
         std::chrono::high_resolution_clock::time_point _previousFrameTime;
-        GLfloat _minimalFrameTime;
-        GLfloat _previousFrameDuration;
+        Float _minimalFrameTime;
+        Float _previousFrameDuration;
 
         bool running;
 };

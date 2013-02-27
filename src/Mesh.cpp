@@ -108,7 +108,7 @@ Mesh& Mesh::operator=(Mesh&& other) {
     return *this;
 }
 
-Mesh* Mesh::setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type, GLuint start, GLuint end) {
+Mesh* Mesh::setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end) {
     indexOffset = offset;
     indexType = type;
     #ifndef MAGNUM_TARGET_GLES2

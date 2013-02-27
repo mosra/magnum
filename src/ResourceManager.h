@@ -30,18 +30,18 @@ namespace Magnum {
  *
  * @see ResourceManager::set(), ResourceState
  */
-enum class ResourceDataState: std::uint8_t {
+enum class ResourceDataState: UnsignedByte {
     /**
      * The resource is currently loading. Parameter @p data in ResourceManager::set()
      * should be set to `null`.
      */
-    Loading = int(ResourceState::Loading),
+    Loading = UnsignedByte(ResourceState::Loading),
 
     /**
      * The resource was not found. Parameter @p data in ResourceManager::set()
      * should be set to `null`.
      */
-    NotFound = int(ResourceState::NotFound),
+    NotFound = UnsignedByte(ResourceState::NotFound),
 
     /**
      * The resource can be changed by the manager in the future. This is
@@ -49,14 +49,14 @@ enum class ResourceDataState: std::uint8_t {
      * the data are accessed, but allows changing the data for e.g. debugging
      * purposes.
      */
-    Mutable = std::uint8_t(ResourceState::Mutable),
+    Mutable = UnsignedByte(ResourceState::Mutable),
 
     /**
      * The resource cannot be changed by the manager in the future. This is
      * faster, as Resource instances will ask for the data only one time, thus
      * suitable for production code.
      */
-    Final = std::uint8_t(ResourceState::Final)
+    Final = UnsignedByte(ResourceState::Final)
 };
 
 /** @relates ResourceManager
@@ -64,7 +64,7 @@ enum class ResourceDataState: std::uint8_t {
 
 @see ResourceManager::set(), ResourceManager::free()
  */
-enum class ResourcePolicy: std::uint8_t {
+enum class ResourcePolicy: UnsignedByte {
     /** The resource will stay resident for whole lifetime of resource manager. */
     Resident,
 

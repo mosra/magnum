@@ -979,11 +979,11 @@ class MAGNUM_EXPORT AbstractTexture {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls.
-         * @see @ref AbstractShaderProgram-subclassing, bind(GLint),
+         * @see @ref AbstractShaderProgram-subclassing, bind(Int),
          *      @fn_gl{Get} with @def_gl{MAX_COMBINED_TEXTURE_IMAGE_UNITS},
          *      @fn_gl{ActiveTexture}
          */
-        static GLint maxSupportedLayerCount();
+        static Int maxSupportedLayerCount();
 
         /**
          * @brief Max supported anisotropy
@@ -994,7 +994,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @requires_extension %Extension @extension{EXT,texture_filter_anisotropic}
          * @requires_es_extension %Extension @es_extension2{EXT,texture_filter_anisotropic,texture_filter_anisotropic}
          */
-        static GLfloat maxSupportedAnisotropy();
+        static Float maxSupportedAnisotropy();
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline explicit AbstractTexture(GLenum target): _target(target) {
@@ -1030,7 +1030,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} or
          *      @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
          */
-        void bind(GLint layer);
+        void bind(Int layer);
 
         /**
          * @brief Set minification filter
@@ -1108,7 +1108,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @requires_extension %Extension @extension{EXT,texture_filter_anisotropic}
          * @requires_es_extension %Extension @es_extension2{EXT,texture_filter_anisotropic,texture_filter_anisotropic}
          */
-        inline AbstractTexture* setMaxAnisotropy(GLfloat anisotropy) {
+        inline AbstractTexture* setMaxAnisotropy(Float anisotropy) {
             (this->*parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
             return this;
         }
@@ -1122,7 +1122,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @see @ref Texture::invalidateSubImage() "invalidateSubImage()",
          *      @fn_gl{InvalidateTexImage}
          */
-        inline void invalidateImage(GLint level) {
+        inline void invalidateImage(Int level) {
             (this->*invalidateImplementation)(level);
         }
 
@@ -1142,7 +1142,7 @@ class MAGNUM_EXPORT AbstractTexture {
 
     protected:
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<std::uint8_t textureDimensions> struct DataHelper {};
+        template<UnsignedInt textureDimensions> struct DataHelper {};
 
         /* Unlike bind() this also sets the binding layer as active */
         void MAGNUM_LOCAL bindInternal();
@@ -1290,7 +1290,7 @@ namespace Implementation {
     };
 
     #ifndef MAGNUM_TARGET_GLES2
-    template<std::uint8_t dimensions> struct MAGNUM_EXPORT ImageHelper<BufferImage<dimensions>> {
+    template<UnsignedInt dimensions> struct MAGNUM_EXPORT ImageHelper<BufferImage<dimensions>> {
         static const GLvoid* dataOrPixelUnpackBuffer(BufferImage<dimensions>* image);
     };
     #endif

@@ -37,9 +37,9 @@ Trade::ImageData.
 @see BufferImage1D, BufferImage2D, BufferImage3D, Buffer
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 */
-template<std::uint8_t dimensions> class MAGNUM_EXPORT BufferImage: public AbstractImage {
+template<UnsignedInt dimensions> class MAGNUM_EXPORT BufferImage: public AbstractImage {
     public:
-        const static std::uint8_t Dimensions = dimensions; /**< @brief %Image dimension count */
+        const static UnsignedInt Dimensions = dimensions; /**< @brief %Image dimension count */
 
         /**
          * @brief Constructor
@@ -54,7 +54,7 @@ template<std::uint8_t dimensions> class MAGNUM_EXPORT BufferImage: public Abstra
         }
 
         /** @brief %Image size */
-        inline typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
+        inline typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
         /** @brief %Image buffer */
         inline Buffer* buffer() { return &_buffer; }
@@ -72,10 +72,10 @@ template<std::uint8_t dimensions> class MAGNUM_EXPORT BufferImage: public Abstra
          *
          * @see Buffer::setData()
          */
-        void setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, const GLvoid* data, Buffer::Usage usage);
+        void setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, Format format, Type type, const GLvoid* data, Buffer::Usage usage);
 
     private:
-        Math::Vector<Dimensions, GLsizei> _size;
+        Math::Vector<Dimensions, Int> _size;
         Buffer _buffer;
 };
 

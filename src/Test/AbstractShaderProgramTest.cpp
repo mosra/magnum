@@ -57,7 +57,7 @@ AbstractShaderProgramTest::AbstractShaderProgramTest() {
 }
 
 void AbstractShaderProgramTest::attributeScalar() {
-    typedef AbstractShaderProgram::Attribute<3, GLfloat> Attribute;
+    typedef AbstractShaderProgram::Attribute<3, Float> Attribute;
     CORRADE_COMPARE(Attribute::Location, 3);
 
     /* Default constructor */
@@ -74,7 +74,7 @@ void AbstractShaderProgramTest::attributeScalar() {
 }
 
 void AbstractShaderProgramTest::attributeScalarInt() {
-    typedef AbstractShaderProgram::Attribute<3, GLint> Attribute;
+    typedef AbstractShaderProgram::Attribute<3, Int> Attribute;
 
     /* Default constructor */
     Attribute a;
@@ -86,7 +86,7 @@ void AbstractShaderProgramTest::attributeScalarInt() {
 }
 
 void AbstractShaderProgramTest::attributeScalarUnsignedInt() {
-    typedef AbstractShaderProgram::Attribute<3, GLuint> Attribute;
+    typedef AbstractShaderProgram::Attribute<3, UnsignedInt> Attribute;
 
     /* Default constructor */
     Attribute a;
@@ -99,7 +99,7 @@ void AbstractShaderProgramTest::attributeScalarUnsignedInt() {
 
 void AbstractShaderProgramTest::attributeScalarDouble() {
     #ifndef MAGNUM_TARGET_GLES
-    typedef AbstractShaderProgram::Attribute<3, GLdouble> Attribute;
+    typedef AbstractShaderProgram::Attribute<3, Double> Attribute;
 
     /* Default constructor */
     Attribute a;

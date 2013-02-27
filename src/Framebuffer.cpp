@@ -58,7 +58,7 @@ Framebuffer::~Framebuffer() {
     glDeleteFramebuffers(1, &_id);
 }
 
-void Framebuffer::mapForDraw(std::initializer_list<std::pair<GLuint, DrawAttachment>> attachments) {
+void Framebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments) {
     /* Max attachment location */
     std::size_t max = 0;
     for(const auto& attachment: attachments)
@@ -94,7 +94,7 @@ void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attac
     delete _attachments;
 }
 
-void Framebuffer::attachTexture2D(BufferAttachment attachment, Texture2D* texture, GLint mipLevel) {
+void Framebuffer::attachTexture2D(BufferAttachment attachment, Texture2D* texture, Int mipLevel) {
     /** @todo Check for texture target compatibility */
     (this->*texture2DImplementation)(attachment, GLenum(texture->target()), texture->id(), mipLevel);
 }
