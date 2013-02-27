@@ -176,7 +176,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         /*@}*/
 
     private:
-        enum class Flag: std::uint8_t {
+        enum class Flag: UnsignedByte {
             ViewportUpdated = 1 << 0,
             SwapInProgress = 1 << 1,
             Redraw = 1 << 2,
@@ -184,7 +184,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
             WillBeFullscreen = 1 << 4,
             MouseLocked = 1 << 5
         };
-        typedef Corrade::Containers::EnumSet<Flag, std::uint8_t> Flags;
+        typedef Corrade::Containers::EnumSet<Flag, UnsignedByte> Flags;
 
         inline void Graphics3DContextLost() override {
             CORRADE_ASSERT(false, "NaClApplication: context unexpectedly lost", );

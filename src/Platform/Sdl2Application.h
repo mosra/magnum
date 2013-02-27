@@ -152,12 +152,12 @@ class Sdl2Application {
         /*@}*/
 
     private:
-        enum class Flag: std::uint8_t {
+        enum class Flag: UnsignedByte {
             Redraw = 1 << 0,
             Exit = 1 << 1
         };
 
-        typedef Corrade::Containers::EnumSet<Flag, unsigned int> Flags;
+        typedef Corrade::Containers::EnumSet<Flag, UnsignedByte> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
         SDL_Window* window;
