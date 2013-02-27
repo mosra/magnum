@@ -19,7 +19,7 @@
  * @brief Forward declarations for Magnum::Trade namespace
  */
 
-#include <cstdint>
+#include "Types.h"
 
 namespace Magnum { namespace Trade {
 
@@ -29,7 +29,7 @@ class AbstractImporter;
 class AbstractMaterialData;
 class CameraData;
 
-template<std::uint8_t> class ImageData;
+template<UnsignedInt> class ImageData;
 typedef ImageData<1> ImageData1D;
 typedef ImageData<2> ImageData2D;
 typedef ImageData<3> ImageData3D;

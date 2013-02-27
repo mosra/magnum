@@ -37,7 +37,7 @@ class PhongMaterialData: public AbstractMaterialData {
          * @param specularColor     Specular color
          * @param shininess         Shininess
          */
-        PhongMaterialData(const Vector3& ambientColor, const Vector3& diffuseColor, const Vector3& specularColor, GLfloat shininess): AbstractMaterialData(Phong), _ambientColor(ambientColor), _diffuseColor(diffuseColor), _specularColor(specularColor), _shininess(shininess) {}
+        PhongMaterialData(const Vector3& ambientColor, const Vector3& diffuseColor, const Vector3& specularColor, Float shininess): AbstractMaterialData(Phong), _ambientColor(ambientColor), _diffuseColor(diffuseColor), _specularColor(specularColor), _shininess(shininess) {}
 
         /** @brief Ambient color */
         inline Vector3 ambientColor() const { return _ambientColor; }
@@ -49,13 +49,13 @@ class PhongMaterialData: public AbstractMaterialData {
         inline Vector3 specularColor() const { return _specularColor; }
 
         /** @brief Shininess */
-        inline GLfloat shininess() const { return _shininess; }
+        inline Float shininess() const { return _shininess; }
 
     private:
         Vector3 _ambientColor,
             _diffuseColor,
             _specularColor;
-        GLfloat _shininess;
+        Float _shininess;
 };
 
 }}

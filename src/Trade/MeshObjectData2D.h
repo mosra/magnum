@@ -45,13 +45,13 @@ class MeshObjectData2D: public ObjectData2D {
          *
          * Creates object with mesh instance type.
          */
-        inline MeshObjectData2D(const std::vector<std::uint32_t>& children, const Matrix4& transformation, std::uint32_t instance, std::uint32_t material): ObjectData2D(children, transformation, InstanceType::Mesh, instance), _material(material) {}
+        inline MeshObjectData2D(const std::vector<UnsignedInt>& children, const Matrix4& transformation, UnsignedInt instance, UnsignedInt material): ObjectData2D(children, transformation, InstanceType::Mesh, instance), _material(material) {}
 
         /** @brief Material ID */
-        inline std::uint32_t material() const { return _material; }
+        inline UnsignedInt material() const { return _material; }
 
     private:
-        std::uint32_t _material;
+        UnsignedInt _material;
 };
 
 }}

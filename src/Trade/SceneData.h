@@ -39,16 +39,16 @@ class MAGNUM_EXPORT SceneData {
          * @param children2D    Two-dimensional child objects
          * @param children3D    Three-dimensional child objects
          */
-        inline SceneData(const std::vector<std::uint32_t>& children2D, const std::vector<std::uint32_t>& children3D): _children2D(children2D), _children3D(children3D) {}
+        inline SceneData(const std::vector<UnsignedInt>& children2D, const std::vector<UnsignedInt>& children3D): _children2D(children2D), _children3D(children3D) {}
 
         /** @brief Two-dimensional child objects */
-        inline const std::vector<std::uint32_t>& children2D() const { return _children2D; }
+        inline const std::vector<UnsignedInt>& children2D() const { return _children2D; }
 
         /** @brief Three-dimensional child objects */
-        inline const std::vector<std::uint32_t>& children3D() const { return _children3D; }
+        inline const std::vector<UnsignedInt>& children3D() const { return _children3D; }
 
     private:
-        std::vector<std::uint32_t> _children2D,
+        std::vector<UnsignedInt> _children2D,
             _children3D;
 };
 

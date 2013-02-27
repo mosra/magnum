@@ -54,20 +54,20 @@ class ObjectData2D {
          * @param instanceType      Instance type
          * @param instanceId        Instance ID
          */
-        inline ObjectData2D(const std::vector<std::uint32_t>& children, const Matrix3& transformation, InstanceType instanceType, std::uint32_t instanceId): _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
+        inline ObjectData2D(const std::vector<UnsignedInt>& children, const Matrix3& transformation, InstanceType instanceType, UnsignedInt instanceId): _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
 
         /**
          * @brief Constructor for empty instance
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          */
-        inline ObjectData2D(const std::vector<std::uint32_t>& children, const Matrix3& transformation): _children(children), _transformation(transformation), _instanceType(InstanceType::Empty), _instanceId(-1) {}
+        inline ObjectData2D(const std::vector<UnsignedInt>& children, const Matrix3& transformation): _children(children), _transformation(transformation), _instanceType(InstanceType::Empty), _instanceId(-1) {}
 
         /** @brief Destructor */
         inline virtual ~ObjectData2D() {}
 
         /** @brief Child objects */
-        inline std::vector<std::uint32_t>& children() { return _children; }
+        inline std::vector<UnsignedInt>& children() { return _children; }
 
         /** @brief Transformation (relative to parent) */
         inline Matrix3 transformation() const { return _transformation; }
@@ -86,13 +86,13 @@ class ObjectData2D {
          * @return ID of given camera / light / mesh etc., specified by
          *      instanceType()
          */
-        inline std::int32_t instanceId() const { return _instanceId; }
+        inline Int instanceId() const { return _instanceId; }
 
     private:
-        std::vector<std::uint32_t> _children;
+        std::vector<UnsignedInt> _children;
         Matrix3 _transformation;
         InstanceType _instanceType;
-        std::int32_t _instanceId;
+        Int _instanceId;
 };
 
 /** @debugoperator{Magnum::Trade::ObjectData2D} */

@@ -105,10 +105,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * @note The function is not const, because the value will probably
          *      be lazy-populated.
          */
-        virtual inline std::int32_t defaultScene() { return -1; }
+        virtual inline Int defaultScene() { return -1; }
 
         /** @brief %Scene count */
-        virtual inline std::uint32_t sceneCount() const { return 0; }
+        virtual inline UnsignedInt sceneCount() const { return 0; }
 
         /**
          * @brief %Scene ID for given name
@@ -116,7 +116,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * If no scene for given name exists, returns -1.
          * @see sceneName()
          */
-        virtual std::int32_t sceneForName(const std::string& name);
+        virtual Int sceneForName(const std::string& name);
 
         /**
          * @brief %Scene name
@@ -124,7 +124,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * @see sceneForName()
          */
-        virtual std::string sceneName(std::uint32_t id);
+        virtual std::string sceneName(UnsignedInt id);
 
         /**
          * @brief %Scene
@@ -132,10 +132,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * Returns pointer to given scene or nullptr, if no such scene exists.
          */
-        virtual SceneData* scene(std::uint32_t id);
+        virtual SceneData* scene(UnsignedInt id);
 
         /** @brief %Light count */
-        virtual inline std::uint32_t lightCount() const { return 0; }
+        virtual inline UnsignedInt lightCount() const { return 0; }
 
         /**
          * @brief %Light ID for given name
@@ -143,7 +143,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * If no light for given name exists, returns -1.
          * @see lightName()
          */
-        virtual std::int32_t lightForName(const std::string& name);
+        virtual Int lightForName(const std::string& name);
 
         /**
          * @brief %Light name
@@ -151,7 +151,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * @see lightForName()
          */
-        virtual std::string lightName(std::uint32_t id);
+        virtual std::string lightName(UnsignedInt id);
 
         /**
          * @brief %Light
@@ -159,10 +159,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * Returns pointer to given light or nullptr, if no such light exists.
          */
-        virtual LightData* light(std::uint32_t id);
+        virtual LightData* light(UnsignedInt id);
 
         /** @brief Camera count */
-        virtual inline std::uint32_t cameraCount() const { return 0; }
+        virtual inline UnsignedInt cameraCount() const { return 0; }
 
         /**
          * @brief Camera ID for given name
@@ -170,7 +170,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * If no camera for given name exists, returns -1.
          * @see cameraName()
          */
-        virtual std::int32_t cameraForName(const std::string& name);
+        virtual Int cameraForName(const std::string& name);
 
         /**
          * @brief Camera name
@@ -178,7 +178,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * @see cameraForName()
          */
-        virtual std::string cameraName(std::uint32_t id);
+        virtual std::string cameraName(UnsignedInt id);
 
         /**
          * @brief Camera
@@ -187,10 +187,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * Returns pointer to given camera or nullptr, if no such camera
          * exists.
          */
-        virtual CameraData* camera(std::uint32_t id);
+        virtual CameraData* camera(UnsignedInt id);
 
         /** @brief Two-dimensional object count */
-        virtual inline std::uint32_t object2DCount() const { return 0; }
+        virtual inline UnsignedInt object2DCount() const { return 0; }
 
         /**
          * @brief Two-dimensional object ID for given name
@@ -198,7 +198,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * If no scene for given name exists, returns -1.
          * @see object2DName()
          */
-        virtual std::int32_t object2DForName(const std::string& name);
+        virtual Int object2DForName(const std::string& name);
 
         /**
          * @brief Two-dimensional object name
@@ -206,7 +206,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * @see object2DForName()
          */
-        virtual std::string object2DName(std::uint32_t id);
+        virtual std::string object2DName(UnsignedInt id);
 
         /**
          * @brief Two-dimensional object
@@ -215,10 +215,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * Returns pointer to given object or nullptr, if no such object
          * exists.
          */
-        virtual ObjectData2D* object2D(std::uint32_t id);
+        virtual ObjectData2D* object2D(UnsignedInt id);
 
         /** @brief Three-dimensional object count */
-        virtual inline std::uint32_t object3DCount() const { return 0; }
+        virtual inline UnsignedInt object3DCount() const { return 0; }
 
         /**
          * @brief Three-dimensional object ID for given name
@@ -226,7 +226,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * If no scene for given name exists, returns -1.
          * @see object3DName()
          */
-        virtual std::int32_t object3DForName(const std::string& name);
+        virtual Int object3DForName(const std::string& name);
 
         /**
          * @brief Three-dimensional object name
@@ -234,7 +234,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * @see object3DForName()
          */
-        virtual std::string object3DName(std::uint32_t id);
+        virtual std::string object3DName(UnsignedInt id);
 
         /**
          * @brief Three-dimensional object
@@ -243,10 +243,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * Returns pointer to given object or nullptr, if no such object
          * exists.
          */
-        virtual ObjectData3D* object3D(std::uint32_t id);
+        virtual ObjectData3D* object3D(UnsignedInt id);
 
         /** @brief Two-dimensional mesh count */
-        virtual inline std::uint32_t mesh2DCount() const { return 0; }
+        virtual inline UnsignedInt mesh2DCount() const { return 0; }
 
         /**
          * @brief Two-dimensional mesh ID for given name
@@ -254,7 +254,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * If no mesh for given name exists, returns -1.
          * @see mesh2DName()
          */
-        virtual std::int32_t mesh2DForName(const std::string& name);
+        virtual Int mesh2DForName(const std::string& name);
 
         /**
          * @brief Two-dimensional mesh name
@@ -262,7 +262,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * @see mesh2DForName()
          */
-        virtual std::string mesh2DName(std::uint32_t id);
+        virtual std::string mesh2DName(UnsignedInt id);
 
         /**
          * @brief Two-dimensional mesh
@@ -270,10 +270,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * Returns pointer to given mesh or nullptr, if no such mesh exists.
          */
-        virtual MeshData2D* mesh2D(std::uint32_t id);
+        virtual MeshData2D* mesh2D(UnsignedInt id);
 
         /** @brief Three-dimensional mesh count */
-        virtual inline std::uint32_t mesh3DCount() const { return 0; }
+        virtual inline UnsignedInt mesh3DCount() const { return 0; }
 
         /**
          * @brief Three-dimensional mesh ID for given name
@@ -281,7 +281,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * If no mesh for given name exists, returns -1.
          * @see mesh3DName()
          */
-        virtual std::int32_t mesh3DForName(const std::string& name);
+        virtual Int mesh3DForName(const std::string& name);
 
         /**
          * @brief Three-dimensional mesh name
@@ -289,7 +289,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * @see mesh3DForName()
          */
-        virtual std::string mesh3DName(std::uint32_t id);
+        virtual std::string mesh3DName(UnsignedInt id);
 
         /**
          * @brief Three-dimensional mesh
@@ -297,10 +297,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * Returns pointer to given mesh or nullptr, if no such mesh exists.
          */
-        virtual MeshData3D* mesh3D(std::uint32_t id);
+        virtual MeshData3D* mesh3D(UnsignedInt id);
 
         /** @brief Material count */
-        virtual inline std::uint32_t materialCount() const { return 0; }
+        virtual inline UnsignedInt materialCount() const { return 0; }
 
         /**
          * @brief Material ID for given name
@@ -308,7 +308,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * If no material for given name exists, returns -1.
          * @see materialName()
          */
-        virtual std::int32_t materialForName(const std::string& name);
+        virtual Int materialForName(const std::string& name);
 
         /**
          * @brief Material name
@@ -316,7 +316,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * @see materialForName()
          */
-        virtual std::string materialName(std::uint32_t id);
+        virtual std::string materialName(UnsignedInt id);
 
         /**
          * @brief Material
@@ -325,10 +325,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * Returns pointer to given material or nullptr, if no such material
          * exists.
          */
-        virtual AbstractMaterialData* material(std::uint32_t id);
+        virtual AbstractMaterialData* material(UnsignedInt id);
 
         /** @brief %Texture count */
-        virtual inline std::uint32_t textureCount() const { return 0; }
+        virtual inline UnsignedInt textureCount() const { return 0; }
 
         /**
          * @brief %Texture ID for given name
@@ -336,7 +336,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * If no texture for given name exists, returns -1.
          * @see textureName()
          */
-        virtual std::int32_t textureForName(const std::string& name);
+        virtual Int textureForName(const std::string& name);
 
         /**
          * @brief %Texture name
@@ -344,7 +344,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * @see textureForName()
          */
-        virtual std::string textureName(std::uint32_t id);
+        virtual std::string textureName(UnsignedInt id);
 
         /**
          * @brief %Texture
@@ -353,10 +353,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * Returns pointer to given texture or nullptr, if no such texture
          * exists.
          */
-        virtual TextureData* texture(std::uint32_t id);
+        virtual TextureData* texture(UnsignedInt id);
 
         /** @brief One-dimensional image count */
-        virtual inline std::uint32_t image1DCount() const { return 0; }
+        virtual inline UnsignedInt image1DCount() const { return 0; }
 
         /**
          * @brief One-dimensional image ID for given name
@@ -364,7 +364,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * If no image for given name exists, returns -1.
          * @see image1Dname()
          */
-        virtual std::int32_t image1DForName(const std::string& name);
+        virtual Int image1DForName(const std::string& name);
 
         /**
          * @brief One-dimensional image name
@@ -372,7 +372,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * @see image1DForName()
          */
-        virtual std::string image1DName(std::uint32_t id);
+        virtual std::string image1DName(UnsignedInt id);
 
         /**
          * @brief One-dimensional image
@@ -380,10 +380,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * Returns pointer to given image or nullptr, if no such image exists.
          */
-        virtual ImageData1D* image1D(std::uint32_t id);
+        virtual ImageData1D* image1D(UnsignedInt id);
 
         /** @brief Two-dimensional image count */
-        virtual inline std::uint32_t image2DCount() const { return 0; }
+        virtual inline UnsignedInt image2DCount() const { return 0; }
 
         /**
          * @brief Two-dimensional image ID for given name
@@ -391,7 +391,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * If no image for given name exists, returns -1.
          * @see image2DName()
          */
-        virtual std::int32_t image2DForName(const std::string& name);
+        virtual Int image2DForName(const std::string& name);
 
         /**
          * @brief Two-dimensional image name
@@ -399,7 +399,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * @see image2DForName()
          */
-        virtual std::string image2DName(std::uint32_t id);
+        virtual std::string image2DName(UnsignedInt id);
 
         /**
          * @brief Two-dimensional image
@@ -407,10 +407,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * Returns pointer to given image or nullptr, if no such image exists.
          */
-        virtual ImageData2D* image2D(std::uint32_t id);
+        virtual ImageData2D* image2D(UnsignedInt id);
 
         /** @brief Three-dimensional image count */
-        virtual inline std::uint32_t image3DCount() const { return 0; }
+        virtual inline UnsignedInt image3DCount() const { return 0; }
 
         /**
          * @brief Three-dimensional image ID for given name
@@ -418,7 +418,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          * If no image for given name exists, returns -1.
          * @see image3DName()
          */
-        virtual std::int32_t image3DForName(const std::string& name);
+        virtual Int image3DForName(const std::string& name);
 
         /**
          * @brief Three-dimensional image name
@@ -426,7 +426,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * @see image3DForName()
          */
-        virtual std::string image3DName(std::uint32_t id);
+        virtual std::string image3DName(UnsignedInt id);
 
         /**
          * @brief Three-dimensional image
@@ -434,7 +434,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
          *
          * Returns pointer to given image or nullptr, if no such image exists.
          */
-        virtual ImageData3D* image3D(std::uint32_t id);
+        virtual ImageData3D* image3D(UnsignedInt id);
 
         /*@}*/
 };
@@ -442,42 +442,42 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
 CORRADE_ENUMSET_OPERATORS(AbstractImporter::Features)
 
 /* Implementations for inline functions with unused parameters */
-inline std::int32_t AbstractImporter::sceneForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::sceneName(std::uint32_t) { return {}; }
-inline SceneData* AbstractImporter::scene(std::uint32_t) { return nullptr; }
-inline std::int32_t AbstractImporter::lightForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::lightName(std::uint32_t) { return {}; }
-inline LightData* AbstractImporter::light(std::uint32_t) { return nullptr; }
-inline std::int32_t AbstractImporter::cameraForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::cameraName(std::uint32_t) { return {}; }
-inline CameraData* AbstractImporter::camera(std::uint32_t) { return nullptr; }
-inline std::int32_t AbstractImporter::object2DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::object2DName(std::uint32_t) { return {}; }
-inline ObjectData2D* AbstractImporter::object2D(std::uint32_t) { return nullptr; }
-inline std::int32_t AbstractImporter::object3DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::object3DName(std::uint32_t) { return {}; }
-inline ObjectData3D* AbstractImporter::object3D(std::uint32_t) { return nullptr; }
-inline std::int32_t AbstractImporter::mesh2DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::mesh2DName(std::uint32_t) { return {}; }
-inline MeshData2D* AbstractImporter::mesh2D(std::uint32_t) { return nullptr; }
-inline std::int32_t AbstractImporter::mesh3DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::mesh3DName(std::uint32_t) { return {}; }
-inline MeshData3D* AbstractImporter::mesh3D(std::uint32_t) { return nullptr; }
-inline std::int32_t AbstractImporter::materialForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::materialName(std::uint32_t) { return {}; }
-inline AbstractMaterialData* AbstractImporter::material(std::uint32_t) { return nullptr; }
-inline std::int32_t AbstractImporter::textureForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::textureName(std::uint32_t) { return {}; }
-inline TextureData* AbstractImporter::texture(std::uint32_t) { return nullptr; }
-inline std::int32_t AbstractImporter::image1DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::image1DName(std::uint32_t) { return {}; }
-inline ImageData1D* AbstractImporter::image1D(std::uint32_t) { return nullptr; }
-inline std::int32_t AbstractImporter::image2DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::image2DName(std::uint32_t) { return {}; }
-inline ImageData2D* AbstractImporter::image2D(std::uint32_t) { return nullptr; }
-inline std::int32_t AbstractImporter::image3DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::image3DName(std::uint32_t) { return {}; }
-inline ImageData3D* AbstractImporter::image3D(std::uint32_t) { return nullptr; }
+inline Int AbstractImporter::sceneForName(const std::string&) { return -1; }
+inline std::string AbstractImporter::sceneName(UnsignedInt) { return {}; }
+inline SceneData* AbstractImporter::scene(UnsignedInt) { return nullptr; }
+inline Int AbstractImporter::lightForName(const std::string&) { return -1; }
+inline std::string AbstractImporter::lightName(UnsignedInt) { return {}; }
+inline LightData* AbstractImporter::light(UnsignedInt) { return nullptr; }
+inline Int AbstractImporter::cameraForName(const std::string&) { return -1; }
+inline std::string AbstractImporter::cameraName(UnsignedInt) { return {}; }
+inline CameraData* AbstractImporter::camera(UnsignedInt) { return nullptr; }
+inline Int AbstractImporter::object2DForName(const std::string&) { return -1; }
+inline std::string AbstractImporter::object2DName(UnsignedInt) { return {}; }
+inline ObjectData2D* AbstractImporter::object2D(UnsignedInt) { return nullptr; }
+inline Int AbstractImporter::object3DForName(const std::string&) { return -1; }
+inline std::string AbstractImporter::object3DName(UnsignedInt) { return {}; }
+inline ObjectData3D* AbstractImporter::object3D(UnsignedInt) { return nullptr; }
+inline Int AbstractImporter::mesh2DForName(const std::string&) { return -1; }
+inline std::string AbstractImporter::mesh2DName(UnsignedInt) { return {}; }
+inline MeshData2D* AbstractImporter::mesh2D(UnsignedInt) { return nullptr; }
+inline Int AbstractImporter::mesh3DForName(const std::string&) { return -1; }
+inline std::string AbstractImporter::mesh3DName(UnsignedInt) { return {}; }
+inline MeshData3D* AbstractImporter::mesh3D(UnsignedInt) { return nullptr; }
+inline Int AbstractImporter::materialForName(const std::string&) { return -1; }
+inline std::string AbstractImporter::materialName(UnsignedInt) { return {}; }
+inline AbstractMaterialData* AbstractImporter::material(UnsignedInt) { return nullptr; }
+inline Int AbstractImporter::textureForName(const std::string&) { return -1; }
+inline std::string AbstractImporter::textureName(UnsignedInt) { return {}; }
+inline TextureData* AbstractImporter::texture(UnsignedInt) { return nullptr; }
+inline Int AbstractImporter::image1DForName(const std::string&) { return -1; }
+inline std::string AbstractImporter::image1DName(UnsignedInt) { return {}; }
+inline ImageData1D* AbstractImporter::image1D(UnsignedInt) { return nullptr; }
+inline Int AbstractImporter::image2DForName(const std::string&) { return -1; }
+inline std::string AbstractImporter::image2DName(UnsignedInt) { return {}; }
+inline ImageData2D* AbstractImporter::image2D(UnsignedInt) { return nullptr; }
+inline Int AbstractImporter::image3DForName(const std::string&) { return -1; }
+inline std::string AbstractImporter::image3DName(UnsignedInt) { return {}; }
+inline ImageData3D* AbstractImporter::image3D(UnsignedInt) { return nullptr; }
 
 }}
 

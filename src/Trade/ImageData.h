@@ -32,9 +32,9 @@ Access to image data provided by AbstractImporter subclasses. Interchangeable
 with Image, ImageWrapper or BufferImage.
 @see ImageData1D, ImageData2D, ImageData3D
 */
-template<std::uint8_t dimensions> class ImageData: public AbstractImage {
+template<UnsignedInt dimensions> class ImageData: public AbstractImage {
     public:
-        const static std::uint8_t Dimensions = dimensions; /**< @brief %Image dimension count */
+        const static UnsignedInt Dimensions = dimensions; /**< @brief %Image dimension count */
 
         /**
          * @brief Constructor
@@ -46,20 +46,20 @@ template<std::uint8_t dimensions> class ImageData: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        inline ImageData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, GLvoid* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
+        inline ImageData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, Format format, Type type, GLvoid* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
 
         /** @brief Destructor */
         inline ~ImageData() { delete[] _data; }
 
         /** @brief %Image size */
-        inline typename DimensionTraits<Dimensions, GLsizei>::VectorType size() const { return _size; }
+        inline typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
         /** @brief Pointer to raw data */
         inline void* data() { return _data; }
         inline const void* data() const { return _data; } /**< @overload */
 
     private:
-        Math::Vector<Dimensions, GLsizei> _size;
+        Math::Vector<Dimensions, Int> _size;
         char* _data;
 };
 
