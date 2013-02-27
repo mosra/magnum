@@ -20,7 +20,7 @@
 
 namespace Magnum { namespace Physics {
 
-template<std::uint8_t dimensions> void ObjectShapeGroup<dimensions>::setClean() {
+template<UnsignedInt dimensions> void ObjectShapeGroup<dimensions>::setClean() {
     /* Clean all objects */
     if(!this->isEmpty()) {
         std::vector<SceneGraph::AbstractObject<dimensions>*> objects(this->size());
@@ -33,7 +33,7 @@ template<std::uint8_t dimensions> void ObjectShapeGroup<dimensions>::setClean() 
     dirty = false;
 }
 
-template<std::uint8_t dimensions> ObjectShape<dimensions>* ObjectShapeGroup<dimensions>::firstCollision(const ObjectShape<dimensions>* shape) {
+template<UnsignedInt dimensions> ObjectShape<dimensions>* ObjectShapeGroup<dimensions>::firstCollision(const ObjectShape<dimensions>* shape) {
     /* Nothing to test with, done */
     if(!shape->shape()) return nullptr;
 

@@ -34,7 +34,7 @@ namespace Magnum { namespace Physics {
 @see Box2D, Box3D
 @todo Assert for skew
 */
-template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Box: public AbstractShape<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Box: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
         inline explicit Box(const typename DimensionTraits<dimensions>::MatrixType& transformation): _transformation(transformation), _transformedTransformation(transformation) {}

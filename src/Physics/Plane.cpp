@@ -40,12 +40,12 @@ bool Plane::collides(const AbstractShape<3>* other) const {
 }
 
 bool Plane::operator%(const Line3D& other) const {
-    float t = Intersection::planeLine(transformedPosition(), transformedNormal(), other.transformedA(), other.transformedB());
-    return t != t || (t != std::numeric_limits<float>::infinity() && t != -std::numeric_limits<float>::infinity());
+    Float t = Intersection::planeLine(transformedPosition(), transformedNormal(), other.transformedA(), other.transformedB());
+    return t != t || (t != std::numeric_limits<Float>::infinity() && t != -std::numeric_limits<Float>::infinity());
 }
 
 bool Plane::operator%(const LineSegment3D& other) const {
-    float t = Intersection::planeLine(transformedPosition(), transformedNormal(), other.transformedA(), other.transformedB());
+    Float t = Intersection::planeLine(transformedPosition(), transformedNormal(), other.transformedA(), other.transformedB());
     return t > 0.0f && t < 1.0f;
 }
 

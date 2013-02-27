@@ -22,27 +22,27 @@
 
 namespace Magnum { namespace Physics {
 
-template<std::uint8_t dimensions> ObjectShape<dimensions>::ObjectShape(SceneGraph::AbstractObject<dimensions>* object, ObjectShapeGroup<dimensions>* group): SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>>(object, group), _shape(nullptr) {
+template<UnsignedInt dimensions> ObjectShape<dimensions>::ObjectShape(SceneGraph::AbstractObject<dimensions>* object, ObjectShapeGroup<dimensions>* group): SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>>(object, group), _shape(nullptr) {
     this->setCachedTransformations(SceneGraph::AbstractFeature<dimensions>::CachedTransformation::Absolute);
 }
 
-template<std::uint8_t dimensions> ObjectShape<dimensions>::~ObjectShape() {
+template<UnsignedInt dimensions> ObjectShape<dimensions>::~ObjectShape() {
     delete _shape;
 }
 
-template<std::uint8_t dimensions> ObjectShapeGroup<dimensions>* ObjectShape<dimensions>::group() {
+template<UnsignedInt dimensions> ObjectShapeGroup<dimensions>* ObjectShape<dimensions>::group() {
     return static_cast<ObjectShapeGroup<dimensions>*>(SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>>::group());
 }
 
-template<std::uint8_t dimensions> const ObjectShapeGroup<dimensions>* ObjectShape<dimensions>::group() const {
+template<UnsignedInt dimensions> const ObjectShapeGroup<dimensions>* ObjectShape<dimensions>::group() const {
     return static_cast<const ObjectShapeGroup<dimensions>*>(SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>>::group());
 }
 
-template<std::uint8_t dimensions> void ObjectShape<dimensions>::markDirty() {
+template<UnsignedInt dimensions> void ObjectShape<dimensions>::markDirty() {
     group()->setDirty();
 }
 
-template<std::uint8_t dimensions> void ObjectShape<dimensions>::clean(const typename DimensionTraits<dimensions>::MatrixType& absoluteTransformationMatrix) {
+template<UnsignedInt dimensions> void ObjectShape<dimensions>::clean(const typename DimensionTraits<dimensions>::MatrixType& absoluteTransformationMatrix) {
     if(_shape) _shape->applyTransformationMatrix(absoluteTransformationMatrix);
 }
 

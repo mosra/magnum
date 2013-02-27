@@ -33,7 +33,7 @@ namespace Magnum { namespace Physics {
 @see AxisAlignedBox2D, AxisAlignedBox3D
 @todo Assert for rotation
 */
-template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT AxisAlignedBox: public AbstractShape<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT AxisAlignedBox: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
         inline explicit AxisAlignedBox(const typename DimensionTraits<dimensions>::VectorType& min, const typename DimensionTraits<dimensions>::VectorType& max): _min(min), _max(max), _transformedMin(min), _transformedMax(max) {}
@@ -89,7 +89,7 @@ typedef AxisAlignedBox<2> AxisAlignedBox2D;
 typedef AxisAlignedBox<3> AxisAlignedBox3D;
 
 /** @collisionoperator{Point,AxisAlignedBox} */
-template<std::uint8_t dimensions> inline bool operator%(const Point<dimensions>& a, const AxisAlignedBox<dimensions>& b) { return b % a; }
+template<UnsignedInt dimensions> inline bool operator%(const Point<dimensions>& a, const AxisAlignedBox<dimensions>& b) { return b % a; }
 
 }}
 

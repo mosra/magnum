@@ -26,14 +26,14 @@ using namespace Magnum::Math::Geometry;
 
 namespace Magnum { namespace Physics {
 
-template<std::uint8_t dimensions> void Capsule<dimensions>::applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
+template<UnsignedInt dimensions> void Capsule<dimensions>::applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
     _transformedA = matrix.transformPoint(_a);
     _transformedB = matrix.transformPoint(_b);
-    float scaling = (matrix.rotationScaling()*typename DimensionTraits<dimensions>::VectorType(1/Constants::sqrt3())).length();
+    Float scaling = (matrix.rotationScaling()*typename DimensionTraits<dimensions>::VectorType(1/Constants::sqrt3())).length();
     _transformedRadius = scaling*_radius;
 }
 
-template<std::uint8_t dimensions> bool Capsule<dimensions>::collides(const AbstractShape<dimensions>* other) const {
+template<UnsignedInt dimensions> bool Capsule<dimensions>::collides(const AbstractShape<dimensions>* other) const {
     if(other->type() == AbstractShape<dimensions>::Type::Point)
         return *this % *static_cast<const Point<dimensions>*>(other);
     if(other->type() == AbstractShape<dimensions>::Type::Sphere)
@@ -42,12 +42,12 @@ template<std::uint8_t dimensions> bool Capsule<dimensions>::collides(const Abstr
     return AbstractShape<dimensions>::collides(other);
 }
 
-template<std::uint8_t dimensions> bool Capsule<dimensions>::operator%(const Point<dimensions>& other) const {
+template<UnsignedInt dimensions> bool Capsule<dimensions>::operator%(const Point<dimensions>& other) const {
     return Distance::lineSegmentPointSquared(transformedA(), transformedB(), other.transformedPosition()) <
         Math::pow<2>(transformedRadius());
 }
 
-template<std::uint8_t dimensions> bool Capsule<dimensions>::operator%(const Sphere<dimensions>& other) const {
+template<UnsignedInt dimensions> bool Capsule<dimensions>::operator%(const Sphere<dimensions>& other) const {
     return Distance::lineSegmentPointSquared(transformedA(), transformedB(), other.transformedPosition()) <
         Math::pow<2>(transformedRadius()+other.transformedRadius());
 }

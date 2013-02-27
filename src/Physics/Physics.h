@@ -19,55 +19,55 @@
  * @brief Forward declarations for Magnum::Physics namespace
  */
 
-#include <cstdint>
+#include "Types.h"
 
 namespace Magnum { namespace Physics {
 
 /** @todoc remove when doxygen is sane again */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t> class AbstractShape;
+template<UnsignedInt> class AbstractShape;
 typedef AbstractShape<2> AbstractShape2D;
 typedef AbstractShape<3> AbstractShape3D;
 
-template<std::uint8_t> class AxisAlignedBox;
+template<UnsignedInt> class AxisAlignedBox;
 typedef AxisAlignedBox<2> AxisAlignedBox2D;
 typedef AxisAlignedBox<3> AxisAlignedBox3D;
 
-template<std::uint8_t> class Box;
+template<UnsignedInt> class Box;
 typedef Box<2> Box2D;
 typedef Box<3> Box3D;
 
-template<std::uint8_t> class Capsule;
+template<UnsignedInt> class Capsule;
 typedef Capsule<2> Capsule2D;
 typedef Capsule<3> Capsule3D;
 
-template<std::uint8_t> class Line;
+template<UnsignedInt> class Line;
 typedef Line<2> Line2D;
 typedef Line<3> Line3D;
 
-template<std::uint8_t> class LineSegment;
+template<UnsignedInt> class LineSegment;
 typedef LineSegment<2> LineSegment2D;
 typedef LineSegment<3> LineSegment3D;
 
-template<std::uint8_t> class ObjectShape;
+template<UnsignedInt> class ObjectShape;
 typedef ObjectShape<2> ObjectShape2D;
 typedef ObjectShape<3> ObjectShape3D;
 
-template<std::uint8_t> class ObjectShapeGroup;
+template<UnsignedInt> class ObjectShapeGroup;
 typedef ObjectShapeGroup<2> ObjectShapeGroup2D;
 typedef ObjectShapeGroup<3> ObjectShapeGroup3D;
 
 class Plane;
 
-template<std::uint8_t> class Point;
+template<UnsignedInt> class Point;
 typedef Point<2> Point2D;
 typedef Point<3> Point3D;
 
-template<std::uint8_t> class ShapeGroup;
+template<UnsignedInt> class ShapeGroup;
 typedef ShapeGroup<2> ShapeGroup2D;
 typedef ShapeGroup<3> ShapeGroup3D;
 
-template<std::uint8_t> class Sphere;
+template<UnsignedInt> class Sphere;
 typedef Sphere<2> Sphere2D;
 typedef Sphere<3> Sphere3D;
 #endif

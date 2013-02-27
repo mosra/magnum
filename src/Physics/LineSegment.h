@@ -28,7 +28,7 @@ namespace Magnum { namespace Physics {
 
 @see LineSegment2D, LineSegment3D
 */
-template<std::uint8_t dimensions> class LineSegment: public Line<dimensions> {
+template<UnsignedInt dimensions> class LineSegment: public Line<dimensions> {
     public:
         /** @brief Constructor */
         inline explicit LineSegment(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b): Line<dimensions>(a, b) {}

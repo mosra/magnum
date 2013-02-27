@@ -28,7 +28,7 @@ namespace Magnum { namespace Physics {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    template<std::uint8_t dimensions> struct ShapeDimensionTraits {};
+    template<UnsignedInt dimensions> struct ShapeDimensionTraits {};
 
     template<> struct ShapeDimensionTraits<2> {
         enum class Type {
@@ -68,10 +68,10 @@ namespace Implementation {
 See @ref collision-detection for brief introduction.
 @see AbstractShape2D, AbstractShape3D
 */
-template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT AbstractShape {
+template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT AbstractShape {
     public:
         /** @brief Dimension count */
-        static const std::uint8_t Dimensions = dimensions;
+        static const UnsignedInt Dimensions = dimensions;
 
         /**
          * @brief Shape type
@@ -130,7 +130,7 @@ typedef AbstractShape<3> AbstractShape3D;
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
 /** @debugoperator{Magnum::Physics::AbstractShape} */
-template<std::uint8_t dimensions> Debug operator<<(Debug debug, typename AbstractShape<dimensions>::Type value);
+template<UnsignedInt dimensions> Debug operator<<(Debug debug, typename AbstractShape<dimensions>::Type value);
 #endif
 
 }}

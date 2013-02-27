@@ -35,10 +35,10 @@ applying transformation, the scale factor is averaged from all axes.
 @see Capsule2D, Capsule3D
 @todo Assert for asymmetric scaling
 */
-template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Capsule: public AbstractShape<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Capsule: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline explicit Capsule(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b, float radius): _a(a), _transformedA(a), _b(b), _transformedB(b), _radius(radius), _transformedRadius(radius) {}
+        inline explicit Capsule(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b, Float radius): _a(a), _transformedA(a), _b(b), _transformedB(b), _radius(radius), _transformedRadius(radius) {}
 
         inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::Capsule;
@@ -69,10 +69,10 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Capsule: public Ab
         }
 
         /** @brief Radius */
-        inline float radius() const { return _radius; }
+        inline Float radius() const { return _radius; }
 
         /** @brief Set radius */
-        inline void setRadius(float radius) { _radius = radius; }
+        inline void setRadius(Float radius) { _radius = radius; }
 
         /** @brief Transformed first point */
         inline typename DimensionTraits<dimensions>::VectorType transformedA() const {
@@ -85,7 +85,7 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Capsule: public Ab
         }
 
         /** @brief Transformed radius */
-        inline float transformedRadius() const {
+        inline Float transformedRadius() const {
             return _transformedRadius;
         }
 
@@ -98,7 +98,7 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Capsule: public Ab
     private:
         typename DimensionTraits<dimensions>::VectorType _a, _transformedA,
             _b, _transformedB;
-        float _radius, _transformedRadius;
+        Float _radius, _transformedRadius;
 };
 
 /** @brief Two-dimensional capsule */
@@ -108,10 +108,10 @@ typedef Capsule<2> Capsule2D;
 typedef Capsule<3> Capsule3D;
 
 /** @collisionoperator{Point,Capsule} */
-template<std::uint8_t dimensions> inline bool operator%(const Point<dimensions>& a, const Capsule<dimensions>& b) { return b % a; }
+template<UnsignedInt dimensions> inline bool operator%(const Point<dimensions>& a, const Capsule<dimensions>& b) { return b % a; }
 
 /** @collisionoperator{Sphere,Capsule} */
-template<std::uint8_t dimensions> inline bool operator%(const Sphere<dimensions>& a, const Capsule<dimensions>& b) { return b % a; }
+template<UnsignedInt dimensions> inline bool operator%(const Sphere<dimensions>& a, const Capsule<dimensions>& b) { return b % a; }
 
 }}
 

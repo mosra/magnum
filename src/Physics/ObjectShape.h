@@ -49,7 +49,7 @@ shape->setShape(Physics::Sphere3D({}, 0.75f) || Physics::AxisAlignedBox3D({}, {3
 @see @ref scenegraph, ObjectShape2D, ObjectShape3D, ObjectShapeGroup2D,
     ObjectShapeGroup3D, DebugTools::ShapeRenderer
 */
-template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShape: public SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>> {
+template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShape: public SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>> {
     public:
         /**
          * @brief Constructor

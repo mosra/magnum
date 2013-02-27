@@ -21,19 +21,19 @@
 
 namespace Magnum { namespace Physics {
 
-template<std::uint8_t dimensions> void AxisAlignedBox<dimensions>::applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
+template<UnsignedInt dimensions> void AxisAlignedBox<dimensions>::applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
     _transformedMin = matrix.transformPoint(_min);
     _transformedMax = matrix.transformPoint(_max);
 }
 
-template<std::uint8_t dimensions> bool AxisAlignedBox<dimensions>::collides(const AbstractShape<dimensions>* other) const {
+template<UnsignedInt dimensions> bool AxisAlignedBox<dimensions>::collides(const AbstractShape<dimensions>* other) const {
     if(other->type() == AbstractShape<dimensions>::Type::Point)
         return *this % *static_cast<const Point<dimensions>*>(other);
 
     return AbstractShape<dimensions>::collides(other);
 }
 
-template<std::uint8_t dimensions> bool AxisAlignedBox<dimensions>::operator%(const Point<dimensions>& other) const {
+template<UnsignedInt dimensions> bool AxisAlignedBox<dimensions>::operator%(const Point<dimensions>& other) const {
     return (other.transformedPosition() >= _transformedMin).all() &&
            (other.transformedPosition() < _transformedMax).all();
 }
