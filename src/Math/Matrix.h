@@ -100,12 +100,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * @f]
          */
         T trace() const {
-            T out(0);
-
-            for(std::size_t i = 0; i != size; ++i)
-                out += (*this)[i][i];
-
-            return out;
+            return this->diagonal().sum();
         }
 
         /** @brief %Matrix without given column and row */
