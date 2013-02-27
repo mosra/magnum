@@ -423,8 +423,7 @@ template<class T> class Quaternion {
          *      v' = qvq^{-1} = qvq^* = q [\boldsymbol v, 0] q^*
          * @f]
          * @see Quaternion(const Vector3&), vector(), Matrix4::transformVector(),
-         *      DualQuaternion::transformPointNormalized(),
-         *      Complex::transformVectorNormalized()
+         *      DualQuaternion::transformPointNormalized(), Complex::transformVector()
          */
         inline Vector3<T> transformVectorNormalized(const Vector3<T>& vector) const {
             CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),

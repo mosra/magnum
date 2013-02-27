@@ -31,8 +31,8 @@ namespace Magnum { namespace MeshTools {
 Usable for one-time mesh transformations that would otherwise negatively affect
 dependent objects, such as (uneven) scaling. Accepts any forward-iterable type
 with compatible vector type as @p vectors. Expects that @ref Math::Quaternion "Quaternion"
-or @ref Math::Complex "Complex" is normalized, no further requirements are for
-transformation matrices.
+is normalized, no further requirements are for other transformation
+representations.
 
 Unlike in transformPointsInPlace(), the transformation does not involve
 translation.
@@ -53,8 +53,8 @@ template<class T, class U> void transformVectorsInPlace(const Math::Quaternion<T
 }
 
 /** @overload */
-template<class T, class U> void transformVectorsInPlace(const Math::Complex<T>& normalizedComplex, U& vectors) {
-    for(auto& vector: vectors) vector = normalizedComplex.transformVectorNormalized(vector);
+template<class T, class U> void transformVectorsInPlace(const Math::Complex<T>& complex, U& vectors) {
+    for(auto& vector: vectors) vector = complex.transformVector(vector);
 }
 
 /** @overload */
@@ -86,7 +86,7 @@ Usable for one-time mesh transformations that would otherwise negatively affect
 dependent objects, such as (uneven) scaling. Accepts any forward-iterable type
 with compatible vector type as @p vectors. Expects that
 @ref Math::DualQuaternion "DualQuaternion" is normalized, no further
-requirements are for transformation matrices.
+requirements are for other transformation representations.
 
 Unlike in transformVectorsInPlace(), the transformation also involves
 translation.

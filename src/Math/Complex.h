@@ -102,7 +102,7 @@ template<class T> class Complex {
          * To be used in transformations later. @f[
          *      c = v_x + iv_y
          * @f]
-         * @see operator Vector2(), transformVector(), transformVectorNormalized()
+         * @see operator Vector2(), transformVector()
          */
         inline constexpr explicit Complex(const Vector2<T>& vector): _real(vector.x()), _imaginary(vector.y()) {}
 
@@ -345,29 +345,12 @@ template<class T> class Complex {
         /**
          * @brief Rotate vector with complex number
          *
-         * See transformVectorNormalized(), which is faster for normalized
-         * complex numbers. @f[
-         *      v' = \frac c {|c|} v = \frac c {|c|} (v_x + iv_y)
+         * @f[
+         *      v' = c v = c (v_x + iv_y)
          * @f]
          * @see Complex(const Vector2&), operator Vector2(), Matrix3::transformVector()
          */
         inline Vector2<T> transformVector(const Vector2<T>& vector) const {
-            return Vector2<T>(normalized()*Complex<T>(vector));
-        }
-
-        /**
-         * @brief Rotate vector with normalized complex number
-         *
-         * Faster alternative to transformVector(), expects that the complex
-         * number is normalized. @f[
-         *      v' = \frac c {|c|} v = cv = c(v_x + iv_y)
-         * @f]
-         * @see Complex(const Vector2&), operator Vector2(), Matrix3::transformVector()
-         */
-        inline Vector2<T> transformVectorNormalized(const Vector2<T>& vector) const {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
-                           "Math::Complex::transformVectorNormalized(): complex number must be normalized",
-                           Vector2<T>(std::numeric_limits<T>::quiet_NaN()));
             return Vector2<T>((*this)*Complex<T>(vector));
         }
 
