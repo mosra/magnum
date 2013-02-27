@@ -110,7 +110,7 @@ void QuaternionTest::constructDefault() {
 }
 
 void QuaternionTest::constructFromVector() {
-    CORRADE_COMPARE(Quaternion({1.0f, 2.0f, 3.0f}), Quaternion({1.0f, 2.0f, 3.0f}, 0.0f));
+    CORRADE_COMPARE(Quaternion(Vector3(1.0f, 2.0f, 3.0f)), Quaternion({1.0f, 2.0f, 3.0f}, 0.0f));
 }
 
 void QuaternionTest::compare() {
@@ -130,7 +130,7 @@ void QuaternionTest::constExpressions() {
     CORRADE_COMPARE(b, Quaternion({1.0f, -3.0f, 7.0f}, 2.5f));
 
     /* Construct from vector */
-    constexpr Quaternion c({2.0f, -3.0f, 1.5f});
+    constexpr Quaternion c(Vector3(2.0f, -3.0f, 1.5f));
     CORRADE_COMPARE(c, Quaternion({2.0f, -3.0f, 1.5f}, 0.0f));
 
     /* Copy constructor */
