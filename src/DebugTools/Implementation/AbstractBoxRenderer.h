@@ -24,7 +24,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<std::uint8_t dimensions> class AbstractBoxRenderer;
+template<UnsignedInt dimensions> class AbstractBoxRenderer;
 
 template<> class AbstractBoxRenderer<2>: public AbstractShapeRenderer<2> {
     public:

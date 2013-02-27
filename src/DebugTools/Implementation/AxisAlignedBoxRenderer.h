@@ -23,7 +23,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<std::uint8_t dimensions> class AxisAlignedBoxRenderer: public AbstractBoxRenderer<dimensions> {
+template<UnsignedInt dimensions> class AxisAlignedBoxRenderer: public AbstractBoxRenderer<dimensions> {
     public:
         AxisAlignedBoxRenderer(Physics::AxisAlignedBox<dimensions>& axisAlignedBox);
 

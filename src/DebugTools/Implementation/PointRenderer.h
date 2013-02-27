@@ -23,7 +23,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<std::uint8_t dimensions> class PointRenderer: public AbstractShapeRenderer<dimensions> {
+template<UnsignedInt dimensions> class PointRenderer: public AbstractShapeRenderer<dimensions> {
     public:
         PointRenderer(Physics::Point<dimensions>& point);
 

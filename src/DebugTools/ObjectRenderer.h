@@ -37,7 +37,7 @@ class ObjectRendererOptions {
         inline constexpr ObjectRendererOptions(): _size(1.0f) {}
 
         /** @brief Size of the rendered axes */
-        inline constexpr GLfloat size() const { return _size; }
+        inline constexpr Float size() const { return _size; }
 
         /**
          * @brief Set size of the rendered axes
@@ -45,13 +45,13 @@ class ObjectRendererOptions {
          *
          * Default is `1.0f`.
          */
-        inline ObjectRendererOptions* setSize(GLfloat size) {
+        inline ObjectRendererOptions* setSize(Float size) {
             _size = size;
             return this;
         }
 
     private:
-        GLfloat _size;
+        Float _size;
 };
 
 /**
@@ -75,7 +75,7 @@ new DebugTools::ObjectRenderer2D(object, "my", debugDrawables);
 
 @see ObjectRenderer2D, ObjectRenderer3D
 */
-template<std::uint8_t dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: public SceneGraph::Drawable<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: public SceneGraph::Drawable<dimensions> {
     public:
         /**
          * @brief Constructor
@@ -90,8 +90,8 @@ template<std::uint8_t dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer:
         explicit ObjectRenderer(SceneGraph::AbstractObject<dimensions>* object, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions>* drawables = nullptr);
 
     protected:
-        /** @todoc Remove GLfloat when Doxygen properly treats this as override */
-        void draw(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, GLfloat>* camera) override;
+        /** @todoc Remove Float when Doxygen properly treats this as override */
+        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>* camera) override;
 
     private:
         Resource<ObjectRendererOptions> options;

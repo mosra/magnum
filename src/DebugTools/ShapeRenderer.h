@@ -30,14 +30,14 @@ namespace Magnum { namespace DebugTools {
 
 /** @todoc Remove `ifndef` when Doxygen is sane again */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t> class ShapeRenderer;
+template<UnsignedInt> class ShapeRenderer;
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    template<std::uint8_t> class AbstractShapeRenderer;
+    template<UnsignedInt> class AbstractShapeRenderer;
 
-    template<std::uint8_t dimensions> void createDebugMesh(ShapeRenderer<dimensions>* renderer, Physics::AbstractShape<dimensions>* shape);
+    template<UnsignedInt dimensions> void createDebugMesh(ShapeRenderer<dimensions>* renderer, Physics::AbstractShape<dimensions>* shape);
 }
 #endif
 
@@ -65,7 +65,7 @@ class ShapeRendererOptions {
         }
 
         /** @brief Point size */
-        inline constexpr GLfloat pointSize() const { return _pointSize; }
+        inline constexpr Float pointSize() const { return _pointSize; }
 
         /**
          * @brief Set point size
@@ -74,14 +74,14 @@ class ShapeRendererOptions {
          * Size of rendered crosshairs, representing Physics::Point shapes.
          * Default is `0.25f`.
          */
-        inline ShapeRendererOptions* setPointSize(GLfloat size) {
+        inline ShapeRendererOptions* setPointSize(Float size) {
             _pointSize = size;
             return this;
         }
 
     private:
         Color3<> _color;
-        GLfloat _pointSize;
+        Float _pointSize;
 };
 
 /**
@@ -105,7 +105,7 @@ new DebugTools::ShapeRenderer2D(shape, "red", debugDrawables);
 
 @see ShapeRenderer2D, ShapeRenderer3D
 */
-template<std::uint8_t dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: public SceneGraph::Drawable<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: public SceneGraph::Drawable<dimensions> {
     #ifndef DOXYGEN_GENERATING_OUTPUT
     friend void Implementation::createDebugMesh<>(ShapeRenderer<dimensions>*, Physics::AbstractShape<dimensions>*);
     #endif
@@ -129,8 +129,8 @@ template<std::uint8_t dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: 
         ~ShapeRenderer();
 
     protected:
-        /** @todoc Remove GLfloat when Doxygen properly treats this as override */
-        void draw(const typename DimensionTraits<dimensions, GLfloat>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, GLfloat>* camera) override;
+        /** @todoc Remove Float when Doxygen properly treats this as override */
+        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>* camera) override;
 
     private:
         Resource<ShapeRendererOptions> options;

@@ -26,24 +26,24 @@
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
 namespace {
-    template<std::uint8_t dimensions> ResourceKey meshKey();
+    template<UnsignedInt dimensions> ResourceKey meshKey();
     template<> inline ResourceKey meshKey<2>() { return ResourceKey("point2d"); }
     template<> inline ResourceKey meshKey<3>() { return ResourceKey("point3d"); }
 
-    template<std::uint8_t dimensions> ResourceKey vertexBufferKey();
+    template<UnsignedInt dimensions> ResourceKey vertexBufferKey();
     template<> inline ResourceKey vertexBufferKey<2>() { return ResourceKey("point2d-vertices"); }
     template<> inline ResourceKey vertexBufferKey<3>() { return ResourceKey("point3d-vertices"); }
 
-    template<std::uint8_t dimensions> typename MeshData<dimensions>::Type meshData();
+    template<UnsignedInt dimensions> typename MeshData<dimensions>::Type meshData();
     template<> inline Trade::MeshData2D meshData<2>() { return Primitives::Crosshair2D::wireframe(); }
     template<> inline Trade::MeshData3D meshData<3>() { return Primitives::Crosshair3D::wireframe(); }
 }
 
-template<std::uint8_t dimensions> PointRenderer<dimensions>::PointRenderer(Physics::Point<dimensions>& point): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), point(point) {
+template<UnsignedInt dimensions> PointRenderer<dimensions>::PointRenderer(Physics::Point<dimensions>& point): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), point(point) {
     if(!this->mesh) this->createResources(meshData<dimensions>());
 }
 
-template<std::uint8_t dimensions> void PointRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
+template<UnsignedInt dimensions> void PointRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
     /* Half scale, because the point is 2x2(x2) */
     this->shader->setTransformationProjectionMatrix(projectionMatrix*
         DimensionTraits<dimensions>::MatrixType::translation(point.transformedPosition())*

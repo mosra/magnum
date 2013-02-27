@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 
+#include "Types.h"
 #include "magnumDebugToolsVisibility.h"
 
 namespace Magnum { namespace DebugTools {
@@ -95,7 +96,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT Profiler {
          *
          * @see otherSection, addSection(), start(Section)
          */
-        typedef std::uint32_t Section;
+        typedef UnsignedInt Section;
 
         /**
          * @brief Default section

@@ -22,9 +22,9 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<std::uint8_t dimensions> AxisAlignedBoxRenderer<dimensions>::AxisAlignedBoxRenderer(Physics::AxisAlignedBox<dimensions>& axisAlignedBox): axisAlignedBox(axisAlignedBox) {}
+template<UnsignedInt dimensions> AxisAlignedBoxRenderer<dimensions>::AxisAlignedBoxRenderer(Physics::AxisAlignedBox<dimensions>& axisAlignedBox): axisAlignedBox(axisAlignedBox) {}
 
-template<std::uint8_t dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
+template<UnsignedInt dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
     /* Half scale, because the box is 2x2(x2) */
     typename DimensionTraits<dimensions>::MatrixType transformation =
         DimensionTraits<dimensions>::MatrixType::translation((axisAlignedBox.transformedMin()+axisAlignedBox.transformedMax())/2)*

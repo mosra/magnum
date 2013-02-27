@@ -78,16 +78,16 @@ template<> void createDebugMesh(ShapeRenderer<3>* renderer, Physics::AbstractSha
 }
 #endif
 
-template<std::uint8_t dimensions> ShapeRenderer<dimensions>::ShapeRenderer(Physics::ObjectShape<dimensions>* shape, ResourceKey options, SceneGraph::DrawableGroup<dimensions>* drawables): SceneGraph::Drawable<dimensions>(shape->object(), drawables), options(ResourceManager::instance()->get<ShapeRendererOptions>(options)) {
+template<UnsignedInt dimensions> ShapeRenderer<dimensions>::ShapeRenderer(Physics::ObjectShape<dimensions>* shape, ResourceKey options, SceneGraph::DrawableGroup<dimensions>* drawables): SceneGraph::Drawable<dimensions>(shape->object(), drawables), options(ResourceManager::instance()->get<ShapeRendererOptions>(options)) {
     CORRADE_ASSERT(shape->shape() != nullptr, "DebugTools::ShapeRenderer: cannot create renderer for empty shape", );
     Implementation::createDebugMesh(this, shape->shape());
 }
 
-template<std::uint8_t dimensions> ShapeRenderer<dimensions>::~ShapeRenderer() {
+template<UnsignedInt dimensions> ShapeRenderer<dimensions>::~ShapeRenderer() {
     for(auto i: renderers) delete i;
 }
 
-template<std::uint8_t dimensions> void ShapeRenderer<dimensions>::draw(const typename DimensionTraits<dimensions>::MatrixType&, SceneGraph::AbstractCamera<dimensions>* camera) {
+template<UnsignedInt dimensions> void ShapeRenderer<dimensions>::draw(const typename DimensionTraits<dimensions>::MatrixType&, SceneGraph::AbstractCamera<dimensions>* camera) {
     typename DimensionTraits<dimensions>::MatrixType projectionMatrix = camera->projectionMatrix()*camera->cameraMatrix();
     for(auto i: renderers) i->draw(options, projectionMatrix);
 }

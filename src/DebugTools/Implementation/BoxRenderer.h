@@ -23,7 +23,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<std::uint8_t dimensions> class BoxRenderer: public AbstractBoxRenderer<dimensions> {
+template<UnsignedInt dimensions> class BoxRenderer: public AbstractBoxRenderer<dimensions> {
     public:
         BoxRenderer(Physics::Box<dimensions>& box);
 
