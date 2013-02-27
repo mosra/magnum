@@ -19,9 +19,8 @@
  * @brief Function Magnum::MeshTools::transformVectorsInPlace(), Magnum::MeshTools::transformVectors(), Magnum::MeshTools::transformPointsInPlace(), Magnum::MeshTools::transformPoints()
  */
 
-#include "Math/Complex.h"
 #include "Math/DualQuaternion.h"
-#include "Math/Matrix3.h"
+#include "Math/DualComplex.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -104,6 +103,11 @@ MeshTools::transformPointsInPlace(rotation, points);
 */
 template<class T, class U> void transformPointsInPlace(const Math::DualQuaternion<T>& normalizedDualQuaternion, U& points) {
     for(auto& point: points) point = normalizedDualQuaternion.transformPointNormalized(point);
+}
+
+/** @overload */
+template<class T, class U> void transformPointsInPlace(const Math::DualComplex<T>& dualComplex, U& points) {
+    for(auto& point: points) point = dualComplex.transformPoint(point);
 }
 
 /** @overload */

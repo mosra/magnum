@@ -81,27 +81,30 @@ void TransformTest::transformVectors2D() {
 
 void TransformTest::transformVectors3D() {
     auto matrix = MeshTools::transformVectors(Matrix4::rotationZ(Deg(90.0f)), points3D);
-    auto complex = MeshTools::transformVectors(Quaternion::rotation(Deg(90.0f), Vector3::zAxis()), points3D);
+    auto quaternion = MeshTools::transformVectors(Quaternion::rotation(Deg(90.0f), Vector3::zAxis()), points3D);
 
     CORRADE_COMPARE(matrix, points3DRotated);
-    CORRADE_COMPARE(complex, points3DRotated);
+    CORRADE_COMPARE(quaternion, points3DRotated);
 }
 
 void TransformTest::transformPoints2D() {
     auto matrix = MeshTools::transformPoints(
         Matrix3::translation(Vector2::yAxis(-1.0f))*Matrix3::rotation(Deg(90.0f)), points2D);
+    auto complex = MeshTools::transformPoints(
+        DualComplex::translation(Vector2::yAxis(-1.0f))*DualComplex::rotation(Deg(90.0f)), points2D);
 
     CORRADE_COMPARE(matrix, points2DRotatedTranslated);
+    CORRADE_COMPARE(complex, points2DRotatedTranslated);
 }
 
 void TransformTest::transformPoints3D() {
     auto matrix = MeshTools::transformPoints(
         Matrix4::translation(Vector3::yAxis(-1.0f))*Matrix4::rotationZ(Deg(90.0f)), points3D);
-    auto complex = MeshTools::transformPoints(
+    auto quaternion = MeshTools::transformPoints(
         DualQuaternion::translation(Vector3::yAxis(-1.0f))*DualQuaternion::rotation(Deg(90.0f), Vector3::zAxis()), points3D);
 
     CORRADE_COMPARE(matrix, points3DRotatedTranslated);
-    CORRADE_COMPARE(complex, points3DRotatedTranslated);
+    CORRADE_COMPARE(quaternion, points3DRotatedTranslated);
 }
 
 }}}
