@@ -231,11 +231,11 @@ value in range @f$ [0, 1] @f$ or from *signed* integral to range @f$ [-1, 1] @f$
     literals, this function should be called with both template parameters
     explicit, e.g.:
 @code
-// Even if this is character literal, integral type is 32bit, thus a != 1.0f
-float a = normalize<float>('\127');
+// Literal type is (signed) char, but we assumed unsigned char, a != 1.0f
+float a = normalize<float>('\xFF');
 
 // b = 1.0f
-float b = normalize<float, std::int8_t>('\127');
+float b = normalize<float, std::uint8_t>('\xFF');
 @endcode
 
 @see denormalize()

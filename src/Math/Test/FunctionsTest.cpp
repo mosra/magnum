@@ -37,6 +37,8 @@ class FunctionsTest: public Corrade::TestSuite::Tester {
         void renormalizeUnsinged();
         void renormalizeSinged();
 
+        void normalizeTypeDeduction();
+
         void pow();
         void log();
         void log2();
@@ -64,6 +66,8 @@ FunctionsTest::FunctionsTest() {
              &FunctionsTest::denormalizeSigned,
              &FunctionsTest::renormalizeUnsinged,
              &FunctionsTest::renormalizeSinged,
+
+             &FunctionsTest::normalizeTypeDeduction,
 
              &FunctionsTest::pow,
              &FunctionsTest::log,
@@ -231,6 +235,11 @@ void FunctionsTest::renormalizeSinged() {
     CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<std::int64_t>(-1.0l)), -1.0l);
     CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<std::int64_t>(0.0l)), 0.0l);
     CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<std::int64_t>(1.0l)), 1.0l);
+}
+
+void FunctionsTest::normalizeTypeDeduction() {
+    CORRADE_COMPARE(Math::normalize<float>('\x7F'), 1.0f);
+    CORRADE_COMPARE((Math::normalize<float, std::int8_t>('\x7F')), 1.0f);
 }
 
 void FunctionsTest::pow() {
