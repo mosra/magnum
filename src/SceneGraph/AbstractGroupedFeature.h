@@ -48,9 +48,9 @@ typedef SceneGraph::FeatureGroup3D<Drawable> DrawableGroup;
     FeatureGroup, FeatureGroup2D, FeatureGroup3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class Derived, class T>
+template<UnsignedInt dimensions, class Derived, class T>
 #else
-template<std::uint8_t dimensions, class Derived, class T = GLfloat>
+template<UnsignedInt dimensions, class Derived, class T = Float>
 #endif
 class AbstractGroupedFeature: public AbstractFeature<dimensions, T> {
     friend class FeatureGroup<dimensions, Derived, T>;
@@ -103,7 +103,7 @@ AbstractGroupedFeature for more information.
 @see AbstractGroupedFeature3D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class Derived, class T = GLfloat>
+template<class Derived, class T = Float>
 #else
 template<class Derived, class T>
 #endif
@@ -119,7 +119,7 @@ AbstractGroupedFeature for more information.
 @see AbstractGroupedFeature2D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class Derived, class T = GLfloat>
+template<class Derived, class T = Float>
 #else
 template<class Derived, class T>
 #endif

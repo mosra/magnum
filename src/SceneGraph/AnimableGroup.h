@@ -32,9 +32,9 @@ See Animable for more information.
 @see @ref scenegraph, AnimableGroup2D, AnimableGroup3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class T>
+template<UnsignedInt dimensions, class T>
 #else
-template<std::uint8_t dimensions, class T = GLfloat>
+template<UnsignedInt dimensions, class T = Float>
 #endif
 class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup: public FeatureGroup<dimensions, Animable<dimensions, T>, T> {
     friend class Animable<dimensions, T>;
@@ -60,7 +60,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup: public FeatureGroup<dimensions, An
          * If there are no running animations the function does nothing.
          * @see runningCount()
          */
-        void step(const GLfloat time, const GLfloat delta);
+        void step(const Float time, const Float delta);
 
     private:
         std::size_t _runningCount;
@@ -77,7 +77,7 @@ more information.
 @see AnimableGroup3D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = GLfloat>
+template<class T = Float>
 #else
 template<class T>
 #endif
@@ -92,7 +92,7 @@ more information.
 @see AnimableGroup2D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = GLfloat>
+template<class T = Float>
 #else
 template<class T>
 #endif

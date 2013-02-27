@@ -43,18 +43,18 @@ camera->setPerspective({}, 0.001f, 100.0f)
 @section Camera3D-explicit-specializations Explicit template specializations
 
 The following specialization are explicitly compiled into SceneGraph library.
-For other specializations (e.g. using `double` type) you have to use
+For other specializations (e.g. using Double type) you have to use
 Camera3D.hpp implementation file to avoid linker errors. See
 @ref compilation-speedup-hpp for more information.
 
- - @ref Camera3D "Camera3D<GLfloat>"
+ - @ref Camera3D "Camera3D<Float>"
 
 @see @ref scenegraph, Camera2D, Drawable, DrawableGroup
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T>
 #else
-template<class T = GLfloat>
+template<class T = Float>
 #endif
 class MAGNUM_SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3, T> {
     public:

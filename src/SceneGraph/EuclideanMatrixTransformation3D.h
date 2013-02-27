@@ -38,7 +38,7 @@ transformations.
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T>
 #else
-template<class T = GLfloat>
+template<class T = Float>
 #endif
 class EuclideanMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
     public:

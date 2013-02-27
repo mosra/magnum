@@ -30,7 +30,7 @@ namespace Magnum { namespace SceneGraph {
 
 @see Animable::setState()
 */
-enum class AnimationState: std::uint8_t {
+enum class AnimationState: UnsignedByte {
     /**
      * The animation is stopped. The animation will be started from the
      * beginning when state is changed to @ref AnimationState "AnimationState::Running".
@@ -74,7 +74,7 @@ class AnimableObject: public Object3D, SceneGraph::Animable3D<> {
             // ...
         }
 
-        void animationStep(GLfloat time, GLfloat delta) override {
+        void animationStep(Float time, Float delta) override {
             rotateX(15.0_degf*delta); // rotate at 15 degrees per second
         }
 }
@@ -121,19 +121,19 @@ traversed when calling AnimableGroup::step(), saving precious frame time.
 @section Animable-explicit-specializations Explicit template specializations
 
 The following specialization are explicitly compiled into %SceneGraph library.
-For other specializations (e.g. using `double` type) you have to use
+For other specializations (e.g. using Double type) you have to use
 Animable.hpp implementation file to avoid linker errors. See also
 @ref compilation-speedup-hpp for more information.
 
- - @ref Animable "Animable<2, GLfloat>", @ref AnimableGroup "AnimableGroup<2, GLfloat>"
- - @ref Animable "Animable<3, GLfloat>", @ref AnimableGroup "AnimableGroup<3, GLfloat>"
+ - @ref Animable "Animable<2, Float>", @ref AnimableGroup "AnimableGroup<2, Float>"
+ - @ref Animable "Animable<3, Float>", @ref AnimableGroup "AnimableGroup<3, Float>"
 
 @see @ref scenegraph, Animable2D, Animable3D, AnimableGroup2D, AnimableGroup3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class T>
+template<UnsignedInt dimensions, class T>
 #else
-template<std::uint8_t dimensions, class T = GLfloat>
+template<UnsignedInt dimensions, class T = Float>
 #endif
 class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimensions, Animable<dimensions, T>, T> {
     friend class AnimableGroup<dimensions, T>;
@@ -153,7 +153,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
         ~Animable();
 
         /** @brief Animation duration */
-        inline GLfloat duration() const { return _duration; }
+        inline Float duration() const { return _duration; }
 
         /** @brief Animation state */
         inline AnimationState state() const { return currentState; }
@@ -195,7 +195,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
          *
          * @see isRepeated()
          */
-        inline std::uint16_t repeatCount() const { return _repeatCount; }
+        inline UnsignedShort repeatCount() const { return _repeatCount; }
 
         /**
          * @brief Set repeat count
@@ -205,7 +205,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
          * infinitely repeated animation. Default is `0`.
          * @see setRepeated()
          */
-        inline Animable<dimensions, T>* setRepeatCount(std::uint16_t count) {
+        inline Animable<dimensions, T>* setRepeatCount(UnsignedShort count) {
             _repeatCount = count;
             return this;
         }
@@ -227,7 +227,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
          * infinite non-repeating animation. Default is `0.0f`.
          */
         /* Protected so only animation implementer can change it */
-        inline Animable<dimensions, T>* setDuration(GLfloat duration) {
+        inline Animable<dimensions, T>* setDuration(Float duration) {
             _duration = duration;
             return this;
         }
@@ -251,7 +251,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
          *
          * @see state(), duration(), isRepeated(), repeatCount()
          */
-        virtual void animationStep(GLfloat time, GLfloat delta) = 0;
+        virtual void animationStep(Float time, Float delta) = 0;
 
         /**
          * @brief Action on animation start
@@ -313,13 +313,13 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
         inline virtual void animationStopped() {}
 
     private:
-        GLfloat _duration;
-        GLfloat startTime, pauseTime;
+        Float _duration;
+        Float startTime, pauseTime;
         AnimationState previousState;
         AnimationState currentState;
         bool _repeated;
-        std::uint16_t _repeatCount;
-        std::uint16_t repeats;
+        UnsignedShort _repeatCount;
+        UnsignedShort repeats;
 };
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
@@ -332,7 +332,7 @@ information.
 @see Animable3D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = GLfloat>
+template<class T = Float>
 #else
 template<class T>
 #endif
@@ -347,7 +347,7 @@ information.
 @see Animable2D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = GLfloat>
+template<class T = Float>
 #else
 template<class T>
 #endif

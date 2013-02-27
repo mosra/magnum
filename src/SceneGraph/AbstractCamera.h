@@ -32,7 +32,7 @@ namespace Magnum { namespace SceneGraph {
 
 @see AbstractCamera::setAspectRatioPolicy()
 */
-enum class AspectRatioPolicy: std::uint8_t {
+enum class AspectRatioPolicy: UnsignedByte {
     NotPreserved,   /**< Don't preserve aspect ratio (default) */
     Extend,         /**< Extend on larger side of view */
     Clip            /**< Clip on smaller side of view */
@@ -40,7 +40,7 @@ enum class AspectRatioPolicy: std::uint8_t {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    template<std::uint8_t dimensions, class T> typename DimensionTraits<dimensions, T>::MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Vector2i& viewport);
+    template<UnsignedInt dimensions, class T> typename DimensionTraits<dimensions, T>::MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Vector2i& viewport);
 }
 #endif
 
@@ -53,22 +53,22 @@ instantiatable, use Camera2D or Camera3D subclasses instead.
 @section AbstractCamera-explicit-specializations Explicit template specializations
 
 The following specialization are explicitly compiled into SceneGraph library.
-For other specializations (e.g. using `double` type) you have to use
+For other specializations (e.g. using Double type) you have to use
 AbstractCamera.hpp implementation file to avoid linker errors. See also
 relevant sections in
 @ref Camera2D-explicit-specializations "Camera2D" and
 @ref Camera3D-explicit-specializations "Camera3D" class documentation or
 @ref compilation-speedup-hpp for more information.
 
- - @ref AbstractCamera "AbstractCamera<2, GLfloat>"
- - @ref AbstractCamera "AbstractCamera<3, GLfloat>"
+ - @ref AbstractCamera "AbstractCamera<2, Float>"
+ - @ref AbstractCamera "AbstractCamera<3, Float>"
 
 @see @ref scenegraph, Drawable, DrawableGroup, AbstractCamera2D, AbstractCamera3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class T>
+template<UnsignedInt dimensions, class T>
 #else
-template<std::uint8_t dimensions, class T = GLfloat>
+template<UnsignedInt dimensions, class T = Float>
 #endif
 class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions, T> {
     public:
@@ -170,7 +170,7 @@ for more information.
 @see AbstractCamera3D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = GLfloat>
+template<class T = Float>
 #else
 template<class T>
 #endif
@@ -185,7 +185,7 @@ for more information.
 @see AbstractCamera2D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = GLfloat>
+template<class T = Float>
 #else
 template<class T>
 #endif

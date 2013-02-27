@@ -44,9 +44,9 @@ When subclassing, you have to:
 @see @ref scenegraph, AbstractTransformation2D, AbstractTransformation3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class T>
+template<UnsignedInt dimensions, class T>
 #else
-template<std::uint8_t dimensions, class T = GLfloat>
+template<UnsignedInt dimensions, class T = Float>
 #endif
 class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation {
     public:
@@ -54,7 +54,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation {
         typedef T Type;
 
         /** @brief Dimension count */
-        static const std::uint8_t Dimensions = dimensions;
+        static const UnsignedInt Dimensions = dimensions;
 
         explicit AbstractTransformation();
         virtual ~AbstractTransformation() = 0;
@@ -131,7 +131,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation {
 };
 
 /** @brief Transformation type */
-enum class TransformationType: std::uint8_t {
+enum class TransformationType: UnsignedByte {
     /** Global transformation, applied after all other transformations. */
     Global = 0x00,
 
@@ -150,7 +150,7 @@ AbstractTransformation for more information.
 @see AbstractTransformation3D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = GLfloat>
+template<class T = Float>
 #else
 template<class T>
 #endif
@@ -166,7 +166,7 @@ AbstractTransformation for more information.
 @see AbstractTransformation2D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = GLfloat>
+template<class T = Float>
 #else
 template<class T>
 #endif

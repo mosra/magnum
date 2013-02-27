@@ -29,11 +29,11 @@
 
 namespace Magnum { namespace SceneGraph {
 
-template<std::uint8_t dimensions, class T> AbstractObject<dimensions, T>::AbstractObject() {}
-template<std::uint8_t dimensions, class T> AbstractObject<dimensions, T>::~AbstractObject() {}
+template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::AbstractObject() {}
+template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::~AbstractObject() {}
 
-template<std::uint8_t dimensions, class T> inline AbstractTransformation<dimensions, T>::AbstractTransformation() {}
-template<std::uint8_t dimensions, class T> inline AbstractTransformation<dimensions, T>::~AbstractTransformation() {}
+template<UnsignedInt dimensions, class T> inline AbstractTransformation<dimensions, T>::AbstractTransformation() {}
+template<UnsignedInt dimensions, class T> inline AbstractTransformation<dimensions, T>::~AbstractTransformation() {}
 
 template<class Transformation> Scene<Transformation>* Object<Transformation>::scene() {
     return static_cast<Scene<Transformation>*>(sceneObject());

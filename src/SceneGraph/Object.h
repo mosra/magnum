@@ -30,13 +30,13 @@ namespace Magnum { namespace SceneGraph {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    enum class ObjectFlag: std::uint8_t {
+    enum class ObjectFlag: UnsignedByte {
         Dirty = 1 << 0,
         Visited = 1 << 1,
         Joint = 1 << 2
     };
 
-    typedef Corrade::Containers::EnumSet<ObjectFlag, std::uint8_t> ObjectFlags;
+    typedef Corrade::Containers::EnumSet<ObjectFlag, UnsignedByte> ObjectFlags;
 
     CORRADE_ENUMSET_OPERATORS(ObjectFlags)
 }
@@ -68,14 +68,14 @@ for(Object* child = o->firstChild(); child; child = child->nextSibling()) {
 @section Object-explicit-specializations Explicit template specializations
 
 The following specialization are explicitly compiled into SceneGraph library.
-For other specializations (e.g. using `double` type or special transformation
+For other specializations (e.g. using Double type or special transformation
 class) you have to use Object.hpp implementation file to avoid linker errors.
 See @ref compilation-speedup-hpp for more information.
 
- - @ref MatrixTransformation2D "Object<MatrixTransformation2D<GLfloat>>"
- - @ref MatrixTransformation3D "Object<MatrixTransformation3D<GLfloat>>"
- - @ref EuclideanMatrixTransformation2D "Object<EuclideanMatrixTransformation2D<GLfloat>>"
- - @ref EuclideanMatrixTransformation3D "Object<EuclideanMatrixTransformation3D<GLfloat>>"
+ - @ref MatrixTransformation2D "Object<MatrixTransformation2D<Float>>"
+ - @ref MatrixTransformation3D "Object<MatrixTransformation3D<Float>>"
+ - @ref EuclideanMatrixTransformation2D "Object<EuclideanMatrixTransformation2D<Float>>"
+ - @ref EuclideanMatrixTransformation3D "Object<EuclideanMatrixTransformation3D<Float>>"
 
 @see Scene, AbstractFeature, AbstractTransformation, DebugTools::ObjectRenderer
 */
@@ -249,7 +249,7 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
 
         typedef Implementation::ObjectFlag Flag;
         typedef Implementation::ObjectFlags Flags;
-        std::uint16_t counter;
+        UnsignedShort counter;
         Flags flags;
 };
 

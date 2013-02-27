@@ -28,8 +28,8 @@ class SceneTest: public Corrade::TestSuite::Tester {
         void parent();
 };
 
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<GLfloat>> Scene3D;
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<GLfloat>> Object3D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<Float>> Scene3D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<Float>> Object3D;
 
 SceneTest::SceneTest() {
     addTests(&SceneTest::transformation,

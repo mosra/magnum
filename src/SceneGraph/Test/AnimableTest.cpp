@@ -58,7 +58,7 @@ void AnimableTest::state() {
             std::string trackedState;
 
         protected:
-            void animationStep(GLfloat, GLfloat) override {}
+            void animationStep(Float, Float) override {}
 
             void animationStarted() override { trackedState += "started"; }
             void animationPaused() override { trackedState += "paused"; }
@@ -146,11 +146,11 @@ class OneShotAnimable: public SceneGraph::Animable<3> {
             setState(AnimationState::Running);
         }
 
-        GLfloat time;
+        Float time;
         std::string stateChanges;
 
     protected:
-        void animationStep(GLfloat time, GLfloat) override {
+        void animationStep(Float time, Float) override {
             this->time = time;
         }
 
@@ -168,10 +168,10 @@ void AnimableTest::step() {
         public:
             InifiniteAnimable(AbstractObject<3>* object, AnimableGroup<3>* group = nullptr): SceneGraph::Animable<3>(object, group), time(-1.0f), delta(0.0f) {}
 
-            GLfloat time, delta;
+            Float time, delta;
 
         protected:
-            void animationStep(GLfloat time, GLfloat delta) override {
+            void animationStep(Float time, Float delta) override {
                 this->time = time;
                 this->delta = delta;
             }
@@ -231,10 +231,10 @@ void AnimableTest::repeat() {
                 setRepeated(true);
             }
 
-            GLfloat time;
+            Float time;
 
         protected:
-            void animationStep(GLfloat time, GLfloat) override {
+            void animationStep(Float time, Float) override {
                 this->time = time;
             }
     };

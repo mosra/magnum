@@ -34,7 +34,7 @@ Uses Math::Matrix4 as underlying type.
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T>
 #else
-template<class T = GLfloat>
+template<class T = Float>
 #endif
 class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
     public:

@@ -31,7 +31,7 @@ namespace Magnum { namespace SceneGraph {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T>
 #else
-template<class T = GLfloat>
+template<class T = Float>
 #endif
 class AbstractTranslationRotationScaling2D: public AbstractTranslationRotation2D<T> {
     public:

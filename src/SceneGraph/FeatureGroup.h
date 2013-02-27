@@ -34,9 +34,9 @@ See AbstractGroupedFeature for more information.
 @see @ref scenegraph, FeatureGroup2D, FeatureGroup3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class Feature, class T>
+template<UnsignedInt dimensions, class Feature, class T>
 #else
-template<std::uint8_t dimensions, class Feature, class T = GLfloat>
+template<UnsignedInt dimensions, class Feature, class T = Float>
 #endif
 class FeatureGroup {
     friend class AbstractGroupedFeature<dimensions, Feature, T>;
@@ -119,7 +119,7 @@ AbstractGroupedFeature for more information.
 @see FeatureGroup3D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class Feature, class T = GLfloat>
+template<class Feature, class T = Float>
 #else
 template<class Feature, class T>
 #endif
@@ -135,7 +135,7 @@ AbstractGroupedFeature for more information.
 @see FeatureGroup2D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class Feature, class T = GLfloat>
+template<class Feature, class T = Float>
 #else
 template<class Feature, class T>
 #endif

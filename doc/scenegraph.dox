@@ -22,12 +22,12 @@ main components:
 
 Transformation handles object position, rotation etc. and its basic property
 is dimension count (2D or 3D) and underlying floating-point type (by default
-`float`s are used everywhere, but you can use `double`s too).
+@ref Float type is used everywhere, but you can use @ref Double too).
 
-@note All classes in SceneGraph have `GLfloat` as default underlying
-    floating-point type, which means that you can omit that template parameter
-    and write just <tt>%AbstractObject<2></tt> or <tt>%MatrixTransformation3D<></tt>
-    instead of <tt>%AbstractObject<2, GLfloat></tt> and <tt>%MatrixTransformation3D&lt;GLfloat&gt;</tt>.
+@note All classes in SceneGraph have Float as default underlying floating-point
+    type, which means that you can omit that template parameter and write just
+    <tt>%AbstractObject<2></tt> or <tt>%MatrixTransformation3D<></tt> instead of
+    <tt>%AbstractObject<2, Float></tt> and <tt>%MatrixTransformation3D&lt;Float&gt;</tt>.
 
 %Scene graph has implementation of transformations in both 2D and 3D, using
 either matrices or combination of position and rotation. Each implementation

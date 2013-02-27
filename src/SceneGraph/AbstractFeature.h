@@ -28,12 +28,12 @@ namespace Magnum { namespace SceneGraph {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    enum class FeatureCachedTransformation: std::uint8_t {
+    enum class FeatureCachedTransformation: UnsignedByte {
         Absolute = 1 << 0,
         InvertedAbsolute = 1 << 1
     };
 
-    typedef Corrade::Containers::EnumSet<FeatureCachedTransformation, std::uint8_t> FeatureCachedTransformations;
+    typedef Corrade::Containers::EnumSet<FeatureCachedTransformation, UnsignedByte> FeatureCachedTransformations;
 
     CORRADE_ENUMSET_OPERATORS(FeatureCachedTransformations)
 }
@@ -118,9 +118,9 @@ which is automatically extracted from the pointer in our constructor.
 @see AbstractFeature2D, AbstractFeature3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class T> class AbstractFeature: private Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>
+template<UnsignedInt dimensions, class T> class AbstractFeature: private Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>
 #else
-template<std::uint8_t dimensions, class T = GLfloat> class AbstractFeature
+template<UnsignedInt dimensions, class T = Float> class AbstractFeature
 #endif
 {
     friend class Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>;
@@ -186,7 +186,7 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractFeature
         #ifndef DOXYGEN_GENERATING_OUTPUT
         typedef Implementation::FeatureCachedTransformation CachedTransformation;
         #else
-        enum class CachedTransformation: std::uint8_t {
+        enum class CachedTransformation: UnsignedByte {
             /**
              * Absolute transformation is cached.
              *
@@ -212,7 +212,7 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractFeature
         #ifndef DOXYGEN_GENERATING_OUTPUT
         typedef Implementation::FeatureCachedTransformations CachedTransformations;
         #else
-        typedef Corrade::Containers::EnumSet<CachedTransformation, std::uint8_t> CachedTransformations;
+        typedef Corrade::Containers::EnumSet<CachedTransformation, UnsignedByte> CachedTransformations;
         #endif
 
         /**
@@ -280,9 +280,9 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractFeature
         CachedTransformations _cachedTransformations;
 };
 
-template<std::uint8_t dimensions, class T> inline AbstractFeature<dimensions, T>::~AbstractFeature() {}
-template<std::uint8_t dimensions, class T> inline void AbstractFeature<dimensions, T>::clean(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
-template<std::uint8_t dimensions, class T> inline void AbstractFeature<dimensions, T>::cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
+template<UnsignedInt dimensions, class T> inline AbstractFeature<dimensions, T>::~AbstractFeature() {}
+template<UnsignedInt dimensions, class T> inline void AbstractFeature<dimensions, T>::clean(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
+template<UnsignedInt dimensions, class T> inline void AbstractFeature<dimensions, T>::cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**
@@ -294,7 +294,7 @@ for more information.
 @see AbstractFeature3D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = GLfloat>
+template<class T = Float>
 #else
 template<class T>
 #endif
@@ -309,7 +309,7 @@ for more information.
 @see AbstractFeature2D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = GLfloat>
+template<class T = Float>
 #else
 template<class T>
 #endif

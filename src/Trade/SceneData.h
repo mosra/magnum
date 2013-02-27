@@ -22,6 +22,8 @@
 #include <string>
 #include <vector>
 
+#include "Types.h"
+
 namespace Magnum { namespace Trade {
 
 /**

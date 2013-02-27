@@ -108,9 +108,9 @@ void MyApplication::drawEvent() {
 @see @ref scenegraph, Drawable2D, Drawable3D, DrawableGroup2D, DrawableGroup3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class T>
+template<UnsignedInt dimensions, class T>
 #else
-template<std::uint8_t dimensions, class T = GLfloat>
+template<UnsignedInt dimensions, class T = Float>
 #endif
 class Drawable: public AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T> {
     public:
@@ -145,7 +145,7 @@ information.
 @see Drawable3D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = GLfloat>
+template<class T = Float>
 #else
 template<class T>
 #endif
@@ -160,7 +160,7 @@ information.
 @see Drawable2D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = GLfloat>
+template<class T = Float>
 #else
 template<class T>
 #endif
@@ -175,16 +175,16 @@ See Drawable for more information.
 */
 #ifndef CORRADE_GCC46_COMPATIBILITY
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class T = GLfloat>
+template<UnsignedInt dimensions, class T = Float>
 #else
-template<std::uint8_t dimensions, class T>
+template<UnsignedInt dimensions, class T>
 #endif
 using DrawableGroup = FeatureGroup<dimensions, Drawable<dimensions, T>, T>;
 #else
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class T = GLfloat>
+template<UnsignedInt dimensions, class T = Float>
 #else
-template<std::uint8_t dimensions, class T>
+template<UnsignedInt dimensions, class T>
 #endif
 class DrawableGroup: public FeatureGroup<dimensions, Drawable<dimensions, T>, T> {};
 #endif
@@ -199,7 +199,7 @@ more information.
 @see DrawableGroup3D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = GLfloat>
+template<class T = Float>
 #else
 template<class T>
 #endif
@@ -214,7 +214,7 @@ more information.
 @see DrawableGroup2D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = GLfloat>
+template<class T = Float>
 #else
 template<class T>
 #endif

@@ -48,9 +48,9 @@ for(AbstractFeature* feature = o->firstFeature(); feature; feature = feature->ne
 @see AbstractObject2D, AbstractObject3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractObject: private Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractObject: private Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>
 #else
-template<std::uint8_t dimensions, class T = GLfloat> class AbstractObject
+template<UnsignedInt dimensions, class T = Float> class AbstractObject
 #endif
 {
     friend class Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>;
@@ -198,7 +198,7 @@ for more information.
 @see AbstractObject3D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = GLfloat>
+template<class T = Float>
 #else
 template<class T>
 #endif
@@ -213,7 +213,7 @@ for more information.
 @see AbstractObject2D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = GLfloat>
+template<class T = Float>
 #else
 template<class T>
 #endif

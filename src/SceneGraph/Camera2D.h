@@ -38,18 +38,18 @@ camera->setProjection({4.0f/3.0f, 1.0f})
 @section Camera2D-explicit-specializations Explicit template specializations
 
 The following specialization are explicitly compiled into SceneGraph library.
-For other specializations (e.g. using `double` type) you have to use
+For other specializations (e.g. using Double type) you have to use
 Camera2D.hpp implementation file to avoid linker errors. See
 @ref compilation-speedup-hpp for more information.
 
- - @ref Camera2D "Camera2D<GLfloat>"
+ - @ref Camera2D "Camera2D<Float>"
 
 @see @ref scenegraph, Camera3D, Drawable, DrawableGroup
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T>
 #else
-template<class T = GLfloat>
+template<class T = Float>
 #endif
 class MAGNUM_SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2, T> {
     public:
