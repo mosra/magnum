@@ -30,7 +30,7 @@ namespace Magnum { namespace Math {
 @tparam T   Underlying data type
 
 Represents 2D rotation and translation.
-@see Dual, Complex, Matrix3
+@see Magnum::DualComplex, Dual, Complex, Matrix3
 @todo Can this be done similarly as in dual quaternions? It sort of works, but
     the math beneath is weird.
 */

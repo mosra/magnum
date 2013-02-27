@@ -120,6 +120,9 @@ typedef Math::Matrix4<GLdouble> Matrix4d;
 /** @brief %Complex number */
 typedef Math::Complex<GLfloat> Complex;
 
+/** @brief %Dual complex number */
+typedef Math::DualComplex<GLfloat> DualComplex;
+
 /** @brief %Quaternion */
 typedef Math::Quaternion<GLfloat> Quaternion;
 
