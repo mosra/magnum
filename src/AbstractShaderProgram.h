@@ -219,53 +219,29 @@ mesh.draw();
 
 @section AbstractShaderProgram-types Mapping between GLSL and Magnum types
 
-- `vec2`, `vec3` and `vec4` is @ref Math::Vector "Math::Vector<2, GLfloat>",
-  @ref Math::Vector "Math::Vector<3, GLfloat>" and
-  @ref Math::Vector "Math::Vector<4, GLfloat>".
+See @ref types for more information, only types with GLSL equivalent can be used
+(and their super- or subclasses with the same size and underlying type).
 
-- `mat2`, `mat3` and `mat4` is @ref Math::Matrix "Math::Matrix<2, GLfloat>",
-  @ref Math::Matrix "Math::Matrix<3, GLfloat>" and
-  @ref Math::Matrix "Math::Matrix<4, GLfloat>".
-
-- `mat2x3`, `mat3x2`, `mat2x4`, `mat4x2`, `mat3x4`, `mat4x3` is
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<2, 3, GLfloat>",
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<3, 2, GLfloat>",
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<2, 4, GLfloat>",
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<4, 2, GLfloat>",
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<3, 4, GLfloat>" and
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<4, 3, GLfloat>".
-
-- `ivec2`, `ivec3` and `ivec4` is @ref Math::Vector "Math::Vector<2, GLint>",
-  @ref Math::Vector "Math::Vector<3, GLint>" and
-  @ref Math::Vector "Math::Vector<4, GLint>", `uvec2`, `uvec3` and `uvec4` is
-  @ref Math::Vector "Math::Vector<2, GLuint>",
-  @ref Math::Vector "Math::Vector<3, GLuint>" and
-  @ref Math::Vector "Math::Vector<4, GLuint>".
-  @requires_gl30 %Extension @extension{EXT,gpu_shader4} (for integer attributes
-    and unsigned integer uniforms)
-  @requires_gles30 Integer attributes and unsigned integer uniforms are not
+@requires_gl30 %Extension @extension{EXT,gpu_shader4} is required when using
+    integer attributes (i.e. UnsignedInt, Int, Vector2ui, Vector2i, Vector3ui,
+    Vector3i, Vector4ui and Vector4i) or unsigned integer uniforms. (i.e.
+    UnsignedInt, Vector2ui, Vector3ui and Vector4ui).
+@requires_gles30 Integer attributes and unsigned integer uniforms are not
     available in OpenGL ES 2.0.
 
-- `dvec2`, `dvec3` and `dvec4` is @ref Math::Vector "Math::Vector<2, GLdouble>",
-  @ref Math::Vector "Math::Vector<3, GLdouble>" and
-  @ref Math::Vector "Math::Vector<4, GLdouble>", `dmat2`, `dmat3` and `dmat4`
-  is @ref Math::Matrix "Math::Matrix<2, GLdouble>",
-  @ref Math::Matrix "Math::Matrix<3, GLdouble>" and
-  @ref Math::Matrix "Math::Matrix<4, GLdouble>", `dmat2x3`, `dmat3x2`,
-  `dmat2x4`, `dmat4x2`, `dmat3x4`, `dmat4x3` is
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<2, 3, GLdouble>",
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<3, 2, GLdouble>",
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<2, 4, GLdouble>",
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<4, 2, GLdouble>",
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<3, 4, GLdouble>" and
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<4, 3, GLdouble>".
-  @requires_gl41 %Extension @extension{ARB,vertex_attrib_64bit} (for double
-    attributes)
-  @requires_gl Double attributes are not available in OpenGL ES.
+@requires_gl40 %Extension @extension{ARB,gpu_shader_fp64} is required when
+    using double uniforms (i.e. Double, Vector2d, Vector3d, Vector4d, Matrix2d,
+    Matrix3d, Matrix4d, Matrix2x3d, Matrix3x2d, Matrix2x4d, Matrix4x2d,
+    Matrix3x4d and Matrix4x3d).
+@requires_gl41 %Extension @extension{ARB,vertex_attrib_64bit} is required when
+    using double attributes (i.e. Double, Vector2d, Vector3d, Vector4d, Matrix2d,
+    Matrix3d, Matrix4d, Matrix2x3d, Matrix3x2d, Matrix2x4d, Matrix4x2d,
+    Matrix3x4d and Matrix4x3d).
+@requires_gl Double attributes and uniforms are not available in OpenGL ES.
 
-Only types listed here (and their subclasses and specializations, such as
-@ref Matrix3 or Color4) can be used for setting uniforms and specifying
-vertex attributes.
+@requires_gles30 Non-square matrix attributes and uniforms (i.e. Matrix2x3,
+    Matrix3x2, Matrix2x4, Matrix4x2, Matrix3x4 and Matrix4x3) are not available
+    in OpenGL ES 2.0.
 
 @section AbstractShaderProgram-performance-optimization Performance optimizations
 

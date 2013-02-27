@@ -19,10 +19,10 @@
  * @brief Basic definitions and forward declarations for Magnum namespace
  */
 
-#include <cstdint>
 #include <corradeConfigure.h>
 
 #include "Math/Math.h"
+#include "Types.h"
 
 #include "magnumConfigure.h"
 
@@ -53,10 +53,10 @@ namespace Magnum {
 namespace Math {
     template<class T> struct Constants;
 
-    constexpr Rad<double> operator "" _rad(long double);
-    constexpr Rad<float> operator "" _radf(long double);
-    constexpr Deg<double> operator "" _deg(long double);
-    constexpr Deg<float> operator "" _degf(long double);
+    constexpr Rad<Double> operator "" _rad(long double);
+    constexpr Rad<Float> operator "" _radf(long double);
+    constexpr Deg<Double> operator "" _deg(long double);
+    constexpr Deg<Float> operator "" _degf(long double);
 }
 
 /* Bring debugging facility from Corrade::Utility namespace */
@@ -65,85 +65,193 @@ using Corrade::Utility::Warning;
 using Corrade::Utility::Error;
 #endif
 
+/** @{ @name Basic type definitions
+
+See @ref types for more information.
+*/
+
+/** @brief Unsigned byte (8bit) */
+typedef std::uint8_t UnsignedByte;
+
+/** @brief Signed byte (8bit) */
+typedef std::int8_t Byte;
+
+/** @brief Unsigned short (16bit) */
+typedef std::uint16_t UnsignedShort;
+
+/** @brief Signed short (16bit) */
+typedef std::int16_t Short;
+
+/** @brief Unsigned int (32bit) */
+typedef std::uint32_t UnsignedInt;
+
+/** @brief Signed int (32bit) */
+typedef std::int32_t Int;
+
+/** @brief Unsigned long (64bit) */
+typedef std::uint64_t UnsignedLong;
+
+/** @brief Signed long (64bit) */
+typedef std::int64_t Long;
+
+/** @brief Float (32bit) */
+typedef float Float;
+
 /** @brief Two-component float vector */
-typedef Math::Vector2<GLfloat> Vector2;
+typedef Math::Vector2<Float> Vector2;
 
 /** @brief Three-component float vector */
-typedef Math::Vector3<GLfloat> Vector3;
+typedef Math::Vector3<Float> Vector3;
 
 /** @brief Four-component float vector */
-typedef Math::Vector4<GLfloat> Vector4;
-
-/** @brief Two-component signed integer vector */
-typedef Math::Vector2<GLint> Vector2i;
-
-/** @brief Three-component signed integer vector */
-typedef Math::Vector3<GLint> Vector3i;
-
-/** @brief Four-component signed integer vector */
-typedef Math::Vector4<GLint> Vector4i;
+typedef Math::Vector4<Float> Vector4;
 
 /** @brief Two-component unsigned integer vector */
-typedef Math::Vector2<GLuint> Vector2ui;
+typedef Math::Vector2<UnsignedInt> Vector2ui;
 
 /** @brief Three-component unsigned integer vector */
-typedef Math::Vector3<GLuint> Vector3ui;
+typedef Math::Vector3<UnsignedInt> Vector3ui;
 
 /** @brief Four-component unsigned integer vector */
-typedef Math::Vector4<GLuint> Vector4ui;
+typedef Math::Vector4<UnsignedInt> Vector4ui;
 
-#ifndef MAGNUM_TARGET_GLES
-/** @brief Two-component double vector */
-typedef Math::Vector2<GLdouble> Vector2d;
+/** @brief Two-component signed integer vector */
+typedef Math::Vector2<Int> Vector2i;
 
-/** @brief Three-component double vector */
-typedef Math::Vector3<GLdouble> Vector3d;
+/** @brief Three-component signed integer vector */
+typedef Math::Vector3<Int> Vector3i;
 
-/** @brief Four-component double vector */
-typedef Math::Vector4<GLdouble> Vector4d;
-#endif
+/** @brief Four-component signed integer vector */
+typedef Math::Vector4<Int> Vector4i;
+
+/** @brief 2x2 float matrix */
+typedef Math::Matrix<2, Float> Matrix2;
 
 /** @brief 3x3 float matrix */
-typedef Math::Matrix3<GLfloat> Matrix3;
+typedef Math::Matrix3<Float> Matrix3;
 
 /** @brief 4x4 float matrix */
-typedef Math::Matrix4<GLfloat> Matrix4;
+typedef Math::Matrix4<Float> Matrix4;
+
+/** @brief Float matrix with 2 columns and 3 rows */
+typedef Math::RectangularMatrix<2, 3, Float> Matrix2x3;
+
+/** @brief Float matrix with 3 columns and 2 rows */
+typedef Math::RectangularMatrix<3, 2, Float> Matrix3x2;
+
+/** @brief Float matrix with 2 columns and 4 rows */
+typedef Math::RectangularMatrix<2, 4, Float> Matrix2x4;
+
+/** @brief Float matrix with 4 columns and 2 rows */
+typedef Math::RectangularMatrix<4, 2, Float> Matrix4x2;
+
+/** @brief Float matrix with 3 columns and 4 rows */
+typedef Math::RectangularMatrix<3, 4, Float> Matrix3x4;
+
+/** @brief Float matrix with 4 columns and 3 rows */
+typedef Math::RectangularMatrix<4, 3, Float> Matrix4x3;
+
+/** @brief Float complex number */
+typedef Math::Complex<Float> Complex;
+
+/** @brief Float dual complex number */
+typedef Math::DualComplex<Float> DualComplex;
+
+/** @brief Float quaternion */
+typedef Math::Quaternion<Float> Quaternion;
+
+/** @brief Float dual quaternion */
+typedef Math::DualQuaternion<Float> DualQuaternion;
+
+/** @brief Float constants */
+typedef Math::Constants<Float> Constants;
+
+/** @brief Angle in float degrees */
+typedef Math::Deg<Float> Deg;
+
+/** @brief Angle in float radians */
+typedef Math::Rad<Float> Rad;
+
+/** @brief Float rectangle */
+typedef Math::Geometry::Rectangle<Float> Rectangle;
+
+/** @brief Signed integer rectangle */
+typedef Math::Geometry::Rectangle<Int> Rectanglei;
+
+/*@}*/
 
 #ifndef MAGNUM_TARGET_GLES
+/** @{ @name Double-precision types
+
+See @ref types for more information.
+@requires_gl Only single-precision types are available in OpenGL ES.
+*/
+
+/** @brief Double (64bit) */
+typedef double Double;
+
+/** @brief Two-component double vector */
+typedef Math::Vector2<Double> Vector2d;
+
+/** @brief Three-component double vector */
+typedef Math::Vector3<Double> Vector3d;
+
+/** @brief Four-component double vector */
+typedef Math::Vector4<Double> Vector4d;
+
+/** @brief 2x2 double matrix */
+typedef Math::Matrix<2, Double> Matrix2d;
+
 /** @brief 3x3 double matrix */
-typedef Math::Matrix3<GLdouble> Matrix3d;
+typedef Math::Matrix3<Double> Matrix3d;
 
 /** @brief 4x4 double matrix */
-typedef Math::Matrix4<GLdouble> Matrix4d;
+typedef Math::Matrix4<Double> Matrix4d;
+
+/** @brief Double matrix with 2 columns and 3 rows */
+typedef Math::RectangularMatrix<2, 3, Double> Matrix2x3d;
+
+/** @brief Double matrix with 3 columns and 2 rows */
+typedef Math::RectangularMatrix<3, 2, Double> Matrix3x2d;
+
+/** @brief Double matrix with 2 columns and 4 rows */
+typedef Math::RectangularMatrix<2, 4, Double> Matrix2x4d;
+
+/** @brief Double matrix with 4 columns and 2 rows */
+typedef Math::RectangularMatrix<4, 2, Double> Matrix4x2d;
+
+/** @brief Double matrix with 3 columns and 4 rows */
+typedef Math::RectangularMatrix<3, 4, Double> Matrix3x4d;
+
+/** @brief Double matrix with 4 columns and 3 rows */
+typedef Math::RectangularMatrix<4, 3, Double> Matrix4x3d;
+
+/** @brief Double complex number */
+typedef Math::Complex<Double> Complexd;
+
+/** @brief Double dual complex number */
+typedef Math::DualComplex<Double> DualComplexd;
+
+/** @brief Double quaternion */
+typedef Math::Quaternion<Double> Quaterniond;
+
+/** @brief Double dual quaternion */
+typedef Math::DualQuaternion<Double> DualQuaterniond;
+
+/** @brief Double constants */
+typedef Math::Constants<Double> Constantsd;
+
+/** @brief Angle in double degrees */
+typedef Math::Deg<Double> Degd;
+
+/** @brief Angle in double radians */
+typedef Math::Rad<Double> Radd;
+
+/** @brief Double rectangle */
+typedef Math::Geometry::Rectangle<Double> Rectangled;
+
+/*@}*/
 #endif
-
-/** @brief %Complex number */
-typedef Math::Complex<GLfloat> Complex;
-
-/** @brief %Dual complex number */
-typedef Math::DualComplex<GLfloat> DualComplex;
-
-/** @brief %Quaternion */
-typedef Math::Quaternion<GLfloat> Quaternion;
-
-/** @brief %Dual quaternion */
-typedef Math::DualQuaternion<GLfloat> DualQuaternion;
-
-/** @brief Floating-point constants */
-/* Using float instead of GLfloat to not break KDevelop autocompletion */
-typedef Math::Constants<float> Constants;
-
-/** @brief Angle in single-precision degrees */
-typedef Math::Deg<float> Deg;
-
-/** @brief Angle in single-precision radians */
-typedef Math::Rad<float> Rad;
-
-/** @brief Floating-point rectangle */
-typedef Math::Geometry::Rectangle<GLfloat> Rectangle;
-
-/** @brief Integer rectangle */
-typedef Math::Geometry::Rectangle<GLint> Rectanglei;
 
 /* Using angle literals from Math namespace */
 using Math::operator "" _deg;

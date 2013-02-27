@@ -78,6 +78,7 @@ set(Magnum_HEADERS
     Swizzle.h
     Texture.h
     Timeline.h
+    Types.h
 
     magnumVisibility.h)
 
