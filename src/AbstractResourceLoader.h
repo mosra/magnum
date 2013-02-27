@@ -19,8 +19,6 @@
  * @brief Class Magnum::AbstractResourceLoader
  */
 
-#include "Magnum.h"
-
 #include <string>
 
 #include "ResourceManager.h"

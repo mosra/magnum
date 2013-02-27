@@ -22,7 +22,8 @@
 #include <Containers/EnumSet.h>
 #include <Containers/LinkedList.h>
 
-#include "AbstractObject.h"
+#include "Magnum.h"
+#include "SceneGraph/AbstractObject.h"
 
 namespace Magnum { namespace SceneGraph {
 

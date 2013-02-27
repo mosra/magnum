@@ -17,7 +17,7 @@
 
 #include <chrono>
 
-#include "Magnum.h"
+#include "Types.h"
 
 #include "magnumVisibility.h"
 

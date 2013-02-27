@@ -19,7 +19,6 @@
  * @brief Function Magnum::MeshTools::flipNormals()
  */
 
-#include <cstdint>
 #include <vector>
 
 #include "Magnum.h"

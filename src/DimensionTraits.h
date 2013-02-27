@@ -15,7 +15,8 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Magnum.h"
+#include "Math/Math.h"
+#include "Types.h"
 
 /** @file
  * @brief Class Magnum::DimensionTraits

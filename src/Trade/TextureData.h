@@ -19,8 +19,6 @@
  * @brief Class Magnum::Trade::TextureData
  */
 
-#include <string>
-
 namespace Magnum { namespace Trade {
 
 /**

@@ -16,7 +16,6 @@
 #include <sstream>
 #include <TestSuite/Tester.h>
 
-#include "Magnum.h"
 #include "MeshTools/Clean.h"
 #include "MeshTools/Subdivide.h"
 

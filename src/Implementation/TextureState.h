@@ -15,6 +15,8 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#include <vector>
+
 #include "Magnum.h"
 
 namespace Magnum { namespace Implementation {

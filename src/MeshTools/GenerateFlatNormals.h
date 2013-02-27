@@ -19,7 +19,6 @@
  * @brief Function Magnum::MeshTools::generateFlatNormals()
  */
 
-#include <cstdint>
 #include <tuple>
 #include <vector>
 

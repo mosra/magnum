@@ -19,7 +19,6 @@
  * @brief Class Magnum::Array, Magnum::Array1D, Magnum::Array2D, Magnum::Array3D
  */
 
-#include <cstdint>
 #include <type_traits>
 #include <Utility/Debug.h>
 

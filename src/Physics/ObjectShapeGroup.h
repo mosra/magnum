@@ -19,7 +19,6 @@
  * @brief Class Magnum::Physics::ObjectShapeGroup
  */
 
-#include <cstdint>
 #include <vector>
 
 #include "Physics/ObjectShape.h"

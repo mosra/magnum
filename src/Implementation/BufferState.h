@@ -15,8 +15,6 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Magnum.h"
-
 #include "Buffer.h"
 
 namespace Magnum { namespace Implementation {
