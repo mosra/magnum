@@ -73,7 +73,7 @@ class MAGNUM_TEXT_EXPORT Font {
          * @param fontFile      %Font file
          * @param size          %Font size
          */
-        explicit Font(FontRenderer& renderer, const std::string& fontFile, GLfloat size);
+        explicit Font(FontRenderer& renderer, const std::string& fontFile, Float size);
 
         /**
          * @brief Create font from memory
@@ -82,7 +82,7 @@ class MAGNUM_TEXT_EXPORT Font {
          * @param dataSize      %Font data size
          * @param size          %Font size
          */
-        explicit Font(FontRenderer& renderer, const unsigned char* data, std::size_t dataSize, GLfloat size);
+        explicit Font(FontRenderer& renderer, const unsigned char* data, std::size_t dataSize, Float size);
 
         /**
          * @brief Prerender given character set
@@ -105,7 +105,7 @@ class MAGNUM_TEXT_EXPORT Font {
         Font& operator=(Font&& other);
 
         /** @brief %Font size */
-        inline GLfloat size() const { return _size; }
+        inline Float size() const { return _size; }
 
         /** @brief Count of prerendered glyphs in the font */
         inline std::size_t glyphCount() const { return glyphs.size(); }
@@ -117,7 +117,7 @@ class MAGNUM_TEXT_EXPORT Font {
          * First returned rectangle is texture position relative to point on
          * baseline, second is position of the texture in texture atlas.
          */
-        const std::tuple<Rectangle, Rectangle>& operator[](std::uint32_t character) const;
+        const std::tuple<Rectangle, Rectangle>& operator[](char32_t character) const;
 
         /** @brief %Font texture atlas */
         inline Texture2D& texture() { return _texture; }
@@ -134,10 +134,10 @@ class MAGNUM_TEXT_EXPORT Font {
         void MAGNUM_TEXT_LOCAL destroy();
         void MAGNUM_TEXT_LOCAL move();
 
-        std::unordered_map<std::uint32_t, std::tuple<Rectangle, Rectangle>> glyphs;
+        std::unordered_map<char32_t, std::tuple<Rectangle, Rectangle>> glyphs;
         Texture2D _texture;
         FT_Face _ftFont;
-        GLfloat _size;
+        Float _size;
         #ifdef MAGNUM_USE_HARFBUZZ
         hb_font_t* _hbFont;
         #endif

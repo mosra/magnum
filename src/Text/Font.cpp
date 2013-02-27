@@ -29,13 +29,13 @@
 
 namespace Magnum { namespace Text {
 
-Font::Font(FontRenderer& renderer, const std::string& fontFile, GLfloat size): _size(size) {
+Font::Font(FontRenderer& renderer, const std::string& fontFile, Float size): _size(size) {
     CORRADE_INTERNAL_ASSERT_OUTPUT(FT_New_Face(renderer.library(), fontFile.c_str(), 0, &_ftFont) == 0);
 
     finishConstruction();
 }
 
-Font::Font(FontRenderer& renderer, const unsigned char* data, std::size_t dataSize, GLfloat size): _size(size) {
+Font::Font(FontRenderer& renderer, const unsigned char* data, std::size_t dataSize, Float size): _size(size) {
     CORRADE_INTERNAL_ASSERT_OUTPUT(FT_New_Memory_Face(renderer.library(), data, dataSize, 0, &_ftFont) == 0);
 
     finishConstruction();
@@ -71,7 +71,7 @@ void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
     charIndices.reserve(characters.size()+1);
     charIndices.push_back(0);
     for(std::size_t i = 0; i != characters.size(); ) {
-        std::uint32_t codepoint;
+        UnsignedInt codepoint;
         std::tie(codepoint, i) = Corrade::Utility::Unicode::nextChar(characters, i);
         charIndices.push_back(FT_Get_Char_Index(_ftFont, codepoint));
     }
@@ -106,8 +106,8 @@ void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
         const FT_Bitmap& bitmap = glyph->bitmap;
         CORRADE_INTERNAL_ASSERT(std::abs(bitmap.width-charPositions[i].width()) <= 2);
         CORRADE_INTERNAL_ASSERT(std::abs(bitmap.rows-charPositions[i].height()) <= 2);
-        for(std::int32_t yin = 0, yout = charPositions[i].bottom(), ymax = bitmap.rows; yin != ymax; ++yin, ++yout)
-            for(std::int32_t xin = 0, xout = charPositions[i].left(), xmax = bitmap.width; xin != xmax; ++xin, ++xout)
+        for(Int yin = 0, yout = charPositions[i].bottom(), ymax = bitmap.rows; yin != ymax; ++yin, ++yout)
+            for(Int xin = 0, xout = charPositions[i].left(), xmax = bitmap.width; xin != xmax; ++xin, ++xout)
                 pixmap[yout*atlasSize.x() + xout] = bitmap.buffer[(bitmap.rows-yin-1)*bitmap.width + xin];
 
         /* Save character texture position and texture coordinates for given character index */
@@ -168,7 +168,7 @@ Font& Font::operator=(Font&& other) {
     return *this;
 }
 
-const std::tuple<Rectangle, Rectangle>& Font::operator[](std::uint32_t character) const {
+const std::tuple<Rectangle, Rectangle>& Font::operator[](char32_t character) const {
     auto it = glyphs.find(character);
 
     if(it == glyphs.end())

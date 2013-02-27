@@ -19,14 +19,14 @@
  * @brief Forward declarations for Magnum::Text namespace
  */
 
-#include <cstdint>
+#include "Types.h"
 
 namespace Magnum { namespace Text {
 
 class Font;
 class FontRenderer;
 
-template<std::uint8_t> class TextRenderer;
+template<UnsignedInt> class TextRenderer;
 typedef TextRenderer<2> TextRenderer2D;
 typedef TextRenderer<3> TextRenderer3D;
 

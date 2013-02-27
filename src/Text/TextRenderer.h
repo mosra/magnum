@@ -64,8 +64,8 @@ shader.setTransformationProjectionMatrix(projection*Matrix3::translation(-rectan
 font.texture()->bind(Shaders::TextShader2D::FontTextureLayer);
 mesh.draw();
 @endcode
-See render(Font&, GLfloat, const std::string&) and
-render(Font&, GLfloat, const std::string&, Buffer*, Buffer*, Buffer::Usage)
+See render(Font&, Float, const std::string&) and
+render(Font&, Float, const std::string&, Buffer*, Buffer*, Buffer::Usage)
 for more information.
 
 While this method is sufficient for one-shot rendering of static texts, for
@@ -98,7 +98,7 @@ for asynchronous buffer updates.
 
 @see TextRenderer2D, TextRenderer3D, Font, Shaders::AbstractTextShader
 */
-template<std::uint8_t dimensions> class MAGNUM_TEXT_EXPORT TextRenderer {
+template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT TextRenderer {
     public:
         /**
          * @brief Render text
@@ -109,7 +109,7 @@ template<std::uint8_t dimensions> class MAGNUM_TEXT_EXPORT TextRenderer {
          * Returns tuple with vertex positions, texture coordinates, indices
          * and rectangle spanning the rendered text.
          */
-        static std::tuple<std::vector<typename DimensionTraits<dimensions>::VectorType>, std::vector<Vector2>, std::vector<std::uint32_t>, Rectangle> render(Font& font, GLfloat size, const std::string& text);
+        static std::tuple<std::vector<typename DimensionTraits<dimensions>::VectorType>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> render(Font& font, Float size, const std::string& text);
 
         /**
          * @brief Render text
@@ -123,21 +123,21 @@ template<std::uint8_t dimensions> class MAGNUM_TEXT_EXPORT TextRenderer {
          * Returns mesh prepared for use with Shaders::AbstractTextShader
          * subclasses and rectangle spanning the rendered text.
          */
-        static std::tuple<Mesh, Rectangle> render(Font& font, GLfloat size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
+        static std::tuple<Mesh, Rectangle> render(Font& font, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
 
         /**
          * @brief Constructor
          * @param font          %Font to use
          * @param size          %Font size
          */
-        TextRenderer(Font& font, GLfloat size);
+        TextRenderer(Font& font, Float size);
 
         /**
          * @brief Capacity for rendered glyphs
          *
          * @see reserve()
          */
-        inline std::uint32_t capacity() const { return _capacity; }
+        inline UnsignedInt capacity() const { return _capacity; }
 
         /** @brief Rectangle spanning the rendered text */
         inline Rectangle rectangle() const { return _rectangle; }
@@ -157,7 +157,7 @@ template<std::uint8_t dimensions> class MAGNUM_TEXT_EXPORT TextRenderer {
          * Initially zero capacity is reserved.
          * @see capacity()
          */
-        void reserve(const std::uint32_t glyphCount, const Buffer::Usage vertexBufferUsage, const Buffer::Usage indexBufferUsage);
+        void reserve(const UnsignedInt glyphCount, const Buffer::Usage vertexBufferUsage, const Buffer::Usage indexBufferUsage);
 
         /**
          * @brief Render text
@@ -174,8 +174,8 @@ template<std::uint8_t dimensions> class MAGNUM_TEXT_EXPORT TextRenderer {
 
     private:
         Font& font;
-        GLfloat size;
-        std::uint32_t _capacity;
+        Float size;
+        UnsignedInt _capacity;
         Rectangle _rectangle;
         Buffer vertexBuffer, indexBuffer;
         Mesh _mesh;

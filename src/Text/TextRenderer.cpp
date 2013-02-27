@@ -36,11 +36,11 @@ namespace {
 
 class TextLayouter {
     public:
-        TextLayouter(Font& font, const GLfloat size, const std::string& text);
+        TextLayouter(Font& font, const Float size, const std::string& text);
 
         ~TextLayouter();
 
-        inline std::uint32_t glyphCount() {
+        inline UnsignedInt glyphCount() {
             #ifdef MAGNUM_USE_HARFBUZZ
             return _glyphCount;
             #else
@@ -48,7 +48,7 @@ class TextLayouter {
             #endif
         }
 
-        std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(const Vector2& cursorPosition, const std::uint32_t i);
+        std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(const Vector2& cursorPosition, const UnsignedInt i);
 
     private:
         #ifdef MAGNUM_USE_HARFBUZZ
@@ -56,16 +56,16 @@ class TextLayouter {
         hb_buffer_t* buffer;
         hb_glyph_info_t* glyphInfo;
         hb_glyph_position_t* glyphPositions;
-        std::uint32_t _glyphCount;
+        UnsignedInt _glyphCount;
         #else
         Font& font;
         std::vector<FT_UInt> glyphs;
         #endif
 
-        const GLfloat size;
+        const Float size;
 };
 
-TextLayouter::TextLayouter(Font& font, const GLfloat size, const std::string& text): font(font), size(size) {
+TextLayouter::TextLayouter(Font& font, const Float size, const std::string& text): font(font), size(size) {
     #ifdef MAGNUM_USE_HARFBUZZ
     /* Prepare HarfBuzz buffer */
     buffer = hb_buffer_create();
@@ -83,7 +83,7 @@ TextLayouter::TextLayouter(Font& font, const GLfloat size, const std::string& te
     /* Get glyph codes from characters */
     glyphs.reserve(text.size()+1);
     for(std::size_t i = 0; i != text.size(); ) {
-        std::uint32_t codepoint;
+        UnsignedInt codepoint;
         std::tie(codepoint, i) = Corrade::Utility::Unicode::nextChar(text, i);
         glyphs.push_back(FT_Get_Char_Index(font.font(), codepoint));
     }
@@ -97,7 +97,7 @@ TextLayouter::~TextLayouter() {
     #endif
 }
 
-std::tuple<Rectangle, Rectangle, Vector2> TextLayouter::renderGlyph(const Vector2& cursorPosition, const std::uint32_t i) {
+std::tuple<Rectangle, Rectangle, Vector2> TextLayouter::renderGlyph(const Vector2& cursorPosition, const UnsignedInt i) {
     /* Position of the texture in the resulting glyph, texture coordinates */
     Rectangle texturePosition, textureCoordinates;
     #ifdef MAGNUM_USE_HARFBUZZ
@@ -129,9 +129,9 @@ std::tuple<Rectangle, Rectangle, Vector2> TextLayouter::renderGlyph(const Vector
     return std::make_tuple(quadPosition, textureCoordinates, advance);
 }
 
-template<class T> void createIndices(void* output, const std::uint32_t glyphCount) {
+template<class T> void createIndices(void* output, const UnsignedInt glyphCount) {
     T* const out = reinterpret_cast<T*>(output);
-    for(std::uint32_t i = 0; i != glyphCount; ++i) {
+    for(UnsignedInt i = 0; i != glyphCount; ++i) {
         /* 0---2 2
            |  / /|
            | / / |
@@ -149,7 +149,7 @@ template<class T> void createIndices(void* output, const std::uint32_t glyphCoun
     }
 }
 
-template<std::uint8_t dimensions> typename DimensionTraits<dimensions>::VectorType point(const Vector2& vec);
+template<UnsignedInt dimensions> typename DimensionTraits<dimensions>::VectorType point(const Vector2& vec);
 
 template<> inline Vector2 point<2>(const Vector2& vec) {
     return vec;
@@ -159,17 +159,17 @@ template<> inline Vector3 point<3>(const Vector2& vec) {
     return {vec, 1.0f};
 }
 
-template<std::uint8_t dimensions> struct Vertex {
+template<UnsignedInt dimensions> struct Vertex {
     typename DimensionTraits<dimensions>::VectorType position;
     Vector2 texcoords;
 };
 
 }
 
-template<std::uint8_t dimensions> std::tuple<std::vector<typename DimensionTraits<dimensions>::VectorType>, std::vector<Vector2>, std::vector<std::uint32_t>, Rectangle> TextRenderer<dimensions>::render(Font& font, GLfloat size, const std::string& text) {
+template<UnsignedInt dimensions> std::tuple<std::vector<typename DimensionTraits<dimensions>::VectorType>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> TextRenderer<dimensions>::render(Font& font, Float size, const std::string& text) {
     TextLayouter layouter(font, size, text);
 
-    const std::uint32_t vertexCount = layouter.glyphCount()*4;
+    const UnsignedInt vertexCount = layouter.glyphCount()*4;
 
     /* Output data */
     std::vector<typename DimensionTraits<dimensions>::VectorType> positions;
@@ -179,7 +179,7 @@ template<std::uint8_t dimensions> std::tuple<std::vector<typename DimensionTrait
 
     /* Render all glyphs */
     Vector2 cursorPosition;
-    for(std::uint32_t i = 0; i != layouter.glyphCount(); ++i) {
+    for(UnsignedInt i = 0; i != layouter.glyphCount(); ++i) {
         /* Position of the texture in the resulting glyph, texture coordinates */
         Rectangle quadPosition, textureCoordinates;
         Vector2 advance;
@@ -203,8 +203,8 @@ template<std::uint8_t dimensions> std::tuple<std::vector<typename DimensionTrait
     }
 
     /* Create indices */
-    std::vector<std::uint32_t> indices(layouter.glyphCount()*6);
-    createIndices<std::uint32_t>(indices.data(), layouter.glyphCount());
+    std::vector<UnsignedInt> indices(layouter.glyphCount()*6);
+    createIndices<UnsignedInt>(indices.data(), layouter.glyphCount());
 
     /* Rendered rectangle */
     Rectangle rectangle;
@@ -214,11 +214,11 @@ template<std::uint8_t dimensions> std::tuple<std::vector<typename DimensionTrait
     return std::make_tuple(std::move(positions), std::move(texcoords), std::move(indices), rectangle);
 }
 
-template<std::uint8_t dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimensions>::render(Font& font, GLfloat size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage) {
+template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimensions>::render(Font& font, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage) {
     TextLayouter layouter(font, size, text);
 
-    const std::uint32_t vertexCount = layouter.glyphCount()*4;
-    const std::uint32_t indexCount = layouter.glyphCount()*6;
+    const UnsignedInt vertexCount = layouter.glyphCount()*4;
+    const UnsignedInt indexCount = layouter.glyphCount()*6;
 
     /* Vertex buffer */
     std::vector<Vertex<dimensions>> vertices;
@@ -226,7 +226,7 @@ template<std::uint8_t dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimen
 
     /* Render all glyphs */
     Vector2 cursorPosition;
-    for(std::uint32_t i = 0; i != layouter.glyphCount(); ++i) {
+    for(UnsignedInt i = 0; i != layouter.glyphCount(); ++i) {
         /* Position of the texture in the resulting glyph, texture coordinates */
         Rectangle quadPosition, textureCoordinates;
         Vector2 advance;
@@ -250,19 +250,19 @@ template<std::uint8_t dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimen
     char* indices;
     if(vertexCount < 255) {
         indexType = Mesh::IndexType::UnsignedByte;
-        indicesSize = indexCount*sizeof(GLushort);
+        indicesSize = indexCount*sizeof(UnsignedByte);
         indices = new char[indicesSize];
-        createIndices<GLubyte>(indices, layouter.glyphCount());
+        createIndices<UnsignedByte>(indices, layouter.glyphCount());
     } else if(vertexCount < 65535) {
         indexType = Mesh::IndexType::UnsignedShort;
-        indicesSize = indexCount*sizeof(GLushort);
+        indicesSize = indexCount*sizeof(UnsignedShort);
         indices = new char[indicesSize];
-        createIndices<GLushort>(indices, layouter.glyphCount());
+        createIndices<UnsignedShort>(indices, layouter.glyphCount());
     } else {
         indexType = Mesh::IndexType::UnsignedInt;
-        indicesSize = indexCount*sizeof(GLuint);
+        indicesSize = indexCount*sizeof(UnsignedInt);
         indices = new char[indicesSize];
-        createIndices<GLuint>(indices, layouter.glyphCount());
+        createIndices<UnsignedInt>(indices, layouter.glyphCount());
     }
     indexBuffer->setData(indicesSize, indices, usage);
     delete indices;
@@ -284,7 +284,7 @@ template<std::uint8_t dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimen
     return std::make_tuple(std::move(mesh), rectangle);
 }
 
-template<std::uint8_t dimensions> TextRenderer<dimensions>::TextRenderer(Font& font, const GLfloat size): font(font), size(size), _capacity(0), vertexBuffer(Buffer::Target::Array), indexBuffer(Buffer::Target::ElementArray) {
+template<UnsignedInt dimensions> TextRenderer<dimensions>::TextRenderer(Font& font, const Float size): font(font), size(size), _capacity(0), vertexBuffer(Buffer::Target::Array), indexBuffer(Buffer::Target::ElementArray) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::map_buffer_range);
     #else
@@ -299,11 +299,11 @@ template<std::uint8_t dimensions> TextRenderer<dimensions>::TextRenderer(Font& f
             typename Shaders::AbstractTextShader<dimensions>::TextureCoordinates());
 }
 
-template<std::uint8_t dimensions> void TextRenderer<dimensions>::reserve(const uint32_t glyphCount, const Buffer::Usage vertexBufferUsage, const Buffer::Usage indexBufferUsage) {
+template<UnsignedInt dimensions> void TextRenderer<dimensions>::reserve(const uint32_t glyphCount, const Buffer::Usage vertexBufferUsage, const Buffer::Usage indexBufferUsage) {
     _capacity = glyphCount;
 
-    const std::uint32_t vertexCount = glyphCount*4;
-    const std::uint32_t indexCount = glyphCount*6;
+    const UnsignedInt vertexCount = glyphCount*4;
+    const UnsignedInt indexCount = glyphCount*6;
 
     /* Allocate vertex buffer, reset vertex count */
     vertexBuffer.setData(vertexCount*sizeof(Vertex<dimensions>), nullptr, vertexBufferUsage);
@@ -314,13 +314,13 @@ template<std::uint8_t dimensions> void TextRenderer<dimensions>::reserve(const u
     std::size_t indicesSize;
     if(vertexCount < 255) {
         indexType = Mesh::IndexType::UnsignedByte;
-        indicesSize = indexCount*sizeof(GLushort);
+        indicesSize = indexCount*sizeof(UnsignedByte);
     } else if(vertexCount < 65535) {
         indexType = Mesh::IndexType::UnsignedShort;
-        indicesSize = indexCount*sizeof(GLushort);
+        indicesSize = indexCount*sizeof(UnsignedShort);
     } else {
         indexType = Mesh::IndexType::UnsignedInt;
-        indicesSize = indexCount*sizeof(GLuint);
+        indicesSize = indexCount*sizeof(UnsignedInt);
     }
     indexBuffer.setData(indicesSize, nullptr, indexBufferUsage);
     _mesh.setIndexCount(0)
@@ -329,15 +329,15 @@ template<std::uint8_t dimensions> void TextRenderer<dimensions>::reserve(const u
     /* Prefill index buffer */
     void* indices = indexBuffer.map(0, indicesSize, Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write);
     if(vertexCount < 255)
-        createIndices<GLubyte>(indices, glyphCount);
+        createIndices<UnsignedByte>(indices, glyphCount);
     else if(vertexCount < 65535)
-        createIndices<GLushort>(indices, glyphCount);
+        createIndices<UnsignedShort>(indices, glyphCount);
     else
-        createIndices<GLuint>(indices, glyphCount);
+        createIndices<UnsignedInt>(indices, glyphCount);
     CORRADE_INTERNAL_ASSERT_OUTPUT(indexBuffer.unmap());
 }
 
-template<std::uint8_t dimensions> void TextRenderer<dimensions>::render(const std::string& text) {
+template<UnsignedInt dimensions> void TextRenderer<dimensions>::render(const std::string& text) {
     TextLayouter layouter(font, size, text);
 
     CORRADE_ASSERT(layouter.glyphCount() <= _capacity, "Text::TextRenderer::render(): capacity" << _capacity << "too small to render" << layouter.glyphCount() << "glyphs", );
@@ -346,7 +346,7 @@ template<std::uint8_t dimensions> void TextRenderer<dimensions>::render(const st
     Vertex<dimensions>* const vertices = static_cast<Vertex<dimensions>*>(vertexBuffer.map(0, layouter.glyphCount()*4*sizeof(Vertex<dimensions>),
         Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write));
     Vector2 cursorPosition;
-    for(std::uint32_t i = 0; i != layouter.glyphCount(); ++i) {
+    for(UnsignedInt i = 0; i != layouter.glyphCount(); ++i) {
         /* Position of the texture in the resulting glyph, texture coordinates */
         Rectangle quadPosition, textureCoordinates;
         Vector2 advance;
