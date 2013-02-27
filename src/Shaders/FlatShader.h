@@ -35,7 +35,7 @@ namespace Magnum { namespace Shaders {
 Draws whole mesh with one color.
 @see FlatShader2D, FlatShader3D
 */
-template<std::uint8_t dimensions> class MAGNUM_SHADERS_EXPORT FlatShader: public AbstractShaderProgram {
+template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatShader: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
         typedef Attribute<0, typename DimensionTraits<dimensions>::VectorType> Position;
@@ -61,7 +61,7 @@ template<std::uint8_t dimensions> class MAGNUM_SHADERS_EXPORT FlatShader: public
         }
 
     private:
-        GLint transformationProjectionMatrixUniform,
+        Int transformationProjectionMatrixUniform,
             colorUniform;
 };
 

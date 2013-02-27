@@ -23,12 +23,12 @@
 namespace Magnum { namespace Shaders {
 
 namespace {
-    template<std::uint8_t> constexpr const char* vertexShaderName();
+    template<UnsignedInt> constexpr const char* vertexShaderName();
     template<> constexpr const char* vertexShaderName<2>() { return "VertexColorShader2D.vert"; }
     template<> constexpr const char* vertexShaderName<3>() { return "VertexColorShader3D.vert"; }
 }
 
-template<std::uint8_t dimensions> VertexColorShader<dimensions>::VertexColorShader(): transformationProjectionMatrixUniform(0) {
+template<UnsignedInt dimensions> VertexColorShader<dimensions>::VertexColorShader(): transformationProjectionMatrixUniform(0) {
     Corrade::Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES

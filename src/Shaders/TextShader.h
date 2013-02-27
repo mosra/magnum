@@ -32,7 +32,7 @@ namespace Magnum { namespace Shaders {
 
 @see TextShader2D, TextShader3D
 */
-template<std::uint8_t dimensions> class MAGNUM_SHADERS_EXPORT TextShader: public AbstractTextShader<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT TextShader: public AbstractTextShader<dimensions> {
     public:
         TextShader();
 
@@ -49,7 +49,7 @@ template<std::uint8_t dimensions> class MAGNUM_SHADERS_EXPORT TextShader: public
         }
 
     private:
-        GLint transformationProjectionMatrixUniform,
+        Int transformationProjectionMatrixUniform,
             colorUniform;
 };
 

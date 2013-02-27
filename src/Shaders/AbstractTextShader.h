@@ -30,7 +30,7 @@ namespace Magnum { namespace Shaders {
 
 @see AbstractTextShader2D, AbstractTextShader3D
 */
-template<std::uint8_t dimensions> class AbstractTextShader: public AbstractShaderProgram {
+template<UnsignedInt dimensions> class AbstractTextShader: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
         typedef Attribute<0, typename DimensionTraits<dimensions>::VectorType> Position;
@@ -45,7 +45,7 @@ template<std::uint8_t dimensions> class AbstractTextShader: public AbstractShade
         ~AbstractTextShader() = 0;
 };
 
-template<std::uint8_t dimensions> inline AbstractTextShader<dimensions>::~AbstractTextShader() {}
+template<UnsignedInt dimensions> inline AbstractTextShader<dimensions>::~AbstractTextShader() {}
 
 /** @brief Base for two-dimensional text shaders */
 typedef AbstractTextShader<2> AbstractTextShader2D;

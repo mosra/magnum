@@ -19,27 +19,27 @@
  * @brief Forward declarations for Magnum::Shaders namespace
  */
 
-#include <cstdint>
+#include "Types.h"
 
 namespace Magnum { namespace Shaders {
 
 /** @todoc remove when doxygen is sane again */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t> class AbstractTextShader;
+template<UnsignedInt> class AbstractTextShader;
 typedef AbstractTextShader<2> AbstractTextShader2D;
 typedef AbstractTextShader<3> AbstractTextShader3D;
 
-template<std::uint8_t> class FlatShader;
+template<UnsignedInt> class FlatShader;
 typedef FlatShader<2> FlatShader2D;
 typedef FlatShader<3> FlatShader3D;
 
 class PhongShader;
 
-template<std::uint8_t> class TextShader;
+template<UnsignedInt> class TextShader;
 typedef TextShader<2> TextShader2D;
 typedef TextShader<3> TextShader3D;
 
-template<std::uint8_t> class VertexColorShader;
+template<UnsignedInt> class VertexColorShader;
 typedef VertexColorShader<2> VertexColorShader2D;
 typedef VertexColorShader<3> VertexColorShader3D;
 #endif

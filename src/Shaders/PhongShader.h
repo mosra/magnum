@@ -78,7 +78,7 @@ class MAGNUM_SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
          * The larger value, the harder surface (smaller specular highlight).
          * If not set, default value is `80.0f`.
          */
-        inline PhongShader* setShininess(GLfloat shininess) {
+        inline PhongShader* setShininess(Float shininess) {
             setUniform(shininessUniform, shininess);
             return this;
         }
@@ -123,7 +123,7 @@ class MAGNUM_SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
         }
 
     private:
-        GLint transformationMatrixUniform,
+        Int transformationMatrixUniform,
             projectionMatrixUniform,
             normalMatrixUniform,
             lightUniform,
