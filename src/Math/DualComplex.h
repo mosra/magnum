@@ -249,6 +249,20 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
             return DualComplex<T>(this->real().invertedNormalized(), {{}, {}})*DualComplex<T>({}, -this->dual());
         }
 
+        /**
+         * @brief Rotate and translate point with dual complex number
+         *
+         * See transformPointNormalized(), which is faster for normalized dual
+         * complex number. @f[
+         *      v' = \hat c v = \hat c ((0 + i) + \epsilon(v_x + iv_y))
+         * @f]
+         * @see DualComplex(const Vector2&), dual(), Matrix3::transformPoint(),
+         *      Complex::transformVector(), DualQuaternion::transformPoint()
+         */
+        inline Vector2<T> transformPoint(const Vector2<T>& vector) const {
+            return Vector2<T>(((*this)*DualComplex<T>(vector)).dual());
+        }
+
         /* Verbatim copy of DUAL_SUBCLASS_IMPLEMENTATION(), as we need to hide
            Dual's operator*() and operator/() */
         #ifndef DOXYGEN_GENERATING_OUTPUT

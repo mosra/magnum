@@ -47,6 +47,7 @@ class DualComplexTest: public Corrade::TestSuite::Tester {
         void translation();
         void combinedTransformParts();
         void matrix();
+        void transformPoint();
 
         void debug();
 };
@@ -82,6 +83,7 @@ DualComplexTest::DualComplexTest() {
              &DualComplexTest::translation,
              &DualComplexTest::combinedTransformParts,
              &DualComplexTest::matrix,
+             &DualComplexTest::transformPoint,
 
              &DualComplexTest::debug);
 }
@@ -214,6 +216,22 @@ void DualComplexTest::matrix() {
     Matrix3 m = Matrix3::rotation(Deg(23.0f))*Matrix3::translation({2.0f, 3.0f});
 
     CORRADE_COMPARE(a.matrix(), m);
+}
+
+void DualComplexTest::transformPoint() {
+    DualComplex a = DualComplex::translation({2.0f, 3.0f})*DualComplex::rotation(Deg(23.0f));
+    DualComplex b = DualComplex::rotation(Deg(23.0f))*DualComplex::translation({2.0f, 3.0f});
+    Matrix3 m = Matrix3::translation({2.0f, 3.0f})*Matrix3::rotation(Deg(23.0f));
+    Matrix3 n = Matrix3::rotation(Deg(23.0f))*Matrix3::translation({2.0f, 3.0f});
+    Vector2 v(-3.6f, 0.7f);
+
+    Vector2 transformedA = a.transformPoint(v);
+    CORRADE_COMPARE(transformedA, m.transformPoint(v));
+    CORRADE_COMPARE(transformedA, Vector2(-1.58733f, 2.237721f));
+
+    Vector2 transformedB = b.transformPoint(v);
+    CORRADE_COMPARE(transformedB, n.transformPoint(v));
+    CORRADE_COMPARE(transformedB, Vector2(-2.918512f, 2.780698f));
 }
 
 void DualComplexTest::debug() {

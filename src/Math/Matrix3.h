@@ -29,7 +29,8 @@ namespace Magnum { namespace Math {
 @tparam T   Underlying data type
 
 Represents 2D transformation. See @ref matrix-vector for brief introduction.
-@see Magnum::Matrix3, Magnum::Matrix3d, SceneGraph::MatrixTransformation2D
+@see Magnum::Matrix3, Magnum::Matrix3d, DualComplex,
+    SceneGraph::MatrixTransformation2D
 @configurationvalueref{Magnum::Math::Matrix3}
 */
 template<class T> class Matrix3: public Matrix<3, T> {
@@ -234,7 +235,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * transformation. @f[
          *      \boldsymbol v' = \boldsymbol M \begin{pmatrix} v_x \\ v_y \\ 1 \end{pmatrix}
          * @f]
-         * @see Matrix4::transformPoint()
+         * @see DualComplex::transformPoint(), Matrix4::transformPoint()
          */
         inline Vector2<T> transformPoint(const Vector2<T>& vector) const {
             return ((*this)*Vector3<T>(vector, T(1))).xy();
