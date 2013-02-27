@@ -212,7 +212,7 @@ void QuaternionTest::invertedNormalized() {
     Quaternion a = Quaternion({1.0f, 3.0f, -2.0f}, -4.0f);
 
     std::ostringstream o;
-    Corrade::Utility::Error::setOutput(&o);
+    Error::setOutput(&o);
     Quaternion notInverted = a.invertedNormalized();
     CORRADE_COMPARE(notInverted.vector(), Vector3());
     CORRADE_COMPARE(notInverted.scalar(), std::numeric_limits<float>::quiet_NaN());
@@ -221,7 +221,7 @@ void QuaternionTest::invertedNormalized() {
     Quaternion aNormalized = a.normalized();
     Quaternion inverted = aNormalized.invertedNormalized();
     CORRADE_COMPARE(aNormalized*inverted, Quaternion());
-    CORRADE_COMPARE(inverted*aNormalized.normalized(), Quaternion());
+    CORRADE_COMPARE(inverted*aNormalized, Quaternion());
     CORRADE_COMPARE(inverted, Quaternion({-1.0f, -3.0f, 2.0f}, -4.0f)/std::sqrt(30.0f));
 }
 

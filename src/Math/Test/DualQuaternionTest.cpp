@@ -56,7 +56,6 @@ typedef Math::Matrix4<float> Matrix4;
 typedef Math::DualQuaternion<float> DualQuaternion;
 typedef Math::Quaternion<float> Quaternion;
 typedef Math::Vector3<float> Vector3;
-typedef Math::Vector4<float> Vector4;
 
 DualQuaternionTest::DualQuaternionTest() {
     addTests(&DualQuaternionTest::construct,

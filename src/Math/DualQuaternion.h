@@ -239,7 +239,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @see inverted()
          */
         inline DualQuaternion<T> invertedNormalized() const {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(lengthSquared(), T(1)),
+            CORRADE_ASSERT(lengthSquared() == Dual<T>(1),
                            "Math::DualQuaternion::invertedNormalized(): dual quaternion must be normalized", {});
             return quaternionConjugated();
         }
@@ -269,7 +269,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      Quaternion::transformVectorNormalized()
          */
         inline Vector3<T> transformPointNormalized(const Vector3<T>& vector) const {
-            CORRADE_ASSERT(MathTypeTraits<Dual<T>>::equals(lengthSquared(), Dual<T>(1)),
+            CORRADE_ASSERT(lengthSquared() == Dual<T>(1),
                            "Math::DualQuaternion::transformPointNormalized(): dual quaternion must be normalized",
                            Vector3<T>(std::numeric_limits<T>::quiet_NaN()));
             return ((*this)*DualQuaternion<T>(vector)*conjugated()).dual().vector();
