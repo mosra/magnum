@@ -204,9 +204,9 @@ template<class T> class Quaternion {
         /**
          * @brief Convert quaternion to rotation matrix
          *
-         * @see DualQuaternion::matrix(), Matrix4::from(const Matrix<3, T>&, const Vector3<T>&)
+         * @see DualQuaternion::toMatrix(), Matrix4::from(const Matrix<3, T>&, const Vector3<T>&)
          */
-        Matrix<3, T> matrix() const {
+        Matrix<3, T> toMatrix() const {
             return {
                 Vector<3, T>(T(1) - 2*pow2(_vector.y()) - 2*pow2(_vector.z()),
                     2*_vector.x()*_vector.y() + 2*_vector.z()*_scalar,

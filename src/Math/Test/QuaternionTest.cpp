@@ -277,8 +277,8 @@ void QuaternionTest::matrix() {
     Matrix3 m = Matrix4::rotation(Deg(37.0f), Vector3(1.0f/Constants<float>::sqrt3())).rotationScaling();
 
     /* Verify that negated quaternion gives the same rotation */
-    CORRADE_COMPARE(q.matrix(), m);
-    CORRADE_COMPARE((-q).matrix(), m);
+    CORRADE_COMPARE(q.toMatrix(), m);
+    CORRADE_COMPARE((-q).toMatrix(), m);
 }
 
 void QuaternionTest::lerp() {

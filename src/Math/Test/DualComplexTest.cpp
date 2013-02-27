@@ -215,7 +215,7 @@ void DualComplexTest::matrix() {
     DualComplex a = DualComplex::rotation(Deg(23.0f))*DualComplex::translation({2.0f, 3.0f});
     Matrix3 m = Matrix3::rotation(Deg(23.0f))*Matrix3::translation({2.0f, 3.0f});
 
-    CORRADE_COMPARE(a.matrix(), m);
+    CORRADE_COMPARE(a.toMatrix(), m);
 }
 
 void DualComplexTest::transformPoint() {

@@ -146,10 +146,10 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         /**
          * @brief Convert dual quaternion to transformation matrix
          *
-         * @see Quaternion::matrix()
+         * @see Quaternion::toMatrix()
          */
-        Matrix4<T> matrix() const {
-            return Matrix4<T>::from(this->real().matrix(), translation());
+        Matrix4<T> toMatrix() const {
+            return Matrix4<T>::from(this->real().toMatrix(), translation());
         }
 
         /**

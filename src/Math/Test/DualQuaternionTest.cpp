@@ -223,8 +223,8 @@ void DualQuaternionTest::matrix() {
     Matrix4 m = Matrix4::rotationX(Deg(23.0f))*Matrix4::translation({-1.0f, 2.0f, 3.0f});
 
     /* Verify that negated dual quaternion gives the same transformation */
-    CORRADE_COMPARE(q.matrix(), m);
-    CORRADE_COMPARE((-q).matrix(), m);
+    CORRADE_COMPARE(q.toMatrix(), m);
+    CORRADE_COMPARE((-q).toMatrix(), m);
 }
 
 void DualQuaternionTest::transformPoint() {

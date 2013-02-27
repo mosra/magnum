@@ -270,7 +270,7 @@ void ComplexTest::matrix() {
     Complex a = Complex::rotation(Deg(37.0f));
     Matrix2 m = Matrix3::rotation(Deg(37.0f)).rotationScaling();
 
-    CORRADE_COMPARE(a.matrix(), m);
+    CORRADE_COMPARE(a.toMatrix(), m);
 }
 
 void ComplexTest::transformVector() {

@@ -130,10 +130,10 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         /**
          * @brief Convert dual complex number to transformation matrix
          *
-         * @see Complex::matrix()
+         * @see Complex::toMatrix()
          */
-        inline Matrix3<T> matrix() const {
-            return Matrix3<T>::from(this->real().matrix(), translation());
+        inline Matrix3<T> toMatrix() const {
+            return Matrix3<T>::from(this->real().toMatrix(), translation());
         }
 
         /**
