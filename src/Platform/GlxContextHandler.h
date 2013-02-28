@@ -22,6 +22,7 @@
 #include "Magnum.h"
 #include <GL/glx.h>
 /* undef Xlib nonsense to avoid conflicts */
+#undef Complex
 #undef None
 #undef Always
 
