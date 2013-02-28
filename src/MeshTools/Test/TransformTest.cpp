@@ -41,6 +41,11 @@ TransformTest::TransformTest() {
              &TransformTest::transformPoints3D);
 }
 
+/* GCC < 4.7 doesn't like constexpr here, don't know why */
+#ifdef CORRADE_GCC46_COMPATIBILITY
+#define constexpr const
+#endif
+
 constexpr static std::array<Vector2, 2> points2D{{
     {-3.0f,   4.0f},
     { 2.5f, -15.0f}
@@ -70,6 +75,10 @@ constexpr static std::array<Vector3, 2> points3DRotatedTranslated{{
     {-4.0f, -4.0f, 34.0f},
     {15.0f,  1.5f,  1.5f}
 }};
+
+#ifdef CORRADE_GCC46_COMPATIBILITY
+#undef constexpr
+#endif
 
 void TransformTest::transformVectors2D() {
     auto matrix = MeshTools::transformVectors(Matrix3::rotation(Deg(90.0f)), points2D);
