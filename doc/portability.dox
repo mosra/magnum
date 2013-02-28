@@ -71,10 +71,20 @@ You can also decide on particular OpenGL version using Context::isVersionSupport
 but remember that some features from that version might be available even if
 the drivers don't expose that version.
 
-Each feature is marked accordingly if it needs specific extension or specific
-OpenGL version. Various classes in %Magnum are taking advantage of some
-extensions and enable faster code paths if given extension is available, for
-example @ref AbstractShaderProgram-performance-optimization "AbstractShaderProgram",
+On the other hand, if you don't want to write fallback code for unsupported
+extensions, you can use macros MAGNUM_ASSERT_EXTENSION_SUPPORTED() or
+MAGNUM_ASSERT_VERSION_SUPPORTED() to add mandatory requirement of given
+extension or version:
+@code
+MAGNUM_ASSERT_EXTENSION_SUPPORTED(GL::ARB::geometry_shader4);
+// just use geometry shader and don't care about old hardware
+@endcode
+
+Each class, function or enum value is marked accordingly if it needs specific
+extension or specific OpenGL version. Various classes in %Magnum are taking
+advantage of some extensions and enable faster code paths if given extension is
+available, but also have proper fallback when it's not, for example
+@ref AbstractShaderProgram-performance-optimization "AbstractShaderProgram",
 @ref AbstractTexture-performance-optimization "AbstractTexture" or
 @ref Mesh-performance-optimization "Mesh". See also @ref required-extensions.
 
@@ -121,7 +131,7 @@ Your application might run on Windows box, on some embedded Linux or even in
 browser - each platform has different requirements how to create entry point
 to the application, how to handle input events, how to create window and
 OpenGL context etc. Namespace Platform contains base classes for applications
-which are abstracting most of it for your convenience.
+which are abstracting out most of it for your convenience.
 
 All the classes support limited form of static polymorphism, which means you
 can switch to another base class and probably don't need to change any other
