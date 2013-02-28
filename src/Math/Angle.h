@@ -118,13 +118,13 @@ template<class T> class Deg: public Unit<Deg, T> {
         inline constexpr /*implicit*/ Deg() {}
 
         /** @brief Explicit constructor from unitless type */
-        inline constexpr explicit Deg(T value): Unit<Deg, T>(value) {}
+        inline constexpr explicit Deg(T value): Unit<Math::Deg, T>(value) {}
 
         /** @brief Copy constructor */
-        inline constexpr /*implicit*/ Deg(Unit<Deg, T> value): Unit<Deg, T>(value) {}
+        inline constexpr /*implicit*/ Deg(Unit<Math::Deg, T> value): Unit<Math::Deg, T>(value) {}
 
         /** @brief Construct from another underlying type */
-        template<class U> inline constexpr explicit Deg(Unit<Deg, U> value): Unit<Deg, T>(value) {}
+        template<class U> inline constexpr explicit Deg(Unit<Math::Deg, U> value): Unit<Math::Deg, T>(value) {}
 
         /**
          * @brief Construct degrees from radians
@@ -177,13 +177,13 @@ template<class T> class Rad: public Unit<Rad, T> {
         inline constexpr /*implicit*/ Rad() {}
 
         /** @brief Construct from unitless type */
-        inline constexpr explicit Rad(T value): Unit<Rad, T>(value) {}
+        inline constexpr explicit Rad(T value): Unit<Math::Rad, T>(value) {}
 
         /** @brief Copy constructor */
-        inline constexpr /*implicit*/ Rad(Unit<Rad, T> value): Unit<Rad, T>(value) {}
+        inline constexpr /*implicit*/ Rad(Unit<Math::Rad, T> value): Unit<Math::Rad, T>(value) {}
 
         /** @brief Construct from another underlying type */
-        template<class U> inline constexpr explicit Rad(Unit<Rad, U> value): Unit<Rad, T>(value) {}
+        template<class U> inline constexpr explicit Rad(Unit<Math::Rad, U> value): Unit<Math::Rad, T>(value) {}
 
         /**
          * @brief Construct radians from degrees
@@ -216,8 +216,8 @@ See operator""_degf() for more information.
 inline constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(value); }
 #endif
 
-template<class T> inline constexpr Deg<T>::Deg(Unit<Rad, T> value): Unit<Deg, T>(T(180)*T(value)/Math::Constants<T>::pi()) {}
-template<class T> inline constexpr Rad<T>::Rad(Unit<Deg, T> value): Unit<Rad, T>(T(value)*Math::Constants<T>::pi()/T(180)) {}
+template<class T> inline constexpr Deg<T>::Deg(Unit<Rad, T> value): Unit<Math::Deg, T>(T(180)*T(value)/Math::Constants<T>::pi()) {}
+template<class T> inline constexpr Rad<T>::Rad(Unit<Deg, T> value): Unit<Math::Rad, T>(T(value)*Math::Constants<T>::pi()/T(180)) {}
 
 /** @debugoperator{Magnum::Math::Rad} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Unit<Rad, T>& value) {
