@@ -40,10 +40,12 @@ namespace Magnum {
 namespace Math {
     template<class T> struct Constants;
 
+    #ifndef CORRADE_GCC46_COMPATIBILITY
     constexpr Rad<Double> operator "" _rad(long double);
     constexpr Rad<Float> operator "" _radf(long double);
     constexpr Deg<Double> operator "" _deg(long double);
     constexpr Deg<Float> operator "" _degf(long double);
+    #endif
 }
 
 /* Bring debugging facility from Corrade::Utility namespace */
@@ -240,11 +242,13 @@ typedef Math::Geometry::Rectangle<Double> Rectangled;
 /*@}*/
 #endif
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /* Using angle literals from Math namespace */
 using Math::operator "" _deg;
 using Math::operator "" _degf;
 using Math::operator "" _rad;
 using Math::operator "" _radf;
+#endif
 
 /** @todoc Remove `ifndef` when Doxygen is sane again */
 #ifndef DOXYGEN_GENERATING_OUTPUT

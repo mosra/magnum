@@ -73,6 +73,7 @@ void AngleTest::construct() {
 }
 
 void AngleTest::literals() {
+    #ifndef CORRADE_GCC46_COMPATIBILITY
     constexpr auto a = 25.0_deg;
     constexpr auto b = 25.0_degf;
     CORRADE_VERIFY((std::is_same<decltype(a), const Degd>::value));
@@ -86,6 +87,9 @@ void AngleTest::literals() {
     CORRADE_VERIFY((std::is_same<decltype(n), const Rad>::value));
     CORRADE_COMPARE(Double(m), 3.14);
     CORRADE_COMPARE(Float(n), 3.14f);
+    #else
+    CORRADE_SKIP("User-defined literals are not available on GCC < 4.7.");
+    #endif
 }
 
 void AngleTest::conversion() {

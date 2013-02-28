@@ -20,6 +20,7 @@
  */
 
 #include <Utility/Debug.h>
+#include <corradeCompatibility.h>
 
 #include "Math/Constants.h"
 #include "Math/Math.h"
