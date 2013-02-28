@@ -111,9 +111,11 @@ void BoolVectorTest::constExpressions() {
     constexpr BoolVector19 b(0xa5, 0x5f, 0x07);
     CORRADE_COMPARE(b, BoolVector19(0xa5, 0x5f, 0x07));
 
-    /* One-value constructor */
+    /* One-value constructor, not constexpr under GCC < 4.7 */
+    #ifndef CORRADE_GCC46_COMPATIBILITY
     constexpr BoolVector19 c(true);
     CORRADE_COMPARE(c, BoolVector19(0xff, 0xff, 0x07));
+    #endif
 
     /* Copy constructor */
     constexpr BoolVector19 d(b);
