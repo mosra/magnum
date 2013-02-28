@@ -31,7 +31,7 @@ namespace Magnum { namespace Math {
 
 Represents 2D rotation and translation. See @ref transformations for brief
 introduction.
-@see Magnum::DualComplex, Dual, Complex, Matrix3
+@see Magnum::DualComplex, Magnum::DualComplexd, Dual, Complex, Matrix3
 @todo Can this be done similarly as in dual quaternions? It sort of works, but
     the math beneath is weird.
 */

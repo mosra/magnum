@@ -109,7 +109,7 @@ std::sin(Float(Rad<Float>(angleInDegrees)); // required explicit conversion hint
                                             // attention (i.e., conversion to radians)
 @endcode
 
-@see Magnum::Deg, Magnum::Rad
+@see Magnum::Deg, Magnum::Degd
 */
 template<class T> class Deg: public Unit<Deg, T> {
     public:
@@ -168,7 +168,7 @@ inline constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Fl
 @brief Angle in radians
 
 See Deg for more information.
-@see Magnum::Rad
+@see Magnum::Rad, Magnum::Radd
 */
 template<class T> class Rad: public Unit<Rad, T> {
     public:

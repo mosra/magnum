@@ -37,6 +37,7 @@ namespace Implementation {
 See @ref matrix-vector for brief introduction.
 
 @configurationvalueref{Magnum::Math::Matrix}
+@see Magnum::Matrix2, Magnum::Matrix2d
  */
 template<std::size_t size, class T> class Matrix: public RectangularMatrix<size, size, T> {
     public:

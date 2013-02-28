@@ -35,6 +35,9 @@ Vector.
 The data are stored in column-major order, to reflect that, all indices in
 math formulas are in reverse order (i.e. @f$ \boldsymbol A_{ji} @f$ instead
 of @f$ \boldsymbol A_{ij} @f$).
+@see Magnum::Matrix2x3, Magnum::Matrix3x2, Magnum::Matrix2x4, Magnum::Matrix4x2,
+    Magnum::Matrix3x4, Magnum::Matrix4x3, Magnum::Matrix2x3d, Magnum::Matrix3x2d,
+    Magnum::Matrix2x4d, Magnum::Matrix4x2d, Magnum::Matrix3x4d, Magnum::Matrix4x3d
 */
 template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
     static_assert(cols != 0 && rows != 0, "RectangularMatrix cannot have zero elements");

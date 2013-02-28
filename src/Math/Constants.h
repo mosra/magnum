@@ -26,7 +26,7 @@ namespace Magnum { namespace Math {
 /**
 @brief Numeric constants
 
-@see Magnum::Constants
+@see Magnum::Constants, Magnum::Constantsd
 */
 template<class T> struct Constants {
     Constants() = delete;

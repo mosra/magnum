@@ -31,7 +31,7 @@ namespace Magnum { namespace Math {
 
 Represents 3D rotation and translation. See @ref transformations for brief
 introduction.
-@see Magnum::DualQuaternion, Dual, Quaternion, Matrix4
+@see Magnum::DualQuaternion, Magnum::DualQuaterniond, Dual, Quaternion, Matrix4
 */
 template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
     public:

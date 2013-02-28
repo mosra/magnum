@@ -29,7 +29,7 @@ namespace Magnum { namespace Math { namespace Geometry {
 Helper class for storing axis-aligned rectangles consisting of bottom left and
 top right corner positions with origin in bottom left. Bottom/left positions
 are inclusive, while top/right positions are exclusive.
-@see Magnum::Rectangle, Magnum::Rectanglei
+@see Magnum::Rectangle, Magnum::Rectanglei, Magnum::Rectangled
 */
 template<class T> class Rectangle {
     template<class> friend class Rectangle;
