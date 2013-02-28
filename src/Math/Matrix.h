@@ -186,10 +186,10 @@ template<std::size_t size, class T> inline Corrade::Utility::Debug operator<<(Co
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Type, VectorType, size)       \
     inline VectorType<T>& operator[](std::size_t col) {                     \
-        return VectorType<T>::from(Matrix<size, T>::data()+col*size);       \
+        return static_cast<VectorType<T>&>(Matrix<size, T>::operator[](col)); \
     }                                                                       \
-    inline constexpr const VectorType<T>& operator[](std::size_t col) const { \
-        return VectorType<T>::from(Matrix<size, T>::data()+col*size);       \
+    inline constexpr const VectorType<T> operator[](std::size_t col) const { \
+        return VectorType<T>(Matrix<size, T>::operator[](col));             \
     }                                                                       \
                                                                             \
     inline Type<T> operator*(const Matrix<size, T>& other) const {          \

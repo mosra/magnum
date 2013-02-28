@@ -25,7 +25,11 @@ class Matrix3Test: public Corrade::TestSuite::Tester {
     public:
         Matrix3Test();
 
+        void construct();
         void constructIdentity();
+        void constructZero();
+        void constructConversion();
+        void constructCopy();
 
         void translation();
         void scaling();
@@ -45,11 +49,16 @@ class Matrix3Test: public Corrade::TestSuite::Tester {
 
 typedef Math::Deg<Float> Deg;
 typedef Math::Matrix3<Float> Matrix3;
+typedef Math::Matrix3<Int> Matrix3i;
 typedef Math::Matrix<2, Float> Matrix2;
 typedef Math::Vector2<Float> Vector2;
 
 Matrix3Test::Matrix3Test() {
-    addTests(&Matrix3Test::constructIdentity,
+    addTests(&Matrix3Test::construct,
+             &Matrix3Test::constructIdentity,
+             &Matrix3Test::constructZero,
+             &Matrix3Test::constructConversion,
+             &Matrix3Test::constructCopy,
 
              &Matrix3Test::translation,
              &Matrix3Test::scaling,
@@ -67,10 +76,19 @@ Matrix3Test::Matrix3Test() {
              &Matrix3Test::configuration);
 }
 
+void Matrix3Test::construct() {
+    constexpr Matrix3 a({3.0f,  5.0f, 8.0f},
+                        {4.5f,  4.0f, 7.0f},
+                        {7.9f, -1.0f, 8.0f});
+    CORRADE_COMPARE(a, Matrix3({3.0f,  5.0f, 8.0f},
+                               {4.5f,  4.0f, 7.0f},
+                               {7.9f, -1.0f, 8.0f}));
+}
+
 void Matrix3Test::constructIdentity() {
-    Matrix3 identity;
-    Matrix3 identity2(Matrix3::Identity);
-    Matrix3 identity3(Matrix3::Identity, 4.0f);
+    constexpr Matrix3 identity;
+    constexpr Matrix3 identity2(Matrix3::Identity);
+    constexpr Matrix3 identity3(Matrix3::Identity, 4.0f);
 
     Matrix3 identityExpected({1.0f, 0.0f, 0.0f},
                              {0.0f, 1.0f, 0.0f},
@@ -85,20 +103,49 @@ void Matrix3Test::constructIdentity() {
     CORRADE_COMPARE(identity3, identity3Expected);
 }
 
-void Matrix3Test::translation() {
-    Matrix3 matrix({1.0f, 0.0f, 0.0f},
-                   {0.0f, 1.0f, 0.0f},
-                   {3.0f, 1.0f, 1.0f});
+void Matrix3Test::constructZero() {
+    constexpr Matrix3 a(Matrix3::Zero);
+    CORRADE_COMPARE(a, Matrix3({0.0f, 0.0f, 0.0f},
+                               {0.0f, 0.0f, 0.0f},
+                               {0.0f, 0.0f, 0.0f}));
+}
 
-    CORRADE_COMPARE(Matrix3::translation({3.0f, 1.0f}), matrix);
+void Matrix3Test::constructConversion() {
+    constexpr Matrix3 a({3.0f,  5.0f, 8.0f},
+                        {4.5f,  4.0f, 7.0f},
+                        {7.9f, -1.0f, 8.0f});
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr Matrix3i b(a);
+    #else
+    Matrix3i b(a); /* Not constexpr under GCC < 4.7 */
+    #endif
+    CORRADE_COMPARE(b, Matrix3i({3,  5, 8},
+                                {4,  4, 7},
+                                {7, -1, 8}));
+}
+
+void Matrix3Test::constructCopy() {
+    constexpr Matrix3 a({3.0f,  5.0f, 8.0f},
+                        {4.5f,  4.0f, 7.0f},
+                        {7.9f, -1.0f, 8.0f});
+    constexpr Matrix3 b(a);
+    CORRADE_COMPARE(b, Matrix3({3.0f,  5.0f, 8.0f},
+                               {4.5f,  4.0f, 7.0f},
+                               {7.9f, -1.0f, 8.0f}));
+}
+
+void Matrix3Test::translation() {
+    constexpr Matrix3 a = Matrix3::translation({3.0f, 1.0f});
+    CORRADE_COMPARE(a, Matrix3({1.0f, 0.0f, 0.0f},
+                               {0.0f, 1.0f, 0.0f},
+                               {3.0f, 1.0f, 1.0f}));
 }
 
 void Matrix3Test::scaling() {
-    Matrix3 matrix({3.0f, 0.0f, 0.0f},
-                   {0.0f, 1.5f, 0.0f},
-                   {0.0f, 0.0f, 1.0f});
-
-    CORRADE_COMPARE(Matrix3::scaling({3.0f, 1.5f}), matrix);
+    constexpr Matrix3 a = Matrix3::scaling({3.0f, 1.5f});
+    CORRADE_COMPARE(a, Matrix3({3.0f, 0.0f, 0.0f},
+                               {0.0f, 1.5f, 0.0f},
+                               {0.0f, 0.0f, 1.0f}));
 }
 
 void Matrix3Test::rotation() {
@@ -137,27 +184,24 @@ void Matrix3Test::projection() {
 }
 
 void Matrix3Test::fromParts() {
-    Matrix2 rotationScaling(Vector2(3.0f, 5.0f),
-                            Vector2(4.0f, 4.0f));
+    constexpr Matrix2 rotationScaling(Vector2(3.0f, 5.0f),
+                                      Vector2(4.0f, 4.0f));
+    constexpr Vector2 translation(7.0f, -1.0f);
+    constexpr Matrix3 a = Matrix3::from(rotationScaling, translation);
 
-    Vector2 translation(7.0f, -1.0f);
-
-    Matrix3 expected({3.0f,  5.0f, 0.0f},
-                     {4.0f,  4.0f, 0.0f},
-                     {7.0f, -1.0f, 1.0f});
-
-    CORRADE_COMPARE(Matrix3::from(rotationScaling, translation), expected);
+    CORRADE_COMPARE(a, Matrix3({3.0f,  5.0f, 0.0f},
+                               {4.0f,  4.0f, 0.0f},
+                               {7.0f, -1.0f, 1.0f}));
 }
 
 void Matrix3Test::rotationScalingPart() {
-    Matrix3 m({3.0f,  5.0f, 8.0f},
-              {4.0f,  4.0f, 7.0f},
-              {7.0f, -1.0f, 8.0f});
+    constexpr Matrix3 a({3.0f,  5.0f, 8.0f},
+                        {4.0f,  4.0f, 7.0f},
+                        {7.0f, -1.0f, 8.0f});
+    constexpr Matrix2 b = a.rotationScaling();
 
-    Matrix2 expected(Vector2(3.0f, 5.0f),
-                     Vector2(4.0f, 4.0f));
-
-    CORRADE_COMPARE(m.rotationScaling(), expected);
+    CORRADE_COMPARE(b, Matrix2(Vector2(3.0f, 5.0f),
+                               Vector2(4.0f, 4.0f)));
 }
 
 void Matrix3Test::rotationPart() {
@@ -190,13 +234,16 @@ void Matrix3Test::rotationPart() {
 }
 
 void Matrix3Test::vectorParts() {
-    Matrix3 m({15.0f,  0.0f, 0.0f},
-              { 0.0f, -3.0f, 0.0f},
-              {-5.0f, 12.0f, 1.0f});
+    constexpr Matrix3 a({15.0f,  0.0f, 0.0f},
+                        { 0.0f, -3.0f, 0.0f},
+                        {-5.0f, 12.0f, 1.0f});
+    constexpr Vector2 right = a.right();
+    constexpr Vector2 up = a.up();
+    constexpr Vector2 translation = a.translation();
 
-    CORRADE_COMPARE(m.right(), Vector2::xAxis(15.0f));
-    CORRADE_COMPARE(m.up(), Vector2::yAxis(-3.0f));
-    CORRADE_COMPARE(m.translation(), Vector2(-5.0f, 12.0f));
+    CORRADE_COMPARE(right, Vector2::xAxis(15.0f));
+    CORRADE_COMPARE(up, Vector2::yAxis(-3.0f));
+    CORRADE_COMPARE(translation, Vector2(-5.0f, 12.0f));
 }
 
 void Matrix3Test::invertedEuclidean() {

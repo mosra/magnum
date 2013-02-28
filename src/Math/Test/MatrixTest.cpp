@@ -28,6 +28,9 @@ class MatrixTest: public Corrade::TestSuite::Tester {
         void construct();
         void constructIdentity();
         void constructZero();
+        void constructConversion();
+        void constructCopy();
+
         void trace();
         void ij();
         void determinant();
@@ -38,14 +41,19 @@ class MatrixTest: public Corrade::TestSuite::Tester {
 };
 
 typedef Matrix<4, Float> Matrix4;
+typedef Matrix<4, Int> Matrix4i;
 typedef Matrix<3, Float> Matrix3;
 typedef Vector<4, Float> Vector4;
+typedef Vector<4, Int> Vector4i;
 typedef Vector<3, Float> Vector3;
 
 MatrixTest::MatrixTest() {
     addTests(&MatrixTest::construct,
              &MatrixTest::constructIdentity,
              &MatrixTest::constructZero,
+             &MatrixTest::constructConversion,
+             &MatrixTest::constructCopy,
+
              &MatrixTest::trace,
              &MatrixTest::ij,
              &MatrixTest::determinant,
@@ -55,19 +63,15 @@ MatrixTest::MatrixTest() {
 }
 
 void MatrixTest::construct() {
-    Float m[] = {
-        3.0f,  5.0f, 8.0f, 4.0f,
-        4.0f,  4.0f, 7.0f, 3.0f,
-        7.0f, -1.0f, 8.0f, 0.0f,
-        9.0f,  4.0f, 5.0f, 9.0f
-    };
-
-    Matrix4 expected(Vector4(3.0f,  5.0f, 8.0f, 4.0f),
-                     Vector4(4.0f,  4.0f, 7.0f, 3.0f),
-                     Vector4(7.0f, -1.0f, 8.0f, 0.0f),
-                     Vector4(9.0f,  4.0f, 5.0f, 9.0f));
-
-    CORRADE_COMPARE(Matrix4::from(m), expected);
+    /* Value constructor */
+    constexpr Matrix4 a(Vector4(3.0f,  5.0f, 8.0f, -3.0f),
+                        Vector4(4.5f,  4.0f, 7.0f,  2.0f),
+                        Vector4(1.0f,  2.0f, 3.0f, -1.0f),
+                        Vector4(7.9f, -1.0f, 8.0f, -1.5f));
+    CORRADE_COMPARE(a, Matrix4(Vector4(3.0f,  5.0f, 8.0f, -3.0f),
+                               Vector4(4.5f,  4.0f, 7.0f,  2.0f),
+                               Vector4(1.0f,  2.0f, 3.0f, -1.0f),
+                               Vector4(7.9f, -1.0f, 8.0f, -1.5f)));
 }
 
 void MatrixTest::constructIdentity() {
@@ -91,14 +95,39 @@ void MatrixTest::constructIdentity() {
 }
 
 void MatrixTest::constructZero() {
-    Matrix4 zero(Matrix4::Zero);
+    constexpr Matrix4 a(Matrix4::Zero);
+    CORRADE_COMPARE(a, Matrix4(Vector4(0.0f, 0.0f, 0.0f, 0.0f),
+                               Vector4(0.0f, 0.0f, 0.0f, 0.0f),
+                               Vector4(0.0f, 0.0f, 0.0f, 0.0f),
+                               Vector4(0.0f, 0.0f, 0.0f, 0.0f)));
+}
 
-    Matrix4 zeroExpected(Vector4(0.0f, 0.0f, 0.0f, 0.0f),
-                         Vector4(0.0f, 0.0f, 0.0f, 0.0f),
-                         Vector4(0.0f, 0.0f, 0.0f, 0.0f),
-                         Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+void MatrixTest::constructConversion() {
+    constexpr Matrix4 a(Vector4(3.0f,  5.0f, 8.0f, -3.0f),
+                        Vector4(4.5f,  4.0f, 7.0f,  2.0f),
+                        Vector4(1.0f,  2.0f, 3.0f, -1.0f),
+                        Vector4(7.9f, -1.0f, 8.0f, -1.5f));
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr Matrix4i b(a);
+    #else
+    Matrix4i b(a); /* Not constexpr under GCC < 4.7 */
+    #endif
+    CORRADE_COMPARE(b, Matrix4i(Vector4i(3,  5, 8, -3),
+                                Vector4i(4,  4, 7,  2),
+                                Vector4i(1,  2, 3, -1),
+                                Vector4i(7, -1, 8, -1)));
+}
 
-    CORRADE_COMPARE(zero, zeroExpected);
+void MatrixTest::constructCopy() {
+    constexpr Matrix4 a(Vector4(3.0f,  5.0f, 8.0f, -3.0f),
+                        Vector4(4.5f,  4.0f, 7.0f,  2.0f),
+                        Vector4(1.0f,  2.0f, 3.0f, -1.0f),
+                        Vector4(7.9f, -1.0f, 8.0f, -1.5f));
+    constexpr Matrix4 b(a);
+    CORRADE_COMPARE(b, Matrix4(Vector4(3.0f,  5.0f, 8.0f, -3.0f),
+                               Vector4(4.5f,  4.0f, 7.0f,  2.0f),
+                               Vector4(1.0f,  2.0f, 3.0f, -1.0f),
+                               Vector4(7.9f, -1.0f, 8.0f, -1.5f)));
 }
 
 void MatrixTest::trace() {

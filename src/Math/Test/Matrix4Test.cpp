@@ -25,7 +25,11 @@ class Matrix4Test: public Corrade::TestSuite::Tester {
     public:
         Matrix4Test();
 
+        void construct();
         void constructIdentity();
+        void constructZero();
+        void constructConversion();
+        void constructCopy();
 
         void translation();
         void scaling();
@@ -51,11 +55,16 @@ class Matrix4Test: public Corrade::TestSuite::Tester {
 typedef Math::Deg<Float> Deg;
 typedef Math::Rad<Float> Rad;
 typedef Math::Matrix4<Float> Matrix4;
+typedef Math::Matrix4<Int> Matrix4i;
 typedef Math::Matrix<3, Float> Matrix3;
 typedef Math::Vector3<Float> Vector3;
 
 Matrix4Test::Matrix4Test() {
-    addTests(&Matrix4Test::constructIdentity,
+    addTests(&Matrix4Test::construct,
+             &Matrix4Test::constructIdentity,
+             &Matrix4Test::constructZero,
+             &Matrix4Test::constructConversion,
+             &Matrix4Test::constructCopy,
 
              &Matrix4Test::translation,
              &Matrix4Test::scaling,
@@ -78,10 +87,21 @@ Matrix4Test::Matrix4Test() {
              &Matrix4Test::configuration);
 }
 
+void Matrix4Test::construct() {
+    constexpr Matrix4 a({3.0f,  5.0f, 8.0f, -3.0f},
+                        {4.5f,  4.0f, 7.0f,  2.0f},
+                        {1.0f,  2.0f, 3.0f, -1.0f},
+                        {7.9f, -1.0f, 8.0f, -1.5f});
+    CORRADE_COMPARE(a, Matrix4({3.0f,  5.0f, 8.0f, -3.0f},
+                               {4.5f,  4.0f, 7.0f,  2.0f},
+                               {1.0f,  2.0f, 3.0f, -1.0f},
+                               {7.9f, -1.0f, 8.0f, -1.5f}));
+}
+
 void Matrix4Test::constructIdentity() {
-    Matrix4 identity;
-    Matrix4 identity2(Matrix4::Identity);
-    Matrix4 identity3(Matrix4::Identity, 4.0f);
+    constexpr Matrix4 identity;
+    constexpr Matrix4 identity2(Matrix4::Identity);
+    constexpr Matrix4 identity3(Matrix4::Identity, 4.0f);
 
     Matrix4 identityExpected({1.0f, 0.0f, 0.0f, 0.0f},
                              {0.0f, 1.0f, 0.0f, 0.0f},
@@ -98,22 +118,57 @@ void Matrix4Test::constructIdentity() {
     CORRADE_COMPARE(identity3, identity3Expected);
 }
 
-void Matrix4Test::translation() {
-    Matrix4 matrix({1.0f, 0.0f, 0.0f, 0.0f},
-                   {0.0f, 1.0f, 0.0f, 0.0f},
-                   {0.0f, 0.0f, 1.0f, 0.0f},
-                   {3.0f, 1.0f, 2.0f, 1.0f});
+void Matrix4Test::constructZero() {
+    /* Zero constructor */
+    constexpr Matrix4 a(Matrix4::Zero);
+    CORRADE_COMPARE(a, Matrix4({0.0f, 0.0f, 0.0f, 0.0f},
+                               {0.0f, 0.0f, 0.0f, 0.0f},
+                               {0.0f, 0.0f, 0.0f, 0.0f},
+                               {0.0f, 0.0f, 0.0f, 0.0f}));
+}
 
-    CORRADE_COMPARE(Matrix4::translation({3.0f, 1.0f, 2.0f}), matrix);
+void Matrix4Test::constructConversion() {
+    constexpr Matrix4 a({3.0f,  5.0f, 8.0f, -3.0f},
+                        {4.5f,  4.0f, 7.0f,  2.0f},
+                        {1.0f,  2.0f, 3.0f, -1.0f},
+                        {7.9f, -1.0f, 8.0f, -1.5f});
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr Matrix4i b(a);
+    #else
+    Matrix4i b(a); /* Not constexpr under GCC < 4.7 */
+    #endif
+    CORRADE_COMPARE(b, Matrix4i({3,  5, 8, -3},
+                                {4,  4, 7,  2},
+                                {1,  2, 3, -1},
+                                {7, -1, 8, -1}));
+}
+
+void Matrix4Test::constructCopy() {
+    constexpr Matrix4 a({3.0f,  5.0f, 8.0f, -3.0f},
+                        {4.5f,  4.0f, 7.0f,  2.0f},
+                        {1.0f,  2.0f, 3.0f, -1.0f},
+                        {7.9f, -1.0f, 8.0f, -1.5f});
+    constexpr Matrix4 b(a);
+    CORRADE_COMPARE(b, Matrix4({3.0f,  5.0f, 8.0f, -3.0f},
+                               {4.5f,  4.0f, 7.0f,  2.0f},
+                               {1.0f,  2.0f, 3.0f, -1.0f},
+                               {7.9f, -1.0f, 8.0f, -1.5f}));
+}
+
+void Matrix4Test::translation() {
+    constexpr Matrix4 a = Matrix4::translation({3.0f, 1.0f, 2.0f});
+    CORRADE_COMPARE(a, Matrix4({1.0f, 0.0f, 0.0f, 0.0f},
+                               {0.0f, 1.0f, 0.0f, 0.0f},
+                               {0.0f, 0.0f, 1.0f, 0.0f},
+                               {3.0f, 1.0f, 2.0f, 1.0f}));
 }
 
 void Matrix4Test::scaling() {
-    Matrix4 matrix({3.0f, 0.0f, 0.0f, 0.0f},
-                   {0.0f, 1.5f, 0.0f, 0.0f},
-                   {0.0f, 0.0f, 2.0f, 0.0f},
-                   {0.0f, 0.0f, 0.0f, 1.0f});
-
-    CORRADE_COMPARE(Matrix4::scaling({3.0f, 1.5f, 2.0f}), matrix);
+    constexpr Matrix4 a = Matrix4::scaling({3.0f, 1.5f, 2.0f});
+    CORRADE_COMPARE(a, Matrix4({3.0f, 0.0f, 0.0f, 0.0f},
+                               {0.0f, 1.5f, 0.0f, 0.0f},
+                               {0.0f, 0.0f, 2.0f, 0.0f},
+                               {0.0f, 0.0f, 0.0f, 1.0f}));
 }
 
 void Matrix4Test::rotation() {
@@ -202,29 +257,28 @@ void Matrix4Test::perspectiveProjectionFov() {
 }
 
 void Matrix4Test::fromParts() {
-    Matrix3 rotationScaling(Vector3(3.0f,  5.0f, 8.0f),
-                            Vector3(4.0f,  4.0f, 7.0f),
-                            Vector3(7.0f, -1.0f, 8.0f));
+    constexpr Matrix3 rotationScaling(Vector3(3.0f,  5.0f, 8.0f),
+                                      Vector3(4.0f,  4.0f, 7.0f),
+                                      Vector3(7.0f, -1.0f, 8.0f));
+    constexpr Vector3 translation(9.0f, 4.0f, 5.0f);
+    constexpr Matrix4 a = Matrix4::from(rotationScaling, translation);
 
-    Vector3 translation(9.0f, 4.0f, 5.0f);
-
-    Matrix4 expected({3.0f,  5.0f, 8.0f, 0.0f},
-                     {4.0f,  4.0f, 7.0f, 0.0f},
-                     {7.0f, -1.0f, 8.0f, 0.0f},
-                     {9.0f,  4.0f, 5.0f, 1.0f});
-    CORRADE_COMPARE(Matrix4::from(rotationScaling, translation), expected);
+    CORRADE_COMPARE(a, Matrix4({3.0f,  5.0f, 8.0f, 0.0f},
+                               {4.0f,  4.0f, 7.0f, 0.0f},
+                               {7.0f, -1.0f, 8.0f, 0.0f},
+                               {9.0f,  4.0f, 5.0f, 1.0f}));
 }
 
 void Matrix4Test::rotationScalingPart() {
-    Matrix4 m({3.0f,  5.0f, 8.0f, 4.0f},
-              {4.0f,  4.0f, 7.0f, 3.0f},
-              {7.0f, -1.0f, 8.0f, 0.0f},
-              {9.0f,  4.0f, 5.0f, 9.0f});
+    constexpr Matrix4 a({3.0f,  5.0f, 8.0f, 4.0f},
+                        {4.0f,  4.0f, 7.0f, 3.0f},
+                        {7.0f, -1.0f, 8.0f, 0.0f},
+                        {9.0f,  4.0f, 5.0f, 9.0f});
+    constexpr Matrix3 b = a.rotationScaling();
 
-    Matrix3 expected(Vector3(3.0f, 5.0f, 8.0f),
-                     Vector3(4.0f, 4.0f, 7.0f),
-                     Vector3(7.0f, -1.0f, 8.0f));
-    CORRADE_COMPARE(m.rotationScaling(), expected);
+    CORRADE_COMPARE(b, Matrix3(Vector3(3.0f, 5.0f, 8.0f),
+                               Vector3(4.0f, 4.0f, 7.0f),
+                               Vector3(7.0f, -1.0f, 8.0f)));
 }
 
 void Matrix4Test::rotationPart() {
@@ -258,15 +312,19 @@ void Matrix4Test::rotationPart() {
 }
 
 void Matrix4Test::vectorParts() {
-    Matrix4 m({-1.0f,  0.0f,  0.0f, 0.0f},
-              { 0.0f, 12.0f,  0.0f, 0.0f},
-              { 0.0f,  0.0f, 35.0f, 0.0f},
-              {-5.0f, 12.0f,  0.5f, 1.0f});
+    constexpr Matrix4 a({-1.0f,  0.0f,  0.0f, 0.0f},
+                        { 0.0f, 12.0f,  0.0f, 0.0f},
+                        { 0.0f,  0.0f, 35.0f, 0.0f},
+                        {-5.0f, 12.0f,  0.5f, 1.0f});
+    constexpr Vector3 right = a.right();
+    constexpr Vector3 up = a.up();
+    constexpr Vector3 backward = a.backward();
+    constexpr Vector3 translation = a.translation();
 
-    CORRADE_COMPARE(m.right(), Vector3::xAxis(-1.0f));
-    CORRADE_COMPARE(m.up(), Vector3::yAxis(12.0f));
-    CORRADE_COMPARE(m.backward(), Vector3::zAxis(35.0f));
-    CORRADE_COMPARE(m.translation(), Vector3(-5.0f, 12.0f, 0.5f));
+    CORRADE_COMPARE(right, Vector3::xAxis(-1.0f));
+    CORRADE_COMPARE(up, Vector3::yAxis(12.0f));
+    CORRADE_COMPARE(backward, Vector3::zAxis(35.0f));
+    CORRADE_COMPARE(translation, Vector3(-5.0f, 12.0f, 0.5f));
 }
 
 void Matrix4Test::invertedEuclidean() {

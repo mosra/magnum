@@ -240,7 +240,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * @see rotationScaling() const, translation() const
          */
-        static Matrix4<T> from(const Matrix<3, T>& rotationScaling, const Vector3<T>& translation) {
+        inline constexpr static Matrix4<T> from(const Matrix<3, T>& rotationScaling, const Vector3<T>& translation) {
             return {{rotationScaling[0], T(0)},
                     {rotationScaling[1], T(0)},
                     {rotationScaling[2], T(0)},
@@ -281,7 +281,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @see from(const Matrix<3, T>&, const Vector3&), rotation() const,
          *      rotation(T, const Vector3&), Matrix3::rotationScaling() const
          */
-        inline Matrix<3, T> rotationScaling() const {
+        inline constexpr Matrix<3, T> rotationScaling() const {
             /* Not Matrix3, because it is for affine 2D transformations */
             return {(*this)[0].xyz(),
                     (*this)[1].xyz(),

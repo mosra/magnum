@@ -25,14 +25,13 @@ class RectangularMatrixTest: public Corrade::TestSuite::Tester {
     public:
         RectangularMatrixTest();
 
-        void constructFromData();
+        void construct();
         void constructDefault();
         void constructConversion();
-        void constructFromVectors();
+        void constructFromData();
         void constructFromDiagonal();
+        void constructCopy();
         void data();
-
-        void constExpressions();
 
         void compare();
 
@@ -65,14 +64,13 @@ typedef Vector<2, Float> Vector2;
 typedef Vector<2, Int> Vector2i;
 
 RectangularMatrixTest::RectangularMatrixTest() {
-    addTests(&RectangularMatrixTest::constructFromData,
+    addTests(&RectangularMatrixTest::construct,
              &RectangularMatrixTest::constructDefault,
              &RectangularMatrixTest::constructConversion,
-             &RectangularMatrixTest::constructFromVectors,
+             &RectangularMatrixTest::constructFromData,
              &RectangularMatrixTest::constructFromDiagonal,
+             &RectangularMatrixTest::constructCopy,
              &RectangularMatrixTest::data,
-
-             &RectangularMatrixTest::constExpressions,
 
              &RectangularMatrixTest::compare,
 
@@ -95,6 +93,36 @@ RectangularMatrixTest::RectangularMatrixTest() {
              &RectangularMatrixTest::configuration);
 }
 
+void RectangularMatrixTest::construct() {
+    constexpr Matrix3x4 a(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
+                          Vector4(5.0f,  6.0f,  7.0f,  8.0f),
+                          Vector4(9.0f, 10.0f, 11.0f, 12.0f));
+    CORRADE_COMPARE(a, Matrix3x4(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
+                                 Vector4(5.0f,  6.0f,  7.0f,  8.0f),
+                                 Vector4(9.0f, 10.0f, 11.0f, 12.0f)));
+}
+
+void RectangularMatrixTest::constructDefault() {
+    constexpr Matrix4x3 a;
+    CORRADE_COMPARE(a, Matrix4x3(Vector3(0.0f, 0.0f, 0.0f),
+                                 Vector3(0.0f, 0.0f, 0.0f),
+                                 Vector3(0.0f, 0.0f, 0.0f),
+                                 Vector3(0.0f, 0.0f, 0.0f)));
+}
+
+void RectangularMatrixTest::constructConversion() {
+    constexpr Matrix2 a(Vector2(  1.3f, 2.7f),
+                        Vector2(-15.0f, 7.0f));
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr Matrix2i b(a);
+    #else
+    Matrix2i b(a); /* Not constexpr under GCC < 4.7 */
+    #endif
+
+    CORRADE_COMPARE(b, Matrix2i(Vector2i(  1, 2),
+                                Vector2i(-15, 7)));
+}
+
 void RectangularMatrixTest::constructFromData() {
     Float m[] = {
         3.0f, 5.0f, 8.0f, 4.0f,
@@ -107,41 +135,6 @@ void RectangularMatrixTest::constructFromData() {
                        Vector4(7.0f, -1.0f, 8.0f, 0.0f));
 
     CORRADE_COMPARE(Matrix3x4::from(m), expected);
-}
-
-void RectangularMatrixTest::constructDefault() {
-    Matrix4x3 zero;
-
-    Matrix4x3 zeroExpected(Vector3(0.0f, 0.0f, 0.0f),
-                           Vector3(0.0f, 0.0f, 0.0f),
-                           Vector3(0.0f, 0.0f, 0.0f),
-                           Vector3(0.0f, 0.0f, 0.0f));
-
-    CORRADE_COMPARE(zero, zeroExpected);
-}
-
-void RectangularMatrixTest::constructConversion() {
-    Matrix2 FloatingPoint(Vector2(  1.3f, 2.7f),
-                          Vector2(-15.0f, 7.0f));
-    Matrix2 FloatingPointRounded(Vector2(1.0f, 2.0f),
-                                 Vector2(-15.0f, 7.0f));
-    Matrix2i integral(Vector2i(  1, 2),
-                      Vector2i(-15, 7));
-
-    CORRADE_COMPARE(Matrix2i(FloatingPoint), integral);
-    CORRADE_COMPARE(Matrix2(integral), FloatingPointRounded);
-}
-
-void RectangularMatrixTest::constructFromVectors() {
-    Matrix3x4 actual(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
-                     Vector4(5.0f,  6.0f,  7.0f,  8.0f),
-                     Vector4(9.0f, 10.0f, 11.0f, 12.0f));
-
-    Matrix3x4 expected(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
-                       Vector4(5.0f,  6.0f,  7.0f,  8.0f),
-                       Vector4(9.0f, 10.0f, 11.0f, 12.0f));
-
-    CORRADE_COMPARE(actual, expected);
 }
 
 void RectangularMatrixTest::constructFromDiagonal() {
@@ -159,6 +152,16 @@ void RectangularMatrixTest::constructFromDiagonal() {
     CORRADE_COMPARE(Matrix4x3::fromDiagonal(diagonal), expectedB);
 }
 
+void RectangularMatrixTest::constructCopy() {
+    constexpr Matrix3x4 a(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
+                          Vector4(5.0f,  6.0f,  7.0f,  8.0f),
+                          Vector4(9.0f, 10.0f, 11.0f, 12.0f));
+    constexpr Matrix3x4 b(a);
+    CORRADE_COMPARE(b, Matrix3x4(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
+                                 Vector4(5.0f,  6.0f,  7.0f,  8.0f),
+                                 Vector4(9.0f, 10.0f, 11.0f, 12.0f)));
+}
+
 void RectangularMatrixTest::data() {
     Matrix3x4 m;
     Vector4 vector(4.0f, 5.0f, 6.0f, 7.0f);
@@ -171,51 +174,20 @@ void RectangularMatrixTest::data() {
     CORRADE_COMPARE(m[0][2], 1.5f);
     CORRADE_COMPARE(m[2], vector);
 
-    Matrix3x4 expected(Vector4(0.0f, 0.0f, 1.5f, 0.0f),
-                       Vector4(0.0f, 1.0f, 0.0f, 0.0f),
-                       Vector4(4.0f, 5.0f, 6.0f, 7.0f));
+    CORRADE_COMPARE(m, Matrix3x4(Vector4(0.0f, 0.0f, 1.5f, 0.0f),
+                                 Vector4(0.0f, 1.0f, 0.0f, 0.0f),
+                                 Vector4(4.0f, 5.0f, 6.0f, 7.0f)));
 
-    CORRADE_COMPARE(m, expected);
-}
-
-void RectangularMatrixTest::constExpressions() {
-    /* Default constructor */
-    constexpr Matrix3x4 a;
-    CORRADE_COMPARE(a, Matrix3x4(Vector4(0.0f, 0.0f, 0.0f, 0.0f),
-                                 Vector4(0.0f, 0.0f, 0.0f, 0.0f),
-                                 Vector4(0.0f, 0.0f, 0.0f, 0.0f)));
-
-    /* Value constructor */
-    constexpr Matrix3x4 b(Vector4(3.0f,  5.0f, 8.0f, 4.0f),
+    /* Pointer chasings, i.e. *(b.data()[1]), are not possible */
+    constexpr Matrix3x4 a(Vector4(3.0f,  5.0f, 8.0f, 4.0f),
                           Vector4(4.5f,  4.0f, 7.0f, 3.0f),
                           Vector4(7.0f, -1.7f, 8.0f, 0.0f));
-    CORRADE_COMPARE(b, Matrix3x4(Vector4(3.0f,  5.0f, 8.0f, 4.0f),
-                                 Vector4(4.5f,  4.0f, 7.0f, 3.0f),
-                                 Vector4(7.0f, -1.7f, 8.0f, 0.0f)));
-
-    /* Conversion constructor, not constexpr under GCC < 4.7 */
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    typedef RectangularMatrix<3, 4, Int> Matrix3x4i;
-    typedef Vector<4, Int> Vector4i;
-    constexpr Matrix3x4i c(b);
-    CORRADE_COMPARE(c, Matrix3x4i(Vector4i(3,  5, 8, 4),
-                                  Vector4i(4,  4, 7, 3),
-                                  Vector4i(7, -1, 8, 0)));
-    #endif
-
-    /* Copy constructor */
-    constexpr Matrix3x4 d(b);
-    CORRADE_COMPARE(d, Matrix3x4(Vector4(3.0f,  5.0f, 8.0f, 4.0f),
-                                 Vector4(4.5f,  4.0f, 7.0f, 3.0f),
-                                 Vector4(7.0f, -1.7f, 8.0f, 0.0f)));
-
-    /* Data access, pointer chasings, i.e. *(b.data()[1]), are not possible */
-    constexpr Vector4 e = b[2];
-    constexpr Float f = b[1][2];
-    constexpr Float g = *b.data();
-    CORRADE_COMPARE(e, Vector4(7.0f, -1.7f, 8.0f, 0.0f));
-    CORRADE_COMPARE(f, 7.0f);
-    CORRADE_COMPARE(g, 3.0f);
+    constexpr Vector4 b = a[2];
+    constexpr Float c = a[1][2];
+    constexpr Float d = *a.data();
+    CORRADE_COMPARE(b, Vector4(7.0f, -1.7f, 8.0f, 0.0f));
+    CORRADE_COMPARE(c, 7.0f);
+    CORRADE_COMPARE(d, 3.0f);
 }
 
 void RectangularMatrixTest::compare() {
