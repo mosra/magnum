@@ -28,20 +28,6 @@
 
 namespace Magnum {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-static_assert(std::is_same<GLubyte, UnsignedByte>::value, "GLubyte is not the same as UnsignedByte");
-static_assert(std::is_same<GLbyte, Byte>::value, "GLbyte is not the same as Byte");
-static_assert(std::is_same<GLushort, UnsignedShort>::value, "GLushort is not the same as UnsignedShort");
-static_assert(std::is_same<GLshort, Short>::value, "GLshort is not the same as Short");
-static_assert(std::is_same<GLuint, UnsignedInt>::value, "GLuint is not the same as UnsignedInt");
-static_assert(std::is_same<GLint, Int>::value, "GLint is not the same as Int");
-static_assert(std::is_same<GLsizei, Int>::value, "GLsizei is not the same as Int");
-static_assert(std::is_same<GLfloat, Float>::value, "GLfloat is not the same as Float");
-#ifndef MAGNUM_TARGET_GLES
-static_assert(std::is_same<GLdouble, Double>::value, "GLdouble is not the same as Double");
-#endif
-#endif
-
 AbstractShaderProgram::Uniform1fImplementation AbstractShaderProgram::uniform1fImplementation = &AbstractShaderProgram::uniformImplementationDefault;
 AbstractShaderProgram::Uniform2fvImplementation AbstractShaderProgram::uniform2fvImplementation = &AbstractShaderProgram::uniformImplementationDefault;
 AbstractShaderProgram::Uniform3fvImplementation AbstractShaderProgram::uniform3fvImplementation = &AbstractShaderProgram::uniformImplementationDefault;

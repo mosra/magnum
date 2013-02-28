@@ -19,7 +19,7 @@
  * @brief Class Magnum::Platform::GlxContextHandler
  */
 
-#include "Magnum.h"
+#include "OpenGL.h"
 #include <GL/glx.h>
 /* undef Xlib nonsense to avoid conflicts */
 #undef Complex

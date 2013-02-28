@@ -19,7 +19,7 @@
  * @brief Class Magnum::Platform::WindowlessGlxApplication
  */
 
-#include "Magnum.h"
+#include "OpenGL.h"
 #include <GL/glx.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -28,7 +28,8 @@
 #undef None
 #undef Always
 
-#include "AbstractContextHandler.h"
+#include "Magnum.h"
+#include "Platform/AbstractContextHandler.h"
 
 namespace Magnum { namespace Platform {
 

@@ -22,6 +22,7 @@ set(Magnum_SRCS
     Framebuffer.cpp
     Image.cpp
     Mesh.cpp
+    OpenGL.cpp
     Query.cpp
     Renderbuffer.cpp
     Resource.cpp
@@ -69,6 +70,7 @@ set(Magnum_HEADERS
     ImageWrapper.h
     Magnum.h
     Mesh.h
+    OpenGL.h
     Query.h
     Renderbuffer.h
     Renderer.h

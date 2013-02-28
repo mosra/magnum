@@ -23,7 +23,7 @@
 #include <vector>
 
 #include "Magnum.h"
-
+#include "OpenGL.h"
 #include "magnumVisibility.h"
 
 namespace Magnum {

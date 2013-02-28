@@ -16,27 +16,14 @@
 */
 
 /** @file
- * @brief Basic definitions and forward declarations for Magnum namespace
+ * @brief Forward declarations for Magnum namespace
  */
 
 #include <corradeConfigure.h>
 
 #include "Math/Math.h"
 #include "Types.h"
-
 #include "magnumConfigure.h"
-
-#ifndef MAGNUM_TARGET_GLES
-#include <GL/glew.h>
-#include <GL/glcorearb.h>
-#else
-#ifndef MAGNUM_TARGET_GLES2
-#include <GLES3/gl3.h>
-#else
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#endif
-#endif
 
 namespace Corrade {
     namespace Utility {

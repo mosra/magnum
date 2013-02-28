@@ -19,6 +19,7 @@
 #include <Utility/Debug.h>
 
 #include "Magnum.h"
+#include "OpenGL.h"
 
 namespace Magnum { namespace Platform {
 

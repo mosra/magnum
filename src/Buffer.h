@@ -25,7 +25,7 @@
 #include <Containers/EnumSet.h>
 
 #include "Magnum.h"
-
+#include "OpenGL.h"
 #include "magnumVisibility.h"
 
 namespace Magnum {

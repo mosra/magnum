@@ -23,6 +23,7 @@
 
 #include "Math/Vector2.h"
 #include "Magnum.h"
+#include "OpenGL.h"
 
 #include <GL/freeglut.h>
 
