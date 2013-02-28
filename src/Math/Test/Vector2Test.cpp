@@ -26,6 +26,11 @@ class Vector2Test: public Corrade::TestSuite::Tester {
         Vector2Test();
 
         void construct();
+        void constructDefault();
+        void constructOneValue();
+        void constructConversion();
+        void constructCopy();
+
         void access();
         void axes();
         void scales();
@@ -35,9 +40,15 @@ class Vector2Test: public Corrade::TestSuite::Tester {
 };
 
 typedef Math::Vector2<Float> Vector2;
+typedef Math::Vector2<Int> Vector2i;
 
 Vector2Test::Vector2Test() {
     addTests(&Vector2Test::construct,
+             &Vector2Test::constructDefault,
+             &Vector2Test::constructOneValue,
+             &Vector2Test::constructConversion,
+             &Vector2Test::constructCopy,
+
              &Vector2Test::access,
              &Vector2Test::axes,
              &Vector2Test::scales,
@@ -46,27 +57,64 @@ Vector2Test::Vector2Test() {
 }
 
 void Vector2Test::construct() {
-    CORRADE_COMPARE(Vector2(1, 2), (Vector<2, Float>(1.0f, 2.0f)));
+    constexpr Vector2 a(1.5f, 2.5f);
+    CORRADE_COMPARE(a, (Vector<2, Float>(1.5f, 2.5f)));
+}
+
+void Vector2Test::constructDefault() {
+    constexpr Vector2 a;
+    CORRADE_COMPARE(a, Vector2(0.0f, 0.0f));
+}
+
+void Vector2Test::constructOneValue() {
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr Vector2 a(3.0f);
+    #else
+    Vector2 a(3.0f); /* Not constexpr under GCC < 4.7 */
+    #endif
+    CORRADE_COMPARE(a, Vector2(3.0f, 3.0f));
+}
+
+void Vector2Test::constructConversion() {
+    constexpr Vector2 a(1.5f, 2.5f);
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr Vector2i b(a);
+    #else
+    Vector2i b(a); /* Not constexpr under GCC < 4.7 */
+    #endif
+    CORRADE_COMPARE(b, Vector2i(1, 2));
+}
+
+void Vector2Test::constructCopy() {
+    constexpr Vector2 a(1.5f, 2.5f);
+    constexpr Vector2 b(a);
+    CORRADE_COMPARE(b, Vector2(1.5f, 2.5f));
 }
 
 void Vector2Test::access() {
     Vector2 vec(1.0f, -2.0f);
-    const Vector2 cvec(1.0f, -2.0f);
-
     CORRADE_COMPARE(vec.x(), 1.0f);
     CORRADE_COMPARE(vec.y(), -2.0f);
-    CORRADE_COMPARE(cvec.x(), 1.0f);
-    CORRADE_COMPARE(cvec.y(), -2.0f);
+
+    constexpr Vector2 cvec(1.0f, -2.0f);
+    constexpr Float x = cvec.x();
+    constexpr Float y = cvec.y();
+    CORRADE_COMPARE(x, 1.0f);
+    CORRADE_COMPARE(y, -2.0f);
 }
 
 void Vector2Test::axes() {
-    CORRADE_COMPARE(Vector2::xAxis(5.0f), Vector2(5.0f, 0.0f));
-    CORRADE_COMPARE(Vector2::yAxis(6.0f), Vector2(0.0f, 6.0f));
+    constexpr Vector2 x = Vector2::xAxis(5.0f);
+    constexpr Vector2 y = Vector2::yAxis(6.0f);
+    CORRADE_COMPARE(x, Vector2(5.0f, 0.0f));
+    CORRADE_COMPARE(y, Vector2(0.0f, 6.0f));
 }
 
 void Vector2Test::scales() {
-    CORRADE_COMPARE(Vector2::xScale(-5.0f), Vector2(-5.0f, 1.0f));
-    CORRADE_COMPARE(Vector2::yScale(-0.2f), Vector2(1.0f, -0.2f));
+    constexpr Vector2 x = Vector2::xScale(-5.0f);
+    constexpr Vector2 y = Vector2::yScale(-0.2f);
+    CORRADE_COMPARE(x, Vector2(-5.0f, 1.0f));
+    CORRADE_COMPARE(y, Vector2(1.0f, -0.2f));
 }
 
 void Vector2Test::debug() {

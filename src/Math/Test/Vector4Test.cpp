@@ -25,8 +25,14 @@ class Vector4Test: public Corrade::TestSuite::Tester {
     public:
         Vector4Test();
 
-        void access();
         void construct();
+        void constructDefault();
+        void constructOneValue();
+        void constructParts();
+        void constructConversion();
+        void constructCopy();
+
+        void access();
         void threeComponent();
         void twoComponent();
 
@@ -35,44 +41,105 @@ class Vector4Test: public Corrade::TestSuite::Tester {
 };
 
 typedef Math::Vector4<Float> Vector4;
+typedef Math::Vector4<Int> Vector4i;
 typedef Math::Vector3<Float> Vector3;
 typedef Math::Vector2<Float> Vector2;
 
 Vector4Test::Vector4Test() {
     addTests(&Vector4Test::construct,
+             &Vector4Test::constructDefault,
+             &Vector4Test::constructOneValue,
+             &Vector4Test::constructParts,
+             &Vector4Test::constructConversion,
+             &Vector4Test::constructCopy,
+
              &Vector4Test::access,
              &Vector4Test::threeComponent,
              &Vector4Test::twoComponent,
+
              &Vector4Test::debug,
              &Vector4Test::configuration);
 }
 
 void Vector4Test::construct() {
-    CORRADE_COMPARE(Vector4(), Vector4(0.0f, 0.0f, 0.0f, 0.0f));
-    CORRADE_COMPARE(Vector4(1, 2, 3, 4), (Vector<4, Float>(1.0f, 2.0f, 3.0f, 4.0f)));
-    CORRADE_COMPARE(Vector4(Vector<3, Float>(1.0f, 2.0f, 3.0f), 4), (Vector<4, Float>(1.0f, 2.0f, 3.0f, 4.0f)));
+    constexpr Vector4 a(1.0f, -2.5f, 3.0f, 4.1f);
+    CORRADE_COMPARE(a, (Vector<4, Float>(1.0f, -2.5f, 3.0f, 4.1f)));
+}
+
+void Vector4Test::constructDefault() {
+    constexpr Vector4 a;
+    CORRADE_COMPARE(a, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+}
+
+void Vector4Test::constructOneValue() {
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr Vector4 a(4.3f);
+    #else
+    Vector4 a(4.3f); /* Not constexpr under GCC < 4.7 */
+    #endif
+    CORRADE_COMPARE(a, Vector4(4.3f, 4.3f, 4.3f, 4.3f));
+}
+
+void Vector4Test::constructParts() {
+    constexpr Vector3 a(1.0f, 2.0f, 3.0f);
+    constexpr Vector4 b(a, 4.0f);
+    CORRADE_COMPARE(b, Vector4(1.0f, 2.0f, 3.0f, 4.0f));
+}
+
+void Vector4Test::constructConversion() {
+    constexpr Vector4 a(1.0f, -2.5f, 3.0f, 4.1f);
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr Vector4i b(a);
+    #else
+    Vector4i b(a); /* Not constexpr under GCC < 4.7 */
+    #endif
+    CORRADE_COMPARE(b, Vector4i(1, -2, 3, 4));
+}
+
+void Vector4Test::constructCopy() {
+    constexpr Vector4 a(1.0f, -2.5f, 3.0f, 4.1f);
+    constexpr Vector4 b(a);
+    CORRADE_COMPARE(b, Vector4(1.0f, -2.5f, 3.0f, 4.1f));
 }
 
 void Vector4Test::access() {
     Vector4 vec(1.0f, -2.0f, 5.0f, 0.5f);
-    const Vector4 cvec(1.0f, -2.0f, 5.0f, 0.5f);
-
     CORRADE_COMPARE(vec.x(), 1.0f);
     CORRADE_COMPARE(vec.y(), -2.0f);
     CORRADE_COMPARE(vec.z(), 5.0f);
     CORRADE_COMPARE(vec.w(), 0.5f);
-    CORRADE_COMPARE(cvec.x(), 1.0f);
-    CORRADE_COMPARE(cvec.y(), -2.0f);
-    CORRADE_COMPARE(cvec.z(), 5.0f);
-    CORRADE_COMPARE(cvec.w(), 0.5f);
+
+    constexpr Vector4 cvec(1.0f, -2.0f, 5.0f, 0.5f);
+    constexpr Float x = cvec.x();
+    constexpr Float y = cvec.y();
+    constexpr Float z = cvec.z();
+    constexpr Float w = cvec.w();
+    CORRADE_COMPARE(x, 1.0f);
+    CORRADE_COMPARE(y, -2.0f);
+    CORRADE_COMPARE(z, 5.0f);
+    CORRADE_COMPARE(w, 0.5f);
 }
 
 void Vector4Test::threeComponent() {
-    CORRADE_COMPARE(Vector4(1.0f, 2.0f, 3.0f, 4.0f).xyz(), Vector3(1.0f, 2.0f, 3.0f));
+    Vector4 a(1.0f, 2.0f, 3.0f, 4.0f);
+    CORRADE_COMPARE(a.xyz(), Vector3(1.0f, 2.0f, 3.0f));
+
+    constexpr Vector4 b(1.0f, 2.0f, 3.0f, 4.0f);
+    constexpr Vector3 c = b.xyz();
+    constexpr Float d = b.xyz().y();
+    CORRADE_COMPARE(c, Vector3(1.0f, 2.0f, 3.0f));
+    CORRADE_COMPARE(d, 2.0f);
 }
 
 void Vector4Test::twoComponent() {
-    CORRADE_COMPARE(Vector4(1.0f, 2.0f, 3.0f, 4.0f).xy(), Vector2(1.0f, 2.0f));
+    Vector4 a(1.0f, 2.0f, 3.0f, 4.0f);
+    CORRADE_COMPARE(a.xy(), Vector2(1.0f, 2.0f));
+
+    constexpr Vector4 b(1.0f, 2.0f, 3.0f, 4.0f);
+    constexpr Vector2 c = b.xy();
+    constexpr Float d = b.xy().x();
+    CORRADE_COMPARE(c, Vector2(1.0f, 2.0f));
+    CORRADE_COMPARE(d, 1.0f);
 }
 
 void Vector4Test::debug() {

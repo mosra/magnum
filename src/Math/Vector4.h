@@ -79,7 +79,7 @@ template<class T> class Vector4: public Vector<4, T> {
          * @see swizzle()
          */
         inline Vector3<T>& xyz() { return Vector3<T>::from(Vector<4, T>::data()); }
-        inline constexpr Vector3<T> xyz() const { return Vector3<T>::from(Vector<4, T>::data()); } /**< @overload */
+        inline constexpr const Vector3<T> xyz() const { return {x(), y(), z()}; } /**< @overload */
 
         /**
          * @brief XY part of the vector
@@ -88,7 +88,7 @@ template<class T> class Vector4: public Vector<4, T> {
          * @see swizzle()
          */
         inline Vector2<T>& xy() { return Vector2<T>::from(Vector<4, T>::data()); }
-        inline constexpr Vector2<T> xy() const { return Vector2<T>::from(Vector<4, T>::data()); } /**< @overload */
+        inline constexpr const Vector2<T> xy() const { return {x(), y()}; } /**< @overload */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector4, 4)
 };

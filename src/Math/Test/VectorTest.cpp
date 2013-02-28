@@ -25,14 +25,14 @@ class VectorTest: public Corrade::TestSuite::Tester {
     public:
         VectorTest();
 
+        void construct();
         void constructFromData();
         void constructDefault();
         void constructOneValue();
         void constructOneComponent();
         void constructConversion();
+        void constructCopy();
         void data();
-
-        void constExpressions();
 
         void negative();
         void addSubtract();
@@ -68,14 +68,14 @@ typedef Vector<4, Float> Vector4;
 typedef Vector<4, Int> Vector4i;
 
 VectorTest::VectorTest() {
-    addTests(&VectorTest::constructFromData,
+    addTests(&VectorTest::construct,
+             &VectorTest::constructFromData,
              &VectorTest::constructDefault,
              &VectorTest::constructOneValue,
              &VectorTest::constructOneComponent,
              &VectorTest::constructConversion,
+             &VectorTest::constructCopy,
              &VectorTest::data,
-
-             &VectorTest::constExpressions,
 
              &VectorTest::negative,
              &VectorTest::addSubtract,
@@ -105,34 +105,54 @@ VectorTest::VectorTest() {
              &VectorTest::configuration);
 }
 
+void VectorTest::construct() {
+    constexpr Vector4 a(1.0f, 2.0f, -3.0f, 4.5f);
+    CORRADE_COMPARE(a, Vector4(1.0f, 2.0f, -3.0f, 4.5f));
+}
+
+void VectorTest::constructDefault() {
+    constexpr Vector4 a;
+    CORRADE_COMPARE(a, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+}
+
 void VectorTest::constructFromData() {
     Float data[] = { 1.0f, 2.0f, 3.0f, 4.0f };
     CORRADE_COMPARE(Vector4::from(data), Vector4(1.0f, 2.0f, 3.0f, 4.0f));
 }
 
-void VectorTest::constructDefault() {
-    CORRADE_COMPARE(Vector4(), Vector4(0.0f, 0.0f, 0.0f, 0.0f));
-}
-
 void VectorTest::constructOneValue() {
-    CORRADE_COMPARE(Vector4(7.25f), Vector4(7.25f, 7.25f, 7.25f, 7.25f));
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr Vector4 a(7.25f);
+    #else
+    Vector4 a(7.25f); /* Not constexpr under GCC < 4.7 */
+    #endif
+
+    CORRADE_COMPARE(a, Vector4(7.25f, 7.25f, 7.25f, 7.25f));
 }
 
 void VectorTest::constructOneComponent() {
     typedef Vector<1, Float> Vector1;
 
     /* Implicit constructor must work */
-    Vector1 vec = 1;
+    constexpr Vector1 vec = 1.0f;
     CORRADE_COMPARE(vec, Vector1(1));
 }
 
 void VectorTest::constructConversion() {
-    Vector4 FloatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
-    Vector4 FloatingPointRounded(1.0f, 2.0f, -15.0f, 7.0f);
-    Vector4i integral(1, 2, -15, 7);
+    constexpr Vector4 a(1.3f, 2.7f, -15.0f, 7.0f);
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr Vector4i b(a);
+    #else
+    Vector4i b(a); /* Not constexpr under GCC < 4.7 */
+    #endif
 
-    CORRADE_COMPARE(Vector4i(FloatingPoint), integral);
-    CORRADE_COMPARE(Vector4(integral), FloatingPointRounded);
+    CORRADE_COMPARE(b, Vector4i(1, 2, -15, 7));
+}
+
+void VectorTest::constructCopy() {
+    constexpr Vector4 a(1.0f, 3.5f, 4.0f, -2.7f);
+    constexpr Vector4 b(a);
+    CORRADE_COMPARE(b, Vector4(1.0f, 3.5f, 4.0f, -2.7f));
 }
 
 void VectorTest::data() {
@@ -143,37 +163,12 @@ void VectorTest::data() {
     CORRADE_COMPARE(vector[2], 1.0f);
     CORRADE_COMPARE(vector[3], 1.5f);
     CORRADE_COMPARE(vector, Vector4(4.0f, 5.0f, 1.0f, 1.5f));
-}
 
-void VectorTest::constExpressions() {
-    /* Default constructor */
-    constexpr Vector4 a;
-    CORRADE_COMPARE(a, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
-
-    /* Value constructor */
-    constexpr Vector4 b(1.0f, 3.5f, 4.0f, -2.7f);
-    CORRADE_COMPARE(b, Vector4(1.0f, 3.5f, 4.0f, -2.7f));
-
-    /* One-value constructor, not constexpr under GCC < 4.7 */
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr Vector4 c(7.0f);
-    CORRADE_COMPARE(c, Vector4(7.0f, 7.0f, 7.0f, 7.0f));
-    #endif
-
-    /* Conversion constructor, not constexpr under GCC < 4.7 */
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr Vector4i d(b);
-    CORRADE_COMPARE(d, Vector4i(1, 3, 4, -2));
-    #endif
-
-    /* Copy constructor */
-    constexpr Vector4 e(b);
-    CORRADE_COMPARE(e, Vector4(1.0f, 3.5f, 4.0f, -2.7f));
-
-    /* Data access, pointer chasings, i.e. *(b.data()[3]), are not possible */
-    constexpr Float f = b[3];
-    constexpr Float g = *b.data();
-    CORRADE_COMPARE(f, -2.7f);
+    /* Pointer chasings, i.e. *(b.data()[3]), are not possible */
+    constexpr Vector4 a(1.0f, 2.0f, -3.0f, 4.5f);
+    constexpr Float f = a[3];
+    constexpr Float g = *a.data();
+    CORRADE_COMPARE(f, 4.5f);
     CORRADE_COMPARE(g, 1.0f);
 }
 

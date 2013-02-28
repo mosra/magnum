@@ -147,7 +147,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * @see swizzle()
          */
         inline Vector2<T>& xy() { return Vector2<T>::from(Vector<3, T>::data()); }
-        inline constexpr Vector2<T> xy() const { return Vector2<T>::from(Vector<3, T>::data()); } /**< @overload */
+        inline constexpr const Vector2<T> xy() const { return {x(), y()}; } /**< @overload */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector3, 3)
 };
