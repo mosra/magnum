@@ -62,7 +62,8 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
         typedef Corrade::Containers::EnumSet<Feature, int> Features;
 
         /** @brief Constructor */
-        inline explicit AbstractImporter(Corrade::PluginManager::AbstractPluginManager* manager = nullptr, const std::string& plugin = {}): Plugin(manager, plugin) {}
+        /* GCC 4.6 can't handle {} as default parameter */
+        inline explicit AbstractImporter(Corrade::PluginManager::AbstractPluginManager* manager = nullptr, const std::string& plugin = std::string()): Plugin(manager, plugin) {}
 
         /** @brief Features supported by this importer */
         virtual Features features() const = 0;
