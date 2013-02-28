@@ -193,13 +193,15 @@ void RectangularMatrixTest::constExpressions() {
                                  Vector4(4.5f,  4.0f, 7.0f, 3.0f),
                                  Vector4(7.0f, -1.7f, 8.0f, 0.0f)));
 
-    /* Conversion constructor */
+    /* Conversion constructor, not constexpr under GCC < 4.7 */
+    #ifndef CORRADE_GCC46_COMPATIBILITY
     typedef RectangularMatrix<3, 4, Int> Matrix3x4i;
     typedef Vector<4, Int> Vector4i;
     constexpr Matrix3x4i c(b);
     CORRADE_COMPARE(c, Matrix3x4i(Vector4i(3,  5, 8, 4),
                                   Vector4i(4,  4, 7, 3),
                                   Vector4i(7, -1, 8, 0)));
+    #endif
 
     /* Copy constructor */
     constexpr Matrix3x4 d(b);

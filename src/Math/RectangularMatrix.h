@@ -112,7 +112,13 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * // integral == {1, 2, -15, 7}
          * @endcode
          */
+        #ifndef CORRADE_GCC46_COMPATIBILITY
         template<class U> inline constexpr explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other): RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), other) {}
+        #else
+        template<class U> inline explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other) {
+            *this = RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), other);
+        }
+        #endif
 
         /** @brief Copy constructor */
         inline constexpr RectangularMatrix(const RectangularMatrix<cols, rows, T>&) = default;
