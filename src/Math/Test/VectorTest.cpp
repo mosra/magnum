@@ -154,13 +154,17 @@ void VectorTest::constExpressions() {
     constexpr Vector4 b(1.0f, 3.5f, 4.0f, -2.7f);
     CORRADE_COMPARE(b, Vector4(1.0f, 3.5f, 4.0f, -2.7f));
 
-    /* One-value constructor */
+    /* One-value constructor, not constexpr under GCC < 4.7 */
+    #ifndef CORRADE_GCC46_COMPATIBILITY
     constexpr Vector4 c(7.0f);
     CORRADE_COMPARE(c, Vector4(7.0f, 7.0f, 7.0f, 7.0f));
+    #endif
 
-    /* Conversion constructor */
+    /* Conversion constructor, not constexpr under GCC < 4.7 */
+    #ifndef CORRADE_GCC46_COMPATIBILITY
     constexpr Vector4i d(b);
     CORRADE_COMPARE(d, Vector4i(1, 3, 4, -2));
+    #endif
 
     /* Copy constructor */
     constexpr Vector4 e(b);

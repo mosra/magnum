@@ -118,7 +118,13 @@ template<std::size_t size, class T> class Vector {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         inline explicit Vector(T value);
         #else
+        #ifndef CORRADE_GCC46_COMPATIBILITY
         template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> inline constexpr explicit Vector(U value): Vector(typename Implementation::GenerateSequence<size>::Type(), value) {}
+        #else
+        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> inline explicit Vector(U value) {
+            *this = Vector(typename Implementation::GenerateSequence<size>::Type(), value);
+        }
+        #endif
         #endif
 
         /**
@@ -132,7 +138,13 @@ template<std::size_t size, class T> class Vector {
          * // integral == {1, 2, -15, 7}
          * @endcode
          */
+        #ifndef CORRADE_GCC46_COMPATIBILITY
         template<class U> inline constexpr explicit Vector(const Vector<size, U>& other): Vector(typename Implementation::GenerateSequence<size>::Type(), other) {}
+        #else
+        template<class U> inline explicit Vector(const Vector<size, U>& other) {
+            *this = Vector(typename Implementation::GenerateSequence<size>::Type(), other);
+        }
+        #endif
 
         /** @brief Copy constructor */
         inline constexpr Vector(const Vector<size, T>&) = default;
