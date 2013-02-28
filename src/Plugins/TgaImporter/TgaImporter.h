@@ -50,25 +50,25 @@ class TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         bool open(const std::string& filename) override;
         void close() override;
 
-        std::uint32_t image2DCount() const override { return _image ? 1 : 0; }
-        ImageData2D* image2D(std::uint32_t id) override;
+        UnsignedInt image2DCount() const override { return _image ? 1 : 0; }
+        ImageData2D* image2D(UnsignedInt id) override;
 
         #pragma pack(1)
         /** @brief TGA file header */
         /** @todoc Enable @c INLINE_SIMPLE_STRUCTS again when unclosed &lt;component&gt; in tagfile is fixed*/
         struct TGAIMPORTER_LOCAL Header {
-            std::uint8_t    identsize;      /**< @brief Size of ID field that follows header (0) */
-            std::uint8_t    colorMapType;   /**< @brief 0 = None, 1 = paletted */
-            std::uint8_t    imageType;      /**< @brief 0 = none, 1 = indexed, 2 = rgb, 3 = grey, +8=rle */
-            std::uint16_t   colorMapStart;  /**< @brief First color map entry */
-            std::uint16_t   colorMapLength; /**< @brief Number of colors */
-            std::uint8_t    colorMapBpp;    /**< @brief Bits per palette entry */
-            std::uint16_t   beginX;         /**< @brief %Image x origin */
-            std::uint16_t   beginY;         /**< @brief %Image y origin */
-            std::uint16_t   width;          /**< @brief %Image width */
-            std::uint16_t   height;         /**< @brief %Image height */
-            std::uint8_t    bpp;            /**< @brief Bits per pixel (8, 16, 24, 32) */
-            std::uint8_t    descriptor;     /**< @brief %Image descriptor */
+            UnsignedByte    identsize;      /**< @brief Size of ID field that follows header (0) */
+            UnsignedByte    colorMapType;   /**< @brief 0 = None, 1 = paletted */
+            UnsignedByte    imageType;      /**< @brief 0 = none, 1 = indexed, 2 = rgb, 3 = grey, +8=rle */
+            UnsignedShort   colorMapStart;  /**< @brief First color map entry */
+            UnsignedShort   colorMapLength; /**< @brief Number of colors */
+            UnsignedByte    colorMapBpp;    /**< @brief Bits per palette entry */
+            UnsignedShort   beginX;         /**< @brief %Image x origin */
+            UnsignedShort   beginY;         /**< @brief %Image y origin */
+            UnsignedShort   width;          /**< @brief %Image width */
+            UnsignedShort   height;         /**< @brief %Image height */
+            UnsignedByte    bpp;            /**< @brief Bits per pixel (8, 16, 24, 32) */
+            UnsignedByte    descriptor;     /**< @brief %Image descriptor */
         };
         #pragma pack(8)
 
