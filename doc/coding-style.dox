@@ -27,6 +27,15 @@ have `*.hpp` extension (hinting that they are something between `*.h` and
 
 @subsection cpp-format Code format
 
+@subsubsection cpp-types Builtin types
+
+Use %Magnum's own type aliases for public API (e.g. @ref UnsignedInt, see
+@ref types for more information), but use specific types when interacting with
+third party libraries and OpenGL (e.g. `GLuint`) and rely only on implicit
+conversions when converting between them. This helps avoiding sign, truncation
+and other issues, e.g. `%Math::%Vector2<GLsizei>` will implicitly convert to
+@ref Vector2i if and only if @ref Int is the same type as `GLsizei`.
+
 @subsubsection cpp-naming Naming
 
 When writing wrappers for OpenGL functions and defines, try to match the
