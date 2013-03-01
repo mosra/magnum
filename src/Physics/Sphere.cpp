@@ -77,7 +77,9 @@ template<UnsignedInt dimensions> bool Sphere<dimensions>::operator%(const Sphere
         Math::pow<2>(transformedRadius()+other.transformedRadius());
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_PHYSICS_EXPORT Sphere<2>;
 template class MAGNUM_PHYSICS_EXPORT Sphere<3>;
+#endif
 
 }}

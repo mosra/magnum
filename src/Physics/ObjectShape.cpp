@@ -46,7 +46,9 @@ template<UnsignedInt dimensions> void ObjectShape<dimensions>::clean(const typen
     if(_shape) _shape->applyTransformationMatrix(absoluteTransformationMatrix);
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_PHYSICS_EXPORT ObjectShape<2>;
 template class MAGNUM_PHYSICS_EXPORT ObjectShape<3>;
+#endif
 
 }}

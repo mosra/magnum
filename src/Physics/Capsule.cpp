@@ -52,7 +52,9 @@ template<UnsignedInt dimensions> bool Capsule<dimensions>::operator%(const Spher
         Math::pow<2>(transformedRadius()+other.transformedRadius());
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_PHYSICS_EXPORT Capsule<2>;
 template class MAGNUM_PHYSICS_EXPORT Capsule<3>;
+#endif
 
 }}

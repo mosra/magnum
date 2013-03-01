@@ -38,7 +38,9 @@ template<UnsignedInt dimensions> bool AxisAlignedBox<dimensions>::operator%(cons
            (other.transformedPosition() < _transformedMax).all();
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_PHYSICS_EXPORT AxisAlignedBox<2>;
 template class MAGNUM_PHYSICS_EXPORT AxisAlignedBox<3>;
+#endif
 
 }}

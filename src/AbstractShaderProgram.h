@@ -223,25 +223,39 @@ See @ref types for more information, only types with GLSL equivalent can be used
 (and their super- or subclasses with the same size and underlying type).
 
 @requires_gl30 %Extension @extension{EXT,gpu_shader4} is required when using
-    integer attributes (i.e. UnsignedInt, Int, Vector2ui, Vector2i, Vector3ui,
-    Vector3i, Vector4ui and Vector4i) or unsigned integer uniforms. (i.e.
-    UnsignedInt, Vector2ui, Vector3ui and Vector4ui).
+    integer attributes (i.e. @ref Magnum::UnsignedInt "UnsignedInt",
+    @ref Magnum::Int "Int", @ref Magnum::Vector2ui "Vector2ui",
+    @ref Magnum::Vector2i "Vector2i", @ref Magnum::Vector3ui "Vector3ui",
+    @ref Magnum::Vector3i "Vector3i", @ref Magnum::Vector4ui "Vector4ui" and
+    @ref Magnum::Vector4i "Vector4i") or unsigned integer uniforms (i.e.
+    @ref Magnum::UnsignedInt "UnsignedInt", @ref Magnum::Vector2ui "Vector2ui",
+    @ref Magnum::Vector3ui "Vector3ui" and @ref Magnum::Vector4ui "Vector4ui").
 @requires_gles30 Integer attributes and unsigned integer uniforms are not
     available in OpenGL ES 2.0.
 
 @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64} is required when
-    using double uniforms (i.e. Double, Vector2d, Vector3d, Vector4d, Matrix2d,
-    Matrix3d, Matrix4d, Matrix2x3d, Matrix3x2d, Matrix2x4d, Matrix4x2d,
-    Matrix3x4d and Matrix4x3d).
+    using double uniforms (i.e. @ref Magnum::Double "Double",
+    @ref Magnum::Vector2d "Vector2d", @ref Magnum::Vector3d "Vector3d",
+    @ref Magnum::Vector4d "Vector4d", @ref Magnum::Matrix2d "Matrix2d",
+    @ref Magnum::Matrix3d "Matrix3d", @ref Magnum::Matrix4d "Matrix4d",
+    @ref Magnum::Matrix2x3d "Matrix2x3d", @ref Magnum::Matrix3x2d "Matrix3x2d",
+    @ref Magnum::Matrix2x4d "Matrix2x4d", @ref Magnum::Matrix4x2d "Matrix4x2d",
+    @ref Magnum::Matrix3x4d "Matrix3x4d" and @ref Magnum::Matrix4x3d "Matrix4x3d").
 @requires_gl41 %Extension @extension{ARB,vertex_attrib_64bit} is required when
-    using double attributes (i.e. Double, Vector2d, Vector3d, Vector4d, Matrix2d,
-    Matrix3d, Matrix4d, Matrix2x3d, Matrix3x2d, Matrix2x4d, Matrix4x2d,
-    Matrix3x4d and Matrix4x3d).
+    using double attributes (i.e. @ref Magnum::Double "Double",
+    @ref Magnum::Vector2d "Vector2d", @ref Magnum::Vector3d "Vector3d",
+    @ref Magnum::Vector4d "Vector4d", @ref Magnum::Matrix2d "Matrix2d",
+    @ref Magnum::Matrix3d "Matrix3d", @ref Magnum::Matrix4d "Matrix4d",
+    @ref Magnum::Matrix2x3d "Matrix2x3d", @ref Magnum::Matrix3x2d "Matrix3x2d",
+    @ref Magnum::Matrix2x4d "Matrix2x4d", @ref Magnum::Matrix4x2d "Matrix4x2d",
+    @ref Magnum::Matrix3x4d "Matrix3x4d" and @ref Magnum::Matrix4x3d "Matrix4x3d").
 @requires_gl Double attributes and uniforms are not available in OpenGL ES.
 
-@requires_gles30 Non-square matrix attributes and uniforms (i.e. Matrix2x3,
-    Matrix3x2, Matrix2x4, Matrix4x2, Matrix3x4 and Matrix4x3) are not available
-    in OpenGL ES 2.0.
+@requires_gles30 Non-square matrix attributes and uniforms (i.e.
+    @ref Magnum::Matrix2x3 "Matrix2x3", @ref Magnum::Matrix3x2 "Matrix3x2",
+    @ref Magnum::Matrix2x4 "Matrix2x4", @ref Magnum::Matrix4x2d "Matrix4x2",
+    @ref Magnum::Matrix3x4 "Matrix3x4" and @ref Magnum::Matrix4x3 "Matrix4x3")
+    are not available in OpenGL ES 2.0.
 
 @section AbstractShaderProgram-performance-optimization Performance optimizations
 

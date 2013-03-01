@@ -79,9 +79,10 @@ class MAGNUM_EXPORT AbstractQuery {
          * See resultAvailable().
          * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT}
          * @requires_gl33 %Extension @extension{ARB,timer_query} (result type
-         *      UnsignedInt and Long)
-         * @requires_gl Result types Int, UnsignedLong and Long are not
-         *      available in OpenGL ES.
+         *      @ref Magnum::UnsignedInt "UnsignedInt" and @ref Magnum::Long
+         *      "Long")
+         * @requires_gl Result types @ref Magnum::Int "Int", @ref Magnum::UnsignedLong "UnsignedLong"
+         *      and @ref Magnum::Long "Long" are not available in OpenGL ES.
          */
         template<class T> T result();
 

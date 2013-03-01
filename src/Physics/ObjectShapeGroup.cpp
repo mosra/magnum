@@ -45,7 +45,9 @@ template<UnsignedInt dimensions> ObjectShape<dimensions>* ObjectShapeGroup<dimen
     return nullptr;
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_PHYSICS_EXPORT ObjectShapeGroup<2>;
 template class MAGNUM_PHYSICS_EXPORT ObjectShapeGroup<3>;
+#endif
 
 }}
