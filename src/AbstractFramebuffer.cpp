@@ -92,12 +92,14 @@ void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer&
     #endif
 }
 
-void AbstractFramebuffer::setViewport(const Rectanglei& rectangle) {
+AbstractFramebuffer* AbstractFramebuffer::setViewport(const Rectanglei& rectangle) {
     _viewport = rectangle;
 
     /* Update the viewport if the framebuffer is currently bound */
     if(Context::current()->state()->framebuffer->drawBinding == _id)
         setViewportInternal();
+
+    return this;
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

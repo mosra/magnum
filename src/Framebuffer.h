@@ -221,6 +221,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
 
         /**
          * @brief Map shader output to attachments
+         * @return Pointer to self (for method chaining)
          *
          * @p attachments is list of shader outputs mapped to framebuffer
          * color attachment IDs. %Shader outputs which are not listed are not
@@ -238,11 +239,12 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
          */
-        void mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments);
+        Framebuffer* mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments);
 
         /**
          * @brief Map shader output to attachment
          * @param attachment        Draw attachment
+         * @return Pointer to self (for method chaining)
          *
          * Similar to above function, can be used in cases when shader has
          * only one (unnamed) output.
@@ -254,8 +256,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
          */
-        inline void mapForDraw(DrawAttachment attachment) {
+        inline Framebuffer* mapForDraw(DrawAttachment attachment) {
             (this->*drawBufferImplementation)(GLenum(attachment));
+            return this;
         }
 
         /**
@@ -292,6 +295,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
         /**
          * @brief Map given color attachment for reading
          * @param attachment        Color attachment
+         * @return Pointer to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
@@ -300,14 +304,16 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
-        inline void mapForRead(ColorAttachment attachment) {
+        inline Framebuffer* mapForRead(ColorAttachment attachment) {
             (this->*readBufferImplementation)(GLenum(attachment));
+            return this;
         }
 
         /**
          * @brief Attach renderbuffer to given buffer
          * @param attachment        %Buffer attachment
          * @param renderbuffer      %Renderbuffer
+         * @return Pointer to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
@@ -315,8 +321,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferRenderbuffer} or
          *      @fn_gl_extension{NamedFramebufferRenderbuffer,EXT,direct_state_access}
          */
-        inline void attachRenderbuffer(BufferAttachment attachment, Renderbuffer* renderbuffer) {
+        inline Framebuffer* attachRenderbuffer(BufferAttachment attachment, Renderbuffer* renderbuffer) {
             (this->*renderbufferImplementation)(attachment, renderbuffer);
+            return this;
         }
 
         #ifndef MAGNUM_TARGET_GLES
@@ -325,6 +332,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @param attachment        %Buffer attachment
          * @param texture           1D texture
          * @param level             Mip level
+         * @return Pointer to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
@@ -333,8 +341,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access}
          * @requires_gl Only 2D and 3D textures are available in OpenGL ES.
          */
-        inline void attachTexture1D(BufferAttachment attachment, Texture1D* texture, Int level) {
+        inline Framebuffer* attachTexture1D(BufferAttachment attachment, Texture1D* texture, Int level) {
             (this->*texture1DImplementation)(attachment, texture, level);
+            return this;
         }
         #endif
 
@@ -343,6 +352,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @param attachment        %Buffer attachment
          * @param texture           2D texture
          * @param level             Mip level
+         * @return Pointer to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
@@ -350,7 +360,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @see attachCubeMapTexture(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
          *      or @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
          */
-        void attachTexture2D(BufferAttachment attachment, Texture2D* texture, Int level);
+        Framebuffer* attachTexture2D(BufferAttachment attachment, Texture2D* texture, Int level);
 
         /**
          * @brief Attach cube map texture to given buffer
@@ -358,6 +368,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @param texture           Cube map texture
          * @param coordinate        Cube map coordinate
          * @param level             Mip level
+         * @return Pointer to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
@@ -365,8 +376,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @see attachTexture2D(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
          *      or @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
          */
-        inline void attachCubeMapTexture(BufferAttachment attachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, Int level) {
+        inline Framebuffer* attachCubeMapTexture(BufferAttachment attachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, Int level) {
             (this->*texture2DImplementation)(attachment, GLenum(coordinate), texture->id(), level);
+            return this;
         }
 
         /**
@@ -375,6 +387,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @param texture           3D texture
          * @param level             Mip level
          * @param layer             Layer of 2D image within a 3D texture
+         * @return Pointer to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
@@ -383,10 +396,19 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{NamedFramebufferTexture3D,EXT,direct_state_access}
          * @requires_es_extension %Extension @es_extension{OES,texture_3D}
          */
-        inline void attachTexture3D(BufferAttachment attachment, Texture3D* texture, Int level, Int layer) {
+        inline Framebuffer* attachTexture3D(BufferAttachment attachment, Texture3D* texture, Int level, Int layer) {
             /** @todo Check for texture target compatibility */
             (this->*texture3DImplementation)(attachment, texture, level, layer);
+            return this;
         }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline Framebuffer* setViewport(const Rectanglei& rectangle) {
+            AbstractFramebuffer::setViewport(rectangle);
+            return this;
+        }
+        #endif
 
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);

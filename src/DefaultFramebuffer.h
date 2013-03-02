@@ -264,6 +264,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Map shader outputs to buffer attachment
+         * @return Pointer to self (for method chaining)
          *
          * @p attachments is list of shader outputs mapped to buffer
          * attachments. %Shader outputs which are not listed are not used, you
@@ -282,11 +283,12 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @requires_gles30 Draw attachments for default framebuffer are
          *      available only in OpenGL ES 3.0.
          */
-        void mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments);
+        DefaultFramebuffer* mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments);
 
         /**
          * @brief Map shader output to buffer attachment
          * @param attachment        %Buffer attachment
+         * @return Pointer to self (for method chaining)
          *
          * Similar to above function, can be used in cases when shader has
          * only one (unnamed) output.
@@ -299,14 +301,16 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @requires_gles30 Draw attachments for default framebuffer are
          *      available only in OpenGL ES 3.0.
          */
-        inline void mapForDraw(DrawAttachment attachment) {
+        inline DefaultFramebuffer* mapForDraw(DrawAttachment attachment) {
             (this->*drawBufferImplementation)(static_cast<GLenum>(attachment));
+            return this;
         }
         #endif
 
         /**
          * @brief Map given attachment for reading
          * @param attachment        %Buffer attachment
+         * @return Pointer to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
@@ -315,8 +319,9 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
-        inline void mapForRead(ReadAttachment attachment) {
+        inline DefaultFramebuffer* mapForRead(ReadAttachment attachment) {
             (this->*readBufferImplementation)(static_cast<GLenum>(attachment));
+            return this;
         }
 
         /**
@@ -349,6 +354,14 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *      Use clear() instead where the extension is not supported.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Rectanglei& rectangle);
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline DefaultFramebuffer* setViewport(const Rectanglei& rectangle) {
+            AbstractFramebuffer::setViewport(rectangle);
+            return this;
+        }
+        #endif
 
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
