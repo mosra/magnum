@@ -31,7 +31,7 @@ std::vector<Rectanglei> atlas(const Vector2i& atlasSize, const std::vector<Vecto
     std::vector<Rectanglei> atlas;
 
     /* Columns and rows */
-    Vector2i gridSize = atlasSize/maxSize;
+    const Vector2i gridSize = atlasSize/maxSize;
     if(std::size_t(gridSize.product()) < sizes.size()) {
         Error() << "TextureTools::atlas(): requested atlas size" << atlasSize
                 << "is too small to fit" << sizes.size() << maxSize

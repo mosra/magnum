@@ -89,7 +89,7 @@ void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
     }
 
     /* Create texture atlas */
-    std::vector<Rectanglei> charPositions = TextureTools::atlas(atlasSize, charSizes);
+    const std::vector<Rectanglei> charPositions = TextureTools::atlas(atlasSize, charSizes);
 
     /* Render all characters to the atlas and create character map */
     glyphs.reserve(charPositions.size());
