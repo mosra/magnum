@@ -65,7 +65,7 @@ void AtlasTest::createTooSmall() {
         {23, 31}
     });
     CORRADE_VERIFY(atlas.empty());
-    CORRADE_COMPARE(o.str(), "TextureTools::Atlas::create(): requested atlas size Vector(64, 32) is too small to fit 3 Vector(25, 31) textures. Generated atlas will be empty.\n");
+    CORRADE_COMPARE(o.str(), "TextureTools::atlas(): requested atlas size Vector(64, 32) is too small to fit 3 Vector(25, 31) textures. Generated atlas will be empty.\n");
 }
 
 }}}
