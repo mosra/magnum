@@ -81,7 +81,7 @@ void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attac
 
     invalidateImplementation(attachments.size(), _attachments);
 
-    delete _attachments;
+    delete[] _attachments;
 }
 
 void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Rectanglei& rectangle) {
@@ -91,7 +91,7 @@ void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attac
 
     invalidateImplementation(attachments.size(), _attachments, rectangle);
 
-    delete _attachments;
+    delete[] _attachments;
 }
 
 void Framebuffer::attachTexture2D(BufferAttachment attachment, Texture2D* texture, Int mipLevel) {

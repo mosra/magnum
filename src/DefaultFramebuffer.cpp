@@ -52,7 +52,7 @@ void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment
 
     invalidateImplementation(attachments.size(), _attachments);
 
-    delete _attachments;
+    delete[] _attachments;
 }
 
 void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Rectanglei& rectangle) {
@@ -62,7 +62,7 @@ void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment
 
     invalidateImplementation(attachments.size(), _attachments, rectangle);
 
-    delete _attachments;
+    delete[] _attachments;
 }
 
 void DefaultFramebuffer::initializeContextBasedFunctionality(Context* context) {
