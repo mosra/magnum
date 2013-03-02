@@ -1,8 +1,15 @@
+corrade_add_resource(MagnumTextureTools_RCS MagnumTextureTools
+    DistanceFieldShader.vert DistanceFieldShader.frag
+    ../Shaders/compatibility.glsl ALIAS compatibility.glsl)
+
 set(MagnumTextureTools_SRCS
-    Atlas.cpp)
+    Atlas.cpp
+    DistanceField.cpp
+    ${MagnumTextureTools_RCS})
 
 set(MagnumTextureTools_HEADERS
     Atlas.h
+    DistanceField.h
 
     magnumTextureToolsVisibility.h)
 
