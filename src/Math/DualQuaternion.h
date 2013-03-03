@@ -53,6 +53,8 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
             return {Quaternion<T>::rotation(angle, normalizedAxis), {{}, T(0)}};
         }
 
+        /** @todo Rotation about axis with arbitrary origin, screw motion */
+
         /**
          * @brief Translation dual quaternion
          * @param vector    Translation vector

@@ -23,7 +23,11 @@
 
 namespace Magnum { namespace Platform {
 
-/** @brief Base for OpenGL context handlers */
+/**
+@brief Base for OpenGL context handlers
+
+@todo GLX_MESA_query_renderer, EGL_MESA_query_renderer
+*/
 template<class Display, class VisualId, class Window> class AbstractContextHandler {
     public:
         /**
