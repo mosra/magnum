@@ -96,6 +96,21 @@ class MAGNUM_TEXT_EXPORT Font {
          */
         void prerender(const std::string& characters, const Vector2i& atlasSize);
 
+        /**
+         * @brief Prerender given character set for use with distance-field rendering
+         * @param characters        UTF-8 characters to render
+         * @param sourceAtlasSize   Size of distance field source atlas
+         * @param atlasSize         Size of resulting atlas
+         * @param radius            Max lookup radius for distance-field creation
+         *
+         * Creates new atlas with prerendered characters, replacing the
+         * previous one (if any). See TextureTools::distanceField() for more
+         * information.
+         * @attention @p sourceAtlasSize must be large enough to contain all
+         *      rendered glyphs with padding given by @p radius.
+         */
+        void prerenderDistanceField(const std::string& characters, const Vector2i& atlasSize, const Vector2i& distanceFieldAtlasSize, Int radius);
+
         ~Font();
 
         /** @brief Move constructor */
@@ -133,6 +148,7 @@ class MAGNUM_TEXT_EXPORT Font {
         void MAGNUM_TEXT_LOCAL finishConstruction();
         void MAGNUM_TEXT_LOCAL destroy();
         void MAGNUM_TEXT_LOCAL move();
+        void MAGNUM_TEXT_LOCAL prerenderInternal(const std::string& characters, const Vector2i& atlasSize, const Int radius, Texture2D* output);
 
         std::unordered_map<char32_t, std::tuple<Rectangle, Rectangle>> glyphs;
         Texture2D _texture;

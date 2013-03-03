@@ -26,6 +26,7 @@
 #include "Extensions.h"
 #include "Image.h"
 #include "TextureTools/Atlas.h"
+#include "TextureTools/DistanceField.h"
 
 namespace Magnum { namespace Text {
 
@@ -61,7 +62,7 @@ void Font::finishConstruction() {
         ->setMagnificationFilter(Texture2D::Filter::LinearInterpolation);
 }
 
-void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
+void Font::prerenderInternal(const std::string& characters, const Vector2i& atlasSize, const Int radius, Texture2D* output) {
     glyphs.clear();
 
     /** @bug Crash when atlas is too small */
@@ -81,6 +82,7 @@ void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
     charIndices.erase(std::unique(charIndices.begin(), charIndices.end()), charIndices.end());
 
     /* Sizes of all characters */
+    const Vector2i padding = Vector2i(radius);
     std::vector<Vector2i> charSizes;
     charSizes.reserve(charIndices.size());
     for(FT_UInt c: charIndices) {
@@ -89,7 +91,7 @@ void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
     }
 
     /* Create texture atlas */
-    const std::vector<Rectanglei> charPositions = TextureTools::atlas(atlasSize, charSizes);
+    const std::vector<Rectanglei> charPositions = TextureTools::atlas(atlasSize, charSizes, padding);
 
     /* Render all characters to the atlas and create character map */
     glyphs.reserve(charPositions.size());
@@ -97,7 +99,7 @@ void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
     Image2D image(atlasSize, Image2D::Format::Red, Image2D::Type::UnsignedByte, pixmap);
     for(std::size_t i = 0; i != charPositions.size(); ++i) {
         /* Load and render glyph */
-        /** @todo B&W only */
+        /** @todo B&W only if radius != 0 */
         FT_GlyphSlot glyph = _ftFont->glyph;
         CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Load_Glyph(_ftFont, charIndices[i], FT_LOAD_DEFAULT) == 0);
         CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Render_Glyph(glyph, FT_RENDER_MODE_NORMAL) == 0);
@@ -112,19 +114,38 @@ void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
 
         /* Save character texture position and texture coordinates for given character index */
         CORRADE_INTERNAL_ASSERT_OUTPUT(glyphs.insert({charIndices[i], std::make_tuple(
-            Rectangle::fromSize(Vector2(glyph->bitmap_left, glyph->bitmap_top-charPositions[i].height())/_size,
-                                Vector2(charPositions[i].size())/_size),
-            Rectangle(Vector2(charPositions[i].bottomLeft())/atlasSize,
-                      Vector2(charPositions[i].topRight())/atlasSize)
+            Rectangle::fromSize((Vector2(glyph->bitmap_left, glyph->bitmap_top-charPositions[i].height()) - Vector2(radius))/_size,
+                                Vector2(charPositions[i].size() + 2*padding)/_size),
+            Rectangle(Vector2(charPositions[i].bottomLeft() - padding)/atlasSize,
+                      Vector2(charPositions[i].topRight() + padding)/atlasSize)
         )}).second);
     }
 
     /* Set texture data */
     #ifndef MAGNUM_TARGET_GLES
-    _texture.setImage(0, Texture2D::InternalFormat::R8, &image);
+    output->setImage(0, Texture2D::InternalFormat::R8, &image);
     #else
-    _texture.setImage(0, Texture2D::InternalFormat::Red, &image);
+    output->setImage(0, Texture2D::InternalFormat::Red, &image);
     #endif
+}
+
+void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
+    prerenderInternal(characters, atlasSize, 0, &_texture);
+}
+
+void Font::prerenderDistanceField(const std::string& characters, const Vector2i& atlasSize, const Vector2i& distanceFieldAtlasSize, Int radius) {
+    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_storage);
+
+    /* Render input texture */
+    Texture2D input;
+    input.setWrapping(Texture2D::Wrapping::ClampToEdge)
+        ->setMinificationFilter(Texture2D::Filter::LinearInterpolation)
+        ->setMagnificationFilter(Texture2D::Filter::LinearInterpolation);
+    prerenderInternal(characters, atlasSize, radius, &input);
+
+    /* Create distance field from input texture */
+    _texture.setStorage(1, Texture2D::InternalFormat::R8, distanceFieldAtlasSize);
+    TextureTools::distanceField(&input, &_texture, Rectanglei::fromSize({}, distanceFieldAtlasSize), radius);
 }
 
 void Font::destroy() {
