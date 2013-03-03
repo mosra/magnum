@@ -30,6 +30,8 @@ namespace Magnum { namespace Shaders {
 /**
 @brief Vector shader
 
+Renders vector art in plain grayscale form. See also DistanceFieldVectorShader
+for more advanced effects.
 @see VectorShader2D, VectorShader3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorShader: public AbstractVectorShader<dimensions> {

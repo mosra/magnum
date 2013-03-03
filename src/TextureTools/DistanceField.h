@@ -50,7 +50,7 @@ the pixel was originally black and nearest white pixel is farther than
 The resulting texture can be used with bilinear filtering. It can be converted
 back to binary form in shader using e.g. GLSL `smoothstep()` function with step
 around `0.5` to create antialiased edges. Or you can exploit the distance field
-features to create many other effects.
+features to create many other effects. See also Shaders::DistanceFieldVectorShader.
 
 Based on: *Chris Green - Improved Alpha-Tested Magnification for Vector Textures
 and Special Effects, SIGGRAPH 2007,

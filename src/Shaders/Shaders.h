@@ -25,6 +25,11 @@ namespace Magnum { namespace Shaders {
 
 /** @todoc remove when doxygen is sane again */
 #ifndef DOXYGEN_GENERATING_OUTPUT
+
+template<UnsignedInt> class DistanceFieldVectorShader;
+typedef DistanceFieldVectorShader<2> DistanceFieldVectorShader2D;
+typedef DistanceFieldVectorShader<3> DistanceFieldVectorShader3D;
+
 template<UnsignedInt> class AbstractVectorShader;
 typedef AbstractVectorShader<2> AbstractVectorShader2D;
 typedef AbstractVectorShader<3> AbstractVectorShader3D;
