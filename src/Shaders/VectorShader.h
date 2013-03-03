@@ -43,7 +43,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorShader: publi
         }
 
         /** @brief Set fill color */
-        inline VectorShader* setColor(const Color3<>& color) {
+        inline VectorShader* setColor(const Color4<>& color) {
             AbstractVectorShader<dimensions>::setUniform(colorUniform, color);
             return this;
         }

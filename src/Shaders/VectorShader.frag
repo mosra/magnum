@@ -4,9 +4,9 @@
 #endif
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 1) uniform vec3 color;
+layout(location = 1) uniform vec4 color;
 #else
-uniform lowp vec3 color;
+uniform lowp vec4 color;
 #endif
 
 #ifdef EXPLICIT_TEXTURE_LAYER
@@ -23,5 +23,5 @@ out vec4 fragmentColor;
 
 void main() {
     lowp float intensity = texture(vectorTexture, fragmentTextureCoordinates).r;
-    fragmentColor = vec4(intensity*color, intensity);
+    fragmentColor = intensity*color;
 }
