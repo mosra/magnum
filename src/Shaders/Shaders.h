@@ -25,9 +25,9 @@ namespace Magnum { namespace Shaders {
 
 /** @todoc remove when doxygen is sane again */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt> class AbstractTextShader;
-typedef AbstractTextShader<2> AbstractTextShader2D;
-typedef AbstractTextShader<3> AbstractTextShader3D;
+template<UnsignedInt> class AbstractVectorShader;
+typedef AbstractVectorShader<2> AbstractVectorShader2D;
+typedef AbstractVectorShader<3> AbstractVectorShader3D;
 
 template<UnsignedInt> class FlatShader;
 typedef FlatShader<2> FlatShader2D;
@@ -35,9 +35,9 @@ typedef FlatShader<3> FlatShader3D;
 
 class PhongShader;
 
-template<UnsignedInt> class TextShader;
-typedef TextShader<2> TextShader2D;
-typedef TextShader<3> TextShader3D;
+template<UnsignedInt> class VectorShader;
+typedef VectorShader<2> VectorShader2D;
+typedef VectorShader<3> VectorShader3D;
 
 template<UnsignedInt> class VertexColorShader;
 typedef VertexColorShader<2> VertexColorShader2D;

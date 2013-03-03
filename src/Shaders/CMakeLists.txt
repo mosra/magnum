@@ -1,21 +1,21 @@
 corrade_add_resource(MagnumShaders_RCS MagnumShaders
     FlatShader2D.vert FlatShader3D.vert FlatShader.frag
     PhongShader.vert PhongShader.frag
-    TextShader2D.vert TextShader3D.vert TextShader.frag
+    VectorShader2D.vert VectorShader3D.vert VectorShader.frag
     VertexColorShader2D.vert VertexColorShader3D.vert VertexColorShader.frag
     compatibility.glsl)
 set(MagnumShaders_SRCS
     FlatShader.cpp
     PhongShader.cpp
-    TextShader.cpp
+    VectorShader.cpp
     VertexColorShader.cpp
     ${MagnumShaders_RCS})
 set(MagnumShaders_HEADERS
-    AbstractTextShader.h
+    AbstractVectorShader.h
     FlatShader.h
     PhongShader.h
     Shaders.h
-    TextShader.h
+    VectorShader.h
     VertexColorShader.h
 
     magnumShadersVisibility.h)

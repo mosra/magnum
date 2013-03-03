@@ -1,5 +1,5 @@
-#ifndef Magnum_Shaders_TextShader_h
-#define Magnum_Shaders_TextShader_h
+#ifndef Magnum_Shaders_VectorShader_h
+#define Magnum_Shaders_VectorShader_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,35 +16,35 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::TextShader
+ * @brief Class Magnum::Shaders::VectorShader
  */
 
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
-#include "AbstractTextShader.h"
+#include "AbstractVectorShader.h"
 
 #include "magnumShadersVisibility.h"
 
 namespace Magnum { namespace Shaders {
 
 /**
-@brief %Text shader
+@brief Vector shader
 
-@see TextShader2D, TextShader3D
+@see VectorShader2D, VectorShader3D
 */
-template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT TextShader: public AbstractTextShader<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorShader: public AbstractVectorShader<dimensions> {
     public:
-        TextShader();
+        VectorShader();
 
         /** @brief Set transformation and projection matrix */
-        inline TextShader* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
-            AbstractTextShader<dimensions>::setUniform(transformationProjectionMatrixUniform, matrix);
+        inline VectorShader* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
+            AbstractVectorShader<dimensions>::setUniform(transformationProjectionMatrixUniform, matrix);
             return this;
         }
 
-        /** @brief Set text color */
-        inline TextShader* setColor(const Color3<>& color) {
-            AbstractTextShader<dimensions>::setUniform(colorUniform, color);
+        /** @brief Set fill color */
+        inline VectorShader* setColor(const Color3<>& color) {
+            AbstractVectorShader<dimensions>::setUniform(colorUniform, color);
             return this;
         }
 
@@ -53,11 +53,11 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT TextShader: public 
             colorUniform;
 };
 
-/** @brief Two-dimensional text shader */
-typedef TextShader<2> TextShader2D;
+/** @brief Two-dimensional vector shader */
+typedef VectorShader<2> VectorShader2D;
 
-/** @brief Three-dimensional text shader */
-typedef TextShader<3> TextShader3D;
+/** @brief Three-dimensional vector shader */
+typedef VectorShader<3> VectorShader3D;
 
 }}
 

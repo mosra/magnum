@@ -1,5 +1,5 @@
-#ifndef Magnum_Shaders_AbstractTextShader_h
-#define Magnum_Shaders_AbstractTextShader_h
+#ifndef Magnum_Shaders_AbstractVectorShader_h
+#define Magnum_Shaders_AbstractVectorShader_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::AbstractTextShader
+ * @brief Class Magnum::Shaders::AbstractVectorShader
  */
 
 #include "AbstractShaderProgram.h"
@@ -26,11 +26,11 @@
 namespace Magnum { namespace Shaders {
 
 /**
-@brief Base for text shaders
+@brief Base for vector shaders
 
-@see AbstractTextShader2D, AbstractTextShader3D
+@see AbstractVectorShader2D, AbstractVectorShader3D
 */
-template<UnsignedInt dimensions> class AbstractTextShader: public AbstractShaderProgram {
+template<UnsignedInt dimensions> class AbstractVectorShader: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
         typedef Attribute<0, typename DimensionTraits<dimensions>::VectorType> Position;
@@ -39,19 +39,19 @@ template<UnsignedInt dimensions> class AbstractTextShader: public AbstractShader
         typedef Attribute<1, Vector2> TextureCoordinates;
 
         enum: GLint {
-            FontTextureLayer = 16   /**< Layer for font texture */
+            VectorTextureLayer = 16 /**< Layer for vector texture */
         };
 
-        ~AbstractTextShader() = 0;
+        ~AbstractVectorShader() = 0;
 };
 
-template<UnsignedInt dimensions> inline AbstractTextShader<dimensions>::~AbstractTextShader() {}
+template<UnsignedInt dimensions> inline AbstractVectorShader<dimensions>::~AbstractVectorShader() {}
 
 /** @brief Base for two-dimensional text shaders */
-typedef AbstractTextShader<2> AbstractTextShader2D;
+typedef AbstractVectorShader<2> AbstractVectorShader2D;
 
 /** @brief Base for three-dimensional text shader */
-typedef AbstractTextShader<3> AbstractTextShader3D;
+typedef AbstractVectorShader<3> AbstractVectorShader3D;
 
 }}
 

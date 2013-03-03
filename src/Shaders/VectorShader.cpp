@@ -13,7 +13,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "TextShader.h"
+#include "VectorShader.h"
 
 #include <Utility/Resource.h>
 
@@ -25,11 +25,11 @@ namespace Magnum { namespace Shaders {
 
 namespace {
     template<UnsignedInt> constexpr const char* vertexShaderName();
-    template<> constexpr const char* vertexShaderName<2>() { return "TextShader2D.vert"; }
-    template<> constexpr const char* vertexShaderName<3>() { return "TextShader3D.vert"; }
+    template<> constexpr const char* vertexShaderName<2>() { return "VectorShader2D.vert"; }
+    template<> constexpr const char* vertexShaderName<3>() { return "VectorShader3D.vert"; }
 }
 
-template<UnsignedInt dimensions> TextShader<dimensions>::TextShader(): transformationProjectionMatrixUniform(0), colorUniform(1) {
+template<UnsignedInt dimensions> VectorShader<dimensions>::VectorShader(): transformationProjectionMatrixUniform(0), colorUniform(1) {
     Corrade::Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
@@ -41,12 +41,12 @@ template<UnsignedInt dimensions> TextShader<dimensions>::TextShader(): transform
     Shader vertexShader(v, Shader::Type::Vertex);
     vertexShader.addSource(rs.get("compatibility.glsl"));
     vertexShader.addSource(rs.get(vertexShaderName<dimensions>()));
-    AbstractTextShader<dimensions>::attachShader(vertexShader);
+    AbstractVectorShader<dimensions>::attachShader(vertexShader);
 
     Shader fragmentShader(v, Shader::Type::Fragment);
     fragmentShader.addSource(rs.get("compatibility.glsl"));
-    fragmentShader.addSource(rs.get("TextShader.frag"));
-    AbstractTextShader<dimensions>::attachShader(fragmentShader);
+    fragmentShader.addSource(rs.get("VectorShader.frag"));
+    AbstractVectorShader<dimensions>::attachShader(fragmentShader);
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||
@@ -54,28 +54,28 @@ template<UnsignedInt dimensions> TextShader<dimensions>::TextShader(): transform
     #else
     if(!Context::current()->isVersionSupported(Version::GLES300)) {
     #endif
-        AbstractTextShader<dimensions>::bindAttributeLocation(AbstractTextShader<dimensions>::Position::Location, "position");
-        AbstractTextShader<dimensions>::bindAttributeLocation(AbstractTextShader<dimensions>::TextureCoordinates::Location, "textureCoordinates");
+        AbstractVectorShader<dimensions>::bindAttributeLocation(AbstractVectorShader<dimensions>::Position::Location, "position");
+        AbstractVectorShader<dimensions>::bindAttributeLocation(AbstractVectorShader<dimensions>::TextureCoordinates::Location, "textureCoordinates");
     }
 
-    AbstractTextShader<dimensions>::link();
+    AbstractVectorShader<dimensions>::link();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>()) {
     #else
     {
     #endif
-        transformationProjectionMatrixUniform = AbstractTextShader<dimensions>::uniformLocation("transformationProjectionMatrix");
-        colorUniform = AbstractTextShader<dimensions>::uniformLocation("color");
+        transformationProjectionMatrixUniform = AbstractVectorShader<dimensions>::uniformLocation("transformationProjectionMatrix");
+        colorUniform = AbstractVectorShader<dimensions>::uniformLocation("color");
     }
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>())
-        AbstractTextShader<dimensions>::setUniform(AbstractTextShader<dimensions>::uniformLocation("fontTexture"), AbstractTextShader<dimensions>::FontTextureLayer);
+        AbstractVectorShader<dimensions>::setUniform(AbstractVectorShader<dimensions>::uniformLocation("vectorTexture"), AbstractVectorShader<dimensions>::VectorTextureLayer);
     #endif
 }
 
-template class TextShader<2>;
-template class TextShader<3>;
+template class VectorShader<2>;
+template class VectorShader<3>;
 
 }}

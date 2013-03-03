@@ -27,7 +27,7 @@
 #include "Extensions.h"
 #include "Mesh.h"
 #include "Swizzle.h"
-#include "Shaders/AbstractTextShader.h"
+#include "Shaders/AbstractVectorShader.h"
 #include "Text/Font.h"
 
 namespace Magnum { namespace Text {
@@ -277,8 +277,8 @@ template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimens
     mesh.setPrimitive(Mesh::Primitive::Triangles)
         ->setIndexCount(indexCount)
         ->addInterleavedVertexBuffer(vertexBuffer, 0,
-            typename Shaders::AbstractTextShader<dimensions>::Position(),
-            typename Shaders::AbstractTextShader<dimensions>::TextureCoordinates())
+            typename Shaders::AbstractVectorShader<dimensions>::Position(),
+            typename Shaders::AbstractVectorShader<dimensions>::TextureCoordinates())
         ->setIndexBuffer(indexBuffer, 0, indexType, 0, vertexCount);
 
     return std::make_tuple(std::move(mesh), rectangle);
@@ -295,8 +295,8 @@ template<UnsignedInt dimensions> TextRenderer<dimensions>::TextRenderer(Font& fo
 
     _mesh.setPrimitive(Mesh::Primitive::Triangles)
         ->addInterleavedVertexBuffer(&vertexBuffer, 0,
-            typename Shaders::AbstractTextShader<dimensions>::Position(),
-            typename Shaders::AbstractTextShader<dimensions>::TextureCoordinates());
+            typename Shaders::AbstractVectorShader<dimensions>::Position(),
+            typename Shaders::AbstractVectorShader<dimensions>::TextureCoordinates());
 }
 
 template<UnsignedInt dimensions> void TextRenderer<dimensions>::reserve(const uint32_t glyphCount, const Buffer::Usage vertexBufferUsage, const Buffer::Usage indexBufferUsage) {

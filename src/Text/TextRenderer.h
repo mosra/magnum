@@ -48,7 +48,7 @@ The text can be then drawn by configuring text shader, binding font texture
 and drawing the mesh:
 @code
 Text::Font font;
-Shaders::TextShader2D shader;
+Shaders::VectorShader2D shader;
 Buffer vertexBuffer, indexBuffer;
 Mesh mesh;
 
@@ -61,7 +61,7 @@ std::tie(mesh, rectangle) = Text::TextRenderer2D::render(font, 0.15f,
 shader.setTransformationProjectionMatrix(projection*Matrix3::translation(-rectangle.width()/2.0f))
     ->setColor(Color3<>(1.0f));
     ->use();
-font.texture()->bind(Shaders::TextShader2D::FontTextureLayer);
+font.texture()->bind(Shaders::VectorShader2D::FontTextureLayer);
 mesh.draw();
 @endcode
 See render(Font&, Float, const std::string&) and
@@ -73,7 +73,7 @@ mutable texts (e.g. FPS counters, chat messages) there is another approach
 that doesn't recreate everything on each text change:
 @code
 Text::Font font;
-Shaders::TextShader2D shader;
+Shaders::VectorShader2D shader;
 
 // Initialize renderer and reserve memory for enough glyphs
 Text::TextRenderer2D renderer(font, 0.15f);
@@ -86,7 +86,7 @@ renderer.render("Hello World Countdown: 10");
 shader.setTransformationProjectionMatrix(projection*Matrix3::translation(-renderer.rectangle().width()/2.0f))
     ->setColor(Color3<>(1.0f));
     ->use();
-font.texture()->bind(Shaders::TextShader2D::FontTextureLayer);
+font.texture()->bind(Shaders::VectorShader2D::FontTextureLayer);
 renderer.mesh().draw();
 @endcode
 
@@ -96,7 +96,7 @@ Mutable text rendering requires @extension{ARB,map_buffer_range} (also part of
 OpenGL ES 3.0 or available as @es_extension{EXT,map_buffer_range} in ES 2.0)
 for asynchronous buffer updates.
 
-@see TextRenderer2D, TextRenderer3D, Font, Shaders::AbstractTextShader
+@see TextRenderer2D, TextRenderer3D, Font, Shaders::AbstractVectorShader
 */
 template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT TextRenderer {
     public:
@@ -120,7 +120,7 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT TextRenderer {
          * @param indexBuffer   %Buffer where to store indices
          * @param usage         Usage of vertex and index buffer
          *
-         * Returns mesh prepared for use with Shaders::AbstractTextShader
+         * Returns mesh prepared for use with Shaders::AbstractVectorShader
          * subclasses and rectangle spanning the rendered text.
          */
         static std::tuple<Mesh, Rectangle> render(Font& font, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);

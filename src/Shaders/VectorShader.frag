@@ -10,9 +10,9 @@ uniform lowp vec3 color;
 #endif
 
 #ifdef EXPLICIT_TEXTURE_LAYER
-layout(binding = 16) uniform sampler2D fontTexture;
+layout(binding = 16) uniform sampler2D vectorTexture;
 #else
-uniform lowp sampler2D fontTexture;
+uniform lowp sampler2D vectorTexture;
 #endif
 
 in vec2 fragmentTextureCoordinates;
@@ -22,6 +22,6 @@ out vec4 fragmentColor;
 #endif
 
 void main() {
-    lowp float intensity = texture(fontTexture, fragmentTextureCoordinates).r;
+    lowp float intensity = texture(vectorTexture, fragmentTextureCoordinates).r;
     fragmentColor = vec4(intensity*color, intensity);
 }
