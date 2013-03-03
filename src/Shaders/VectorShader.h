@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::VectorShader
+ * @brief Class Magnum::Shaders::VectorShader, typedef Magnum::Shaders::VectorShader2D, Magnum::Shaders::VectorShader3D
  */
 
 #include "Math/Matrix3.h"
@@ -36,13 +36,19 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorShader: publi
     public:
         VectorShader();
 
-        /** @brief Set transformation and projection matrix */
+        /**
+         * @brief Set transformation and projection matrix
+         * @return Pointer to self (for method chaining)
+         */
         inline VectorShader* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
             AbstractShaderProgram::setUniform(transformationProjectionMatrixUniform, matrix);
             return this;
         }
 
-        /** @brief Set fill color */
+        /**
+         * @brief Set fill color
+         * @return Pointer to self (for method chaining)
+         */
         inline VectorShader* setColor(const Color4<>& color) {
             AbstractShaderProgram::setUniform(colorUniform, color);
             return this;

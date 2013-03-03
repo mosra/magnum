@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::AbstractVectorShader
+ * @brief Class Magnum::Shaders::AbstractVectorShader, typedef Magnum::Shaders::AbstractVectorShader2D, Magnum::Shaders::AbstractVectorShader3D
  */
 
 #include "AbstractShaderProgram.h"
