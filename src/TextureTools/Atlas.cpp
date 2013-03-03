@@ -20,7 +20,7 @@
 
 namespace Magnum { namespace TextureTools {
 
-std::vector<Rectanglei> atlas(const Vector2i& atlasSize, const std::vector<Vector2i>& sizes) {
+std::vector<Rectanglei> atlas(const Vector2i& atlasSize, const std::vector<Vector2i>& sizes, const Vector2i& padding) {
     if(sizes.empty()) return {};
 
     /* Size of largest texture */
@@ -31,10 +31,11 @@ std::vector<Rectanglei> atlas(const Vector2i& atlasSize, const std::vector<Vecto
     std::vector<Rectanglei> atlas;
 
     /* Columns and rows */
-    const Vector2i gridSize = atlasSize/maxSize;
+    const Vector2i paddedSize = maxSize+2*padding;
+    const Vector2i gridSize = atlasSize/paddedSize;
     if(std::size_t(gridSize.product()) < sizes.size()) {
         Error() << "TextureTools::atlas(): requested atlas size" << atlasSize
-                << "is too small to fit" << sizes.size() << maxSize
+                << "is too small to fit" << sizes.size() << paddedSize
                 << "textures. Generated atlas will be empty.";
         return atlas;
     }
@@ -43,7 +44,7 @@ std::vector<Rectanglei> atlas(const Vector2i& atlasSize, const std::vector<Vecto
 
     atlas.reserve(sizes.size());
     for(std::size_t i = 0; i != sizes.size(); ++i)
-        atlas.push_back(Rectanglei::fromSize(Vector2i(i%gridSize.x(), i/gridSize.x())*maxSize, sizes[i]));
+        atlas.push_back(Rectanglei::fromSize(Vector2i(i%gridSize.x(), i/gridSize.x())*paddedSize+padding, sizes[i]));
 
     return atlas;
 }

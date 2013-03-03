@@ -26,12 +26,14 @@ class AtlasTest: public Corrade::TestSuite::Tester {
         explicit AtlasTest();
 
         void create();
+        void createPadding();
         void createEmpty();
         void createTooSmall();
 };
 
 AtlasTest::AtlasTest() {
     addTests(&AtlasTest::create,
+             &AtlasTest::createPadding,
              &AtlasTest::createEmpty,
              &AtlasTest::createTooSmall);
 }
@@ -50,6 +52,20 @@ void AtlasTest::create() {
         Rectanglei::fromSize({0, 25}, {23, 25})}));
 }
 
+void AtlasTest::createPadding() {
+    std::vector<Rectanglei> atlas = TextureTools::atlas({64, 64}, {
+        {8, 16},
+        {28, 13},
+        {19, 23}
+    }, {2, 1});
+
+    CORRADE_COMPARE(atlas.size(), 3);
+    CORRADE_COMPARE(atlas, (std::vector<Rectanglei>{
+        Rectanglei::fromSize({2, 1}, {8, 16}),
+        Rectanglei::fromSize({34, 1}, {28, 13}),
+        Rectanglei::fromSize({2, 26}, {19, 23})}));
+}
+
 void AtlasTest::createEmpty() {
     std::vector<Rectanglei> atlas = TextureTools::atlas({}, {});
     CORRADE_VERIFY(atlas.empty());
@@ -60,10 +76,10 @@ void AtlasTest::createTooSmall() {
     Error::setOutput(&o);
 
     std::vector<Rectanglei> atlas = TextureTools::atlas({64, 32}, {
-        {12, 18},
-        {25, 15},
-        {23, 31}
-    });
+        {8, 16},
+        {21, 13},
+        {19, 29}
+    }, {2, 1});
     CORRADE_VERIFY(atlas.empty());
     CORRADE_COMPARE(o.str(), "TextureTools::atlas(): requested atlas size Vector(64, 32) is too small to fit 3 Vector(25, 31) textures. Generated atlas will be empty.\n");
 }

@@ -21,6 +21,7 @@
 
 #include <vector>
 
+#include "Math/Vector2.h"
 #include "Magnum.h"
 
 #include "magnumTextureToolsVisibility.h"
@@ -31,11 +32,16 @@ namespace Magnum { namespace TextureTools {
 @brief Pack textures into texture atlas
 @param atlasSize    Size of resulting atlas
 @param sizes        Sizes of all textures in the atlas
+@param padding      Padding around each texture
 
 Packs many small textures into one larger. If the textures cannot be packed
 into required size, empty vector is returned.
+
+Padding is added twice to each size and the atlas is laid out so the padding
+don't overlap. Returned sizes are the same as original sizes, i.e. without the
+padding.
 */
-std::vector<Rectanglei> MAGNUM_TEXTURETOOLS_EXPORT atlas(const Vector2i& atlasSize, const std::vector<Vector2i>& sizes);
+std::vector<Rectanglei> MAGNUM_TEXTURETOOLS_EXPORT atlas(const Vector2i& atlasSize, const std::vector<Vector2i>& sizes, const Vector2i& padding = Vector2i());
 
 }}
 
