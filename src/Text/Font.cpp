@@ -85,7 +85,7 @@ void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
     charSizes.reserve(charIndices.size());
     for(FT_UInt c: charIndices) {
         CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Load_Glyph(_ftFont, c, FT_LOAD_DEFAULT) == 0);
-        charSizes.push_back((Vector2i(_ftFont->glyph->metrics.width, _ftFont->glyph->metrics.height))/64);
+        charSizes.push_back(Vector2i(_ftFont->glyph->metrics.width, _ftFont->glyph->metrics.height)/64);
     }
 
     /* Create texture atlas */
