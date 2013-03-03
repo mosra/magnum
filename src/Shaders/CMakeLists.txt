@@ -1,7 +1,8 @@
 corrade_add_resource(MagnumShaders_RCS MagnumShaders
+    AbstractVectorShader2D.vert AbstractVectorShader3D.vert
     FlatShader2D.vert FlatShader3D.vert FlatShader.frag
     PhongShader.vert PhongShader.frag
-    VectorShader2D.vert VectorShader3D.vert VectorShader.frag
+    VectorShader.frag
     VertexColorShader2D.vert VertexColorShader3D.vert VertexColorShader.frag
     compatibility.glsl)
 set(MagnumShaders_SRCS

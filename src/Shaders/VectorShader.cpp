@@ -25,8 +25,8 @@ namespace Magnum { namespace Shaders {
 
 namespace {
     template<UnsignedInt> constexpr const char* vertexShaderName();
-    template<> constexpr const char* vertexShaderName<2>() { return "VectorShader2D.vert"; }
-    template<> constexpr const char* vertexShaderName<3>() { return "VectorShader3D.vert"; }
+    template<> constexpr const char* vertexShaderName<2>() { return "AbstractVectorShader2D.vert"; }
+    template<> constexpr const char* vertexShaderName<3>() { return "AbstractVectorShader3D.vert"; }
 }
 
 template<UnsignedInt dimensions> VectorShader<dimensions>::VectorShader(): transformationProjectionMatrixUniform(0), colorUniform(1) {
