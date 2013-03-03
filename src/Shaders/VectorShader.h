@@ -38,13 +38,13 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorShader: publi
 
         /** @brief Set transformation and projection matrix */
         inline VectorShader* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
-            AbstractVectorShader<dimensions>::setUniform(transformationProjectionMatrixUniform, matrix);
+            AbstractShaderProgram::setUniform(transformationProjectionMatrixUniform, matrix);
             return this;
         }
 
         /** @brief Set fill color */
         inline VectorShader* setColor(const Color4<>& color) {
-            AbstractVectorShader<dimensions>::setUniform(colorUniform, color);
+            AbstractShaderProgram::setUniform(colorUniform, color);
             return this;
         }
 

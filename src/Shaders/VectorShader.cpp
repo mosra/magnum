@@ -41,12 +41,12 @@ template<UnsignedInt dimensions> VectorShader<dimensions>::VectorShader(): trans
     Shader vertexShader(v, Shader::Type::Vertex);
     vertexShader.addSource(rs.get("compatibility.glsl"));
     vertexShader.addSource(rs.get(vertexShaderName<dimensions>()));
-    AbstractVectorShader<dimensions>::attachShader(vertexShader);
+    AbstractShaderProgram::attachShader(vertexShader);
 
     Shader fragmentShader(v, Shader::Type::Fragment);
     fragmentShader.addSource(rs.get("compatibility.glsl"));
     fragmentShader.addSource(rs.get("VectorShader.frag"));
-    AbstractVectorShader<dimensions>::attachShader(fragmentShader);
+    AbstractShaderProgram::attachShader(fragmentShader);
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||
@@ -54,24 +54,24 @@ template<UnsignedInt dimensions> VectorShader<dimensions>::VectorShader(): trans
     #else
     if(!Context::current()->isVersionSupported(Version::GLES300)) {
     #endif
-        AbstractVectorShader<dimensions>::bindAttributeLocation(AbstractVectorShader<dimensions>::Position::Location, "position");
-        AbstractVectorShader<dimensions>::bindAttributeLocation(AbstractVectorShader<dimensions>::TextureCoordinates::Location, "textureCoordinates");
+        AbstractShaderProgram::bindAttributeLocation(AbstractVectorShader<dimensions>::Position::Location, "position");
+        AbstractShaderProgram::bindAttributeLocation(AbstractVectorShader<dimensions>::TextureCoordinates::Location, "textureCoordinates");
     }
 
-    AbstractVectorShader<dimensions>::link();
+    AbstractShaderProgram::link();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>()) {
     #else
     {
     #endif
-        transformationProjectionMatrixUniform = AbstractVectorShader<dimensions>::uniformLocation("transformationProjectionMatrix");
-        colorUniform = AbstractVectorShader<dimensions>::uniformLocation("color");
+        transformationProjectionMatrixUniform = AbstractShaderProgram::uniformLocation("transformationProjectionMatrix");
+        colorUniform = AbstractShaderProgram::uniformLocation("color");
     }
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>())
-        AbstractVectorShader<dimensions>::setUniform(AbstractVectorShader<dimensions>::uniformLocation("vectorTexture"), AbstractVectorShader<dimensions>::VectorTextureLayer);
+        AbstractShaderProgram::setUniform(AbstractShaderProgram::uniformLocation("vectorTexture"), AbstractVectorShader<dimensions>::VectorTextureLayer);
     #endif
 }
 
