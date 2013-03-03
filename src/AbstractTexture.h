@@ -83,7 +83,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @see setMagnificationFilter() and setMinificationFilter()
          */
         enum class Filter: GLint {
-            NearestNeighbor = GL_NEAREST,   /**< Nearest neighbor filtering */
+            Nearest = GL_NEAREST,   /**< Nearest neighbor filtering */
 
             /**
              * Linear interpolation filtering.
@@ -94,7 +94,7 @@ class MAGNUM_EXPORT AbstractTexture {
              *      / @ref Magnum::AbstractTexture::InternalFormat "InternalFormat::Float"
              *      in OpenGL ES 2.0.
              */
-            LinearInterpolation = GL_LINEAR
+            Linear = GL_LINEAR
         };
 
         /**
@@ -103,12 +103,12 @@ class MAGNUM_EXPORT AbstractTexture {
          * @see setMinificationFilter()
          */
         enum class Mipmap: GLint {
-            BaseLevel = GL_NEAREST & ~GL_NEAREST, /**< Select base mip level */
+            Base = GL_NEAREST & ~GL_NEAREST, /**< Select base mip level */
 
             /**
              * Select nearest mip level. **Unavailable on rectangle textures.**
              */
-            NearestLevel = GL_NEAREST_MIPMAP_NEAREST & ~GL_NEAREST,
+            Nearest = GL_NEAREST_MIPMAP_NEAREST & ~GL_NEAREST,
 
             /**
              * Linear interpolation of nearest mip levels. **Unavailable on
@@ -120,7 +120,7 @@ class MAGNUM_EXPORT AbstractTexture {
              *      / @ref Magnum::AbstractTexture::InternalFormat "InternalFormat::Float"
              *      in OpenGL ES 2.0.
              */
-            LinearInterpolation = GL_NEAREST_MIPMAP_LINEAR & ~GL_NEAREST
+            Linear = GL_NEAREST_MIPMAP_LINEAR & ~GL_NEAREST
         };
 
         /**
@@ -1043,7 +1043,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * Sets filter used when the object pixel size is smaller than the
          * texture size. If @extension{EXT,direct_state_access} is not
          * available, the texture is bound to some layer before the operation.
-         * Initial value is (@ref AbstractTexture::Filter "Filter::NearestNeighbor",
+         * Initial value is (@ref AbstractTexture::Filter "Filter::Nearest",
          * @ref AbstractTexture::Mipmap "Mipmap::Linear").
          * @attention For rectangle textures only some modes are supported,
          *      see @ref AbstractTexture::Filter "Filter" and
@@ -1053,7 +1053,7 @@ class MAGNUM_EXPORT AbstractTexture {
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_MIN_FILTER}
          */
-        AbstractTexture* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::BaseLevel);
+        AbstractTexture* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::Base);
 
         /**
          * @brief Set magnification filter

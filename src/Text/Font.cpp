@@ -58,8 +58,8 @@ void Font::finishConstruction() {
 
     /* Set up the texture */
     _texture.setWrapping(Texture2D::Wrapping::ClampToEdge)
-        ->setMinificationFilter(Texture2D::Filter::LinearInterpolation)
-        ->setMagnificationFilter(Texture2D::Filter::LinearInterpolation);
+        ->setMinificationFilter(Texture2D::Filter::Linear)
+        ->setMagnificationFilter(Texture2D::Filter::Linear);
 }
 
 void Font::prerenderInternal(const std::string& characters, const Vector2i& atlasSize, const Int radius, Texture2D* output) {
@@ -139,8 +139,8 @@ void Font::prerenderDistanceField(const std::string& characters, const Vector2i&
     /* Render input texture */
     Texture2D input;
     input.setWrapping(Texture2D::Wrapping::ClampToEdge)
-        ->setMinificationFilter(Texture2D::Filter::LinearInterpolation)
-        ->setMagnificationFilter(Texture2D::Filter::LinearInterpolation);
+        ->setMinificationFilter(Texture2D::Filter::Linear)
+        ->setMagnificationFilter(Texture2D::Filter::Linear);
     prerenderInternal(characters, atlasSize, radius, &input);
 
     /* Create distance field from input texture */

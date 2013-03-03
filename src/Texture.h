@@ -314,7 +314,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline Texture<Dimensions>* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::BaseLevel) {
+        inline Texture<Dimensions>* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
             return this;
         }

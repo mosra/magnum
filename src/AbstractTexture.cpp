@@ -73,12 +73,12 @@ AbstractTexture::InvalidateSubImplementation AbstractTexture::invalidateSubImple
    thus testing only on AbstractTexture. */
 #define filter_or(filter, mipmap) \
     (static_cast<GLint>(AbstractTexture::Filter::filter)|static_cast<GLint>(AbstractTexture::Mipmap::mipmap))
-static_assert((filter_or(NearestNeighbor, BaseLevel) == GL_NEAREST) &&
-              (filter_or(NearestNeighbor, NearestLevel) == GL_NEAREST_MIPMAP_NEAREST) &&
-              (filter_or(NearestNeighbor, LinearInterpolation) == GL_NEAREST_MIPMAP_LINEAR) &&
-              (filter_or(LinearInterpolation, BaseLevel) == GL_LINEAR) &&
-              (filter_or(LinearInterpolation, NearestLevel) == GL_LINEAR_MIPMAP_NEAREST) &&
-              (filter_or(LinearInterpolation, LinearInterpolation) == GL_LINEAR_MIPMAP_LINEAR),
+static_assert((filter_or(Nearest, Base) == GL_NEAREST) &&
+              (filter_or(Nearest, Nearest) == GL_NEAREST_MIPMAP_NEAREST) &&
+              (filter_or(Nearest, Linear) == GL_NEAREST_MIPMAP_LINEAR) &&
+              (filter_or(Linear, Base) == GL_LINEAR) &&
+              (filter_or(Linear, Nearest) == GL_LINEAR_MIPMAP_NEAREST) &&
+              (filter_or(Linear, Linear) == GL_LINEAR_MIPMAP_LINEAR),
     "Unsupported constants for GL texture filtering");
 #undef filter_or
 #endif
@@ -159,7 +159,7 @@ void AbstractTexture::bindImplementationDSA(GLint layer) {
 
 AbstractTexture* AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE || mipmap == Mipmap::BaseLevel, "AbstractTexture: rectangle textures cannot have mipmaps", this);
+    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE || mipmap == Mipmap::Base, "AbstractTexture: rectangle textures cannot have mipmaps", this);
     #endif
 
     (this->*parameteriImplementation)(GL_TEXTURE_MIN_FILTER,

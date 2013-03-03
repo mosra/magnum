@@ -184,7 +184,7 @@ class CubeMapTexture: public AbstractTexture {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline CubeMapTexture* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::BaseLevel) {
+        inline CubeMapTexture* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
             return this;
         }

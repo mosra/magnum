@@ -97,8 +97,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @see blit()
          */
         enum class BlitFilter: GLenum {
-            NearestNeighbor = GL_NEAREST,   /**< Nearest neighbor filtering */
-            LinearInterpolation = GL_LINEAR /**< Linear interpolation filtering */
+            Nearest = GL_NEAREST,   /**< Nearest neighbor filtering */
+            Linear = GL_LINEAR      /**< Linear interpolation filtering */
         };
 
         /**
@@ -166,14 +166,13 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * Convenience alternative to above function when source rectangle is
          * the same as destination rectangle. As the image is copied
          * pixel-by-pixel, no interpolation is needed and thus
-         * @ref BlitFilter "BlitFilter::NearestNeighbor" filtering is used by
-         * default.
+         * @ref BlitFilter "BlitFilter::Nearest" filtering is used by default.
          * @see @fn_gl{BlitFramebuffer}
          * @requires_gl30 %Extension @extension{EXT,framebuffer_blit}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
          */
         inline static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& rectangle, BlitMask mask) {
-            blit(source, destination, rectangle, rectangle, mask, BlitFilter::NearestNeighbor);
+            blit(source, destination, rectangle, rectangle, mask, BlitFilter::Nearest);
         }
 
         explicit AbstractFramebuffer() = default;
