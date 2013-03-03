@@ -38,7 +38,7 @@ template<UnsignedInt dimensions> class AbstractVectorShader: public AbstractShad
         /** @brief Texture coordinates */
         typedef Attribute<1, Vector2> TextureCoordinates;
 
-        enum: GLint {
+        enum: Int {
             VectorTextureLayer = 16 /**< Layer for vector texture */
         };
 
