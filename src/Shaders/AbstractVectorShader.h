@@ -42,7 +42,7 @@ template<UnsignedInt dimensions> class AbstractVectorShader: public AbstractShad
             VectorTextureLayer = 16 /**< Layer for vector texture */
         };
 
-        ~AbstractVectorShader() = 0;
+        virtual ~AbstractVectorShader() = 0;
 };
 
 template<UnsignedInt dimensions> inline AbstractVectorShader<dimensions>::~AbstractVectorShader() {}
