@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Text::Font
+ * @brief Class Magnum::Text::Font, Magnum::Text::TextLayouter
  */
 
 #include <unordered_map>
@@ -31,6 +31,9 @@
 struct FT_FaceRec_;
 typedef FT_FaceRec_*  FT_Face;
 struct hb_font_t;
+struct hb_buffer_t;
+struct hb_glyph_info_t;
+struct hb_glyph_position_t;
 #endif
 
 namespace Magnum { namespace Text {
@@ -157,6 +160,57 @@ class MAGNUM_TEXT_EXPORT Font {
         #ifdef MAGNUM_USE_HARFBUZZ
         hb_font_t* _hbFont;
         #endif
+};
+
+/**
+@brief %Text layouter
+
+Provides low-level text rendering using Font, used internally in TextRenderer.
+*/
+class TextLayouter {
+    public:
+        /**
+         * @brief Constructor
+         * @param font      %Font
+         * @param size      %Font size
+         * @param text      Text to layout
+         */
+        TextLayouter(Font& font, const Float size, const std::string& text);
+
+        ~TextLayouter();
+
+        /** @brief Count of glyphs in laid out text */
+        inline UnsignedInt glyphCount() {
+            #ifdef MAGNUM_USE_HARFBUZZ
+            return _glyphCount;
+            #else
+            return glyphs.size();
+            #endif
+        }
+
+        /**
+         * @brief Render glyph
+         * @param i                 Glyph index
+         * @param cursorPosition    Cursor position
+         *
+         * Returns quad position, texture coordinates and advance to next
+         * glyph.
+         */
+        std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(const Vector2& cursorPosition, const UnsignedInt i);
+
+    private:
+        #ifdef MAGNUM_USE_HARFBUZZ
+        const Font& font;
+        hb_buffer_t* buffer;
+        hb_glyph_info_t* glyphInfo;
+        hb_glyph_position_t* glyphPositions;
+        UnsignedInt _glyphCount;
+        #else
+        Font& font;
+        std::vector<FT_UInt> glyphs;
+        #endif
+
+        const Float size;
 };
 
 }}

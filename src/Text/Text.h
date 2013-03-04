@@ -25,6 +25,7 @@ namespace Magnum { namespace Text {
 
 class Font;
 class FontRenderer;
+class TextLayouter;
 
 class AbstractTextRenderer;
 template<UnsignedInt> class TextRenderer;
