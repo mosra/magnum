@@ -13,7 +13,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Font.h"
+#include "FreeTypeFont.h"
 
 #include <algorithm>
 #include <ft2build.h>
@@ -30,27 +30,52 @@
 
 namespace Magnum { namespace Text {
 
-FontRenderer::FontRenderer() {
+namespace {
+
+class FreeTypeLayouter: public AbstractLayouter {
+    public:
+        FreeTypeLayouter(FreeTypeFont& font, const Float size, const std::string& text);
+        ~FreeTypeLayouter();
+
+        std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(const Vector2& cursorPosition, const UnsignedInt i) override;
+
+    private:
+        #ifdef MAGNUM_USE_HARFBUZZ
+        const FreeTypeFont& font;
+        hb_buffer_t* buffer;
+        hb_glyph_info_t* glyphInfo;
+        hb_glyph_position_t* glyphPositions;
+        #else
+        FreeTypeFont& font;
+        std::vector<FT_UInt> glyphs;
+        #endif
+
+        const Float size;
+};
+
+}
+
+FreeTypeFontRenderer::FreeTypeFontRenderer() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Init_FreeType(&_library) == 0);
 }
 
-FontRenderer::~FontRenderer() {
+FreeTypeFontRenderer::~FreeTypeFontRenderer() {
     FT_Done_FreeType(_library);
 }
 
-Font::Font(FontRenderer& renderer, const std::string& fontFile, Float size): _size(size) {
+FreeTypeFont::FreeTypeFont(FreeTypeFontRenderer& renderer, const std::string& fontFile, Float size): _size(size) {
     CORRADE_INTERNAL_ASSERT_OUTPUT(FT_New_Face(renderer.library(), fontFile.c_str(), 0, &_ftFont) == 0);
 
     finishConstruction();
 }
 
-Font::Font(FontRenderer& renderer, const unsigned char* data, std::size_t dataSize, Float size): _size(size) {
+FreeTypeFont::FreeTypeFont(FreeTypeFontRenderer& renderer, const unsigned char* data, std::size_t dataSize, Float size): _size(size) {
     CORRADE_INTERNAL_ASSERT_OUTPUT(FT_New_Memory_Face(renderer.library(), data, dataSize, 0, &_ftFont) == 0);
 
     finishConstruction();
 }
 
-void Font::finishConstruction() {
+void FreeTypeFont::finishConstruction() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Set_Char_Size(_ftFont, 0, _size*64, 100, 100) == 0);
 
     #ifdef MAGNUM_USE_HARFBUZZ
@@ -70,7 +95,7 @@ void Font::finishConstruction() {
         ->setMagnificationFilter(Texture2D::Filter::Linear);
 }
 
-void Font::prerenderInternal(const std::string& characters, const Vector2i& atlasSize, const Int radius, Texture2D* output) {
+void FreeTypeFont::prerenderInternal(const std::string& characters, const Vector2i& atlasSize, const Int radius, Texture2D* output) {
     glyphs.clear();
 
     /** @bug Crash when atlas is too small */
@@ -137,11 +162,11 @@ void Font::prerenderInternal(const std::string& characters, const Vector2i& atla
     #endif
 }
 
-void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
+void FreeTypeFont::prerender(const std::string& characters, const Vector2i& atlasSize) {
     prerenderInternal(characters, atlasSize, 0, &_texture);
 }
 
-void Font::prerenderDistanceField(const std::string& characters, const Vector2i& sourceAtlasSize, const Vector2i& atlasSize, Int radius) {
+void FreeTypeFont::prerenderDistanceField(const std::string& characters, const Vector2i& sourceAtlasSize, const Vector2i& atlasSize, Int radius) {
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_storage);
 
     /* Render input texture */
@@ -156,48 +181,14 @@ void Font::prerenderDistanceField(const std::string& characters, const Vector2i&
     TextureTools::distanceField(&input, &_texture, Rectanglei::fromSize({}, atlasSize), radius);
 }
 
-void Font::destroy() {
-    if(!_ftFont) return;
-
+FreeTypeFont::~FreeTypeFont() {
     #ifdef MAGNUM_USE_HARFBUZZ
     hb_font_destroy(_hbFont);
     #endif
     FT_Done_Face(_ftFont);
 }
 
-void Font::move() {
-    #ifdef MAGNUM_USE_HARFBUZZ
-    _hbFont = nullptr;
-    #endif
-    _ftFont = nullptr;
-}
-
-Font::~Font() { destroy(); }
-
-Font::Font(Font&& other): glyphs(std::move(other.glyphs)), _texture(std::move(other._texture)), _ftFont(other._ftFont), _size(other._size)
-    #ifdef MAGNUM_USE_HARFBUZZ
-    , _hbFont(other._hbFont)
-    #endif
-{
-    other.move();
-}
-
-Font& Font::operator=(Font&& other) {
-    destroy();
-
-    glyphs = std::move(other.glyphs);
-    _texture = std::move(other._texture);
-    _ftFont = other._ftFont;
-    #ifdef MAGNUM_USE_HARFBUZZ
-    _hbFont = other._hbFont;
-    #endif
-    _size = other._size;
-
-    other.move();
-    return *this;
-}
-
-const std::tuple<Rectangle, Rectangle>& Font::operator[](char32_t character) const {
+const std::tuple<Rectangle, Rectangle>& FreeTypeFont::operator[](char32_t character) const {
     auto it = glyphs.find(character);
 
     if(it == glyphs.end())
@@ -205,7 +196,13 @@ const std::tuple<Rectangle, Rectangle>& Font::operator[](char32_t character) con
     return it->second;
 }
 
-TextLayouter::TextLayouter(Font& font, const Float size, const std::string& text): font(font), size(size) {
+AbstractLayouter* FreeTypeFont::layout(const Float size, const std::string& text) {
+    return new FreeTypeLayouter(*this, size, text);
+}
+
+namespace {
+
+FreeTypeLayouter::FreeTypeLayouter(FreeTypeFont& font, const Float size, const std::string& text): font(font), size(size) {
     #ifdef MAGNUM_USE_HARFBUZZ
     /* Prepare HarfBuzz buffer */
     buffer = hb_buffer_create();
@@ -222,6 +219,7 @@ TextLayouter::TextLayouter(Font& font, const Float size, const std::string& text
     #else
     /* Get glyph codes from characters */
     glyphs.reserve(text.size()+1);
+    _glyphCount = text.size();
     for(std::size_t i = 0; i != text.size(); ) {
         UnsignedInt codepoint;
         std::tie(codepoint, i) = Corrade::Utility::Unicode::nextChar(text, i);
@@ -230,14 +228,14 @@ TextLayouter::TextLayouter(Font& font, const Float size, const std::string& text
     #endif
 }
 
-TextLayouter::~TextLayouter() {
+FreeTypeLayouter::~FreeTypeLayouter() {
     #ifdef MAGNUM_USE_HARFBUZZ
     /* Destroy HarfBuzz buffer */
     hb_buffer_destroy(buffer);
     #endif
 }
 
-std::tuple<Rectangle, Rectangle, Vector2> TextLayouter::renderGlyph(const Vector2& cursorPosition, const UnsignedInt i) {
+std::tuple<Rectangle, Rectangle, Vector2> FreeTypeLayouter::renderGlyph(const Vector2& cursorPosition, const UnsignedInt i) {
     /* Position of the texture in the resulting glyph, texture coordinates */
     Rectangle texturePosition, textureCoordinates;
     #ifdef MAGNUM_USE_HARFBUZZ
@@ -267,6 +265,8 @@ std::tuple<Rectangle, Rectangle, Vector2> TextLayouter::renderGlyph(const Vector
         texturePosition.size()*size);
 
     return std::make_tuple(quadPosition, textureCoordinates, advance);
+}
+
 }
 
 }}

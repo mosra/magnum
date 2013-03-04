@@ -50,14 +50,14 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
          * Returns tuple with vertex positions, texture coordinates, indices
          * and rectangle spanning the rendered text.
          */
-        static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> render(Font& font, Float size, const std::string& text);
+        static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> render(AbstractFont& font, Float size, const std::string& text);
 
         /**
          * @brief Constructor
          * @param font          %Font to use
          * @param size          %Font size
          */
-        AbstractTextRenderer(Font& font, Float size);
+        AbstractTextRenderer(AbstractFont& font, Float size);
 
         virtual ~AbstractTextRenderer() = 0;
 
@@ -106,13 +106,13 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
     #else
     private:
     #endif
-        static std::tuple<Mesh, Rectangle> MAGNUM_LOCAL render(Font& font, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
+        static std::tuple<Mesh, Rectangle> MAGNUM_LOCAL render(AbstractFont& font, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
 
         Mesh _mesh;
         Buffer vertexBuffer, indexBuffer;
 
     private:
-        Font& font;
+        AbstractFont& font;
         Float size;
         UnsignedInt _capacity;
         Rectangle _rectangle;
@@ -197,14 +197,14 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT TextRenderer: public A
          * Returns mesh prepared for use with Shaders::AbstractVectorShader
          * subclasses and rectangle spanning the rendered text.
          */
-        static std::tuple<Mesh, Rectangle> render(Font& font, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
+        static std::tuple<Mesh, Rectangle> render(AbstractFont& font, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
 
         /**
          * @brief Constructor
          * @param font          %Font to use
          * @param size          %Font size
          */
-        TextRenderer(Font& font, Float size);
+        TextRenderer(AbstractFont& font, Float size);
 
         using AbstractTextRenderer::render;
 };

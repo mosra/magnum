@@ -1,5 +1,3 @@
-#ifndef Magnum_Text_Text_h
-#define Magnum_Text_Text_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,25 +13,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-/** @file
- * @brief Forward declarations for Magnum::Text namespace
- */
-
-#include "Types.h"
+#include "Text/AbstractFont.h"
 
 namespace Magnum { namespace Text {
 
-class AbstractFont;
-class AbstractLayouter;
+AbstractFont::AbstractFont() {}
+AbstractFont::~AbstractFont() {}
 
-class FreeTypeFontRenderer;
-class FreeTypeFont;
-
-class AbstractTextRenderer;
-template<UnsignedInt> class TextRenderer;
-typedef TextRenderer<2> TextRenderer2D;
-typedef TextRenderer<3> TextRenderer3D;
+AbstractLayouter::AbstractLayouter(): _glyphCount(0) {}
+AbstractLayouter::~AbstractLayouter() {}
 
 }}
-
-#endif

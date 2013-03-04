@@ -1,5 +1,5 @@
-#ifndef Magnum_Text_Font_h
-#define Magnum_Text_Font_h
+#ifndef Magnum_Text_FreeTypeFont_h
+#define Magnum_Text_FreeTypeFont_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,15 +16,15 @@
 */
 
 /** @file
- * @brief Class Magnum::Text::FontRenderer, Magnum::Text::Font, Magnum::Text::TextLayouter
+ * @brief Class Magnum::Text::FreeTypeFontRenderer, Magnum::Text::FreeTypeFont
  */
 
 #include <unordered_map>
 
 #include "Math/Geometry/Rectangle.h"
 #include "Texture.h"
-
-#include "magnumTextVisibility.h"
+#include "Text/AbstractFont.h"
+#include "Text/magnumTextVisibility.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 struct FT_LibraryRec_;
@@ -40,16 +40,16 @@ struct hb_glyph_position_t;
 namespace Magnum { namespace Text {
 
 /**
-@brief %Font renderer
+@brief FreeType font renderer
 
-Contains global instance of font renderer. See Font class documentation for
-more information.
+Contains global instance of font renderer. See FreeTypeFont class documentation
+for more information.
 */
-class MAGNUM_TEXT_EXPORT FontRenderer {
+class MAGNUM_TEXT_EXPORT FreeTypeFontRenderer {
     public:
-        explicit FontRenderer();
+        explicit FreeTypeFontRenderer();
 
-        ~FontRenderer();
+        ~FreeTypeFontRenderer();
 
         /** @brief FreeType library handle */
         inline FT_Library library() { return _library; }
@@ -59,36 +59,33 @@ class MAGNUM_TEXT_EXPORT FontRenderer {
 };
 
 /**
-@brief %Font
+@brief FreeType font
 
 Contains font with characters prerendered into texture atlas.
 
-@section Font-usage Usage
+@section FreeTypeFont-usage Usage
 
-You need to maintain instance of FontRenderer during the lifetime of all Font
+You need to maintain instance of FreeTypeFontRenderer during the lifetime of all FreeTypeFont
 instances. The font can be created either from file or from memory location of
 format supported by [FreeType](http://www.freetype.org/) library. Next step is
 to prerender all the glyphs which will be used in text rendering later.
 @code
-Text::FontRenderer fontRenderer;
+Text::FreeTypeFontRenderer fontRenderer;
 
-Text::Font font(fontRenderer, "MyFont.ttf", 48.0f);
+Text::FreeTypeFont font(fontRenderer, "MyFreeTypeFont.ttf", 48.0f);
 font.prerender("abcdefghijklmnopqrstuvwxyz"
                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                "0123456789 ", Vector2i(512));
 @endcode
 See TextRenderer for information about text rendering.
 
-@section Font-extensions Required OpenGL functionality
+@section FreeTypeFont-extensions Required OpenGL functionality
 
 %Font texture uses one-component internal format, which requires
 @extension{ARB,texture_rg} (also part of OpenGL ES 3.0 or available as
 @es_extension{EXT,texture_rg} in ES 2.0).
 */
-class MAGNUM_TEXT_EXPORT Font {
-    Font(const Font&) = delete;
-    Font& operator=(const Font&) = delete;
-
+class MAGNUM_TEXT_EXPORT FreeTypeFont: public AbstractFont {
     public:
         /**
          * @brief Create font from file
@@ -96,7 +93,7 @@ class MAGNUM_TEXT_EXPORT Font {
          * @param fontFile      %Font file
          * @param size          %Font size
          */
-        explicit Font(FontRenderer& renderer, const std::string& fontFile, Float size);
+        explicit FreeTypeFont(FreeTypeFontRenderer& renderer, const std::string& fontFile, Float size);
 
         /**
          * @brief Create font from memory
@@ -105,7 +102,7 @@ class MAGNUM_TEXT_EXPORT Font {
          * @param dataSize      %Font data size
          * @param size          %Font size
          */
-        explicit Font(FontRenderer& renderer, const unsigned char* data, std::size_t dataSize, Float size);
+        explicit FreeTypeFont(FreeTypeFontRenderer& renderer, const unsigned char* data, std::size_t dataSize, Float size);
 
         /**
          * @brief Prerender given character set
@@ -134,13 +131,7 @@ class MAGNUM_TEXT_EXPORT Font {
          */
         void prerenderDistanceField(const std::string& characters, const Vector2i& sourceAtlasSize, const Vector2i& atlasSize, Int radius);
 
-        ~Font();
-
-        /** @brief Move constructor */
-        Font(Font&& other);
-
-        /** @brief Move assignment */
-        Font& operator=(Font&& other);
+        ~FreeTypeFont();
 
         /** @brief %Font size */
         inline Float size() const { return _size; }
@@ -157,80 +148,25 @@ class MAGNUM_TEXT_EXPORT Font {
          */
         const std::tuple<Rectangle, Rectangle>& operator[](char32_t character) const;
 
-        /** @brief %Font texture atlas */
-        inline Texture2D& texture() { return _texture; }
-
-        /** @brief Font handle */
+        /** @brief %Font handle */
         #ifdef MAGNUM_USE_HARFBUZZ
         inline hb_font_t* font() { return _hbFont; }
         #else
         inline FT_Face font() { return _ftFont; }
         #endif
 
+        AbstractLayouter* layout(const Float size, const std::string& text) override;
+
     private:
         void MAGNUM_TEXT_LOCAL finishConstruction();
-        void MAGNUM_TEXT_LOCAL destroy();
-        void MAGNUM_TEXT_LOCAL move();
         void MAGNUM_TEXT_LOCAL prerenderInternal(const std::string& characters, const Vector2i& atlasSize, const Int radius, Texture2D* output);
 
         std::unordered_map<char32_t, std::tuple<Rectangle, Rectangle>> glyphs;
-        Texture2D _texture;
         FT_Face _ftFont;
         Float _size;
         #ifdef MAGNUM_USE_HARFBUZZ
         hb_font_t* _hbFont;
         #endif
-};
-
-/**
-@brief %Text layouter
-
-Provides low-level text rendering using Font, used internally in TextRenderer.
-*/
-class TextLayouter {
-    public:
-        /**
-         * @brief Constructor
-         * @param font      %Font
-         * @param size      %Font size
-         * @param text      Text to layout
-         */
-        TextLayouter(Font& font, const Float size, const std::string& text);
-
-        ~TextLayouter();
-
-        /** @brief Count of glyphs in laid out text */
-        inline UnsignedInt glyphCount() {
-            #ifdef MAGNUM_USE_HARFBUZZ
-            return _glyphCount;
-            #else
-            return glyphs.size();
-            #endif
-        }
-
-        /**
-         * @brief Render glyph
-         * @param i                 Glyph index
-         * @param cursorPosition    Cursor position
-         *
-         * Returns quad position, texture coordinates and advance to next
-         * glyph.
-         */
-        std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(const Vector2& cursorPosition, const UnsignedInt i);
-
-    private:
-        #ifdef MAGNUM_USE_HARFBUZZ
-        const Font& font;
-        hb_buffer_t* buffer;
-        hb_glyph_info_t* glyphInfo;
-        hb_glyph_position_t* glyphPositions;
-        UnsignedInt _glyphCount;
-        #else
-        Font& font;
-        std::vector<FT_UInt> glyphs;
-        #endif
-
-        const Float size;
 };
 
 }}

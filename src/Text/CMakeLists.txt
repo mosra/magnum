@@ -7,10 +7,12 @@ if(USE_HARFBUZZ)
 endif()
 
 set(MagnumText_SRCS
-    Font.cpp
+    AbstractFont.cpp
+    FreeTypeFont.cpp
     TextRenderer.cpp)
 set(MagnumText_HEADERS
-    Font.h
+    AbstractFont.h
+    FreeTypeFont.h
     Text.h
     TextRenderer.h
 
