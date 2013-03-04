@@ -184,7 +184,7 @@ namespace {
 
 FreeTypeLayouter::FreeTypeLayouter(FreeTypeFont& font, const Float size, const std::string& text): font(font), size(size) {
     /* Get glyph codes from characters */
-    glyphs.reserve(text.size()+1);
+    glyphs.reserve(text.size());
     _glyphCount = text.size();
     for(std::size_t i = 0; i != text.size(); ) {
         UnsignedInt codepoint;
