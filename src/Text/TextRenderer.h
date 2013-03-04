@@ -121,9 +121,8 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
 /**
 @brief %Text renderer
 
-Lays out the text into mesh using [HarfBuzz](http://www.freedesktop.org/wiki/Software/HarfBuzz)
-library. Use of ligatures, kerning etc. depends on features supported by
-particular font. See also Font.
+Lays out the text into mesh using given Font. Use of ligatures, kerning etc.
+depends on features supported by particular font and its layouter.
 
 @section TextRenderer-usage Usage
 

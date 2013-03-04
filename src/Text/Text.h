@@ -21,6 +21,8 @@
 
 #include "Types.h"
 
+#include "magnumConfigure.h"
+
 namespace Magnum { namespace Text {
 
 class AbstractFont;
@@ -28,6 +30,9 @@ class AbstractLayouter;
 
 class FreeTypeFontRenderer;
 class FreeTypeFont;
+#ifdef MAGNUM_USE_HARFBUZZ
+class HarfBuzzFont;
+#endif
 
 class AbstractTextRenderer;
 template<UnsignedInt> class TextRenderer;

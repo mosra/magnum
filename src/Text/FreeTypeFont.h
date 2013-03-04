@@ -31,10 +31,6 @@ struct FT_LibraryRec_;
 typedef FT_LibraryRec_* FT_Library;
 struct FT_FaceRec_;
 typedef FT_FaceRec_*  FT_Face;
-struct hb_font_t;
-struct hb_buffer_t;
-struct hb_glyph_info_t;
-struct hb_glyph_position_t;
 #endif
 
 namespace Magnum { namespace Text {
@@ -148,25 +144,24 @@ class MAGNUM_TEXT_EXPORT FreeTypeFont: public AbstractFont {
          */
         const std::tuple<Rectangle, Rectangle>& operator[](char32_t character) const;
 
-        /** @brief %Font handle */
-        #ifdef MAGNUM_USE_HARFBUZZ
-        inline hb_font_t* font() { return _hbFont; }
-        #else
+        /** @brief FreeType font handle */
         inline FT_Face font() { return _ftFont; }
-        #endif
 
         AbstractLayouter* layout(const Float size, const std::string& text) override;
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #else
+    protected:
+    #endif
+        FT_Face _ftFont;
 
     private:
         void MAGNUM_TEXT_LOCAL finishConstruction();
         void MAGNUM_TEXT_LOCAL prerenderInternal(const std::string& characters, const Vector2i& atlasSize, const Int radius, Texture2D* output);
 
         std::unordered_map<char32_t, std::tuple<Rectangle, Rectangle>> glyphs;
-        FT_Face _ftFont;
         Float _size;
-        #ifdef MAGNUM_USE_HARFBUZZ
-        hb_font_t* _hbFont;
-        #endif
 };
 
 }}

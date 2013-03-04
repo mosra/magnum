@@ -1,11 +1,6 @@
 find_package(Freetype REQUIRED)
 include_directories(${FREETYPE_INCLUDE_DIRS})
 
-if(USE_HARFBUZZ)
-    find_package(HarfBuzz REQUIRED)
-    include_directories(${HARFBUZZ_INCLUDE_DIRS})
-endif()
-
 set(MagnumText_SRCS
     AbstractFont.cpp
     FreeTypeFont.cpp
@@ -17,6 +12,14 @@ set(MagnumText_HEADERS
     TextRenderer.h
 
     magnumTextVisibility.h)
+
+if(USE_HARFBUZZ)
+    find_package(HarfBuzz REQUIRED)
+    include_directories(${HARFBUZZ_INCLUDE_DIRS})
+
+    set(MagnumText_SRCS ${MagnumText_SRCS} HarfBuzzFont.cpp)
+    set(MagnumText_HEADERS ${MagnumText_HEADERS} HarfBuzzFont.h)
+endif()
 
 add_library(MagnumText SHARED ${MagnumText_SRCS})
 
