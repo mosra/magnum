@@ -26,7 +26,6 @@
 #include "Context.h"
 #include "Extensions.h"
 #include "Mesh.h"
-#include "Swizzle.h"
 #include "Shaders/AbstractVectorShader.h"
 #include "Text/Font.h"
 
@@ -149,31 +148,19 @@ template<class T> void createIndices(void* output, const UnsignedInt glyphCount)
     }
 }
 
-template<UnsignedInt dimensions> typename DimensionTraits<dimensions>::VectorType point(const Vector2& vec);
-
-template<> inline Vector2 point<2>(const Vector2& vec) {
-    return vec;
-}
-
-template<> inline Vector3 point<3>(const Vector2& vec) {
-    return {vec, 1.0f};
-}
-
-template<UnsignedInt dimensions> struct Vertex {
-    typename DimensionTraits<dimensions>::VectorType position;
-    Vector2 texcoords;
+struct Vertex {
+    Vector2 position, texcoords;
 };
 
 }
 
-template<UnsignedInt dimensions> std::tuple<std::vector<typename DimensionTraits<dimensions>::VectorType>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> TextRenderer<dimensions>::render(Font& font, Float size, const std::string& text) {
+template<UnsignedInt dimensions> std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> TextRenderer<dimensions>::render(Font& font, Float size, const std::string& text) {
     TextLayouter layouter(font, size, text);
 
     const UnsignedInt vertexCount = layouter.glyphCount()*4;
 
     /* Output data */
-    std::vector<typename DimensionTraits<dimensions>::VectorType> positions;
-    std::vector<Vector2> texcoords;
+    std::vector<Vector2> positions, texcoords;
     positions.reserve(vertexCount);
     texcoords.reserve(vertexCount);
 
@@ -186,10 +173,10 @@ template<UnsignedInt dimensions> std::tuple<std::vector<typename DimensionTraits
         std::tie(quadPosition, textureCoordinates, advance) = layouter.renderGlyph(cursorPosition, i);
 
         positions.insert(positions.end(), {
-            point<dimensions>(quadPosition.topLeft()),
-            point<dimensions>(quadPosition.bottomLeft()),
-            point<dimensions>(quadPosition.topRight()),
-            point<dimensions>(quadPosition.bottomRight()),
+            quadPosition.topLeft(),
+            quadPosition.bottomLeft(),
+            quadPosition.topRight(),
+            quadPosition.bottomRight(),
         });
         texcoords.insert(texcoords.end(), {
             textureCoordinates.topLeft(),
@@ -208,8 +195,7 @@ template<UnsignedInt dimensions> std::tuple<std::vector<typename DimensionTraits
 
     /* Rendered rectangle */
     Rectangle rectangle;
-    if(layouter.glyphCount()) rectangle =
-        {swizzle<'x', 'y'>(positions[1]), swizzle<'x', 'y'>(positions[positions.size()-2])};
+    if(layouter.glyphCount()) rectangle = {positions[1], positions[positions.size()-2]};
 
     return std::make_tuple(std::move(positions), std::move(texcoords), std::move(indices), rectangle);
 }
@@ -221,7 +207,7 @@ template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimens
     const UnsignedInt indexCount = layouter.glyphCount()*6;
 
     /* Vertex buffer */
-    std::vector<Vertex<dimensions>> vertices;
+    std::vector<Vertex> vertices;
     vertices.reserve(vertexCount);
 
     /* Render all glyphs */
@@ -233,10 +219,10 @@ template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimens
         std::tie(quadPosition, textureCoordinates, advance) = layouter.renderGlyph(cursorPosition, i);
 
         vertices.insert(vertices.end(), {
-            {point<dimensions>(quadPosition.topLeft()), textureCoordinates.topLeft()},
-            {point<dimensions>(quadPosition.bottomLeft()), textureCoordinates.bottomLeft()},
-            {point<dimensions>(quadPosition.topRight()), textureCoordinates.topRight()},
-            {point<dimensions>(quadPosition.bottomRight()), textureCoordinates.bottomRight()}
+            {quadPosition.topLeft(), textureCoordinates.topLeft()},
+            {quadPosition.bottomLeft(), textureCoordinates.bottomLeft()},
+            {quadPosition.topRight(), textureCoordinates.topRight()},
+            {quadPosition.bottomRight(), textureCoordinates.bottomRight()}
         });
 
         /* Advance cursor position to next character */
@@ -269,15 +255,14 @@ template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimens
 
     /* Rendered rectangle */
     Rectangle rectangle;
-    if(layouter.glyphCount()) rectangle =
-        {swizzle<'x', 'y'>(vertices[1].position), swizzle<'x', 'y'>(vertices[vertices.size()-2].position)};
+    if(layouter.glyphCount()) rectangle = {vertices[1].position, vertices[vertices.size()-2].position};
 
     /* Configure mesh */
     Mesh mesh;
     mesh.setPrimitive(Mesh::Primitive::Triangles)
         ->setIndexCount(indexCount)
         ->addInterleavedVertexBuffer(vertexBuffer, 0,
-            typename Shaders::AbstractVectorShader<dimensions>::Position(),
+            typename Shaders::AbstractVectorShader<dimensions>::Position(Shaders::AbstractVectorShader<dimensions>::Position::Components::Two),
             typename Shaders::AbstractVectorShader<dimensions>::TextureCoordinates())
         ->setIndexBuffer(indexBuffer, 0, indexType, 0, vertexCount);
 
@@ -295,7 +280,7 @@ template<UnsignedInt dimensions> TextRenderer<dimensions>::TextRenderer(Font& fo
 
     _mesh.setPrimitive(Mesh::Primitive::Triangles)
         ->addInterleavedVertexBuffer(&vertexBuffer, 0,
-            typename Shaders::AbstractVectorShader<dimensions>::Position(),
+            typename Shaders::AbstractVectorShader<dimensions>::Position(Shaders::AbstractVectorShader<dimensions>::Position::Components::Two),
             typename Shaders::AbstractVectorShader<dimensions>::TextureCoordinates());
 }
 
@@ -306,7 +291,7 @@ template<UnsignedInt dimensions> void TextRenderer<dimensions>::reserve(const ui
     const UnsignedInt indexCount = glyphCount*6;
 
     /* Allocate vertex buffer, reset vertex count */
-    vertexBuffer.setData(vertexCount*sizeof(Vertex<dimensions>), nullptr, vertexBufferUsage);
+    vertexBuffer.setData(vertexCount*sizeof(Vertex), nullptr, vertexBufferUsage);
     _mesh.setVertexCount(0);
 
     /* Allocate index buffer, reset index count and reconfigure buffer binding */
@@ -343,7 +328,7 @@ template<UnsignedInt dimensions> void TextRenderer<dimensions>::render(const std
     CORRADE_ASSERT(layouter.glyphCount() <= _capacity, "Text::TextRenderer::render(): capacity" << _capacity << "too small to render" << layouter.glyphCount() << "glyphs", );
 
     /* Render all glyphs */
-    Vertex<dimensions>* const vertices = static_cast<Vertex<dimensions>*>(vertexBuffer.map(0, layouter.glyphCount()*4*sizeof(Vertex<dimensions>),
+    Vertex* const vertices = static_cast<Vertex*>(vertexBuffer.map(0, layouter.glyphCount()*4*sizeof(Vertex),
         Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write));
     Vector2 cursorPosition;
     for(UnsignedInt i = 0; i != layouter.glyphCount(); ++i) {
@@ -358,10 +343,10 @@ template<UnsignedInt dimensions> void TextRenderer<dimensions>::render(const std
             _rectangle.topRight() = quadPosition.topRight();
 
         const std::size_t vertex = i*4;
-        vertices[vertex]   = {point<dimensions>(quadPosition.topLeft()), textureCoordinates.topLeft()};
-        vertices[vertex+1] = {point<dimensions>(quadPosition.bottomLeft()), textureCoordinates.bottomLeft()};
-        vertices[vertex+2] = {point<dimensions>(quadPosition.topRight()), textureCoordinates.topRight()};
-        vertices[vertex+3] = {point<dimensions>(quadPosition.bottomRight()), textureCoordinates.bottomRight()};
+        vertices[vertex]   = {quadPosition.topLeft(), textureCoordinates.topLeft()};
+        vertices[vertex+1] = {quadPosition.bottomLeft(), textureCoordinates.bottomLeft()};
+        vertices[vertex+2] = {quadPosition.topRight(), textureCoordinates.topRight()};
+        vertices[vertex+3] = {quadPosition.bottomRight(), textureCoordinates.bottomRight()};
 
         /* Advance cursor position to next character */
         cursorPosition += advance;

@@ -109,7 +109,7 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT TextRenderer {
          * Returns tuple with vertex positions, texture coordinates, indices
          * and rectangle spanning the rendered text.
          */
-        static std::tuple<std::vector<typename DimensionTraits<dimensions>::VectorType>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> render(Font& font, Float size, const std::string& text);
+        static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> render(Font& font, Float size, const std::string& text);
 
         /**
          * @brief Render text
