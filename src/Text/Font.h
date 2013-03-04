@@ -16,18 +16,19 @@
 */
 
 /** @file
- * @brief Class Magnum::Text::Font, Magnum::Text::TextLayouter
+ * @brief Class Magnum::Text::FontRenderer, Magnum::Text::Font, Magnum::Text::TextLayouter
  */
 
 #include <unordered_map>
 
 #include "Math/Geometry/Rectangle.h"
 #include "Texture.h"
-#include "Text/FontRenderer.h"
 
 #include "magnumTextVisibility.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+struct FT_LibraryRec_;
+typedef FT_LibraryRec_* FT_Library;
 struct FT_FaceRec_;
 typedef FT_FaceRec_*  FT_Face;
 struct hb_font_t;
@@ -37,6 +38,25 @@ struct hb_glyph_position_t;
 #endif
 
 namespace Magnum { namespace Text {
+
+/**
+@brief %Font renderer
+
+Contains global instance of font renderer. See Font class documentation for
+more information.
+*/
+class MAGNUM_TEXT_EXPORT FontRenderer {
+    public:
+        explicit FontRenderer();
+
+        ~FontRenderer();
+
+        /** @brief FreeType library handle */
+        inline FT_Library library() { return _library; }
+
+    private:
+        FT_Library _library;
+};
 
 /**
 @brief %Font

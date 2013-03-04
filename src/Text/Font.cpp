@@ -30,6 +30,14 @@
 
 namespace Magnum { namespace Text {
 
+FontRenderer::FontRenderer() {
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Init_FreeType(&_library) == 0);
+}
+
+FontRenderer::~FontRenderer() {
+    FT_Done_FreeType(_library);
+}
+
 Font::Font(FontRenderer& renderer, const std::string& fontFile, Float size): _size(size) {
     CORRADE_INTERNAL_ASSERT_OUTPUT(FT_New_Face(renderer.library(), fontFile.c_str(), 0, &_ftFont) == 0);
 

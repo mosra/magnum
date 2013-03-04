@@ -8,11 +8,9 @@ endif()
 
 set(MagnumText_SRCS
     Font.cpp
-    FontRenderer.cpp
     TextRenderer.cpp)
 set(MagnumText_HEADERS
     Font.h
-    FontRenderer.h
     Text.h
     TextRenderer.h
 
