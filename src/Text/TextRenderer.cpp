@@ -154,7 +154,7 @@ struct Vertex {
 
 }
 
-template<UnsignedInt dimensions> std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> TextRenderer<dimensions>::render(Font& font, Float size, const std::string& text) {
+std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> AbstractTextRenderer::render(Font& font, Float size, const std::string& text) {
     TextLayouter layouter(font, size, text);
 
     const UnsignedInt vertexCount = layouter.glyphCount()*4;
@@ -200,7 +200,7 @@ template<UnsignedInt dimensions> std::tuple<std::vector<Vector2>, std::vector<Ve
     return std::make_tuple(std::move(positions), std::move(texcoords), std::move(indices), rectangle);
 }
 
-template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimensions>::render(Font& font, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage) {
+std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(Font& font, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage) {
     TextLayouter layouter(font, size, text);
 
     const UnsignedInt vertexCount = layouter.glyphCount()*4;
@@ -257,19 +257,28 @@ template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimens
     Rectangle rectangle;
     if(layouter.glyphCount()) rectangle = {vertices[1].position, vertices[vertices.size()-2].position};
 
-    /* Configure mesh */
+    /* Configure mesh except for vertex buffer (depends on dimension count, done
+       in subclass) */
     Mesh mesh;
     mesh.setPrimitive(Mesh::Primitive::Triangles)
         ->setIndexCount(indexCount)
-        ->addInterleavedVertexBuffer(vertexBuffer, 0,
-            typename Shaders::AbstractVectorShader<dimensions>::Position(Shaders::AbstractVectorShader<dimensions>::Position::Components::Two),
-            typename Shaders::AbstractVectorShader<dimensions>::TextureCoordinates())
         ->setIndexBuffer(indexBuffer, 0, indexType, 0, vertexCount);
 
     return std::make_tuple(std::move(mesh), rectangle);
 }
 
-template<UnsignedInt dimensions> TextRenderer<dimensions>::TextRenderer(Font& font, const Float size): font(font), size(size), _capacity(0), vertexBuffer(Buffer::Target::Array), indexBuffer(Buffer::Target::ElementArray) {
+template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimensions>::render(Font& font, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage) {
+    /* Finalize mesh configuration and return the result */
+    auto r = AbstractTextRenderer::render(font, size, text, vertexBuffer, indexBuffer, usage);
+    Mesh& mesh = std::get<0>(r);
+    mesh.addInterleavedVertexBuffer(vertexBuffer, 0,
+            typename Shaders::AbstractVectorShader<dimensions>::Position(
+                Shaders::AbstractVectorShader<dimensions>::Position::Components::Two),
+            typename Shaders::AbstractVectorShader<dimensions>::TextureCoordinates());
+    return std::move(r);
+}
+
+AbstractTextRenderer::AbstractTextRenderer(Font& font, Float size): vertexBuffer(Buffer::Target::Array), indexBuffer(Buffer::Target::ElementArray), font(font), size(size), _capacity(0) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::map_buffer_range);
     #else
@@ -278,13 +287,20 @@ template<UnsignedInt dimensions> TextRenderer<dimensions>::TextRenderer(Font& fo
     #endif
     #endif
 
-    _mesh.setPrimitive(Mesh::Primitive::Triangles)
-        ->addInterleavedVertexBuffer(&vertexBuffer, 0,
+    /* Vertex buffer configuration depends on dimension count, done in subclass */
+    _mesh.setPrimitive(Mesh::Primitive::Triangles);
+}
+
+AbstractTextRenderer::~AbstractTextRenderer() {}
+
+template<UnsignedInt dimensions> TextRenderer<dimensions>::TextRenderer(Font& font, const Float size): AbstractTextRenderer(font, size) {
+    /* Finalize mesh configuration */
+    _mesh.addInterleavedVertexBuffer(&vertexBuffer, 0,
             typename Shaders::AbstractVectorShader<dimensions>::Position(Shaders::AbstractVectorShader<dimensions>::Position::Components::Two),
             typename Shaders::AbstractVectorShader<dimensions>::TextureCoordinates());
 }
 
-template<UnsignedInt dimensions> void TextRenderer<dimensions>::reserve(const uint32_t glyphCount, const Buffer::Usage vertexBufferUsage, const Buffer::Usage indexBufferUsage) {
+void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usage vertexBufferUsage, const Buffer::Usage indexBufferUsage) {
     _capacity = glyphCount;
 
     const UnsignedInt vertexCount = glyphCount*4;
@@ -322,7 +338,7 @@ template<UnsignedInt dimensions> void TextRenderer<dimensions>::reserve(const ui
     CORRADE_INTERNAL_ASSERT_OUTPUT(indexBuffer.unmap());
 }
 
-template<UnsignedInt dimensions> void TextRenderer<dimensions>::render(const std::string& text) {
+void AbstractTextRenderer::render(const std::string& text) {
     TextLayouter layouter(font, size, text);
 
     CORRADE_ASSERT(layouter.glyphCount() <= _capacity, "Text::TextRenderer::render(): capacity" << _capacity << "too small to render" << layouter.glyphCount() << "glyphs", );

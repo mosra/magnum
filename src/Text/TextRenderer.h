@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Text::TextRenderer
+ * @brief Class Magnum::Text::AbstractTextRenderer, Magnum::Text::TextRenderer, typedef Magnum::Text::TextRenderer2D, Magnum::Text::TextRenderer3D
  */
 
 #include "Math/Geometry/Rectangle.h"
@@ -32,6 +32,91 @@
 #include <vector>
 
 namespace Magnum { namespace Text {
+
+/**
+@brief Base for text renderers
+
+Not meant to be used directly, see TextRenderer for more information.
+@see TextRenderer2D, TextRenderer3D
+*/
+class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
+    public:
+        /**
+         * @brief Render text
+         * @param font          %Font to use
+         * @param size          %Font size
+         * @param text          %Text to render
+         *
+         * Returns tuple with vertex positions, texture coordinates, indices
+         * and rectangle spanning the rendered text.
+         */
+        static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> render(Font& font, Float size, const std::string& text);
+
+        /**
+         * @brief Constructor
+         * @param font          %Font to use
+         * @param size          %Font size
+         */
+        AbstractTextRenderer(Font& font, Float size);
+
+        virtual ~AbstractTextRenderer() = 0;
+
+        /**
+         * @brief Capacity for rendered glyphs
+         *
+         * @see reserve()
+         */
+        inline UnsignedInt capacity() const { return _capacity; }
+
+        /** @brief Rectangle spanning the rendered text */
+        inline Rectangle rectangle() const { return _rectangle; }
+
+        /** @brief Text mesh */
+        inline Mesh* mesh() { return &_mesh; }
+
+        /**
+         * @brief Reserve capacity for rendered glyphs
+         *
+         * Reallocates memory in buffers to hold @p glyphCount glyphs and
+         * prefills index buffer. Consider using appropriate @p vertexBufferUsage
+         * if the text will be changed frequently. Index buffer is changed
+         * only by calling this function, thus @p indexBufferUsage generally
+         * doesn't need to be so dynamic if the capacity won't be changed much.
+         *
+         * Initially zero capacity is reserved.
+         * @see capacity()
+         */
+        void reserve(const UnsignedInt glyphCount, const Buffer::Usage vertexBufferUsage, const Buffer::Usage indexBufferUsage);
+
+        /**
+         * @brief Render text
+         *
+         * Renders the text to vertex buffer, reusing index buffer already
+         * filled with reserve(). Rectangle spanning the rendered text is
+         * available through rectangle().
+         *
+         * Initially no text is rendered.
+         * @attention The capacity must be large enough to contain all glyphs,
+         *      see reserve() for more information.
+         */
+        void render(const std::string& text);
+
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        static std::tuple<Mesh, Rectangle> MAGNUM_LOCAL render(Font& font, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
+
+        Mesh _mesh;
+        Buffer vertexBuffer, indexBuffer;
+
+    private:
+        Font& font;
+        Float size;
+        UnsignedInt _capacity;
+        Rectangle _rectangle;
+};
 
 /**
 @brief %Text renderer
@@ -98,19 +183,8 @@ for asynchronous buffer updates.
 
 @see TextRenderer2D, TextRenderer3D, Font, Shaders::AbstractVectorShader
 */
-template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT TextRenderer {
+template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT TextRenderer: public AbstractTextRenderer {
     public:
-        /**
-         * @brief Render text
-         * @param font          %Font to use
-         * @param size          %Font size
-         * @param text          %Text to render
-         *
-         * Returns tuple with vertex positions, texture coordinates, indices
-         * and rectangle spanning the rendered text.
-         */
-        static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> render(Font& font, Float size, const std::string& text);
-
         /**
          * @brief Render text
          * @param font          %Font to use
@@ -132,53 +206,7 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT TextRenderer {
          */
         TextRenderer(Font& font, Float size);
 
-        /**
-         * @brief Capacity for rendered glyphs
-         *
-         * @see reserve()
-         */
-        inline UnsignedInt capacity() const { return _capacity; }
-
-        /** @brief Rectangle spanning the rendered text */
-        inline Rectangle rectangle() const { return _rectangle; }
-
-        /** @brief Text mesh */
-        inline Mesh* mesh() { return &_mesh; }
-
-        /**
-         * @brief Reserve capacity for rendered glyphs
-         *
-         * Reallocates memory in buffers to hold @p glyphCount glyphs and
-         * prefills index buffer. Consider using appropriate @p vertexBufferUsage
-         * if the text will be changed frequently. Index buffer is changed
-         * only by calling this function, thus @p indexBufferUsage generally
-         * doesn't need to be so dynamic if the capacity won't be changed much.
-         *
-         * Initially zero capacity is reserved.
-         * @see capacity()
-         */
-        void reserve(const UnsignedInt glyphCount, const Buffer::Usage vertexBufferUsage, const Buffer::Usage indexBufferUsage);
-
-        /**
-         * @brief Render text
-         *
-         * Renders the text to vertex buffer, reusing index buffer already
-         * filled with reserve(). Rectangle spanning the rendered text is
-         * available through rectangle().
-         *
-         * Initially no text is rendered.
-         * @attention The capacity must be large enough to contain all glyphs,
-         *      see reserve() for more information.
-         */
-        void render(const std::string& text);
-
-    private:
-        Font& font;
-        Float size;
-        UnsignedInt _capacity;
-        Rectangle _rectangle;
-        Buffer vertexBuffer, indexBuffer;
-        Mesh _mesh;
+        using AbstractTextRenderer::render;
 };
 
 /** @brief Two-dimensional text renderer */
