@@ -109,7 +109,7 @@ class MAGNUM_TEXT_EXPORT Font {
          * @attention @p sourceAtlasSize must be large enough to contain all
          *      rendered glyphs with padding given by @p radius.
          */
-        void prerenderDistanceField(const std::string& characters, const Vector2i& atlasSize, const Vector2i& distanceFieldAtlasSize, Int radius);
+        void prerenderDistanceField(const std::string& characters, const Vector2i& sourceAtlasSize, const Vector2i& atlasSize, Int radius);
 
         ~Font();
 

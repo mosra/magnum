@@ -133,7 +133,7 @@ void Font::prerender(const std::string& characters, const Vector2i& atlasSize) {
     prerenderInternal(characters, atlasSize, 0, &_texture);
 }
 
-void Font::prerenderDistanceField(const std::string& characters, const Vector2i& atlasSize, const Vector2i& distanceFieldAtlasSize, Int radius) {
+void Font::prerenderDistanceField(const std::string& characters, const Vector2i& sourceAtlasSize, const Vector2i& atlasSize, Int radius) {
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_storage);
 
     /* Render input texture */
@@ -141,11 +141,11 @@ void Font::prerenderDistanceField(const std::string& characters, const Vector2i&
     input.setWrapping(Texture2D::Wrapping::ClampToEdge)
         ->setMinificationFilter(Texture2D::Filter::Linear)
         ->setMagnificationFilter(Texture2D::Filter::Linear);
-    prerenderInternal(characters, atlasSize, radius, &input);
+    prerenderInternal(characters, sourceAtlasSize, radius, &input);
 
     /* Create distance field from input texture */
-    _texture.setStorage(1, Texture2D::InternalFormat::R8, distanceFieldAtlasSize);
-    TextureTools::distanceField(&input, &_texture, Rectanglei::fromSize({}, distanceFieldAtlasSize), radius);
+    _texture.setStorage(1, Texture2D::InternalFormat::R8, atlasSize);
+    TextureTools::distanceField(&input, &_texture, Rectanglei::fromSize({}, atlasSize), radius);
 }
 
 void Font::destroy() {
