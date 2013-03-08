@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::ObjectShapeGroup
+ * @brief Class Magnum::Physics::ObjectShapeGroup, typedef Magnum::Physics::ObjectShapeGroup2D, Magnum::Physics::ObjectShapeGroup3D
  */
 
 #include <vector>

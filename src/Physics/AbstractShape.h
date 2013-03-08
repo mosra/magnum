@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::AbstractShape
+ * @brief Class Magnum::Physics::AbstractShape, typedef Magnum::Physics::AbstractShape2D, Magnum::Physics::AbstractShape3D
  */
 
 #include "Magnum.h"

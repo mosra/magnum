@@ -16,7 +16,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::ObjectShape
+ * @brief Class Magnum::Physics::ObjectShape, typedef Magnum::Physics::ObjectShape2D, Magnum::Physics::ObjectShape3D
  */
 
 #include "SceneGraph/AbstractGroupedFeature.h"
