@@ -40,8 +40,12 @@ namespace Magnum { namespace Trade { namespace TgaImporter {
 /** @brief TGA importer plugin */
 class TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     public:
-        /** @copydoc AbstractImporter::AbstractImporter() */
-        TgaImporter(Corrade::PluginManager::AbstractPluginManager* manager = 0, const std::string& plugin = ""): AbstractImporter(manager, plugin), _image(nullptr) {}
+        /** @brief Default constructor */
+        inline explicit TgaImporter(): _image(nullptr) {}
+
+        /** @brief Plugin manager constructor */
+        inline explicit TgaImporter(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin): AbstractImporter(manager, std::move(plugin)), _image(nullptr) {}
+
         inline virtual ~TgaImporter() { close(); }
 
         inline Features features() const override { return Feature::OpenFile|Feature::OpenStream; }

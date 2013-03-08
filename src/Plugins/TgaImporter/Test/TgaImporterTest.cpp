@@ -36,13 +36,13 @@ class TgaImporterTest: public Corrade::TestSuite::Tester {
 };
 
 TgaImporterTest::TgaImporterTest() {
-    addTests(&TgaImporterTest::openInexistent,
-             &TgaImporterTest::openShort,
-             &TgaImporterTest::paletted,
-             &TgaImporterTest::nonRgb,
-             &TgaImporterTest::bits16,
-             &TgaImporterTest::bits24,
-             &TgaImporterTest::bits32);
+    addTests({&TgaImporterTest::openInexistent,
+              &TgaImporterTest::openShort,
+              &TgaImporterTest::paletted,
+              &TgaImporterTest::nonRgb,
+              &TgaImporterTest::bits16,
+              &TgaImporterTest::bits24,
+              &TgaImporterTest::bits32});
 }
 
 void TgaImporterTest::openInexistent() {
