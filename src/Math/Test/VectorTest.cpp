@@ -19,7 +19,27 @@
 
 #include "Math/Vector.h"
 
-namespace Magnum { namespace Math { namespace Test {
+struct Vec3 {
+    float x, y, z;
+};
+
+namespace Magnum { namespace Math {
+
+namespace Implementation {
+
+template<> struct VectorConverter<3, float, Vec3> {
+    inline static Vector<3, Float> from(const Vec3& other) {
+        return {other.x, other.y, other.z};
+    }
+
+    inline static Vec3 to(const Vector<3, Float>& other) {
+        return {other[0], other[1], other[2]};
+    }
+};
+
+}
+
+namespace Test {
 
 class VectorTest: public Corrade::TestSuite::Tester {
     public:
@@ -32,6 +52,8 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void constructOneComponent();
         void constructConversion();
         void constructCopy();
+
+        void convert();
         void data();
 
         void negative();
@@ -75,6 +97,8 @@ VectorTest::VectorTest() {
               &VectorTest::constructOneComponent,
               &VectorTest::constructConversion,
               &VectorTest::constructCopy,
+
+              &VectorTest::convert,
               &VectorTest::data,
 
               &VectorTest::negative,
@@ -153,6 +177,15 @@ void VectorTest::constructCopy() {
     constexpr Vector4 a(1.0f, 3.5f, 4.0f, -2.7f);
     constexpr Vector4 b(a);
     CORRADE_COMPARE(b, Vector4(1.0f, 3.5f, 4.0f, -2.7f));
+}
+
+void VectorTest::convert() {
+    Vec3 a{1.5f, 2.0f, -3.5f};
+    Vector3 b(1.5f, 2.0f, -3.5f);
+    CORRADE_COMPARE(Vector3(a), b);
+    CORRADE_COMPARE(Vec3(b).x, a.x);
+    CORRADE_COMPARE(Vec3(b).y, a.y);
+    CORRADE_COMPARE(Vec3(b).z, a.z);
 }
 
 void VectorTest::data() {

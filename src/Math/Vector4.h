@@ -60,6 +60,9 @@ template<class T> class Vector4: public Vector<4, T> {
         /** @copydoc Vector::Vector(const Vector<size, U>&) */
         template<class U> inline constexpr explicit Vector4(const Vector<4, U>& other): Vector<4, T>(other) {}
 
+        /** @brief Construct vector from external representation */
+        template<class U, class V = decltype(Implementation::VectorConverter<4, T, U>::from(std::declval<U>()))> inline constexpr explicit Vector4(const U& other): Vector<4, T>(Implementation::VectorConverter<4, T, U>::from(other)) {}
+
         /** @brief Copy constructor */
         inline constexpr Vector4(const Vector<4, T>& other): Vector<4, T>(other) {}
 

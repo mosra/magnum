@@ -33,6 +33,12 @@
 
 namespace Magnum { namespace Math {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
+    template<std::size_t, class, class> struct VectorConverter;
+}
+#endif
+
 /**
 @brief %Vector
 @tparam size    %Vector size
@@ -146,11 +152,19 @@ template<std::size_t size, class T> class Vector {
         }
         #endif
 
+        /** @brief Construct vector from external representation */
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> inline constexpr explicit Vector(const U& other): Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
+
         /** @brief Copy constructor */
         inline constexpr Vector(const Vector<size, T>&) = default;
 
         /** @brief Assignment operator */
         inline Vector<size, T>& operator=(const Vector<size, T>&) = default;
+
+        /** @brief Convert vector to external representation */
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(std::declval<Vector<size, T>>()))> inline constexpr explicit operator U() const {
+            return Implementation::VectorConverter<size, T, U>::to(*this);
+        }
 
         /**
          * @brief Raw data

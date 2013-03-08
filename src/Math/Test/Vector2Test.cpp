@@ -19,7 +19,27 @@
 
 #include "Math/Vector2.h"
 
-namespace Magnum { namespace Math { namespace Test {
+struct Vec2 {
+    float x, y;
+};
+
+namespace Magnum { namespace Math {
+
+namespace Implementation {
+
+template<> struct VectorConverter<2, float, Vec2> {
+    inline constexpr static Vector<2, float> from(const Vec2& other) {
+        return {other.x, other.y};
+    }
+
+    inline constexpr static Vec2 to(const Vector<2, float>& other) {
+        return {other[0], other[1]};
+    }
+};
+
+}
+
+namespace Test {
 
 class Vector2Test: public Corrade::TestSuite::Tester {
     public:
@@ -30,6 +50,8 @@ class Vector2Test: public Corrade::TestSuite::Tester {
         void constructOneValue();
         void constructConversion();
         void constructCopy();
+
+        void convert();
 
         void access();
         void axes();
@@ -48,6 +70,8 @@ Vector2Test::Vector2Test() {
               &Vector2Test::constructOneValue,
               &Vector2Test::constructConversion,
               &Vector2Test::constructCopy,
+
+              &Vector2Test::convert,
 
               &Vector2Test::access,
               &Vector2Test::axes,
@@ -90,6 +114,14 @@ void Vector2Test::constructCopy() {
     constexpr Vector2 a(1.5f, 2.5f);
     constexpr Vector2 b(a);
     CORRADE_COMPARE(b, Vector2(1.5f, 2.5f));
+}
+
+void Vector2Test::convert() {
+    Vec2 a{1.5f, 2.0f};
+    Vector2 b(1.5f, 2.0f);
+    CORRADE_COMPARE(Vector2(a), b);
+    CORRADE_COMPARE(Vec2(b).x, a.x);
+    CORRADE_COMPARE(Vec2(b).y, a.y);
 }
 
 void Vector2Test::access() {
