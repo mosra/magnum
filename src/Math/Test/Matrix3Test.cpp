@@ -54,26 +54,26 @@ typedef Math::Matrix<2, Float> Matrix2;
 typedef Math::Vector2<Float> Vector2;
 
 Matrix3Test::Matrix3Test() {
-    addTests(&Matrix3Test::construct,
-             &Matrix3Test::constructIdentity,
-             &Matrix3Test::constructZero,
-             &Matrix3Test::constructConversion,
-             &Matrix3Test::constructCopy,
+    addTests({&Matrix3Test::construct,
+              &Matrix3Test::constructIdentity,
+              &Matrix3Test::constructZero,
+              &Matrix3Test::constructConversion,
+              &Matrix3Test::constructCopy,
 
-             &Matrix3Test::translation,
-             &Matrix3Test::scaling,
-             &Matrix3Test::rotation,
-             &Matrix3Test::reflection,
-             &Matrix3Test::projection,
-             &Matrix3Test::fromParts,
-             &Matrix3Test::rotationScalingPart,
-             &Matrix3Test::rotationPart,
-             &Matrix3Test::vectorParts,
-             &Matrix3Test::invertedEuclidean,
-             &Matrix3Test::transform,
+              &Matrix3Test::translation,
+              &Matrix3Test::scaling,
+              &Matrix3Test::rotation,
+              &Matrix3Test::reflection,
+              &Matrix3Test::projection,
+              &Matrix3Test::fromParts,
+              &Matrix3Test::rotationScalingPart,
+              &Matrix3Test::rotationPart,
+              &Matrix3Test::vectorParts,
+              &Matrix3Test::invertedEuclidean,
+              &Matrix3Test::transform,
 
-             &Matrix3Test::debug,
-             &Matrix3Test::configuration);
+              &Matrix3Test::debug,
+              &Matrix3Test::configuration});
 }
 
 void Matrix3Test::construct() {

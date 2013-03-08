@@ -32,10 +32,10 @@ class SwizzleTest: public Corrade::TestSuite::Tester {
 typedef Vector<4, Int> Vector4i;
 
 SwizzleTest::SwizzleTest() {
-    addTests(&SwizzleTest::components,
-             &SwizzleTest::constants,
-             &SwizzleTest::sizes,
-             &SwizzleTest::constExpressions);
+    addTests({&SwizzleTest::components,
+              &SwizzleTest::constants,
+              &SwizzleTest::sizes,
+              &SwizzleTest::constExpressions});
 }
 
 void SwizzleTest::components() {

@@ -37,12 +37,12 @@ class InterleaveTest: public Corrade::TestSuite::Tester {
 };
 
 InterleaveTest::InterleaveTest() {
-    addTests(&InterleaveTest::attributeCount,
-             &InterleaveTest::attributeCountGaps,
-             &InterleaveTest::stride,
-             &InterleaveTest::strideGaps,
-             &InterleaveTest::write,
-             &InterleaveTest::writeGaps);
+    addTests({&InterleaveTest::attributeCount,
+              &InterleaveTest::attributeCountGaps,
+              &InterleaveTest::stride,
+              &InterleaveTest::strideGaps,
+              &InterleaveTest::write,
+              &InterleaveTest::writeGaps});
 }
 
 void InterleaveTest::attributeCount() {

@@ -29,9 +29,9 @@ class SwizzleTest: public Corrade::TestSuite::Tester {
 };
 
 SwizzleTest::SwizzleTest() {
-    addTests(&SwizzleTest::rgba,
-             &SwizzleTest::type,
-             &SwizzleTest::defaultType);
+    addTests({&SwizzleTest::rgba,
+              &SwizzleTest::type,
+              &SwizzleTest::defaultType});
 }
 
 void SwizzleTest::rgba() {

@@ -20,7 +20,7 @@
  */
 
 #include <Containers/EnumSet.h>
-#include <PluginManager/Plugin.h>
+#include <PluginManager/AbstractPlugin.h>
 
 #include "Trade/Trade.h"
 
@@ -44,7 +44,7 @@ be done in data parsing functions, because the user might want to import only
 some data. This is obviously not the case for single-data formats like images,
 as the file contains all data user wants to import.
 */
-class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
+class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlugin {
     PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.2")
 
     public:
@@ -61,9 +61,11 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::Plugin {
         /** @brief Set of features supported by this importer */
         typedef Corrade::Containers::EnumSet<Feature, int> Features;
 
-        /** @brief Constructor */
-        /* GCC 4.6 can't handle {} as default parameter */
-        inline explicit AbstractImporter(Corrade::PluginManager::AbstractPluginManager* manager = nullptr, const std::string& plugin = std::string()): Plugin(manager, plugin) {}
+        /** @brief Default constructor */
+        inline explicit AbstractImporter() = default;
+
+        /** @brief Plugin manager constructor */
+        inline explicit AbstractImporter(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin): AbstractPlugin(manager, std::move(plugin)) {}
 
         /** @brief Features supported by this importer */
         virtual Features features() const = 0;

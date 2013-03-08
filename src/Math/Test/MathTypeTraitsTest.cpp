@@ -33,8 +33,8 @@ class MathTypeTraitsTest: public Corrade::TestSuite::Tester {
 };
 
 MathTypeTraitsTest::MathTypeTraitsTest() {
-    addTests(&MathTypeTraitsTest::equalsIntegral,
-             &MathTypeTraitsTest::equalsFloatingPoint);
+    addTests({&MathTypeTraitsTest::equalsIntegral,
+              &MathTypeTraitsTest::equalsFloatingPoint});
 }
 
 void MathTypeTraitsTest::equalsIntegral() {

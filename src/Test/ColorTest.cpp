@@ -49,22 +49,22 @@ typedef Magnum::Color3<Float> Color3f;
 typedef Magnum::Color4<Float> Color4f;
 
 ColorTest::ColorTest() {
-    addTests(&ColorTest::access,
+    addTests({&ColorTest::access,
 
-             &ColorTest::fromHue,
-             &ColorTest::fromSaturation,
-             &ColorTest::fromValue,
+              &ColorTest::fromHue,
+              &ColorTest::fromSaturation,
+              &ColorTest::fromValue,
 
-             &ColorTest::hue,
-             &ColorTest::saturation,
-             &ColorTest::value,
+              &ColorTest::hue,
+              &ColorTest::saturation,
+              &ColorTest::value,
 
-             &ColorTest::hsv,
-             &ColorTest::hsvOverflow,
-             &ColorTest::hsvAlpha,
+              &ColorTest::hsv,
+              &ColorTest::hsvOverflow,
+              &ColorTest::hsvAlpha,
 
-             &ColorTest::debug,
-             &ColorTest::configuration);
+              &ColorTest::debug,
+              &ColorTest::configuration});
 }
 
 void ColorTest::access() {

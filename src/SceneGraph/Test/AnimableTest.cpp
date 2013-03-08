@@ -39,13 +39,14 @@ class AnimableTest: public Corrade::TestSuite::Tester {
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
 
 AnimableTest::AnimableTest() {
-    addTests(&AnimableTest::state,
-             &AnimableTest::step,
-             &AnimableTest::duration,
-             &AnimableTest::repeat,
-             &AnimableTest::stop,
-             &AnimableTest::pause,
-             &AnimableTest::debug);
+    addTests({&AnimableTest::state,
+              &AnimableTest::step,
+              &AnimableTest::duration,
+              &AnimableTest::repeat,
+              &AnimableTest::stop,
+              &AnimableTest::pause,
+
+              &AnimableTest::debug});
 }
 
 void AnimableTest::state() {

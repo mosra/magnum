@@ -30,8 +30,8 @@ class GenerateFlatNormalsTest: public Corrade::TestSuite::Tester {
 };
 
 GenerateFlatNormalsTest::GenerateFlatNormalsTest() {
-    addTests(&GenerateFlatNormalsTest::wrongIndexCount,
-             &GenerateFlatNormalsTest::generate);
+    addTests({&GenerateFlatNormalsTest::wrongIndexCount,
+              &GenerateFlatNormalsTest::generate});
 }
 
 void GenerateFlatNormalsTest::wrongIndexCount() {

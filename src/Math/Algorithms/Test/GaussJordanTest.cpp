@@ -31,8 +31,8 @@ typedef RectangularMatrix<4, 4, Float> Matrix4;
 typedef Vector<4, Float> Vector4;
 
 GaussJordanTest::GaussJordanTest() {
-    addTests(&GaussJordanTest::singular,
-             &GaussJordanTest::invert);
+    addTests({&GaussJordanTest::singular,
+              &GaussJordanTest::invert});
 }
 
 void GaussJordanTest::singular() {

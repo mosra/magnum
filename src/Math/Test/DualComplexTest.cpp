@@ -61,31 +61,31 @@ typedef Math::Matrix3<Float> Matrix3;
 typedef Math::Vector2<Float> Vector2;
 
 DualComplexTest::DualComplexTest() {
-    addTests(&DualComplexTest::construct,
-             &DualComplexTest::constructDefault,
-             &DualComplexTest::constructFromVector,
+    addTests({&DualComplexTest::construct,
+              &DualComplexTest::constructDefault,
+              &DualComplexTest::constructFromVector,
 
-             &DualComplexTest::constExpressions,
+              &DualComplexTest::constExpressions,
 
-             &DualComplexTest::multiply,
+              &DualComplexTest::multiply,
 
-             &DualComplexTest::lengthSquared,
-             &DualComplexTest::length,
-             &DualComplexTest::normalized,
+              &DualComplexTest::lengthSquared,
+              &DualComplexTest::length,
+              &DualComplexTest::normalized,
 
-             &DualComplexTest::complexConjugated,
-             &DualComplexTest::dualConjugated,
-             &DualComplexTest::conjugated,
-             &DualComplexTest::inverted,
-             &DualComplexTest::invertedNormalized,
+              &DualComplexTest::complexConjugated,
+              &DualComplexTest::dualConjugated,
+              &DualComplexTest::conjugated,
+              &DualComplexTest::inverted,
+              &DualComplexTest::invertedNormalized,
 
-             &DualComplexTest::rotation,
-             &DualComplexTest::translation,
-             &DualComplexTest::combinedTransformParts,
-             &DualComplexTest::matrix,
-             &DualComplexTest::transformPoint,
+              &DualComplexTest::rotation,
+              &DualComplexTest::translation,
+              &DualComplexTest::combinedTransformParts,
+              &DualComplexTest::matrix,
+              &DualComplexTest::transformPoint,
 
-             &DualComplexTest::debug);
+              &DualComplexTest::debug});
 }
 
 void DualComplexTest::construct() {

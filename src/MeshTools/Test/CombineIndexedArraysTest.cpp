@@ -30,8 +30,8 @@ class CombineIndexedArraysTest: public Corrade::TestSuite::Tester {
 };
 
 CombineIndexedArraysTest::CombineIndexedArraysTest() {
-    addTests(&CombineIndexedArraysTest::wrongIndexCount,
-             &CombineIndexedArraysTest::combine);
+    addTests({&CombineIndexedArraysTest::wrongIndexCount,
+              &CombineIndexedArraysTest::combine});
 }
 
 void CombineIndexedArraysTest::wrongIndexCount() {

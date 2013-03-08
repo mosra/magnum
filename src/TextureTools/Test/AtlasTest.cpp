@@ -32,10 +32,10 @@ class AtlasTest: public Corrade::TestSuite::Tester {
 };
 
 AtlasTest::AtlasTest() {
-    addTests(&AtlasTest::create,
-             &AtlasTest::createPadding,
-             &AtlasTest::createEmpty,
-             &AtlasTest::createTooSmall);
+    addTests({&AtlasTest::create,
+              &AtlasTest::createPadding,
+              &AtlasTest::createEmpty,
+              &AtlasTest::createTooSmall});
 }
 
 void AtlasTest::create() {

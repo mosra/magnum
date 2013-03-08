@@ -32,8 +32,8 @@ class CylinderTest: public Corrade::TestSuite::Tester {
 };
 
 CylinderTest::CylinderTest() {
-    addTests(&CylinderTest::withoutAnything,
-             &CylinderTest::withTextureCoordsAndCaps);
+    addTests({&CylinderTest::withoutAnything,
+              &CylinderTest::withTextureCoordsAndCaps});
 }
 
 void CylinderTest::withoutAnything() {

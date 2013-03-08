@@ -70,8 +70,8 @@ TipsifyTest::TipsifyTest(): indices{
 
     16, 17, 18
 }, vertexCount(19) {
-    addTests(&TipsifyTest::buildAdjacency,
-             &TipsifyTest::tipsify);
+    addTests({&TipsifyTest::buildAdjacency,
+              &TipsifyTest::tipsify});
 }
 
 void TipsifyTest::buildAdjacency() {

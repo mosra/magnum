@@ -46,19 +46,19 @@ typedef Math::Vector3<Float> Vector3;
 typedef Math::Vector2<Float> Vector2;
 
 Vector4Test::Vector4Test() {
-    addTests(&Vector4Test::construct,
-             &Vector4Test::constructDefault,
-             &Vector4Test::constructOneValue,
-             &Vector4Test::constructParts,
-             &Vector4Test::constructConversion,
-             &Vector4Test::constructCopy,
+    addTests({&Vector4Test::construct,
+              &Vector4Test::constructDefault,
+              &Vector4Test::constructOneValue,
+              &Vector4Test::constructParts,
+              &Vector4Test::constructConversion,
+              &Vector4Test::constructCopy,
 
-             &Vector4Test::access,
-             &Vector4Test::threeComponent,
-             &Vector4Test::twoComponent,
+              &Vector4Test::access,
+              &Vector4Test::threeComponent,
+              &Vector4Test::twoComponent,
 
-             &Vector4Test::debug,
-             &Vector4Test::configuration);
+              &Vector4Test::debug,
+              &Vector4Test::configuration});
 }
 
 void Vector4Test::construct() {

@@ -33,11 +33,11 @@ class SphereTest: public Corrade::TestSuite::Tester, ShapeTestBase {
 };
 
 SphereTest::SphereTest() {
-    addTests(&SphereTest::applyTransformation,
-             &SphereTest::collisionPoint,
-             &SphereTest::collisionLine,
-             &SphereTest::collisionLineSegment,
-             &SphereTest::collisionSphere);
+    addTests({&SphereTest::applyTransformation,
+              &SphereTest::collisionPoint,
+              &SphereTest::collisionLine,
+              &SphereTest::collisionLineSegment,
+              &SphereTest::collisionSphere});
 }
 
 void SphereTest::applyTransformation() {

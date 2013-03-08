@@ -64,33 +64,33 @@ typedef Vector<2, Float> Vector2;
 typedef Vector<2, Int> Vector2i;
 
 RectangularMatrixTest::RectangularMatrixTest() {
-    addTests(&RectangularMatrixTest::construct,
-             &RectangularMatrixTest::constructDefault,
-             &RectangularMatrixTest::constructConversion,
-             &RectangularMatrixTest::constructFromData,
-             &RectangularMatrixTest::constructFromDiagonal,
-             &RectangularMatrixTest::constructCopy,
-             &RectangularMatrixTest::data,
+    addTests({&RectangularMatrixTest::construct,
+              &RectangularMatrixTest::constructDefault,
+              &RectangularMatrixTest::constructConversion,
+              &RectangularMatrixTest::constructFromData,
+              &RectangularMatrixTest::constructFromDiagonal,
+              &RectangularMatrixTest::constructCopy,
+              &RectangularMatrixTest::data,
 
-             &RectangularMatrixTest::compare,
+              &RectangularMatrixTest::compare,
 
-             &RectangularMatrixTest::negative,
-             &RectangularMatrixTest::addSubtract,
-             &RectangularMatrixTest::multiplyDivide,
-             &RectangularMatrixTest::multiply,
+              &RectangularMatrixTest::negative,
+              &RectangularMatrixTest::addSubtract,
+              &RectangularMatrixTest::multiplyDivide,
+              &RectangularMatrixTest::multiply,
 
-             &RectangularMatrixTest::transposed,
-             &RectangularMatrixTest::diagonal,
+              &RectangularMatrixTest::transposed,
+              &RectangularMatrixTest::diagonal,
 
-             &RectangularMatrixTest::sum,
-             &RectangularMatrixTest::product,
-             &RectangularMatrixTest::min,
-             &RectangularMatrixTest::minAbs,
-             &RectangularMatrixTest::max,
-             &RectangularMatrixTest::maxAbs,
+              &RectangularMatrixTest::sum,
+              &RectangularMatrixTest::product,
+              &RectangularMatrixTest::min,
+              &RectangularMatrixTest::minAbs,
+              &RectangularMatrixTest::max,
+              &RectangularMatrixTest::maxAbs,
 
-             &RectangularMatrixTest::debug,
-             &RectangularMatrixTest::configuration);
+              &RectangularMatrixTest::debug,
+              &RectangularMatrixTest::configuration});
 }
 
 void RectangularMatrixTest::construct() {

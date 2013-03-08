@@ -31,8 +31,8 @@ typedef RectangularMatrix<3, 3, Float> Matrix3;
 typedef Vector<3, Float> Vector3;
 
 GramSchmidtTest::GramSchmidtTest() {
-    addTests(&GramSchmidtTest::orthogonalize,
-             &GramSchmidtTest::orthonormalize);
+    addTests({&GramSchmidtTest::orthogonalize,
+              &GramSchmidtTest::orthonormalize});
 }
 
 void GramSchmidtTest::orthogonalize() {

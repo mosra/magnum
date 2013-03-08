@@ -50,23 +50,23 @@ static_assert(BoolVector<17>::DataSize == 3, "Improper DataSize");
 typedef Math::BoolVector<19> BoolVector19;
 
 BoolVectorTest::BoolVectorTest() {
-    addTests(&BoolVectorTest::constructDefault,
-             &BoolVectorTest::constructOneValue,
-             &BoolVectorTest::constructOneElement,
-             &BoolVectorTest::data,
+    addTests({&BoolVectorTest::constructDefault,
+              &BoolVectorTest::constructOneValue,
+              &BoolVectorTest::constructOneElement,
+              &BoolVectorTest::data,
 
-             &BoolVectorTest::constExpressions,
+              &BoolVectorTest::constExpressions,
 
-             &BoolVectorTest::compare,
-             &BoolVectorTest::compareUndefined,
-             &BoolVectorTest::all,
-             &BoolVectorTest::none,
-             &BoolVectorTest::any,
+              &BoolVectorTest::compare,
+              &BoolVectorTest::compareUndefined,
+              &BoolVectorTest::all,
+              &BoolVectorTest::none,
+              &BoolVectorTest::any,
 
-             &BoolVectorTest::bitInverse,
-             &BoolVectorTest::bitAndOrXor,
+              &BoolVectorTest::bitInverse,
+              &BoolVectorTest::bitAndOrXor,
 
-             &BoolVectorTest::debug);
+              &BoolVectorTest::debug});
 }
 
 void BoolVectorTest::constructDefault() {

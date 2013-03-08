@@ -36,8 +36,8 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
 
 ObjectShapeTest::ObjectShapeTest() {
-    addTests(&ObjectShapeTest::clean,
-             &ObjectShapeTest::firstCollision);
+    addTests({&ObjectShapeTest::clean,
+              &ObjectShapeTest::firstCollision});
 }
 
 void ObjectShapeTest::clean() {

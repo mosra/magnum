@@ -28,7 +28,7 @@ class PointTest: public Corrade::TestSuite::Tester {
 };
 
 PointTest::PointTest() {
-    addTests(&PointTest::applyTransformation);
+    addTests({&PointTest::applyTransformation});
 }
 
 void PointTest::applyTransformation() {

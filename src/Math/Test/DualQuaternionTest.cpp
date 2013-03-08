@@ -59,30 +59,30 @@ typedef Math::Quaternion<Float> Quaternion;
 typedef Math::Vector3<Float> Vector3;
 
 DualQuaternionTest::DualQuaternionTest() {
-    addTests(&DualQuaternionTest::construct,
-             &DualQuaternionTest::constructDefault,
-             &DualQuaternionTest::constructFromVector,
+    addTests({&DualQuaternionTest::construct,
+              &DualQuaternionTest::constructDefault,
+              &DualQuaternionTest::constructFromVector,
 
-             &DualQuaternionTest::constExpressions,
+              &DualQuaternionTest::constExpressions,
 
-             &DualQuaternionTest::lengthSquared,
-             &DualQuaternionTest::length,
-             &DualQuaternionTest::normalized,
+              &DualQuaternionTest::lengthSquared,
+              &DualQuaternionTest::length,
+              &DualQuaternionTest::normalized,
 
-             &DualQuaternionTest::quaternionConjugated,
-             &DualQuaternionTest::dualConjugated,
-             &DualQuaternionTest::conjugated,
-             &DualQuaternionTest::inverted,
-             &DualQuaternionTest::invertedNormalized,
+              &DualQuaternionTest::quaternionConjugated,
+              &DualQuaternionTest::dualConjugated,
+              &DualQuaternionTest::conjugated,
+              &DualQuaternionTest::inverted,
+              &DualQuaternionTest::invertedNormalized,
 
-             &DualQuaternionTest::rotation,
-             &DualQuaternionTest::translation,
-             &DualQuaternionTest::combinedTransformParts,
-             &DualQuaternionTest::matrix,
-             &DualQuaternionTest::transformPoint,
-             &DualQuaternionTest::transformPointNormalized,
+              &DualQuaternionTest::rotation,
+              &DualQuaternionTest::translation,
+              &DualQuaternionTest::combinedTransformParts,
+              &DualQuaternionTest::matrix,
+              &DualQuaternionTest::transformPoint,
+              &DualQuaternionTest::transformPointNormalized,
 
-             &DualQuaternionTest::debug);
+              &DualQuaternionTest::debug});
 }
 
 void DualQuaternionTest::construct() {

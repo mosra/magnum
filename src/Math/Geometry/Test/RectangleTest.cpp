@@ -37,11 +37,12 @@ typedef Geometry::Rectangle<Int> Rectanglei;
 typedef Vector2<Int> Vector2i;
 
 RectangleTest::RectangleTest() {
-    addTests(&RectangleTest::access,
-             &RectangleTest::compare,
-             &RectangleTest::construct,
-             &RectangleTest::size,
-             &RectangleTest::debug);
+    addTests({&RectangleTest::access,
+              &RectangleTest::compare,
+              &RectangleTest::construct,
+              &RectangleTest::size,
+
+              &RectangleTest::debug});
 }
 
 void RectangleTest::access() {

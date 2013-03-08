@@ -41,17 +41,17 @@ class MatrixTransformation2DTest: public Corrade::TestSuite::Tester {
 };
 
 MatrixTransformation2DTest::MatrixTransformation2DTest() {
-    addTests(&MatrixTransformation2DTest::fromMatrix,
-             &MatrixTransformation2DTest::toMatrix,
-             &MatrixTransformation2DTest::compose,
-             &MatrixTransformation2DTest::inverted,
+    addTests({&MatrixTransformation2DTest::fromMatrix,
+              &MatrixTransformation2DTest::toMatrix,
+              &MatrixTransformation2DTest::compose,
+              &MatrixTransformation2DTest::inverted,
 
-             &MatrixTransformation2DTest::setTransformation,
-             &MatrixTransformation2DTest::transform,
-             &MatrixTransformation2DTest::translate,
-             &MatrixTransformation2DTest::rotate,
-             &MatrixTransformation2DTest::scale,
-             &MatrixTransformation2DTest::reflect);
+              &MatrixTransformation2DTest::setTransformation,
+              &MatrixTransformation2DTest::transform,
+              &MatrixTransformation2DTest::translate,
+              &MatrixTransformation2DTest::rotate,
+              &MatrixTransformation2DTest::scale,
+              &MatrixTransformation2DTest::reflect});
 }
 
 void MatrixTransformation2DTest::fromMatrix() {

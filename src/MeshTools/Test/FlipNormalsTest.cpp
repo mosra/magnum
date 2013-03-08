@@ -31,9 +31,9 @@ class FlipNormalsTest: public Corrade::TestSuite::Tester {
 };
 
 FlipNormalsTest::FlipNormalsTest() {
-    addTests(&FlipNormalsTest::wrongIndexCount,
-             &FlipNormalsTest::flipFaceWinding,
-             &FlipNormalsTest::flipNormals);
+    addTests({&FlipNormalsTest::wrongIndexCount,
+              &FlipNormalsTest::flipFaceWinding,
+              &FlipNormalsTest::flipNormals});
 }
 
 void FlipNormalsTest::wrongIndexCount() {

@@ -28,7 +28,7 @@ class BoxTest: public Corrade::TestSuite::Tester {
 };
 
 BoxTest::BoxTest() {
-    addTests(&BoxTest::applyTransformation);
+    addTests({&BoxTest::applyTransformation});
 }
 
 void BoxTest::applyTransformation() {

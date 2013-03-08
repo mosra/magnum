@@ -28,7 +28,7 @@ class LineTest: public Corrade::TestSuite::Tester {
 };
 
 LineTest::LineTest() {
-    addTests(&LineTest::applyTransformation);
+    addTests({&LineTest::applyTransformation});
 }
 
 void LineTest::applyTransformation() {

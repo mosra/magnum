@@ -47,21 +47,21 @@ typedef Math::Vector3<Int> Vector3i;
 typedef Math::Vector2<Float> Vector2;
 
 Vector3Test::Vector3Test() {
-    addTests(&Vector3Test::construct,
-             &Vector3Test::constructDefault,
-             &Vector3Test::constructOneValue,
-             &Vector3Test::constructParts,
-             &Vector3Test::constructConversion,
-             &Vector3Test::constructCopy,
+    addTests({&Vector3Test::construct,
+              &Vector3Test::constructDefault,
+              &Vector3Test::constructOneValue,
+              &Vector3Test::constructParts,
+              &Vector3Test::constructConversion,
+              &Vector3Test::constructCopy,
 
-             &Vector3Test::access,
-             &Vector3Test::cross,
-             &Vector3Test::axes,
-             &Vector3Test::scales,
-             &Vector3Test::twoComponent,
+              &Vector3Test::access,
+              &Vector3Test::cross,
+              &Vector3Test::axes,
+              &Vector3Test::scales,
+              &Vector3Test::twoComponent,
 
-             &Vector3Test::debug,
-             &Vector3Test::configuration);
+              &Vector3Test::debug,
+              &Vector3Test::configuration});
 }
 
 void Vector3Test::construct() {

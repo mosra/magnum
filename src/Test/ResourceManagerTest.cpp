@@ -62,14 +62,14 @@ class IntResourceLoader: public AbstractResourceLoader<Int> {
 size_t Data::count = 0;
 
 ResourceManagerTest::ResourceManagerTest() {
-    addTests(&ResourceManagerTest::state,
-             &ResourceManagerTest::stateFallback,
-             &ResourceManagerTest::stateDisallowed,
-             &ResourceManagerTest::basic,
-             &ResourceManagerTest::residentPolicy,
-             &ResourceManagerTest::referenceCountedPolicy,
-             &ResourceManagerTest::manualPolicy,
-             &ResourceManagerTest::loader);
+    addTests({&ResourceManagerTest::state,
+              &ResourceManagerTest::stateFallback,
+              &ResourceManagerTest::stateDisallowed,
+              &ResourceManagerTest::basic,
+              &ResourceManagerTest::residentPolicy,
+              &ResourceManagerTest::referenceCountedPolicy,
+              &ResourceManagerTest::manualPolicy,
+              &ResourceManagerTest::loader});
 }
 
 void ResourceManagerTest::state() {

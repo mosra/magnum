@@ -60,31 +60,31 @@ typedef Math::Matrix<3, Float> Matrix3;
 typedef Math::Vector3<Float> Vector3;
 
 Matrix4Test::Matrix4Test() {
-    addTests(&Matrix4Test::construct,
-             &Matrix4Test::constructIdentity,
-             &Matrix4Test::constructZero,
-             &Matrix4Test::constructConversion,
-             &Matrix4Test::constructCopy,
+    addTests({&Matrix4Test::construct,
+              &Matrix4Test::constructIdentity,
+              &Matrix4Test::constructZero,
+              &Matrix4Test::constructConversion,
+              &Matrix4Test::constructCopy,
 
-             &Matrix4Test::translation,
-             &Matrix4Test::scaling,
-             &Matrix4Test::rotation,
-             &Matrix4Test::rotationX,
-             &Matrix4Test::rotationY,
-             &Matrix4Test::rotationZ,
-             &Matrix4Test::reflection,
-             &Matrix4Test::orthographicProjection,
-             &Matrix4Test::perspectiveProjection,
-             &Matrix4Test::perspectiveProjectionFov,
-             &Matrix4Test::fromParts,
-             &Matrix4Test::rotationScalingPart,
-             &Matrix4Test::rotationPart,
-             &Matrix4Test::vectorParts,
-             &Matrix4Test::invertedEuclidean,
-             &Matrix4Test::transform,
+              &Matrix4Test::translation,
+              &Matrix4Test::scaling,
+              &Matrix4Test::rotation,
+              &Matrix4Test::rotationX,
+              &Matrix4Test::rotationY,
+              &Matrix4Test::rotationZ,
+              &Matrix4Test::reflection,
+              &Matrix4Test::orthographicProjection,
+              &Matrix4Test::perspectiveProjection,
+              &Matrix4Test::perspectiveProjectionFov,
+              &Matrix4Test::fromParts,
+              &Matrix4Test::rotationScalingPart,
+              &Matrix4Test::rotationPart,
+              &Matrix4Test::vectorParts,
+              &Matrix4Test::invertedEuclidean,
+              &Matrix4Test::transform,
 
-             &Matrix4Test::debug,
-             &Matrix4Test::configuration);
+              &Matrix4Test::debug,
+              &Matrix4Test::configuration});
 }
 
 void Matrix4Test::construct() {

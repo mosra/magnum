@@ -40,20 +40,20 @@ class AbstractShaderProgramTest: public Corrade::TestSuite::Tester {
 };
 
 AbstractShaderProgramTest::AbstractShaderProgramTest() {
-    addTests(&AbstractShaderProgramTest::attributeScalar,
-             &AbstractShaderProgramTest::attributeScalarInt,
-             &AbstractShaderProgramTest::attributeScalarUnsignedInt,
-             &AbstractShaderProgramTest::attributeScalarDouble,
+    addTests({&AbstractShaderProgramTest::attributeScalar,
+              &AbstractShaderProgramTest::attributeScalarInt,
+              &AbstractShaderProgramTest::attributeScalarUnsignedInt,
+              &AbstractShaderProgramTest::attributeScalarDouble,
 
-             &AbstractShaderProgramTest::attributeVector,
-             &AbstractShaderProgramTest::attributeVectorInt,
-             &AbstractShaderProgramTest::attributeVectorUnsignedInt,
-             &AbstractShaderProgramTest::attributeVectorDouble,
-             &AbstractShaderProgramTest::attributeVector4,
-             &AbstractShaderProgramTest::attributeVectorBGRA,
+              &AbstractShaderProgramTest::attributeVector,
+              &AbstractShaderProgramTest::attributeVectorInt,
+              &AbstractShaderProgramTest::attributeVectorUnsignedInt,
+              &AbstractShaderProgramTest::attributeVectorDouble,
+              &AbstractShaderProgramTest::attributeVector4,
+              &AbstractShaderProgramTest::attributeVectorBGRA,
 
-             &AbstractShaderProgramTest::attributeMatrix,
-             &AbstractShaderProgramTest::attributeMatrixDouble);
+              &AbstractShaderProgramTest::attributeMatrix,
+              &AbstractShaderProgramTest::attributeMatrixDouble});
 }
 
 void AbstractShaderProgramTest::attributeScalar() {

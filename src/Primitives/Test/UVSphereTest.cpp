@@ -32,8 +32,8 @@ class UVSphereTest: public Corrade::TestSuite::Tester {
 };
 
 UVSphereTest::UVSphereTest() {
-    addTests(&UVSphereTest::withoutTextureCoords,
-             &UVSphereTest::withTextureCoords);
+    addTests({&UVSphereTest::withoutTextureCoords,
+              &UVSphereTest::withTextureCoords});
 }
 
 void UVSphereTest::withoutTextureCoords() {

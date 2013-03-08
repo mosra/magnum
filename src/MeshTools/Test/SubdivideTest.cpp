@@ -49,8 +49,8 @@ class SubdivideTest: public Corrade::TestSuite::Tester {
 };
 
 SubdivideTest::SubdivideTest() {
-    addTests(&SubdivideTest::wrongIndexCount,
-             &SubdivideTest::subdivide);
+    addTests({&SubdivideTest::wrongIndexCount,
+              &SubdivideTest::subdivide});
 }
 
 void SubdivideTest::wrongIndexCount() {

@@ -30,7 +30,7 @@ class IntersectionTest: public Corrade::TestSuite::Tester {
 typedef Math::Vector3<Float> Vector3;
 
 IntersectionTest::IntersectionTest() {
-    addTests(&IntersectionTest::planeLine);
+    addTests({&IntersectionTest::planeLine});
 }
 
 void IntersectionTest::planeLine() {

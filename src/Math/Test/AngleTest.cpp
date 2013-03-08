@@ -38,12 +38,12 @@ typedef Math::Deg<Double> Degd;
 typedef Math::Rad<Double> Radd;
 
 AngleTest::AngleTest() {
-    addTests(&AngleTest::construct,
-             &AngleTest::literals,
-             &AngleTest::conversion,
+    addTests({&AngleTest::construct,
+              &AngleTest::literals,
+              &AngleTest::conversion,
 
-             &AngleTest::debugDeg,
-             &AngleTest::debugRad);
+              &AngleTest::debugDeg,
+              &AngleTest::debugRad});
 }
 
 void AngleTest::construct() {

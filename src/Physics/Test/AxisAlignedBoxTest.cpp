@@ -32,8 +32,8 @@ class AxisAlignedBoxTest: public Corrade::TestSuite::Tester, ShapeTestBase {
 };
 
 AxisAlignedBoxTest::AxisAlignedBoxTest() {
-    addTests(&AxisAlignedBoxTest::applyTransformation,
-             &AxisAlignedBoxTest::collisionPoint);
+    addTests({&AxisAlignedBoxTest::applyTransformation,
+              &AxisAlignedBoxTest::collisionPoint});
 }
 
 void AxisAlignedBoxTest::applyTransformation() {

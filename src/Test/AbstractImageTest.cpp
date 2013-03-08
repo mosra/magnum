@@ -29,8 +29,8 @@ class AbstractImageTest: public Corrade::TestSuite::Tester {
 };
 
 AbstractImageTest::AbstractImageTest() {
-    addTests(&AbstractImageTest::debugFormat,
-             &AbstractImageTest::debugType);
+    addTests({&AbstractImageTest::debugFormat,
+              &AbstractImageTest::debugType});
 }
 
 void AbstractImageTest::debugFormat() {

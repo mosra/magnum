@@ -54,25 +54,25 @@ typedef Math::Vector3<Byte> Vector3b;
 typedef Math::Vector3<Int> Vector3i;
 
 FunctionsTest::FunctionsTest() {
-    addTests(&FunctionsTest::min,
-             &FunctionsTest::max,
-             &FunctionsTest::abs,
-             &FunctionsTest::sqrt,
-             &FunctionsTest::clamp,
-             &FunctionsTest::lerp,
-             &FunctionsTest::normalizeUnsigned,
-             &FunctionsTest::normalizeSigned,
-             &FunctionsTest::denormalizeUnsigned,
-             &FunctionsTest::denormalizeSigned,
-             &FunctionsTest::renormalizeUnsinged,
-             &FunctionsTest::renormalizeSinged,
+    addTests({&FunctionsTest::min,
+              &FunctionsTest::max,
+              &FunctionsTest::abs,
+              &FunctionsTest::sqrt,
+              &FunctionsTest::clamp,
+              &FunctionsTest::lerp,
+              &FunctionsTest::normalizeUnsigned,
+              &FunctionsTest::normalizeSigned,
+              &FunctionsTest::denormalizeUnsigned,
+              &FunctionsTest::denormalizeSigned,
+              &FunctionsTest::renormalizeUnsinged,
+              &FunctionsTest::renormalizeSinged,
 
-             &FunctionsTest::normalizeTypeDeduction,
+              &FunctionsTest::normalizeTypeDeduction,
 
-             &FunctionsTest::pow,
-             &FunctionsTest::log,
-             &FunctionsTest::log2,
-             &FunctionsTest::trigonometric);
+              &FunctionsTest::pow,
+              &FunctionsTest::log,
+              &FunctionsTest::log2,
+              &FunctionsTest::trigonometric});
 }
 
 void FunctionsTest::min() {

@@ -32,8 +32,8 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<Float>> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<Float>> Object3D;
 
 SceneTest::SceneTest() {
-    addTests(&SceneTest::transformation,
-             &SceneTest::parent);
+    addTests({&SceneTest::transformation,
+              &SceneTest::parent});
 }
 
 void SceneTest::transformation() {

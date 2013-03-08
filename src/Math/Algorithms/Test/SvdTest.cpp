@@ -50,8 +50,8 @@ constexpr static Matrix5x8d a(
 static const Vector5d expected(std::sqrt(1248.0), 0.0, 20.0, std::sqrt(384.0), 0.0);
 
 SvdTest::SvdTest() {
-    addTests(&SvdTest::testDouble,
-             &SvdTest::testFloat);
+    addTests({&SvdTest::testDouble,
+              &SvdTest::testFloat});
 }
 
 void SvdTest::testDouble() {

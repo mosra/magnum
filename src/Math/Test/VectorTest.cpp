@@ -68,41 +68,41 @@ typedef Vector<4, Float> Vector4;
 typedef Vector<4, Int> Vector4i;
 
 VectorTest::VectorTest() {
-    addTests(&VectorTest::construct,
-             &VectorTest::constructFromData,
-             &VectorTest::constructDefault,
-             &VectorTest::constructOneValue,
-             &VectorTest::constructOneComponent,
-             &VectorTest::constructConversion,
-             &VectorTest::constructCopy,
-             &VectorTest::data,
+    addTests({&VectorTest::construct,
+              &VectorTest::constructFromData,
+              &VectorTest::constructDefault,
+              &VectorTest::constructOneValue,
+              &VectorTest::constructOneComponent,
+              &VectorTest::constructConversion,
+              &VectorTest::constructCopy,
+              &VectorTest::data,
 
-             &VectorTest::negative,
-             &VectorTest::addSubtract,
-             &VectorTest::multiplyDivide,
-             &VectorTest::multiplyDivideComponentWise,
+              &VectorTest::negative,
+              &VectorTest::addSubtract,
+              &VectorTest::multiplyDivide,
+              &VectorTest::multiplyDivideComponentWise,
 
-             &VectorTest::compare,
-             &VectorTest::compareComponentWise,
+              &VectorTest::compare,
+              &VectorTest::compareComponentWise,
 
-             &VectorTest::dot,
-             &VectorTest::dotSelf,
-             &VectorTest::length,
-             &VectorTest::normalized,
+              &VectorTest::dot,
+              &VectorTest::dotSelf,
+              &VectorTest::length,
+              &VectorTest::normalized,
 
-             &VectorTest::sum,
-             &VectorTest::product,
-             &VectorTest::min,
-             &VectorTest::minAbs,
-             &VectorTest::max,
-             &VectorTest::maxAbs,
+              &VectorTest::sum,
+              &VectorTest::product,
+              &VectorTest::min,
+              &VectorTest::minAbs,
+              &VectorTest::max,
+              &VectorTest::maxAbs,
 
-             &VectorTest::projected,
-             &VectorTest::projectedOntoNormalized,
-             &VectorTest::angle,
+              &VectorTest::projected,
+              &VectorTest::projectedOntoNormalized,
+              &VectorTest::angle,
 
-             &VectorTest::debug,
-             &VectorTest::configuration);
+              &VectorTest::debug,
+              &VectorTest::configuration});
 }
 
 void VectorTest::construct() {

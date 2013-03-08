@@ -32,9 +32,9 @@ class CompressIndicesTest: public Corrade::TestSuite::Tester {
 };
 
 CompressIndicesTest::CompressIndicesTest() {
-    addTests(&CompressIndicesTest::compressChar,
-             &CompressIndicesTest::compressShort,
-             &CompressIndicesTest::compressInt);
+    addTests({&CompressIndicesTest::compressChar,
+              &CompressIndicesTest::compressShort,
+              &CompressIndicesTest::compressInt});
 }
 
 void CompressIndicesTest::compressChar() {

@@ -34,10 +34,10 @@ typedef Magnum::Array2D<int> Array2D;
 typedef Magnum::Array3D<int> Array3D;
 
 ArrayTest::ArrayTest() {
-    addTests(&ArrayTest::construct,
-             &ArrayTest::constexprConstruct,
-             &ArrayTest::equality,
-             &ArrayTest::access);
+    addTests({&ArrayTest::construct,
+              &ArrayTest::constexprConstruct,
+              &ArrayTest::equality,
+              &ArrayTest::access});
 }
 
 void ArrayTest::construct() {

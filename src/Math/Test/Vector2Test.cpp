@@ -43,17 +43,18 @@ typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector2<Int> Vector2i;
 
 Vector2Test::Vector2Test() {
-    addTests(&Vector2Test::construct,
-             &Vector2Test::constructDefault,
-             &Vector2Test::constructOneValue,
-             &Vector2Test::constructConversion,
-             &Vector2Test::constructCopy,
+    addTests({&Vector2Test::construct,
+              &Vector2Test::constructDefault,
+              &Vector2Test::constructOneValue,
+              &Vector2Test::constructConversion,
+              &Vector2Test::constructCopy,
 
-             &Vector2Test::access,
-             &Vector2Test::axes,
-             &Vector2Test::scales,
-             &Vector2Test::debug,
-             &Vector2Test::configuration);
+              &Vector2Test::access,
+              &Vector2Test::axes,
+              &Vector2Test::scales,
+
+              &Vector2Test::debug,
+              &Vector2Test::configuration});
 }
 
 void Vector2Test::construct() {

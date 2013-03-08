@@ -46,14 +46,14 @@ typedef SceneGraph::Camera2D<> Camera2D;
 typedef SceneGraph::Camera3D<> Camera3D;
 
 CameraTest::CameraTest() {
-    addTests(&CameraTest::fixAspectRatio,
-             &CameraTest::defaultProjection2D,
-             &CameraTest::defaultProjection3D,
-             &CameraTest::projectionSize2D,
-             &CameraTest::projectionSizeOrthographic,
-             &CameraTest::projectionSizePerspective,
-             &CameraTest::projectionSizeViewport,
-             &CameraTest::draw);
+    addTests({&CameraTest::fixAspectRatio,
+              &CameraTest::defaultProjection2D,
+              &CameraTest::defaultProjection3D,
+              &CameraTest::projectionSize2D,
+              &CameraTest::projectionSizeOrthographic,
+              &CameraTest::projectionSizePerspective,
+              &CameraTest::projectionSizeViewport,
+              &CameraTest::draw});
 }
 
 void CameraTest::fixAspectRatio() {

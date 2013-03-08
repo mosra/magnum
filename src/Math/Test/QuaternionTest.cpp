@@ -66,36 +66,36 @@ typedef Math::Vector3<Float> Vector3;
 typedef Math::Vector4<Float> Vector4;
 
 QuaternionTest::QuaternionTest() {
-    addTests(&QuaternionTest::construct,
-             &QuaternionTest::constructDefault,
-             &QuaternionTest::constructFromVector,
-             &QuaternionTest::compare,
+    addTests({&QuaternionTest::construct,
+              &QuaternionTest::constructDefault,
+              &QuaternionTest::constructFromVector,
+              &QuaternionTest::compare,
 
-             &QuaternionTest::constExpressions,
+              &QuaternionTest::constExpressions,
 
-             &QuaternionTest::addSubtract,
-             &QuaternionTest::negated,
-             &QuaternionTest::multiplyDivideScalar,
-             &QuaternionTest::multiply,
+              &QuaternionTest::addSubtract,
+              &QuaternionTest::negated,
+              &QuaternionTest::multiplyDivideScalar,
+              &QuaternionTest::multiply,
 
-             &QuaternionTest::dot,
-             &QuaternionTest::dotSelf,
-             &QuaternionTest::length,
-             &QuaternionTest::normalized,
+              &QuaternionTest::dot,
+              &QuaternionTest::dotSelf,
+              &QuaternionTest::length,
+              &QuaternionTest::normalized,
 
-             &QuaternionTest::conjugated,
-             &QuaternionTest::inverted,
-             &QuaternionTest::invertedNormalized,
+              &QuaternionTest::conjugated,
+              &QuaternionTest::inverted,
+              &QuaternionTest::invertedNormalized,
 
-             &QuaternionTest::rotation,
-             &QuaternionTest::angle,
-             &QuaternionTest::matrix,
-             &QuaternionTest::lerp,
-             &QuaternionTest::slerp,
-             &QuaternionTest::transformVector,
-             &QuaternionTest::transformVectorNormalized,
+              &QuaternionTest::rotation,
+              &QuaternionTest::angle,
+              &QuaternionTest::matrix,
+              &QuaternionTest::lerp,
+              &QuaternionTest::slerp,
+              &QuaternionTest::transformVector,
+              &QuaternionTest::transformVectorNormalized,
 
-             &QuaternionTest::debug);
+              &QuaternionTest::debug});
 }
 
 void QuaternionTest::construct() {

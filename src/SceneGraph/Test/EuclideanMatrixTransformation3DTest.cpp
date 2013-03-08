@@ -40,16 +40,16 @@ class EuclideanMatrixTransformation3DTest: public Corrade::TestSuite::Tester {
 };
 
 EuclideanMatrixTransformation3DTest::EuclideanMatrixTransformation3DTest() {
-    addTests(&EuclideanMatrixTransformation3DTest::fromMatrix,
-             &EuclideanMatrixTransformation3DTest::toMatrix,
-             &EuclideanMatrixTransformation3DTest::compose,
-             &EuclideanMatrixTransformation3DTest::inverted,
+    addTests({&EuclideanMatrixTransformation3DTest::fromMatrix,
+              &EuclideanMatrixTransformation3DTest::toMatrix,
+              &EuclideanMatrixTransformation3DTest::compose,
+              &EuclideanMatrixTransformation3DTest::inverted,
 
-             &EuclideanMatrixTransformation3DTest::setTransformation,
-             &EuclideanMatrixTransformation3DTest::translate,
-             &EuclideanMatrixTransformation3DTest::rotate,
-             &EuclideanMatrixTransformation3DTest::reflect,
-             &EuclideanMatrixTransformation3DTest::normalizeRotation);
+              &EuclideanMatrixTransformation3DTest::setTransformation,
+              &EuclideanMatrixTransformation3DTest::translate,
+              &EuclideanMatrixTransformation3DTest::rotate,
+              &EuclideanMatrixTransformation3DTest::reflect,
+              &EuclideanMatrixTransformation3DTest::normalizeRotation});
 }
 
 void EuclideanMatrixTransformation3DTest::fromMatrix() {

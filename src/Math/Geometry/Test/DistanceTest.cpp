@@ -36,10 +36,10 @@ typedef Math::Vector3<Float> Vector3;
 typedef Math::Constants<Float> Constants;
 
 DistanceTest::DistanceTest() {
-    addTests(&DistanceTest::linePoint2D,
-             &DistanceTest::linePoint3D,
-             &DistanceTest::lineSegmentPoint2D,
-             &DistanceTest::lineSegmentPoint3D);
+    addTests({&DistanceTest::linePoint2D,
+              &DistanceTest::linePoint3D,
+              &DistanceTest::lineSegmentPoint2D,
+              &DistanceTest::lineSegmentPoint3D});
 }
 
 void DistanceTest::linePoint2D() {

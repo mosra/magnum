@@ -31,8 +31,8 @@ class ShapeGroupTest: public Corrade::TestSuite::Tester {
 };
 
 ShapeGroupTest::ShapeGroupTest() {
-    addTests(&ShapeGroupTest::copy,
-             &ShapeGroupTest::reference);
+    addTests({&ShapeGroupTest::copy,
+              &ShapeGroupTest::reference});
 }
 
 void ShapeGroupTest::copy() {

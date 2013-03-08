@@ -28,7 +28,7 @@ class AbstractShapeTest: public Corrade::TestSuite::Tester {
 };
 
 AbstractShapeTest::AbstractShapeTest() {
-    addTests(&AbstractShapeTest::debug);
+    addTests({&AbstractShapeTest::debug});
 }
 
 void AbstractShapeTest::debug() {

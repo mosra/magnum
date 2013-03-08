@@ -55,33 +55,33 @@ class ComplexTest: public Corrade::TestSuite::Tester {
 };
 
 ComplexTest::ComplexTest() {
-    addTests(&ComplexTest::construct,
-             &ComplexTest::constructDefault,
-             &ComplexTest::constructFromVector,
-             &ComplexTest::compare,
+    addTests({&ComplexTest::construct,
+              &ComplexTest::constructDefault,
+              &ComplexTest::constructFromVector,
+              &ComplexTest::compare,
 
-             &ComplexTest::constExpressions,
+              &ComplexTest::constExpressions,
 
-             &ComplexTest::addSubtract,
-             &ComplexTest::negated,
-             &ComplexTest::multiplyDivideScalar,
-             &ComplexTest::multiply,
+              &ComplexTest::addSubtract,
+              &ComplexTest::negated,
+              &ComplexTest::multiplyDivideScalar,
+              &ComplexTest::multiply,
 
-             &ComplexTest::dot,
-             &ComplexTest::dotSelf,
-             &ComplexTest::length,
-             &ComplexTest::normalized,
+              &ComplexTest::dot,
+              &ComplexTest::dotSelf,
+              &ComplexTest::length,
+              &ComplexTest::normalized,
 
-             &ComplexTest::conjugated,
-             &ComplexTest::inverted,
-             &ComplexTest::invertedNormalized,
+              &ComplexTest::conjugated,
+              &ComplexTest::inverted,
+              &ComplexTest::invertedNormalized,
 
-             &ComplexTest::angle,
-             &ComplexTest::rotation,
-             &ComplexTest::matrix,
-             &ComplexTest::transformVector,
+              &ComplexTest::angle,
+              &ComplexTest::rotation,
+              &ComplexTest::matrix,
+              &ComplexTest::transformVector,
 
-             &ComplexTest::debug);
+              &ComplexTest::debug});
 }
 
 typedef Math::Deg<Float> Deg;

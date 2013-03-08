@@ -54,15 +54,15 @@ class CachingObject: public Object3D, AbstractFeature<3> {
 };
 
 ObjectTest::ObjectTest() {
-    addTests(&ObjectTest::parenting,
-             &ObjectTest::scene,
-             &ObjectTest::absoluteTransformation,
-             &ObjectTest::transformations,
-             &ObjectTest::transformationsRelative,
-             &ObjectTest::transformationsOrphan,
-             &ObjectTest::transformationsDuplicate,
-             &ObjectTest::setClean,
-             &ObjectTest::bulkSetClean);
+    addTests({&ObjectTest::parenting,
+              &ObjectTest::scene,
+              &ObjectTest::absoluteTransformation,
+              &ObjectTest::transformations,
+              &ObjectTest::transformationsRelative,
+              &ObjectTest::transformationsOrphan,
+              &ObjectTest::transformationsDuplicate,
+              &ObjectTest::setClean,
+              &ObjectTest::bulkSetClean});
 }
 
 void ObjectTest::parenting() {

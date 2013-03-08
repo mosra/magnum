@@ -40,16 +40,16 @@ class EuclideanMatrixTransformation2DTest: public Corrade::TestSuite::Tester {
 };
 
 EuclideanMatrixTransformation2DTest::EuclideanMatrixTransformation2DTest() {
-    addTests(&EuclideanMatrixTransformation2DTest::fromMatrix,
-             &EuclideanMatrixTransformation2DTest::toMatrix,
-             &EuclideanMatrixTransformation2DTest::compose,
-             &EuclideanMatrixTransformation2DTest::inverted,
+    addTests({&EuclideanMatrixTransformation2DTest::fromMatrix,
+              &EuclideanMatrixTransformation2DTest::toMatrix,
+              &EuclideanMatrixTransformation2DTest::compose,
+              &EuclideanMatrixTransformation2DTest::inverted,
 
-             &EuclideanMatrixTransformation2DTest::setTransformation,
-             &EuclideanMatrixTransformation2DTest::translate,
-             &EuclideanMatrixTransformation2DTest::rotate,
-             &EuclideanMatrixTransformation2DTest::reflect,
-             &EuclideanMatrixTransformation2DTest::normalizeRotation);
+              &EuclideanMatrixTransformation2DTest::setTransformation,
+              &EuclideanMatrixTransformation2DTest::translate,
+              &EuclideanMatrixTransformation2DTest::rotate,
+              &EuclideanMatrixTransformation2DTest::reflect,
+              &EuclideanMatrixTransformation2DTest::normalizeRotation});
 }
 
 void EuclideanMatrixTransformation2DTest::fromMatrix() {

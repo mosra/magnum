@@ -31,9 +31,9 @@ class PlaneTest: public Corrade::TestSuite::Tester, ShapeTestBase {
 };
 
 PlaneTest::PlaneTest() {
-    addTests(&PlaneTest::applyTransformation,
-             &PlaneTest::collisionLine,
-             &PlaneTest::collisionLineSegment);
+    addTests({&PlaneTest::applyTransformation,
+              &PlaneTest::collisionLine,
+              &PlaneTest::collisionLineSegment});
 }
 
 void PlaneTest::applyTransformation() {

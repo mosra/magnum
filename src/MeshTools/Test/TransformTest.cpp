@@ -34,11 +34,11 @@ class TransformTest: public Corrade::TestSuite::Tester {
 };
 
 TransformTest::TransformTest() {
-    addTests(&TransformTest::transformVectors2D,
-             &TransformTest::transformVectors3D,
+    addTests({&TransformTest::transformVectors2D,
+              &TransformTest::transformVectors3D,
 
-             &TransformTest::transformPoints2D,
-             &TransformTest::transformPoints3D);
+              &TransformTest::transformPoints2D,
+              &TransformTest::transformPoints3D});
 }
 
 /* GCC < 4.7 doesn't like constexpr here, don't know why */

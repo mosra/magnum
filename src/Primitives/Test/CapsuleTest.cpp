@@ -35,8 +35,8 @@ class CapsuleTest: public Corrade::TestSuite::Tester {
 };
 
 CapsuleTest::CapsuleTest() {
-    addTests(&CapsuleTest::withoutTextureCoords,
-             &CapsuleTest::withTextureCoords);
+    addTests({&CapsuleTest::withoutTextureCoords,
+              &CapsuleTest::withTextureCoords});
 }
 
 void CapsuleTest::withoutTextureCoords() {

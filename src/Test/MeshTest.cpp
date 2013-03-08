@@ -32,10 +32,10 @@ class MeshTest: public Corrade::TestSuite::Tester {
 };
 
 MeshTest::MeshTest() {
-    addTests(&MeshTest::debugPrimitive,
-             &MeshTest::debugIndexType,
-             &MeshTest::configurationPrimitive,
-             &MeshTest::configurationIndexType);
+    addTests({&MeshTest::debugPrimitive,
+              &MeshTest::debugIndexType,
+              &MeshTest::configurationPrimitive,
+              &MeshTest::configurationIndexType});
 }
 
 void MeshTest::debugPrimitive() {

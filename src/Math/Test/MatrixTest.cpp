@@ -48,18 +48,18 @@ typedef Vector<4, Int> Vector4i;
 typedef Vector<3, Float> Vector3;
 
 MatrixTest::MatrixTest() {
-    addTests(&MatrixTest::construct,
-             &MatrixTest::constructIdentity,
-             &MatrixTest::constructZero,
-             &MatrixTest::constructConversion,
-             &MatrixTest::constructCopy,
+    addTests({&MatrixTest::construct,
+              &MatrixTest::constructIdentity,
+              &MatrixTest::constructZero,
+              &MatrixTest::constructConversion,
+              &MatrixTest::constructCopy,
 
-             &MatrixTest::trace,
-             &MatrixTest::ij,
-             &MatrixTest::determinant,
-             &MatrixTest::inverted,
-             &MatrixTest::debug,
-             &MatrixTest::configuration);
+              &MatrixTest::trace,
+              &MatrixTest::ij,
+              &MatrixTest::determinant,
+              &MatrixTest::inverted,
+              &MatrixTest::debug,
+              &MatrixTest::configuration});
 }
 
 void MatrixTest::construct() {

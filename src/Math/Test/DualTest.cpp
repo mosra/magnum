@@ -43,20 +43,20 @@ class DualTest: public Corrade::TestSuite::Tester {
 typedef Math::Dual<Float> Dual;
 
 DualTest::DualTest() {
-    addTests(&DualTest::construct,
-             &DualTest::constructDefault,
-             &DualTest::compare,
+    addTests({&DualTest::construct,
+              &DualTest::constructDefault,
+              &DualTest::compare,
 
-             &DualTest::constExpressions,
+              &DualTest::constExpressions,
 
-             &DualTest::addSubtract,
-             &DualTest::negated,
-             &DualTest::multiplyDivide,
+              &DualTest::addSubtract,
+              &DualTest::negated,
+              &DualTest::multiplyDivide,
 
-             &DualTest::conjugated,
-             &DualTest::sqrt,
+              &DualTest::conjugated,
+              &DualTest::sqrt,
 
-             &DualTest::debug);
+              &DualTest::debug});
 }
 
 void DualTest::construct() {

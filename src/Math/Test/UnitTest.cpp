@@ -34,14 +34,14 @@ class UnitTest: public Corrade::TestSuite::Tester {
 };
 
 UnitTest::UnitTest() {
-    addTests(&UnitTest::construct,
-             &UnitTest::constructDefault,
-             &UnitTest::constructConversion,
-             &UnitTest::compare,
+    addTests({&UnitTest::construct,
+              &UnitTest::constructDefault,
+              &UnitTest::constructConversion,
+              &UnitTest::compare,
 
-             &UnitTest::negated,
-             &UnitTest::addSubtract,
-             &UnitTest::multiplyDivide);
+              &UnitTest::negated,
+              &UnitTest::addSubtract,
+              &UnitTest::multiplyDivide});
 }
 
 template<class> struct Sec_;
