@@ -136,8 +136,7 @@ const std::array<UnsignedByte, 18> Renderer<3>::indices{{
 template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(SceneGraph::AbstractObject<dimensions>* object, ResourceKey options, SceneGraph::DrawableGroup<dimensions>* drawables): SceneGraph::Drawable<dimensions>(object, drawables), options(ResourceManager::instance()->get<ObjectRendererOptions>(options)) {
     /* Shader */
     shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::VertexColorShader<dimensions>>(Renderer<dimensions>::shader());
-    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(),
-        new Shaders::VertexColorShader<dimensions>, ResourceDataState::Final, ResourcePolicy::Resident);
+    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(), new Shaders::VertexColorShader<dimensions>);
 
     /* Mesh and vertex buffer */
     mesh = ResourceManager::instance()->get<Mesh>(Renderer<dimensions>::mesh());
