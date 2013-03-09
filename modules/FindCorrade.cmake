@@ -7,20 +7,26 @@
 #  CORRADE_INCLUDE_DIR              - Include dir for Corrade
 #  CORRADE_INTERCONNECT_LIBRARIES   - Corrade Interconnect library and
 #   dependent libraries
-#  CORRADE_UTILITY_LIBRARIES        - Corrade Utility library and dependent
-#   libraries
-#  CORRADE_PLUGINMANAGER_LIBRARIES  - Corrade Plugin manager library and
+#  CORRADE_UTILITY_LIBRARIES        - Corrade Utility library and
 #   dependent libraries
-#  CORRADE_TESTSUITE_LIBRARIES      - Corrade TestSuite library and dependent
-#   libraries
+#  CORRADE_PLUGINMANAGER_LIBRARIES  - Corrade PluginManager library and
+#   dependent libraries
+#  CORRADE_TESTSUITE_LIBRARIES      - Corrade TestSuite library and
+#   dependent libraries
 #  CORRADE_RC_EXECUTABLE            - Corrade resource compiler executable
 # Additionally these variables are defined for internal usage:
+#  CORRADE_INTERCONNECT_LIBRARY     - Corrade Interconnect library (w/o
+#   dependencies)
 #  CORRADE_UTILITY_LIBRARY          - Corrade Utility library (w/o
 #   dependencies)
 #  CORRADE_PLUGINMANAGER_LIBRARY    - Corrade Plugin manager library (w/o
 #   dependencies)
 #  CORRADE_TESTSUITE_LIBRARY        - Corrade TestSuite library (w/o
 #   dependencies)
+# Corrade configures the compiler to use C++11 standard. Additionally you can
+# use CORRADE_CXX_FLAGS to enable additional pedantic set of warnings and enable
+# hidden visibility by default.
+#
 # If Corrade library is found, these macros and functions are defined:
 #
 #
@@ -42,9 +48,7 @@
 # generates resource file with group group_name from given files in current
 # build directory. Argument name is name under which the resources can be
 # explicitly loaded. Variable 'name' contains compiled resource filename,
-# which is then used for compiling library / executable.
-#
-# Example usage:
+# which is then used for compiling library / executable. Example usage:
 #  corrade_add_resource(name group_name file1 ALIAS alias1 file2 file3)
 #  add_executable(app source1 source2 ... ${name})
 #
@@ -62,13 +66,10 @@
 #                            plugin_name metadata_file
 #                            sources...)
 # The macro adds preprocessor directive CORRADE_STATIC_PLUGIN. Additional
-# libraries can be linked in via target_link_libraries(plugin_name ...).
-#
-# Plugin library name will be added at the end of static_plugins_variable and
-# the variable is meant to be used for linking plugins to main
-# executable/library, e.g:
+# libraries can be linked in via target_link_libraries(plugin_name ...). Plugin
+# library name will be appended to static_plugins_variable and the variable is
+# meant to be used for linking plugins to main executable/library, e.g:
 #  target_link_libraries(app lib1 lib2 ... ${static_plugins_variable})
-#
 # This variable is set with parent scope to be available in parent directory.
 # If there are more intermediate directories between plugin directory and main
 # executable directory, the variable can be propagated to parent scope like
@@ -124,7 +125,9 @@ set(CORRADE_UTILITY_LIBRARIES ${CORRADE_UTILITY_LIBRARY})
 set(CORRADE_INTERCONNECT_LIBRARIES ${CORRADE_INTERCONNECT_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
 set(CORRADE_PLUGINMANAGER_LIBRARIES ${CORRADE_PLUGINMANAGER_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
 set(CORRADE_TESTSUITE_LIBRARIES ${CORRADE_TESTSUITE_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
-mark_as_advanced(CORRADE_UTILITY_LIBRARY CORRADE_PLUGINMANAGER_LIBRARY CORRADE_TESTSUITE_LIBRARY)
+mark_as_advanced(CORRADE_UTILITY_LIBRARY
+    CORRADE_INTERCONNECT_LIBRARY
+    CORRADE_PLUGINMANAGER_LIBRARY
+    CORRADE_TESTSUITE_LIBRARY)
 
-include(CorradeMacros)
-include(CorradeLibSuffix)
+include(UseCorrade)
