@@ -7,6 +7,7 @@ set(MagnumPrimitives_SRCS
     Plane.cpp
     Square.cpp
     UVSphere.cpp)
+
 set(MagnumPrimitives_HEADERS
     Capsule.h
     Crosshair.h
@@ -26,6 +27,5 @@ install(TARGETS MagnumPrimitives DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumPrimitives_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Primitives)
 
 if(BUILD_TESTS)
-    enable_testing()
     add_subdirectory(Test)
 endif()

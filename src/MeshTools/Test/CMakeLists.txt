@@ -10,4 +10,7 @@ corrade_add_test(MeshToolsTipsifyTest TipsifyTest.cpp LIBRARIES MagnumMeshTools)
 corrade_add_test(MeshToolsTransformTest TransformTest.cpp LIBRARIES MagnumMeshTools)
 
 # Graceful assert for testing
-set_target_properties(MeshToolsCombineIndexedArraysTest MeshToolsInterleaveTest MeshToolsSubdivideTest PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
+set_target_properties(MeshToolsCombineIndexedArraysTest
+    MeshToolsInterleaveTest
+    MeshToolsSubdivideTest
+    PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)

@@ -5,6 +5,7 @@ corrade_add_resource(MagnumShaders_RCS MagnumShaders
     VectorShader.frag DistanceFieldVectorShader.frag
     VertexColorShader2D.vert VertexColorShader3D.vert VertexColorShader.frag
     compatibility.glsl)
+
 set(MagnumShaders_SRCS
     DistanceFieldVectorShader.cpp
     FlatShader.cpp
@@ -12,6 +13,7 @@ set(MagnumShaders_SRCS
     VectorShader.cpp
     VertexColorShader.cpp
     ${MagnumShaders_RCS})
+
 set(MagnumShaders_HEADERS
     DistanceFieldVectorShader.h
     AbstractVectorShader.h
@@ -24,7 +26,6 @@ set(MagnumShaders_HEADERS
     magnumShadersVisibility.h)
 
 add_library(MagnumShaders SHARED ${MagnumShaders_SRCS})
-
 target_link_libraries(MagnumShaders Magnum)
 
 install(TARGETS MagnumShaders DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})

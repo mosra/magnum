@@ -22,7 +22,6 @@ if(USE_HARFBUZZ)
 endif()
 
 add_library(MagnumText SHARED ${MagnumText_SRCS})
-
 target_link_libraries(MagnumText Magnum MagnumTextureTools ${FREETYPE_LIBRARIES})
 if(USE_HARFBUZZ)
     target_link_libraries(MagnumText ${HARFBUZZ_LIBRARIES})

@@ -1,9 +1,16 @@
+# Files shared between main library and unit test library
 set(MagnumSceneGraph_SRCS
     Animable.cpp
     Camera.cpp
     EuclideanMatrixTransformation2D.cpp
     EuclideanMatrixTransformation3D.cpp
     Object.cpp)
+
+# Files compiled with different flags for main library and unit test library
+set(MagnumSceneGraph_GracefulAssert_SRCS
+    MatrixTransformation2D.cpp
+    MatrixTransformation3D.cpp)
+
 set(MagnumSceneGraph_HEADERS
     AbstractCamera.h
     AbstractCamera.hpp
@@ -34,15 +41,10 @@ set(MagnumSceneGraph_HEADERS
     SceneGraph.h
 
     magnumSceneGraphVisibility.h)
-add_library(MagnumSceneGraphObjects OBJECT ${MagnumSceneGraph_SRCS})
-
-# Files compiled with different flags for main library and unit test library
-set(MagnumSceneGraph_GracefulAssert_SRCS
-    MatrixTransformation2D.cpp
-    MatrixTransformation3D.cpp)
 
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
+add_library(MagnumSceneGraphObjects OBJECT ${MagnumSceneGraph_SRCS})
 set_target_properties(MagnumSceneGraphObjects PROPERTIES COMPILE_FLAGS "-DMagnumSceneGraphObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
 # SceneGraph library
@@ -55,8 +57,6 @@ install(TARGETS MagnumSceneGraph DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumSceneGraph_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/SceneGraph)
 
 if(BUILD_TESTS)
-    enable_testing()
-
     # Library with graceful assert for testing
     add_library(MagnumSceneGraphTestLib SHARED
         $<TARGET_OBJECTS:MagnumSceneGraphObjects>

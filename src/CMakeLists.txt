@@ -1,13 +1,8 @@
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wold-style-cast -Winit-self -Werror=return-type -Wmissing-declarations -pedantic -std=c++0x -fvisibility=hidden")
-
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion")
-endif()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CORRADE_INCLUDE_DIR})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/magnumConfigure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h)
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CORRADE_INCLUDE_DIR})
 
 # Files shared between main library and unit test library
 set(Magnum_SRCS
@@ -97,8 +92,6 @@ if(NOT TARGET_GLES2)
         BufferImage.h)
 endif()
 
-add_library(MagnumObjects OBJECT ${Magnum_SRCS})
-
 # Files shared between main library and math unit test library
 set(MagnumMath_SRCS
     Math/Angle.cpp
@@ -109,10 +102,11 @@ set(MagnumMath_SRCS
     Math/Quaternion.cpp
     Math/RectangularMatrix.cpp
     Math/Vector.cpp)
-add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
 
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
+add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
+add_library(MagnumObjects OBJECT ${Magnum_SRCS})
 set_target_properties(MagnumObjects MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
 # Main library
@@ -134,12 +128,10 @@ target_link_libraries(Magnum ${Magnum_LIBS})
 
 install(TARGETS Magnum DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${Magnum_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
-
-# Install also configure file
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 
-add_subdirectory(Platform)
 add_subdirectory(Math)
+add_subdirectory(Platform)
 add_subdirectory(Trade)
 
 if(WITH_DEBUGTOOLS)
@@ -175,9 +167,7 @@ if(WITH_TEXTURETOOLS)
 endif()
 
 if(BUILD_TESTS)
-    enable_testing()
-
-    # Library with graceful assert for testing
+    # Libraries with graceful assert for testing
     add_library(MagnumMathTestLib SHARED
         $<TARGET_OBJECTS:MagnumMathObjects>)
     set_target_properties(MagnumMathTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)

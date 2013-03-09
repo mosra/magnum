@@ -33,13 +33,13 @@ else()
     cmake_dependent_option(WITH_GLUTAPPLICATION "Build GlutApplication library" OFF "NOT TARGET_GLES" OFF)
     option(WITH_SDL2APPLICATION "Build Sdl2Application library" OFF)
 endif()
-option(BUILD_TESTS "Build unit tests." OFF)
 
+option(BUILD_TESTS "Build unit tests." OFF)
 if(BUILD_TESTS)
     enable_testing()
 endif()
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Magnum_SOURCE_DIR}/modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
 
 # If targetting NaCl, set explicit OpenGL ES 2.0 support
 if(${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
@@ -74,6 +74,7 @@ if(USE_HARFBUZZ)
 endif()
 
 # Installation paths
+include(CorradeLibSuffix)
 set(MAGNUM_BINARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/bin)
 set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
 set(MAGNUM_CMAKE_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)

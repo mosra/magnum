@@ -1,9 +1,10 @@
-# Extension wrangler
-add_library(MagnumPlatformExtensionWrangler OBJECT ExtensionWrangler.cpp)
-
 set(MagnumPlatform_HEADERS
     AbstractContextHandler.h
     ExtensionWrangler.h)
+
+# Extension wrangler
+add_library(MagnumPlatformExtensionWrangler OBJECT ExtensionWrangler.cpp)
+
 install(FILES ${MagnumPlatform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 
 # GLUT application
