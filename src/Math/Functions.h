@@ -280,6 +280,7 @@ integral type.
     range is undefined.
 
 @see normalize()
+@todo Fix test for UnsignedLong
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class Integral, class FloatingPoint> inline Integral denormalize(const FloatingPoint& value);
