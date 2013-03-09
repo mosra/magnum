@@ -223,7 +223,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Font.h)
 
         # Dependencies
-        find_package(FreeType)
+        find_package(Freetype)
         if(NOT FREETYPE_FOUND)
             unset(MAGNUM_${_COMPONENT}_LIBRARY)
         endif()
