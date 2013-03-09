@@ -229,7 +229,8 @@ namespace Implementation {
                 }
 
                 inline ~Data() {
-                    CORRADE_ASSERT(referenceCount == 0, "ResourceManager: cannot destruct it while data are still referenced", );
+                    CORRADE_ASSERT(referenceCount == 0,
+                        "ResourceManager::~ResourceManager(): destroyed while data are still referenced", );
                     delete data;
                 }
 
