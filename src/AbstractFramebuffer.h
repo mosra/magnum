@@ -294,9 +294,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 inline AbstractFramebuffer::~AbstractFramebuffer() {}
 
 CORRADE_ENUMSET_OPERATORS(AbstractFramebuffer::ClearMask)
-#ifndef MAGNUM_TARGET_GLES
 CORRADE_ENUMSET_OPERATORS(AbstractFramebuffer::BlitMask)
-#endif
 
 }
 
