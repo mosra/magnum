@@ -592,9 +592,9 @@ class MAGNUM_EXPORT Mesh {
          *          mesh->vertexCount(), Shaders::PhongShader::Normal());
          * @endcode
          *
-         * @attention The actual vertex count must be set before calling this
-         *      function, otherwise vertex data positions in the buffer will
-         *      be miscalculated.
+         * @attention If specifying more than one attribute the actual vertex
+         *      count must be set before calling this function. Otherwise
+         *      vertex data positions in the buffer will be miscalculated.
          * @attention The buffer passed as parameter is not managed by the
          *      mesh, you must ensure it will exist for whole lifetime of the
          *      mesh and delete it afterwards.
@@ -608,7 +608,8 @@ class MAGNUM_EXPORT Mesh {
          *      if @extension{APPLE,vertex_array_object} is available
          */
         template<class ...T> inline Mesh* addVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes) {
-            CORRADE_ASSERT(_vertexCount != 0, "Mesh: vertex count must be set before binding attributes", this);
+            CORRADE_ASSERT(sizeof...(attributes) == 1 || _vertexCount != 0,
+                "Mesh::addVertexBuffer(): vertex count must be set before binding attributes", this);
 
             addVertexBufferInternal(buffer, offset, attributes...);
             return this;
