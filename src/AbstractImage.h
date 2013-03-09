@@ -84,6 +84,8 @@ class MAGNUM_EXPORT AbstractImage {
              *      is available in OpenGL ES.
              */
             Blue = GL_BLUE,
+
+            /** @todo GL_ALPHA? */
             #endif
 
             /**
@@ -116,8 +118,9 @@ class MAGNUM_EXPORT AbstractImage {
             /**
              * Floating-point BGRA.
              * @requires_es_extension %Extension @es_extension{EXT,read_format_bgra}
-             *      for framebuffer reading, extension @es_extension{APPLE,texture_format_BGRA8888} or
-             *      @es_extension{EXT,texture_format_BGRA8888} for texture data.
+             *      for framebuffer reading, extension @es_extension{APPLE,texture_format_BGRA8888}
+             *      or @es_extension{EXT,texture_format_BGRA8888} for texture
+             *      data.
              */
             #ifndef MAGNUM_TARGET_GLES
             BGRA = GL_BGRA,
@@ -147,9 +150,9 @@ class MAGNUM_EXPORT AbstractImage {
             /**
              * Integer blue channel.
              * @requires_gl30 %Extension @extension{EXT,texture_integer}
-             * @requires_gl Only @ref Magnum::AbstractImage::Format "Format::RedInteger" is available
-             *      in OpenGL ES 3.0, only floating-point image data are
-             *      available in OpenGL ES 2.0.
+             * @requires_gl Only @ref Magnum::AbstractImage::Format "Format::RedInteger"
+             *      is available in OpenGL ES 3.0, only floating-point image
+             *      data are available in OpenGL ES 2.0.
              */
             BlueInteger = GL_BLUE_INTEGER,
             #endif
