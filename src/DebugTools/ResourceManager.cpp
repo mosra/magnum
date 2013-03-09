@@ -19,16 +19,18 @@
 
 #include "Buffer.h"
 #include "Mesh.h"
+#include "DebugTools/ForceRenderer.h"
 #include "DebugTools/ObjectRenderer.h"
 #include "DebugTools/ShapeRenderer.h"
 
 namespace Magnum {
 
-template class ResourceManager<AbstractShaderProgram, Buffer, Mesh, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions>;
+template class ResourceManager<AbstractShaderProgram, Buffer, Mesh, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions>;
 
 namespace DebugTools {
 
 ResourceManager::ResourceManager() {
+    setFallback(new ForceRendererOptions);
     setFallback(new ObjectRendererOptions);
     setFallback(new ShapeRendererOptions);
 }

@@ -34,16 +34,17 @@
 
 namespace Magnum {
 
-extern template ResourceManager<AbstractShaderProgram, Buffer, Mesh, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions> MAGNUM_DEBUGTOOLS_EXPORT  *& ResourceManager<AbstractShaderProgram, Buffer, Mesh, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions>::internalInstance();
+extern template ResourceManager<AbstractShaderProgram, Buffer, Mesh, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions> MAGNUM_DEBUGTOOLS_EXPORT *& ResourceManager<AbstractShaderProgram, Buffer, Mesh, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions>::internalInstance();
 
 namespace DebugTools {
 
 /**
 @brief %Resource manager for debug tools
 
-Stores various data used by debug renderers.
+Stores various data used by debug renderers. See @ref debug-tools for more
+information.
 */
-class MAGNUM_DEBUGTOOLS_EXPORT ResourceManager: public Magnum::ResourceManager<AbstractShaderProgram, Buffer, Mesh, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions> {
+class MAGNUM_DEBUGTOOLS_EXPORT ResourceManager: public Magnum::ResourceManager<AbstractShaderProgram, Buffer, Mesh, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions> {
     public:
         explicit ResourceManager();
         ~ResourceManager();

@@ -1,4 +1,5 @@
 set(MagnumDebugTools_SRCS
+    ForceRenderer.cpp
     ObjectRenderer.cpp
     Profiler.cpp
     ResourceManager.cpp
@@ -11,6 +12,7 @@ set(MagnumDebugTools_SRCS
     Implementation/PointRenderer.cpp)
 
 set(MagnumDebugTools_HEADERS
+    ForceRenderer.h
     DebugTools.h
     ObjectRenderer.h
     Profiler.h
@@ -30,3 +32,7 @@ target_link_libraries(MagnumDebugTools
 
 install(TARGETS MagnumDebugTools DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumDebugTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/DebugTools)
+
+if(BUILD_TESTS)
+    add_subdirectory(Test)
+endif()

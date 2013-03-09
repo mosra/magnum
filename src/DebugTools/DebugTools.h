@@ -25,6 +25,11 @@ namespace Magnum { namespace DebugTools {
 
 /** @todoc Remove `ifndef` when Doxygen is sane again */
 #ifndef DOXYGEN_GENERATING_OUTPUT
+template<UnsignedInt> class ForceRenderer;
+typedef ForceRenderer<2> ForceRenderer2D;
+typedef ForceRenderer<3> ForceRenderer3D;
+class ForceRendererOptions;
+
 template<UnsignedInt> class ObjectRenderer;
 typedef ObjectRenderer<2> ObjectRenderer2D;
 typedef ObjectRenderer<3> ObjectRenderer3D;

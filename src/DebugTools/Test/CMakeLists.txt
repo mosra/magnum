@@ -1,0 +1,1 @@
+corrade_add_test(MagnumDebugToolsForceRendererTest ForceRendererTest.cpp LIBRARIES MagnumMathTestLib)
