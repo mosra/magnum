@@ -310,7 +310,7 @@ class MAGNUM_EXPORT Buffer {
         /**
          * @brief Memory mapping access
          *
-         * @deprecated Prefer to use map(GLintptr, GLsizeiptr, MapFlags)
+         * @deprecated Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      instead, as it has more complete set of features.
          * @see map(MapAccess)
          * @requires_es_extension %Extension @es_extension{OES,mapbuffer} in
@@ -622,7 +622,7 @@ class MAGNUM_EXPORT Buffer {
          * If @extension{EXT,direct_state_access} is not available and the
          * buffer is not already bound somewhere, it is bound to hinted target
          * before the operation.
-         * @deprecated Prefer to use map(GLintptr, GLsizeiptr, MapFlags)
+         * @deprecated Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      instead, as it has more complete set of features.
          * @see unmap(), setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{MapBuffer}
          *      or @fn_gl_extension{MapNamedBuffer,EXT,direct_state_access}
