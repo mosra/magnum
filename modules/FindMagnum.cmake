@@ -15,24 +15,25 @@
 # components. The base library depends on Corrade, OpenGL and GLEW
 # libraries. Additional dependencies are specified by the components. The
 # optional components are:
-#  DebugTools    - DebugTools library (depends on MeshTools, Physics,
-#                  Primitives, SceneGraph and Shaders components)
-#  MeshTools     - MeshTools library
-#  Physics       - Physics library
-#  Primitives    - Library with stock geometric primitives (static)
-#  SceneGraph    - Scene graph library
-#  Shaders       - Library with stock shaders
-#  Text          - Text rendering library (depends on TextureTools component,
-#                  FreeType library and possibly HarfBuzz library, see below)
-#  TextureTools  - TextureTools library
-#  GlxApplication - GLX application (depends on X11 libraries)
-#  XEglApplication - X/EGL application (depends on EGL and X11 libraries)
+#  DebugTools       - DebugTools library (depends on MeshTools, Physics,
+#                     Primitives, SceneGraph and Shaders components)
+#  MeshTools        - MeshTools library
+#  Physics          - Physics library
+#  Primitives       - Library with stock geometric primitives (static)
+#  SceneGraph       - Scene graph library
+#  Shaders          - Library with stock shaders
+#  Text             - Text rendering library (depends on TextureTools
+#                     component, FreeType library and possibly HarfBuzz
+#                     library, see below)
+#  TextureTools     - TextureTools library
+#  GlxApplication   - GLX application (depends on X11 libraries)
+#  XEglApplication  - X/EGL application (depends on EGL and X11 libraries)
 #  WindowlessGlxApplication - Windowless GLX application (depends on X11
-#   libraries)
-#  GlutApplication - GLUT application (depends on GLUT library)
-#  Sdl2Application - SDL2 application (depends on SDL2 library)
-#  NaClApplication - NaCl application (only if targetting Google Chrome
-#   Native Client)
+#                     libraries)
+#  GlutApplication  - GLUT application (depends on GLUT library)
+#  Sdl2Application  - SDL2 application (depends on SDL2 library)
+#  NaClApplication  - NaCl application (only if targetting Google Chrome
+#                     Native Client)
 # Example usage with specifying additional components is:
 #  find_package(Magnum [REQUIRED|COMPONENTS]
 #               MeshTools Primitives GlutApplication)
@@ -44,10 +45,12 @@
 # Features of found Magnum library are exposed in these variables:
 #  MAGNUM_TARGET_GLES   - Defined if compiled for OpenGL ES
 #  MAGNUM_TARGET_GLES2  - Defined if compiled for OpenGL ES 2.0
-#  MAGNUM_TARGET_DESKTOP_GLES - Defined if compiled with OpenGL ES emulation
-#                         on desktop OpenGL
-#  MAGNUM_TARGET_NACL   - Defined if compiled for Google Chrome Native Client
-#  MAGNUM_USE_HARFBUZZ  - Defined if HarfBuzz library is used for text rendering
+#  MAGNUM_TARGET_DESKTOP_GLES - Defined if compiled with OpenGL ES
+#   emulation on desktop OpenGL
+#  MAGNUM_TARGET_NACL   - Defined if compiled for Google Chrome Native
+#   Client
+#  MAGNUM_USE_HARFBUZZ  - Defined if HarfBuzz library is used for text
+#   rendering
 #
 # Additionally these variables are defined for internal usage:
 #  MAGNUM_INCLUDE_DIR                   - Root include dir (w/o
