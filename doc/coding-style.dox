@@ -50,6 +50,25 @@ namespace itself and contain foward declarations for all classes, enums and
 copies of all meaningful typedefs. See @ref compilation-forward-declarations
 for more information.
 
+@section compatibility Compatibility with various OpenGL editions
+
+If any class, function or part of code depends on particular OpenGL edition
+(e.g. only for desktop), use conditional compilation to avoid erors on other
+platforms (see @ref portability-target for more information). Put related
+documentation also into the conditional compilation block and don't forget to
+appropriately mark the class/function (@ref documentation-commands-requires "see below").
+Example:
+@code
+#ifndef MAGNUM_TARGET_GLES
+//
+// @brief Set polygon mode
+//
+// @requires_gl Polygon mode is not available in OpenGL ES.
+//
+void setPolygonMode(PolygonMode mode);
+#endif
+@endcode
+
 @section documentation Doxygen documentation
 
 @subsection documentation-commands Special documentation commands
@@ -77,15 +96,17 @@ with @c \@extension command:
 @code
 @extension{ARB,timer_query}
 @endcode
-It produces link to the specification of the extension in OpenGL registry,
-e.g. @extension{ARB,timer_query}. Similarly for OpenGL ES extensions there is
-@c \@es_extension command. Some extensions have slightly different URL,
-with command @c \@es_extension2 you can specify extension filename, if the
-previous command gives 404 error. The following produces link to
-@es_extension2{NV,read_buffer_front,GL_NV_read_buffer} extension:
+It produces link to the specification of the extension in OpenGL registry:
+> @extension{ARB,timer_query}
+
+Similarly for OpenGL ES extensions there is @c \@es_extension command. Some
+extensions have slightly different URL, with command @c \@es_extension2 you can
+specify extension filename, if the previous command gives 404 error. For example
 @code
 @es_extension2{NV,read_buffer_front,GL_NV_read_buffer}
 @endcode
+produces this link:
+> @es_extension2{NV,read_buffer_front,GL_NV_read_buffer}
 
 @subsubsection documentation-commands-ref_gl Links to related OpenGL functions and definitions
 
@@ -98,9 +119,8 @@ inline static void setSeamless(bool enabled) {
     enabled ? glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS) : glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 }
 @endcode
-
-It produces link to the online manual, in this case @fn_gl{Enable}/@fn_gl{Disable}
-with @def_gl{TEXTURE_CUBE_MAP_SEAMLESS}.
+It produces link to the online manual:
+> @fn_gl{Enable}/@fn_gl{Disable} with @def_gl{TEXTURE_CUBE_MAP_SEAMLESS}.
 
 For functions which are not part of OpenGL core specification, but only as
 extensions, use @c \@fn_gl_extension command, e.g.
@@ -109,8 +129,8 @@ extensions, use @c \@fn_gl_extension command, e.g.
 @endcode
 First parameter is function name without the suffix, the second two parameters
 are the same as in @c \@extension command. It produced link to extension
-specification, with function name as link text, in this case
-@fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}.
+specification, with function name as link text:
+> @fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}.
 
 @subsubsection documentation-commands-requires Classes and functions requiring specific OpenGL version or extensions
 
