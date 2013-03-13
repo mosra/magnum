@@ -129,6 +129,12 @@ Vector<3, Int> b;
 b[1] = 1;       // second element
 @endcode
 
+Row vectors can be accessed too, but only for reading, and the access is slower
+due to the way the matrix is stored (see explanation below):
+@code
+Vector<2, Int> c = a.row(2); // third row
+@endcode
+
 Fixed-size vector subclasses have functions for accessing named components
 and subparts:
 @code

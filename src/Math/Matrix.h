@@ -200,6 +200,9 @@ template<std::size_t size, class T> inline Corrade::Utility::Debug operator<<(Co
     inline constexpr const VectorType<T> operator[](std::size_t col) const { \
         return VectorType<T>(Matrix<size, T>::operator[](col));             \
     }                                                                       \
+    inline VectorType<T> row(std::size_t row) const {                       \
+        return VectorType<T>(Matrix<size, T>::row(row));                    \
+    }                                                                       \
                                                                             \
     inline Type<T> operator*(const Matrix<size, T>& other) const {          \
         return Matrix<size, T>::operator*(other);                           \

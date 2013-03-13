@@ -154,7 +154,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * Float a = m[2][1];
          * @endcode
          *
-         * @see data()
+         * @see row(), data()
          */
         inline Vector<rows, T>& operator[](std::size_t col) {
             return _data[col];
@@ -162,6 +162,22 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /** @overload */
         inline constexpr const Vector<rows, T>& operator[](std::size_t col) const {
             return _data[col];
+        }
+
+        /**
+         * @brief %Matrix row
+         *
+         * Consider using transposed() when accessing rows frequently, as this
+         * is slower than accessing columns due to the way the matrix is stored.
+         * @see operator[]()
+         */
+        inline Vector<cols, T> row(std::size_t row) const {
+            Vector<cols, T> out;
+
+            for(std::size_t i = 0; i != cols; ++i)
+                out[i] = _data[i][row];
+
+            return out;
         }
 
         /** @brief Equality comparison */
@@ -336,7 +352,11 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             return operator*(RectangularMatrix<1, rows, T>(other))[0];
         }
 
-        /** @brief Transposed matrix */
+        /**
+         * @brief Transposed matrix
+         *
+         * @see row()
+         */
         RectangularMatrix<rows, cols, T> transposed() const {
             RectangularMatrix<rows, cols, T> out;
 

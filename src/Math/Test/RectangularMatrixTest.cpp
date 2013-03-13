@@ -40,7 +40,9 @@ class RectangularMatrixTest: public Corrade::TestSuite::Tester {
         void constructFromData();
         void constructFromDiagonal();
         void constructCopy();
+
         void data();
+        void row();
 
         void compare();
 
@@ -79,7 +81,9 @@ RectangularMatrixTest::RectangularMatrixTest() {
               &RectangularMatrixTest::constructFromData,
               &RectangularMatrixTest::constructFromDiagonal,
               &RectangularMatrixTest::constructCopy,
+
               &RectangularMatrixTest::data,
+              &RectangularMatrixTest::row,
 
               &RectangularMatrixTest::compare,
 
@@ -197,6 +201,14 @@ void RectangularMatrixTest::data() {
     CORRADE_COMPARE(b, Vector4(7.0f, -1.7f, 8.0f, 0.0f));
     CORRADE_COMPARE(c, 7.0f);
     CORRADE_COMPARE(d, 3.0f);
+}
+
+void RectangularMatrixTest::row() {
+    const Matrix3x4 a(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
+                      Vector4(5.0f,  6.0f,  7.0f,  8.0f),
+                      Vector4(9.0f, 10.0f, 11.0f, 12.0f));
+
+    CORRADE_COMPARE(a.row(1), Vector3(2.0f, 6.0f, 10.0f));
 }
 
 void RectangularMatrixTest::compare() {
