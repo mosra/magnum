@@ -77,6 +77,19 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         }
 
         /**
+         * @brief Create dual complex number from rotation matrix
+         *
+         * Expects that the matrix represents rigid transformation.
+         * @see toMatrix(), Complex::fromMatrix(),
+         *      Matrix3::isRigidTransformation()
+         */
+        inline static DualComplex<T> fromMatrix(const Matrix3<T>& matrix) {
+            CORRADE_ASSERT(matrix.isRigidTransformation(),
+                "Math::DualComplex::fromMatrix(): the matrix doesn't represent rigid transformation", {});
+            return {Implementation::complexFromMatrix(matrix.rotationScaling()), Complex<T>(matrix.translation())};
+        }
+
+        /**
          * @brief Default constructor
          *
          * Creates unit dual complex number. @f[
@@ -140,7 +153,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         /**
          * @brief Convert dual complex number to transformation matrix
          *
-         * @see Complex::toMatrix()
+         * @see fromMatrix(), Complex::toMatrix()
          */
         inline Matrix3<T> toMatrix() const {
             return Matrix3<T>::from(this->real().toMatrix(), translation());

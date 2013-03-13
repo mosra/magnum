@@ -225,6 +225,14 @@ void DualComplexTest::matrix() {
     Matrix3 m = Matrix3::rotation(Deg(23.0f))*Matrix3::translation({2.0f, 3.0f});
 
     CORRADE_COMPARE(a.toMatrix(), m);
+
+    std::ostringstream o;
+    Error::setOutput(&o);
+    DualComplex::fromMatrix(m*2);
+    CORRADE_COMPARE(o.str(), "Math::DualComplex::fromMatrix(): the matrix doesn't represent rigid transformation\n");
+
+    DualComplex b = DualComplex::fromMatrix(m);
+    CORRADE_COMPARE(b, a);
 }
 
 void DualComplexTest::transformPoint() {

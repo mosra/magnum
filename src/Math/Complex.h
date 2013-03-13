@@ -37,6 +37,15 @@
 
 namespace Magnum { namespace Math {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
+    /* No assertions fired, for internal use */
+    template<class T> inline static Complex<T> complexFromMatrix(const Matrix<2, T>& matrix) {
+        return {matrix[0][0], matrix[0][1]};
+    }
+}
+#endif
+
 /**
 @brief %Complex number
 @tparam T   Data type
@@ -85,6 +94,18 @@ template<class T> class Complex {
          */
         inline static Complex<T> rotation(Rad<T> angle) {
             return {std::cos(T(angle)), std::sin(T(angle))};
+        }
+
+        /**
+         * @brief Create complex number from rotation matrix
+         *
+         * Expects that the matrix is orthogonal (i.e. pure rotation).
+         * @see toMatrix(), DualComplex::fromMatrix(), Matrix::isOrthogonal()
+         */
+        inline static Complex<T> fromMatrix(const Matrix<2, T>& matrix) {
+            CORRADE_ASSERT(matrix.isOrthogonal(),
+                "Math::Complex::fromMatrix(): the matrix is not orthogonal", {});
+            return Implementation::complexFromMatrix(matrix);
         }
 
         /**
@@ -164,7 +185,8 @@ template<class T> class Complex {
          *               b &  a
          *          \end{pmatrix}
          * @f]
-         * @see DualComplex::toMatrix(), Matrix3::from(const Matrix<2, T>&, const Vector2<T>&)
+         * @see fromMatrix(), DualComplex::toMatrix(),
+         *      Matrix3::from(const Matrix<2, T>&, const Vector2<T>&)
          */
         Matrix<2, T> toMatrix() const {
             return {Vector<2, T>(_real, _imaginary),

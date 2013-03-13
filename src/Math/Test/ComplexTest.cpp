@@ -280,6 +280,14 @@ void ComplexTest::matrix() {
     Matrix2 m = Matrix3::rotation(Deg(37.0f)).rotationScaling();
 
     CORRADE_COMPARE(a.toMatrix(), m);
+
+    std::ostringstream o;
+    Error::setOutput(&o);
+    Complex::fromMatrix(m*2);
+    CORRADE_COMPARE(o.str(), "Math::Complex::fromMatrix(): the matrix is not orthogonal\n");
+
+    Complex b = Complex::fromMatrix(m);
+    CORRADE_COMPARE(b, a);
 }
 
 void ComplexTest::transformVector() {
