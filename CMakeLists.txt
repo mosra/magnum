@@ -33,21 +33,20 @@ cmake_dependent_option(TARGET_GLES2 "Build for OpenGL ES 2" ON "TARGET_GLES" OFF
 cmake_dependent_option(TARGET_DESKTOP_GLES "Build for OpenGL ES on desktop" OFF "TARGET_GLES" OFF)
 
 # Parts of the library
-option(WITH_EVERYTHING "Build everything (doesn't include *Application libraries)" ON)
-cmake_dependent_option(WITH_DEBUGTOOLS "Build DebugTools library" OFF "NOT WITH_EVERYTHING" ON)
-cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" OFF "NOT WITH_EVERYTHING;NOT WITH_DEBUGTOOLS" ON)
-cmake_dependent_option(WITH_PHYSICS "Build Physics library" OFF "NOT WITH_EVERYTHING;NOT WITH_DEBUGTOOLS" ON)
-cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" OFF "NOT WITH_EVERYTHING;NOT WITH_DEBUGTOOLS" ON)
-cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" OFF "NOT WITH_EVERYTHING;NOT WITH_DEBUGTOOLS" ON)
-cmake_dependent_option(WITH_SHADERS "Build Shaders library" OFF "NOT WITH_EVERYTHING;NOT WITH_DEBUGTOOLS" ON)
-cmake_dependent_option(WITH_TEXT "Build Text library" OFF "NOT WITH_EVERYTHING" ON)
-cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" OFF "NOT WITH_EVERYTHING;NOT WITH_TEXT" ON)
-
-cmake_dependent_option(WITH_MAGNUMINFO "Build magnum-info utility" OFF "NOT WITH_EVERYTHING" ON)
+option(WITH_DEBUGTOOLS "Build DebugTools library" ON)
+cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" ON "NOT WITH_DEBUGTOOLS" ON)
+cmake_dependent_option(WITH_PHYSICS "Build Physics library" ON "NOT WITH_DEBUGTOOLS" ON)
+cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" ON "NOT WITH_DEBUGTOOLS" ON)
+cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" ON "NOT WITH_DEBUGTOOLS;NOT WITH_PHYSICS" ON)
+cmake_dependent_option(WITH_SHADERS "Build Shaders library" ON "NOT WITH_DEBUGTOOLS" ON)
+option(WITH_TEXT "Build Text library" ON)
+cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT WITH_TEXT" ON)
+option(WITH_MAGNUMINFO "Build magnum-info utility" ON)
 
 # Library features
 cmake_dependent_option(USE_HARFBUZZ "Use HarfBuzz in Text library" ON "WITH_TEXT" OFF)
 
+# Application libraries
 if(${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
     option(WITH_NACLAPPLICATION "Build NaClApplication library" OFF)
 else()
