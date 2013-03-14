@@ -282,12 +282,29 @@ void QuaternionTest::angle() {
 }
 
 void QuaternionTest::matrix() {
-    Quaternion q = Quaternion::rotation(Deg(37.0f), Vector3(1.0f/Constants<Float>::sqrt3()));
-    Matrix3 m = Matrix4::rotation(Deg(37.0f), Vector3(1.0f/Constants<Float>::sqrt3())).rotationScaling();
+    Vector3 axis = Vector3(1.0f, -3.0f, 5.0f).normalized();
+
+    Quaternion q = Quaternion::rotation(Deg(37.0f), axis);
+    Matrix3 m = Matrix4::rotation(Deg(37.0f), axis).rotationScaling();
 
     /* Verify that negated quaternion gives the same rotation */
     CORRADE_COMPARE(q.toMatrix(), m);
     CORRADE_COMPARE((-q).toMatrix(), m);
+
+    std::ostringstream o;
+    Error::setOutput(&o);
+    Quaternion::fromMatrix(m*2);
+    CORRADE_COMPARE(o.str(), "Math::Quaternion::fromMatrix(): the matrix is not orthogonal\n");
+
+    /* Trace > 0 */
+    CORRADE_VERIFY(m.trace() > 0.0f);
+    CORRADE_COMPARE(Quaternion::fromMatrix(m), q);
+
+    /* Trace < 0 */
+    Matrix3 m2 = Matrix4::rotation(Deg(130.0f), axis).rotationScaling();
+    Quaternion q2 = Quaternion::rotation(Deg(130.0f), axis);
+    CORRADE_VERIFY(m2.trace() < 0.0f);
+    CORRADE_COMPARE(Quaternion::fromMatrix(m2), q2);
 }
 
 void QuaternionTest::lerp() {

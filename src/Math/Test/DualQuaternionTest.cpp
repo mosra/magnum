@@ -234,6 +234,14 @@ void DualQuaternionTest::matrix() {
     /* Verify that negated dual quaternion gives the same transformation */
     CORRADE_COMPARE(q.toMatrix(), m);
     CORRADE_COMPARE((-q).toMatrix(), m);
+
+    std::ostringstream o;
+    Error::setOutput(&o);
+    DualQuaternion::fromMatrix(m*2);
+    CORRADE_COMPARE(o.str(), "Math::DualQuaternion::fromMatrix(): the matrix doesn't represent rigid transformation\n");
+
+    DualQuaternion p = DualQuaternion::fromMatrix(m);
+    CORRADE_COMPARE(p, q);
 }
 
 void DualQuaternionTest::transformPoint() {

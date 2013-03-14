@@ -80,6 +80,21 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         }
 
         /**
+         * @brief Create dual quaternion from transformation matrix
+         *
+         * Expects that the matrix represents rigid transformation.
+         * @see toMatrix(), Quaternion::fromMatrix(),
+         *      Matrix4::isRigidTransformation()
+         */
+        inline static DualQuaternion<T> fromMatrix(const Matrix4<T>& matrix) {
+            CORRADE_ASSERT(matrix.isRigidTransformation(),
+                "Math::DualQuaternion::fromMatrix(): the matrix doesn't represent rigid transformation", {});
+
+            Quaternion<T> q = Implementation::quaternionFromMatrix(matrix.rotationScaling());
+            return {q, Quaternion<T>(matrix.translation()/2)*q};
+        }
+
+        /**
          * @brief Default constructor
          *
          * Creates unit dual quaternion. @f[
@@ -158,7 +173,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         /**
          * @brief Convert dual quaternion to transformation matrix
          *
-         * @see Quaternion::toMatrix()
+         * @see fromMatrix(), Quaternion::toMatrix()
          */
         Matrix4<T> toMatrix() const {
             return Matrix4<T>::from(this->real().toMatrix(), translation());

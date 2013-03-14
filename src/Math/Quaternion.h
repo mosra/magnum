@@ -38,6 +38,45 @@
 
 namespace Magnum { namespace Math {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
+
+/* No assertions fired, for internal use */
+template<class T> inline Quaternion<T> quaternionFromMatrix(const Matrix<3, T>& m) {
+    const Vector<3, T> diagonal = m.diagonal();
+    const T trace = diagonal.sum();
+
+    /* Diagonal is positive */
+    if(trace > T(0)) {
+        const T s = std::sqrt(trace + T(1));
+        const T t = T(0.5)/s;
+        return {Vector3<T>(m[1][2] - m[2][1],
+                           m[2][0] - m[0][2],
+                           m[0][1] - m[1][0])*t, s*T(0.5)};
+    }
+
+    /* Diagonal is negative */
+    std::size_t i = 0;
+    if(diagonal[1] > diagonal[0]) i = 1;
+    if(diagonal[2] > diagonal[i]) i = 2;
+
+    const std::size_t j = (i + 1) % 3;
+    const std::size_t k = (i + 2) % 3;
+
+    const T s = std::sqrt(diagonal[i] - diagonal[j] - diagonal[k] + T(1));
+    const T t = (s == T(0) ? T(0) : T(0.5)/s);
+
+    Vector3<T> vec;
+    vec[i] = s*T(0.5);
+    vec[j] = (m[i][j] + m[j][i])*t;
+    vec[k] = (m[i][k] + m[k][i])*t;
+
+    return {vec, (m[j][k] - m[k][j])*t};
+}
+
+}
+#endif
+
 /**
 @brief %Quaternion
 @tparam T   Underlying data type
@@ -135,6 +174,18 @@ template<class T> class Quaternion {
         }
 
         /**
+         * @brief Create quaternion from rotation matrix
+         *
+         * Expects that the matrix is orthogonal (i.e. pure rotation).
+         * @see toMatrix(), DualComplex::fromMatrix(), Matrix::isOrthogonal()
+         */
+        inline static Quaternion<T> fromMatrix(const Matrix<3, T>& matrix) {
+            CORRADE_ASSERT(matrix.isOrthogonal(),
+                "Math::Quaternion::fromMatrix(): the matrix is not orthogonal", {});
+            return Implementation::quaternionFromMatrix(matrix);
+        }
+
+        /**
          * @brief Default constructor
          *
          * Creates unit quaternion. @f[
@@ -213,7 +264,8 @@ template<class T> class Quaternion {
         /**
          * @brief Convert quaternion to rotation matrix
          *
-         * @see DualQuaternion::toMatrix(), Matrix4::from(const Matrix<3, T>&, const Vector3<T>&)
+         * @see fromMatrix(), DualQuaternion::toMatrix(),
+         *      Matrix4::from(const Matrix<3, T>&, const Vector3<T>&)
          */
         Matrix<3, T> toMatrix() const {
             return {
