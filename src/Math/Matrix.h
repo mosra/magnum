@@ -108,7 +108,8 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * The matrix is orthogonal if its transpose is equal to its inverse: @f[
          *      Q^T = Q^{-1}
          * @f]
-         * @see transposed(), inverted()
+         * @see transposed(), inverted(), Matrix3::isRigidTransformation(),
+         *      Matrix4::isRigidTransformation()
          */
         bool isOrthogonal() const {
             /* Normality */

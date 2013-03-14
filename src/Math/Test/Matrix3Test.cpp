@@ -40,6 +40,8 @@ class Matrix3Test: public Corrade::TestSuite::Tester {
         void constructConversion();
         void constructCopy();
 
+        void isRigidTransformation();
+
         void translation();
         void scaling();
         void rotation();
@@ -68,6 +70,8 @@ Matrix3Test::Matrix3Test() {
               &Matrix3Test::constructZero,
               &Matrix3Test::constructConversion,
               &Matrix3Test::constructCopy,
+
+              &Matrix3Test::isRigidTransformation,
 
               &Matrix3Test::translation,
               &Matrix3Test::scaling,
@@ -141,6 +145,18 @@ void Matrix3Test::constructCopy() {
     CORRADE_COMPARE(b, Matrix3({3.0f,  5.0f, 8.0f},
                                {4.5f,  4.0f, 7.0f},
                                {7.9f, -1.0f, 8.0f}));
+}
+
+void Matrix3Test::isRigidTransformation() {
+    CORRADE_VERIFY(!Matrix3({1.0f, 0.0f, 0.0f},
+                            {0.1f, 1.0f, 0.0f},
+                            {5.0f, 4.0f, 1.0f}).isRigidTransformation());
+    CORRADE_VERIFY(!Matrix3({1.0f, 0.0f, 0.0f},
+                            {0.0f, 1.0f, 1.0f},
+                            {5.0f, 4.0f, 0.0f}).isRigidTransformation());
+    CORRADE_VERIFY(Matrix3({1.0f, 0.0f, 0.0f},
+                           {0.0f, 1.0f, 0.0f},
+                           {5.0f, 4.0f, 1.0f}).isRigidTransformation());
 }
 
 void Matrix3Test::translation() {

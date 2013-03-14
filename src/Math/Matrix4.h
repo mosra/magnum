@@ -284,6 +284,17 @@ template<class T> class Matrix4: public Matrix<4, T> {
         inline constexpr Matrix4(const RectangularMatrix<4, 4, T>& other): Matrix<4, T>(other) {}
 
         /**
+         * @brief Check whether the matrix represents rigid transformation
+         *
+         * Rigid transformation consists only of rotation and translation (i.e.
+         * no scaling or projection).
+         * @see isOrthogonal()
+         */
+        inline bool isRigidTransformation() const {
+            return rotationScaling().isOrthogonal() && row(3) == Vector4<T>(T(0), T(0), T(0), T(1));
+        }
+
+        /**
          * @brief 3D rotation and scaling part of the matrix
          *
          * Upper-left 3x3 part of the matrix.
