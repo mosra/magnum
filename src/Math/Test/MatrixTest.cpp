@@ -40,6 +40,8 @@ class MatrixTest: public Corrade::TestSuite::Tester {
         void constructConversion();
         void constructCopy();
 
+        void isOrthogonal();
+
         void trace();
         void ij();
         void determinant();
@@ -62,6 +64,8 @@ MatrixTest::MatrixTest() {
               &MatrixTest::constructZero,
               &MatrixTest::constructConversion,
               &MatrixTest::constructCopy,
+
+              &MatrixTest::isOrthogonal,
 
               &MatrixTest::trace,
               &MatrixTest::ij,
@@ -137,6 +141,18 @@ void MatrixTest::constructCopy() {
                                Vector4(4.5f,  4.0f, 7.0f,  2.0f),
                                Vector4(1.0f,  2.0f, 3.0f, -1.0f),
                                Vector4(7.9f, -1.0f, 8.0f, -1.5f)));
+}
+
+void MatrixTest::isOrthogonal() {
+    CORRADE_VERIFY(!Matrix3(Vector3(1.0f, 0.0f, 0.0f),
+                            Vector3(0.0f, 1.0f, 0.0f),
+                            Vector3(0.0f, 0.1f, 1.0f)).isOrthogonal());
+    CORRADE_VERIFY(!Matrix3(Vector3(1.0f, 0.0f, 0.0f),
+                            Vector3(0.0f, 1.0f, 0.0f),
+                            Vector3(0.0f, 1.0f, 0.0f)).isOrthogonal());
+    CORRADE_VERIFY(Matrix3(Vector3(1.0f, 0.0f, 0.0f),
+                           Vector3(0.0f, 1.0f, 0.0f),
+                           Vector3(0.0f, 0.0f, 1.0f)).isOrthogonal());
 }
 
 void MatrixTest::trace() {
