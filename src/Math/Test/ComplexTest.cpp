@@ -120,10 +120,10 @@ void ComplexTest::constructFromVector() {
 }
 
 void ComplexTest::compare() {
-    CORRADE_VERIFY(Complex(3.7f, -1.0f+MathTypeTraits<Float>::epsilon()/2) == Complex(3.7f, -1.0f));
-    CORRADE_VERIFY(Complex(3.7f, -1.0f+MathTypeTraits<Float>::epsilon()*2) != Complex(3.7f, -1.0f));
-    CORRADE_VERIFY(Complex(1.0f+MathTypeTraits<Float>::epsilon()/2, 3.7f) == Complex(1.0f, 3.7f));
-    CORRADE_VERIFY(Complex(1.0f+MathTypeTraits<Float>::epsilon()*2, 3.7f) != Complex(1.0f, 3.7f));
+    CORRADE_VERIFY(Complex(3.7f, -1.0f+TypeTraits<Float>::epsilon()/2) == Complex(3.7f, -1.0f));
+    CORRADE_VERIFY(Complex(3.7f, -1.0f+TypeTraits<Float>::epsilon()*2) != Complex(3.7f, -1.0f));
+    CORRADE_VERIFY(Complex(1.0f+TypeTraits<Float>::epsilon()/2, 3.7f) == Complex(1.0f, 3.7f));
+    CORRADE_VERIFY(Complex(1.0f+TypeTraits<Float>::epsilon()*2, 3.7f) != Complex(1.0f, 3.7f));
 }
 
 void ComplexTest::constExpressions() {

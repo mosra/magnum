@@ -25,13 +25,13 @@
 #include <limits>
 #include <TestSuite/Tester.h>
 
-#include "Math/MathTypeTraits.h"
+#include "Math/TypeTraits.h"
 
 namespace Magnum { namespace Math { namespace Test {
 
-class MathTypeTraitsTest: public Corrade::TestSuite::Tester {
+class TypeTraitsTest: public Corrade::TestSuite::Tester {
     public:
-        MathTypeTraitsTest();
+        TypeTraitsTest();
 
         void equalsFloatingPoint();
         void equalsIntegral();
@@ -41,12 +41,12 @@ class MathTypeTraitsTest: public Corrade::TestSuite::Tester {
         template<class T> void _equalsIntegral();
 };
 
-MathTypeTraitsTest::MathTypeTraitsTest() {
-    addTests({&MathTypeTraitsTest::equalsIntegral,
-              &MathTypeTraitsTest::equalsFloatingPoint});
+TypeTraitsTest::TypeTraitsTest() {
+    addTests({&TypeTraitsTest::equalsIntegral,
+              &TypeTraitsTest::equalsFloatingPoint});
 }
 
-void MathTypeTraitsTest::equalsIntegral() {
+void TypeTraitsTest::equalsIntegral() {
     _equalsIntegral<UnsignedByte>();
     _equalsIntegral<Byte>();
     _equalsIntegral<UnsignedShort>();
@@ -57,29 +57,29 @@ void MathTypeTraitsTest::equalsIntegral() {
     _equalsIntegral<Long>();
 }
 
-void MathTypeTraitsTest::equalsFloatingPoint() {
+void TypeTraitsTest::equalsFloatingPoint() {
     _equalsFloatingPoint<Float>();
     _equalsFloatingPoint<Double>();
 }
 
-template<class T> void MathTypeTraitsTest::_equalsIntegral() {
-    CORRADE_VERIFY(!MathTypeTraits<T>::equals(1, 1+MathTypeTraits<T>::epsilon()));
+template<class T> void TypeTraitsTest::_equalsIntegral() {
+    CORRADE_VERIFY(!TypeTraits<T>::equals(1, 1+TypeTraits<T>::epsilon()));
 }
 
-template<class T> void MathTypeTraitsTest::_equalsFloatingPoint() {
-    CORRADE_VERIFY(MathTypeTraits<T>::equals(T(1)+MathTypeTraits<T>::epsilon()/T(2), T(1)));
-    CORRADE_VERIFY(!MathTypeTraits<T>::equals(T(1)+MathTypeTraits<T>::epsilon()*T(2), T(1)));
+template<class T> void TypeTraitsTest::_equalsFloatingPoint() {
+    CORRADE_VERIFY(TypeTraits<T>::equals(T(1)+TypeTraits<T>::epsilon()/T(2), T(1)));
+    CORRADE_VERIFY(!TypeTraits<T>::equals(T(1)+TypeTraits<T>::epsilon()*T(2), T(1)));
 
     {
         CORRADE_EXPECT_FAIL("Comparing to infinity is broken");
-        CORRADE_VERIFY(MathTypeTraits<T>::equals(std::numeric_limits<T>::infinity(),
+        CORRADE_VERIFY(TypeTraits<T>::equals(std::numeric_limits<T>::infinity(),
                                                 std::numeric_limits<T>::infinity()));
     }
 
-    CORRADE_VERIFY(!MathTypeTraits<T>::equals(std::numeric_limits<T>::quiet_NaN(),
+    CORRADE_VERIFY(!TypeTraits<T>::equals(std::numeric_limits<T>::quiet_NaN(),
                                               std::numeric_limits<T>::quiet_NaN()));
 }
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Math::Test::MathTypeTraitsTest)
+CORRADE_TEST_MAIN(Magnum::Math::Test::TypeTraitsTest)

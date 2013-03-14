@@ -158,7 +158,7 @@ template<class T = Float>
 class Color3: public Math::Vector3<T> {
     public:
         /** @brief Corresponding floating-point type for HSV computation */
-        typedef typename Math::MathTypeTraits<T>::FloatingPointType FloatingPointType;
+        typedef typename Math::TypeTraits<T>::FloatingPointType FloatingPointType;
 
         /**
          * @brief Type for storing HSV values

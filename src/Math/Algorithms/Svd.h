@@ -96,8 +96,8 @@ decomposition and least squares solutions"*.
 /* The matrix is passed by value because it is changed inside */
 template<std::size_t cols, std::size_t rows, class T> std::tuple<RectangularMatrix<cols, rows, T>, Vector<cols, T>, Matrix<cols, T>> svd(RectangularMatrix<cols, rows, T> m) {
     static_assert(rows >= cols, "Unsupported matrix aspect ratio");
-    static_assert(T(1)+MathTypeTraits<T>::epsilon() > T(1), "Epsilon too small");
-    constexpr T tol = Implementation::smallestDelta<T>()/MathTypeTraits<T>::epsilon();
+    static_assert(T(1)+TypeTraits<T>::epsilon() > T(1), "Epsilon too small");
+    constexpr T tol = Implementation::smallestDelta<T>()/TypeTraits<T>::epsilon();
     static_assert(tol > T(0), "Tol too small");
     constexpr std::size_t maxIterations = 50;
 
@@ -212,7 +212,7 @@ template<std::size_t cols, std::size_t rows, class T> std::tuple<RectangularMatr
     }
 
     /* Diagonalization of the bidiagonal form */
-    const T epsilon = MathTypeTraits<T>::epsilon()*epsilonX;
+    const T epsilon = TypeTraits<T>::epsilon()*epsilonX;
     for(std::size_t k2 = cols; k2 != 0; --k2) {
         const std::size_t k = k2 - 1;
 

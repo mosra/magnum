@@ -32,7 +32,7 @@ set(MagnumMath_HEADERS
     DualQuaternion.h
     Functions.h
     Math.h
-    MathTypeTraits.h
+    TypeTraits.h
     Matrix.h
     Matrix3.h
     Matrix4.h

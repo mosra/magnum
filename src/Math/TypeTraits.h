@@ -1,5 +1,5 @@
-#ifndef Magnum_Math_MathTypeTraits_h
-#define Magnum_Math_MathTypeTraits_h
+#ifndef Magnum_Math_TypeTraits_h
+#define Magnum_Math_TypeTraits_h
 /*
     This file is part of Magnum.
 
@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::MathTypeTraits
+ * @brief Class Magnum::Math::TypeTraits
  */
 
 #include <cmath>
@@ -54,8 +54,8 @@ namespace Magnum { namespace Math {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    template<class T> struct MathTypeTraitsDefault {
-        MathTypeTraitsDefault() = delete;
+    template<class T> struct TypeTraitsDefault {
+        TypeTraitsDefault() = delete;
 
         inline constexpr static bool equals(T a, T b) {
             return a == b;
@@ -71,7 +71,7 @@ Traits classes are usable for detecting type features at compile time without
 the need for repeated code such as method overloading or template
 specialization for given types.
 */
-template<class T> struct MathTypeTraits: Implementation::MathTypeTraitsDefault<T> {
+template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
     /*
      * The following values are implemented as inline functions, not as
      * static const variables, because the compiler will inline the return
@@ -118,58 +118,58 @@ template<class T> struct MathTypeTraits: Implementation::MathTypeTraitsDefault<T
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* Integral scalar types */
 namespace Implementation {
-    template<class T> struct MathTypeTraitsIntegral: MathTypeTraitsDefault<T> {
+    template<class T> struct TypeTraitsIntegral: TypeTraitsDefault<T> {
         inline constexpr static T epsilon() { return T(1); }
     };
 }
 
-template<> struct MathTypeTraits<UnsignedByte>: Implementation::MathTypeTraitsIntegral<UnsignedByte> {
+template<> struct TypeTraits<UnsignedByte>: Implementation::TypeTraitsIntegral<UnsignedByte> {
     typedef Float FloatingPointType;
 };
-template<> struct MathTypeTraits<Byte>: Implementation::MathTypeTraitsIntegral<Byte> {
+template<> struct TypeTraits<Byte>: Implementation::TypeTraitsIntegral<Byte> {
     typedef Float FloatingPointType;
 };
-template<> struct MathTypeTraits<UnsignedShort>: Implementation::MathTypeTraitsIntegral<UnsignedShort> {
+template<> struct TypeTraits<UnsignedShort>: Implementation::TypeTraitsIntegral<UnsignedShort> {
     typedef Float FloatingPointType;
 };
-template<> struct MathTypeTraits<Short>: Implementation::MathTypeTraitsIntegral<Short> {
+template<> struct TypeTraits<Short>: Implementation::TypeTraitsIntegral<Short> {
     typedef Float FloatingPointType;
 };
-template<> struct MathTypeTraits<UnsignedInt>: Implementation::MathTypeTraitsIntegral<UnsignedInt> {
+template<> struct TypeTraits<UnsignedInt>: Implementation::TypeTraitsIntegral<UnsignedInt> {
     typedef Double FloatingPointType;
 };
-template<> struct MathTypeTraits<Int>: Implementation::MathTypeTraitsIntegral<Int> {
+template<> struct TypeTraits<Int>: Implementation::TypeTraitsIntegral<Int> {
     typedef Double FloatingPointType;
 };
-template<> struct MathTypeTraits<UnsignedLong>: Implementation::MathTypeTraitsIntegral<UnsignedLong> {
+template<> struct TypeTraits<UnsignedLong>: Implementation::TypeTraitsIntegral<UnsignedLong> {
     typedef long double FloatingPointType;
 };
-template<> struct MathTypeTraits<Long>: Implementation::MathTypeTraitsIntegral<Long> {
+template<> struct TypeTraits<Long>: Implementation::TypeTraitsIntegral<Long> {
     typedef long double FloatingPointType;
 };
 
 /* Floating-point scalar types */
 namespace Implementation {
-    template<class T> struct MathTypeTraitsFloatingPoint {
-        MathTypeTraitsFloatingPoint() = delete;
+    template<class T> struct TypeTraitsFloatingPoint {
+        TypeTraitsFloatingPoint() = delete;
 
         inline static bool equals(T a, T b) {
-            return std::abs(a - b) < MathTypeTraits<T>::epsilon();
+            return std::abs(a - b) < TypeTraits<T>::epsilon();
         }
     };
 }
 
-template<> struct MathTypeTraits<Float>: Implementation::MathTypeTraitsFloatingPoint<Float> {
+template<> struct TypeTraits<Float>: Implementation::TypeTraitsFloatingPoint<Float> {
     typedef Float FloatingPointType;
 
     inline constexpr static Float epsilon() { return FLOAT_EQUALITY_PRECISION; }
 };
-template<> struct MathTypeTraits<Double>: Implementation::MathTypeTraitsFloatingPoint<Double> {
+template<> struct TypeTraits<Double>: Implementation::TypeTraitsFloatingPoint<Double> {
     typedef Double FloatingPointType;
 
     inline constexpr static Double epsilon() { return DOUBLE_EQUALITY_PRECISION; }
 };
-template<> struct MathTypeTraits<long double>: Implementation::MathTypeTraitsFloatingPoint<long double> {
+template<> struct TypeTraits<long double>: Implementation::TypeTraitsFloatingPoint<long double> {
     typedef long double FloatingPointType;
 
     inline constexpr static long double epsilon() { return LONG_DOUBLE_EQUALITY_PRECISION; }

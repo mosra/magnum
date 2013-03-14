@@ -25,7 +25,7 @@
 corrade_add_test(MathBoolVectorTest BoolVectorTest.cpp)
 corrade_add_test(MathConstantsTest ConstantsTest.cpp)
 corrade_add_test(MathFunctionsTest FunctionsTest.cpp LIBRARIES MagnumMathTestLib)
-corrade_add_test(MathMathTypeTraitsTest MathTypeTraitsTest.cpp)
+corrade_add_test(MathTypeTraitsTest TypeTraitsTest.cpp)
 
 corrade_add_test(MathVectorTest VectorTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathVector2Test Vector2Test.cpp LIBRARIES MagnumMathTestLib)

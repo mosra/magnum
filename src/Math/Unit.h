@@ -28,7 +28,7 @@
  * @brief Class Magnum::Math::Unit
  */
 
-#include "Math/MathTypeTraits.h"
+#include "Math/TypeTraits.h"
 
 namespace Magnum { namespace Math {
 
@@ -58,7 +58,7 @@ template<template<class> class Derived, class T> class Unit {
 
         /** @brief Equality comparison */
         inline constexpr bool operator==(Unit<Derived, T> other) const {
-            return MathTypeTraits<T>::equals(value, other.value);
+            return TypeTraits<T>::equals(value, other.value);
         }
 
         /** @brief Non-equality comparison */

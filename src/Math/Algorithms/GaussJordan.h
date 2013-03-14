@@ -64,7 +64,7 @@ template<std::size_t size, std::size_t rows, class T> bool gaussJordanInPlaceTra
         std::swap(t[row], t[rowMax]);
 
         /* Singular */
-        if(MathTypeTraits<T>::equals(a[row][row], T(0)))
+        if(TypeTraits<T>::equals(a[row][row], T(0)))
             return false;
 
         /* Eliminate column */

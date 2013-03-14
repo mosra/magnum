@@ -69,7 +69,7 @@ template<class T> class Complex {
          * @see Quaternion::angle(), Vector::angle()
          */
         inline static Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
+            CORRADE_ASSERT(TypeTraits<T>::equals(normalizedA.dot(), T(1)) && TypeTraits<T>::equals(normalizedB.dot(), T(1)),
                            "Math::Complex::angle(): complex numbers must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
             return Rad<T>(std::acos(normalizedA._real*normalizedB._real + normalizedA._imaginary*normalizedB._imaginary));
         }
@@ -117,8 +117,8 @@ template<class T> class Complex {
 
         /** @brief Equality comparison */
         inline bool operator==(const Complex<T>& other) const {
-            return MathTypeTraits<T>::equals(_real, other._real) &&
-                   MathTypeTraits<T>::equals(_imaginary, other._imaginary);
+            return TypeTraits<T>::equals(_real, other._real) &&
+                   TypeTraits<T>::equals(_imaginary, other._imaginary);
         }
 
         /** @brief Non-equality comparison */
@@ -345,7 +345,7 @@ template<class T> class Complex {
          * @see inverted()
          */
         inline Complex<T> invertedNormalized() const {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
+            CORRADE_ASSERT(TypeTraits<T>::equals(dot(), T(1)),
                            "Math::Complex::invertedNormalized(): complex number must be normalized",
                            Complex<T>(std::numeric_limits<T>::quiet_NaN(), {}));
             return conjugated();

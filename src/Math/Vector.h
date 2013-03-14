@@ -36,7 +36,7 @@
 
 #include "Math/Angle.h"
 #include "Math/BoolVector.h"
-#include "Math/MathTypeTraits.h"
+#include "Math/TypeTraits.h"
 
 #include "magnumVisibility.h"
 
@@ -102,7 +102,7 @@ template<std::size_t size, class T> class Vector {
          * @see Quaternion::angle(), Complex::angle()
          */
         inline static Rad<T> angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
+            CORRADE_ASSERT(TypeTraits<T>::equals(normalizedA.dot(), T(1)) && TypeTraits<T>::equals(normalizedB.dot(), T(1)),
                            "Math::Vector::angle(): vectors must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
             return Rad<T>(std::acos(dot(normalizedA, normalizedB)));
         }
@@ -195,7 +195,7 @@ template<std::size_t size, class T> class Vector {
         /** @brief Equality comparison */
         inline bool operator==(const Vector<size, T>& other) const {
             for(std::size_t i = 0; i != size; ++i)
-                if(!MathTypeTraits<T>::equals(_data[i], other._data[i])) return false;
+                if(!TypeTraits<T>::equals(_data[i], other._data[i])) return false;
 
             return true;
         }
@@ -468,7 +468,7 @@ template<std::size_t size, class T> class Vector {
          * @f]
          */
         inline Vector<size, T> projectedOntoNormalized(const Vector<size, T>& line) const {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(line.dot(), T(1)), "Math::Vector::projectedOntoNormalized(): line must be normalized", (Vector<size, T>(std::numeric_limits<T>::quiet_NaN())));
+            CORRADE_ASSERT(TypeTraits<T>::equals(line.dot(), T(1)), "Math::Vector::projectedOntoNormalized(): line must be normalized", (Vector<size, T>(std::numeric_limits<T>::quiet_NaN())));
             return line*dot(*this, line);
         }
 

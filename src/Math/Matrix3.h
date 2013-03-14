@@ -96,7 +96,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @see Matrix4::reflection()
          */
         static Matrix3<T> reflection(const Vector2<T>& normal) {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(normal.dot(), T(1)),
+            CORRADE_ASSERT(TypeTraits<T>::equals(normal.dot(), T(1)),
                            "Math::Matrix3::reflection(): normal must be normalized", {});
             return from(Matrix<2, T>() - T(2)*normal*RectangularMatrix<1, 2, T>(normal).transposed(), {});
         }

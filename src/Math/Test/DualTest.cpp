@@ -83,10 +83,10 @@ void DualTest::constructDefault() {
 }
 
 void DualTest::compare() {
-    CORRADE_VERIFY(Dual(1.0f, 1.0f+MathTypeTraits<Float>::epsilon()/2) == Dual(1.0f, 1.0f));
-    CORRADE_VERIFY(Dual(1.0f, 1.0f+MathTypeTraits<Float>::epsilon()*2) != Dual(1.0f, 1.0f));
-    CORRADE_VERIFY(Dual(1.0f+MathTypeTraits<Float>::epsilon()/2, 1.0f) == Dual(1.0f, 1.0f));
-    CORRADE_VERIFY(Dual(1.0f+MathTypeTraits<Float>::epsilon()*2, 1.0f) != Dual(1.0f, 1.0f));
+    CORRADE_VERIFY(Dual(1.0f, 1.0f+TypeTraits<Float>::epsilon()/2) == Dual(1.0f, 1.0f));
+    CORRADE_VERIFY(Dual(1.0f, 1.0f+TypeTraits<Float>::epsilon()*2) != Dual(1.0f, 1.0f));
+    CORRADE_VERIFY(Dual(1.0f+TypeTraits<Float>::epsilon()/2, 1.0f) == Dual(1.0f, 1.0f));
+    CORRADE_VERIFY(Dual(1.0f+TypeTraits<Float>::epsilon()*2, 1.0f) != Dual(1.0f, 1.0f));
 
     /* Compare to real part only */
     CORRADE_VERIFY(Dual(1.0f, 0.0f) == 1.0f);

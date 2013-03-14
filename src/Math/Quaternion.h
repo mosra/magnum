@@ -32,7 +32,7 @@
 #include <Utility/Assert.h>
 #include <Utility/Debug.h>
 
-#include "Math/MathTypeTraits.h"
+#include "Math/TypeTraits.h"
 #include "Math/Matrix.h"
 #include "Math/Vector3.h"
 
@@ -71,7 +71,7 @@ template<class T> class Quaternion {
          * @see Complex::angle(), Vector::angle()
          */
         inline static Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
+            CORRADE_ASSERT(TypeTraits<T>::equals(normalizedA.dot(), T(1)) && TypeTraits<T>::equals(normalizedB.dot(), T(1)),
                            "Math::Quaternion::angle(): quaternions must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
             return Rad<T>(angleInternal(normalizedA, normalizedB));
         }
@@ -88,7 +88,7 @@ template<class T> class Quaternion {
          * @see slerp(), Math::lerp()
          */
         inline static Quaternion<T> lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
+            CORRADE_ASSERT(TypeTraits<T>::equals(normalizedA.dot(), T(1)) && TypeTraits<T>::equals(normalizedB.dot(), T(1)),
                            "Math::Quaternion::lerp(): quaternions must be normalized",
                            Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
             return ((T(1) - t)*normalizedA + t*normalizedB).normalized();
@@ -108,7 +108,7 @@ template<class T> class Quaternion {
          * @see lerp()
          */
         inline static Quaternion<T> slerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
+            CORRADE_ASSERT(TypeTraits<T>::equals(normalizedA.dot(), T(1)) && TypeTraits<T>::equals(normalizedB.dot(), T(1)),
                            "Math::Quaternion::slerp(): quaternions must be normalized",
                            Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
             T a = angleInternal(normalizedA, normalizedB);
@@ -128,7 +128,7 @@ template<class T> class Quaternion {
          *      Vector3::yAxis(), Vector3::zAxis()
          */
         inline static Quaternion<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis) {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedAxis.dot(), T(1)),
+            CORRADE_ASSERT(TypeTraits<T>::equals(normalizedAxis.dot(), T(1)),
                            "Math::Quaternion::rotation(): axis must be normalized", {});
 
             return {normalizedAxis*std::sin(T(angle)/2), std::cos(T(angle)/2)};
@@ -164,7 +164,7 @@ template<class T> class Quaternion {
 
         /** @brief Equality comparison */
         inline bool operator==(const Quaternion<T>& other) const {
-            return _vector == other._vector && MathTypeTraits<T>::equals(_scalar, other._scalar);
+            return _vector == other._vector && TypeTraits<T>::equals(_scalar, other._scalar);
         }
 
         /** @brief Non-equality comparison */
@@ -187,7 +187,7 @@ template<class T> class Quaternion {
          * @see rotationAxis(), rotation(), DualQuaternion::rotationAngle()
          */
         inline Rad<T> rotationAngle() const {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
+            CORRADE_ASSERT(TypeTraits<T>::equals(dot(), T(1)),
                            "Math::Quaternion::rotationAngle(): quaternion must be normalized",
                            Rad<T>(std::numeric_limits<T>::quiet_NaN()));
             return Rad<T>(T(2)*std::acos(_scalar));
@@ -204,7 +204,7 @@ template<class T> class Quaternion {
          * @see rotationAngle(), rotation()
          */
         inline Vector3<T> rotationAxis() const {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
+            CORRADE_ASSERT(TypeTraits<T>::equals(dot(), T(1)),
                            "Math::Quaternion::rotationAxis(): quaternion must be normalized",
                            {});
             return _vector/std::sqrt(1-pow2(_scalar));
@@ -404,7 +404,7 @@ template<class T> class Quaternion {
          * @see inverted()
          */
         inline Quaternion<T> invertedNormalized() const {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
+            CORRADE_ASSERT(TypeTraits<T>::equals(dot(), T(1)),
                            "Math::Quaternion::invertedNormalized(): quaternion must be normalized",
                            Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
             return conjugated();
@@ -435,7 +435,7 @@ template<class T> class Quaternion {
          *      DualQuaternion::transformPointNormalized(), Complex::transformVector()
          */
         inline Vector3<T> transformVectorNormalized(const Vector3<T>& vector) const {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(dot(), T(1)),
+            CORRADE_ASSERT(TypeTraits<T>::equals(dot(), T(1)),
                            "Math::Quaternion::transformVectorNormalized(): quaternion must be normalized",
                            Vector3<T>(std::numeric_limits<T>::quiet_NaN()));
             return ((*this)*Quaternion<T>(vector)*conjugated()).vector();

@@ -31,7 +31,7 @@
 #include <cmath>
 #include <Utility/Debug.h>
 
-#include "Math/MathTypeTraits.h"
+#include "Math/TypeTraits.h"
 
 namespace Magnum { namespace Math {
 
@@ -63,8 +63,8 @@ template<class T> class Dual {
 
         /** @brief Equality comparison */
         inline bool operator==(const Dual<T>& other) const {
-            return MathTypeTraits<T>::equals(_real, other._real) &&
-                   MathTypeTraits<T>::equals(_dual, other._dual);
+            return TypeTraits<T>::equals(_real, other._real) &&
+                   TypeTraits<T>::equals(_dual, other._dual);
         }
 
         /** @brief Non-equality comparison */

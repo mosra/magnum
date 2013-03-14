@@ -40,7 +40,7 @@ namespace Magnum { namespace Math {
 template<class T> struct Constants {
     Constants() = delete;
 
-    /* See MathTypeTraits for answer why these are functions and not constants. */
+    /* See TypeTraits for answer why these are functions and not constants. */
     #ifdef DOXYGEN_GENERATING_OUTPUT
     /**
      * @brief Pi

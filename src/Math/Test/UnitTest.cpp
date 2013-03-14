@@ -78,8 +78,8 @@ void UnitTest::constructConversion() {
 }
 
 void UnitTest::compare() {
-    CORRADE_VERIFY(Sec(25.0f + MathTypeTraits<Float>::epsilon()/2) == Sec(25.0f));
-    CORRADE_VERIFY(Sec(25.0f + MathTypeTraits<Float>::epsilon()*2) != Sec(25.0f));
+    CORRADE_VERIFY(Sec(25.0f + TypeTraits<Float>::epsilon()/2) == Sec(25.0f));
+    CORRADE_VERIFY(Sec(25.0f + TypeTraits<Float>::epsilon()*2) != Sec(25.0f));
 
     constexpr bool c = Sec(3.0f) < Sec(3.0f);
     constexpr bool d = Sec(3.0f) <= Sec(3.0f);

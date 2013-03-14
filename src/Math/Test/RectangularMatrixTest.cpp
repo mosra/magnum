@@ -214,9 +214,9 @@ void RectangularMatrixTest::row() {
 void RectangularMatrixTest::compare() {
     Matrix2 a(Vector2(1.0f, -3.0f),
               Vector2(5.0f, -10.0f));
-    Matrix2 b(Vector2(1.0f + MathTypeTraits<Float>::epsilon()/2, -3.0f),
+    Matrix2 b(Vector2(1.0f + TypeTraits<Float>::epsilon()/2, -3.0f),
               Vector2(5.0f, -10.0f));
-    Matrix2 c(Vector2(1.0f, -1.0f + MathTypeTraits<Float>::epsilon()*2),
+    Matrix2 c(Vector2(1.0f, -1.0f + TypeTraits<Float>::epsilon()*2),
               Vector2(5.0f, -10.0f));
     CORRADE_VERIFY(a == b);
     CORRADE_VERIFY(a != c);

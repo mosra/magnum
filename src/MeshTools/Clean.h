@@ -43,7 +43,7 @@ template<class Vertex, std::size_t vertexSize = Vertex::Size> class Clean {
     public:
         inline Clean(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
 
-        void operator()(typename Vertex::Type epsilon = Math::MathTypeTraits<typename Vertex::Type>::epsilon()) {
+        void operator()(typename Vertex::Type epsilon = Math::TypeTraits<typename Vertex::Type>::epsilon()) {
             if(indices.empty()) return;
 
             /* Get mesh bounds */
@@ -145,7 +145,7 @@ Removes duplicate vertices from the mesh.
 @todo Interpolate vertices, not collapse them to first in the cell
 @todo Ability to specify other attributes for interpolation
 */
-template<class Vertex, std::size_t vertexSize = Vertex::Size> inline void clean(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices, typename Vertex::Type epsilon = Math::MathTypeTraits<typename Vertex::Type>::epsilon()) {
+template<class Vertex, std::size_t vertexSize = Vertex::Size> inline void clean(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices, typename Vertex::Type epsilon = Math::TypeTraits<typename Vertex::Type>::epsilon()) {
     Implementation::Clean<Vertex, vertexSize>(indices, vertices)(epsilon);
 }
 
