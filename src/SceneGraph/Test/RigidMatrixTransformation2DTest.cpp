@@ -24,17 +24,17 @@
 
 #include <TestSuite/Tester.h>
 
-#include "SceneGraph/EuclideanMatrixTransformation2D.h"
+#include "SceneGraph/RigidMatrixTransformation2D.h"
 #include "SceneGraph/Scene.h"
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
-typedef Object<EuclideanMatrixTransformation2D<>> Object2D;
-typedef Scene<EuclideanMatrixTransformation2D<>> Scene2D;
+typedef Object<RigidMatrixTransformation2D<>> Object2D;
+typedef Scene<RigidMatrixTransformation2D<>> Scene2D;
 
-class EuclideanMatrixTransformation2DTest: public Corrade::TestSuite::Tester {
+class RigidMatrixTransformation2DTest: public Corrade::TestSuite::Tester {
     public:
-        explicit EuclideanMatrixTransformation2DTest();
+        explicit RigidMatrixTransformation2DTest();
 
         void fromMatrix();
         void toMatrix();
@@ -48,41 +48,41 @@ class EuclideanMatrixTransformation2DTest: public Corrade::TestSuite::Tester {
         void normalizeRotation();
 };
 
-EuclideanMatrixTransformation2DTest::EuclideanMatrixTransformation2DTest() {
-    addTests({&EuclideanMatrixTransformation2DTest::fromMatrix,
-              &EuclideanMatrixTransformation2DTest::toMatrix,
-              &EuclideanMatrixTransformation2DTest::compose,
-              &EuclideanMatrixTransformation2DTest::inverted,
+RigidMatrixTransformation2DTest::RigidMatrixTransformation2DTest() {
+    addTests({&RigidMatrixTransformation2DTest::fromMatrix,
+              &RigidMatrixTransformation2DTest::toMatrix,
+              &RigidMatrixTransformation2DTest::compose,
+              &RigidMatrixTransformation2DTest::inverted,
 
-              &EuclideanMatrixTransformation2DTest::setTransformation,
-              &EuclideanMatrixTransformation2DTest::translate,
-              &EuclideanMatrixTransformation2DTest::rotate,
-              &EuclideanMatrixTransformation2DTest::reflect,
-              &EuclideanMatrixTransformation2DTest::normalizeRotation});
+              &RigidMatrixTransformation2DTest::setTransformation,
+              &RigidMatrixTransformation2DTest::translate,
+              &RigidMatrixTransformation2DTest::rotate,
+              &RigidMatrixTransformation2DTest::reflect,
+              &RigidMatrixTransformation2DTest::normalizeRotation});
 }
 
-void EuclideanMatrixTransformation2DTest::fromMatrix() {
+void RigidMatrixTransformation2DTest::fromMatrix() {
     Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(EuclideanMatrixTransformation2D<>::fromMatrix(m), m);
+    CORRADE_COMPARE(RigidMatrixTransformation2D<>::fromMatrix(m), m);
 }
 
-void EuclideanMatrixTransformation2DTest::toMatrix() {
+void RigidMatrixTransformation2DTest::toMatrix() {
     Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(EuclideanMatrixTransformation2D<>::toMatrix(m), m);
+    CORRADE_COMPARE(RigidMatrixTransformation2D<>::toMatrix(m), m);
 }
 
-void EuclideanMatrixTransformation2DTest::compose() {
+void RigidMatrixTransformation2DTest::compose() {
     Matrix3 parent = Matrix3::rotation(Deg(17.0f));
     Matrix3 child = Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(EuclideanMatrixTransformation2D<>::compose(parent, child), parent*child);
+    CORRADE_COMPARE(RigidMatrixTransformation2D<>::compose(parent, child), parent*child);
 }
 
-void EuclideanMatrixTransformation2DTest::inverted() {
+void RigidMatrixTransformation2DTest::inverted() {
     Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(EuclideanMatrixTransformation2D<>::inverted(m)*m, Matrix3());
+    CORRADE_COMPARE(RigidMatrixTransformation2D<>::inverted(m)*m, Matrix3());
 }
 
-void EuclideanMatrixTransformation2DTest::setTransformation() {
+void RigidMatrixTransformation2DTest::setTransformation() {
     /* Dirty after setting transformation */
     Object2D o;
     o.setClean();
@@ -97,7 +97,7 @@ void EuclideanMatrixTransformation2DTest::setTransformation() {
     CORRADE_COMPARE(s.transformationMatrix(), Matrix3());
 }
 
-void EuclideanMatrixTransformation2DTest::translate() {
+void RigidMatrixTransformation2DTest::translate() {
     {
         Object2D o;
         o.rotate(Deg(17.0f));
@@ -111,7 +111,7 @@ void EuclideanMatrixTransformation2DTest::translate() {
     }
 }
 
-void EuclideanMatrixTransformation2DTest::rotate() {
+void RigidMatrixTransformation2DTest::rotate() {
     {
         Object2D o;
         o.translate({1.0f, -0.3f});
@@ -125,7 +125,7 @@ void EuclideanMatrixTransformation2DTest::rotate() {
     }
 }
 
-void EuclideanMatrixTransformation2DTest::reflect() {
+void RigidMatrixTransformation2DTest::reflect() {
     {
         Object2D o;
         o.rotate(Deg(17.0f));
@@ -139,7 +139,7 @@ void EuclideanMatrixTransformation2DTest::reflect() {
     }
 }
 
-void EuclideanMatrixTransformation2DTest::normalizeRotation() {
+void RigidMatrixTransformation2DTest::normalizeRotation() {
     Object2D o;
     o.rotate(Deg(17.0f));
     o.normalizeRotation();
@@ -148,4 +148,4 @@ void EuclideanMatrixTransformation2DTest::normalizeRotation() {
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::EuclideanMatrixTransformation2DTest)
+CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::RigidMatrixTransformation2DTest)

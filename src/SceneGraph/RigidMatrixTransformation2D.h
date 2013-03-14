@@ -1,5 +1,5 @@
-#ifndef Magnum_SceneGraph_EuclideanMatrixTransformation2D_h
-#define Magnum_SceneGraph_EuclideanMatrixTransformation2D_h
+#ifndef Magnum_SceneGraph_RigidMatrixTransformation2D_h
+#define Magnum_SceneGraph_RigidMatrixTransformation2D_h
 /*
     This file is part of Magnum.
 
@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::EuclideanMatrixTransformation2D
+ * @brief Class Magnum::SceneGraph::RigidMatrixTransformation2D
  */
 
 #include "Math/Matrix3.h"
@@ -36,20 +36,19 @@
 namespace Magnum { namespace SceneGraph {
 
 /**
-@brief Two-dimensional euclidean transformation implemented using matrices
+@brief Two-dimensional rigid transformation implemented using matrices
 
 Unlike MatrixTransformation2D this class allows only rotation, reflection and
 translation (no scaling or setting arbitrary transformations). This allows to
-use Matrix3::invertedEuclidean() for faster computation of inverse
-transformations.
-@see @ref scenegraph, EuclideanMatrixTransformation3D
+use Matrix3::invertedRigid() for faster computation of inverse transformations.
+@see @ref scenegraph, RigidMatrixTransformation3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T>
 #else
 template<class T = Float>
 #endif
-class EuclideanMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
+class RigidMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
     public:
         /** @brief Transformation matrix type */
         typedef typename DimensionTraits<2, T>::MatrixType DataType;
@@ -80,7 +79,7 @@ class EuclideanMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
          * @brief Reset transformation to default
          * @return Pointer to self (for method chaining)
          */
-        inline EuclideanMatrixTransformation2D<T>* resetTransformation() {
+        inline RigidMatrixTransformation2D<T>* resetTransformation() {
             setTransformation({});
             return this;
         }
@@ -92,7 +91,7 @@ class EuclideanMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
          * Normalizes the rotation part using Math::Algorithms::gramSchmidt()
          * to prevent rounding errors when rotating the object subsequently.
          */
-        EuclideanMatrixTransformation2D<T>* normalizeRotation() {
+        RigidMatrixTransformation2D<T>* normalizeRotation() {
             setTransformation(Math::Matrix3<T>::from(
                 Math::Algorithms::gramSchmidtOrthonormalize(_transformation.rotationScaling()),
                 _transformation.translation()));
@@ -100,7 +99,7 @@ class EuclideanMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
         }
 
         /** @copydoc AbstractTranslationRotation2D::translate() */
-        inline EuclideanMatrixTransformation2D<T>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) override {
+        inline RigidMatrixTransformation2D<T>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix3<T>::translation(vector), type);
             return this;
         }
@@ -113,7 +112,7 @@ class EuclideanMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
          *
          * @see normalizeRotation(), Matrix3::rotation()
          */
-        inline EuclideanMatrixTransformation2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
+        inline RigidMatrixTransformation2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix3<T>::rotation(angle), type);
             return this;
         }
@@ -127,7 +126,7 @@ class EuclideanMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
          *
          * @see Matrix3::reflection()
          */
-        inline EuclideanMatrixTransformation2D<T>* reflect(const Math::Vector2<T>& normal, TransformationType type = TransformationType::Global) {
+        inline RigidMatrixTransformation2D<T>* reflect(const Math::Vector2<T>& normal, TransformationType type = TransformationType::Global) {
             transform(Math::Matrix3<T>::reflection(normal), type);
             return this;
         }
@@ -138,23 +137,23 @@ class EuclideanMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
          *      if you want to move it above all.
          * @return Pointer to self (for method chaining)
          */
-        inline EuclideanMatrixTransformation2D<T>* move(Object<EuclideanMatrixTransformation2D<T>>* under) {
-            static_cast<Object<EuclideanMatrixTransformation2D>*>(this)->Corrade::Containers::template LinkedList<Object<EuclideanMatrixTransformation2D<T>>>::move(this, under);
+        inline RigidMatrixTransformation2D<T>* move(Object<RigidMatrixTransformation2D<T>>* under) {
+            static_cast<Object<RigidMatrixTransformation2D>*>(this)->Corrade::Containers::template LinkedList<Object<RigidMatrixTransformation2D<T>>>::move(this, under);
             return this;
         }
 
     protected:
         /* Allow construction only from Object */
-        inline explicit EuclideanMatrixTransformation2D() = default;
+        inline explicit RigidMatrixTransformation2D() = default;
 
     private:
         inline void setTransformation(const Math::Matrix3<T>& transformation) {
             /* Setting transformation is forbidden for the scene */
             /** @todo Assert for this? */
             /** @todo Do this in some common code so we don't need to include Object? */
-            if(!static_cast<Object<EuclideanMatrixTransformation2D<T>>*>(this)->isScene()) {
+            if(!static_cast<Object<RigidMatrixTransformation2D<T>>*>(this)->isScene()) {
                 _transformation = transformation;
-                static_cast<Object<EuclideanMatrixTransformation2D<T>>*>(this)->setDirty();
+                static_cast<Object<RigidMatrixTransformation2D<T>>*>(this)->setDirty();
             }
         }
 

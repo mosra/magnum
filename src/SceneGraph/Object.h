@@ -83,8 +83,8 @@ See @ref compilation-speedup-hpp for more information.
 
  - @ref MatrixTransformation2D "Object<MatrixTransformation2D<Float>>"
  - @ref MatrixTransformation3D "Object<MatrixTransformation3D<Float>>"
- - @ref EuclideanMatrixTransformation2D "Object<EuclideanMatrixTransformation2D<Float>>"
- - @ref EuclideanMatrixTransformation3D "Object<EuclideanMatrixTransformation3D<Float>>"
+ - @ref RigidMatrixTransformation2D "Object<RigidMatrixTransformation2D<Float>>"
+ - @ref RigidMatrixTransformation3D "Object<RigidMatrixTransformation3D<Float>>"
 
 @see Scene, AbstractFeature, AbstractTransformation, DebugTools::ObjectRenderer
 */

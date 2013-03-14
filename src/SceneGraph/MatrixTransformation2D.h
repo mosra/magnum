@@ -38,7 +38,7 @@ namespace Magnum { namespace SceneGraph {
 @brief Two-dimensional transformation implemented using matrices
 
 Uses Math::Matrix3 as underlying type.
-@see @ref scenegraph, EuclideanMatrixTransformation2D, MatrixTransformation3D
+@see @ref scenegraph, RigidMatrixTransformation2D, MatrixTransformation3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T>

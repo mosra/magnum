@@ -98,9 +98,6 @@ template<class T = Float> using Drawable2D = Drawable<2, T>;
 template<class T = Float> using Drawable3D = Drawable<3, T>;
 #endif
 
-template<class T = Float> class EuclideanMatrixTransformation2D;
-template<class T = Float> class EuclideanMatrixTransformation3D;
-
 template<UnsignedInt dimensions, class Feature, class T = Float> class FeatureGroup;
 #ifndef CORRADE_GCC46_COMPATIBILITY
 template<class Feature, class T = Float> using FeatureGroup2D = FeatureGroup<2, Feature, T>;
@@ -119,6 +116,10 @@ template<class T = Float> class MatrixTransformation2D;
 template<class T = Float> class MatrixTransformation3D;
 
 template<class Transformation> class Object;
+
+template<class T = Float> class RigidMatrixTransformation2D;
+template<class T = Float> class RigidMatrixTransformation3D;
+
 template<class Transformation> class Scene;
 #endif
 

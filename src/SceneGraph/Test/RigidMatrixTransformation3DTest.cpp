@@ -24,17 +24,17 @@
 
 #include <TestSuite/Tester.h>
 
-#include "SceneGraph/EuclideanMatrixTransformation3D.h"
+#include "SceneGraph/RigidMatrixTransformation3D.h"
 #include "SceneGraph/Scene.h"
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
-typedef Object<EuclideanMatrixTransformation3D<>> Object3D;
-typedef Scene<EuclideanMatrixTransformation3D<>> Scene3D;
+typedef Object<RigidMatrixTransformation3D<>> Object3D;
+typedef Scene<RigidMatrixTransformation3D<>> Scene3D;
 
-class EuclideanMatrixTransformation3DTest: public Corrade::TestSuite::Tester {
+class RigidMatrixTransformation3DTest: public Corrade::TestSuite::Tester {
     public:
-        explicit EuclideanMatrixTransformation3DTest();
+        explicit RigidMatrixTransformation3DTest();
 
         void fromMatrix();
         void toMatrix();
@@ -48,41 +48,41 @@ class EuclideanMatrixTransformation3DTest: public Corrade::TestSuite::Tester {
         void normalizeRotation();
 };
 
-EuclideanMatrixTransformation3DTest::EuclideanMatrixTransformation3DTest() {
-    addTests({&EuclideanMatrixTransformation3DTest::fromMatrix,
-              &EuclideanMatrixTransformation3DTest::toMatrix,
-              &EuclideanMatrixTransformation3DTest::compose,
-              &EuclideanMatrixTransformation3DTest::inverted,
+RigidMatrixTransformation3DTest::RigidMatrixTransformation3DTest() {
+    addTests({&RigidMatrixTransformation3DTest::fromMatrix,
+              &RigidMatrixTransformation3DTest::toMatrix,
+              &RigidMatrixTransformation3DTest::compose,
+              &RigidMatrixTransformation3DTest::inverted,
 
-              &EuclideanMatrixTransformation3DTest::setTransformation,
-              &EuclideanMatrixTransformation3DTest::translate,
-              &EuclideanMatrixTransformation3DTest::rotate,
-              &EuclideanMatrixTransformation3DTest::reflect,
-              &EuclideanMatrixTransformation3DTest::normalizeRotation});
+              &RigidMatrixTransformation3DTest::setTransformation,
+              &RigidMatrixTransformation3DTest::translate,
+              &RigidMatrixTransformation3DTest::rotate,
+              &RigidMatrixTransformation3DTest::reflect,
+              &RigidMatrixTransformation3DTest::normalizeRotation});
 }
 
-void EuclideanMatrixTransformation3DTest::fromMatrix() {
+void RigidMatrixTransformation3DTest::fromMatrix() {
     Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(EuclideanMatrixTransformation3D<>::fromMatrix(m), m);
+    CORRADE_COMPARE(RigidMatrixTransformation3D<>::fromMatrix(m), m);
 }
 
-void EuclideanMatrixTransformation3DTest::toMatrix() {
+void RigidMatrixTransformation3DTest::toMatrix() {
     Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(EuclideanMatrixTransformation3D<>::toMatrix(m), m);
+    CORRADE_COMPARE(RigidMatrixTransformation3D<>::toMatrix(m), m);
 }
 
-void EuclideanMatrixTransformation3DTest::compose() {
+void RigidMatrixTransformation3DTest::compose() {
     Matrix4 parent = Matrix4::rotationX(Deg(17.0f));
     Matrix4 child = Matrix4::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(EuclideanMatrixTransformation3D<>::compose(parent, child), parent*child);
+    CORRADE_COMPARE(RigidMatrixTransformation3D<>::compose(parent, child), parent*child);
 }
 
-void EuclideanMatrixTransformation3DTest::inverted() {
+void RigidMatrixTransformation3DTest::inverted() {
     Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(EuclideanMatrixTransformation3D<>::inverted(m)*m, Matrix4());
+    CORRADE_COMPARE(RigidMatrixTransformation3D<>::inverted(m)*m, Matrix4());
 }
 
-void EuclideanMatrixTransformation3DTest::setTransformation() {
+void RigidMatrixTransformation3DTest::setTransformation() {
     /* Dirty after setting transformation */
     Object3D o;
     o.setClean();
@@ -97,7 +97,7 @@ void EuclideanMatrixTransformation3DTest::setTransformation() {
     CORRADE_COMPARE(s.transformationMatrix(), Matrix4());
 }
 
-void EuclideanMatrixTransformation3DTest::translate() {
+void RigidMatrixTransformation3DTest::translate() {
     {
         Object3D o;
         o.rotateX(Deg(17.0f));
@@ -111,7 +111,7 @@ void EuclideanMatrixTransformation3DTest::translate() {
     }
 }
 
-void EuclideanMatrixTransformation3DTest::rotate() {
+void RigidMatrixTransformation3DTest::rotate() {
     {
         Object3D o;
         o.translate({1.0f, -0.3f, 2.3f});
@@ -141,7 +141,7 @@ void EuclideanMatrixTransformation3DTest::rotate() {
     }
 }
 
-void EuclideanMatrixTransformation3DTest::reflect() {
+void RigidMatrixTransformation3DTest::reflect() {
     {
         Object3D o;
         o.rotateX(Deg(17.0f));
@@ -155,7 +155,7 @@ void EuclideanMatrixTransformation3DTest::reflect() {
     }
 }
 
-void EuclideanMatrixTransformation3DTest::normalizeRotation() {
+void RigidMatrixTransformation3DTest::normalizeRotation() {
     Object3D o;
     o.rotateX(Deg(17.0f));
     o.normalizeRotation();
@@ -164,4 +164,4 @@ void EuclideanMatrixTransformation3DTest::normalizeRotation() {
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::EuclideanMatrixTransformation3DTest)
+CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::RigidMatrixTransformation3DTest)

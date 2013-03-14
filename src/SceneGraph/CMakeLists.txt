@@ -26,8 +26,8 @@
 set(MagnumSceneGraph_SRCS
     Animable.cpp
     Camera.cpp
-    EuclideanMatrixTransformation2D.cpp
-    EuclideanMatrixTransformation3D.cpp
+    RigidMatrixTransformation2D.cpp
+    RigidMatrixTransformation3D.cpp
     Object.cpp)
 
 # Files compiled with different flags for main library and unit test library
@@ -54,8 +54,8 @@ set(MagnumSceneGraph_HEADERS
     Camera3D.h
     Camera3D.hpp
     Drawable.h
-    EuclideanMatrixTransformation2D.h
-    EuclideanMatrixTransformation3D.h
+    RigidMatrixTransformation2D.h
+    RigidMatrixTransformation3D.h
     FeatureGroup.h
     MatrixTransformation2D.h
     MatrixTransformation3D.h

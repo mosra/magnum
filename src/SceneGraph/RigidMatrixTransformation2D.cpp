@@ -22,14 +22,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "EuclideanMatrixTransformation3D.h"
+#include "RigidMatrixTransformation2D.h"
 
 #include "Object.hpp"
 
 namespace Magnum { namespace SceneGraph {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template class MAGNUM_SCENEGRAPH_EXPORT Object<EuclideanMatrixTransformation3D<>>;
+template class MAGNUM_SCENEGRAPH_EXPORT Object<RigidMatrixTransformation2D<>>;
 #endif
 
 }}
