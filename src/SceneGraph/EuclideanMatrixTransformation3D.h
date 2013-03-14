@@ -68,7 +68,7 @@ class EuclideanMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
         }
 
         inline static Math::Matrix4<T> inverted(const Math::Matrix4<T>& transformation) {
-            return transformation.invertedEuclidean();
+            return transformation.invertedRigid();
         }
 
         inline Math::Matrix4<T> transformation() const {

@@ -68,7 +68,7 @@ class EuclideanMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
         }
 
         inline static Math::Matrix3<T> inverted(const Math::Matrix3<T>& transformation) {
-            return transformation.invertedEuclidean();
+            return transformation.invertedRigid();
         }
 
         inline Math::Matrix3<T> transformation() const {

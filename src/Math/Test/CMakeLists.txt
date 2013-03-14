@@ -49,6 +49,7 @@ corrade_add_test(MathDualQuaternionTest DualQuaternionTest.cpp LIBRARIES MagnumM
 
 set_target_properties(
     MathVectorTest
+    MathMatrixTest
     MathMatrix3Test
     MathMatrix4Test
     MathComplexTest

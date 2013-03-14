@@ -188,9 +188,9 @@ Inverse transformation can be computed using Matrix3::inverted(), Matrix4::inver
 Complex::inverted(), Quaternion::inverted(), DualComplex::inverted() or
 DualQuaternion::inverted(). %Matrix inversion is quite costly, so if your
 transformation involves only translation and rotation, you can use faster
-alternatives Matrix3::invertedEuclidean() and Matrix4::invertedEuclidean(). If
-you are sure that the (dual) complex number or (dual) quaternion is of unit
-length, you can use Complex::invertedNormalized(), Quaternion::invertedNormalized(),
+alternatives Matrix3::invertedRigid() and Matrix4::invertedRigid(). If you are
+sure that the (dual) complex number or (dual) quaternion is of unit length, you
+can use Complex::invertedNormalized(), Quaternion::invertedNormalized(),
 DualComplex::invertedNormalized() or DualQuaternion::invertedNormalized() which
 is a little bit faster, because it doesn't need to renormalize the result.
 

@@ -218,20 +218,18 @@ template<class T> class Matrix3: public Matrix<3, T> {
         inline constexpr Vector2<T> translation() const { return (*this)[2].xy(); } /**< @overload */
 
         /**
-         * @brief Inverted Euclidean transformation matrix
+         * @brief Inverted rigid transformation matrix
          *
-         * Assumes that the matrix represents Euclidean transformation (i.e.
-         * only rotation and translation, no scaling) and creates inverted
-         * matrix from transposed rotation part and negated translation part.
+         * Expects that the matrix represents rigid transformation.
          * Significantly faster than the general algorithm in inverted().
-         * @see rotationScaling() const, translation() const
+         * @see isRigidTransformation(), invertedOrthogonal(),
+         *      rotationScaling() const, translation() const
          */
-        inline Matrix3<T> invertedEuclidean() const {
-            CORRADE_ASSERT((*this)[0][2] == T(0) && (*this)[1][2] == T(0) && (*this)[2][2] == T(1),
-                "Math::Matrix3::invertedEuclidean(): unexpected values on last row", {});
+        inline Matrix3<T> invertedRigid() const {
+            CORRADE_ASSERT(isRigidTransformation(),
+                "Math::Matrix3::invertedRigid(): the matrix doesn't represent rigid transformation", {});
+
             Matrix<2, T> inverseRotation = rotationScaling().transposed();
-            CORRADE_ASSERT((inverseRotation*rotationScaling() == Matrix<2, T>()),
-                "Math::Matrix3::invertedEuclidean(): the matrix doesn't represent Euclidean transformation", {});
             return from(inverseRotation, inverseRotation*-translation());
         }
 

@@ -46,6 +46,7 @@ class MatrixTest: public Corrade::TestSuite::Tester {
         void ij();
         void determinant();
         void inverted();
+        void invertedOrthogonal();
 
         void debug();
         void configuration();
@@ -57,6 +58,7 @@ typedef Matrix<3, Float> Matrix3;
 typedef Vector<4, Float> Vector4;
 typedef Vector<4, Int> Vector4i;
 typedef Vector<3, Float> Vector3;
+typedef Math::Constants<Float> Constants;
 
 MatrixTest::MatrixTest() {
     addTests({&MatrixTest::construct,
@@ -71,6 +73,7 @@ MatrixTest::MatrixTest() {
               &MatrixTest::ij,
               &MatrixTest::determinant,
               &MatrixTest::inverted,
+              &MatrixTest::invertedOrthogonal,
               &MatrixTest::debug,
               &MatrixTest::configuration});
 }
@@ -207,6 +210,20 @@ void MatrixTest::inverted() {
 
     CORRADE_COMPARE(_inverse, inverse);
     CORRADE_COMPARE(_inverse*m, Matrix4());
+}
+
+void MatrixTest::invertedOrthogonal() {
+    std::ostringstream o;
+    Error::setOutput(&o);
+
+    Matrix3 a(Vector3(Constants::sqrt3()/2.0f, 0.5f, 0.0f),
+              Vector3(-0.5f, Constants::sqrt3()/2.0f, 0.0f),
+              Vector3(0.0f, 0.0f, 1.0f));
+    (a*2).invertedOrthogonal();
+    CORRADE_COMPARE(o.str(), "Math::Matrix::invertedOrthogonal(): the matrix is not orthogonal\n");
+
+    CORRADE_COMPARE(a.invertedOrthogonal()*a, Matrix3());
+    CORRADE_COMPARE(a.invertedOrthogonal(), a.inverted());
 }
 
 void MatrixTest::debug() {

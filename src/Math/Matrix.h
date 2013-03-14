@@ -168,8 +168,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * Computed using Cramer's rule: @f[
          *      A^{-1} = \frac{1}{\det(A)} Adj(A)
          * @f]
-         *
-         * See Matrix3::invertedEuclidean() and Matrix4::invertedEuclidean()
+         * See invertedOrthogonal(), Matrix3::invertedRigid() and Matrix4::invertedRigid()
          * which are faster alternatives for particular matrix types.
          */
         Matrix<size, T> inverted() const {
@@ -182,6 +181,21 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
                     out[col][row] = (((row+col) & 1) ? -1 : 1)*ij(row, col).determinant()/_determinant;
 
             return out;
+        }
+
+        /**
+         * @brief Inverted orthogonal matrix
+         *
+         * Equivalent to transposed(), expects that the matrix is orthogonal. @f[
+         *      A^{-1} = A^T
+         * @f]
+         * @see inverted(), isOrthogonal(), Matrix3::invertedRigid(),
+         *      Matrix4::invertedRigid()
+         */
+        inline Matrix<size, T> invertedOrthogonal() const {
+            CORRADE_ASSERT(isOrthogonal(),
+                "Math::Matrix::invertedOrthogonal(): the matrix is not orthogonal", {});
+            return this->transposed();
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -239,7 +253,10 @@ template<std::size_t size, class T> inline Corrade::Utility::Debug operator<<(Co
     }                                                                       \
                                                                             \
     inline Type<T> transposed() const { return Matrix<size, T>::transposed(); } \
-    inline Type<T> inverted() const { return Matrix<size, T>::inverted(); }
+    inline Type<T> inverted() const { return Matrix<size, T>::inverted(); } \
+    inline Type<T> invertedOrthogonal() const {                             \
+        return Matrix<size, T>::invertedOrthogonal();                       \
+    }
 
 #define MAGNUM_MATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(Type, size)          \
     template<class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Type<T>>::type operator*(U number, const Type<T>& matrix) { \
