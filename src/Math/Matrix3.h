@@ -93,10 +93,10 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @param normal    Normal of the line through which to reflect
          *
          * Expects that the normal is normalized.
-         * @see Matrix4::reflection()
+         * @see Matrix4::reflection(), Vector::isNormalized()
          */
         static Matrix3<T> reflection(const Vector2<T>& normal) {
-            CORRADE_ASSERT(TypeTraits<T>::equals(normal.dot(), T(1)),
+            CORRADE_ASSERT(normal.isNormalized(),
                            "Math::Matrix3::reflection(): normal must be normalized", {});
             return from(Matrix<2, T>() - T(2)*normal*RectangularMatrix<1, 2, T>(normal).transposed(), {});
         }

@@ -99,10 +99,10 @@ template<std::size_t size, class T> class Vector {
          * Expects that both vectors are normalized. @f[
          *      \theta = acos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| |\boldsymbol b|} \right) = acos (\boldsymbol a \cdot \boldsymbol b)
          * @f]
-         * @see Quaternion::angle(), Complex::angle()
+         * @see isNormalized(), Quaternion::angle(), Complex::angle()
          */
         inline static Rad<T> angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
-            CORRADE_ASSERT(TypeTraits<T>::equals(normalizedA.dot(), T(1)) && TypeTraits<T>::equals(normalizedB.dot(), T(1)),
+            CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
                            "Math::Vector::angle(): vectors must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
             return Rad<T>(std::acos(dot(normalizedA, normalizedB)));
         }
@@ -243,6 +243,18 @@ template<std::size_t size, class T> class Vector {
                 out.set(i, _data[i] > other._data[i]);
 
             return out;
+        }
+
+        /**
+         * @brief Whether the vector is normalized
+         *
+         * The vector is normalized if it has unit length: @f[
+         *      |\boldsymbol a|^2 = |\boldsymbol a| = 1
+         * @f]
+         * @see dot(), normalized()
+         */
+        inline bool isNormalized() const {
+            return TypeTraits<T>::equals(dot(), T(1));
         }
 
         /**
@@ -422,7 +434,7 @@ template<std::size_t size, class T> class Vector {
          * other values, because it doesn't compute the square root. @f[
          *      \boldsymbol a \cdot \boldsymbol a = \sum_{i=0}^{n-1} \boldsymbol a_i^2
          * @f]
-         * @see dot(const Vector&, const Vector&)
+         * @see dot(const Vector&, const Vector&), isNormalized()
          */
         inline T dot() const {
             return dot(*this, *this);
@@ -435,13 +447,18 @@ template<std::size_t size, class T> class Vector {
          * values. @f[
          *      |\boldsymbol a| = \sqrt{\boldsymbol a \cdot \boldsymbol a}
          * @f]
+         * @see isNormalized()
          * @todo something like std::hypot() for possibly better precision?
          */
         inline T length() const {
             return std::sqrt(dot());
         }
 
-        /** @brief Normalized vector (of unit length) */
+        /**
+         * @brief Normalized vector (of unit length)
+         *
+         * @see isNormalized()
+         */
         inline Vector<size, T> normalized() const {
             return *this/length();
         }
@@ -468,7 +485,7 @@ template<std::size_t size, class T> class Vector {
          * @f]
          */
         inline Vector<size, T> projectedOntoNormalized(const Vector<size, T>& line) const {
-            CORRADE_ASSERT(TypeTraits<T>::equals(line.dot(), T(1)), "Math::Vector::projectedOntoNormalized(): line must be normalized", (Vector<size, T>(std::numeric_limits<T>::quiet_NaN())));
+            CORRADE_ASSERT(line.isNormalized(), "Math::Vector::projectedOntoNormalized(): line must be normalized", (Vector<size, T>(std::numeric_limits<T>::quiet_NaN())));
             return line*dot(*this, line);
         }
 

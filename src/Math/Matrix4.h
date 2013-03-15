@@ -88,10 +88,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * faster alternatives like rotationX(), rotationY() and rotationZ().
          * @see rotation() const, Quaternion::rotation(), DualQuaternion::rotation(),
          *      Matrix3::rotation(Rad), Vector3::xAxis(), Vector3::yAxis(),
-         *      Vector3::zAxis()
+         *      Vector3::zAxis(), Vector::isNormalized()
          */
         static Matrix4<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis) {
-            CORRADE_ASSERT(TypeTraits<T>::equals(normalizedAxis.dot(), T(1)),
+            CORRADE_ASSERT(normalizedAxis.isNormalized(),
                            "Math::Matrix4::rotation(): axis must be normalized", {});
 
             T sine = std::sin(T(angle));
@@ -181,10 +181,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @param normal    Normal of the plane through which to reflect
          *
          * Expects that the normal is normalized.
-         * @see Matrix3::reflection()
+         * @see Matrix3::reflection(), Vector::isNormalized()
          */
         static Matrix4<T> reflection(const Vector3<T>& normal) {
-            CORRADE_ASSERT(TypeTraits<T>::equals(normal.dot(), T(1)),
+            CORRADE_ASSERT(normal.isNormalized(),
                            "Math::Matrix4::reflection(): normal must be normalized", {});
             return from(Matrix<3, T>() - T(2)*normal*RectangularMatrix<1, 3, T>(normal).transposed(), {});
         }

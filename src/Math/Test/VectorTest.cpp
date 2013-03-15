@@ -62,6 +62,8 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void constructConversion();
         void constructCopy();
 
+        void isNormalized();
+
         void convert();
         void data();
 
@@ -106,6 +108,8 @@ VectorTest::VectorTest() {
               &VectorTest::constructOneComponent,
               &VectorTest::constructConversion,
               &VectorTest::constructCopy,
+
+              &VectorTest::isNormalized,
 
               &VectorTest::convert,
               &VectorTest::data,
@@ -186,6 +190,11 @@ void VectorTest::constructCopy() {
     constexpr Vector4 a(1.0f, 3.5f, 4.0f, -2.7f);
     constexpr Vector4 b(a);
     CORRADE_COMPARE(b, Vector4(1.0f, 3.5f, 4.0f, -2.7f));
+}
+
+void VectorTest::isNormalized() {
+    CORRADE_VERIFY(!Vector3(1.0f, 2.0f, -1.0f).isNormalized());
+    CORRADE_VERIFY(Vector3(0.0f, 1.0f, 0.0f).isNormalized());
 }
 
 void VectorTest::convert() {
