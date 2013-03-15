@@ -37,7 +37,9 @@ class QuaternionTest: public Corrade::TestSuite::Tester {
         void construct();
         void constructDefault();
         void constructFromVector();
+
         void compare();
+        void isNormalized();
 
         void constExpressions();
 
@@ -78,7 +80,9 @@ QuaternionTest::QuaternionTest() {
     addTests({&QuaternionTest::construct,
               &QuaternionTest::constructDefault,
               &QuaternionTest::constructFromVector,
+
               &QuaternionTest::compare,
+              &QuaternionTest::isNormalized,
 
               &QuaternionTest::constExpressions,
 
@@ -127,6 +131,11 @@ void QuaternionTest::compare() {
     CORRADE_VERIFY(Quaternion({1.0f+TypeTraits<Float>::epsilon()*2, 2.0f, 3.0f}, -4.0f) != Quaternion({1.0f, 2.0f, 3.0f}, -4.0f));
     CORRADE_VERIFY(Quaternion({4.0f, 2.0f, 3.0f}, -1.0f+TypeTraits<Float>::epsilon()/2) == Quaternion({4.0f, 2.0f, 3.0f}, -1.0f));
     CORRADE_VERIFY(Quaternion({4.0f, 2.0f, 3.0f}, -1.0f+TypeTraits<Float>::epsilon()*2) != Quaternion({4.0f, 2.0f, 3.0f}, -1.0f));
+}
+
+void QuaternionTest::isNormalized() {
+    CORRADE_VERIFY(!Quaternion({1.0f, 2.0f, 3.0f}, 4.0f).isNormalized());
+    CORRADE_VERIFY(Quaternion::rotation(Deg(23.0f), Vector3::xAxis()).isNormalized());
 }
 
 void QuaternionTest::constExpressions() {

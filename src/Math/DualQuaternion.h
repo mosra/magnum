@@ -56,7 +56,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f]
          * @see rotationAngle(), rotationAxis(), Quaternion::rotation(),
          *      Matrix4::rotation(), DualComplex::rotation(), Vector3::xAxis(),
-         *      Vector3::yAxis(), Vector3::zAxis()
+         *      Vector3::yAxis(), Vector3::zAxis(), Vector::isNormalized()
          */
         inline static DualQuaternion<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis) {
             return {Quaternion<T>::rotation(angle, normalizedAxis), {{}, T(0)}};
@@ -131,6 +131,18 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         #else
         inline constexpr explicit DualQuaternion(const Vector3<T>& vector): Dual<Quaternion<T>>({}, {vector, T(0)}) {}
         #endif
+
+        /**
+         * @brief Whether the dual quaternion is normalized
+         *
+         * Dual quaternion is normalized if it has unit length: @f[
+         *      |\hat q|^2 = |\hat q| = 1 + \epsilon 0
+         * @f]
+         * @see lengthSquared(), normalized()
+         */
+        inline bool isNormalized() const {
+            return lengthSquared() == Dual<T>(1);
+        }
 
         /**
          * @brief Rotation angle of unit dual quaternion
@@ -240,7 +252,11 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
             return Math::sqrt(lengthSquared());
         }
 
-        /** @brief Normalized dual quaternion (of unit length) */
+        /**
+         * @brief Normalized dual quaternion (of unit length)
+         *
+         * @see isNormalized()
+         */
         inline DualQuaternion<T> normalized() const {
             return (*this)/length();
         }
@@ -264,10 +280,10 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * normalized. @f[
          *      \hat q^{-1} = \frac{\hat q^*}{|\hat q|^2} = \hat q^*
          * @f]
-         * @see inverted()
+         * @see isNormalized(), inverted()
          */
         inline DualQuaternion<T> invertedNormalized() const {
-            CORRADE_ASSERT(lengthSquared() == Dual<T>(1),
+            CORRADE_ASSERT(isNormalized(),
                            "Math::DualQuaternion::invertedNormalized(): dual quaternion must be normalized", {});
             return quaternionConjugated();
         }
@@ -293,11 +309,12 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * quaternion is normalized. @f[
          *      v' = \hat q v \overline{\hat q^{-1}} = \hat q v \overline{\hat q^*} = \hat q ([\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]) \overline{\hat q^*}
          * @f]
-         * @see DualQuaternion(const Vector3&), dual(), Matrix4::transformPoint(),
-         *      Quaternion::transformVectorNormalized(), DualComplex::transformPointNormalized()
+         * @see isNormalized(), DualQuaternion(const Vector3&), dual(),
+         *      Matrix4::transformPoint(), Quaternion::transformVectorNormalized(),
+         *      DualComplex::transformPointNormalized()
          */
         inline Vector3<T> transformPointNormalized(const Vector3<T>& vector) const {
-            CORRADE_ASSERT(lengthSquared() == Dual<T>(1),
+            CORRADE_ASSERT(isNormalized(),
                            "Math::DualQuaternion::transformPointNormalized(): dual quaternion must be normalized",
                            Vector3<T>(std::numeric_limits<T>::quiet_NaN()));
             return ((*this)*DualQuaternion<T>(vector)*conjugated()).dual().vector();

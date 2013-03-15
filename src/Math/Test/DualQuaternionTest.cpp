@@ -37,6 +37,8 @@ class DualQuaternionTest: public Corrade::TestSuite::Tester {
         void constructDefault();
         void constructFromVector();
 
+        void isNormalized();
+
         void constExpressions();
 
         void lengthSquared();
@@ -71,6 +73,8 @@ DualQuaternionTest::DualQuaternionTest() {
     addTests({&DualQuaternionTest::construct,
               &DualQuaternionTest::constructDefault,
               &DualQuaternionTest::constructFromVector,
+
+              &DualQuaternionTest::isNormalized,
 
               &DualQuaternionTest::constExpressions,
 
@@ -107,6 +111,11 @@ void DualQuaternionTest::constructDefault() {
 
 void DualQuaternionTest::constructFromVector() {
     CORRADE_COMPARE(DualQuaternion(Vector3(1.0f, 2.0f, 3.0f)), DualQuaternion({{0.0f, 0.0f, 0.0f}, 1.0f}, {{1.0f, 2.0f, 3.0f}, 0.0f}));
+}
+
+void DualQuaternionTest::isNormalized() {
+    CORRADE_VERIFY(!DualQuaternion({{1.0f, 2.0f, 3.0f}, 4.0f}, {}).isNormalized());
+    CORRADE_VERIFY((DualQuaternion::rotation(Deg(23.0f), Vector3::xAxis())*DualQuaternion::translation({3.0f, 1.0f, -0.5f})).isNormalized());
 }
 
 void DualQuaternionTest::constExpressions() {
