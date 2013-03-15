@@ -42,6 +42,7 @@ class MatrixTransformation3DTest: public Corrade::TestSuite::Tester {
         void inverted();
 
         void setTransformation();
+        void resetTransformation();
         void transform();
         void translate();
         void rotate();
@@ -56,6 +57,7 @@ MatrixTransformation3DTest::MatrixTransformation3DTest() {
               &MatrixTransformation3DTest::inverted,
 
               &MatrixTransformation3DTest::setTransformation,
+              &MatrixTransformation3DTest::resetTransformation,
               &MatrixTransformation3DTest::transform,
               &MatrixTransformation3DTest::translate,
               &MatrixTransformation3DTest::rotate,
@@ -100,6 +102,14 @@ void MatrixTransformation3DTest::setTransformation() {
     s.setTransformation(Matrix4::rotationX(Deg(17.0f)));
     CORRADE_VERIFY(!s.isDirty());
     CORRADE_COMPARE(s.transformationMatrix(), Matrix4());
+}
+
+void MatrixTransformation3DTest::resetTransformation() {
+    Object3D o;
+    o.rotateX(Deg(17.0f));
+    CORRADE_VERIFY(o.transformationMatrix() != Matrix4());
+    o.resetTransformation();
+    CORRADE_COMPARE(o.transformationMatrix(), Matrix4());
 }
 
 void MatrixTransformation3DTest::transform() {

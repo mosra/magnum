@@ -76,15 +76,6 @@ class RigidMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
         #endif
 
         /**
-         * @brief Reset transformation to default
-         * @return Pointer to self (for method chaining)
-         */
-        inline RigidMatrixTransformation2D<T>* resetTransformation() {
-            setTransformation({});
-            return this;
-        }
-
-        /**
          * @brief Normalize rotation part
          * @return Pointer to self (for method chaining)
          *
@@ -95,6 +86,11 @@ class RigidMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
             setTransformation(Math::Matrix3<T>::from(
                 Math::Algorithms::gramSchmidtOrthonormalize(_transformation.rotationScaling()),
                 _transformation.translation()));
+            return this;
+        }
+
+        inline RigidMatrixTransformation2D<T>* resetTransformation() override {
+            setTransformation({});
             return this;
         }
 

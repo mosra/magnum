@@ -42,6 +42,7 @@ class RigidMatrixTransformation2DTest: public Corrade::TestSuite::Tester {
         void inverted();
 
         void setTransformation();
+        void resetTransformation();
         void translate();
         void rotate();
         void reflect();
@@ -55,6 +56,7 @@ RigidMatrixTransformation2DTest::RigidMatrixTransformation2DTest() {
               &RigidMatrixTransformation2DTest::inverted,
 
               &RigidMatrixTransformation2DTest::setTransformation,
+              &RigidMatrixTransformation2DTest::resetTransformation,
               &RigidMatrixTransformation2DTest::translate,
               &RigidMatrixTransformation2DTest::rotate,
               &RigidMatrixTransformation2DTest::reflect,
@@ -95,6 +97,14 @@ void RigidMatrixTransformation2DTest::setTransformation() {
     s.rotate(Deg(17.0f));
     CORRADE_VERIFY(!s.isDirty());
     CORRADE_COMPARE(s.transformationMatrix(), Matrix3());
+}
+
+void RigidMatrixTransformation2DTest::resetTransformation() {
+    Object2D o;
+    o.rotate(Deg(17.0f));
+    CORRADE_VERIFY(o.transformationMatrix() != Matrix3());
+    o.resetTransformation();
+    CORRADE_COMPARE(o.transformationMatrix(), Matrix3());
 }
 
 void RigidMatrixTransformation2DTest::translate() {

@@ -76,15 +76,6 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
         #endif
 
         /**
-         * @brief Reset transformation to default
-         * @return Pointer to self (for method chaining)
-         */
-        inline RigidMatrixTransformation3D<T>* resetTransformation() {
-            setTransformation({});
-            return this;
-        }
-
-        /**
          * @brief Normalize rotation part
          * @return Pointer to self (for method chaining)
          *
@@ -95,6 +86,11 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
             setTransformation(Math::Matrix4<T>::from(
                 Math::Algorithms::gramSchmidtOrthonormalize(_transformation.rotationScaling()),
                 _transformation.translation()));
+            return this;
+        }
+
+        inline RigidMatrixTransformation3D<T>* resetTransformation() override {
+            setTransformation({});
             return this;
         }
 

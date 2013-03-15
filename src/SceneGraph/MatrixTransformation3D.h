@@ -88,6 +88,11 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
             return this;
         }
 
+        inline MatrixTransformation3D<T>* resetTransformation() override {
+            setTransformation({});
+            return this;
+        }
+
         /**
          * @brief Multiply transformation
          * @param transformation    Transformation

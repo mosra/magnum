@@ -100,6 +100,11 @@ class MatrixTransformation2D: public AbstractTranslationRotationScaling2D<T> {
             return this;
         }
 
+        inline MatrixTransformation2D<T>* resetTransformation() override {
+            setTransformation({});
+            return this;
+        }
+
         /**
          * @copydoc AbstractTranslationRotationScaling2D::translate()
          * Same as calling transform() with Matrix3::translation().

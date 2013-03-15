@@ -137,6 +137,12 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation {
 
         /*@}*/
         #endif
+
+        /**
+         * @brief Reset object transformation
+         * @return Pointer to self (for method chaining)
+         */
+        virtual AbstractTransformation<dimensions, T>* resetTransformation() = 0;
 };
 
 /** @brief Transformation type */
