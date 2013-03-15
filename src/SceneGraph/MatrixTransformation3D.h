@@ -47,8 +47,8 @@ template<class T = Float>
 #endif
 class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
     public:
-        /** @brief Transformation matrix type */
-        typedef typename DimensionTraits<3, T>::MatrixType DataType;
+        /** @brief Underlying transformation type */
+        typedef Math::Matrix4<T> DataType;
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline constexpr static Math::Matrix4<T> fromMatrix(const Math::Matrix4<T>& matrix) {

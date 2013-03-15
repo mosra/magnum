@@ -50,8 +50,8 @@ template<class T = Float>
 #endif
 class RigidMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
     public:
-        /** @brief Transformation matrix type */
-        typedef typename DimensionTraits<2, T>::MatrixType DataType;
+        /** @brief Underlying transformation type */
+        typedef Math::Matrix3<T> DataType;
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline static Math::Matrix3<T> fromMatrix(const Math::Matrix3<T>& matrix) {
