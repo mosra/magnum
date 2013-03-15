@@ -114,13 +114,12 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         bool isOrthogonal() const {
             /* Normality */
             for(std::size_t i = 0; i != size; ++i)
-                if(!TypeTraits<T>::equals((*this)[i].dot(), T(1)))
-                    return false;
+                if(!(*this)[i].isNormalized()) return false;
 
             /* Orthogonality */
             for(std::size_t i = 0; i != size-1; ++i)
                 for(std::size_t j = i+1; j != size; ++j)
-                    if(!TypeTraits<T>::equals(Vector<size, T>::dot((*this)[i], (*this)[j]), T(0)))
+                    if(Vector<size, T>::dot((*this)[i], (*this)[j]) > TypeTraits<T>::epsilon())
                         return false;
 
             return true;
