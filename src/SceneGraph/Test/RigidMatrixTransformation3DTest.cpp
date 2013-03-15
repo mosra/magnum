@@ -44,6 +44,7 @@ class RigidMatrixTransformation3DTest: public Corrade::TestSuite::Tester {
 
         void setTransformation();
         void resetTransformation();
+        void transform();
         void translate();
         void rotate();
         void reflect();
@@ -58,6 +59,7 @@ RigidMatrixTransformation3DTest::RigidMatrixTransformation3DTest() {
 
               &RigidMatrixTransformation3DTest::setTransformation,
               &RigidMatrixTransformation3DTest::resetTransformation,
+              &RigidMatrixTransformation3DTest::transform,
               &RigidMatrixTransformation3DTest::translate,
               &RigidMatrixTransformation3DTest::rotate,
               &RigidMatrixTransformation3DTest::reflect,
@@ -91,37 +93,68 @@ void RigidMatrixTransformation3DTest::inverted() {
 }
 
 void RigidMatrixTransformation3DTest::setTransformation() {
-    /* Dirty after setting transformation */
     Object3D o;
+
+    /* Can't transform with non-rigid transformation */
+    std::ostringstream out;
+    Error::setOutput(&out);
+    o.setTransformation(Matrix4::scaling(Vector3(3.0f)));
+    CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation3D::setTransformation(): the matrix doesn't represent rigid transformation\n");
+
+    /* Dirty after setting transformation */
     o.setClean();
-    o.rotateX(Deg(17.0f));
+    CORRADE_VERIFY(!o.isDirty());
+    o.setTransformation(Matrix4::rotationX(Deg(17.0f)));
     CORRADE_VERIFY(o.isDirty());
+    CORRADE_COMPARE(o.transformationMatrix(), Matrix4::rotationX(Deg(17.0f)));
 
     /* Scene cannot be transformed */
     Scene3D s;
     s.setClean();
-    s.rotateX(Deg(17.0f));
+    CORRADE_VERIFY(!s.isDirty());
+    s.setTransformation(Matrix4::rotationX(Deg(17.0f)));
     CORRADE_VERIFY(!s.isDirty());
     CORRADE_COMPARE(s.transformationMatrix(), Matrix4());
 }
 
 void RigidMatrixTransformation3DTest::resetTransformation() {
     Object3D o;
-    o.rotateX(Deg(17.0f));
+    o.setTransformation(Matrix4::rotationX(Deg(17.0f)));
     CORRADE_VERIFY(o.transformationMatrix() != Matrix4());
     o.resetTransformation();
     CORRADE_COMPARE(o.transformationMatrix(), Matrix4());
 }
 
+void RigidMatrixTransformation3DTest::transform() {
+    {
+        /* Can't transform with non-rigid transformation */
+        Object3D o;
+        std::ostringstream out;
+        Error::setOutput(&out);
+        o.transform(Matrix4::scaling(Vector3(3.0f)));
+        CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation3D::transform(): the matrix doesn't represent rigid transformation\n");
+    } {
+        Object3D o;
+        o.setTransformation(Matrix4::rotationX(Deg(17.0f)));
+        o.transform(Matrix4::translation({1.0f, -0.3f, 2.3f}));
+        CORRADE_COMPARE(o.transformationMatrix(), Matrix4::translation({1.0f, -0.3f, 2.3f})*Matrix4::rotationX(Deg(17.0f)));
+    } {
+        Object3D o;
+        o.setTransformation(Matrix4::rotationX(Deg(17.0f)));
+        o.transform(Matrix4::translation({1.0f, -0.3f, 2.3f}), TransformationType::Local);
+        CORRADE_COMPARE(o.transformationMatrix(), Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f}));
+    }
+}
+
 void RigidMatrixTransformation3DTest::translate() {
     {
         Object3D o;
-        o.rotateX(Deg(17.0f));
+        o.setTransformation(Matrix4::rotationX(Deg(17.0f)));
         o.translate({1.0f, -0.3f, 2.3f});
         CORRADE_COMPARE(o.transformationMatrix(), Matrix4::translation({1.0f, -0.3f, 2.3f})*Matrix4::rotationX(Deg(17.0f)));
     } {
         Object3D o;
-        o.rotateX(Deg(17.0f));
+        o.setTransformation(Matrix4::rotationX(Deg(17.0f)));
         o.translate({1.0f, -0.3f, 2.3f}, TransformationType::Local);
         CORRADE_COMPARE(o.transformationMatrix(), Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f}));
     }
@@ -130,7 +163,7 @@ void RigidMatrixTransformation3DTest::translate() {
 void RigidMatrixTransformation3DTest::rotate() {
     {
         Object3D o;
-        o.translate({1.0f, -0.3f, 2.3f});
+        o.setTransformation(Matrix4::translation({1.0f, -0.3f, 2.3f}));
         o.rotateX(Deg(17.0f))
             ->rotateY(Deg(25.0f))
             ->rotateZ(Deg(-23.0f))
@@ -143,7 +176,7 @@ void RigidMatrixTransformation3DTest::rotate() {
             Matrix4::translation({1.0f, -0.3f, 2.3f}));
     } {
         Object3D o;
-        o.translate({1.0f, -0.3f, 2.3f});
+        o.setTransformation(Matrix4::translation({1.0f, -0.3f, 2.3f}));
         o.rotateX(Deg(17.0f), TransformationType::Local)
             ->rotateY(Deg(25.0f), TransformationType::Local)
             ->rotateZ(Deg(-23.0f), TransformationType::Local)
@@ -160,12 +193,12 @@ void RigidMatrixTransformation3DTest::rotate() {
 void RigidMatrixTransformation3DTest::reflect() {
     {
         Object3D o;
-        o.rotateX(Deg(17.0f));
+        o.setTransformation(Matrix4::rotationX(Deg(17.0f)));
         o.reflect(Vector3(-1.0f/Constants::sqrt3()));
         CORRADE_COMPARE(o.transformationMatrix(), Matrix4::reflection(Vector3(-1.0f/Constants::sqrt3()))*Matrix4::rotationX(Deg(17.0f)));
     } {
         Object3D o;
-        o.rotateX(Deg(17.0f));
+        o.setTransformation(Matrix4::rotationX(Deg(17.0f)));
         o.reflect(Vector3(-1.0f/Constants::sqrt3()), TransformationType::Local);
         CORRADE_COMPARE(o.transformationMatrix(), Matrix4::rotationX(Deg(17.0f))*Matrix4::reflection(Vector3(-1.0f/Constants::sqrt3())));
     }
@@ -173,7 +206,7 @@ void RigidMatrixTransformation3DTest::reflect() {
 
 void RigidMatrixTransformation3DTest::normalizeRotation() {
     Object3D o;
-    o.rotateX(Deg(17.0f));
+    o.setTransformation(Matrix4::rotationX(Deg(17.0f)));
     o.normalizeRotation();
     CORRADE_COMPARE(o.transformationMatrix(), Matrix4::rotationX(Deg(17.0f)));
 }

@@ -91,22 +91,47 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
             return this;
         }
 
+        /**
+         * @brief Set transformation
+         * @return Pointer to self (for method chaining)
+         *
+         * Expects that the matrix represents rigid transformation.
+         * @see Matrix4::isRigidTransformation()
+         */
+        RigidMatrixTransformation3D<T>* setTransformation(const Math::Matrix4<T>& transformation) {
+            CORRADE_ASSERT(transformation.isRigidTransformation(),
+                "SceneGraph::RigidMatrixTransformation3D::setTransformation(): the matrix doesn't represent rigid transformation", this);
+            setTransformationInternal(transformation);
+            return this;
+        }
+
         inline RigidMatrixTransformation3D<T>* resetTransformation() override {
             setTransformation({});
             return this;
         }
 
         /**
-         * @brief Translate object
-         * @param vector            Translation vector
+         * @brief Multiply transformation
+         * @param transformation    Transformation
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
-         * @see Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis(),
-         *      Matrix4::translation()
+         * Expects that the matrix represents rigid transformation.
+         * @see Matrix4::isRigidTransformation()
+         */
+        inline RigidMatrixTransformation3D<T>* transform(const Math::Matrix4<T>& transformation, TransformationType type = TransformationType::Global) {
+            CORRADE_ASSERT(transformation.isRigidTransformation(),
+                "SceneGraph::RigidMatrixTransformation3D::transform(): the matrix doesn't represent rigid transformation", this);
+            transformInternal(transformation, type);
+            return this;
+        }
+
+        /**
+         * @copydoc AbstractTranslationRotationScaling3D::translate()
+         * Same as calling transform() with Matrix4::translation().
          */
         inline RigidMatrixTransformation3D<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) override {
-            transform(Math::Matrix4<T>::translation(vector), type);
+            transformInternal(Math::Matrix4<T>::translation(vector), type);
             return this;
         }
 
@@ -117,12 +142,12 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
+         * Same as calling transform() with Matrix4::rotation().
          * @see rotateX(), rotateY(), rotateZ(), Vector3::xAxis(),
-         *      Vector3::yAxis(), Vector3::zAxis(), normalizeRotation(),
-         *      Matrix4::rotation()
+         *      Vector3::yAxis(), Vector3::zAxis(), normalizeRotation()
          */
         inline RigidMatrixTransformation3D<T>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) override {
-            transform(Math::Matrix4<T>::rotation(angle, normalizedAxis), type);
+            transformInternal(Math::Matrix4<T>::rotation(angle, normalizedAxis), type);
             return this;
         }
 
@@ -132,10 +157,11 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
-         * @see normalizeRotation(), Matrix4::rotationX()
+         * Same as calling transform() with Matrix4::rotationX().
+         * @see normalizeRotation()
          */
         inline RigidMatrixTransformation3D<T>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
-            transform(Math::Matrix4<T>::rotationX(angle), type);
+            transformInternal(Math::Matrix4<T>::rotationX(angle), type);
             return this;
         }
 
@@ -145,10 +171,11 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
-         * @see normalizeRotation(), Matrix4::rotationY()
+         * Same as calling transform() with Matrix4::rotationY().
+         * @see normalizeRotation()
          */
         inline RigidMatrixTransformation3D<T>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
-            transform(Math::Matrix4<T>::rotationY(angle), type);
+            transformInternal(Math::Matrix4<T>::rotationY(angle), type);
             return this;
         }
 
@@ -158,10 +185,11 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          *
-         * @see normalizeRotation(), Matrix4::rotationZ()
+         * Same as calling transform() with Matrix4::rotationZ().
+         * @see normalizeRotation()
          */
         inline RigidMatrixTransformation3D<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
-            transform(Math::Matrix4<T>::rotationZ(angle), type);
+            transformInternal(Math::Matrix4<T>::rotationZ(angle), type);
             return this;
         }
 
@@ -172,10 +200,10 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
          * @param type      Transformation type
          * @return Pointer to self (for method chaining)
          *
-         * @see Matrix4::reflection()
+         * Same as calling transform() with Matrix4::reflection().
          */
         inline RigidMatrixTransformation3D<T>* reflect(const Math::Vector3<T>& normal, TransformationType type = TransformationType::Global) {
-            transform(Math::Matrix4<T>::reflection(normal), type);
+            transformInternal(Math::Matrix4<T>::reflection(normal), type);
             return this;
         }
 
@@ -184,7 +212,8 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
         inline explicit RigidMatrixTransformation3D() = default;
 
     private:
-        inline void setTransformation(const Math::Matrix4<T>& transformation) {
+        /* No assertions fired, for internal use */
+        inline void setTransformationInternal(const Math::Matrix4<T>& transformation) {
             /* Setting transformation is forbidden for the scene */
             /** @todo Assert for this? */
             /** @todo Do this in some common code so we don't need to include Object? */
@@ -194,7 +223,8 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
             }
         }
 
-        inline void transform(const Math::Matrix4<T>& transformation, TransformationType type) {
+        /* No assertions fired, for internal use */
+        inline void transformInternal(const Math::Matrix4<T>& transformation, TransformationType type) {
             setTransformation(type == TransformationType::Global ?
                 transformation*_transformation : _transformation*transformation);
         }
