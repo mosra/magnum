@@ -38,6 +38,8 @@ class DualComplexTest: public Corrade::TestSuite::Tester {
         void constructDefault();
         void constructFromVector();
 
+        void isNormalized();
+
         void constExpressions();
 
         void multiply();
@@ -73,6 +75,8 @@ DualComplexTest::DualComplexTest() {
     addTests({&DualComplexTest::construct,
               &DualComplexTest::constructDefault,
               &DualComplexTest::constructFromVector,
+
+              &DualComplexTest::isNormalized,
 
               &DualComplexTest::constExpressions,
 
@@ -110,6 +114,11 @@ void DualComplexTest::constructDefault() {
 
 void DualComplexTest::constructFromVector() {
     CORRADE_COMPARE(DualComplex(Vector2(1.5f, -3.0f)), DualComplex({1.0f, 0.0f}, {1.5f, -3.0f}));
+}
+
+void DualComplexTest::isNormalized() {
+    CORRADE_VERIFY(!DualComplex({2.0f, 1.0f}, {}).isNormalized());
+    CORRADE_VERIFY((DualComplex::rotation(Deg(23.0f))*DualComplex::translation({6.0f, 3.0f})).isNormalized());
 }
 
 void DualComplexTest::constExpressions() {

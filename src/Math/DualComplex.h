@@ -127,6 +127,18 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         #endif
 
         /**
+         * @brief Whether the dual complex number is normalized
+         *
+         * Dual complex number is normalized if its real part has unit length: @f[
+         *      |c_0|^2 = |c_0| = 1
+         * @f]
+         * @see Complex::dot(), normalized()
+         */
+        inline bool isNormalized() const {
+            return TypeTraits<T>::equals(this->real().dot(), T(1));
+        }
+
+        /**
          * @brief Rotation angle of dual complex number
          *
          * @f[
@@ -240,6 +252,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f[
          *      c' = \frac{c_0}{|c_0|}
          * @f]
+         * @see isNormalized()
          * @todo can this be done similarly to dual quaternions?
          */
         inline DualComplex<T> normalized() const {
@@ -265,7 +278,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * Expects that the complex number is normalized. @f[
          *      \hat c^{-1} = c_0^{-1} - \epsilon c_\epsilon = c_0^* - \epsilon c_\epsilon
          * @f]
-         * @see inverted()
+         * @see isNormalized(), inverted()
          * @todo can this be done similarly to dual quaternions?
          */
         inline DualComplex<T> invertedNormalized() const {

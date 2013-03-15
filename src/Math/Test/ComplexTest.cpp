@@ -37,7 +37,9 @@ class ComplexTest: public Corrade::TestSuite::Tester {
         void construct();
         void constructDefault();
         void constructFromVector();
+
         void compare();
+        void isNormalized();
 
         void constExpressions();
 
@@ -67,7 +69,9 @@ ComplexTest::ComplexTest() {
     addTests({&ComplexTest::construct,
               &ComplexTest::constructDefault,
               &ComplexTest::constructFromVector,
+
               &ComplexTest::compare,
+              &ComplexTest::isNormalized,
 
               &ComplexTest::constExpressions,
 
@@ -124,6 +128,11 @@ void ComplexTest::compare() {
     CORRADE_VERIFY(Complex(3.7f, -1.0f+TypeTraits<Float>::epsilon()*2) != Complex(3.7f, -1.0f));
     CORRADE_VERIFY(Complex(1.0f+TypeTraits<Float>::epsilon()/2, 3.7f) == Complex(1.0f, 3.7f));
     CORRADE_VERIFY(Complex(1.0f+TypeTraits<Float>::epsilon()*2, 3.7f) != Complex(1.0f, 3.7f));
+}
+
+void ComplexTest::isNormalized() {
+    CORRADE_VERIFY(!Complex(2.5f, -3.7f).isNormalized());
+    CORRADE_VERIFY(Complex::rotation(Deg(23.0f)).isNormalized());
 }
 
 void ComplexTest::constExpressions() {

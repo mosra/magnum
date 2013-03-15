@@ -75,10 +75,10 @@ template<class T> class Complex {
          * Expects that both complex numbers are normalized. @f[
          *      \theta = acos \left( \frac{Re(c_0 \cdot c_1))}{|c_0| |c_1|} \right) = acos (a_0 a_1 + b_0 b_1)
          * @f]
-         * @see Quaternion::angle(), Vector::angle()
+         * @see isNormalized(), Quaternion::angle(), Vector::angle()
          */
         inline static Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
-            CORRADE_ASSERT(TypeTraits<T>::equals(normalizedA.dot(), T(1)) && TypeTraits<T>::equals(normalizedB.dot(), T(1)),
+            CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
                            "Math::Complex::angle(): complex numbers must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
             return Rad<T>(std::acos(normalizedA._real*normalizedB._real + normalizedA._imaginary*normalizedB._imaginary));
         }
@@ -145,6 +145,18 @@ template<class T> class Complex {
         /** @brief Non-equality comparison */
         inline bool operator!=(const Complex<T>& other) const {
             return !operator==(other);
+        }
+
+        /**
+         * @brief Whether the complex number is normalized
+         *
+         * Complex number is normalized if it has unit length: @f[
+         *      |c|^2 = |c| = 1
+         * @f]
+         * @see dot(), normalized()
+         */
+        inline bool isNormalized() const {
+            return TypeTraits<T>::equals(dot(), T(1));
         }
 
         /** @brief Real part */
@@ -311,7 +323,7 @@ template<class T> class Complex {
          * with other values, because it doesn't compute the square root. @f[
          *      c \cdot c = a^2 + b^2
          * @f]
-         * @see dot(const Complex&, const Complex&)
+         * @see dot(const Complex&, const Complex&), isNormalized()
          */
         inline T dot() const {
             return dot(*this, *this);
@@ -324,12 +336,17 @@ template<class T> class Complex {
          * values. @f[
          *      |c| = \sqrt{c \cdot c}
          * @f]
+         * @see isNormalized()
          */
         inline T length() const {
             return std::hypot(_real, _imaginary);
         }
 
-        /** @brief Normalized complex number (of unit length) */
+        /**
+         * @brief Normalized complex number (of unit length)
+         *
+         * @see isNormalized()
+         */
         inline Complex<T> normalized() const {
             return (*this)/length();
         }
@@ -364,10 +381,10 @@ template<class T> class Complex {
          * normalized. @f[
          *      c^{-1} = \frac{c^*}{c \cdot c} = c^*
          * @f]
-         * @see inverted()
+         * @see isNormalized(), inverted()
          */
         inline Complex<T> invertedNormalized() const {
-            CORRADE_ASSERT(TypeTraits<T>::equals(dot(), T(1)),
+            CORRADE_ASSERT(isNormalized(),
                            "Math::Complex::invertedNormalized(): complex number must be normalized",
                            Complex<T>(std::numeric_limits<T>::quiet_NaN(), {}));
             return conjugated();
