@@ -22,6 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <TestSuite/Tester.h>
 
 #include "SceneGraph/RigidMatrixTransformation3D.h"
@@ -64,6 +65,11 @@ RigidMatrixTransformation3DTest::RigidMatrixTransformation3DTest() {
 }
 
 void RigidMatrixTransformation3DTest::fromMatrix() {
+    std::ostringstream o;
+    Error::setOutput(&o);
+    RigidMatrixTransformation3D<>::fromMatrix(Matrix4::scaling(Vector3(4.0f)));
+    CORRADE_COMPARE(o.str(), "SceneGraph::RigidMatrixTransformation3D::fromMatrix(): the matrix doesn't represent rigid transformation\n");
+
     Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f});
     CORRADE_COMPARE(RigidMatrixTransformation3D<>::fromMatrix(m), m);
 }

@@ -54,7 +54,9 @@ class RigidMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
         typedef typename DimensionTraits<2, T>::MatrixType DataType;
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline constexpr static Math::Matrix3<T> fromMatrix(const Math::Matrix3<T>& matrix) {
+        inline static Math::Matrix3<T> fromMatrix(const Math::Matrix3<T>& matrix) {
+            CORRADE_ASSERT(matrix.isRigidTransformation(),
+                "SceneGraph::RigidMatrixTransformation2D::fromMatrix(): the matrix doesn't represent rigid transformation", {});
             return matrix;
         }
 

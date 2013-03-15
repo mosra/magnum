@@ -30,3 +30,7 @@ corrade_add_test(SceneGraphObjectTest ObjectTest.cpp LIBRARIES MagnumSceneGraphT
 corrade_add_test(SceneGraphRigidMatrixTransfor___2DTest RigidMatrixTransformation2DTest.cpp LIBRARIES MagnumSceneGraph)
 corrade_add_test(SceneGraphRigidMatrixTransfor___3DTest RigidMatrixTransformation3DTest.cpp LIBRARIES MagnumSceneGraph)
 corrade_add_test(SceneGraphSceneTest SceneTest.cpp LIBRARIES MagnumSceneGraph)
+
+set_target_properties(SceneGraphRigidMatrixTransfor___2DTest
+    SceneGraphRigidMatrixTransfor___3DTest
+    PROPERTIES COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT")
