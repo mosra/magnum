@@ -259,6 +259,10 @@ void FunctionsTest::pow() {
     CORRADE_COMPARE(Math::pow<10>(2ul), 1024ul);
     CORRADE_COMPARE(Math::pow<0>(3ul), 1ul);
     CORRADE_COMPARE(Math::pow<2>(2.0f), 4.0f);
+
+    /* Constant expression */
+    constexpr Int a = Math::pow<3>(5);
+    CORRADE_COMPARE(a, 125);
 }
 
 void FunctionsTest::log() {
