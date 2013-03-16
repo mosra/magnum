@@ -81,6 +81,7 @@ For other specializations (e.g. using Double type or special transformation
 class) you have to use Object.hpp implementation file to avoid linker errors.
 See @ref compilation-speedup-hpp for more information.
 
+ - @ref DualComplexTransformation "Object<DualComplexTransformation<Float>>"
  - @ref MatrixTransformation2D "Object<MatrixTransformation2D<Float>>"
  - @ref MatrixTransformation3D "Object<MatrixTransformation3D<Float>>"
  - @ref RigidMatrixTransformation2D "Object<RigidMatrixTransformation2D<Float>>"

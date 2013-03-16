@@ -26,6 +26,7 @@
 set(MagnumSceneGraph_SRCS
     Animable.cpp
     Camera.cpp
+    DualComplexTransformation.cpp
     RigidMatrixTransformation2D.cpp
     RigidMatrixTransformation3D.cpp
     Object.cpp)
@@ -54,6 +55,7 @@ set(MagnumSceneGraph_HEADERS
     Camera3D.h
     Camera3D.hpp
     Drawable.h
+    DualComplexTransformation.h
     RigidMatrixTransformation2D.h
     RigidMatrixTransformation3D.h
     FeatureGroup.h

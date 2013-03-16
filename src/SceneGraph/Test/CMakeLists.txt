@@ -24,6 +24,7 @@
 
 corrade_add_test(SceneGraphAnimableTest AnimableTest.cpp LIBRARIES MagnumSceneGraph)
 corrade_add_test(SceneGraphCameraTest CameraTest.cpp LIBRARIES MagnumSceneGraph)
+corrade_add_test(SceneGraphDualComplexTransforma___Test DualComplexTransformationTest.cpp LIBRARIES MagnumSceneGraph)
 corrade_add_test(SceneGraphMatrixTransformation2DTest MatrixTransformation2DTest.cpp LIBRARIES MagnumSceneGraph)
 corrade_add_test(SceneGraphMatrixTransformation3DTest MatrixTransformation3DTest.cpp LIBRARIES MagnumSceneGraph)
 corrade_add_test(SceneGraphObjectTest ObjectTest.cpp LIBRARIES MagnumSceneGraphTestLib)
@@ -31,6 +32,7 @@ corrade_add_test(SceneGraphRigidMatrixTransfor___2DTest RigidMatrixTransformatio
 corrade_add_test(SceneGraphRigidMatrixTransfor___3DTest RigidMatrixTransformation3DTest.cpp LIBRARIES MagnumSceneGraph)
 corrade_add_test(SceneGraphSceneTest SceneTest.cpp LIBRARIES MagnumSceneGraph)
 
-set_target_properties(SceneGraphRigidMatrixTransfor___2DTest
+set_target_properties(SceneGraphDualComplexTransforma___Test
+    SceneGraphRigidMatrixTransfor___2DTest
     SceneGraphRigidMatrixTransfor___3DTest
     PROPERTIES COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT")
