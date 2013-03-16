@@ -99,6 +99,7 @@ template<class T = Float> using Drawable3D = Drawable<3, T>;
 #endif
 
 template<class T = Float> class DualComplexTransformation;
+template<class T = Float> class DualQuaternionTransformation;
 
 template<UnsignedInt dimensions, class Feature, class T = Float> class FeatureGroup;
 #ifndef CORRADE_GCC46_COMPATIBILITY
