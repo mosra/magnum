@@ -36,10 +36,9 @@ class DualQuaternionTest: public Corrade::TestSuite::Tester {
         void construct();
         void constructDefault();
         void constructFromVector();
+        void constructCopy();
 
         void isNormalized();
-
-        void constExpressions();
 
         void lengthSquared();
         void length();
@@ -73,10 +72,9 @@ DualQuaternionTest::DualQuaternionTest() {
     addTests({&DualQuaternionTest::construct,
               &DualQuaternionTest::constructDefault,
               &DualQuaternionTest::constructFromVector,
+              &DualQuaternionTest::constructCopy,
 
               &DualQuaternionTest::isNormalized,
-
-              &DualQuaternionTest::constExpressions,
 
               &DualQuaternionTest::lengthSquared,
               &DualQuaternionTest::length,
@@ -99,41 +97,36 @@ DualQuaternionTest::DualQuaternionTest() {
 }
 
 void DualQuaternionTest::construct() {
-    DualQuaternion q({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f});
-    CORRADE_COMPARE(q.real(), Quaternion({1.0f, 2.0f, 3.0f}, -4.0f));
-    CORRADE_COMPARE(q.dual(), Quaternion({0.5f, -3.1f, 3.3f}, 2.0f));
+    constexpr DualQuaternion a({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f});
+    CORRADE_COMPARE(a, DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f}));
+
+    constexpr Quaternion b = a.real();
+    CORRADE_COMPARE(b, Quaternion({1.0f, 2.0f, 3.0f}, -4.0f));
+
+    constexpr Quaternion c = a.dual();
+    CORRADE_COMPARE(c, Quaternion({0.5f, -3.1f, 3.3f}, 2.0f));
 }
 
 void DualQuaternionTest::constructDefault() {
-    CORRADE_COMPARE(DualQuaternion(), DualQuaternion({{0.0f, 0.0f, 0.0f}, 1.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
-    CORRADE_COMPARE(DualQuaternion().length(), 1.0f);
+    constexpr DualQuaternion a;
+    CORRADE_COMPARE(a, DualQuaternion({{0.0f, 0.0f, 0.0f}, 1.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
+    CORRADE_COMPARE(a.length(), 1.0f);
 }
 
 void DualQuaternionTest::constructFromVector() {
-    CORRADE_COMPARE(DualQuaternion(Vector3(1.0f, 2.0f, 3.0f)), DualQuaternion({{0.0f, 0.0f, 0.0f}, 1.0f}, {{1.0f, 2.0f, 3.0f}, 0.0f}));
+    constexpr DualQuaternion a(Vector3(1.0f, 2.0f, 3.0f));
+    CORRADE_COMPARE(a, DualQuaternion({{0.0f, 0.0f, 0.0f}, 1.0f}, {{1.0f, 2.0f, 3.0f}, 0.0f}));
+}
+
+void DualQuaternionTest::constructCopy() {
+    constexpr DualQuaternion a({{1.0f, 2.0f, -3.0f}, -3.5f}, {{4.5f, -7.0f, 2.0f}, 1.0f});
+    constexpr DualQuaternion b(a);
+    CORRADE_COMPARE(a, DualQuaternion({{1.0f, 2.0f, -3.0f}, -3.5f}, {{4.5f, -7.0f, 2.0f}, 1.0f}));
 }
 
 void DualQuaternionTest::isNormalized() {
     CORRADE_VERIFY(!DualQuaternion({{1.0f, 2.0f, 3.0f}, 4.0f}, {}).isNormalized());
     CORRADE_VERIFY((DualQuaternion::rotation(Deg(23.0f), Vector3::xAxis())*DualQuaternion::translation({3.0f, 1.0f, -0.5f})).isNormalized());
-}
-
-void DualQuaternionTest::constExpressions() {
-    /* Default constructor */
-    constexpr DualQuaternion a;
-    CORRADE_COMPARE(a, DualQuaternion({{0.0f, 0.0f, 0.0f}, 1.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
-
-    /* Value constructor */
-    constexpr DualQuaternion b({{1.0f, 2.0f, -3.0f}, -3.5f}, {{4.5f, -7.0f, 2.0f}, 1.0f});
-    CORRADE_COMPARE(b, DualQuaternion({{1.0f, 2.0f, -3.0f}, -3.5f}, {{4.5f, -7.0f, 2.0f}, 1.0f}));
-
-    /* Vector constructor */
-    constexpr DualQuaternion c(Vector3(1.5f, -5.0f, 3.0f));
-    CORRADE_COMPARE(c, DualQuaternion({{0.0f, 0.0f, 0.0f}, 1.0f}, {{1.5f, -5.0f, 3.0f}, 0.0f}));
-
-    /* Copy constructor */
-    constexpr DualQuaternion d(b);
-    CORRADE_COMPARE(d, DualQuaternion({{1.0f, 2.0f, -3.0f}, -3.5f}, {{4.5f, -7.0f, 2.0f}, 1.0f}));
 }
 
 void DualQuaternionTest::lengthSquared() {

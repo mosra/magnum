@@ -35,9 +35,9 @@ class DualTest: public Corrade::TestSuite::Tester {
 
         void construct();
         void constructDefault();
-        void compare();
+        void constructCopy();
 
-        void constExpressions();
+        void compare();
 
         void addSubtract();
         void negated();
@@ -54,9 +54,9 @@ typedef Math::Dual<Float> Dual;
 DualTest::DualTest() {
     addTests({&DualTest::construct,
               &DualTest::constructDefault,
-              &DualTest::compare,
+              &DualTest::constructCopy,
 
-              &DualTest::constExpressions,
+              &DualTest::compare,
 
               &DualTest::addSubtract,
               &DualTest::negated,
@@ -69,17 +69,26 @@ DualTest::DualTest() {
 }
 
 void DualTest::construct() {
-    Dual a(2.0f, -7.5f);
-    CORRADE_COMPARE(a.real(), 2.0f);
-    CORRADE_COMPARE(a.dual(), -7.5f);
+    constexpr Dual a(2.0f, -7.5f);
+    constexpr Float b = a.real();
+    constexpr Float c = a.dual();
+    CORRADE_COMPARE(b, 2.0f);
+    CORRADE_COMPARE(c, -7.5f);
 
-    Dual b(3.0f);
-    CORRADE_COMPARE(b.real(), 3.0f);
-    CORRADE_COMPARE(b.dual(), 0.0f);
+    constexpr Dual d(3.0f);
+    CORRADE_COMPARE(d.real(), 3.0f);
+    CORRADE_COMPARE(d.dual(), 0.0f);
 }
 
 void DualTest::constructDefault() {
-    CORRADE_COMPARE(Dual(), Dual(0.0f, 0.0f));
+    constexpr Dual a;
+    CORRADE_COMPARE(a, Dual(0.0f, 0.0f));
+}
+
+void DualTest::constructCopy() {
+    constexpr Dual a(2.0f, 3.0f);
+    constexpr Dual b(a);
+    CORRADE_COMPARE(b, Dual(2.0f, 3.0f));
 }
 
 void DualTest::compare() {
@@ -91,26 +100,6 @@ void DualTest::compare() {
     /* Compare to real part only */
     CORRADE_VERIFY(Dual(1.0f, 0.0f) == 1.0f);
     CORRADE_VERIFY(Dual(1.0f, 3.0f) != 1.0f);
-}
-
-void DualTest::constExpressions() {
-    /* Default constructor */
-    constexpr Dual a;
-    CORRADE_COMPARE(a, Dual(0.0f, 0.0f));
-
-    /* Value constructor */
-    constexpr Dual b(2.0f, 3.0f);
-    CORRADE_COMPARE(b, Dual(2.0f, 3.0f));
-
-    /* Copy constructor */
-    constexpr Dual c(b);
-    CORRADE_COMPARE(c, Dual(2.0f, 3.0f));
-
-    /* Data access */
-    constexpr Float e = b.real();
-    constexpr Float f = b.dual();
-    CORRADE_COMPARE(e, 2.0f);
-    CORRADE_COMPARE(f, 3.0f);
 }
 
 void DualTest::addSubtract() {

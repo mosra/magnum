@@ -37,10 +37,9 @@ class DualComplexTest: public Corrade::TestSuite::Tester {
         void construct();
         void constructDefault();
         void constructFromVector();
+        void constructCopy();
 
         void isNormalized();
-
-        void constExpressions();
 
         void multiply();
 
@@ -75,10 +74,9 @@ DualComplexTest::DualComplexTest() {
     addTests({&DualComplexTest::construct,
               &DualComplexTest::constructDefault,
               &DualComplexTest::constructFromVector,
+              &DualComplexTest::constructCopy,
 
               &DualComplexTest::isNormalized,
-
-              &DualComplexTest::constExpressions,
 
               &DualComplexTest::multiply,
 
@@ -102,41 +100,35 @@ DualComplexTest::DualComplexTest() {
 }
 
 void DualComplexTest::construct() {
-    DualComplex a({-1.0f, 2.5f}, {3.0f, -7.5f});
-    CORRADE_COMPARE(a.real(), Complex(-1.0f, 2.5f));
-    CORRADE_COMPARE(a.dual(), Complex(3.0f, -7.5f));
+    constexpr DualComplex a({-1.0f, 2.5f}, {3.0f, -7.5f});
+    CORRADE_COMPARE(a, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
+
+    constexpr Complex b = a.real();
+    constexpr Complex c = a.dual();
+    CORRADE_COMPARE(b, Complex(-1.0f, 2.5f));
+    CORRADE_COMPARE(c, Complex(3.0f, -7.5f));
 }
 
 void DualComplexTest::constructDefault() {
-    CORRADE_COMPARE(DualComplex(), DualComplex({1.0f, 0.0f}, {0.0f, 0.0f}));
-    CORRADE_COMPARE(DualComplex().length(), 1.0f);
+    constexpr DualComplex a;
+    CORRADE_COMPARE(a, DualComplex({1.0f, 0.0f}, {0.0f, 0.0f}));
+    CORRADE_COMPARE(a.length(), 1.0f);
 }
 
 void DualComplexTest::constructFromVector() {
-    CORRADE_COMPARE(DualComplex(Vector2(1.5f, -3.0f)), DualComplex({1.0f, 0.0f}, {1.5f, -3.0f}));
+    constexpr DualComplex a(Vector2(1.5f, -3.0f));
+    CORRADE_COMPARE(a, DualComplex({1.0f, 0.0f}, {1.5f, -3.0f}));
+}
+
+void DualComplexTest::constructCopy() {
+    constexpr DualComplex a({-1.0f, 2.5f}, {3.0f, -7.5f});
+    constexpr DualComplex b(a);
+    CORRADE_COMPARE(a, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
 }
 
 void DualComplexTest::isNormalized() {
     CORRADE_VERIFY(!DualComplex({2.0f, 1.0f}, {}).isNormalized());
     CORRADE_VERIFY((DualComplex::rotation(Deg(23.0f))*DualComplex::translation({6.0f, 3.0f})).isNormalized());
-}
-
-void DualComplexTest::constExpressions() {
-    /* Default constructor */
-    constexpr DualComplex a;
-    CORRADE_COMPARE(a, DualComplex({1.0f, 0.0f}, {0.0f, 0.0f}));
-
-    /* Value constructor */
-    constexpr DualComplex b({-1.0f, 2.5f}, {3.0f, -7.5f});
-    CORRADE_COMPARE(b, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
-
-    /* Vector constructor */
-    constexpr DualComplex c(Vector2(-3.0f, 7.5f));
-    CORRADE_COMPARE(c, DualComplex({}, {-3.0f, 7.5f}));
-
-    /* Copy constructor */
-    constexpr DualComplex d(b);
-    CORRADE_COMPARE(d, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
 }
 
 void DualComplexTest::multiply() {

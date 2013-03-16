@@ -37,11 +37,10 @@ class ComplexTest: public Corrade::TestSuite::Tester {
         void construct();
         void constructDefault();
         void constructFromVector();
+        void constructCopy();
 
         void compare();
         void isNormalized();
-
-        void constExpressions();
 
         void addSubtract();
         void negated();
@@ -69,11 +68,10 @@ ComplexTest::ComplexTest() {
     addTests({&ComplexTest::construct,
               &ComplexTest::constructDefault,
               &ComplexTest::constructFromVector,
+              &ComplexTest::constructCopy,
 
               &ComplexTest::compare,
               &ComplexTest::isNormalized,
-
-              &ComplexTest::constExpressions,
 
               &ComplexTest::addSubtract,
               &ComplexTest::negated,
@@ -105,22 +103,35 @@ typedef Math::Matrix3<Float> Matrix3;
 typedef Math::Matrix<2, Float> Matrix2;
 
 void ComplexTest::construct() {
-    Complex c(0.5f, -3.7f);
-    CORRADE_COMPARE(c.real(), 0.5f);
-    CORRADE_COMPARE(c.imaginary(), -3.7f);
+    constexpr Complex a(0.5f, -3.7f);
+    CORRADE_COMPARE(a, Complex(0.5f, -3.7f));
+
+    constexpr Float b = a.real();
+    constexpr Float c = a.imaginary();
+    CORRADE_COMPARE(b, 0.5f);
+    CORRADE_COMPARE(c, -3.7f);
 }
 
 void ComplexTest::constructDefault() {
-    CORRADE_COMPARE(Complex(), Complex(1.0f, 0.0f));
-    CORRADE_COMPARE(Complex().length(), 1.0f);
+    constexpr Complex a;
+    CORRADE_COMPARE(a, Complex(1.0f, 0.0f));
+    CORRADE_COMPARE(a.length(), 1.0f);
 }
 
 void ComplexTest::constructFromVector() {
-    Vector2 vec(1.5f, -3.0f);
+    constexpr Vector2 vec(1.5f, -3.0f);
 
-    Complex a(vec);
+    constexpr Complex a(vec);
     CORRADE_COMPARE(a, Complex(1.5f, -3.0f));
-    CORRADE_COMPARE(Vector2(a), vec);
+
+    constexpr Vector2 b(a);
+    CORRADE_COMPARE(b, vec);
+}
+
+void ComplexTest::constructCopy() {
+    constexpr Complex a(2.5f, -5.0f);
+    constexpr Complex b(a);
+    CORRADE_COMPARE(b, Complex(2.5f, -5.0f));
 }
 
 void ComplexTest::compare() {
@@ -133,32 +144,6 @@ void ComplexTest::compare() {
 void ComplexTest::isNormalized() {
     CORRADE_VERIFY(!Complex(2.5f, -3.7f).isNormalized());
     CORRADE_VERIFY(Complex::rotation(Deg(23.0f)).isNormalized());
-}
-
-void ComplexTest::constExpressions() {
-    /* Default constructor */
-    constexpr Complex a;
-    CORRADE_COMPARE(a, Complex(1.0f, 0.0f));
-
-    /* Value constructor */
-    constexpr Complex b(2.5f, -5.0f);
-    CORRADE_COMPARE(b, Complex(2.5f, -5.0f));
-
-    /* Vector constructor */
-    constexpr Complex c(Vector2(-1.0f, 2.2f));
-    CORRADE_COMPARE(c, Complex(-1.0f, 2.2f));
-
-    /* Copy constructor */
-    constexpr Complex d(b);
-    CORRADE_COMPARE(d, Complex(2.5f, -5.0f));
-
-    /* Data access */
-    constexpr Float e = b.real();
-    constexpr Float f = b.imaginary();
-    constexpr Vector2 g(b);
-    CORRADE_COMPARE(e, 2.5f);
-    CORRADE_COMPARE(f, -5.0f);
-    CORRADE_COMPARE(g, Vector2(2.5f, -5.0f));
 }
 
 void ComplexTest::addSubtract() {
