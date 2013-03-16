@@ -247,7 +247,8 @@ template<class T> class Quaternion {
          * Expects that the quaternion is normalized. @f[
          *      \theta = 2 \cdot acos q_S
          * @f]
-         * @see rotationAxis(), rotation(), DualQuaternion::rotationAngle()
+         * @see isNormalized(), rotationAxis(), rotation(),
+         *      DualQuaternion::rotationAngle()
          */
         inline Rad<T> rotationAngle() const {
             CORRADE_ASSERT(isNormalized(),
@@ -264,7 +265,7 @@ template<class T> class Quaternion {
          * default-constructed quaternion. @f[
          *      \boldsymbol a = \frac{\boldsymbol q_V}{\sqrt{1 - q_S^2}}
          * @f]
-         * @see rotationAngle(), rotation()
+         * @see isNormalized(), rotationAngle(), rotation()
          */
         inline Vector3<T> rotationAxis() const {
             CORRADE_ASSERT(isNormalized(),
