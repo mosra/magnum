@@ -41,11 +41,15 @@ ConstantsTest::ConstantsTest() {
 }
 
 void ConstantsTest::constants() {
-    CORRADE_COMPARE(Math::pow<2>(Constants<Float>::sqrt2()), 2.0f);
-    CORRADE_COMPARE(Math::pow<2>(Constants<Float>::sqrt3()), 3.0f);
+    constexpr Float a = Constants<Float>::sqrt2();
+    constexpr Float b = Constants<Float>::sqrt3();
+    CORRADE_COMPARE(Math::pow<2>(a), 2.0f);
+    CORRADE_COMPARE(Math::pow<2>(b), 3.0f);
 
-    CORRADE_COMPARE(Math::pow<2>(Constants<Double>::sqrt2()), 2.0);
-    CORRADE_COMPARE(Math::pow<2>(Constants<Double>::sqrt3()), 3.0);
+    constexpr Double c = Constants<Double>::sqrt2();
+    constexpr Double d = Constants<Double>::sqrt3();
+    CORRADE_COMPARE(Math::pow<2>(c), 2.0);
+    CORRADE_COMPARE(Math::pow<2>(d), 3.0);
 }
 
 }}}
