@@ -105,6 +105,9 @@ void DualQuaternionTest::construct() {
 
     constexpr Quaternion c = a.dual();
     CORRADE_COMPARE(c, Quaternion({0.5f, -3.1f, 3.3f}, 2.0f));
+
+    constexpr DualQuaternion d({{1.0f, 2.0f, 3.0f}, -4.0f});
+    CORRADE_COMPARE(d, DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
 }
 
 void DualQuaternionTest::constructDefault() {

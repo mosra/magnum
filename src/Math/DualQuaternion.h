@@ -115,7 +115,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      \hat q = q_0 + \epsilon q_\epsilon
          * @f]
          */
-        inline constexpr /*implicit*/ DualQuaternion(const Quaternion<T>& real, const Quaternion<T>& dual): Dual<Quaternion<T>>(real, dual) {}
+        inline constexpr /*implicit*/ DualQuaternion(const Quaternion<T>& real, const Quaternion<T>& dual = Quaternion<T>({}, T(0))): Dual<Quaternion<T>>(real, dual) {}
 
         /**
          * @brief Construct dual quaternion from vector

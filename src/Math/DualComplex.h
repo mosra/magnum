@@ -110,7 +110,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          *      \hat c = c_0 + \epsilon c_\epsilon
          * @f]
          */
-        inline constexpr /*implicit*/ DualComplex(const Complex<T>& real, const Complex<T>& dual): Dual<Complex<T>>(real, dual) {}
+        inline constexpr /*implicit*/ DualComplex(const Complex<T>& real, const Complex<T>& dual = Complex<T>(T(0), T(0))): Dual<Complex<T>>(real, dual) {}
 
         /**
          * @brief Construct dual complex number from vector
