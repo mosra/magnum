@@ -55,7 +55,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f[
          *      \hat c = (cos \theta + i sin \theta) + \epsilon (0 + i0)
          * @f]
-         * @see rotationAngle(), Complex::rotation(), Matrix3::rotation(),
+         * @see angle(), Complex::rotation(), Matrix3::rotation(),
          *      DualQuaternion::rotation()
          */
         inline static DualComplex<T> rotation(Rad<T> angle) {
@@ -139,15 +139,12 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         }
 
         /**
-         * @brief Rotation angle of dual complex number
+         * @brief Rotation part of dual complex number
          *
-         * @f[
-         *      \theta = atan2(b_0, a_0)
-         * @f]
-         * @see rotation(), Complex::rotationAngle()
+         * @see Complex::angle()
          */
-        inline Rad<T> rotationAngle() const {
-            return this->real().rotationAngle();
+        inline constexpr Complex<T> rotation() const {
+            return this->real();
         }
 
         /**

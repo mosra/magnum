@@ -90,7 +90,7 @@ template<class T> class Complex {
          * @f[
          *      c = cos \theta + i sin \theta
          * @f]
-         * @see rotationAngle(), Matrix3::rotation(), Quaternion::rotation()
+         * @see angle(), Matrix3::rotation(), Quaternion::rotation()
          */
         inline static Complex<T> rotation(Rad<T> angle) {
             return {std::cos(T(angle)), std::sin(T(angle))};
@@ -182,9 +182,9 @@ template<class T> class Complex {
          * @f[
          *      \theta = atan2(b, a)
          * @f]
-         * @see rotation(), DualComplex::rotationAngle()
+         * @see rotation()
          */
-        inline Rad<T> rotationAngle() const {
+        inline Rad<T> angle() const {
             return Rad<T>(std::atan2(_imaginary, _real));
         }
 

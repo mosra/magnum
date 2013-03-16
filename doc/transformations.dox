@@ -243,18 +243,18 @@ Matrix3 c = Matrix3::from(rotation, {1.0f, 3.0f});
 @endcode
 
 %Complex numbers and quaternions are far better in this regard and they allow
-you to extract rotation angle using Complex::rotationAngle(), Quaternion::rotationAngle(),
-DualComplex::rotationAngle() or DualQuaternion::rotationAngle(), and rotation
-axis in 3D using Quaternion::rotationAxis() or DualQuaternion::rotationAxis().
-It is also possible to extract translation from their dual versions using
-DualComplex::translation() const and DualQuaternion::translation() const.
+you to extract rotation angle using Complex::angle() or Quaternion::angle() or
+rotation axis in 3D using Quaternion::axis(). Their dual versions allow to
+extract both rotation and translation part using DualComplex::rotation() const,
+DualQuaternion::rotation() const, DualComplex::translation() const and
+DualQuaternion::translation() const.
 @code
 DualComplex a;
-Rad rotation = a.rotationAngle();
+Rad rotationAngle = a.rotation().angle();
 Vector2 translation = a.translation();
 
 Quaternion b;
-Vector3 rotationAxis = b.rotationAxis();
+Vector3 rotationAxis = b.axis();
 @endcode
 
 You can convert Complex and Quaternion to rotation matrix using Complex::toMatrix()

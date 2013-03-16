@@ -162,7 +162,7 @@ template<class T> class Quaternion {
          * Expects that the rotation axis is normalized. @f[
          *      q = [\boldsymbol a \cdot sin \frac \theta 2, cos \frac \theta 2]
          * @f]
-         * @see rotationAngle(), rotationAxis(), DualQuaternion::rotation(),
+         * @see angle(), axis(), DualQuaternion::rotation(),
          *      Matrix4::rotation(), Complex::rotation(), Vector3::xAxis(),
          *      Vector3::yAxis(), Vector3::zAxis(), Vector::isNormalized()
          */
@@ -247,12 +247,11 @@ template<class T> class Quaternion {
          * Expects that the quaternion is normalized. @f[
          *      \theta = 2 \cdot acos q_S
          * @f]
-         * @see isNormalized(), rotationAxis(), rotation(),
-         *      DualQuaternion::rotationAngle()
+         * @see isNormalized(), axis(), rotation()
          */
-        inline Rad<T> rotationAngle() const {
+        inline Rad<T> angle() const {
             CORRADE_ASSERT(isNormalized(),
-                           "Math::Quaternion::rotationAngle(): quaternion must be normalized",
+                           "Math::Quaternion::angle(): quaternion must be normalized",
                            Rad<T>(std::numeric_limits<T>::quiet_NaN()));
             return Rad<T>(T(2)*std::acos(_scalar));
         }
@@ -265,11 +264,11 @@ template<class T> class Quaternion {
          * default-constructed quaternion. @f[
          *      \boldsymbol a = \frac{\boldsymbol q_V}{\sqrt{1 - q_S^2}}
          * @f]
-         * @see isNormalized(), rotationAngle(), rotation()
+         * @see isNormalized(), angle(), rotation()
          */
-        inline Vector3<T> rotationAxis() const {
+        inline Vector3<T> axis() const {
             CORRADE_ASSERT(isNormalized(),
-                           "Math::Quaternion::rotationAxis(): quaternion must be normalized",
+                           "Math::Quaternion::axis(): quaternion must be normalized",
                            {});
             return _vector/std::sqrt(1-pow2(_scalar));
         }

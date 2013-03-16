@@ -210,8 +210,13 @@ void DualQuaternionTest::rotation() {
     DualQuaternion q = DualQuaternion::rotation(Deg(120.0f), axis);
     CORRADE_COMPARE(q.length(), 1.0f);
     CORRADE_COMPARE(q, DualQuaternion({Vector3(0.5f, 0.5f, 0.5f), 0.5f}, {{}, 0.0f}));
-    CORRADE_COMPARE_AS(q.rotationAngle(), Deg(120.0f), Deg);
-    CORRADE_COMPARE(q.rotationAxis(), axis);
+    CORRADE_COMPARE_AS(q.rotation().angle(), Deg(120.0f), Deg);
+    CORRADE_COMPARE(q.rotation().axis(), axis);
+
+    /* Constexpr access to rotation */
+    constexpr DualQuaternion b({{-1.0f, 2.0f, 3.0f}, 4.0f}, {});
+    constexpr Quaternion c = b.rotation();
+    CORRADE_COMPARE(c, Quaternion({-1.0f, 2.0f, 3.0f}, 4.0f));
 }
 
 void DualQuaternionTest::translation() {
@@ -227,10 +232,10 @@ void DualQuaternionTest::combinedTransformParts() {
     DualQuaternion a = DualQuaternion::translation(translation)*DualQuaternion::rotation(Deg(23.0f), Vector3::xAxis());
     DualQuaternion b = DualQuaternion::rotation(Deg(23.0f), Vector3::xAxis())*DualQuaternion::translation(translation);
 
-    CORRADE_COMPARE(a.rotationAxis(), Vector3::xAxis());
-    CORRADE_COMPARE(b.rotationAxis(), Vector3::xAxis());
-    CORRADE_COMPARE_AS(a.rotationAngle(), Deg(23.0f), Rad);
-    CORRADE_COMPARE_AS(b.rotationAngle(), Deg(23.0f), Rad);
+    CORRADE_COMPARE(a.rotation().axis(), Vector3::xAxis());
+    CORRADE_COMPARE(b.rotation().axis(), Vector3::xAxis());
+    CORRADE_COMPARE_AS(a.rotation().angle(), Deg(23.0f), Rad);
+    CORRADE_COMPARE_AS(b.rotation().angle(), Deg(23.0f), Rad);
 
     CORRADE_COMPARE(a.translation(), translation);
     CORRADE_COMPARE(b.translation(), Quaternion::rotation(Deg(23.0f), Vector3::xAxis()).transformVector(translation));

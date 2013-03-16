@@ -207,7 +207,12 @@ void DualComplexTest::rotation() {
     DualComplex a = DualComplex::rotation(Deg(120.0f));
     CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(a, DualComplex({-0.5f, 0.8660254f}, {0.0f, 0.0f}));
-    CORRADE_COMPARE_AS(a.rotationAngle(), Deg(120.0f), Rad);
+    CORRADE_COMPARE_AS(a.rotation().angle(), Deg(120.0f), Rad);
+
+    /* Constexpr access to rotation */
+    constexpr DualComplex b({-1.0f, 2.0f}, {});
+    constexpr Complex c = b.rotation();
+    CORRADE_COMPARE(c, Complex(-1.0f, 2.0f));
 }
 
 void DualComplexTest::translation() {
@@ -223,8 +228,8 @@ void DualComplexTest::combinedTransformParts() {
     DualComplex a = DualComplex::translation(translation)*DualComplex::rotation(Deg(23.0f));
     DualComplex b = DualComplex::rotation(Deg(23.0f))*DualComplex::translation(translation);
 
-    CORRADE_COMPARE_AS(a.rotationAngle(), Deg(23.0f), Rad);
-    CORRADE_COMPARE_AS(b.rotationAngle(), Deg(23.0f), Rad);
+    CORRADE_COMPARE_AS(a.rotation().angle(), Deg(23.0f), Rad);
+    CORRADE_COMPARE_AS(b.rotation().angle(), Deg(23.0f), Rad);
     CORRADE_COMPARE(a.translation(), translation);
     CORRADE_COMPARE(b.translation(), Complex::rotation(Deg(23.0f)).transformVector(translation));
 }

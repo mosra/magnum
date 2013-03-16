@@ -54,9 +54,9 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * Expects that the rotation axis is normalized. @f[
          *      \hat q = [\boldsymbol a \cdot sin \frac \theta 2, cos \frac \theta 2] + \epsilon [\boldsymbol 0, 0]
          * @f]
-         * @see rotationAngle(), rotationAxis(), Quaternion::rotation(),
-         *      Matrix4::rotation(), DualComplex::rotation(), Vector3::xAxis(),
-         *      Vector3::yAxis(), Vector3::zAxis(), Vector::isNormalized()
+         * @see rotation() const, Quaternion::rotation(), Matrix4::rotation(),
+         *      DualComplex::rotation(), Vector3::xAxis(), Vector3::yAxis(),
+         *      Vector3::zAxis(), Vector::isNormalized()
          */
         inline static DualQuaternion<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis) {
             return {Quaternion<T>::rotation(angle, normalizedAxis), {{}, T(0)}};
@@ -145,29 +145,12 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         }
 
         /**
-         * @brief Rotation angle of unit dual quaternion
+         * @brief Rotation part of unit dual quaternion
          *
-         * Expects that the real part of the quaternion is normalized. @f[
-         *      \theta = 2 \cdot acos q_{S 0}
-         * @f]
-         * @see rotationAxis(), rotation(), Quaternion::rotationAngle()
+         * @see Quaternion::angle(), Quaternion::axis()
          */
-        inline Math::Rad<T> rotationAngle() const {
-            return this->real().rotationAngle();
-        }
-
-        /**
-         * @brief Rotation axis of unit dual quaternion
-         *
-         * Expects that the quaternion is normalized. Returns either unit-length
-         * vector for valid rotation quaternion or NaN vector for
-         * default-constructed quaternion. @f[
-         *      \boldsymbol a = \frac{\boldsymbol q_{V 0}}{\sqrt{1 - q_{S 0}^2}}
-         * @f]
-         * @see rotationAngle(), rotation(), Quaternion::rotationAxis()
-         */
-        inline Vector3<T> rotationAxis() const {
-            return this->real().rotationAxis();
+        inline constexpr Quaternion<T> rotation() const {
+            return this->real();
         }
 
         /**

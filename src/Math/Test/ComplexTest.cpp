@@ -273,15 +273,15 @@ void ComplexTest::rotation() {
     Complex a = Complex::rotation(Deg(120.0f));
     CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(a, Complex(-0.5f, 0.8660254f));
-    CORRADE_COMPARE_AS(a.rotationAngle(), Deg(120.0f), Rad);
+    CORRADE_COMPARE_AS(a.angle(), Deg(120.0f), Rad);
 
     /* Verify negative angle */
     Complex b = Complex::rotation(Deg(-240.0f));
     CORRADE_COMPARE(b, Complex(-0.5f, 0.8660254f));
-    CORRADE_COMPARE_AS(b.rotationAngle(), Deg(120.0f), Rad);
+    CORRADE_COMPARE_AS(b.angle(), Deg(120.0f), Rad);
 
     /* Default-constructed complex number has zero angle */
-    CORRADE_COMPARE_AS(Complex().rotationAngle(), Deg(0.0f), Rad);
+    CORRADE_COMPARE_AS(Complex().angle(), Deg(0.0f), Rad);
 }
 
 void ComplexTest::matrix() {
