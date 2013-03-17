@@ -30,6 +30,10 @@
 
 namespace Magnum { namespace Trade {
 
+AbstractImporter::AbstractImporter() = default;
+
+AbstractImporter::AbstractImporter(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin): AbstractPlugin(manager, std::move(plugin)) {}
+
 bool AbstractImporter::open(const std::string&) {
     Error() << plugin() << "doesn't support opening files";
     return false;
