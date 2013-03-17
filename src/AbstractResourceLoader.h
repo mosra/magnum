@@ -1,25 +1,32 @@
 #ifndef Magnum_AbstractResourceLoader_h
 #define Magnum_AbstractResourceLoader_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
  * @brief Class Magnum::AbstractResourceLoader
  */
-
-#include "Magnum.h"
 
 #include <string>
 
@@ -30,13 +37,68 @@ namespace Magnum {
 /**
 @brief Base for resource loaders
 
-Provides asynchronous resource loading for ResourceManager.
+Provides (a)synchronous resource loading for ResourceManager.
+
+@section AbstractResourceLoader-usage Usage and subclassing
+
+Usage is done by subclassing. Subclass instances can be added to
+ResourceManager using ResourceManager::setLoader(). After adding the loader,
+each call to ResourceManager::get() will call load() implementation unless the
+resource is already loaded (or loading is in progress). Note that resources
+requested before the loader was added are not be affected by the loader.
+
+Subclassing is done by implementing at least load() function. The loading can
+be done synchronously or asynchronously (i.e., in another thread). The base
+implementation provides interface to ResourceManager and manages loading
+progress (which is then available through functions requestedCount(),
+loadedCount() and notFoundCount()). You shouldn't access the ResourceManager
+directly when loading the data.
+
+Your load() implementation must call the base implementation at the beginning
+so ResourceManager is informed about loading state. Then, after your resources
+are loaded, call set() to pass them to ResourceManager or call setNotFound()
+to indicate that the resource was not found.
+
+You can also implement name() to provide meaningful names for resource keys.
+
+Example implementation for synchronous mesh loader:
+@code
+class MeshResourceLoader: public AbstractResourceLoader<Mesh> {
+    public:
+        void load(ResourceKey key) {
+            // Indicate that loading has begun
+            AbstractResourceLoader<Mesh>::load(key);
+
+            // Load the mesh...
+
+            // Not found
+            if(!found) {
+                setNotFound(key);
+                return;
+            }
+
+            // Found, pass it to resource manager
+            set(key, mesh, state, policy);
+        }
+};
+@endcode
+
+You can then add it to resource manager instance like this:
+@code
+MyResourceManager manager;
+MeshResourceLoader loader;
+
+manager->setLoader(loader);
+
+// This will now automatically request the mesh from loader by calling load()
+Resource<Mesh> myMesh = manager->get<Mesh>("my-mesh");
+@endcode
 */
 template<class T> class AbstractResourceLoader {
     friend class Implementation::ResourceManagerData<T>;
 
     public:
-        inline AbstractResourceLoader(): manager(nullptr), _requestedCount(0), _loadedCount(0), _notFoundCount(0) {}
+        inline explicit AbstractResourceLoader(): manager(nullptr), _requestedCount(0), _loadedCount(0), _notFoundCount(0) {}
 
         inline virtual ~AbstractResourceLoader() {
             if(manager) manager->_loader = nullptr;
@@ -55,7 +117,7 @@ template<class T> class AbstractResourceLoader {
          * Count of resources requested by calling load(), but not found by
          * the loader.
          */
-        inline std::size_t notFountCount() const { return _notFoundCount; }
+        inline std::size_t notFoundCount() const { return _notFoundCount; }
 
         /**
          * @brief Count of loaded resources
@@ -78,11 +140,12 @@ template<class T> class AbstractResourceLoader {
          *
          * If the resource isn't yet loaded or loading, state of the resource
          * is set to @ref Resource::ResourceState "ResourceState::Loading" and count of
-         * requested features is incremented.
+         * requested features is incremented. Depending on implementation the
+         * resource might be loaded synchronously or asynchronously.
          *
-         * The resource might be loaded asynchronously and added to
-         * ResourceManager when loading is done.
-         * @see ResourceManager::state(), requestedCount(), notFountCount(),
+         * See class documentation for reimplementation guide.
+         *
+         * @see ResourceManager::state(), requestedCount(), notFoundCount(),
          *      loadedCount()
          */
         virtual void load(ResourceKey key) = 0;

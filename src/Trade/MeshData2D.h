@@ -1,18 +1,27 @@
 #ifndef Magnum_Trade_MeshData2D_h
 #define Magnum_Trade_MeshData2D_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -21,7 +30,6 @@
 
 #include <string>
 
-#include "Math/Point2D.h"
 #include "Mesh.h"
 
 namespace Magnum { namespace Trade {
@@ -35,14 +43,11 @@ type.
 */
 class MAGNUM_EXPORT MeshData2D {
     MeshData2D(const MeshData2D& other) = delete;
-    MeshData2D(MeshData2D&& other) = delete;
     MeshData2D& operator=(const MeshData2D& other) = delete;
-    MeshData2D& operator=(MeshData2D&& other) = delete;
 
     public:
         /**
          * @brief Constructor
-         * @param name              %Mesh name
          * @param primitive         Primitive
          * @param indices           Array with indices or 0, if this is not
          *      indexed mesh
@@ -51,13 +56,16 @@ class MAGNUM_EXPORT MeshData2D {
          * @param textureCoords2D   Array with two-dimensional texture
          *      coordinate arrays or empty array
          */
-        inline MeshData2D(const std::string& name, Mesh::Primitive primitive, std::vector<std::uint32_t>* indices, std::vector<std::vector<Point2D>*> positions, std::vector<std::vector<Vector2>*> textureCoords2D): _name(name), _primitive(primitive), _indices(indices), _positions(positions), _textureCoords2D(textureCoords2D) {}
+        inline MeshData2D(Mesh::Primitive primitive, std::vector<UnsignedInt>* indices, std::vector<std::vector<Vector2>*> positions, std::vector<std::vector<Vector2>*> textureCoords2D): _primitive(primitive), _indices(indices), _positions(positions), _textureCoords2D(textureCoords2D) {}
+
+        /** @brief Move constructor */
+        MeshData2D(MeshData2D&&) = default;
 
         /** @brief Destructor */
         ~MeshData2D();
 
-        /** @brief %Mesh name */
-        inline std::string name() const { return _name; }
+        /** @brief Move assignment */
+        MeshData2D& operator=(MeshData2D&&) = default;
 
         /** @brief Primitive */
         inline Mesh::Primitive primitive() const { return _primitive; }
@@ -66,11 +74,11 @@ class MAGNUM_EXPORT MeshData2D {
          * @brief Indices
          * @return Indices or nullptr if the mesh is not indexed.
          */
-        inline std::vector<std::uint32_t>* indices() { return _indices; }
-        inline const std::vector<std::uint32_t>* indices() const { return _indices; } /**< @overload */
+        inline std::vector<UnsignedInt>* indices() { return _indices; }
+        inline const std::vector<UnsignedInt>* indices() const { return _indices; } /**< @overload */
 
         /** @brief Count of vertex position arrays */
-        inline std::uint32_t positionArrayCount() const { return _positions.size(); }
+        inline UnsignedInt positionArrayCount() const { return _positions.size(); }
 
         /**
          * @brief Positions
@@ -78,11 +86,11 @@ class MAGNUM_EXPORT MeshData2D {
          * @return Positions or nullptr if there is no vertex array with given
          *      ID.
          */
-        inline std::vector<Point2D>* positions(std::uint32_t id) { return _positions[id]; }
-        inline const std::vector<Point2D>* positions(std::uint32_t id) const { return _positions[id]; } /**< @overload */
+        inline std::vector<Vector2>* positions(UnsignedInt id) { return _positions[id]; }
+        inline const std::vector<Vector2>* positions(UnsignedInt id) const { return _positions[id]; } /**< @overload */
 
         /** @brief Count of 2D texture coordinate arrays */
-        inline std::uint32_t textureCoords2DArrayCount() const { return _textureCoords2D.size(); }
+        inline UnsignedInt textureCoords2DArrayCount() const { return _textureCoords2D.size(); }
 
         /**
          * @brief 2D texture coordinates
@@ -90,14 +98,13 @@ class MAGNUM_EXPORT MeshData2D {
          * @return %Texture coordinates or nullptr if there is no texture
          *      coordinates array with given ID.
          */
-        inline std::vector<Vector2>* textureCoords2D(std::uint32_t id) { return _textureCoords2D[id]; }
-        inline const std::vector<Vector2>* textureCoords2D(std::uint32_t id) const { return _textureCoords2D[id]; } /**< @overload */
+        inline std::vector<Vector2>* textureCoords2D(UnsignedInt id) { return _textureCoords2D[id]; }
+        inline const std::vector<Vector2>* textureCoords2D(UnsignedInt id) const { return _textureCoords2D[id]; } /**< @overload */
 
     private:
-        std::string _name;
         Mesh::Primitive _primitive;
-        std::vector<std::uint32_t>* _indices;
-        std::vector<std::vector<Point2D>*> _positions;
+        std::vector<UnsignedInt>* _indices;
+        std::vector<std::vector<Vector2>*> _positions;
         std::vector<std::vector<Vector2>*> _textureCoords2D;
 };
 

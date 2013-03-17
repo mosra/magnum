@@ -1,16 +1,25 @@
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 #include "Sdl2Application.h"
@@ -40,10 +49,10 @@ Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
 
 }
 
-Sdl2Application::Sdl2Application(int, char**, const std::string& name, const Math::Vector2<GLsizei>& size): _redraw(true) {
+Sdl2Application::Sdl2Application(int, char**, const std::string& name, const Vector2i& size): flags(Flag::Redraw) {
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         Error() << "Cannot initialize SDL.";
-        exit(1);
+        std::exit(1);
     }
 
     /* Enable double buffering and 24bt depth buffer */
@@ -54,7 +63,7 @@ Sdl2Application::Sdl2Application(int, char**, const std::string& name, const Mat
         size.x(), size.y(), SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     if(!window) {
         Error() << "Cannot create window.";
-        exit(2);
+        std::exit(2);
     }
 
     context = SDL_GL_CreateContext(window);
@@ -83,7 +92,7 @@ Sdl2Application::~Sdl2Application() {
 }
 
 int Sdl2Application::exec() {
-    for(;;) {
+    while(!(flags & Flag::Exit)) {
         SDL_Event event;
 
         while(SDL_PollEvent(&event)) {
@@ -92,10 +101,10 @@ int Sdl2Application::exec() {
                     switch(event.window.event) {
                         case SDL_WINDOWEVENT_RESIZED:
                             viewportEvent({event.window.data1, event.window.data2});
-                            _redraw = true;
+                            flags |= Flag::Redraw;
                             break;
                         case SDL_WINDOWEVENT_EXPOSED:
-                            _redraw = true;
+                            flags |= Flag::Redraw;
                             break;
                     } break;
 
@@ -103,15 +112,13 @@ int Sdl2Application::exec() {
                 case SDL_KEYUP: {
                     KeyEvent e(static_cast<KeyEvent::Key>(event.key.keysym.sym), fixedModifiers(event.key.keysym.mod));
                     event.type == SDL_KEYDOWN ? keyPressEvent(e) : keyReleaseEvent(e);
-                    break;
-                }
+                } break;
 
                 case SDL_MOUSEBUTTONDOWN:
                 case SDL_MOUSEBUTTONUP: {
                     MouseEvent e(static_cast<MouseEvent::Button>(event.button.button), {event.button.x, event.button.y});
                     event.type == SDL_MOUSEBUTTONDOWN ? mousePressEvent(e) : mouseReleaseEvent(e);
-                    break;
-                }
+                } break;
 
                 case SDL_MOUSEWHEEL:
                     if(event.wheel.y != 0) {
@@ -129,8 +136,8 @@ int Sdl2Application::exec() {
             }
         }
 
-        if(_redraw) {
-            _redraw = false;
+        if(flags & Flag::Redraw) {
+            flags &= ~Flag::Redraw;
             drawEvent();
         } else Corrade::Utility::sleep(5);
     }

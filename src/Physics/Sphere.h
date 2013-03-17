@@ -1,18 +1,27 @@
 #ifndef Magnum_Physics_Sphere_h
 #define Magnum_Physics_Sphere_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -33,11 +42,12 @@ namespace Magnum { namespace Physics {
 Unlike other elements the sphere doesn't support asymmetric scaling. When
 applying transformation, the scale factor is averaged from all axes.
 @see Sphere2D, Sphere3D
+@todo Assert for asymmetric scaling
 */
-template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Sphere: public AbstractShape<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Sphere: public AbstractShape<dimensions> {
     public:
         /** @brief Constructor */
-        inline Sphere(const typename DimensionTraits<dimensions>::VectorType& position, float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
+        inline explicit Sphere(const typename DimensionTraits<dimensions>::VectorType& position, Float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
 
         inline typename AbstractShape<dimensions>::Type type() const override {
             return AbstractShape<dimensions>::Type::Sphere;
@@ -58,10 +68,10 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Sphere: public Abs
         }
 
         /** @brief Radius */
-        inline float radius() const { return _radius; }
+        inline Float radius() const { return _radius; }
 
         /** @brief Set radius */
-        inline void setRadius(float radius) { _radius = radius; }
+        inline void setRadius(Float radius) { _radius = radius; }
 
         /** @brief Transformed position */
         inline typename DimensionTraits<dimensions>::VectorType transformedPosition() const {
@@ -69,7 +79,7 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Sphere: public Abs
         }
 
         /** @brief Transformed radius */
-        inline float transformedRadius() const {
+        inline Float transformedRadius() const {
             return _transformedRadius;
         }
 
@@ -88,7 +98,7 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT Sphere: public Abs
     private:
         typename DimensionTraits<dimensions>::VectorType _position,
             _transformedPosition;
-        float _radius, _transformedRadius;
+        Float _radius, _transformedRadius;
 };
 
 /** @brief Two-dimensional sphere */
@@ -98,13 +108,13 @@ typedef Sphere<2> Sphere2D;
 typedef Sphere<3> Sphere3D;
 
 /** @collisionoperator{Point,Sphere} */
-template<std::uint8_t dimensions> inline bool operator%(const Point<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
+template<UnsignedInt dimensions> inline bool operator%(const Point<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
 
 /** @collisionoperator{Line,Sphere} */
-template<std::uint8_t dimensions> inline bool operator%(const Line<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
+template<UnsignedInt dimensions> inline bool operator%(const Line<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
 
 /** @collisionoperator{LineSegment,Sphere} */
-template<std::uint8_t dimensions> inline bool operator%(const LineSegment<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
+template<UnsignedInt dimensions> inline bool operator%(const LineSegment<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
 
 }}
 

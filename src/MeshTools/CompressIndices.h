@@ -1,18 +1,27 @@
 #ifndef Magnum_MeshTools_CompressIndices_h
 #define Magnum_MeshTools_CompressIndices_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -22,33 +31,11 @@
 #include <tuple>
 
 #include "Buffer.h"
-#include "TypeTraits.h"
+#include "Mesh.h"
 
 #include "magnumMeshToolsVisibility.h"
 
 namespace Magnum { namespace MeshTools {
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-namespace Implementation {
-
-class MAGNUM_MESHTOOLS_EXPORT CompressIndices {
-    public:
-        CompressIndices(const std::vector<std::uint32_t>& indices): indices(indices) {}
-
-        std::tuple<std::size_t, Type, char*> operator()() const;
-
-        void operator()(IndexedMesh* mesh, Buffer* buffer, Buffer::Usage usage) const;
-
-    private:
-        struct Compressor {
-            template<class IndexType> static std::tuple<std::size_t, Type, char*> run(const std::vector<std::uint32_t>& indices);
-        };
-
-        const std::vector<std::uint32_t>& indices;
-};
-
-}
-#endif
 
 /**
 @brief Compress vertex indices
@@ -63,20 +50,18 @@ sufficient. Size of the buffer can be computed from index count and type, as
 shown below. Example usage:
 @code
 std::size_t indexCount;
-Type indexType;
+Mesh::IndexType indexType;
 char* data;
 std::tie(indexCount, indexType, data) = MeshTools::compressIndices(indices);
-std::size_t dataSize = indexCount*TypeInfo::sizeOf(indexType);
+std::size_t dataSize = indexCount*Mesh::indexSize(indexType);
 // ...
 delete[] data;
 @endcode
 
-See also compressIndices(IndexedMesh*, Buffer::Usage, const std::vector<std::uint32_t>&),
+See also compressIndices(Mesh*, Buffer*, Buffer::Usage, const std::vector<UnsignedInt>&),
 which writes the compressed data directly into index buffer of given mesh.
 */
-inline std::tuple<std::size_t, Type, char*> compressIndices(const std::vector<std::uint32_t>& indices) {
-    return Implementation::CompressIndices{indices}();
-}
+std::tuple<std::size_t, Mesh::IndexType, char*> MAGNUM_MESHTOOLS_EXPORT compressIndices(const std::vector<UnsignedInt>& indices);
 
 /**
 @brief Compress vertex indices and write them to index buffer
@@ -85,17 +70,14 @@ inline std::tuple<std::size_t, Type, char*> compressIndices(const std::vector<st
 @param usage    Index buffer usage
 @param indices  Index array
 
-The same as compressIndices(const std::vector<std::uint32_t>&), but this
-function writes the output to given index buffer and updates index count and
-type in the mesh accordingly, so you don't have to call
-IndexedMesh::setIndexBuffer(), IndexedMesh::setIndexCount() and
-IndexedMesh::setIndexType() on your own.
+The same as compressIndices(const std::vector<UnsignedInt>&), but this
+function writes the output to given buffer, updates index count and specifies
+index buffer with proper index range in the mesh, so you don't have to call
+Mesh::setIndexCount() and Mesh::setIndexBuffer() on your own.
 
 @see MeshTools::interleave()
 */
-inline void compressIndices(IndexedMesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<std::uint32_t>& indices) {
-    return Implementation::CompressIndices{indices}(mesh, buffer, usage);
-}
+void MAGNUM_MESHTOOLS_EXPORT compressIndices(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<UnsignedInt>& indices);
 
 }}
 

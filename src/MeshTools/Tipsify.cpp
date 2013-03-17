@@ -1,60 +1,67 @@
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 #include "Tipsify.h"
 
 #include <stack>
 
-using namespace std;
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Magnum { namespace MeshTools { namespace Implementation {
 
-void Tipsify::operator()(size_t cacheSize) {
+void Tipsify::operator()(std::size_t cacheSize) {
     /* Neighboring triangles for each vertex, per-vertex live triangle count */
-    std::vector<uint32_t> liveTriangleCount, neighborPosition, neighbors;
+    std::vector<UnsignedInt> liveTriangleCount, neighborPosition, neighbors;
     buildAdjacency(liveTriangleCount, neighborPosition, neighbors);
 
     /* Global time, per-vertex caching timestamps, per-triangle emmited flag */
-    uint32_t time = cacheSize+1;
-    std::vector<uint32_t> timestamp(vertexCount);
+    UnsignedInt time = cacheSize+1;
+    std::vector<UnsignedInt> timestamp(vertexCount);
     std::vector<bool> emitted(indices.size()/3);
 
     /* Dead-end vertex stack */
-    std::stack<uint32_t> deadEndStack;
+    std::stack<UnsignedInt> deadEndStack;
 
     /* Output index buffer */
-    std::vector<uint32_t> outputIndices;
+    std::vector<UnsignedInt> outputIndices;
     outputIndices.reserve(indices.size());
 
     /* Starting vertex for fanning, cursor */
-    uint32_t fanningVertex = 0;
-    uint32_t i = 0;
+    UnsignedInt fanningVertex = 0;
+    UnsignedInt i = 0;
     while(fanningVertex != 0xFFFFFFFFu) {
         /* Array with candidates for next fanning vertex (in 1-ring around
            fanning vertex) */
-        std::vector<uint32_t> candidates;
+        std::vector<UnsignedInt> candidates;
 
         /* For all neighbors of fanning vertex */
-        for(uint32_t ti = neighborPosition[fanningVertex], t = neighbors[ti]; ti != neighborPosition[fanningVertex+1]; t = neighbors[++ti]) {
+        for(UnsignedInt ti = neighborPosition[fanningVertex], t = neighbors[ti]; ti != neighborPosition[fanningVertex+1]; t = neighbors[++ti]) {
             /* Continue if already emitted */
             if(emitted[t]) continue;
             emitted[t] = true;
 
             /* Write all vertices of the triangle to output buffer */
-            for(uint32_t vi = 0, v = indices[t*3]; vi != 3; v = indices[++vi+t*3]) {
+            for(UnsignedInt vi = 0, v = indices[t*3]; vi != 3; v = indices[++vi+t*3]) {
                 outputIndices.push_back(v);
 
                 /* Add to dead end stack and candidates array */
@@ -75,9 +82,9 @@ void Tipsify::operator()(size_t cacheSize) {
         fanningVertex = 0xFFFFFFFFu;
 
         /* Go through candidates in 1-ring around fanning vertex */
-        int32_t candidatePriority = -1;
+        Int candidatePriority = -1;
         for(auto it = candidates.begin(); it != candidates.end(); ++it) {
-            uint32_t v = *it;
+            UnsignedInt v = *it;
 
             /* Skip if it doesn't have any live triangles */
             if(!liveTriangleCount[v]) continue;
@@ -85,7 +92,7 @@ void Tipsify::operator()(size_t cacheSize) {
             /* Get most fresh candidate which will still be in cache even
                after fanning. Every fanned triangle will generate at most
                two cache misses, thus 2*liveTriangleCount */
-            int32_t priority = 0;
+            Int priority = 0;
             if(time-timestamp[v]+2*liveTriangleCount[v] <= cacheSize)
                 priority = time-timestamp[v];
             if(priority > candidatePriority) {
@@ -121,12 +128,12 @@ void Tipsify::operator()(size_t cacheSize) {
     std::swap(indices, outputIndices);
 }
 
-void Tipsify::buildAdjacency(std::vector<uint32_t>& liveTriangleCount, std::vector<uint32_t>& neighborOffset, std::vector<uint32_t>& neighbors) const {
+void Tipsify::buildAdjacency(std::vector<UnsignedInt>& liveTriangleCount, std::vector<UnsignedInt>& neighborOffset, std::vector<UnsignedInt>& neighbors) const {
     /* How many times is each vertex referenced == count of neighboring
        triangles for each vertex */
     liveTriangleCount.clear();
     liveTriangleCount.resize(vertexCount);
-    for(size_t i = 0; i != indices.size(); ++i)
+    for(std::size_t i = 0; i != indices.size(); ++i)
         ++liveTriangleCount[indices[i]];
 
     /* Building offset array from counts. Neighbors for i-th vertex will at
@@ -136,8 +143,8 @@ void Tipsify::buildAdjacency(std::vector<uint32_t>& liveTriangleCount, std::vect
     neighborOffset.clear();
     neighborOffset.reserve(vertexCount+1);
     neighborOffset.push_back(0);
-    uint32_t sum = 0;
-    for(size_t i = 0; i != vertexCount; ++i) {
+    UnsignedInt sum = 0;
+    for(std::size_t i = 0; i != vertexCount; ++i) {
         neighborOffset.push_back(sum);
         sum += liveTriangleCount[i];
     }
@@ -146,7 +153,7 @@ void Tipsify::buildAdjacency(std::vector<uint32_t>& liveTriangleCount, std::vect
        positioning */
     neighbors.clear();
     neighbors.resize(sum);
-    for(size_t i = 0; i != indices.size(); ++i)
+    for(std::size_t i = 0; i != indices.size(); ++i)
         neighbors[neighborOffset[indices[i]+1]++] = i/3;
 }
 

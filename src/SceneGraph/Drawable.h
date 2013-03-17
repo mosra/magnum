@@ -1,18 +1,27 @@
 #ifndef Magnum_SceneGraph_Drawable_h
 #define Magnum_SceneGraph_Drawable_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -26,7 +35,7 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief %Drawable
 
-Adds drawing function to object. Each %Drawable is part of some DrawableGroup
+Adds drawing function to the object. Each %Drawable is part of some DrawableGroup
 and the whole group is drawn with particular camera using AbstractCamera::draw().
 
 @section Drawable-usage Usage
@@ -52,40 +61,77 @@ class DrawableObject: public Object3D, SceneGraph::Drawable3D<> {
 
 Then you add these objects to your scene and some drawable group and transform
 them as you like. You can also use DrawableGroup::add() and
-DrawableGroup::remove() for that.
+DrawableGroup::remove().
 @code
 Scene3D scene;
-SceneGraph::DrawableGroup3D<> group;
+SceneGraph::DrawableGroup3D<> drawables;
 
-(new DrawableObject(&scene, &group))
+(new DrawableObject(&scene, &drawables))
     ->translate(Vector3::yAxis(-0.3f))
-    ->rotateX(deg(30.0f));
-(new AnotherDrawableObject(&scene, &group))
+    ->rotateX(30.0_degf);
+(new AnotherDrawableObject(&scene, &drawables))
     ->translate(Vector3::zAxis(0.5f));
 // ...
 @endcode
 
 The last thing you need is Camera attached to some object (thus using its
-transformation) and with it you can perform drawing in your draw event:
+transformation) and with it you can perform drawing in your draw event
+implementation. See Camera2D and Camera3D documentation for more information.
 @code
 Camera3D<> camera(&cameraObject);
 
 void MyApplication::drawEvent() {
-    camera.draw(&group);
+    camera.draw(drawables);
+
+    swapBuffers();
+    // ...
 }
 @endcode
 
-@see Drawable2D, Drawable3D, DrawableGroup2D, DrawableGroup3D
+@section Drawable-performance Using drawable groups to improve performance
+
+You can organize your drawables to multiple groups to minimize OpenGL state
+changes - for example put all objects using the same shader, the same light
+setup etc into one group, then put all transparent into another and set common
+parameters once for whole group instead of setting them again in each draw()
+implementation. Example:
+@code
+Shaders::PhongShader* shader;
+SceneGraph::DrawableGroup3D<> phongObjects, transparentObjects;
+
+void MyApplication::drawEvent() {
+    shader->setProjectionMatrix(camera->projectionMatrix())
+          ->setLightPosition(lightPosition)
+          ->setLightColor(lightColor)
+          ->setAmbientColor(ambientColor);
+    camera.draw(phongObjects);
+
+    Renderer::setFeature(Renderer::Feature::Blending, true);
+    camera.draw(transparentObjects);
+    Renderer::setFeature(Renderer::Feature::Blending, false);
+
+    // ...
+}
+@endcode
+
+@see @ref scenegraph, Drawable2D, Drawable3D, DrawableGroup2D, DrawableGroup3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class T>
+template<UnsignedInt dimensions, class T>
 #else
-template<std::uint8_t dimensions, class T = GLfloat>
+template<UnsignedInt dimensions, class T = Float>
 #endif
 class Drawable: public AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T> {
     public:
-        /** @copydoc AbstractGroupedFeature::AbstractGroupedFeature() */
-        inline Drawable(AbstractObject<dimensions, T>* object, DrawableGroup<dimensions, T>* group = nullptr): AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>(object, group) {}
+        /**
+         * @brief Constructor
+         * @param object    %Object this drawable belongs to
+         * @param drawables Group this drawable belongs to
+         *
+         * Adds the feature to the object and also to the group, if specified.
+         * Otherwise you can use DrawableGroup::add().
+         */
+        inline explicit Drawable(AbstractObject<dimensions, T>* object, DrawableGroup<dimensions, T>* drawables = nullptr): AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>(object, drawables) {}
 
         /**
          * @brief Draw the object using given camera
@@ -98,6 +144,7 @@ class Drawable: public AbstractGroupedFeature<dimensions, Drawable<dimensions, T
         virtual void draw(const typename DimensionTraits<dimensions, T>::MatrixType& transformationMatrix, AbstractCamera<dimensions, T>* camera) = 0;
 };
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Two-dimensional drawable
 
@@ -105,15 +152,13 @@ Convenience alternative to <tt>%Drawable<2, T></tt>. See Drawable for more
 information.
 @note Not available on GCC < 4.7. Use <tt>%Drawable<2, T></tt> instead.
 @see Drawable3D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = GLfloat> using Drawable2D = Drawable<2, T>;
-#endif
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = Float>
 #else
-typedef Drawable<2, T = GLfloat> Drawable2D;
+template<class T>
 #endif
+using Drawable2D = Drawable<2, T>;
 
 /**
 @brief Three-dimensional drawable
@@ -122,34 +167,38 @@ Convenience alternative to <tt>%Drawable<3, T></tt>. See Drawable for more
 information.
 @note Not available on GCC < 4.7. Use <tt>%Drawable<3, T></tt> instead.
 @see Drawable2D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = GLfloat> using Drawable3D = Drawable<3, T>;
-#endif
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = Float>
 #else
-typedef Drawable<3, T = GLfloat> Drawable3D;
+template<class T>
+#endif
+using Drawable3D = Drawable<3, T>;
 #endif
 
 /**
 @brief Group of drawables
 
 See Drawable for more information.
-@see DrawableGroup2D, DrawableGroup3D
-@todoc Remove workaround when Doxygen supports alias template
+@see @ref scenegraph, DrawableGroup2D, DrawableGroup3D
 */
-#if !defined(CORRADE_GCC46_COMPATIBILITY) && !defined(DOXYGEN_GENERATING_OUTPUT)
-template<std::uint8_t dimensions, class T = GLfloat> using DrawableGroup = FeatureGroup<dimensions, Drawable<dimensions, T>, T>;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<UnsignedInt dimensions, class T = Float>
 #else
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class T>
+template<UnsignedInt dimensions, class T>
+#endif
+using DrawableGroup = FeatureGroup<dimensions, Drawable<dimensions, T>, T>;
 #else
-template<std::uint8_t dimensions, class T = GLfloat>
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<UnsignedInt dimensions, class T = Float>
+#else
+template<UnsignedInt dimensions, class T>
 #endif
 class DrawableGroup: public FeatureGroup<dimensions, Drawable<dimensions, T>, T> {};
 #endif
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Group of two-dimensional drawables
 
@@ -157,15 +206,13 @@ Convenience alternative to <tt>%DrawableGroup<2, T></tt>. See Drawable for
 more information.
 @note Not available on GCC < 4.7. Use <tt>%Drawable<2, T></tt> instead.
 @see DrawableGroup3D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = GLfloat> using DrawableGroup2D = DrawableGroup<2, T>;
-#endif
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = Float>
 #else
-typedef DrawableGroup<2, T = GLfloat> DrawableGroup2D;
+template<class T>
 #endif
+using DrawableGroup2D = DrawableGroup<2, T>;
 
 /**
 @brief Group of three-dimensional drawables
@@ -174,14 +221,13 @@ Convenience alternative to <tt>%DrawableGroup<3, T></tt>. See Drawable for
 more information.
 @note Not available on GCC < 4.7. Use <tt>%Drawable<3, T></tt> instead.
 @see DrawableGroup2D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = GLfloat> using DrawableGroup3D = DrawableGroup<3, T>;
-#endif
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = Float>
 #else
-typedef DrawableGroup<3, T = GLfloat> DrawableGroup3D;
+template<class T>
+#endif
+using DrawableGroup3D = DrawableGroup<3, T>;
 #endif
 
 }}

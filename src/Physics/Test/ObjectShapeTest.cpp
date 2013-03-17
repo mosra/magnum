@@ -1,35 +1,52 @@
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
-#include "ObjectShapeTest.h"
+#include <TestSuite/Tester.h>
 
 #include "Physics/ObjectShapeGroup.h"
 #include "Physics/ObjectShape.h"
 #include "Physics/Point.h"
+#include "Physics/Sphere.h"
 #include "SceneGraph/MatrixTransformation3D.h"
 #include "SceneGraph/Scene.h"
 
-CORRADE_TEST_MAIN(Magnum::Physics::Test::ObjectShapeTest)
-
 namespace Magnum { namespace Physics { namespace Test {
+
+class ObjectShapeTest: public Corrade::TestSuite::Tester {
+    public:
+        ObjectShapeTest();
+
+        void clean();
+        void firstCollision();
+};
 
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
 
 ObjectShapeTest::ObjectShapeTest() {
-    addTests(&ObjectShapeTest::clean);
+    addTests({&ObjectShapeTest::clean,
+              &ObjectShapeTest::firstCollision});
 }
 
 void ObjectShapeTest::clean() {
@@ -38,7 +55,7 @@ void ObjectShapeTest::clean() {
 
     Object3D a(&scene);
     ObjectShape3D* shape = new ObjectShape3D(&a, &group);
-    shape->setShape(new Physics::Point3D({1.0f, -2.0f, 3.0f}));
+    shape->setShape(Physics::Point3D({1.0f, -2.0f, 3.0f}));
     a.scale(Vector3(-2.0f));
 
     Object3D b(&scene);
@@ -73,4 +90,41 @@ void ObjectShapeTest::clean() {
     CORRADE_VERIFY(b.isDirty());
 }
 
+void ObjectShapeTest::firstCollision() {
+    Scene3D scene;
+    ObjectShapeGroup3D group;
+
+    Object3D a(&scene);
+    ObjectShape3D* aShape = new ObjectShape3D(&a, &group);
+    aShape->setShape(Physics::Sphere3D({1.0f, -2.0f, 3.0f}, 1.5f));
+
+    Object3D b(&scene);
+    ObjectShape3D* bShape = new ObjectShape3D(&b, &group);
+    bShape->setShape(Physics::Point3D({3.0f, -2.0f, 3.0f}));
+
+    Object3D c(&scene);
+    ObjectShape3D* cShape = new ObjectShape3D(&c, &group);
+
+    /* No-op if the object has no shape */
+    CORRADE_VERIFY(group.isDirty());
+    CORRADE_VERIFY(!group.firstCollision(cShape));
+    CORRADE_VERIFY(group.isDirty());
+
+    /* No collisions initially */
+    CORRADE_VERIFY(!group.firstCollision(aShape));
+    CORRADE_VERIFY(!group.firstCollision(bShape));
+    CORRADE_VERIFY(!group.isDirty());
+
+    /* Move point into sphere */
+    b.translate(Vector3::xAxis(-1.0f));
+
+    /* Collision */
+    CORRADE_VERIFY(group.isDirty());
+    CORRADE_VERIFY(group.firstCollision(aShape) == bShape);
+    CORRADE_VERIFY(group.firstCollision(bShape) == aShape);
+    CORRADE_VERIFY(!group.isDirty());
+}
+
 }}}
+
+CORRADE_TEST_MAIN(Magnum::Physics::Test::ObjectShapeTest)

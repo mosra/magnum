@@ -1,18 +1,27 @@
 #ifndef Magnum_MeshTools_Clean_h
 #define Magnum_MeshTools_Clean_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -24,7 +33,6 @@
 #include <Utility/MurmurHash2.h>
 
 #include "Math/Vector.h"
-#include "TypeTraits.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -33,9 +41,9 @@ namespace Implementation {
 
 template<class Vertex, std::size_t vertexSize = Vertex::Size> class Clean {
     public:
-        inline Clean(std::vector<std::uint32_t>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
+        inline Clean(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
 
-        void operator()(typename Vertex::Type epsilon = TypeTraits<typename Vertex::Type>::epsilon()) {
+        void operator()(typename Vertex::Type epsilon = Math::TypeTraits<typename Vertex::Type>::epsilon()) {
             if(indices.empty()) return;
 
             /* Get mesh bounds */
@@ -111,12 +119,12 @@ template<class Vertex, std::size_t vertexSize = Vertex::Size> class Clean {
         };
 
         struct HashedVertex {
-            std::uint32_t oldIndex, newIndex;
+            UnsignedInt oldIndex, newIndex;
 
-            HashedVertex(std::uint32_t oldIndex, std::uint32_t newIndex): oldIndex(oldIndex), newIndex(newIndex) {}
+            HashedVertex(UnsignedInt oldIndex, UnsignedInt newIndex): oldIndex(oldIndex), newIndex(newIndex) {}
         };
 
-        std::vector<std::uint32_t>& indices;
+        std::vector<UnsignedInt>& indices;
         std::vector<Vertex>& vertices;
 };
 
@@ -140,7 +148,7 @@ Removes duplicate vertices from the mesh.
 @todo Interpolate vertices, not collapse them to first in the cell
 @todo Ability to specify other attributes for interpolation
 */
-template<class Vertex, std::size_t vertexSize = Vertex::Size> inline void clean(std::vector<std::uint32_t>& indices, std::vector<Vertex>& vertices, typename Vertex::Type epsilon = TypeTraits<typename Vertex::Type>::epsilon()) {
+template<class Vertex, std::size_t vertexSize = Vertex::Size> inline void clean(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices, typename Vertex::Type epsilon = Math::TypeTraits<typename Vertex::Type>::epsilon()) {
     Implementation::Clean<Vertex, vertexSize>(indices, vertices)(epsilon);
 }
 

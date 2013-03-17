@@ -1,18 +1,27 @@
 #ifndef Magnum_Math_Vector2_h
 #define Magnum_Math_Vector2_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 2
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 2 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -28,7 +37,7 @@ namespace Magnum { namespace Math {
 @tparam T   Data type
 
 See @ref matrix-vector for brief introduction.
-@see Magnum::Vector2
+@see Magnum::Vector2, Magnum::Vector2i, Magnum::Vector2ui, Magnum::Vector2d
 @configurationvalueref{Magnum::Math::Vector2}
 */
 template<class T> class Vector2: public Vector<2, T> {
@@ -72,20 +81,28 @@ template<class T> class Vector2: public Vector<2, T> {
         inline constexpr static Vector2<T> yScale(T scale) { return Vector2<T>(T(1), scale); }
 
         /** @copydoc Vector::Vector() */
-        inline constexpr Vector2() {}
+        inline constexpr /*implicit*/ Vector2() {}
 
         /** @copydoc Vector::Vector(T) */
-        inline constexpr explicit Vector2(T value): Vector<2, T>(value, value) {}
-
-        /** @brief Copy constructor */
-        inline constexpr Vector2(const RectangularMatrix<1, 2, T>& other): Vector<2, T>(other) {}
+        inline constexpr explicit Vector2(T value): Vector<2, T>(value) {}
 
         /**
          * @brief Constructor
-         * @param x     X component
-         * @param y     Y component
+         *
+         * @f[
+         *      \boldsymbol v = \begin{pmatrix} x \\ y \end{pmatrix}
+         * @f]
          */
-        inline constexpr Vector2(T x, T y): Vector<2, T>(x, y) {}
+        inline constexpr /*implicit*/ Vector2(T x, T y): Vector<2, T>(x, y) {}
+
+        /** @copydoc Vector::Vector(const Vector<size, U>&) */
+        template<class U> inline constexpr explicit Vector2(const Vector<2, U>& other): Vector<2, T>(other) {}
+
+        /** @brief Construct vector from external representation */
+        template<class U, class V = decltype(Implementation::VectorConverter<2, T, U>::from(std::declval<U>()))> inline constexpr explicit Vector2(const U& other): Vector<2, T>(Implementation::VectorConverter<2, T, U>::from(other)) {}
+
+        /** @brief Copy constructor */
+        inline constexpr Vector2(const Vector<2, T>& other): Vector<2, T>(other) {}
 
         inline T& x() { return (*this)[0]; }                /**< @brief X component */
         inline constexpr T x() const { return (*this)[0]; } /**< @overload */
@@ -93,7 +110,6 @@ template<class T> class Vector2: public Vector<2, T> {
         inline constexpr T y() const { return (*this)[1]; } /**< @overload */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector2, 2)
-        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 2, Vector2<T>)
 };
 
 MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Vector2, 2)

@@ -1,3 +1,27 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
 namespace Magnum {
 /** @page portability Writing portable applications
 @brief How to support different platforms and different OpenGL capabilities within one codebase.
@@ -71,10 +95,20 @@ You can also decide on particular OpenGL version using Context::isVersionSupport
 but remember that some features from that version might be available even if
 the drivers don't expose that version.
 
-Each feature is marked accordingly if it needs specific extension or specific
-OpenGL version. Various classes in %Magnum are taking advantage of some
-extensions and enable faster code paths if given extension is available, for
-example @ref AbstractShaderProgram-performance-optimization "AbstractShaderProgram",
+On the other hand, if you don't want to write fallback code for unsupported
+extensions, you can use macros MAGNUM_ASSERT_EXTENSION_SUPPORTED() or
+MAGNUM_ASSERT_VERSION_SUPPORTED() to add mandatory requirement of given
+extension or version:
+@code
+MAGNUM_ASSERT_EXTENSION_SUPPORTED(GL::ARB::geometry_shader4);
+// just use geometry shader and don't care about old hardware
+@endcode
+
+Each class, function or enum value is marked accordingly if it needs specific
+extension or specific OpenGL version. Various classes in %Magnum are taking
+advantage of some extensions and enable faster code paths if given extension is
+available, but also have proper fallback when it's not, for example
+@ref AbstractShaderProgram-performance-optimization "AbstractShaderProgram",
 @ref AbstractTexture-performance-optimization "AbstractTexture" or
 @ref Mesh-performance-optimization "Mesh". See also @ref required-extensions.
 
@@ -121,7 +155,7 @@ Your application might run on Windows box, on some embedded Linux or even in
 browser - each platform has different requirements how to create entry point
 to the application, how to handle input events, how to create window and
 OpenGL context etc. Namespace Platform contains base classes for applications
-which are abstracting most of it for your convenience.
+which are abstracting out most of it for your convenience.
 
 All the classes support limited form of static polymorphism, which means you
 can switch to another base class and probably don't need to change any other
@@ -136,7 +170,8 @@ macro is also aliased to MAGNUM_APPLICATION_MAIN() to save you typing.
 
 Example application, which targets both embedded Linux (using plain X and EGL)
 and desktop (using SDL2 toolkit). Thanks to static polymorphism most of the
-functions will work on both without changes:
+functions will work on both without changes, the main difference will be in
+particular *Event class implementations:
 @code
 #ifndef MAGNUM_TARGET_GLES
 #include <Platform/Sdl2Application.h>
@@ -157,7 +192,7 @@ class MyApplication: public ApplicationBase {
         }
 
     protected:
-        void viewportEvent(const Math::Vector2<GLsizei>& size) override {
+        void viewportEvent(const Vector2i& size) override {
             // ...
         }
 
@@ -165,7 +200,7 @@ class MyApplication: public ApplicationBase {
             // ...
         }
 
-        void keyPressEvent(Key key, Modifiers modifiers, const Math::Vector2<int>& position) {
+        void keyPressEvent(KeyEvent& event) override {
             // ...
         }
 };

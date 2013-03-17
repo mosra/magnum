@@ -1,24 +1,34 @@
 #ifndef Magnum_SceneGraph_Object_hpp
 #define Magnum_SceneGraph_Object_hpp
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
  * @brief @ref compilation-speedup-hpp "Template implementation" for Object.h
  */
 
+#include "AbstractTransformation.h"
 #include "Object.h"
 
 #include <algorithm>
@@ -27,6 +37,12 @@
 #include "Scene.h"
 
 namespace Magnum { namespace SceneGraph {
+
+template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::AbstractObject() {}
+template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::~AbstractObject() {}
+
+template<UnsignedInt dimensions, class T> inline AbstractTransformation<dimensions, T>::AbstractTransformation() {}
+template<UnsignedInt dimensions, class T> inline AbstractTransformation<dimensions, T>::~AbstractTransformation() {}
 
 template<class Transformation> Scene<Transformation>* Object<Transformation>::scene() {
     return static_cast<Scene<Transformation>*>(sceneObject());
@@ -62,7 +78,7 @@ template<class Transformation> Object<Transformation>* Object<Transformation>::s
     }
 
     /* Remove the object from old parent children list */
-    if(this->parent()) this->parent()->Corrade::Containers::LinkedList<Object<Transformation>>::cut(this);
+    if(this->parent()) this->parent()->Corrade::Containers::template LinkedList<Object<Transformation>>::cut(this);
 
     /* Add the object to list of new parent */
     if(parent) parent->Corrade::Containers::LinkedList<Object<Transformation>>::insert(this);
@@ -144,18 +160,39 @@ template<class Transformation> std::vector<typename DimensionTraits<Transformati
     return transformationMatrices;
 }
 
+/*
+Computing absolute transformations for given list of objects
+
+The goal is to compute absolute transformation only once for each object
+involved. Objects contained in the subtree specified by `object` list are
+divided into two groups:
+ - "joints", which are either part of `object` list or they have more than one
+   child in the subtree
+ - "non-joints", i.e. paths between joints
+
+Then for all joints their transformation (relative to parent joint) is
+computed and recursively concatenated together. Resulting transformations for
+joints which were originally in `object` list is then returned.
+*/
 template<class Transformation> std::vector<typename Transformation::DataType> Object<Transformation>::transformations(std::vector<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation) const {
+    CORRADE_ASSERT(objects.size() < 0xFFFFu, "SceneGraph::Object::transformations(): too large scene", {});
+
     /* Remember object count for later */
     std::size_t objectCount = objects.size();
 
-    /* Create initial list of joints from original objects */
-    std::vector<Object<Transformation>*> jointObjects(objects.size());
-    for(std::size_t i = 0; i != jointObjects.size(); ++i) {
-        jointObjects[i] = static_cast<Object<Transformation>*>(objects[i]);
-        CORRADE_INTERNAL_ASSERT(jointObjects[i]->counter == 0xFFFFu);
-        jointObjects[i]->counter = i;
-        jointObjects[i]->flags |= Flag::Joint;
+    /** @bug What if there is one objects twice in the list */
+
+    /* Mark all original objects as joints and create initial list of joints
+       from them */
+    for(std::size_t i = 0; i != objects.size(); ++i) {
+        /* Multiple occurences of one object in the array, don't overwrite it
+           with different counter */
+        if(objects[i]->counter != 0xFFFFu) continue;
+
+        objects[i]->counter = i;
+        objects[i]->flags |= Flag::Joint;
     }
+    std::vector<Object<Transformation>*> jointObjects(objects);
 
     /* Scene object */
     const Scene<Transformation>* scene = this->scene();
@@ -166,8 +203,13 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     /* Mark all objects up the hierarchy as visited */
     auto it = objects.begin();
     while(!objects.empty()) {
+        /* Already visited, remove and continue to next (duplicate occurence) */
+        if((*it)->flags & Flag::Visited) {
+            it = objects.erase(it);
+            continue;
+        }
+
         /* Mark the object as visited */
-        CORRADE_INTERNAL_ASSERT(!((*it)->flags & Flag::Visited));
         (*it)->flags |= Flag::Visited;
 
         Object<Transformation>* parent = (*it)->parent();
@@ -184,6 +226,8 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
             /* If not already marked as joint, mark it as such and add it to
                list of joint objects */
             if(!(parent->flags & Flag::Joint)) {
+                CORRADE_ASSERT(jointObjects.size() < 0xFFFFu,
+                               "SceneGraph::Object::transformations(): too large scene", {});
                 CORRADE_INTERNAL_ASSERT(parent->counter == 0xFFFFu);
                 parent->counter = jointObjects.size();
                 parent->flags |= Flag::Joint;
@@ -197,8 +241,6 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
         if(it == objects.end()) it = objects.begin();
     }
 
-    CORRADE_ASSERT(objects.size() < 0xFFFFu, "SceneGraph::Object::transformations(): too large scene", {});
-
     /* Array of absolute transformations in joints */
     std::vector<typename Transformation::DataType> jointTransformations(jointObjects.size());
 
@@ -206,9 +248,18 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     for(std::size_t i = 0; i != jointTransformations.size(); ++i)
         computeJointTransformation(jointObjects, jointTransformations, i, initialTransformation);
 
+    /* Copy transformation for second or next occurences from first occurence
+       of duplicate object */
+    for(std::size_t i = 0; i != objectCount; ++i) {
+        if(jointObjects[i]->counter != i)
+            jointTransformations[i] = jointTransformations[jointObjects[i]->counter];
+    }
+
     /* All visited marks are now cleaned, clean joint marks and counters */
     for(auto it = jointObjects.begin(); it != jointObjects.end(); ++it) {
-        CORRADE_INTERNAL_ASSERT((*it)->flags & Flag::Joint);
+        /* All not-already cleaned objects (...duplicate occurences) should
+           have joint mark */
+        CORRADE_INTERNAL_ASSERT((*it)->counter = 0xFFFFu || (*it)->flags & Flag::Joint);
         (*it)->flags &= ~Flag::Joint;
         (*it)->counter = 0xFFFFu;
     }
@@ -221,7 +272,8 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
 template<class Transformation> typename Transformation::DataType Object<Transformation>::computeJointTransformation(const std::vector<Object<Transformation>*>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const {
     Object<Transformation>* o = jointObjects[joint];
 
-    /* Transformation already computed ("unvisited" by this function before), done */
+    /* Transformation already computed ("unvisited" by this function before
+       either due to recursion or duplicate object occurences), done */
     if(!(o->flags & Flag::Visited)) return jointTransformations[joint];
 
     /* Initialize transformation */

@@ -1,38 +1,51 @@
 #ifndef Magnum_Math_Constants_h
 #define Magnum_Math_Constants_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
- * @brief Class Magnum::Math::Constants, functions Magnum::Math::deg(), Magnum::Math::rad()
+ * @brief Class Magnum::Math::Constants
  */
+
+#include "Types.h"
 
 namespace Magnum { namespace Math {
 
 /**
 @brief Numeric constants
 
-@see Magnum::Constants
+@see Magnum::Constants, Magnum::Constantsd
 */
 template<class T> struct Constants {
-    /* See MathTypeTraits for answer why these are functions and not constants. */
+    Constants() = delete;
+
+    /* See TypeTraits for answer why these are functions and not constants. */
     #ifdef DOXYGEN_GENERATING_OUTPUT
     /**
      * @brief Pi
      *
-     * @see deg(), rad()
+     * @see Deg, Rad
      */
     static inline constexpr T pi();
 
@@ -42,40 +55,21 @@ template<class T> struct Constants {
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<> struct Constants<double> {
-    static inline constexpr double pi()    { return 3.141592653589793; }
-    static inline constexpr double sqrt2() { return 1.414213562373095; }
-    static inline constexpr double sqrt3() { return 1.732050807568877; }
+template<> struct Constants<Double> {
+    Constants() = delete;
+
+    static inline constexpr Double pi()    { return 3.141592653589793; }
+    static inline constexpr Double sqrt2() { return 1.414213562373095; }
+    static inline constexpr Double sqrt3() { return 1.732050807568877; }
 };
-template<> struct Constants<float> {
-    static inline constexpr float pi()    { return 3.141592654f; }
-    static inline constexpr float sqrt2() { return 1.414213562f; }
-    static inline constexpr float sqrt3() { return 1.732050808f; }
+template<> struct Constants<Float> {
+    Constants() = delete;
+
+    static inline constexpr Float pi()    { return 3.141592654f; }
+    static inline constexpr Float sqrt2() { return 1.414213562f; }
+    static inline constexpr Float sqrt3() { return 1.732050808f; }
 };
 #endif
-
-/**
-@brief Angle in degrees
-
-Function to make angle entering less error-prone. Converts the value to
-radians at compile time. For example `deg(180.0f)` is converted to `3.14f`.
-
-Usable for entering e.g. rotation:
-@code
-Matrix4::rotation(deg(30.0f), Vector3::yAxis());
-@endcode
-
-This function (and also rad()) is available also in Magnum namespace itself.
-@see Constants, rad()
- */
-template<class T> inline constexpr T deg(T value) { return value*Constants<T>::pi()/180; }
-
-/**
- * @brief Angle in radians
- *
- * See deg() for more information.
- */
-template<class T> inline constexpr T rad(T value) { return value; }
 
 }}
 

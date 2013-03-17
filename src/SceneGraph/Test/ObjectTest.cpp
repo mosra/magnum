@@ -1,31 +1,49 @@
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
-#include "ObjectTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 
-#include "Math/Constants.h"
 #include "SceneGraph/MatrixTransformation3D.h"
 #include "SceneGraph/Scene.h"
 
-using namespace std;
-
-CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::ObjectTest)
-
 namespace Magnum { namespace SceneGraph { namespace Test {
+
+class ObjectTest: public Corrade::TestSuite::Tester {
+    public:
+        ObjectTest();
+
+        void parenting();
+        void scene();
+        void absoluteTransformation();
+        void transformations();
+        void transformationsRelative();
+        void transformationsOrphan();
+        void transformationsDuplicate();
+        void setClean();
+        void bulkSetClean();
+};
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
@@ -45,12 +63,15 @@ class CachingObject: public Object3D, AbstractFeature<3> {
 };
 
 ObjectTest::ObjectTest() {
-    addTests(&ObjectTest::parenting,
-             &ObjectTest::scene,
-             &ObjectTest::absoluteTransformation,
-             &ObjectTest::transformations,
-             &ObjectTest::setClean,
-             &ObjectTest::bulkSetClean);
+    addTests({&ObjectTest::parenting,
+              &ObjectTest::scene,
+              &ObjectTest::absoluteTransformation,
+              &ObjectTest::transformations,
+              &ObjectTest::transformationsRelative,
+              &ObjectTest::transformationsOrphan,
+              &ObjectTest::transformationsDuplicate,
+              &ObjectTest::setClean,
+              &ObjectTest::bulkSetClean});
 }
 
 void ObjectTest::parenting() {
@@ -103,10 +124,12 @@ void ObjectTest::absoluteTransformation() {
     /* Proper transformation composition */
     Object3D o(&s);
     o.translate(Vector3::xAxis(2.0f));
+    CORRADE_COMPARE(o.transformation(), Matrix4::translation(Vector3::xAxis(2.0f)));
+    CORRADE_COMPARE(o.transformation(), o.transformationMatrix());
     Object3D o2(&o);
-    o2.rotateY(deg(90.0f));
+    o2.rotateY(Deg(90.0f));
     CORRADE_COMPARE(o2.absoluteTransformation(),
-        Matrix4::translation(Vector3::xAxis(2.0f))*Matrix4::rotationY(deg(90.0f)));
+        Matrix4::translation(Vector3::xAxis(2.0f))*Matrix4::rotationY(Deg(90.0f)));
     CORRADE_COMPARE(o2.absoluteTransformation(), o2.absoluteTransformationMatrix());
 
     /* Transformation of root object */
@@ -118,72 +141,100 @@ void ObjectTest::absoluteTransformation() {
 void ObjectTest::transformations() {
     Scene3D s;
 
-    Matrix4 initial = Matrix4::rotationX(deg(90.0f)).inverted();
+    Matrix4 initial = Matrix4::rotationX(Deg(90.0f)).inverted();
 
     /* Empty list */
-    CORRADE_COMPARE(s.transformations(vector<Object3D*>(), initial), vector<Matrix4>());
+    CORRADE_COMPARE(s.transformations(std::vector<Object3D*>(), initial), std::vector<Matrix4>());
 
     /* Scene alone */
-    CORRADE_COMPARE(s.transformations({&s}, initial), vector<Matrix4>{initial});
+    CORRADE_COMPARE(s.transformations({&s}, initial), std::vector<Matrix4>{initial});
 
     /* One object */
     Object3D first(&s);
-    first.rotateZ(deg(30.0f));
+    first.rotateZ(Deg(30.0f));
     Object3D second(&first);
     second.scale(Vector3(0.5f));
-    CORRADE_COMPARE(s.transformations({&second}, initial), vector<Matrix4>{
-        initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::scaling(Vector3(0.5f))
+    CORRADE_COMPARE(s.transformations({&second}, initial), std::vector<Matrix4>{
+        initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::scaling(Vector3(0.5f))
     });
 
     /* One object and scene */
-    CORRADE_COMPARE(s.transformations({&second, &s}, initial), (vector<Matrix4>{
-        initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
+    CORRADE_COMPARE(s.transformations({&second, &s}, initial), (std::vector<Matrix4>{
+        initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
         initial
     }));
 
     /* Two objects with foreign joint */
     Object3D third(&first);
     third.translate(Vector3::xAxis(5.0f));
-    CORRADE_COMPARE(s.transformations({&second, &third}, initial), (vector<Matrix4>{
-        initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
-        initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f)),
+    CORRADE_COMPARE(s.transformations({&second, &third}, initial), (std::vector<Matrix4>{
+        initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
+        initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f)),
     }));
 
     /* Three objects with joint as one of them */
-    CORRADE_COMPARE(s.transformations({&second, &third, &first}, initial), (vector<Matrix4>{
-        initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
-        initial*Matrix4::rotationZ(deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f)),
-        initial*Matrix4::rotationZ(deg(30.0f)),
+    CORRADE_COMPARE(s.transformations({&second, &third, &first}, initial), (std::vector<Matrix4>{
+        initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
+        initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f)),
+        initial*Matrix4::rotationZ(Deg(30.0f)),
     }));
+}
 
-    {
-        CORRADE_EXPECT_FAIL("Transformations not relative to scene are not yet implemented.");
+void ObjectTest::transformationsRelative() {
+    CORRADE_EXPECT_FAIL("Transformations not relative to scene are not yet implemented.");
 
-        /* Transformation relative to another object */
-        CORRADE_COMPARE(second.transformations({&third}), vector<Matrix4>{
-            Matrix4::scaling(Vector3(0.5f)).inverted()*Matrix4::translation(Vector3::xAxis(5.0f))
-        });
+    Scene3D s;
+    Object3D first(&s);
+    first.rotateZ(Deg(30.0f));
+    Object3D second(&first);
+    second.scale(Vector3(0.5f));
+    Object3D third(&first);
+    third.translate(Vector3::xAxis(5.0f));
 
-        /* Transformation relative to another object, not part of any scene (but should work) */
-        Object3D orphanParent1;
-        orphanParent1.rotate(deg(31.0f), Vector3(1.0f).normalized());
-        Object3D orphanParent(&orphanParent1);
-        Object3D orphan1(&orphanParent);
-        orphan1.scale(Vector3::xScale(3.0f));
-        Object3D orphan2(&orphanParent);
-        orphan2.translate(Vector3::zAxis(5.0f));
-        CORRADE_COMPARE(orphan1.transformations({&orphan2}), vector<Matrix4>{
-            Matrix4::scaling(Vector3::xScale(3.0f)).inverted()*Matrix4::translation(Vector3::zAxis(5.0f))
-        });
-    }
+    /* Transformation relative to another object */
+    CORRADE_COMPARE(second.transformations({&third}), std::vector<Matrix4>{
+        Matrix4::scaling(Vector3(0.5f)).inverted()*Matrix4::translation(Vector3::xAxis(5.0f))
+    });
 
-    ostringstream o;
+    /* Transformation relative to another object, not part of any scene (but should work) */
+    Object3D orphanParent1;
+    orphanParent1.rotate(Deg(31.0f), Vector3(1.0f).normalized());
+    Object3D orphanParent(&orphanParent1);
+    Object3D orphan1(&orphanParent);
+    orphan1.scale(Vector3::xScale(3.0f));
+    Object3D orphan2(&orphanParent);
+    orphan2.translate(Vector3::zAxis(5.0f));
+    CORRADE_COMPARE(orphan1.transformations({&orphan2}), std::vector<Matrix4>{
+        Matrix4::scaling(Vector3::xScale(3.0f)).inverted()*Matrix4::translation(Vector3::zAxis(5.0f))
+    });
+}
+
+void ObjectTest::transformationsOrphan() {
+    std::ostringstream o;
     Error::setOutput(&o);
 
     /* Transformation of objects not part of the same scene */
+    Scene3D s;
     Object3D orphan;
-    CORRADE_COMPARE(s.transformations({&orphan}), vector<Matrix4>());
+    CORRADE_COMPARE(s.transformations({&orphan}), std::vector<Matrix4>());
     CORRADE_COMPARE(o.str(), "SceneGraph::Object::transformations(): the objects are not part of the same tree\n");
+}
+
+void ObjectTest::transformationsDuplicate() {
+    Scene3D s;
+    Object3D first(&s);
+    first.rotateZ(Deg(30.0f));
+    Object3D second(&first);
+    second.scale(Vector3(0.5f));
+    Object3D third(&first);
+    third.translate(Vector3::xAxis(5.0f));
+
+    Matrix4 firstExpected = Matrix4::rotationZ(Deg(30.0f));
+    Matrix4 secondExpected = Matrix4::rotationZ(Deg(30.0f))*Matrix4::scaling(Vector3(0.5f));
+    Matrix4 thirdExpected = Matrix4::rotationZ(Deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f));
+    CORRADE_COMPARE(s.transformations({&second, &third, &second, &first, &third}), (std::vector<Matrix4>{
+        secondExpected, thirdExpected, secondExpected, firstExpected, thirdExpected
+    }));
 }
 
 void ObjectTest::setClean() {
@@ -224,7 +275,7 @@ void ObjectTest::setClean() {
     CachingInvertedFeature* childTwoFeature2 = new CachingInvertedFeature(childTwo);
 
     CachingObject* childThree = new CachingObject(childTwo);
-    childThree->rotate(deg(90.0f), Vector3::yAxis());
+    childThree->rotate(Deg(90.0f), Vector3::yAxis());
 
     /* Object is dirty at the beginning */
     CORRADE_VERIFY(scene.isDirty());
@@ -283,7 +334,7 @@ void ObjectTest::setClean() {
 
 void ObjectTest::bulkSetClean() {
     /* Verify it doesn't crash when passed empty list */
-    Object3D::setClean(vector<Object3D*>());
+    Object3D::setClean(std::vector<Object3D*>());
 
     Scene3D scene;
     Object3D a(&scene);
@@ -294,7 +345,7 @@ void ObjectTest::bulkSetClean() {
     CachingObject d(&c);
     d.scale(Vector3(-2.0f));
     Object3D e(&scene);
-    vector<Object3D*> cleanAll{&a, &b, &c, &d, &e};
+    std::vector<Object3D*> cleanAll{&a, &b, &c, &d, &e};
 
     /* All objects should be cleaned */
     CORRADE_VERIFY(a.isDirty());
@@ -314,3 +365,5 @@ void ObjectTest::bulkSetClean() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::ObjectTest)

@@ -1,9 +1,34 @@
-# Extension wrangler
-add_library(MagnumPlatformExtensionWrangler OBJECT ExtensionWrangler.cpp)
+#
+#   This file is part of Magnum.
+#
+#   Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+#
+#   Permission is hereby granted, free of charge, to any person obtaining a
+#   copy of this software and associated documentation files (the "Software"),
+#   to deal in the Software without restriction, including without limitation
+#   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+#   and/or sell copies of the Software, and to permit persons to whom the
+#   Software is furnished to do so, subject to the following conditions:
+#
+#   The above copyright notice and this permission notice shall be included
+#   in all copies or substantial portions of the Software.
+#
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+#   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+#   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+#   DEALINGS IN THE SOFTWARE.
+#
 
 set(MagnumPlatform_HEADERS
     AbstractContextHandler.h
     ExtensionWrangler.h)
+
+# Extension wrangler
+add_library(MagnumPlatformExtensionWrangler OBJECT ExtensionWrangler.cpp)
+
 install(FILES ${MagnumPlatform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 
 # GLUT application
@@ -16,7 +41,7 @@ if(WITH_GLUTAPPLICATION)
         install(FILES GlutApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
         install(TARGETS MagnumGlutApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
     else()
-        message(FATAL_ERROR "GLUT library, required by GlutApplication, was not found. Set WITH_GLUTWINDOWCONTEXT to OFF to skip building it.")
+        message(FATAL_ERROR "GLUT library, required by GlutApplication, was not found. Set WITH_GLUTAPPLICATION to OFF to skip building it.")
     endif()
 endif()
 
@@ -31,7 +56,7 @@ if(WITH_SDL2APPLICATION)
         install(FILES Sdl2Application.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
         install(TARGETS MagnumSdl2Application DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
     else()
-        message(FATAL_ERROR "SDL2 library, required by Sdl2Application, was not found. Set WITH_SDL2WINDOWCONTEXT to OFF to skip building it.")
+        message(FATAL_ERROR "SDL2 library, required by Sdl2Application, was not found. Set WITH_SDL2APPLICATION to OFF to skip building it.")
     endif()
 endif()
 
@@ -59,8 +84,8 @@ if(WITH_GLXAPPLICATION)
     install(TARGETS MagnumGlxApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
-# X/EGL window context
-if(WITH_XEGLWINDOWCONTEXT)
+# X/EGL application
+if(WITH_XEGLAPPLICATION)
     set(NEED_ABSTRACTXAPPLICATION 1)
     set(NEED_EGLCONTEXT 1)
     add_library(MagnumXEglApplication STATIC
@@ -71,12 +96,26 @@ if(WITH_XEGLWINDOWCONTEXT)
     install(TARGETS MagnumXEglApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
-# Abstract X application
-if(NEED_ABSTRACTXAPPLICATION)
+if(WITH_WINDOWLESSGLXAPPLICATION OR NEED_ABSTRACTXAPPLICATION)
     find_package(X11)
     if(NOT X11_FOUND)
-        message(FATAL_ERROR "X11 library, required by some contexts, was not found. Set WITH_*X*WINDOWCONTEXT to OFF to skip building them.")
+        message(FATAL_ERROR "X11 library, required by some contexts, was not found. Set WITH_*X*APPLICATION to OFF to skip building them.")
     endif()
+endif()
+
+# Windowless GLX application
+if(WITH_WINDOWLESSGLXAPPLICATION)
+    add_library(MagnumWindowlessGlxApplication STATIC
+        WindowlessGlxApplication.cpp
+        $<TARGET_OBJECTS:MagnumPlatformExtensionWrangler>)
+    # X11 macros are a mess, disable warnings for C-style casts
+    set_target_properties(MagnumWindowlessGlxApplication PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
+    install(FILES WindowlessGlxApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(TARGETS MagnumWindowlessGlxApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+endif()
+
+# Abstract X application
+if(NEED_ABSTRACTXAPPLICATION)
     add_library(MagnumAbstractXApplication OBJECT AbstractXApplication.cpp)
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumAbstractXApplication PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
@@ -95,10 +134,21 @@ endif()
 if(NEED_EGLCONTEXT)
     find_package(EGL)
     if(NOT EGL_FOUND)
-        message(FATAL_ERROR "EGL library, required by some window contexts, was not found. Set WITH_*EGL*WINDOWCONTEXT to OFF to skip building them.")
+        message(FATAL_ERROR "EGL library, required by some window contexts, was not found. Set WITH_*EGL*APPLICATION to OFF to skip building them.")
     endif()
     add_library(MagnumEglContextHandler OBJECT EglContextHandler.cpp)
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumEglContextHandler PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
     install(FILES EglContextHandler.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+endif()
+
+# Magnum Info
+if(WITH_MAGNUMINFO)
+    if(UNIX)
+        add_executable(magnum-info magnum-info.cpp)
+        target_link_libraries(magnum-info Magnum MagnumWindowlessGlxApplication ${X11_LIBRARIES})
+        install(TARGETS magnum-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+    else()
+        message(WARNING "magnum-info is currently available only on Unix. Set WITH_MAGNUMINFO to OFF to suppress this warning.")
+    endif()
 endif()

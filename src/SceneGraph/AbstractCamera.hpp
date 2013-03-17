@@ -1,18 +1,27 @@
 #ifndef Magnum_SceneGraph_AbstractCamera_hpp
 #define Magnum_SceneGraph_AbstractCamera_hpp
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -30,7 +39,7 @@ namespace Magnum { namespace SceneGraph {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
-template<std::uint8_t dimensions, class T> class Camera {};
+template<UnsignedInt dimensions, class T> class Camera {};
 
 template<class T> class Camera<2, T> {
     public:
@@ -45,12 +54,12 @@ template<class T> class Camera<3, T> {
         }
 };
 
-template<std::uint8_t dimensions, class T> typename DimensionTraits<dimensions, T>::MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Math::Vector2<GLsizei>& viewport) {
+template<UnsignedInt dimensions, class T> typename DimensionTraits<dimensions, T>::MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Vector2i& viewport) {
     /* Don't divide by zero / don't preserve anything */
     if(projectionScale.x() == 0 || projectionScale.y() == 0 || viewport.x() == 0 || viewport.y() == 0 || aspectRatioPolicy == AspectRatioPolicy::NotPreserved)
         return {};
 
-    Math::Vector2<T> relativeAspectRatio = Math::Vector2<T>::from(viewport)*projectionScale;
+    Math::Vector2<T> relativeAspectRatio = Math::Vector2<T>(viewport)*projectionScale;
 
     /* Extend on larger side = scale larger side down
        Clip on smaller side = scale smaller side up */
@@ -63,18 +72,24 @@ template<std::uint8_t dimensions, class T> typename DimensionTraits<dimensions, 
 }
 #endif
 
-template<std::uint8_t dimensions, class T> AbstractCamera<dimensions, T>* AbstractCamera<dimensions, T>::setAspectRatioPolicy(AspectRatioPolicy policy) {
+template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::AbstractCamera(AbstractObject<dimensions, T>* object): AbstractFeature<dimensions, T>(object), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {
+    AbstractFeature<dimensions, T>::setCachedTransformations(AbstractFeature<dimensions, T>::CachedTransformation::InvertedAbsolute);
+}
+
+template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::~AbstractCamera() {}
+
+template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>* AbstractCamera<dimensions, T>::setAspectRatioPolicy(AspectRatioPolicy policy) {
     _aspectRatioPolicy = policy;
     fixAspectRatio();
     return this;
 }
 
-template<std::uint8_t dimensions, class T> void AbstractCamera<dimensions, T>::setViewport(const Math::Vector2<GLsizei>& size) {
+template<UnsignedInt dimensions, class T> void AbstractCamera<dimensions, T>::setViewport(const Vector2i& size) {
     _viewport = size;
     fixAspectRatio();
 }
 
-template<std::uint8_t dimensions, class T> void AbstractCamera<dimensions, T>::draw(DrawableGroup<dimensions, T>& group) {
+template<UnsignedInt dimensions, class T> void AbstractCamera<dimensions, T>::draw(DrawableGroup<dimensions, T>& group) {
     AbstractObject<dimensions, T>* scene = AbstractFeature<dimensions, T>::object()->sceneObject();
     CORRADE_ASSERT(scene, "Camera::draw(): cannot draw when camera is not part of any scene", );
 

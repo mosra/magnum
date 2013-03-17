@@ -1,23 +1,31 @@
 #ifndef Magnum_DimensionTraits_h
 #define Magnum_DimensionTraits_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
-#include <cstddef>
-
-#include "Magnum.h"
+#include "Math/Math.h"
+#include "Types.h"
 
 /** @file
  * @brief Class Magnum::DimensionTraits
@@ -25,20 +33,10 @@
 
 namespace Magnum {
 
-namespace Math {
-    template<std::size_t, class> class Vector;
-    template<class> class Vector2;
-    template<class> class Vector3;
-
-    template<class> class Point2D;
-    template<class> class Point3D;
-
-    template<class> class Matrix3;
-    template<class> class Matrix4;
-}
-
 /** @brief Matrix, point and vector specializations for given dimension count */
-template<std::uint8_t dimensions, class T = GLfloat> struct DimensionTraits {
+template<UnsignedInt dimensions, class T = Float> struct DimensionTraits {
+    DimensionTraits() = delete;
+
     #ifdef DOXYGEN_GENERATING_OUTPUT
     /**
      * @brief Vector type
@@ -46,14 +44,6 @@ template<std::uint8_t dimensions, class T = GLfloat> struct DimensionTraits {
      * Math::Vector, Math::Vector2 or Math::Vector3 based on dimension count.
      */
     typedef U VectorType;
-
-    /**
-     * @brief Point type
-     *
-     * Floating-point Math::Point2D or Math::Point3D for 2D or 3D. No point
-     * type defined for one dimension and integral types.
-     */
-    typedef U PointType;
 
     /**
      * @brief Matrix type
@@ -68,41 +58,51 @@ template<std::uint8_t dimensions, class T = GLfloat> struct DimensionTraits {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* One dimension */
 template<class T> struct DimensionTraits<1, T> {
+    DimensionTraits() = delete;
+
     typedef Math::Vector<1, T> VectorType;
 };
 
 /* Two dimensions - integral */
 template<class T> struct DimensionTraits<2, T> {
+    DimensionTraits() = delete;
+
     typedef Math::Vector2<T> VectorType;
 };
 
 /* Two dimensions - floating-point */
-template<> struct DimensionTraits<2, float> {
-    typedef Math::Vector2<float> VectorType;
-    typedef Math::Point2D<float> PointType;
-    typedef Math::Matrix3<float> MatrixType;
+template<> struct DimensionTraits<2, Float> {
+    DimensionTraits() = delete;
+
+    typedef Math::Vector2<Float> VectorType;
+    typedef Math::Matrix3<Float> MatrixType;
 };
-template<> struct DimensionTraits<2, double> {
-    typedef Math::Vector2<double> VectorType;
-    typedef Math::Point2D<double> PointType;
-    typedef Math::Matrix3<double> MatrixType;
+template<> struct DimensionTraits<2, Double> {
+    DimensionTraits() = delete;
+
+    typedef Math::Vector2<Double> VectorType;
+    typedef Math::Matrix3<Double> MatrixType;
 };
 
 /* Three dimensions - integral */
 template<class T> struct DimensionTraits<3, T> {
+    DimensionTraits() = delete;
+
     typedef Math::Vector3<T> VectorType;
 };
 
 /* Three dimensions - floating-point */
-template<> struct DimensionTraits<3, float> {
-    typedef Math::Vector3<float> VectorType;
-    typedef Math::Point3D<float> PointType;
-    typedef Math::Matrix4<float> MatrixType;
+template<> struct DimensionTraits<3, Float> {
+    DimensionTraits() = delete;
+
+    typedef Math::Vector3<Float> VectorType;
+    typedef Math::Matrix4<Float> MatrixType;
 };
-template<> struct DimensionTraits<3, double> {
-    typedef Math::Vector3<double> VectorType;
-    typedef Math::Point3D<double> PointType;
-    typedef Math::Matrix4<double> MatrixType;
+template<> struct DimensionTraits<3, Double> {
+    DimensionTraits() = delete;
+
+    typedef Math::Vector3<Double> VectorType;
+    typedef Math::Matrix4<Double> MatrixType;
 };
 #endif
 

@@ -1,65 +1,80 @@
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
-#include "FlipNormalsTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 
 #include "Math/Vector3.h"
 #include "MeshTools/FlipNormals.h"
 
-CORRADE_TEST_MAIN(Magnum::MeshTools::Test::FlipNormalsTest)
-
-using namespace std;
-
 namespace Magnum { namespace MeshTools { namespace Test {
 
+class FlipNormalsTest: public Corrade::TestSuite::Tester {
+    public:
+        FlipNormalsTest();
+
+        void wrongIndexCount();
+        void flipFaceWinding();
+        void flipNormals();
+};
+
 FlipNormalsTest::FlipNormalsTest() {
-    addTests(&FlipNormalsTest::wrongIndexCount,
-             &FlipNormalsTest::flipFaceWinding,
-             &FlipNormalsTest::flipNormals);
+    addTests({&FlipNormalsTest::wrongIndexCount,
+              &FlipNormalsTest::flipFaceWinding,
+              &FlipNormalsTest::flipNormals});
 }
 
 void FlipNormalsTest::wrongIndexCount() {
-    stringstream ss;
+    std::stringstream ss;
     Error::setOutput(&ss);
 
-    vector<uint32_t> indices{0, 1};
+    std::vector<UnsignedInt> indices{0, 1};
     MeshTools::flipFaceWinding(indices);
 
     CORRADE_COMPARE(ss.str(), "MeshTools::flipNormals(): index count is not divisible by 3!\n");
 }
 
 void FlipNormalsTest::flipFaceWinding() {
-    vector<uint32_t> indices{0, 1, 2,
-                                 3, 4, 5};
+    std::vector<UnsignedInt> indices{0, 1, 2,
+                                       3, 4, 5};
     MeshTools::flipFaceWinding(indices);
 
-    CORRADE_COMPARE(indices, (vector<uint32_t>{0, 2, 1,
-                                               3, 5, 4}));
+    CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{0, 2, 1,
+                                                         3, 5, 4}));
 }
 
 void FlipNormalsTest::flipNormals() {
-    vector<Vector3> normals{Vector3::xAxis(),
-                            Vector3::yAxis(),
-                            Vector3::zAxis()};
+    std::vector<Vector3> normals{Vector3::xAxis(),
+                                 Vector3::yAxis(),
+                                 Vector3::zAxis()};
     MeshTools::flipNormals(normals);
 
-    CORRADE_COMPARE(normals, (vector<Vector3>{-Vector3::xAxis(),
-                                              -Vector3::yAxis(),
-                                              -Vector3::zAxis()}));
+    CORRADE_COMPARE(normals, (std::vector<Vector3>{-Vector3::xAxis(),
+                                                   -Vector3::yAxis(),
+                                                   -Vector3::zAxis()}));
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::FlipNormalsTest)

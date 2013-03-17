@@ -1,21 +1,30 @@
 #ifndef Magnum_ResourceManager_h
 #define Magnum_ResourceManager_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
+/** @file /ResourceManager.h
  * @brief Class Magnum::ResourceManager, enum Magnum::ResourceDataState, Magnum::ResourcePolicy
  */
 
@@ -30,18 +39,18 @@ namespace Magnum {
  *
  * @see ResourceManager::set(), ResourceState
  */
-enum class ResourceDataState: std::uint8_t {
+enum class ResourceDataState: UnsignedByte {
     /**
      * The resource is currently loading. Parameter @p data in ResourceManager::set()
      * should be set to `null`.
      */
-    Loading = int(ResourceState::Loading),
+    Loading = UnsignedByte(ResourceState::Loading),
 
     /**
      * The resource was not found. Parameter @p data in ResourceManager::set()
      * should be set to `null`.
      */
-    NotFound = int(ResourceState::NotFound),
+    NotFound = UnsignedByte(ResourceState::NotFound),
 
     /**
      * The resource can be changed by the manager in the future. This is
@@ -49,14 +58,14 @@ enum class ResourceDataState: std::uint8_t {
      * the data are accessed, but allows changing the data for e.g. debugging
      * purposes.
      */
-    Mutable = std::uint8_t(ResourceState::Mutable),
+    Mutable = UnsignedByte(ResourceState::Mutable),
 
     /**
      * The resource cannot be changed by the manager in the future. This is
      * faster, as Resource instances will ask for the data only one time, thus
      * suitable for production code.
      */
-    Final = std::uint8_t(ResourceState::Final)
+    Final = UnsignedByte(ResourceState::Final)
 };
 
 /** @relates ResourceManager
@@ -64,7 +73,7 @@ enum class ResourceDataState: std::uint8_t {
 
 @see ResourceManager::set(), ResourceManager::free()
  */
-enum class ResourcePolicy: std::uint8_t {
+enum class ResourcePolicy: UnsignedByte {
     /** The resource will stay resident for whole lifetime of resource manager. */
     Resident,
 
@@ -90,7 +99,7 @@ namespace Implementation {
     };
 
     template<class T> class ResourceManagerData {
-        template<class, class> friend class Resource;
+        template<class, class> friend class Magnum::Resource;
         friend class AbstractResourceLoader<T>;
 
         ResourceManagerData(const ResourceManagerData<T>&) = delete;
@@ -158,7 +167,7 @@ namespace Implementation {
 
                 /* Cannot change resource with already final state */
                 CORRADE_ASSERT(it == _data.end() || it->second.state != ResourceDataState::Final,
-                    "ResourceManager::set(): cannot change already final resource", );
+                    "ResourceManager::set(): cannot change already final resource" << key, );
 
                 /* If nothing is referencing reference-counted resource, we're done */
                 if(policy == ResourcePolicy::ReferenceCounted && (it == _data.end() || it->second.referenceCount == 0)) {
@@ -239,7 +248,8 @@ namespace Implementation {
                 }
 
                 inline ~Data() {
-                    CORRADE_ASSERT(referenceCount == 0, "ResourceManager: cannot destruct it while data are still referenced", );
+                    CORRADE_ASSERT(referenceCount == 0,
+                        "ResourceManager::~ResourceManager(): destroyed while data are still referenced", );
                     delete data;
                 }
 
@@ -335,6 +345,8 @@ cube->draw();
 @endcode
 - Destroying resource references and deleting manager instance when nothing
   references the resources anymore.
+
+@see AbstractResourceLoader
 */
 /* Due to too much work involved with explicit template instantiation (all
    Resource combinations, all ResourceManagerData...), this class doesn't have
@@ -432,6 +444,16 @@ template<class... Types> class ResourceManager: private Implementation::Resource
             this->Implementation::ResourceManagerData<T>::set(key, data, state, policy);
         }
 
+        /**
+         * @brief Set resource data
+         *
+         * Same as above function with state set to @ref ResourceDataState "ResourceDataState::Final"
+         * and policy to @ref ResourcePolicy "ResourcePolicy::Resident".
+         */
+        template<class T> inline void set(ResourceKey key, T* data) {
+            this->Implementation::ResourceManagerData<T>::set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);
+        }
+
         /** @brief Fallback for not found resources */
         template<class T> inline T* fallback() {
             return this->Implementation::ResourceManagerData<T>::fallback();
@@ -470,8 +492,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
         /**
          * @brief Set loader for given type of resources
          *
-         * The loader will affect only loading of resources requested after
-         * that.
+         * See AbstractResourceLoader documentation for more information.
          */
         template<class T> inline void setLoader(AbstractResourceLoader<T>* loader) {
             return this->Implementation::ResourceManagerData<T>::setLoader(loader);

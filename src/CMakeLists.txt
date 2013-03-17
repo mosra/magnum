@@ -1,158 +1,166 @@
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wold-style-cast -Winit-self -pedantic -std=c++0x -fvisibility=hidden")
+#
+#   This file is part of Magnum.
+#
+#   Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+#
+#   Permission is hereby granted, free of charge, to any person obtaining a
+#   copy of this software and associated documentation files (the "Software"),
+#   to deal in the Software without restriction, including without limitation
+#   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+#   and/or sell copies of the Software, and to permit persons to whom the
+#   Software is furnished to do so, subject to the following conditions:
+#
+#   The above copyright notice and this permission notice shall be included
+#   in all copies or substantial portions of the Software.
+#
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+#   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+#   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+#   DEALINGS IN THE SOFTWARE.
+#
 
-# Disable strict aliasing for GCC 4.4, as it breaks RectangularMatrix::from()
-# (and I have no better solution for that yet)
-if(CORRADE_GCC44_COMPATIBILITY)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
-endif()
-
-# -Wdouble-promotion is supported from GCC 4.6
-# TODO: do this with check_c_compiler_flags()
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.6.0")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion")
-endif()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CORRADE_INCLUDE_DIR})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/magnumConfigure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CORRADE_INCLUDE_DIR})
-
 # Files shared between main library and unit test library
 set(Magnum_SRCS
+    AbstractFramebuffer.cpp
     AbstractImage.cpp
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
     Buffer.cpp
     Context.cpp
     DebugMarker.cpp
+    DefaultFramebuffer.cpp
     Framebuffer.cpp
     Image.cpp
-    IndexedMesh.cpp
     Mesh.cpp
-    Profiler.cpp
+    OpenGL.cpp
     Query.cpp
     Renderbuffer.cpp
     Resource.cpp
     Shader.cpp
-    SizeTraits.cpp
     Timeline.cpp
-    TypeTraits.cpp
 
     Implementation/BufferState.cpp
     Implementation/State.cpp
 
     Trade/AbstractImporter.cpp
     Trade/MeshData2D.cpp
-    Trade/MeshData3D.cpp)
+    Trade/MeshData3D.cpp
+    Trade/ObjectData2D.cpp
+    Trade/ObjectData3D.cpp)
 
 # Desktop-only code
 if(NOT TARGET_GLES)
     set(Magnum_SRCS ${Magnum_SRCS}
-        BufferedTexture.cpp)
+        BufferTexture.cpp)
 endif()
 
 # Not-ES2 code
 if(NOT TARGET_GLES2)
     set(Magnum_SRCS ${Magnum_SRCS}
-        BufferedImage.cpp)
+        BufferImage.cpp)
 endif()
 
 set(Magnum_HEADERS
+    AbstractFramebuffer.h
     AbstractImage.h
     AbstractResourceLoader.h
     AbstractShaderProgram.h
     AbstractTexture.h
+    Array.h
     Buffer.h
     Color.h
     Context.h
     CubeMapTexture.h
     DebugMarker.h
+    DefaultFramebuffer.h
     DimensionTraits.h
     Extensions.h
     Framebuffer.h
     Image.h
     ImageWrapper.h
-    IndexedMesh.h
     Magnum.h
     Mesh.h
-    Profiler.h
+    OpenGL.h
     Query.h
     Renderbuffer.h
+    Renderer.h
     Resource.h
     ResourceManager.h
     Shader.h
-    SizeTraits.h
     Swizzle.h
     Texture.h
     Timeline.h
-    TypeTraits.h
+    Types.h
 
     magnumVisibility.h)
 
 # Desktop-only headers
 if(NOT TARGET_GLES)
     set(Magnum_HEADERS ${Magnum_HEADERS}
-        BufferedTexture.h
+        BufferTexture.h
         CubeMapTextureArray.h)
 endif()
 
 # Not-ES2 headers
 if(NOT TARGET_GLES2)
     set(Magnum_HEADERS ${Magnum_HEADERS}
-        BufferedImage.h)
-endif()
-
-if(NOT CMAKE_NO_OBJECT_TARGET)
-    add_library(MagnumObjects OBJECT ${Magnum_SRCS})
+        BufferImage.h)
 endif()
 
 # Files shared between main library and math unit test library
 set(MagnumMath_SRCS
-    Math/Math.cpp
+    Math/Angle.cpp
+    Math/Complex.cpp
+    Math/DualComplex.cpp
+    Math/DualQuaternion.cpp
+    Math/Functions.cpp
+    Math/Quaternion.cpp
     Math/RectangularMatrix.cpp
     Math/Vector.cpp)
-if(NOT CMAKE_NO_OBJECT_TARGET)
-    add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
-endif()
 
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
-if(NOT CMAKE_NO_OBJECT_TARGET)
-    set_target_properties(MagnumObjects MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
-endif()
+add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
+add_library(MagnumObjects OBJECT ${Magnum_SRCS})
+set_target_properties(MagnumObjects MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
 # Main library
-if(NOT CMAKE_NO_OBJECT_TARGET)
-    add_library(Magnum SHARED
-        $<TARGET_OBJECTS:MagnumObjects>
-        $<TARGET_OBJECTS:MagnumMathObjects>)
-else()
-    add_library(Magnum SHARED
-        ${Magnum_SRCS}
-        ${MagnumMath_SRCS})
-endif()
+add_library(Magnum SHARED
+    $<TARGET_OBJECTS:MagnumObjects>
+    $<TARGET_OBJECTS:MagnumMathObjects>)
 set(Magnum_LIBS
     ${CORRADE_UTILITY_LIBRARY}
     ${CORRADE_PLUGINMANAGER_LIBRARY})
-if(NOT TARGET_GLES)
-    set(Magnum_LIBS ${Magnum_LIBS}
-        ${OPENGL_gl_LIBRARY}
-        ${GLEW_LIBRARY})
+if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
+    set(Magnum_LIBS ${Magnum_LIBS} ${OPENGL_gl_LIBRARY})
 else()
-    set(Magnum_LIBS ${Magnum_LIBS}
-        ${OPENGLES2_LIBRARY})
+    set(Magnum_LIBS ${Magnum_LIBS} ${OPENGLES2_LIBRARY})
+endif()
+if(NOT TARGET_GLES)
+    set(Magnum_LIBS ${Magnum_LIBS} ${GLEW_LIBRARIES})
 endif()
 target_link_libraries(Magnum ${Magnum_LIBS})
 
 install(TARGETS Magnum DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${Magnum_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
-
-# Install also configure file
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 
-add_subdirectory(Platform)
 add_subdirectory(Math)
+add_subdirectory(Platform)
 add_subdirectory(Trade)
+
+if(WITH_DEBUGTOOLS)
+    add_subdirectory(DebugTools)
+endif()
 
 if(WITH_MESHTOOLS)
     add_subdirectory(MeshTools)
@@ -174,26 +182,27 @@ if(WITH_SHADERS)
     add_subdirectory(Shaders)
 endif()
 
+if(WITH_TEXT)
+    add_subdirectory(Text)
+endif()
+
+if(WITH_TEXTURETOOLS)
+    add_subdirectory(TextureTools)
+endif()
+
 if(BUILD_TESTS)
-    enable_testing()
-
-    # Library with graceful assert for testing
-    if(NOT CMAKE_NO_OBJECT_TARGET)
-        add_library(MagnumMathTestLib SHARED
-            $<TARGET_OBJECTS:MagnumMathObjects>)
-
-        add_library(MagnumTestLib SHARED
-            $<TARGET_OBJECTS:MagnumObjects>
-            $<TARGET_OBJECTS:MagnumMathObjects>)
-    else()
-        add_library(MagnumMathTestLib SHARED
-            ${MagnumMath_SRCS})
-
-        add_library(MagnumTestLib SHARED
-            ${Magnum_SRCS}
-            ${MagnumMath_SRCS})
+    # Libraries with graceful assert for testing
+    add_library(MagnumMathTestLib SHARED
+        $<TARGET_OBJECTS:MagnumMathObjects>)
+    set_target_properties(MagnumMathTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
+    if(WIN32)
+        target_link_libraries(MagnumMathTestLib ${CORRADE_UTILITY_LIBRARY})
     endif()
-    set_target_properties(MagnumTestLib MagnumMathTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
+
+    add_library(MagnumTestLib SHARED
+        $<TARGET_OBJECTS:MagnumObjects>
+        $<TARGET_OBJECTS:MagnumMathObjects>)
+    set_target_properties(MagnumTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
     target_link_libraries(MagnumTestLib ${Magnum_LIBS})
 
     add_subdirectory(Test)

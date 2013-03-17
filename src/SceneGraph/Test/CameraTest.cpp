@@ -1,21 +1,29 @@
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
-#include "CameraTest.h"
+#include <TestSuite/Tester.h>
 
-#include "Math/Constants.h"
 #include "SceneGraph/AbstractCamera.hpp" /* only for aspectRatioFix(), so it doesn't have to be exported */
 #include "SceneGraph/Camera2D.h"
 #include "SceneGraph/Camera3D.h"
@@ -24,9 +32,21 @@
 #include "SceneGraph/MatrixTransformation3D.h"
 #include "SceneGraph/Scene.h"
 
-CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::CameraTest)
-
 namespace Magnum { namespace SceneGraph { namespace Test {
+
+class CameraTest: public Corrade::TestSuite::Tester {
+    public:
+        CameraTest();
+
+        void fixAspectRatio();
+        void defaultProjection2D();
+        void defaultProjection3D();
+        void projectionSize2D();
+        void projectionSizeOrthographic();
+        void projectionSizePerspective();
+        void projectionSizeViewport();
+        void draw();
+};
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D<>> Object2D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
@@ -35,56 +55,56 @@ typedef SceneGraph::Camera2D<> Camera2D;
 typedef SceneGraph::Camera3D<> Camera3D;
 
 CameraTest::CameraTest() {
-    addTests(&CameraTest::fixAspectRatio,
-             &CameraTest::defaultProjection2D,
-             &CameraTest::defaultProjection3D,
-             &CameraTest::projection2D,
-             &CameraTest::orthographic,
-             &CameraTest::perspective,
-             &CameraTest::projectionSizeViewport,
-             &CameraTest::draw);
+    addTests({&CameraTest::fixAspectRatio,
+              &CameraTest::defaultProjection2D,
+              &CameraTest::defaultProjection3D,
+              &CameraTest::projectionSize2D,
+              &CameraTest::projectionSizeOrthographic,
+              &CameraTest::projectionSizePerspective,
+              &CameraTest::projectionSizeViewport,
+              &CameraTest::draw});
 }
 
 void CameraTest::fixAspectRatio() {
     Vector2 projectionScale(0.5f, 1.0f/3.0f);
-    Math::Vector2<GLsizei> size(400, 300);
+    Vector2i size(400, 300);
 
     /* Division by zero */
     Vector2 projectionScaleZeroY(0.5f, 0.0f);
     Vector2 projectionScaleZeroX(0.0f, 0.5f);
-    Math::Vector2<GLsizei> sizeZeroY(400, 0);
-    Math::Vector2<GLsizei> sizeZeroX(0, 300);
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Clip, projectionScaleZeroX, size)), Matrix4());
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Clip, projectionScaleZeroY, size)), Matrix4());
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Clip, projectionScale, sizeZeroY)), Matrix4());
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Extend, projectionScale, sizeZeroX)), Matrix4());
+    Vector2i sizeZeroY(400, 0);
+    Vector2i sizeZeroX(0, 300);
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::Clip, projectionScaleZeroX, size)), Matrix4());
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::Clip, projectionScaleZeroY, size)), Matrix4());
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::Clip, projectionScale, sizeZeroY)), Matrix4());
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::Extend, projectionScale, sizeZeroX)), Matrix4());
 
     /* Not preserved */
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::NotPreserved, projectionScale, size)), Matrix4());
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::NotPreserved, projectionScale, size)), Matrix4());
 
     /* Clip */
-    Matrix4 expectedClip(1.0f, 0.0f,      0.0f, 0.0f,
-                         0.0f, 4.0f/3.0f, 0.0f, 0.0f,
-                         0.0f, 0.0f,      1.0f, 0.0f,
-                         0.0f, 0.0f,      0.0f, 1.0f);
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Clip, Vector2(0.5f), size)), expectedClip);
-    Matrix4 expectedClipRectangle(1.0f, 0.0f, 0.0f, 0.0f,
-                                  0.0f, 2.0f, 0.0f, 0.0f,
-                                  0.0f, 0.0f, 1.0f, 0.0f,
-                                  0.0f, 0.0f, 0.0f, 1.0f);
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Clip, projectionScale, size)), expectedClipRectangle);
+    Matrix4 expectedClip({1.0f,      0.0f, 0.0f, 0.0f},
+                         {0.0f, 4.0f/3.0f, 0.0f, 0.0f},
+                         {0.0f,      0.0f, 1.0f, 0.0f},
+                         {0.0f,      0.0f, 0.0f, 1.0f});
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::Clip, Vector2(0.5f), size)), expectedClip);
+    Matrix4 expectedClipRectangle({1.0f, 0.0f, 0.0f, 0.0f},
+                                  {0.0f, 2.0f, 0.0f, 0.0f},
+                                  {0.0f, 0.0f, 1.0f, 0.0f},
+                                  {0.0f, 0.0f, 0.0f, 1.0f});
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::Clip, projectionScale, size)), expectedClipRectangle);
 
     /* Extend */
-    Matrix4 expectedExtend(3.0f/4.0f, 0.0f, 0.0f, 0.0f,
-                           0.0f,      1.0f, 0.0f, 0.0f,
-                           0.0f,      0.0f, 1.0f, 0.0f,
-                           0.0f,      0.0f, 0.0f, 1.0f);
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Extend, Vector2(0.5f), size)), expectedExtend);
-    Matrix4 expectedExtendRectangle(0.5f, 0.0f, 0.0f, 0.0f,
-                                    0.0f, 1.0f, 0.0f, 0.0f,
-                                    0.0f, 0.0f, 1.0f, 0.0f,
-                                    0.0f, 0.0f, 0.0f, 1.0f);
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, GLfloat>(AspectRatioPolicy::Extend, projectionScale, size)), expectedExtendRectangle);
+    Matrix4 expectedExtend({3.0f/4.0f, 0.0f, 0.0f, 0.0f},
+                           {     0.0f, 1.0f, 0.0f, 0.0f},
+                           {     0.0f, 0.0f, 1.0f, 0.0f},
+                           {     0.0f, 0.0f, 0.0f, 1.0f});
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::Extend, Vector2(0.5f), size)), expectedExtend);
+    Matrix4 expectedExtendRectangle({0.5f, 0.0f, 0.0f, 0.0f},
+                                    {0.0f, 1.0f, 0.0f, 0.0f},
+                                    {0.0f, 0.0f, 1.0f, 0.0f},
+                                    {0.0f, 0.0f, 0.0f, 1.0f});
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::Extend, projectionScale, size)), expectedExtendRectangle);
 }
 
 void CameraTest::defaultProjection2D() {
@@ -101,58 +121,27 @@ void CameraTest::defaultProjection3D() {
     CORRADE_COMPARE(camera.projectionSize(), Vector2(2.0f));
 }
 
-void CameraTest::projection2D() {
+void CameraTest::projectionSize2D() {
     Vector2 projectionSize(4.0f, 3.0f);
     Object2D o;
     Camera2D camera(&o);
     camera.setProjection(projectionSize);
-
-    Matrix3 a(2.0f/4.0f,    0.0f,       0.0f,
-              0.0f,         2.0f/3.0f,  0.0f,
-              0.0f,         0.0f,       1.0f);
-
-    CORRADE_COMPARE(camera.projectionMatrix(), a);
     CORRADE_COMPARE(camera.projectionSize(), projectionSize);
 }
 
-void CameraTest::orthographic() {
-    Vector2 projectionSize(5);
+void CameraTest::projectionSizeOrthographic() {
+    Vector2 projectionSizeRectangle(5.0f, 4.0f);
     Object3D o;
     Camera3D camera(&o);
-    camera.setOrthographic(projectionSize, 1, 9);
-
-    Matrix4 a(0.4f,   0.0f,   0.0f,       0.0f,
-              0.0f,   0.4f,   0.0f,       0.0f,
-              0.0f,   0.0f,   -0.25f,     0.0f,
-              0.0f,   0.0f,   -1.25f,     1.0f);
-
-    CORRADE_COMPARE(camera.projectionMatrix(), a);
-    CORRADE_COMPARE(camera.projectionSize(), projectionSize);
-
-    Vector2 projectionSizeRectangle(5.0f, 4.0f);
     camera.setOrthographic(projectionSizeRectangle, 1, 9);
-
-    Matrix4 rectangle(0.4f,   0.0f,   0.0f,       0.0f,
-                      0.0f,   0.5f,   0.0f,       0.0f,
-                      0.0f,   0.0f,   -0.25f,     0.0f,
-                      0.0f,   0.0f,   -1.25f,     1.0f);
-
-    CORRADE_COMPARE(camera.projectionMatrix(), rectangle);
     CORRADE_COMPARE(camera.projectionSize(), projectionSizeRectangle);
 }
 
-void CameraTest::perspective() {
+void CameraTest::projectionSizePerspective() {
     Object3D o;
     Camera3D camera(&o);
-    camera.setPerspective(deg(27.0f), 32.0f, 100);
-
-    Matrix4 a(4.1652994f, 0.0f,       0.0f,        0.0f,
-              0.0f,       4.1652994f, 0.0f,        0.0f,
-              0.0f,       0.0f,      -1.9411764f, -1.0f,
-              0.0f,       0.0f,      -94.1176452f, 0.0f);
-
-    CORRADE_COMPARE(camera.projectionMatrix(), a);
-    CORRADE_COMPARE(camera.projectionSize(), Vector2(0.48015756f));
+    camera.setPerspective(Deg(27.0f), 2.35f, 32.0f, 100);
+    CORRADE_COMPARE(camera.projectionSize(), Vector2(0.48015756f, 0.204322f));
 }
 
 void CameraTest::projectionSizeViewport() {
@@ -209,3 +198,5 @@ void CameraTest::draw() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::CameraTest)

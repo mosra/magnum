@@ -1,70 +1,84 @@
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
-#include "CompressIndicesTest.h"
-
+#include <TestSuite/Tester.h>
 #include <Utility/Endianness.h>
 
 #include "MeshTools/CompressIndices.h"
 
-CORRADE_TEST_MAIN(Magnum::MeshTools::Test::CompressIndicesTest)
-
-using namespace std;
 using Corrade::Utility::Endianness;
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
+class CompressIndicesTest: public Corrade::TestSuite::Tester {
+    public:
+        CompressIndicesTest();
+
+        void compressChar();
+        void compressShort();
+        void compressInt();
+};
+
 CompressIndicesTest::CompressIndicesTest() {
-    addTests(&CompressIndicesTest::compressChar,
-             &CompressIndicesTest::compressShort,
-             &CompressIndicesTest::compressInt);
+    addTests({&CompressIndicesTest::compressChar,
+              &CompressIndicesTest::compressShort,
+              &CompressIndicesTest::compressInt});
 }
 
 void CompressIndicesTest::compressChar() {
-    size_t indexCount;
-    Type indexType;
+    std::size_t indexCount;
+    Mesh::IndexType indexType;
     char* data;
-    tie(indexCount, indexType, data) = MeshTools::compressIndices(
-        vector<uint32_t>{1, 2, 3, 0, 4});
+    std::tie(indexCount, indexType, data) = MeshTools::compressIndices(
+        std::vector<UnsignedInt>{1, 2, 3, 0, 4});
 
     CORRADE_COMPARE(indexCount, 5);
-    CORRADE_VERIFY(indexType == Type::UnsignedByte);
-    CORRADE_COMPARE(vector<char>(data, data+indexCount*TypeInfo::sizeOf(indexType)),
-        (vector<char>{ 0x01, 0x02, 0x03, 0x00, 0x04 }));
+    CORRADE_VERIFY(indexType == Mesh::IndexType::UnsignedByte);
+    CORRADE_COMPARE(std::vector<char>(data, data+indexCount*Mesh::indexSize(indexType)),
+        (std::vector<char>{ 0x01, 0x02, 0x03, 0x00, 0x04 }));
 
     delete[] data;
 }
 
 void CompressIndicesTest::compressShort() {
-    size_t indexCount;
-    Type indexType;
+    std::size_t indexCount;
+    Mesh::IndexType indexType;
     char* data;
-    tie(indexCount, indexType, data) = MeshTools::compressIndices(
-        vector<uint32_t>{1, 256, 0, 5});
+    std::tie(indexCount, indexType, data) = MeshTools::compressIndices(
+        std::vector<UnsignedInt>{1, 256, 0, 5});
 
     CORRADE_COMPARE(indexCount, 4);
-    CORRADE_VERIFY(indexType == Type::UnsignedShort);
+    CORRADE_VERIFY(indexType == Mesh::IndexType::UnsignedShort);
     if(!Endianness::isBigEndian()) {
-        CORRADE_COMPARE(vector<char>(data, data+indexCount*TypeInfo::sizeOf(indexType)),
-            (vector<char>{ 0x01, 0x00,
+        CORRADE_COMPARE(std::vector<char>(data, data+indexCount*Mesh::indexSize(indexType)),
+            (std::vector<char>{ 0x01, 0x00,
                            0x00, 0x01,
                            0x00, 0x00,
                            0x05, 0x00 }));
     } else {
-        CORRADE_COMPARE(vector<char>(data, data+indexCount*TypeInfo::sizeOf(indexType)),
-            (vector<char>{ 0x00, 0x01,
+        CORRADE_COMPARE(std::vector<char>(data, data+indexCount*Mesh::indexSize(indexType)),
+            (std::vector<char>{ 0x00, 0x01,
                            0x01, 0x00,
                            0x00, 0x00,
                            0x00, 0x05 }));
@@ -74,23 +88,23 @@ void CompressIndicesTest::compressShort() {
 }
 
 void CompressIndicesTest::compressInt() {
-    size_t indexCount;
-    Type indexType;
+    std::size_t indexCount;
+    Mesh::IndexType indexType;
     char* data;
-    tie(indexCount, indexType, data) = MeshTools::compressIndices(
-        vector<uint32_t>{65536, 3, 2});
+    std::tie(indexCount, indexType, data) = MeshTools::compressIndices(
+        std::vector<UnsignedInt>{65536, 3, 2});
 
     CORRADE_COMPARE(indexCount, 3);
-    CORRADE_VERIFY(indexType == Type::UnsignedInt);
+    CORRADE_VERIFY(indexType == Mesh::IndexType::UnsignedInt);
 
     if(!Endianness::isBigEndian()) {
-        CORRADE_COMPARE(vector<char>(data, data+indexCount*TypeInfo::sizeOf(indexType)),
-            (vector<char>{ 0x00, 0x00, 0x01, 0x00,
+        CORRADE_COMPARE(std::vector<char>(data, data+indexCount*Mesh::indexSize(indexType)),
+            (std::vector<char>{ 0x00, 0x00, 0x01, 0x00,
                            0x03, 0x00, 0x00, 0x00,
                            0x02, 0x00, 0x00, 0x00 }));
     } else {
-        CORRADE_COMPARE(vector<char>(data, data+indexCount*TypeInfo::sizeOf(indexType)),
-            (vector<char>{ 0x00, 0x01, 0x00, 0x00,
+        CORRADE_COMPARE(std::vector<char>(data, data+indexCount*Mesh::indexSize(indexType)),
+            (std::vector<char>{ 0x00, 0x01, 0x00, 0x00,
                            0x00, 0x00, 0x00, 0x03,
                            0x00, 0x00, 0x00, 0x02 }));
     }
@@ -99,3 +113,5 @@ void CompressIndicesTest::compressInt() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::CompressIndicesTest)

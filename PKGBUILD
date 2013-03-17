@@ -5,7 +5,7 @@ pkgrel=1
 pkgdesc="OpenGL 3 graphics engine"
 arch=('i686' 'x86_64')
 url="https://github.com/mosra/magnum"
-license=('LGPLv3')
+license=('MIT')
 depends=('corrade' 'glew')
 makedepends=('cmake')
 options=(!strip)
@@ -14,6 +14,10 @@ provides=('magnum-git')
 build() {
     mkdir -p "$startdir/build"
     cd "$startdir/build/"
+
+    # Disable optimization (saves A LOT of compilation time)
+    newcxxflags=$(echo $CXXFLAGS | sed s/-O.//g | sed s/-D_FORTIFY_SOURCE=.//g)
+    export CXXFLAGS="$newcxxflags"
 
     if [ "$CXX" = clang++ ] ; then
         newcxxflags=$(echo $CXXFLAGS | sed s/--param=ssp-buffer-size=4//g)

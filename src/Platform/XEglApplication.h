@@ -1,18 +1,27 @@
 #ifndef Magnum_Platform_XEglApplication_h
 #define Magnum_Platform_XEglApplication_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -27,7 +36,8 @@ namespace Magnum { namespace Platform {
 /**
 @brief X/EGL application
 
-Uses EglContextHandler.
+Creates window with double-buffered OpenGL ES 2 context. Uses
+EglContextHandler.
 
 @section XEglApplication-usage Usage
 
@@ -49,10 +59,8 @@ class XEglApplication: public AbstractXApplication {
          * @param argv      Arguments of `main()` function
          * @param title     Window title
          * @param size      Window size
-         *
-         * Creates window with double-buffered OpenGL ES 2 context.
          */
-        inline XEglApplication(int& argc, char** argv, const std::string& title = "Magnum X/EGL application", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600)): AbstractXApplication(new EglContextHandler, argc, argv, title, size) {}
+        inline explicit XEglApplication(int& argc, char** argv, const std::string& title = "Magnum X/EGL application", const Vector2i& size = Vector2i(800, 600)): AbstractXApplication(new EglContextHandler, argc, argv, title, size) {}
 };
 
 }}

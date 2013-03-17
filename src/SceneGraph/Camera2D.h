@@ -1,18 +1,27 @@
 #ifndef Magnum_SceneGraph_Camera2D_h
 #define Magnum_SceneGraph_Camera2D_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -26,22 +35,30 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Camera for two-dimensional scenes
 
-See Drawable documentation for more information.
+See Drawable documentation for introduction. The camera by default displays
+OpenGL unit cube `[(-1, -1, -1); (1, 1, 1)]` and doesn't do any aspect ratio
+correction. Common setup example:
+@code
+SceneGraph::Camera2D<>* camera = new SceneGraph::Camera2D<>(&cameraObject);
+camera->setProjection({4.0f/3.0f, 1.0f})
+      ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
+@endcode
 
 @section Camera2D-explicit-specializations Explicit template specializations
 
 The following specialization are explicitly compiled into SceneGraph library.
-For other specializations you have to use Camera2D.hpp implementation file to
-avoid linker errors. See @ref compilation-speedup-hpp for more information.
+For other specializations (e.g. using Double type) you have to use
+Camera2D.hpp implementation file to avoid linker errors. See
+@ref compilation-speedup-hpp for more information.
 
- - @ref Camera2D "Camera2D<GLfloat>"
+ - @ref Camera2D "Camera2D<Float>"
 
-@see Camera3D, Drawable, DrawableGroup
+@see @ref scenegraph, Camera3D, Drawable, DrawableGroup
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T>
 #else
-template<class T = GLfloat>
+template<class T = Float>
 #endif
 class MAGNUM_SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2, T> {
     public:
@@ -50,17 +67,16 @@ class MAGNUM_SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2, T> {
          * @param object    %Object holding this feature
          *
          * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
-         * @see setOrthographic()
+         * @see setProjection()
          */
-        inline Camera2D(AbstractObject<2, T>* object): AbstractCamera<2, T>(object) {}
+        explicit Camera2D(AbstractObject<2, T>* object);
 
         /**
          * @brief Set projection
          * @param size      Size of the view
          * @return Pointer to self (for method chaining)
          *
-         * The area of given size will be scaled down to range @f$ [-1; 1] @f$
-         * on all directions.
+         * @see Matrix3::projection()
          */
         Camera2D<T>* setProjection(const Math::Vector2<T>& size);
 

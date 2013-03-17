@@ -1,18 +1,27 @@
 #ifndef Magnum_AbstractShaderProgram_h
 #define Magnum_AbstractShaderProgram_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -23,19 +32,12 @@
 #include <Containers/EnumSet.h>
 
 #include "Magnum.h"
-#include "TypeTraits.h"
-
+#include "OpenGL.h"
 #include "magnumVisibility.h"
 
 /** @todo early asserts (no bool returns?) */
 
 namespace Magnum {
-
-namespace Math {
-    template<std::size_t, std::size_t, class> class RectangularMatrix;
-    template<std::size_t, class> class Matrix;
-    template<std::size_t, class> class Vector;
-}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
@@ -53,26 +55,32 @@ functions and properties:
  - <strong>%Attribute definitions</strong> with location and type for
    configuring meshes, for example:
 @code
-typedef Attribute<0, Point3D> Position;
+typedef Attribute<0, Vector3> Position;
 typedef Attribute<1, Vector3> Normal;
 typedef Attribute<2, Vector2> TextureCoordinates;
 @endcode
-   @todoc Output attribute location (for bindFragmentDataLocationIndexed(),
-        referenced also from Framebuffer::mapDefaultForDraw() / Framebuffer::mapForDraw())
-
+ - **Output attribute locations**, if desired, for example:
+@code
+enum: UnsignedInt {
+    ColorOutput = 0,
+    NormalOutput = 1
+};
+@endcode
  - **Layers for texture uniforms** to which the textures will be bound before
    rendering, for example:
 @code
-static const GLint DiffuseTextureLayer = 0;
-static const GLint SpecularTextureLayer = 1;
+enum: Int {
+    DiffuseTextureLayer = 0,
+    SpecularTextureLayer = 1
+};
 @endcode
  - **Uniform locations** for setting uniform data (see below) (private
-   constants), for example:
+   variables), for example:
 @code
-static const GLint TransformationUniform = 0;
-static const GLint ProjectionUniform = 1;
-static const GLint DiffuseTextureUniform = 2;
-static const GLint SpecularTextureUniform = 3;
+Int TransformationUniform = 0,
+    ProjectionUniform = 1,
+    DiffuseTextureUniform = 2,
+    SpecularTextureUniform = 3;
 @endcode
  - **Constructor**, which attaches particular shaders, links the program and
    gets uniform locations, for example:
@@ -112,12 +120,13 @@ layout(location = 0) in vec4 position;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 textureCoordinates;
 @endcode
+
 Similarly for ouput attributes, you can also specify blend equation color
 index for them (see Framebuffer::BlendFunction for more information about
 using color input index):
 @code
 layout(location = 0, index = 0) out vec4 color;
-layout(location = 1, index = 1) out vec4 ambient;
+layout(location = 1, index = 1) out vec3 normal;
 @endcode
 
 If you don't have the required extension, you can use functions
@@ -131,8 +140,8 @@ bindAttributeLocation(Position::Location, "position");
 bindAttributeLocation(Normal::Location, "normal");
 bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
 
-bindFragmentDataLocationIndexed(0, 0, "color");
-bindFragmentDataLocationIndexed(1, 1, "ambient");
+bindFragmentDataLocationIndexed(ColorOutput, 0, "color");
+bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
 
 // Link...
 @endcode
@@ -164,11 +173,11 @@ layout(location = 1) uniform mat4 projection;
 If you don't have the required extension, you can get uniform location using
 uniformLocation() after linking stage:
 @code
-GLint transformationUniform = uniformLocation("transformation");
-GLint projectionUniform = uniformLocation("projection");
+Int transformationUniform = uniformLocation("transformation");
+Int projectionUniform = uniformLocation("projection");
 @endcode
 
-@requires_gl43 Extension @extension{ARB,explicit_uniform_location} for
+@requires_gl43 %Extension @extension{ARB,explicit_uniform_location} for
     explicit uniform location instead of using uniformLocation().
 @requires_gl Explicit uniform location is not supported in OpenGL ES. Use
     uniformLocation() instead.
@@ -185,24 +194,27 @@ layout(binding = 1) uniform sampler2D specularTexture;
 @endcode
 
 If you don't have the required extension (or if you want to change the layer
-later), you can set the texture layer uniform using setUniform(GLint, GLint):
+later), you can set the texture layer uniform using setUniform(Int, Int):
 @code
 setUniform(DiffuseTextureUniform, DiffuseTextureLayer);
 setUniform(SpecularTextureUniform, SpecularTextureLayer);
 @endcode
 
-@requires_gl42 Extension @extension{ARB,shading_language_420pack} for explicit
-    texture layer binding instead of using setUniform(GLint, GLint).
+@requires_gl42 %Extension @extension{ARB,shading_language_420pack} for explicit
+    texture layer binding instead of using setUniform(Int, Int).
 @requires_gl Explicit texture layer binding is not supported in OpenGL ES. Use
-    setUniform(GLint, GLint) instead.
+    setUniform(Int, Int) instead.
 
 @section AbstractShaderProgram-rendering-workflow Rendering workflow
 
-Basic workflow with %AbstractShaderProgram subclasses is to instance the class
-and configuring attribute binding in meshes (see @ref Mesh-configuration "Mesh documentation"
-for more information) at the beginning, then in draw event setting uniforms
-and marking the shader for use, binding required textures to their respective
-layers using AbstractTexture::bind(GLint) and calling Mesh::draw(). Example:
+Basic workflow with %AbstractShaderProgram subclasses is: instance shader
+class, configure attribute binding in meshes (see @ref Mesh-configuration "Mesh documentation"
+for more information) and map shader outputs to framebuffer attachments if
+needed (see @ref Framebuffer-usage "Framebuffer documentation" for more
+information). In each draw event set uniforms, mark the shader for use, bind
+specific framebuffer (if needed) and bind required textures to their
+respective layers using AbstractTexture::bind(Int). Then call Mesh::draw().
+Example:
 @code
 shader->setTransformation(transformation)
     ->setProjection(projection)
@@ -216,53 +228,43 @@ mesh.draw();
 
 @section AbstractShaderProgram-types Mapping between GLSL and Magnum types
 
-- `vec2`, `vec3` and `vec4` is @ref Math::Vector "Math::Vector<2, GLfloat>",
-  @ref Math::Vector "Math::Vector<3, GLfloat>" and
-  @ref Math::Vector "Math::Vector<4, GLfloat>".
+See @ref types for more information, only types with GLSL equivalent can be used
+(and their super- or subclasses with the same size and underlying type).
 
-- `mat2`, `mat3` and `mat4` is @ref Math::Matrix "Math::Matrix<2, GLfloat>",
-  @ref Math::Matrix "Math::Matrix<3, GLfloat>" and
-  @ref Math::Matrix "Math::Matrix<4, GLfloat>".
-
-- `mat2x3`, `mat3x2`, `mat2x4`, `mat4x2`, `mat3x4`, `mat4x3` is
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<2, 3, GLfloat>",
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<3, 2, GLfloat>",
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<2, 4, GLfloat>",
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<4, 2, GLfloat>",
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<3, 4, GLfloat>" and
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<4, 3, GLfloat>".
-
-- `ivec2`, `ivec3` and `ivec4` is @ref Math::Vector "Math::Vector<2, GLint>",
-  @ref Math::Vector "Math::Vector<3, GLint>" and
-  @ref Math::Vector "Math::Vector<4, GLint>", `uvec2`, `uvec3` and `uvec4` is
-  @ref Math::Vector "Math::Vector<2, GLuint>",
-  @ref Math::Vector "Math::Vector<3, GLuint>" and
-  @ref Math::Vector "Math::Vector<4, GLuint>".
-  @requires_gl30 %Extension @extension{EXT,gpu_shader4} (for integer attributes
-    and unsigned integer uniforms)
-  @requires_gles30 Integer attributes and unsigned integer uniforms are not
+@requires_gl30 %Extension @extension{EXT,gpu_shader4} is required when using
+    integer attributes (i.e. @ref Magnum::UnsignedInt "UnsignedInt",
+    @ref Magnum::Int "Int", @ref Magnum::Vector2ui "Vector2ui",
+    @ref Magnum::Vector2i "Vector2i", @ref Magnum::Vector3ui "Vector3ui",
+    @ref Magnum::Vector3i "Vector3i", @ref Magnum::Vector4ui "Vector4ui" and
+    @ref Magnum::Vector4i "Vector4i") or unsigned integer uniforms (i.e.
+    @ref Magnum::UnsignedInt "UnsignedInt", @ref Magnum::Vector2ui "Vector2ui",
+    @ref Magnum::Vector3ui "Vector3ui" and @ref Magnum::Vector4ui "Vector4ui").
+@requires_gles30 Integer attributes and unsigned integer uniforms are not
     available in OpenGL ES 2.0.
 
-- `dvec2`, `dvec3` and `dvec4` is @ref Math::Vector "Math::Vector<2, GLdouble>",
-  @ref Math::Vector "Math::Vector<3, GLdouble>" and
-  @ref Math::Vector "Math::Vector<4, GLdouble>", `dmat2`, `dmat3` and `dmat4`
-  is @ref Math::Matrix "Math::Matrix<2, GLdouble>",
-  @ref Math::Matrix "Math::Matrix<3, GLdouble>" and
-  @ref Math::Matrix "Math::Matrix<4, GLdouble>", `dmat2x3`, `dmat3x2`,
-  `dmat2x4`, `dmat4x2`, `dmat3x4`, `dmat4x3` is
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<2, 3, GLdouble>",
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<3, 2, GLdouble>",
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<2, 4, GLdouble>",
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<4, 2, GLdouble>",
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<3, 4, GLdouble>" and
-  @ref Math::RectangularMatrix "Math::RectangularMatrix<4, 3, GLdouble>".
-  @requires_gl41 %Extension @extension{ARB,vertex_attrib_64bit} (for double
-    attributes)
-  @requires_gl Double attributes are not available in OpenGL ES.
+@requires_gl40 %Extension @extension{ARB,gpu_shader_fp64} is required when
+    using double uniforms (i.e. @ref Magnum::Double "Double",
+    @ref Magnum::Vector2d "Vector2d", @ref Magnum::Vector3d "Vector3d",
+    @ref Magnum::Vector4d "Vector4d", @ref Magnum::Matrix2d "Matrix2d",
+    @ref Magnum::Matrix3d "Matrix3d", @ref Magnum::Matrix4d "Matrix4d",
+    @ref Magnum::Matrix2x3d "Matrix2x3d", @ref Magnum::Matrix3x2d "Matrix3x2d",
+    @ref Magnum::Matrix2x4d "Matrix2x4d", @ref Magnum::Matrix4x2d "Matrix4x2d",
+    @ref Magnum::Matrix3x4d "Matrix3x4d" and @ref Magnum::Matrix4x3d "Matrix4x3d").
+@requires_gl41 %Extension @extension{ARB,vertex_attrib_64bit} is required when
+    using double attributes (i.e. @ref Magnum::Double "Double",
+    @ref Magnum::Vector2d "Vector2d", @ref Magnum::Vector3d "Vector3d",
+    @ref Magnum::Vector4d "Vector4d", @ref Magnum::Matrix2d "Matrix2d",
+    @ref Magnum::Matrix3d "Matrix3d", @ref Magnum::Matrix4d "Matrix4d",
+    @ref Magnum::Matrix2x3d "Matrix2x3d", @ref Magnum::Matrix3x2d "Matrix3x2d",
+    @ref Magnum::Matrix2x4d "Matrix2x4d", @ref Magnum::Matrix4x2d "Matrix4x2d",
+    @ref Magnum::Matrix3x4d "Matrix3x4d" and @ref Magnum::Matrix4x3d "Matrix4x3d").
+@requires_gl Double attributes and uniforms are not available in OpenGL ES.
 
-Only types listed here (and their subclasses and specializations, such as
-@ref Matrix3 or Color4) can be used for setting uniforms and specifying
-vertex attributes. See also TypeTraits::AttributeType.
+@requires_gles30 Non-square matrix attributes and uniforms (i.e.
+    @ref Magnum::Matrix2x3 "Matrix2x3", @ref Magnum::Matrix3x2 "Matrix3x2",
+    @ref Magnum::Matrix2x4 "Matrix2x4", @ref Magnum::Matrix4x2d "Matrix4x2",
+    @ref Magnum::Matrix3x4 "Matrix3x4" and @ref Magnum::Matrix4x3 "Matrix4x3")
+    are not available in OpenGL ES 2.0.
 
 @section AbstractShaderProgram-performance-optimization Performance optimizations
 
@@ -273,7 +275,7 @@ are cached, so repeated queries don't result in repeated @fn_gl{Get} calls.
 If extension @extension{ARB,separate_shader_objects} or
 @extension{EXT,direct_state_access} is available, uniform setting functions
 use DSA functions to avoid unnecessary calls to @fn_gl{UseProgram}. See
-setUniform(GLint, GLfloat) documentation for more information.
+setUniform() documentation for more information.
 
 To achieve least state changes, set all uniforms in one run -- method chaining
 comes in handy.
@@ -298,14 +300,13 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * location `0`.
          *
          * Template parameter @p T is the type which is used for shader
-         * attribute, e.g. @ref Math::Vector4 "Vector4<GLint>" for `ivec4`.
-         * DataType is type of passed data when adding vertex buffers to mesh.
-         * By default it is the same as type used in shader (e.g.
-         * @ref DataType "DataType::Int" for @ref Math::Vector4 "Vector4<GLint>").
-         * It's also possible to pass integer data to floating-point shader
-         * inputs. In this case you may want to normalize the values (e.g.
-         * color components from 0-255 to 0.0f-1.0f) - see
-         * @ref DataOption "DataOption::Normalize".
+         * attribute, e.g. @ref Vector4i for `ivec4`. DataType is type of
+         * passed data when adding vertex buffers to mesh. By default it is
+         * the same as type used in shader (e.g. @ref DataType "DataType::Int"
+         * for @ref Vector4i). It's also possible to pass integer data to
+         * floating-point shader inputs. In this case you may want to
+         * normalize the values (e.g. color components from 0-255 to
+         * 0.0f - 1.0f) -- see @ref DataOption "DataOption::Normalize".
          *
          * Only some types are allowed as attribute types, see
          * @ref AbstractShaderProgram-types or TypeTraits::AttributeType for
@@ -315,10 +316,11 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * shaders and @ref Mesh-configuration for example usage when adding
          * vertex buffers to mesh.
          */
-        template<GLuint location, class T> class Attribute {
+        template<UnsignedInt location, class T> class Attribute {
             public:
-                /** @brief Location to which the attribute is bound */
-                static const GLuint Location = location;
+                enum: UnsignedInt {
+                    Location = location /**< Location to which the attribute is bound */
+                };
 
                 /**
                  * @brief Type
@@ -326,7 +328,61 @@ class MAGNUM_EXPORT AbstractShaderProgram {
                  * Type used in shader code.
                  * @see DataType
                  */
-                typedef typename TypeTraits<T>::AttributeType Type;
+                typedef typename Implementation::Attribute<T>::Type Type;
+
+                /**
+                 * @brief Component count
+                 *
+                 * Count of components passed to the shader. If passing smaller
+                 * count of components than corresponding type has, unspecified
+                 * components are set to default values (second and third to `0`,
+                 * fourth to `1`).
+                 */
+                #ifdef DOXYGEN_GENERATING_OUTPUT
+                enum class Components: GLint {
+                    /**
+                     * Only first component is specified. Second, third and
+                     * fourth component are set to `0`, `0`, `1`, respectively.
+                     * Only for scalar and vector types, not matrices.
+                     */
+                    One = 1,
+
+                    /**
+                     * First two components are specified. Third and fourth
+                     * component are set to `0`, `1`, respectively. Only for
+                     * two, three and four-component vector types and 2x2, 3x2
+                     * and 4x2 matrix types.
+                     */
+                    Two = 2,
+
+                    /**
+                     * First three components are specified. Fourth component is
+                     * set to `1`. Only for three and four-component vector
+                     * types, 2x3, 3x3 and 4x3 matrix types.
+                     */
+                    Three = 3,
+
+                    /**
+                     * All four components are specified. Only for four-component
+                     * vector types and 2x4, 3x4 and 4x4 matrix types.
+                     */
+                    Four = 4
+
+                    #ifndef MAGNUM_TARGET_GLES
+                    ,
+                    /**
+                     * Four components with BGRA ordering. Only for four-component
+                     * float vector type.
+                     * @requires_gl32 %Extension @extension{ARB,vertex_array_bgra}
+                     * @requires_gl Only RGBA component ordering is supported
+                     *      in OpenGL ES.
+                     */
+                    BGRA = 1 << 1
+                    #endif
+                };
+                #else
+                typedef typename Implementation::Attribute<T>::Components Components;
+                #endif
 
                 /**
                  * @brief Data type
@@ -348,7 +404,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
                      * @requires_gl30 %Extension @extension{NV,half_float}
                      * @requires_gles30 %Extension @es_extension{OES,vertex_half_float}
                      */
-                    Half = GL_HALF_FLOAT,
+                    HalfFloat = GL_HALF_FLOAT,
 
                     /** Float. Only for float attribute types. */
                     Float = GL_FLOAT,
@@ -371,7 +427,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
                      * @requires_gl33 %Extension @extension{ARB,vertex_type_2_10_10_10_rev}
                      * @requires_gles30 (no extension providing this functionality)
                      */
-                    UnsignedInt2101010REV = GL_UNSIGNED_INT_2_10_10_10_REV,
+                    UnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
 
                     /**
                      * Signed 2.10.10.10 packed integer. Only for
@@ -379,7 +435,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
                      * @requires_gl33 %Extension @extension{ARB,vertex_type_2_10_10_10_rev}
                      * @requires_gles30 (no extension providing this functionality)
                      */
-                    Int2101010REV = GL_INT_2_10_10_10_REV
+                    Int2101010Rev = GL_INT_2_10_10_10_REV
                     #endif
                 };
                 #else
@@ -391,21 +447,12 @@ class MAGNUM_EXPORT AbstractShaderProgram {
                  * @see DataOptions, Attribute()
                  */
                 #ifdef DOXYGEN_GENERATING_OUTPUT
-                enum class DataOption: std::uint8_t {
+                enum class DataOption: UnsignedByte {
                     /**
                      * Normalize integer components. Only for float attribute
                      * types. Default is to not normalize.
                      */
-                    Normalize = 1 << 0,
-
-                    /**
-                     * BGRA component ordering. Default is RGBA. Only for
-                     * four-component float vector attribute type.
-                     * @requires_gl32 %Extension @extension{ARB,vertex_array_bgra}
-                     * @requires_gl Only RGBA component ordering is supported
-                     *      in OpenGL ES.
-                     */
-                    BGRA = 1 << 1
+                    Normalize = 1 << 0
                 };
                 #else
                 typedef typename Implementation::Attribute<T>::DataOption DataOption;
@@ -416,27 +463,49 @@ class MAGNUM_EXPORT AbstractShaderProgram {
                  * @see Attribute()
                  */
                 #ifdef DOXYGEN_GENERATING_OUTPUT
-                typedef typename Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
+                typedef typename Corrade::Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
                 #else
                 typedef typename Implementation::Attribute<T>::DataOptions DataOptions;
                 #endif
 
                 /**
                  * @brief Constructor
+                 * @param components    Component count
                  * @param dataType      Type of passed data. Default is the
                  *      same as type used in shader (e.g. DataType::Integer
-                 *      for Vector4<GLint>).
+                 *      for Vector4i).
                  * @param dataOptions   Data options. Default is no options.
                  */
-                inline constexpr Attribute(DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _dataType(dataType), _dataOptions(dataOptions) {}
+                inline constexpr Attribute(Components components, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(components), _dataType(dataType), _dataOptions(dataOptions) {}
+
+                /**
+                 * @brief Constructor
+                 * @param dataType      Type of passed data. Default is the
+                 *      same as type used in shader (e.g. DataType::Integer
+                 *      for Vector4i).
+                 * @param dataOptions   Data options. Default is no options.
+                 *
+                 * Component count is set to the same value as in type used in
+                 * shader (e.g. @ref Components "Components::Three" for Vector3).
+                 */
+                inline constexpr Attribute(DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(Implementation::Attribute<T>::DefaultComponents), _dataType(dataType), _dataOptions(dataOptions) {}
+
+                /** @brief Component count of passed data */
+                inline constexpr Components components() const { return _components; }
 
                 /** @brief Type of passed data */
                 inline constexpr DataType dataType() const { return _dataType; }
+
+                /** @brief Size of passed data */
+                inline std::size_t dataSize() const {
+                    return Implementation::Attribute<T>::size(GLint(_components)*Implementation::Attribute<T>::vectorCount(), _dataType);
+                }
 
                 /** @brief Data options */
                 inline constexpr DataOptions dataOptions() const { return _dataOptions; }
 
             private:
+                const Components _components;
                 const DataType _dataType;
                 const DataOptions _dataOptions;
         };
@@ -448,7 +517,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * OpenGL calls.
          * @see Attribute, @fn_gl{Get} with @def_gl{MAX_VERTEX_ATTRIBS}
          */
-        static GLint maxSupportedVertexAttributeCount();
+        static Int maxSupportedVertexAttributeCount();
 
         /**
          * @brief Constructor
@@ -456,7 +525,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * Creates one OpenGL shader program.
          * @see @fn_gl{CreateProgram}
          */
-        inline AbstractShaderProgram(): state(Initialized) {
+        inline explicit AbstractShaderProgram(): state(Initialized) {
             _id = glCreateProgram();
         }
 
@@ -486,7 +555,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @note This function should be called after attachShader() calls and
          *      before link().
          * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_BINARY_RETRIEVABLE_HINT}
-         * @requires_gl41 Extension @extension{ARB,get_program_binary}
+         * @requires_gl41 %Extension @extension{ARB,get_program_binary}
          * @requires_gles30 Always allowed in OpenGL ES 2.0.
          */
         inline void setRetrievableBinary(bool enabled) {
@@ -501,7 +570,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @note This function should be called after attachShader() calls and
          *      before link().
          * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_SEPARABLE}
-         * @requires_gl41 Extension @extension{ARB,separate_shader_objects}
+         * @requires_gl41 %Extension @extension{ARB,separate_shader_objects}
          * @requires_es_extension %Extension @es_extension{EXT,separate_shader_objects}
          */
         inline void setSeparable(bool enabled) {
@@ -544,7 +613,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *      for more information.
          * @see @fn_gl{BindAttribLocation}
          */
-        void bindAttributeLocation(GLuint location, const std::string& name);
+        void bindAttributeLocation(UnsignedInt location, const std::string& name);
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -563,11 +632,11 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
          * @see @fn_gl{BindFragDataLocationIndexed}
-         * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+         * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
          * @requires_gl Multiple blend function inputs are not available in
          *      OpenGL ES.
          */
-        void bindFragmentDataLocationIndexed(GLuint location, GLuint index, const std::string& name);
+        void bindFragmentDataLocationIndexed(UnsignedInt location, UnsignedInt index, const std::string& name);
 
         /**
          * @brief Bind fragment data to given location and first color input index
@@ -577,11 +646,11 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * The same as bindFragmentDataLocationIndexed(), but with `index` set
          * to `0`.
          * @see @fn_gl{BindFragDataLocation}
-         * @requires_gl30 Extension @extension{EXT,gpu_shader4}
+         * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
          * @requires_gl Use explicit location specification in OpenGL ES 3.0
          *      instead.
          */
-        void bindFragmentDataLocation(GLuint location, const std::string& name);
+        void bindFragmentDataLocation(UnsignedInt location, const std::string& name);
         #endif
 
         /**
@@ -605,7 +674,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *      for more information.
          * @see @fn_gl{GetUniformLocation}
          */
-        GLint uniformLocation(const std::string& name);
+        Int uniformLocation(const std::string& name);
 
         /**
          * @brief Set uniform value
@@ -618,265 +687,265 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @see @fn_gl{UseProgram}, @fn_gl{Uniform} or `glProgramUniform()`
          *      from @extension{ARB,separate_shader_objects}/@extension{EXT,direct_state_access}.
          */
-        inline void setUniform(GLint location, GLfloat value) {
+        inline void setUniform(Int location, Float value) {
             (this->*uniform1fImplementation)(location, value);
         }
 
-        /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::Vector<2, GLfloat>& value) {
+        /** @copydoc setUniform(Int, Float) */
+        inline void setUniform(Int location, const Math::Vector<2, Float>& value) {
             (this->*uniform2fvImplementation)(location, value);
         }
 
-        /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::Vector<3, GLfloat>& value) {
+        /** @copydoc setUniform(Int, Float) */
+        inline void setUniform(Int location, const Math::Vector<3, Float>& value) {
             (this->*uniform3fvImplementation)(location, value);
         }
 
-        /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::Vector<4, GLfloat>& value) {
+        /** @copydoc setUniform(Int, Float) */
+        inline void setUniform(Int location, const Math::Vector<4, Float>& value) {
             (this->*uniform4fvImplementation)(location, value);
         }
 
-        /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, GLint value) {
+        /** @copydoc setUniform(Int, Float) */
+        inline void setUniform(Int location, Int value) {
             (this->*uniform1iImplementation)(location, value);
         }
 
-        /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::Vector<2, GLint>& value) {
+        /** @copydoc setUniform(Int, Float) */
+        inline void setUniform(Int location, const Math::Vector<2, Int>& value) {
             (this->*uniform2ivImplementation)(location, value);
         }
 
-        /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::Vector<3, GLint>& value) {
+        /** @copydoc setUniform(Int, Float) */
+        inline void setUniform(Int location, const Math::Vector<3, Int>& value) {
             (this->*uniform3ivImplementation)(location, value);
         }
 
-        /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::Vector<4, GLint>& value) {
+        /** @copydoc setUniform(Int, Float) */
+        inline void setUniform(Int location, const Math::Vector<4, Int>& value) {
             (this->*uniform4ivImplementation)(location, value);
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl30 Extension @extension{EXT,gpu_shader4}
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
-        inline void setUniform(GLint location, GLuint value) {
+        inline void setUniform(Int location, UnsignedInt value) {
             (this->*uniform1uiImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl30 Extension @extension{EXT,gpu_shader4}
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
-        inline void setUniform(GLint location, const Math::Vector<2, GLuint>& value) {
+        inline void setUniform(Int location, const Math::Vector<2, UnsignedInt>& value) {
             (this->*uniform2uivImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl30 Extension @extension{EXT,gpu_shader4}
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
-        inline void setUniform(GLint location, const Math::Vector<3, GLuint>& value) {
+        inline void setUniform(Int location, const Math::Vector<3, UnsignedInt>& value) {
             (this->*uniform3uivImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl30 Extension @extension{EXT,gpu_shader4}
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
-        inline void setUniform(GLint location, const Math::Vector<4, GLuint>& value) {
+        inline void setUniform(Int location, const Math::Vector<4, UnsignedInt>& value) {
             (this->*uniform4uivImplementation)(location, value);
         }
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, GLdouble value) {
+        inline void setUniform(Int location, Double value) {
             (this->*uniform1dImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::Vector<2, GLdouble>& value) {
+        inline void setUniform(Int location, const Math::Vector<2, Double>& value) {
             (this->*uniform2dvImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::Vector<3, GLdouble>& value) {
+        inline void setUniform(Int location, const Math::Vector<3, Double>& value) {
             (this->*uniform3dvImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::Vector<4, GLdouble>& value) {
+        inline void setUniform(Int location, const Math::Vector<4, Double>& value) {
             (this->*uniform4dvImplementation)(location, value);
         }
         #endif
 
-        /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::Matrix<2, GLfloat>& value) {
+        /** @copydoc setUniform(Int, Float) */
+        inline void setUniform(Int location, const Math::Matrix<2, Float>& value) {
             (this->*uniformMatrix2fvImplementation)(location, value);
         }
 
-        /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::Matrix<3, GLfloat>& value) {
+        /** @copydoc setUniform(Int, Float) */
+        inline void setUniform(Int location, const Math::Matrix<3, Float>& value) {
             (this->*uniformMatrix3fvImplementation)(location, value);
         }
 
-        /** @copydoc setUniform(GLint, GLfloat) */
-        inline void setUniform(GLint location, const Math::Matrix<4, GLfloat>& value) {
+        /** @copydoc setUniform(Int, Float) */
+        inline void setUniform(Int location, const Math::Matrix<4, Float>& value) {
             (this->*uniformMatrix4fvImplementation)(location, value);
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @copydoc setUniform(GLint, GLfloat)
+         * @copydoc setUniform(Int, Float)
          * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<2, 3, GLfloat>& value) {
+        inline void setUniform(Int location, const Math::RectangularMatrix<2, 3, Float>& value) {
             (this->*uniformMatrix2x3fvImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
+         * @copydoc setUniform(Int, Float)
          * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<3, 2, GLfloat>& value) {
+        inline void setUniform(Int location, const Math::RectangularMatrix<3, 2, Float>& value) {
             (this->*uniformMatrix3x2fvImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
+         * @copydoc setUniform(Int, Float)
          * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<2, 4, GLfloat>& value) {
+        inline void setUniform(Int location, const Math::RectangularMatrix<2, 4, Float>& value) {
             (this->*uniformMatrix2x4fvImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
+         * @copydoc setUniform(Int, Float)
          * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<4, 2, GLfloat>& value) {
+        inline void setUniform(Int location, const Math::RectangularMatrix<4, 2, Float>& value) {
             (this->*uniformMatrix4x2fvImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
+         * @copydoc setUniform(Int, Float)
          * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<3, 4, GLfloat>& value) {
+        inline void setUniform(Int location, const Math::RectangularMatrix<3, 4, Float>& value) {
             (this->*uniformMatrix3x4fvImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
+         * @copydoc setUniform(Int, Float)
          * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<4, 3, GLfloat>& value) {
+        inline void setUniform(Int location, const Math::RectangularMatrix<4, 3, Float>& value) {
             (this->*uniformMatrix4x3fvImplementation)(location, value);
         }
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::Matrix<2, GLdouble>& value) {
+        inline void setUniform(Int location, const Math::Matrix<2, Double>& value) {
             (this->*uniformMatrix2dvImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::Matrix<3, GLdouble>& value) {
+        inline void setUniform(Int location, const Math::Matrix<3, Double>& value) {
             (this->*uniformMatrix3dvImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::Matrix<4, GLdouble>& value) {
+        inline void setUniform(Int location, const Math::Matrix<4, Double>& value) {
             (this->*uniformMatrix4dvImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<2, 3, GLdouble>& value) {
+        inline void setUniform(Int location, const Math::RectangularMatrix<2, 3, Double>& value) {
             (this->*uniformMatrix2x3dvImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<3, 2, GLdouble>& value) {
+        inline void setUniform(Int location, const Math::RectangularMatrix<3, 2, Double>& value) {
             (this->*uniformMatrix3x2dvImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<2, 4, GLdouble>& value) {
+        inline void setUniform(Int location, const Math::RectangularMatrix<2, 4, Double>& value) {
             (this->*uniformMatrix2x4dvImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<4, 2, GLdouble>& value) {
+        inline void setUniform(Int location, const Math::RectangularMatrix<4, 2, Double>& value) {
             (this->*uniformMatrix4x2dvImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<3, 4, GLdouble>& value) {
+        inline void setUniform(Int location, const Math::RectangularMatrix<3, 4, Double>& value) {
             (this->*uniformMatrix3x4dvImplementation)(location, value);
         }
 
         /**
-         * @copydoc setUniform(GLint, GLfloat)
-         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(GLint location, const Math::RectangularMatrix<4, 3, GLdouble>& value) {
+        inline void setUniform(Int location, const Math::RectangularMatrix<4, 3, Double>& value) {
             (this->*uniformMatrix4x3dvImplementation)(location, value);
         }
         #endif
@@ -1056,62 +1125,81 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         State state;
 };
 
+#ifdef DOXYGEN_GENERATING_OUTPUT
+/** @debugoperator{Magnum::AbstractShaderProgram::Attribute} */
+template<class T> Debug operator<<(Debug debug, AbstractShaderProgram::Attribute<T>::Components);
+
+/** @debugoperator{Magnum::AbstractShaderProgram::Attribute} */
+template<class T> Debug operator<<(Debug debug, AbstractShaderProgram::Attribute<T>::DataType);
+#endif
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
-template<class> struct Attribute {};
+/* Base for sized attributes */
+template<std::size_t cols, std::size_t rows> struct SizedAttribute;
 
-template<> struct Attribute<GLfloat> {
-    enum class DataType: GLenum {
-        UnsignedByte = GL_UNSIGNED_BYTE,
-        Byte = GL_BYTE,
-        UnsignedShort = GL_UNSIGNED_SHORT,
-        Short = GL_SHORT,
-        UnsignedInt = GL_UNSIGNED_INT,
-        Int = GL_INT,
-        #ifndef MAGNUM_TARGET_GLES2
-        HalfFloat = GL_HALF_FLOAT,
-        #else
-        HalfFloat = GL_HALF_FLOAT_OES,
-        #endif
-        Float = GL_FLOAT
-
-        #ifndef MAGNUM_TARGET_GLES
-        ,
-        Double = GL_DOUBLE
-        #endif
-    };
-
-    enum class DataOption: std::uint8_t {
-        Normalized = 1 << 0
-    };
-
-    typedef Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
-
-    static const DataType DefaultDataType = DataType::Float;
-
-    inline constexpr static GLint size(DataOptions) { return 1; }
-    inline constexpr static std::size_t vectorCount() { return 1; }
-};
-
-CORRADE_ENUMSET_OPERATORS(Attribute<GLfloat>::DataOptions)
-
-template<size_t vectorSize> struct Attribute<Math::Vector<vectorSize, GLfloat>>: public Attribute<GLfloat> {
-    inline constexpr static GLint size(DataOptions) { return vectorSize; }
-    inline constexpr static std::size_t vectorCount() { return 1; }
-};
-
-template<size_t cols, size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, GLfloat>>: public Attribute<GLfloat> {
-    inline constexpr static GLint size(DataOptions) { return rows; }
+/* Vector attribute sizes */
+template<std::size_t cols> struct SizedVectorAttribute {
     inline constexpr static std::size_t vectorCount() { return cols; }
 };
-
-template<size_t matrixSize> struct Attribute<Math::Matrix<matrixSize, GLfloat>>: public Attribute<GLfloat> {
-    inline constexpr static GLint size(DataOptions) { return matrixSize; }
-    inline constexpr static std::size_t vectorCount() { return matrixSize; }
+template<> struct SizedAttribute<1, 1>: SizedVectorAttribute<1> {
+    enum class Components: GLint { One = 1 };
+    constexpr static Components DefaultComponents = Components::One;
 };
+template<> struct SizedAttribute<1, 2>: SizedVectorAttribute<1> {
+    enum class Components: GLint { One = 1, Two = 2 };
+    constexpr static Components DefaultComponents = Components::Two;
+};
+template<> struct SizedAttribute<1, 3>: SizedVectorAttribute<1> {
+    enum class Components: GLint { One = 1, Two = 2, Three = 3 };
+    constexpr static Components DefaultComponents = Components::Three;
+};
+template<> struct SizedAttribute<1, 4>: SizedVectorAttribute<1> {
+    enum class Components: GLint { One = 1, Two = 2, Three = 3, Four = 4 };
+    constexpr static Components DefaultComponents = Components::Four;
+};
+Debug MAGNUM_EXPORT operator<<(Debug debug, SizedAttribute<1, 1>::Components value);
+Debug MAGNUM_EXPORT operator<<(Debug debug, SizedAttribute<1, 2>::Components value);
+Debug MAGNUM_EXPORT operator<<(Debug debug, SizedAttribute<1, 3>::Components value);
+Debug MAGNUM_EXPORT operator<<(Debug debug, SizedAttribute<1, 4>::Components value);
 
-template<> struct Attribute<Math::Vector<4, GLfloat>> {
+/* Matrix attribute sizes */
+template<std::size_t rows> struct SizedMatrixAttribute;
+template<> struct SizedMatrixAttribute<2> {
+    enum class Components: GLint { Two   = 2 };
+    constexpr static Components DefaultComponents = Components::Two;
+};
+template<> struct SizedMatrixAttribute<3> {
+    enum class Components: GLint { Three = 3 };
+    constexpr static Components DefaultComponents = Components::Three;
+};
+template<> struct SizedMatrixAttribute<4> {
+    enum class Components: GLint { Four  = 4 };
+    constexpr static Components DefaultComponents = Components::Four;
+};
+Debug MAGNUM_EXPORT operator<<(Debug debug, SizedMatrixAttribute<2>::Components value);
+Debug MAGNUM_EXPORT operator<<(Debug debug, SizedMatrixAttribute<3>::Components value);
+Debug MAGNUM_EXPORT operator<<(Debug debug, SizedMatrixAttribute<4>::Components value);
+template<> struct SizedAttribute<2, 2>: SizedVectorAttribute<2>, SizedMatrixAttribute<2> {};
+template<> struct SizedAttribute<3, 3>: SizedVectorAttribute<3>, SizedMatrixAttribute<3> {};
+template<> struct SizedAttribute<4, 4>: SizedVectorAttribute<4>, SizedMatrixAttribute<4> {};
+#ifndef MAGNUM_TARGET_GLES2
+template<> struct SizedAttribute<2, 3>: SizedVectorAttribute<2>, SizedMatrixAttribute<3> {};
+template<> struct SizedAttribute<3, 2>: SizedVectorAttribute<3>, SizedMatrixAttribute<2> {};
+template<> struct SizedAttribute<2, 4>: SizedVectorAttribute<2>, SizedMatrixAttribute<4> {};
+template<> struct SizedAttribute<4, 2>: SizedVectorAttribute<4>, SizedMatrixAttribute<2> {};
+template<> struct SizedAttribute<3, 4>: SizedVectorAttribute<3>, SizedMatrixAttribute<4> {};
+template<> struct SizedAttribute<4, 3>: SizedVectorAttribute<4>, SizedMatrixAttribute<3> {};
+#endif
+
+/* Base for attributes */
+template<class> struct Attribute;
+
+/* Base for float attributes */
+struct FloatAttribute {
+    typedef Float Type;
+
     enum class DataType: GLenum {
         UnsignedByte = GL_UNSIGNED_BYTE,
         Byte = GL_BYTE,
@@ -1125,45 +1213,31 @@ template<> struct Attribute<Math::Vector<4, GLfloat>> {
         HalfFloat = GL_HALF_FLOAT_OES,
         #endif
         Float = GL_FLOAT
+
         #ifndef MAGNUM_TARGET_GLES
         ,
         Double = GL_DOUBLE
         #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        ,
-        UnsignedAlpha2RGB10 = GL_UNSIGNED_INT_2_10_10_10_REV,
-        Alpha2RGB10 = GL_INT_2_10_10_10_REV
-        #endif
     };
+    constexpr static DataType DefaultDataType = DataType::Float;
 
-    enum class DataOption: std::uint8_t {
+    enum class DataOption: UnsignedByte {
         Normalized = 1 << 0
-
-        #ifndef MAGNUM_TARGET_GLES
-        ,
-        BGRA = 2 << 0
-        #endif
     };
+    typedef Corrade::Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
 
-    typedef Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
-
-    static const DataType DefaultDataType = DataType::Float;
-
-    #ifndef MAGNUM_TARGET_GLES
-    inline constexpr static GLint size(DataOptions options) {
-        return options & DataOption::BGRA ? GL_BGRA : 4;
-    }
-    #else
-    inline constexpr static GLint size(DataOptions) { return 4; }
-    #endif
-
-    inline constexpr static std::size_t vectorCount() { return 1; }
+    static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
 
-typedef Math::Vector<4, GLfloat> _Vector4;
-CORRADE_ENUMSET_OPERATORS(Attribute<_Vector4>::DataOptions)
+CORRADE_ENUMSET_OPERATORS(FloatAttribute::DataOptions)
 
-template<> struct Attribute<GLint> {
+Debug MAGNUM_EXPORT operator<<(Debug debug, FloatAttribute::DataType value);
+
+#ifndef MAGNUM_TARGET_GLES2
+/* Base for int attributes */
+struct IntAttribute {
+    typedef Int Type;
+
     enum class DataType: GLenum {
         UnsignedByte = GL_UNSIGNED_BYTE,
         Byte = GL_BYTE,
@@ -1172,79 +1246,146 @@ template<> struct Attribute<GLint> {
         UnsignedInt = GL_UNSIGNED_INT,
         Int = GL_INT
     };
+    constexpr static DataType DefaultDataType = DataType::Int;
 
-    enum class DataOption: std::uint8_t {};
+    enum class DataOption: UnsignedByte {};
+    typedef Corrade::Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
 
-    typedef Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
-
-    static const DataType DefaultDataType = DataType::Int;
-
-    inline constexpr static GLint size() { return 1; }
+    static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
 
-template<> struct Attribute<GLuint> {
-    typedef Attribute<GLint>::DataType DataType;
-    typedef Attribute<GLint>::DataOption DataOption;
+Debug MAGNUM_EXPORT operator<<(Debug debug, IntAttribute::DataType value);
 
-    typedef Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
+/* Base for unsigned int attributes */
+struct UnsignedIntAttribute {
+    typedef UnsignedInt Type;
 
-    static const DataType DefaultDataType = DataType::UnsignedInt;
+    typedef IntAttribute::DataType DataType;
+    constexpr static DataType DefaultDataType = DataType::UnsignedInt;
 
-    inline constexpr static GLint size() { return 1; }
-};
+    typedef IntAttribute::DataOption DataOption;
+    typedef Corrade::Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
 
-template<size_t size> struct Attribute<Math::Vector<size, GLint>>: public Attribute<GLint> {
-    inline constexpr static GLint size() { return size; }
-};
-
-template<size_t size> struct Attribute<Math::Vector<size, GLuint>>: public Attribute<GLuint> {
-    inline constexpr static GLint size() { return size; }
-};
-
-#ifndef MAGNUM_TARGET_GLES
-template<> struct Attribute<GLdouble> {
-    enum class DataType: GLenum {
-        Double = GL_DOUBLE
-    };
-
-    enum class DataOption: std::uint8_t {};
-
-    typedef Corrade::Containers::EnumSet<DataOption, std::uint8_t> DataOptions;
-
-    static const DataType DefaultDataType = DataType::Double;
-
-    inline constexpr static GLint size() { return 1; }
-    inline constexpr static std::size_t vectorCount() { return 1; }
-};
-
-template<size_t cols, size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, GLdouble>>: public Attribute<GLdouble> {
-    inline constexpr static GLint size() { return rows; }
-    inline constexpr static std::size_t vectorCount() { return cols; }
-};
-
-template<size_t size> struct Attribute<Math::Matrix<size, GLdouble>>: public Attribute<GLdouble> {
-    inline constexpr static GLint size() { return size; }
-    inline constexpr static std::size_t vectorCount() { return size; }
-};
-
-template<size_t size> struct Attribute<Math::Vector<size, GLdouble>>: public Attribute<GLdouble> {
-    inline constexpr static GLint size() { return size; }
-    inline constexpr static std::size_t vectorCount() { return size; }
+    inline static std::size_t size(GLint components, DataType dataType) {
+        return IntAttribute::size(components, dataType);
+    }
 };
 #endif
 
-template<class T> struct Attribute<Math::Vector2<T>>: public Attribute<Math::Vector<2, T>> {};
-template<class T> struct Attribute<Math::Vector3<T>>: public Attribute<Math::Vector<3, T>> {};
-template<class T> struct Attribute<Math::Vector4<T>>: public Attribute<Math::Vector<4, T>> {};
+#ifndef MAGNUM_TARGET_GLES
+/* Base for double attributes */
+struct DoubleAttribute {
+    typedef Double Type;
 
-template<class T> struct Attribute<Math::Point2D<T>>: public Attribute<Math::Vector3<T>> {};
-template<class T> struct Attribute<Math::Point3D<T>>: public Attribute<Math::Vector4<T>> {};
+    enum class DataType: GLenum {
+        Double = GL_DOUBLE
+    };
+    constexpr static DataType DefaultDataType = DataType::Double;
 
-template<class T> struct Attribute<Color3<T>>: public Attribute<Math::Vector3<T>> {};
-template<class T> struct Attribute<Color4<T>>: public Attribute<Math::Vector4<T>> {};
+    enum class DataOption: UnsignedByte {};
+    typedef Corrade::Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
 
-template<class T> struct Attribute<Math::Matrix3<T>>: public Attribute<Math::Matrix<3, T>> {};
-template<class T> struct Attribute<Math::Matrix4<T>>: public Attribute<Math::Matrix<4, T>> {};
+    static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
+};
+
+Debug MAGNUM_EXPORT operator<<(Debug debug, DoubleAttribute::DataType value);
+#endif
+
+/* Floating-point four-component vector is absolutely special case */
+template<> struct Attribute<Math::Vector<4, Float>> {
+    typedef Float Type;
+
+    enum class Components: GLint {
+        One = 1,
+        Two = 2,
+        Three = 3,
+        Four = 4
+        #ifndef MAGNUM_TARGET_GLES
+        ,
+        BGRA = GL_BGRA
+        #endif
+    };
+    constexpr static Components DefaultComponents = Components::Four;
+
+    enum class DataType: GLenum {
+        UnsignedByte = GL_UNSIGNED_BYTE,
+        Byte = GL_BYTE,
+        UnsignedShort = GL_UNSIGNED_SHORT,
+        Short = GL_SHORT,
+        UnsignedInt = GL_UNSIGNED_INT,
+        Int = GL_INT,
+        #ifndef MAGNUM_TARGET_GLES2
+        HalfFloat = GL_HALF_FLOAT,
+        #else
+        HalfFloat = GL_HALF_FLOAT_OES,
+        #endif
+        Float = GL_FLOAT
+        #ifndef MAGNUM_TARGET_GLES
+        ,
+        Double = GL_DOUBLE
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        ,
+        UnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
+        Int2101010Rev = GL_INT_2_10_10_10_REV
+        #endif
+    };
+    constexpr static DataType DefaultDataType = DataType::Float;
+
+    enum class DataOption: UnsignedByte {
+        Normalized = 1 << 0
+    };
+    typedef Corrade::Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
+
+    inline constexpr static std::size_t vectorCount() { return 1; }
+
+    static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
+};
+
+typedef Math::Vector<4, Float> _Vector4;
+CORRADE_ENUMSET_OPERATORS(Attribute<_Vector4>::DataOptions)
+
+Debug MAGNUM_EXPORT operator<<(Debug debug, Attribute<Math::Vector<4, Float>>::Components value);
+Debug MAGNUM_EXPORT operator<<(Debug debug, Attribute<Math::Vector<4, Float>>::DataType value);
+
+/* Common float, int, unsigned int and double scalar attributes */
+template<> struct Attribute<Float>: FloatAttribute, SizedAttribute<1, 1> {};
+#ifndef MAGNUM_TARGET_GLES2
+template<> struct Attribute<Int>: IntAttribute, SizedAttribute<1, 1> {};
+template<> struct Attribute<UnsignedInt>: UnsignedIntAttribute, SizedAttribute<1, 1> {};
+#ifndef MAGNUM_TARGET_GLES
+template<> struct Attribute<Double>: DoubleAttribute, SizedAttribute<1, 1> {};
+#endif
+#endif
+
+/* Common float, int, unsigned int and double vector attributes */
+template<std::size_t size_> struct Attribute<Math::Vector<size_, Float>>: FloatAttribute, SizedAttribute<1, size_> {};
+#ifndef MAGNUM_TARGET_GLES2
+template<std::size_t size_> struct Attribute<Math::Vector<size_, Int>>: IntAttribute, SizedAttribute<1, size_> {};
+template<std::size_t size_> struct Attribute<Math::Vector<size_, UnsignedInt>>: UnsignedIntAttribute, SizedAttribute<1, size_> {};
+#ifndef MAGNUM_TARGET_GLES
+template<std::size_t size_> struct Attribute<Math::Vector<size_, Double>>: DoubleAttribute, SizedAttribute<1, size_> {};
+#endif
+#endif
+template<class T> struct Attribute<Math::Vector2<T>>: Attribute<Math::Vector<2, T>> {};
+template<class T> struct Attribute<Math::Vector3<T>>: Attribute<Math::Vector<3, T>> {};
+template<class T> struct Attribute<Math::Vector4<T>>: Attribute<Math::Vector<4, T>> {};
+template<class T> struct Attribute<Color3<T>>: Attribute<Math::Vector3<T>> {};
+template<class T> struct Attribute<Color4<T>>: Attribute<Math::Vector4<T>> {};
+
+/* Common float and double rectangular matrix attributes */
+template<std::size_t cols, std::size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, Float>>: FloatAttribute, SizedAttribute<cols, rows> {};
+#ifndef MAGNUM_TARGET_GLES
+template<std::size_t cols, std::size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, Double>>: DoubleAttribute, SizedAttribute<cols, rows> {};
+#endif
+
+/* Common float and double square matrix attributes */
+template<std::size_t size_> struct Attribute<Math::Matrix<size_, Float>>: Attribute<Math::RectangularMatrix<size_, size_, Float>> {};
+#ifndef MAGNUM_TARGET_GLES
+template<std::size_t size_> struct Attribute<Math::Matrix<size_, Double>>: Attribute<Math::RectangularMatrix<size_, size_, Double>> {};
+#endif
+template<class T> struct Attribute<Math::Matrix3<T>>: Attribute<Math::Matrix<3, T>> {};
+template<class T> struct Attribute<Math::Matrix4<T>>: Attribute<Math::Matrix<4, T>> {};
 
 }
 #endif

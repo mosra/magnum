@@ -1,18 +1,27 @@
 #ifndef Magnum_Platform_Sdl2Application_h
 #define Magnum_Platform_Sdl2Application_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -22,6 +31,9 @@
 #include "Math/Vector2.h"
 #include "Magnum.h"
 
+#ifdef _WIN32 /* Windows version of SDL2 redefines main(), we don't want that */
+#define SDL_MAIN_HANDLED
+#endif
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_scancode.h>
 #include <Corrade/Containers/EnumSet.h>
@@ -42,7 +54,7 @@ buffer. Supports keyboard and mouse handling.
 @section Sdl2Application-usage Usage
 
 You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen.  The subclass can be then used directly in `main()` - see
+draw on the screen. The subclass can be then used directly in `main()` -- see
 convenience macro MAGNUM_SDL2APPLICATION_MAIN().
 @code
 class MyApplication: public Magnum::Platform::Sdl2Application {
@@ -65,7 +77,7 @@ class Sdl2Application {
          * @param title     Window title
          * @param size      Window size
          */
-        Sdl2Application(int argc, char** argv, const std::string& title = "Magnum SDL2 application", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
+        explicit Sdl2Application(int argc, char** argv, const std::string& title = "Magnum SDL2 application", const Vector2i& size = Vector2i(800, 600));
 
         /**
          * @brief Destructor
@@ -80,12 +92,15 @@ class Sdl2Application {
          */
         int exec();
 
+        /** @brief Exit application main loop */
+        inline void exit() { flags |= Flag::Exit; }
+
     protected:
 
         /** @{ @name Drawing functions */
 
         /** @copydoc GlutApplication::viewportEvent() */
-        virtual void viewportEvent(const Math::Vector2<GLsizei>& size) = 0;
+        virtual void viewportEvent(const Vector2i& size) = 0;
 
         /** @copydoc GlutApplication::drawEvent() */
         virtual void drawEvent() = 0;
@@ -94,17 +109,13 @@ class Sdl2Application {
         inline void swapBuffers() { SDL_GL_SwapWindow(window); }
 
         /** @copydoc GlutApplication::redraw() */
-        inline void redraw() { _redraw = true; }
+        inline void redraw() { flags |= Flag::Redraw; }
 
         /*@}*/
 
         /** @{ @name Keyboard handling */
 
-        /**
-         * @brief Key press event
-         *
-         * Called when an key is pressed. Default implementation does nothing.
-         */
+        /** @copydoc GlutApplication::keyPressEvent() */
         virtual void keyPressEvent(KeyEvent& event);
 
         /**
@@ -134,20 +145,10 @@ class Sdl2Application {
         void setMouseLocked(bool enabled);
 
     protected:
-        /**
-         * @brief Mouse press event
-         *
-         * Called when mouse button is pressed. Default implementation does
-         * nothing.
-         */
+        /** @copydoc GlutApplication::mousePressEvent() */
         virtual void mousePressEvent(MouseEvent& event);
 
-        /**
-         * @brief Mouse release event
-         *
-         * Called when mouse button is released. Default implementation does
-         * nothing.
-         */
+        /** @copydoc GlutApplication::mouseReleaseEvent() */
         virtual void mouseReleaseEvent(MouseEvent& event);
 
         /**
@@ -160,13 +161,23 @@ class Sdl2Application {
         /*@}*/
 
     private:
+        enum class Flag: UnsignedByte {
+            Redraw = 1 << 0,
+            Exit = 1 << 1
+        };
+
+        typedef Corrade::Containers::EnumSet<Flag, UnsignedByte> Flags;
+        CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
+
         SDL_Window* window;
         SDL_GLContext context;
 
         Context* c;
 
-        bool _redraw;
+        Flags flags;
 };
+
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Flags)
 
 /**
 @brief Base for input events
@@ -184,7 +195,8 @@ class Sdl2Application::InputEvent {
         /**
          * @brief %Modifier
          *
-         * @see Modifiers, KeyEvent::modifiers()
+         * @see Modifiers, KeyEvent::modifiers(), MouseEvent::modifiers(),
+         *      MouseMoveEvent::modifiers()
          */
         enum class Modifier: Uint16 {
             Shift = KMOD_SHIFT,         /**< Shift */
@@ -199,21 +211,17 @@ class Sdl2Application::InputEvent {
         /**
          * @brief Set of modifiers
          *
-         * @see KeyEvent::modifiers()
+         * @see KeyEvent::modifiers(), MouseEvent::modifiers(),
+         *      MouseMoveEvent::modifiers()
          */
         typedef Corrade::Containers::EnumSet<Modifier, Uint16> Modifiers;
 
         inline virtual ~InputEvent() {}
 
-        /**
-         * @brief Set event as accepted
-         *
-         * If the event is ignored (i.e., not set as accepted), it might be
-         * propagated elsewhere. By default is each event ignored.
-         */
+        /** @copydoc GlutApplication::InputEvent::setAccepted() */
         inline void setAccepted(bool accepted = true) { _accepted = accepted; }
 
-        /** @brief Whether the event is accepted */
+        /** @copydoc GlutApplication::InputEvent::isAccepted() */
         inline bool isAccepted() { return _accepted; }
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -351,7 +359,7 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         inline Button button() const { return _button; }
 
         /** @brief Position */
-        inline Math::Vector2<int> position() const { return _position; }
+        inline Vector2i position() const { return _position; }
 
         /**
          * @brief Modifiers
@@ -361,10 +369,10 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        inline MouseEvent(Button button, const Math::Vector2<int>& position): _button(button), _position(position), modifiersLoaded(false) {}
+        inline MouseEvent(Button button, const Vector2i& position): _button(button), _position(position), modifiersLoaded(false) {}
 
         const Button _button;
-        const Math::Vector2<int> _position;
+        const Vector2i _position;
         bool modifiersLoaded;
         Modifiers _modifiers;
 };
@@ -379,14 +387,14 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
 
     public:
         /** @brief Position */
-        inline Math::Vector2<int> position() const { return _position; }
+        inline Vector2i position() const { return _position; }
 
         /**
          * @brief Relative position
          *
          * Position relative to previous event.
          */
-        inline Math::Vector2<int> relativePosition() const { return _relativePosition; }
+        inline Vector2i relativePosition() const { return _relativePosition; }
 
         /**
          * @brief Modifiers
@@ -396,18 +404,20 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        inline MouseMoveEvent(const Math::Vector2<int>& position, const Math::Vector2<int>& relativePosition): _position(position), _relativePosition(relativePosition), modifiersLoaded(false) {}
+        inline MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition): _position(position), _relativePosition(relativePosition), modifiersLoaded(false) {}
 
-        const Math::Vector2<int> _position, _relativePosition;
+        const Vector2i _position, _relativePosition;
         bool modifiersLoaded;
         Modifiers _modifiers;
 };
 
 /** @hideinitializer
+@brief Entry point for SDL2-based applications
 @param className Class name
 
-Can be used as equivalent to the following code to achieve better portability,
-see @ref portability-applications for more information.
+Can be used with Sdl2Application subclasses as equivalent to the following
+code to achieve better portability, see @ref portability-applications for more
+information.
 @code
 int main(int argc, char** argv) {
     className app(argc, argv);

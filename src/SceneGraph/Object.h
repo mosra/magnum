@@ -1,18 +1,27 @@
 #ifndef Magnum_SceneGraph_Object_h
 #define Magnum_SceneGraph_Object_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -30,13 +39,13 @@ namespace Magnum { namespace SceneGraph {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    enum class ObjectFlag: std::uint8_t {
+    enum class ObjectFlag: UnsignedByte {
         Dirty = 1 << 0,
         Visited = 1 << 1,
         Joint = 1 << 2
     };
 
-    typedef Corrade::Containers::EnumSet<ObjectFlag, std::uint8_t> ObjectFlags;
+    typedef Corrade::Containers::EnumSet<ObjectFlag, UnsignedByte> ObjectFlags;
 
     CORRADE_ENUMSET_OPERATORS(ObjectFlags)
 }
@@ -68,15 +77,20 @@ for(Object* child = o->firstChild(); child; child = child->nextSibling()) {
 @section Object-explicit-specializations Explicit template specializations
 
 The following specialization are explicitly compiled into SceneGraph library.
-For other specializations you have to use Object.hpp implementation file to
-avoid linker errors. See @ref compilation-speedup-hpp for more information.
+For other specializations (e.g. using Double type or special transformation
+class) you have to use Object.hpp implementation file to avoid linker errors.
+See @ref compilation-speedup-hpp for more information.
 
- - @ref MatrixTransformation2D "Object<MatrixTransformation2D<>>"
- - @ref MatrixTransformation3D "Object<MatrixTransformation3D<>>"
+ - @ref DualComplexTransformation "Object<DualComplexTransformation<Float>>"
+ - @ref DualQuaternionTransformation "Object<DualQuaternionTransformation<Float>>"
+ - @ref MatrixTransformation2D "Object<MatrixTransformation2D<Float>>"
+ - @ref MatrixTransformation3D "Object<MatrixTransformation3D<Float>>"
+ - @ref RigidMatrixTransformation2D "Object<RigidMatrixTransformation2D<Float>>"
+ - @ref RigidMatrixTransformation3D "Object<RigidMatrixTransformation3D<Float>>"
 
-@see Scene, AbstractFeature, AbstractTransformation
+@see Scene, AbstractFeature, AbstractTransformation, DebugTools::ObjectRenderer
 */
-template<class Transformation> class Object: public AbstractObject<Transformation::Dimensions, typename Transformation::Type>, public Transformation
+template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public AbstractObject<Transformation::Dimensions, typename Transformation::Type>, public Transformation
     #ifndef DOXYGEN_GENERATING_OUTPUT
     , private Corrade::Containers::LinkedList<Object<Transformation>>, private Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>
     #endif
@@ -105,7 +119,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          * @brief Constructor
          * @param parent    Parent object
          */
-        inline Object(Object<Transformation>* parent = nullptr): counter(0xFFFFu), flags(Flag::Dirty) {
+        inline explicit Object(Object<Transformation>* parent = nullptr): counter(0xFFFFu), flags(Flag::Dirty) {
             setParent(parent);
         }
 
@@ -200,6 +214,10 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
 
         /** @{ @name Object transformation */
 
+        inline typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType transformationMatrix() const override {
+            return Transformation::toMatrix(Transformation::transformation());
+        }
+
         inline typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType absoluteTransformationMatrix() const override {
             return Transformation::toMatrix(absoluteTransformation());
         }
@@ -239,17 +257,17 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         Object<Transformation>* sceneObject() override;
         const Object<Transformation>* sceneObject() const override;
 
-        std::vector<typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType> transformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType& initialTransformationMatrix = typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType()) const override;
+        std::vector<typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType> transformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType& initialTransformationMatrix = (typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType())) const override;
 
-        typename Transformation::DataType computeJointTransformation(const std::vector<Object<Transformation>*>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const;
+        typename Transformation::DataType MAGNUM_SCENEGRAPH_LOCAL computeJointTransformation(const std::vector<Object<Transformation>*>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const;
 
         void setClean(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) const override;
 
-        void setClean(const typename Transformation::DataType& absoluteTransformation);
+        void MAGNUM_SCENEGRAPH_LOCAL setClean(const typename Transformation::DataType& absoluteTransformation);
 
         typedef Implementation::ObjectFlag Flag;
         typedef Implementation::ObjectFlags Flags;
-        std::uint16_t counter;
+        UnsignedShort counter;
         Flags flags;
 };
 

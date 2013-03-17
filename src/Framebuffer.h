@@ -1,1322 +1,455 @@
 #ifndef Magnum_Framebuffer_h
 #define Magnum_Framebuffer_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
  * @brief Class Magnum::Framebuffer
  */
 
-#include <Containers/EnumSet.h>
-
-#include "AbstractImage.h"
-#include "Buffer.h"
+#include "AbstractFramebuffer.h"
 #include "CubeMapTexture.h"
-#include "Color.h"
-#include "Renderbuffer.h"
 
 namespace Magnum {
 
-/** @nosubgrouping
+/**
 @brief %Framebuffer
 
-Provides operations with framebuffers (configuring, clearing, blitting...) and
-creation and attaching of named framebuffers.
-@todo @extension{ARB,viewport_array}
+Unlike DefaultFramebuffer, which is used for on-screen rendering, this class
+is used for off-screen rendering, usable either in windowless applications,
+texture generation or for various post-processing effects.
+
+@section Framebuffer-usage Example usage
+
+See @ref DefaultFramebuffer-usage "DefaultFramebuffer documentation" for
+introduction. Imagine you have shader with multiple outputs (e.g. for deferred
+rendering). You want to render them off-screen to textures and then use the
+textures for actual on-screen rendering. First you need to create the
+framebuffer with the same viewport as default framebuffer and attach textures
+and renderbuffers to desired outputs:
+@code
+Framebuffer framebuffer(defaultFramebuffer.viewportPosition(), defaultFramebuffer.viewportSize());
+Texture2D color, normal;
+Renderbuffer depthStencil;
+
+// configure the textures and allocate texture memory...
+
+framebuffer.attachTexture2D(Framebuffer::ColorAttachment(0), &color);
+framebuffer.attachTexture2D(Framebuffer::ColorAttachment(1), &normal);
+framebuffer.attachRenderbuffer(Framebuffer::BufferAttachment::DepthStencil, &depthStencil);
+@endcode
+
+Then you need to map outputs of your shader to color attachments in the
+framebuffer:
+@code
+framebuffer.mapForDraw({{MyShader::ColorOutput, Framebuffer::ColorAttachment(0)},
+                        {MyShader::NormalOutput, Framebuffer::ColorAttachment(1)}});
+@endcode
+
+The actual @ref Platform::GlutApplication::drawEvent() "drawEvent()" might
+look like this. First you clear all buffers you need, perform drawing to
+off-screen framebuffer, then bind the default and render the textures on
+screen:
+@code
+void drawEvent() {
+    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color)
+    framebuffer.clear(Framebuffer::Clear::Color|Framebuffer::Clear::Depth|Framebuffer::Clear::Stencil);
+
+    framebuffer.bind(Framebuffer::Target::Draw);
+    // ...
+
+    defaultFramebuffer.bind(DefaultFramebuffer::Target::Draw);
+    // ...
+}
+@endcode
+
+@section Framebuffer-performance-optimization Performance optimizations
+
+See also @ref AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
+
+If extension @extension{EXT,direct_state_access} is available, functions
+mapForDraw(), mapForRead(), attachRenderbuffer(), attachTexture1D(),
+attachTexture2D(), attachCubeMapTexture() and attachTexture3D() use DSA
+to avoid unnecessary calls to @fn_gl{BindFramebuffer}. See their respective
+documentation for more information.
+
+@requires_gl30 %Extension @extension{EXT,framebuffer_object}
 */
-class MAGNUM_EXPORT Framebuffer {
-    Framebuffer(const Framebuffer& other) = delete;
-    Framebuffer(Framebuffer&& other) = delete;
-    Framebuffer& operator=(const Framebuffer& other) = delete;
-    Framebuffer& operator=(Framebuffer&& other) = delete;
+class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
+    friend class Context;
 
     public:
         /**
-         * @brief Affected polygon facing for culling, stencil operations and masks
+         * @brief Color attachment
          *
-         * @see setFaceCullingMode(),
-         *      setStencilFunction(PolygonFacing, StencilFunction, GLint, GLuint),
-         *      setStencilOperation(PolygonFacing, StencilOperation, StencilOperation, StencilOperation),
-         *      setStencilMask(PolygonFacing, GLuint)
+         * @see Attachment, attachRenderbuffer(), attachTexture1D(),
+         *      attachTexture2D(), attachCubeMapTexture(), attachTexture3D()
          */
-        enum class PolygonFacing: GLenum {
-            Front = GL_FRONT,                   /**< Front-facing polygons */
-            Back = GL_BACK,                     /**< Back-facing polygons */
-            FrontAndBack = GL_FRONT_AND_BACK    /**< Front- and back-facing polygons */
-        };
+        class ColorAttachment {
+            friend class Framebuffer;
 
-        /** @{ @name Framebuffer features */
+            public:
+                /**
+                 * @brief Constructor
+                 * @param id        Color attachment id
+                 */
+                inline constexpr explicit ColorAttachment(UnsignedInt id): attachment(GL_COLOR_ATTACHMENT0 + id) {}
 
-        /**
-         * @brief Features
-         *
-         * If not specified otherwise, all features are disabled by default.
-         * @see setFeature()
-         */
-        enum class Feature: GLenum {
-            /**
-             * Blending
-             * @see setBlendEquation(), setBlendFunction(), setBlendColor()
-             */
-            Blending = GL_BLEND,
+                #ifndef DOXYGEN_GENERATING_OUTPUT
+                inline constexpr explicit operator GLenum() const { return attachment; }
+                #endif
 
-            #ifndef MAGNUM_TARGET_GLES
-            /**
-             * Logical operation
-             * @see setLogicOperation()
-             * @requires_gl Logical operations on framebuffer are not
-             *      available in OpenGL ES.
-             */
-            LogicOperation = GL_COLOR_LOGIC_OP,
-
-            /**
-             * Depth clamping. If enabled, ignores near and far clipping plane.
-             * @requires_gl32 Extension @extension{ARB,depth_clamp}
-             * @requires_gl Depth clamping is not available in OpenGL ES.
-             */
-            DepthClamp = GL_DEPTH_CLAMP,
-            #endif
-
-            /**
-             * Scissor test
-             * @see setScissor()
-             */
-            ScissorTest = GL_SCISSOR_TEST,
-            DepthTest = GL_DEPTH_TEST,      /**< Depth test */
-            StencilTest = GL_STENCIL_TEST,  /**< Stencil test */
-            Dithering = GL_DITHER,          /**< Dithering (enabled by default) */
-            FaceCulling = GL_CULL_FACE      /**< Back face culling */
+            private:
+                GLenum attachment;
         };
 
         /**
-         * @brief Set feature
+         * @brief Draw attachment
          *
-         * @see @fn_gl{Enable}/@fn_gl{Disable}
+         * @see mapForDraw()
          */
-        inline static void setFeature(Feature feature, bool enabled) {
-            enabled ? glEnable(static_cast<GLenum>(feature)) : glDisable(static_cast<GLenum>(feature));
-        }
+        class DrawAttachment {
+            public:
+                /** @brief No attachment */
+                static const DrawAttachment None;
 
-        /**
-         * @brief Which polygon facing to cull
-         *
-         * Initial value is `PolygonFacing::Back`. If set to both front and
-         * back, only points and lines are drawn.
-         * @attention You have to also enable face culling with setFeature().
-         * @see @fn_gl{CullFace}
-         */
-        inline static void setFaceCullingMode(PolygonFacing mode) {
-            glCullFace(static_cast<GLenum>(mode));
-        }
+                /** @brief Color attachment */
+                inline constexpr /*implicit*/ DrawAttachment(Framebuffer::ColorAttachment attachment): attachment(GLenum(attachment)) {}
 
-        /**
-         * @brief Set viewport size
-         *
-         * Call when window size changes.
-         * @see @fn_gl{Viewport}
-         */
-        inline static void setViewport(const Math::Vector2<GLint>& position, const Math::Vector2<GLsizei>& size) {
-            glViewport(position.x(), position.y(), size.x(), size.y());
-        }
+                #ifndef DOXYGEN_GENERATING_OUTPUT
+                inline constexpr explicit operator GLenum() const { return attachment; }
+                #endif
 
-        /*@}*/
+            private:
+                inline constexpr explicit DrawAttachment(GLenum attachment): attachment(attachment) {}
 
-        /** @{ @name Clearing the framebuffer */
-
-        /**
-         * @brief Mask for clearing
-         *
-         * @see ClearMask, clear(), clear(ClearMask)
-         */
-        enum class Clear: GLbitfield {
-            Color = GL_COLOR_BUFFER_BIT,    /**< Color */
-            Depth = GL_DEPTH_BUFFER_BIT,    /**< Depth value */
-            Stencil = GL_STENCIL_BUFFER_BIT /**< Stencil value */
-        };
-
-        /** @brief Mask for clearing */
-        typedef Corrade::Containers::EnumSet<Clear, GLbitfield,
-            GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT> ClearMask;
-
-        /**
-         * @brief Clear specified buffers in framebuffer
-         *
-         * @see clear(), setClearColor(), setClearDepth(), setClearStencil(),
-         *      @fn_gl{Clear}
-         * @todo Clearing only given draw buffer
-         */
-        inline static void clear(ClearMask mask) { glClear(static_cast<GLbitfield>(mask)); }
-
-        /**
-         * @brief Set clear color
-         *
-         * Initial value is `{0.0f, 0.0f, 0.0f, 1.0f}`.
-         * @see @fn_gl{ClearColor}
-         */
-        inline static void setClearColor(const Color4<>& color) {
-            glClearColor(color.r(), color.g(), color.b(), color.a());
-        }
-
-        #ifndef MAGNUM_TARGET_GLES
-        /**
-         * @brief Set clear depth
-         *
-         * Initial value is `1.0`.
-         * @see @fn_gl{ClearDepth}
-         * @requires_gl See setClearDepth(GLfloat), which is available in OpenGL ES.
-         */
-        inline static void setClearDepth(GLdouble depth) { glClearDepth(depth); }
-        #endif
-
-        /**
-         * @overload
-         *
-         * @see @fn_gl{ClearDepth}
-         * @requires_gl41 Extension @extension{ARB,ES2_compatibility}
-         * @todo Call double version if the extension is not available
-         */
-        inline static void setClearDepth(GLfloat depth) { glClearDepthf(depth); }
-
-        /**
-         * @brief Set clear stencil
-         *
-         * Initial value is `0`.
-         * @see @fn_gl{ClearStencil}
-         */
-        inline static void setClearStencil(GLint stencil) { glClearStencil(stencil); }
-
-        /*@}*/
-
-        /** @{ @name Scissor operations */
-
-        /**
-         * @brief Set scissor rectangle
-         * @param bottomLeft    Bottom left corner. Initial value is `(0, 0)`.
-         * @param size          Scissor rectangle size. Initial value is
-         *      size of the window when the context is first attached to a
-         *      window.
-         *
-         * @attention You have to enable scissoring with setFeature() first.
-         * @see @fn_gl{Scissor}
-         */
-        inline static void setScissor(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLsizei>& size) {
-            glScissor(bottomLeft.x(), bottomLeft.y(), size.x(), size.y());
-        }
-
-        /*@}*/
-
-        /** @{ @name Stencil operations */
-
-        /**
-         * @brief Stencil function
-         *
-         * @see setStencilFunction()
-         */
-        enum class StencilFunction: GLenum {
-            Never = GL_NEVER,           /**< Never pass the test. */
-            Always = GL_ALWAYS,         /**< Always pass the test. */
-            Less = GL_LESS,             /**< Pass when reference value is less than buffer value. */
-            LessOrEqual = GL_LEQUAL,    /**< Pass when reference value is less than or equal to buffer value. */
-            Equal = GL_EQUAL,           /**< Pass when reference value is equal to buffer value. */
-            NotEqual = GL_NOTEQUAL,     /**< Pass when reference value is not equal to buffer value. */
-            GreaterOrEqual = GL_GEQUAL, /**< Pass when reference value is greater than or equal to buffer value. */
-            Greater = GL_GREATER        /**< Pass when reference value is greater than buffer value. */
+                GLenum attachment;
         };
 
         /**
-         * @brief Stencil operation
+         * @brief %Buffer attachment
          *
-         * @see setStencilOperation()
+         * @see attachRenderbuffer(), attachTexture1D(), attachTexture2D(),
+         *      attachCubeMapTexture(), attachTexture3D()
          */
-        enum class StencilOperation: GLenum {
-            Keep = GL_KEEP, /**< Keep the current value. */
-            Zero = GL_ZERO, /**< Set the stencil buffer value to `0`. */
+        class BufferAttachment {
+            public:
+                /** @brief Depth buffer */
+                static const BufferAttachment Depth;
 
-            /**
-             * Set the stencil value to reference value specified by
-             * setStencilFunction().
-             */
-            Replace = GL_REPLACE,
+                /** @brief Stencil buffer */
+                static const BufferAttachment Stencil;
 
-            /**
-             * Increment the current stencil buffer value, clamp to maximum
-             * possible value on overflow.
-             */
-            Increment = GL_INCR,
+                #ifndef MAGNUM_TARGET_GLES2
+                /**
+                 * @brief Both depth and stencil buffer
+                 *
+                 * @requires_gles30 Combined depth and stencil attachment is
+                 *      not available in OpenGL ES 2.0.
+                 */
+                static const BufferAttachment DepthStencil;
+                #endif
 
-            /**
-             * Increment the current stencil buffer value, wrap to zero on
-             * overflow.
-             */
-            IncrementWrap = GL_INCR_WRAP,
+                /** @brief Color buffer */
+                inline constexpr /*implicit*/ BufferAttachment(Framebuffer::ColorAttachment attachment): attachment(GLenum(attachment)) {}
 
-            /**
-             * Increment the current stencil buffer value, clamp to minimum
-             * possible value on underflow.
-             */
-            Decrement = GL_DECR,
+                #ifndef DOXYGEN_GENERATING_OUTPUT
+                inline constexpr explicit operator GLenum() const { return attachment; }
+                #endif
 
-            /**
-             * Decrement the current stencil buffer value, wrap to maximum
-             * possible value on underflow.
-             */
-            DecrementWrap = GL_DECR_WRAP,
+            private:
+                inline constexpr explicit BufferAttachment(GLenum attachment): attachment(attachment) {}
 
-            /**
-             * Bitwise invert the current stencil buffer value.
-             */
-            Invert = GL_INVERT
+                GLenum attachment;
         };
 
         /**
-         * @brief Set stencil function
-         * @param facing            Affected polygon facing
-         * @param function          Stencil function. Initial value is
-         *      `StencilFunction::Always`.
-         * @param referenceValue    Reference value. Initial value is `0`.
-         * @param mask              Mask for both reference and buffer value.
-         *      Initial value is all `1`s.
+         * @brief Invalidation attachment
          *
-         * @attention You have to enable stencil test with setFeature() first.
-         * @see setStencilFunction(StencilFunction, GLint, GLuint),
-         *      @fn_gl{StencilFuncSeparate}
+         * @see invalidate()
+         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
+         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}
          */
-        inline static void setStencilFunction(PolygonFacing facing, StencilFunction function, GLint referenceValue, GLuint mask) {
-            glStencilFuncSeparate(static_cast<GLenum>(facing), static_cast<GLenum>(function), referenceValue, mask);
-        }
+        class InvalidationAttachment {
+            public:
+                /** @brief Invalidate depth buffer */
+                static const InvalidationAttachment Depth;
 
-        /**
-         * @brief Set stencil function
-         *
-         * The same as setStencilFunction(PolygonFacing, StencilFunction, GLint, GLuint)
-         * with `facing` set to `PolygonFacing::FrontAndBack`.
-         * @see @fn_gl{StencilFunc}
-         */
-        inline static void setStencilFunction(StencilFunction function, GLint referenceValue, GLuint mask) {
-            glStencilFunc(static_cast<GLenum>(function), referenceValue, mask);
-        }
+                /** @brief Invalidate stencil buffer */
+                static const InvalidationAttachment Stencil;
 
-        /**
-         * @brief Set stencil operation
-         * @param facing            Affected polygon facing
-         * @param stencilFail       Action when stencil test fails
-         * @param depthFail         Action when stencil test passes, but depth
-         *      test fails
-         * @param depthPass         Action when both stencil and depth test
-         *      pass
-         *
-         * Initial value for all fields is `StencilOperation::Keep`.
-         * @attention You have to enable stencil test with setFeature() first.
-         * @see setStencilOperation(StencilOperation, StencilOperation, StencilOperation),
-         *      @fn_gl{StencilOpSeparate}
-         */
-        inline static void setStencilOperation(PolygonFacing facing, StencilOperation stencilFail, StencilOperation depthFail, StencilOperation depthPass) {
-            glStencilOpSeparate(static_cast<GLenum>(facing), static_cast<GLenum>(stencilFail), static_cast<GLenum>(depthFail), static_cast<GLenum>(depthPass));
-        }
+                /** @brief Invalidate color buffer */
+                inline constexpr /*implicit*/ InvalidationAttachment(Framebuffer::ColorAttachment attachment): attachment(GLenum(attachment)) {}
 
-        /**
-         * @brief Set stencil operation
-         *
-         * The same as setStencilOperation(PolygonFacing, StencilOperation, StencilOperation, StencilOperation)
-         * with `facing` set to `PolygonFacing::FrontAndBack`.
-         * @see @fn_gl{StencilOp}
-         */
-        inline static void setStencilOperation(StencilOperation stencilFail, StencilOperation depthFail, StencilOperation depthPass) {
-            glStencilOp(static_cast<GLenum>(stencilFail), static_cast<GLenum>(depthFail), static_cast<GLenum>(depthPass));
-        }
+                #ifndef DOXYGEN_GENERATING_OUTPUT
+                inline constexpr explicit operator GLenum() const { return attachment; }
+                #endif
 
-        /*@}*/
+            private:
+                inline constexpr explicit InvalidationAttachment(GLenum attachment): attachment(attachment) {}
 
-        /** @{ @name Depth testing */
-
-        /**
-         * @brief Depth function
-         *
-         * @see setDepthFunction()
-         */
-        typedef StencilFunction DepthFunction;
-
-        /**
-         * @brief Set depth function
-         *
-         * Initial value is `DepthFunction::Less`.
-         * @attention You have to enable depth test with setFeature() first.
-         * @see @fn_gl{DepthFunc}
-         */
-        inline static void setDepthFunction(DepthFunction function) {
-            glDepthFunc(static_cast<GLenum>(function));
-        }
-
-        /*@}*/
-
-        /** @{ @name Masking writes */
-
-        /**
-         * @brief Mask color writes
-         *
-         * Set to `false` to disallow writing to given color channel. Initial
-         * values are all `true`.
-         * @see @fn_gl{ColorMask}
-         * @todo Masking only given draw buffer
-         */
-        inline static void setColorMask(GLboolean allowRed, GLboolean allowGreen, GLboolean allowBlue, GLboolean allowAlpha) {
-            glColorMask(allowRed, allowGreen, allowBlue, allowAlpha);
-        }
-
-        /**
-         * @brief Mask depth writes
-         *
-         * Set to `false` to disallow writing to depth buffer. Initial value
-         * is `true`.
-         * @see @fn_gl{DepthMask}
-         */
-        inline static void setDepthMask(GLboolean allow) {
-            glDepthMask(allow);
-        }
-
-        /**
-         * @brief Mask stencil writes
-         *
-         * Set given bit to `0` to disallow writing stencil value for given
-         * faces to it. Initial value is all `1`s.
-         * @see setStencilMask(GLuint), @fn_gl{StencilMaskSeparate}
-         */
-        inline static void setStencilMask(PolygonFacing facing, GLuint allowBits) {
-            glStencilMaskSeparate(static_cast<GLenum>(facing), allowBits);
-        }
-
-        /**
-         * @brief Mask stencil writes
-         *
-         * The same as setStencilMask(PolygonFacing, GLuint) with `facing` set
-         * to `PolygonFacing::FrontAndBack`.
-         * @see @fn_gl{StencilMask}
-         */
-        inline static void setStencilMask(GLuint allowBits) {
-            glStencilMask(allowBits);
-        }
-
-        /*@}*/
-
-        /** @{ @name Blending
-         * You have to enable blending with setFeature() first.
-         * @todo Blending for given draw buffer
-         */
-
-        /**
-         * @brief Blend equation
-         *
-         * @see setBlendEquation()
-         */
-        enum class BlendEquation: GLenum {
-            Add = GL_FUNC_ADD,                          /**< `source + destination` */
-            Subtract = GL_FUNC_SUBTRACT,                /**< `source - destination` */
-            ReverseSubtract = GL_FUNC_REVERSE_SUBTRACT  /**< `destination - source` */
-
-            #ifndef MAGNUM_TARGET_GLES2
-            ,
-            /**
-             * `min(source, destination)`
-             * @requires_gles30 %Extension @es_extension2{EXT,blend_minmax,blend_minmax}
-             */
-            Min = GL_MIN,
-
-            /**
-             * `max(source, destination)`
-             * @requires_gles30 %Extension @es_extension2{EXT,blend_minmax,blend_minmax}
-             */
-            Max = GL_MAX
-            #endif
-        };
-
-        /**
-         * @brief Blend function
-         *
-         * @see setBlendFunction()
-         */
-        enum class BlendFunction: GLenum {
-            /** Zero (@f$ RGB = (0.0, 0.0, 0.0); A = 0.0 @f$) */
-            Zero = GL_ZERO,
-
-            /** One (@f$ RGB = (1.0, 1.0, 1.0); A = 1.0 @f$) */
-            One = GL_ONE,
-
-            /**
-             * Constant color (@f$ RGB = (R_c, G_c, B_c); A = A_c @f$)
-             *
-             * @see setBlendColor()
-             */
-            ConstantColor = GL_CONSTANT_COLOR,
-
-            /**
-             * One minus constant color (@f$ RGB = (1.0 - R_c, 1.0 - G_c, 1.0 - B_c); A = 1.0 - A_c @f$)
-             *
-             * @see setBlendColor()
-             */
-            OneMinusConstantColor = GL_ONE_MINUS_CONSTANT_COLOR,
-
-            /**
-             * Constant alpha (@f$ RGB = (A_c, A_c, A_c); A = A_c @f$)
-             *
-             * @see setBlendColor()
-             */
-            ConstantAlpha = GL_CONSTANT_ALPHA,
-
-            /**
-             * One minus constant alpha (@f$ RGB = (1.0 - A_c, 1.0 - A_c, 1.0 - A_c); A = 1.0 - A_c @f$)
-             *
-             * @see setBlendColor()
-             */
-            OneMinusConstantAlpha = GL_ONE_MINUS_CONSTANT_ALPHA,
-
-            /** Source color (@f$ RGB = (R_{s0}, G_{s0}, B_{s0}); A = A_{s0} @f$) */
-            SourceColor = GL_SRC_COLOR,
-
-            #ifndef MAGNUM_TARGET_GLES
-            /**
-             * Second source color (@f$ RGB = (R_{s1}, G_{s1}, B_{s1}); A = A_{s1} @f$)
-             *
-             * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
-             * @requires_gl Multiple blending inputs are not available in
-             *      OpenGL ES.
-             */
-            SecondSourceColor = GL_SRC1_COLOR,
-            #endif
-
-            /**
-             * One minus source color (@f$ RGB = (1.0 - R_{s0}, 1.0 - G_{s0}, 1.0 - B_{s0}); A = 1.0 - A_{s0} @f$)
-             */
-            OneMinusSourceColor = GL_ONE_MINUS_SRC_COLOR,
-
-            #ifndef MAGNUM_TARGET_GLES
-            /**
-             * One minus second source color (@f$ RGB = (1.0 - R_{s1}, 1.0 - G_{s1}, 1.0 - B_{s1}); A = 1.0 - A_{s1} @f$)
-             *
-             * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
-             * @requires_gl Multiple blending inputs are not available in
-             *      OpenGL ES.
-             */
-            OneMinusSecondSourceColor = GL_ONE_MINUS_SRC1_COLOR,
-            #endif
-
-            /** Source alpha (@f$ RGB = (A_{s0}, A_{s0}, A_{s0}); A = A_{s0} @f$) */
-            SourceAlpha = GL_SRC_ALPHA,
-
-            /**
-             * Saturate source alpha (@f$ RGB = (f, f, f); A = 1.0; f = min(A_s, 1.0 - A_d) @f$)
-             *
-             * Can be used only in source parameter of setBlendFunction().
-             */
-            SourceAlphaSaturate = GL_SRC_ALPHA_SATURATE,
-
-            #ifndef MAGNUM_TARGET_GLES
-            /**
-             * Second source alpha (@f$ RGB = (A_{s1}, A_{s1}, A_{s1}); A = A_{s1} @f$)
-             *
-             * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
-             * @requires_gl Multiple blending inputs are not available in
-             *      OpenGL ES.
-             */
-            SecondSourceAlpha = GL_SRC1_ALPHA,
-            #endif
-
-            /**
-             * One minus source alpha (@f$ RGB = (1.0 - A_{s0}, 1.0 - A_{s0}, 1.0 - A_{s0}); A = 1.0 - A_{s0} @f$)
-             */
-            OneMinusSourceAlpha = GL_ONE_MINUS_SRC_ALPHA,
-
-            #ifndef MAGNUM_TARGET_GLES
-            /**
-             * One minus second source alpha (@f$ RGB = (1.0 - A_{s1}, 1.0 - A_{s1}, 1.0 - A_{s1}); A = 1.0 - A_{s1} @f$)
-             *
-             * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
-             * @requires_gl Multiple blending inputs are not available in
-             *      OpenGL ES.
-             */
-            OneMinusSecondSourceAlpha = GL_ONE_MINUS_SRC1_ALPHA,
-            #endif
-
-            /** Destination color (@f$ RGB = (R_d, G_d, B_d); A = A_d @f$) */
-            DestinationColor = GL_DST_COLOR,
-
-            /**
-             * One minus source color (@f$ RGB = (1.0 - R_d, 1.0 - G_d, 1.0 - B_d); A = 1.0 - A_d @f$)
-             */
-            OneMinusDestinationColor = GL_ONE_MINUS_DST_COLOR,
-
-            /** Destination alpha (@f$ RGB = (A_d, A_d, A_d); A = A_d @f$) */
-            DestinationAlpha = GL_DST_ALPHA,
-
-            /**
-             * One minus source alpha (@f$ RGB = (1.0 - A_d, 1.0 - A_d, 1.0 - A_d); A = 1.0 - A_d @f$)
-             */
-            OneMinusDestinationAlpha = GL_ONE_MINUS_DST_ALPHA
-        };
-
-        /**
-         * @brief Set blend equation
-         *
-         * How to combine source color (pixel value) with destination color
-         * (framebuffer). Initial value is `BlendEquation::Add`.
-         * @attention You have to enable blending with setFeature() first.
-         * @see setBlendEquation(BlendEquation, BlendEquation),
-         *      @fn_gl{BlendEquation}
-         */
-        inline static void setBlendEquation(BlendEquation equation) {
-            glBlendEquation(static_cast<GLenum>(equation));
-        }
-
-        /**
-         * @brief Set blend equation separately for RGB and alpha components
-         *
-         * See setBlendEquation(BlendEquation) for more information.
-         * @attention You have to enable blending with setFeature() first.
-         * @see @fn_gl{BlendEquationSeparate}
-         */
-        inline static void setBlendEquation(BlendEquation rgb, BlendEquation alpha) {
-            glBlendEquationSeparate(static_cast<GLenum>(rgb), static_cast<GLenum>(alpha));
-        }
-
-        /**
-         * @brief Set blend function
-         * @param source        How the source blending factor is computed
-         *      from pixel value. Initial value is `BlendFunction::One`.
-         * @param destination   How the destination blending factor is
-         *      computed from framebuffer. Initial value is
-         *      `BlendFunction::Zero`.
-         *
-         * @attention You have to enable blending with setFeature() first.
-         * @see setBlendFunction(BlendFunction, BlendFunction, BlendFunction, BlendFunction),
-         *      @fn_gl{BlendFunc}
-         */
-        inline static void setBlendFunction(BlendFunction source, BlendFunction destination) {
-            glBlendFunc(static_cast<GLenum>(source), static_cast<GLenum>(destination));
-        }
-
-        /**
-         * @brief Set blend function separately for RGB and alpha components
-         *
-         * See setBlendFunction(BlendFunction, BlendFunction) for more information.
-         * @attention You have to enable blending with setFeature() first.
-         * @see @fn_gl{BlendFuncSeparate}
-         */
-        inline static void setBlendFunction(BlendFunction sourceRgb, BlendFunction destinationRgb, BlendFunction sourceAlpha, BlendFunction destinationAlpha) {
-            glBlendFuncSeparate(static_cast<GLenum>(sourceRgb), static_cast<GLenum>(destinationRgb), static_cast<GLenum>(sourceAlpha), static_cast<GLenum>(destinationAlpha));
-        }
-
-        /**
-         * @brief Set blend color
-         *
-         * Sets constant color used in setBlendFunction() by
-         * `BlendFunction::ConstantColor`,
-         * `BlendFunction::OneMinusConstantColor`,
-         * `BlendFunction::ConstantAlpha` and
-         * `BlendFunction::OneMinusConstantAlpha`.
-         * @attention You have to enable blending with setFeature() first.
-         * @see @fn_gl{BlendColor}
-         */
-        inline static void setBlendColor(const Color4<>& color) {
-            glBlendColor(color.r(), color.g(), color.b(), color.a());
-        }
-
-        /*@}*/
-
-        #ifndef MAGNUM_TARGET_GLES
-        /** @{ @name Logical operation */
-
-        /**
-         * @brief Logical operation
-         *
-         * @see setLogicOperation()
-         * @requires_gl Logical operations on framebuffer are not available in
-         *      OpenGL ES.
-         */
-        enum class LogicOperation: GLenum {
-            Clear = GL_CLEAR,               /**< `0` */
-            Set = GL_SET,                   /**< `1` */
-            Copy = GL_COPY,                 /**< `source` */
-            CopyInverted = GL_COPY_INVERTED,/**< `~source` */
-            Noop = GL_NOOP,                 /**< `destination` */
-            Invert = GL_INVERT,             /**< `~destination` */
-            And = GL_AND,                   /**< `source & destination` */
-            AndReverse = GL_AND_REVERSE,    /**< `source & ~destination` */
-            AndInverted = GL_AND_INVERTED,  /**< `~source & destination` */
-            Nand = GL_NAND,                 /**< `~(source & destination)` */
-            Or = GL_OR,                     /**< `source | destination` */
-            OrReverse = GL_OR_REVERSE,      /**< `source | ~destination` */
-            OrInverted = GL_OR_INVERTED,    /**< `~source | destination` */
-            Nor = GL_NOR,                   /**< `~(source | destination)` */
-            Xor = GL_XOR,                   /**< `source ^ destination` */
-            Equivalence = GL_EQUIV          /**< `~(source ^ destination)` */
-        };
-
-        /**
-         * @brief Set logical operation
-         *
-         * @attention You have to enable logical operation with setFeature() first.
-         * @see @fn_gl{LogicOp}
-         * @requires_gl Logical operations on framebuffer are not available in
-         *      OpenGL ES.
-         */
-        inline static void setLogicOperation(LogicOperation operation) {
-            glLogicOp(static_cast<GLenum>(operation));
-        }
-
-        /*@}*/
-        #endif
-
-        /** @{ @name Framebuffer creation and binding */
-
-        /**
-         * @brief %Framebuffer target
-         *
-         * @see bind(), bindDefault()
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        enum class Target: GLenum {
-            /**
-             * For reading only.
-             * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
-             * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample}
-             *      or @es_extension{ANGLE,framebuffer_blit}
-             */
-            #ifndef MAGNUM_TARGET_GLES2
-            Read = GL_READ_FRAMEBUFFER,
-            #else
-            Read = GL_READ_FRAMEBUFFER_APPLE,
-            #endif
-
-            /**
-             * For drawing only.
-             * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
-             * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample}
-             *      or @es_extension{ANGLE,framebuffer_blit}
-             */
-            #ifndef MAGNUM_TARGET_GLES2
-            Draw = GL_DRAW_FRAMEBUFFER,
-            #else
-            Draw = GL_DRAW_FRAMEBUFFER_APPLE,
-            #endif
-
-            ReadDraw = GL_FRAMEBUFFER       /**< For both reading and drawing. */
-        };
-
-        #ifndef MAGNUM_TARGET_GLES2
-        /**
-         * @brief Draw attachment for default framebuffer
-         *
-         * @see mapDefaultForDraw()
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         * @requires_gles30 Draw attachments for default framebuffer are
-         *      available only in OpenGL ES 3.0.
-         */
-        enum class DefaultDrawAttachment: GLenum {
-            /** Don't use the output. */
-            None = GL_NONE,
-
-            #ifndef MAGNUM_TARGET_GLES
-            /**
-             * Write output to back left framebuffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
-             */
-            BackLeft = GL_BACK_LEFT,
-
-            /**
-             * Write output to back right framebuffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
-             */
-            BackRight = GL_BACK_RIGHT,
-
-            /**
-             * Write output to front left framebuffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
-             */
-            FrontLeft = GL_FRONT_LEFT,
-
-            /**
-             * Write output to front right framebuffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
-             */
-            FrontRight = GL_FRONT_RIGHT,
-            #endif
-
-            /**
-             * Write output to back framebuffer.
-             *
-             * On desktop OpenGL, this is equal to
-             * @ref Magnum::Framebuffer::DefaultDrawAttachment "DefaultDrawAttachment::BackLeft".
-             */
-            #ifdef MAGNUM_TARGET_GLES
-            Back = GL_BACK,
-            #else
-            Back = GL_BACK_LEFT,
-            #endif
-
-            /**
-             * Write output to front framebuffer.
-             *
-             * On desktop OpenGL, this is equal to
-             * @ref Magnum::Framebuffer::DefaultDrawAttachment "DefaultDrawAttachment::FrontLeft".
-             */
-            #ifdef MAGNUM_TARGET_GLES
-            Front = GL_FRONT
-            #else
-            Front = GL_FRONT_LEFT
-            #endif
-        };
-        #endif
-
-        /**
-         * @brief Read attachment for default framebuffer
-         *
-         * @see mapDefaultForRead()
-         * @requires_gl30 %Extension @extension{EXT,framebuffer_object}
-         * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
-         */
-        enum class DefaultReadAttachment: GLenum {
-            /** Don't read from any framebuffer */
-            None = GL_NONE,
-
-            #ifndef MAGNUM_TARGET_GLES
-            /**
-             * Read from back left framebuffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
-             */
-            BackLeft = GL_BACK_LEFT,
-
-            /**
-             * Read from back right framebuffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
-             */
-            BackRight = GL_BACK_RIGHT,
-
-            /**
-             * Read from front left framebuffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
-             */
-            FrontLeft = GL_FRONT_LEFT,
-
-            /**
-             * Read from front right framebuffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
-             */
-            FrontRight = GL_FRONT_RIGHT,
-
-            /**
-             * Read from left framebuffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
-             */
-            Left = GL_LEFT,
-
-            /**
-             * Read from right framebuffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
-             */
-            Right = GL_RIGHT,
-            #endif
-
-            /** Read from back framebuffer. */
-            Back = GL_BACK,
-
-            /**
-             * Read from front framebuffer.
-             * @requires_es_extension %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
-             */
-            Front = GL_FRONT
-
-            #ifndef MAGNUM_TARGET_GLES
-            ,
-
-            /**
-             * Read from front and back framebuffer.
-             * @requires_gl In OpenGL ES you must specify either
-             *      @ref Magnum::Framebuffer::DefaultReadAttachment "DefaultReadAttachment::Front"
-             *      or @ref Magnum::Framebuffer::DefaultReadAttachment "DefaultReadAttachment::Back".
-             */
-            FrontAndBack = GL_FRONT_AND_BACK
-            #endif
+                GLenum attachment;
         };
 
         /**
          * @brief Constructor
          *
          * Generates new OpenGL framebuffer.
-         * @see @fn_gl{GenFramebuffers}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * @see setViewport(), @fn_gl{GenFramebuffers}
          */
-        inline Framebuffer() { glGenFramebuffers(1, &_id); }
+        explicit Framebuffer(const Rectanglei& viewport);
 
         /**
          * @brief Destructor
          *
          * Deletes associated OpenGL framebuffer.
          * @see @fn_gl{DeleteFramebuffers}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
          */
-        inline ~Framebuffer() { glDeleteFramebuffers(1, &_id); }
+        ~Framebuffer();
 
         /**
-         * @brief Bind default framebuffer to given target
-         * @param target     %Target
+         * @brief Map shader output to attachments
+         * @return Pointer to self (for method chaining)
          *
-         * @see @fn_gl{BindFramebuffer}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        inline static void bindDefault(Target target) {
-            glBindFramebuffer(static_cast<GLenum>(target), 0);
-        }
-
-        /**
-         * @brief Bind framebuffer
+         * @p attachments is list of shader outputs mapped to framebuffer
+         * color attachment IDs. %Shader outputs which are not listed are not
+         * used, you can achieve the same by passing Framebuffer::DrawAttachment::None
+         * as color attachment ID. Example usage:
+         * @code
+         * framebuffer.mapForDraw({{MyShader::ColorOutput, Framebuffer::ColorAttachment(0)},
+         *                         {MyShader::NormalOutput, Framebuffer::DrawAttachment::None}});
+         * @endcode
          *
-         * @see @fn_gl{BindFramebuffer}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        inline void bind(Target target) {
-            glBindFramebuffer(static_cast<GLenum>(target), _id);
-        }
-
-        #ifndef MAGNUM_TARGET_GLES2
-        /**
-         * @brief Map given attachments of default framebuffer for drawing
-         * @param attachments       Default attachments. If any value is
-         *      DefaultAttachment::None, given output is not used.
-         *
-         * If used for mapping output of fragment shader, the order must be as
-         * specified by the shader (see AbstractShaderProgram documentation).
-         * If used for blit(), the order is not important. Each used attachment
-         * should have either renderbuffer or texture attached for writing to
-         * work properly.
-         * @see mapForDraw(), mapDefaultForRead(), bindDefault(), @fn_gl{DrawBuffers}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         * @requires_gles30 Draw attachments for default framebuffer are
-         *      available only in OpenGL ES 3.0.
-         */
-        static void mapDefaultForDraw(std::initializer_list<DefaultDrawAttachment> attachments);
-        #endif
-
-        /**
-         * @brief Map given color attachments of current framebuffer for drawing
-         * @param colorAttachments  Color attachment IDs. If any value is -1,
-         *      given output is not used.
-         *
-         * If used for mapping output of fragment shader, the order must be as
-         * specified by the shader (see AbstractShaderProgram documentation).
-         * If used for blit(), the order is not important. Each used attachment
-         * should have either renderbuffer or texture attached for writing to
-         * work properly.
-         * @see mapDefaultForDraw(), mapForRead(), bind(), @fn_gl{DrawBuffers}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * If @extension{EXT,direct_state_access} is not available and the
+         * framebufferbuffer is not currently bound, it is bound before the
+         * operation.
+         * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffers} or
+         *      @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
          */
-        void mapForDraw(std::initializer_list<std::int8_t> colorAttachments);
+        Framebuffer* mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments);
 
         /**
-         * @brief Map given attachment of default framebuffer for reading
-         * @param attachment        Default attachment
+         * @brief Map shader output to attachment
+         * @param attachment        Draw attachment
+         * @return Pointer to self (for method chaining)
          *
-         * Each used attachment should have either renderbuffer or texture
-         * attached to work properly.
-         * @see mapForRead(), mapDefaultForDraw(), bindDefault(), @fn_gl{ReadBuffer}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * Similar to above function, can be used in cases when shader has
+         * only one (unnamed) output.
+         *
+         * If @extension{EXT,direct_state_access} is not available and the
+         * framebufferbuffer is not currently bound, it is bound before the
+         * operation.
+         * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffer} or
+         *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access}
+         * @requires_gles30 %Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
+         */
+        inline Framebuffer* mapForDraw(DrawAttachment attachment) {
+            (this->*drawBufferImplementation)(GLenum(attachment));
+            return this;
+        }
+
+        /**
+         * @brief Invalidate framebuffer
+         * @param attachments       Attachments to invalidate
+         *
+         * The framebuffer is bound to some target before the operation, if
+         * not already.
+         * @see @fn_gl{InvalidateFramebuffer} or @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer}
+         *      on OpenGL ES 2.0
+         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}. Use
+         *      clear() instead where the extension is not supported.
+         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}.
+         *      Use clear() instead where the extension is not supported.
+         */
+        void invalidate(std::initializer_list<InvalidationAttachment> attachments);
+
+        /**
+         * @brief Invalidate framebuffer rectangle
+         * @param attachments       Attachments to invalidate
+         * @param rectangle         %Rectangle to invalidate
+         *
+         * The framebuffer is bound to some target before the operation, if
+         * not already.
+         * @see @fn_gl{InvalidateSubFramebuffer} or @fn_gles_extension{DiscardSubFramebuffer,EXT,discard_framebuffer}
+         *      on OpenGL ES 2.0
+         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}. Use
+         *      clear() instead where the extension is not supported.
+         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}.
+         *      Use clear() instead where the extension is not supported.
+         */
+        void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Rectanglei& rectangle);
+
+        /**
+         * @brief Map given color attachment for reading
+         * @param attachment        Color attachment
+         * @return Pointer to self (for method chaining)
+         *
+         * If @extension{EXT,direct_state_access} is not available and the
+         * framebufferbuffer is not currently bound, it is bound before the
+         * operation.
+         * @see mapForDraw(), @fn_gl{BindFramebuffer}, @fn_gl{ReadBuffer} or
+         *      @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
-        inline static void mapDefaultForRead(DefaultReadAttachment attachment) {
-            bindDefault(Target::Read);
-            /** @todo Get some extension wrangler instead to avoid undeclared glReadBuffer() on ES2 */
-            #ifndef MAGNUM_TARGET_GLES2
-            glReadBuffer(static_cast<GLenum>(attachment));
-            #else
-            static_cast<void>(attachment);
-            #endif
+        inline Framebuffer* mapForRead(ColorAttachment attachment) {
+            (this->*readBufferImplementation)(GLenum(attachment));
+            return this;
         }
 
         /**
-         * @brief Map given color attachment of current framebuffer for reading
-         * @param colorAttachment   Color attachment ID
-         *
-         * The color attachment should have either renderbuffer or texture
-         * attached for reading to work properly.
-         * @see mapDefaultForRead(), mapForDraw(), bind(), @fn_gl{ReadBuffer}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
-         */
-        inline void mapForRead(std::uint8_t colorAttachment) {
-            bind(Target::Read);
-            /** @todo Get some extension wrangler instead to avoid undeclared glReadBuffer() on ES2 */
-            #ifndef MAGNUM_TARGET_GLES2
-            glReadBuffer(GL_COLOR_ATTACHMENT0 + colorAttachment);
-            #else
-            static_cast<void>(colorAttachment);
-            #endif
-        }
-
-        /*@}*/
-
-        /** @{ @name Attaching textures and renderbuffers */
-
-        /**
-         * @brief Attachment for depth/stencil part of fragment shader output
-         *
-         * @see attachRenderbuffer(Target, DepthStencilAttachment, Renderbuffer*),
-         *      attachTexture1D(Target, DepthStencilAttachment, Texture1D*, GLint),
-         *      attachTexture2D(Target, DepthStencilAttachment, Texture2D*, GLint),
-         *      attachCubeMapTexture(Target, DepthStencilAttachment, CubeMapTexture*, CubeMapTexture::Coordinate, GLint),
-         *      attachTexture3D(Target, DepthStencilAttachment, Texture3D*, GLint, GLint)
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        enum class DepthStencilAttachment: GLenum {
-            Depth = GL_DEPTH_ATTACHMENT,    /**< Depth output only. */
-
-            Stencil = GL_STENCIL_ATTACHMENT /**< Stencil output only. */
-
-            #ifndef MAGNUM_TARGET_GLES2
-            ,
-            /**
-             * Both depth and stencil output.
-             * @requires_gles30 Combined depth and stencil attachment is not
-             *      available in OpenGL ES 2.0.
-             */
-            DepthStencil = GL_DEPTH_STENCIL_ATTACHMENT
-            #endif
-        };
-
-        /**
-         * @brief Attach renderbuffer to given framebuffer depth/stencil attachment
-         * @param target            %Target
-         * @param depthStencilAttachment Depth/stencil attachment
+         * @brief Attach renderbuffer to given buffer
+         * @param attachment        %Buffer attachment
          * @param renderbuffer      %Renderbuffer
+         * @return Pointer to self (for method chaining)
          *
-         * @see bind(), @fn_gl{FramebufferRenderbuffer}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * If @extension{EXT,direct_state_access} is not available and the
+         * framebufferbuffer is not currently bound, it is bound before the
+         * operation.
+         * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferRenderbuffer} or
+         *      @fn_gl_extension{NamedFramebufferRenderbuffer,EXT,direct_state_access}
          */
-        inline void attachRenderbuffer(Target target, DepthStencilAttachment depthStencilAttachment, Renderbuffer* renderbuffer) {
-            /** @todo Check for internal format compatibility */
-            bind(target);
-            glFramebufferRenderbuffer(static_cast<GLenum>(target), static_cast<GLenum>(depthStencilAttachment), GL_RENDERBUFFER, renderbuffer->id());
-        }
-
-        /**
-         * @brief Attach renderbuffer to given framebuffer color attachment
-         * @param target            %Target
-         * @param colorAttachment   Color attachment ID (number between 0 and 15)
-         * @param renderbuffer      %Renderbuffer
-         *
-         * @see bind(), @fn_gl{FramebufferRenderbuffer}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        inline void attachRenderbuffer(Target target, std::uint8_t colorAttachment, Renderbuffer* renderbuffer) {
-            /** @todo Check for internal format compatibility */
-            bind(target);
-            glFramebufferRenderbuffer(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, GL_RENDERBUFFER, renderbuffer->id());
+        inline Framebuffer* attachRenderbuffer(BufferAttachment attachment, Renderbuffer* renderbuffer) {
+            (this->*renderbufferImplementation)(attachment, renderbuffer);
+            return this;
         }
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @brief Attach 1D texture to given framebuffer depth/stencil attachment
-         * @param target            %Target
-         * @param depthStencilAttachment Depth/stencil attachment
+         * @brief Attach 1D texture to given buffer
+         * @param attachment        %Buffer attachment
          * @param texture           1D texture
-         * @param mipLevel          Mip level
+         * @param level             Mip level
+         * @return Pointer to self (for method chaining)
          *
-         * @see bind(), @fn_gl{FramebufferTexture}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * If @extension{EXT,direct_state_access} is not available and the
+         * framebufferbuffer is not currently bound, it is bound before the
+         * operation.
+         * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture} or
+         *      @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access}
          * @requires_gl Only 2D and 3D textures are available in OpenGL ES.
          */
-        inline void attachTexture1D(Target target, DepthStencilAttachment depthStencilAttachment, Texture1D* texture, GLint mipLevel) {
-            /** @todo Check for internal format compatibility */
-            /** @todo Check for texture target compatibility */
-            bind(target);
-            glFramebufferTexture1D(static_cast<GLenum>(target), static_cast<GLenum>(depthStencilAttachment), static_cast<GLenum>(texture->target()), texture->id(), mipLevel);
-        }
-
-        /**
-         * @brief Attach 1D texture to given framebuffer color attachment
-         * @param target            %Target
-         * @param colorAttachment   Color attachment ID (number between 0 and 15)
-         * @param texture           1D texture
-         * @param mipLevel          Mip level
-         *
-         * @see bind(), @fn_gl{FramebufferTexture}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         * @requires_gl Only 2D and 3D textures are available in OpenGL ES.
-         */
-        inline void attachTexture1D(Target target, std::uint8_t colorAttachment, Texture1D* texture, GLint mipLevel) {
-            /** @todo Check for internal format compatibility */
-            /** @todo Check for texture target compatibility */
-            bind(target);
-            glFramebufferTexture1D(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, static_cast<GLenum>(texture->target()), texture->id(), mipLevel);
+        inline Framebuffer* attachTexture1D(BufferAttachment attachment, Texture1D* texture, Int level) {
+            (this->*texture1DImplementation)(attachment, texture, level);
+            return this;
         }
         #endif
 
         /**
-         * @brief Attach 2D texture to given framebuffer depth/stencil attachment
-         * @param target            %Target
-         * @param depthStencilAttachment Depth/stencil attachment
+         * @brief Attach 2D texture to given buffer
+         * @param attachment        %Buffer attachment
          * @param texture           2D texture
-         * @param mipLevel          Mip level. For rectangle textures it
-         *      should be always 0.
+         * @param level             Mip level
+         * @return Pointer to self (for method chaining)
          *
-         * @see attachCubeMapTexture(), bind(), @fn_gl{FramebufferTexture}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * If @extension{EXT,direct_state_access} is not available and the
+         * framebufferbuffer is not currently bound, it is bound before the
+         * operation.
+         * @see attachCubeMapTexture(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
+         *      or @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
          */
-        inline void attachTexture2D(Target target, DepthStencilAttachment depthStencilAttachment, Texture2D* texture, GLint mipLevel) {
-            /** @todo Check for internal format compatibility */
-            /** @todo Check for texture target compatibility */
-            bind(target);
-            glFramebufferTexture2D(static_cast<GLenum>(target), static_cast<GLenum>(depthStencilAttachment), static_cast<GLenum>(texture->target()), texture->id(), mipLevel);
-        }
+        Framebuffer* attachTexture2D(BufferAttachment attachment, Texture2D* texture, Int level);
 
         /**
-         * @brief Attach 2D texture to given framebuffer color attachment
-         * @param target            %Target
-         * @param colorAttachment   Color attachment ID (number between 0 and 15)
-         * @param texture           2D texture
-         * @param mipLevel          Mip level. For rectangle textures it
-         *      should be always 0.
-         *
-         * @see attachCubeMapTexture(), bind(), @fn_gl{FramebufferTexture}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        inline void attachTexture2D(Target target, std::uint8_t colorAttachment, Texture2D* texture, GLint mipLevel) {
-            /** @todo Check for internal format compatibility */
-            /** @todo Check for texture target compatibility */
-            bind(target);
-            glFramebufferTexture2D(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, static_cast<GLenum>(texture->target()), texture->id(), mipLevel);
-        }
-
-        /**
-         * @brief Attach cube map texture to given framebuffer depth/stencil attachment
-         * @param target            %Target
-         * @param depthStencilAttachment Depth/stencil attachment
+         * @brief Attach cube map texture to given buffer
+         * @param attachment        %Buffer attachment
          * @param texture           Cube map texture
          * @param coordinate        Cube map coordinate
-         * @param mipLevel          Mip level
+         * @param level             Mip level
+         * @return Pointer to self (for method chaining)
          *
-         * @see attachTexture2D(), bind(), @fn_gl{FramebufferTexture}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * If @extension{EXT,direct_state_access} is not available and the
+         * framebufferbuffer is not currently bound, it is bound before the
+         * operation.
+         * @see attachTexture2D(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
+         *      or @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
          */
-        inline void attachCubeMapTexture(Target target, DepthStencilAttachment depthStencilAttachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, GLint mipLevel) {
-            /** @todo Check for internal format compatibility */
-            bind(target);
-            glFramebufferTexture2D(static_cast<GLenum>(target), static_cast<GLenum>(depthStencilAttachment), static_cast<GLenum>(coordinate), texture->id(), mipLevel);
+        inline Framebuffer* attachCubeMapTexture(BufferAttachment attachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, Int level) {
+            (this->*texture2DImplementation)(attachment, GLenum(coordinate), texture->id(), level);
+            return this;
         }
 
         /**
-         * @brief Attach cube map texture to given framebuffer color attachment
-         * @param target            %Target
-         * @param colorAttachment   Color attachment ID (number between 0 and 15)
-         * @param texture           Cube map texture
-         * @param coordinate        Cube map coordinate
-         * @param mipLevel          Mip level
-         *
-         * @see attachTexture2D(), bind(), @fn_gl{FramebufferTexture}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        inline void attachCubeMapTexture(Target target, std::uint8_t colorAttachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, GLint mipLevel) {
-            /** @todo Check for internal format compatibility */
-            bind(target);
-            glFramebufferTexture2D(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, static_cast<GLenum>(coordinate), texture->id(), mipLevel);
-        }
-
-        /**
-         * @brief Attach 3D texture to given framebuffer depth/stencil attachment
-         * @param target            %Target
-         * @param depthStencilAttachment Depth/stencil attachment
+         * @brief Attach 3D texture to given buffer
+         * @param attachment        %Buffer attachment
          * @param texture           3D texture
-         * @param mipLevel          Mip level
+         * @param level             Mip level
          * @param layer             Layer of 2D image within a 3D texture
+         * @return Pointer to self (for method chaining)
          *
-         * @see bind(), @fn_gl{FramebufferTexture}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
+         * If @extension{EXT,direct_state_access} is not available and the
+         * framebufferbuffer is not currently bound, it is bound before the
+         * operation.
+         * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture} or
+         *      @fn_gl_extension{NamedFramebufferTexture3D,EXT,direct_state_access}
          * @requires_es_extension %Extension @es_extension{OES,texture_3D}
          */
-        inline void attachTexture3D(Target target, DepthStencilAttachment depthStencilAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {
-            /** @todo Check for internal format compatibility */
+        inline Framebuffer* attachTexture3D(BufferAttachment attachment, Texture3D* texture, Int level, Int layer) {
             /** @todo Check for texture target compatibility */
-            bind(target);
-            /** @todo Get some extension wrangler for glFramebufferTexture3D() (extension only) */
-            #ifndef MAGNUM_TARGET_GLES
-            glFramebufferTexture3D(static_cast<GLenum>(target), static_cast<GLenum>(depthStencilAttachment), static_cast<GLenum>(texture->target()), texture->id(), mipLevel, layer);
-            #else
-            static_cast<void>(depthStencilAttachment);
-            static_cast<void>(texture);
-            static_cast<void>(mipLevel);
-            static_cast<void>(layer);
-            #endif
+            (this->*texture3DImplementation)(attachment, texture, level, layer);
+            return this;
         }
 
-        /**
-         * @brief Attach 3D texture to given framebuffer color attachment
-         * @param target            %Target
-         * @param colorAttachment   Color attachment ID (number between 0 and 15)
-         * @param texture           3D texture
-         * @param mipLevel          Mip level
-         * @param layer             Layer of 2D image within a 3D texture.
-         *
-         * @see bind(), @fn_gl{FramebufferTexture}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         * @requires_es_extension %Extension @es_extension{OES,texture_3D}
-         */
-        inline void attachTexture3D(Target target, std::uint8_t colorAttachment, Texture3D* texture, GLint mipLevel, GLint layer) {
-            /** @todo Check for internal format compatibility */
-            /** @todo Check for texture target compatibility */
-            bind(target);
-            /** @todo Get some extension wrangler for glFramebufferTexture3D() (extension only) */
-            #ifndef MAGNUM_TARGET_GLES
-            glFramebufferTexture3D(static_cast<GLenum>(target), GL_COLOR_ATTACHMENT0 + colorAttachment, static_cast<GLenum>(texture->target()), texture->id(), mipLevel, layer);
-            #else
-            static_cast<void>(colorAttachment);
-            static_cast<void>(texture);
-            static_cast<void>(mipLevel);
-            static_cast<void>(layer);
-            #endif
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline Framebuffer* setViewport(const Rectanglei& rectangle) {
+            AbstractFramebuffer::setViewport(rectangle);
+            return this;
         }
-
-        /*@}*/
-
-        /** @{ @name Framebuffer blitting and reading */
-
-        /**
-         * @brief Output mask for blitting
-         *
-         * Specifies which data are copied when performing blit operation
-         * using blit().
-         * @see BlitMask
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
-         */
-        enum class Blit: GLbitfield {
-            Color = GL_COLOR_BUFFER_BIT,    /**< Color */
-            Depth = GL_DEPTH_BUFFER_BIT,    /**< Depth value */
-            Stencil = GL_STENCIL_BUFFER_BIT /**< Stencil value */
-        };
-
-        /**
-         * @brief Output mask for blitting
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
-         */
-        typedef Corrade::Containers::EnumSet<Blit, GLbitfield,
-            GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT> BlitMask;
-
-        /**
-         * @brief Copy block of pixels from read to draw framebuffer
-         * @param bottomLeft        Bottom left coordinates of source rectangle
-         * @param topRight          Top right coordinates of source rectangle
-         * @param destinationBottomLeft Bottom left coordinates of destination rectangle
-         * @param destinationTopRight Top right coordinates of destination
-         *      rectangle
-         * @param blitMask          Blit mask
-         * @param filter            Interpolation applied if the image is
-         *      stretched
-         *
-         * See mapForRead() / mapDefaultForRead() and mapForDraw() /
-         * mapDefaultForDraw() for binding particular framebuffer for reading
-         * and drawing. If multiple attachments are specified in mapForDraw()
-         * / mapDefaultForDraw(), the data are written to each of them.
-         * @see @fn_gl{BlitFramebuffer}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
-         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
-         */
-        inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, const Math::Vector2<GLint>& destinationBottomLeft, const Math::Vector2<GLint>& destinationTopRight, BlitMask blitMask, AbstractTexture::Filter filter) {
-            /** @todo Get some extension wrangler instead to avoid undeclared glBlitFramebuffer() on ES2 */
-            #ifndef MAGNUM_TARGET_GLES2
-            glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), destinationBottomLeft.x(), destinationBottomLeft.y(), destinationTopRight.x(), destinationTopRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(filter));
-            #else
-            static_cast<void>(bottomLeft);
-            static_cast<void>(topRight);
-            static_cast<void>(destinationBottomLeft);
-            static_cast<void>(destinationTopRight);
-            static_cast<void>(blitMask);
-            static_cast<void>(filter);
-            #endif
-        }
-
-        /**
-         * @brief Copy block of pixels from read to draw framebuffer
-         * @param bottomLeft        Bottom left coordinates of source and
-         *      destination rectangle
-         * @param topRight          Top right coordinates of source and
-         *      destination rectangle
-         * @param blitMask          Blit mask
-         *
-         * Convenience function when source rectangle is the same as
-         * destination rectangle. As the image is copied pixel-by-pixel,
-         * no interpolation is needed and thus
-         * AbstractTexture::Filter::NearestNeighbor filtering is used by
-         * default.
-         * @see @fn_gl{BlitFramebuffer}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_blit}
-         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
-         */
-        inline static void blit(const Math::Vector2<GLint>& bottomLeft, const Math::Vector2<GLint>& topRight, BlitMask blitMask) {
-            /** @todo Get some extension wrangler instead to avoid undeclared glBlitFramebuffer() on ES2 */
-            #ifndef MAGNUM_TARGET_GLES2
-            glBlitFramebuffer(bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), bottomLeft.x(), bottomLeft.y(), topRight.x(), topRight.y(), static_cast<GLbitfield>(blitMask), static_cast<GLenum>(AbstractTexture::Filter::NearestNeighbor));
-            #else
-            static_cast<void>(bottomLeft);
-            static_cast<void>(topRight);
-            static_cast<void>(blitMask);
-            #endif
-        }
-
-        /**
-         * @brief Read block of pixels from framebuffer to image
-         * @param offset            Offset in the framebuffer
-         * @param size              %Image size
-         * @param components        Color components
-         * @param type              Data type
-         * @param image             %Image where to put the data
-         *
-         * @see @fn_gl{ReadPixels}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         */
-        static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, Image2D* image);
-
-        #ifndef MAGNUM_TARGET_GLES2
-        /**
-         * @brief Read block of pixels from framebuffer to buffered image
-         * @param offset            Offset in the framebuffer
-         * @param size              %Image size
-         * @param components        Color components
-         * @param type              Data type
-         * @param image             Buffered image where to put the data
-         * @param usage             %Buffer usage
-         *
-         * @see Buffer::bind(Target), @fn_gl{ReadPixels}
-         * @requires_gl30 Extension @extension{EXT,framebuffer_object}
-         * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
-         */
-        static void read(const Math::Vector2<GLint>& offset, const Math::Vector2<GLsizei>& size, AbstractImage::Components components, AbstractImage::ComponentType type, BufferedImage2D* image, Buffer::Usage usage);
         #endif
-
-        /*@}*/
 
     private:
-        GLuint _id;
-};
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
 
-CORRADE_ENUMSET_OPERATORS(Framebuffer::ClearMask)
-#ifndef MAGNUM_TARGET_GLES
-CORRADE_ENUMSET_OPERATORS(Framebuffer::BlitMask)
-#endif
+        typedef void(Framebuffer::*RenderbufferImplementation)(BufferAttachment, Renderbuffer*);
+        void MAGNUM_LOCAL renderbufferImplementationDefault(BufferAttachment attachment, Renderbuffer* renderbuffer);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL renderbufferImplementationDSA(BufferAttachment attachment, Renderbuffer* renderbuffer);
+        #endif
+        static RenderbufferImplementation renderbufferImplementation;
+
+        #ifndef MAGNUM_TARGET_GLES
+        typedef void(Framebuffer::*Texture1DImplementation)(BufferAttachment, Texture1D*, GLint);
+        void MAGNUM_LOCAL texture1DImplementationDefault(BufferAttachment attachment, Texture1D* texture, GLint level);
+        void MAGNUM_LOCAL texture1DImplementationDSA(BufferAttachment attachment, Texture1D* texture, GLint level);
+        static Texture1DImplementation texture1DImplementation;
+        #endif
+
+        typedef void(Framebuffer::*Texture2DImplementation)(BufferAttachment, GLenum, GLuint, GLint);
+        void MAGNUM_LOCAL texture2DImplementationDefault(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL texture2DImplementationDSA(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
+        #endif
+        static MAGNUM_LOCAL Texture2DImplementation texture2DImplementation;
+
+        typedef void(Framebuffer::*Texture3DImplementation)(BufferAttachment, Texture3D*, GLint, GLint);
+        void MAGNUM_LOCAL texture3DImplementationDefault(BufferAttachment attachment, Texture3D* texture, GLint level, GLint layer);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL texture3DImplementationDSA(BufferAttachment attachment, Texture3D* texture, GLint level, GLint layer);
+        #endif
+        static Texture3DImplementation texture3DImplementation;
+};
 
 }
 

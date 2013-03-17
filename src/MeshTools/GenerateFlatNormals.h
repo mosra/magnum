@@ -1,25 +1,33 @@
 #ifndef Magnum_MeshTools_GenerateFlatNormals_h
 #define Magnum_MeshTools_GenerateFlatNormals_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
  * @brief Function Magnum::MeshTools::generateFlatNormals()
  */
 
-#include <cstdint>
 #include <tuple>
 #include <vector>
 
@@ -38,10 +46,10 @@ namespace Magnum { namespace MeshTools {
 For each face generates one normal vector, removes duplicates before
 returning. Example usage:
 @code
-std::vector<std::uint32_t> vertexIndices;
-std::vector<Point3D> positions;
+std::vector<UnsignedInt> vertexIndices;
+std::vector<Vector3> positions;
 
-std::vector<std::uint32_t> normalIndices;
+std::vector<UnsignedInt> normalIndices;
 std::vector<Vector3> normals;
 std::tie(normalIndices, normals) = MeshTools::generateFlatNormals(vertexIndices, positions);
 @endcode
@@ -51,7 +59,7 @@ use the same indices.
 @attention Index count must be divisible by 3, otherwise zero length result
     is generated.
 */
-std::tuple<std::vector<std::uint32_t>, std::vector<Vector3>> MAGNUM_MESHTOOLS_EXPORT generateFlatNormals(const std::vector<std::uint32_t>& indices, const std::vector<Point3D>& positions);
+std::tuple<std::vector<UnsignedInt>, std::vector<Vector3>> MAGNUM_MESHTOOLS_EXPORT generateFlatNormals(const std::vector<UnsignedInt>& indices, const std::vector<Vector3>& positions);
 
 }}
 

@@ -15,18 +15,25 @@
 # components. The base library depends on Corrade, OpenGL and GLEW
 # libraries. Additional dependencies are specified by the components. The
 # optional components are:
-#  MeshTools     - MeshTools library
-#  Physics       - Physics library (depends on Primitives, SceneGraph and
-#                  Shaders components)
-#  Primitives    - Library with stock geometric primitives (static)
-#  SceneGraph    - Scene graph library
-#  Shaders       - Library with stock shaders
-#  GlxApplication - GLX application (depends on X11 libraries)
-#  XEglApplication - X/EGL application (depends on EGL and X11 libraries)
-#  GlutApplication - GLUT application (depends on GLUT library)
-#  Sdl2Application - SDL2 application (depends on SDL2 library)
-#  NaClApplication - NaCl application (only if targetting Google Chrome
-#   Native Client)
+#  DebugTools       - DebugTools library (depends on MeshTools, Physics,
+#                     Primitives, SceneGraph and Shaders components)
+#  MeshTools        - MeshTools library
+#  Physics          - Physics library
+#  Primitives       - Library with stock geometric primitives (static)
+#  SceneGraph       - Scene graph library
+#  Shaders          - Library with stock shaders
+#  Text             - Text rendering library (depends on TextureTools
+#                     component, FreeType library and possibly HarfBuzz
+#                     library, see below)
+#  TextureTools     - TextureTools library
+#  GlxApplication   - GLX application (depends on X11 libraries)
+#  XEglApplication  - X/EGL application (depends on EGL and X11 libraries)
+#  WindowlessGlxApplication - Windowless GLX application (depends on X11
+#                     libraries)
+#  GlutApplication  - GLUT application (depends on GLUT library)
+#  Sdl2Application  - SDL2 application (depends on SDL2 library)
+#  NaClApplication  - NaCl application (only if targetting Google Chrome
+#                     Native Client)
 # Example usage with specifying additional components is:
 #  find_package(Magnum [REQUIRED|COMPONENTS]
 #               MeshTools Primitives GlutApplication)
@@ -34,6 +41,16 @@
 #  MAGNUM_*_FOUND   - Whether the component was found
 #  MAGNUM_*_LIBRARIES - Component library and dependent libraries
 #  MAGNUM_*_INCLUDE_DIRS - Include dirs of module dependencies
+#
+# Features of found Magnum library are exposed in these variables:
+#  MAGNUM_TARGET_GLES   - Defined if compiled for OpenGL ES
+#  MAGNUM_TARGET_GLES2  - Defined if compiled for OpenGL ES 2.0
+#  MAGNUM_TARGET_DESKTOP_GLES - Defined if compiled with OpenGL ES
+#   emulation on desktop OpenGL
+#  MAGNUM_TARGET_NACL   - Defined if compiled for Google Chrome Native
+#   Client
+#  MAGNUM_USE_HARFBUZZ  - Defined if HarfBuzz library is used for text
+#   rendering
 #
 # Additionally these variables are defined for internal usage:
 #  MAGNUM_INCLUDE_DIR                   - Root include dir (w/o
@@ -51,6 +68,30 @@
 #  MAGNUM_INCLUDE_INSTALL_DIR           - Header installation directory
 #  MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR   - Plugin header installation
 #   directory
+#
+
+#
+#   This file is part of Magnum.
+#
+#   Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+#
+#   Permission is hereby granted, free of charge, to any person obtaining a
+#   copy of this software and associated documentation files (the "Software"),
+#   to deal in the Software without restriction, including without limitation
+#   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+#   and/or sell copies of the Software, and to permit persons to whom the
+#   Software is furnished to do so, subject to the following conditions:
+#
+#   The above copyright notice and this permission notice shall be included
+#   in all copies or substantial portions of the Software.
+#
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+#   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+#   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+#   DEALINGS IN THE SOFTWARE.
 #
 
 # Dependencies
@@ -80,12 +121,22 @@ string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_NACL" _TARGET_NACL)
 if(NOT _TARGET_NACL EQUAL -1)
     set(MAGNUM_TARGET_NACL 1)
 endif()
+string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_DESKTOP_GLES" _TARGET_DESKTOP_GLES)
+if(NOT _TARGET_DESKTOP_GLES EQUAL -1)
+    set(MAGNUM_TARGET_DESKTOP_GLES 1)
+endif()
+string(FIND "${_magnumConfigure}" "#define MAGNUM_USE_HARFBUZZ" _USE_HARFBUZZ)
+if(NOT _USE_HARFBUZZ EQUAL -1)
+    set(MAGNUM_USE_HARFBUZZ 1)
+endif()
 
-if(NOT MAGNUM_TARGET_GLES)
+if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
     find_package(OpenGL REQUIRED)
-    find_package(GLEW REQUIRED)
 else()
     find_package(OpenGLES2 REQUIRED)
+endif()
+if(NOT MAGNUM_TARGET_GLES)
+    find_package(GLEW REQUIRED)
 endif()
 
 # On Windows, *Application libraries need to have ${MAGNUM_LIBRARY} listed
@@ -152,6 +203,21 @@ foreach(component ${Magnum_FIND_COMPONENTS})
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
         endif()
+
+        # Windowless GLX application dependencies
+        if(${component} STREQUAL WindowlessGlxApplication)
+            find_package(X11)
+            if(X11_FOUND)
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${X11_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY})
+            else()
+                unset(MAGNUM_${_COMPONENT}_LIBRARY)
+            endif()
+        endif()
+    endif()
+
+    # DebugTools library
+    if(${component} STREQUAL DebugTools)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Profiler.h)
     endif()
 
     # Mesh tools library
@@ -177,6 +243,28 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     # Shaders library
     if(${component} STREQUAL Shaders)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES PhongShader.h)
+    endif()
+
+    # Text library
+    if(${component} STREQUAL Text)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Font.h)
+
+        # Dependencies
+        find_package(Freetype)
+        if(NOT FREETYPE_FOUND)
+            unset(MAGNUM_${_COMPONENT}_LIBRARY)
+        endif()
+        if(MAGNUM_USE_HARFBUZZ)
+            find_package(HarfBuzz)
+            if(NOT HARFBUZZ_FOUND)
+                unset(MAGNUM_${_COMPONENT}_LIBRARY)
+            endif()
+        endif()
+    endif()
+
+    # TextureTools library
+    if(${component} STREQUAL TextureTools)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Atlas.h)
     endif()
 
     # Try to find the includes
@@ -212,13 +300,13 @@ set(MAGNUM_INCLUDE_DIRS ${MAGNUM_INCLUDE_DIR}
 set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARY}
     ${CORRADE_UTILITY_LIBRARY}
     ${CORRADE_PLUGINMANAGER_LIBRARY})
-if(NOT MAGNUM_TARGET_GLES)
-    set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES}
-        ${OPENGL_gl_LIBRARY}
-        ${GLEW_LIBRARY})
+if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
+    set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGL_gl_LIBRARY})
 else()
-    set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES}
-        ${OPENGLES2_LIBRARY})
+    set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGLES2_LIBRARY})
+endif()
+if(NOT MAGNUM_TARGET_GLES)
+    set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${GLEW_LIBRARIES})
 endif()
 
 # Installation dirs

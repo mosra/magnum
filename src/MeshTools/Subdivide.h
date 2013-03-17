@@ -1,18 +1,27 @@
 #ifndef Magnum_MeshTools_Subdivide_h
 #define Magnum_MeshTools_Subdivide_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -29,7 +38,7 @@ namespace Implementation {
 
 template<class Vertex, class Interpolator> class Subdivide {
     public:
-        inline Subdivide(std::vector<std::uint32_t>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
+        inline Subdivide(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
 
         void operator()(Interpolator interpolator) {
             CORRADE_ASSERT(!(indices.size()%3), "MeshTools::subdivide(): index count is not divisible by 3!", );
@@ -40,7 +49,7 @@ template<class Vertex, class Interpolator> class Subdivide {
             /* Subdivide each face to four new */
             for(std::size_t i = 0; i != indexCount; i += 3) {
                 /* Interpolate each side */
-                std::uint32_t newVertices[3];
+                UnsignedInt newVertices[3];
                 for(int j = 0; j != 3; ++j)
                     newVertices[j] = addVertex(interpolator(vertices[indices[i+j]], vertices[indices[i+(j+1)%3]]));
 
@@ -66,15 +75,15 @@ template<class Vertex, class Interpolator> class Subdivide {
         }
 
     private:
-        std::vector<std::uint32_t>& indices;
+        std::vector<UnsignedInt>& indices;
         std::vector<Vertex>& vertices;
 
-        std::uint32_t addVertex(const Vertex& v) {
+        UnsignedInt addVertex(const Vertex& v) {
             vertices.push_back(v);
             return vertices.size()-1;
         }
 
-        void addFace(std::uint32_t first, std::uint32_t second, std::uint32_t third) {
+        void addFace(UnsignedInt first, UnsignedInt second, UnsignedInt third) {
             indices.push_back(first);
             indices.push_back(second);
             indices.push_back(third);
@@ -96,7 +105,7 @@ template<class Vertex, class Interpolator> class Subdivide {
 Goes through all triangle faces and subdivides them into four new. Cleaning
 duplicate vertices in the mesh is up to user.
 */
-template<class Vertex, class Interpolator> inline void subdivide(std::vector<std::uint32_t>& indices, std::vector<Vertex>& vertices, Interpolator interpolator) {
+template<class Vertex, class Interpolator> inline void subdivide(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices, Interpolator interpolator) {
     Implementation::Subdivide<Vertex, Interpolator>(indices, vertices)(interpolator);
 }
 

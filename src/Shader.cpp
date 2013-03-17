@@ -1,22 +1,31 @@
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 #include "Shader.h"
 
 #include <fstream>
-#include <Utility/Debug.h>
+#include <Utility/Assert.h>
 
 #define COMPILER_MESSAGE_MAX_LENGTH 1024
 
@@ -25,8 +34,6 @@
 typedef char GLchar;
 #endif
 
-using namespace std;
-
 namespace Magnum {
 
 Shader::Shader(Version version, Type type): _type(type), _state(State::Initialized), shader(0) {
@@ -34,23 +41,25 @@ Shader::Shader(Version version, Type type): _type(type), _state(State::Initializ
 
     switch(version) {
         #ifndef MAGNUM_TARGET_GLES
-        case Version::GL210: addSource("#version 120\n"); break;
-        case Version::GL300: addSource("#version 130\n"); break;
-        case Version::GL310: addSource("#version 140\n"); break;
-        case Version::GL320: addSource("#version 150\n"); break;
-        case Version::GL330: addSource("#version 330\n"); break;
-        case Version::GL400: addSource("#version 400\n"); break;
-        case Version::GL410: addSource("#version 410\n"); break;
-        case Version::GL420: addSource("#version 420\n"); break;
-        case Version::GL430: addSource("#version 430\n"); break;
+        case Version::GL210: addSource("#version 120\n"); return;
+        case Version::GL300: addSource("#version 130\n"); return;
+        case Version::GL310: addSource("#version 140\n"); return;
+        case Version::GL320: addSource("#version 150\n"); return;
+        case Version::GL330: addSource("#version 330\n"); return;
+        case Version::GL400: addSource("#version 400\n"); return;
+        case Version::GL410: addSource("#version 410\n"); return;
+        case Version::GL420: addSource("#version 420\n"); return;
+        case Version::GL430: addSource("#version 430\n"); return;
         #else
-        case Version::GLES200: addSource("#version 100\n"); break;
-        case Version::GLES300: addSource("#version 300\n"); break;
+        case Version::GLES200: addSource("#version 100\n"); return;
+        case Version::GLES300: addSource("#version 300\n"); return;
         #endif
 
-        default:
-            CORRADE_ASSERT(false, "Shader::Shader(): unsupported version" << GLint(version), );
+        case Version::None:
+            CORRADE_ASSERT(false, "Shader::Shader(): unsupported version" << version, );
     }
+
+    CORRADE_INTERNAL_ASSERT(false);
 }
 
 Shader::Shader(Shader&& other): _type(other._type), _state(other._state), sources(other.sources), shader(other.shader) {
@@ -72,7 +81,7 @@ Shader& Shader::operator=(Shader&& other) {
 
 bool Shader::addFile(const std::string& filename) {
     /* Open file */
-    ifstream file(filename.c_str());
+    std::ifstream file(filename.c_str());
     if(!file.good()) {
         file.close();
 
@@ -81,13 +90,13 @@ bool Shader::addFile(const std::string& filename) {
     }
 
     /* Get size of shader and initialize buffer */
-    file.seekg(0, ios::end);
-    size_t size = file.tellg();
+    file.seekg(0, std::ios::end);
+    std::size_t size = file.tellg();
     char* source = new char[size+1];
     source[size] = '\0';
 
     /* Read data, close */
-    file.seekg(0, ios::beg);
+    file.seekg(0, std::ios::beg);
     file.read(source, size);
     file.close();
 
@@ -104,7 +113,7 @@ GLuint Shader::compile() {
 
     /* Array of sources */
     const GLchar** _sources = new const GLchar*[sources.size()];
-    for(size_t i = 0; i != sources.size(); ++i)
+    for(std::size_t i = 0; i != sources.size(); ++i)
         _sources[i] = static_cast<const GLchar*>(sources[i].c_str());
 
     /* Create shader and set its source */

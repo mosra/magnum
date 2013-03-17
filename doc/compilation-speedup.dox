@@ -1,3 +1,27 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
 namespace Magnum {
 /** @page compilation-speedup Speeding up compilation
 @brief Techniques for reducing compilation times.
@@ -19,16 +43,20 @@ some types it can be too cumbersome -- e.g. too many template parameters,
 typedefs etc. In this case a header with forward declarations is usually
 available, each namespace has its own:
 
+ - Math/Math.h
  - Magnum.h
+ - DebugTools/DebugTools.h
  - Physics/Physics.h
  - SceneGraph/SceneGraph.h
  - Shaders/Shaders.h
+ - Text/Text.h
+ - Trade/Trade.h
 
 @section compilation-speedup-templates Templates
 
 Many things in %Magnum are templated to allow handling of various types and
-sizes of data, for example whole Scene graph can operate either with `float`s
-or with `double`s. However, having templated classes and function usually
+sizes of data, for example whole Scene graph can operate either with @ref Float
+or @ref Double data type. However, having templated classes and function usually
 means that the compiler compiles the whole templated code again in each
 compilation unit (i.e. source file). In linking stage of the application or
 library the duplicates are just thrown out, which is a waste of compilation
@@ -60,7 +88,7 @@ Sometimes you however need to use your own specialization and that's why
 template implementation files are included in the library. For example we want
 to use @ref SceneGraph::Object "Object" from SceneGraph with
 @ref SceneGraph::MatrixTransformation3D "MatrixTransformation3D" with
-`GLdouble` as underlying type, because our scene will span the whole universe.
+@ref Double as underlying type, because our scene will span the whole universe.
 We include the implementation file in dedicated source file and explicitly
 instantiate the template:
 @code
@@ -69,7 +97,7 @@ instantiate the template:
 
 using namespace Magnum::SceneGraph;
 
-template class Object<MatrixTransformation3D<GLdouble>>;
+template class Object<MatrixTransformation3D<Double>>;
 @endcode
 All other files using the same object specialization now need to include only
 SceneGraph/Object.h header. Thus the Object specialization will be compiled

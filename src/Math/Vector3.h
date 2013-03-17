@@ -1,18 +1,27 @@
 #ifndef Magnum_Math_Vector3_h
 #define Magnum_Math_Vector3_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -20,6 +29,7 @@
  */
 
 #include "Vector2.h"
+#include "Swizzle.h"
 
 namespace Magnum { namespace Math {
 
@@ -27,9 +37,8 @@ namespace Magnum { namespace Math {
 @brief Three-component vector
 @tparam T   Data type
 
-See @ref matrix-vector for brief introduction. See also Point2D for
-homogeneous two-dimensional coordinates.
-@see Magnum::Vector3
+See @ref matrix-vector for brief introduction.
+@see Magnum::Vector3, Magnum::Vector3i, Magnum::Vector3ui, Magnum::Vector3d
 @configurationvalueref{Magnum::Math::Vector3}
 */
 template<class T> class Vector3: public Vector<3, T> {
@@ -40,7 +49,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * Usable for translation or rotation along given axis, for example:
          * @code
          * Matrix4::translation(Vector3::xAxis(5.0f)); // same as Matrix4::translation({5.0f, 0.0f, 0.0f});
-         * Matrix4::rotation(deg(30.0f), Vector3::xAxis()); // same as Matrix::rotation(deg(30.0f), {1.0f, 0.0f, 0.0f});
+         * Matrix4::rotation(30.0_degf, Vector3::xAxis()); // same as Matrix::rotation(30.0_degf, {1.0f, 0.0f, 0.0f});
          * @endcode
          * @see yAxis(), zAxis(), xScale(), Matrix4::right()
          */
@@ -93,39 +102,48 @@ template<class T> class Vector3: public Vector<3, T> {
          * @brief Cross product
          *
          * @f[
+         * \boldsymbol a \times \boldsymbol b =
          * \begin{pmatrix} c_0 \\ c_1 \\ c_2 \end{pmatrix} =
          * \begin{pmatrix}a_1b_2 - a_2b_1 \\ a_2b_0 - a_0b_2 \\ a_0b_1 - a_1b_0 \end{pmatrix}
          * @f]
          */
         inline constexpr static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
-            return Vector3<T>(a[1]*b[2]-a[2]*b[1],
-                              a[2]*b[0]-a[0]*b[2],
-                              a[0]*b[1]-a[1]*b[0]);
+            return swizzle<'y', 'z', 'x'>(a)*swizzle<'z', 'x', 'y'>(b) -
+                   swizzle<'z', 'x', 'y'>(a)*swizzle<'y', 'z', 'x'>(b);
         }
 
         /** @copydoc Vector::Vector() */
-        inline constexpr Vector3() {}
+        inline constexpr /*implicit*/ Vector3() {}
 
         /** @copydoc Vector::Vector(T) */
-        inline constexpr explicit Vector3(T value): Vector<3, T>(value, value, value) {}
+        inline constexpr explicit Vector3(T value): Vector<3, T>(value) {}
+
+        /**
+         * @brief Constructor
+         *
+         * @f[
+         *      \boldsymbol v = \begin{pmatrix} x \\ y \\ z \end{pmatrix}
+         * @f]
+         */
+        inline constexpr /*implicit*/ Vector3(T x, T y, T z): Vector<3, T>(x, y, z) {}
+
+        /**
+         * @brief Constructor
+         *
+         * @f[
+         *      \boldsymbol v = \begin{pmatrix} v_x \\ v_y \\ z \end{pmatrix}
+         * @f]
+         */
+        inline constexpr /*implicit*/ Vector3(const Vector2<T>& xy, T z): Vector<3, T>(xy[0], xy[1], z) {}
+
+        /** @copydoc Vector::Vector(const Vector<size, U>&) */
+        template<class U> inline constexpr explicit Vector3(const Vector<3, U>& other): Vector<3, T>(other) {}
+
+        /** @brief Construct vector from external representation */
+        template<class U, class V = decltype(Implementation::VectorConverter<3, T, U>::from(std::declval<U>()))> inline constexpr explicit Vector3(const U& other): Vector<3, T>(Implementation::VectorConverter<3, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        inline constexpr Vector3(const RectangularMatrix<1, 3, T>& other): Vector<3, T>(other) {}
-
-        /**
-         * @brief Constructor
-         * @param x     X component
-         * @param y     Y component
-         * @param z     Z component
-         */
-        inline constexpr Vector3(T x, T y, T z): Vector<3, T>(x, y, z) {}
-
-        /**
-         * @brief Constructor
-         * @param xy    Two-component vector
-         * @param z     Z component
-         */
-        inline constexpr Vector3(const Vector2<T>& xy, T z): Vector<3, T>(xy[0], xy[1], z) {}
+        inline constexpr Vector3(const Vector<3, T>& other): Vector<3, T>(other) {}
 
         inline T& x() { return (*this)[0]; }                /**< @brief X component */
         inline constexpr T x() const { return (*this)[0]; } /**< @overload */
@@ -141,10 +159,9 @@ template<class T> class Vector3: public Vector<3, T> {
          * @see swizzle()
          */
         inline Vector2<T>& xy() { return Vector2<T>::from(Vector<3, T>::data()); }
-        inline constexpr Vector2<T> xy() const { return Vector2<T>::from(Vector<3, T>::data()); } /**< @overload */
+        inline constexpr const Vector2<T> xy() const { return {x(), y()}; } /**< @overload */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector3, 3)
-        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, 3, Vector3<T>)
 };
 
 MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Vector3, 3)

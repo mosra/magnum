@@ -1,19 +1,59 @@
-corrade_add_test2(MathConstantsTest ConstantsTest.cpp)
-corrade_add_test2(MathTest MathTest.cpp LIBRARIES MagnumMathTestLib)
-corrade_add_test2(MathMathTypeTraitsTest MathTypeTraitsTest.cpp)
+#
+#   This file is part of Magnum.
+#
+#   Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+#
+#   Permission is hereby granted, free of charge, to any person obtaining a
+#   copy of this software and associated documentation files (the "Software"),
+#   to deal in the Software without restriction, including without limitation
+#   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+#   and/or sell copies of the Software, and to permit persons to whom the
+#   Software is furnished to do so, subject to the following conditions:
+#
+#   The above copyright notice and this permission notice shall be included
+#   in all copies or substantial portions of the Software.
+#
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+#   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+#   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+#   DEALINGS IN THE SOFTWARE.
+#
 
-corrade_add_test2(MathRectangularMatrixTest RectangularMatrixTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathBoolVectorTest BoolVectorTest.cpp)
+corrade_add_test(MathConstantsTest ConstantsTest.cpp)
+corrade_add_test(MathFunctionsTest FunctionsTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathTypeTraitsTest TypeTraitsTest.cpp)
 
-corrade_add_test2(MathVectorTest VectorTest.cpp LIBRARIES MagnumMathTestLib)
-corrade_add_test2(MathVector2Test Vector2Test.cpp LIBRARIES MagnumMathTestLib)
-corrade_add_test2(MathVector3Test Vector3Test.cpp LIBRARIES MagnumMathTestLib)
-corrade_add_test2(MathVector4Test Vector4Test.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathVectorTest VectorTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathVector2Test Vector2Test.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathVector3Test Vector3Test.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathVector4Test Vector4Test.cpp LIBRARIES MagnumMathTestLib)
 
-corrade_add_test2(MathPoint2DTest Point2DTest.cpp LIBRARIES MagnumMathTestLib)
-corrade_add_test2(MathPoint3DTest Point3DTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathRectangularMatrixTest RectangularMatrixTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathMatrixTest MatrixTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathMatrix3Test Matrix3Test.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathMatrix4Test Matrix4Test.cpp LIBRARIES MagnumMathTestLib)
 
-corrade_add_test2(MathMatrixTest MatrixTest.cpp LIBRARIES MagnumMathTestLib)
-corrade_add_test2(MathMatrix3Test Matrix3Test.cpp LIBRARIES MagnumMathTestLib)
-corrade_add_test2(MathMatrix4Test Matrix4Test.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathSwizzleTest SwizzleTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathUnitTest UnitTest.cpp)
+corrade_add_test(MathAngleTest AngleTest.cpp LIBRARIES MagnumMathTestLib)
 
-set_target_properties(MathVectorTest MathMatrix4Test PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
+corrade_add_test(MathDualTest DualTest.cpp)
+corrade_add_test(MathComplexTest ComplexTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathDualComplexTest DualComplexTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathQuaternionTest QuaternionTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathDualQuaternionTest DualQuaternionTest.cpp LIBRARIES MagnumMathTestLib)
+
+set_target_properties(
+    MathVectorTest
+    MathMatrixTest
+    MathMatrix3Test
+    MathMatrix4Test
+    MathComplexTest
+    MathDualComplexTest
+    MathQuaternionTest
+    MathDualQuaternionTest
+    PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)

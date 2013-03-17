@@ -1,3 +1,27 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
 namespace Magnum {
 /** @page building Downloading and building
 @brief Guide how to download and build %Magnum on different platforms.
@@ -55,33 +79,60 @@ If you want to build with another compiler (e.g. Clang), pass
 
 @subsection building-optional Enabling or disabling features
 
-By default the engine is built for desktop OpenGL. If you want to target
-OpenGL ES, set `TARGET_GLES` to `ON` or pass `-DTARGET_GLES=ON` to CMake. Note
-that some features are available for desktop OpenGL only, see @ref requires-gl.
+By default the engine is built for desktop OpenGL. Using `TARGET_*` CMake
+parameters you can target other platforms. Note that some features are available
+for desktop OpenGL only, see @ref requires-gl.
 
-By default the engine is built with everything except
-@ref Platform "application libraries". Using `WITH_*` CMake parameters you can
-specify which parts will be built and which not:
+ - `TARGET_GLES` - Target OpenGL ES.
+ - `TARGET_GLES2` - Target OpenGL ES 2.0. Currently enabled by default when
+   `TARGET_GLES` is set, as no customer OpenGL ES 3.0 platform exists yet.
+ - `TARGET_DESKTOP_GLES` - Target OpenGL ES on desktop, i.e. use OpenGL ES
+   emulation in desktop OpenGL library. Might not be supported in all drivers.
 
- - `WITH_EVERYTHING` - Defaults to `ON`, builds everything except window
-   contexts. If set to `OFF`, only the main library is built and you can
-   select additional libraries with the following:
- - `WITH_MESHTOOLS` - MeshTools library.
- - `WITH_PHYSICS` - Physics library.
- - `WITH_PRIMITIVES` - Primitives library.
- - `WITH_SCENEGRAPH` - SceneGraph library.
- - `WITH_SHADERS` - Shaders library.
+By default the engine is built with everything except application libraries (see
+below). Using `WITH_*` CMake parameters you can specify which parts will be built
+and which not:
 
-None of the application libraries is built by default, regardless to
-`WITH_EVERYTHING` is enabled or not:
+ - `WITH_DEBUGTOOLS` - DebugTools library. Enables also building of MeshTools,
+   Physics, Primitives, SceneGraph and Shaders libraries.
+ - `WITH_MESHTOOLS` - MeshTools library. Enabled automatically if `WITH_DEBUGTOOLS`
+   is enabled.
+ - `WITH_PHYSICS` - Physics library. Enables also building of SceneGraph
+   library. Enabled automatically if `WITH_DEBUGTOOLS` is enabled.
+ - `WITH_PRIMITIVES` - Primitives library. Enabled automatically if `WITH_DEBUGTOOLS`
+   is enabled.
+ - `WITH_SCENEGRAPH` - SceneGraph library. Enabled automatically if `WITH_DEBUGTOOLS`
+   or `WITH_PHYSICS` is enabled.
+ - `WITH_SHADERS` - Shaders library. Enabled automatically if `WITH_DEBUGTOOLS`
+   is enabled.
+ - `WITH_TEXT` - Text library. Enables also building of TextureTools library.
+   Requires **FreeType** and possibly **HarfBuzz** library (see below).
+ - `WITH_TEXTURETOOLS` - TextureTools library. Enabled automatically if `WITH_TEXT`
+   is enabled.
+ - `WITH_MAGNUMINFO` - `magnum-info` executable, provides information about the
+   engine and OpenGL capabilities.
 
- - `WITH_XEGLAPPLICATION` - X/EGL application, available only if targeting
-   OpenGL ES (see above). Requires **X11** and **EGL** libraries.
- - `WITH_GLXAPPLICATION` - GLX application. Requires **X11** and **GLX**
-   libraries.
- - `WITH_GLUTAPPLICATION` - GLUT application, available only if targeting
-   desktop OpenGL. Requires **GLUT** library.
- - `WITH_SDL2APPLICATION` - SDL2 application. Requires **SDL2** library.
+Some dependencies are optional, although disabling them might reduce some
+functionality:
+
+ - `USE_HARFBUZZ` - Defaults to `ON`, disabling it will result in worse text
+   rendering (no kerning & ligatures) and possible issues with non-Latin text.
+
+None of the @ref Platform "application libraries" is built by default (and you
+need at least one). Choose the one which suits your requirements and your
+platform best:
+
+ - `WITH_XEGLAPPLICATION` - @ref Platform::XEglApplication "XEglApplication",
+   available only if targeting OpenGL ES (see above). Requires **X11** and
+   **EGL** libraries.
+ - `WITH_GLXAPPLICATION` - @ref Platform::GlxApplication "GlxApplication".
+   Requires **X11** and **GLX** libraries.
+ - `WITH_WINDOWLESSGLXAPPLICATION` - @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication".
+   Requires **X11** and **GLX** libraries.
+ - `WITH_GLUTAPPLICATION` - @ref Platform::GlutApplication "GlutApplication",
+   available only if targeting desktop OpenGL. Requires **GLUT** library.
+ - `WITH_SDL2APPLICATION` - @ref Platform::Sdl2Application "Sdl2Application".
+   Requires **SDL2** library.
 
 @subsection building-tests Building and running unit tests
 
@@ -159,9 +210,10 @@ You will need [Native Client SDK](https://developers.google.com/native-client/be
 Tested version is `pepper_22`.
 
 Make sure you have `toolchains` Git submodule updated, as
-@ref building-download "explained above". Don't forget to adapt `NACL_PREFIX
+@ref building-download "explained above". Don't forget to adapt `NACL_PREFIX`
 variable in `generic/NaCl-glibc-x86-32.cmake` and `generic/NaCl-glibc-x86-64.cmake`
-to path where your SDK is installed. Default is `/usr/nacl`.
+to path where your SDK is installed. Default is `/usr/nacl`.  You may need to
+adapt also `NACL_TOOLCHAIN_PATH` so CMake is able to find the compiler.
 
 Then create build directories for x86-32 and x86-64 and run cmake and make in
 them. The toolchains needs access to its platform file, so be sure to properly

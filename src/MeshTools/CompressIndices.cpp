@@ -1,68 +1,91 @@
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 #include "CompressIndices.h"
 
 #include <cstring>
-#include <vector>
 #include <algorithm>
 
-#include "IndexedMesh.h"
-#include "SizeTraits.h"
-
-using namespace std;
+#include "Math/Functions.h"
 
 namespace Magnum { namespace MeshTools {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-namespace Implementation {
+namespace {
 
-std::tuple<size_t, Type, char* > CompressIndices::operator()() const {
-    #ifndef CORRADE_GCC44_COMPATIBILITY
-    return SizeBasedCall<Compressor>(*std::max_element(indices.begin(), indices.end()))(indices);
-    #else
-    return SizeBasedCall<std::tuple<size_t, Type, char*>, Compressor>(*std::max_element(indices.begin(), indices.end()))(indices);
-    #endif
-}
+template<class> constexpr Mesh::IndexType indexType();
+template<> inline constexpr Mesh::IndexType indexType<UnsignedByte>() { return Mesh::IndexType::UnsignedByte; }
+template<> inline constexpr Mesh::IndexType indexType<UnsignedShort>() { return Mesh::IndexType::UnsignedShort; }
+template<> inline constexpr Mesh::IndexType indexType<UnsignedInt>() { return Mesh::IndexType::UnsignedInt; }
 
-void CompressIndices::operator()(IndexedMesh* mesh, Buffer* buffer, Buffer::Usage usage) const {
-    size_t indexCount;
-    Type indexType;
-    char* data;
-    std::tie(indexCount, indexType, data) = operator()();
-
-    mesh->setIndexBuffer(buffer)
-        ->setIndexType(indexType)
-        ->setIndexCount(indices.size());
-    buffer->setData(indexCount*TypeInfo::sizeOf(indexType), data, usage);
-
-    delete[] data;
-}
-
-template<class IndexType> std::tuple<size_t, Type, char*> CompressIndices::Compressor::run(const std::vector<uint32_t>& indices) {
-    /* Create smallest possible version of index buffer */
-    char* buffer = new char[indices.size()*sizeof(IndexType)];
-    for(size_t i = 0; i != indices.size(); ++i) {
-        IndexType index = indices[i];
-        memcpy(buffer+i*sizeof(IndexType), reinterpret_cast<const char*>(&index), sizeof(IndexType));
+template<class T> inline std::tuple<std::size_t, Mesh::IndexType, char*> compress(const std::vector<UnsignedInt>& indices) {
+    char* buffer = new char[indices.size()*sizeof(T)];
+    for(std::size_t i = 0; i != indices.size(); ++i) {
+        T index = static_cast<T>(indices[i]);
+        std::memcpy(buffer+i*sizeof(T), &index, sizeof(T));
     }
 
-    return std::make_tuple(indices.size(), TypeTraits<IndexType>::indexType(), buffer);
+    return std::make_tuple(indices.size(), indexType<T>(), buffer);
+}
+
+std::tuple<std::size_t, Mesh::IndexType, char*> compressIndicesInternal(const std::vector<UnsignedInt>& indices, UnsignedInt max) {
+    switch(Math::log(256, max)) {
+        case 0:
+            return compress<UnsignedByte>(indices);
+        case 1:
+            return compress<UnsignedShort>(indices);
+        case 2:
+        case 3:
+            return compress<UnsignedInt>(indices);
+
+        default:
+            CORRADE_ASSERT(false, "MeshTools::compressIndices(): no type able to index" << max << "elements.", {});
+    }
 }
 
 }
 #endif
+
+std::tuple<std::size_t, Mesh::IndexType, char*> compressIndices(const std::vector<UnsignedInt>& indices) {
+    return compressIndicesInternal(indices, *std::max_element(indices.begin(), indices.end()));
+}
+
+void compressIndices(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<UnsignedInt>& indices) {
+    auto minmax = std::minmax_element(indices.begin(), indices.end());
+
+    /** @todo Performance hint when range can be represented by smaller value? */
+
+    std::size_t indexCount;
+    Mesh::IndexType indexType;
+    char* data;
+    std::tie(indexCount, indexType, data) = compressIndicesInternal(indices, *minmax.second);
+
+    mesh->setIndexCount(indices.size())
+        ->setIndexBuffer(buffer, 0, indexType, *minmax.first, *minmax.second);
+    buffer->setData(indexCount*Mesh::indexSize(indexType), data, usage);
+
+    delete[] data;
+}
 
 }}

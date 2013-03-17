@@ -1,18 +1,27 @@
 #ifndef Magnum_SceneGraph_AbstractFeature_h
 #define Magnum_SceneGraph_AbstractFeature_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -22,18 +31,19 @@
 #include <Containers/EnumSet.h>
 #include <Containers/LinkedList.h>
 
-#include "AbstractObject.h"
+#include "Magnum.h"
+#include "SceneGraph/AbstractObject.h"
 
 namespace Magnum { namespace SceneGraph {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    enum class FeatureCachedTransformation: std::uint8_t {
+    enum class FeatureCachedTransformation: UnsignedByte {
         Absolute = 1 << 0,
         InvertedAbsolute = 1 << 1
     };
 
-    typedef Corrade::Containers::EnumSet<FeatureCachedTransformation, std::uint8_t> FeatureCachedTransformations;
+    typedef Corrade::Containers::EnumSet<FeatureCachedTransformation, UnsignedByte> FeatureCachedTransformations;
 
     CORRADE_ENUMSET_OPERATORS(FeatureCachedTransformations)
 }
@@ -118,9 +128,9 @@ which is automatically extracted from the pointer in our constructor.
 @see AbstractFeature2D, AbstractFeature3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class T> class AbstractFeature: private Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>
+template<UnsignedInt dimensions, class T> class AbstractFeature: private Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>
 #else
-template<std::uint8_t dimensions, class T = GLfloat> class AbstractFeature
+template<UnsignedInt dimensions, class T = Float> class AbstractFeature
 #endif
 {
     friend class Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>;
@@ -132,8 +142,8 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractFeature
          * @brief Constructor
          * @param object    %Object holding this feature
          */
-        inline AbstractFeature(AbstractObject<dimensions, T>* object) {
-            object->Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>::insert(this);
+        inline explicit AbstractFeature(AbstractObject<dimensions, T>* object) {
+            object->Corrade::Containers::template LinkedList<AbstractFeature<dimensions, T>>::insert(this);
         }
 
         virtual ~AbstractFeature() = 0;
@@ -186,7 +196,7 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractFeature
         #ifndef DOXYGEN_GENERATING_OUTPUT
         typedef Implementation::FeatureCachedTransformation CachedTransformation;
         #else
-        enum class CachedTransformation: std::uint8_t {
+        enum class CachedTransformation: UnsignedByte {
             /**
              * Absolute transformation is cached.
              *
@@ -212,7 +222,7 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractFeature
         #ifndef DOXYGEN_GENERATING_OUTPUT
         typedef Implementation::FeatureCachedTransformations CachedTransformations;
         #else
-        typedef Corrade::Containers::EnumSet<CachedTransformation, std::uint8_t> CachedTransformations;
+        typedef Corrade::Containers::EnumSet<CachedTransformation, UnsignedByte> CachedTransformations;
         #endif
 
         /**
@@ -280,10 +290,11 @@ template<std::uint8_t dimensions, class T = GLfloat> class AbstractFeature
         CachedTransformations _cachedTransformations;
 };
 
-template<std::uint8_t dimensions, class T> inline AbstractFeature<dimensions, T>::~AbstractFeature() {}
-template<std::uint8_t dimensions, class T> inline void AbstractFeature<dimensions, T>::clean(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
-template<std::uint8_t dimensions, class T> inline void AbstractFeature<dimensions, T>::cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
+template<UnsignedInt dimensions, class T> inline AbstractFeature<dimensions, T>::~AbstractFeature() {}
+template<UnsignedInt dimensions, class T> inline void AbstractFeature<dimensions, T>::clean(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
+template<UnsignedInt dimensions, class T> inline void AbstractFeature<dimensions, T>::cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base for two-dimensional features
 
@@ -291,15 +302,13 @@ Convenience alternative to <tt>%AbstractFeature<2, T></tt>. See AbstractFeature
 for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractFeature<2, T></tt> instead.
 @see AbstractFeature3D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = GLfloat> using AbstractFeature2D = AbstractFeature<2, T>;
-#endif
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = Float>
 #else
-typedef AbstractFeature<2, T = GLfloat> AbstractFeature2D;
+template<class T>
 #endif
+using AbstractFeature2D = AbstractFeature<2, T>;
 
 /**
 @brief Base for three-dimensional features
@@ -308,14 +317,13 @@ Convenience alternative to <tt>%AbstractFeature<3, T></tt>. See AbstractFeature
 for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractFeature<3, T></tt> instead.
 @see AbstractFeature2D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = GLfloat> using AbstractFeature3D = AbstractFeature<3, T>;
-#endif
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = Float>
 #else
-typedef AbstractFeature<2, T = GLfloat> AbstractFeature3D;
+template<class T>
+#endif
+using AbstractFeature3D = AbstractFeature<3, T>;
 #endif
 
 }}

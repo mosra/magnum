@@ -5,7 +5,7 @@ pkgrel=1
 pkgdesc="OpenGL 3 graphics engine (Git version)"
 arch=('i686' 'x86_64')
 url="https://github.com/mosra/magnum"
-license=('LGPLv3')
+license=('MIT')
 depends=('corrade-git' 'glew')
 makedepends=('cmake' 'git')
 

@@ -1,18 +1,27 @@
 #ifndef Magnum_SceneGraph_MatrixTransformation2D_h
 #define Magnum_SceneGraph_MatrixTransformation2D_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -28,17 +37,18 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Two-dimensional transformation implemented using matrices
 
-@see MatrixTransformation3D
+Uses Math::Matrix3 as underlying type.
+@see @ref scenegraph, RigidMatrixTransformation2D, MatrixTransformation3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T>
 #else
-template<class T = GLfloat>
+template<class T = Float>
 #endif
 class MatrixTransformation2D: public AbstractTranslationRotationScaling2D<T> {
     public:
-        /** @brief Transformation matrix type */
-        typedef typename DimensionTraits<2, T>::MatrixType DataType;
+        /** @brief Underlying transformation type */
+        typedef Math::Matrix3<T> DataType;
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline constexpr static Math::Matrix3<T> fromMatrix(const Math::Matrix3<T>& matrix) {
@@ -90,6 +100,11 @@ class MatrixTransformation2D: public AbstractTranslationRotationScaling2D<T> {
             return this;
         }
 
+        inline MatrixTransformation2D<T>* resetTransformation() override {
+            setTransformation({});
+            return this;
+        }
+
         /**
          * @copydoc AbstractTranslationRotationScaling2D::translate()
          * Same as calling transform() with Matrix3::translation().
@@ -103,7 +118,7 @@ class MatrixTransformation2D: public AbstractTranslationRotationScaling2D<T> {
          * @copydoc AbstractTranslationRotationScaling2D::rotate()
          * Same as calling transform() with Matrix3::rotation().
          */
-        inline MatrixTransformation2D<T>* rotate(T angle, TransformationType type = TransformationType::Global) override {
+        inline MatrixTransformation2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
             transform(Math::Matrix3<T>::rotation(angle), type);
             return this;
         }
@@ -118,19 +133,33 @@ class MatrixTransformation2D: public AbstractTranslationRotationScaling2D<T> {
         }
 
         /**
+         * @brief Reflect object
+         * @param normal    Normal of the line through which to reflect
+         *      (normalized)
+         * @param type      Transformation type
+         * @return Pointer to self (for method chaining)
+         *
+         * Same as calling transform() with Matrix3::reflection().
+         */
+        inline MatrixTransformation2D<T>* reflect(const Math::Vector2<T>& normal, TransformationType type = TransformationType::Global) {
+            transform(Math::Matrix3<T>::reflection(normal), type);
+            return this;
+        }
+
+        /**
          * @brief Move object in stacking order
          * @param under     Sibling object under which to move or `nullptr`,
          *      if you want to move it above all.
          * @return Pointer to self (for method chaining)
          */
         inline MatrixTransformation2D<T>* move(Object<MatrixTransformation2D<T>>* under) {
-            static_cast<Object<MatrixTransformation2D>*>(this)->Corrade::Containers::LinkedList<Object<MatrixTransformation2D<T>>>::move(this, under);
+            static_cast<Object<MatrixTransformation2D>*>(this)->Corrade::Containers::template LinkedList<Object<MatrixTransformation2D<T>>>::move(this, under);
             return this;
         }
 
     protected:
         /* Allow construction only from Object */
-        inline MatrixTransformation2D() {}
+        inline explicit MatrixTransformation2D() = default;
 
     private:
         Math::Matrix3<T> _transformation;

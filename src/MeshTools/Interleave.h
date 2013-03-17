@@ -1,18 +1,27 @@
 #ifndef Magnum_MeshTools_Interleave_h
 #define Magnum_MeshTools_Interleave_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -39,7 +48,7 @@ class Interleave {
         template<class ...T> std::tuple<std::size_t, std::size_t, char*> operator()(const T&... attributes) {
             /* Compute buffer size and stride */
             _attributeCount = attributeCount(attributes...);
-            if(_attributeCount) {
+            if(_attributeCount && _attributeCount != ~std::size_t(0)) {
                 _stride = stride(attributes...);
 
                 /* Create output buffer */
@@ -62,29 +71,55 @@ class Interleave {
         }
 
         /* Specialization for only one attribute array */
-        template<class T> void operator()(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const T& attribute) {
+        template<class T> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, void>::type operator()(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const T& attribute) {
             mesh->setVertexCount(attribute.size());
             buffer->setData(attribute, usage);
         }
 
-        template<class T, class ...U> inline static std::size_t attributeCount(const T& first, const U&... next) {
-            CORRADE_ASSERT(sizeof...(next) == 0 || attributeCount(next...) == first.size(), "MeshTools::interleave(): attribute arrays don't have the same length, nothing done.", 0);
+        template<class T, class ...U> inline static typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type attributeCount(const T& first, const U&... next) {
+            CORRADE_ASSERT(sizeof...(next) == 0 || attributeCount(next...) == first.size() || attributeCount(next...) == ~std::size_t(0), "MeshTools::interleave(): attribute arrays don't have the same length, nothing done.", 0);
 
             return first.size();
         }
 
-        template<class T, class ...U> inline static std::size_t stride(const T&, const U&... next) {
+        template<class... T> inline static std::size_t attributeCount(std::size_t, const T&... next) {
+            return attributeCount(next...);
+        }
+
+        template<class ...T> inline static std::size_t attributeCount(std::size_t) {
+            return ~std::size_t(0);
+        }
+
+        template<class T, class ...U> inline static typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type stride(const T&, const U&... next) {
             return sizeof(typename T::value_type) + stride(next...);
         }
 
+        template<class... T> inline static std::size_t stride(std::size_t gap, const T&... next) {
+            return gap + stride(next...);
+        }
+
     private:
-        template<class T, class ...U> void write(char* startingOffset, const T& first, const U&... next) {
-            /* Copy the data to the buffer */
-            auto it = first.begin();
+        template<class T, class ...U> inline void write(char* startingOffset, const T& first, const U&... next) {
+            write(startingOffset+writeOne(startingOffset, first), next...);
+        }
+
+        /* Copy data to the buffer */
+        template<class T>  typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type writeOne(char* startingOffset, const T& attributeList) {
+            auto it = attributeList.begin();
             for(std::size_t i = 0; i != _attributeCount; ++i, ++it)
                 memcpy(startingOffset+i*_stride, reinterpret_cast<const char*>(&*it), sizeof(typename T::value_type));
 
-            write(startingOffset+sizeof(typename T::value_type), next...);
+            return sizeof(typename T::value_type);
+        }
+
+        /* Fill gap with zeros */
+        std::size_t writeOne(char* startingOffset, std::size_t gap) {
+            char* data = new char[gap]();
+            for(std::size_t i = 0; i != _attributeCount; ++i)
+                memcpy(startingOffset+i*_stride, data, gap);
+
+            delete[] data;
+            return gap;
         }
 
         /* Terminator functions for recursive calls */
@@ -102,15 +137,14 @@ class Interleave {
 
 /**
 @brief %Interleave vertex attributes
-@param attribute    First attribute array
-@param attributes   Next attribute arrays
-@return Attribute count, stride and interleaved attribute array. Deleting the
-    array is user responsibility.
 
-This function takes two or more attribute arrays and returns them interleaved,
-so data for each attribute are in continuous place in memory. Size of the data
-buffer can be computed from attribute count and stride, as shown below. Example
-usage:
+This function takes list of attribute arrays and returns them interleaved, so
+data for each attribute are in continuous place in memory. Returned tuple
+contains attribute count, stride and data array. Deleting the data array is up
+to the user.
+
+Size of the data buffer can be computed from attribute count and stride, as
+shown below. Example usage:
 @code
 std::vector<Vector4> positions;
 std::vector<Vector2> textureCoordinates;
@@ -123,28 +157,41 @@ std::size_t dataSize = attributeCount*stride;
 delete[] data;
 @endcode
 
-The only requirements to attribute array type is that it must have typedef
-`T::value_type`, forward iterator (to be used with range-based for) and
-function `size()` returning count of elements. In most cases it will be
-`std::vector` or `std::array`.
+It's often desirable to align data for one vertex on 32bit boundaries. To
+achieve that, you can specify gaps between the attributes:
+@code
+std::vector<Vector4> positions;
+std::vector<GLushort> weights;
+std::vector<Color3<GLubyte>> vertexColors;
+std::size_t attributeCount;
+std::size_t stride;
+char* data;
+std::tie(attributeCount, stride, data) = MeshTools::interleave(positions, weights, 2, textureCoordinates, 1);
+@endcode
+This way vertex stride is 24 bytes, without gaps it would be 21 bytes, causing
+possible performance loss.
+
+@attention The function expects that all arrays have the same size.
+
+@note The only requirements to attribute array type is that it must have
+    typedef `T::value_type`, forward iterator (to be used with range-based
+    for) and function `size()` returning count of elements. In most cases it
+    will be `std::vector` or `std::array`.
 
 See also interleave(Mesh*, Buffer*, Buffer::Usage, const T&...),
 which writes the interleaved array directly into buffer of given mesh.
-
-@attention Each passed array should have the same size, if not, resulting
-    array has zero length.
 */
 /* enable_if to avoid clash with overloaded function below */
-template<class T, class ...U> inline typename std::enable_if<!std::is_convertible<T, Mesh*>::value, std::tuple<std::size_t, std::size_t, char*>>::type interleave(const T& attribute, const U&... attributes) {
-    return Implementation::Interleave()(attribute, attributes...);
+template<class T, class ...U> inline typename std::enable_if<!std::is_convertible<T, Mesh*>::value, std::tuple<std::size_t, std::size_t, char*>>::type interleave(const T& first, const U&... next) {
+    return Implementation::Interleave()(first, next...);
 }
 
 /**
 @brief %Interleave vertex attributes and write them to array buffer
-@param attributes   Attribute arrays
 @param mesh         Output mesh
-@param buffer       Output array buffer
-@param usage        Array buffer usage
+@param buffer       Output vertex buffer
+@param usage        Vertex buffer usage
+@param attributes   Attribute arrays and gaps
 
 The same as interleave(const T&, const U&...), but this function writes the
 output to given array buffer and updates vertex count in the mesh accordingly,

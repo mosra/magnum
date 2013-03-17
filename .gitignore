@@ -2,4 +2,6 @@ build*
 pkg
 *.kdev4
 *~
+*.kate-swp
 *.pkg.tar.xz
+CMakeLists.txt.user*

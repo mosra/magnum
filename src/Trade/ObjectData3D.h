@@ -1,23 +1,34 @@
 #ifndef Magnum_Trade_ObjectData3D_h
 #define Magnum_Trade_ObjectData3D_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
  * @brief Class Magnum::Trade::ObjectData3D
  */
+
+#include <vector>
 
 #include "Math/Matrix4.h"
 #include "Magnum.h"
@@ -48,30 +59,25 @@ class ObjectData3D {
 
         /**
          * @brief Constructor
-         * @param name              Object name
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          * @param instanceType      Instance type
          * @param instanceId        Instance ID
          */
-        inline ObjectData3D(const std::string& name, const std::vector<std::uint32_t>& children, const Matrix4& transformation, InstanceType instanceType, std::uint32_t instanceId): _name(name), _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
+        inline ObjectData3D(const std::vector<UnsignedInt>& children, const Matrix4& transformation, InstanceType instanceType, UnsignedInt instanceId): _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
 
         /**
          * @brief Constructor for empty instance
-         * @param name              Object name
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          */
-        inline ObjectData3D(const std::string& name, const std::vector<std::uint32_t>& children, const Matrix4& transformation): _name(name), _children(children), _transformation(transformation), _instanceType(InstanceType::Empty), _instanceId(-1) {}
+        inline ObjectData3D(const std::vector<UnsignedInt>& children, const Matrix4& transformation): _children(children), _transformation(transformation), _instanceType(InstanceType::Empty), _instanceId(-1) {}
 
         /** @brief Destructor */
         inline virtual ~ObjectData3D() {}
 
-        /** @brief %Object name */
-        inline std::string name() const { return _name; }
-
         /** @brief Child objects */
-        inline std::vector<std::uint32_t>& children() { return _children; }
+        inline std::vector<UnsignedInt>& children() { return _children; }
 
         /** @brief Transformation (relative to parent) */
         inline Matrix4 transformation() const { return _transformation; }
@@ -90,15 +96,17 @@ class ObjectData3D {
          * @return ID of given camera / light / mesh etc., specified by
          *      instanceType()
          */
-        inline std::int32_t instanceId() const { return _instanceId; }
+        inline Int instanceId() const { return _instanceId; }
 
     private:
-        std::string _name;
-        std::vector<std::uint32_t> _children;
+        std::vector<UnsignedInt> _children;
         Matrix4 _transformation;
         InstanceType _instanceType;
-        std::int32_t _instanceId;
+        Int _instanceId;
 };
+
+/** @debugoperator{Magnum::Trade::ObjectData3D} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, ObjectData3D::InstanceType value);
 
 }}
 

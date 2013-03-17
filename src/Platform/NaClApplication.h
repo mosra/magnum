@@ -1,18 +1,27 @@
 #ifndef Magnum_Platform_NaClApplication_h
 #define Magnum_Platform_NaClApplication_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -44,7 +53,8 @@ namespace Magnum { namespace Platform {
 @brief NaCl application
 
 Application running in [Google Chrome Native Client](https://developers.google.com/native-client/).
-Supports keyboard and mouse handling.
+Creates double-buffered RGBA canvas with depth and stencil buffers. Supports
+keyboard and mouse handling.
 
 @section NaClApplication-usage Usage
 
@@ -69,10 +79,8 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
          * @brief Constructor
          * @param instance  Module instance
          * @param size      Rendering size
-         *
-         * Creates double-buffered RGBA canvas with depth and stencil buffers.
          */
-        explicit NaClApplication(PP_Instance instance, const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(640, 480));
+        explicit NaClApplication(PP_Instance instance, const Vector2i& size = Vector2i(640, 480));
 
         ~NaClApplication();
 
@@ -94,7 +102,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         /** @{ @name Drawing functions */
 
         /** @copydoc GlutApplication::viewportEvent() */
-        virtual void viewportEvent(const Math::Vector2<GLsizei>& size) = 0;
+        virtual void viewportEvent(const Vector2i& size) = 0;
 
         /** @copydoc GlutApplication::drawEvent() */
         virtual void drawEvent() = 0;
@@ -177,7 +185,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         /*@}*/
 
     private:
-        enum class Flag: std::uint8_t {
+        enum class Flag: UnsignedByte {
             ViewportUpdated = 1 << 0,
             SwapInProgress = 1 << 1,
             Redraw = 1 << 2,
@@ -185,7 +193,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
             WillBeFullscreen = 1 << 4,
             MouseLocked = 1 << 5
         };
-        typedef Corrade::Containers::EnumSet<Flag, std::uint8_t> Flags;
+        typedef Corrade::Containers::EnumSet<Flag, UnsignedByte> Flags;
 
         inline void Graphics3DContextLost() override {
             CORRADE_ASSERT(false, "NaClApplication: context unexpectedly lost", );
@@ -205,7 +213,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         pp::Graphics3D* graphics;
         pp::Fullscreen* fullscreen;
         Context* c;
-        Math::Vector2<GLsizei> viewportSize;
+        Vector2i viewportSize;
         Flags flags;
 
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
@@ -262,7 +270,8 @@ class NaClApplication::InputEvent {
          * @brief Set event as accepted
          *
          * If the event is ignored (i.e., not set as accepted), it is
-         * propagated to the browser. By default is each event ignored.
+         * propagated elsewhere (e.g. to the browser). By default is each
+         * event ignored.
          */
         inline void setAccepted(bool accepted = true) { _accepted = accepted; }
 
@@ -399,13 +408,13 @@ class NaClApplication::MouseEvent: public NaClApplication::InputEvent {
         inline Button button() const { return _button; }
 
         /** @brief Position */
-        inline Math::Vector2<int> position() const { return _position; }
+        inline Vector2i position() const { return _position; }
 
     private:
-        inline MouseEvent(Button button, const Math::Vector2<int>& position, Modifiers modifiers): InputEvent(modifiers), _button(button), _position(position) {}
+        inline MouseEvent(Button button, const Vector2i& position, Modifiers modifiers): InputEvent(modifiers), _button(button), _position(position) {}
 
         const Button _button;
-        const Math::Vector2<int> _position;
+        const Vector2i _position;
 };
 
 /**
@@ -419,19 +428,19 @@ class NaClApplication::MouseMoveEvent: public NaClApplication::InputEvent {
 
     public:
         /** @brief Position */
-        inline Math::Vector2<int> position() const { return _position; }
+        inline Vector2i position() const { return _position; }
 
         /**
          * @brief Relative position
          *
          * Position relative to previous event.
          */
-        inline Math::Vector2<int> relativePosition() const { return _relativePosition; }
+        inline Vector2i relativePosition() const { return _relativePosition; }
 
     private:
-        inline MouseMoveEvent(const Math::Vector2<int>& position, const Math::Vector2<int>& relativePosition, Modifiers modifiers): InputEvent(modifiers), _position(position), _relativePosition(relativePosition) {}
+        inline MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition, Modifiers modifiers): InputEvent(modifiers), _position(position), _relativePosition(relativePosition) {}
 
-        const Math::Vector2<int> _position, _relativePosition;
+        const Vector2i _position, _relativePosition;
 };
 
 CORRADE_ENUMSET_OPERATORS(NaClApplication::Flags)

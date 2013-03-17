@@ -1,29 +1,37 @@
 #ifndef Magnum_Physics_ObjectShapeGroup_h
 #define Magnum_Physics_ObjectShapeGroup_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
- * @brief Class Magnum::Physics::ObjectShapeGroup
+ * @brief Class Magnum::Physics::ObjectShapeGroup, typedef Magnum::Physics::ObjectShapeGroup2D, Magnum::Physics::ObjectShapeGroup3D
  */
 
-#include <cstdint>
 #include <vector>
 
+#include "Physics/ObjectShape.h"
 #include "SceneGraph/FeatureGroup.h"
-#include "Physics.h"
 
 #include "magnumPhysicsVisibility.h"
 
@@ -32,9 +40,10 @@ namespace Magnum { namespace Physics {
 /**
 @brief Group of object shapes
 
-@see ObjectShapeGroup2D, ObjectShapeGroup3D
+See ObjectShape for more information.
+@see @ref scenegraph, ObjectShapeGroup2D, ObjectShapeGroup3D
 */
-template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShapeGroup: public SceneGraph::FeatureGroup<dimensions, ObjectShape<dimensions>> {
+template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShapeGroup: public SceneGraph::FeatureGroup<dimensions, ObjectShape<dimensions>> {
     friend class ObjectShape<dimensions>;
 
     public:
@@ -43,7 +52,7 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShapeGroup: 
          *
          * Marks the group as dirty.
          */
-        inline ObjectShapeGroup(): dirty(true) {}
+        inline explicit ObjectShapeGroup(): dirty(true) {}
 
         /**
          * @brief Whether the group is dirty
@@ -70,19 +79,35 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShapeGroup: 
          */
         void setClean();
 
+        /**
+         * @brief First collision of given shape with other shapes in the group
+         *
+         * Returns first shape colliding with given one. If there aren't any
+         * collisions, returns `nullptr`. Calls setClean() before the
+         * operation.
+         */
+        ObjectShape<dimensions>* firstCollision(const ObjectShape<dimensions>* shape);
+
     private:
         bool dirty;
 };
 
-/** @brief Group of two-dimensional shaped objects */
+/**
+@brief Group of two-dimensional shaped objects
+
+See ObjectShape for more information.
+@see ObjectShapeGroup3D
+*/
 typedef ObjectShapeGroup<2> ObjectShapeGroup2D;
 
-/** @brief Group of three-dimensional shaped objects */
+/**
+@brief Group of three-dimensional shaped objects
+
+See ObjectShape for more information.
+@see ObjectShapeGroup2D
+*/
 typedef ObjectShapeGroup<3> ObjectShapeGroup3D;
 
 }}
-
-/* Make the definition complete */
-#include "ObjectShape.h"
 
 #endif

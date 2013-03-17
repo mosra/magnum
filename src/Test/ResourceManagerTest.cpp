@@ -1,33 +1,50 @@
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
-#include "ResourceManagerTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 
 #include "AbstractResourceLoader.h"
 #include "ResourceManager.h"
 
 #include "corradeCompatibility.h"
 
-using namespace std;
-using namespace Corrade::Utility;
-
-CORRADE_TEST_MAIN(Magnum::Test::ResourceManagerTest)
-
 namespace Magnum { namespace Test {
+
+class ResourceManagerTest: public Corrade::TestSuite::Tester {
+    public:
+        ResourceManagerTest();
+
+        void state();
+        void stateFallback();
+        void stateDisallowed();
+        void basic();
+        void residentPolicy();
+        void referenceCountedPolicy();
+        void manualPolicy();
+        void loader();
+};
 
 class Data {
     public:
@@ -37,16 +54,16 @@ class Data {
         inline ~Data() { --count; }
 };
 
-typedef Magnum::ResourceManager<int32_t, Data> ResourceManager;
+typedef Magnum::ResourceManager<Int, Data> ResourceManager;
 
-class IntResourceLoader: public AbstractResourceLoader<std::int32_t> {
+class IntResourceLoader: public AbstractResourceLoader<Int> {
     public:
         void load(ResourceKey key) override {
             AbstractResourceLoader::load(key);
         }
 
         void load() {
-            set("hello", new std::int32_t(773), ResourceDataState::Final, ResourcePolicy::Resident);
+            set("hello", new Int(773), ResourceDataState::Final, ResourcePolicy::Resident);
             setNotFound("world");
         }
 };
@@ -54,14 +71,14 @@ class IntResourceLoader: public AbstractResourceLoader<std::int32_t> {
 size_t Data::count = 0;
 
 ResourceManagerTest::ResourceManagerTest() {
-    addTests(&ResourceManagerTest::state,
-             &ResourceManagerTest::stateFallback,
-             &ResourceManagerTest::stateDisallowed,
-             &ResourceManagerTest::basic,
-             &ResourceManagerTest::residentPolicy,
-             &ResourceManagerTest::referenceCountedPolicy,
-             &ResourceManagerTest::manualPolicy,
-             &ResourceManagerTest::loader);
+    addTests({&ResourceManagerTest::state,
+              &ResourceManagerTest::stateFallback,
+              &ResourceManagerTest::stateDisallowed,
+              &ResourceManagerTest::basic,
+              &ResourceManagerTest::residentPolicy,
+              &ResourceManagerTest::referenceCountedPolicy,
+              &ResourceManagerTest::manualPolicy,
+              &ResourceManagerTest::loader});
 }
 
 void ResourceManagerTest::state() {
@@ -117,14 +134,14 @@ void ResourceManagerTest::stateFallback() {
 void ResourceManagerTest::stateDisallowed() {
     ResourceManager rm;
 
-    stringstream out;
+    std::ostringstream out;
     Error::setOutput(&out);
 
     Data d;
     rm.set("data", &d, ResourceDataState::Loading, ResourcePolicy::Resident);
     CORRADE_COMPARE(out.str(), "ResourceManager::set(): data should be null if and only if state is NotFound or Loading\n");
 
-    out.str("");
+    out.str({});
     rm.set<Data>("data", nullptr, ResourceDataState::Final, ResourcePolicy::Resident);
     CORRADE_COMPARE(out.str(), "ResourceManager::set(): data should be null if and only if state is NotFound or Loading\n");
 }
@@ -135,27 +152,27 @@ void ResourceManagerTest::basic() {
     /* One mutable, one final */
     ResourceKey questionKey("the-question");
     ResourceKey answerKey("the-answer");
-    rm.set(questionKey, new int32_t(10), ResourceDataState::Mutable, ResourcePolicy::Resident);
-    rm.set(answerKey, new int32_t(42), ResourceDataState::Final, ResourcePolicy::Resident);
-    Resource<int32_t> theQuestion = rm.get<int32_t>(questionKey);
-    Resource<int32_t> theAnswer = rm.get<int32_t>(answerKey);
+    rm.set(questionKey, new Int(10), ResourceDataState::Mutable, ResourcePolicy::Resident);
+    rm.set(answerKey, new Int(42), ResourceDataState::Final, ResourcePolicy::Resident);
+    Resource<Int> theQuestion = rm.get<Int>(questionKey);
+    Resource<Int> theAnswer = rm.get<Int>(answerKey);
 
     /* Check basic functionality */
     CORRADE_COMPARE(theQuestion.state(), ResourceState::Mutable);
     CORRADE_COMPARE(theAnswer.state(), ResourceState::Final);
     CORRADE_COMPARE(*theQuestion, 10);
     CORRADE_COMPARE(*theAnswer, 42);
-    CORRADE_COMPARE(rm.count<int32_t>(), 2);
+    CORRADE_COMPARE(rm.count<Int>(), 2);
 
     /* Cannot change already final resource */
-    stringstream out;
+    std::ostringstream out;
     Error::setOutput(&out);
-    rm.set(answerKey, new int32_t(43), ResourceDataState::Mutable, ResourcePolicy::Resident);
+    rm.set(answerKey, new Int(43), ResourceDataState::Mutable, ResourcePolicy::Resident);
     CORRADE_COMPARE(*theAnswer, 42);
-    CORRADE_COMPARE(out.str(), "ResourceManager::set(): cannot change already final resource\n");
+    CORRADE_COMPARE(out.str(), "ResourceManager::set(): cannot change already final resource " + answerKey.hexString() + '\n');
 
     /* But non-final can be changed */
-    rm.set(questionKey, new int32_t(20), ResourceDataState::Final, ResourcePolicy::Resident);
+    rm.set(questionKey, new Int(20), ResourceDataState::Final, ResourcePolicy::Resident);
     CORRADE_COMPARE(theQuestion.state(), ResourceState::Final);
     CORRADE_COMPARE(*theQuestion, 20);
 }
@@ -227,8 +244,8 @@ void ResourceManagerTest::loader() {
     rm.setLoader(&loader);
 
     Resource<Data> data = rm.get<Data>("data");
-    Resource<std::int32_t> hello = rm.get<std::int32_t>("hello");
-    Resource<std::int32_t> world = rm.get<std::int32_t>("world");
+    Resource<Int> hello = rm.get<Int>("hello");
+    Resource<Int> world = rm.get<Int>("world");
     CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
     CORRADE_COMPARE(hello.state(), ResourceState::Loading);
     CORRADE_COMPARE(world.state(), ResourceState::Loading);
@@ -240,3 +257,5 @@ void ResourceManagerTest::loader() {
 }
 
 }}
+
+CORRADE_TEST_MAIN(Magnum::Test::ResourceManagerTest)

@@ -1,16 +1,25 @@
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 #include "AbstractXApplication.h"
@@ -25,11 +34,9 @@
 /* Mask for X events */
 #define INPUT_MASK KeyPressMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|PointerMotionMask|StructureNotifyMask
 
-using namespace std;
-
 namespace Magnum { namespace Platform {
 
-AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int&, char**, const string& title, const Math::Vector2<GLsizei>& size): contextHandler(contextHandler), viewportSize(size), flags(Flag::Redraw) {
+AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int&, char**, const std::string& title, const Vector2i& size): contextHandler(contextHandler), viewportSize(size), flags(Flag::Redraw) {
     /* Get default X display */
     display = XOpenDisplay(0);
 
@@ -108,7 +115,7 @@ int AbstractXApplication::exec() {
             switch(event.type) {
                 /* Window resizing */
                 case ConfigureNotify: {
-                    Math::Vector2<GLsizei> size(event.xconfigure.width, event.xconfigure.height);
+                    Vector2i size(event.xconfigure.width, event.xconfigure.height);
                     if(size != viewportSize) {
                         viewportSize = size;
                         viewportEvent(size);
@@ -118,22 +125,21 @@ int AbstractXApplication::exec() {
 
                 /* Key/mouse events */
                 case KeyPress:
-                    keyPressEvent(static_cast<Key>(XLookupKeysym(&event.xkey, 0)), static_cast<Modifier>(event.xkey.state), {event.xkey.x, event.xkey.y});
-                    break;
-                case KeyRelease:
-                    keyReleaseEvent(static_cast<Key>(XLookupKeysym(&event.xkey, 0)), static_cast<Modifier>(event.xkey.state), {event.xkey.x, event.xkey.y});
-                    break;
+                case KeyRelease: {
+                    KeyEvent e(static_cast<KeyEvent::Key>(XLookupKeysym(&event.xkey, 0)), static_cast<InputEvent::Modifier>(event.xkey.state), {event.xkey.x, event.xkey.y});
+                    event.type == KeyPress ? keyPressEvent(e) : keyReleaseEvent(e);
+                } break;
                 case ButtonPress:
-                    mousePressEvent(static_cast<MouseButton>(event.xbutton.button), static_cast<Modifier>(event.xkey.state), {event.xbutton.x, event.xbutton.y});
-                    break;
-                case ButtonRelease:
-                    mouseReleaseEvent(static_cast<MouseButton>(event.xbutton.button), static_cast<Modifier>(event.xkey.state), {event.xbutton.x, event.xbutton.y});
-                    break;
+                case ButtonRelease: {
+                    MouseEvent e(static_cast<MouseEvent::Button>(event.xbutton.button), static_cast<InputEvent::Modifier>(event.xkey.state), {event.xbutton.x, event.xbutton.y});
+                    event.type == ButtonPress ? mousePressEvent(e) : mouseReleaseEvent(e);
+                } break;
 
                 /* Mouse move events */
-                case MotionNotify:
-                    mouseMotionEvent(static_cast<Modifier>(event.xmotion.state), {event.xmotion.x, event.xmotion.y});
-                    break;
+                case MotionNotify: {
+                    MouseMoveEvent e(static_cast<InputEvent::Modifier>(event.xmotion.state), {event.xmotion.x, event.xmotion.y});
+                    mouseMoveEvent(e);
+                } break;
             }
         }
 

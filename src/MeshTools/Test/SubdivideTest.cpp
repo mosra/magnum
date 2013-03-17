@@ -1,55 +1,86 @@
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
-#include "SubdivideTest.h"
-
 #include <sstream>
+#include <TestSuite/Tester.h>
 
 #include "MeshTools/Clean.h"
 #include "MeshTools/Subdivide.h"
 
-CORRADE_TEST_MAIN(Magnum::MeshTools::Test::SubdivideTest)
-
-using namespace std;
-
 namespace Magnum { namespace MeshTools { namespace Test {
 
+class SubdivideTest: public Corrade::TestSuite::Tester {
+    public:
+        SubdivideTest();
+
+        void wrongIndexCount();
+        void subdivide();
+
+    private:
+        class Vector1 {
+            public:
+                static const std::size_t Size = 1;
+                typedef Int Type;
+
+                Vector1(): data(0) {}
+                Vector1(Type i): data(i) {}
+                Type operator[](std::size_t) const { return data; }
+                Type& operator[](std::size_t) { return data; }
+                bool operator==(Vector1 i) const { return i.data == data; }
+                Vector1 operator-(Vector1 i) const { return data-i.data; }
+
+            private:
+                Type data;
+        };
+
+        inline static Vector1 interpolator(Vector1 a, Vector1 b) { return (a[0]+b[0])/2; }
+};
+
 SubdivideTest::SubdivideTest() {
-    addTests(&SubdivideTest::wrongIndexCount,
-             &SubdivideTest::subdivide);
+    addTests({&SubdivideTest::wrongIndexCount,
+              &SubdivideTest::subdivide});
 }
 
 void SubdivideTest::wrongIndexCount() {
-    stringstream ss;
+    std::stringstream ss;
     Error::setOutput(&ss);
 
-    vector<Vector1> positions;
-    vector<uint32_t> indices{0, 1};
+    std::vector<Vector1> positions;
+    std::vector<UnsignedInt> indices{0, 1};
     MeshTools::subdivide(indices, positions, interpolator);
     CORRADE_COMPARE(ss.str(), "MeshTools::subdivide(): index count is not divisible by 3!\n");
 }
 
 void SubdivideTest::subdivide() {
-    vector<Vector1> positions{0, 2, 6, 8};
-    vector<uint32_t> indices{0, 1, 2, 1, 2, 3};
+    std::vector<Vector1> positions{0, 2, 6, 8};
+    std::vector<UnsignedInt> indices{0, 1, 2, 1, 2, 3};
     MeshTools::subdivide(indices, positions, interpolator);
 
     CORRADE_COMPARE(indices.size(), 24);
 
-    CORRADE_VERIFY(positions == (vector<Vector1>{0, 2, 6, 8, 1, 4, 3, 4, 7, 5}));
-    CORRADE_COMPARE(indices, (vector<uint32_t>{4, 5, 6, 7, 8, 9, 0, 4, 6, 4, 1, 5, 6, 5, 2, 1, 7, 9, 7, 2, 8, 9, 8, 3}));
+    CORRADE_VERIFY(positions == (std::vector<Vector1>{0, 2, 6, 8, 1, 4, 3, 4, 7, 5}));
+    CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{4, 5, 6, 7, 8, 9, 0, 4, 6, 4, 1, 5, 6, 5, 2, 1, 7, 9, 7, 2, 8, 9, 8, 3}));
 
     MeshTools::clean(indices, positions);
 
@@ -58,3 +89,5 @@ void SubdivideTest::subdivide() {
 }
 
 }}}
+
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::SubdivideTest)

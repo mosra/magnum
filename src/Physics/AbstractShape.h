@@ -1,22 +1,31 @@
 #ifndef Magnum_Physics_AbstractShape_h
 #define Magnum_Physics_AbstractShape_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
- * @brief Class Magnum::Physics::AbstractShape
+ * @brief Class Magnum::Physics::AbstractShape, typedef Magnum::Physics::AbstractShape2D, Magnum::Physics::AbstractShape3D
  */
 
 #include "Magnum.h"
@@ -28,7 +37,7 @@ namespace Magnum { namespace Physics {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    template<std::uint8_t dimensions> struct ShapeDimensionTraits {};
+    template<UnsignedInt dimensions> struct ShapeDimensionTraits {};
 
     template<> struct ShapeDimensionTraits<2> {
         enum class Type {
@@ -56,6 +65,9 @@ namespace Implementation {
             Plane
         };
     };
+
+    Debug MAGNUM_PHYSICS_EXPORT operator<<(Debug debug, ShapeDimensionTraits<2>::Type value);
+    Debug MAGNUM_PHYSICS_EXPORT operator<<(Debug debug, ShapeDimensionTraits<3>::Type value);
 }
 #endif
 
@@ -65,10 +77,10 @@ namespace Implementation {
 See @ref collision-detection for brief introduction.
 @see AbstractShape2D, AbstractShape3D
 */
-template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT AbstractShape {
+template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT AbstractShape {
     public:
         /** @brief Dimension count */
-        static const std::uint8_t Dimensions = dimensions;
+        static const UnsignedInt Dimensions = dimensions;
 
         /**
          * @brief Shape type
@@ -93,7 +105,7 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT AbstractShape {
         typedef typename Implementation::ShapeDimensionTraits<dimensions>::Type Type;
         #endif
 
-        /** @brief Destructor */
+        explicit AbstractShape() = default;
         virtual inline ~AbstractShape() {}
 
         /** @brief Shape type */
@@ -118,18 +130,16 @@ template<std::uint8_t dimensions> class MAGNUM_PHYSICS_EXPORT AbstractShape {
         virtual bool collides(const AbstractShape<dimensions>* other) const;
 };
 
+
 /** @brief Abstract two-dimensional shape */
 typedef AbstractShape<2> AbstractShape2D;
 
 /** @brief Abstract three-dimensional shape */
 typedef AbstractShape<3> AbstractShape3D;
 
+#ifdef DOXYGEN_GENERATING_OUTPUT
 /** @debugoperator{Magnum::Physics::AbstractShape} */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-Debug MAGNUM_PHYSICS_EXPORT operator<<(Debug debug, AbstractShape2D::Type value);
-Debug MAGNUM_PHYSICS_EXPORT operator<<(Debug debug, AbstractShape3D::Type value);
-#else
-template<std::uint8_t dimensions> Debug operator<<(Debug debug, typename AbstractShape<dimensions>::Type value);
+template<UnsignedInt dimensions> Debug operator<<(Debug debug, typename AbstractShape<dimensions>::Type value);
 #endif
 
 }}

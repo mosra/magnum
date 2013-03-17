@@ -1,7 +1,37 @@
+#
+#   This file is part of Magnum.
+#
+#   Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+#
+#   Permission is hereby granted, free of charge, to any person obtaining a
+#   copy of this software and associated documentation files (the "Software"),
+#   to deal in the Software without restriction, including without limitation
+#   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+#   and/or sell copies of the Software, and to permit persons to whom the
+#   Software is furnished to do so, subject to the following conditions:
+#
+#   The above copyright notice and this permission notice shall be included
+#   in all copies or substantial portions of the Software.
+#
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+#   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+#   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+#   DEALINGS IN THE SOFTWARE.
+#
+
 # Files shared between main library and unit test library
 set(MagnumMeshTools_SRCS
     CompressIndices.cpp
     Tipsify.cpp)
+
+# Files compiled with different flags for main library and unit test library
+set(MagnumMeshTools_GracefulAssert_SRCS
+    FlipNormals.cpp
+    GenerateFlatNormals.cpp)
+
 set(MagnumMeshTools_HEADERS
     Clean.h
     CombineIndexedArrays.h
@@ -14,50 +44,27 @@ set(MagnumMeshTools_HEADERS
     Transform.h
 
     magnumMeshToolsVisibility.h)
-if(NOT CMAKE_NO_OBJECT_TARGET)
-    add_library(MagnumMeshToolsObjects OBJECT ${MagnumMeshTools_SRCS})
-endif()
 
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
-if(NOT CMAKE_NO_OBJECT_TARGET)
-    set_target_properties(MagnumMeshToolsObjects PROPERTIES COMPILE_FLAGS "-DMagnumMeshToolsObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
-endif()
-
-# Files compiled with different flags for main library and unit test library
-set(MagnumMeshTools_GracefulAssert_SRCS
-    FlipNormals.cpp
-    GenerateFlatNormals.cpp)
+add_library(MagnumMeshToolsObjects OBJECT ${MagnumMeshTools_SRCS})
+set_target_properties(MagnumMeshToolsObjects PROPERTIES COMPILE_FLAGS "-DMagnumMeshToolsObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
 # Main library
-if(NOT CMAKE_NO_OBJECT_TARGET)
-    add_library(MagnumMeshTools SHARED
-        $<TARGET_OBJECTS:MagnumMeshToolsObjects>
-        ${MagnumMeshTools_GracefulAssert_SRCS})
-else()
-    add_library(MagnumMeshTools SHARED
-        ${MagnumMeshTools_SRCS}
-        ${MagnumMeshTools_GracefulAssert_SRCS})
-endif()
+add_library(MagnumMeshTools SHARED
+    $<TARGET_OBJECTS:MagnumMeshToolsObjects>
+    ${MagnumMeshTools_GracefulAssert_SRCS})
 target_link_libraries(MagnumMeshTools Magnum)
 
 install(TARGETS MagnumMeshTools DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumMeshTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/MeshTools)
 
 if(BUILD_TESTS)
-    enable_testing()
-
     # Library with graceful assert for testing
-    if(NOT CMAKE_NO_OBJECT_TARGET)
-        add_library(MagnumMeshToolsTestLib SHARED
-            $<TARGET_OBJECTS:MagnumMeshToolsObjects>
-            ${MagnumMeshTools_GracefulAssert_SRCS})
-    else()
-        add_library(MagnumMeshToolsTestLib SHARED
-            ${MagnumMeshTools_SRCS}
-            ${MagnumMeshTools_GracefulAssert_SRCS})
-    endif()
-    set_target_properties(MagnumMeshToolsTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
+    add_library(MagnumMeshToolsTestLib SHARED
+        $<TARGET_OBJECTS:MagnumMeshToolsObjects>
+        ${MagnumMeshTools_GracefulAssert_SRCS})
+    set_target_properties(MagnumMeshToolsTestLib PROPERTIES COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT -DMagnumMeshTools_EXPORTS")
     target_link_libraries(MagnumMeshToolsTestLib Magnum)
 
     add_subdirectory(Test)

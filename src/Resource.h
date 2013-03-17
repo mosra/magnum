@@ -1,24 +1,34 @@
 #ifndef Magnum_Resource_h
 #define Magnum_Resource_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file /Resource.h
  * @brief Class Magnum::ResourceKey, Magnum::Resource, enum Magnum::ResourceState
  */
 
+#include <Utility/Assert.h>
 #include <Utility/MurmurHash2.h>
 
 #include "Magnum.h"
@@ -32,7 +42,7 @@ namespace Magnum {
  *
  * @see Resource::state(), ResourceManager::state()
  */
-enum class ResourceState: std::uint8_t {
+enum class ResourceState: UnsignedByte {
     /** The resource is not yet loaded (and no fallback is available). */
     NotLoaded,
 
@@ -64,6 +74,7 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, ResourceState value);
 /**
 @brief Key for accessing resource
 
+See ResourceManager for more information.
 @see ResourceManager::referenceCount(), ResourceManager::state(),
     ResourceManager::get(), ResourceManager::set(), Resource::key()
 */
@@ -88,7 +99,7 @@ class ResourceKey: public Corrade::Utility::MurmurHash2::Digest {
 };
 
 /** @debugoperator{Magnum::ResourceKey} */
-inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const ResourceKey& value) {
+inline Debug operator<<(Debug debug, const ResourceKey& value) {
     return debug << static_cast<const Corrade::Utility::HashDigest<sizeof(std::size_t)>&>(value);
 }
 
@@ -118,7 +129,7 @@ class Resource {
          * Creates empty resource. Resources are acquired from the manager by
          * calling ResourceManager::get().
          */
-        inline Resource(): manager(nullptr), lastCheck(0), _state(ResourceState::Final), data(nullptr) {}
+        inline explicit Resource(): manager(nullptr), lastCheck(0), _state(ResourceState::Final), data(nullptr) {}
 
         /** @brief Copy constructor */
         inline Resource(const Resource<T, U>& other): manager(other.manager), _key(other._key), lastCheck(other.lastCheck), _state(other._state), data(other.data) {

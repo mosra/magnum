@@ -1,18 +1,27 @@
 #ifndef Magnum_SceneGraph_AbstractTransformation_h
 #define Magnum_SceneGraph_AbstractTransformation_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -24,6 +33,8 @@
 #include "DimensionTraits.h"
 #include "SceneGraph.h"
 
+#include "SceneGraph/magnumSceneGraphVisibility.h"
+
 namespace Magnum { namespace SceneGraph {
 
 /**
@@ -34,26 +45,27 @@ for introduction.
 
 @section AbstractTransformation-subclassing Subclassing
 
-When sublassing, you have to:
+When subclassing, you have to:
 
-- Implement all members described in **Subclass implementation** group above
+- Implement all members listed in **Subclass implementation** group above
 - Provide implicit (parameterless) constructor
 
-@see AbstractTransformation2D, AbstractTransformation3D
+@see @ref scenegraph, AbstractTransformation2D, AbstractTransformation3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class T>
+template<UnsignedInt dimensions, class T>
 #else
-template<std::uint8_t dimensions, class T = GLfloat>
+template<UnsignedInt dimensions, class T = Float>
 #endif
-class AbstractTransformation {
+class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation {
     public:
         /** @brief Underlying floating-point type */
         typedef T Type;
 
         /** @brief Dimension count */
-        static const std::uint8_t Dimensions = dimensions;
+        static const UnsignedInt Dimensions = dimensions;
 
+        explicit AbstractTransformation();
         virtual ~AbstractTransformation() = 0;
 
         #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -125,10 +137,16 @@ class AbstractTransformation {
 
         /*@}*/
         #endif
+
+        /**
+         * @brief Reset object transformation
+         * @return Pointer to self (for method chaining)
+         */
+        virtual AbstractTransformation<dimensions, T>* resetTransformation() = 0;
 };
 
 /** @brief Transformation type */
-enum class TransformationType: std::uint8_t {
+enum class TransformationType: UnsignedByte {
     /** Global transformation, applied after all other transformations. */
     Global = 0x00,
 
@@ -136,8 +154,7 @@ enum class TransformationType: std::uint8_t {
     Local = 0x01
 };
 
-template<std::uint8_t dimensions, class T> inline AbstractTransformation<dimensions, T>::~AbstractTransformation() {}
-
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base for two-dimensional transformations
 
@@ -146,15 +163,13 @@ AbstractTransformation for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractTransformation<2, T></tt>
     instead.
 @see AbstractTransformation3D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = GLfloat> using AbstractTransformation2D = AbstractTransformation<2, T>;
-#endif
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = Float>
 #else
-typedef AbstractTransformation<2, T = GLfloat> AbstractTransformation2D;
+template<class T>
 #endif
+using AbstractTransformation2D = AbstractTransformation<2, T>;
 
 /**
 @brief Base for three-dimensional transformations
@@ -164,14 +179,13 @@ AbstractTransformation for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractTransformation<3, T></tt>
     instead.
 @see AbstractTransformation2D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = GLfloat> using AbstractTransformation3D = AbstractTransformation<3, T>;
-#endif
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = Float>
 #else
-typedef AbstractTransformation<3, T = GLfloat> AbstractTransformation3D;
+template<class T>
+#endif
+using AbstractTransformation3D = AbstractTransformation<3, T>;
 #endif
 
 }}

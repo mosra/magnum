@@ -1,18 +1,27 @@
 #ifndef Magnum_Query_h
 #define Magnum_Query_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -20,7 +29,7 @@
  */
 
 #include "Magnum.h"
-
+#include "OpenGL.h"
 #include "magnumVisibility.h"
 
 namespace Magnum {
@@ -40,7 +49,7 @@ class MAGNUM_EXPORT AbstractQuery {
          * Generates one OpenGL query.
          * @see @fn_gl{GenQueries}
          */
-        inline AbstractQuery() {
+        inline explicit AbstractQuery() {
             /** @todo Get some extension wrangler instead to avoid undeclared glGenQueries() on ES2 */
             #ifndef MAGNUM_TARGET_GLES2
             glGenQueries(1, &_id);
@@ -72,15 +81,17 @@ class MAGNUM_EXPORT AbstractQuery {
 
         /**
          * @brief Result
-         * @tparam T Result type. Can be either `bool`, `GLuint`,
-         *      `GLint`, `GLuint64` or `GLint64`.
+         * @tparam T Result type. Can be either `bool`, @ref UnsignedInt,
+         *      @ref Int, @ref UnsignedLong or @ref Long.
          *
          * Note that this function is blocking until the result is available.
          * See resultAvailable().
          * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT}
-         * @requires_gl33 Extension @extension{ARB,timer_query} (result type `GLuint64` and `GLint64`)
-         * @requires_gl Result types @c GLint, @c GLuint64 and @c GLint64 are
-         *      not available in OpenGL ES.
+         * @requires_gl33 %Extension @extension{ARB,timer_query} (result type
+         *      @ref Magnum::UnsignedInt "UnsignedInt" and @ref Magnum::Long
+         *      "Long")
+         * @requires_gl Result types @ref Magnum::Int "Int", @ref Magnum::UnsignedLong "UnsignedLong"
+         *      and @ref Magnum::Long "Long" are not available in OpenGL ES.
          */
         template<class T> T result();
 
@@ -91,11 +102,11 @@ class MAGNUM_EXPORT AbstractQuery {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> bool MAGNUM_EXPORT AbstractQuery::result<bool>();
-template<> GLuint MAGNUM_EXPORT AbstractQuery::result<GLuint>();
+template<> UnsignedInt MAGNUM_EXPORT AbstractQuery::result<UnsignedInt>();
 #ifndef MAGNUM_TARGET_GLES
-template<> GLint MAGNUM_EXPORT AbstractQuery::result<GLint>();
-template<> GLuint64 MAGNUM_EXPORT AbstractQuery::result<GLuint64>();
-template<> GLint64 MAGNUM_EXPORT AbstractQuery::result<GLint64>();
+template<> Int MAGNUM_EXPORT AbstractQuery::result<Int>();
+template<> UnsignedLong MAGNUM_EXPORT AbstractQuery::result<UnsignedLong>();
+template<> Long MAGNUM_EXPORT AbstractQuery::result<Long>();
 #endif
 #endif
 
@@ -117,9 +128,9 @@ if(!q.resultAvailable()) {
 }
 
 // ...or block until the result is available
-GLuint primitiveCount = q.result<GLuint>();
+UnsignedInt primitiveCount = q.result<UnsignedInt>();
 @endcode
-@requires_gl30 Extension @extension{EXT,transform_feedback}
+@requires_gl30 %Extension @extension{EXT,transform_feedback}
 @requires_gles30 Only sample queries are available on OpenGL ES 2.0.
 */
 class MAGNUM_EXPORT Query: public AbstractQuery {
@@ -144,7 +155,7 @@ class MAGNUM_EXPORT Query: public AbstractQuery {
 
             /**
              * Elapsed time
-             * @requires_gl33 Extension @extension{ARB,timer_query}
+             * @requires_gl33 %Extension @extension{ARB,timer_query}
              * @requires_gl Only transform feedback query is available in
              *      OpenGL ES.
              */
@@ -152,7 +163,7 @@ class MAGNUM_EXPORT Query: public AbstractQuery {
             #endif
         };
 
-        inline Query(): target(nullptr) {}
+        inline explicit Query(): target(nullptr) {}
 
         inline ~Query() { delete target; }
 
@@ -227,7 +238,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
 
             /**
              * Whether any samples passed from fragment shader
-             * @requires_gl33 Extension @extension{ARB,occlusion_query2}
+             * @requires_gl33 %Extension @extension{ARB,occlusion_query2}
              */
             #ifndef MAGNUM_TARGET_GLES2
             AnySamplesPassed = GL_ANY_SAMPLES_PASSED,
@@ -240,7 +251,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
              *
              * An implementation may choose a less precise version of the
              * test at the expense of some false positives.
-             * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+             * @requires_gl43 %Extension @extension{ARB,ES3_compatibility}
              */
             #ifndef MAGNUM_TARGET_GLES2
             AnySamplesPassedConservative = GL_ANY_SAMPLES_PASSED_CONSERVATIVE
@@ -253,7 +264,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
         /**
          * @brief Conditional render mode
          *
-         * @requires_gl30 Extension @extension{NV,conditional_render}
+         * @requires_gl30 %Extension @extension{NV,conditional_render}
          * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
         enum class ConditionalRenderMode: GLenum {
@@ -283,7 +294,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
         };
         #endif
 
-        inline SampleQuery(): target(nullptr) {}
+        inline explicit SampleQuery(): target(nullptr) {}
 
         inline ~SampleQuery() { delete target; }
 
@@ -298,7 +309,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
          * @brief Begin conditional rendering based on result value
          *
          * @see @fn_gl{BeginConditionalRender}
-         * @requires_gl30 Extension @extension{NV,conditional_render}
+         * @requires_gl30 %Extension @extension{NV,conditional_render}
          * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
         inline void beginConditionalRender(ConditionalRenderMode mode) {
@@ -309,7 +320,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
          * @brief End conditional render
          *
          * @see @fn_gl{EndConditionalRender}
-         * @requires_gl30 Extension @extension{NV,conditional_render}
+         * @requires_gl30 %Extension @extension{NV,conditional_render}
          * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
         inline void endConditionalRender() {
@@ -326,9 +337,9 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
 @brief %Query for elapsed time
 
 Queries timestamp after all previous OpenGL calls have been processed. It is
-similar to Query::Target::TimeElapsed query, but this query just retrieves
-timestamp, not time duration between Query::begin() and Query::end() calls.
-Example usage, compared to Query::Target::TimeElapsed:
+similar to @ref Query::Target "Query::Target::TimeElapsed" query, but this
+query just retrieves timestamp, not time duration between Query::begin() and
+Query::end() calls. Example usage, compared to @ref Query::Target "Query::Target::TimeElapsed":
 @code
 Query q1, q2;
 q1.begin(Query::Target::TimeElapsed);
@@ -337,8 +348,8 @@ q1.end();
 q2.begin(Query::Target::TimeElapsed);
 // another rendering...
 q2.end();
-GLuint timeElapsed1 = q1.result<GLuint>();
-GLuint timeElapsed2 = q2.result<GLuint>();
+UnsignedInt timeElapsed1 = q1.result<UnsignedInt>();
+UnsignedInt timeElapsed2 = q2.result<UnsignedInt>();
 @endcode
 @code
 TimeQuery q1, q2, q3;
@@ -347,16 +358,19 @@ q1.timestamp();
 q2.timestamp();
 // another rendering...
 q3.timestamp();
-GLuint tmp = q2.result<GLuint>();
-GLuint timeElapsed1 = tmp-q1.result<GLuint>();
-GLuint timeElapsed2 = q3.result<GLuint>()-tmp;
+UnsignedInt tmp = q2.result<UnsignedInt>();
+UnsignedInt timeElapsed1 = tmp-q1.result<UnsignedInt>();
+UnsignedInt timeElapsed2 = q3.result<UnsignedInt>()-tmp;
 @endcode
 Using this query results in fewer OpenGL calls when doing more measures.
-@requires_gl33 Extension @extension{ARB,timer_query}
+@requires_gl33 %Extension @extension{ARB,timer_query}
 @requires_gl Timer query is not available in OpenGL ES.
+@todo timestamp with glGet + example usage
 */
 class TimeQuery: public AbstractQuery {
     public:
+        explicit TimeQuery() = default;
+
         /**
          * @brief Query timestamp
          *

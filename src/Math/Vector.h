@@ -1,173 +1,419 @@
 #ifndef Magnum_Math_Vector_h
 #define Magnum_Math_Vector_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
  * @brief Class Magnum::Math::Vector
  */
 
-#include "RectangularMatrix.h"
+#include <cmath>
+#include <limits>
+#include <Utility/Assert.h>
+#include <Utility/Debug.h>
+#include <Utility/ConfigurationValue.h>
+
+#include "Math/Angle.h"
+#include "Math/BoolVector.h"
+#include "Math/TypeTraits.h"
+
+#include "magnumVisibility.h"
 
 namespace Magnum { namespace Math {
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
+    template<std::size_t, class, class> struct VectorConverter;
+}
+#endif
 
 /**
 @brief %Vector
 @tparam size    %Vector size
-@tparam T       Data type
+@tparam T       Underlying data type
 
 See @ref matrix-vector for brief introduction.
 @configurationvalueref{Magnum::Math::Vector}
 */
-template<std::size_t size, class T> class Vector: public RectangularMatrix<1, size, T> {
+template<std::size_t size, class T> class Vector {
+    static_assert(size != 0, "Vector cannot have zero elements");
+
+    template<std::size_t, class> friend class Vector;
+
     public:
-        const static std::size_t Size = size; /**< @brief %Vector size */
+        typedef T Type;                         /**< @brief Underlying data type */
+        const static std::size_t Size = size;   /**< @brief %Vector size */
+
+        /**
+         * @brief %Vector from array
+         * @return Reference to the data as if it was Vector, thus doesn't
+         *      perform any copying.
+         *
+         * @attention Use with caution, the function doesn't check whether the
+         *      array is long enough.
+         */
+        inline constexpr static Vector<size, T>& from(T* data) {
+            return *reinterpret_cast<Vector<size, T>*>(data);
+        }
+        /** @overload */
+        inline constexpr static const Vector<size, T>& from(const T* data) {
+            return *reinterpret_cast<const Vector<size, T>*>(data);
+        }
 
         /**
          * @brief Dot product
          *
          * @f[
-         * a \cdot b = \sum_{i=0}^{n-1} a_ib_i
+         *      \boldsymbol a \cdot \boldsymbol b = \sum_{i=0}^{n-1} \boldsymbol a_i \boldsymbol b_i
          * @f]
          * @see dot() const
          */
-        static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
-            T out(0);
+        inline static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
+            return (a*b).sum();
+        }
+
+        /**
+         * @brief Angle between normalized vectors
+         *
+         * Expects that both vectors are normalized. @f[
+         *      \theta = acos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| |\boldsymbol b|} \right) = acos (\boldsymbol a \cdot \boldsymbol b)
+         * @f]
+         * @see isNormalized(), Quaternion::angle(), Complex::angle()
+         */
+        inline static Rad<T> angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
+            CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+                           "Math::Vector::angle(): vectors must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
+            return Rad<T>(std::acos(dot(normalizedA, normalizedB)));
+        }
+
+        /**
+         * @brief Default constructor
+         *
+         * @f[
+         *      \boldsymbol v = \boldsymbol 0
+         * @f]
+         */
+        inline constexpr /*implicit*/ Vector(): _data() {}
+
+        /** @todo Creating Vector from combination of vector and scalar types */
+
+        /**
+         * @brief Construct vector from values
+         * @param first First value
+         * @param next  Next values
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class ...U> inline constexpr /*implicit*/ Vector(T first, U... next);
+        #else
+        template<class ...U, class V = typename std::enable_if<sizeof...(U)+1 == size, T>::type> inline constexpr /*implicit*/ Vector(T first, U... next): _data{first, next...} {}
+        #endif
+
+        /** @brief Construct vector with one value for all fields */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        inline explicit Vector(T value);
+        #else
+        #ifndef CORRADE_GCC46_COMPATIBILITY
+        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> inline constexpr explicit Vector(U value): Vector(typename Implementation::GenerateSequence<size>::Type(), value) {}
+        #else
+        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> inline explicit Vector(U value) {
+            *this = Vector(typename Implementation::GenerateSequence<size>::Type(), value);
+        }
+        #endif
+        #endif
+
+        /**
+         * @brief Construct vector from another of different type
+         *
+         * Performs only default casting on the values, no rounding or
+         * anything else. Example usage:
+         * @code
+         * Vector<4, Float> floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
+         * Vector<4, Byte> integral(floatingPoint);
+         * // integral == {1, 2, -15, 7}
+         * @endcode
+         */
+        #ifndef CORRADE_GCC46_COMPATIBILITY
+        template<class U> inline constexpr explicit Vector(const Vector<size, U>& other): Vector(typename Implementation::GenerateSequence<size>::Type(), other) {}
+        #else
+        template<class U> inline explicit Vector(const Vector<size, U>& other) {
+            *this = Vector(typename Implementation::GenerateSequence<size>::Type(), other);
+        }
+        #endif
+
+        /** @brief Construct vector from external representation */
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> inline constexpr explicit Vector(const U& other): Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
+
+        /** @brief Copy constructor */
+        inline constexpr Vector(const Vector<size, T>&) = default;
+
+        /** @brief Assignment operator */
+        inline Vector<size, T>& operator=(const Vector<size, T>&) = default;
+
+        /** @brief Convert vector to external representation */
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(std::declval<Vector<size, T>>()))> inline constexpr explicit operator U() const {
+            return Implementation::VectorConverter<size, T, U>::to(*this);
+        }
+
+        /**
+         * @brief Raw data
+         * @return One-dimensional array of `size*size` length.
+         *
+         * @see operator[]()
+         */
+        inline T* data() { return _data; }
+        inline constexpr const T* data() const { return _data; } /**< @overload */
+
+        /**
+         * @brief Value at given position
+         *
+         * @see data()
+         */
+        inline T& operator[](std::size_t pos) { return _data[pos]; }
+        inline constexpr T operator[](std::size_t pos) const { return _data[pos]; } /**< @overload */
+
+        /** @brief Equality comparison */
+        inline bool operator==(const Vector<size, T>& other) const {
+            for(std::size_t i = 0; i != size; ++i)
+                if(!TypeTraits<T>::equals(_data[i], other._data[i])) return false;
+
+            return true;
+        }
+
+        /** @brief Non-equality comparison */
+        inline bool operator!=(const Vector<size, T>& other) const {
+            return !operator==(other);
+        }
+
+        /** @brief Component-wise less than */
+        inline BoolVector<size> operator<(const Vector<size, T>& other) const {
+            BoolVector<size> out;
 
             for(std::size_t i = 0; i != size; ++i)
-                out += a[i]*b[i];
+                out.set(i, _data[i] < other._data[i]);
+
+            return out;
+        }
+
+        /** @brief Component-wise less than or equal */
+        inline BoolVector<size> operator<=(const Vector<size, T>& other) const {
+            BoolVector<size> out;
+
+            for(std::size_t i = 0; i != size; ++i)
+                out.set(i, _data[i] <= other._data[i]);
+
+            return out;
+        }
+
+        /** @brief Component-wise greater than or equal */
+        inline BoolVector<size> operator>=(const Vector<size, T>& other) const {
+            BoolVector<size> out;
+
+            for(std::size_t i = 0; i != size; ++i)
+                out.set(i, _data[i] >= other._data[i]);
+
+            return out;
+        }
+
+        /** @brief Component-wise greater than */
+        inline BoolVector<size> operator>(const Vector<size, T>& other) const {
+            BoolVector<size> out;
+
+            for(std::size_t i = 0; i != size; ++i)
+                out.set(i, _data[i] > other._data[i]);
 
             return out;
         }
 
         /**
-         * @brief Angle between normalized vectors (in radians)
+         * @brief Whether the vector is normalized
          *
-         * @f[
-         * \phi = acos \left(\frac{a \cdot b}{|a| \cdot |b|} \right)
+         * The vector is normalized if it has unit length: @f[
+         *      |\boldsymbol a|^2 = |\boldsymbol a| = 1
          * @f]
-         * @attention Both vectors must be normalized.
+         * @see dot(), normalized()
          */
-        inline static T angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
-            CORRADE_ASSERT(MathTypeTraits<T>::equals(normalizedA.dot(), T(1)) && MathTypeTraits<T>::equals(normalizedB.dot(), T(1)),
-                           "Math::Vector::angle(): vectors must be normalized", std::numeric_limits<T>::quiet_NaN());
-            return std::acos(dot(normalizedA, normalizedB));
-        }
-
-        /** @brief Default constructor */
-        inline constexpr Vector() {}
-
-        /** @todo Creating Vector from combination of vector and scalar types */
-
-        /**
-         * @brief Initializer-list constructor
-         * @param first First value
-         * @param next  Next values
-         */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> inline constexpr Vector(T first, U... next): RectangularMatrix<1, size, T>(first, next...) {}
-        #else
-        template<class ...U> inline constexpr Vector(T first, U... next);
-        #endif
-
-        /**
-         * @brief Constructor
-         * @param value Value for all fields
-         */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class U> inline explicit Vector(typename std::enable_if<std::is_same<T, U>::value && size != 1, U>::type value) {
-        #else
-        inline explicit Vector(T value) {
-        #endif
-            for(std::size_t i = 0; i != size; ++i)
-                (*this)[i] = value;
-        }
-
-        /** @brief Copy constructor */
-        inline constexpr Vector(const RectangularMatrix<1, size, T>& other): RectangularMatrix<1, size, T>(other) {}
-
-        /** @brief Value at given position */
-        inline T& operator[](std::size_t pos) { return RectangularMatrix<1, size, T>::_data[pos]; }
-        inline constexpr T operator[](std::size_t pos) const { return RectangularMatrix<1, size, T>::_data[pos]; } /**< @overload */
-
-        /**
-         * @brief Component-wise less than
-         * @return `True` if all components are smaller than their
-         *      counterparts in @p other, `false` otherwise
-         */
-        inline bool operator<(const Vector<size, T>& other) const {
-            for(std::size_t i = 0; i != size; ++i)
-                if((*this)[i] >= other[i]) return false;
-
-            return true;
+        inline bool isNormalized() const {
+            return Implementation::isNormalizedSquared(dot());
         }
 
         /**
-         * @brief Component-wise less than or equal
-         * @return `True` if all components are smaller than or equal to their
-         *      counterparts in @p other, `false` otherwise
-         */
-        inline bool operator<=(const Vector<size, T>& other) const {
-            for(std::size_t i = 0; i != size; ++i)
-                if((*this)[i] > other[i]) return false;
-
-            return true;
-        }
-
-        /**
-         * @brief Component-wise greater than or equal
-         * @return `True` if all components are larger than or equal to their
-         *      counterparts in @p other, `false` otherwise
-         */
-        inline bool operator>=(const Vector<size, T>& other) const {
-            for(std::size_t i = 0; i != size; ++i)
-                if((*this)[i] < other[i]) return false;
-
-            return true;
-        }
-
-        /**
-         * @brief Component-wise greater than
-         * @return `True` if all components are larger than their
-         *      counterparts in @p other, `false` otherwise
-         */
-        inline bool operator>(const Vector<size, T>& other) const {
-            for(std::size_t i = 0; i != size; ++i)
-                if((*this)[i] <= other[i]) return false;
-
-            return true;
-        }
-
-        /**
-         * @brief Multiply vector component-wise
+         * @brief Negated vector
          *
-         * @see operator*=(const Vector<size, T>&)
+         * The computation is done in-place. @f[
+         *      \boldsymbol a_i = -\boldsymbol a_i
+         * @f]
          */
-        inline Vector<size, T> operator*(const Vector<size, T>& other) const {
-            return Vector<size, T>(*this)*=other;
+        Vector<size, T> operator-() const {
+            Vector<size, T> out;
+
+            for(std::size_t i = 0; i != size; ++i)
+                out._data[i] = -_data[i];
+
+            return out;
+        }
+
+        /**
+         * @brief Add and assign vector
+         *
+         * The computation is done in-place. @f[
+         *      \boldsymbol a_i = \boldsymbol a_i + \boldsymbol b_i
+         * @f]
+         */
+        Vector<size, T>& operator+=(const Vector<size, T>& other) {
+            for(std::size_t i = 0; i != size; ++i)
+                _data[i] += other._data[i];
+
+            return *this;
+        }
+
+        /**
+         * @brief Add vector
+         *
+         * @see operator+=()
+         */
+        inline Vector<size, T> operator+(const Vector<size, T>& other) const {
+            return Vector<size, T>(*this) += other;
+        }
+
+        /**
+         * @brief Subtract and assign vector
+         *
+         * The computation is done in-place. @f[
+         *      \boldsymbol a_i = \boldsymbol a_i - \boldsymbol b_i
+         * @f]
+         */
+        Vector<size, T>& operator-=(const Vector<size, T>& other) {
+            for(std::size_t i = 0; i != size; ++i)
+                _data[i] -= other._data[i];
+
+            return *this;
+        }
+
+        /**
+         * @brief Subtract vector
+         *
+         * @see operator-=()
+         */
+        inline Vector<size, T> operator-(const Vector<size, T>& other) const {
+            return Vector<size, T>(*this) -= other;
+        }
+
+        /**
+         * @brief Multiply vector with number and assign
+         *
+         * The computation is done in-place. @f[
+         *      \boldsymbol a_i = b \boldsymbol a_i
+         * @f]
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class U> Vector<size, T>& operator*=(U number) {
+        #else
+        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>&>::type operator*=(U number) {
+        #endif
+            for(std::size_t i = 0; i != size; ++i)
+                _data[i] *= number;
+
+            return *this;
+        }
+
+        /**
+         * @brief Multiply vector with number
+         *
+         * @see operator*=(U), operator*(U, const Vector<size, T>&)
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class U> inline Vector<size, T> operator*(U number) const {
+        #else
+        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator*(U number) const {
+        #endif
+            return Vector<size, T>(*this) *= number;
+        }
+
+        /**
+         * @brief Divide vector with number and assign
+         *
+         * The computation is done in-place. @f[
+         *      \boldsymbol a_i = \frac{\boldsymbol a_i} b
+         * @f]
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class U> Vector<size, T>& operator/=(U number) {
+        #else
+        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>&>::type operator/=(U number) {
+        #endif
+            for(std::size_t i = 0; i != size; ++i)
+                _data[i] /= number;
+
+            return *this;
+        }
+
+        /**
+         * @brief Divide vector with number
+         *
+         * @see operator/=(), operator/(U, const Vector<size, T>&)
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class U> inline Vector<size, T> operator/(U number) const {
+        #else
+        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator/(U number) const {
+        #endif
+            return Vector<size, T>(*this) /= number;
         }
 
         /**
          * @brief Multiply vector component-wise and assign
          *
-         * More efficient than operator*(const Vector<size, T>&) const,
-         * because it does the computation in-place.
+         * The computation is done in-place. @f[
+         *      \boldsymbol a_i = \boldsymbol a_i \boldsymbol b_i
+         * @f]
          */
-        Vector<size, T>& operator*=(const Vector<size, T>& other) {
+        template<class U> Vector<size, T>& operator*=(const Vector<size, U>& other) {
             for(std::size_t i = 0; i != size; ++i)
-                (*this)[i] *= other[i];
+                _data[i] *= other._data[i];
+
+            return *this;
+        }
+
+        /**
+         * @brief Multiply vector component-wise
+         *
+         * @see operator*=(const Vector<size, U>&)
+         */
+        template<class U> inline Vector<size, T> operator*(const Vector<size, U>& other) const {
+            return Vector<size, T>(*this) *= other;
+        }
+
+        /**
+         * @brief Divide vector component-wise and assign
+         *
+         * The computation is done in-place. @f[
+         *      \boldsymbol a_i = \frac{\boldsymbol a_i}{\boldsymbol b_i}
+         * @f]
+         */
+        template<class U> Vector<size, T>& operator/=(const Vector<size, U>& other) {
+            for(std::size_t i = 0; i != size; ++i)
+                _data[i] /= other._data[i];
 
             return *this;
         }
@@ -175,34 +421,20 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
         /**
          * @brief Divide vector component-wise
          *
-         * @see operator/=(const Vector<size, T>&)
+         * @see operator/=(const Vector<size, U>&)
          */
-        inline Vector<size, T> operator/(const Vector<size, T>& other) const {
-            return Vector<size, T>(*this)/=other;
-        }
-
-        /**
-         * @brief Divide vector component-wise and assign
-         *
-         * More efficient than operator/(const Vector<size, T>&) const,
-         * because it does the computation in-place.
-         */
-        Vector<size, T>& operator/=(const Vector<size, T>& other) {
-            for(std::size_t i = 0; i != size; ++i)
-                (*this)[i] /= other[i];
-
-            return *this;
+        template<class U> inline Vector<size, T> operator/(const Vector<size, U>& other) const {
+            return Vector<size, T>(*this) /= other;
         }
 
         /**
          * @brief Dot product of the vector
          *
          * Should be used instead of length() for comparing vector length with
-         * other values, because it doesn't compute the square root, just the
-         * dot product: @f$ a \cdot a < length \cdot length @f$ is faster
-         * than @f$ \sqrt{a \cdot a} < length @f$.
-         *
-         * @see dot(const Vector<size, T>&, const Vector<size, T>&)
+         * other values, because it doesn't compute the square root. @f[
+         *      \boldsymbol a \cdot \boldsymbol a = \sum_{i=0}^{n-1} \boldsymbol a_i^2
+         * @f]
+         * @see dot(const Vector&, const Vector&), isNormalized()
          */
         inline T dot() const {
             return dot(*this, *this);
@@ -211,82 +443,155 @@ template<std::size_t size, class T> class Vector: public RectangularMatrix<1, si
         /**
          * @brief %Vector length
          *
-         * @see dot() const
+         * See also dot() const which is faster for comparing length with other
+         * values. @f[
+         *      |\boldsymbol a| = \sqrt{\boldsymbol a \cdot \boldsymbol a}
+         * @f]
+         * @see isNormalized()
+         * @todo something like std::hypot() for possibly better precision?
          */
         inline T length() const {
             return std::sqrt(dot());
         }
 
-        /** @brief Normalized vector (of length 1) */
+        /**
+         * @brief Normalized vector (of unit length)
+         *
+         * @see isNormalized()
+         */
         inline Vector<size, T> normalized() const {
             return *this/length();
         }
 
+        /**
+         * @brief %Vector projected onto line
+         *
+         * Returns vector projected onto @p line. @f[
+         *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b
+         * @f]
+         * @see projectedOntoNormalized()
+         */
+        inline Vector<size, T> projected(const Vector<size, T>& line) const {
+            return line*dot(*this, line)/line.dot();
+        }
+
+        /**
+         * @brief %Vector projected onto normalized line
+         *
+         * Slightly faster alternative to projected(), expects @p line to be
+         * normalized. @f[
+         *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b =
+         *          (\boldsymbol a \cdot \boldsymbol b) \boldsymbol b
+         * @f]
+         */
+        inline Vector<size, T> projectedOntoNormalized(const Vector<size, T>& line) const {
+            CORRADE_ASSERT(line.isNormalized(), "Math::Vector::projectedOntoNormalized(): line must be normalized", (Vector<size, T>(std::numeric_limits<T>::quiet_NaN())));
+            return line*dot(*this, line);
+        }
+
         /** @brief Sum of values in the vector */
         T sum() const {
-            T out(0);
+            T out(_data[0]);
 
-            for(std::size_t i = 0; i != size; ++i)
-                out += (*this)[i];
+            for(std::size_t i = 1; i != size; ++i)
+                out += _data[i];
 
             return out;
         }
 
         /** @brief Product of values in the vector */
         T product() const {
-            T out(1);
+            T out(_data[0]);
 
-            for(std::size_t i = 0; i != size; ++i)
-                out *= (*this)[i];
+            for(std::size_t i = 1; i != size; ++i)
+                out *= _data[i];
 
             return out;
         }
 
         /** @brief Minimal value in the vector */
         T min() const {
-            T out((*this)[0]);
+            T out(_data[0]);
 
             for(std::size_t i = 1; i != size; ++i)
-                out = std::min(out, (*this)[i]);
+                out = std::min(out, _data[i]);
+
+            return out;
+        }
+
+        /** @brief Minimal absolute value in the vector */
+        T minAbs() const {
+            T out(std::abs(_data[0]));
+
+            for(std::size_t i = 1; i != size; ++i)
+                out = std::min(out, std::abs(_data[i]));
 
             return out;
         }
 
         /** @brief Maximal value in the vector */
         T max() const {
-            T out((*this)[0]);
+            T out(_data[0]);
 
             for(std::size_t i = 1; i != size; ++i)
-                out = std::max(out, (*this)[i]);
+                out = std::max(out, _data[i]);
 
             return out;
         }
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        /* Reimplementation of functions to return correct type */
-        template<std::size_t otherCols> inline RectangularMatrix<otherCols, size, T> operator*(const RectangularMatrix<otherCols, 1, T>& other) const {
-            return RectangularMatrix<1, size, T>::operator*(other);
+        /** @brief Maximal absolute value in the vector */
+        T maxAbs() const {
+            T out(std::abs(_data[0]));
+
+            for(std::size_t i = 1; i != size; ++i)
+                out = std::max(out, std::abs(_data[i]));
+
+            return out;
         }
-        MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(1, size, Vector<size, T>)
-        MAGNUM_RECTANGULARMATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(1, size, Vector<size, T>)
-        #endif
 
     private:
-        /* Hiding unused things from RectangularMatrix */
-        using RectangularMatrix<1, size, T>::Cols;
-        using RectangularMatrix<1, size, T>::Rows;
-        using RectangularMatrix<1, size, T>::operator[];
-        using RectangularMatrix<1, size, T>::operator();
+        /* Implementation for Vector<size, T>::Vector(const Vector<size, U>&) */
+        template<class U, std::size_t ...sequence> inline constexpr explicit Vector(Implementation::Sequence<sequence...>, const Vector<sizeof...(sequence), U>& vector): _data{T(vector._data[sequence])...} {}
+
+        /* Implementation for Vector<size, T>::Vector(U) */
+        template<std::size_t ...sequence> inline constexpr explicit Vector(Implementation::Sequence<sequence...>, T value): _data{Implementation::repeat(value, sequence)...} {}
+
+        T _data[size];
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
+/** @relates Vector
+@brief Multiply number with vector
+
+Same as Vector::operator*(U) const.
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<std::size_t size, class T, class U> inline Vector<size, T> operator*(U number, const Vector<size, T>& vector) {
+#else
 template<std::size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator*(U number, const Vector<size, T>& vector) {
-    return number*RectangularMatrix<1, size, T>(vector);
-}
-template<std::size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator/(U number, const Vector<size, T>& vector) {
-    return number/RectangularMatrix<1, size, T>(vector);
-}
 #endif
+    return vector*number;
+}
+
+/** @relates Vector
+@brief Divide vector with number and invert
+
+@f[
+    \boldsymbol c_i = \frac b {\boldsymbol a_i}
+@f]
+@see Vector::operator/()
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<std::size_t size, class T, class U> inline Vector<size, T> operator/(U number, const Vector<size, T>& vector) {
+#else
+template<std::size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator/(U number, const Vector<size, T>& vector) {
+#endif
+    Vector<size, T> out;
+
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = number/vector[i];
+
+    return out;
+}
 
 /** @debugoperator{Magnum::Math::Vector} */
 template<std::size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Vector<size, T>& value) {
@@ -294,28 +599,28 @@ template<std::size_t size, class T> Corrade::Utility::Debug operator<<(Corrade::
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
     for(std::size_t i = 0; i != size; ++i) {
         if(i != 0) debug << ", ";
-        debug << typename MathTypeTraits<T>::NumericType(value[i]);
+        debug << value[i];
     }
-    debug << ')';
+    debug << ")";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
     return debug;
 }
 
 /* Explicit instantiation for types used in OpenGL */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, float>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, float>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, float>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, int>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, int>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, int>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, unsigned int>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, unsigned int>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, unsigned int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, Float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, Float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, Float>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, Int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, Int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, Int>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, UnsignedInt>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, UnsignedInt>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, UnsignedInt>&);
 #ifndef MAGNUM_TARGET_GLES
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, double>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, double>&);
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<2, Double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<3, Double>&);
+extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Vector<4, Double>&);
 #endif
 #endif
 
@@ -327,34 +632,62 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
     inline constexpr static const Type<T>& from(const T* data) {            \
         return *reinterpret_cast<const Type<T>*>(data);                     \
     }                                                                       \
-    template<class U> inline constexpr static Type<T> from(const Math::Vector<size, U>& other) { \
-        return Math::Vector<size, T>::from(other);                          \
-    }                                                                       \
                                                                             \
     inline Type<T>& operator=(const Type<T>& other) {                       \
         Math::Vector<size, T>::operator=(other);                            \
         return *this;                                                       \
     }                                                                       \
                                                                             \
-    template<std::size_t otherCols> inline Math::RectangularMatrix<otherCols, size, T> operator*(const Math::RectangularMatrix<otherCols, 1, T>& other) const { \
-        return Math::Vector<size, T>::operator*(other);    \
+    inline Type<T> operator-() const {                                      \
+        return Math::Vector<size, T>::operator-();                          \
     }                                                                       \
-    inline Type<T> operator*(const Math::Vector<size, T>& other) const {    \
-        return Math::Vector<size, T>::operator*(other);                     \
+    inline Type<T>& operator+=(const Math::Vector<size, T>& other) {        \
+        Math::Vector<size, T>::operator+=(other);                           \
+        return *this;                                                       \
     }                                                                       \
-    inline Type<T>& operator*=(const Math::Vector<size, T>& other) {        \
+    inline Type<T> operator+(const Math::Vector<size, T>& other) const {    \
+        return Math::Vector<size, T>::operator+(other);                     \
+    }                                                                       \
+    inline Type<T>& operator-=(const Math::Vector<size, T>& other) {        \
+        Math::Vector<size, T>::operator-=(other);                           \
+        return *this;                                                       \
+    }                                                                       \
+    inline Type<T> operator-(const Math::Vector<size, T>& other) const {    \
+        return Math::Vector<size, T>::operator-(other);                     \
+    }                                                                       \
+    template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Type<T>&>::type operator*=(U number) { \
+        Math::Vector<size, T>::operator*=(number);                          \
+        return *this;                                                       \
+    }                                                                       \
+    template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Type<T>>::type operator*(U number) const { \
+        return Math::Vector<size, T>::operator*(number);                    \
+    }                                                                       \
+    template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Type<T>&>::type operator/=(U number) { \
+        Math::Vector<size, T>::operator/=(number);                          \
+        return *this;                                                       \
+    }                                                                       \
+    template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Type<T>>::type operator/(U number) const { \
+        return Math::Vector<size, T>::operator/(number);                    \
+    }                                                                       \
+    template<class U> inline Type<T>& operator*=(const Math::Vector<size, U>& other) { \
         Math::Vector<size, T>::operator*=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    inline Type<T> operator/(const Math::Vector<size, T>& other) const {    \
-        return Math::Vector<size, T>::operator/(other);                     \
+    template<class U> inline Type<T> operator*(const Math::Vector<size, U>& other) const { \
+        return Math::Vector<size, T>::operator*(other);                     \
     }                                                                       \
-    inline Type<T>& operator/=(const Math::Vector<size, T>& other) {        \
+    template<class U> inline Type<T>& operator/=(const Math::Vector<size, U>& other) { \
         Math::Vector<size, T>::operator/=(other);                           \
         return *this;                                                       \
     }                                                                       \
+    template<class U> inline Type<T> operator/(const Math::Vector<size, U>& other) const { \
+        return Math::Vector<size, T>::operator/(other);                     \
+    }                                                                       \
                                                                             \
-    inline Type<T> normalized() const { return Math::Vector<size, T>::normalized(); }
+    inline Type<T> normalized() const { return Math::Vector<size, T>::normalized(); } \
+    inline Type<T> projected(const Math::Vector<size, T>& other) const {    \
+        return Math::Vector<size, T>::projected(other);                     \
+    }
 
 #define MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Type, size)          \
     template<class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Type<T>>::type operator*(U number, const Type<T>& vector) { \
@@ -369,8 +702,60 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
 
 namespace Corrade { namespace Utility {
 
-/** @configurationvalue{Magnum::Math::Vector} */
-template<std::size_t size, class T> struct ConfigurationValue<Magnum::Math::Vector<size, T>>: public ConfigurationValue<Magnum::Math::RectangularMatrix<1, size, T>> {};
+/** @configurationvalue{Magnum::Math::RectangularMatrix} */
+template<std::size_t size, class T> struct ConfigurationValue<Magnum::Math::Vector<size, T>> {
+    ConfigurationValue() = delete;
+
+    /** @brief Writes elements separated with spaces */
+    static std::string toString(const Magnum::Math::Vector<size, T>& value, ConfigurationValueFlags flags) {
+        std::string output;
+
+        for(std::size_t i = 0; i != size; ++i) {
+            if(!output.empty()) output += ' ';
+            output += ConfigurationValue<T>::toString(value[i], flags);
+        }
+
+        return output;
+    }
+
+    /** @brief Reads elements separated with whitespace */
+    static Magnum::Math::Vector<size, T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
+        Magnum::Math::Vector<size, T> result;
+
+        std::size_t oldpos = 0, pos = std::string::npos, i = 0;
+        do {
+            pos = stringValue.find(' ', oldpos);
+            std::string part = stringValue.substr(oldpos, pos-oldpos);
+
+            if(!part.empty()) {
+                result[i] = ConfigurationValue<T>::fromString(part, flags);
+                ++i;
+            }
+
+            oldpos = pos+1;
+        } while(pos != std::string::npos);
+
+        return result;
+    }
+};
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* Vectors */
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, Magnum::Float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, Magnum::Float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, Magnum::Float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, Magnum::Int>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, Magnum::Int>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, Magnum::Int>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, Magnum::UnsignedInt>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, Magnum::UnsignedInt>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, Magnum::UnsignedInt>>;
+#ifndef MAGNUM_TARGET_GLES
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, Magnum::Double>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, Magnum::Double>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, Magnum::Double>>;
+#endif
+#endif
 
 }}
 

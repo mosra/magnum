@@ -1,28 +1,45 @@
+#
+#   This file is part of Magnum.
+#
+#   Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+#
+#   Permission is hereby granted, free of charge, to any person obtaining a
+#   copy of this software and associated documentation files (the "Software"),
+#   to deal in the Software without restriction, including without limitation
+#   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+#   and/or sell copies of the Software, and to permit persons to whom the
+#   Software is furnished to do so, subject to the following conditions:
+#
+#   The above copyright notice and this permission notice shall be included
+#   in all copies or substantial portions of the Software.
+#
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+#   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+#   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+#   DEALINGS IN THE SOFTWARE.
+#
+
 set(MagnumPhysics_SRCS
     AbstractShape.cpp
     AxisAlignedBox.cpp
     Box.cpp
     Capsule.cpp
-    DebugDrawResourceManager.cpp
     Line.cpp
     Plane.cpp
     Point.cpp
     ObjectShape.cpp
     ObjectShapeGroup.cpp
     ShapeGroup.cpp
-    Sphere.cpp
-
-    Implementation/AbstractBoxRenderer.cpp
-    Implementation/AbstractDebugRenderer.cpp
-    Implementation/AxisAlignedBoxRenderer.cpp
-    Implementation/BoxRenderer.cpp)
+    Sphere.cpp)
 
 set(MagnumPhysics_HEADERS
     AbstractShape.h
     AxisAlignedBox.h
     Box.h
     Capsule.h
-    DebugDrawResourceManager.h
     Line.h
     LineSegment.h
     ObjectShape.h
@@ -36,13 +53,11 @@ set(MagnumPhysics_HEADERS
     magnumPhysicsVisibility.h)
 
 add_library(MagnumPhysics SHARED ${MagnumPhysics_SRCS})
-
-target_link_libraries(MagnumPhysics Magnum MagnumPrimitives MagnumSceneGraph MagnumShaders)
+target_link_libraries(MagnumPhysics Magnum MagnumSceneGraph)
 
 install(TARGETS MagnumPhysics DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumPhysics_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Physics)
 
 if(BUILD_TESTS)
-    enable_testing()
     add_subdirectory(Test)
 endif()

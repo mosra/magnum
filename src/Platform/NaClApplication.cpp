@@ -1,16 +1,25 @@
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 #include "NaClApplication.h"
@@ -23,8 +32,8 @@
 
 namespace Magnum { namespace Platform {
 
-NaClApplication::NaClApplication(PP_Instance instance, const Math::Vector2<GLsizei>& size): Instance(instance), Graphics3DClient(this), MouseLock(this), viewportSize(size) {
-    int32_t attributes[] = {
+NaClApplication::NaClApplication(PP_Instance instance, const Vector2i& size): Instance(instance), Graphics3DClient(this), MouseLock(this), viewportSize(size) {
+    std::int32_t attributes[] = {
         PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
         PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
         PP_GRAPHICS3DATTRIB_STENCIL_SIZE, 8,
@@ -38,11 +47,11 @@ NaClApplication::NaClApplication(PP_Instance instance, const Math::Vector2<GLsiz
     graphics = new pp::Graphics3D(this, attributes);
     if(graphics->is_null()) {
         Error() << "Platform::NaClApplication::NaClApplication(): cannot create graphics";
-        exit(1);
+        std::exit(1);
     }
     if(!BindGraphics(*graphics)) {
         Error() << "Platform::NaClApplication::NaClApplication(): cannot bind graphics";
-        exit(1);
+        std::exit(1);
     }
 
     fullscreen = new pp::Fullscreen(this);
@@ -101,7 +110,7 @@ void NaClApplication::DidChangeView(const pp::View& view) {
         else return;
     }
 
-    Math::Vector2<GLsizei> size(view.GetRect().width(), view.GetRect().height());
+    Vector2i size(view.GetRect().width(), view.GetRect().height());
 
     /* Canvas resized */
     if(viewportSize != size) {
@@ -195,7 +204,7 @@ void NaClApplication::setMouseLocked(bool enabled) {
     else UnlockMouse();
 }
 
-void NaClApplication::mouseLockCallback(void* applicationInstance, int32_t) {
+void NaClApplication::mouseLockCallback(void* applicationInstance, std::int32_t) {
     NaClApplication* instance = static_cast<NaClApplication*>(applicationInstance);
     instance->flags |= Flag::MouseLocked;
 }

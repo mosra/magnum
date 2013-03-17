@@ -5,56 +5,40 @@
 # This module tries to find Corrade library and then defines:
 #  CORRADE_FOUND                    - True if Corrade library is found
 #  CORRADE_INCLUDE_DIR              - Include dir for Corrade
-#  CORRADE_UTILITY_LIBRARIES        - Corrade Utility library and dependent
-#   libraries
-#  CORRADE_PLUGINMANAGER_LIBRARIES  - Corrade Plugin manager library and
+#  CORRADE_INTERCONNECT_LIBRARIES   - Corrade Interconnect library and
 #   dependent libraries
-#  CORRADE_TESTSUITE_LIBRARIES      - Corrade TestSuite library and dependent
-#   libraries
+#  CORRADE_UTILITY_LIBRARIES        - Corrade Utility library and
+#   dependent libraries
+#  CORRADE_PLUGINMANAGER_LIBRARIES  - Corrade PluginManager library and
+#   dependent libraries
+#  CORRADE_TESTSUITE_LIBRARIES      - Corrade TestSuite library and
+#   dependent libraries
 #  CORRADE_RC_EXECUTABLE            - Corrade resource compiler executable
 # Additionally these variables are defined for internal usage:
+#  CORRADE_INTERCONNECT_LIBRARY     - Corrade Interconnect library (w/o
+#   dependencies)
 #  CORRADE_UTILITY_LIBRARY          - Corrade Utility library (w/o
 #   dependencies)
 #  CORRADE_PLUGINMANAGER_LIBRARY    - Corrade Plugin manager library (w/o
 #   dependencies)
 #  CORRADE_TESTSUITE_LIBRARY        - Corrade TestSuite library (w/o
 #   dependencies)
+# Corrade configures the compiler to use C++11 standard. Additionally you can
+# use CORRADE_CXX_FLAGS to enable additional pedantic set of warnings and enable
+# hidden visibility by default.
+#
 # If Corrade library is found, these macros and functions are defined:
 #
 #
 # Add unit test using Corrade's TestSuite.
-#  corrade_add_test2(test_name
-#                    sources...
-#                    [LIBRARIES libraries...])
+#  corrade_add_test(test_name
+#                   sources...
+#                   [LIBRARIES libraries...])
 # Test name is also executable name. You can also specify libraries to link
 # with instead of using target_link_libraries(). CORRADE_TESTSUITE_LIBRARIES
 # are linked atuomatically to each test. Note that the enable_testing()
 # function must be called explicitly.
 #
-#
-# Add QtTest unit test.
-#  corrade_add_test(test_name moc_header source_file
-#                   [libraries...])
-# These tests contain mainly from one source file and one header, which is
-# processed by Qt meta-object compiler. The executable is then linked to QtCore
-# and QtTest library, more libraries can be specified as another parameters.
-# Test name is also executable name. Header file is processed with Qt's moc.
-#
-# Note: Before using this function you must find package Qt4. The
-# enable_testing() function must be also called explicitly.
-#
-#
-# Add QtTest unit test with multiple source files.
-#  corrade_add_multifile_test(test_name
-#                             moc_header_variable
-#                             source_files_variable)
-# Useful when there is need to compile more than one cpp/h file into the test.
-#
-# Example usage:
-#  set(test_headers ComplexTest.h MyObject.h)
-#  set(test_sources ComplexTest.cpp MyObject.cpp)
-#  corrade_add_test(MyComplexTest test_headers test_sources
-#                   CoreLibrary AnotherLibrary)
 #
 # Compile data resources into application binary.
 #  corrade_add_resource(name group_name
@@ -64,9 +48,7 @@
 # generates resource file with group group_name from given files in current
 # build directory. Argument name is name under which the resources can be
 # explicitly loaded. Variable 'name' contains compiled resource filename,
-# which is then used for compiling library / executable.
-#
-# Example usage:
+# which is then used for compiling library / executable. Example usage:
 #  corrade_add_resource(name group_name file1 ALIAS alias1 file2 file3)
 #  add_executable(app source1 source2 ... ${name})
 #
@@ -84,13 +66,10 @@
 #                            plugin_name metadata_file
 #                            sources...)
 # The macro adds preprocessor directive CORRADE_STATIC_PLUGIN. Additional
-# libraries can be linked in via target_link_libraries(plugin_name ...).
-#
-# Plugin library name will be added at the end of static_plugins_variable and
-# the variable is meant to be used for linking plugins to main
-# executable/library, e.g:
+# libraries can be linked in via target_link_libraries(plugin_name ...). Plugin
+# library name will be appended to static_plugins_variable and the variable is
+# meant to be used for linking plugins to main executable/library, e.g:
 #  target_link_libraries(app lib1 lib2 ... ${static_plugins_variable})
-#
 # This variable is set with parent scope to be available in parent directory.
 # If there are more intermediate directories between plugin directory and main
 # executable directory, the variable can be propagated to parent scope like
@@ -106,7 +85,33 @@
 # DLL is not found, fatal error message is printed.
 #
 
+#
+#   This file is part of Corrade.
+#
+#   Copyright © 2007, 2008, 2009, 2010, 2011, 2012, 2013
+#             Vladimír Vondruš <mosra@centrum.cz>
+#
+#   Permission is hereby granted, free of charge, to any person obtaining a
+#   copy of this software and associated documentation files (the "Software"),
+#   to deal in the Software without restriction, including without limitation
+#   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+#   and/or sell copies of the Software, and to permit persons to whom the
+#   Software is furnished to do so, subject to the following conditions:
+#
+#   The above copyright notice and this permission notice shall be included
+#   in all copies or substantial portions of the Software.
+#
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+#   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+#   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+#   DEALINGS IN THE SOFTWARE.
+#
+
 # Libraries
+find_library(CORRADE_INTERCONNECT_LIBRARY CorradeInterconnect)
 find_library(CORRADE_UTILITY_LIBRARY CorradeUtility)
 find_library(CORRADE_PLUGINMANAGER_LIBRARY CorradePluginManager)
 find_library(CORRADE_TESTSUITE_LIBRARY CorradeTestSuite)
@@ -122,6 +127,7 @@ find_path(CORRADE_INCLUDE_DIR
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Corrade DEFAULT_MSG
     CORRADE_UTILITY_LIBRARY
+    CORRADE_INTERCONNECT_LIBRARY
     CORRADE_PLUGINMANAGER_LIBRARY
     CORRADE_TESTSUITE_LIBRARY
     CORRADE_INCLUDE_DIR
@@ -149,9 +155,12 @@ if(NOT _GCC46_COMPATIBILITY EQUAL -1)
 endif()
 
 set(CORRADE_UTILITY_LIBRARIES ${CORRADE_UTILITY_LIBRARY})
+set(CORRADE_INTERCONNECT_LIBRARIES ${CORRADE_INTERCONNECT_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
 set(CORRADE_PLUGINMANAGER_LIBRARIES ${CORRADE_PLUGINMANAGER_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
 set(CORRADE_TESTSUITE_LIBRARIES ${CORRADE_TESTSUITE_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
-mark_as_advanced(CORRADE_UTILITY_LIBRARY CORRADE_PLUGINMANAGER_LIBRARY CORRADE_TESTSUITE_LIBRARY)
+mark_as_advanced(CORRADE_UTILITY_LIBRARY
+    CORRADE_INTERCONNECT_LIBRARY
+    CORRADE_PLUGINMANAGER_LIBRARY
+    CORRADE_TESTSUITE_LIBRARY)
 
-include(CorradeMacros)
-include(CorradeLibSuffix)
+include(UseCorrade)

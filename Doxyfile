@@ -202,6 +202,7 @@ ALIASES                = \
     "todoc=@xrefitem todoc \"Documentation todo\" \"Documentation-related todo list\"" \
     "fn_gl{1}=<a href=\"http://www.opengl.org/sdk/docs/man4/xhtml/gl\1.xml\">gl\1()</a>" \
     "fn_gl_extension{3}=<a href=\"http://www.opengl.org/registry/specs/\2/\3.txt\">gl\1<b></b>\2()</a>" \
+    "fn_gles_extension{3}=<a href=\"http://www.khronos.org/registry/gles/extensions/\2/\2_\3.txt\">gl\1<b></b>\2()</a>" \
     "def_gl{1}=`GL_\1`" \
     "requires_gl30=@xrefitem requires-gl30 \"Requires OpenGL 3.0\" \"Functionality requiring OpenGL 3.0\"" \
     "requires_gl31=@xrefitem requires-gl31 \"Requires OpenGL 3.1\" \"Functionality requiring OpenGL 3.1\"" \
@@ -1189,7 +1190,7 @@ EXT_LINKS_IN_WINDOW    = NO
 # to manually remove any form_*.png images from the HTML output directory
 # to force them to be regenerated.
 
-FORMULA_FONTSIZE       = 10
+FORMULA_FONTSIZE       = 12
 
 # Use the FORMULA_TRANPARENT tag to determine whether or not the images
 # generated for formulas are transparent PNGs. Transparent PNGs are
@@ -1670,7 +1671,7 @@ DOT_FONTPATH           =
 # indirect inheritance relations. Setting this tag to YES will force the
 # CLASS_DIAGRAMS tag to NO.
 
-CLASS_GRAPH            = YES
+CLASS_GRAPH            = NO
 
 # If the COLLABORATION_GRAPH and HAVE_DOT tags are set to YES then doxygen
 # will generate a graph for each documented class showing the direct and
@@ -1737,7 +1738,7 @@ CALLER_GRAPH           = NO
 # If the GRAPHICAL_HIERARCHY and HAVE_DOT tags are set to YES then doxygen
 # will generate a graphical hierarchy of all classes instead of a textual one.
 
-GRAPHICAL_HIERARCHY    = YES
+GRAPHICAL_HIERARCHY    = NO
 
 # If the DIRECTORY_GRAPH and HAVE_DOT tags are set to YES
 # then doxygen will show the dependencies a directory has on other directories

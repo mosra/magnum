@@ -1,18 +1,27 @@
 #ifndef Magnum_Buffer_h
 #define Magnum_Buffer_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -22,9 +31,10 @@
 #include <cstddef>
 #include <array>
 #include <vector>
+#include <Containers/EnumSet.h>
 
 #include "Magnum.h"
-
+#include "OpenGL.h"
 #include "magnumVisibility.h"
 
 namespace Magnum {
@@ -40,6 +50,7 @@ data updates.
 Default way to set or update buffer data with setData() or setSubData() is to
 explicitly specify data size and pass the pointer to it:
 @code
+Buffer buffer;
 Vector3* data = new Vector3[200];
 buffer.setData(200*sizeof(Vector3), data, Buffer::Usage::StaticDraw);
 @endcode
@@ -59,19 +70,52 @@ std::vector<Vector3> data;
 buffer.setData(data, Buffer::Usage::StaticDraw);
 @endcode
 
+@subsection Buffer-data-mapping Memory mapping
+
+%Buffer data can be also updated asynchronously. First you need to allocate
+the buffer to desired size by passing `nullptr` to setData(), e.g.:
+@code
+buffer.setData(200*sizeof(Vector3)), nullptr, Buffer::Usage::StaticDraw);
+@endcode
+Then you can map the buffer to client memory and operate with the memory
+directly. After you are done with the operation, call unmap() to unmap the
+buffer again.
+@code
+Vector3* data = static_cast<Vector3*>(buffer.map(0, 200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::InvalidateBuffer));
+for(std::size_t i = 0; i != 200; ++i)
+    data[i] = ...;
+CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
+@endcode
+If you are updating only a few discrete portions of the buffer, you can use
+@ref MapFlag "MapFlag::FlushExplicit" and flushMappedRange() to reduce number
+of memory operations performed by OpenGL on unmapping. Example:
+@code
+Vector3* data = static_cast<Vector3*>(buffer.map(0, 200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit));
+for(std::size_t i: {7, 27, 56, 128}) {
+    data[i] = ...;
+    buffer.flushMappedRange(i*sizeof(Vector3), sizeof(Vector3));
+}
+CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
+@endcode
+
 @section Buffer-performance-optimization Performance optimizations
 
 The engine tracks currently bound buffers to avoid unnecessary calls to
-@fn_gl{BindBuffer}. If the buffer is already bound to some target,
-functions copy(), setData() and setSubData() use that target in
-@fn_gl{CopyBufferSubData}, @fn_gl{BufferData} and @fn_gl{BufferSubData}
-functions instead of binding the buffer to some specific target. You can also
-use setTargetHint() to possibly reduce unnecessary rebinding.
+@fn_gl{BindBuffer}. If the buffer is already bound to some target, functions
+copy(), setData(), setSubData(), map(), flushMappedRange() and unmap() use
+that target instead of binding the buffer to some specific target. You can
+also use setTargetHint() to possibly reduce unnecessary rebinding.
 
 If extension @extension{EXT,direct_state_access} is available, functions
-copy(), setData() and setSubData() use DSA functions to avoid unnecessary
-calls to @fn_gl{BindBuffer}. See their respective documentation for more
-information.
+copy(), setData(), setSubData(), map(), flushMappedRange() and unmap() use DSA
+functions to avoid unnecessary calls to @fn_gl{BindBuffer}. See their
+respective documentation for more information.
+
+You can use functions invalidateData() and invalidateSubData() if you don't
+need buffer data anymore to avoid unnecessary memory operations performed by
+OpenGL in order to preserve the data. If running on OpenGL ES or extension
+@extension{ARB,invalidate_subdata} is not available, these functions do
+nothing.
 
 @todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
 @todo BindBufferRange/BindBufferOffset/BindBufferBase for transform feedback (3.0, @extension{EXT,transform_feedback})
@@ -97,7 +141,7 @@ class MAGNUM_EXPORT Buffer {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Used for storing atomic counters.
-             * @requires_gl42 Extension @extension{ARB,shader_atomic_counters}
+             * @requires_gl42 %Extension @extension{ARB,shader_atomic_counters}
              * @requires_gl Atomic counters are not available in OpenGL ES.
              */
             AtomicCounter = GL_ATOMIC_COUNTER_BUFFER,
@@ -106,7 +150,7 @@ class MAGNUM_EXPORT Buffer {
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * Source for copies. See copy().
-             * @requires_gl31 Extension @extension{ARB,copy_buffer}
+             * @requires_gl31 %Extension @extension{ARB,copy_buffer}
              * @requires_gles30 Buffer copying is not available in OpenGL ES
              *      2.0.
              */
@@ -114,7 +158,7 @@ class MAGNUM_EXPORT Buffer {
 
             /**
              * Target for copies. See copy().
-             * @requires_gl31 Extension @extension{ARB,copy_buffer}
+             * @requires_gl31 %Extension @extension{ARB,copy_buffer}
              * @requires_gles30 Buffer copying is not available in OpenGL ES
              *      2.0.
              */
@@ -124,14 +168,14 @@ class MAGNUM_EXPORT Buffer {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Indirect compute dispatch commands.
-             * @requires_gl43 Extension @extension{ARB,compute_shader}
+             * @requires_gl43 %Extension @extension{ARB,compute_shader}
              * @requires_gl Compute shaders are not available in OpenGL ES.
              */
             DispatchIndirect = GL_DISPATCH_INDIRECT_BUFFER,
 
             /**
              * Used for supplying arguments for indirect drawing.
-             * @requires_gl40 Extension @extension{ARB,draw_indirect}
+             * @requires_gl40 %Extension @extension{ARB,draw_indirect}
              * @requires_gl Indirect drawing not available in OpenGL ES.
              */
             DrawIndirect = GL_DRAW_INDIRECT_BUFFER,
@@ -161,14 +205,14 @@ class MAGNUM_EXPORT Buffer {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Used for shader storage.
-             * @requires_gl43 Extension @extension{ARB,shader_storage_buffer_object}
+             * @requires_gl43 %Extension @extension{ARB,shader_storage_buffer_object}
              * @requires_gl Shader storage is not available in OpenGL ES.
              */
             ShaderStorage = GL_SHADER_STORAGE_BUFFER,
 
             /**
-             * Source for texel fetches. See BufferedTexture.
-             * @requires_gl31 Extension @extension{ARB,texture_buffer_object}
+             * Source for texel fetches. See BufferTexture.
+             * @requires_gl31 %Extension @extension{ARB,texture_buffer_object}
              * @requires_gl Texture buffers are not available in OpenGL ES.
              */
             Texture = GL_TEXTURE_BUFFER,
@@ -177,7 +221,7 @@ class MAGNUM_EXPORT Buffer {
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * Target for transform feedback.
-             * @requires_gl30 Extension @extension{EXT,transform_feedback}
+             * @requires_gl30 %Extension @extension{EXT,transform_feedback}
              * @requires_gles30 Transform feedback is not available in OpenGL
              *      ES 2.0.
              */
@@ -185,7 +229,7 @@ class MAGNUM_EXPORT Buffer {
 
             /**
              * Used for storing uniforms.
-             * @requires_gl31 Extension @extension{ARB,uniform_buffer_object}
+             * @requires_gl31 %Extension @extension{ARB,uniform_buffer_object}
              * @requires_gles30 Uniform buffers are not available in OpenGL ES
              *      2.0.
              */
@@ -265,12 +309,122 @@ class MAGNUM_EXPORT Buffer {
             /**
              * Updated frequently as output from OpenGL command and used
              * frequently for drawing or copying to other images.
-             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::DynamicCopy"
+             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::DynamicDraw"
              *      is available in OpenGL ES 2.0.
              */
             DynamicCopy = GL_DYNAMIC_COPY
             #endif
         };
+
+        /**
+         * @brief Memory mapping access
+         *
+         * @deprecated Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         *      instead, as it has more complete set of features.
+         * @see map(MapAccess)
+         * @requires_es_extension %Extension @es_extension{OES,mapbuffer} in
+         *      OpenGL ES 2.0, use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         *      in OpenGL ES 3.0 instead.
+         */
+        enum class MapAccess: GLenum {
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Map buffer for reading only.
+             * @requires_gl Only @ref Magnum::Buffer::MapAccess "MapAccess::WriteOnly"
+             *      is available in OpenGL ES 2.0.
+             */
+            ReadOnly = GL_READ_ONLY,
+            #endif
+
+            /**
+             * Map buffer for writing only.
+             */
+            #ifdef MAGNUM_TARGET_GLES
+            WriteOnly = GL_WRITE_ONLY_OES
+            #else
+            WriteOnly = GL_WRITE_ONLY,
+
+            /**
+             * Map buffer for both reading and writing.
+             * @requires_gl Only @ref Magnum::Buffer::MapAccess "MapAccess::WriteOnly"
+             *      is available in OpenGL ES 2.0.
+             */
+            ReadWrite = GL_READ_WRITE
+            #endif
+        };
+
+        /**
+         * @brief Memory mapping flag
+         *
+         * @see MapFlags, map(GLintptr, GLsizeiptr, MapFlags)
+         * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
+         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
+         */
+        enum class MapFlag: GLbitfield {
+            /** Map buffer for reading. */
+            #ifndef MAGNUM_TARGET_GLES2
+            Read = GL_MAP_READ_BIT,
+            #else
+            Read = GL_MAP_READ_BIT_EXT,
+            #endif
+
+            /** Map buffer for writing. */
+            #ifndef MAGNUM_TARGET_GLES2
+            Write = GL_MAP_WRITE_BIT,
+            #else
+            Write = GL_MAP_WRITE_BIT_EXT,
+            #endif
+
+            /**
+             * Previous contents of the entire buffer may be discarded. May
+             * not be used in combination with @ref MapFlag "MapFlag::Read".
+             * @see invalidateData()
+             */
+            #ifndef MAGNUM_TARGET_GLES2
+            InvalidateBuffer = GL_MAP_INVALIDATE_BUFFER_BIT,
+            #else
+            InvalidateBuffer = GL_MAP_INVALIDATE_BUFFER_BIT_EXT,
+            #endif
+
+            /**
+             * Previous contents of mapped range may be discarded. May not
+             * be used in combination with @ref MapFlag "MapFlag::Read".
+             * @see invalidateSubData()
+             */
+            #ifndef MAGNUM_TARGET_GLES2
+            InvalidateRange = GL_MAP_INVALIDATE_RANGE_BIT,
+            #else
+            InvalidateRange = GL_MAP_INVALIDATE_RANGE_BIT_EXT,
+            #endif
+
+            /**
+             * Only one or more discrete subranges of the mapping will be
+             * modified. See flushMappedRange() for more information. May only
+             * be used in conjuction with @ref MapFlag "MapFlag::Write".
+             */
+            #ifndef MAGNUM_TARGET_GLES2
+            FlushExplicit = GL_MAP_FLUSH_EXPLICIT_BIT,
+            #else
+            FlushExplicit = GL_MAP_FLUSH_EXPLICIT_BIT_EXT,
+            #endif
+
+            /**
+             * No pending operations on the buffer should be synchronized
+             * before mapping.
+             */
+            #ifndef MAGNUM_TARGET_GLES2
+            Unsynchronized = GL_MAP_UNSYNCHRONIZED_BIT
+            #else
+            Unsynchronized = GL_MAP_UNSYNCHRONIZED_BIT_EXT
+            #endif
+        };
+
+        /**
+         * @brief Memory mapping flags
+         *
+         * @see map(GLintptr, GLsizeiptr, MapFlags)
+         */
+        typedef Corrade::Containers::EnumSet<MapFlag, GLbitfield> MapFlags;
 
         /**
          * @brief Unbind any buffer from given target
@@ -293,10 +447,10 @@ class MAGNUM_EXPORT Buffer {
          * buffers aren't already bound somewhere, they are bound to
          * `Target::CopyRead` and `Target::CopyWrite` before the copy is
          * performed.
-         * @requires_gl31 Extension @extension{ARB,copy_buffer}
-         * @requires_gles30 Buffer copying is not available in OpenGL ES 2.0.
          * @see @fn_gl{BindBuffer} and @fn_gl{CopyBufferSubData} or
          *      @fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}
+         * @requires_gl31 %Extension @extension{ARB,copy_buffer}
+         * @requires_gles30 %Buffer copying is not available in OpenGL ES 2.0.
          */
         inline static void copy(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
             copyImplementation(read, write, readOffset, writeOffset, size);
@@ -311,7 +465,7 @@ class MAGNUM_EXPORT Buffer {
          * Generates new OpenGL buffer.
          * @see @fn_gl{GenBuffers}
          */
-        inline Buffer(Target targetHint = Target::Array): _targetHint(targetHint) {
+        inline explicit Buffer(Target targetHint = Target::Array): _targetHint(targetHint) {
             glGenBuffers(1, &_id);
         }
 
@@ -443,6 +597,111 @@ class MAGNUM_EXPORT Buffer {
             setSubData(offset, data.size()*sizeof(T), data.data());
         }
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Invalidate buffer data
+         *
+         * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
+         * is not available, this function does nothing.
+         * @see @ref MapFlag "MapFlag::InvalidateBuffer", @fn_gl{InvalidateBufferData}
+         */
+        inline void invalidateData() {
+            (this->*invalidateImplementation)();
+        }
+
+        /**
+         * @brief Invalidate buffer subdata
+         * @param offset    Offset into the buffer
+         * @param length    Length of the invalidated range
+         *
+         * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
+         * is not available, this function does nothing.
+         * @see @ref MapFlag "MapFlag::InvalidateRange", @fn_gl{InvalidateBufferData}
+         */
+        inline void invalidateSubData(GLintptr offset, GLsizeiptr length) {
+            (this->*invalidateSubImplementation)(offset, length);
+        }
+        #endif
+
+        /**
+         * @brief Map buffer to client memory
+         * @param access    Access
+         * @return Pointer to buffer data
+         *
+         * If @extension{EXT,direct_state_access} is not available and the
+         * buffer is not already bound somewhere, it is bound to hinted target
+         * before the operation.
+         * @deprecated Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         *      instead, as it has more complete set of features.
+         * @see unmap(), setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{MapBuffer}
+         *      or @fn_gl_extension{MapNamedBuffer,EXT,direct_state_access}
+         * @requires_es_extension %Extension @es_extension{OES,mapbuffer} in
+         *      OpenGL ES 2.0, use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         *      in OpenGL ES 3.0 instead.
+         */
+        inline void* map(MapAccess access) {
+            return (this->*mapImplementation)(access);
+        }
+
+        /**
+         * @brief Map buffer to client memory
+         * @param offset    Offset into the buffer
+         * @param length    Length of the mapped memory
+         * @param flags     Flags. At least @ref MapFlag "MapFlag::Read" or
+         *      @ref MapFlag "MapFlag::Write" must be specified.
+         * @return Pointer to buffer data
+         *
+         * If @extension{EXT,direct_state_access} is not available and the
+         * buffer is not already bound somewhere, it is bound to hinted target
+         * before the operation.
+         * @see flushMappedRange(), unmap(), map(MapAccess), setTargetHint(), @fn_gl{BindBuffer}
+         *      and @fn_gl{MapBufferRange} or @fn_gl_extension{MapNamedBufferRange,EXT,direct_state_access}
+         * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
+         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
+         */
+        inline void* map(GLintptr offset, GLsizeiptr length, MapFlags flags) {
+            return (this->*mapRangeImplementation)(offset, length, flags);
+        }
+
+        /**
+         * @brief Flush mapped range
+         * @param offset    Offset relative to start of mapped range
+         * @param length    Length of the flushed memory
+         *
+         * Flushes specified subsection of mapped range. Use only if you called
+         * map() with @ref MapFlag "MapFlag::FlushExplicit" flag. See
+         * @ref Buffer-data-mapping "class documentation" for usage example.
+         *
+         * If @extension{EXT,direct_state_access} is not available and the
+         * buffer is not already bound somewhere, it is bound to hinted target
+         * before the operation.
+         * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{FlushMappedBufferRange}
+         *      or @fn_gl_extension{FlushMappedNamedBufferRange,EXT,direct_state_access}
+         * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
+         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
+         */
+        inline void flushMappedRange(GLintptr offset, GLsizeiptr length) {
+            (this->*flushMappedRangeImplementation)(offset, length);
+        }
+
+        /**
+         * @brief Unmap buffer
+         * @return `False` if the data have become corrupt during the time
+         *      the buffer was mapped (e.g. after screen was resized), `true`
+         *      otherwise.
+         *
+         * Unmaps buffer previously mapped with map(), invalidating the
+         * pointer returned by these functions. If @extension{EXT,direct_state_access}
+         * is not available and the buffer is not already bound somewhere, it
+         * is bound to hinted target before the operation.
+         * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{UnmapBuffer} or
+         *      @fn_gl_extension{UnmapNamedBuffer,EXT,direct_state_access}
+         * @requires_gles30 %Extension @es_extension{OES,mapbuffer}
+         */
+        inline bool unmap() {
+            return (this->*unmapImplementation)();
+        }
+
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
 
@@ -472,9 +731,53 @@ class MAGNUM_EXPORT Buffer {
         #endif
         static SetSubDataImplementation setSubDataImplementation;
 
+        typedef void(Buffer::*InvalidateImplementation)();
+        void MAGNUM_LOCAL invalidateImplementationNoOp();
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL invalidateImplementationARB();
+        #endif
+        static InvalidateImplementation invalidateImplementation;
+
+        typedef void(Buffer::*InvalidateSubImplementation)(GLintptr, GLsizeiptr);
+        void MAGNUM_LOCAL invalidateSubImplementationNoOp(GLintptr offset, GLsizeiptr length);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL invalidateSubImplementationARB(GLintptr offset, GLsizeiptr length);
+        #endif
+        static InvalidateSubImplementation invalidateSubImplementation;
+
+        typedef void*(Buffer::*MapImplementation)(MapAccess);
+        void MAGNUM_LOCAL * mapImplementationDefault(MapAccess access);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL * mapImplementationDSA(MapAccess access);
+        #endif
+        static MapImplementation mapImplementation;
+
+        typedef void*(Buffer::*MapRangeImplementation)(GLintptr, GLsizeiptr, MapFlags);
+        void MAGNUM_LOCAL * mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL * mapRangeImplementationDSA(GLintptr offset, GLsizeiptr length, MapFlags access);
+        #endif
+        static MapRangeImplementation mapRangeImplementation;
+
+        typedef void(Buffer::*FlushMappedRangeImplementation)(GLintptr, GLsizeiptr);
+        void MAGNUM_LOCAL flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr length);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL flushMappedRangeImplementationDSA(GLintptr offset, GLsizeiptr length);
+        #endif
+        static FlushMappedRangeImplementation flushMappedRangeImplementation;
+
+        typedef bool(Buffer::*UnmapImplementation)();
+        bool MAGNUM_LOCAL unmapImplementationDefault();
+        #ifndef MAGNUM_TARGET_GLES
+        bool MAGNUM_LOCAL unmapImplementationDSA();
+        #endif
+        static UnmapImplementation unmapImplementation;
+
         GLuint _id;
         Target _targetHint;
 };
+
+CORRADE_ENUMSET_OPERATORS(Buffer::MapFlags)
 
 }
 

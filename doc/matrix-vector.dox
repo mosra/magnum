@@ -1,3 +1,27 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
 namespace Magnum { namespace Math {
 /** @page matrix-vector Operations with matrices and vectors
 
@@ -14,9 +38,9 @@ easier.
 
 %Magnum has three main matrix and vector classes: RectangularMatrix, (square)
 Matrix and Vector. To achieve greatest code reuse, %Matrix is internally
-square %RectangularMatrix and %Vector is internally one-column
-%RectangularMatrix. Both vectors and matrices can have arbitrary size (known
-at compile time) and can store any meaningful type.
+square %RectangularMatrix and %RectangularMatrix is internally array of one or
+more %Vector instances. Both vectors and matrices can have arbitrary size
+(known at compile time) and can store any arithmetic type.
 
 Each subclass brings some specialization to its superclass and for most common
 vector and matrix sizes there are specialized classes Matrix3 and Matrix4,
@@ -26,38 +50,34 @@ return the most specialized type known to make subsequent operations more
 convenient - columns of %RectangularMatrix are returned as %Vector, but when
 accessing columns of e.g. %Matrix3, they are returned as %Vector3.
 
-There are also even more specialized subclasses - Point2D, Point3D for
-creating points with homogeneous coordinates and Color3, Color4 for color
-handling and conversion.
+There are also even more specialized subclasses, e.g. Color3 and Color4 for
+color handling and conversion.
 
 @section matrix-vector-construction Constructing matrices and vectors
 
 Default constructors of RectangularMatrix and Vector (and Vector2, Vector3,
 Vector4, Color3) create zero-filled objects. Matrix (and Matrix3, Matrix4) is
-by default constructed as identity matrix. Point2D and Point3D have
-homogeneous component set to one, Color4 has alpha value set to opaque.
+by default constructed as identity matrix. Color4 has alpha value set to opaque.
 @code
-RectangularMatrix<2, 3, int> a; // zero-filled
-Vector<3, int> b;               // zero-filled
+RectangularMatrix<2, 3, Int> a; // zero-filled
+Vector<3, Int> b;               // zero-filled
 
-Matrix<3, int> identity;                    // diagonal set to 1
-Matrix<3, int> zero(Matrix<3, int>::Zero);  // zero-filled
+Matrix<3, Int> identity;                    // diagonal set to 1
+Matrix<3, Int> zero(Matrix<3, Int>::Zero);  // zero-filled
 
-Point2D<int> c; // {0, 0, 1}
-Point3D<int> d; // {0, 0, 0, 1}
-
-Color4<float> black1;           // {0.0f, 0.0f, 0.0f, 1.0f}
+Color4<Float> black1;           // {0.0f, 0.0f, 0.0f, 1.0f}
 Color4<unsigned char> black2;   // {0, 0, 0, 255}
 @endcode
 
-Most common and most efficient way to create matrix or vector is to pass
-values of all components to the constructor.
+Most common and most efficient way to create vector is to pass all values to
+constructor, matrix is created by passing all column vectors to the
+constructor.
 @code
-Matrix3<int> mat(0, 1, 2,
-                 3, 4, 5,
-                 6, 7, 8); // column-major (see explanation why below)
+Vector3<Int> vec(0, 1, 2);
 
-Vector3<int> vec(0, 1, 2);
+Matrix3<Int> mat({0, 1, 2},
+                 {3, 4, 5},
+                 {6, 7, 8});
 @endcode
 All constructors check number of passed arguments and the errors are catched
 at compile time.
@@ -65,43 +85,34 @@ at compile time.
 You can specify all components of vector or whole diagonal of square matrix at
 once:
 @code
-Matrix3<int> diag(Matrix3<int>::Identity, 2); // diagonal set to 2, zeros elsewhere
-Vector3<int> fill(10);    // {10, 10, 10}
-@endcode
-
-Vectors are commonly used to specify various axes and scaling coefficients in
-transformations, you can use convenience functions instead of typing out all
-other elements:
-@code
-Matrix4::rotation(deg(5.0f), Vector3::xAxis()); // {1.0f, 0.0f, 0.0f}
-Matrix3::translation(Vector2::yAxis(2.0f));     // {0.0f, 2.0f}
-Matrix4::scaling(Vector3::zScale(-10.0f));      // {1.0f, 1.0f, -10.0f}
+Matrix3<Int> diag(Matrix3<Int>::Identity, 2); // diagonal set to 2, zeros elsewhere
+Vector3<Int> fill(10);    // {10, 10, 10}
 @endcode
 
 It is possible to create matrices from other matrices and vectors with the
 same row count; vectors from vector and scalar:
 @code
-RectangularMatrix<2, 3, int> a;
-Vector3<int> b, c;
-Matrix3<int> mat = Matrix3<int>::from(b, a, c);
-Vector<8, int> vec = Vector<8, int>::from(1, b, 2, c);
+RectangularMatrix<2, 3, Int> a;
+Vector3<Int> b, c;
+Matrix3<Int> mat(a, b);
+Vector<8, Int> vec(1, b, 2, c);
 @endcode
 
 It is also possible to create them from an C-style array. The function does
 simple type cast without any copying, so it's possible to conveniently operate
 on the array itself:
 @code
-int[] mat = { 2, 4, 6,
+Int[] mat = { 2, 4, 6,
               1, 3, 5 };
-RectangularMatrix<2, 3, int>::from(mat) *= 2; // mat == { 4, 8, 12, 2, 6, 10 }
+RectangularMatrix<2, 3, Int>::from(mat) *= 2; // mat == { 4, 8, 12, 2, 6, 10 }
 @endcode
 Note that unlike constructors, this function has no way to check whether the
 array is long enough to contain all elements, so use with caution.
 
-You can also convert between data types:
+You can also *explicitly* convert between data types:
 @code
-Vector4<float> floating(1.3f, 2.7f, -15.0f, 7.0f);
-Vector4<int> integral(Vector4<int>::from(floating)); // {1, 2, -15, 7}
+Vector4<Float> floating(1.3f, 2.7f, -15.0f, 7.0f);
+Vector4<Int> integral(floating); // {1, 2, -15, 7}
 @endcode
 
 @section matrix-vector-component-access Accessing matrix and vector components
@@ -110,37 +121,37 @@ Column vectors of matrices and vector components can be accessed using square
 brackets, there is also round bracket operator for accessing matrix components
 directly:
 @code
-RectangularMatrix<3, 2, int> a;
+RectangularMatrix<3, 2, Int> a;
 a[2] /= 2;      // third column (column major indexing, see explanation below)
 a[0][1] = 5;    // first column, second element
-a(0, 1) += 3;   // first column, second element (preferred)
 
-Vector<3, int> b;
+Vector<3, Int> b;
 b[1] = 1;       // second element
 @endcode
-For accessing matrix element prefer round bracket operator, as it is possibly
-faster than the double square brackets (but never slower) and isn't prone to
-compiler mis-optimizations.
+
+Row vectors can be accessed too, but only for reading, and the access is slower
+due to the way the matrix is stored (see explanation below):
+@code
+Vector<2, Int> c = a.row(2); // third row
+@endcode
 
 Fixed-size vector subclasses have functions for accessing named components
 and subparts:
 @code
-Vector4<int> a;
-int x = a.x();
+Vector4<Int> a;
+Int x = a.x();
 a.y() += 5;
 
-Vector3<int> xyz = a.xyz();
+Vector3<Int> xyz = a.xyz();
 xyz.xy() *= 5;
 @endcode
 Color3 and Color4 name their components `rgba` instead of `xyzw`.
 
-For more involved operations with components there are two swizzle() functions,
-they have the same features, but one is guaranteed to do most of the work at
-compile-time, while the second has more convenient syntax:
+For more involved operations with components there is the swizzle() function:
 @code
-Vector4<int> original(-1, 2, 3, 4);
-Vector4<int> bgra = swizzle<'b', 'g', 'r', 'a'>(original); // { 3, 2, -1, 4 }
-Vector<6, int> a10rgb = swizzle(original, "a10rgb"); // { 4, 1, 0, -1, 2, 3 }
+Vector<4, Int> original(-1, 2, 3, 4);
+Vector<4, Int> bgra = swizzle<'b', 'g', 'r', 'a'>(original); // { 3, 2, -1, 4 }
+Vector<6, Int> w10xyz = swizzle<'w', '1', '0', 'x', 'y', 'z'>(original); // { 4, 1, 0, -1, 2, 3 }
 @endcode
 
 @section matrix-vector-column-major Matrices are column-major and vectors are columns
@@ -152,28 +163,24 @@ implications and it may differ from what is common in mathematics:
 - Order of template arguments in specification of RectangularMatrix is also
   column-major:
 @code
-RectangularMatrix<2, 3, int> mat; // two columns, three rows
+RectangularMatrix<2, 3, Int> mat; // two columns, three rows
 @endcode
-- Order of components in matrix constructors is also column-major, so the
-  elements passed in constructor doesn't need to be reordered internally
-  before putting them into data array:
+- Order of components in matrix constructors is also column-major, further
+  emphasized by requirement that you have to pass directly column vectors:
 @code
-Matrix3<int> mat(0, 1, 2,
-                 3, 4, 5,
-                 6, 7, 8); // first column is {0, 1, 2}
+Matrix3<Int> mat({0, 1, 2},
+                 {3, 4, 5},
+                 {6, 7, 8}); // first column is {0, 1, 2}
 @endcode
-- Element accessing order is also column-major. It costs virtually no time to
-  return reference to portion of data array as column vector, thus the bracket
-  operator is accessing columns. Returned vector has also its own bracket
-  operator, which is indexing rows. To avoid confusion, first parameter of
-  round bracket operator is thus also column index.
+- Element accessing order is also column-major, thus the bracket operator is
+  accessing columns. Returned vector has also its own bracket operator, which
+  is then indexing rows.
 @code
 mat[0] *= 2;    // first column
-mat[2][0] = 5;  // first element of first column vector
-mat(2, 0) += 3; // first element of first column
+mat[2][0] = 5;  // first element of first column
 @endcode
 - Various algorithms which commonly operate on matrix rows (such as
-  @ref Algorithms::GaussJordan "Gauss-Jordan elimination") have faster
+  @ref Algorithms::gaussJordanInPlace() "Gauss-Jordan elimination") have faster
   alternatives which operate on columns. It's then up to user decision to
   operate with transposed matrices or use the slower non-transposed
   alternative of the algorithm.

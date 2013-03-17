@@ -1,18 +1,27 @@
 #ifndef Magnum_Primitives_Capsule_h
 #define Magnum_Primitives_Capsule_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -21,12 +30,14 @@
 
 #include "Trade/MeshData3D.h"
 
+#include "Primitives/magnumPrimitivesVisibility.h"
+
 namespace Magnum { namespace Primitives {
 
 /**
 @brief 3D capsule primitive
 
-%Cylinder along Y axis with hemispheres instead of caps. Indexed triangle mesh
+%Cylinder along Y axis with hemispheres instead of caps. Indexed @ref Mesh::Primitive "Triangles"
 with normals and optional 2D texture coordinates.
 */
 class Capsule: public Trade::MeshData3D {
@@ -53,19 +64,19 @@ class Capsule: public Trade::MeshData3D {
          * If texture coordinates are generated, vertices of one segment are
          * duplicated for texture wrapping.
          */
-        Capsule(std::uint32_t hemisphereRings, std::uint32_t cylinderRings, std::uint32_t segments, GLfloat length, TextureCoords textureCoords = TextureCoords::DontGenerate);
+        explicit MAGNUM_PRIMITIVES_EXPORT Capsule(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float length, TextureCoords textureCoords = TextureCoords::DontGenerate);
 
     private:
-        Capsule(std::uint32_t segments, TextureCoords textureCoords);
+        Capsule(UnsignedInt segments, TextureCoords textureCoords);
 
-        void capVertex(GLfloat y, GLfloat normalY, GLfloat textureCoordsV);
-        void hemisphereVertexRings(std::uint32_t count, GLfloat centerY, GLfloat startRingAngle, GLfloat ringAngleIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);
-        void cylinderVertexRings(std::uint32_t count, GLfloat startY, GLfloat yIncrement, GLfloat startTextureCoordsV, GLfloat textureCoordsVIncrement);
+        void capVertex(Float y, Float normalY, Float textureCoordsV);
+        void hemisphereVertexRings(UnsignedInt count, Float centerY, Rad startRingAngle, Rad ringAngleIncrement, Float startTextureCoordsV, Float textureCoordsVIncrement);
+        void cylinderVertexRings(UnsignedInt count, Float startY, Float yIncrement, Float startTextureCoordsV, Float textureCoordsVIncrement);
         void bottomFaceRing();
-        void faceRings(std::uint32_t count, std::uint32_t offset = 1);
+        void faceRings(UnsignedInt count, UnsignedInt offset = 1);
         void topFaceRing();
 
-        std::uint32_t segments;
+        UnsignedInt segments;
         TextureCoords textureCoords;
 };
 

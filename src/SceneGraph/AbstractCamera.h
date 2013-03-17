@@ -1,22 +1,31 @@
 #ifndef Magnum_SceneGraph_AbstractCamera_h
 #define Magnum_SceneGraph_AbstractCamera_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractCamera, enum AspectRatioPolicy, alias Magnum::SceneGraph::AbstractCamera2D, Magnum::SceneGraph::AbstractCamera3D
+ * @brief Class Magnum::SceneGraph::AbstractCamera, enum Magnum::SceneGraph::AspectRatioPolicy, alias Magnum::SceneGraph::AbstractCamera2D, Magnum::SceneGraph::AbstractCamera3D
  */
 
 #include "Math/Matrix3.h"
@@ -32,7 +41,7 @@ namespace Magnum { namespace SceneGraph {
 
 @see AbstractCamera::setAspectRatioPolicy()
 */
-enum class AspectRatioPolicy: std::uint8_t {
+enum class AspectRatioPolicy: UnsignedByte {
     NotPreserved,   /**< Don't preserve aspect ratio (default) */
     Extend,         /**< Extend on larger side of view */
     Clip            /**< Clip on smaller side of view */
@@ -40,7 +49,7 @@ enum class AspectRatioPolicy: std::uint8_t {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    template<std::uint8_t dimensions, class T> typename DimensionTraits<dimensions, T>::MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Math::Vector2<GLsizei>& viewport);
+    template<UnsignedInt dimensions, class T> typename DimensionTraits<dimensions, T>::MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Vector2i& viewport);
 }
 #endif
 
@@ -53,21 +62,22 @@ instantiatable, use Camera2D or Camera3D subclasses instead.
 @section AbstractCamera-explicit-specializations Explicit template specializations
 
 The following specialization are explicitly compiled into SceneGraph library.
-For other specializations you have to use AbstractCamera.hpp implementation
-file to avoid linker errors. See also relevant sections in
+For other specializations (e.g. using Double type) you have to use
+AbstractCamera.hpp implementation file to avoid linker errors. See also
+relevant sections in
 @ref Camera2D-explicit-specializations "Camera2D" and
 @ref Camera3D-explicit-specializations "Camera3D" class documentation or
 @ref compilation-speedup-hpp for more information.
 
- - @ref AbstractCamera "AbstractCamera<2>"
- - @ref AbstractCamera "AbstractCamera<3>"
+ - @ref AbstractCamera "AbstractCamera<2, Float>"
+ - @ref AbstractCamera "AbstractCamera<3, Float>"
 
-@see Drawable, DrawableGroup, AbstractCamera2D, AbstractCamera3D
+@see @ref scenegraph, Drawable, DrawableGroup, AbstractCamera2D, AbstractCamera3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class T>
+template<UnsignedInt dimensions, class T>
 #else
-template<std::uint8_t dimensions, class T = GLfloat>
+template<UnsignedInt dimensions, class T = Float>
 #endif
 class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions, T> {
     public:
@@ -75,9 +85,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
          * @brief Constructor
          * @param object        Object holding the camera
          */
-        inline AbstractCamera(AbstractObject<dimensions, T>* object): AbstractFeature<dimensions, T>(object), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {
-            AbstractFeature<dimensions, T>::setCachedTransformations(AbstractFeature<dimensions, T>::CachedTransformation::InvertedAbsolute);
-        }
+        explicit AbstractCamera(AbstractObject<dimensions, T>* object);
 
         virtual ~AbstractCamera() = 0;
 
@@ -121,7 +129,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
         }
 
         /** @brief Viewport size */
-        inline Math::Vector2<GLsizei> viewport() const { return _viewport; }
+        inline Vector2i viewport() const { return _viewport; }
 
         /**
          * @brief Set viewport size
@@ -130,7 +138,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
          * according to aspect ratio policy.
          * @see setAspectRatioPolicy()
          */
-        virtual void setViewport(const Math::Vector2<GLsizei>& size);
+        virtual void setViewport(const Vector2i& size);
 
         /**
          * @brief Draw
@@ -158,11 +166,10 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
         typename DimensionTraits<dimensions, T>::MatrixType _projectionMatrix;
         typename DimensionTraits<dimensions, T>::MatrixType _cameraMatrix;
 
-        Math::Vector2<GLsizei> _viewport;
+        Vector2i _viewport;
 };
 
-template<std::uint8_t dimensions, class T> inline AbstractCamera<dimensions, T>::~AbstractCamera() {}
-
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base for two-dimensional cameras
 
@@ -170,15 +177,13 @@ Convenience alternative to <tt>%AbstractCamera<2, T></tt>. See AbstractCamera
 for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractCamera<2, T></tt> instead.
 @see AbstractCamera3D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = GLfloat> using AbstractCamera2D = AbstractCamera<2, T>;
-#endif
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = Float>
 #else
-typedef AbstractCamera<2, T = GLfloat> AbstractCamera2D;
+template<class T>
 #endif
+using AbstractCamera2D = AbstractCamera<2, T>;
 
 /**
 @brief Base for three-dimensional cameras
@@ -187,14 +192,13 @@ Convenience alternative to <tt>%AbstractCamera<3, T></tt>. See AbstractCamera
 for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractCamera<3, T></tt> instead.
 @see AbstractCamera2D
-@todoc Remove workaround when Doxygen supports alias template
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = GLfloat> using AbstractCamera3D = AbstractCamera<3, T>;
-#endif
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T = Float>
 #else
-typedef AbstractCamera<3, T = GLfloat> AbstractCamera3D;
+template<class T>
+#endif
+using AbstractCamera3D = AbstractCamera<3, T>;
 #endif
 
 }}

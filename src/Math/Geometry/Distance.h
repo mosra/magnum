@@ -1,25 +1,34 @@
 #ifndef Magnum_Math_Geometry_Distance_h
 #define Magnum_Math_Geometry_Distance_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
  * @brief Class Magnum::Math::Geometry::Distance
  */
 
-#include "Math/Math.h"
+#include "Math/Functions.h"
 #include "Math/Matrix.h"
 #include "Math/Vector3.h"
 
@@ -28,6 +37,8 @@ namespace Magnum { namespace Math { namespace Geometry {
 /** @brief Functions for computing distances */
 class Distance {
     public:
+        Distance() = delete;
+
         /**
          * @brief %Distance of line and point in 2D
          * @param a         First point of the line
@@ -42,7 +53,7 @@ class Distance {
          * @see linePointSquared(const Vector2&, const Vector2&, const Vector2&)
          */
         template<class T> inline static T linePoint(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
-            return std::abs(Matrix<2, T>::from(b - a, a - point).determinant())/(b - a).length();
+            return std::abs(Matrix<2, T>(b - a, a - point).determinant())/(b - a).length();
         }
 
         /**
@@ -57,7 +68,7 @@ class Distance {
          */
         template<class T> inline static T linePointSquared(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
             Vector2<T> bMinusA = b - a;
-            return Math::pow<2>(Matrix<2, T>::from(bMinusA, a - point).determinant())/bMinusA.dot();
+            return Math::pow<2>(Matrix<2, T>(bMinusA, a - point).determinant())/bMinusA.dot();
         }
 
         /**
@@ -132,7 +143,7 @@ class Distance {
                 return std::sqrt(pointDistanceB);
 
             /* Between A and B */
-            return std::abs(Matrix<2, T>::from(bMinusA, -pointMinusA).determinant())/std::sqrt(bDistanceA);
+            return std::abs(Matrix<2, T>(bMinusA, -pointMinusA).determinant())/std::sqrt(bDistanceA);
         }
 
         /**
@@ -158,7 +169,7 @@ class Distance {
                 return pointDistanceB;
 
             /* Between A and B */
-            return Math::pow<2>(Matrix<2, T>::from(bMinusA, -pointMinusA).determinant())/bDistanceA;
+            return Math::pow<2>(Matrix<2, T>(bMinusA, -pointMinusA).determinant())/bDistanceA;
         }
 
         /**

@@ -1,38 +1,45 @@
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 #include "GenerateFlatNormals.h"
 
-#include "Math/Point3D.h"
+#include "Math/Vector3.h"
 #include "MeshTools/Clean.h"
-
-using namespace std;
 
 namespace Magnum { namespace MeshTools {
 
-tuple<vector<std::uint32_t>, vector<Vector3>> generateFlatNormals(const vector<std::uint32_t>& indices, const vector<Point3D>& positions) {
-    CORRADE_ASSERT(!(indices.size()%3), "MeshTools::generateFlatNormals(): index count is not divisible by 3!", (tuple<vector<uint32_t>, vector<Vector3>>()));
+std::tuple<std::vector<UnsignedInt>, std::vector<Vector3>> generateFlatNormals(const std::vector<UnsignedInt>& indices, const std::vector<Vector3>& positions) {
+    CORRADE_ASSERT(!(indices.size()%3), "MeshTools::generateFlatNormals(): index count is not divisible by 3!", (std::tuple<std::vector<UnsignedInt>, std::vector<Vector3>>()));
 
     /* Create normal for every triangle (assuming counterclockwise winding) */
-    vector<uint32_t> normalIndices;
+    std::vector<UnsignedInt> normalIndices;
     normalIndices.reserve(indices.size());
-    vector<Vector3> normals;
+    std::vector<Vector3> normals;
     normals.reserve(indices.size()/3);
-    for(size_t i = 0; i != indices.size(); i += 3) {
-        Vector3 normal = Vector3::cross(positions[indices[i+2]].xyz()-positions[indices[i+1]].xyz(),
-                                        positions[indices[i]].xyz()-positions[indices[i+1]].xyz()).normalized();
+    for(std::size_t i = 0; i != indices.size(); i += 3) {
+        Vector3 normal = Vector3::cross(positions[indices[i+2]]-positions[indices[i+1]],
+                                        positions[indices[i]]-positions[indices[i+1]]).normalized();
 
         /* Use the same normal for all three vertices of the face */
         normalIndices.push_back(normals.size());
@@ -42,8 +49,8 @@ tuple<vector<std::uint32_t>, vector<Vector3>> generateFlatNormals(const vector<s
     }
 
     /* Clean duplicate normals and return */
-    clean(normalIndices, normals);
-    return make_tuple(normalIndices, normals);
+    MeshTools::clean(normalIndices, normals);
+    return std::make_tuple(normalIndices, normals);
 }
 
 }}

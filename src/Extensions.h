@@ -1,18 +1,27 @@
 #ifndef Magnum_Extensions_h
 #define Magnum_Extensions_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -30,18 +39,13 @@ Each extension is `struct` named hierarchically by prefix, vendor and
 extension name, for example `GL::APPLE::vertex_array_object`. Each struct has
 the same public methods as Extension class (requiredVersion(), coreVersion()
 and string(), but these structs are better suited for compile-time decisions
-rather than Extension instances. See Context::isExtensionSupported() for
+rather than %Extension instances. See Context::isExtensionSupported() for
 example usage.
-
 @see MAGNUM_ASSERT_EXTENSION_SUPPORTED()
-
 @todo Manual indices for extensions, this has gaps
-@todo Unhide ES2_compatibility, ES3_compatibility on ES
-@todo Add ES and GL 4.3 extensions
 */
 namespace Extensions {
 
-#ifndef MAGNUM_TARGET_GLES
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define _extension(prefix, vendor, extension, _requiredVersion, _coreVersion) \
     struct extension {                                                      \
@@ -54,6 +58,7 @@ namespace Extensions {
 /* IMPORTANT: don't forget to add new extensions also in Context.cpp */
 
 namespace GL {
+    #ifndef MAGNUM_TARGET_GLES
     #line 1
     namespace AMD {
         _extension(GL,AMD,vertex_shader_layer,          GL210,  None) // #417
@@ -70,6 +75,7 @@ namespace GL {
         _extension(GL,ARB,draw_instanced,               GL210, GL310) // #44
         _extension(GL,ARB,geometry_shader4,             GL210, GL320) // #47
         _extension(GL,ARB,instanced_arrays,             GL210, GL330) // #49
+        _extension(GL,ARB,map_buffer_range,             GL210, GL300) // #50
         _extension(GL,ARB,texture_buffer_object,        GL210, GL310) // #51
         _extension(GL,ARB,texture_rg,                   GL210, GL300) // #53
         _extension(GL,ARB,uniform_buffer_object,        GL210, GL310) // #57
@@ -121,6 +127,27 @@ namespace GL {
         _extension(GL,ARB,shader_atomic_counters,       GL300, GL420) // #114
         _extension(GL,ARB,shader_image_load_store,      GL300, GL420) // #115
         _extension(GL,ARB,texture_storage,              GL210, GL420) // #117
+        _extension(GL,ARB,arrays_of_arrays,             GL210, GL430) // #120
+        _extension(GL,ARB,clear_buffer_object,          GL210, GL430) // #121
+        _extension(GL,ARB,compute_shader,               GL420, GL430) // #122
+        _extension(GL,ARB,copy_image,                   GL210, GL430) // #123
+        _extension(GL,ARB,texture_view,                 GL210, GL430) // #124
+        _extension(GL,ARB,vertex_attrib_binding,        GL210, GL430) // #125
+        _extension(GL,ARB,ES3_compatibility,            GL330, GL430) // #127
+        _extension(GL,ARB,explicit_uniform_location,    GL210, GL430) // #128
+        _extension(GL,ARB,fragment_layer_viewport,      GL300, GL430) // #129
+        _extension(GL,ARB,framebuffer_no_attachments,   GL210, GL430) // #130
+        _extension(GL,ARB,internalformat_query2,        GL210, GL430) // #131
+        _extension(GL,ARB,invalidate_subdata,           GL210, GL430) // #132
+        _extension(GL,ARB,multi_draw_indirect,          GL310, GL430) // #133
+        _extension(GL,ARB,program_interface_query,      GL210, GL430) // #134
+        _extension(GL,ARB,robust_buffer_access_behavior,GL210, GL430) // #135
+        _extension(GL,ARB,shader_image_size,            GL420, GL430) // #136
+        _extension(GL,ARB,shader_storage_buffer_object, GL400, GL430) // #137
+        _extension(GL,ARB,stencil_texturing,            GL210, GL430) // #138
+        _extension(GL,ARB,texture_buffer_range,         GL210, GL430) // #139
+        _extension(GL,ARB,texture_query_levels,         GL300, GL430) // #140
+        _extension(GL,ARB,texture_storage_multisample,  GL210, GL430) // #141
     } namespace EXT {
         _extension(GL,EXT,texture_filter_anisotropic,   GL210,  None) // #187
         _extension(GL,EXT,framebuffer_object,           GL210, GL300) // #310
@@ -142,6 +169,8 @@ namespace GL {
         _extension(GL,GREMEDY,string_marker,            GL210,  None) // #311
     } namespace INTEL {
         /* INTEL_map_texture not supported */                         // #429
+    } namespace KHR {
+        _extension(GL,KHR,debug,                        GL210, GL430) // #119
     } namespace NV {
         _extension(GL,NV,half_float,                    GL210, GL300) // #283
         _extension(GL,NV,primitive_restart,             GL210, GL310) // #285
@@ -149,9 +178,59 @@ namespace GL {
         _extension(GL,NV,conditional_render,            GL210, GL300) // #346
         /* NV_draw_texture not supported */                           // #430
     }
+    /* IMPORTANT: if this line is > 188 (57 + size), don't forget to update array size in Context.h */
+    #else
+    #line 1
+    namespace ANGLE {
+        _extension(GL,ANGLE,framebuffer_blit,       GLES200, GLES300) // #83
+    } namespace APPLE {
+        _extension(GL,APPLE,framebuffer_multisample, GLES200, GLES300) // #78
+        _extension(GL,APPLE,texture_format_BGRA8888, GLES200,   None) // #79
+    } namespace ARM {
+        _extension(GL,ARM,rgba8,                    GLES200, GLES300) // #82
+    } namespace EXT {
+        _extension(GL,EXT,texture_filter_anisotropic, GLES200,  None) // #41
+        _extension(GL,EXT,texture_type_2_10_10_10_REV, GLES200, GLES300) // #42
+        _extension(GL,EXT,texture_format_BGRA8888,  GLES200,    None) // #51
+        _extension(GL,EXT,discard_framebuffer,      GLES200, GLES300) // #64
+        _extension(GL,EXT,blend_minmax,             GLES200, GLES300) // #65
+        _extension(GL,EXT,read_format_bgra,         GLES200,    None) // #66
+        _extension(GL,EXT,debug_marker,             GLES200,    None) // #99
+        _extension(GL,EXT,occlusion_query_boolean,  GLES200, GLES300) // #100
+        _extension(GL,EXT,separate_shader_objects,  GLES200,    None) // #101
+        _extension(GL,EXT,texture_rg,               GLES200, GLES300) // #103
+        _extension(GL,EXT,sRGB,                     GLES200,    None) // #105
+        _extension(GL,EXT,texture_storage,          GLES200, GLES300) // #108
+        _extension(GL,EXT,map_buffer_range,         GLES200, GLES300) // #121
+    } namespace NV {
+        _extension(GL,NV,draw_buffers,              GLES200, GLES300) // #91
+        _extension(GL,NV,read_buffer,               GLES200, GLES300) // #93
+        _extension(GL,NV,read_buffer_front,         GLES200,    None) // #93
+        _extension(GL,NV,read_depth,                GLES200, GLES300) // #94
+        _extension(GL,NV,read_stencil,              GLES200,    None) // #94
+        _extension(GL,NV,read_depth_stencil,        GLES200, GLES300) // #94
+    } namespace OES {
+        _extension(GL,OES,depth24,                  GLES200, GLES300) // #24
+        _extension(GL,OES,depth32,                  GLES200,    None) // #25
+        _extension(GL,OES,element_index_uint,       GLES200, GLES300) // #26
+        _extension(GL,OES,mapbuffer,                GLES200,    None) // #29
+        _extension(GL,OES,rgb8_rgba8,               GLES200, GLES300) // #30
+        _extension(GL,OES,stencil1,                 GLES200,    None) // #31
+        _extension(GL,OES,stencil4,                 GLES200,    None) // #32
+        _extension(GL,OES,texture_3D,               GLES200,    None) // #34
+        _extension(GL,OES,texture_half_float_linear, GLES200, GLES300) // #35
+        _extension(GL,OES,texture_float_linear,     GLES200, GLES300) // #35
+        _extension(GL,OES,texture_half_float,       GLES200, GLES300) // #36
+        _extension(GL,OES,texture_float,            GLES200, GLES300) // #36
+        _extension(GL,OES,vertex_half_float,        GLES200, GLES300) // #38
+        _extension(GL,OES,packed_depth_stencil,     GLES200, GLES300) // #43
+        _extension(GL,OES,depth_texture,            GLES200, GLES300) // #44
+        _extension(GL,OES,vertex_array_object,      GLES200, GLES300) // #71
+        _extension(GL,OES,required_internalformat,  GLES200, GLES300) // #?
+    }
+    #endif
 }
 #undef _extension
-#endif
 #endif
 
 }

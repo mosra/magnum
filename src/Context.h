@@ -1,36 +1,45 @@
 #ifndef Magnum_Context_h
 #define Magnum_Context_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
- * @brief Enum Version, class Magnum::Context, Magnum::Extension, macro MAGNUM_ASSERT_VERSION_SUPPORTED(), MAGNUM_ASSERT_EXTENSION_SUPPORTED()
+ * @brief Enum Magnum::Version, class Magnum::Context, Magnum::Extension, macro MAGNUM_ASSERT_VERSION_SUPPORTED(), MAGNUM_ASSERT_EXTENSION_SUPPORTED()
  */
 
 #include <bitset>
 #include <vector>
 
 #include "Magnum.h"
-
+#include "OpenGL.h"
 #include "magnumVisibility.h"
 
 namespace Magnum {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    class State;
+    struct State;
 }
 #endif
 
@@ -39,7 +48,7 @@ namespace Implementation {
 
 @see Context, MAGNUM_ASSERT_VERSION_SUPPORTED()
 */
-enum class Version: GLint {
+enum class Version: Int {
     None = 0xFFFF,                  /**< @brief Unspecified */
     #ifndef MAGNUM_TARGET_GLES
     GL210 = 210,                    /**< @brief OpenGL 2.1 / GLSL 1.20 */
@@ -123,7 +132,12 @@ class MAGNUM_EXPORT Extension {
 /**
 @brief OpenGL context
 
-Provides access to version and extension information.
+Provides access to version and extension information. Instance available
+through Context::current() is automatically created during construction of
+*Application classes in Platform namespace so you can safely assume that the
+instance is available during whole lifetime of *Application object.
+@todo @extension{ATI,meminfo}, @extension{NVX,gpu_memory_info}, GPU temperature?
+    (here or where?)
 */
 class MAGNUM_EXPORT Context {
     Context(const Context&) = delete;
@@ -135,10 +149,13 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Constructor
          *
+         * Constructed automatically, see class documentation for more
+         * information.
          * @see @fn_gl{Get} with @def_gl{MAJOR_VERSION}, @def_gl{MINOR_VERSION},
          *      @fn_gl{GetString} with @def_gl{EXTENSIONS}
          */
-        Context();
+        explicit Context();
+
         ~Context();
 
         /** @brief Current context */
@@ -158,7 +175,7 @@ class MAGNUM_EXPORT Context {
          * @see minorVersion(), version(), versionString(),
          *      shadingLanguageVersionString()
          */
-        inline GLint majorVersion() const { return _majorVersion; }
+        inline Int majorVersion() const { return _majorVersion; }
 
         /**
          * @brief Minor OpenGL version (e.g. `3`)
@@ -166,7 +183,7 @@ class MAGNUM_EXPORT Context {
          * @see majorVersion(), version(), versionString(),
          *      shadingLanguageVersionString()
          */
-        inline GLint minorVersion() const { return _minorVersion; }
+        inline Int minorVersion() const { return _minorVersion; }
 
         /**
          * @brief Vendor string
@@ -178,7 +195,7 @@ class MAGNUM_EXPORT Context {
         }
 
         /**
-         * @brief Renderer string
+         * @brief %Renderer string
          *
          * @see vendorString(), @fn_gl{GetString} with @def_gl{RENDERER}
          */
@@ -289,8 +306,8 @@ class MAGNUM_EXPORT Context {
         static Context* _current;
 
         Version _version;
-        GLint _majorVersion;
-        GLint _minorVersion;
+        Int _majorVersion;
+        Int _minorVersion;
 
         std::bitset<128> extensionStatus;
         std::vector<Extension> _supportedExtensions;
@@ -322,7 +339,7 @@ MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
     do {                                                                    \
         if(!Context::current()->isVersionSupported(version)) {    \
             Corrade::Utility::Error() << "Magnum: required version" << version << "is not supported"; \
-            exit(-3);                                                       \
+            std::exit(-3);                                                  \
         }                                                                   \
     } while(0)
 #endif
@@ -352,7 +369,7 @@ MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
     do {                                                                    \
         if(!Context::current()->isExtensionSupported<extension>()) { \
             Corrade::Utility::Error() << "Magnum: required extension" << extension::string() << "is not supported"; \
-            exit(-3);                                                       \
+            std::exit(-3);                                                  \
         }                                                                   \
     } while(0)
 #endif

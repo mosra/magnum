@@ -1,18 +1,27 @@
 #ifndef Magnum_SceneGraph_AbstractGroupedFeature_h
 #define Magnum_SceneGraph_AbstractGroupedFeature_h
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -44,13 +53,13 @@ class Drawable: public SceneGraph::AbstractGroupedFeature3D<Drawable> {
 typedef SceneGraph::FeatureGroup3D<Drawable> DrawableGroup;
 @endcode
 
-@see AbstractGroupedFeature2D, AbstractGroupedFeature3D, FeatureGroup,
-    FeatureGroup2D, FeatureGroup3D
+@see @ref scenegraph, AbstractGroupedFeature2D, AbstractGroupedFeature3D,
+    FeatureGroup, FeatureGroup2D, FeatureGroup3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::uint8_t dimensions, class Derived, class T>
+template<UnsignedInt dimensions, class Derived, class T>
 #else
-template<std::uint8_t dimensions, class Derived, class T = GLfloat>
+template<UnsignedInt dimensions, class Derived, class T = Float>
 #endif
 class AbstractGroupedFeature: public AbstractFeature<dimensions, T> {
     friend class FeatureGroup<dimensions, Derived, T>;
@@ -62,9 +71,9 @@ class AbstractGroupedFeature: public AbstractFeature<dimensions, T> {
          * @param group     Group this feature belongs to
          *
          * Adds the feature to the object and to group, if specified.
-         * @see FeatureGroup::add(), FeatureGroup::remove()
+         * @see FeatureGroup::add()
          */
-        inline AbstractGroupedFeature(AbstractObject<dimensions, T>* object, FeatureGroup<dimensions, Derived, T>* group = nullptr): AbstractFeature<dimensions, T>(object), _group(nullptr) {
+        inline explicit AbstractGroupedFeature(AbstractObject<dimensions, T>* object, FeatureGroup<dimensions, Derived, T>* group = nullptr): AbstractFeature<dimensions, T>(object), _group(nullptr) {
             if(group) group->add(static_cast<Derived*>(this));
         }
 
@@ -92,40 +101,38 @@ class AbstractGroupedFeature: public AbstractFeature<dimensions, T> {
         FeatureGroup<dimensions, Derived, T>* _group;
 };
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base for two-dimensional grouped features
 
 Convenience alternative to <tt>%AbstractGroupedFeature<2, Derived, T></tt>. See
 AbstractGroupedFeature for more information.
-@see AbstractGroupedFeature3D
 @note Not available on GCC < 4.7. Use <tt>%AbstractGroupedFeature<2, Derived, T></tt>
     instead.
-@todoc Remove workaround when Doxygen supports alias template
+@see AbstractGroupedFeature3D
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class Derived, class T = GLfloat> using AbstractGroupedFeature2D = AbstractGroupedFeature<2, Derived, T>;
-#endif
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class Derived, class T = Float>
 #else
-typedef AbstractGroupedFeature<2, Derived, T = GLfloat> AbstractGroupedFeature2D;
+template<class Derived, class T>
 #endif
+using AbstractGroupedFeature2D = AbstractGroupedFeature<2, Derived, T>;
 
 /**
 @brief Base for three-dimensional grouped features
 
 Convenience alternative to <tt>%AbstractGroupedFeature<3, Derived, T></tt>. See
 AbstractGroupedFeature for more information.
-@see AbstractGroupedFeature2D
 @note Not available on GCC < 4.7. Use <tt>%AbstractGroupedFeature<3, Derived, T></tt>
     instead.
-@todoc Remove workaround when Doxygen supports alias template
+@see AbstractGroupedFeature2D
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class Derived, class T = GLfloat> using AbstractGroupedFeature3D = AbstractGroupedFeature<3, Derived, T>;
-#endif
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class Derived, class T = Float>
 #else
-typedef AbstractGroupedFeature<3, Derived, T = GLfloat> AbstractGroupedFeature3D;
+template<class Derived, class T>
+#endif
+using AbstractGroupedFeature3D = AbstractGroupedFeature<3, Derived, T>;
 #endif
 
 }}

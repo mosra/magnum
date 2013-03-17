@@ -1,18 +1,27 @@
 #ifndef Magnum_SceneGraph_Camera3D_hpp
 #define Magnum_SceneGraph_Camera3D_hpp
 /*
-    Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
-
     This file is part of Magnum.
 
-    Magnum is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License version 3
-    only, as published by the Free Software Foundation.
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
 
-    Magnum is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License version 3 for more details.
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
 */
 
 /** @file
@@ -22,42 +31,36 @@
 #include "AbstractCamera.hpp"
 #include "Camera3D.h"
 
-using namespace std;
-
 namespace Magnum { namespace SceneGraph {
 
+template<class T> Camera3D<T>::Camera3D(AbstractObject<3, T>* object): AbstractCamera<3, T>(object), _near(T(0)), _far(T(0)) {}
+
 template<class T> Camera3D<T>* Camera3D<T>::setOrthographic(const Math::Vector2<T>& size, T near, T far) {
+    /** @todo Get near/far from the matrix */
     _near = near;
     _far = far;
 
-    Math::Vector2<T> xyScale = T(2.0)/size;
-    T zScale = T(2.0)/(near-far);
-
-    AbstractCamera<3, T>::rawProjectionMatrix = Math::Matrix4<T>(
-        xyScale.x(),    T(0.0),         T(0.0),         T(0.0),
-        T(0.0),         xyScale.y(),    T(0.0),         T(0.0),
-        T(0.0),         T(0.0),         zScale,         T(0.0),
-        T(0.0),         T(0.0),         near*zScale-1,  T(1.0)
-    );
-
+    AbstractCamera<3, T>::rawProjectionMatrix = Math::Matrix4<T>::orthographicProjection(size, near, far);
     AbstractCamera<3, T>::fixAspectRatio();
     return this;
 }
 
-template<class T> Camera3D<T>* Camera3D<T>::setPerspective(T fov, T near, T far) {
+template<class T> Camera3D<T>* Camera3D<T>::setPerspective(const Math::Vector2<T>& size, T near, T far) {
+    /** @todo Get near/far from the matrix */
     _near = near;
     _far = far;
 
-    T xyScale = T(1.0)/tan(fov/2); /* == near/size */
-    T zScale = T(1.0)/(near-far);
+    AbstractCamera<3, T>::rawProjectionMatrix = Math::Matrix4<T>::perspectiveProjection(size, near, far);
+    AbstractCamera<3, T>::fixAspectRatio();
+    return this;
+}
 
-    AbstractCamera<3, T>::rawProjectionMatrix = Matrix4(
-        xyScale,    T(0.0),     T(0.0),                 T(0.0),
-        T(0.0),     xyScale,    T(0.0),                 T(0.0),
-        T(0.0),     T(0.0),     (far+near)*zScale,      T(-1.0),
-        T(0.0),     T(0.0),     (2*far*near)*zScale,    T(0.0)
-    );
+template<class T> Camera3D<T>* Camera3D<T>::setPerspective(Math::Rad<T> fov, T aspectRatio, T near, T far) {
+    /** @todo Get near/far from the matrix */
+    _near = near;
+    _far = far;
 
+    AbstractCamera<3, T>::rawProjectionMatrix = Math::Matrix4<T>::perspectiveProjection(fov, aspectRatio, near, far);
     AbstractCamera<3, T>::fixAspectRatio();
     return this;
 }
