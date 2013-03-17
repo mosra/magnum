@@ -201,10 +201,18 @@ void VectorTest::convert() {
     constexpr Vec3 a{1.5f, 2.0f, -3.5f};
     constexpr Vector3 b(1.5f, 2.0f, -3.5f);
 
+    #ifndef CORRADE_GCC46_COMPATIBILITY
     constexpr Vector3 c(a);
+    #else
+    Vector3 c(a); /* Not constexpr under GCC < 4.7 */
+    #endif
     CORRADE_COMPARE(c, b);
 
+    #ifndef CORRADE_GCC46_COMPATIBILITY
     constexpr Vec3 d(b);
+    #else
+    Vec3 d(b); /* Not constexpr under GCC < 4.7 */
+    #endif
     CORRADE_COMPARE(d.x, a.x);
     CORRADE_COMPARE(d.y, a.y);
     CORRADE_COMPARE(d.z, a.z);
