@@ -25,6 +25,7 @@
 */
 
 #include <chrono>
+#include <corradeCompatibility.h>
 
 #include "Types.h"
 
