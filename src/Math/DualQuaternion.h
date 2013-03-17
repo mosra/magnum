@@ -141,7 +141,11 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @see lengthSquared(), normalized()
          */
         inline bool isNormalized() const {
-            return lengthSquared() == Dual<T>(1);
+            /* Comparing dual part classically, as comparing sqrt() of it would
+               lead to overly strict precision */
+            Dual<T> a = lengthSquared();
+            return Implementation::isNormalizedSquared(a.real()) &&
+                   TypeTraits<T>::equals(a.dual(), T(0));
         }
 
         /**

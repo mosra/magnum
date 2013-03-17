@@ -135,7 +135,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @see Complex::dot(), normalized()
          */
         inline bool isNormalized() const {
-            return TypeTraits<T>::equals(this->real().dot(), T(1));
+            return Implementation::isNormalizedSquared(lengthSquared());
         }
 
         /**

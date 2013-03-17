@@ -254,7 +254,7 @@ template<std::size_t size, class T> class Vector {
          * @see dot(), normalized()
          */
         inline bool isNormalized() const {
-            return TypeTraits<T>::equals(dot(), T(1));
+            return Implementation::isNormalizedSquared(dot());
         }
 
         /**

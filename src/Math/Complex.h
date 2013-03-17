@@ -156,7 +156,7 @@ template<class T> class Complex {
          * @see dot(), normalized()
          */
         inline bool isNormalized() const {
-            return TypeTraits<T>::equals(dot(), T(1));
+            return Implementation::isNormalizedSquared(dot());
         }
 
         /** @brief Real part */

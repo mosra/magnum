@@ -174,6 +174,19 @@ template<> struct TypeTraits<long double>: Implementation::TypeTraitsFloatingPoi
 
     inline constexpr static long double epsilon() { return LONG_DOUBLE_EQUALITY_PRECISION; }
 };
+
+/* Comparing squared length to 1 is not sufficient to compare within range
+   [1 - epsilon, 1 + epsilon], as e.g. Quaternion with dot() = 1 + 1e-7 when
+   converted to matrix has column vectors with dot() = 1 + 1e-6, which is just
+   above 1 + epsilon. Thus it's needed to compare sqrt(dot()) in range
+   [1 - epsilon, 1 + epsilon] or dot() in range [1 - 2*epsilon + epsilon^2,
+   1 + 2*epsilon + epsilon^2]. Because epsilon^2 is way off machine precision,
+   it's omitted. */
+namespace Implementation {
+    template<class T> inline bool isNormalizedSquared(T lengthSquared) {
+        return std::abs(lengthSquared - T(1)) < T(2)*TypeTraits<T>::epsilon();
+    }
+}
 #endif
 
 }}

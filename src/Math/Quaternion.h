@@ -232,7 +232,7 @@ template<class T> class Quaternion {
          * @see dot(), normalized()
          */
         inline bool isNormalized() const {
-            return TypeTraits<T>::equals(dot(), T(1));
+            return Implementation::isNormalizedSquared(dot());
         }
 
         /** @brief %Vector part */
