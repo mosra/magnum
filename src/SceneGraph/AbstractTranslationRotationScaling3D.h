@@ -44,7 +44,7 @@ template<class T = Float>
 #endif
 class AbstractTranslationRotationScaling3D: public AbstractTranslationRotation3D<T> {
     public:
-        explicit AbstractTranslationRotationScaling3D() = default;
+        explicit AbstractTranslationRotationScaling3D();
 
         /**
          * @brief Scale object
@@ -56,6 +56,8 @@ class AbstractTranslationRotationScaling3D: public AbstractTranslationRotation3D
          */
         virtual AbstractTranslationRotationScaling3D<T>* scale(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) = 0;
 };
+
+template<class T> inline AbstractTranslationRotationScaling3D<T>::AbstractTranslationRotationScaling3D() = default;
 
 }}
 

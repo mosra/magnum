@@ -184,7 +184,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
             blit(source, destination, rectangle, rectangle, mask, BlitFilter::Nearest);
         }
 
-        explicit AbstractFramebuffer() = default;
+        explicit AbstractFramebuffer();
         virtual ~AbstractFramebuffer() = 0;
 
         /**
@@ -300,6 +300,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         #endif
 };
 
+inline AbstractFramebuffer::AbstractFramebuffer() = default;
 inline AbstractFramebuffer::~AbstractFramebuffer() {}
 
 CORRADE_ENUMSET_OPERATORS(AbstractFramebuffer::ClearMask)

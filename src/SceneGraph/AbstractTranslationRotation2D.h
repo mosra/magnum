@@ -44,7 +44,7 @@ template<class T = Float>
 #endif
 class AbstractTranslationRotation2D: public AbstractTransformation<2, T> {
     public:
-        explicit AbstractTranslationRotation2D() = default;
+        explicit AbstractTranslationRotation2D();
 
         /**
          * @brief Translate object
@@ -64,6 +64,8 @@ class AbstractTranslationRotation2D: public AbstractTransformation<2, T> {
          */
         virtual AbstractTranslationRotation2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) = 0;
 };
+
+template<class T> inline AbstractTranslationRotation2D<T>::AbstractTranslationRotation2D() = default;
 
 }}
 

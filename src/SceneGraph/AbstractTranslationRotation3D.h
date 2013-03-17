@@ -45,7 +45,7 @@ template<class T = Float>
 #endif
 class AbstractTranslationRotation3D: public AbstractTransformation<3, T> {
     public:
-        explicit AbstractTranslationRotation3D() = default;
+        explicit AbstractTranslationRotation3D();
 
         /**
          * @brief Translate object
@@ -108,6 +108,8 @@ class AbstractTranslationRotation3D: public AbstractTransformation<3, T> {
             return rotate(angle, Math::Vector3<T>::zAxis(), type);
         }
 };
+
+template<class T> inline AbstractTranslationRotation3D<T>::AbstractTranslationRotation3D() = default;
 
 }}
 

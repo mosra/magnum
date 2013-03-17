@@ -187,11 +187,13 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
 
     protected:
         /* Allow construction only from Object */
-        inline explicit MatrixTransformation3D() = default;
+        explicit MatrixTransformation3D();
 
     private:
         Math::Matrix4<T> _transformation;
 };
+
+template<class T> inline MatrixTransformation3D<T>::MatrixTransformation3D() = default;
 
 }}
 

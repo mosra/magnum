@@ -209,7 +209,7 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
 
     protected:
         /* Allow construction only from Object */
-        inline explicit RigidMatrixTransformation3D() = default;
+        explicit RigidMatrixTransformation3D();
 
     private:
         /* No assertions fired, for internal use */
@@ -231,6 +231,8 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
 
         Math::Matrix4<T> _transformation;
 };
+
+template<class T> inline RigidMatrixTransformation3D<T>::RigidMatrixTransformation3D() = default;
 
 }}
 

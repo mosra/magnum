@@ -176,7 +176,7 @@ class RigidMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
 
     protected:
         /* Allow construction only from Object */
-        inline explicit RigidMatrixTransformation2D() = default;
+        explicit RigidMatrixTransformation2D();
 
     private:
         /* No assertions fired, for internal use */
@@ -198,6 +198,8 @@ class RigidMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
 
         Math::Matrix3<T> _transformation;
 };
+
+template<class T> inline RigidMatrixTransformation2D<T>::RigidMatrixTransformation2D() = default;
 
 }}
 

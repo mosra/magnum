@@ -166,7 +166,7 @@ class DualQuaternionTransformation: public AbstractTranslationRotation3D<T> {
 
     protected:
         /* Allow construction only from Object */
-        inline explicit DualQuaternionTransformation() = default;
+        explicit DualQuaternionTransformation();
 
     private:
         /* No assertions fired, for internal use */
@@ -188,6 +188,8 @@ class DualQuaternionTransformation: public AbstractTranslationRotation3D<T> {
 
         Math::DualQuaternion<T> _transformation;
 };
+
+template<class T> inline DualQuaternionTransformation<T>::DualQuaternionTransformation() = default;
 
 }}
 

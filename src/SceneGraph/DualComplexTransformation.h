@@ -157,7 +157,7 @@ class DualComplexTransformation: public AbstractTranslationRotation2D<T> {
 
     protected:
         /* Allow construction only from Object */
-        inline explicit DualComplexTransformation() = default;
+        explicit DualComplexTransformation();
 
     private:
         /* No assertions fired, for internal use */
@@ -179,6 +179,8 @@ class DualComplexTransformation: public AbstractTranslationRotation2D<T> {
 
         Math::DualComplex<T> _transformation;
 };
+
+template<class T> inline DualComplexTransformation<T>::DualComplexTransformation() = default;
 
 }}
 

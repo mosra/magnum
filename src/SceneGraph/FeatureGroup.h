@@ -51,7 +51,7 @@ class FeatureGroup {
     friend class AbstractGroupedFeature<dimensions, Feature, T>;
 
     public:
-        explicit FeatureGroup() = default;
+        explicit FeatureGroup();
 
         /**
          * @brief Destructor
@@ -117,6 +117,8 @@ class FeatureGroup {
     private:
         std::vector<Feature*> features;
 };
+
+template<UnsignedInt dimensions, class Feature, class T> inline FeatureGroup<dimensions, Feature, T>::FeatureGroup() = default;
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**

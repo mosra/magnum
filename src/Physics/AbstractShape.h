@@ -105,7 +105,7 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT AbstractShape {
         typedef typename Implementation::ShapeDimensionTraits<dimensions>::Type Type;
         #endif
 
-        explicit AbstractShape() = default;
+        explicit AbstractShape();
         virtual inline ~AbstractShape() {}
 
         /** @brief Shape type */
@@ -130,6 +130,7 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT AbstractShape {
         virtual bool collides(const AbstractShape<dimensions>* other) const;
 };
 
+template<UnsignedInt dimensions> inline AbstractShape<dimensions>::AbstractShape() = default;
 
 /** @brief Abstract two-dimensional shape */
 typedef AbstractShape<2> AbstractShape2D;
