@@ -166,7 +166,7 @@ template<std::size_t size, class T> class Vector {
         template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> inline constexpr explicit Vector(const U& other): Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
         #else
         template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> inline explicit Vector(const U& other) {
-            *this = Vector(Implementation::VectorConverter<size, T, U>::from(other));
+            *this = Implementation::VectorConverter<size, T, U>::from(other);
         }
         #endif
 
