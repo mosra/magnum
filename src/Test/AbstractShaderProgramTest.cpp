@@ -67,7 +67,7 @@ AbstractShaderProgramTest::AbstractShaderProgramTest() {
 
 void AbstractShaderProgramTest::attributeScalar() {
     typedef AbstractShaderProgram::Attribute<3, Float> Attribute;
-    CORRADE_COMPARE(Attribute::Location, 3);
+    CORRADE_COMPARE(Int(Attribute::Location), 3);
 
     /* Default constructor */
     Attribute a;
