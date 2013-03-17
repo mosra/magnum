@@ -25,59 +25,67 @@
 namespace Magnum {
 /** @mainpage
 
-%Magnum is 3D graphics engine written in C++11 and OpenGL 3 Core Profile.
-Features:
+%Magnum is 2D/3D graphics engine written in C++11 and OpenGL 3 Core Profile.
 
-- Easy-to-use templated @ref Math "mathematical library" for
-  @ref matrix-vector "matrix/vector calculations" and
-  @ref Math::Geometry "geometry".
-- Classes wrapping OpenGL objects and simplifying their usage -
-  @ref AbstractShaderProgram "shaders", @ref Buffer "buffers",
-  @ref Mesh "meshes" and @ref AbstractTexture "textures". Access to
-  @ref Framebuffer "framebuffer" and @ref AbstractQuery "occlusion queries".
-- @ref MeshTools "Mesh tools" for cleaning, optimizing and generating meshes,
-  utility classes for @ref Color.h "color conversion", @ref Timeline "timeline"
-  and @ref DebugTools::Profiler "profiling".
-- Hierarchical @ref SceneGraph "scene graph" which supports transformation
-  caching for better performance, @ref Physics "physics library" for collision
-  detection and rigid body dynamics.
-- Plugin-based @ref Trade "data exchange framework" for importing image, mesh,
-  material and scene data in various formats.
-- Collection of pre-made @ref Primitives "graphic primitives" and
-  @ref Shaders "shaders" for testing purposes.
-- Classes for creating OpenGL-enabled applications with @ref Platform
-  "various toolkits", methods for querying
-  @ref Context "supported OpenGL version and available extensions".
-- Comprehensive use of C++11 features for safety, performance and ease of
-  development. All code which doesn't directly interact with OpenGL is
-  covered with unit tests.
+@section mainpage-design-goals Design goals
 
-The engine is meant to be run on OpenGL 3 capable hardware, but most of the
-functionality is working on OpenGL 2.1 hardware too. The engine can be built
-also for OpenGL ES with limited functionality. See also @ref required-extensions.
+-   **2D is not an ugly stepchild**
+    Many engines out there are either purely 2D or 3D and if you want to do
+    your next project in 2D only, you have to either relearn another engine
+    from scratch or emulate it in 3D, leaving many things overly complicated.
+    %Magnum treats 2D equivalently to 3D so you can reuse what you already
+    learned for 3D and even combine 2D and 3D in one project.
 
-@section download-build Downloading and building Magnum
+-   **Forward compatibility**
+    If newer technology makes things faster, simpler or more intuitive, it is
+    the way to go. If you then really need to, you can selectively backport
+    some features and it will be easier than maintaining full backward
+    compatibility by default. %Magnum by default relies on decent C++11 support
+    and modern OpenGL features, but compatibility functions for older hardware
+    and compatibility branch for older compilers are available if you need
+    them.
+
+-   **Intuitive, but not restrictive API**
+    Scripting languages are often preferred to C/C++ because they tend to do
+    more with less -- less complicated APIs, nicer syntax and less boilerplate
+    code. %Magnum is designed with scripting language intuitivity in mind, but
+    also with speed and static checks that native code and strong typing
+    offers. Usually the most common way is the most simple, but if you need
+    full control, you can have it.
+
+-   **Extensible and replaceable components**
+    If you want to use different mathematical library for specific purposes,
+    that new windowing toolkit, your own file formats or another physics
+    library, you can. Conversion of data between different libraries can be
+    done on top of pre-made skeleton classes, support for file formats is done
+    using plugins and platform support is done by writing simple wrapper class.
+
+@section mainpage-features Features
+
+-   Vector and matrix library with implementation of complex numbers,
+    quaternions and their dual counterparts for representing transformations.
+-   Classes wrapping OpenGL and simplifying its usage with direct state access
+    and automatic fallback for unavailable features.
+-   Extensible scene graph which can be modified for each specific usage.
+-   Plugin-based data exchange framework, tools for manipulating meshes,
+    textures and images.
+-   Integration with various windowing toolkits and also ability to create
+    windowless contexts. Ported to OpenGL ES and various platforms.
+-   Pre-made shaders, primitives and other tools for easy prototyping and
+    debugging.
+
+@section mainpage-download-build Downloading and building Magnum
 
 Guide @ref building "how to download and build Magnum" on different platforms.
 
-@section getting-started Getting started
-
-To get up and running, you must first subclass one of the provided window
-context classes and implement required functions. %Magnum provides
-implementations for the most common toolkits (such as GLUT, Xlib, or SDL2) in
-Platform namespace.
-
-Then you can either draw your meshes directly or use SceneGraph which will
-help you with object hierarchy, transformations and resource management.
-
-@subsection getting-started-examples Tutorials and examples
+@section mainpage-getting-started Getting started
 
 The best way to get started is to render your first triangle in
 @ref example-index "step-by-step tutorial". Then you can dig deeper and try
 other examples, read about @ref features "fundamental principles" in the
 documentation or start experimenting on your own!
 
-@subsection getting-started-hacking Hacking Magnum
+@section mainpage-hacking Hacking Magnum
 
 If you want to hack on this engine, if you spotted a bug, need an feature or
 have an awesome idea, you can get a copy of the sources from GitHub and start
@@ -93,7 +101,7 @@ Feel free to get more information or contact the author at:
 - E-mail - mosra@centrum.cz
 - Jabber - mosra@jabbim.cz
 
-@section license License
+@section mainpage-license License
 
 %Magnum is licensed under MIT/Expat license:
 

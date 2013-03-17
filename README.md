@@ -1,30 +1,60 @@
-Magnum is 3D graphics engine written in C++11 and OpenGL 3 Core Profile.
-Features:
+Magnum is 2D/3D graphics engine written in C++11 and OpenGL 3 Core Profile.
 
- * Easy-to-use templated mathematical library for matrix/vector calculations
-   and geometry.
- * Classes wrapping OpenGL objects and simplifying their usage - shaders,
-   buffers, meshes and textures. Access to framebuffer and occlusion queries.
- * Mesh tools for cleaning, optimizing and generating meshes, utility classes
-   for color conversion, timeline and profiling.
- * Hierarchical scene graph which supports transformation caching for better
-   performance, physics library for collision detection and rigid body
-   dynamics.
- * Plugin-based data exchange framework for importing image, mesh, material
-   and scene data in various formats.
- * Collection of pre-made graphic primitives and shaders for testing purposes.
- * Classes for creating OpenGL-enabled applications with various toolkits,
-   methods for querying supported OpenGL version and available extensions.
- * Comprehensive use of C++11 features for safety, performance and ease of
-   development. All code which doesn't directly interact with OpenGL is
-   covered with unit tests.
- * Actively maintained Doxygen documentation. Occasionally updated snapshot is
-   also available online at http://mosra.cz/blog/magnum-doc/ .
+DESIGN GOALS
+============
+
+*   **2D is not an ugly stepchild**
+    Many engines out there are either purely 2D or 3D and if you want to do
+    your next project in 2D only, you have to either relearn another engine
+    from scratch or emulate it in 3D, leaving many things overly complicated.
+    Magnum treats 2D equivalently to 3D so you can reuse what you already
+    learned for 3D and even combine 2D and 3D in one project.
+
+*   **Forward compatibility**
+    If newer technology makes things faster, simpler or more intuitive, it is
+    the way to go. If you then really need to, you can selectively backport
+    some features and it will be easier than maintaining full backward
+    compatibility by default. Magnum by default relies on decent C++11 support
+    and modern OpenGL features, but compatibility functions for older hardware
+    and compatibility branch for older compilers are available if you need
+    them.
+
+*   **Intuitive, but not restrictive API**
+    Scripting languages are often preferred to C/C++ because they tend to do
+    more with less -- less complicated APIs, nicer syntax and less boilerplate
+    code. Magnum is designed with scripting language intuitivity in mind, but
+    also with speed and static checks that native code and strong typing
+    offers. Usually the most common way is the most simple, but if you need
+    full control, you can have it.
+
+*   **Extensible and replaceable components**
+    If you want to use different mathematical library for specific purposes,
+    that new windowing toolkit, your own file formats or another physics
+    library, you can. Conversion of data between different libraries can be
+    done on top of pre-made skeleton classes, support for file formats is done
+    using plugins and platform support is done by writing simple wrapper class.
+
+FEATURES
+========
+
+*   Actively maintained Doxygen documentation with tutorials and examples.
+    Snapshot is available at http://mosra.cz/blog/magnum-doc/.
+*   Vector and matrix library with implementation of complex numbers,
+    quaternions and their dual counterparts for representing transformations.
+*   Classes wrapping OpenGL and simplifying its usage with direct state access
+    and automatic fallback for unavailable features.
+*   Extensible scene graph which can be modified for each specific usage.
+*   Plugin-based data exchange framework, tools for manipulating meshes,
+    textures and images.
+*   Integration with various windowing toolkits and also ability to create
+    windowless contexts.
+*   Pre-made shaders, primitives and other tools for easy prototyping and
+    debugging.
 
 INSTALLATION
 ============
 
-You can either use packaging scripts, which are stored in package/
+You can either use packaging scripts, which are stored in `package/`
 subdirectory, or compile and install everything manually. Note that Doxygen
 documentation (see above or build your own using instructions below) contains
 more comprehensive guide for building, packaging and crosscompiling.
@@ -38,7 +68,7 @@ Minimal dependencies
  * **CMake** >= 2.8.8 (needed for `OBJECT` library target)
  * **GLEW** - OpenGL extension wrangler (only if targeting desktop OpenGL)
  * **Corrade** - Plugin management and utility library. You can get it at
-   http://github.com/mosra/corrade or at http://mosra.cz/blog/corrade.php.
+   https://github.com/mosra/corrade.
 
 Compilation, installation
 -------------------------
@@ -85,12 +115,11 @@ PLUGINS AND EXAMPLES
 ====================
 
 Various importer plugins for image and 3D model formats are maintained in
-separate repository, which can be found at
-http://github.com/mosra/magnum-plugins .
+separate repository, which can be found at https://github.com/mosra/magnum-plugins.
 
-There are also examples of engine usage, varying from simple *Hello
-World*-like example to more advanced applications, such as viewer for complex
-3D models. Example repository is at http://github.com/mosra/magnum-examples .
+There are also examples of engine usage, varying from simple *Hello World*-like
+example to more advanced applications, such as viewer for complex 3D models.
+Example repository is at https://github.com/mosra/magnum-examples.
 
 CONTACT
 =======
