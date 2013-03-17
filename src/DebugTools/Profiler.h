@@ -63,7 +63,7 @@ p.enable();
 void MyApplication::drawEvent() {
     p.start();
 
-    // ... misc stuff belogning to "Other" section
+    // ... misc stuff belonging to "Other" section
 
     p.start(sections.ai);
 
