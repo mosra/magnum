@@ -44,27 +44,45 @@ SwizzleTest::SwizzleTest() {
 }
 
 void SwizzleTest::rgba() {
-    CORRADE_COMPARE((swizzle<'b', 'r', 'a', 'g'>(Vector4i(2, 4, 5, 7))), Vector4i(5, 2, 7, 4));
+    constexpr auto a = swizzle<'b', 'r', 'a', 'g'>(Vector4i(2, 4, 5, 7));
+    CORRADE_COMPARE(a, Vector4i(5, 2, 7, 4));
 }
 
 void SwizzleTest::type() {
-    Vector4i orig;
-    CORRADE_VERIFY((std::is_same<decltype(swizzle<'y', 'a'>(orig)), Vector2i>::value));
-    CORRADE_VERIFY((std::is_same<decltype(swizzle<'y', 'z', 'a'>(orig)), Vector3i>::value));
-    CORRADE_VERIFY((std::is_same<decltype(swizzle<'y', 'a', 'y', 'x'>(orig)), Vector4i>::value));
+    constexpr Vector4i orig;
+    constexpr Color3<Float> origColor3;
+    constexpr Color4<Double> origColor4;
 
-    Color3<Float> origColor3;
-    Color4<Double> origColor4;
-    CORRADE_VERIFY((std::is_same<decltype(swizzle<'y', 'z', 'r'>(origColor3)), Color3<Float>>::value));
-    CORRADE_VERIFY((std::is_same<decltype(swizzle<'y', 'z', 'a'>(origColor4)), Color3<Double>>::value));
-    CORRADE_VERIFY((std::is_same<decltype(swizzle<'y', 'z', 'y', 'x'>(origColor3)), Color4<Float>>::value));
-    CORRADE_VERIFY((std::is_same<decltype(swizzle<'y', 'a', 'y', 'x'>(origColor4)), Color4<Double>>::value));
+    constexpr auto a = swizzle<'y', 'a'>(orig);
+    CORRADE_VERIFY((std::is_same<decltype(a), const Vector2i>::value));
+
+    constexpr auto b = swizzle<'y', 'z', 'a'>(orig);
+    CORRADE_VERIFY((std::is_same<decltype(b), const Vector3i>::value));
+
+    constexpr auto c = swizzle<'y', 'a', 'y', 'x'>(orig);
+    CORRADE_VERIFY((std::is_same<decltype(c), const Vector4i>::value));
+
+    constexpr auto d = swizzle<'y', 'z', 'r'>(origColor3);
+    CORRADE_VERIFY((std::is_same<decltype(d), const Color3<Float>>::value));
+
+    constexpr auto e = swizzle<'y', 'z', 'a'>(origColor4);
+    CORRADE_VERIFY((std::is_same<decltype(e), const Color3<Double>>::value));
+
+    constexpr auto f = swizzle<'y', 'z', 'y', 'x'>(origColor3);
+    CORRADE_VERIFY((std::is_same<decltype(f), const Color4<Float>>::value));
+
+    constexpr auto g = swizzle<'y', 'a', 'y', 'x'>(origColor4);
+    CORRADE_VERIFY((std::is_same<decltype(g), const Color4<Double>>::value));
 }
 
 void SwizzleTest::defaultType() {
-    Vector4i orig(1, 2, 3, 4);
-    CORRADE_COMPARE(swizzle<'b'>(orig), (Math::Vector<1, Int>(3)));
-    CORRADE_COMPARE((swizzle<'b', 'r', 'a', 'g', 'z', 'y', 'x'>(orig)), (Math::Vector<7, Int>(3, 1, 4, 2, 3, 2, 1)));
+    constexpr Vector4i orig(1, 2, 3, 4);
+
+    constexpr auto a = swizzle<'b'>(orig);
+    CORRADE_COMPARE(a, (Math::Vector<1, Int>(3)));
+
+    constexpr auto b = swizzle<'b', 'r', 'a', 'g', 'z', 'y', 'x'>(orig);
+    CORRADE_COMPARE(b, (Math::Vector<7, Int>(3, 1, 4, 2, 3, 2, 1)));
 }
 
 }}
