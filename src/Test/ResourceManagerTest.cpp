@@ -59,7 +59,7 @@ typedef Magnum::ResourceManager<Int, Data> ResourceManager;
 class IntResourceLoader: public AbstractResourceLoader<Int> {
     public:
         void load(ResourceKey key) override {
-            AbstractResourceLoader::load(key);
+            AbstractResourceLoader<Int>::load(key);
         }
 
         void load() {

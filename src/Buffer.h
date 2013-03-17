@@ -123,10 +123,10 @@ nothing.
 class MAGNUM_EXPORT Buffer {
     friend class Context;
 
-    Buffer(const Buffer& other) = delete;
-    Buffer(Buffer&& other) = delete;
-    Buffer& operator=(const Buffer& other) = delete;
-    Buffer& operator=(Buffer&& other) = delete;
+    Buffer(const Buffer&) = delete;
+    Buffer(Buffer&&) = delete;
+    Buffer& operator=(const Buffer&) = delete;
+    Buffer& operator=(Buffer&&) = delete;
 
     public:
         /**

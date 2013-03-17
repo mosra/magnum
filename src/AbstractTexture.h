@@ -82,8 +82,8 @@ do nothing.
 class MAGNUM_EXPORT AbstractTexture {
     friend class Context;
 
-    AbstractTexture(const AbstractTexture& other) = delete;
-    AbstractTexture& operator=(const AbstractTexture& other) = delete;
+    AbstractTexture(const AbstractTexture&) = delete;
+    AbstractTexture& operator=(const AbstractTexture&) = delete;
 
     public:
         /**

@@ -39,10 +39,10 @@ Provides access to material information for given mesh instance.
 @see MeshObjectData2D
 */
 class MeshObjectData3D: public ObjectData3D {
-    MeshObjectData3D(const MeshObjectData3D& other) = delete;
-    MeshObjectData3D(MeshObjectData3D&& other) = delete;
-    MeshObjectData3D& operator=(const MeshObjectData3D& other) = delete;
-    MeshObjectData3D& operator=(MeshObjectData3D&& other) = delete;
+    MeshObjectData3D(const MeshObjectData3D&) = delete;
+    MeshObjectData3D(MeshObjectData3D&&) = delete;
+    MeshObjectData3D& operator=(const MeshObjectData3D&) = delete;
+    MeshObjectData3D& operator=(MeshObjectData3D&&) = delete;
 
     public:
         /**

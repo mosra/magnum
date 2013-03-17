@@ -34,10 +34,10 @@ namespace Magnum { namespace Trade {
 @brief %Texture data
 */
 class MAGNUM_EXPORT TextureData {
-    TextureData(const TextureData& other) = delete;
-    TextureData(TextureData&& other) = delete;
-    TextureData& operator=(const TextureData& other) = delete;
-    TextureData& operator=(TextureData&& other) = delete;
+    TextureData(const TextureData&) = delete;
+    TextureData(TextureData&&) = delete;
+    TextureData& operator=(const TextureData&) = delete;
+    TextureData& operator=(TextureData&&) = delete;
 };
 
 }}

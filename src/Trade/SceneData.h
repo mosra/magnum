@@ -39,10 +39,10 @@ namespace Magnum { namespace Trade {
 @brief %Scene data
 */
 class MAGNUM_EXPORT SceneData {
-    SceneData(const SceneData& other) = delete;
-    SceneData(SceneData&& other) = delete;
-    SceneData& operator=(const SceneData& other) = delete;
-    SceneData& operator=(SceneData&& other) = delete;
+    SceneData(const SceneData&) = delete;
+    SceneData(SceneData&&) = delete;
+    SceneData& operator=(const SceneData&) = delete;
+    SceneData& operator=(SceneData&&) = delete;
 
     public:
         /**

@@ -35,7 +35,6 @@ class SwizzleTest: public Corrade::TestSuite::Tester {
         void components();
         void constants();
         void sizes();
-        void constExpressions();
 };
 
 typedef Vector<4, Int> Vector4i;
@@ -43,33 +42,28 @@ typedef Vector<4, Int> Vector4i;
 SwizzleTest::SwizzleTest() {
     addTests({&SwizzleTest::components,
               &SwizzleTest::constants,
-              &SwizzleTest::sizes,
-              &SwizzleTest::constExpressions});
+              &SwizzleTest::sizes});
 }
 
 void SwizzleTest::components() {
-    CORRADE_COMPARE((swizzle<'z', 'x', 'w', 'y'>(Vector4i(2, 4, 5, 7))), Vector4i(5, 2, 7, 4));
+    constexpr auto a = swizzle<'z', 'x', 'w', 'y'>(Vector4i(2, 4, 5, 7));
+    CORRADE_COMPARE(a, Vector4i(5, 2, 7, 4));
 }
 
 void SwizzleTest::constants() {
-    CORRADE_COMPARE((swizzle<'1', 'w', '0', 'y'>(Vector4i(2, 4, 5, 7))), Vector4i(1, 7, 0, 4));
+    constexpr auto a = swizzle<'1', 'w', '0', 'y'>(Vector4i(2, 4, 5, 7));
+    CORRADE_COMPARE(a, Vector4i(1, 7, 0, 4));
 }
 
 void SwizzleTest::sizes() {
-    CORRADE_COMPARE((swizzle<'y', 'x', 'x'>(Math::Vector<2, Int>(1, 2))),
-        (Math::Vector<3, Int>(2, 1, 1)));
-    CORRADE_COMPARE(swizzle<'z'>(Vector4i(1, 2, 3, 4)),
-        (Math::Vector<1, Int>(3)));
-    CORRADE_COMPARE((swizzle<'z', 'x', 'w', 'y', 'z', 'y', 'x'>(Vector4i(1, 2, 3, 4))),
-        (Math::Vector<7, Int>(3, 1, 4, 2, 3, 2, 1)));
-}
+    constexpr auto a = swizzle<'y', 'x', 'x'>(Math::Vector<2, Int>(1, 2));
+    CORRADE_COMPARE(a, (Math::Vector<3, Int>(2, 1, 1)));
 
-void SwizzleTest::constExpressions() {
-    constexpr auto a = swizzle<'z', 'x', 'w', 'y'>(Vector4i(2, 4, 5, 7));
-    CORRADE_COMPARE(a, Vector4i(5, 2, 7, 4));
+    constexpr auto b = swizzle<'z'>(Vector4i(1, 2, 3, 4));
+    CORRADE_COMPARE(b, (Math::Vector<1, Int>(3)));
 
-    constexpr auto b = swizzle<'1', 'w', '0', 'y'>(Vector4i(2, 4, 5, 7));
-    CORRADE_COMPARE(b, Vector4i(1, 7, 0, 4));
+    constexpr auto c = swizzle<'z', 'x', 'w', 'y', 'z', 'y', 'x'>(Vector4i(1, 2, 3, 4));
+    CORRADE_COMPARE(c, (Math::Vector<7, Int>(3, 1, 4, 2, 3, 2, 1)));
 }
 
 }}}

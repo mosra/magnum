@@ -37,11 +37,11 @@ namespace Magnum { namespace Math {
 namespace Implementation {
 
 template<> struct VectorConverter<3, float, Vec3> {
-    inline static Vector<3, Float> from(const Vec3& other) {
+    inline constexpr static Vector<3, Float> from(const Vec3& other) {
         return {other.x, other.y, other.z};
     }
 
-    inline static Vec3 to(const Vector<3, Float>& other) {
+    inline constexpr static Vec3 to(const Vector<3, Float>& other) {
         return {other[0], other[1], other[2]};
     }
 };
@@ -198,12 +198,24 @@ void VectorTest::isNormalized() {
 }
 
 void VectorTest::convert() {
-    Vec3 a{1.5f, 2.0f, -3.5f};
-    Vector3 b(1.5f, 2.0f, -3.5f);
-    CORRADE_COMPARE(Vector3(a), b);
-    CORRADE_COMPARE(Vec3(b).x, a.x);
-    CORRADE_COMPARE(Vec3(b).y, a.y);
-    CORRADE_COMPARE(Vec3(b).z, a.z);
+    constexpr Vec3 a{1.5f, 2.0f, -3.5f};
+    constexpr Vector3 b(1.5f, 2.0f, -3.5f);
+
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr Vector3 c(a);
+    #else
+    Vector3 c(a); /* Not constexpr under GCC < 4.7 */
+    #endif
+    CORRADE_COMPARE(c, b);
+
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr Vec3 d(b);
+    #else
+    Vec3 d(b); /* Not constexpr under GCC < 4.7 */
+    #endif
+    CORRADE_COMPARE(d.x, a.x);
+    CORRADE_COMPARE(d.y, a.y);
+    CORRADE_COMPARE(d.z, a.z);
 }
 
 void VectorTest::data() {

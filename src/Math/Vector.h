@@ -162,7 +162,13 @@ template<std::size_t size, class T> class Vector {
         #endif
 
         /** @brief Construct vector from external representation */
+        #ifndef CORRADE_GCC46_COMPATIBILITY
         template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> inline constexpr explicit Vector(const U& other): Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
+        #else
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> inline explicit Vector(const U& other) {
+            *this = Implementation::VectorConverter<size, T, U>::from(other);
+        }
+        #endif
 
         /** @brief Copy constructor */
         inline constexpr Vector(const Vector<size, T>&) = default;
@@ -172,6 +178,7 @@ template<std::size_t size, class T> class Vector {
 
         /** @brief Convert vector to external representation */
         template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(std::declval<Vector<size, T>>()))> inline constexpr explicit operator U() const {
+            /** @bug Why this is not constexpr under GCC 4.6? */
             return Implementation::VectorConverter<size, T, U>::to(*this);
         }
 

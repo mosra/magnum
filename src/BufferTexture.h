@@ -82,10 +82,10 @@ documentation for more information.
 class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
     friend class Context;
 
-    BufferTexture(const BufferTexture& other) = delete;
-    BufferTexture(BufferTexture&& other) = delete;
-    BufferTexture& operator=(const BufferTexture& other) = delete;
-    BufferTexture& operator=(BufferTexture&& other) = delete;
+    BufferTexture(const BufferTexture&) = delete;
+    BufferTexture(BufferTexture&&) = delete;
+    BufferTexture& operator=(const BufferTexture&) = delete;
+    BufferTexture& operator=(BufferTexture&&) = delete;
 
     public:
         /**

@@ -34,7 +34,7 @@ Capsule::Capsule(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, Unsigne
 
     Float height = 2.0f+length;
     Float hemisphereTextureCoordsVIncrement = 1.0f/(hemisphereRings*height);
-    Rad hemisphereRingAngleIncrement = Rad(Constants::pi())/(2*hemisphereRings);
+    Rad hemisphereRingAngleIncrement(Constants::pi()/(2*hemisphereRings));
 
     /* Bottom cap vertex */
     capVertex(-height/2, -1.0f, 0.0f);
@@ -68,7 +68,7 @@ void Capsule::capVertex(Float y, Float normalY, Float textureCoordsV) {
 }
 
 void Capsule::hemisphereVertexRings(UnsignedInt count, Float centerY, Rad startRingAngle, Rad ringAngleIncrement, Float startTextureCoordsV, Float textureCoordsVIncrement) {
-    Rad segmentAngleIncrement = 2*Rad(Constants::pi())/segments;
+    Rad segmentAngleIncrement(2*Constants::pi()/segments);
     Float x, y, z;
     for(UnsignedInt i = 0; i != count; ++i) {
         Rad ringAngle = startRingAngle + i*ringAngleIncrement;
@@ -94,7 +94,7 @@ void Capsule::hemisphereVertexRings(UnsignedInt count, Float centerY, Rad startR
 }
 
 void Capsule::cylinderVertexRings(UnsignedInt count, Float startY, Float yIncrement, Float startTextureCoordsV, Float textureCoordsVIncrement) {
-    Rad segmentAngleIncrement = 2*Rad(Constants::pi())/segments;
+    Rad segmentAngleIncrement(2*Constants::pi()/segments);
     for(UnsignedInt i = 0; i != count; ++i) {
         for(UnsignedInt j = 0; j != segments; ++j) {
             Rad segmentAngle = j*segmentAngleIncrement;

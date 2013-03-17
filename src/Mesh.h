@@ -240,8 +240,8 @@ for more information.
 class MAGNUM_EXPORT Mesh {
     friend class Context;
 
-    Mesh(const Mesh& other) = delete;
-    Mesh& operator=(const Mesh& other) = delete;
+    Mesh(const Mesh&) = delete;
+    Mesh& operator=(const Mesh&) = delete;
 
     public:
         /** @name Polygon drawing settings */

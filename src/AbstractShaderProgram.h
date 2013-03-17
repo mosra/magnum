@@ -285,10 +285,10 @@ comes in handy.
 class MAGNUM_EXPORT AbstractShaderProgram {
     friend class Context;
 
-    AbstractShaderProgram(const AbstractShaderProgram& other) = delete;
-    AbstractShaderProgram(AbstractShaderProgram&& other) = delete;
-    AbstractShaderProgram& operator=(const AbstractShaderProgram& other) = delete;
-    AbstractShaderProgram& operator=(AbstractShaderProgram&& other) = delete;
+    AbstractShaderProgram(const AbstractShaderProgram&) = delete;
+    AbstractShaderProgram(AbstractShaderProgram&&) = delete;
+    AbstractShaderProgram& operator=(const AbstractShaderProgram&) = delete;
+    AbstractShaderProgram& operator=(AbstractShaderProgram&&) = delete;
 
     public:
         /**

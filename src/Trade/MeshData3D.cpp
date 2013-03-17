@@ -28,6 +28,12 @@
 
 namespace Magnum { namespace Trade {
 
+MeshData3D::MeshData3D(Mesh::Primitive primitive, std::vector<UnsignedInt>* indices, std::vector<std::vector<Vector3>*> positions, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D): _primitive(primitive), _indices(indices), _positions(std::move(positions)), _normals(std::move(normals)), _textureCoords2D(std::move(textureCoords2D)) {}
+
+MeshData3D::MeshData3D(MeshData3D&&) = default;
+
+MeshData3D& MeshData3D::operator=(MeshData3D&&) = default;
+
 MeshData3D::~MeshData3D() {
     delete _indices;
     for(auto it = _positions.begin(); it != _positions.end(); ++it) delete *it;

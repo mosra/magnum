@@ -99,10 +99,10 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
     friend class Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>;
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Object(const Object<Transformation>& other) = delete;
-    Object(Object<Transformation>&& other) = delete;
-    Object<Transformation>& operator=(const Object<Transformation>& other) = delete;
-    Object<Transformation>& operator=(Object<Transformation>&& other) = delete;
+    Object(const Object<Transformation>&) = delete;
+    Object(Object<Transformation>&&) = delete;
+    Object<Transformation>& operator=(const Object<Transformation>&) = delete;
+    Object<Transformation>& operator=(Object<Transformation>&&) = delete;
     #endif
 
     public:

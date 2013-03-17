@@ -49,12 +49,7 @@ class MAGNUM_EXPORT AbstractQuery {
          * Generates one OpenGL query.
          * @see @fn_gl{GenQueries}
          */
-        inline explicit AbstractQuery() {
-            /** @todo Get some extension wrangler instead to avoid undeclared glGenQueries() on ES2 */
-            #ifndef MAGNUM_TARGET_GLES2
-            glGenQueries(1, &_id);
-            #endif
-        }
+        explicit AbstractQuery();
 
         /**
          * @brief Destructor
@@ -62,12 +57,7 @@ class MAGNUM_EXPORT AbstractQuery {
          * Deletes assigned OpenGL query.
          * @see @fn_gl{DeleteQueries}
          */
-        virtual inline ~AbstractQuery() {
-            /** @todo Get some extension wrangler instead to avoid undeclared glGenQueries() on ES2 */
-            #ifndef MAGNUM_TARGET_GLES2
-            glDeleteQueries(1, &_id);
-            #endif
-        }
+        virtual ~AbstractQuery() = 0;
 
         /** @brief OpenGL query ID */
         inline GLuint id() const { return _id; }
@@ -163,9 +153,9 @@ class MAGNUM_EXPORT Query: public AbstractQuery {
             #endif
         };
 
-        inline explicit Query(): target(nullptr) {}
+        explicit Query();
 
-        inline ~Query() { delete target; }
+        ~Query();
 
         /**
          * @brief Begin query
@@ -294,9 +284,9 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
         };
         #endif
 
-        inline explicit SampleQuery(): target(nullptr) {}
+        explicit SampleQuery();
 
-        inline ~SampleQuery() { delete target; }
+        ~SampleQuery();
 
         /** @copydoc Query::begin() */
         void begin(Target target);
@@ -369,7 +359,7 @@ Using this query results in fewer OpenGL calls when doing more measures.
 */
 class TimeQuery: public AbstractQuery {
     public:
-        explicit TimeQuery() = default;
+        explicit TimeQuery();
 
         /**
          * @brief Query timestamp

@@ -38,10 +38,10 @@ namespace Magnum { namespace Trade {
 Subclasses provide access to parameters for given material type.
 */
 class AbstractMaterialData {
-    AbstractMaterialData(const AbstractMaterialData& other) = delete;
-    AbstractMaterialData(AbstractMaterialData&& other) = delete;
-    AbstractMaterialData& operator=(const AbstractMaterialData& other) = delete;
-    AbstractMaterialData& operator=(AbstractMaterialData&& other) = delete;
+    AbstractMaterialData(const AbstractMaterialData&) = delete;
+    AbstractMaterialData(AbstractMaterialData&&) = delete;
+    AbstractMaterialData& operator=(const AbstractMaterialData&) = delete;
+    AbstractMaterialData& operator=(AbstractMaterialData&&) = delete;
 
     public:
         /** @brief Material type */

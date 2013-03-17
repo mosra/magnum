@@ -43,10 +43,10 @@ MeshObjectData2D, which is specialized for objects with mesh instance type.
 @see ObjectData3D
 */
 class ObjectData2D {
-    ObjectData2D(const ObjectData2D& other) = delete;
-    ObjectData2D(ObjectData2D&& other) = delete;
-    ObjectData2D& operator=(const ObjectData2D& other) = delete;
-    ObjectData2D& operator=(ObjectData2D&& other) = delete;
+    ObjectData2D(const ObjectData2D&) = delete;
+    ObjectData2D(ObjectData2D&&) = delete;
+    ObjectData2D& operator=(const ObjectData2D&) = delete;
+    ObjectData2D& operator=(ObjectData2D&&) = delete;
 
     public:
         /** @brief Instance type */

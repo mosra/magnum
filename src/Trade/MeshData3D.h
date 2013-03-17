@@ -42,8 +42,8 @@ type.
 @see MeshData2D
 */
 class MAGNUM_EXPORT MeshData3D {
-    MeshData3D(const MeshData3D& other) = delete;
-    MeshData3D& operator=(const MeshData3D& other) = delete;
+    MeshData3D(const MeshData3D&) = delete;
+    MeshData3D& operator=(const MeshData3D&) = delete;
 
     public:
         /**
@@ -57,16 +57,16 @@ class MAGNUM_EXPORT MeshData3D {
          * @param textureCoords2D   Array with two-dimensional texture
          *      coordinate arrays or empty array
          */
-        inline MeshData3D(Mesh::Primitive primitive, std::vector<UnsignedInt>* indices, std::vector<std::vector<Vector3>*> positions, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D): _primitive(primitive), _indices(indices), _positions(positions), _normals(normals), _textureCoords2D(textureCoords2D) {}
+        MeshData3D(Mesh::Primitive primitive, std::vector<UnsignedInt>* indices, std::vector<std::vector<Vector3>*> positions, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D);
 
         /** @brief Move constructor */
-        MeshData3D(MeshData3D&&) = default;
+        MeshData3D(MeshData3D&&);
 
         /** @brief Destructor */
         ~MeshData3D();
 
         /** @brief Move assignment */
-        MeshData3D& operator=(MeshData3D&&) = default;
+        MeshData3D& operator=(MeshData3D&&);
 
         /** @brief Primitive */
         inline Mesh::Primitive primitive() const { return _primitive; }

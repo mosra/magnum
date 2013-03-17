@@ -57,7 +57,7 @@ Cylinder::Cylinder(UnsignedInt rings, UnsignedInt segments, Float length, Flags 
 }
 
 void Cylinder::capVertexRing(Float y, Float textureCoordsV, const Vector3& normal) {
-    Rad segmentAngleIncrement = 2*Rad(Constants::pi())/segments;
+    Rad segmentAngleIncrement(2*Constants::pi()/segments);
 
     for(UnsignedInt i = 0; i != segments; ++i) {
         Rad segmentAngle = i*segmentAngleIncrement;

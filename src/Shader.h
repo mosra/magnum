@@ -45,8 +45,8 @@ Allows loading and compiling the shader from file or directly from source
 string. See AbstractShaderProgram for more information.
  */
 class MAGNUM_EXPORT Shader {
-    Shader(const Shader& other) = delete;
-    Shader& operator=(const Shader& other) = delete;
+    Shader(const Shader&) = delete;
+    Shader& operator=(const Shader&) = delete;
 
     public:
         /** @brief %Shader type */

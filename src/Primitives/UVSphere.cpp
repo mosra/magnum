@@ -32,7 +32,7 @@ UVSphere::UVSphere(UnsignedInt rings, UnsignedInt segments, TextureCoords textur
     CORRADE_ASSERT(rings >= 2 && segments >= 3, "UVSphere must have at least two rings and three segments", );
 
     Float textureCoordsVIncrement = 1.0f/rings;
-    Rad ringAngleIncrement = Rad(Constants::pi())/rings;
+    Rad ringAngleIncrement(Constants::pi()/rings);
 
     /* Bottom cap vertex */
     capVertex(-1.0f, -1.0f, 0.0f);
