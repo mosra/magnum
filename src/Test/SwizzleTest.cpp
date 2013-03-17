@@ -53,6 +53,11 @@ void SwizzleTest::type() {
     constexpr Color3<Float> origColor3;
     constexpr Color4<Double> origColor4;
 
+    /* decltype(a) is not const because a is not constexpr under GCC <= 4.5 */
+    #ifdef CORRADE_GCC45_COMPATIBILITY
+    #define const
+    #endif
+
     constexpr auto a = swizzle<'y', 'a'>(orig);
     CORRADE_VERIFY((std::is_same<decltype(a), const Vector2i>::value));
 
@@ -73,6 +78,10 @@ void SwizzleTest::type() {
 
     constexpr auto g = swizzle<'y', 'a', 'y', 'x'>(origColor4);
     CORRADE_VERIFY((std::is_same<decltype(g), const Color4<Double>>::value));
+
+    #ifdef CORRADE_GCC45_COMPATIBILITY
+    #undef const
+    #endif
 }
 
 void SwizzleTest::defaultType() {

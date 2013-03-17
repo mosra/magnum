@@ -96,9 +96,14 @@ decomposition and least squares solutions"*.
 /* The matrix is passed by value because it is changed inside */
 template<std::size_t cols, std::size_t rows, class T> std::tuple<RectangularMatrix<cols, rows, T>, Vector<cols, T>, Matrix<cols, T>> svd(RectangularMatrix<cols, rows, T> m) {
     static_assert(rows >= cols, "Unsupported matrix aspect ratio");
-    static_assert(T(1)+TypeTraits<T>::epsilon() > T(1), "Epsilon too small");
     constexpr T tol = Implementation::smallestDelta<T>()/TypeTraits<T>::epsilon();
+    #ifndef CORRADE_GCC45_COMPATIBILITY
+    static_assert(T(1)+TypeTraits<T>::epsilon() > T(1), "Epsilon too small");
     static_assert(tol > T(0), "Tol too small");
+    #else
+    CORRADE_ASSERT(T(1)+TypeTraits<T>::epsilon() > T(1), "Epsilon too small", {});
+    CORRADE_ASSERT(tol > T(0), "Tol too small", {});
+    #endif
     constexpr std::size_t maxIterations = 50;
 
     Matrix<cols, T> v(Matrix<cols, T>::Zero);
