@@ -32,7 +32,19 @@ MeshData3D::MeshData3D(Mesh::Primitive primitive, std::vector<UnsignedInt>* indi
 
 MeshData3D::MeshData3D(MeshData3D&&) = default;
 
+#ifndef CORRADE_GCC45_COMPATIBILITY
 MeshData3D& MeshData3D::operator=(MeshData3D&&) = default;
+#else
+MeshData3D& MeshData3D::operator=(MeshData3D&& other) {
+    std::swap(_primitive, other._primitive);
+    std::swap(_indices, other._indices);
+    std::swap(_positions, other._positions);
+    std::swap(_normals, other._normals);
+    std::swap(_textureCoords2D, other._textureCoords2D);
+
+    return *this;
+}
+#endif
 
 MeshData3D::~MeshData3D() {
     delete _indices;

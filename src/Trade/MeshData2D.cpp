@@ -32,7 +32,18 @@ MeshData2D::MeshData2D(Mesh::Primitive primitive, std::vector<UnsignedInt>* indi
 
 MeshData2D::MeshData2D(MeshData2D&&) = default;
 
+#ifndef CORRADE_GCC45_COMPATIBILITY
 MeshData2D& MeshData2D::operator=(MeshData2D&&) = default;
+#else
+MeshData2D& MeshData2D::operator=(MeshData2D&& other) {
+    std::swap(_primitive, other._primitive);
+    std::swap(_indices, other._indices);
+    std::swap(_positions, other._positions);
+    std::swap(_textureCoords2D, other._textureCoords2D);
+
+    return *this;
+}
+#endif
 
 MeshData2D::~MeshData2D() {
     delete _indices;
