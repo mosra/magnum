@@ -99,7 +99,11 @@ template<class T> class Vector2: public Vector<2, T> {
         template<class U> inline constexpr explicit Vector2(const Vector<2, U>& other): Vector<2, T>(other) {}
 
         /** @brief Construct vector from external representation */
+        #ifndef CORRADE_GCC44_COMPATIBILITY
         template<class U, class V = decltype(Implementation::VectorConverter<2, T, U>::from(std::declval<U>()))> inline constexpr explicit Vector2(const U& other): Vector<2, T>(Implementation::VectorConverter<2, T, U>::from(other)) {}
+        #else
+        template<class U, class V = decltype(Implementation::VectorConverter<2, T, U>::from(*static_cast<const U*>(nullptr)))> inline constexpr explicit Vector2(const U& other): Vector<2, T>(Implementation::VectorConverter<2, T, U>::from(other)) {}
+        #endif
 
         /** @brief Copy constructor */
         inline constexpr Vector2(const Vector<2, T>& other): Vector<2, T>(other) {}

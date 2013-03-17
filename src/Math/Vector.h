@@ -165,7 +165,11 @@ template<std::size_t size, class T> class Vector {
         #ifndef CORRADE_GCC46_COMPATIBILITY
         template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> inline constexpr explicit Vector(const U& other): Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
         #else
+        #ifndef CORRADE_GCC44_COMPATIBILITY
         template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> inline explicit Vector(const U& other) {
+        #else
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(*static_cast<const U*>(nullptr)))> inline explicit Vector(const U& other) {
+        #endif
             *this = Implementation::VectorConverter<size, T, U>::from(other);
         }
         #endif
@@ -177,7 +181,11 @@ template<std::size_t size, class T> class Vector {
         inline Vector<size, T>& operator=(const Vector<size, T>&) = default;
 
         /** @brief Convert vector to external representation */
+        #ifndef CORRADE_GCC44_COMPATIBILITY
         template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(std::declval<Vector<size, T>>()))> inline constexpr explicit operator U() const {
+        #else
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(*static_cast<const Vector<size, T>*>(nullptr)))> inline constexpr operator U() const {
+        #endif
             /** @bug Why this is not constexpr under GCC 4.6? */
             return Implementation::VectorConverter<size, T, U>::to(*this);
         }
