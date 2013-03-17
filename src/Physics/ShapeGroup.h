@@ -95,8 +95,8 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT ShapeGroup: public 
     #undef friendOp
     #endif
 
-    ShapeGroup(const ShapeGroup& other) = delete;
-    ShapeGroup& operator=(const ShapeGroup& other) = delete;
+    ShapeGroup(const ShapeGroup&) = delete;
+    ShapeGroup& operator=(const ShapeGroup&) = delete;
 
     public:
         /** @brief Default constructor */

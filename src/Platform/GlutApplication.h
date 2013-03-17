@@ -231,10 +231,10 @@ class GlutApplication {
     mouseReleaseEvent(), mouseMoveEvent()
 */
 class GlutApplication::InputEvent {
-    InputEvent(const InputEvent& other) = delete;
-    InputEvent(InputEvent&& other) = delete;
-    InputEvent& operator=(const InputEvent& other) = delete;
-    InputEvent& operator=(InputEvent&& other) = delete;
+    InputEvent(const InputEvent&) = delete;
+    InputEvent(InputEvent&&) = delete;
+    InputEvent& operator=(const InputEvent&) = delete;
+    InputEvent& operator=(InputEvent&&) = delete;
 
     public:
         inline virtual ~InputEvent() {}

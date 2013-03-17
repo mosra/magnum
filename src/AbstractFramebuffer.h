@@ -52,10 +52,10 @@ switching framebuffers.
 class MAGNUM_EXPORT AbstractFramebuffer {
     friend class Context;
 
-    AbstractFramebuffer(const AbstractFramebuffer& other) = delete;
-    AbstractFramebuffer(AbstractFramebuffer&& other) = delete;
-    AbstractFramebuffer& operator=(const AbstractFramebuffer& other) = delete;
-    AbstractFramebuffer& operator=(AbstractFramebuffer&& other) = delete;
+    AbstractFramebuffer(const AbstractFramebuffer&) = delete;
+    AbstractFramebuffer(AbstractFramebuffer&&) = delete;
+    AbstractFramebuffer& operator=(const AbstractFramebuffer&) = delete;
+    AbstractFramebuffer& operator=(AbstractFramebuffer&&) = delete;
 
     public:
         /**

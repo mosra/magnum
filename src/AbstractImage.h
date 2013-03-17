@@ -47,10 +47,10 @@ functions operating with images). It also possibly needs to be "stackable" to
 easily revert the state back.
 */
 class MAGNUM_EXPORT AbstractImage {
-    AbstractImage(const AbstractImage& other) = delete;
-    AbstractImage(AbstractImage&& other) = delete;
-    AbstractImage& operator=(const AbstractImage& other) = delete;
-    AbstractImage& operator=(AbstractImage&& other) = delete;
+    AbstractImage(const AbstractImage&) = delete;
+    AbstractImage(AbstractImage&&) = delete;
+    AbstractImage& operator=(const AbstractImage&) = delete;
+    AbstractImage& operator=(AbstractImage&&) = delete;
 
     public:
         /**

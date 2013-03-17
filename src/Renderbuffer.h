@@ -54,10 +54,10 @@ See its documentation for more information.
 class MAGNUM_EXPORT Renderbuffer {
     friend class Context;
 
-    Renderbuffer(const Renderbuffer& other) = delete;
-    Renderbuffer(Renderbuffer&& other) = delete;
-    Renderbuffer& operator=(const Renderbuffer& other) = delete;
-    Renderbuffer& operator=(Renderbuffer&& other) = delete;
+    Renderbuffer(const Renderbuffer&) = delete;
+    Renderbuffer(Renderbuffer&&) = delete;
+    Renderbuffer& operator=(const Renderbuffer&) = delete;
+    Renderbuffer& operator=(Renderbuffer&&) = delete;
 
     public:
         /**

@@ -42,8 +42,8 @@ type.
 @see MeshData2D
 */
 class MAGNUM_EXPORT MeshData3D {
-    MeshData3D(const MeshData3D& other) = delete;
-    MeshData3D& operator=(const MeshData3D& other) = delete;
+    MeshData3D(const MeshData3D&) = delete;
+    MeshData3D& operator=(const MeshData3D&) = delete;
 
     public:
         /**

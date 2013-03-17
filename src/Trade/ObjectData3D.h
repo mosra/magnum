@@ -43,10 +43,10 @@ MeshObjectData3D, which is specialized for objects with mesh instance type.
 @see ObjectData2D
 */
 class ObjectData3D {
-    ObjectData3D(const ObjectData3D& other) = delete;
-    ObjectData3D(ObjectData3D&& other) = delete;
-    ObjectData3D& operator=(const ObjectData3D& other) = delete;
-    ObjectData3D& operator=(ObjectData3D&& other) = delete;
+    ObjectData3D(const ObjectData3D&) = delete;
+    ObjectData3D(ObjectData3D&&) = delete;
+    ObjectData3D& operator=(const ObjectData3D&) = delete;
+    ObjectData3D& operator=(ObjectData3D&&) = delete;
 
     public:
         /** @brief Instance type */

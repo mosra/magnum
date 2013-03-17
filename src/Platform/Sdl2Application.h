@@ -186,10 +186,10 @@ CORRADE_ENUMSET_OPERATORS(Sdl2Application::Flags)
     mousePressEvent(), mouseReleaseEvent(), mouseMoveEvent()
 */
 class Sdl2Application::InputEvent {
-    InputEvent(const InputEvent& other) = delete;
-    InputEvent(InputEvent&& other) = delete;
-    InputEvent& operator=(const InputEvent& other) = delete;
-    InputEvent& operator=(InputEvent&& other) = delete;
+    InputEvent(const InputEvent&) = delete;
+    InputEvent(InputEvent&&) = delete;
+    InputEvent& operator=(const InputEvent&) = delete;
+    InputEvent& operator=(InputEvent&&) = delete;
 
     public:
         /**
