@@ -85,7 +85,9 @@ template<class T = Float> using Animable2D = Animable<2, T>;
 template<class T = Float> using Animable3D = Animable<3, T>;
 #endif
 
+#ifndef CORRADE_GCC45_COMPATIBILITY
 enum class AnimationState: UnsignedByte;
+#endif
 
 template<UnsignedInt dimensions, class T = Float> class AnimableGroup;
 #ifndef CORRADE_GCC46_COMPATIBILITY
