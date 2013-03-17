@@ -48,7 +48,7 @@ AtlasTest::AtlasTest() {
 }
 
 void AtlasTest::create() {
-    std::vector<Rectanglei> atlas = TextureTools::atlas({64, 64}, {
+    std::vector<Rectanglei> atlas = TextureTools::atlas({64, 64}, std::vector<Vector2i>{
         {12, 18},
         {32, 15},
         {23, 25}
@@ -62,7 +62,7 @@ void AtlasTest::create() {
 }
 
 void AtlasTest::createPadding() {
-    std::vector<Rectanglei> atlas = TextureTools::atlas({64, 64}, {
+    std::vector<Rectanglei> atlas = TextureTools::atlas({64, 64}, std::vector<Vector2i>{
         {8, 16},
         {28, 13},
         {19, 23}
@@ -84,7 +84,7 @@ void AtlasTest::createTooSmall() {
     std::ostringstream o;
     Error::setOutput(&o);
 
-    std::vector<Rectanglei> atlas = TextureTools::atlas({64, 32}, {
+    std::vector<Rectanglei> atlas = TextureTools::atlas({64, 32}, std::vector<Vector2i>{
         {8, 16},
         {21, 13},
         {19, 29}
