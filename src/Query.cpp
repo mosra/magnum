@@ -26,6 +26,20 @@
 
 namespace Magnum {
 
+AbstractQuery::AbstractQuery() {
+    /** @todo Get some extension wrangler instead to avoid undeclared glGenQueries() on ES2 */
+    #ifndef MAGNUM_TARGET_GLES2
+    glGenQueries(1, &_id);
+    #endif
+}
+
+AbstractQuery::~AbstractQuery() {
+    /** @todo Get some extension wrangler instead to avoid undeclared glGenQueries() on ES2 */
+    #ifndef MAGNUM_TARGET_GLES2
+    glDeleteQueries(1, &_id);
+    #endif
+}
+
 bool AbstractQuery::resultAvailable() {
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
@@ -79,6 +93,10 @@ template<> Long AbstractQuery::result<Long>() {
 }
 #endif
 
+Query::Query(): target(nullptr) {}
+
+Query::~Query() { delete target; }
+
 #ifndef MAGNUM_TARGET_GLES2
 void Query::begin(Query::Target target) {
     glBeginQuery(static_cast<GLenum>(target), id());
@@ -93,6 +111,10 @@ void Query::end() {
     target = nullptr;
 }
 #endif
+
+SampleQuery::SampleQuery(): target(nullptr) {}
+
+SampleQuery::~SampleQuery() { delete target; }
 
 void SampleQuery::begin(SampleQuery::Target target) {
     /** @todo Re-enable when extension wrangler is available for ES */
@@ -112,5 +134,7 @@ void SampleQuery::end() {
     delete target;
     target = nullptr;
 }
+
+TimeQuery::TimeQuery() = default;
 
 }
