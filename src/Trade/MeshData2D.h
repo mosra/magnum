@@ -56,16 +56,16 @@ class MAGNUM_EXPORT MeshData2D {
          * @param textureCoords2D   Array with two-dimensional texture
          *      coordinate arrays or empty array
          */
-        inline MeshData2D(Mesh::Primitive primitive, std::vector<UnsignedInt>* indices, std::vector<std::vector<Vector2>*> positions, std::vector<std::vector<Vector2>*> textureCoords2D): _primitive(primitive), _indices(indices), _positions(positions), _textureCoords2D(textureCoords2D) {}
+        MeshData2D(Mesh::Primitive primitive, std::vector<UnsignedInt>* indices, std::vector<std::vector<Vector2>*> positions, std::vector<std::vector<Vector2>*> textureCoords2D);
 
         /** @brief Move constructor */
-        MeshData2D(MeshData2D&&) = default;
+        MeshData2D(MeshData2D&&);
 
         /** @brief Destructor */
         ~MeshData2D();
 
         /** @brief Move assignment */
-        MeshData2D& operator=(MeshData2D&&) = default;
+        MeshData2D& operator=(MeshData2D&&);
 
         /** @brief Primitive */
         inline Mesh::Primitive primitive() const { return _primitive; }
