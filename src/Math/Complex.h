@@ -172,7 +172,11 @@ template<class T> class Complex {
          *      \boldsymbol v = \begin{pmatrix} a \\ b \end{pmatrix}
          * @f]
          */
+        #ifndef CORRADE_GCC44_COMPATIBILITY
         inline constexpr explicit operator Vector2<T>() const {
+        #else
+        inline constexpr operator Vector2<T>() const {
+        #endif
             return {_real, _imaginary};
         }
 

@@ -117,7 +117,11 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
                 inline constexpr explicit ColorAttachment(UnsignedInt id): attachment(GL_COLOR_ATTACHMENT0 + id) {}
 
                 #ifndef DOXYGEN_GENERATING_OUTPUT
+                #ifndef CORRADE_GCC44_COMPATIBILITY
                 inline constexpr explicit operator GLenum() const { return attachment; }
+                #else
+                inline constexpr operator GLenum() const { return attachment; }
+                #endif
                 #endif
 
             private:
@@ -138,7 +142,11 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
                 inline constexpr /*implicit*/ DrawAttachment(Framebuffer::ColorAttachment attachment): attachment(GLenum(attachment)) {}
 
                 #ifndef DOXYGEN_GENERATING_OUTPUT
+                #ifndef CORRADE_GCC44_COMPATIBILITY
                 inline constexpr explicit operator GLenum() const { return attachment; }
+                #else
+                inline constexpr operator GLenum() const { return attachment; }
+                #endif
                 #endif
 
             private:
@@ -175,7 +183,11 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
                 inline constexpr /*implicit*/ BufferAttachment(Framebuffer::ColorAttachment attachment): attachment(GLenum(attachment)) {}
 
                 #ifndef DOXYGEN_GENERATING_OUTPUT
+                #ifndef CORRADE_GCC44_COMPATIBILITY
                 inline constexpr explicit operator GLenum() const { return attachment; }
+                #else
+                inline constexpr operator GLenum() const { return attachment; }
+                #endif
                 #endif
 
             private:
@@ -203,7 +215,11 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
                 inline constexpr /*implicit*/ InvalidationAttachment(Framebuffer::ColorAttachment attachment): attachment(GLenum(attachment)) {}
 
                 #ifndef DOXYGEN_GENERATING_OUTPUT
+                #ifndef CORRADE_GCC44_COMPATIBILITY
                 inline constexpr explicit operator GLenum() const { return attachment; }
+                #else
+                inline constexpr operator GLenum() const { return attachment; }
+                #endif
                 #endif
 
             private:
