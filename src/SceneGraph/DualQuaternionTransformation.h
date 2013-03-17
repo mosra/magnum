@@ -148,6 +148,22 @@ class DualQuaternionTransformation: public AbstractTranslationRotation3D<T> {
             return this;
         }
 
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        inline DualQuaternionTransformation<T>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
+            AbstractTranslationRotation3D<T>::rotateX(angle, type);
+            return this;
+        }
+        inline DualQuaternionTransformation<T>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
+            AbstractTranslationRotation3D<T>::rotateY(angle, type);
+            return this;
+        }
+        inline DualQuaternionTransformation<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
+            AbstractTranslationRotation3D<T>::rotateZ(angle, type);
+            return this;
+        }
+        #endif
+
     protected:
         /* Allow construction only from Object */
         inline explicit DualQuaternionTransformation() = default;
