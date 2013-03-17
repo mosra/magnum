@@ -40,7 +40,7 @@ Capsule::Capsule(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, Unsigne
     capVertex(-height/2, -1.0f, 0.0f);
 
     /* Rings of bottom hemisphere */
-    hemisphereVertexRings(hemisphereRings-1, -length/2, -Rad(Constants::pi())/2+hemisphereRingAngleIncrement, hemisphereRingAngleIncrement, hemisphereTextureCoordsVIncrement, hemisphereTextureCoordsVIncrement);
+    hemisphereVertexRings(hemisphereRings-1, -length/2, -Rad(Constants::pi()/2)+hemisphereRingAngleIncrement, hemisphereRingAngleIncrement, hemisphereTextureCoordsVIncrement, hemisphereTextureCoordsVIncrement);
 
     /* Rings of cylinder */
     cylinderVertexRings(cylinderRings+1, -length/2, length/cylinderRings, 1.0f/height, length/(cylinderRings*height));
@@ -71,12 +71,12 @@ void Capsule::hemisphereVertexRings(UnsignedInt count, Float centerY, Rad startR
     Rad segmentAngleIncrement(2*Constants::pi()/segments);
     Float x, y, z;
     for(UnsignedInt i = 0; i != count; ++i) {
-        Rad ringAngle = startRingAngle + i*ringAngleIncrement;
+        Rad ringAngle = startRingAngle + Rad(i*ringAngleIncrement);
         x = z = Math::cos(ringAngle);
         y = Math::sin(ringAngle);
 
         for(UnsignedInt j = 0; j != segments; ++j) {
-            Rad segmentAngle = j*segmentAngleIncrement;
+            Rad segmentAngle(j*segmentAngleIncrement);
             positions(0)->push_back({x*Math::sin(segmentAngle), centerY+y, z*Math::cos(segmentAngle)});
             normals(0)->push_back({x*Math::sin(segmentAngle), y, z*Math::cos(segmentAngle)});
 
@@ -97,7 +97,7 @@ void Capsule::cylinderVertexRings(UnsignedInt count, Float startY, Float yIncrem
     Rad segmentAngleIncrement(2*Constants::pi()/segments);
     for(UnsignedInt i = 0; i != count; ++i) {
         for(UnsignedInt j = 0; j != segments; ++j) {
-            Rad segmentAngle = j*segmentAngleIncrement;
+            Rad segmentAngle(j*segmentAngleIncrement);
             positions(0)->push_back({Math::sin(segmentAngle), startY, Math::cos(segmentAngle)});
             normals(0)->push_back({Math::sin(segmentAngle), 0.0f, Math::cos(segmentAngle)});
 

@@ -131,9 +131,17 @@ void UnitTest::multiplyDivide() {
     constexpr Sec b(-4.5f);
     constexpr Sec c(5.0f);
 
+    /* The operation returns underlying type on GCC 4.4 because of non-explicit
+       conversion operators and conflicts with builtin operators */
+    #ifndef CORRADE_GCC44_COMPATIBILITY
     constexpr Sec d = a*-1.5f;
     constexpr Sec e = -1.5f*a;
     constexpr Sec f = b/-1.5f;
+    #else
+    constexpr Sec d(a*-1.5f);
+    constexpr Sec e(-1.5f*a);
+    constexpr Sec f(b/-1.5f);
+    #endif
     CORRADE_COMPARE(d, b);
     CORRADE_COMPARE(e, b);
     CORRADE_COMPARE(f, a);
