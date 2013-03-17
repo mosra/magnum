@@ -110,8 +110,8 @@ void FreeTypeFont::prerenderInternal(const std::string& characters, const Vector
     const Vector2i padding = Vector2i(radius);
     std::vector<Vector2i> charSizes;
     charSizes.reserve(charIndices.size());
-    for(FT_UInt c: charIndices) {
-        CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Load_Glyph(_ftFont, c, FT_LOAD_DEFAULT) == 0);
+    for(auto it = charIndices.begin(); it != charIndices.end(); ++it) {
+        CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Load_Glyph(_ftFont, *it, FT_LOAD_DEFAULT) == 0);
         charSizes.push_back(Vector2i(_ftFont->glyph->metrics.width, _ftFont->glyph->metrics.height)/64);
     }
 

@@ -34,8 +34,8 @@ std::vector<Rectanglei> atlas(const Vector2i& atlasSize, const std::vector<Vecto
 
     /* Size of largest texture */
     Vector2i maxSize;
-    for(const Vector2i& size: sizes)
-        maxSize = Math::max(maxSize, size);
+    for(auto it = sizes.begin(); it != sizes.end(); ++it)
+        maxSize = Math::max(maxSize, *it);
 
     std::vector<Rectanglei> atlas;
 

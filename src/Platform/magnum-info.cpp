@@ -104,7 +104,10 @@ MagnumInfo::MagnumInfo(int& argc, char** argv): WindowlessGlxApplication(argc, a
             Debug() << versions[i] << "extension support:";
         else Debug() << "Vendor extension support:";
 
-        for(const auto& extension: Extension::extensions(versions[i])) {
+        auto extensions = Extension::extensions(versions[i]);
+        for(auto it = extensions.begin(); it != extensions.end(); ++it) {
+            const auto& extension = *it;
+
             std::string extensionName = extension.string();
             Debug d;
             d << "   " << extensionName << std::string(60-extensionName.size(), ' ');

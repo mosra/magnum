@@ -57,22 +57,26 @@ MeshTools::transformVectorsInPlace(rotation, vectors);
 @todo GPU transform feedback implementation (otherwise this is only bad joke)
 */
 template<class T, class U> void transformVectorsInPlace(const Math::Quaternion<T>& normalizedQuaternion, U& vectors) {
-    for(auto& vector: vectors) vector = normalizedQuaternion.transformVectorNormalized(vector);
+    for(auto it = vectors.begin(); it != vectors.end(); ++it)
+        *it = normalizedQuaternion.transformVectorNormalized(*it);
 }
 
 /** @overload */
 template<class T, class U> void transformVectorsInPlace(const Math::Complex<T>& complex, U& vectors) {
-    for(auto& vector: vectors) vector = complex.transformVector(vector);
+    for(auto it = vectors.begin(); it != vectors.end(); ++it)
+        *it = complex.transformVector(*it);
 }
 
 /** @overload */
 template<class T, class U> void transformVectorsInPlace(const Math::Matrix3<T>& matrix, U& vectors) {
-    for(auto& vector: vectors) vector = matrix.transformVector(vector);
+    for(auto it = vectors.begin(); it != vectors.end(); ++it)
+        *it = matrix.transformVector(*it);
 }
 
 /** @overload */
 template<class T, class U> void transformVectorsInPlace(const Math::Matrix4<T>& matrix, U& vectors) {
-    for(auto& vector: vectors) vector = matrix.transformVector(vector);
+    for(auto it = vectors.begin(); it != vectors.end(); ++it)
+        *it = matrix.transformVector(*it);
 }
 
 /**
@@ -111,22 +115,26 @@ MeshTools::transformPointsInPlace(rotation, points);
     DualQuaternion::transformPointNormalized()
 */
 template<class T, class U> void transformPointsInPlace(const Math::DualQuaternion<T>& normalizedDualQuaternion, U& points) {
-    for(auto& point: points) point = normalizedDualQuaternion.transformPointNormalized(point);
+    for(auto it = points.begin(); it != points.end(); ++it)
+        *it = normalizedDualQuaternion.transformPointNormalized(*it);
 }
 
 /** @overload */
 template<class T, class U> void transformPointsInPlace(const Math::DualComplex<T>& dualComplex, U& points) {
-    for(auto& point: points) point = dualComplex.transformPoint(point);
+    for(auto it = points.begin(); it != points.end(); ++it)
+        *it = dualComplex.transformPoint(*it);
 }
 
 /** @overload */
 template<class T, class U> void transformPointsInPlace(const Math::Matrix3<T>& matrix, U& points) {
-    for(auto& point: points) point = matrix.transformPoint(point);
+    for(auto it = points.begin(); it != points.end(); ++it)
+        *it = matrix.transformPoint(*it);
 }
 
 /** @overload */
 template<class T, class U> void transformPointsInPlace(const Math::Matrix4<T>& matrix, U& points) {
-    for(auto& point: points) point = matrix.transformPoint(point);
+    for(auto it = points.begin(); it != points.end(); ++it)
+        *it = matrix.transformPoint(*it);
 }
 
 /**

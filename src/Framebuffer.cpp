@@ -70,14 +70,14 @@ Framebuffer::~Framebuffer() {
 Framebuffer* Framebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments) {
     /* Max attachment location */
     std::size_t max = 0;
-    for(const auto& attachment: attachments)
-        if(attachment.first > max) max = attachment.first;
+    for(auto it = attachments.begin(); it != attachments.end(); ++it)
+        if(it->first > max) max = it->first;
 
     /* Create linear array from associative */
     GLenum* _attachments = new GLenum[max+1];
     std::fill_n(_attachments, max, GL_NONE);
-    for(const auto& attachment: attachments)
-        _attachments[attachment.first] = GLenum(attachment.second);
+    for(auto it = attachments.begin(); it != attachments.end(); ++it)
+        _attachments[it->first] = GLenum(it->second);
 
     (this->*drawBuffersImplementation)(max+1, _attachments);
     delete[] _attachments;
