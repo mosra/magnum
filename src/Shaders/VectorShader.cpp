@@ -41,11 +41,14 @@ namespace {
 template<UnsignedInt dimensions> VectorShader<dimensions>::VectorShader(): transformationProjectionMatrixUniform(0), colorUniform(1) {
     Corrade::Utility::Resource rs("MagnumShaders");
 
+    /* Weird bug in GCC 4.5 - cannot use initializer list here, although the
+       same thing works in PhongShader flawlessly */
     #ifndef MAGNUM_TARGET_GLES
-    Version v = Context::current()->supportedVersion({Version::GL320, Version::GL210});
+    std::initializer_list<Version> vs{Version::GL320, Version::GL210};
     #else
-    Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
+    std::initializer_list<Version> vs{Version::GLES300, Version::GLES200};
     #endif
+    Version v = Context::current()->supportedVersion(vs);
 
     Shader vertexShader(v, Shader::Type::Vertex);
     vertexShader.addSource(rs.get("compatibility.glsl"));
