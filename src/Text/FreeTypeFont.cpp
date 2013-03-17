@@ -119,7 +119,9 @@ void FreeTypeFont::prerenderInternal(const std::string& characters, const Vector
     const std::vector<Rectanglei> charPositions = TextureTools::atlas(atlasSize, charSizes, padding);
 
     /* Render all characters to the atlas and create character map */
+    #ifndef CORRADE_GCC44_COMPATIBILITY
     glyphs.reserve(charPositions.size());
+    #endif
     unsigned char* pixmap = new unsigned char[atlasSize.product()]();
     Image2D image(atlasSize, Image2D::Format::Red, Image2D::Type::UnsignedByte, pixmap);
     for(std::size_t i = 0; i != charPositions.size(); ++i) {
