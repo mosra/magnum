@@ -22,4 +22,4 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-corrade_add_test(MagnumDebugToolsForceRendererTest ForceRendererTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(DebugToolsForceRendererTest ForceRendererTest.cpp LIBRARIES MagnumMathTestLib)
