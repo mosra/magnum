@@ -55,6 +55,7 @@ template<class T> struct Constants {
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_TARGET_GLES
 template<> struct Constants<Double> {
     Constants() = delete;
 
@@ -62,6 +63,7 @@ template<> struct Constants<Double> {
     static inline constexpr Double sqrt2() { return 1.414213562373095; }
     static inline constexpr Double sqrt3() { return 1.732050807568877; }
 };
+#endif
 template<> struct Constants<Float> {
     Constants() = delete;
 

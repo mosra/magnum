@@ -51,7 +51,9 @@ template<class T> T pythagoras(T a, T b) {
 
 template<class T> T smallestDelta();
 template<> inline constexpr Float smallestDelta<Float>() { return 1.0e-32; }
+#ifndef MAGNUM_TARGET_GLES
 template<> inline constexpr Double smallestDelta<Double>() { return 1.0e-64; }
+#endif
 
 }
 #endif

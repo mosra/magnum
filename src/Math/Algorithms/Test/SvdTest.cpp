@@ -36,11 +36,13 @@ class SvdTest: public Corrade::TestSuite::Tester {
         void testFloat();
 };
 
+#ifndef MAGNUM_TARGET_GLES
 typedef RectangularMatrix<5, 8, Double> Matrix5x8d;
 typedef Matrix<8, Double> Matrix8d;
 typedef Matrix<5, Double> Matrix5d;
 typedef Vector<8, Double> Vector8d;
 typedef Vector<5, Double> Vector5d;
+#endif
 
 typedef RectangularMatrix<5, 8, Float> Matrix5x8f;
 typedef Matrix<8, Float> Matrix8f;
@@ -48,15 +50,25 @@ typedef Matrix<5, Float> Matrix5f;
 typedef Vector<8, Float> Vector8f;
 typedef Vector<5, Float> Vector5f;
 
-constexpr static Matrix5x8d a(
+#ifndef MAGNUM_TARGET_GLES
+constexpr static Matrix5x8d ad(
     Vector8d(22.0, 14.0,  -1.0, -3.0,  9.0,  9.0,  2.0,  4.0),
     Vector8d(10.0,  7.0,  13.0, -2.0,  8.0,  1.0, -6.0,  5.0),
     Vector8d( 2.0, 10.0,  -1.0, 13.0,  1.0, -7.0,  6.0,  0.0),
     Vector8d( 3.0,  0.0, -11.0, -2.0, -2.0,  5.0,  5.0, -2.0),
     Vector8d( 7.0,  8.0,   3.0,  4.0,  4.0, -1.0,  1.0,  2.0)
 );
+static const Vector5d expectedd(std::sqrt(1248.0), 0.0, 20.0, std::sqrt(384.0), 0.0);
+#endif
 
-static const Vector5d expected(std::sqrt(1248.0), 0.0, 20.0, std::sqrt(384.0), 0.0);
+constexpr static Matrix5x8f af(
+    Vector8f(22.0f, 14.0f,  -1.0f, -3.0f,  9.0f,  9.0f,  2.0f,  4.0f),
+    Vector8f(10.0f,  7.0f,  13.0f, -2.0f,  8.0f,  1.0f, -6.0f,  5.0f),
+    Vector8f( 2.0f, 10.0f,  -1.0f, 13.0f,  1.0f, -7.0f,  6.0f,  0.0f),
+    Vector8f( 3.0f,  0.0f, -11.0f, -2.0f, -2.0f,  5.0f,  5.0f, -2.0f),
+    Vector8f( 7.0f,  8.0f,   3.0f,  4.0f,  4.0f, -1.0f,  1.0f,  2.0f)
+);
+static const Vector5f expectedf(std::sqrt(1248.0f), 0.0f, 20.0f, std::sqrt(384.0f), 0.0f);
 
 SvdTest::SvdTest() {
     addTests({&SvdTest::testDouble,
@@ -64,41 +76,45 @@ SvdTest::SvdTest() {
 }
 
 void SvdTest::testDouble() {
+    #ifndef MAGNUM_TARGET_GLES
     Matrix5x8d u;
     Vector5d w;
     Matrix5d v;
-    std::tie(u, w, v) = Algorithms::svd(a);
+    std::tie(u, w, v) = Algorithms::svd(ad);
 
     /* Test composition */
     Matrix8d u2(u[0], u[1], u[2], u[3], u[4], Vector8d(), Vector8d(), Vector8d());
     Matrix5x8d w2 = Matrix5x8d::fromDiagonal(w);
-    CORRADE_COMPARE(u2*w2*v.transposed(), a);
+    CORRADE_COMPARE(u2*w2*v.transposed(), ad);
 
     /* Test that V is unitary */
     CORRADE_COMPARE(v*v.transposed(), Matrix5d(Matrix5d::Identity));
     CORRADE_COMPARE(v.transposed()*v, Matrix5d(Matrix5d::Identity));
 
     /* Test W */
-    CORRADE_COMPARE(w, expected);
+    CORRADE_COMPARE(w, expectedd);
+    #else
+    CORRADE_SKIP("Double precision is not supported when targeting OpenGL ES.");
+    #endif
 }
 
 void SvdTest::testFloat() {
     Matrix5x8f u;
     Vector5f w;
     Matrix5f v;
-    std::tie(u, w, v) = Algorithms::svd(Matrix5x8f(a));
+    std::tie(u, w, v) = Algorithms::svd(af);
 
     /* Test composition (single precision is not enough, test for similarity) */
     Matrix8f u2(u[0], u[1], u[2], u[3], u[4], Vector8f(), Vector8f(), Vector8f());
     Matrix5x8f w2 = Matrix5x8f::fromDiagonal(w);
-    CORRADE_VERIFY((u2*w2*v.transposed()-Matrix5x8f(a)).maxAbs() < 1.0e-5f);
+    CORRADE_VERIFY((u2*w2*v.transposed()-af).maxAbs() < 1.0e-5f);
 
     /* Test that V is unitary */
     CORRADE_COMPARE(v*v.transposed(), Matrix5f(Matrix5f::Identity));
     CORRADE_COMPARE(v.transposed()*v, Matrix5f(Matrix5f::Identity));
 
     /* Test W (single precision is not enough, test for similarity) */
-    CORRADE_VERIFY((w-Vector5f(expected)).maxAbs() < 1.0e-5f);
+    CORRADE_VERIFY((w-expectedf).maxAbs() < 1.0e-5f);
 }
 
 }}}}
