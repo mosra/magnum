@@ -33,23 +33,31 @@ class ConstantsTest: public Corrade::TestSuite::Tester {
     public:
         ConstantsTest();
 
-        void constants();
+        void constantsFloat();
+        void constantsDouble();
 };
 
 ConstantsTest::ConstantsTest() {
-    addTests({&ConstantsTest::constants});
+    addTests({&ConstantsTest::constantsFloat,
+              &ConstantsTest::constantsDouble});
 }
 
-void ConstantsTest::constants() {
+void ConstantsTest::constantsFloat() {
     constexpr Float a = Constants<Float>::sqrt2();
     constexpr Float b = Constants<Float>::sqrt3();
     CORRADE_COMPARE(Math::pow<2>(a), 2.0f);
     CORRADE_COMPARE(Math::pow<2>(b), 3.0f);
+}
 
+void ConstantsTest::constantsDouble() {
+    #ifndef MAGNUM_TARGET_GLES
     constexpr Double c = Constants<Double>::sqrt2();
     constexpr Double d = Constants<Double>::sqrt3();
     CORRADE_COMPARE(Math::pow<2>(c), 2.0);
     CORRADE_COMPARE(Math::pow<2>(d), 3.0);
+    #else
+    CORRADE_SKIP("Double precision is not supported when targeting OpenGL ES.");
+    #endif
 }
 
 }}}

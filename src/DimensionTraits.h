@@ -77,12 +77,14 @@ template<> struct DimensionTraits<2, Float> {
     typedef Math::Vector2<Float> VectorType;
     typedef Math::Matrix3<Float> MatrixType;
 };
+#ifndef MAGNUM_TARGET_GLES
 template<> struct DimensionTraits<2, Double> {
     DimensionTraits() = delete;
 
     typedef Math::Vector2<Double> VectorType;
     typedef Math::Matrix3<Double> MatrixType;
 };
+#endif
 
 /* Three dimensions - integral */
 template<class T> struct DimensionTraits<3, T> {
@@ -98,12 +100,14 @@ template<> struct DimensionTraits<3, Float> {
     typedef Math::Vector3<Float> VectorType;
     typedef Math::Matrix4<Float> MatrixType;
 };
+#ifndef MAGNUM_TARGET_GLES
 template<> struct DimensionTraits<3, Double> {
     DimensionTraits() = delete;
 
     typedef Math::Vector3<Double> VectorType;
     typedef Math::Matrix4<Double> MatrixType;
 };
+#endif
 #endif
 
 }

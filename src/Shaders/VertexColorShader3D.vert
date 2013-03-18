@@ -27,8 +27,12 @@
 #define out varying
 #endif
 
+#ifndef GL_ES
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 0) uniform mat4 transformationProjectionMatrix;
+layout(location = 0) uniform mat4 transformationProjectionMatrix = mat4(1.0);
+#else
+uniform mat4 transformationProjectionMatrix = mat4(1.0);
+#endif
 #else
 uniform highp mat4 transformationProjectionMatrix;
 #endif

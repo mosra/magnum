@@ -93,11 +93,11 @@ template<> Long AbstractQuery::result<Long>() {
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
 Query::Query(): target(nullptr) {}
 
 Query::~Query() { delete target; }
 
-#ifndef MAGNUM_TARGET_GLES2
 void Query::begin(Query::Target target) {
     glBeginQuery(static_cast<GLenum>(target), id());
     this->target = new Target(target);
@@ -135,6 +135,8 @@ void SampleQuery::end() {
     target = nullptr;
 }
 
+#ifndef MAGNUM_TARGET_GLES
 TimeQuery::TimeQuery() = default;
+#endif
 
 }

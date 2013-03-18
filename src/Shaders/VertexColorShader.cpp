@@ -69,10 +69,11 @@ template<UnsignedInt dimensions> VertexColorShader<dimensions>::VertexColorShade
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||
-        Context::current()->version() == Version::GL210) {
+        Context::current()->version() == Version::GL210)
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES300)) {
+    if(!Context::current()->isVersionSupported(Version::GLES300))
     #endif
+    {
         bindAttributeLocation(Position::Location, "position");
         bindAttributeLocation(Color::Location, "color");
     }
@@ -80,12 +81,16 @@ template<UnsignedInt dimensions> VertexColorShader<dimensions>::VertexColorShade
     link();
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>()) {
-    #else
-    {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
     #endif
+    {
         transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
     }
+
+    /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
+    #ifdef MAGNUM_TARGET_GLES
+    setTransformationProjectionMatrix(typename DimensionTraits<dimensions>::MatrixType());
+    #endif
 }
 
 template class VertexColorShader<2>;

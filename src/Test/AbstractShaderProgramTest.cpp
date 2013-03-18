@@ -83,6 +83,7 @@ void AbstractShaderProgramTest::attributeScalar() {
 }
 
 void AbstractShaderProgramTest::attributeScalarInt() {
+    #ifndef MAGNUM_TARGET_GLES2
     typedef AbstractShaderProgram::Attribute<3, Int> Attribute;
 
     /* Default constructor */
@@ -92,9 +93,13 @@ void AbstractShaderProgramTest::attributeScalarInt() {
     /* Options */
     Attribute b(Attribute::DataType::Short);
     CORRADE_COMPARE(b.dataSize(), 2);
+    #else
+    CORRADE_SKIP("Integer attributes are not available in OpenGL ES 2.");
+    #endif
 }
 
 void AbstractShaderProgramTest::attributeScalarUnsignedInt() {
+    #ifndef MAGNUM_TARGET_GLES2
     typedef AbstractShaderProgram::Attribute<3, UnsignedInt> Attribute;
 
     /* Default constructor */
@@ -104,6 +109,9 @@ void AbstractShaderProgramTest::attributeScalarUnsignedInt() {
     /* Options */
     Attribute b(Attribute::DataType::UnsignedByte);
     CORRADE_COMPARE(b.dataSize(), 1);
+    #else
+    CORRADE_SKIP("Integer attributes are not available in OpenGL ES 2.");
+    #endif
 }
 
 void AbstractShaderProgramTest::attributeScalarDouble() {
@@ -128,12 +136,19 @@ void AbstractShaderProgramTest::attributeVector() {
     CORRADE_COMPARE(a.dataType(), Attribute::DataType::Float);
 
     /* Options */
+    #ifndef MAGNUM_TARGET_GLES
     Attribute b(Attribute::Components::Two, Attribute::DataType::Double);
     CORRADE_COMPARE(b.components(), Attribute::Components::Two);
     CORRADE_COMPARE(b.dataSize(), 2*8);
+    #else
+    Attribute b(Attribute::Components::Two, Attribute::DataType::Float);
+    CORRADE_COMPARE(b.components(), Attribute::Components::Two);
+    CORRADE_COMPARE(b.dataSize(), 2*4);
+    #endif
 }
 
 void AbstractShaderProgramTest::attributeVectorInt() {
+    #ifndef MAGNUM_TARGET_GLES2
     typedef AbstractShaderProgram::Attribute<3, Vector2i> Attribute;
 
     /* Default constructor */
@@ -145,9 +160,13 @@ void AbstractShaderProgramTest::attributeVectorInt() {
     /* Options */
     Attribute b(Attribute::Components::One, Attribute::DataType::Int);
     CORRADE_COMPARE(b.dataSize(), 4);
+    #else
+    CORRADE_SKIP("Integer attributes are not available in OpenGL ES 2.");
+    #endif
 }
 
 void AbstractShaderProgramTest::attributeVectorUnsignedInt() {
+    #ifndef MAGNUM_TARGET_GLES2
     typedef AbstractShaderProgram::Attribute<3, Vector4ui> Attribute;
 
     /* Default constructor */
@@ -159,6 +178,9 @@ void AbstractShaderProgramTest::attributeVectorUnsignedInt() {
     /* Options */
     Attribute b(Attribute::Components::Three, Attribute::DataType::UnsignedShort);
     CORRADE_COMPARE(b.dataSize(), 3*2);
+    #else
+    CORRADE_SKIP("Integer attributes are not available in OpenGL ES 2.");
+    #endif
 }
 
 void AbstractShaderProgramTest::attributeVectorDouble() {
@@ -183,8 +205,13 @@ void AbstractShaderProgramTest::attributeVector4() {
     typedef AbstractShaderProgram::Attribute<3, Vector4> Attribute;
 
     /* Custom type */
+    #ifndef MAGNUM_TARGET_GLES
     Attribute a(Attribute::DataType::UnsignedInt2101010Rev);
     CORRADE_COMPARE(a.dataSize(), 4);
+    #else
+    Attribute a(Attribute::DataType::HalfFloat);
+    CORRADE_COMPARE(a.dataSize(), 8);
+    #endif
 }
 
 void AbstractShaderProgramTest::attributeVectorBGRA() {

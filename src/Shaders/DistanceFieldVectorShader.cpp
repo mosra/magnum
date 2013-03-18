@@ -62,10 +62,11 @@ template<UnsignedInt dimensions> DistanceFieldVectorShader<dimensions>::Distance
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||
-        Context::current()->version() == Version::GL210) {
+        Context::current()->version() == Version::GL210)
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES300)) {
+    if(!Context::current()->isVersionSupported(Version::GLES300))
     #endif
+    {
         AbstractShaderProgram::bindAttributeLocation(AbstractVectorShader<dimensions>::Position::Location, "position");
         AbstractShaderProgram::bindAttributeLocation(AbstractVectorShader<dimensions>::TextureCoordinates::Location, "textureCoordinates");
     }
@@ -73,10 +74,9 @@ template<UnsignedInt dimensions> DistanceFieldVectorShader<dimensions>::Distance
     AbstractShaderProgram::link();
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>()) {
-    #else
-    {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
     #endif
+    {
         transformationProjectionMatrixUniform = AbstractShaderProgram::uniformLocation("transformationProjectionMatrix");
         colorUniform = AbstractShaderProgram::uniformLocation("color");
         outlineColorUniform = AbstractShaderProgram::uniformLocation("outlineColor");

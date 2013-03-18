@@ -59,7 +59,9 @@ void TypeTraitsTest::equalsIntegral() {
 
 void TypeTraitsTest::equalsFloatingPoint() {
     _equalsFloatingPoint<Float>();
+    #ifndef MAGNUM_TARGET_GLES
     _equalsFloatingPoint<Double>();
+    #endif
 }
 
 template<class T> void TypeTraitsTest::_equalsIntegral() {

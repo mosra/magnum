@@ -52,10 +52,11 @@ PhongShader::PhongShader(): transformationMatrixUniform(0), projectionMatrixUnif
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||
-        Context::current()->version() == Version::GL210) {
+        Context::current()->version() == Version::GL210)
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES300)) {
+    if(!Context::current()->isVersionSupported(Version::GLES300))
     #endif
+    {
         bindAttributeLocation(Position::Location, "position");
         bindAttributeLocation(Normal::Location, "normal");
     }
@@ -63,10 +64,9 @@ PhongShader::PhongShader(): transformationMatrixUniform(0), projectionMatrixUnif
     link();
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>()) {
-    #else
-    {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
     #endif
+    {
         transformationMatrixUniform = uniformLocation("transformationMatrix");
         projectionMatrixUniform = uniformLocation("projectionMatrix");
         normalMatrixUniform = uniformLocation("normalMatrix");

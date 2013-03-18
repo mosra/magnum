@@ -51,7 +51,7 @@ void SwizzleTest::rgba() {
 void SwizzleTest::type() {
     constexpr Vector4i orig;
     constexpr Color3<Float> origColor3;
-    constexpr Color4<Double> origColor4;
+    constexpr Color4<UnsignedByte> origColor4;
 
     /* decltype(a) is not const because a is not constexpr under GCC <= 4.5 */
     #ifdef CORRADE_GCC45_COMPATIBILITY
@@ -71,13 +71,13 @@ void SwizzleTest::type() {
     CORRADE_VERIFY((std::is_same<decltype(d), const Color3<Float>>::value));
 
     constexpr auto e = swizzle<'y', 'z', 'a'>(origColor4);
-    CORRADE_VERIFY((std::is_same<decltype(e), const Color3<Double>>::value));
+    CORRADE_VERIFY((std::is_same<decltype(e), const Color3<UnsignedByte>>::value));
 
     constexpr auto f = swizzle<'y', 'z', 'y', 'x'>(origColor3);
     CORRADE_VERIFY((std::is_same<decltype(f), const Color4<Float>>::value));
 
     constexpr auto g = swizzle<'y', 'a', 'y', 'x'>(origColor4);
-    CORRADE_VERIFY((std::is_same<decltype(g), const Color4<Double>>::value));
+    CORRADE_VERIFY((std::is_same<decltype(g), const Color4<UnsignedByte>>::value));
 
     #ifdef CORRADE_GCC45_COMPATIBILITY
     #undef const
