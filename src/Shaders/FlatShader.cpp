@@ -58,20 +58,20 @@ template<UnsignedInt dimensions> FlatShader<dimensions>::FlatShader(): transform
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||
-        Context::current()->version() == Version::GL210) {
+        Context::current()->version() == Version::GL210)
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES300)) {
+    if(!Context::current()->isVersionSupported(Version::GLES300))
     #endif
+    {
         bindAttributeLocation(Position::Location, "position");
     }
 
     link();
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>()) {
-    #else
-    {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
     #endif
+    {
         transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
         colorUniform = uniformLocation("color");
     }
