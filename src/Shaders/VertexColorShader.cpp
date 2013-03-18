@@ -75,6 +75,11 @@ template<UnsignedInt dimensions> VertexColorShader<dimensions>::VertexColorShade
     {
         transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
     }
+
+    /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
+    #ifdef MAGNUM_TARGET_GLES
+    setTransformationProjectionMatrix(typename DimensionTraits<dimensions>::MatrixType());
+    #endif
 }
 
 template class VertexColorShader<2>;
