@@ -22,6 +22,13 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# Disable `-pedantic` for GCC 4.6, as the compiler doesn't like
+# list-initialization of array of classes (RectangularMatrix constructors). It
+# is perfectly legal C++11 and both GCC 4.7 and Clang accept it without notice.
+if(CORRADE_GCC46_COMPATIBILITY)
+    string(REPLACE "-pedantic" "" CORRADE_CXX_FLAGS "${CORRADE_CXX_FLAGS}")
+endif()
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CORRADE_INCLUDE_DIR})
 

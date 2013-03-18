@@ -106,12 +106,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * @todo Creating matrix from arbitrary combination of matrices with n rows
          */
-        #ifndef CORRADE_GCC46_COMPATIBILITY
         template<class ...U> inline constexpr /*implicit*/ RectangularMatrix(const Vector<rows, T>& first, const U&... next): _data{first, next...} {
-        #else
-        template<class ...U> inline /*implicit*/ RectangularMatrix(const Vector<rows, T>& first, const U&... next): _data() {
-            constructInternal({first, next...});
-        #endif
             static_assert(sizeof...(next)+1 == cols, "Improper number of arguments passed to RectangularMatrix constructor");
         }
 
@@ -448,21 +443,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 
     private:
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
-        #ifndef CORRADE_GCC46_COMPATIBILITY
         template<class U, std::size_t ...sequence> inline constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix): _data{Vector<rows, T>(matrix[sequence])...} {}
-        #else
-        template<class U, std::size_t ...sequence> inline constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix): _data() {
-            constructInternal({Vector<rows, T>(matrix[sequence])...});
-        }
-        #endif
-
-        #ifdef CORRADE_GCC46_COMPATIBILITY
-        /* GCC < 4.7 workaround for a ton of warnings / "error: bad array initializer" */
-        inline void constructInternal(std::initializer_list<Vector<rows, T>> data) {
-            for(std::size_t i = 0; i != data.size(); ++i)
-                _data[i] = *(data.begin() + i);
-        }
-        #endif
 
         Vector<rows, T> _data[cols];
 };
