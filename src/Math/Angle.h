@@ -147,6 +147,7 @@ template<class T> class Deg: public Unit<Deg, T> {
 };
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
+#ifndef MAGNUM_TARGET_GLES
 /** @relates Deg
 @brief Double-precision degree value literal
 
@@ -157,8 +158,10 @@ Double cosine = Math::cos(1.047_rad); // cosine = 0.5
 @endcode
 @see Magnum::operator""_deg(), operator""_degf(), operator""_rad()
 @note Not available on GCC < 4.7. Use Deg::Deg(T) instead.
+@requires_gl Only single-precision types are available in OpenGL ES.
 */
 inline constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(value); }
+#endif
 
 /** @relates Deg
 @brief Single-precision degree value literal
@@ -170,6 +173,7 @@ Float tangent = Math::tan(1.047_radf); // tangent = 1.732f
 @endcode
 @see Magnum::operator""_degf(), operator""_deg(), operator""_radf()
 @note Not available on GCC < 4.7. Use Deg::Deg(T) instead.
+@requires_gl Only single-precision types are available in OpenGL ES.
 */
 inline constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(value); }
 #endif
@@ -206,6 +210,7 @@ template<class T> class Rad: public Unit<Rad, T> {
 };
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
+#ifndef MAGNUM_TARGET_GLES
 /** @relates Rad
 @brief Double-precision radian value literal
 
@@ -214,6 +219,7 @@ See operator""_rad() for more information.
 @note Not available on GCC < 4.7. Use Rad::Rad(T) instead.
 */
 inline constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(value); }
+#endif
 
 /** @relates Rad
 @brief Single-precision radian value literal

@@ -43,8 +43,10 @@ class AngleTest: public Corrade::TestSuite::Tester {
 
 typedef Math::Deg<Float> Deg;
 typedef Math::Rad<Float> Rad;
+#ifndef MAGNUM_TARGET_GLES
 typedef Math::Deg<Double> Degd;
 typedef Math::Rad<Double> Radd;
+#endif
 
 AngleTest::AngleTest() {
     addTests({&AngleTest::construct,
@@ -57,44 +59,68 @@ AngleTest::AngleTest() {
 
 void AngleTest::construct() {
     /* Default constructor */
-    constexpr Degd a;
     constexpr Deg m;
-    CORRADE_COMPARE(Double(a), 0.0f);
     CORRADE_COMPARE(Float(m), 0.0f);
+    #ifndef MAGNUM_TARGET_GLES
+    constexpr Degd a;
+    CORRADE_COMPARE(Double(a), 0.0);
+    #else
+    constexpr Deg a;
+    CORRADE_COMPARE(Float(a), 0.0f);
+    #endif
 
     /* Value constructor */
     constexpr Deg b(25.0);
+    CORRADE_COMPARE(Float(b), 25.0f);
+    #ifndef MAGNUM_TARGET_GLES
     constexpr Radd n(3.14);
-    CORRADE_COMPARE(Float(b), 25.0);
     CORRADE_COMPARE(Double(n), 3.14);
+    #else
+    constexpr Rad n(3.14);
+    CORRADE_COMPARE(Float(n), 3.14f);
+    #endif
 
     /* Copy constructor */
     constexpr Deg c(b);
-    constexpr Radd o(n);
     CORRADE_COMPARE(c, b);
+    #ifndef MAGNUM_TARGET_GLES
+    constexpr Radd o(n);
     CORRADE_COMPARE(o, n);
+    #else
+    constexpr Rad o(n);
+    CORRADE_COMPARE(o, n);
+    #endif
 
     /* Conversion operator */
-    constexpr Degd d(b);
     constexpr Rad p(n);
-    CORRADE_COMPARE(Double(d), 25.0);
     CORRADE_COMPARE(Float(p), 3.14f);
+    #ifndef MAGNUM_TARGET_GLES
+    constexpr Degd d(b);
+    CORRADE_COMPARE(Double(d), 25.0);
+    #else
+    constexpr Deg d(b);
+    CORRADE_COMPARE(Float(d), 25.0f);
+    #endif
 }
 
 void AngleTest::literals() {
     #ifndef CORRADE_GCC46_COMPATIBILITY
+    #ifndef MAGNUM_TARGET_GLES
     constexpr auto a = 25.0_deg;
-    constexpr auto b = 25.0_degf;
     CORRADE_VERIFY((std::is_same<decltype(a), const Degd>::value));
-    CORRADE_VERIFY((std::is_same<decltype(b), const Deg>::value));
     CORRADE_COMPARE(Double(a), 25.0);
+    #endif
+    constexpr auto b = 25.0_degf;
+    CORRADE_VERIFY((std::is_same<decltype(b), const Deg>::value));
     CORRADE_COMPARE(Float(b), 25.0f);
 
+    #ifndef MAGNUM_TARGET_GLES
     constexpr auto m = 3.14_rad;
-    constexpr auto n = 3.14_radf;
     CORRADE_VERIFY((std::is_same<decltype(m), const Radd>::value));
-    CORRADE_VERIFY((std::is_same<decltype(n), const Rad>::value));
     CORRADE_COMPARE(Double(m), 3.14);
+    #endif
+    constexpr auto n = 3.14_radf;
+    CORRADE_VERIFY((std::is_same<decltype(n), const Rad>::value));
     CORRADE_COMPARE(Float(n), 3.14f);
     #else
     CORRADE_SKIP("User-defined literals are not available on GCC < 4.7.");

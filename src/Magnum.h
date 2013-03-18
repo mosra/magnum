@@ -50,9 +50,11 @@ namespace Math {
     template<class T> struct Constants;
 
     #ifndef CORRADE_GCC46_COMPATIBILITY
+    #ifndef MAGNUM_TARGET_GLES
     constexpr Rad<Double> operator "" _rad(long double);
-    constexpr Rad<Float> operator "" _radf(long double);
     constexpr Deg<Double> operator "" _deg(long double);
+    #endif
+    constexpr Rad<Float> operator "" _radf(long double);
     constexpr Deg<Float> operator "" _degf(long double);
     #endif
 }
@@ -253,9 +255,11 @@ typedef Math::Geometry::Rectangle<Double> Rectangled;
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /* Using angle literals from Math namespace */
+#ifndef MAGNUM_TARGET_GLES
 using Math::operator "" _deg;
-using Math::operator "" _degf;
 using Math::operator "" _rad;
+#endif
+using Math::operator "" _degf;
 using Math::operator "" _radf;
 #endif
 
