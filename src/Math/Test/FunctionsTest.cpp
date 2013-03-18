@@ -187,12 +187,8 @@ void FunctionsTest::denormalizeUnsigned() {
     CORRADE_COMPARE(Math::denormalize<UnsignedInt>(0.0), 0);
     CORRADE_COMPARE(Math::denormalize<UnsignedInt>(1.0), std::numeric_limits<UnsignedInt>::max());
 
-    CORRADE_COMPARE(Math::denormalize<UnsignedLong>(0.0), 0);
-    {
-        CORRADE_EXPECT_FAIL("Wrong result with GCC and non-optimized code.");
-        CORRADE_VERIFY(false);
-        //CORRADE_COMPARE(Math::denormalize<UnsignedLong>(1.0), std::numeric_limits<UnsignedLong>::max());
-    }
+    CORRADE_COMPARE(Math::denormalize<UnsignedLong>(0.0l), 0);
+    CORRADE_COMPARE(Math::denormalize<UnsignedLong>(1.0l), std::numeric_limits<UnsignedLong>::max());
     #endif
 
     CORRADE_COMPARE(Math::denormalize<UnsignedShort>(0.33f), 21626);
