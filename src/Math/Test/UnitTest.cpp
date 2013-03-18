@@ -55,7 +55,7 @@ UnitTest::UnitTest() {
 
 template<class> struct Sec_;
 typedef Unit<Sec_, Float> Sec;
-typedef Unit<Sec_, Double> Secd;
+typedef Unit<Sec_, Int> Seci;
 
 inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, Sec value) {
     return debug << Float(value);
@@ -72,7 +72,7 @@ void UnitTest::constructDefault() {
 }
 
 void UnitTest::constructConversion() {
-    constexpr Secd a(25.0);
+    constexpr Seci a(25.0);
     constexpr Sec b(a);
     CORRADE_COMPARE(b, Sec(25.0f));
 }
