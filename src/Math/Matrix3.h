@@ -244,7 +244,13 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @todo extract 2x2 matrix and multiply directly? (benchmark that)
          */
         inline Vector2<T> transformVector(const Vector2<T>& vector) const {
+            /* Workaround for GCC 4.4 strict-aliasing fascism */
+            #ifndef CORRADE_GCC44_COMPATIBILITY
             return ((*this)*Vector3<T>(vector, T(0))).xy();
+            #else
+            const auto v = (*this)*Vector3<T>(vector, T(0));
+            return v.xy();
+            #endif
         }
 
         /**
@@ -257,7 +263,13 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @see DualComplex::transformPoint(), Matrix4::transformPoint()
          */
         inline Vector2<T> transformPoint(const Vector2<T>& vector) const {
+            /* Workaround for GCC 4.4 strict-aliasing fascism */
+            #ifndef CORRADE_GCC44_COMPATIBILITY
             return ((*this)*Vector3<T>(vector, T(1))).xy();
+            #else
+            const auto v = (*this)*Vector3<T>(vector, T(1));
+            return v.xy();
+            #endif
         }
 
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(3, 3, Matrix3<T>)

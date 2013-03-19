@@ -401,7 +401,13 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @todo extract 3x3 matrix and multiply directly? (benchmark that)
          */
         inline Vector3<T> transformVector(const Vector3<T>& vector) const {
+            /* Workaround for GCC 4.4 strict-aliasing fascism */
+            #ifndef CORRADE_GCC44_COMPATIBILITY
             return ((*this)*Vector4<T>(vector, T(0))).xyz();
+            #else
+            const auto v = (*this)*Vector4<T>(vector, T(0));
+            return v.xyz();
+            #endif
         }
 
         /**
@@ -414,7 +420,13 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @see DualQuaternion::transformPoint(), Matrix3::transformPoint()
          */
         inline Vector3<T> transformPoint(const Vector3<T>& vector) const {
+            /* Workaround for GCC 4.4 strict-aliasing fascism */
+            #ifndef CORRADE_GCC44_COMPATIBILITY
             return ((*this)*Vector4<T>(vector, T(1))).xyz();
+            #else
+            const auto v = (*this)*Vector4<T>(vector, T(1));
+            return v.xyz();
+            #endif
         }
 
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(4, 4, Matrix4<T>)
