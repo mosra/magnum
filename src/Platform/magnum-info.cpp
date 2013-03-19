@@ -50,6 +50,12 @@ MagnumInfo::MagnumInfo(int& argc, char** argv): WindowlessGlxApplication(argc, a
     {
         Debug d;
         d << "Compilation flags:";
+        #ifdef CORRADE_GCC44_COMPATIBILITY
+        d << "CORRADE_GCC44_COMPATIBILITY";
+        #endif
+        #ifdef CORRADE_GCC45_COMPATIBILITY
+        d << "CORRADE_GCC45_COMPATIBILITY";
+        #endif
         #ifdef CORRADE_GCC46_COMPATIBILITY
         d << "CORRADE_GCC46_COMPATIBILITY";
         #endif
