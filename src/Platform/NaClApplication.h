@@ -454,7 +454,7 @@ namespace Implementation {
             }
 
             inline bool Init() override {
-                return glInitializePPAPI(get_browser_interface()) == GL_TRUE;
+                return glInitializePPAPI(get_browser_interface());
             }
 
             inline pp::Instance* CreateInstance(PP_Instance instance) {
