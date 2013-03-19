@@ -431,7 +431,7 @@ class MAGNUM_EXPORT AbstractImage {
              * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil}
              */
             #ifdef MAGNUM_TARGET_GLES2
-            UnsignedInt248 = GL_UNSIGNED_INT_24_8_OES,
+            UnsignedInt248 = GL_UNSIGNED_INT_24_8_OES
             #else
             UnsignedInt248 = GL_UNSIGNED_INT_24_8,
 
