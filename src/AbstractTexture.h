@@ -649,11 +649,7 @@ class MAGNUM_EXPORT AbstractTexture {
              * RGB, normalized unsigned, red and blue component 5bit, green 6bit.
              * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
              */
-            #ifndef MAGNUM_TARGET_GLES2
             RGB565 = GL_RGB565,
-            #else
-            RGB565 = GL_RGB565_OES,
-            #endif
             #endif
 
             /**
@@ -685,21 +681,13 @@ class MAGNUM_EXPORT AbstractTexture {
              * RGBA, normalized unsigned, each component 4bit.
              * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
              */
-            #ifndef MAGNUM_TARGET_GLES2
             RGBA4 = GL_RGBA4,
-            #else
-            RGBA4 = GL_RGBA4_OES,
-            #endif
 
             /**
              * RGBA, normalized unsigned, each RGB component 5bit, alpha 1bit.
              * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
              */
-            #ifndef MAGNUM_TARGET_GLES2
             RGB5A1 = GL_RGB5_A1,
-            #else
-            RGB5A1 = GL_RGB5_A1_OES,
-            #endif
 
             /**
              * RGBA, normalized unsigned, each RGB component 10bit, alpha 2bit.
