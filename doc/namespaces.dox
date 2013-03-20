@@ -50,7 +50,7 @@ Base classes for creating applications with various toolkits.
 @brief %Math library
 
 Template classes for matrix and vector calculations. See @ref matrix-vector
-for brief introduction.
+and @ref transformations for introduction.
 */
 
 /** @dir Math/Algorithms
@@ -77,7 +77,8 @@ Functions for computing intersections, distances, areas and volumes.
 /** @namespace Magnum::DebugTools
 @brief %Debug tools
 
-Debugging helpers, renderers and profilers.
+Debugging helpers, renderers and profilers. See @ref debug-tools for
+introduction.
 */
 
 /** @dir MeshTools
