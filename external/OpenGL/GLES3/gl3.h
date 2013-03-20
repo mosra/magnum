@@ -2,7 +2,7 @@
 #define __gl3_h_
 
 /*
- * gl3.h last updated on $Date: 2012-10-03 07:52:40 -0700 (Wed, 03 Oct 2012) $
+ * gl3.h last updated on $Date: 2013-02-12 14:37:24 -0800 (Tue, 12 Feb 2013) $
  */
 
 #include <GLES3/gl3platform.h>
@@ -12,7 +12,7 @@ extern "C" {
 #endif
 
 /*
-** Copyright (c) 2007-2012 The Khronos Group Inc.
+** Copyright (c) 2007-2013 The Khronos Group Inc.
 **
 ** Permission is hereby granted, free of charge, to any person obtaining a
 ** copy of this software and/or associated documentation files (the
@@ -861,7 +861,7 @@ GL_APICALL void           GL_APIENTRY glGenTextures (GLsizei n, GLuint* textures
 GL_APICALL void           GL_APIENTRY glGetActiveAttrib (GLuint program, GLuint index, GLsizei bufsize, GLsizei* length, GLint* size, GLenum* type, GLchar* name);
 GL_APICALL void           GL_APIENTRY glGetActiveUniform (GLuint program, GLuint index, GLsizei bufsize, GLsizei* length, GLint* size, GLenum* type, GLchar* name);
 GL_APICALL void           GL_APIENTRY glGetAttachedShaders (GLuint program, GLsizei maxcount, GLsizei* count, GLuint* shaders);
-GL_APICALL int            GL_APIENTRY glGetAttribLocation (GLuint program, const GLchar* name);
+GL_APICALL GLint          GL_APIENTRY glGetAttribLocation (GLuint program, const GLchar* name);
 GL_APICALL void           GL_APIENTRY glGetBooleanv (GLenum pname, GLboolean* params);
 GL_APICALL void           GL_APIENTRY glGetBufferParameteriv (GLenum target, GLenum pname, GLint* params);
 GL_APICALL GLenum         GL_APIENTRY glGetError (void);
@@ -880,7 +880,7 @@ GL_APICALL void           GL_APIENTRY glGetTexParameterfv (GLenum target, GLenum
 GL_APICALL void           GL_APIENTRY glGetTexParameteriv (GLenum target, GLenum pname, GLint* params);
 GL_APICALL void           GL_APIENTRY glGetUniformfv (GLuint program, GLint location, GLfloat* params);
 GL_APICALL void           GL_APIENTRY glGetUniformiv (GLuint program, GLint location, GLint* params);
-GL_APICALL int            GL_APIENTRY glGetUniformLocation (GLuint program, const GLchar* name);
+GL_APICALL GLint          GL_APIENTRY glGetUniformLocation (GLuint program, const GLchar* name);
 GL_APICALL void           GL_APIENTRY glGetVertexAttribfv (GLuint index, GLenum pname, GLfloat* params);
 GL_APICALL void           GL_APIENTRY glGetVertexAttribiv (GLuint index, GLenum pname, GLint* params);
 GL_APICALL void           GL_APIENTRY glGetVertexAttribPointerv (GLuint index, GLenum pname, GLvoid** pointer);

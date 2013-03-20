@@ -22,4 +22,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-install(FILES glcorearb.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/external/GL)
+# NaCl has its own gl2.h, this one causes linker issues
+if(NOT TARGET_NACL)
+    install(FILES khrplatform.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/OpenGL/KHR)
+endif()

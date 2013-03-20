@@ -150,16 +150,17 @@ class MAGNUM_EXPORT AbstractTexture {
              * Clamp to edge. Coordinates out of the range will be clamped to
              * first / last column / row in given direction.
              */
-            ClampToEdge = GL_CLAMP_TO_EDGE
+            ClampToEdge = GL_CLAMP_TO_EDGE,
 
-            #ifndef MAGNUM_TARGET_GLES
-            ,
             /**
              * Clamp to border color. Coordinates out of range will be clamped
              * to border color (set with setBorderColor()).
-             * @requires_gl Texture border is not available in OpenGL ES.
+             * @requires_es_extension %Extension @es_extension{NV,texture_border_clamp}
              */
+            #ifndef MAGNUM_TARGET_GLES
             ClampToBorder = GL_CLAMP_TO_BORDER
+            #else
+            ClampToBorder = GL_CLAMP_TO_BORDER_NV
             #endif
         };
 
@@ -649,11 +650,7 @@ class MAGNUM_EXPORT AbstractTexture {
              * RGB, normalized unsigned, red and blue component 5bit, green 6bit.
              * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
              */
-            #ifndef MAGNUM_TARGET_GLES2
             RGB565 = GL_RGB565,
-            #else
-            RGB565 = GL_RGB565_OES,
-            #endif
             #endif
 
             /**
@@ -685,21 +682,13 @@ class MAGNUM_EXPORT AbstractTexture {
              * RGBA, normalized unsigned, each component 4bit.
              * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
              */
-            #ifndef MAGNUM_TARGET_GLES2
             RGBA4 = GL_RGBA4,
-            #else
-            RGBA4 = GL_RGBA4_OES,
-            #endif
 
             /**
              * RGBA, normalized unsigned, each RGB component 5bit, alpha 1bit.
              * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
              */
-            #ifndef MAGNUM_TARGET_GLES2
             RGB5A1 = GL_RGB5_A1,
-            #else
-            RGB5A1 = GL_RGB5_A1_OES,
-            #endif
 
             /**
              * RGBA, normalized unsigned, each RGB component 10bit, alpha 2bit.
@@ -905,7 +894,8 @@ class MAGNUM_EXPORT AbstractTexture {
              * Depth component, size implementation-dependent.
              * @deprecated Prefer to use exactly specified version of this
              *      format, e.g. @ref Magnum::AbstractTexture::InternalFormat "InternalFormat::DepthComponent16".
-             * @requires_gles30 %Extension @es_extension{OES,depth_texture}
+             * @requires_gles30 %Extension @es_extension{OES,depth_texture} or
+             *      @es_extension{ANGLE,depth_texture}
              */
             DepthComponent = GL_DEPTH_COMPONENT,
 
@@ -923,8 +913,9 @@ class MAGNUM_EXPORT AbstractTexture {
 
             /**
              * Depth component, 16bit.
-             * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
-             *      and @es_extension{OES,depth_texture}
+             * @requires_gles30 %Extension (@es_extension{OES,required_internalformat}
+             *      and @es_extension{OES,depth_texture}) or (@es_extension{EXT,texture_storage}
+             *      and @es_extension{ANGLE,depth_texture})
              */
             DepthComponent16 = GL_DEPTH_COMPONENT16,
 
@@ -941,8 +932,9 @@ class MAGNUM_EXPORT AbstractTexture {
 
             /**
              * Depth component, 32bit.
-             * @requires_es_extension %Extension @es_extension{OES,required_internalformat},
-             *      @es_extension{OES,depth_texture} and @es_extension{OES,depth32}
+             * @requires_es_extension %Extension (@es_extension{OES,required_internalformat},
+             *      @es_extension{OES,depth_texture} and @es_extension{OES,depth32})
+             *      or (@es_extension{EXT,texture_storage} and @es_extension{ANGLE,depth_texture})
              */
             #ifndef MAGNUM_TARGET_GLES2
             DepthComponent32 = GL_DEPTH_COMPONENT32,
@@ -963,8 +955,9 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * 24bit depth and 8bit stencil component.
              * @requires_gl30 %Extension @extension{EXT,packed_depth_stencil}
-             * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
-             *      and @es_extension{OES,packed_depth_stencil}
+             * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil}
+             *      and (@es_extension{OES,required_internalformat} or
+             *      (@es_extension{EXT,texture_storage} and @es_extension{ANGLE,depth_texture}))
              */
             #ifdef MAGNUM_TARGET_GLES2
             Depth24Stencil8 = GL_DEPTH24_STENCIL8_OES
@@ -1082,7 +1075,6 @@ class MAGNUM_EXPORT AbstractTexture {
             return this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Set border color
          * @return Pointer to self (for method chaining)
@@ -1094,13 +1086,16 @@ class MAGNUM_EXPORT AbstractTexture {
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_BORDER_COLOR}
-         * @requires_gl Texture border is not available in OpenGL ES.
+         * @requires_es_extension %Extension @es_extension{NV,texture_border_clamp}
          */
         inline AbstractTexture* setBorderColor(const Color4<>& color) {
+            #ifndef MAGNUM_TARGET_GLES
             (this->*parameterfvImplementation)(GL_TEXTURE_BORDER_COLOR, color.data());
+            #else
+            (this->*parameterfvImplementation)(GL_TEXTURE_BORDER_COLOR_NV, color.data());
+            #endif
             return this;
         }
-        #endif
 
         /**
          * @brief Set max anisotropy

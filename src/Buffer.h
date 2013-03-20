@@ -423,6 +423,8 @@ class MAGNUM_EXPORT Buffer {
          * @brief Memory mapping flags
          *
          * @see map(GLintptr, GLsizeiptr, MapFlags)
+         * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
+         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
          */
         typedef Corrade::Containers::EnumSet<MapFlag, GLbitfield> MapFlags;
 

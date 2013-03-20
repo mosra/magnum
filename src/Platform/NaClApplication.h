@@ -454,7 +454,7 @@ namespace Implementation {
             }
 
             inline bool Init() override {
-                return glInitializePPAPI(get_browser_interface()) == GL_TRUE;
+                return glInitializePPAPI(get_browser_interface());
             }
 
             inline pp::Instance* CreateInstance(PP_Instance instance) {
@@ -475,6 +475,7 @@ When no other application header is included this macro is also aliased to
 /* look at that insane placement of __attribute__. WTF. */
 #define MAGNUM_NACLAPPLICATION_MAIN(application)                            \
     namespace pp {                                                          \
+        Module __attribute__ ((visibility ("default"))) * CreateModule();   \
         Module __attribute__ ((visibility ("default"))) * CreateModule() {  \
             return new Magnum::Platform::Implementation::NaClModule<application>(); \
         }                                                                   \

@@ -82,7 +82,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *
          * @see BlitMask
          * @requires_gl30 %Extension @extension{EXT,framebuffer_object}
-         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
+         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
+         *      @es_extension{NV,framebuffer_blit}
          */
         enum class Blit: GLbitfield {
             ColorBuffer = GL_COLOR_BUFFER_BIT,    /**< Color buffer */
@@ -95,7 +96,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *
          * @see blit()
          * @requires_gl30 %Extension @extension{EXT,framebuffer_object}
-         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
+         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
+         *      @es_extension{NV,framebuffer_blit}
          */
         typedef Corrade::Containers::EnumSet<Blit, GLbitfield,
             GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT> BlitMask;
@@ -120,8 +122,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
             /**
              * For reading only.
              * @requires_gl30 %Extension @extension{EXT,framebuffer_blit}
-             * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample}
-             *      or @es_extension{ANGLE,framebuffer_blit}
+             * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample},
+             *      @es_extension{ANGLE,framebuffer_blit} or @es_extension{NV,framebuffer_blit}
              */
             #ifndef MAGNUM_TARGET_GLES2
             Read = GL_READ_FRAMEBUFFER,
@@ -132,8 +134,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
             /**
              * For drawing only.
              * @requires_gl30 %Extension @extension{EXT,framebuffer_blit}
-             * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample}
-             *      or @es_extension{ANGLE,framebuffer_blit}
+             * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample},
+             *      @es_extension{ANGLE,framebuffer_blit} or @es_extension{NV,framebuffer_blit}
              */
             #ifndef MAGNUM_TARGET_GLES2
             Draw = GL_DRAW_FRAMEBUFFER,
@@ -161,7 +163,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * blitting operation.
          * @see @fn_gl{BlitFramebuffer}
          * @requires_gl30 %Extension @extension{EXT,framebuffer_blit}
-         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
+         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
+         *      @es_extension{NV,framebuffer_blit}
          */
         static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& sourceRectangle, const Rectanglei& destinationRectangle, BlitMask mask, BlitFilter filter);
 
@@ -178,7 +181,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @ref BlitFilter "BlitFilter::Nearest" filtering is used by default.
          * @see @fn_gl{BlitFramebuffer}
          * @requires_gl30 %Extension @extension{EXT,framebuffer_blit}
-         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit}
+         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
+         *      @es_extension{NV,framebuffer_blit}
          */
         inline static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& rectangle, BlitMask mask) {
             blit(source, destination, rectangle, rectangle, mask, BlitFilter::Nearest);

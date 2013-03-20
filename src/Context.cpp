@@ -212,6 +212,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,sRGB),
         _extension(GL,NV,read_buffer_front),
         _extension(GL,NV,read_stencil),
+        _extension(GL,NV,texture_border_clamp),             // done
         _extension(GL,OES,depth32),
         _extension(GL,OES,mapbuffer),
         _extension(GL,OES,stencil1),
@@ -219,6 +220,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,texture_3D)};
     static const std::vector<Extension> extensionsES300{
         _extension(GL,ANGLE,framebuffer_blit),
+        _extension(GL,ANGLE,depth_texture),                 // done
         _extension(GL,APPLE,framebuffer_multisample),
         _extension(GL,ARM,rgba8),
         _extension(GL,EXT,texture_type_2_10_10_10_REV),
@@ -232,6 +234,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,NV,read_buffer),
         _extension(GL,NV,read_depth),
         _extension(GL,NV,read_depth_stencil),
+        _extension(GL,NV,framebuffer_blit),                 // done
         _extension(GL,OES,depth24),
         _extension(GL,OES,element_index_uint),
         _extension(GL,OES,rgb8_rgba8),

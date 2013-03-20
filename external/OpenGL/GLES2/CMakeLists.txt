@@ -22,4 +22,14 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-add_subdirectory(OpenGL)
+set(MagnumOpenGL_HEADERS
+    gl2ext.h)
+
+# NaCl has its own gl2.h, this one causes linker issues
+if(NOT TARGET_NACL)
+    set(MagnumOpenGL_HEADERS ${MagnumOpenGL_HEADERS}
+        gl2platform.h
+        gl2.h)
+endif()
+
+install(FILES ${MagnumOpenGL_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/OpenGL/GLES2)

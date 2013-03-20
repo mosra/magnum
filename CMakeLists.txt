@@ -76,6 +76,7 @@ endif()
 if(${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
     set(TARGET_GLES 1)
     set(TARGET_GLES2 1)
+    set(TARGET_NACL 1)
     set(MAGNUM_TARGET_NACL 1)
 endif()
 
@@ -110,8 +111,6 @@ set(MAGNUM_BINARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/bin)
 set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
 set(MAGNUM_CMAKE_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
-
-include_directories(${CMAKE_SOURCE_DIR}/external)
 
 add_subdirectory(external)
 add_subdirectory(modules)

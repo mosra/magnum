@@ -22,4 +22,13 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-install(FILES gl3.h gl3platform.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/external/GLES3)
+if(NOT TARGET_GLES)
+    add_subdirectory(GL)
+else()
+    add_subdirectory(KHR)
+    if(TARGET_GLES2)
+        add_subdirectory(GLES2)
+    else()
+        add_subdirectory(GLES3)
+    endif()
+endif()

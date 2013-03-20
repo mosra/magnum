@@ -183,6 +183,7 @@ namespace GL {
     #line 1
     namespace ANGLE {
         _extension(GL,ANGLE,framebuffer_blit,       GLES200, GLES300) // #83
+        _extension(GL,ANGLE,depth_texture,          GLES200, GLES300) // #138
     } namespace APPLE {
         _extension(GL,APPLE,framebuffer_multisample, GLES200, GLES300) // #78
         _extension(GL,APPLE,texture_format_BGRA8888, GLES200,   None) // #79
@@ -209,6 +210,8 @@ namespace GL {
         _extension(GL,NV,read_depth,                GLES200, GLES300) // #94
         _extension(GL,NV,read_stencil,              GLES200,    None) // #94
         _extension(GL,NV,read_depth_stencil,        GLES200, GLES300) // #94
+        _extension(GL,NV,framebuffer_blit,          GLES200, GLES300) // #142
+        _extension(GL,NV,texture_border_clamp,      GLES200,    None) // #149
     } namespace OES {
         _extension(GL,OES,depth24,                  GLES200, GLES300) // #24
         _extension(GL,OES,depth32,                  GLES200,    None) // #25
