@@ -64,14 +64,15 @@ class MAGNUM_EXPORT AbstractImage {
         /**
          * @brief Format of pixel data
          *
-         * @todo What is allowed for FB reading and what for image
-         *      specification?
          * @see pixelSize()
          */
         enum class Format: GLenum {
             /**
              * Floating-point red channel.
-             * @requires_gles30 %Extension @es_extension{EXT,texture_rg}
+             * @requires_gles30 For texture data only, extension
+             *      @es_extension{EXT,texture_rg}.
+             * @requires_es_extension For framebuffer reading, extension
+             *      @es_extension{EXT,texture_rg}.
              */
             #ifndef MAGNUM_TARGET_GLES2
             Red = GL_RED,
@@ -81,14 +82,14 @@ class MAGNUM_EXPORT AbstractImage {
 
             #ifndef MAGNUM_TARGET_GLES
             /**
-             * Floating-point green channel. For framebuffer reading only.
+             * Floating-point green channel.
              * @requires_gl Only @ref Magnum::AbstractImage::Format "Format::Red"
              *      is available in OpenGL ES.
              */
             Green = GL_GREEN,
 
             /**
-             * Floating-point blue channel. For framebuffer reading only.
+             * Floating-point blue channel.
              * @requires_gl Only @ref Magnum::AbstractImage::Format "Format::Red"
              *      is available in OpenGL ES.
              */
@@ -98,10 +99,13 @@ class MAGNUM_EXPORT AbstractImage {
             #endif
 
             /**
-             * Floating-point red and green channel. For texture data only.
+             * Floating-point red and green channel.
              * @requires_gl30 %Extension @extension{ARB,texture_rg} and
              *      @extension{EXT,texture_integer}
-             * @requires_gles30 %Extension @es_extension{EXT,texture_rg}
+             * @requires_gles30 For texture data only, extension
+             *      @es_extension{EXT,texture_rg}.
+             * @requires_es_extension For framebuffer reading, extension
+             *      @es_extension{EXT,texture_rg}.
              */
             #ifndef MAGNUM_TARGET_GLES2
             RG = GL_RG,
@@ -109,7 +113,10 @@ class MAGNUM_EXPORT AbstractImage {
             RG = GL_RG_EXT,
             #endif
 
-            /** Floating-point RGB. */
+            /**
+             * Floating-point RGB.
+             * @requires_gl Can't be used for framebuffer reading in OpenGL ES.
+             */
             RGB = GL_RGB,
 
             /** Floating-point RGBA. */
@@ -170,16 +177,18 @@ class MAGNUM_EXPORT AbstractImage {
              * Integer red and green channel.
              * @requires_gl30 %Extension @extension{ARB,texture_rg} and
              *      @extension{EXT,texture_integer}
-             * @requires_gles30 Only floating-point image data are available
-             *      in OpenGL ES 2.0.
+             * @requires_gl Can't be used for framebuffer reading in OpenGL ES.
+             * @requires_gles30 For texture data only, only floating-point image
+             *      data are available in OpenGL ES 2.0.
              */
             RGInteger = GL_RG_INTEGER,
 
             /**
              * Integer RGB.
              * @requires_gl30 %Extension @extension{EXT,texture_integer}
-             * @requires_gles30 Only floating-point image data are available
-             *      in OpenGL ES 2.0.
+             * @requires_gl Can't be used for framebuffer reading in OpenGL ES.
+             * @requires_gles30 For texture data only, only floating-point image
+             *      data are available in OpenGL ES 2.0.
              */
             RGBInteger = GL_RGB_INTEGER,
 
@@ -213,8 +222,9 @@ class MAGNUM_EXPORT AbstractImage {
             #endif
 
             /**
-             * Depth component. For framebuffer reading only.
-             * @requires_gles30 %Extension @es_extension2{NV,read_depth,GL_NV_read_depth_stencil}
+             * Depth component.
+             * @requires_es_extension For framebuffer reading only, extension
+             *      @es_extension2{NV,read_depth,GL_NV_read_depth_stencil}.
              */
             DepthComponent = GL_DEPTH_COMPONENT,
 
@@ -230,9 +240,12 @@ class MAGNUM_EXPORT AbstractImage {
             #endif
 
             /**
-             * Depth and stencil. For framebuffer reading only.
+             * Depth and stencil.
              * @requires_gl30 %Extension @extension{EXT,packed_depth_stencil}
-             * @requires_gles30 %Extension @es_extension2{NV,read_depth_stencil,GL_NV_read_depth_stencil}
+             * @requires_gles30 For texture data only, extension
+             *      @es_extension{OES,packed_depth_stencil}.
+             * @requires_es_extension For framebuffer reading only, extension
+             *      @es_extension2{NV,read_depth_stencil,GL_NV_read_depth_stencil}.
              */
             #ifndef MAGNUM_TARGET_GLES2
             DepthStencil = GL_DEPTH_STENCIL
@@ -253,30 +266,39 @@ class MAGNUM_EXPORT AbstractImage {
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * Each component signed byte.
-             * @requires_gles30 Only @ref Magnum::AbstractImage::Type "Type::UnsignedByte"
-             *      is available in OpenGL ES 2.0.
+             * @requires_gl Can't be used for framebuffer reading in OpenGL ES.
+             * @requires_gles30 For texture data only, only
+             *      @ref Magnum::AbstractImage::Type "Type::UnsignedByte" is
+             *      available in OpenGL ES 2.0.
              */
             Byte = GL_BYTE,
             #endif
 
             /**
              * Each component unsigned short.
-             * @requires_gles30 %Extension @es_extension{OES,depth_texture}
+             * @requires_gl Can't be used for framebuffer reading in OpenGL ES.
+             * @requires_gles30 For texture data only, extension
+             *      @es_extension{OES,depth_texture} or @es_extension{ANGLE,depth_texture}.
              */
             UnsignedShort = GL_UNSIGNED_SHORT,
 
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * Each component signed short.
-             * @requires_gles30 Only @ref Magnum::AbstractImage::Type "Type::UnsignedShort"
-             *      is available in OpenGL ES 2.0.
+             * @requires_gl Can't be used for framebuffer reading in OpenGL ES.
+             * @requires_gles30 For texture data only, only
+             *      @ref Magnum::AbstractImage::Type "Type::UnsignedShort" is
+             *      available in OpenGL ES 2.0.
              */
             Short = GL_SHORT,
             #endif
 
             /**
              * Each component unsigned int.
-             * @requires_gles30 %Extension @es_extension{OES,depth_texture}
+             * @requires_gles30 Can't be used for framebuffer reading in OpenGL
+             *      ES 2.0.
+             * @requires_gles30 For texture data only, extension
+             *      @es_extension{OES,depth_texture} or @es_extension{ANGLE,depth_texture}.
              */
             UnsignedInt = GL_UNSIGNED_INT,
 
@@ -290,10 +312,10 @@ class MAGNUM_EXPORT AbstractImage {
             #endif
 
             /**
-             * Each component half float. For framebuffer reading only.
+             * Each component half float.
              * @requires_gl30 %Extension @extension{NV,half_float} / @extension{ARB,half_float_pixel}
-             * @requires_gles30 %Extension @es_extension2{OES,texture_half_float,OES_texture_float},
-             *      for texture data only.
+             * @requires_gles30 For texture data only, extension
+             *      @es_extension2{OES,texture_half_float,OES_texture_float}.
              */
             #ifndef MAGNUM_TARGET_GLES2
             HalfFloat = GL_HALF_FLOAT,
@@ -303,7 +325,8 @@ class MAGNUM_EXPORT AbstractImage {
 
             /**
              * Each component float.
-             * @requires_gles30 %Extension @es_extension{OES,texture_float}
+             * @requires_gles30 For texture data only, extension
+             *      @es_extension{OES,texture_float}.
              */
             Float = GL_FLOAT,
 
@@ -323,7 +346,10 @@ class MAGNUM_EXPORT AbstractImage {
             UnsignedByte233Rev = GL_UNSIGNED_BYTE_2_3_3_REV,
             #endif
 
-            /** RGB, unsigned byte, red and blue component 5bit, green 6bit. */
+            /**
+             * RGB, unsigned byte, red and blue component 5bit, green 6bit.
+             * @requires_gl Can't be used for framebuffer reading in OpenGL ES.
+             */
             UnsignedShort565 = GL_UNSIGNED_SHORT_5_6_5,
 
             #ifndef MAGNUM_TARGET_GLES
@@ -335,13 +361,16 @@ class MAGNUM_EXPORT AbstractImage {
             UnsignedShort565Rev = GL_UNSIGNED_SHORT_5_6_5_REV,
             #endif
 
-            /** RGBA, unsigned short, each component 4bit. */
+            /**
+             * RGBA, unsigned short, each component 4bit.
+             * @requires_gl Can't be used for framebuffer reading in OpenGL ES.
+             */
             UnsignedShort4444 = GL_UNSIGNED_SHORT_4_4_4_4,
 
             /**
              * ABGR, unsigned short, each component 4bit.
-             * @requires_es_extension %Extension @es_extension{EXT,read_format_bgra},
-             *      for framebuffer reading only.
+             * @requires_es_extension For framebuffer reading only, extension
+             *      @es_extension{EXT,read_format_bgra}.
              */
             #ifndef MAGNUM_TARGET_GLES
             UnsignedShort4444Rev = GL_UNSIGNED_SHORT_4_4_4_4_REV,
@@ -352,14 +381,15 @@ class MAGNUM_EXPORT AbstractImage {
             /**
              * RGBA, unsigned short, each RGB component 5bit, alpha component
              * 1bit.
+             * @requires_gl Can't be used for framebuffer reading in OpenGL ES.
              */
             UnsignedShort5551 = GL_UNSIGNED_SHORT_5_5_5_1,
 
             /**
              * ABGR, unsigned short, each RGB component 5bit, alpha component
              * 1bit.
-             * @requires_es_extension %Extension @es_extension{EXT,read_format_bgra},
-             *      for framebuffer reading only.
+             * @requires_es_extension For framebuffer reading only, extension
+             *      @es_extension{EXT,read_format_bgra}.
              */
             #ifndef MAGNUM_TARGET_GLES
             UnsignedShort1555Rev = GL_UNSIGNED_SHORT_1_5_5_5_REV,
@@ -395,8 +425,10 @@ class MAGNUM_EXPORT AbstractImage {
             /**
              * ABGR, unsigned int, each RGB component 10bit, alpha component
              * 2bit.
-             * @requires_gles30 %Extension @es_extension{EXT,texture_type_2_10_10_10_REV},
-             *      for texture data only.
+             * @requires_gles30 Can't be used for framebuffer reading in OpenGL
+             *      ES 2.0.
+             * @requires_gles30 For texture data only, extension
+             *      @es_extension{EXT,texture_type_2_10_10_10_REV}.
              */
             #ifndef MAGNUM_TARGET_GLES2
             UnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
@@ -407,7 +439,6 @@ class MAGNUM_EXPORT AbstractImage {
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * BGR, unsigned int, red and green 11bit float, blue 10bit float.
-             * For framebuffer reading only.
              * @requires_gl30 %Extension @extension{EXT,packed_float}
              * @requires_gles30 Floating-point types are not available in
              *      OpenGL ES 2.0.
@@ -415,8 +446,7 @@ class MAGNUM_EXPORT AbstractImage {
             UnsignedInt10F11F11FRev = GL_UNSIGNED_INT_10F_11F_11F_REV,
 
             /**
-             * BGR, unsigned int, each component 9bit + 5bit exponent. For
-             * framebuffer reading only.
+             * BGR, unsigned int, each component 9bit + 5bit exponent.
              * @requires_gl30 %Extension @extension{EXT,texture_shared_exponent}
              * @requires_gles30 Only 8bit and 16bit types are available in
              *      OpenGL ES 2.0.
@@ -425,10 +455,10 @@ class MAGNUM_EXPORT AbstractImage {
             #endif
 
             /**
-             * Unsigned int, depth component 24bit, stencil index 8bit. For
-             * framebuffer reading only.
+             * Unsigned int, depth component 24bit, stencil index 8bit.
              * @requires_gl30 %Extension @extension{EXT,packed_depth_stencil}
-             * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil}
+             * @requires_gles30 For texture data only, extension
+             *      @es_extension{OES,packed_depth_stencil}.
              */
             #ifdef MAGNUM_TARGET_GLES2
             UnsignedInt248 = GL_UNSIGNED_INT_24_8_OES
@@ -437,10 +467,11 @@ class MAGNUM_EXPORT AbstractImage {
 
             /**
              * Float + unsigned int, depth component 32bit float, 24bit gap,
-             * stencil index 8bit. For framebuffer reading only.
+             * stencil index 8bit.
              * @requires_gl30 %Extension @extension{ARB,depth_buffer_float}
-             * @requires_gles30 Only @ref Magnum::AbstractImage::Type "Type::UnsignedInt248"
-             *      is available in OpenGL ES 2.0.
+             * @requires_gles30 For texture data only, only
+             *      @ref Magnum::AbstractImage::Type "Type::UnsignedInt248" is
+             *      available in OpenGL ES 2.0.
              */
             Float32UnsignedInt248Rev = GL_FLOAT_32_UNSIGNED_INT_24_8_REV
             #endif
