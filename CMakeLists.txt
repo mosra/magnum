@@ -64,7 +64,7 @@ endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
 
-# If targetting NaCl, set explicit OpenGL ES 2.0 support
+# If targeting NaCl, set explicit OpenGL ES 2.0 support
 if(${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
     set(TARGET_GLES 1)
     set(TARGET_GLES2 1)

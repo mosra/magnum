@@ -68,7 +68,7 @@ class WindowlessGlxApplication {
          * @param argv      Arguments of `main()` function
          *
          * Creates window with double-buffered OpenGL 3.2 core context or
-         * OpenGL ES 2.0 context, if targetting OpenGL ES.
+         * OpenGL ES 2.0 context, if targeting OpenGL ES.
          */
         explicit WindowlessGlxApplication(int& argc, char** argv);
 

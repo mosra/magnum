@@ -37,7 +37,7 @@ namespace Magnum { namespace Platform {
 @brief GLX application
 
 Creates window with double-buffered OpenGL or OpenGL ES 2.0 context, if
-targetting OpenGL ES. Uses GlxContextHandler.
+targeting OpenGL ES. Uses GlxContextHandler.
 
 @section GlxApplication-usage Usage
 

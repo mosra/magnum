@@ -63,7 +63,7 @@ endif()
 # NaCl application
 if(WITH_NACLAPPLICATION)
     if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
-        message(FATAL_ERROR "NaClApplication is available only when targetting Google Chrome Native Client. Set WITH_NACLAPPLICATION to OFF to skip building it.")
+        message(FATAL_ERROR "NaClApplication is available only when targeting Google Chrome Native Client. Set WITH_NACLAPPLICATION to OFF to skip building it.")
     endif()
 
     add_library(MagnumNaClApplication STATIC
