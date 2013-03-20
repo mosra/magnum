@@ -303,15 +303,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
          */
         inline constexpr Matrix<3, T> rotationScaling() const {
             /* Not Matrix3, because it is for affine 2D transformations */
-            #ifndef CORRADE_GCC45_COMPATIBILITY /* GCC 4.5 badly optimizes this */
             return {(*this)[0].xyz(),
                     (*this)[1].xyz(),
                     (*this)[2].xyz()};
-            #else
-            return {Vector3<T>((*this)[0][0], (*this)[0][1], (*this)[0][2]),
-                    Vector3<T>((*this)[1][0], (*this)[1][1], (*this)[1][2]),
-                    Vector3<T>((*this)[2][0], (*this)[2][1], (*this)[2][2])};
-            #endif
         }
 
         /**
@@ -324,15 +318,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
          */
         inline Matrix<3, T> rotation() const {
             /* Not Matrix3, because it is for affine 2D transformations */
-            #ifndef CORRADE_GCC45_COMPATIBILITY /* GCC 4.5 badly optimizes this */
             return {(*this)[0].xyz().normalized(),
                     (*this)[1].xyz().normalized(),
                     (*this)[2].xyz().normalized()};
-            #else
-            return {Vector3<T>((*this)[0][0], (*this)[0][1], (*this)[0][2]).normalized(),
-                    Vector3<T>((*this)[1][0], (*this)[1][1], (*this)[1][2]).normalized(),
-                    Vector3<T>((*this)[2][0], (*this)[2][1], (*this)[2][2]).normalized()};
-            #endif
         }
 
         /** @todo uniform scaling extraction */
