@@ -65,6 +65,63 @@ using Corrade::Utility::Warning;
 using Corrade::Utility::Error;
 #endif
 
+#ifdef DOXYGEN_GENERATING_OUTPUT
+
+/** @todoc remove trailing underscores when Doxygen can handle `undef` */
+
+/**
+@brief OpenGL ES target
+
+`MAGNUM_TARGET_GLES` is defined if the engine is built for OpenGL ES 3.0 or
+OpenGL ES 2.0.
+@see @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES",
+    @ref MAGNUM_TARGET_DESKTOP_GLES_ "MAGNUM_TARGET_DESKTOP_GLES",
+    @ref MAGNUM_TARGET_NACL_ "MAGNUM_TARGET_NACL", @ref building
+*/
+#define MAGNUM_TARGET_GLES_
+
+/**
+@brief OpenGL ES 2.0 target.
+
+`MAGNUM_TARGET_GLES2` is defined if the engine is built for OpenGL ES 2.0.
+Implies also @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES".
+@see @ref MAGNUM_TARGET_DESKTOP_GLES_ "MAGNUM_TARGET_DESKTOP_GLES",
+    @ref MAGNUM_TARGET_NACL_ "MAGNUM_TARGET_NACL", @ref building
+*/
+#define MAGNUM_TARGET_GLES2_
+
+/**
+@brief Desktop emulation of OpenGL ES target
+
+`MAGNUM_TARGET_DESKTOP_GLES` is defined if the engine is built for OpenGL ES
+3.0 or OpenGL ES 2.0 emulated within standard desktop OpenGL. Implies also
+@ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES".
+@see @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2",
+    @ref MAGNUM_TARGET_NACL_ "MAGNUM_TARGET_NACL", @ref building
+*/
+#define MAGNUM_TARGET_DESKTOP_GLES_
+
+/**
+@brief Google Chrome Native Client target
+
+`MAGNUM_TARGET_NACL` is defined if the engine is built for OpenGL ES 2.0 on
+Google Chrome Native Client. Implies also @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES"
+and @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES".
+@see @ref building
+*/
+#define MAGNUM_TARGET_NACL_
+
+/**
+@brief HarfBuzz library usage
+
+`MAGNUM_USE_HARFBUZZ` is defined if HarfBuzz library is used for text
+rendering.
+@see Text::HarfBuzzFont
+*/
+#define MAGNUM_USE_HARFBUZZ_
+
+#endif
+
 /** @{ @name Basic type definitions
 
 See @ref types for more information.

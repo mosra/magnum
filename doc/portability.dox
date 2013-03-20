@@ -39,9 +39,11 @@ format is not supported.
 
 If you include Magnum.h, you get these predefined macros:
 
- - `MAGNUM_TARGET_GLES` if targetting OpenGL ES 2.0 or 3.0
- - `MAGNUM_TARGET_GLES2` if targetting OpenGL ES 2.0
- - `MAGNUM_TARGET_NACL` if targetting Google Chrome Native Client
+- @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES" if targeting OpenGL ES 2.0 or
+  3.0
+- @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2" if targeting OpenGL ES 2.0
+- @ref MAGNUM_TARGET_NACL_ "MAGNUM_TARGET_NACL" if targeting Google Chrome
+  Native Client
 
 Example usage:
 @code
@@ -63,12 +65,8 @@ possible. Many features from C++11 are used to simplify things and make them
 faster and more secure, but on the other hand it requires fairly recent
 compiler with good enough support of the new standard. Currently %Magnum is
 written with GCC 4.7 and Clang 3.1 in mind, but support for some other
-compilers is also available:
-
- - GCC 4.6 support can be explicitly enabled with CMake option
-   `MAGNUM_GCC46_COMPATIBILITY`
-
-The options are also available as predefined macros when including Magnum.h.
+compilers is also available and handled by Corrade library. See Corrade.h for
+more information.
 
 Each feature is marked accordingly if it is not available on some compilers,
 see @ref SceneGraph::DrawableGroup3D for an example. It is up to you (or your

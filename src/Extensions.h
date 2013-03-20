@@ -41,6 +41,9 @@ the same public methods as Extension class (requiredVersion(), coreVersion()
 and string(), but these structs are better suited for compile-time decisions
 rather than %Extension instances. See Context::isExtensionSupported() for
 example usage.
+
+This namespace is built by default and found by default in CMake. See
+@ref building and @ref cmake for more information.
 @see MAGNUM_ASSERT_EXTENSION_SUPPORTED()
 @todo Manual indices for extensions, this has gaps
 */

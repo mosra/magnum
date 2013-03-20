@@ -2,11 +2,8 @@
 #
 # Basic usage:
 #  find_package(Magnum [REQUIRED])
-# This command tries to find Magnum library and then defines:
-#  MAGNUM_FOUND                 - Whether the library was found
-#  MAGNUM_TARGET_GLES           - Defined if Magnum was built for OpenGL
-#   ES, slightly reducing feature count. The same variable is also
-#   #defined in Magnum headers.
+# This command tries to find base Magnum library and then defines:
+#  MAGNUM_FOUND                 - Whether the base library was found
 #  MAGNUM_LIBRARIES             - Magnum library and dependent libraries
 #  MAGNUM_INCLUDE_DIRS          - Root include dir and include dirs of
 #   dependencies
@@ -18,22 +15,22 @@
 #  DebugTools       - DebugTools library (depends on MeshTools, Physics,
 #                     Primitives, SceneGraph and Shaders components)
 #  MeshTools        - MeshTools library
-#  Physics          - Physics library
-#  Primitives       - Library with stock geometric primitives (static)
-#  SceneGraph       - Scene graph library
-#  Shaders          - Library with stock shaders
-#  Text             - Text rendering library (depends on TextureTools
-#                     component, FreeType library and possibly HarfBuzz
-#                     library, see below)
+#  Physics          - Physics library (depends on SceneGraph component)
+#  Primitives       - Primitives library
+#  SceneGraph       - SceneGraph library
+#  Shaders          - Shaders library
+#  Text             - Text library (depends on TextureTools component,
+#                     FreeType library and possibly HarfBuzz library,
+#                     see below)
 #  TextureTools     - TextureTools library
-#  GlxApplication   - GLX application (depends on X11 libraries)
-#  XEglApplication  - X/EGL application (depends on EGL and X11 libraries)
-#  WindowlessGlxApplication - Windowless GLX application (depends on X11
-#                     libraries)
 #  GlutApplication  - GLUT application (depends on GLUT library)
-#  Sdl2Application  - SDL2 application (depends on SDL2 library)
-#  NaClApplication  - NaCl application (only if targetting Google Chrome
+#  GlxApplication   - GLX application (depends on GLX and X11 libraries)
+#  NaClApplication  - NaCl application (only if targeting Google Chrome
 #                     Native Client)
+#  Sdl2Application  - SDL2 application (depends on SDL2 library)
+#  XEglApplication  - X/EGL application (depends on EGL and X11 libraries)
+#  WindowlessGlxApplication - Windowless GLX application (depends on GLX
+#                     and X11 libraries)
 # Example usage with specifying additional components is:
 #  find_package(Magnum [REQUIRED|COMPONENTS]
 #               MeshTools Primitives GlutApplication)
@@ -43,9 +40,9 @@
 #  MAGNUM_*_INCLUDE_DIRS - Include dirs of module dependencies
 # If exactly one *Application or exactly one Windowless*Application
 # component is requested and found, its libraries and include dirs are
-# available in convenience aliases MAGNUM_APPLICATION_LIBRARIES or
+# available in convenience aliases MAGNUM_APPLICATION_LIBRARIES /
 # MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES and MAGNUM_APPLICATION_INCLUDE_DIRS
-# or MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS to simplify porting.
+# / MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS to simplify porting.
 #
 # Features of found Magnum library are exposed in these variables:
 #  MAGNUM_TARGET_GLES   - Defined if compiled for OpenGL ES
