@@ -150,16 +150,17 @@ class MAGNUM_EXPORT AbstractTexture {
              * Clamp to edge. Coordinates out of the range will be clamped to
              * first / last column / row in given direction.
              */
-            ClampToEdge = GL_CLAMP_TO_EDGE
+            ClampToEdge = GL_CLAMP_TO_EDGE,
 
-            #ifndef MAGNUM_TARGET_GLES
-            ,
             /**
              * Clamp to border color. Coordinates out of range will be clamped
              * to border color (set with setBorderColor()).
-             * @requires_gl Texture border is not available in OpenGL ES.
+             * @requires_es_extension %Extension @es_extension{NV,texture_border_clamp}
              */
+            #ifndef MAGNUM_TARGET_GLES
             ClampToBorder = GL_CLAMP_TO_BORDER
+            #else
+            ClampToBorder = GL_CLAMP_TO_BORDER_NV
             #endif
         };
 
@@ -1074,7 +1075,6 @@ class MAGNUM_EXPORT AbstractTexture {
             return this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Set border color
          * @return Pointer to self (for method chaining)
@@ -1086,13 +1086,16 @@ class MAGNUM_EXPORT AbstractTexture {
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_BORDER_COLOR}
-         * @requires_gl Texture border is not available in OpenGL ES.
+         * @requires_es_extension %Extension @es_extension{NV,texture_border_clamp}
          */
         inline AbstractTexture* setBorderColor(const Color4<>& color) {
+            #ifndef MAGNUM_TARGET_GLES
             (this->*parameterfvImplementation)(GL_TEXTURE_BORDER_COLOR, color.data());
+            #else
+            (this->*parameterfvImplementation)(GL_TEXTURE_BORDER_COLOR_NV, color.data());
+            #endif
             return this;
         }
-        #endif
 
         /**
          * @brief Set max anisotropy

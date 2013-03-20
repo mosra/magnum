@@ -212,6 +212,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,sRGB),
         _extension(GL,NV,read_buffer_front),
         _extension(GL,NV,read_stencil),
+        _extension(GL,NV,texture_border_clamp),             // done
         _extension(GL,OES,depth32),
         _extension(GL,OES,mapbuffer),
         _extension(GL,OES,stencil1),
