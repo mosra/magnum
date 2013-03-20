@@ -22,4 +22,4 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-add_subdirectory(OpenGL)
+install(FILES khrplatform.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/OpenGL/KHR)

@@ -22,4 +22,4 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-install(FILES glcorearb.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/external/GL)
+install(FILES gl2.h gl2platform.h gl2ext.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/OpenGL/GLES2)

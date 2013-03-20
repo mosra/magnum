@@ -30,7 +30,16 @@ if(CORRADE_GCC46_COMPATIBILITY)
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CORRADE_INCLUDE_DIR})
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CORRADE_INCLUDE_DIR}
+
+    # We can use both implicit include path (GLES2/gl2.h) where our headers can
+    # be overriden with system ones or explicit (OpenGL/GLES2/gl2ext.h) where
+    # only our headers will be used
+    ${CMAKE_SOURCE_DIR}/external
+    ${CMAKE_SOURCE_DIR}/external/OpenGL)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/magnumConfigure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h)

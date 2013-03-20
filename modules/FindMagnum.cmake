@@ -295,7 +295,7 @@ find_package_handle_standard_args(Magnum
 
 # Dependent libraries and includes
 set(MAGNUM_INCLUDE_DIRS ${MAGNUM_INCLUDE_DIR}
-    ${MAGNUM_INCLUDE_DIR}/external
+    ${MAGNUM_INCLUDE_DIR}/OpenGL
     ${CORRADE_INCLUDE_DIR})
 set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARY}
     ${CORRADE_UTILITY_LIBRARY}

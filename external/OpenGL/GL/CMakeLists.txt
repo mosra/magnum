@@ -22,4 +22,4 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-add_subdirectory(OpenGL)
+install(FILES glcorearb.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/OpenGL/GL)

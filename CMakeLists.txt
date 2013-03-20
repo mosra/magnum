@@ -104,8 +104,6 @@ set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
 set(MAGNUM_CMAKE_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
 
-include_directories(${CMAKE_SOURCE_DIR}/external)
-
 add_subdirectory(external)
 add_subdirectory(modules)
 add_subdirectory(src)
