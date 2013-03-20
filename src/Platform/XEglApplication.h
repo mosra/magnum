@@ -50,6 +50,10 @@ class MyApplication: public Magnum::Platform::XEglApplication {
 };
 MAGNUM_XEGLAPPLICATION_MAIN(MyApplication)
 @endcode
+
+If no other application header is included this class is also aliased to
+`Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
+to simplify porting.
 */
 class XEglApplication: public AbstractXApplication {
     public:
@@ -87,6 +91,7 @@ When no other application header is included this macro is also aliased to
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
+typedef XEglApplication Application;
 #define MAGNUM_APPLICATION_MAIN(className) MAGNUM_XEGLAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_APPLICATION_MAIN

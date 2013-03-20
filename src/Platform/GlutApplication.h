@@ -60,6 +60,10 @@ class MyApplication: public Magnum::Platform::GlutApplication {
 };
 MAGNUM_GLUTAPPLICATION_MAIN(MyApplication)
 @endcode
+
+If no other application header is included this class is also aliased to
+`Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
+to simplify porting.
 */
 class GlutApplication {
     public:
@@ -386,6 +390,7 @@ When no other application header is included this macro is also aliased to
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
+typedef GlutApplication Application;
 #define MAGNUM_APPLICATION_MAIN(className) MAGNUM_GLUTAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_APPLICATION_MAIN

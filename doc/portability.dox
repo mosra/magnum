@@ -164,9 +164,12 @@ mouse movement events etc.
 
 In most cases the entry point is classic `main()` function, but some platforms
 (e.g. Native Client) have different requirements. To make things easier, entry
-points are handled using macros, which take care of the rest. Each application
-has its own specific macro and if no other application header is included, the
-macro is also aliased to MAGNUM_APPLICATION_MAIN() to save you typing.
+points are handled using macros, which take care of the rest.
+
+If only one `*Application` or `*WindowlessApplication` header is included, the
+application class is aliased to `Platform::Application` or `Platform::WindowlessApplication`
+and the macro is aliased to `MAGNUM_APPLICATION_MAIN()` or `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`
+to simplify porting.
 
 Example application, which targets both embedded Linux (using plain X and EGL)
 and desktop (using SDL2 toolkit). Thanks to static polymorphism most of the
@@ -179,15 +182,9 @@ particular *Event class implementations:
 #include <Platform/XEglApplication.h>
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
-typedef Platform::Sdl2Application ApplicationBase;
-#else
-typedef Platform::XEglApplication ApplicationBase;
-#endif
-
-class MyApplication: public ApplicationBase {
+class MyApplication: public Platform::Application {
     public:
-        MyApplication(int& argc, char** argv): ApplicationBase(argc, argv, "My Application") {
+        MyApplication(int& argc, char** argv): Platform::Application(argc, argv, "My Application") {
             // ...
         }
 

@@ -55,6 +55,10 @@ class MyApplication: public Magnum::Platform::WindowlessGlxApplication {
 };
 MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN(MyApplication)
 @endcode
+
+If no other application header is included this class is also aliased to
+`Platform::WindowlessApplication` and the macro is aliased to
+`MAGNUM_WINDOWLESSAPPLICATION_MAIN()` to simplify porting.
 */
 class WindowlessGlxApplication {
     public:
@@ -107,6 +111,7 @@ aliased to `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`.
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_WINDOWLESSAPPLICATION_MAIN
+typedef WindowlessGlxApplication WindowlessApplication;
 #define MAGNUM_WINDOWLESSAPPLICATION_MAIN(className) MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_WINDOWLESSAPPLICATION_MAIN
