@@ -41,10 +41,11 @@
 #  MAGNUM_*_FOUND   - Whether the component was found
 #  MAGNUM_*_LIBRARIES - Component library and dependent libraries
 #  MAGNUM_*_INCLUDE_DIRS - Include dirs of module dependencies
-# If exactly one *Application component is requested and found, its
-# libraries and include dirs are also available in convenience aliases
-# MAGNUM_APPLICATION_LIBRARIES and MAGNUM_APPLICATION_INCLUDE_DIRS to
-# simplify porting.
+# If exactly one *Application or exactly one Windowless*Application
+# component is requested and found, its libraries and include dirs are
+# available in convenience aliases MAGNUM_APPLICATION_LIBRARIES or
+# MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES and MAGNUM_APPLICATION_INCLUDE_DIRS
+# or MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS to simplify porting.
 #
 # Features of found Magnum library are exposed in these variables:
 #  MAGNUM_TARGET_GLES   - Defined if compiled for OpenGL ES
@@ -288,10 +289,17 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         # Don't expose variables w/o dependencies to end users
         mark_as_advanced(FORCE MAGNUM_${_COMPONENT}_LIBRARY _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
 
-        # If this is application library, make it available also in global
-        # MAGNUM_APPLICATION_LIBRARIES and MAGNUM_APPLICATION_INCLUDE_DIRS. If
-        # these variables are already set, unset them to avoid ambiguity.
-        if(${component} MATCHES .+Application)
+        # Global aliases for Windowless*Application and *Application components.
+        # If already set, unset them to avoid ambiguity.
+        if(${component} MATCHES Windowless.+Application)
+            if(NOT DEFINED MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES AND NOT DEFINED MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS)
+                set(MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES ${MAGNUM_${_COMPONENT}_LIBRARIES})
+                set(MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS ${MAGNUM_${_COMPONENT}_INCLUDE_DIRS})
+            else()
+                unset(MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES)
+                unset(MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS)
+            endif()
+        elseif(${component} MATCHES .+Application)
             if(NOT DEFINED MAGNUM_APPLICATION_LIBRARIES AND NOT DEFINED MAGNUM_APPLICATION_INCLUDE_DIRS)
                 set(MAGNUM_APPLICATION_LIBRARIES ${MAGNUM_${_COMPONENT}_LIBRARIES})
                 set(MAGNUM_APPLICATION_INCLUDE_DIRS ${MAGNUM_${_COMPONENT}_INCLUDE_DIRS})
