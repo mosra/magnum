@@ -893,7 +893,8 @@ class MAGNUM_EXPORT AbstractTexture {
              * Depth component, size implementation-dependent.
              * @deprecated Prefer to use exactly specified version of this
              *      format, e.g. @ref Magnum::AbstractTexture::InternalFormat "InternalFormat::DepthComponent16".
-             * @requires_gles30 %Extension @es_extension{OES,depth_texture}
+             * @requires_gles30 %Extension @es_extension{OES,depth_texture} or
+             *      @es_extension{ANGLE,depth_texture}
              */
             DepthComponent = GL_DEPTH_COMPONENT,
 
@@ -911,8 +912,9 @@ class MAGNUM_EXPORT AbstractTexture {
 
             /**
              * Depth component, 16bit.
-             * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
-             *      and @es_extension{OES,depth_texture}
+             * @requires_gles30 %Extension (@es_extension{OES,required_internalformat}
+             *      and @es_extension{OES,depth_texture}) or (@es_extension{EXT,texture_storage}
+             *      and @es_extension{ANGLE,depth_texture})
              */
             DepthComponent16 = GL_DEPTH_COMPONENT16,
 
@@ -929,8 +931,9 @@ class MAGNUM_EXPORT AbstractTexture {
 
             /**
              * Depth component, 32bit.
-             * @requires_es_extension %Extension @es_extension{OES,required_internalformat},
-             *      @es_extension{OES,depth_texture} and @es_extension{OES,depth32}
+             * @requires_es_extension %Extension (@es_extension{OES,required_internalformat},
+             *      @es_extension{OES,depth_texture} and @es_extension{OES,depth32})
+             *      or (@es_extension{EXT,texture_storage} and @es_extension{ANGLE,depth_texture})
              */
             #ifndef MAGNUM_TARGET_GLES2
             DepthComponent32 = GL_DEPTH_COMPONENT32,
@@ -951,8 +954,9 @@ class MAGNUM_EXPORT AbstractTexture {
             /**
              * 24bit depth and 8bit stencil component.
              * @requires_gl30 %Extension @extension{EXT,packed_depth_stencil}
-             * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
-             *      and @es_extension{OES,packed_depth_stencil}
+             * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil}
+             *      and (@es_extension{OES,required_internalformat} or
+             *      (@es_extension{EXT,texture_storage} and @es_extension{ANGLE,depth_texture}))
              */
             #ifdef MAGNUM_TARGET_GLES2
             Depth24Stencil8 = GL_DEPTH24_STENCIL8_OES

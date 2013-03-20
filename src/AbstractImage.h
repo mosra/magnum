@@ -223,6 +223,8 @@ class MAGNUM_EXPORT AbstractImage {
 
             /**
              * Depth component.
+             * @requires_gles30 For texture data only, extension
+             *      @es_extension{ANGLE,depth_texture}.
              * @requires_es_extension For framebuffer reading only, extension
              *      @es_extension2{NV,read_depth,GL_NV_read_depth_stencil}.
              */

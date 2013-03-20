@@ -183,6 +183,7 @@ namespace GL {
     #line 1
     namespace ANGLE {
         _extension(GL,ANGLE,framebuffer_blit,       GLES200, GLES300) // #83
+        _extension(GL,ANGLE,depth_texture,          GLES200, GLES300) // #138
     } namespace APPLE {
         _extension(GL,APPLE,framebuffer_multisample, GLES200, GLES300) // #78
         _extension(GL,APPLE,texture_format_BGRA8888, GLES200,   None) // #79

@@ -219,6 +219,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,texture_3D)};
     static const std::vector<Extension> extensionsES300{
         _extension(GL,ANGLE,framebuffer_blit),
+        _extension(GL,ANGLE,depth_texture),                 // done
         _extension(GL,APPLE,framebuffer_multisample),
         _extension(GL,ARM,rgba8),
         _extension(GL,EXT,texture_type_2_10_10_10_REV),
