@@ -166,10 +166,15 @@ In most cases the entry point is classic `main()` function, but some platforms
 (e.g. Native Client) have different requirements. To make things easier, entry
 points are handled using macros, which take care of the rest.
 
-If only one `*Application` or `*WindowlessApplication` header is included, the
-application class is aliased to `Platform::Application` or `Platform::WindowlessApplication`
-and the macro is aliased to `MAGNUM_APPLICATION_MAIN()` or `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`
-to simplify porting.
+If exactly one `*Application` or `*Windowless*Application` header is included,
+the application class is aliased to `Platform::Application` or
+`Platform::WindowlessApplication` and the macro is aliased to
+`MAGNUM_APPLICATION_MAIN()` or `MAGNUM_WINDOWLESSAPPLICATION_MAIN()` to
+simplify porting. The same is with CMake code, if exactly one `*Application` or
+`Windowless*Application` component , the libraries and include dirs are
+available in `MAGNUM_APPLICATION_LIBRARIES` / `MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES`
+and `MAGNUM_APPLICATION_INCLUDE_DIRS` / `MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS`
+variables.
 
 Example application, which targets both embedded Linux (using plain X and EGL)
 and desktop (using SDL2 toolkit). Thanks to static polymorphism most of the
@@ -184,25 +189,37 @@ particular *Event class implementations:
 
 class MyApplication: public Platform::Application {
     public:
-        MyApplication(int& argc, char** argv): Platform::Application(argc, argv, "My Application") {
-            // ...
-        }
+        MyApplication(int& argc, char** argv): Platform::Application(argc, argv, "My Application");
 
     protected:
-        void viewportEvent(const Vector2i& size) override {
-            // ...
-        }
-
-        void drawEvent() override {
-            // ...
-        }
-
-        void keyPressEvent(KeyEvent& event) override {
-            // ...
-        }
+        void viewportEvent(const Vector2i& size) override;
+        void drawEvent() override;
+        void keyPressEvent(KeyEvent& event) override;
 };
 
+// ...
+
 MAGNUM_APPLICATION_MAIN(MyApplication)
+@endcode
+
+And corresponding CMake code. Note that we need to call `find_package()` twice,
+first to get variable `MAGNUM_TARGET_GLES` and then again to find proper
+application library based on its value:
+@code
+find_package(Magnum REQUIRED)
+
+if(MAGNUM_TARGET_GLES)
+    find_package(Magnum REQUIRED Sdl2Application)
+else()
+    find_package(Magnum REQUIRED XEglApplication)
+endif()
+
+include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
+
+add_executable(myapplication MyApplication.cpp)
+target_link_libraries(myapplication
+    ${MAGNUM_LIBRARIES}
+    ${MAGNUM_APPLICATION_LIBRARIES})
 @endcode
 
 */
