@@ -40,7 +40,8 @@ Contains classes for interacting with OpenGL.
 /** @namespace Magnum::Platform
 @brief Platform-specific application and context creation
 
-Base classes for creating applications with various toolkits.
+Base classes for creating applications with various toolkits. See @ref platform
+for introduction.
 */
 
 /** @dir Math
