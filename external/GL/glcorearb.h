@@ -31,9 +31,9 @@ extern "C" {
 /* glcorearb.h replaces gl3.h. It is for use with OpenGL core
  * profile implementations.
  *
- * glcorearb.h last updated on $Date: 2012-09-19 19:02:24 -0700 (Wed, 19 Sep 2012) $
+ * glcorearb.h last updated on $Date: 2013-02-07 01:42:49 -0800 (Thu, 07 Feb 2013) $
  *
- * RELEASE NOTES - 2012/09/19
+ * RELEASE NOTES - 2013/02/07
  *
  * glcorearb.h should be placed in the same directory as gl.h and
  * included as
@@ -2705,6 +2705,11 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 
 #ifndef GL_NV_vdpau_interop
 typedef GLintptr GLvdpauSurfaceNV;
+#endif
+
+#ifndef GL_OES_fixed_point
+/* GLint must be 32 bits, a relatively safe assumption on modern CPUs */
+typedef GLint GLfixed;
 #endif
 
 #ifndef GL_VERSION_1_0
