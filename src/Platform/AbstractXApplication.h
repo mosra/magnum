@@ -370,36 +370,6 @@ class AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEv
         const Vector2i _position;
 };
 
-/** @hideinitializer
-@brief Entry point for X11-based applications
-@param className Class name
-
-Can be used with AbstractXApplication subclasses as equivalent to the
-following code to achieve better portability, see @ref portability-applications
-for more information.
-@code
-int main(int argc, char** argv) {
-    className app(argc, argv);
-    return app.exec();
-}
-@endcode
-When no other application header is included this macro is also aliased to
-`MAGNUM_APPLICATION_MAIN()`.
-*/
-#define MAGNUM_XAPPLICATION_MAIN(className)                                 \
-    int main(int argc, char** argv) {                                       \
-        className app(argc, argv);                                          \
-        return app.exec();                                                  \
-    }
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef MAGNUM_APPLICATION_MAIN
-#define MAGNUM_APPLICATION_MAIN(className) MAGNUM_XAPPLICATION_MAIN(className)
-#else
-#undef MAGNUM_APPLICATION_MAIN
-#endif
-#endif
-
 /* Implementations for inline functions with unused parameters */
 inline void AbstractXApplication::keyPressEvent(KeyEvent&) {}
 inline void AbstractXApplication::keyReleaseEvent(KeyEvent&) {}

@@ -43,12 +43,12 @@ EglContextHandler.
 
 You need to implement at least drawEvent() and viewportEvent() to be able to
 draw on the screen.  The subclass can be then used directly in `main()` - see
-convenience macro MAGNUM_XAPPLICATION_MAIN().
+convenience macro MAGNUM_XEGLAPPLICATION_MAIN().
 @code
 class MyApplication: public Magnum::Platform::XEglApplication {
     // implement required methods...
 };
-MAGNUM_XAPPLICATION_MAIN(MyApplication)
+MAGNUM_XEGLAPPLICATION_MAIN(MyApplication)
 @endcode
 */
 class XEglApplication: public AbstractXApplication {
@@ -62,6 +62,36 @@ class XEglApplication: public AbstractXApplication {
          */
         inline explicit XEglApplication(int& argc, char** argv, const std::string& title = "Magnum X/EGL application", const Vector2i& size = Vector2i(800, 600)): AbstractXApplication(new EglContextHandler, argc, argv, title, size) {}
 };
+
+/** @hideinitializer
+@brief Entry point for X/EGL-based applications
+@param className Class name
+
+Can be used with XEglApplication subclasses as equivalent to the following code
+to achieve better portability, see @ref portability-applications for more
+information.
+@code
+int main(int argc, char** argv) {
+    className app(argc, argv);
+    return app.exec();
+}
+@endcode
+When no other application header is included this macro is also aliased to
+`MAGNUM_APPLICATION_MAIN()`.
+*/
+#define MAGNUM_XEGLAPPLICATION_MAIN(className)                              \
+    int main(int argc, char** argv) {                                       \
+        className app(argc, argv);                                          \
+        return app.exec();                                                  \
+    }
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_APPLICATION_MAIN
+#define MAGNUM_APPLICATION_MAIN(className) MAGNUM_XEGLAPPLICATION_MAIN(className)
+#else
+#undef MAGNUM_APPLICATION_MAIN
+#endif
+#endif
 
 }}
 
