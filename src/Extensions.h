@@ -209,6 +209,7 @@ namespace GL {
         _extension(GL,NV,read_depth,                GLES200, GLES300) // #94
         _extension(GL,NV,read_stencil,              GLES200,    None) // #94
         _extension(GL,NV,read_depth_stencil,        GLES200, GLES300) // #94
+        _extension(GL,NV,framebuffer_blit,          GLES200, GLES300) // #142
     } namespace OES {
         _extension(GL,OES,depth24,                  GLES200, GLES300) // #24
         _extension(GL,OES,depth32,                  GLES200,    None) // #25
