@@ -67,6 +67,10 @@ class MyApplication: public Magnum::Platform::Sdl2Application {
 };
 MAGNUM_NACLAPPLICATION_MAIN(MyApplication)
 @endcode
+
+If no other application header is included this class is also aliased to
+`Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
+to simplify porting.
 */
 class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public pp::MouseLock {
     public:
@@ -483,6 +487,7 @@ When no other application header is included this macro is also aliased to
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
+typedef NaClApplication Application;
 #define MAGNUM_APPLICATION_MAIN(className) MAGNUM_NACLAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_APPLICATION_MAIN

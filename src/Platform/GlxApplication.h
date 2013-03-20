@@ -37,19 +37,23 @@ namespace Magnum { namespace Platform {
 @brief GLX application
 
 Creates window with double-buffered OpenGL or OpenGL ES 2.0 context, if
-targetting OpenGL ES. Uses GlxContextHandler.
+targeting OpenGL ES. Uses GlxContextHandler.
 
 @section GlxApplication-usage Usage
 
 You need to implement at least drawEvent() and viewportEvent() to be able to
 draw on the screen. The subclass can be then used directly in `main()` - see
-convenience macro MAGNUM_XAPPLICATION_MAIN().
+convenience macro MAGNUM_GLXAPPLICATION_MAIN().
 @code
 class MyApplication: public Magnum::Platform::GlxApplication {
     // implement required methods...
 };
-MAGNUM_XAPPLICATION_MAIN(MyApplication)
+MAGNUM_GLXAPPLICATION_MAIN(MyApplication)
 @endcode
+
+If no other application header is included this class is also aliased to
+`Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
+to simplify porting.
 */
 class GlxApplication: public AbstractXApplication {
     public:
@@ -62,6 +66,37 @@ class GlxApplication: public AbstractXApplication {
          */
         inline explicit GlxApplication(int& argc, char** argv, const std::string& title = "Magnum GLX application", const Vector2i& size = Vector2i(800, 600)): AbstractXApplication(new GlxContextHandler, argc, argv, title, size) {}
 };
+
+/** @hideinitializer
+@brief Entry point for GLX-based applications
+@param className Class name
+
+Can be used with GlxApplication subclasses as equivalent to the following code
+to achieve better portability, see @ref portability-applications for more
+information.
+@code
+int main(int argc, char** argv) {
+    className app(argc, argv);
+    return app.exec();
+}
+@endcode
+When no other application header is included this macro is also aliased to
+`MAGNUM_APPLICATION_MAIN()`.
+*/
+#define MAGNUM_GLXAPPLICATION_MAIN(className)                               \
+    int main(int argc, char** argv) {                                       \
+        className app(argc, argv);                                          \
+        return app.exec();                                                  \
+    }
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_APPLICATION_MAIN
+typedef GlxApplication Application;
+#define MAGNUM_APPLICATION_MAIN(className) MAGNUM_GLXAPPLICATION_MAIN(className)
+#else
+#undef MAGNUM_APPLICATION_MAIN
+#endif
+#endif
 
 }}
 

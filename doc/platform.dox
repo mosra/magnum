@@ -23,15 +23,13 @@
 */
 
 namespace Magnum {
-/** @page features Feature overview
-@brief Fundamental principles and design goals
+/** @page platform Platform support
 
-- @subpage platform -- @copybrief platform
-- @subpage types -- @copybrief types
-- @subpage matrix-vector -- @copybrief matrix-vector
-- @subpage transformations -- @copybrief transformations
-- @subpage scenegraph -- @copybrief scenegraph
-- @subpage collision-detection -- @copybrief collision-detection
-- @subpage debug-tools -- @copybrief debug-tools
+@brief Integration into windowing toolkits and creation of windowless contexts
+
+@tableofcontents
+
+@todoc write when the API is stabilized
+
 */
 }

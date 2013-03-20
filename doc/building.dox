@@ -122,17 +122,19 @@ None of the @ref Platform "application libraries" is built by default (and you
 need at least one). Choose the one which suits your requirements and your
 platform best:
 
- - `WITH_XEGLAPPLICATION` - @ref Platform::XEglApplication "XEglApplication",
-   available only if targeting OpenGL ES (see above). Requires **X11** and
-   **EGL** libraries.
- - `WITH_GLXAPPLICATION` - @ref Platform::GlxApplication "GlxApplication".
-   Requires **X11** and **GLX** libraries.
- - `WITH_WINDOWLESSGLXAPPLICATION` - @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication".
-   Requires **X11** and **GLX** libraries.
- - `WITH_GLUTAPPLICATION` - @ref Platform::GlutApplication "GlutApplication",
-   available only if targeting desktop OpenGL. Requires **GLUT** library.
- - `WITH_SDL2APPLICATION` - @ref Platform::Sdl2Application "Sdl2Application".
-   Requires **SDL2** library.
+- `WITH_GLUTAPPLICATION` - @ref Platform::GlutApplication "GlutApplication",
+  available only if targeting desktop OpenGL. Requires **GLUT** library.
+- `WITH_GLXAPPLICATION` - @ref Platform::GlxApplication "GlxApplication".
+  Requires **X11** and **GLX** libraries.
+- `WITH_NACLAPPLICATION` - @ref Platform::NaClApplication "NaClApplication",
+  available only if targeting Google Chrome Native Client (see below).
+- `WITH_SDL2APPLICATION` - @ref Platform::Sdl2Application "Sdl2Application".
+  Requires **SDL2** library.
+- `WITH_XEGLAPPLICATION` - @ref Platform::XEglApplication "XEglApplication",
+  available only if targeting OpenGL ES (see above). Requires **X11** and
+  **EGL** libraries.
+- `WITH_WINDOWLESSGLXAPPLICATION` - @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication".
+  Requires **X11** and **GLX** libraries.
 
 @subsection building-tests Building and running unit tests
 

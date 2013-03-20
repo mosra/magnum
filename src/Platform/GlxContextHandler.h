@@ -44,7 +44,7 @@ namespace Magnum { namespace Platform {
 /**
 @brief GLX context
 
-Creates OpenGL or OpenGL ES 2.0 context, if targetting OpenGL ES. Used in
+Creates OpenGL or OpenGL ES 2.0 context, if targeting OpenGL ES. Used in
 GlxApplication.
 */
 class GlxContextHandler: public AbstractContextHandler<Display*, VisualID, Window> {

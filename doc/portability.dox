@@ -39,9 +39,11 @@ format is not supported.
 
 If you include Magnum.h, you get these predefined macros:
 
- - `MAGNUM_TARGET_GLES` if targetting OpenGL ES 2.0 or 3.0
- - `MAGNUM_TARGET_GLES2` if targetting OpenGL ES 2.0
- - `MAGNUM_TARGET_NACL` if targetting Google Chrome Native Client
+- @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES" if targeting OpenGL ES 2.0 or
+  3.0
+- @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2" if targeting OpenGL ES 2.0
+- @ref MAGNUM_TARGET_NACL_ "MAGNUM_TARGET_NACL" if targeting Google Chrome
+  Native Client
 
 Example usage:
 @code
@@ -63,12 +65,8 @@ possible. Many features from C++11 are used to simplify things and make them
 faster and more secure, but on the other hand it requires fairly recent
 compiler with good enough support of the new standard. Currently %Magnum is
 written with GCC 4.7 and Clang 3.1 in mind, but support for some other
-compilers is also available:
-
- - GCC 4.6 support can be explicitly enabled with CMake option
-   `MAGNUM_GCC46_COMPATIBILITY`
-
-The options are also available as predefined macros when including Magnum.h.
+compilers is also available and handled by Corrade library. See Corrade.h for
+more information.
 
 Each feature is marked accordingly if it is not available on some compilers,
 see @ref SceneGraph::DrawableGroup3D for an example. It is up to you (or your
@@ -164,9 +162,17 @@ mouse movement events etc.
 
 In most cases the entry point is classic `main()` function, but some platforms
 (e.g. Native Client) have different requirements. To make things easier, entry
-points are handled using macros, which take care of the rest. Each application
-has its own specific macro and if no other application header is included, the
-macro is also aliased to MAGNUM_APPLICATION_MAIN() to save you typing.
+points are handled using macros, which take care of the rest.
+
+If exactly one `*Application` or `*Windowless*Application` header is included,
+the application class is aliased to `Platform::Application` or
+`Platform::WindowlessApplication` and the macro is aliased to
+`MAGNUM_APPLICATION_MAIN()` or `MAGNUM_WINDOWLESSAPPLICATION_MAIN()` to
+simplify porting. The same is with CMake code, if exactly one `*Application` or
+`Windowless*Application` component , the libraries and include dirs are
+available in `MAGNUM_APPLICATION_LIBRARIES` / `MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES`
+and `MAGNUM_APPLICATION_INCLUDE_DIRS` / `MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS`
+variables.
 
 Example application, which targets both embedded Linux (using plain X and EGL)
 and desktop (using SDL2 toolkit). Thanks to static polymorphism most of the
@@ -179,33 +185,39 @@ particular *Event class implementations:
 #include <Platform/XEglApplication.h>
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
-typedef Platform::Sdl2Application ApplicationBase;
-#else
-typedef Platform::XEglApplication ApplicationBase;
-#endif
-
-class MyApplication: public ApplicationBase {
+class MyApplication: public Platform::Application {
     public:
-        MyApplication(int& argc, char** argv): ApplicationBase(argc, argv, "My Application") {
-            // ...
-        }
+        MyApplication(int& argc, char** argv): Platform::Application(argc, argv, "My Application");
 
     protected:
-        void viewportEvent(const Vector2i& size) override {
-            // ...
-        }
-
-        void drawEvent() override {
-            // ...
-        }
-
-        void keyPressEvent(KeyEvent& event) override {
-            // ...
-        }
+        void viewportEvent(const Vector2i& size) override;
+        void drawEvent() override;
+        void keyPressEvent(KeyEvent& event) override;
 };
 
+// ...
+
 MAGNUM_APPLICATION_MAIN(MyApplication)
+@endcode
+
+And corresponding CMake code. Note that we need to call `find_package()` twice,
+first to get variable `MAGNUM_TARGET_GLES` and then again to find proper
+application library based on its value:
+@code
+find_package(Magnum REQUIRED)
+
+if(MAGNUM_TARGET_GLES)
+    find_package(Magnum REQUIRED Sdl2Application)
+else()
+    find_package(Magnum REQUIRED XEglApplication)
+endif()
+
+include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
+
+add_executable(myapplication MyApplication.cpp)
+target_link_libraries(myapplication
+    ${MAGNUM_LIBRARIES}
+    ${MAGNUM_APPLICATION_LIBRARIES})
 @endcode
 
 */

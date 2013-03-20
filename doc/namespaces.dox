@@ -32,6 +32,9 @@
 @brief Root namespace
 
 Contains classes for interacting with OpenGL.
+
+This library is built by default and found by default in CMake. See
+@ref building and @ref cmake for more information.
 */
 
 /** @dir Platform
@@ -40,7 +43,12 @@ Contains classes for interacting with OpenGL.
 /** @namespace Magnum::Platform
 @brief Platform-specific application and context creation
 
-Base classes for creating applications with various toolkits.
+Base classes for creating applications with various toolkits. See @ref platform
+for introduction.
+
+Parts of this namespace are built when `WITH_*APPLICATION` is enabled and found
+as `*Application` component in CMake. See @ref building and @ref cmake for more
+information.
 */
 
 /** @dir Math
@@ -50,7 +58,10 @@ Base classes for creating applications with various toolkits.
 @brief %Math library
 
 Template classes for matrix and vector calculations. See @ref matrix-vector
-for brief introduction.
+and @ref transformations for introduction.
+
+This library is built by default and found by default in CMake. See
+@ref building and @ref cmake for more information.
 */
 
 /** @dir Math/Algorithms
@@ -60,6 +71,9 @@ for brief introduction.
 @brief %Algorithms
 
 Various matrix and vector algorithms.
+
+This library is built by default and found by default in CMake. See
+@ref building and @ref cmake for more information.
 */
 
 /** @dir Math/Geometry
@@ -69,6 +83,9 @@ Various matrix and vector algorithms.
 @brief %Geometry library
 
 Functions for computing intersections, distances, areas and volumes.
+
+This library is built by default and found by default in CMake. See
+@ref building and @ref cmake for more information.
 */
 
 /** @dir DebugTools
@@ -77,7 +94,12 @@ Functions for computing intersections, distances, areas and volumes.
 /** @namespace Magnum::DebugTools
 @brief %Debug tools
 
-Debugging helpers, renderers and profilers.
+Debugging helpers, renderers and profilers. See @ref debug-tools for
+introduction.
+
+This library is built when `WITH_DEBUGTOOLS` is enabled and found as
+`%DebugTools` component in CMake. See @ref building and @ref cmake for more
+information.
 */
 
 /** @dir MeshTools
@@ -87,6 +109,10 @@ Debugging helpers, renderers and profilers.
 @brief %Mesh tools
 
 Tools for generating, optimizing and cleaning meshes.
+
+This library is built when `WITH_MESHTOOLS` is enabled and found as
+`%MeshTools` component in CMake. See @ref building and @ref cmake for more
+information.
 */
 
 /** @dir Primitives
@@ -96,6 +122,10 @@ Tools for generating, optimizing and cleaning meshes.
 @brief Primitive library
 
 Basic primitives for testing purposes.
+
+This library is built when `WITH_PRIMITIVES` is enabled and found as
+`%Primitives` component in CMake. See @ref building and @ref cmake for more
+information.
 */
 
 /** @dir SceneGraph
@@ -107,6 +137,10 @@ Basic primitives for testing purposes.
 
 Managing object hierarchy, transformations and interactions. See
 @ref scenegraph for introduction.
+
+This library is built when `WITH_SCENEGRAPH` is enabled and found as
+`%SceneGraph` component in CMake. See @ref building and @ref cmake for more
+information.
 */
 
 /** @dir Shaders
@@ -116,6 +150,9 @@ Managing object hierarchy, transformations and interactions. See
 @brief Sample shaders
 
 Collection of shaders for testing purposes.
+
+This library is built when `WITH_SHADERS` is enabled and found as `%Shaders`
+component in CMake. See @ref building and @ref cmake for more information.
 */
 
 /** @dir Physics
@@ -126,6 +163,9 @@ Collection of shaders for testing purposes.
 
 Collision detection system and rigid body objects. See @ref collision-detection
 for introduction.
+
+This library is built when `WITH_PHYSICS` is enabled and found as `%Physics`
+component in CMake. See @ref building and @ref cmake for more information.
 */
 
 /** @dir Text
@@ -135,6 +175,9 @@ for introduction.
 @brief %Text rendering
 
 Font texture creation and text layouting.
+
+This library is built when `WITH_TEXT` is enabled and found as `%Text`
+component in CMake. See @ref building and @ref cmake for more information.
 */
 
 /** @dir TextureTools
@@ -144,6 +187,10 @@ Font texture creation and text layouting.
 @brief %Texture tools
 
 Tools for generating, compressing and optimizing textures.
+
+This library is built when `WITH_TEXTURETOOLS` is enabled and found as
+`%TextureTools` component in CMake. See @ref building and @ref cmake for more
+information.
 */
 
 /** @dir Trade
@@ -154,4 +201,7 @@ Tools for generating, compressing and optimizing textures.
 
 Contains plugin interfaces for importing data of various formats and classes
 for direct access to the data.
+
+This library is built by default and found by default in CMake. See
+@ref building and @ref cmake for more information.
 */
