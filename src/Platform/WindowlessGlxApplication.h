@@ -96,8 +96,8 @@ int main(int argc, char** argv) {
     return app.exec();
 }
 @endcode
-When no other application header is included this macro is also aliased to
-`MAGNUM_APPLICATION_MAIN()`.
+When no other windowless application header is included this macro is also
+aliased to `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`.
 */
 #define MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN(className)                     \
     int main(int argc, char** argv) {                                       \
@@ -106,10 +106,10 @@ When no other application header is included this macro is also aliased to
     }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef MAGNUM_APPLICATION_MAIN
-#define MAGNUM_APPLICATION_MAIN(className) MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN(className)
+#ifndef MAGNUM_WINDOWLESSAPPLICATION_MAIN
+#define MAGNUM_WINDOWLESSAPPLICATION_MAIN(className) MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN(className)
 #else
-#undef MAGNUM_APPLICATION_MAIN
+#undef MAGNUM_WINDOWLESSAPPLICATION_MAIN
 #endif
 #endif
 
