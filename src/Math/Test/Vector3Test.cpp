@@ -133,6 +133,9 @@ void Vector3Test::constructConversion() {
     Vector3i b(a); /* Not constexpr under GCC < 4.7 */
     #endif
     CORRADE_COMPARE(b, Vector3i(1, 2, -3));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Vector3, Vector3i>::value));
 }
 
 void Vector3Test::constructCopy() {

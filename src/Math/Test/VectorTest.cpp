@@ -187,6 +187,9 @@ void VectorTest::constructConversion() {
     #endif
 
     CORRADE_COMPARE(b, Vector4i(1, 2, -15, 7));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Vector4, Vector4i>::value));
 }
 
 void VectorTest::constructCopy() {

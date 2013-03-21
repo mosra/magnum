@@ -120,6 +120,9 @@ void Vector2Test::constructConversion() {
     Vector2i b(a); /* Not constexpr under GCC < 4.7 */
     #endif
     CORRADE_COMPARE(b, Vector2i(1, 2));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Vector2, Vector2i>::value));
 }
 
 void Vector2Test::constructCopy() {

@@ -135,6 +135,9 @@ void Matrix3Test::constructConversion() {
     CORRADE_COMPARE(b, Matrix3i({3,  5, 8},
                                 {4,  4, 7},
                                 {7, -1, 8}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Matrix3, Matrix3i>::value));
 }
 
 void Matrix3Test::constructCopy() {

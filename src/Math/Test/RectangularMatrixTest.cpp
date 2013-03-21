@@ -134,6 +134,9 @@ void RectangularMatrixTest::constructConversion() {
 
     CORRADE_COMPARE(b, Matrix2i(Vector2i(  1, 2),
                                 Vector2i(-15, 7)));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Matrix2, Matrix2i>::value));
 }
 
 void RectangularMatrixTest::constructFromData() {
