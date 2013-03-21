@@ -119,6 +119,9 @@ void DualQuaternionTest::constructDefault() {
 void DualQuaternionTest::constructFromVector() {
     constexpr DualQuaternion a(Vector3(1.0f, 2.0f, 3.0f));
     CORRADE_COMPARE(a, DualQuaternion({{0.0f, 0.0f, 0.0f}, 1.0f}, {{1.0f, 2.0f, 3.0f}, 0.0f}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Vector3, DualQuaternion>::value));
 }
 
 void DualQuaternionTest::constructCopy() {

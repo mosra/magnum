@@ -126,6 +126,10 @@ void ComplexTest::constructFromVector() {
 
     constexpr Vector2 b(a);
     CORRADE_COMPARE(b, vec);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Vector2, Complex>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Complex, Vector2>::value));
 }
 
 void ComplexTest::constructCopy() {
