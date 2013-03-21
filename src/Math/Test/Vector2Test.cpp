@@ -144,6 +144,10 @@ void Vector2Test::convert() {
     Vec2 d(b);
     CORRADE_COMPARE(d.x, a.x);
     CORRADE_COMPARE(d.y, a.y);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Vec2, Vector2>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Vector2, Vec2>::value));
 }
 
 void Vector2Test::access() {

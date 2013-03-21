@@ -156,6 +156,10 @@ void Vector4Test::convert() {
     CORRADE_COMPARE(d.y, a.y);
     CORRADE_COMPARE(d.z, a.z);
     CORRADE_COMPARE(d.w, a.w);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Vec4, Vector4>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Vector4, Vec4>::value));
 }
 
 void Vector4Test::access() {

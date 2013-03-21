@@ -158,6 +158,10 @@ void Vector3Test::convert() {
     CORRADE_COMPARE(d.x, a.x);
     CORRADE_COMPARE(d.y, a.y);
     CORRADE_COMPARE(d.z, a.z);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Vec3, Vector3>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Vector3, Vec3>::value));
 }
 
 void Vector3Test::access() {
