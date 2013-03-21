@@ -82,6 +82,9 @@ void RectangleTest::constructConversion() {
     constexpr Rectangle a({1.3f, 2.7f}, {-15.0f, 7.0f});
     constexpr Rectanglei b(a);
     CORRADE_COMPARE(b, Rectanglei({1, 2}, {-15, 7}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Rectangle, Rectanglei>::value));
 }
 
 void RectangleTest::constructCopy() {
