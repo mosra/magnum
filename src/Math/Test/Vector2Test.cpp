@@ -126,11 +126,18 @@ void Vector2Test::constructCopy() {
 }
 
 void Vector2Test::convert() {
-    Vec2 a{1.5f, 2.0f};
-    Vector2 b(1.5f, 2.0f);
-    CORRADE_COMPARE(Vector2(a), b);
-    CORRADE_COMPARE(Vec2(b).x, a.x);
-    CORRADE_COMPARE(Vec2(b).y, a.y);
+    constexpr Vec2 a{1.5f, 2.0f};
+    constexpr Vector2 b(1.5f, 2.0f);
+
+    constexpr Vector2 c(a);
+    CORRADE_COMPARE(c, b);
+
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr /* Not constexpr under GCC < 4.7 */
+    #endif
+    Vec2 d(b);
+    CORRADE_COMPARE(d.x, a.x);
+    CORRADE_COMPARE(d.y, a.y);
 }
 
 void Vector2Test::access() {
