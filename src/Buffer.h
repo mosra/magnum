@@ -781,6 +781,9 @@ class MAGNUM_EXPORT Buffer {
 
 CORRADE_ENUMSET_OPERATORS(Buffer::MapFlags)
 
+/** @debugoperator{Magnum::Buffer} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Buffer::Target value);
+
 }
 
 #endif
