@@ -107,6 +107,9 @@ void Vector2Test::constructOneValue() {
     Vector2 a(3.0f); /* Not constexpr under GCC < 4.7 */
     #endif
     CORRADE_COMPARE(a, Vector2(3.0f, 3.0f));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Float, Vector2>::value));
 }
 
 void Vector2Test::constructConversion() {

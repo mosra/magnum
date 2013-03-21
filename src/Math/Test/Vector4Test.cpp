@@ -111,6 +111,9 @@ void Vector4Test::constructOneValue() {
     Vector4 a(4.3f); /* Not constexpr under GCC < 4.7 */
     #endif
     CORRADE_COMPARE(a, Vector4(4.3f, 4.3f, 4.3f, 4.3f));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Float, Vector4>::value));
 }
 
 void Vector4Test::constructParts() {

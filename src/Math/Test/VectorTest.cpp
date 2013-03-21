@@ -165,6 +165,9 @@ void VectorTest::constructOneValue() {
     #endif
 
     CORRADE_COMPARE(a, Vector4(7.25f, 7.25f, 7.25f, 7.25f));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Float, Vector4>::value));
 }
 
 void VectorTest::constructOneComponent() {

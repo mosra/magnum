@@ -114,6 +114,9 @@ void Vector3Test::constructOneValue() {
     Vector3 a(-3.0f); /* Not constexpr under GCC < 4.7 */
     #endif
     CORRADE_COMPARE(a, Vector3(-3.0f, -3.0f, -3.0f));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Float, Vector3>::value));
 }
 
 void Vector3Test::constructParts() {
