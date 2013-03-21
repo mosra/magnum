@@ -33,9 +33,14 @@ class RectangleTest: public Corrade::TestSuite::Tester {
     public:
         RectangleTest();
 
+        void construct();
+        void constructDefault();
+        void constructFromSize();
+        void constructConversion();
+        void constructCopy();
+
         void access();
         void compare();
-        void construct();
         void size();
 
         void debug();
@@ -46,17 +51,48 @@ typedef Geometry::Rectangle<Int> Rectanglei;
 typedef Vector2<Int> Vector2i;
 
 RectangleTest::RectangleTest() {
-    addTests({&RectangleTest::access,
+    addTests({&RectangleTest::construct,
+              &RectangleTest::constructDefault,
+              &RectangleTest::constructFromSize,
+              &RectangleTest::constructConversion,
+              &RectangleTest::constructCopy,
+
+              &RectangleTest::access,
               &RectangleTest::compare,
-              &RectangleTest::construct,
               &RectangleTest::size,
 
               &RectangleTest::debug});
 }
 
+void RectangleTest::construct() {
+    constexpr Rectanglei a({3, 5}, {23, 78});
+    CORRADE_COMPARE(a, Rectanglei({3, 5}, {23, 78}));
+}
+
+void RectangleTest::constructDefault() {
+    constexpr Rectanglei a;
+    CORRADE_COMPARE(a, Rectanglei({0, 0}, {0, 0}));
+}
+
+void RectangleTest::constructFromSize() {
+    CORRADE_COMPARE(Rectanglei::fromSize({3, 5}, {23, 78}), Rectanglei({3, 5}, {26, 83}));
+}
+
+void RectangleTest::constructConversion() {
+    constexpr Rectangle a({1.3f, 2.7f}, {-15.0f, 7.0f});
+    constexpr Rectanglei b(a);
+    CORRADE_COMPARE(b, Rectanglei({1, 2}, {-15, 7}));
+}
+
+void RectangleTest::constructCopy() {
+    constexpr Rectanglei a({3, 5}, {23, 78});
+    constexpr Rectanglei b(a);
+    CORRADE_COMPARE(b, Rectanglei({3, 5}, {23, 78}));
+}
+
 void RectangleTest::access() {
     Rectanglei rect({34, 23}, {47, 30});
-    const Rectanglei crect({34, 23}, {47, 30});
+    constexpr Rectanglei crect({34, 23}, {47, 30});
 
     CORRADE_COMPARE(rect.bottomLeft(), Vector2i(34, 23));
     CORRADE_COMPARE(rect.topRight(), Vector2i(47, 30));
@@ -64,12 +100,22 @@ void RectangleTest::access() {
     CORRADE_COMPARE(rect.top(), 30);
     CORRADE_COMPARE(rect.left(), 34);
     CORRADE_COMPARE(rect.right(), 47);
-    CORRADE_COMPARE(crect.bottomLeft(), Vector2i(34, 23));
-    CORRADE_COMPARE(crect.topRight(), Vector2i(47, 30));
-    CORRADE_COMPARE(crect.bottom(), 23);
-    CORRADE_COMPARE(crect.top(), 30);
-    CORRADE_COMPARE(crect.left(), 34);
-    CORRADE_COMPARE(crect.right(), 47);
+    CORRADE_COMPARE(rect.bottomLeft(), Vector2i(34, 23));
+    CORRADE_COMPARE(rect.topRight(), Vector2i(47, 30));
+
+    constexpr Int bottom = crect.bottom();
+    constexpr Int top = crect.top();
+    constexpr Int left = crect.left();
+    constexpr Int right = crect.right();
+    CORRADE_COMPARE(bottom, 23);
+    CORRADE_COMPARE(top, 30);
+    CORRADE_COMPARE(left, 34);
+    CORRADE_COMPARE(right, 47);
+
+    constexpr Vector2i bottomLeft = crect.bottomLeft();
+    constexpr Vector2i topRight = crect.topRight();
+    CORRADE_COMPARE(bottomLeft, Vector2i(34, 23));
+    CORRADE_COMPARE(topRight, Vector2i(47, 30));
 
     CORRADE_COMPARE(rect.topLeft(), Vector2i(34, 30));
     CORRADE_COMPARE(rect.bottomRight(), Vector2i(47, 23));
@@ -79,12 +125,6 @@ void RectangleTest::compare() {
     CORRADE_VERIFY(Rectanglei({34, 23}, {47, 30}) == Rectanglei({34, 23}, {47, 30}));
     CORRADE_VERIFY(Rectanglei({34, 23}, {47, 30}) != Rectanglei({34, 23}, {48, 30}));
     CORRADE_VERIFY(Rectanglei({34, 23}, {47, 30}) != Rectanglei({35, 23}, {47, 30}));
-}
-
-void RectangleTest::construct() {
-    CORRADE_COMPARE(Rectanglei(), Rectanglei({0, 0}, {0, 0}));
-    CORRADE_COMPARE(Rectanglei::fromSize({3, 5}, {23, 78}), Rectanglei({3, 5}, {26, 83}));
-    CORRADE_COMPARE(Rectanglei(Rectangle({1.3f, 2.7f}, {-15.0f, 7.0f})), Rectanglei({1, 2}, {-15, 7}));
 }
 
 void RectangleTest::size() {
