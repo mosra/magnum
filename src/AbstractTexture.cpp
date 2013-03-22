@@ -96,6 +96,7 @@ Int AbstractTexture::maxSupportedLayerCount() {
     return Context::current()->state()->texture->maxSupportedLayerCount;
 }
 
+#ifndef MAGNUM_TARGET_GLES3
 Float AbstractTexture::maxSupportedAnisotropy() {
     GLfloat& value = Context::current()->state()->texture->maxSupportedAnisotropy;
 
@@ -108,6 +109,7 @@ Float AbstractTexture::maxSupportedAnisotropy() {
 
     return value;
 }
+#endif
 
 void AbstractTexture::destroy() {
     /* Moved out */

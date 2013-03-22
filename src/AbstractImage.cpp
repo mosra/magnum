@@ -59,9 +59,13 @@ std::size_t AbstractImage::pixelSize(Format format, Type type) {
         case Type::UnsignedShort565Rev:
         #endif
         case Type::UnsignedShort4444:
+        #ifndef MAGNUM_TARGET_GLES3
         case Type::UnsignedShort4444Rev:
+        #endif
         case Type::UnsignedShort5551:
+        #ifndef MAGNUM_TARGET_GLES3
         case Type::UnsignedShort1555Rev:
+        #endif
             return 2;
         #ifndef MAGNUM_TARGET_GLES
         case Type::UnsignedInt8888:
@@ -111,7 +115,9 @@ std::size_t AbstractImage::pixelSize(Format format, Type type) {
         #ifndef MAGNUM_TARGET_GLES2
         case Format::RGBAInteger:
         #endif
+        #ifndef MAGNUM_TARGET_GLES3
         case Format::BGRA:
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         case Format::BGRAInteger:
         #endif
@@ -119,7 +125,9 @@ std::size_t AbstractImage::pixelSize(Format format, Type type) {
 
         /* Handled above */
         case Format::DepthComponent:
+        #ifndef MAGNUM_TARGET_GLES3
         case Format::StencilIndex:
+        #endif
         case Format::DepthStencil:
             CORRADE_INTERNAL_ASSERT(false);
     }
@@ -143,19 +151,27 @@ Debug operator<<(Debug debug, AbstractImage::Format value) {
         #ifndef MAGNUM_TARGET_GLES
         _c(BGR)
         #endif
+        #ifndef MAGNUM_TARGET_GLES3
         _c(BGRA)
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         _c(RedInteger)
+        #ifndef MAGNUM_TARGET_GLES
         _c(GreenInteger)
         _c(BlueInteger)
+        #endif
         _c(RGInteger)
         _c(RGBInteger)
         _c(RGBAInteger)
+        #ifndef MAGNUM_TARGET_GLES
         _c(BGRInteger)
         _c(BGRAInteger)
         #endif
+        #endif
         _c(DepthComponent)
+        #ifndef MAGNUM_TARGET_GLES3
         _c(StencilIndex)
+        #endif
         _c(DepthStencil)
         #undef _c
     }
@@ -180,7 +196,7 @@ Debug operator<<(Debug debug, AbstractImage::Type value) {
         #endif
         _c(HalfFloat)
         _c(Float)
-        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
         _c(UnsignedByte332)
         _c(UnsignedByte233Rev)
         #endif
@@ -189,9 +205,13 @@ Debug operator<<(Debug debug, AbstractImage::Type value) {
         _c(UnsignedShort565Rev)
         #endif
         _c(UnsignedShort4444)
+        #ifndef MAGNUM_TARGET_GLES3
         _c(UnsignedShort4444Rev)
+        #endif
         _c(UnsignedShort5551)
+        #ifndef MAGNUM_TARGET_GLES3
         _c(UnsignedShort1555Rev)
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         _c(UnsignedInt8888)
         _c(UnsignedInt8888Rev)

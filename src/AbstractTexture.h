@@ -653,6 +653,7 @@ class MAGNUM_EXPORT AbstractTexture {
             RGB565 = GL_RGB565,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES3
             /**
              * RGB, each component normalized unsigned 10bit.
              * @requires_es_extension %Extension @es_extension{OES,required_internalformat}
@@ -662,6 +663,7 @@ class MAGNUM_EXPORT AbstractTexture {
             RGB10 = GL_RGB10,
             #else
             RGB10 = GL_RGB10_EXT,
+            #endif
             #endif
 
             #ifndef MAGNUM_TARGET_GLES
@@ -740,6 +742,7 @@ class MAGNUM_EXPORT AbstractTexture {
             RGB9E5 = GL_RGB9_E5,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES3
             /**
              * sRGB, normalized unsigned, size implementation-dependent.
              * @todo is this allowed in core?
@@ -754,6 +757,7 @@ class MAGNUM_EXPORT AbstractTexture {
             #else
             SRGB = GL_SRGB_EXT,
             #endif
+            #endif
 
             #ifndef MAGNUM_TARGET_GLES2
             /**
@@ -764,6 +768,7 @@ class MAGNUM_EXPORT AbstractTexture {
             SRGB8 = GL_SRGB8,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES3
             /**
              * sRGBA, normalized unsigned, size implementation-dependent.
              * @todo is this allowed in core?
@@ -777,6 +782,7 @@ class MAGNUM_EXPORT AbstractTexture {
             SRGBAlpha = GL_SRGB_ALPHA,
             #else
             SRGBAlpha = GL_SRGB_ALPHA_EXT,
+            #endif
             #endif
 
             #ifndef MAGNUM_TARGET_GLES2
@@ -930,6 +936,7 @@ class MAGNUM_EXPORT AbstractTexture {
             DepthComponent24 = GL_DEPTH_COMPONENT24_OES,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES3
             /**
              * Depth component, 32bit.
              * @requires_es_extension %Extension (@es_extension{OES,required_internalformat},
@@ -940,6 +947,7 @@ class MAGNUM_EXPORT AbstractTexture {
             DepthComponent32 = GL_DEPTH_COMPONENT32,
             #else
             DepthComponent32 = GL_DEPTH_COMPONENT32_OES,
+            #endif
             #endif
 
             #ifndef MAGNUM_TARGET_GLES2
