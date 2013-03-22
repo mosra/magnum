@@ -219,9 +219,25 @@ class Sdl2Application::Configuration {
             return this;
         }
 
+        /** @brief Sample count */
+        inline Int sampleCount() const { return _sampleCount; }
+
+        /**
+         * @brief Set sample count
+         * @return Pointer to self (for method chaining)
+         *
+         * Default is `0`, thus no multisampling. See also
+         * @ref Renderer::Feature "Renderer::Feature::Multisampling".
+         */
+        inline Configuration* setSampleCount(Int count) {
+            _sampleCount = count;
+            return this;
+        }
+
     private:
         std::string _title;
         Vector2i _size;
+        Int _sampleCount;
 };
 
 /**
