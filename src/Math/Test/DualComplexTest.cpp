@@ -121,6 +121,9 @@ void DualComplexTest::constructDefault() {
 void DualComplexTest::constructFromVector() {
     constexpr DualComplex a(Vector2(1.5f, -3.0f));
     CORRADE_COMPARE(a, DualComplex({1.0f, 0.0f}, {1.5f, -3.0f}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Vector2, DualComplex>::value));
 }
 
 void DualComplexTest::constructCopy() {

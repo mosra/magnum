@@ -128,10 +128,11 @@ void AngleTest::literals() {
 }
 
 void AngleTest::conversion() {
-    constexpr Deg a(Rad(1.57079633f));
+    /* Implicit conversion should be allowed */
+    constexpr Deg a = Rad(1.57079633f);
     CORRADE_COMPARE(Float(a), 90.0f);
 
-    constexpr Rad b(Deg(90.0f));
+    constexpr Rad b = Deg(90.0f);
     CORRADE_COMPARE(Float(b), 1.57079633f);
 }
 

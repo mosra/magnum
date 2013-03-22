@@ -22,14 +22,152 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-namespace Magnum {
+namespace Magnum { namespace Platform {
 /** @page platform Platform support
 
 @brief Integration into windowing toolkits and creation of windowless contexts
 
 @tableofcontents
 
-@todoc write when the API is stabilized
+Platform namespace provides classes integrating %Magnum engine into various
+toolkits, both windowed and windowless. All the classes have common API to
+achieve static polymorphism, so basically you can use different toolkits on
+different platforms and the only thing you need to change is the class name,
+everything else is the same.
+
+Basic usage is to subclass the chosen `*Application` class and implement
+required methods.
+
+@section platform-windowed Windowed applications
+
+Windowed applications provide a window and keyboard and mouse handling. The
+most basic toolkit (and toolkit available on most platforms) is GLUT, which is
+is implemented in GlutApplication. As said above, the usage is similar for all
+toolkits, you must provide two-argument constructor and implement at least
+@ref GlutApplication::viewportEvent() "viewportEvent()" and
+@ref GlutApplication::drawEvent() "drawEvent()".
+
+Barebone application implementation which will just clear the window to dark
+blue color:
+@code
+#include <DefaultFramebuffer.h>
+#include <Renderer.h>
+#include <Platform/GlutApplication.h>
+
+using namespace Magnum;
+
+class MyApplication: public Platform::GlutApplication {
+    public:
+        MyApplication(int& argc, char** argv);
+
+        void viewportEvent(const Vector2i& viewport) override;
+        void drawEvent() override;
+};
+
+MyApplication::MyApplication(int& argc, char** argv): Platform::GlutApplication(argc, argv) {
+    // Set clear color to dark blue
+    Renderer::setClearColor({0.0f, 0.0f, 0.4f});
+}
+
+void MyApplication::viewportEvent(const Vector2i& size) {
+    // Resize the framebuffer to new window size
+    defaultFramebuffer.setViewport({{}, size});
+}
+
+void MyApplication::drawEvent() {
+    // Clear the window
+    defaultFramebuffer.clear();
+
+    // The context is double-buffered, swap buffers
+    swapBuffers();
+}
+
+// main() function implementation
+MAGNUM_GLUTAPPLICATION_MAIN(MyApplication)
+@endcode
+
+@section platform-windowless Windowless applications
+
+Windowless applications provide just a context for ofscreen rendering or
+performing tasks on GPU. There is not yet any platform-independent toolkit
+which could handle this in portable way, thus you have to use platform-specific
+ones. As example we use WindowlessGlxApplication, you need to implement just
+@ref WindowlessGlxApplication::exec() "exec()" function.
+
+Barebone application which will just print out current OpenGL version and
+renderer string and exits:
+@code
+#include <Context.h>
+#include <Platform/WindowlessGlxApplication.h>
+
+using namespace Magnum;
+
+class MyApplication: public Platform::WindowlessGlxApplication {
+    public:
+        MyApplication(int& argc, char** argv);
+
+        int exec() override;
+};
+
+MyApplication::MyApplication(int& argc, char** argv): Platform::WindowlessGlxApplication(argc, argv) {}
+
+int MyApplication::exec() {
+    Debug() << "OpenGL version:" << Context::current()->versionString();
+    Debug() << "OpenGL renderer:" << Context::current()->rendererString();
+
+    // Exit with success
+    return 0;
+}
+
+// main() function implementation
+MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN(MyApplication)
+@endcode
+
+@section platform-compilation Compilation with CMake
+
+Barebone compilation consists just of finding %Magnum library with required
+`*Application` component, compilation of the executable and linking the
+libraries to it:
+@code
+find_package(Magnum REQUIRED GlutApplication)
+
+include_directories(${MAGNUM_INCLUDE_DIRS})
+
+add_executable(myapplication MyApplication.cpp)
+target_link_libraries(myapplication
+    ${MAGNUM_LIBRARIES}
+    ${MAGNUM_GLUTAPPLICATION_LIBRARIES})
+@endcode
+
+@section platform-configuration Specifying configuration
+
+By default the application is created with some reasonable defaults (e.g.
+window size 800x600 pixels). If you want something else, you can pass
+@ref GlutApplication::Configuration "Configuration" instance to application
+constructor. Using method chaining it can be done conveniently like this:
+@code
+MyApplication::MyApplication(int& argc, char** argv):
+    Platform::GlutApplication(argc, argv, (new Configuration())
+        ->setTitle("My Application")->setSize({800, 600}) {
+    // ...
+}
+@endcode
+
+However, sometimes you would need to configure the application based on some
+configuration file or system introspection. In that case you can pass `nullptr`
+instead of Configuration instance and then specify it later with
+@ref GlutApplication::createContext() "createContext()":
+@code
+MyApplication::MyApplication(int& argc, char** argv): Platform::GlutApplication(argc, argv, nullptr) {
+    // ...
+
+    createContext((new Configuration())
+        ->setTitle("My Application")
+        ->setSize(size));
+
+    // ...
+}
+@endcode
 
 */
-}
+}}

@@ -45,6 +45,8 @@ namespace Magnum { namespace Platform {
 /**
 @brief Windowless GLX application
 
+See @ref platform for brief introduction.
+
 @section WindowlessGlxApplication-usage Usage
 
 Place your code into exec(). The subclass can be then used directly in
@@ -62,15 +64,13 @@ If no other application header is included this class is also aliased to
 */
 class WindowlessGlxApplication {
     public:
-        /**
-         * @brief Constructor
-         * @param argc      Count of arguments of `main()` function
-         * @param argv      Arguments of `main()` function
-         *
-         * Creates window with double-buffered OpenGL 3.2 core context or
-         * OpenGL ES 2.0 context, if targeting OpenGL ES.
-         */
+        class Configuration;
+
+        /** @copydoc GlutApplication::GlutApplication(int&, char**) */
         explicit WindowlessGlxApplication(int& argc, char** argv);
+
+        /** @copydoc GlutApplication::GlutApplication(int&, char**, Configuration*) */
+        explicit WindowlessGlxApplication(int& argc, char** argv, Configuration* configuration);
 
         ~WindowlessGlxApplication();
 
@@ -80,12 +80,32 @@ class WindowlessGlxApplication {
          */
         virtual int exec() = 0;
 
+    protected:
+        /** @copydoc GlutApplication::createContext() */
+        void createContext(Configuration* configuration);
+
     private:
         Display* display;
         GLXContext context;
         GLXPbuffer pbuffer;
 
         Context* c;
+};
+
+/**
+@brief %Configuration
+
+@see WindowlessGlxApplication(), createContext()
+*/
+class WindowlessGlxApplication::Configuration {
+    Configuration(const Configuration&) = delete;
+    Configuration(Configuration&&) = delete;
+    Configuration& operator=(const Configuration&) = delete;
+    Configuration& operator=(Configuration&&) = delete;
+
+    public:
+        explicit Configuration();
+        ~Configuration();
 };
 
 /** @hideinitializer

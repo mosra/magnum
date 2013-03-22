@@ -64,6 +64,10 @@ inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, Sec val
 void UnitTest::construct() {
     constexpr Sec a(25.0f);
     CORRADE_COMPARE(Float(a), 25.0f);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Float, Sec>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Sec, Float>::value));
 }
 
 void UnitTest::constructDefault() {
@@ -75,6 +79,9 @@ void UnitTest::constructConversion() {
     constexpr Seci a(25.0);
     constexpr Sec b(a);
     CORRADE_COMPARE(b, Sec(25.0f));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Sec, Seci>::value));
 }
 
 void UnitTest::compare() {

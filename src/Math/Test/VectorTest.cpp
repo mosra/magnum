@@ -165,6 +165,9 @@ void VectorTest::constructOneValue() {
     #endif
 
     CORRADE_COMPARE(a, Vector4(7.25f, 7.25f, 7.25f, 7.25f));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Float, Vector4>::value));
 }
 
 void VectorTest::constructOneComponent() {
@@ -184,6 +187,9 @@ void VectorTest::constructConversion() {
     #endif
 
     CORRADE_COMPARE(b, Vector4i(1, 2, -15, 7));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Vector4, Vector4i>::value));
 }
 
 void VectorTest::constructCopy() {
@@ -202,20 +208,22 @@ void VectorTest::convert() {
     constexpr Vector3 b(1.5f, 2.0f, -3.5f);
 
     #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr Vector3 c(a);
-    #else
-    Vector3 c(a); /* Not constexpr under GCC < 4.7 */
+    constexpr /* Not constexpr under GCC < 4.7 */
     #endif
+    Vector3 c(b);
     CORRADE_COMPARE(c, b);
 
     #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr Vec3 d(b);
-    #else
-    Vec3 d(b); /* Not constexpr under GCC < 4.7 */
+    constexpr /* Not constexpr under GCC < 4.7 */
     #endif
+    Vec3 d(b);
     CORRADE_COMPARE(d.x, a.x);
     CORRADE_COMPARE(d.y, a.y);
     CORRADE_COMPARE(d.z, a.z);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Vec3, Vector3>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Vector3, Vec3>::value));
 }
 
 void VectorTest::data() {

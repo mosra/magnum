@@ -47,9 +47,8 @@ namespace Platform {
 /** @nosubgrouping
 @brief SDL2 application
 
-Application using [Simple DirectMedia Layer](www.libsdl.org/). Centered
-non-resizable window with double-buffered OpenGL context and 24bit depth
-buffer. Supports keyboard and mouse handling.
+Application using [Simple DirectMedia Layer](www.libsdl.org/). Supports
+keyboard and mouse handling. See @ref platform for brief introduction.
 
 @section Sdl2Application-usage Usage
 
@@ -69,37 +68,29 @@ to simplify porting.
 */
 class Sdl2Application {
     public:
+        class Configuration;
         class InputEvent;
         class KeyEvent;
         class MouseEvent;
         class MouseMoveEvent;
 
-        /**
-         * @brief Constructor
-         * @param argc      Count of arguments of `main()` function
-         * @param argv      Arguments of `main()` function
-         * @param title     Window title
-         * @param size      Window size
-         */
-        explicit Sdl2Application(int argc, char** argv, const std::string& title = "Magnum SDL2 application", const Vector2i& size = Vector2i(800, 600));
+        /** @copydoc GlutApplication::GlutApplication(int&, char**) */
+        explicit Sdl2Application(int& argc, char** argv);
 
-        /**
-         * @brief Destructor
-         *
-         * Deletes context and destroys the window.
-         */
+        /** @copydoc GlutApplication::GlutApplication(int&, char**, Configuration*) */
+        explicit Sdl2Application(int& argc, char** argv, Configuration* configuration);
+
         virtual ~Sdl2Application();
 
-        /**
-         * @brief Execute main loop
-         * @return Value for returning from `main()`.
-         */
+        /** @copydoc GlutApplication::exec() */
         int exec();
 
         /** @brief Exit application main loop */
         inline void exit() { flags |= Flag::Exit; }
 
     protected:
+        /** @copydoc GlutApplication::createContext() */
+        void createContext(Configuration* configuration);
 
         /** @{ @name Drawing functions */
 
@@ -182,6 +173,56 @@ class Sdl2Application {
 };
 
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Flags)
+
+/**
+@brief %Configuration
+
+Centered non-resizable window with double-buffered OpenGL context and 24bit
+depth buffer.
+@see Sdl2Application(), createContext()
+*/
+class Sdl2Application::Configuration {
+    Configuration(const Configuration&) = delete;
+    Configuration(Configuration&&) = delete;
+    Configuration& operator=(const Configuration&) = delete;
+    Configuration& operator=(Configuration&&) = delete;
+
+    public:
+        explicit Configuration();
+        ~Configuration();
+
+        /** @brief Window title */
+        inline std::string title() const { return _title; }
+
+        /**
+         * @brief Set window title
+         * @return Pointer to self (for method chaining)
+         *
+         * Default is `"Magnum SDL2 Application"`.
+         */
+        inline Configuration* setTitle(std::string title) {
+            _title = std::move(title);
+            return this;
+        }
+
+        /** @brief Window size */
+        inline Vector2i size() const { return _size; }
+
+        /**
+         * @brief Set window size
+         * @return Pointer to self (for method chaining)
+         *
+         * Default is `{800, 600}`.
+         */
+        inline Configuration* setSize(const Vector2i& size) {
+            _size = size;
+            return this;
+        }
+
+    private:
+        std::string _title;
+        Vector2i _size;
+};
 
 /**
 @brief Base for input events

@@ -154,6 +154,9 @@ void Matrix4Test::constructConversion() {
                                 {4,  4, 7,  2},
                                 {1,  2, 3, -1},
                                 {7, -1, 8, -1}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Matrix4, Matrix4i>::value));
 }
 
 void Matrix4Test::constructCopy() {

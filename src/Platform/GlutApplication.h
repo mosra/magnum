@@ -45,9 +45,9 @@ namespace Platform {
 /** @nosubgrouping
 @brief GLUT application
 
-Creates double-buffered RGBA window with depth and stencil buffers. Supports
-keyboard handling for limited subset of keys, mouse handling with support for
-changing cursor and mouse tracking and warping.
+Supports keyboard handling for limited subset of keys, mouse handling with
+support for changing cursor and mouse tracking and warping. See @ref platform
+for brief introduction.
 
 @section GlutApplication-usage Usage
 
@@ -67,19 +67,33 @@ to simplify porting.
 */
 class GlutApplication {
     public:
+        class Configuration;
         class InputEvent;
         class KeyEvent;
         class MouseEvent;
         class MouseMoveEvent;
 
         /**
-         * @brief Constructor
+         * @brief Default constructor
          * @param argc      Count of arguments of `main()` function
          * @param argv      Arguments of `main()` function
-         * @param title     Window title
-         * @param size      Window size
+         *
+         * Creates application with default configuration. See Configuration
+         * for more information.
          */
-        explicit GlutApplication(int& argc, char** argv, const std::string& title = "Magnum GLUT application", const Vector2i& size = Vector2i(800, 600));
+        explicit GlutApplication(int& argc, char** argv);
+
+        /**
+         * @brief Constructor
+         * @param argc          Count of arguments of `main()` function
+         * @param argv          Arguments of `main()` function
+         * @param configuration Configuration
+         *
+         * The @p configuration is deleted afterwards. If `nullptr` is passed
+         * as @p configuration, the context is not created and must be created
+         * with createContext().
+         */
+        explicit GlutApplication(int& argc, char** argv, Configuration* configuration);
 
         virtual ~GlutApplication();
 
@@ -92,9 +106,17 @@ class GlutApplication {
             return 0;
         }
 
+    protected:
+        /**
+         * @brief Create context with given configuration
+         *
+         * The @p configuration is deleted afterwards. Must be called if and
+         * only if the context wasn't created by the constructor itself.
+         */
+        void createContext(Configuration* configuration);
+
         /** @{ @name Drawing functions */
 
-    protected:
         /**
          * @brief Viewport event
          *
@@ -209,6 +231,8 @@ class GlutApplication {
         /*@}*/
 
     private:
+        void initialize(int& argc, char** argv);
+
         inline static void staticViewportEvent(int x, int y) {
             instance->viewportEvent({x, y});
         }
@@ -226,6 +250,55 @@ class GlutApplication {
         static GlutApplication* instance;
 
         Context* c;
+};
+
+/**
+@brief %Configuration
+
+Double-buffered RGBA window with depth and stencil buffers.
+@see GlutApplication(), createContext()
+*/
+class GlutApplication::Configuration {
+    Configuration(const Configuration&) = delete;
+    Configuration(Configuration&&) = delete;
+    Configuration& operator=(const Configuration&) = delete;
+    Configuration& operator=(Configuration&&) = delete;
+
+    public:
+        explicit Configuration();
+        ~Configuration();
+
+        /** @brief Window title */
+        inline std::string title() const { return _title; }
+
+        /**
+         * @brief Set window title
+         * @return Pointer to self (for method chaining)
+         *
+         * Default is `"Magnum GLUT Application"`.
+         */
+        inline Configuration* setTitle(std::string title) {
+            _title = std::move(title);
+            return this;
+        }
+
+        /** @brief Window size */
+        inline Vector2i size() const { return _size; }
+
+        /**
+         * @brief Set window size
+         * @return Pointer to self (for method chaining)
+         *
+         * Default is `{800, 600}`.
+         */
+        inline Configuration* setSize(const Vector2i& size) {
+            _size = size;
+            return this;
+        }
+
+    private:
+        std::string _title;
+        Vector2i _size;
 };
 
 /**

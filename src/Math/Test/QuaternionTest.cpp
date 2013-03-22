@@ -128,6 +128,9 @@ void QuaternionTest::constructDefault() {
 void QuaternionTest::constructFromVector() {
     constexpr Quaternion a(Vector3(1.0f, 2.0f, 3.0f));
     CORRADE_COMPARE(a, Quaternion({1.0f, 2.0f, 3.0f}, 0.0f));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Vector3, Quaternion>::value));
 }
 
 void QuaternionTest::constructCopy() {

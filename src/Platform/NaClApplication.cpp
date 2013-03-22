@@ -32,15 +32,27 @@
 
 namespace Magnum { namespace Platform {
 
-NaClApplication::NaClApplication(PP_Instance instance, const Vector2i& size): Instance(instance), Graphics3DClient(this), MouseLock(this), viewportSize(size) {
+NaClApplication::NaClApplication(PP_Instance instance): Instance(instance), Graphics3DClient(this), MouseLock(this), c(nullptr) {
+    createContext(new Configuration);
+}
+
+NaClApplication::NaClApplication(PP_Instance instance, Configuration* configuration): Instance(instance), Graphics3DClient(this), MouseLock(this), c(nullptr) {
+    if(configuration) createContext(configuration);
+}
+
+void NaClApplication::createContext(NaClApplication::Configuration* configuration) {
+    CORRADE_ASSERT(!c, "NaClApplication::createContext(): context already created", );
+
+    viewportSize = configuration->size();
+
     std::int32_t attributes[] = {
         PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
         PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
         PP_GRAPHICS3DATTRIB_STENCIL_SIZE, 8,
         PP_GRAPHICS3DATTRIB_SAMPLES, 0,
         PP_GRAPHICS3DATTRIB_SAMPLE_BUFFERS, 0,
-        PP_GRAPHICS3DATTRIB_WIDTH, size.x(),
-        PP_GRAPHICS3DATTRIB_HEIGHT, size.y(),
+        PP_GRAPHICS3DATTRIB_WIDTH, configuration->size().x(),
+        PP_GRAPHICS3DATTRIB_HEIGHT, configuration->size().y(),
         PP_GRAPHICS3DATTRIB_NONE
     };
 
@@ -66,6 +78,8 @@ NaClApplication::NaClApplication(PP_Instance instance, const Vector2i& size): In
 
     /* Make sure viewportEvent() is called for first time */
     flags |= Flag::ViewportUpdated;
+
+    delete configuration;
 }
 
 NaClApplication::~NaClApplication() {
@@ -208,5 +222,8 @@ void NaClApplication::mouseLockCallback(void* applicationInstance, std::int32_t)
     NaClApplication* instance = static_cast<NaClApplication*>(applicationInstance);
     instance->flags |= Flag::MouseLocked;
 }
+
+NaClApplication::Configuration::Configuration(): _size(640, 480) {}
+NaClApplication::Configuration::~Configuration() = default;
 
 }}

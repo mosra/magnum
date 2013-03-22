@@ -111,6 +111,9 @@ void Vector4Test::constructOneValue() {
     Vector4 a(4.3f); /* Not constexpr under GCC < 4.7 */
     #endif
     CORRADE_COMPARE(a, Vector4(4.3f, 4.3f, 4.3f, 4.3f));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Float, Vector4>::value));
 }
 
 void Vector4Test::constructParts() {
@@ -127,6 +130,9 @@ void Vector4Test::constructConversion() {
     Vector4i b(a); /* Not constexpr under GCC < 4.7 */
     #endif
     CORRADE_COMPARE(b, Vector4i(1, -2, 3, 4));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Vector4, Vector4i>::value));
 }
 
 void Vector4Test::constructCopy() {
@@ -136,13 +142,24 @@ void Vector4Test::constructCopy() {
 }
 
 void Vector4Test::convert() {
-    Vec4 a{1.5f, 2.0f, -3.5f, -0.5f};
-    Vector4 b(1.5f, 2.0f, -3.5f, -0.5f);
-    CORRADE_COMPARE(Vector4(a), b);
-    CORRADE_COMPARE(Vec4(b).x, a.x);
-    CORRADE_COMPARE(Vec4(b).y, a.y);
-    CORRADE_COMPARE(Vec4(b).z, a.z);
-    CORRADE_COMPARE(Vec4(b).w, a.w);
+    constexpr Vec4 a{1.5f, 2.0f, -3.5f, -0.5f};
+    constexpr Vector4 b(1.5f, 2.0f, -3.5f, -0.5f);
+
+    constexpr Vector4 c(a);
+    CORRADE_COMPARE(c, b);
+
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr /* Not constexpr under GCC < 4.7 */
+    #endif
+    Vec4 d(b);
+    CORRADE_COMPARE(d.x, a.x);
+    CORRADE_COMPARE(d.y, a.y);
+    CORRADE_COMPARE(d.z, a.z);
+    CORRADE_COMPARE(d.w, a.w);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Vec4, Vector4>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Vector4, Vec4>::value));
 }
 
 void Vector4Test::access() {
