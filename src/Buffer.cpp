@@ -40,7 +40,9 @@ Buffer::SetDataImplementation Buffer::setDataImplementation = &Buffer::setDataIm
 Buffer::SetSubDataImplementation Buffer::setSubDataImplementation = &Buffer::setSubDataImplementationDefault;
 Buffer::InvalidateImplementation Buffer::invalidateImplementation = &Buffer::invalidateImplementationNoOp;
 Buffer::InvalidateSubImplementation Buffer::invalidateSubImplementation = &Buffer::invalidateSubImplementationNoOp;
+#ifndef MAGNUM_TARGET_GLES3
 Buffer::MapImplementation Buffer::mapImplementation = &Buffer::mapImplementationDefault;
+#endif
 Buffer::MapRangeImplementation Buffer::mapRangeImplementation = &Buffer::mapRangeImplementationDefault;
 Buffer::FlushMappedRangeImplementation Buffer::flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDefault;
 Buffer::UnmapImplementation Buffer::unmapImplementation = &Buffer::unmapImplementationDefault;
@@ -156,6 +158,7 @@ void Buffer::invalidateSubImplementationARB(GLintptr offset, GLsizeiptr length) 
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES3
 void* Buffer::mapImplementationDefault(MapAccess access) {
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES
@@ -170,6 +173,7 @@ void* Buffer::mapImplementationDefault(MapAccess access) {
 void* Buffer::mapImplementationDSA(MapAccess access) {
     return glMapNamedBufferEXT(_id, GLenum(access));
 }
+#endif
 #endif
 
 void* Buffer::mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access) {

@@ -316,6 +316,7 @@ class MAGNUM_EXPORT Buffer {
             #endif
         };
 
+        #ifndef MAGNUM_TARGET_GLES3
         /**
          * @brief Memory mapping access
          *
@@ -352,6 +353,7 @@ class MAGNUM_EXPORT Buffer {
             ReadWrite = GL_READ_WRITE
             #endif
         };
+        #endif
 
         /**
          * @brief Memory mapping flag
@@ -625,6 +627,7 @@ class MAGNUM_EXPORT Buffer {
         }
         #endif
 
+        #ifndef MAGNUM_TARGET_GLES3
         /**
          * @brief Map buffer to client memory
          * @param access    Access
@@ -644,6 +647,7 @@ class MAGNUM_EXPORT Buffer {
         inline void* map(MapAccess access) {
             return (this->*mapImplementation)(access);
         }
+        #endif
 
         /**
          * @brief Map buffer to client memory
@@ -747,12 +751,14 @@ class MAGNUM_EXPORT Buffer {
         #endif
         static InvalidateSubImplementation invalidateSubImplementation;
 
+        #ifndef MAGNUM_TARGET_GLES3
         typedef void*(Buffer::*MapImplementation)(MapAccess);
         void MAGNUM_LOCAL * mapImplementationDefault(MapAccess access);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL * mapImplementationDSA(MapAccess access);
         #endif
         static MapImplementation mapImplementation;
+        #endif
 
         typedef void*(Buffer::*MapRangeImplementation)(GLintptr, GLsizeiptr, MapFlags);
         void MAGNUM_LOCAL * mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access);
