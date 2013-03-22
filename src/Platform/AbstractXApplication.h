@@ -50,28 +50,40 @@ namespace Platform {
 /** @nosubgrouping
 @brief Base for X11-based applications
 
-Supports keyboard and mouse handling.
-
+Supports keyboard and mouse handling. See @ref platform for brief introduction.
 @note Not meant to be used directly, see subclasses.
 */
 class AbstractXApplication {
     public:
+        class Configuration;
         class InputEvent;
         class KeyEvent;
         class MouseEvent;
         class MouseMoveEvent;
 
         /**
+         * @brief Default constructor
+         * @param contextHandler OpenGL context handler
+         * @param argc          Count of arguments of `main()` function
+         * @param argv          Arguments of `main()` function
+         *
+         * Creates application with default configuration. See Configuration
+         * for more information.
+         */
+        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int& argc, char** argv);
+
+        /**
          * @brief Constructor
          * @param contextHandler OpenGL context handler
          * @param argc          Count of arguments of `main()` function
          * @param argv          Arguments of `main()` function
-         * @param title         Window title
-         * @param size          Window size
+         * @param configuration Configuration
          *
-         * Creates window with double-buffered OpenGL ES 2 context.
+         * The @p configuration is deleted afterwards. If `nullptr` is passed
+         * as @p configuration, the context is not created and must be created
+         * with createContext().
          */
-        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int& argc, char** argv, const std::string& title = "Magnum X application", const Vector2i& size = Vector2i(800, 600));
+        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int& argc, char** argv, Configuration* configuration);
 
         /**
          * @brief Destructor
@@ -90,6 +102,9 @@ class AbstractXApplication {
         inline void exit() { flags |= Flag::Exit; }
 
     protected:
+        /** @copydoc GlutApplication::createContext() */
+        void createContext(Configuration* configuration);
+
         /** @{ @name Drawing functions */
 
         /** @copydoc GlutApplication::viewportEvent() */
@@ -153,6 +168,55 @@ class AbstractXApplication {
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Flags)
+
+/**
+@brief %Configuration
+
+Double-buffered OpenGL context.
+@see AbstractXApplication(), createContext()
+*/
+class AbstractXApplication::Configuration {
+    Configuration(const Configuration&) = delete;
+    Configuration(Configuration&&) = delete;
+    Configuration& operator=(const Configuration&) = delete;
+    Configuration& operator=(Configuration&&) = delete;
+
+    public:
+        explicit Configuration();
+        ~Configuration();
+
+        /** @brief Window title */
+        inline std::string title() const { return _title; }
+
+        /**
+         * @brief Set window title
+         * @return Pointer to self (for method chaining)
+         *
+         * Default is `"Magnum X Application"`.
+         */
+        inline Configuration* setTitle(std::string title) {
+            _title = std::move(title);
+            return this;
+        }
+
+        /** @brief Window size */
+        inline Vector2i size() const { return _size; }
+
+        /**
+         * @brief Set window size
+         * @return Pointer to self (for method chaining)
+         *
+         * Default is `{800, 600}`.
+         */
+        inline Configuration* setSize(const Vector2i& size) {
+            _size = size;
+            return this;
+        }
+
+    private:
+        std::string _title;
+        Vector2i _size;
+};
 
 /**
 @brief Base for input events

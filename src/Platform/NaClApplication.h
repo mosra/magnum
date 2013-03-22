@@ -53,8 +53,7 @@ namespace Magnum { namespace Platform {
 @brief NaCl application
 
 Application running in [Google Chrome Native Client](https://developers.google.com/native-client/).
-Creates double-buffered RGBA canvas with depth and stencil buffers. Supports
-keyboard and mouse handling.
+Supports keyboard and mouse handling. See @ref platform for brief introduction.
 
 @section NaClApplication-usage Usage
 
@@ -74,17 +73,31 @@ to simplify porting.
 */
 class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public pp::MouseLock {
     public:
+        class Configuration;
         class InputEvent;
         class KeyEvent;
         class MouseEvent;
         class MouseMoveEvent;
 
         /**
-         * @brief Constructor
+         * @brief Default constructor
          * @param instance  Module instance
-         * @param size      Rendering size
+         *
+         * Creates application with default configuration. See Configuration
+         * for more information.
          */
-        explicit NaClApplication(PP_Instance instance, const Vector2i& size = Vector2i(640, 480));
+        explicit NaClApplication(PP_Instance instance);
+
+        /**
+         * @brief Constructor
+         * @param instance      Module instance
+         * @param configuration Configuration
+         *
+         * The @p configuration is deleted afterwards. If `nullptr` is passed
+         * as @p configuration, the context is not created and must be created
+         * with createContext().
+         */
+        explicit NaClApplication(PP_Instance instance, Configuration* configuration);
 
         ~NaClApplication();
 
@@ -102,6 +115,8 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         bool setFullscreen(bool enabled);
 
     protected:
+        /** @copydoc GlutApplication::createContext() */
+        void createContext(Configuration* configuration);
 
         /** @{ @name Drawing functions */
 
@@ -221,6 +236,40 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         Flags flags;
 
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
+};
+
+/**
+@brief %Configuration
+
+Double-buffered RGBA canvas with depth and stencil buffers.
+@see NaClApplication(), createContext()
+*/
+class NaClApplication::Configuration {
+    Configuration(const Configuration&) = delete;
+    Configuration(Configuration&&) = delete;
+    Configuration& operator=(const Configuration&) = delete;
+    Configuration& operator=(Configuration&&) = delete;
+
+    public:
+        explicit Configuration();
+        ~Configuration();
+
+        /** @brief Window size */
+        inline Vector2i size() const { return _size; }
+
+        /**
+         * @brief Set window size
+         * @return Pointer to self (for method chaining)
+         *
+         * Default is `{640, 480}`.
+         */
+        inline Configuration* setSize(const Vector2i& size) {
+            _size = size;
+            return this;
+        }
+
+    private:
+        Vector2i _size;
 };
 
 /**

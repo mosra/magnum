@@ -49,7 +49,17 @@ Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
 
 }
 
-Sdl2Application::Sdl2Application(int, char**, const std::string& name, const Vector2i& size): flags(Flag::Redraw) {
+Sdl2Application::Sdl2Application(int&, char**): context(nullptr), flags(Flag::Redraw) {
+    createContext(new Configuration);
+}
+
+Sdl2Application::Sdl2Application(int&, char**, Configuration* configuration): context(nullptr), flags(Flag::Redraw) {
+    if(configuration) createContext(configuration);
+}
+
+void Sdl2Application::createContext(Configuration* configuration) {
+    CORRADE_ASSERT(!context, "Sdl2Application::createContext(): context already created", );
+
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         Error() << "Cannot initialize SDL.";
         std::exit(1);
@@ -59,8 +69,8 @@ Sdl2Application::Sdl2Application(int, char**, const std::string& name, const Vec
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-    window = SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        size.x(), size.y(), SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow(configuration->title().c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        configuration->size().x(), configuration->size().y(), SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     if(!window) {
         Error() << "Cannot create window.";
         std::exit(2);
@@ -76,11 +86,12 @@ Sdl2Application::Sdl2Application(int, char**, const std::string& name, const Vec
     SDL_Event* sizeEvent = new SDL_Event;
     sizeEvent->type = SDL_WINDOWEVENT;
     sizeEvent->window.event = SDL_WINDOWEVENT_RESIZED;
-    sizeEvent->window.data1 = size.x();
-    sizeEvent->window.data2 = size.y();
+    sizeEvent->window.data1 = configuration->size().x();
+    sizeEvent->window.data2 = configuration->size().y();
     SDL_PushEvent(sizeEvent);
 
     c = new Context;
+    delete configuration;
 }
 
 Sdl2Application::~Sdl2Application() {
@@ -149,6 +160,9 @@ void Sdl2Application::setMouseLocked(bool enabled) {
     SDL_SetWindowGrab(window, enabled ? SDL_TRUE : SDL_FALSE);
     SDL_SetRelativeMouseMode(enabled ? SDL_TRUE : SDL_FALSE);
 }
+
+Sdl2Application::Configuration::Configuration(): _title("Magnum SDL2 Application"), _size(800, 600) {}
+Sdl2Application::Configuration::~Configuration() = default;
 
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseEvent::modifiers() {
     if(modifiersLoaded) return _modifiers;

@@ -31,16 +31,31 @@ namespace Magnum { namespace Platform {
 
 GlutApplication* GlutApplication::instance = nullptr;
 
-GlutApplication::GlutApplication(int& argc, char** argv, const std::string& title, const Vector2i& size) {
+GlutApplication::GlutApplication(int& argc, char** argv): c(nullptr) {
+    initialize(argc, argv);
+    createContext(new Configuration);
+}
+
+GlutApplication::GlutApplication(int& argc, char** argv, Configuration* configuration): c(nullptr) {
+    initialize(argc, argv);
+    if(configuration) createContext(configuration);
+}
+
+void GlutApplication::initialize(int& argc, char** argv) {
     /* Save global instance */
     instance = this;
 
     /* Init GLUT */
     glutInit(&argc, argv);
+}
+
+void GlutApplication::createContext(Configuration* configuration) {
+    CORRADE_ASSERT(!c, "GlutApplication::createContext(): context already created", );
+
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL);
-    glutInitWindowSize(size.x(), size.y());
-    glutCreateWindow(title.c_str());
+    glutInitWindowSize(configuration->size().x(), configuration->size().y());
+    glutCreateWindow(configuration->title().c_str());
     glutReshapeFunc(staticViewportEvent);
     glutSpecialFunc(staticKeyEvent);
     glutMouseFunc(staticMouseEvent);
@@ -50,6 +65,7 @@ GlutApplication::GlutApplication(int& argc, char** argv, const std::string& titl
     ExtensionWrangler::initialize();
 
     c = new Context;
+    delete configuration;
 }
 
 GlutApplication::~GlutApplication() {
@@ -73,5 +89,8 @@ void GlutApplication::staticMouseMoveEvent(int x, int y) {
     MouseMoveEvent e({x, y});
     instance->mouseMoveEvent(e);
 }
+
+GlutApplication::Configuration::Configuration(): _title("Magnum GLUT Application"), _size(800, 600) {}
+GlutApplication::Configuration::~Configuration() = default;
 
 }}

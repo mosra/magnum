@@ -24,6 +24,7 @@
 
 #include "WindowlessGlxApplication.h"
 
+#include <Utility/Assert.h>
 #include <Utility/Debug.h>
 
 #include "Context.h"
@@ -33,6 +34,16 @@
 namespace Magnum { namespace Platform {
 
 WindowlessGlxApplication::WindowlessGlxApplication(int&, char**) {
+    createContext(new Configuration);
+}
+
+WindowlessGlxApplication::WindowlessGlxApplication(int&, char**, Configuration* configuration) {
+    if(configuration) createContext(configuration);
+}
+
+void WindowlessGlxApplication::createContext(Configuration* configuration) {
+    CORRADE_ASSERT(!c, "WindowlessGlxApplication::createContext(): context already created", );
+
     display = XOpenDisplay(nullptr);
 
     /* Check version */
@@ -89,11 +100,15 @@ WindowlessGlxApplication::WindowlessGlxApplication(int&, char**) {
     ExtensionWrangler::initialize(ExtensionWrangler::ExperimentalFeatures::Enable);
 
     c = new Context;
+    delete configuration;
 }
 
 WindowlessGlxApplication::~WindowlessGlxApplication() {
     glXMakeCurrent(display, None, nullptr);
     glXDestroyContext(display, context);
 }
+
+WindowlessGlxApplication::Configuration::Configuration() = default;
+WindowlessGlxApplication::Configuration::~Configuration() = default;
 
 }}

@@ -36,8 +36,7 @@ namespace Magnum { namespace Platform {
 /**
 @brief GLX application
 
-Creates window with double-buffered OpenGL or OpenGL ES 2.0 context, if
-targeting OpenGL ES. Uses GlxContextHandler.
+Uses GlxContextHandler. See @ref platform for brief introduction.
 
 @section GlxApplication-usage Usage
 
@@ -57,14 +56,11 @@ to simplify porting.
 */
 class GlxApplication: public AbstractXApplication {
     public:
-        /**
-         * @brief Constructor
-         * @param argc      Count of arguments of `main()` function
-         * @param argv      Arguments of `main()` function
-         * @param title     Window title
-         * @param size      Window size
-         */
-        inline explicit GlxApplication(int& argc, char** argv, const std::string& title = "Magnum GLX application", const Vector2i& size = Vector2i(800, 600)): AbstractXApplication(new GlxContextHandler, argc, argv, title, size) {}
+        /** @copydoc GlutApplication::GlutApplication(int&, char**) */
+        inline explicit GlxApplication(int& argc, char** argv): AbstractXApplication(new GlxContextHandler, argc, argv) {}
+
+        /** @copydoc GlutApplication::GlutApplication(int&, char**, Configuration*) */
+        inline explicit GlxApplication(int& argc, char** argv, Configuration* configuration): AbstractXApplication(new GlxContextHandler, argc, argv, configuration) {}
 };
 
 /** @hideinitializer

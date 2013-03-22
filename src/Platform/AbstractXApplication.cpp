@@ -36,7 +36,19 @@
 
 namespace Magnum { namespace Platform {
 
-AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int&, char**, const std::string& title, const Vector2i& size): contextHandler(contextHandler), viewportSize(size), flags(Flag::Redraw) {
+AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int&, char**): contextHandler(contextHandler), flags(Flag::Redraw) {
+    createContext(new Configuration);
+}
+
+AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int&, char**, Configuration* configuration): contextHandler(contextHandler), flags(Flag::Redraw) {
+    if(configuration) createContext(configuration);
+}
+
+void AbstractXApplication::createContext(AbstractXApplication::Configuration* configuration) {
+    CORRADE_ASSERT(!c, "AbstractXApplication::createContext(): context already created", );
+
+    viewportSize = configuration->size();
+
     /* Get default X display */
     display = XOpenDisplay(0);
 
@@ -61,8 +73,8 @@ AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, Visu
     attr.colormap = XCreateColormap(display, root, visInfo->visual, AllocNone);
     attr.event_mask = 0;
     unsigned long mask = CWBackPixel|CWBorderPixel|CWColormap|CWEventMask;
-    window = XCreateWindow(display, root, 20, 20, size.x(), size.y(), 0, visInfo->depth, InputOutput, visInfo->visual, mask, &attr);
-    XSetStandardProperties(display, window, title.c_str(), 0, None, 0, 0, 0);
+    window = XCreateWindow(display, root, 20, 20, configuration->size().x(), configuration->size().y(), 0, visInfo->depth, InputOutput, visInfo->visual, mask, &attr);
+    XSetStandardProperties(display, window, configuration->title().c_str(), 0, None, 0, 0, 0);
     XFree(visInfo);
 
     /* Be notified about closing the window */
@@ -82,6 +94,7 @@ AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, Visu
     ExtensionWrangler::initialize(contextHandler->experimentalExtensionWranglerFeatures());
 
     c = new Context;
+    delete configuration;
 }
 
 AbstractXApplication::~AbstractXApplication() {
@@ -151,5 +164,8 @@ int AbstractXApplication::exec() {
 
     return 0;
 }
+
+AbstractXApplication::Configuration::Configuration(): _title("Magnum X Application"), _size(800, 600) {}
+AbstractXApplication::Configuration::~Configuration() = default;
 
 }}
