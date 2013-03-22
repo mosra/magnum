@@ -219,7 +219,11 @@ void AbstractFramebuffer::drawBufferImplementationDefault(GLenum buffer) {
     /** @todo Re-enable when extension wrangler is available for ES2 */
     #ifndef MAGNUM_TARGET_GLES2
     bindInternal(drawTarget);
+    #ifndef MAGNUM_TARGET_GLES3
     glDrawBuffer(buffer);
+    #else
+    glDrawBuffers(1, &buffer);
+    #endif
     #else
     static_cast<void>(buffer);
     #endif

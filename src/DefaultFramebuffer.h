@@ -306,7 +306,8 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * framebufferbuffer is not currently bound, it is bound before the
          * operation.
          * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffer} or
-         *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access}
+         *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access},
+         *      @fn_gl{DrawBuffers} in OpenGL ES 3.0
          * @requires_gles30 Draw attachments for default framebuffer are
          *      available only in OpenGL ES 3.0.
          */
