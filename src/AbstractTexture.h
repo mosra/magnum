@@ -314,39 +314,39 @@ class MAGNUM_EXPORT AbstractTexture {
              *      in OpenGL ES.
              */
             RGBA16 = GL_RGBA16,
-            #endif
 
             /**
              * Red component, normalized signed short.
              * @requires_gl31 %Extension @extension{EXT,texture_snorm}
-             * @requires_gles30 Only unsigned normalized formats are available
-             *      in OpenGL ES 2.0.
+             * @requires_gl Only byte-sized normalized formats are available
+             *      in OpenGL ES.
              */
             R16Snorm = GL_R16_SNORM,
 
             /**
              * Red and green component, each normalized signed short.
              * @requires_gl31 %Extension @extension{EXT,texture_snorm}
-             * @requires_gles30 Only unsigned normalized formats are available
-             *      in OpenGL ES 2.0.
+             * @requires_gl Only byte-sized normalized formats are available
+             *      in OpenGL ES.
              */
             RG16Snorm = GL_RG16_SNORM,
 
             /**
              * RGB, each component normalized signed short.
              * @requires_gl31 %Extension @extension{EXT,texture_snorm}
-             * @requires_gles30 Only unsigned normalized formats are available
-             *      in OpenGL ES 2.0.
+             * @requires_gl Only byte-sized normalized formats are available
+             *      in OpenGL ES.
              */
             RGB16Snorm = GL_RGB16_SNORM,
 
             /**
              * RGBA, each component normalized signed short.
              * @requires_gl31 %Extension @extension{EXT,texture_snorm}
-             * @requires_gles30 Only unsigned normalized formats are available
-             *      in OpenGL ES 2.0.
+             * @requires_gl Only byte-sized normalized formats are available
+             *      in OpenGL ES.
              */
             RGBA16Snorm = GL_RGBA16_SNORM,
+            #endif
 
             /**
              * Red component, non-normalized unsigned byte.
