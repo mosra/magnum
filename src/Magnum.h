@@ -74,7 +74,8 @@ using Corrade::Utility::Error;
 
 `MAGNUM_TARGET_GLES` is defined if the engine is built for OpenGL ES 3.0 or
 OpenGL ES 2.0.
-@see @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES",
+@see @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2",
+    @ref MAGNUM_TARGET_GLES3_ "MAGNUM_TARGET_GLES3",
     @ref MAGNUM_TARGET_DESKTOP_GLES_ "MAGNUM_TARGET_DESKTOP_GLES",
     @ref MAGNUM_TARGET_NACL_ "MAGNUM_TARGET_NACL", @ref building
 */
@@ -85,10 +86,22 @@ OpenGL ES 2.0.
 
 `MAGNUM_TARGET_GLES2` is defined if the engine is built for OpenGL ES 2.0.
 Implies also @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES".
-@see @ref MAGNUM_TARGET_DESKTOP_GLES_ "MAGNUM_TARGET_DESKTOP_GLES",
+@see @ref MAGNUM_TARGET_GLES3_ "MAGNUM_TARGET_GLES3",
+    @ref MAGNUM_TARGET_DESKTOP_GLES_ "MAGNUM_TARGET_DESKTOP_GLES",
     @ref MAGNUM_TARGET_NACL_ "MAGNUM_TARGET_NACL", @ref building
 */
 #define MAGNUM_TARGET_GLES2_
+
+/**
+@brief OpenGL ES 3.0 target.
+
+`MAGNUM_TARGET_GLES3` is defined if the engine is built for OpenGL ES 3.0.
+Implies also @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES".
+@see @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2",
+    @ref MAGNUM_TARGET_DESKTOP_GLES_ "MAGNUM_TARGET_DESKTOP_GLES",
+    @ref MAGNUM_TARGET_NACL_ "MAGNUM_TARGET_NACL", @ref building
+*/
+#define MAGNUM_TARGET_GLES3_
 
 /**
 @brief Desktop emulation of OpenGL ES target

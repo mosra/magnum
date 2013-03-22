@@ -47,6 +47,7 @@
 # Features of found Magnum library are exposed in these variables:
 #  MAGNUM_TARGET_GLES   - Defined if compiled for OpenGL ES
 #  MAGNUM_TARGET_GLES2  - Defined if compiled for OpenGL ES 2.0
+#  MAGNUM_TARGET_GLES3  - Defined if compiled for OpenGL ES 3.0
 #  MAGNUM_TARGET_DESKTOP_GLES - Defined if compiled with OpenGL ES
 #   emulation on desktop OpenGL
 #  MAGNUM_TARGET_NACL   - Defined if compiled for Google Chrome Native
@@ -118,6 +119,10 @@ endif()
 string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES2" _TARGET_GLES2)
 if(NOT _TARGET_GLES2 EQUAL -1)
     set(MAGNUM_TARGET_GLES2 1)
+endif()
+string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES3" _TARGET_GLES3)
+if(NOT _TARGET_GLES3 EQUAL -1)
+    set(MAGNUM_TARGET_GLES3 1)
 endif()
 string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_NACL" _TARGET_NACL)
 if(NOT _TARGET_NACL EQUAL -1)

@@ -97,6 +97,7 @@ are also available as preprocessor variables if including Magnum.h:
 
 - `MAGNUM_TARGET_GLES` -- Defined if compiled for OpenGL ES
 - `MAGNUM_TARGET_GLES2` -- Defined if compiled for OpenGL ES 2.0
+- `MAGNUM_TARGET_GLES3` -- Defined if compiled for OpenGL ES 3.0
 - `MAGNUM_TARGET_DESKTOP_GLES` -- Defined if compiled with OpenGL ES emulation
   on desktop OpenGL
 - `MAGNUM_TARGET_NACL` -- Defined if compiled for Google Chrome Native Client
