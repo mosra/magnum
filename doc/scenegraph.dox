@@ -85,10 +85,10 @@ Parent object can be either passed in constructor or using Object::setParent().
 Scene3D scene;
 
 Object3D* first = new Object3D(&scene);
-Object3D* second = new Object3D(&first);
+Object3D* second = new Object3D(first);
 @endcode
 
-Object3D children can be accessed using Object::firstChild() and
+%Object children can be accessed using Object::firstChild() and
 Object::lastChild(), then you can traverse siblings (objects with the same
 parent) with Object::previousSibling() and Object::nextSibling(). For example
 all children of an object can be traversed the following way:
@@ -149,22 +149,20 @@ implement needed functions in your own Object subclass without having to
 subclass each feature individually (and making the code overly verbose).
 Simplified example:
 @code
-class Bomb: public Object3D, Drawable, Animatable {
+class Bomb: public Object3D, SceneGraph::Drawable3D<>, SceneGraph:.Animable3D<> {
     public:
-        inline Bomb(Object3D* parent): Object3D(parent), Drawable(this), Animatable(this) {}
+        inline Bomb(Object3D* parent): Object3D(parent), SceneGraph::Drawable3D<>(this), SceneGraph::Animable3D<>(this) {}
 
     protected:
-        void draw() {
-            // drawing implementation for Drawable feature
-        }
+        // drawing implementation for Drawable feature
+        void draw() override;
 
-        void animationStep() {
-            // animation step for Animatable feature
-        }
+        // animation step for Animable feature
+        void animationStep() override;
 };
 @endcode
 
-From the outside there is no difference between features added as member and
+From the outside there is no difference between features added "at runtime" and
 features added using multiple inheritance, they can be both accessed from
 feature list.
 
@@ -197,9 +195,9 @@ it first, because by default the caching is disabled. You can enable it using
 AbstractFeature::setCachedTransformations() and then implement corresponding
 cleaning function(s):
 @code
-class CachingObject: public Object3D, Object3D::FeatureType {
+class CachingObject: public Object3D, SceneGraph::AbstractFeature3D<> {
     public:
-        CachingObject(Object3D* parent): Object3D::FeatureType(this) {
+        CachingObject(Object3D* parent): SceneGraph::AbstractFeature3D<>(this) {
             setCachedTransformations(CachedTransformation::Absolute);
         }
 
@@ -262,7 +260,7 @@ inherited after the %Object class:
 @code
 class MyObject: public Object3D, MyFeature {
     public:
-        inline MyObject(Object3D* parent): Object3D(parent), MyFeature(this) {}
+        MyObject(Object3D* parent): Object3D(parent), MyFeature(this) {}
 };
 @endcode
 When constructing MyObject, Object3D constructor is called first and then
@@ -275,7 +273,7 @@ However, if we would inherit MyFeature first, it will cause problems:
 @code
 class MyObject: MyFeature, public Object3D {
     public:
-        inline MyObject(Object3D* parent): MyFeature(this), Object3D(parent) {} // crash!
+        MyObject(Object3D* parent): MyFeature(this), Object3D(parent) {} // crash!
 };
 @endcode
 MyFeature tries to add itself to feature list in not-yet-constructed Object3D,
@@ -287,7 +285,7 @@ wouldn't help either:
 @code
 class MyObject: MyFeature, public Object3D {
     public:
-        inline MyObject(Object3D* parent): Object3D(parent), MyFeature(this) {}
+        MyObject(Object3D* parent): Object3D(parent), MyFeature(this) {}
 
         // crash on destruction!
 };
