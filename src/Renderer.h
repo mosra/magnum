@@ -94,6 +94,14 @@ class MAGNUM_EXPORT Renderer {
 
             #ifndef MAGNUM_TARGET_GLES
             /**
+             * Multisampling (enabled by default)
+             * @requires_gl Always enabled in OpenGL ES.
+             */
+            Multisampling = GL_MULTISAMPLE,
+            #endif
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
              * Depth clamping. If enabled, ignores near and far clipping plane.
              * @requires_gl32 %Extension @extension{ARB,depth_clamp}
              * @requires_gl Depth clamping is not available in OpenGL ES.
