@@ -152,6 +152,7 @@ class MAGNUM_EXPORT AbstractTexture {
              */
             ClampToEdge = GL_CLAMP_TO_EDGE,
 
+            #ifndef MAGNUM_TARGET_GLES3
             /**
              * Clamp to border color. Coordinates out of range will be clamped
              * to border color (set with setBorderColor()).
@@ -161,6 +162,7 @@ class MAGNUM_EXPORT AbstractTexture {
             ClampToBorder = GL_CLAMP_TO_BORDER
             #else
             ClampToBorder = GL_CLAMP_TO_BORDER_NV
+            #endif
             #endif
         };
 
@@ -995,6 +997,7 @@ class MAGNUM_EXPORT AbstractTexture {
          */
         static Int maxSupportedLayerCount();
 
+        #ifndef MAGNUM_TARGET_GLES3
         /**
          * @brief Max supported anisotropy
          *
@@ -1005,6 +1008,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @requires_es_extension %Extension @es_extension2{EXT,texture_filter_anisotropic,texture_filter_anisotropic}
          */
         static Float maxSupportedAnisotropy();
+        #endif
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline explicit AbstractTexture(GLenum target): _target(target) {
@@ -1083,6 +1087,7 @@ class MAGNUM_EXPORT AbstractTexture {
             return this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES3
         /**
          * @brief Set border color
          * @return Pointer to self (for method chaining)
@@ -1124,6 +1129,7 @@ class MAGNUM_EXPORT AbstractTexture {
             (this->*parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
             return this;
         }
+        #endif
 
         /**
          * @brief Invalidate texture image
