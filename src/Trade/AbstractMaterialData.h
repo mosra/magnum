@@ -28,7 +28,7 @@
  * @brief Class Magnum::Trade::AbstractMaterialData
  */
 
-#include <string>
+#include "magnumVisibility.h"
 
 namespace Magnum { namespace Trade {
 
@@ -37,7 +37,7 @@ namespace Magnum { namespace Trade {
 
 Subclasses provide access to parameters for given material type.
 */
-class AbstractMaterialData {
+class MAGNUM_EXPORT AbstractMaterialData {
     AbstractMaterialData(const AbstractMaterialData&) = delete;
     AbstractMaterialData(AbstractMaterialData&&) = delete;
     AbstractMaterialData& operator=(const AbstractMaterialData&) = delete;
@@ -53,7 +53,7 @@ class AbstractMaterialData {
          * @brief Constructor
          * @param type      Material type
          */
-        inline AbstractMaterialData(Type type): _type(type) {}
+        explicit AbstractMaterialData(Type type);
 
         /** @brief Destructor */
         virtual ~AbstractMaterialData() = 0;
@@ -64,8 +64,6 @@ class AbstractMaterialData {
     private:
         Type _type;
 };
-
-inline AbstractMaterialData::~AbstractMaterialData() {}
 
 }}
 

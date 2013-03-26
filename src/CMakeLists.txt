@@ -68,10 +68,15 @@ set(Magnum_SRCS
     Implementation/State.cpp
 
     Trade/AbstractImporter.cpp
+    Trade/AbstractMaterialData.cpp
     Trade/MeshData2D.cpp
     Trade/MeshData3D.cpp
+    Trade/MeshObjectData2D.cpp
+    Trade/MeshObjectData3D.cpp
     Trade/ObjectData2D.cpp
-    Trade/ObjectData3D.cpp)
+    Trade/ObjectData3D.cpp
+    Trade/PhongMaterialData.cpp
+    Trade/SceneData.cpp)
 
 # Desktop-only code
 if(NOT TARGET_GLES)

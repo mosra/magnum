@@ -37,7 +37,7 @@ namespace Magnum { namespace Trade {
 /**
 @brief Phong material data
 */
-class PhongMaterialData: public AbstractMaterialData {
+class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
     public:
         /**
          * @brief Constructor
@@ -46,7 +46,7 @@ class PhongMaterialData: public AbstractMaterialData {
          * @param specularColor     Specular color
          * @param shininess         Shininess
          */
-        PhongMaterialData(const Vector3& ambientColor, const Vector3& diffuseColor, const Vector3& specularColor, Float shininess): AbstractMaterialData(Phong), _ambientColor(ambientColor), _diffuseColor(diffuseColor), _specularColor(specularColor), _shininess(shininess) {}
+        explicit PhongMaterialData(const Vector3& ambientColor, const Vector3& diffuseColor, const Vector3& specularColor, Float shininess);
 
         /** @brief Ambient color */
         inline Vector3 ambientColor() const { return _ambientColor; }

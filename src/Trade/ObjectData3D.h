@@ -42,7 +42,7 @@ Provides access to object transformation and hierarchy. See also
 MeshObjectData3D, which is specialized for objects with mesh instance type.
 @see ObjectData2D
 */
-class ObjectData3D {
+class MAGNUM_EXPORT ObjectData3D {
     ObjectData3D(const ObjectData3D&) = delete;
     ObjectData3D(ObjectData3D&&) = delete;
     ObjectData3D& operator=(const ObjectData3D&) = delete;
@@ -64,14 +64,14 @@ class ObjectData3D {
          * @param instanceType      Instance type
          * @param instanceId        Instance ID
          */
-        inline ObjectData3D(const std::vector<UnsignedInt>& children, const Matrix4& transformation, InstanceType instanceType, UnsignedInt instanceId): _children(children), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
+        explicit ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, InstanceType instanceType, UnsignedInt instanceId);
 
         /**
          * @brief Constructor for empty instance
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          */
-        inline ObjectData3D(const std::vector<UnsignedInt>& children, const Matrix4& transformation): _children(children), _transformation(transformation), _instanceType(InstanceType::Empty), _instanceId(-1) {}
+        explicit ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation);
 
         /** @brief Destructor */
         inline virtual ~ObjectData3D() {}

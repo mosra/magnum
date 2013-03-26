@@ -26,6 +26,10 @@
 
 namespace Magnum { namespace Trade {
 
+ObjectData3D::ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, ObjectData3D::InstanceType instanceType, UnsignedInt instanceId): _children(std::move(children)), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
+
+ObjectData3D::ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation): _children(std::move(children)), _transformation(transformation), _instanceType(InstanceType::Empty), _instanceId(-1) {}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug operator<<(Debug debug, ObjectData3D::InstanceType value) {
     switch(value) {
