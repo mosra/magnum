@@ -124,15 +124,6 @@ and @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES".
 */
 #define MAGNUM_TARGET_NACL_
 
-/**
-@brief HarfBuzz library usage
-
-`MAGNUM_USE_HARFBUZZ` is defined if HarfBuzz library is used for text
-rendering.
-@see Text::HarfBuzzFont
-*/
-#define MAGNUM_USE_HARFBUZZ_
-
 #endif
 
 /** @{ @name Basic type definitions

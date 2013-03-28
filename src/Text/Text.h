@@ -39,12 +39,6 @@ class AbstractLayouter;
 class DistanceFieldGlyphCache;
 class GlyphCache;
 
-class FreeTypeFontRenderer;
-class FreeTypeFont;
-#ifdef MAGNUM_USE_HARFBUZZ
-class HarfBuzzFont;
-#endif
-
 class AbstractTextRenderer;
 template<UnsignedInt> class TextRenderer;
 typedef TextRenderer<2> TextRenderer2D;

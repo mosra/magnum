@@ -27,4 +27,3 @@
 #cmakedefine MAGNUM_TARGET_GLES3
 #cmakedefine MAGNUM_TARGET_DESKTOP_GLES
 #cmakedefine MAGNUM_TARGET_NACL
-#cmakedefine MAGNUM_USE_HARFBUZZ

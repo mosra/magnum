@@ -65,9 +65,6 @@ MagnumInfo::MagnumInfo(int& argc, char** argv): WindowlessGlxApplication(argc, a
         #ifdef MAGNUM_TARGET_NACL
         d << "MAGNUM_TARGET_NACL";
         #endif
-        #ifdef MAGNUM_USE_HARFBUZZ
-        d << "MAGNUM_USE_HARFBUZZ";
-        #endif
     }
     Debug() << "";
 

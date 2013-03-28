@@ -57,8 +57,7 @@ The optional components are:
 - `%Primitives` -- Primitives library
 - `%SceneGraph` -- SceneGraph library
 - `%Shaders` -- Shaders library
-- `%Text` -- Text library (depends on `%TextureTools` component, FreeType
-  library and possibly HarfBuzz library, see below)
+- `%Text` -- Text library (depends on `%TextureTools` component)
 - `%TextureTools` -- TextureTools library
 
 Platform namespace is split into more components:
@@ -101,8 +100,6 @@ are also available as preprocessor variables if including Magnum.h:
 - `MAGNUM_TARGET_DESKTOP_GLES` -- Defined if compiled with OpenGL ES emulation
   on desktop OpenGL
 - `MAGNUM_TARGET_NACL` -- Defined if compiled for Google Chrome Native Client
-- `MAGNUM_USE_HARFBUZZ` -- Defined if HarfBuzz library is used for text
-  rendering
 
 %Corrade library provides also its own set of CMake macros and variables, see
 @ref corrade-cmake "its documentation" for more information.

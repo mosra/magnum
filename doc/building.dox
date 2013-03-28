@@ -106,17 +106,10 @@ and which not:
  - `WITH_SHADERS` - Shaders library. Enabled automatically if `WITH_DEBUGTOOLS`
    is enabled.
  - `WITH_TEXT` - Text library. Enables also building of TextureTools library.
-   Requires **FreeType** and possibly **HarfBuzz** library (see below).
  - `WITH_TEXTURETOOLS` - TextureTools library. Enabled automatically if `WITH_TEXT`
    is enabled.
  - `WITH_MAGNUMINFO` - `magnum-info` executable, provides information about the
    engine and OpenGL capabilities.
-
-Some dependencies are optional, although disabling them might reduce some
-functionality:
-
- - `USE_HARFBUZZ` - Defaults to `ON`, disabling it will result in worse text
-   rendering (no kerning & ligatures) and possible issues with non-Latin text.
 
 None of the @ref Platform "application libraries" is built by default (and you
 need at least one). Choose the one which suits your requirements and your
