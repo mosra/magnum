@@ -40,7 +40,7 @@ namespace {
 
 class FreeTypeLayouter: public AbstractLayouter {
     public:
-        FreeTypeLayouter(FreeTypeFont& font, const Float size, const std::string& text);
+        explicit FreeTypeLayouter(FreeTypeFont& font, const Float size, const std::string& text);
 
         std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(const Vector2& cursorPosition, const UnsignedInt i) override;
 

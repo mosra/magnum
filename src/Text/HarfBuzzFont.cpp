@@ -32,7 +32,7 @@ namespace {
 
 class HarfBuzzLayouter: public AbstractLayouter {
     public:
-        HarfBuzzLayouter(HarfBuzzFont& font, const Float size, const std::string& text);
+        explicit HarfBuzzLayouter(HarfBuzzFont& font, const Float size, const std::string& text);
         ~HarfBuzzLayouter();
 
         std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(const Vector2& cursorPosition, const UnsignedInt i) override;

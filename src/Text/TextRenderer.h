@@ -66,7 +66,7 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
          * @param font          %Font to use
          * @param size          %Font size
          */
-        AbstractTextRenderer(AbstractFont& font, Float size);
+        explicit AbstractTextRenderer(AbstractFont& font, Float size);
 
         virtual ~AbstractTextRenderer() = 0;
 
@@ -212,7 +212,7 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT TextRenderer: public A
          * @param font          %Font to use
          * @param size          %Font size
          */
-        TextRenderer(AbstractFont& font, Float size);
+        explicit TextRenderer(AbstractFont& font, Float size);
 
         using AbstractTextRenderer::render;
 };

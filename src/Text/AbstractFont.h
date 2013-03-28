@@ -48,7 +48,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont {
     AbstractFont& operator=(const AbstractFont&&) = delete;
 
     public:
-        AbstractFont();
+        explicit AbstractFont();
         virtual ~AbstractFont() = 0;
 
         /** @brief %Font texture atlas */
@@ -81,7 +81,7 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
     AbstractLayouter& operator=(const AbstractLayouter&&) = delete;
 
     public:
-        AbstractLayouter();
+        explicit AbstractLayouter();
         virtual ~AbstractLayouter() = 0;
 
         /** @brief Count of glyphs in laid out text */
