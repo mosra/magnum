@@ -26,10 +26,12 @@
 
 namespace Magnum { namespace Text {
 
-AbstractFont::AbstractFont() {}
+AbstractFont::AbstractFont(Float size): _size(size) {}
+
 AbstractFont::~AbstractFont() {}
 
 AbstractLayouter::AbstractLayouter(): _glyphCount(0) {}
+
 AbstractLayouter::~AbstractLayouter() {}
 
 }}

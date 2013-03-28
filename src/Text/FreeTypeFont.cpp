@@ -62,14 +62,14 @@ FreeTypeFontRenderer::~FreeTypeFontRenderer() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Done_FreeType(_library) == 0);
 }
 
-FreeTypeFont::FreeTypeFont(FreeTypeFontRenderer& renderer, const std::string& fontFile, Float size): _size(size) {
+FreeTypeFont::FreeTypeFont(FreeTypeFontRenderer& renderer, const std::string& fontFile, Float size): AbstractFont(size) {
     CORRADE_INTERNAL_ASSERT_OUTPUT(FT_New_Face(renderer.library(), fontFile.c_str(), 0, &_ftFont) == 0);
-    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Set_Char_Size(_ftFont, 0, _size*64, 100, 100) == 0);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Set_Char_Size(_ftFont, 0, size*64, 100, 100) == 0);
 }
 
-FreeTypeFont::FreeTypeFont(FreeTypeFontRenderer& renderer, const unsigned char* data, std::size_t dataSize, Float size): _size(size) {
+FreeTypeFont::FreeTypeFont(FreeTypeFontRenderer& renderer, const unsigned char* data, std::size_t dataSize, Float size): AbstractFont(size) {
     CORRADE_INTERNAL_ASSERT_OUTPUT(FT_New_Memory_Face(renderer.library(), data, dataSize, 0, &_ftFont) == 0);
-    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Set_Char_Size(_ftFont, 0, _size*64, 100, 100) == 0);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Set_Char_Size(_ftFont, 0, size*64, 100, 100) == 0);
 }
 
 void FreeTypeFont::createGlyphCache(GlyphCache* const cache, const std::string& characters) {

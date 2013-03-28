@@ -48,8 +48,11 @@ class MAGNUM_TEXT_EXPORT AbstractFont {
     AbstractFont& operator=(const AbstractFont&&) = delete;
 
     public:
-        explicit AbstractFont();
+        explicit AbstractFont(Float size);
         virtual ~AbstractFont() = 0;
+
+        /** @brief Font size */
+        inline Float size() const { return _size; }
 
         /**
          * @brief Create glyph cache for given character set
@@ -69,6 +72,9 @@ class MAGNUM_TEXT_EXPORT AbstractFont {
          * @see createGlyphCache()
          */
         virtual AbstractLayouter* layout(const GlyphCache* const cache, const Float size, const std::string& text) = 0;
+
+    private:
+        Float _size;
 };
 
 /**

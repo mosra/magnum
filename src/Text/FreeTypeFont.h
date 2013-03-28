@@ -102,9 +102,6 @@ class MAGNUM_TEXT_EXPORT FreeTypeFont: public AbstractFont {
 
         ~FreeTypeFont();
 
-        /** @brief Font size */
-        inline Float size() const { return _size; }
-
         /** @brief FreeType font handle */
         inline FT_Face font() { return _ftFont; }
 
@@ -117,9 +114,6 @@ class MAGNUM_TEXT_EXPORT FreeTypeFont: public AbstractFont {
     protected:
     #endif
         FT_Face _ftFont;
-
-    private:
-        Float _size;
 };
 
 }}
