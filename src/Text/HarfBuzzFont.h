@@ -68,15 +68,12 @@ class MAGNUM_TEXT_EXPORT HarfBuzzFont: public FreeTypeFont {
 
         ~HarfBuzzFont();
 
-        /** @brief HarfBuzz font handle */
-        inline hb_font_t* font() { return _hbFont; }
-
         AbstractLayouter* layout(const GlyphCache* const cache, const Float size, const std::string& text) override;
 
     private:
         void MAGNUM_TEXT_LOCAL finishConstruction();
 
-        hb_font_t* _hbFont;
+        hb_font_t* hbFont;
 };
 
 }}

@@ -41,14 +41,14 @@ namespace {
 
 class FreeTypeLayouter: public AbstractLayouter {
     public:
-        explicit FreeTypeLayouter(FreeTypeFont& font, const GlyphCache* const cache, const Float size, const std::string& text);
+        explicit FreeTypeLayouter(FT_Face ftFont, const GlyphCache* const cache, const Float fontSize, const Float textSize, const std::string& text);
 
         std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(const Vector2& cursorPosition, const UnsignedInt i) override;
 
     private:
-        FreeTypeFont& font;
+        FT_Face font;
         const GlyphCache* const cache;
-        const Float size;
+        const Float fontSize, textSize;
         std::vector<FT_UInt> glyphs;
 };
 
@@ -63,13 +63,13 @@ FreeTypeFontRenderer::~FreeTypeFontRenderer() {
 }
 
 FreeTypeFont::FreeTypeFont(FreeTypeFontRenderer& renderer, const std::string& fontFile, Float size): AbstractFont(size) {
-    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_New_Face(renderer.library(), fontFile.c_str(), 0, &_ftFont) == 0);
-    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Set_Char_Size(_ftFont, 0, size*64, 100, 100) == 0);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_New_Face(renderer.library(), fontFile.c_str(), 0, &ftFont) == 0);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Set_Char_Size(ftFont, 0, size*64, 100, 100) == 0);
 }
 
 FreeTypeFont::FreeTypeFont(FreeTypeFontRenderer& renderer, const unsigned char* data, std::size_t dataSize, Float size): AbstractFont(size) {
-    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_New_Memory_Face(renderer.library(), data, dataSize, 0, &_ftFont) == 0);
-    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Set_Char_Size(_ftFont, 0, size*64, 100, 100) == 0);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_New_Memory_Face(renderer.library(), data, dataSize, 0, &ftFont) == 0);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Set_Char_Size(ftFont, 0, size*64, 100, 100) == 0);
 }
 
 void FreeTypeFont::createGlyphCache(GlyphCache* const cache, const std::string& characters) {
@@ -82,7 +82,7 @@ void FreeTypeFont::createGlyphCache(GlyphCache* const cache, const std::string& 
     for(std::size_t i = 0; i != characters.size(); ) {
         UnsignedInt codepoint;
         std::tie(codepoint, i) = Corrade::Utility::Unicode::nextChar(characters, i);
-        charIndices.push_back(FT_Get_Char_Index(_ftFont, codepoint));
+        charIndices.push_back(FT_Get_Char_Index(ftFont, codepoint));
     }
 
     /* Remove duplicates (e.g. uppercase and lowercase mapped to same glyph) */
@@ -93,8 +93,8 @@ void FreeTypeFont::createGlyphCache(GlyphCache* const cache, const std::string& 
     std::vector<Vector2i> charSizes;
     charSizes.reserve(charIndices.size());
     for(FT_UInt c: charIndices) {
-        CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Load_Glyph(_ftFont, c, FT_LOAD_DEFAULT) == 0);
-        charSizes.push_back(Vector2i(_ftFont->glyph->metrics.width, _ftFont->glyph->metrics.height)/64);
+        CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Load_Glyph(ftFont, c, FT_LOAD_DEFAULT) == 0);
+        charSizes.push_back(Vector2i(ftFont->glyph->metrics.width, ftFont->glyph->metrics.height)/64);
     }
 
     /* Create texture atlas */
@@ -106,8 +106,8 @@ void FreeTypeFont::createGlyphCache(GlyphCache* const cache, const std::string& 
     for(std::size_t i = 0; i != charPositions.size(); ++i) {
         /* Load and render glyph */
         /** @todo B&W only if radius != 0 */
-        FT_GlyphSlot glyph = _ftFont->glyph;
-        CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Load_Glyph(_ftFont, charIndices[i], FT_LOAD_DEFAULT) == 0);
+        FT_GlyphSlot glyph = ftFont->glyph;
+        CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Load_Glyph(ftFont, charIndices[i], FT_LOAD_DEFAULT) == 0);
         CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Render_Glyph(glyph, FT_RENDER_MODE_NORMAL) == 0);
 
         /* Copy rendered bitmap to texture image */
@@ -129,22 +129,22 @@ void FreeTypeFont::createGlyphCache(GlyphCache* const cache, const std::string& 
 }
 
 FreeTypeFont::~FreeTypeFont() {
-    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Done_Face(_ftFont) == 0);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Done_Face(ftFont) == 0);
 }
 
 AbstractLayouter* FreeTypeFont::layout(const GlyphCache* const cache, const Float size, const std::string& text) {
-    return new FreeTypeLayouter(*this, cache, size, text);
+    return new FreeTypeLayouter(ftFont, cache, this->size(), size, text);
 }
 
 namespace {
 
-FreeTypeLayouter::FreeTypeLayouter(FreeTypeFont& font, const GlyphCache* const cache, const Float size, const std::string& text): font(font), cache(cache), size(size) {
+FreeTypeLayouter::FreeTypeLayouter(FT_Face font, const GlyphCache* const cache, const Float fontSize, const Float textSize, const std::string& text): font(font), cache(cache), fontSize(fontSize), textSize(textSize) {
     /* Get glyph codes from characters */
     glyphs.reserve(text.size());
     for(std::size_t i = 0; i != text.size(); ) {
         UnsignedInt codepoint;
         std::tie(codepoint, i) = Corrade::Utility::Unicode::nextChar(text, i);
-        glyphs.push_back(FT_Get_Char_Index(font.font(), codepoint));
+        glyphs.push_back(FT_Get_Char_Index(font, codepoint));
     }
     _glyphCount = glyphs.size();
 }
@@ -155,22 +155,22 @@ std::tuple<Rectangle, Rectangle, Vector2> FreeTypeLayouter::renderGlyph(const Ve
     Rectanglei rectangle;
     std::tie(position, rectangle) = (*cache)[glyphs[i]];
 
-    Rectangle texturePosition = Rectangle::fromSize(Vector2(position)/font.size(),
-                                                    Vector2(rectangle.size())/font.size());
+    Rectangle texturePosition = Rectangle::fromSize(Vector2(position)/fontSize,
+                                                    Vector2(rectangle.size())/fontSize);
     Rectangle textureCoordinates(Vector2(rectangle.bottomLeft())/cache->textureSize(),
                                  Vector2(rectangle.topRight())/cache->textureSize());
 
     /* Load glyph */
-    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Load_Glyph(font.font(), glyphs[i], FT_LOAD_DEFAULT) == 0);
-    const FT_GlyphSlot  slot = font.font()->glyph;
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Load_Glyph(font, glyphs[i], FT_LOAD_DEFAULT) == 0);
+    const FT_GlyphSlot  slot = font->glyph;
     Vector2 offset = Vector2(0, 0); /** @todo really? */
-    Vector2 advance = Vector2(slot->advance.x, slot->advance.y)/(64*font.size());
+    Vector2 advance = Vector2(slot->advance.x, slot->advance.y)/(64*fontSize);
 
     /* Absolute quad position, composed from cursor position, glyph offset
         and texture position, denormalized to requested text size */
     Rectangle quadPosition = Rectangle::fromSize(
-        (cursorPosition + offset + Vector2(texturePosition.left(), texturePosition.bottom()))*size,
-        texturePosition.size()*size);
+        (cursorPosition + offset + Vector2(texturePosition.left(), texturePosition.bottom()))*textSize,
+        texturePosition.size()*textSize);
 
     return std::make_tuple(quadPosition, textureCoordinates, advance);
 }

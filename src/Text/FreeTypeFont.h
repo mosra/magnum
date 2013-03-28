@@ -102,9 +102,6 @@ class MAGNUM_TEXT_EXPORT FreeTypeFont: public AbstractFont {
 
         ~FreeTypeFont();
 
-        /** @brief FreeType font handle */
-        inline FT_Face font() { return _ftFont; }
-
         void createGlyphCache(GlyphCache* const cache, const std::string& characters) override;
         AbstractLayouter* layout(const GlyphCache* const cache, const Float size, const std::string& text) override;
 
@@ -113,7 +110,7 @@ class MAGNUM_TEXT_EXPORT FreeTypeFont: public AbstractFont {
     #else
     protected:
     #endif
-        FT_Face _ftFont;
+        FT_Face ftFont;
 };
 
 }}

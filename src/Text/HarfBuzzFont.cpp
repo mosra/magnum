@@ -34,18 +34,18 @@ namespace {
 
 class HarfBuzzLayouter: public AbstractLayouter {
     public:
-        explicit HarfBuzzLayouter(HarfBuzzFont& font, const GlyphCache* const cache, const Float size, const std::string& text);
+        explicit HarfBuzzLayouter(hb_font_t* const font, const GlyphCache* const cache, const Float fontSize, const Float textSize, const std::string& text);
         ~HarfBuzzLayouter();
 
         std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(const Vector2& cursorPosition, const UnsignedInt i) override;
 
     private:
-        const HarfBuzzFont& font;
+        const hb_font_t* const font;
         const GlyphCache* const cache;
+        const Float fontSize, textSize;
         hb_buffer_t* buffer;
         hb_glyph_info_t* glyphInfo;
         hb_glyph_position_t* glyphPositions;
-        const Float size;
 };
 
 }
@@ -60,20 +60,20 @@ HarfBuzzFont::HarfBuzzFont(FreeTypeFontRenderer& renderer, const unsigned char* 
 
 void HarfBuzzFont::finishConstruction() {
     /* Create Harfbuzz font */
-    _hbFont = hb_ft_font_create(_ftFont, nullptr);
+    hbFont = hb_ft_font_create(ftFont, nullptr);
 }
 
 HarfBuzzFont::~HarfBuzzFont() {
-    hb_font_destroy(_hbFont);
+    hb_font_destroy(hbFont);
 }
 
 AbstractLayouter* HarfBuzzFont::layout(const GlyphCache* const cache, const Float size, const std::string& text) {
-    return new HarfBuzzLayouter(*this, cache, size, text);
+    return new HarfBuzzLayouter(hbFont, cache, this->size(), size, text);
 }
 
 namespace {
 
-HarfBuzzLayouter::HarfBuzzLayouter(HarfBuzzFont& font, const GlyphCache* const cache, const Float size, const std::string& text): font(font), cache(cache), size(size) {
+HarfBuzzLayouter::HarfBuzzLayouter(hb_font_t* const font, const GlyphCache* const cache, const Float fontSize, const Float textSize, const std::string& text): font(font), cache(cache), fontSize(fontSize), textSize(textSize) {
     /* Prepare HarfBuzz buffer */
     buffer = hb_buffer_create();
     hb_buffer_set_direction(buffer, HB_DIRECTION_LTR);
@@ -82,7 +82,7 @@ HarfBuzzLayouter::HarfBuzzLayouter(HarfBuzzFont& font, const GlyphCache* const c
 
     /* Layout the text */
     hb_buffer_add_utf8(buffer, text.c_str(), -1, 0, -1);
-    hb_shape(font.font(), buffer, nullptr, 0);
+    hb_shape(font, buffer, nullptr, 0);
 
     glyphInfo = hb_buffer_get_glyph_infos(buffer, &_glyphCount);
     glyphPositions = hb_buffer_get_glyph_positions(buffer, &_glyphCount);
@@ -99,22 +99,22 @@ std::tuple<Rectangle, Rectangle, Vector2> HarfBuzzLayouter::renderGlyph(const Ve
     Rectanglei rectangle;
     std::tie(position, rectangle) = (*cache)[glyphInfo[i].codepoint];
 
-    Rectangle texturePosition = Rectangle::fromSize(Vector2(position)/font.size(),
-                                                    Vector2(rectangle.size())/font.size());
+    Rectangle texturePosition = Rectangle::fromSize(Vector2(position)/fontSize,
+                                                    Vector2(rectangle.size())/fontSize);
     Rectangle textureCoordinates(Vector2(rectangle.bottomLeft())/cache->textureSize(),
                                  Vector2(rectangle.topRight())/cache->textureSize());
 
     /* Glyph offset and advance to next glyph in normalized coordinates */
     Vector2 offset = Vector2(glyphPositions[i].x_offset,
-                             glyphPositions[i].y_offset)/(64*font.size());
+                             glyphPositions[i].y_offset)/(64*fontSize);
     Vector2 advance = Vector2(glyphPositions[i].x_advance,
-                              glyphPositions[i].y_advance)/(64*font.size());
+                              glyphPositions[i].y_advance)/(64*fontSize);
 
     /* Absolute quad position, composed from cursor position, glyph offset
         and texture position, denormalized to requested text size */
     Rectangle quadPosition = Rectangle::fromSize(
-        (cursorPosition + offset + Vector2(texturePosition.left(), texturePosition.bottom()))*size,
-        texturePosition.size()*size);
+        (cursorPosition + offset + Vector2(texturePosition.left(), texturePosition.bottom()))*textSize,
+        texturePosition.size()*textSize);
 
     return std::make_tuple(quadPosition, textureCoordinates, advance);
 }
