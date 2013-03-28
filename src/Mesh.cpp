@@ -230,7 +230,7 @@ void Mesh::destroyImplementationDefault() {}
 void Mesh::destroyImplementationVAO() {
     /** @todo Get some extension wrangler instead to avoid linker errors to glDeleteVertexArrays() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
-    glDeleteVertexArrays(1, &vao);
+    if(vao) glDeleteVertexArrays(1, &vao);
     #endif
 }
 
