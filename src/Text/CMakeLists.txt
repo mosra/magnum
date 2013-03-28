@@ -27,10 +27,14 @@ include_directories(${FREETYPE_INCLUDE_DIRS})
 
 set(MagnumText_SRCS
     AbstractFont.cpp
+    DistanceFieldGlyphCache.cpp
+    GlyphCache.cpp
     FreeTypeFont.cpp
     TextRenderer.cpp)
 set(MagnumText_HEADERS
     AbstractFont.h
+    DistanceFieldGlyphCache.h
+    GlyphCache.h
     FreeTypeFont.h
     Text.h
     TextRenderer.h

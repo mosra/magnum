@@ -26,19 +26,22 @@
 
 #include <hb-ft.h>
 
+#include "GlyphCache.h"
+
 namespace Magnum { namespace Text {
 
 namespace {
 
 class HarfBuzzLayouter: public AbstractLayouter {
     public:
-        explicit HarfBuzzLayouter(HarfBuzzFont& font, const Float size, const std::string& text);
+        explicit HarfBuzzLayouter(HarfBuzzFont& font, const GlyphCache* const cache, const Float size, const std::string& text);
         ~HarfBuzzLayouter();
 
         std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(const Vector2& cursorPosition, const UnsignedInt i) override;
 
     private:
         const HarfBuzzFont& font;
+        const GlyphCache* const cache;
         hb_buffer_t* buffer;
         hb_glyph_info_t* glyphInfo;
         hb_glyph_position_t* glyphPositions;
@@ -64,13 +67,13 @@ HarfBuzzFont::~HarfBuzzFont() {
     hb_font_destroy(_hbFont);
 }
 
-AbstractLayouter* HarfBuzzFont::layout(const Float size, const std::string& text) {
-    return new HarfBuzzLayouter(*this, size, text);
+AbstractLayouter* HarfBuzzFont::layout(const GlyphCache* const cache, const Float size, const std::string& text) {
+    return new HarfBuzzLayouter(*this, cache, size, text);
 }
 
 namespace {
 
-HarfBuzzLayouter::HarfBuzzLayouter(HarfBuzzFont& font, const Float size, const std::string& text): font(font), size(size) {
+HarfBuzzLayouter::HarfBuzzLayouter(HarfBuzzFont& font, const GlyphCache* const cache, const Float size, const std::string& text): font(font), cache(cache), size(size) {
     /* Prepare HarfBuzz buffer */
     buffer = hb_buffer_create();
     hb_buffer_set_direction(buffer, HB_DIRECTION_LTR);
@@ -92,8 +95,14 @@ HarfBuzzLayouter::~HarfBuzzLayouter() {
 
 std::tuple<Rectangle, Rectangle, Vector2> HarfBuzzLayouter::renderGlyph(const Vector2& cursorPosition, const UnsignedInt i) {
     /* Position of the texture in the resulting glyph, texture coordinates */
-    Rectangle texturePosition, textureCoordinates;
-    std::tie(texturePosition, textureCoordinates) = font[glyphInfo[i].codepoint];
+    Vector2i position;
+    Rectanglei rectangle;
+    std::tie(position, rectangle) = (*cache)[glyphInfo[i].codepoint];
+
+    Rectangle texturePosition = Rectangle::fromSize(Vector2(position)/font.size(),
+                                                    Vector2(rectangle.size())/font.size());
+    Rectangle textureCoordinates(Vector2(rectangle.bottomLeft())/cache->textureSize(),
+                                 Vector2(rectangle.topRight())/cache->textureSize());
 
     /* Glyph offset and advance to next glyph in normalized coordinates */
     Vector2 offset = Vector2(glyphPositions[i].x_offset,

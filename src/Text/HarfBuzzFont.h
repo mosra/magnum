@@ -51,18 +51,18 @@ class MAGNUM_TEXT_EXPORT HarfBuzzFont: public FreeTypeFont {
     public:
         /**
          * @brief Create font from file
-         * @param renderer      %Font renderer
-         * @param fontFile      %Font file
-         * @param size          %Font size
+         * @param renderer      Font renderer
+         * @param fontFile      Font file
+         * @param size          Font size
          */
         explicit HarfBuzzFont(FreeTypeFontRenderer& renderer, const std::string& fontFile, Float size);
 
         /**
          * @brief Create font from memory
-         * @param renderer      %Font renderer
-         * @param data          %Font data
-         * @param dataSize      %Font data size
-         * @param size          %Font size
+         * @param renderer      Font renderer
+         * @param data          Font data
+         * @param dataSize      Font data size
+         * @param size          Font size
          */
         explicit HarfBuzzFont(FreeTypeFontRenderer& renderer, const unsigned char* data, std::size_t dataSize, Float size);
 
@@ -71,7 +71,7 @@ class MAGNUM_TEXT_EXPORT HarfBuzzFont: public FreeTypeFont {
         /** @brief HarfBuzz font handle */
         inline hb_font_t* font() { return _hbFont; }
 
-        AbstractLayouter* layout(const Float size, const std::string& text) override;
+        AbstractLayouter* layout(const GlyphCache* const cache, const Float size, const std::string& text) override;
 
     private:
         void MAGNUM_TEXT_LOCAL finishConstruction();

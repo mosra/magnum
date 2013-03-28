@@ -51,22 +51,24 @@ class MAGNUM_TEXT_EXPORT AbstractFont {
         explicit AbstractFont();
         virtual ~AbstractFont() = 0;
 
-        /** @brief %Font texture atlas */
-        inline Texture2D& texture() { return _texture; }
+        /**
+         * @brief Create glyph cache for given character set
+         * @param cache         Glyph cache instance
+         * @param characters    UTF-8 characters to render
+         *
+         * Fills the cache with given characters.
+         */
+        virtual void createGlyphCache(GlyphCache* const cache, const std::string& characters) = 0;
 
         /**
-         * @brief Layout the text using fon't own layouter
-         * @param size      %Font size
-         * @param text      Text to layout
+         * @brief Layout the text using font own layouter
+         * @param cache     Glyph cache
+         * @param size      Font size
+         * @param text      %Text to layout
+         *
+         * @see createGlyphCache()
          */
-        virtual AbstractLayouter* layout(const Float size, const std::string& text) = 0;
-
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    private:
-    #else
-    protected:
-    #endif
-        Texture2D _texture;
+        virtual AbstractLayouter* layout(const GlyphCache* const cache, const Float size, const std::string& text) = 0;
 };
 
 /**

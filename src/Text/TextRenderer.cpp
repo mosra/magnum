@@ -60,8 +60,8 @@ struct Vertex {
 
 }
 
-std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> AbstractTextRenderer::render(AbstractFont& font, Float size, const std::string& text) {
-    AbstractLayouter* const layouter = font.layout(size, text);
+std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> AbstractTextRenderer::render(AbstractFont* const font, const GlyphCache* const cache, Float size, const std::string& text) {
+    AbstractLayouter* const layouter = font->layout(cache, size, text);
     const UnsignedInt vertexCount = layouter->glyphCount()*4;
 
     /* Output data */
@@ -106,8 +106,8 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
     return std::make_tuple(std::move(positions), std::move(texcoords), std::move(indices), rectangle);
 }
 
-std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont& font, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage) {
-    AbstractLayouter* const layouter = font.layout(size, text);
+std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont* const font, const GlyphCache* const cache, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage) {
+    AbstractLayouter* const layouter = font->layout(cache, size, text);
 
     const UnsignedInt vertexCount = layouter->glyphCount()*4;
     const UnsignedInt indexCount = layouter->glyphCount()*6;
@@ -174,9 +174,9 @@ std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont& font, Flo
     return std::make_tuple(std::move(mesh), rectangle);
 }
 
-template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimensions>::render(AbstractFont& font, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage) {
+template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimensions>::render(AbstractFont* const font, const GlyphCache* const cache, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage) {
     /* Finalize mesh configuration and return the result */
-    auto r = AbstractTextRenderer::render(font, size, text, vertexBuffer, indexBuffer, usage);
+    auto r = AbstractTextRenderer::render(font, cache, size, text, vertexBuffer, indexBuffer, usage);
     Mesh& mesh = std::get<0>(r);
     mesh.addInterleavedVertexBuffer(vertexBuffer, 0,
             typename Shaders::AbstractVectorShader<dimensions>::Position(
@@ -185,7 +185,7 @@ template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimens
     return std::move(r);
 }
 
-AbstractTextRenderer::AbstractTextRenderer(AbstractFont& font, Float size): vertexBuffer(Buffer::Target::Array), indexBuffer(Buffer::Target::ElementArray), font(font), size(size), _capacity(0) {
+AbstractTextRenderer::AbstractTextRenderer(AbstractFont* const font, const GlyphCache* const cache, Float size): vertexBuffer(Buffer::Target::Array), indexBuffer(Buffer::Target::ElementArray), font(font), cache(cache), size(size), _capacity(0) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::map_buffer_range);
     #else
@@ -200,7 +200,7 @@ AbstractTextRenderer::AbstractTextRenderer(AbstractFont& font, Float size): vert
 
 AbstractTextRenderer::~AbstractTextRenderer() {}
 
-template<UnsignedInt dimensions> TextRenderer<dimensions>::TextRenderer(AbstractFont& font, const Float size): AbstractTextRenderer(font, size) {
+template<UnsignedInt dimensions> TextRenderer<dimensions>::TextRenderer(AbstractFont* const font, const GlyphCache* const cache, const Float size): AbstractTextRenderer(font, cache, size) {
     /* Finalize mesh configuration */
     _mesh.addInterleavedVertexBuffer(&vertexBuffer, 0,
             typename Shaders::AbstractVectorShader<dimensions>::Position(Shaders::AbstractVectorShader<dimensions>::Position::Components::Two),
@@ -246,7 +246,7 @@ void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usag
 }
 
 void AbstractTextRenderer::render(const std::string& text) {
-    AbstractLayouter* layouter = font.layout(size, text);
+    AbstractLayouter* layouter = font->layout(cache, size, text);
 
     CORRADE_ASSERT(layouter->glyphCount() <= _capacity, "Text::TextRenderer::render(): capacity" << _capacity << "too small to render" << layouter->glyphCount() << "glyphs", );
 

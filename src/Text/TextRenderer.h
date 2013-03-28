@@ -52,21 +52,23 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
     public:
         /**
          * @brief Render text
-         * @param font          %Font to use
-         * @param size          %Font size
-         * @param text          %Text to render
+         * @param font          Font
+         * @param cache         Glyph cache
+         * @param size          Font size
+         * @param text          Text to render
          *
          * Returns tuple with vertex positions, texture coordinates, indices
          * and rectangle spanning the rendered text.
          */
-        static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> render(AbstractFont& font, Float size, const std::string& text);
+        static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> render(AbstractFont* const font, const GlyphCache* const cache, Float size, const std::string& text);
 
         /**
          * @brief Constructor
-         * @param font          %Font to use
-         * @param size          %Font size
+         * @param font          Font
+         * @param cache         Glyph cache
+         * @param size          Font size
          */
-        explicit AbstractTextRenderer(AbstractFont& font, Float size);
+        explicit AbstractTextRenderer(AbstractFont* const font, const GlyphCache* const cache, Float size);
 
         virtual ~AbstractTextRenderer() = 0;
 
@@ -115,13 +117,14 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
     #else
     private:
     #endif
-        static std::tuple<Mesh, Rectangle> MAGNUM_LOCAL render(AbstractFont& font, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
+        static std::tuple<Mesh, Rectangle> MAGNUM_LOCAL render(AbstractFont* const font, const GlyphCache* const cache, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
 
         Mesh _mesh;
         Buffer vertexBuffer, indexBuffer;
 
     private:
-        AbstractFont& font;
+        AbstractFont* const font;
+        const GlyphCache* const cache;
         Float size;
         UnsignedInt _capacity;
         Rectangle _rectangle;
@@ -140,46 +143,49 @@ methods, returning result either as data arrays or as fully configured mesh.
 The text can be then drawn by configuring text shader, binding font texture
 and drawing the mesh:
 @code
-Text::Font font;
-Shaders::VectorShader2D shader;
-Buffer vertexBuffer, indexBuffer;
+Text::AbstractFont* font;
+Text::GlyphCache* cache;
+
+Shaders::VectorShader2D* shader;
+Buffer *vertexBuffer, *indexBuffer;
 Mesh mesh;
 
 // Render the text
 Rectangle rectangle;
-std::tie(mesh, rectangle) = Text::TextRenderer2D::render(font, 0.15f,
-    "Hello World!", &vertexBuffer, &indexBuffer, Buffer::Usage::StaticDraw);
+std::tie(mesh, rectangle) = Text::TextRenderer2D::render(font, cache, 0.15f,
+    "Hello World!", vertexBuffer, indexBuffer, Buffer::Usage::StaticDraw);
 
 // Draw white text centered on the screen
-shader.setTransformationProjectionMatrix(projection*Matrix3::translation(-rectangle.width()/2.0f))
+shader->setTransformationProjectionMatrix(projection*Matrix3::translation(-rectangle.width()/2.0f))
     ->setColor(Color3<>(1.0f));
     ->use();
-font.texture()->bind(Shaders::VectorShader2D::FontTextureLayer);
+glyphCache->texture()->bind(Shaders::VectorShader2D::FontTextureLayer);
 mesh.draw();
 @endcode
-See render(Font&, Float, const std::string&) and
-render(Font&, Float, const std::string&, Buffer*, Buffer*, Buffer::Usage)
+See render(Font* const, const GlyphCache* const, Float, const std::string&) and
+render(Font* const, const GlyphCache* const, Float, const std::string&, Buffer*, Buffer*, Buffer::Usage)
 for more information.
 
 While this method is sufficient for one-shot rendering of static texts, for
 mutable texts (e.g. FPS counters, chat messages) there is another approach
 that doesn't recreate everything on each text change:
 @code
-Text::Font font;
-Shaders::VectorShader2D shader;
+Text::AbstractFont* font;
+Text::GlyphCache* cache;
+Shaders::VectorShader2D* shader;
 
 // Initialize renderer and reserve memory for enough glyphs
-Text::TextRenderer2D renderer(font, 0.15f);
+Text::TextRenderer2D renderer(font, cache, 0.15f);
 renderer.reserve(32, Buffer::Usage::DynamicDraw, Buffer::Usage::StaticDraw);
 
 // Update the text occasionally
 renderer.render("Hello World Countdown: 10");
 
 // Draw the text centered on the screen
-shader.setTransformationProjectionMatrix(projection*Matrix3::translation(-renderer.rectangle().width()/2.0f))
+shader->setTransformationProjectionMatrix(projection*Matrix3::translation(-renderer.rectangle().width()/2.0f))
     ->setColor(Color3<>(1.0f));
     ->use();
-font.texture()->bind(Shaders::VectorShader2D::FontTextureLayer);
+glyphCache->texture()->bind(Shaders::VectorShader2D::FontTextureLayer);
 renderer.mesh().draw();
 @endcode
 
@@ -195,8 +201,9 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT TextRenderer: public A
     public:
         /**
          * @brief Render text
-         * @param font          %Font to use
-         * @param size          %Font size
+         * @param font          Font
+         * @param cache         Glyph cache
+         * @param size          Font size
          * @param text          %Text to render
          * @param vertexBuffer  %Buffer where to store vertices
          * @param indexBuffer   %Buffer where to store indices
@@ -205,14 +212,15 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT TextRenderer: public A
          * Returns mesh prepared for use with Shaders::AbstractVectorShader
          * subclasses and rectangle spanning the rendered text.
          */
-        static std::tuple<Mesh, Rectangle> render(AbstractFont& font, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
+        static std::tuple<Mesh, Rectangle> render(AbstractFont* const font, const GlyphCache* const cache, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
 
         /**
          * @brief Constructor
-         * @param font          %Font to use
-         * @param size          %Font size
+         * @param font          Font
+         * @param cache         Glyph cache
+         * @param size          Font size
          */
-        explicit TextRenderer(AbstractFont& font, Float size);
+        explicit TextRenderer(AbstractFont* const font, const GlyphCache* const cache, Float size);
 
         using AbstractTextRenderer::render;
 };

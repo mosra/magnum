@@ -23,6 +23,7 @@
 */
 
 #include "FreeTypeFont.h"
+#include "GlyphCache.h"
 
 #include <algorithm>
 #include <ft2build.h>
@@ -40,14 +41,15 @@ namespace {
 
 class FreeTypeLayouter: public AbstractLayouter {
     public:
-        explicit FreeTypeLayouter(FreeTypeFont& font, const Float size, const std::string& text);
+        explicit FreeTypeLayouter(FreeTypeFont& font, const GlyphCache* const cache, const Float size, const std::string& text);
 
         std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(const Vector2& cursorPosition, const UnsignedInt i) override;
 
     private:
         FreeTypeFont& font;
-        std::vector<FT_UInt> glyphs;
+        const GlyphCache* const cache;
         const Float size;
+        std::vector<FT_UInt> glyphs;
 };
 
 }
@@ -62,34 +64,15 @@ FreeTypeFontRenderer::~FreeTypeFontRenderer() {
 
 FreeTypeFont::FreeTypeFont(FreeTypeFontRenderer& renderer, const std::string& fontFile, Float size): _size(size) {
     CORRADE_INTERNAL_ASSERT_OUTPUT(FT_New_Face(renderer.library(), fontFile.c_str(), 0, &_ftFont) == 0);
-
-    finishConstruction();
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Set_Char_Size(_ftFont, 0, _size*64, 100, 100) == 0);
 }
 
 FreeTypeFont::FreeTypeFont(FreeTypeFontRenderer& renderer, const unsigned char* data, std::size_t dataSize, Float size): _size(size) {
     CORRADE_INTERNAL_ASSERT_OUTPUT(FT_New_Memory_Face(renderer.library(), data, dataSize, 0, &_ftFont) == 0);
-
-    finishConstruction();
-}
-
-void FreeTypeFont::finishConstruction() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Set_Char_Size(_ftFont, 0, _size*64, 100, 100) == 0);
-
-    #ifndef MAGNUM_TARGET_GLES
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);
-    #else
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::EXT::texture_rg);
-    #endif
-
-    /* Set up the texture */
-    _texture.setWrapping(Texture2D::Wrapping::ClampToEdge)
-        ->setMinificationFilter(Texture2D::Filter::Linear)
-        ->setMagnificationFilter(Texture2D::Filter::Linear);
 }
 
-void FreeTypeFont::prerenderInternal(const std::string& characters, const Vector2i& atlasSize, const Int radius, Texture2D* output) {
-    glyphs.clear();
-
+void FreeTypeFont::createGlyphCache(GlyphCache* const cache, const std::string& characters) {
     /** @bug Crash when atlas is too small */
 
     /* Get glyph codes from characters */
@@ -107,7 +90,6 @@ void FreeTypeFont::prerenderInternal(const std::string& characters, const Vector
     charIndices.erase(std::unique(charIndices.begin(), charIndices.end()), charIndices.end());
 
     /* Sizes of all characters */
-    const Vector2i padding = Vector2i(radius);
     std::vector<Vector2i> charSizes;
     charSizes.reserve(charIndices.size());
     for(FT_UInt c: charIndices) {
@@ -116,12 +98,11 @@ void FreeTypeFont::prerenderInternal(const std::string& characters, const Vector
     }
 
     /* Create texture atlas */
-    const std::vector<Rectanglei> charPositions = TextureTools::atlas(atlasSize, charSizes, padding);
+    const std::vector<Rectanglei> charPositions = cache->reserve(charSizes);
 
     /* Render all characters to the atlas and create character map */
-    glyphs.reserve(charPositions.size());
-    unsigned char* pixmap = new unsigned char[atlasSize.product()]();
-    Image2D image(atlasSize, Image2D::Format::Red, Image2D::Type::UnsignedByte, pixmap);
+    unsigned char* pixmap = new unsigned char[cache->textureSize().product()]();
+    Image2D image(cache->textureSize(), Image2D::Format::Red, Image2D::Type::UnsignedByte, pixmap);
     for(std::size_t i = 0; i != charPositions.size(); ++i) {
         /* Load and render glyph */
         /** @todo B&W only if radius != 0 */
@@ -135,63 +116,29 @@ void FreeTypeFont::prerenderInternal(const std::string& characters, const Vector
         CORRADE_INTERNAL_ASSERT(std::abs(bitmap.rows-charPositions[i].height()) <= 2);
         for(Int yin = 0, yout = charPositions[i].bottom(), ymax = bitmap.rows; yin != ymax; ++yin, ++yout)
             for(Int xin = 0, xout = charPositions[i].left(), xmax = bitmap.width; xin != xmax; ++xin, ++xout)
-                pixmap[yout*atlasSize.x() + xout] = bitmap.buffer[(bitmap.rows-yin-1)*bitmap.width + xin];
+                pixmap[yout*cache->textureSize().x() + xout] = bitmap.buffer[(bitmap.rows-yin-1)*bitmap.width + xin];
 
-        /* Save character texture position and texture coordinates for given character index */
-        CORRADE_INTERNAL_ASSERT_OUTPUT(glyphs.insert({charIndices[i], std::make_tuple(
-            Rectangle::fromSize((Vector2(glyph->bitmap_left, glyph->bitmap_top-charPositions[i].height()) - Vector2(radius))/_size,
-                                Vector2(charPositions[i].size() + 2*padding)/_size),
-            Rectangle(Vector2(charPositions[i].bottomLeft() - padding)/atlasSize,
-                      Vector2(charPositions[i].topRight() + padding)/atlasSize)
-        )}).second);
+        /* Insert glyph parameters into cache */
+        cache->insert(charIndices[i],
+            Vector2i(glyph->bitmap_left, glyph->bitmap_top-charPositions[i].height()),
+            charPositions[i]);
     }
 
-    /* Set texture data */
-    #ifndef MAGNUM_TARGET_GLES
-    output->setImage(0, Texture2D::InternalFormat::R8, &image);
-    #else
-    output->setImage(0, Texture2D::InternalFormat::Red, &image);
-    #endif
-}
-
-void FreeTypeFont::prerender(const std::string& characters, const Vector2i& atlasSize) {
-    prerenderInternal(characters, atlasSize, 0, &_texture);
-}
-
-void FreeTypeFont::prerenderDistanceField(const std::string& characters, const Vector2i& sourceAtlasSize, const Vector2i& atlasSize, Int radius) {
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_storage);
-
-    /* Render input texture */
-    Texture2D input;
-    input.setWrapping(Texture2D::Wrapping::ClampToEdge)
-        ->setMinificationFilter(Texture2D::Filter::Linear)
-        ->setMagnificationFilter(Texture2D::Filter::Linear);
-    prerenderInternal(characters, sourceAtlasSize, radius, &input);
-
-    /* Create distance field from input texture */
-    _texture.setStorage(1, Texture2D::InternalFormat::R8, atlasSize);
-    TextureTools::distanceField(&input, &_texture, Rectanglei::fromSize({}, atlasSize), radius);
+    /* Set cache image */
+    cache->setImage({}, &image);
 }
 
 FreeTypeFont::~FreeTypeFont() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Done_Face(_ftFont) == 0);
 }
 
-const std::tuple<Rectangle, Rectangle>& FreeTypeFont::operator[](char32_t character) const {
-    auto it = glyphs.find(character);
-
-    if(it == glyphs.end())
-        return glyphs.at(0);
-    return it->second;
-}
-
-AbstractLayouter* FreeTypeFont::layout(const Float size, const std::string& text) {
-    return new FreeTypeLayouter(*this, size, text);
+AbstractLayouter* FreeTypeFont::layout(const GlyphCache* const cache, const Float size, const std::string& text) {
+    return new FreeTypeLayouter(*this, cache, size, text);
 }
 
 namespace {
 
-FreeTypeLayouter::FreeTypeLayouter(FreeTypeFont& font, const Float size, const std::string& text): font(font), size(size) {
+FreeTypeLayouter::FreeTypeLayouter(FreeTypeFont& font, const GlyphCache* const cache, const Float size, const std::string& text): font(font), cache(cache), size(size) {
     /* Get glyph codes from characters */
     glyphs.reserve(text.size());
     for(std::size_t i = 0; i != text.size(); ) {
@@ -204,8 +151,14 @@ FreeTypeLayouter::FreeTypeLayouter(FreeTypeFont& font, const Float size, const s
 
 std::tuple<Rectangle, Rectangle, Vector2> FreeTypeLayouter::renderGlyph(const Vector2& cursorPosition, const UnsignedInt i) {
     /* Position of the texture in the resulting glyph, texture coordinates */
-    Rectangle texturePosition, textureCoordinates;
-    std::tie(texturePosition, textureCoordinates) = font[glyphs[i]];
+    Vector2i position;
+    Rectanglei rectangle;
+    std::tie(position, rectangle) = (*cache)[glyphs[i]];
+
+    Rectangle texturePosition = Rectangle::fromSize(Vector2(position)/font.size(),
+                                                    Vector2(rectangle.size())/font.size());
+    Rectangle textureCoordinates(Vector2(rectangle.bottomLeft())/cache->textureSize(),
+                                 Vector2(rectangle.topRight())/cache->textureSize());
 
     /* Load glyph */
     CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Load_Glyph(font.font(), glyphs[i], FT_LOAD_DEFAULT) == 0);

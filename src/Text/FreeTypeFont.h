@@ -66,97 +66,50 @@ class MAGNUM_TEXT_EXPORT FreeTypeFontRenderer {
 /**
 @brief FreeType font
 
-Contains font with characters prerendered into texture atlas.
-
 @section FreeTypeFont-usage Usage
 
-You need to maintain instance of FreeTypeFontRenderer during the lifetime of all FreeTypeFont
-instances. The font can be created either from file or from memory location of
-format supported by [FreeType](http://www.freetype.org/) library. Next step is
-to prerender all the glyphs which will be used in text rendering later.
+You need to maintain instance of FreeTypeFontRenderer during the lifetime of
+all FreeTypeFont instances. The font can be created either from file or from
+memory location of format supported by [FreeType](http://www.freetype.org/)
+library.
 @code
 Text::FreeTypeFontRenderer fontRenderer;
 
 Text::FreeTypeFont font(fontRenderer, "MyFreeTypeFont.ttf", 48.0f);
-font.prerender("abcdefghijklmnopqrstuvwxyz"
-               "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-               "0123456789 ", Vector2i(512));
 @endcode
-See TextRenderer for information about text rendering.
-
-@section FreeTypeFont-extensions Required OpenGL functionality
-
-%Font texture uses one-component internal format, which requires
-@extension{ARB,texture_rg} (also part of OpenGL ES 3.0 or available as
-@es_extension{EXT,texture_rg} in ES 2.0).
+Next step is to prerender all the glyphs which will be used in text rendering
+later, see GlyphCache for more information. See TextRenderer for information
+about text rendering.
 */
 class MAGNUM_TEXT_EXPORT FreeTypeFont: public AbstractFont {
     public:
         /**
          * @brief Create font from file
-         * @param renderer      %Font renderer
-         * @param fontFile      %Font file
-         * @param size          %Font size
+         * @param renderer      Font renderer
+         * @param fontFile      Font file
+         * @param size          Font size
          */
         explicit FreeTypeFont(FreeTypeFontRenderer& renderer, const std::string& fontFile, Float size);
 
         /**
          * @brief Create font from memory
-         * @param renderer      %Font renderer
-         * @param data          %Font data
-         * @param dataSize      %Font data size
-         * @param size          %Font size
+         * @param renderer      Font renderer
+         * @param data          Font data
+         * @param dataSize      Font data size
+         * @param size          Font size
          */
         explicit FreeTypeFont(FreeTypeFontRenderer& renderer, const unsigned char* data, std::size_t dataSize, Float size);
 
-        /**
-         * @brief Prerender given character set
-         * @param characters    UTF-8 characters to render
-         * @param atlasSize     Size of resulting atlas
-         *
-         * Creates new atlas with prerendered characters, replacing the
-         * previous one (if any).
-         * @attention @p atlasSize must be large enough to contain all
-         *      rendered glyphs.
-         */
-        void prerender(const std::string& characters, const Vector2i& atlasSize);
-
-        /**
-         * @brief Prerender given character set for use with distance-field rendering
-         * @param characters        UTF-8 characters to render
-         * @param sourceAtlasSize   Size of distance field source atlas
-         * @param atlasSize         Size of resulting atlas
-         * @param radius            Max lookup radius for distance-field creation
-         *
-         * Creates new atlas with prerendered characters, replacing the
-         * previous one (if any). See TextureTools::distanceField() for more
-         * information.
-         * @attention @p sourceAtlasSize must be large enough to contain all
-         *      rendered glyphs with padding given by @p radius.
-         */
-        void prerenderDistanceField(const std::string& characters, const Vector2i& sourceAtlasSize, const Vector2i& atlasSize, Int radius);
-
         ~FreeTypeFont();
 
-        /** @brief %Font size */
+        /** @brief Font size */
         inline Float size() const { return _size; }
-
-        /** @brief Count of prerendered glyphs in the font */
-        inline std::size_t glyphCount() const { return glyphs.size(); }
-
-        /**
-         * @brief Position of given character in the texture
-         * @param character     Unicode character code (UTF-32)
-         *
-         * First returned rectangle is texture position relative to point on
-         * baseline, second is position of the texture in texture atlas.
-         */
-        const std::tuple<Rectangle, Rectangle>& operator[](char32_t character) const;
 
         /** @brief FreeType font handle */
         inline FT_Face font() { return _ftFont; }
 
-        AbstractLayouter* layout(const Float size, const std::string& text) override;
+        void createGlyphCache(GlyphCache* const cache, const std::string& characters) override;
+        AbstractLayouter* layout(const GlyphCache* const cache, const Float size, const std::string& text) override;
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -166,10 +119,6 @@ class MAGNUM_TEXT_EXPORT FreeTypeFont: public AbstractFont {
         FT_Face _ftFont;
 
     private:
-        void MAGNUM_TEXT_LOCAL finishConstruction();
-        void MAGNUM_TEXT_LOCAL prerenderInternal(const std::string& characters, const Vector2i& atlasSize, const Int radius, Texture2D* output);
-
-        std::unordered_map<char32_t, std::tuple<Rectangle, Rectangle>> glyphs;
         Float _size;
 };
 
