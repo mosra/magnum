@@ -394,7 +394,9 @@ class MAGNUM_EXPORT Renderer {
 
         /*@}*/
 
-        /** @{ @name Blending
+        /**
+         * @{ @name Blending
+         *
          * You have to enable blending with setFeature() first.
          * @todo Blending for given draw buffer
          */
