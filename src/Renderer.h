@@ -664,6 +664,29 @@ class MAGNUM_EXPORT Renderer {
 
         /*@}*/
         #endif
+
+        /** @{ @name Renderer management */
+
+        /**
+         * @brief Flush the pipeline
+         *
+         * @see finish(), @fn_gl{Flush}
+         */
+        inline static void flush() {
+            glFlush();
+        }
+
+        /**
+         * @brief Finish the pipeline
+         *
+         * Blocks until all commands in the pipeline are finished.
+         * @see flush(), @fn_gl{Finish}
+         */
+        inline static void finish() {
+            glFinish();
+        }
+
+        /*@}*/
 };
 
 }
