@@ -39,6 +39,8 @@ Helper class for storing axis-aligned rectangles consisting of bottom left and
 top right corner positions with origin in bottom left. Bottom/left positions
 are inclusive, while top/right positions are exclusive.
 @see Magnum::Rectangle, Magnum::Rectanglei, Magnum::Rectangled
+@todo rename to Range, make it generic for one, two and three dimensions, add translated(), padded()...
+@todo move outside Math?
 */
 template<class T> class Rectangle {
     template<class> friend class Rectangle;
