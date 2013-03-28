@@ -70,8 +70,8 @@ template<UnsignedInt dimensions> class ImageWrapper: public AbstractImage {
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
          *
-         * Dimensions and data pointer are set to zero, call setData() to fill
-         * the image with data.
+         * Data pointer is set to zero, call setData() to fill the image with
+         * data.
          */
         inline explicit ImageWrapper(const typename DimensionTraits<Dimensions, Int>::VectorType& size, Format format, Type type): AbstractImage(format, type), _size(size), _data(nullptr) {}
 
