@@ -57,7 +57,7 @@ FreeTypeFontRenderer::FreeTypeFontRenderer() {
 }
 
 FreeTypeFontRenderer::~FreeTypeFontRenderer() {
-    FT_Done_FreeType(_library);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Done_FreeType(_library) == 0);
 }
 
 FreeTypeFont::FreeTypeFont(FreeTypeFontRenderer& renderer, const std::string& fontFile, Float size): _size(size) {
@@ -174,7 +174,7 @@ void FreeTypeFont::prerenderDistanceField(const std::string& characters, const V
 }
 
 FreeTypeFont::~FreeTypeFont() {
-    FT_Done_Face(_ftFont);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(FT_Done_Face(_ftFont) == 0);
 }
 
 const std::tuple<Rectangle, Rectangle>& FreeTypeFont::operator[](char32_t character) const {
