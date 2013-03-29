@@ -43,6 +43,7 @@ variables:
 - `MAGNUM_FOUND` -- Whether the library was found
 - `MAGNUM_LIBRARIES` -- %Magnum library and dependent libraries
 - `MAGNUM_INCLUDE_DIRS` -- Root include dir and include dirs of dependencies
+- `MAGNUM_PLUGINS_FONT_DIR` -- Directory with font plugins
 - `MAGNUM_PLUGINS_IMPORTER_DIR` -- Directory with importer plugins
 
 However, this command will try to find only the base library, not the optional

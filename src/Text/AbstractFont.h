@@ -30,6 +30,7 @@
 
 #include <tuple>
 #include <string>
+#include <PluginManager/AbstractPlugin.h>
 
 #include "Magnum.h"
 #include "Texture.h"
@@ -39,17 +40,51 @@
 namespace Magnum { namespace Text {
 
 /**
-@brief Base for fonts
+@brief Base for font plugins
+
+@section AbstractFont-usage Usage
+
+First step is to open the font using open(), next step is to prerender all the
+glyphs which will be used in text rendering later, see GlyphCache for more
+information. See TextRenderer for information about text rendering.
+
+@section AbstractFont-subclassing Subclassing
+
+Plugin implements functions open(), close(), createGlyphCache() and layout().
 */
-class MAGNUM_TEXT_EXPORT AbstractFont {
-    AbstractFont(const AbstractFont&) = delete;
-    AbstractFont(AbstractFont&&) = delete;
-    AbstractFont& operator=(const AbstractFont&) = delete;
-    AbstractFont& operator=(const AbstractFont&&) = delete;
+class MAGNUM_TEXT_EXPORT AbstractFont: public Corrade::PluginManager::AbstractPlugin {
+    PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.1")
 
     public:
-        explicit AbstractFont(Float size);
-        virtual ~AbstractFont() = 0;
+        /** @brief Default constructor */
+        explicit AbstractFont();
+
+        /** @brief Plugin manager constructor */
+        explicit AbstractFont(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin);
+
+        /**
+         * @brief Open font from file
+         * @param filename      Font file
+         * @param size          Font size
+         *
+         * Closes previous file, if it was opened, and tries to open given
+         * file. Returns `true` on success, `false` otherwise.
+         */
+        virtual bool open(const std::string& filename, Float size) = 0;
+
+        /**
+         * @brief Open font from memory
+         * @param data          Font data
+         * @param dataSize      Font data size
+         * @param size          Font size
+         *
+         * Closes previous file, if it was opened, and tries to open given
+         * file. Returns `true` on success, `false` otherwise.
+         */
+        virtual bool open(const unsigned char* data, std::size_t dataSize, Float size) = 0;
+
+        /** @brief Close font */
+        virtual void close() = 0;
 
         /** @brief Font size */
         inline Float size() const { return _size; }
@@ -73,7 +108,11 @@ class MAGNUM_TEXT_EXPORT AbstractFont {
          */
         virtual AbstractLayouter* layout(const GlyphCache* const cache, const Float size, const std::string& text) = 0;
 
+    #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
+    #else
+    protected:
+    #endif
         Float _size;
 };
 

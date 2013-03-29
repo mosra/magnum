@@ -26,9 +26,9 @@
 
 namespace Magnum { namespace Text {
 
-AbstractFont::AbstractFont(Float size): _size(size) {}
+AbstractFont::AbstractFont(): _size(0.0f) {}
 
-AbstractFont::~AbstractFont() {}
+AbstractFont::AbstractFont(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin): AbstractPlugin(manager, std::move(plugin)), _size(0.0f) {}
 
 AbstractLayouter::AbstractLayouter(): _glyphCount(0) {}
 

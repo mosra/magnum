@@ -7,6 +7,7 @@
 #  MAGNUM_LIBRARIES             - Magnum library and dependent libraries
 #  MAGNUM_INCLUDE_DIRS          - Root include dir and include dirs of
 #   dependencies
+#  MAGNUM_PLUGINS_FONT_DIR      - Directory with font plugins
 #  MAGNUM_PLUGINS_IMPORTER_DIR  - Directory with importer plugins
 # This command will try to find only the base library, not the optional
 # components. The base library depends on Corrade, OpenGL and GLEW
@@ -60,6 +61,8 @@
 #   dependencies)
 #  MAGNUM_LIBRARY_INSTALL_DIR           - Library installation directory
 #  MAGNUM_PLUGINS_INSTALL_DIR           - Plugin installation directory
+#  MAGNUM_PLUGINS_FONT_INSTALL_DIR      - Font plugin installation
+#   directory
 #  MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR  - Importer plugin installation
 #   directory
 #  MAGNUM_CMAKE_MODULE_INSTALL_DIR      - Installation dir for CMake
@@ -319,6 +322,7 @@ endif()
 # Installation dirs
 set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
 set(MAGNUM_PLUGINS_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum)
+set(MAGNUM_PLUGINS_FONT_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/fonts)
 set(MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/importers)
 set(MAGNUM_CMAKE_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
@@ -328,14 +332,17 @@ mark_as_advanced(FORCE
     MAGNUM_INCLUDE_DIR
     MAGNUM_LIBRARY_INSTALL_DIR
     MAGNUM_PLUGINS_INSTALL_DIR
+    MAGNUM_PLUGINS_FONT_INSTALL_DIR
     MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR
     MAGNUM_CMAKE_MODULE_INSTALL_DIR
     MAGNUM_INCLUDE_INSTALL_DIR
     MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR)
 
-# Importer plugins dir
+# Plugin directories
 if(NOT WIN32)
+    set(MAGNUM_PLUGINS_FONT_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/fonts)
     set(MAGNUM_PLUGINS_IMPORTER_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/importers)
 else()
+    set(MAGNUM_PLUGINS_FONT_DIR fonts)
     set(MAGNUM_PLUGINS_IMPORTER_DIR importers)
 endif()
