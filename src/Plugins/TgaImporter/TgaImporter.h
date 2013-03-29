@@ -69,25 +69,6 @@ class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         UnsignedInt image2DCount() const override;
         ImageData2D* image2D(UnsignedInt id) override;
 
-        #pragma pack(1)
-        /** @brief TGA file header */
-        /** @todoc Enable @c INLINE_SIMPLE_STRUCTS again when unclosed &lt;component&gt; in tagfile is fixed*/
-        struct MAGNUM_TGAIMPORTER_LOCAL Header {
-            UnsignedByte    identsize;      /**< @brief Size of ID field that follows header (0) */
-            UnsignedByte    colorMapType;   /**< @brief 0 = None, 1 = paletted */
-            UnsignedByte    imageType;      /**< @brief 0 = none, 1 = indexed, 2 = rgb, 3 = grey, +8=rle */
-            UnsignedShort   colorMapStart;  /**< @brief First color map entry */
-            UnsignedShort   colorMapLength; /**< @brief Number of colors */
-            UnsignedByte    colorMapBpp;    /**< @brief Bits per palette entry */
-            UnsignedShort   beginX;         /**< @brief %Image x origin */
-            UnsignedShort   beginY;         /**< @brief %Image y origin */
-            UnsignedShort   width;          /**< @brief %Image width */
-            UnsignedShort   height;         /**< @brief %Image height */
-            UnsignedByte    bpp;            /**< @brief Bits per pixel (8, 16, 24, 32) */
-            UnsignedByte    descriptor;     /**< @brief %Image descriptor */
-        };
-        #pragma pack(8)
-
     private:
         bool MAGNUM_TGAIMPORTER_LOCAL open(std::istream& in);
 

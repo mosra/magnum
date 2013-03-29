@@ -26,6 +26,7 @@ set(TgaImporter_SRCS
     TgaImporter.cpp)
 
 set(TgaImporter_HEADERS
+    TgaHeader.h
     TgaImporter.h)
 
 add_library(TgaImporterObjects OBJECT ${TgaImporter_SRCS})

@@ -32,13 +32,11 @@
 #include <Swizzle.h>
 #include <Trade/ImageData.h>
 
+#include "TgaHeader.h"
+
 using Corrade::Utility::Endianness;
 
 namespace Magnum { namespace Trade { namespace TgaImporter {
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-static_assert(sizeof(TgaImporter::Header) == 18, "TgaImporter: header size is not 18 bytes");
-#endif
 
 TgaImporter::TgaImporter(): in(nullptr) {}
 
@@ -85,13 +83,13 @@ ImageData2D* TgaImporter::image2D(UnsignedInt id) {
     in->seekg(0, std::istream::end);
     std::streampos filesize = in->tellg();
     in->seekg(0, std::istream::beg);
-    if(filesize < std::streampos(sizeof(Header))) {
+    if(filesize < std::streampos(sizeof(TgaHeader))) {
         Error() << "Trade::TgaImporter::TgaImporter::image2D(): the file is too short:" << filesize << "bytes";
         return nullptr;
     }
 
-    Header header;
-    in->read(reinterpret_cast<char*>(&header), sizeof(Header));
+    TgaHeader header;
+    in->read(reinterpret_cast<char*>(&header), sizeof(TgaHeader));
 
     /* Convert to machine endian */
     header.width = Endianness::littleEndian(header.width);
