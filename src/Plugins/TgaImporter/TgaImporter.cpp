@@ -40,9 +40,9 @@ namespace Magnum { namespace Trade { namespace TgaImporter {
 static_assert(sizeof(TgaImporter::Header) == 18, "TgaImporter: header size is not 18 bytes");
 #endif
 
-TgaImporter::TgaImporter(): _image(nullptr) {}
+TgaImporter::TgaImporter(): in(nullptr) {}
 
-TgaImporter::TgaImporter(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin): AbstractImporter(manager, std::move(plugin)), _image(nullptr) {}
+TgaImporter::TgaImporter(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin): AbstractImporter(manager, std::move(plugin)), in(nullptr) {}
 
 TgaImporter::~TgaImporter() { close(); }
 
@@ -51,32 +51,47 @@ TgaImporter::Features TgaImporter::features() const {
 }
 
 bool TgaImporter::TgaImporter::openData(const void* const data, const std::size_t size) {
-    std::istringstream in(std::string(reinterpret_cast<const char*>(data), size));
-    return open(in);
+    close();
+
+    in = new std::istringstream(std::string(reinterpret_cast<const char*>(data), size));
+    return true;
 }
 
 bool TgaImporter::TgaImporter::openFile(const std::string& filename) {
-    std::ifstream in(filename.c_str());
-    if(in.good()) return open(in);
+    close();
+
+    in = new std::ifstream(filename.c_str());
+    if(in->good()) return true;
 
     Error() << "TgaImporter: cannot open file" << filename;
+    close();
     return false;
 }
 
-bool TgaImporter::open(std::istream& in) {
-    if(_image) close();
+void TgaImporter::close() {
+    delete in;
+    in = nullptr;
+}
+
+UnsignedInt TgaImporter::TgaImporter::image2DCount() const {
+    return in ? 1 : 0;
+}
+
+ImageData2D* TgaImporter::image2D(UnsignedInt id) {
+    CORRADE_ASSERT(in, "Trade::TgaImporter::TgaImporter::image2D(): no file opened", nullptr);
+    CORRADE_ASSERT(id == 0, "Trade::TgaImporter::TgaImporter::image2D(): wrong image ID", nullptr);
 
     /* Check if the file is long enough */
-    in.seekg(0, std::istream::end);
-    std::streampos filesize = in.tellg();
-    in.seekg(0, std::istream::beg);
+    in->seekg(0, std::istream::end);
+    std::streampos filesize = in->tellg();
+    in->seekg(0, std::istream::beg);
     if(filesize < std::streampos(sizeof(Header))) {
         Error() << "TgaImporter: the file is too short:" << filesize << "bytes";
-        return false;
+        return nullptr;
     }
 
     Header header;
-    in.read(reinterpret_cast<char*>(&header), sizeof(Header));
+    in->read(reinterpret_cast<char*>(&header), sizeof(Header));
 
     /* Convert to machine endian */
     header.width = Endianness::littleEndian(header.width);
@@ -84,12 +99,12 @@ bool TgaImporter::open(std::istream& in) {
 
     if(header.colorMapType != 0) {
         Error() << "TgaImporter: paletted files are not supported";
-        return false;
+        return nullptr;
     }
 
     if(header.imageType != 2) {
         Error() << "TgaImporter: non-RGB files are not supported";
-        return false;
+        return nullptr;
     }
 
     ImageData2D::Format format;
@@ -110,12 +125,12 @@ bool TgaImporter::open(std::istream& in) {
             break;
         default:
             Error() << "TgaImporter: unsupported bits-per-pixel:" << header.bpp;
-            return false;
+            return nullptr;
     }
 
     std::size_t size = header.width*header.height*header.bpp/8;
     char* buffer = new char[size];
-    in.read(buffer, size);
+    in->read(buffer, size);
 
     Math::Vector2<GLsizei> dimensions(header.width, header.height);
 
@@ -131,22 +146,7 @@ bool TgaImporter::open(std::istream& in) {
     }
     #endif
 
-    _image = new ImageData2D(dimensions, format, ImageData2D::Type::UnsignedByte, buffer);
-    return true;
-}
-
-void TgaImporter::close() {
-    /** @todo fixme: delete it only if it wasn't retrieved by user */
-    //delete _image;
-    _image = nullptr;
-}
-
-UnsignedInt TgaImporter::TgaImporter::image2DCount() const {
-    return _image ? 1 : 0;
-}
-
-ImageData2D* TgaImporter::image2D(UnsignedInt) {
-    return _image;
+    return new ImageData2D(dimensions, format, ImageData2D::Type::UnsignedByte, buffer);
 }
 
 }}}

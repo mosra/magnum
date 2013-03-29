@@ -87,7 +87,7 @@ class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     private:
         bool MAGNUM_TGAIMPORTER_LOCAL open(std::istream& in);
 
-        ImageData2D* _image;
+        std::istream* in;
 };
 
 }}}
