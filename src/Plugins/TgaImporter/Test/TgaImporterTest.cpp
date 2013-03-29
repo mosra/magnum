@@ -24,10 +24,14 @@
 
 #include <sstream>
 #include <TestSuite/Tester.h>
-#include <Math/Vector2.h>
+#include <Utility/Directory.h>
 #include <Trade/ImageData.h>
 
-#include "../TgaImporter.h"
+#include "TgaImporter/TgaImporter.h"
+
+#include "configure.h"
+
+using Corrade::Utility::Directory;
 
 namespace Magnum { namespace Trade { namespace TgaImporter { namespace Test {
 
@@ -46,6 +50,8 @@ class TgaImporterTest: public Corrade::TestSuite::Tester {
 
         void grayscaleBits8();
         void grayscaleBits16();
+
+        void file();
 };
 
 TgaImporterTest::TgaImporterTest() {
@@ -59,7 +65,9 @@ TgaImporterTest::TgaImporterTest() {
               &TgaImporterTest::colorBits32,
 
               &TgaImporterTest::grayscaleBits8,
-              &TgaImporterTest::grayscaleBits16});
+              &TgaImporterTest::grayscaleBits16,
+
+              &TgaImporterTest::file});
 }
 
 void TgaImporterTest::openInexistent() {
@@ -208,6 +216,24 @@ void TgaImporterTest::grayscaleBits16() {
     Error::setOutput(&debug);
     CORRADE_VERIFY(!importer.image2D(0));
     CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::TgaImporter::image2D(): unsupported grayscale bits-per-pixel: 16\n");
+}
+
+void TgaImporterTest::file() {
+    TgaImporter importer;
+    const char data[] = {
+        0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 8, 0,
+        1, 2,
+        3, 4,
+        5, 6
+    };
+    CORRADE_VERIFY(importer.openFile(Directory::join(TGAIMPORTER_TEST_DIR, "file.tga")));
+
+    Trade::ImageData2D* image = importer.image2D(0);
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->format(), Trade::ImageData2D::Format::Red);
+    CORRADE_COMPARE(image->size(), Vector2i(2, 3));
+    CORRADE_COMPARE(image->type(), Trade::ImageData2D::Type::UnsignedByte);
+    CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(image->data()), 2*3), std::string(data + 18, 2*3));
 }
 
 }}}}
