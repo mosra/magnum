@@ -25,6 +25,7 @@
 #include "TgaImporter.h"
 
 #include <fstream>
+#include <sstream>
 #include <algorithm>
 #include <Utility/Endianness.h>
 #include <Math/Vector2.h>
@@ -46,26 +47,24 @@ TgaImporter::TgaImporter(Corrade::PluginManager::AbstractPluginManager* manager,
 TgaImporter::~TgaImporter() { close(); }
 
 TgaImporter::Features TgaImporter::features() const {
-    return Feature::OpenFile|Feature::OpenStream;
+    return Feature::OpenData|Feature::OpenFile;
 }
 
-bool TgaImporter::TgaImporter::open(const std::string& filename) {
+bool TgaImporter::TgaImporter::openData(const void* const data, const std::size_t size) {
+    std::istringstream in(std::string(reinterpret_cast<const char*>(data), size));
+    return open(in);
+}
+
+bool TgaImporter::TgaImporter::openFile(const std::string& filename) {
     std::ifstream in(filename.c_str());
-    if(!in.good()) {
-        Error() << "TgaImporter: cannot open file" << filename;
-        return false;
-    }
-    bool status = open(in);
-    in.close();
-    return status;
+    if(in.good()) return open(in);
+
+    Error() << "TgaImporter: cannot open file" << filename;
+    return false;
 }
 
 bool TgaImporter::open(std::istream& in) {
     if(_image) close();
-    if(!in.good()) {
-        Error() << "TgaImporter: cannot read input stream";
-        return false;
-    }
 
     /* Check if the file is long enough */
     in.seekg(0, std::istream::end);

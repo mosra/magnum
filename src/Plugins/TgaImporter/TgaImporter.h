@@ -58,8 +58,9 @@ class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         virtual ~TgaImporter();
 
         Features features() const override;
-        bool open(std::istream& in) override;
-        bool open(const std::string& filename) override;
+        bool openData(const void* const data, const std::size_t size) override;
+        using AbstractImporter::openData;
+        bool openFile(const std::string& filename) override;
         void close() override;
         UnsignedInt image2DCount() const override;
         ImageData2D* image2D(UnsignedInt id) override;
@@ -84,6 +85,8 @@ class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         #pragma pack(8)
 
     private:
+        bool MAGNUM_TGAIMPORTER_LOCAL open(std::istream& in);
+
         ImageData2D* _image;
 };
 
