@@ -465,44 +465,6 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
 
 CORRADE_ENUMSET_OPERATORS(AbstractImporter::Features)
 
-/* Implementations for inline functions with unused parameters */
-inline Int AbstractImporter::sceneForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::sceneName(UnsignedInt) { return {}; }
-inline SceneData* AbstractImporter::scene(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::lightForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::lightName(UnsignedInt) { return {}; }
-inline LightData* AbstractImporter::light(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::cameraForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::cameraName(UnsignedInt) { return {}; }
-inline CameraData* AbstractImporter::camera(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::object2DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::object2DName(UnsignedInt) { return {}; }
-inline ObjectData2D* AbstractImporter::object2D(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::object3DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::object3DName(UnsignedInt) { return {}; }
-inline ObjectData3D* AbstractImporter::object3D(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::mesh2DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::mesh2DName(UnsignedInt) { return {}; }
-inline MeshData2D* AbstractImporter::mesh2D(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::mesh3DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::mesh3DName(UnsignedInt) { return {}; }
-inline MeshData3D* AbstractImporter::mesh3D(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::materialForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::materialName(UnsignedInt) { return {}; }
-inline AbstractMaterialData* AbstractImporter::material(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::textureForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::textureName(UnsignedInt) { return {}; }
-inline TextureData* AbstractImporter::texture(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::image1DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::image1DName(UnsignedInt) { return {}; }
-inline ImageData1D* AbstractImporter::image1D(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::image2DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::image2DName(UnsignedInt) { return {}; }
-inline ImageData2D* AbstractImporter::image2D(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::image3DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::image3DName(UnsignedInt) { return {}; }
-inline ImageData3D* AbstractImporter::image3D(UnsignedInt) { return nullptr; }
-
 }}
 
 #endif
