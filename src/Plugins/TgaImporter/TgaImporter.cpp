@@ -132,17 +132,17 @@ ImageData2D* TgaImporter::image2D(UnsignedInt id) {
     char* buffer = new char[size];
     in->read(buffer, size);
 
-    Math::Vector2<GLsizei> dimensions(header.width, header.height);
+    Vector2i dimensions(header.width, header.height);
 
     #ifdef MAGNUM_TARGET_GLES
-    if(format == AbstractImage::Components::RGB) {
-        Math::Vector3<GLubyte>* data = reinterpret_cast<Math::Vector3<GLubyte>*>(buffer);
+    if(format == ImageData2D::Format::RGB) {
+        auto data = reinterpret_cast<Math::Vector3<UnsignedByte>*>(buffer);
         std::transform(data, data + dimensions.product(), data,
-            [](Math::Vector3<GLubyte> pixel) { return swizzle<'b', 'g', 'r'>(pixel); });
-    } else /* RGBA */ {
-        Math::Vector4<GLubyte>* data = reinterpret_cast<Math::Vector4<GLubyte>*>(buffer);
+            [](Math::Vector3<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r'>(pixel); });
+    } else if(format == ImageData2D::Format::RGBA) {
+        auto data = reinterpret_cast<Math::Vector4<UnsignedByte>*>(buffer);
         std::transform(data, data + dimensions.product(), data,
-            [](Math::Vector4<GLubyte> pixel) { return swizzle<'b', 'g', 'r', 'a'>(pixel); });
+            [](Math::Vector4<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r', 'a'>(pixel); });
     }
     #endif
 

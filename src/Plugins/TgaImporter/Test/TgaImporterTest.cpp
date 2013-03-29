@@ -87,7 +87,7 @@ void TgaImporterTest::paletted() {
 
 void TgaImporterTest::nonRgb() {
     TgaImporter importer;
-    const char data[] = { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    const char data[] = { 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     CORRADE_VERIFY(importer.openData(data));
 
     std::ostringstream debug;
@@ -111,13 +111,17 @@ void TgaImporterTest::bits24() {
     TgaImporter importer;
     const char data[] = {
         0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
-        1, 2, 3, 2, 3, 4, 3, 4, 5, 4, 5, 6, 5, 6, 7, 6, 7, 8
+        1, 2, 3, 2, 3, 4,
+        3, 4, 5, 4, 5, 6,
+        5, 6, 7, 6, 7, 8
     };
     #ifndef MAGNUM_TARGET_GLES
     const char* pixels = data + 18;
     #else
     const char pixels[] = {
-        3, 2, 1, 4, 3, 2, 5, 4, 3, 6, 5, 4, 7, 6, 5, 8, 7, 6
+        3, 2, 1, 4, 3, 2,
+        5, 4, 3, 6, 5, 4,
+        7, 6, 5, 8, 7, 6
     };
     #endif
     CORRADE_VERIFY(importer.openData(data));
@@ -129,7 +133,7 @@ void TgaImporterTest::bits24() {
     #else
     CORRADE_COMPARE(image->format(), Trade::ImageData2D::Format::RGB);
     #endif
-    CORRADE_COMPARE(image->size(), Math::Vector2<GLsizei>(2, 3));
+    CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), Trade::ImageData2D::Type::UnsignedByte);
     CORRADE_COMPARE(std::string(static_cast<const char*>(image->data()), 2*3*3), std::string(pixels, 2*3*3));
 
@@ -140,13 +144,17 @@ void TgaImporterTest::bits32() {
     TgaImporter importer;
     const char data[] = {
         0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 32, 0,
-        1, 2, 3, 1, 2, 3, 4, 1, 3, 4, 5, 1, 4, 5, 6, 1, 5, 6, 7, 1, 6, 7, 8, 1
+        1, 2, 3, 1, 2, 3, 4, 1,
+        3, 4, 5, 1, 4, 5, 6, 1,
+        5, 6, 7, 1, 6, 7, 8, 1
     };
     #ifndef MAGNUM_TARGET_GLES
     const char* pixels = data + 18;
     #else
     const char pixels[] = {
-        3, 2, 1, 1, 4, 3, 2, 1, 5, 4, 3, 1, 6, 5, 4, 1, 7, 6, 5, 1, 8, 7, 6, 1
+        3, 2, 1, 1, 4, 3, 2, 1,
+        5, 4, 3, 1, 6, 5, 4, 1,
+        7, 6, 5, 1, 8, 7, 6, 1
     };
     #endif
     CORRADE_VERIFY(importer.openData(data));
