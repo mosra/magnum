@@ -67,6 +67,7 @@ set(Magnum_SRCS
     Implementation/BufferState.cpp
     Implementation/State.cpp
 
+    Trade/AbstractImageConverter.cpp
     Trade/AbstractImporter.cpp
     Trade/AbstractMaterialData.cpp
     Trade/MeshData2D.cpp

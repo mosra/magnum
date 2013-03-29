@@ -24,6 +24,7 @@
 
 set(MagnumTrade_HEADERS
     AbstractImporter.h
+    AbstractImageConverter.h
     AbstractMaterialData.h
     CameraData.h
     ImageData.h
