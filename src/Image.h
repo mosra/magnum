@@ -55,7 +55,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        inline explicit Image(const typename DimensionTraits<Dimensions, Int>::VectorType& size, Format format, Type type, GLvoid* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<char*>(data)) {}
+        inline explicit Image(const typename DimensionTraits<Dimensions, Int>::VectorType& size, Format format, Type type, GLvoid* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
 
         /**
          * @brief Constructor
@@ -74,8 +74,8 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
         inline typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
         /** @brief Pointer to raw data */
-        inline void* data() { return _data; }
-        inline const void* data() const { return _data; } /**< @overload */
+        inline unsigned char* data() { return _data; }
+        inline const unsigned char* data() const { return _data; } /**< @overload */
 
         /**
          * @brief Set image data
@@ -91,7 +91,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
 
     private:
         Math::Vector<Dimensions, Int> _size;
-        char* _data;
+        unsigned char* _data;
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
