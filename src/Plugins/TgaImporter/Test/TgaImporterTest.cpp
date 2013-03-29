@@ -143,7 +143,7 @@ void TgaImporterTest::colorBits24() {
     #endif
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), Trade::ImageData2D::Type::UnsignedByte);
-    CORRADE_COMPARE(std::string(static_cast<const char*>(image->data()), 2*3*3), std::string(pixels, 2*3*3));
+    CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(image->data()), 2*3*3), std::string(pixels, 2*3*3));
 
     delete image;
 }
@@ -176,7 +176,7 @@ void TgaImporterTest::colorBits32() {
     #endif
     CORRADE_COMPARE(image->size(), Math::Vector2<GLsizei>(2, 3));
     CORRADE_COMPARE(image->type(), Trade::ImageData2D::Type::UnsignedByte);
-    CORRADE_COMPARE(std::string(static_cast<const char*>(image->data()), 2*3*3), std::string(pixels, 2*3*3));
+    CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(image->data()), 2*3*3), std::string(pixels, 2*3*3));
 
     delete image;
 }
@@ -196,7 +196,7 @@ void TgaImporterTest::grayscaleBits8() {
     CORRADE_COMPARE(image->format(), Trade::ImageData2D::Format::Red);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), Trade::ImageData2D::Type::UnsignedByte);
-    CORRADE_COMPARE(std::string(static_cast<const char*>(image->data()), 2*3), std::string(data + 18, 2*3));
+    CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(image->data()), 2*3), std::string(data + 18, 2*3));
 }
 
 void TgaImporterTest::grayscaleBits16() {
