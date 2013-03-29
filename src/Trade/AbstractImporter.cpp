@@ -24,9 +24,7 @@
 
 #include "AbstractImporter.h"
 
-#include <Utility/Debug.h>
-
-#include "Magnum.h"
+#include <Utility/Assert.h>
 
 namespace Magnum { namespace Trade {
 
@@ -34,14 +32,18 @@ AbstractImporter::AbstractImporter() = default;
 
 AbstractImporter::AbstractImporter(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin): AbstractPlugin(manager, std::move(plugin)) {}
 
-bool AbstractImporter::open(const std::string&) {
-    Error() << plugin() << "doesn't support opening files";
-    return false;
+bool AbstractImporter::openData(const void* const, const std::size_t) {
+    CORRADE_ASSERT(features() & Feature::OpenData,
+        "Trade::AbstractImporter::openData(): feature advertised but not implemented", nullptr);
+
+    CORRADE_ASSERT(false, "Trade::AbstractImporter::openData(): feature not implemented", nullptr);
 }
 
-bool AbstractImporter::open(std::istream&) {
-    Error() << plugin() << "doesn't support opening input streams";
-    return false;
+bool AbstractImporter::openFile(const std::string&) {
+    CORRADE_ASSERT(features() & Feature::OpenFile,
+        "Trade::AbstractImporter::openFile(): feature advertised but not implemented", nullptr);
+
+    CORRADE_ASSERT(false, "Trade::AbstractImporter::openFile(): feature not implemented", nullptr);
 }
 
 }}

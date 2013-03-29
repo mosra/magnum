@@ -54,7 +54,7 @@ some data. This is obviously not the case for single-data formats like images,
 as the file contains all data user wants to import.
 */
 class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlugin {
-    PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.2")
+    PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.2.1")
 
     public:
         /**
@@ -62,13 +62,13 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
          *
          * @see Features, features()
          */
-        enum class Feature {
-            OpenFile = 0x01,    /**< Can open files specified by filename */
-            OpenStream = 0x02   /**< Can open files from input streams */
+        enum class Feature: UnsignedByte {
+            OpenData = 1 << 0,  /**< Opening files from raw data */
+            OpenFile = 1 << 1   /**< Opening files specified by filename */
         };
 
         /** @brief Set of features supported by this importer */
-        typedef Corrade::Containers::EnumSet<Feature, int> Features;
+        typedef Corrade::Containers::EnumSet<Feature, UnsignedByte> Features;
 
         /** @brief Default constructor */
         explicit AbstractImporter();
@@ -80,26 +80,38 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         virtual Features features() const = 0;
 
         /**
-         * @brief Open file
-         * @param filename  Filename
-         * @return Whether the file was successfully opened
+         * @brief Open raw data
+         * @param data      Data
+         * @param size      Data size
          *
          * Closes previous file, if it was opened, and tries to open given
-         * file. See also @ref Feature "Feature::OpenFile". Default
-         * implementation prints message to error output and returns false.
+         * file. Available only if @ref Feature "Feature::OpenData" is
+         * supported. Returns `true` on success, `false` otherwise.
+         * @see features(), openFile()
          */
-        virtual bool open(const std::string& filename);
+        virtual bool openData(const void* const data, const std::size_t size);
 
         /**
-         * @brief Open stream
-         * @param in        Input stream
-         * @return Whether the file was successfully opened
+         * @brief Open raw data
+         * @param data      Data
          *
-         * See also open(const std::string&), @ref Feature
-         * "Feature::OpenStream". Default implementation prints message to
-         * error output and returns false.
+         * Convenience alternative to above function useful when array size is
+         * known at compile-time.
          */
-        virtual bool open(std::istream& in);
+        template<std::size_t size, class T> inline bool openData(const T(&data)[size]) {
+            return openData(data, size*sizeof(T));
+        }
+
+        /**
+         * @brief Open file
+         * @param filename  Filename
+         *
+         * Closes previous file, if it was opened, and tries to open given
+         * file. Available only if @ref Feature "Feature::OpenFile" is
+         * supported. Returns `true` on success, `false` otherwise.
+         * @see features(), openData()
+         */
+        virtual bool openFile(const std::string& filename);
 
         /** @brief Close file */
         virtual void close() = 0;
