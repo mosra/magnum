@@ -246,7 +246,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
     # Text library
     if(${component} STREQUAL Text)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Font.h)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES AbstractFont.h)
     endif()
 
     # TextureTools library
