@@ -50,20 +50,18 @@ namespace Magnum { namespace Trade { namespace TgaImporter {
 class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     public:
         /** @brief Default constructor */
-        inline explicit TgaImporter(): _image(nullptr) {}
+        explicit TgaImporter();
 
         /** @brief Plugin manager constructor */
-        inline explicit TgaImporter(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin): AbstractImporter(manager, std::move(plugin)), _image(nullptr) {}
+        explicit TgaImporter(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin);
 
-        inline virtual ~TgaImporter() { close(); }
+        virtual ~TgaImporter();
 
-        inline Features features() const override { return Feature::OpenFile|Feature::OpenStream; }
-
+        Features features() const override;
         bool open(std::istream& in) override;
         bool open(const std::string& filename) override;
         void close() override;
-
-        UnsignedInt image2DCount() const override { return _image ? 1 : 0; }
+        UnsignedInt image2DCount() const override;
         ImageData2D* image2D(UnsignedInt id) override;
 
         #pragma pack(1)

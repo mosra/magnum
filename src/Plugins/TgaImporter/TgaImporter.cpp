@@ -39,6 +39,16 @@ namespace Magnum { namespace Trade { namespace TgaImporter {
 static_assert(sizeof(TgaImporter::Header) == 18, "TgaImporter: header size is not 18 bytes");
 #endif
 
+TgaImporter::TgaImporter(): _image(nullptr) {}
+
+TgaImporter::TgaImporter(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin): AbstractImporter(manager, std::move(plugin)), _image(nullptr) {}
+
+TgaImporter::~TgaImporter() { close(); }
+
+TgaImporter::Features TgaImporter::features() const {
+    return Feature::OpenFile|Feature::OpenStream;
+}
+
 bool TgaImporter::TgaImporter::open(const std::string& filename) {
     std::ifstream in(filename.c_str());
     if(!in.good()) {
@@ -130,6 +140,10 @@ void TgaImporter::close() {
     /** @todo fixme: delete it only if it wasn't retrieved by user */
     //delete _image;
     _image = nullptr;
+}
+
+UnsignedInt TgaImporter::TgaImporter::image2DCount() const {
+    return _image ? 1 : 0;
 }
 
 ImageData2D* TgaImporter::image2D(UnsignedInt) {
