@@ -38,20 +38,28 @@ class TgaImporterTest: public Corrade::TestSuite::Tester {
         void openInexistent();
         void openShort();
         void paletted();
-        void nonRgb();
-        void bits16();
-        void bits24();
-        void bits32();
+        void compressed();
+
+        void colorBits16();
+        void colorBits24();
+        void colorBits32();
+
+        void grayscaleBits8();
+        void grayscaleBits16();
 };
 
 TgaImporterTest::TgaImporterTest() {
     addTests({&TgaImporterTest::openInexistent,
               &TgaImporterTest::openShort,
               &TgaImporterTest::paletted,
-              &TgaImporterTest::nonRgb,
-              &TgaImporterTest::bits16,
-              &TgaImporterTest::bits24,
-              &TgaImporterTest::bits32});
+              &TgaImporterTest::compressed,
+
+              &TgaImporterTest::colorBits16,
+              &TgaImporterTest::colorBits24,
+              &TgaImporterTest::colorBits32,
+
+              &TgaImporterTest::grayscaleBits8,
+              &TgaImporterTest::grayscaleBits16});
 }
 
 void TgaImporterTest::openInexistent() {
@@ -60,7 +68,7 @@ void TgaImporterTest::openInexistent() {
 
     TgaImporter importer;
     CORRADE_VERIFY(!importer.openFile("inexistent.file"));
-    CORRADE_COMPARE(debug.str(), "TgaImporter: cannot open file inexistent.file\n");
+    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::TgaImporter::openFile(): cannot open file inexistent.file\n");
 }
 
 void TgaImporterTest::openShort() {
@@ -71,7 +79,7 @@ void TgaImporterTest::openShort() {
     std::ostringstream debug;
     Error::setOutput(&debug);
     CORRADE_VERIFY(!importer.image2D(0));
-    CORRADE_COMPARE(debug.str(), "TgaImporter: the file is too short: 17 bytes\n");
+    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::TgaImporter::image2D(): the file is too short: 17 bytes\n");
 }
 
 void TgaImporterTest::paletted() {
@@ -82,10 +90,10 @@ void TgaImporterTest::paletted() {
     std::ostringstream debug;
     Error::setOutput(&debug);
     CORRADE_VERIFY(!importer.image2D(0));
-    CORRADE_COMPARE(debug.str(), "TgaImporter: paletted files are not supported\n");
+    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::TgaImporter::image2D(): paletted files are not supported\n");
 }
 
-void TgaImporterTest::nonRgb() {
+void TgaImporterTest::compressed() {
     TgaImporter importer;
     const char data[] = { 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     CORRADE_VERIFY(importer.openData(data));
@@ -93,10 +101,10 @@ void TgaImporterTest::nonRgb() {
     std::ostringstream debug;
     Error::setOutput(&debug);
     CORRADE_VERIFY(!importer.image2D(0));
-    CORRADE_COMPARE(debug.str(), "TgaImporter: non-RGB files are not supported\n");
+    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::TgaImporter::image2D(): compressed files are not supported\n");
 }
 
-void TgaImporterTest::bits16() {
+void TgaImporterTest::colorBits16() {
     TgaImporter importer;
     const char data[] = { 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0 };
     CORRADE_VERIFY(importer.openData(data));
@@ -104,10 +112,10 @@ void TgaImporterTest::bits16() {
     std::ostringstream debug;
     Error::setOutput(&debug);
     CORRADE_VERIFY(!importer.image2D(0));
-    CORRADE_COMPARE(debug.str(), "TgaImporter: unsupported bits-per-pixel: 16\n");
+    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::TgaImporter::image2D(): unsupported color bits-per-pixel: 16\n");
 }
 
-void TgaImporterTest::bits24() {
+void TgaImporterTest::colorBits24() {
     TgaImporter importer;
     const char data[] = {
         0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
@@ -140,7 +148,7 @@ void TgaImporterTest::bits24() {
     delete image;
 }
 
-void TgaImporterTest::bits32() {
+void TgaImporterTest::colorBits32() {
     TgaImporter importer;
     const char data[] = {
         0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 32, 0,
@@ -171,6 +179,35 @@ void TgaImporterTest::bits32() {
     CORRADE_COMPARE(std::string(static_cast<const char*>(image->data()), 2*3*3), std::string(pixels, 2*3*3));
 
     delete image;
+}
+
+void TgaImporterTest::grayscaleBits8() {
+    TgaImporter importer;
+    const char data[] = {
+        0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 8, 0,
+        1, 2,
+        3, 4,
+        5, 6
+    };
+    CORRADE_VERIFY(importer.openData(data));
+
+    Trade::ImageData2D* image = importer.image2D(0);
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->format(), Trade::ImageData2D::Format::Red);
+    CORRADE_COMPARE(image->size(), Vector2i(2, 3));
+    CORRADE_COMPARE(image->type(), Trade::ImageData2D::Type::UnsignedByte);
+    CORRADE_COMPARE(std::string(static_cast<const char*>(image->data()), 2*3), std::string(data + 18, 2*3));
+}
+
+void TgaImporterTest::grayscaleBits16() {
+    TgaImporter importer;
+    const char data[] = { 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0 };
+    CORRADE_VERIFY(importer.openData(data));
+
+    std::ostringstream debug;
+    Error::setOutput(&debug);
+    CORRADE_VERIFY(!importer.image2D(0));
+    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::TgaImporter::image2D(): unsupported grayscale bits-per-pixel: 16\n");
 }
 
 }}}}

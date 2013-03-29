@@ -46,7 +46,11 @@
 
 namespace Magnum { namespace Trade { namespace TgaImporter {
 
-/** @brief TGA importer plugin */
+/**
+@brief TGA image importer
+
+Supports uncompressed BGR, BGRA or grayscale images with 8 bits per channel.
+*/
 class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     public:
         /** @brief Default constructor */
