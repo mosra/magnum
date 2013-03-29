@@ -33,21 +33,21 @@
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifdef _WIN32
     #ifdef TgaImporter_EXPORTS
-        #define TGAIMPORTER_EXPORT __declspec(dllexport)
+        #define MAGNUM_TGAIMPORTER_EXPORT __declspec(dllexport)
     #else
-        #define TGAIMPORTER_EXPORT __declspec(dllimport)
+        #define MAGNUM_TGAIMPORTER_EXPORT __declspec(dllimport)
     #endif
-    #define TGAIMPORTER_LOCAL
+    #define MAGNUM_TGAIMPORTER_LOCAL
 #else
-    #define TGAIMPORTER_EXPORT __attribute__ ((visibility ("default")))
-    #define TGAIMPORTER_LOCAL __attribute__ ((visibility ("hidden")))
+    #define MAGNUM_TGAIMPORTER_EXPORT __attribute__ ((visibility ("default")))
+    #define MAGNUM_TGAIMPORTER_LOCAL __attribute__ ((visibility ("hidden")))
 #endif
 #endif
 
 namespace Magnum { namespace Trade { namespace TgaImporter {
 
 /** @brief TGA importer plugin */
-class TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
+class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     public:
         /** @brief Default constructor */
         inline explicit TgaImporter(): _image(nullptr) {}
@@ -69,7 +69,7 @@ class TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         #pragma pack(1)
         /** @brief TGA file header */
         /** @todoc Enable @c INLINE_SIMPLE_STRUCTS again when unclosed &lt;component&gt; in tagfile is fixed*/
-        struct TGAIMPORTER_LOCAL Header {
+        struct MAGNUM_TGAIMPORTER_LOCAL Header {
             UnsignedByte    identsize;      /**< @brief Size of ID field that follows header (0) */
             UnsignedByte    colorMapType;   /**< @brief 0 = None, 1 = paletted */
             UnsignedByte    imageType;      /**< @brief 0 = none, 1 = indexed, 2 = rgb, 3 = grey, +8=rle */
