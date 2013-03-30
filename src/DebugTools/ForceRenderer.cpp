@@ -95,7 +95,7 @@ template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneG
 }
 
 template<UnsignedInt dimensions> void ForceRenderer<dimensions>::draw(const typename DimensionTraits<dimensions>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions>* camera) {
-    shader->setTransformationProjectionMatrix(camera->projectionMatrix()*Implementation::forceRendererTransformation<dimensions>(transformationMatrix.translation()+forcePosition, *force)*DimensionTraits<dimensions>::MatrixType::scaling(typename DimensionTraits<dimensions>::VectorType(options->scale())))
+    shader->setTransformationProjectionMatrix(camera->projectionMatrix()*Implementation::forceRendererTransformation<dimensions>(transformationMatrix.transformPoint(forcePosition), *force)*DimensionTraits<dimensions>::MatrixType::scaling(typename DimensionTraits<dimensions>::VectorType(options->scale())))
         ->setColor(options->color())
         ->use();
     mesh->draw();
