@@ -54,6 +54,8 @@ else()
     option(WITH_SDL2APPLICATION "Build Sdl2Application library" OFF)
 endif()
 
+option(BUILD_STATIC "Build static libraries (default are shared)" OFF)
+cmake_dependent_option(BUILD_STATIC_PIC "Build static libraries with position-independent code" OFF "BUILD_STATIC" OFF)
 option(BUILD_TESTS "Build unit tests." OFF)
 if(BUILD_TESTS)
     enable_testing()
@@ -93,6 +95,12 @@ if(TARGET_GLES)
 endif()
 if(TARGET_DESKTOP_GLES)
     set(MAGNUM_TARGET_DESKTOP_GLES 1)
+endif()
+
+if(NOT BUILD_STATIC)
+    set(SHARED_OR_STATIC SHARED)
+else()
+    set(SHARED_OR_STATIC STATIC)
 endif()
 
 # Installation paths

@@ -73,10 +73,15 @@ set(MagnumSceneGraph_HEADERS
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
 add_library(MagnumSceneGraphObjects OBJECT ${MagnumSceneGraph_SRCS})
-set_target_properties(MagnumSceneGraphObjects PROPERTIES COMPILE_FLAGS "-DMagnumSceneGraphObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
+    set_target_properties(MagnumSceneGraphObjects PROPERTIES COMPILE_FLAGS "-DMagnumSceneGraphObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+else()
+    set_target_properties(MagnumSceneGraphObjects PROPERTIES COMPILE_FLAGS "-DMagnumSceneGraphObjects_EXPORTS")
+endif()
 
 # SceneGraph library
-add_library(MagnumSceneGraph SHARED
+add_library(MagnumSceneGraph ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumSceneGraphObjects>
     ${MagnumSceneGraph_GracefulAssert_SRCS})
 target_link_libraries(MagnumSceneGraph Magnum)
@@ -86,7 +91,7 @@ install(FILES ${MagnumSceneGraph_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_D
 
 if(BUILD_TESTS)
     # Library with graceful assert for testing
-    add_library(MagnumSceneGraphTestLib SHARED
+    add_library(MagnumSceneGraphTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumSceneGraphObjects>
         ${MagnumSceneGraph_GracefulAssert_SRCS})
     set_target_properties(MagnumSceneGraphTestLib PROPERTIES COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT -DMagnumSceneGraph_EXPORTS")

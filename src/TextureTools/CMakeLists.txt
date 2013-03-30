@@ -37,7 +37,11 @@ set(MagnumTextureTools_HEADERS
 
     magnumTextureToolsVisibility.h)
 
-add_library(MagnumTextureTools SHARED ${MagnumTextureTools_SRCS})
+add_library(MagnumTextureTools ${SHARED_OR_STATIC} ${MagnumTextureTools_SRCS})
+if(BUILD_STATIC_PIC)
+    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
+    set_target_properties(MagnumTextureTools PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
+endif()
 target_link_libraries(MagnumTextureTools Magnum)
 
 install(TARGETS MagnumTextureTools DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})

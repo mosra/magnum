@@ -156,9 +156,13 @@ add_library(MagnumObjects OBJECT ${Magnum_SRCS})
 set_target_properties(MagnumObjects MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
 # Main library
-add_library(Magnum SHARED
+add_library(Magnum ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumObjects>
     $<TARGET_OBJECTS:MagnumMathObjects>)
+if(BUILD_STATIC_PIC)
+    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
+    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
+endif()
 set(Magnum_LIBS
     ${CORRADE_UTILITY_LIBRARY}
     ${CORRADE_PLUGINMANAGER_LIBRARY})
@@ -216,12 +220,12 @@ endif()
 
 if(BUILD_TESTS)
     # Libraries with graceful assert for testing
-    add_library(MagnumMathTestLib SHARED
+    add_library(MagnumMathTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumMathObjects>)
     set_target_properties(MagnumMathTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
     target_link_libraries(MagnumMathTestLib ${CORRADE_UTILITY_LIBRARY})
 
-    add_library(MagnumTestLib SHARED
+    add_library(MagnumTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumObjects>
         $<TARGET_OBJECTS:MagnumMathObjects>)
     set_target_properties(MagnumTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
