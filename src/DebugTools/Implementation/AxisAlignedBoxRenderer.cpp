@@ -34,11 +34,9 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 template<UnsignedInt dimensions> AxisAlignedBoxRenderer<dimensions>::AxisAlignedBoxRenderer(Physics::AxisAlignedBox<dimensions>& axisAlignedBox): axisAlignedBox(axisAlignedBox) {}
 
 template<UnsignedInt dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
-    /* Half scale, because the box is 2x2(x2) */
-    typename DimensionTraits<dimensions>::MatrixType transformation =
+    this->shader->setTransformationProjectionMatrix(projectionMatrix*
         DimensionTraits<dimensions>::MatrixType::translation((axisAlignedBox.transformedMin()+axisAlignedBox.transformedMax())/2)*
-        DimensionTraits<dimensions>::MatrixType::scaling((axisAlignedBox.transformedMax()-axisAlignedBox.transformedMin())/2);
-    this->shader->setTransformationProjectionMatrix(projectionMatrix*transformation)
+        DimensionTraits<dimensions>::MatrixType::scaling(axisAlignedBox.transformedMax()-axisAlignedBox.transformedMin()))
         ->setColor(options->color())
         ->use();
     this->mesh->draw();

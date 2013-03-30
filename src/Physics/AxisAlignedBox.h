@@ -39,6 +39,8 @@ namespace Magnum { namespace Physics {
 /**
 @brief Axis-aligned box
 
+Unit-size means that half extents are equal to 1, equivalent to e.g. sphere
+radius.
 @see AxisAlignedBox2D, AxisAlignedBox3D
 @todo Assert for rotation
 */
