@@ -33,7 +33,8 @@ set(MagnumDebugTools_SRCS
     Implementation/AbstractShapeRenderer.cpp
     Implementation/AxisAlignedBoxRenderer.cpp
     Implementation/BoxRenderer.cpp
-    Implementation/PointRenderer.cpp)
+    Implementation/PointRenderer.cpp
+    Implementation/SphereRenderer.cpp)
 
 set(MagnumDebugTools_HEADERS
     ForceRenderer.h
