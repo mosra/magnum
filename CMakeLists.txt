@@ -71,16 +71,15 @@ if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION} VERSION_
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Magnum_SOURCE_DIR}/modules-compatibility/")
 endif()
 
+find_package(Corrade REQUIRED)
+
 # If targeting NaCl, set explicit OpenGL ES 2.0 support
-if(${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
+if(CORRADE_TARGET_NACL)
     set(TARGET_GLES 1)
     set(TARGET_GLES2 1)
-    set(TARGET_NACL 1)
-    set(MAGNUM_TARGET_NACL 1)
 endif()
 
 # Check dependencies
-find_package(Corrade REQUIRED)
 if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
     find_package(OpenGL REQUIRED)
 elseif(TARGET_GLES2)

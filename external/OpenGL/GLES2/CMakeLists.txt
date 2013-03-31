@@ -26,7 +26,7 @@ set(MagnumOpenGL_HEADERS
     gl2ext.h)
 
 # NaCl has its own gl2.h, this one causes linker issues
-if(NOT TARGET_NACL)
+if(NOT CORRADE_TARGET_NACL)
     set(MagnumOpenGL_HEADERS ${MagnumOpenGL_HEADERS}
         gl2platform.h
         gl2.h)

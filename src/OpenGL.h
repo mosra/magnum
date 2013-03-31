@@ -28,6 +28,7 @@
  * @brief OpenGL headers
  */
 
+#include <corradeConfigure.h>
 #include "magnumConfigure.h"
 
 /* Desktop OpenGL */
@@ -38,7 +39,7 @@
 /* NaCl has its own gl2.h, the official one causes linker issues. Additionaly
    to NaCl's gl2ext.h we are including our own to prevent undeclared symbol
    errors with some recent extensions. */
-#elif defined(MAGNUM_TARGET_NACL)
+#elif defined(CORRADE_TARGET_NACL)
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #undef __gl2ext_h_
