@@ -42,8 +42,10 @@ Trade::MeshData2D Circle::solid(UnsignedInt segments) {
 
     /* Points on circle */
     const Rad angleIncrement(2*Constants::pi()/segments);
-    for(UnsignedInt i = 0; i != segments; ++i)
-        positions->emplace_back(Math::cos(i*angleIncrement), Math::sin(i*angleIncrement));
+    for(UnsignedInt i = 0; i != segments; ++i) {
+        const Rad angle(i*angleIncrement);
+        positions->emplace_back(Math::cos(angle), Math::sin(angle));
+    }
 
     return Trade::MeshData2D(Mesh::Primitive::TriangleFan, nullptr, {positions}, {});
 }
@@ -57,8 +59,10 @@ Trade::MeshData2D Circle::wireframe(UnsignedInt segments) {
 
     /* Points on circle */
     const Rad angleIncrement(2*Constants::pi()/segments);
-    for(UnsignedInt i = 0; i != segments; ++i)
-        positions->emplace_back(Math::cos(i*angleIncrement), Math::sin(i*angleIncrement));
+    for(UnsignedInt i = 0; i != segments; ++i) {
+        const Rad angle(i*angleIncrement);
+        positions->emplace_back(Math::cos(angle), Math::sin(angle));
+    }
 
     return Trade::MeshData2D(Mesh::Primitive::LineLoop, nullptr, {positions}, {});
 }

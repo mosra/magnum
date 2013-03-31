@@ -41,9 +41,9 @@ Image2D* AbstractImageConverter::convertToImage(const Image2D* const) const {
 
 std::pair<const unsigned char*, std::size_t> AbstractImageConverter::convertToData(const Image2D* const) const {
     CORRADE_ASSERT(features() & Feature::ConvertToData,
-        "Trade::AbstractImageConverter::convertToData(): feature advertised but not implemented", std::make_pair(nullptr, 0));
+        "Trade::AbstractImageConverter::convertToData(): feature advertised but not implemented", {});
 
-    CORRADE_ASSERT(false, "Trade::AbstractImageConverter::convertToData(): feature not implemented", std::make_pair(nullptr, 0));
+    CORRADE_ASSERT(false, "Trade::AbstractImageConverter::convertToData(): feature not implemented", {});
 }
 
 bool AbstractImageConverter::convertToFile(const Image2D* const, const std::string&) const {
