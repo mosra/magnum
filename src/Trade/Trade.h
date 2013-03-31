@@ -34,6 +34,7 @@ namespace Magnum { namespace Trade {
 
 /** @todoc Remove `ifndef` when Doxygen is sane again */
 #ifndef DOXYGEN_GENERATING_OUTPUT
+class AbstractImageConverter;
 class AbstractImporter;
 class AbstractMaterialData;
 class CameraData;

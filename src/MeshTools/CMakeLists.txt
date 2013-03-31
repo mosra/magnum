@@ -48,12 +48,21 @@ set(MagnumMeshTools_HEADERS
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
 add_library(MagnumMeshToolsObjects OBJECT ${MagnumMeshTools_SRCS})
-set_target_properties(MagnumMeshToolsObjects PROPERTIES COMPILE_FLAGS "-DMagnumMeshToolsObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+if(NOT BUILD_SHARED OR BUILD_STATIC_PIC)
+    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
+    set_target_properties(MagnumMeshToolsObjects PROPERTIES COMPILE_FLAGS "-DMagnumMeshToolsObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+else()
+    set_target_properties(MagnumMeshToolsObjects PROPERTIES COMPILE_FLAGS "-DMagnumMeshToolsObjects_EXPORTS")
+endif()
 
 # Main library
-add_library(MagnumMeshTools SHARED
+add_library(MagnumMeshTools ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumMeshToolsObjects>
     ${MagnumMeshTools_GracefulAssert_SRCS})
+if(BUILD_STATIC_PIC)
+    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
+    set_target_properties(MagnumMeshTools PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
+endif()
 target_link_libraries(MagnumMeshTools Magnum)
 
 install(TARGETS MagnumMeshTools DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
@@ -61,7 +70,7 @@ install(FILES ${MagnumMeshTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DI
 
 if(BUILD_TESTS)
     # Library with graceful assert for testing
-    add_library(MagnumMeshToolsTestLib SHARED
+    add_library(MagnumMeshToolsTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumMeshToolsObjects>
         ${MagnumMeshTools_GracefulAssert_SRCS})
     set_target_properties(MagnumMeshToolsTestLib PROPERTIES COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT -DMagnumMeshTools_EXPORTS")

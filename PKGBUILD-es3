@@ -1,0 +1,44 @@
+# Author: mosra <mosra@centrum.cz>
+pkgname=magnum
+pkgver=dev.es3
+pkgrel=1
+pkgdesc="OpenGL graphics engine (OpenGL ES 3.0 version)"
+arch=('i686' 'x86_64')
+url="https://github.com/mosra/magnum"
+license=('MIT')
+depends=('corrade' 'glew')
+makedepends=('cmake')
+options=(!strip)
+provides=('magnum-git')
+
+build() {
+    mkdir -p "$startdir/build-es3"
+    cd "$startdir/build-es3"
+
+    if [ "$CXX" = clang++ ] ; then
+        newcxxflags=$(echo $CXXFLAGS | sed s/--param=ssp-buffer-size=4//g)
+        export CXXFLAGS="$newcxxflags"
+    fi
+
+    cmake .. \
+        -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DBUILD_TESTS=ON \
+        -DTARGET_GLES=ON \
+        -DTARGET_GLES2=OFF \
+        -DWITH_TEXT=OFF \
+        -DWITH_TEXTURETOOLS=OFF \
+        -DWITH_MAGNUMINFO=OFF \
+        -DWITH_XEGLAPPLICATION=ON
+    make
+}
+
+check() {
+    cd "$startdir/build-es3"
+    ctest --output-on-failure
+}
+
+package() {
+    cd "$startdir/build-es3"
+    make DESTDIR="$pkgdir/" install
+}

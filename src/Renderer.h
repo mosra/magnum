@@ -77,6 +77,11 @@ class MAGNUM_EXPORT Renderer {
              */
             Blending = GL_BLEND,
 
+            DepthTest = GL_DEPTH_TEST,      /**< Depth test */
+            Dithering = GL_DITHER,          /**< Dithering (enabled by default) */
+
+            FaceCulling = GL_CULL_FACE,     /**< Back face culling */
+
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Logical operation
@@ -85,7 +90,17 @@ class MAGNUM_EXPORT Renderer {
              *      available in OpenGL ES.
              */
             LogicOperation = GL_COLOR_LOGIC_OP,
+            #endif
 
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Multisampling (enabled by default)
+             * @requires_gl Always enabled in OpenGL ES.
+             */
+            Multisampling = GL_MULTISAMPLE,
+            #endif
+
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Depth clamping. If enabled, ignores near and far clipping plane.
              * @requires_gl32 %Extension @extension{ARB,depth_clamp}
@@ -99,10 +114,8 @@ class MAGNUM_EXPORT Renderer {
              * @see setScissor()
              */
             ScissorTest = GL_SCISSOR_TEST,
-            DepthTest = GL_DEPTH_TEST,      /**< Depth test */
-            StencilTest = GL_STENCIL_TEST,  /**< Stencil test */
-            Dithering = GL_DITHER,          /**< Dithering (enabled by default) */
-            FaceCulling = GL_CULL_FACE      /**< Back face culling */
+
+            StencilTest = GL_STENCIL_TEST   /**< Stencil test */
         };
 
         /**
@@ -381,7 +394,9 @@ class MAGNUM_EXPORT Renderer {
 
         /*@}*/
 
-        /** @{ @name Blending
+        /**
+         * @{ @name Blending
+         *
          * You have to enable blending with setFeature() first.
          * @todo Blending for given draw buffer
          */
@@ -651,6 +666,29 @@ class MAGNUM_EXPORT Renderer {
 
         /*@}*/
         #endif
+
+        /** @{ @name Renderer management */
+
+        /**
+         * @brief Flush the pipeline
+         *
+         * @see finish(), @fn_gl{Flush}
+         */
+        inline static void flush() {
+            glFlush();
+        }
+
+        /**
+         * @brief Finish the pipeline
+         *
+         * Blocks until all commands in the pipeline are finished.
+         * @see flush(), @fn_gl{Finish}
+         */
+        inline static void finish() {
+            glFinish();
+        }
+
+        /*@}*/
 };
 
 }

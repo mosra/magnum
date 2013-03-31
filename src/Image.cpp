@@ -31,7 +31,7 @@ template<UnsignedInt dimensions> void Image<dimensions>::setData(const typename 
     _format = format;
     _type = type;
     _size = size;
-    _data = reinterpret_cast<char*>(data);
+    _data = reinterpret_cast<unsigned char*>(data);
 }
 
 template class Image<1>;

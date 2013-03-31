@@ -33,7 +33,8 @@ set(MagnumDebugTools_SRCS
     Implementation/AbstractShapeRenderer.cpp
     Implementation/AxisAlignedBoxRenderer.cpp
     Implementation/BoxRenderer.cpp
-    Implementation/PointRenderer.cpp)
+    Implementation/PointRenderer.cpp
+    Implementation/SphereRenderer.cpp)
 
 set(MagnumDebugTools_HEADERS
     ForceRenderer.h
@@ -45,7 +46,11 @@ set(MagnumDebugTools_HEADERS
 
     magnumDebugToolsVisibility.h)
 
-add_library(MagnumDebugTools SHARED ${MagnumDebugTools_SRCS})
+add_library(MagnumDebugTools ${SHARED_OR_STATIC} ${MagnumDebugTools_SRCS})
+if(BUILD_STATIC_PIC)
+    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
+    set_target_properties(MagnumDebugTools PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
+endif()
 target_link_libraries(MagnumDebugTools
     Magnum
     MagnumMeshTools

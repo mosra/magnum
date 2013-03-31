@@ -36,12 +36,8 @@ namespace Magnum { namespace Text {
 
 class AbstractFont;
 class AbstractLayouter;
-
-class FreeTypeFontRenderer;
-class FreeTypeFont;
-#ifdef MAGNUM_USE_HARFBUZZ
-class HarfBuzzFont;
-#endif
+class DistanceFieldGlyphCache;
+class GlyphCache;
 
 class AbstractTextRenderer;
 template<UnsignedInt> class TextRenderer;

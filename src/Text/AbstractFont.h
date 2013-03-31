@@ -30,6 +30,7 @@
 
 #include <tuple>
 #include <string>
+#include <PluginManager/AbstractPlugin.h>
 
 #include "Magnum.h"
 #include "Texture.h"
@@ -39,34 +40,80 @@
 namespace Magnum { namespace Text {
 
 /**
-@brief Base for fonts
+@brief Base for font plugins
+
+@section AbstractFont-usage Usage
+
+First step is to open the font using open(), next step is to prerender all the
+glyphs which will be used in text rendering later, see GlyphCache for more
+information. See TextRenderer for information about text rendering.
+
+@section AbstractFont-subclassing Subclassing
+
+Plugin implements functions open(), close(), createGlyphCache() and layout().
 */
-class MAGNUM_TEXT_EXPORT AbstractFont {
-    AbstractFont(const AbstractFont&) = delete;
-    AbstractFont(AbstractFont&&) = delete;
-    AbstractFont& operator=(const AbstractFont&) = delete;
-    AbstractFont& operator=(const AbstractFont&&) = delete;
+class MAGNUM_TEXT_EXPORT AbstractFont: public Corrade::PluginManager::AbstractPlugin {
+    PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.1")
 
     public:
-        AbstractFont();
-        virtual ~AbstractFont() = 0;
+        /** @brief Default constructor */
+        explicit AbstractFont();
 
-        /** @brief %Font texture atlas */
-        inline Texture2D& texture() { return _texture; }
+        /** @brief Plugin manager constructor */
+        explicit AbstractFont(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin);
 
         /**
-         * @brief Layout the text using fon't own layouter
-         * @param size      %Font size
-         * @param text      Text to layout
+         * @brief Open font from file
+         * @param filename      Font file
+         * @param size          Font size
+         *
+         * Closes previous file, if it was opened, and tries to open given
+         * file. Returns `true` on success, `false` otherwise.
          */
-        virtual AbstractLayouter* layout(const Float size, const std::string& text) = 0;
+        virtual bool open(const std::string& filename, Float size) = 0;
+
+        /**
+         * @brief Open font from memory
+         * @param data          Font data
+         * @param dataSize      Font data size
+         * @param size          Font size
+         *
+         * Closes previous file, if it was opened, and tries to open given
+         * file. Returns `true` on success, `false` otherwise.
+         */
+        virtual bool open(const unsigned char* data, std::size_t dataSize, Float size) = 0;
+
+        /** @brief Close font */
+        virtual void close() = 0;
+
+        /** @brief Font size */
+        inline Float size() const { return _size; }
+
+        /**
+         * @brief Create glyph cache for given character set
+         * @param cache         Glyph cache instance
+         * @param characters    UTF-8 characters to render
+         *
+         * Fills the cache with given characters.
+         */
+        virtual void createGlyphCache(GlyphCache* const cache, const std::string& characters) = 0;
+
+        /**
+         * @brief Layout the text using font own layouter
+         * @param cache     Glyph cache
+         * @param size      Font size
+         * @param text      %Text to layout
+         *
+         * @see createGlyphCache()
+         */
+        virtual AbstractLayouter* layout(const GlyphCache* const cache, const Float size, const std::string& text) = 0;
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
     #else
     protected:
     #endif
-        Texture2D _texture;
+        Float _size;
 };
 
 /**
@@ -81,7 +128,7 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
     AbstractLayouter& operator=(const AbstractLayouter&&) = delete;
 
     public:
-        AbstractLayouter();
+        explicit AbstractLayouter();
         virtual ~AbstractLayouter() = 0;
 
         /** @brief Count of glyphs in laid out text */

@@ -52,7 +52,11 @@ set(MagnumPhysics_HEADERS
 
     magnumPhysicsVisibility.h)
 
-add_library(MagnumPhysics SHARED ${MagnumPhysics_SRCS})
+add_library(MagnumPhysics ${SHARED_OR_STATIC} ${MagnumPhysics_SRCS})
+if(BUILD_STATIC_PIC)
+    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
+    set_target_properties(MagnumPhysics PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
+endif()
 target_link_libraries(MagnumPhysics Magnum MagnumSceneGraph)
 
 install(TARGETS MagnumPhysics DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})

@@ -69,6 +69,12 @@ void Sdl2Application::createContext(Configuration* configuration) {
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
+    /* Multisampling */
+    if(configuration->sampleCount()) {
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, configuration->sampleCount());
+    }
+
     window = SDL_CreateWindow(configuration->title().c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         configuration->size().x(), configuration->size().y(), SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     if(!window) {

@@ -39,6 +39,8 @@ namespace Magnum { namespace Physics {
 /**
 @brief Unit-size box with assigned transformation matrix
 
+Unit-size means that half extents are equal to 1, equivalent to e.g. sphere
+radius.
 @todo Use quat + position + size instead?
 @see Box2D, Box3D
 @todo Assert for skew

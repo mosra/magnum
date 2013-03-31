@@ -23,5 +23,6 @@
 #
 
 corrade_add_test(PrimitivesCapsuleTest CapsuleTest.cpp LIBRARIES MagnumPrimitives)
-corrade_add_test(PrimitivesUVSphereTest UVSphereTest.cpp LIBRARIES MagnumPrimitives)
+corrade_add_test(PrimitivesCircleTest CircleTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesCylinderTest CylinderTest.cpp LIBRARIES MagnumPrimitives)
+corrade_add_test(PrimitivesUVSphereTest UVSphereTest.cpp LIBRARIES MagnumPrimitives)

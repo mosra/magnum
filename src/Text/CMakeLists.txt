@@ -22,34 +22,26 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-find_package(Freetype REQUIRED)
-include_directories(${FREETYPE_INCLUDE_DIRS})
-
 set(MagnumText_SRCS
     AbstractFont.cpp
-    FreeTypeFont.cpp
+    DistanceFieldGlyphCache.cpp
+    GlyphCache.cpp
     TextRenderer.cpp)
 set(MagnumText_HEADERS
     AbstractFont.h
-    FreeTypeFont.h
+    DistanceFieldGlyphCache.h
+    GlyphCache.h
     Text.h
     TextRenderer.h
 
     magnumTextVisibility.h)
 
-if(USE_HARFBUZZ)
-    find_package(HarfBuzz REQUIRED)
-    include_directories(${HARFBUZZ_INCLUDE_DIRS})
-
-    set(MagnumText_SRCS ${MagnumText_SRCS} HarfBuzzFont.cpp)
-    set(MagnumText_HEADERS ${MagnumText_HEADERS} HarfBuzzFont.h)
+add_library(MagnumText ${SHARED_OR_STATIC} ${MagnumText_SRCS})
+if(BUILD_STATIC_PIC)
+    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
+    set_target_properties(MagnumText PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
 endif()
-
-add_library(MagnumText SHARED ${MagnumText_SRCS})
-target_link_libraries(MagnumText Magnum MagnumTextureTools ${FREETYPE_LIBRARIES})
-if(USE_HARFBUZZ)
-    target_link_libraries(MagnumText ${HARFBUZZ_LIBRARIES})
-endif()
+target_link_libraries(MagnumText Magnum MagnumTextureTools)
 
 install(TARGETS MagnumText DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumText_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Text)

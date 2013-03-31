@@ -84,7 +84,7 @@ DistanceFieldShader::DistanceFieldShader() {
 void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectangle, const Int radius) {
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::EXT::framebuffer_object);
 
-    /** @todo Disable depth test and then enable it back (if was previously) */
+    /** @todo Disable depth test, blending and then enable it back (if was previously) */
 
     Framebuffer framebuffer(rectangle);
     framebuffer.attachTexture2D(Framebuffer::ColorAttachment(0), output, 0);

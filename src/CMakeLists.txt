@@ -67,11 +67,17 @@ set(Magnum_SRCS
     Implementation/BufferState.cpp
     Implementation/State.cpp
 
+    Trade/AbstractImageConverter.cpp
     Trade/AbstractImporter.cpp
+    Trade/AbstractMaterialData.cpp
     Trade/MeshData2D.cpp
     Trade/MeshData3D.cpp
+    Trade/MeshObjectData2D.cpp
+    Trade/MeshObjectData3D.cpp
     Trade/ObjectData2D.cpp
-    Trade/ObjectData3D.cpp)
+    Trade/ObjectData3D.cpp
+    Trade/PhongMaterialData.cpp
+    Trade/SceneData.cpp)
 
 # Desktop-only code
 if(NOT TARGET_GLES)
@@ -150,16 +156,22 @@ add_library(MagnumObjects OBJECT ${Magnum_SRCS})
 set_target_properties(MagnumObjects MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
 # Main library
-add_library(Magnum SHARED
+add_library(Magnum ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumObjects>
     $<TARGET_OBJECTS:MagnumMathObjects>)
+if(BUILD_STATIC_PIC)
+    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
+    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
+endif()
 set(Magnum_LIBS
     ${CORRADE_UTILITY_LIBRARY}
     ${CORRADE_PLUGINMANAGER_LIBRARY})
 if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
     set(Magnum_LIBS ${Magnum_LIBS} ${OPENGL_gl_LIBRARY})
-else()
+elseif(TARGET_GLES2)
     set(Magnum_LIBS ${Magnum_LIBS} ${OPENGLES2_LIBRARY})
+else()
+    set(Magnum_LIBS ${Magnum_LIBS} ${OPENGLES3_LIBRARY})
 endif()
 if(NOT TARGET_GLES)
     set(Magnum_LIBS ${Magnum_LIBS} ${GLEW_LIBRARIES})
@@ -208,14 +220,12 @@ endif()
 
 if(BUILD_TESTS)
     # Libraries with graceful assert for testing
-    add_library(MagnumMathTestLib SHARED
+    add_library(MagnumMathTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumMathObjects>)
     set_target_properties(MagnumMathTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
-    if(WIN32)
-        target_link_libraries(MagnumMathTestLib ${CORRADE_UTILITY_LIBRARY})
-    endif()
+    target_link_libraries(MagnumMathTestLib ${CORRADE_UTILITY_LIBRARY})
 
-    add_library(MagnumTestLib SHARED
+    add_library(MagnumTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumObjects>
         $<TARGET_OBJECTS:MagnumMathObjects>)
     set_target_properties(MagnumTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)

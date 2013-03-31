@@ -80,7 +80,10 @@ void RectangleTest::constructFromSize() {
 
 void RectangleTest::constructConversion() {
     constexpr Rectangle a({1.3f, 2.7f}, {-15.0f, 7.0f});
-    constexpr Rectanglei b(a);
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr /* Not constexpr under GCC < 4.7 */
+    #endif
+    Rectanglei b(a);
     CORRADE_COMPARE(b, Rectanglei({1, 2}, {-15, 7}));
 
     /* Implicit conversion is not allowed */

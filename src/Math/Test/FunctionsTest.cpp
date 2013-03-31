@@ -52,6 +52,7 @@ class FunctionsTest: public Corrade::TestSuite::Tester {
         void log();
         void log2();
         void trigonometric();
+        void trigonometricWithBase();
 };
 
 typedef Math::Constants<Float> Constants;
@@ -81,7 +82,8 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::pow,
               &FunctionsTest::log,
               &FunctionsTest::log2,
-              &FunctionsTest::trigonometric});
+              &FunctionsTest::trigonometric,
+              &FunctionsTest::trigonometricWithBase});
 }
 
 void FunctionsTest::min() {
@@ -294,6 +296,21 @@ void FunctionsTest::trigonometric() {
     CORRADE_COMPARE(Math::tan(Deg(45.0f)), 1.0f);
     CORRADE_COMPARE(Math::tan(Rad(Constants::pi()/4)), 1.0f);
     CORRADE_COMPARE_AS(Math::atan(1.0f), Deg(45.0f), Deg);
+}
+
+void FunctionsTest::trigonometricWithBase() {
+    /* Verify that the functions can be called with Unit<Deg, T> and Unit<Rad, T> */
+    CORRADE_VERIFY((std::is_same<decltype(2*Deg(15.0f)), Unit<Math::Deg, Float>>::value));
+    CORRADE_VERIFY((std::is_same<decltype(2*Rad(Constants::pi()/12)), Unit<Math::Rad, Float>>::value));
+
+    CORRADE_COMPARE(Math::sin(2*Deg(15.0f)), 0.5f);
+    CORRADE_COMPARE(Math::sin(2*Rad(Constants::pi()/12)), 0.5f);
+
+    CORRADE_COMPARE(Math::cos(2*Deg(30.0f)), 0.5f);
+    CORRADE_COMPARE(Math::cos(2*Rad(Constants::pi()/6)), 0.5f);
+
+    CORRADE_COMPARE(Math::tan(2*Deg(22.5f)), 1.0f);
+    CORRADE_COMPARE(Math::tan(2*Rad(Constants::pi()/8)), 1.0f);
 }
 
 }}}

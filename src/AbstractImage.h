@@ -131,6 +131,7 @@ class MAGNUM_EXPORT AbstractImage {
             BGR = GL_BGR,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES3
             /**
              * Floating-point BGRA.
              * @requires_es_extension %Extension @es_extension{EXT,read_format_bgra}
@@ -142,6 +143,7 @@ class MAGNUM_EXPORT AbstractImage {
             BGRA = GL_BGRA,
             #else
             BGRA = GL_BGRA_EXT,
+            #endif
             #endif
 
             #ifndef MAGNUM_TARGET_GLES2
@@ -230,6 +232,7 @@ class MAGNUM_EXPORT AbstractImage {
              */
             DepthComponent = GL_DEPTH_COMPONENT,
 
+            #ifndef MAGNUM_TARGET_GLES3
             /**
              * Stencil index. For framebuffer reading only.
              * @requires_es_extension %Extension @es_extension2{NV,read_stencil,GL_NV_read_depth_stencil}
@@ -239,6 +242,7 @@ class MAGNUM_EXPORT AbstractImage {
             StencilIndex = GL_STENCIL_INDEX,
             #else
             StencilIndex = 0x1901,
+            #endif
             #endif
 
             /**
@@ -369,6 +373,7 @@ class MAGNUM_EXPORT AbstractImage {
              */
             UnsignedShort4444 = GL_UNSIGNED_SHORT_4_4_4_4,
 
+            #ifndef MAGNUM_TARGET_GLES3
             /**
              * ABGR, unsigned short, each component 4bit.
              * @requires_es_extension For framebuffer reading only, extension
@@ -379,6 +384,7 @@ class MAGNUM_EXPORT AbstractImage {
             #else
             UnsignedShort4444Rev = GL_UNSIGNED_SHORT_4_4_4_4_REV_EXT,
             #endif
+            #endif
 
             /**
              * RGBA, unsigned short, each RGB component 5bit, alpha component
@@ -387,6 +393,7 @@ class MAGNUM_EXPORT AbstractImage {
              */
             UnsignedShort5551 = GL_UNSIGNED_SHORT_5_5_5_1,
 
+            #ifndef MAGNUM_TARGET_GLES3
             /**
              * ABGR, unsigned short, each RGB component 5bit, alpha component
              * 1bit.
@@ -397,6 +404,7 @@ class MAGNUM_EXPORT AbstractImage {
             UnsignedShort1555Rev = GL_UNSIGNED_SHORT_1_5_5_5_REV,
             #else
             UnsignedShort1555Rev = GL_UNSIGNED_SHORT_1_5_5_5_REV_EXT,
+            #endif
             #endif
 
             #ifndef MAGNUM_TARGET_GLES

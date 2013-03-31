@@ -32,6 +32,7 @@
 #include <vector>
 
 #include "Types.h"
+#include "magnumVisibility.h"
 
 namespace Magnum { namespace Trade {
 
@@ -50,7 +51,7 @@ class MAGNUM_EXPORT SceneData {
          * @param children2D    Two-dimensional child objects
          * @param children3D    Three-dimensional child objects
          */
-        inline SceneData(const std::vector<UnsignedInt>& children2D, const std::vector<UnsignedInt>& children3D): _children2D(children2D), _children3D(children3D) {}
+        explicit SceneData(std::vector<UnsignedInt> children2D, std::vector<UnsignedInt> children3D);
 
         /** @brief Two-dimensional child objects */
         inline const std::vector<UnsignedInt>& children2D() const { return _children2D; }

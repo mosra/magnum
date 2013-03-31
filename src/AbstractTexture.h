@@ -152,6 +152,7 @@ class MAGNUM_EXPORT AbstractTexture {
              */
             ClampToEdge = GL_CLAMP_TO_EDGE,
 
+            #ifndef MAGNUM_TARGET_GLES3
             /**
              * Clamp to border color. Coordinates out of range will be clamped
              * to border color (set with setBorderColor()).
@@ -161,6 +162,7 @@ class MAGNUM_EXPORT AbstractTexture {
             ClampToBorder = GL_CLAMP_TO_BORDER
             #else
             ClampToBorder = GL_CLAMP_TO_BORDER_NV
+            #endif
             #endif
         };
 
@@ -314,39 +316,39 @@ class MAGNUM_EXPORT AbstractTexture {
              *      in OpenGL ES.
              */
             RGBA16 = GL_RGBA16,
-            #endif
 
             /**
              * Red component, normalized signed short.
              * @requires_gl31 %Extension @extension{EXT,texture_snorm}
-             * @requires_gles30 Only unsigned normalized formats are available
-             *      in OpenGL ES 2.0.
+             * @requires_gl Only byte-sized normalized formats are available
+             *      in OpenGL ES.
              */
             R16Snorm = GL_R16_SNORM,
 
             /**
              * Red and green component, each normalized signed short.
              * @requires_gl31 %Extension @extension{EXT,texture_snorm}
-             * @requires_gles30 Only unsigned normalized formats are available
-             *      in OpenGL ES 2.0.
+             * @requires_gl Only byte-sized normalized formats are available
+             *      in OpenGL ES.
              */
             RG16Snorm = GL_RG16_SNORM,
 
             /**
              * RGB, each component normalized signed short.
              * @requires_gl31 %Extension @extension{EXT,texture_snorm}
-             * @requires_gles30 Only unsigned normalized formats are available
-             *      in OpenGL ES 2.0.
+             * @requires_gl Only byte-sized normalized formats are available
+             *      in OpenGL ES.
              */
             RGB16Snorm = GL_RGB16_SNORM,
 
             /**
              * RGBA, each component normalized signed short.
              * @requires_gl31 %Extension @extension{EXT,texture_snorm}
-             * @requires_gles30 Only unsigned normalized formats are available
-             *      in OpenGL ES 2.0.
+             * @requires_gl Only byte-sized normalized formats are available
+             *      in OpenGL ES.
              */
             RGBA16Snorm = GL_RGBA16_SNORM,
+            #endif
 
             /**
              * Red component, non-normalized unsigned byte.
@@ -653,6 +655,7 @@ class MAGNUM_EXPORT AbstractTexture {
             RGB565 = GL_RGB565,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES3
             /**
              * RGB, each component normalized unsigned 10bit.
              * @requires_es_extension %Extension @es_extension{OES,required_internalformat}
@@ -662,6 +665,7 @@ class MAGNUM_EXPORT AbstractTexture {
             RGB10 = GL_RGB10,
             #else
             RGB10 = GL_RGB10_EXT,
+            #endif
             #endif
 
             #ifndef MAGNUM_TARGET_GLES
@@ -740,6 +744,7 @@ class MAGNUM_EXPORT AbstractTexture {
             RGB9E5 = GL_RGB9_E5,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES3
             /**
              * sRGB, normalized unsigned, size implementation-dependent.
              * @todo is this allowed in core?
@@ -754,6 +759,7 @@ class MAGNUM_EXPORT AbstractTexture {
             #else
             SRGB = GL_SRGB_EXT,
             #endif
+            #endif
 
             #ifndef MAGNUM_TARGET_GLES2
             /**
@@ -764,6 +770,7 @@ class MAGNUM_EXPORT AbstractTexture {
             SRGB8 = GL_SRGB8,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES3
             /**
              * sRGBA, normalized unsigned, size implementation-dependent.
              * @todo is this allowed in core?
@@ -777,6 +784,7 @@ class MAGNUM_EXPORT AbstractTexture {
             SRGBAlpha = GL_SRGB_ALPHA,
             #else
             SRGBAlpha = GL_SRGB_ALPHA_EXT,
+            #endif
             #endif
 
             #ifndef MAGNUM_TARGET_GLES2
@@ -930,6 +938,7 @@ class MAGNUM_EXPORT AbstractTexture {
             DepthComponent24 = GL_DEPTH_COMPONENT24_OES,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES3
             /**
              * Depth component, 32bit.
              * @requires_es_extension %Extension (@es_extension{OES,required_internalformat},
@@ -940,6 +949,7 @@ class MAGNUM_EXPORT AbstractTexture {
             DepthComponent32 = GL_DEPTH_COMPONENT32,
             #else
             DepthComponent32 = GL_DEPTH_COMPONENT32_OES,
+            #endif
             #endif
 
             #ifndef MAGNUM_TARGET_GLES2
@@ -987,6 +997,7 @@ class MAGNUM_EXPORT AbstractTexture {
          */
         static Int maxSupportedLayerCount();
 
+        #ifndef MAGNUM_TARGET_GLES3
         /**
          * @brief Max supported anisotropy
          *
@@ -997,6 +1008,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @requires_es_extension %Extension @es_extension2{EXT,texture_filter_anisotropic,texture_filter_anisotropic}
          */
         static Float maxSupportedAnisotropy();
+        #endif
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline explicit AbstractTexture(GLenum target): _target(target) {
@@ -1075,6 +1087,7 @@ class MAGNUM_EXPORT AbstractTexture {
             return this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES3
         /**
          * @brief Set border color
          * @return Pointer to self (for method chaining)
@@ -1116,6 +1129,7 @@ class MAGNUM_EXPORT AbstractTexture {
             (this->*parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
             return this;
         }
+        #endif
 
         /**
          * @brief Invalidate texture image

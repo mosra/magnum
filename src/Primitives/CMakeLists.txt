@@ -24,6 +24,7 @@
 
 set(MagnumPrimitives_SRCS
     Capsule.cpp
+    Circle.cpp
     Crosshair.cpp
     Cube.cpp
     Cylinder.cpp
@@ -34,6 +35,7 @@ set(MagnumPrimitives_SRCS
 
 set(MagnumPrimitives_HEADERS
     Capsule.h
+    Circle.h
     Crosshair.h
     Cube.h
     Cylinder.h
@@ -44,7 +46,11 @@ set(MagnumPrimitives_HEADERS
 
     magnumPrimitivesVisibility.h)
 
-add_library(MagnumPrimitives SHARED ${MagnumPrimitives_SRCS})
+add_library(MagnumPrimitives ${SHARED_OR_STATIC} ${MagnumPrimitives_SRCS})
+if(BUILD_STATIC_PIC)
+    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
+    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
+endif()
 target_link_libraries(MagnumPrimitives Magnum)
 
 install(TARGETS MagnumPrimitives DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})

@@ -2,11 +2,11 @@
 pkgname=magnum
 pkgver=dev
 pkgrel=1
-pkgdesc="OpenGL 3 graphics engine"
+pkgdesc="OpenGL graphics engine"
 arch=('i686' 'x86_64')
 url="https://github.com/mosra/magnum"
 license=('MIT')
-depends=('corrade' 'glew')
+depends=('corrade' 'glew' 'sdl-hg' 'freeglut')
 makedepends=('cmake')
 options=(!strip)
 provides=('magnum-git')
@@ -27,13 +27,16 @@ build() {
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_PREFIX=/usr \
+        -DWITH_GLUTAPPLICATION=ON \
+        -DWITH_GLXAPPLICATION=ON \
+        -DWITH_SDL2APPLICATION=ON \
         -DBUILD_TESTS=TRUE
     make
 }
 
 check() {
     cd "$startdir/build"
-    ctest --output-on-failure -E Benchmark
+    ctest --output-on-failure
 }
 
 package() {

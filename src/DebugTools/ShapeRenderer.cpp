@@ -31,11 +31,13 @@
 #include "Physics/ObjectShape.h"
 #include "Physics/Point.h"
 #include "Physics/ShapeGroup.h"
+#include "Physics/Sphere.h"
 #include "SceneGraph/AbstractCamera.h"
 
 #include "Implementation/AxisAlignedBoxRenderer.h"
 #include "Implementation/BoxRenderer.h"
 #include "Implementation/PointRenderer.h"
+#include "Implementation/SphereRenderer.h"
 
 namespace Magnum { namespace DebugTools {
 
@@ -58,6 +60,9 @@ template<> void createDebugMesh(ShapeRenderer<2>* renderer, Physics::AbstractSha
             if(group->first()) createDebugMesh(renderer, group->first());
             if(group->second()) createDebugMesh(renderer, group->second());
         } break;
+        case Physics::AbstractShape2D::Type::Sphere:
+            renderer->renderers.push_back(new Implementation::SphereRenderer<2>(*static_cast<Physics::Sphere2D*>(shape)));
+            break;
         default:
             Warning() << "DebugTools::ShapeRenderer2D::createShapeRenderer(): type" << shape->type() << "not implemented";
     }

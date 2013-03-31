@@ -57,7 +57,7 @@ class MAGNUM_EXPORT MeshData3D {
          * @param textureCoords2D   Array with two-dimensional texture
          *      coordinate arrays or empty array
          */
-        MeshData3D(Mesh::Primitive primitive, std::vector<UnsignedInt>* indices, std::vector<std::vector<Vector3>*> positions, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D);
+        explicit MeshData3D(Mesh::Primitive primitive, std::vector<UnsignedInt>* indices, std::vector<std::vector<Vector3>*> positions, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D);
 
         /** @brief Move constructor */
         MeshData3D(MeshData3D&&);

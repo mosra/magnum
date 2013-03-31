@@ -38,7 +38,7 @@ namespace Magnum { namespace Trade {
 Provides access to material information for given mesh instance.
 @see MeshObjectData3D
 */
-class MeshObjectData2D: public ObjectData2D {
+class MAGNUM_EXPORT MeshObjectData2D: public ObjectData2D {
     MeshObjectData2D(const MeshObjectData2D&) = delete;
     MeshObjectData2D(MeshObjectData2D&&) = delete;
     MeshObjectData2D& operator=(const MeshObjectData2D&) = delete;
@@ -54,7 +54,7 @@ class MeshObjectData2D: public ObjectData2D {
          *
          * Creates object with mesh instance type.
          */
-        inline MeshObjectData2D(const std::vector<UnsignedInt>& children, const Matrix4& transformation, UnsignedInt instance, UnsignedInt material): ObjectData2D(children, transformation, InstanceType::Mesh, instance), _material(material) {}
+        explicit MeshObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, UnsignedInt instance, UnsignedInt material);
 
         /** @brief Material ID */
         inline UnsignedInt material() const { return _material; }

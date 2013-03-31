@@ -36,11 +36,11 @@
 
 namespace Magnum { namespace Platform {
 
-AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int&, char**): contextHandler(contextHandler), flags(Flag::Redraw) {
+AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int&, char**): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {
     createContext(new Configuration);
 }
 
-AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int&, char**, Configuration* configuration): contextHandler(contextHandler), flags(Flag::Redraw) {
+AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int&, char**, Configuration* configuration): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {
     if(configuration) createContext(configuration);
 }
 

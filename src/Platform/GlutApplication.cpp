@@ -53,7 +53,13 @@ void GlutApplication::createContext(Configuration* configuration) {
     CORRADE_ASSERT(!c, "GlutApplication::createContext(): context already created", );
 
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
-    glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL);
+
+    unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
+
+    /* Multisampling */
+    if(configuration->sampleCount()) flags |= GLUT_MULTISAMPLE;
+
+    glutInitDisplayMode(flags);
     glutInitWindowSize(configuration->size().x(), configuration->size().y());
     glutCreateWindow(configuration->title().c_str());
     glutReshapeFunc(staticViewportEvent);

@@ -80,20 +80,30 @@ UnsignedInt MAGNUM_EXPORT log2(UnsignedInt number);
  */
 UnsignedInt MAGNUM_EXPORT log(UnsignedInt base, UnsignedInt number);
 
+/** @todo Can't trigonometric functions be done with only one overload? */
+
 /** @brief Sine */
+#ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T sin(Rad<T> angle) { return std::sin(T(angle)); }
+#else
+template<class T> inline T sin(Unit<Rad, T> angle) { return std::sin(T(angle)); }
+template<class T> inline T sin(Unit<Deg, T> angle) { return sin(Rad<T>(angle)); }
+#endif
 
 /** @brief Cosine */
+#ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T cos(Rad<T> angle) { return std::cos(T(angle)); }
+#else
+template<class T> inline T cos(Unit<Rad, T> angle) { return std::cos(T(angle)); }
+template<class T> inline T cos(Unit<Deg, T> angle) { return cos(Rad<T>(angle)); }
+#endif
 
 /** @brief Tangent */
+#ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T tan(Rad<T> angle) { return std::tan(T(angle)); }
-
-/** @todo Can't trigonometric functions be done with only one overload? */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T> inline T sin(Deg<T> angle) { return sin(Rad<T>(angle)); }
-template<class T> inline T cos(Deg<T> angle) { return cos(Rad<T>(angle)); }
-template<class T> inline T tan(Deg<T> angle) { return tan(Rad<T>(angle)); }
+#else
+template<class T> inline T tan(Unit<Rad, T> angle) { return std::tan(T(angle)); }
+template<class T> inline T tan(Unit<Deg, T> angle) { return tan(Rad<T>(angle)); }
 #endif
 
 /** @brief Arc sine */

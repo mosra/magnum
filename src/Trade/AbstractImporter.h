@@ -54,7 +54,7 @@ some data. This is obviously not the case for single-data formats like images,
 as the file contains all data user wants to import.
 */
 class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlugin {
-    PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.2")
+    PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.2.1")
 
     public:
         /**
@@ -62,13 +62,13 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
          *
          * @see Features, features()
          */
-        enum class Feature {
-            OpenFile = 0x01,    /**< Can open files specified by filename */
-            OpenStream = 0x02   /**< Can open files from input streams */
+        enum class Feature: UnsignedByte {
+            OpenData = 1 << 0,  /**< Opening files from raw data */
+            OpenFile = 1 << 1   /**< Opening files specified by filename */
         };
 
         /** @brief Set of features supported by this importer */
-        typedef Corrade::Containers::EnumSet<Feature, int> Features;
+        typedef Corrade::Containers::EnumSet<Feature, UnsignedByte> Features;
 
         /** @brief Default constructor */
         explicit AbstractImporter();
@@ -80,26 +80,38 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         virtual Features features() const = 0;
 
         /**
-         * @brief Open file
-         * @param filename  Filename
-         * @return Whether the file was successfully opened
+         * @brief Open raw data
+         * @param data      Data
+         * @param size      Data size
          *
          * Closes previous file, if it was opened, and tries to open given
-         * file. See also @ref Feature "Feature::OpenFile". Default
-         * implementation prints message to error output and returns false.
+         * file. Available only if @ref Feature "Feature::OpenData" is
+         * supported. Returns `true` on success, `false` otherwise.
+         * @see features(), openFile()
          */
-        virtual bool open(const std::string& filename);
+        virtual bool openData(const void* const data, const std::size_t size);
 
         /**
-         * @brief Open stream
-         * @param in        Input stream
-         * @return Whether the file was successfully opened
+         * @brief Open raw data
+         * @param data      Data
          *
-         * See also open(const std::string&), @ref Feature
-         * "Feature::OpenStream". Default implementation prints message to
-         * error output and returns false.
+         * Convenience alternative to above function useful when array size is
+         * known at compile-time.
          */
-        virtual bool open(std::istream& in);
+        template<std::size_t size, class T> inline bool openData(const T(&data)[size]) {
+            return openData(data, size*sizeof(T));
+        }
+
+        /**
+         * @brief Open file
+         * @param filename  Filename
+         *
+         * Closes previous file, if it was opened, and tries to open given
+         * file. Available only if @ref Feature "Feature::OpenFile" is
+         * supported. Returns `true` on success, `false` otherwise.
+         * @see features(), openData()
+         */
+        virtual bool openFile(const std::string& filename);
 
         /** @brief Close file */
         virtual void close() = 0;
@@ -112,7 +124,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
          * @brief Default scene
          *
          * When there is more than one scene, returns ID of the default one.
-         * If there is no default scene, returns -1.
+         * If there is no default scene, returns `-1`.
          *
          * @note The function is not const, because the value will probably
          *      be lazy-populated.
@@ -125,7 +137,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         /**
          * @brief %Scene ID for given name
          *
-         * If no scene for given name exists, returns -1.
+         * If no scene for given name exists, returns `-1`.
          * @see sceneName()
          */
         virtual Int sceneForName(const std::string& name);
@@ -142,7 +154,8 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
          * @brief %Scene
          * @param id        %Scene ID, from range [0, sceneCount()).
          *
-         * Returns pointer to given scene or nullptr, if no such scene exists.
+         * Returns given scene or `nullptr` if import failed. Deleting the data
+         * is user responsibility.
          */
         virtual SceneData* scene(UnsignedInt id);
 
@@ -152,7 +165,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         /**
          * @brief %Light ID for given name
          *
-         * If no light for given name exists, returns -1.
+         * If no light for given name exists, returns `-1`.
          * @see lightName()
          */
         virtual Int lightForName(const std::string& name);
@@ -169,7 +182,8 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
          * @brief %Light
          * @param id        %Light ID, from range [0, lightCount()).
          *
-         * Returns pointer to given light or nullptr, if no such light exists.
+         * Returns given light or `nullptr` if importing failed. Deleting the
+         * data is user responsibility.
          */
         virtual LightData* light(UnsignedInt id);
 
@@ -179,7 +193,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         /**
          * @brief Camera ID for given name
          *
-         * If no camera for given name exists, returns -1.
+         * If no camera for given name exists, returns `-1`.
          * @see cameraName()
          */
         virtual Int cameraForName(const std::string& name);
@@ -196,8 +210,8 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
          * @brief Camera
          * @param id        Camera ID, from range [0, cameraCount()).
          *
-         * Returns pointer to given camera or nullptr, if no such camera
-         * exists.
+         * Returns given camera or `nullptr` if importing failed. Deleting the
+         * data is user responsibility.
          */
         virtual CameraData* camera(UnsignedInt id);
 
@@ -207,7 +221,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         /**
          * @brief Two-dimensional object ID for given name
          *
-         * If no scene for given name exists, returns -1.
+         * If no scene for given name exists, returns `-1`.
          * @see object2DName()
          */
         virtual Int object2DForName(const std::string& name);
@@ -224,8 +238,8 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
          * @brief Two-dimensional object
          * @param id        Object ID, from range [0, object2DCount()).
          *
-         * Returns pointer to given object or nullptr, if no such object
-         * exists.
+         * Returns given object or `nullptr` if importing failed. Deleting the
+         * data is user responsibility.
          */
         virtual ObjectData2D* object2D(UnsignedInt id);
 
@@ -235,7 +249,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         /**
          * @brief Three-dimensional object ID for given name
          *
-         * If no scene for given name exists, returns -1.
+         * If no scene for given name exists, returns `-1`.
          * @see object3DName()
          */
         virtual Int object3DForName(const std::string& name);
@@ -252,8 +266,8 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
          * @brief Three-dimensional object
          * @param id        Object ID, from range [0, object3DCount()).
          *
-         * Returns pointer to given object or nullptr, if no such object
-         * exists.
+         * Returns given object or `nullptr` if importing failed. Deleting the
+         * data is user responsibility.
          */
         virtual ObjectData3D* object3D(UnsignedInt id);
 
@@ -263,7 +277,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         /**
          * @brief Two-dimensional mesh ID for given name
          *
-         * If no mesh for given name exists, returns -1.
+         * If no mesh for given name exists, returns `-1`.
          * @see mesh2DName()
          */
         virtual Int mesh2DForName(const std::string& name);
@@ -280,7 +294,8 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
          * @brief Two-dimensional mesh
          * @param id        %Mesh ID, from range [0, mesh2DCount()).
          *
-         * Returns pointer to given mesh or nullptr, if no such mesh exists.
+         * Returns given mesh or `nullptr` if importing failed. Deleting the
+         * data is user responsibility.
          */
         virtual MeshData2D* mesh2D(UnsignedInt id);
 
@@ -290,7 +305,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         /**
          * @brief Three-dimensional mesh ID for given name
          *
-         * If no mesh for given name exists, returns -1.
+         * If no mesh for given name exists, returns `-1`.
          * @see mesh3DName()
          */
         virtual Int mesh3DForName(const std::string& name);
@@ -307,7 +322,8 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
          * @brief Three-dimensional mesh
          * @param id        %Mesh ID, from range [0, mesh3DCount()).
          *
-         * Returns pointer to given mesh or nullptr, if no such mesh exists.
+         * Returns given mesh or `nullptr` if importing failed. Deleting the
+         * data is user responsibility.
          */
         virtual MeshData3D* mesh3D(UnsignedInt id);
 
@@ -317,7 +333,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         /**
          * @brief Material ID for given name
          *
-         * If no material for given name exists, returns -1.
+         * If no material for given name exists, returns `-1`.
          * @see materialName()
          */
         virtual Int materialForName(const std::string& name);
@@ -334,8 +350,8 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
          * @brief Material
          * @param id        Material ID, from range [0, materialCount()).
          *
-         * Returns pointer to given material or nullptr, if no such material
-         * exists.
+         * Returns given material or `nullptr` if importing failed. Deleting
+         * the data is user responsibility.
          */
         virtual AbstractMaterialData* material(UnsignedInt id);
 
@@ -345,7 +361,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         /**
          * @brief %Texture ID for given name
          *
-         * If no texture for given name exists, returns -1.
+         * If no texture for given name exists, returns `-1`.
          * @see textureName()
          */
         virtual Int textureForName(const std::string& name);
@@ -362,8 +378,8 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
          * @brief %Texture
          * @param id        %Texture ID, from range [0, textureCount()).
          *
-         * Returns pointer to given texture or nullptr, if no such texture
-         * exists.
+         * Returns given texture or `nullptr` if importing failed. Deleting the
+         * data is user responsibility.
          */
         virtual TextureData* texture(UnsignedInt id);
 
@@ -373,7 +389,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         /**
          * @brief One-dimensional image ID for given name
          *
-         * If no image for given name exists, returns -1.
+         * If no image for given name exists, returns `-1`.
          * @see image1Dname()
          */
         virtual Int image1DForName(const std::string& name);
@@ -390,7 +406,8 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
          * @brief One-dimensional image
          * @param id        %Image ID, from range [0, image1DCount()).
          *
-         * Returns pointer to given image or nullptr, if no such image exists.
+         * Returns given image or `nullptr` if importing failed. Deleting the
+         * data is user responsibility.
          */
         virtual ImageData1D* image1D(UnsignedInt id);
 
@@ -400,7 +417,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         /**
          * @brief Two-dimensional image ID for given name
          *
-         * If no image for given name exists, returns -1.
+         * If no image for given name exists, returns `-1`.
          * @see image2DName()
          */
         virtual Int image2DForName(const std::string& name);
@@ -417,7 +434,8 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
          * @brief Two-dimensional image
          * @param id        %Image ID, from range [0, image2DCount()).
          *
-         * Returns pointer to given image or nullptr, if no such image exists.
+         * Returns given image or `nullptr` if importing failed. Deleting the
+         * data is user responsibility.
          */
         virtual ImageData2D* image2D(UnsignedInt id);
 
@@ -427,7 +445,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         /**
          * @brief Three-dimensional image ID for given name
          *
-         * If no image for given name exists, returns -1.
+         * If no image for given name exists, returns `-1`.
          * @see image3DName()
          */
         virtual Int image3DForName(const std::string& name);
@@ -444,7 +462,8 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
          * @brief Three-dimensional image
          * @param id        %Image ID, from range [0, image3DCount()).
          *
-         * Returns pointer to given image or nullptr, if no such image exists.
+         * Returns given image or `nullptr` if importing failed. Deleting the
+         * data is user responsibility.
          */
         virtual ImageData3D* image3D(UnsignedInt id);
 
@@ -452,44 +471,6 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractImporter::Features)
-
-/* Implementations for inline functions with unused parameters */
-inline Int AbstractImporter::sceneForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::sceneName(UnsignedInt) { return {}; }
-inline SceneData* AbstractImporter::scene(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::lightForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::lightName(UnsignedInt) { return {}; }
-inline LightData* AbstractImporter::light(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::cameraForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::cameraName(UnsignedInt) { return {}; }
-inline CameraData* AbstractImporter::camera(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::object2DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::object2DName(UnsignedInt) { return {}; }
-inline ObjectData2D* AbstractImporter::object2D(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::object3DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::object3DName(UnsignedInt) { return {}; }
-inline ObjectData3D* AbstractImporter::object3D(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::mesh2DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::mesh2DName(UnsignedInt) { return {}; }
-inline MeshData2D* AbstractImporter::mesh2D(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::mesh3DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::mesh3DName(UnsignedInt) { return {}; }
-inline MeshData3D* AbstractImporter::mesh3D(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::materialForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::materialName(UnsignedInt) { return {}; }
-inline AbstractMaterialData* AbstractImporter::material(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::textureForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::textureName(UnsignedInt) { return {}; }
-inline TextureData* AbstractImporter::texture(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::image1DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::image1DName(UnsignedInt) { return {}; }
-inline ImageData1D* AbstractImporter::image1D(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::image2DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::image2DName(UnsignedInt) { return {}; }
-inline ImageData2D* AbstractImporter::image2D(UnsignedInt) { return nullptr; }
-inline Int AbstractImporter::image3DForName(const std::string&) { return -1; }
-inline std::string AbstractImporter::image3DName(UnsignedInt) { return {}; }
-inline ImageData3D* AbstractImporter::image3D(UnsignedInt) { return nullptr; }
 
 }}
 

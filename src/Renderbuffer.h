@@ -436,6 +436,7 @@ class MAGNUM_EXPORT Renderbuffer {
             DepthComponent24 = GL_DEPTH_COMPONENT24_OES,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES3
             /**
              * Depth component, 32bit.
              * @requires_es_extension %Extension @es_extension{OES,depth32}
@@ -444,6 +445,7 @@ class MAGNUM_EXPORT Renderbuffer {
             DepthComponent32 = GL_DEPTH_COMPONENT32,
             #else
             DepthComponent32 = GL_DEPTH_COMPONENT32_OES,
+            #endif
             #endif
 
             #ifndef MAGNUM_TARGET_GLES2
@@ -466,6 +468,7 @@ class MAGNUM_EXPORT Renderbuffer {
             StencilIndex = GL_STENCIL_INDEX,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES3
             /**
              * 1-bit stencil index.
              * @requires_es_extension %Extension @es_extension{OES,stencil1}
@@ -484,6 +487,7 @@ class MAGNUM_EXPORT Renderbuffer {
             StencilIndex4 = GL_STENCIL_INDEX4,
             #else
             StencilIndex4 = GL_STENCIL_INDEX4_OES,
+            #endif
             #endif
 
             /** 8-bit stencil index. */

@@ -2,11 +2,11 @@
 pkgname=mingw32-magnum
 pkgver=dev
 pkgrel=1
-pkgdesc="OpenGL 3 graphics engine (mingw32)"
+pkgdesc="OpenGL graphics engine (mingw32)"
 arch=('any')
 url="https://github.com/mosra/magnum"
 license=('MIT')
-depends=('mingw32-runtime' 'mingw32-corrade' 'mingw32-glew')
+depends=('mingw32-runtime' 'mingw32-corrade' 'mingw32-glew' 'mingw32-freeglut')
 makedepends=('mingw32-gcc' 'cmake' 'corrade')
 options=(!buildflags !strip)
 
@@ -19,7 +19,8 @@ build() {
     cmake .. \
         -DCMAKE_TOOLCHAIN_FILE=../toolchains/archlinux/basic-mingw32.cmake \
         -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX=/usr/i486-mingw32
+        -DCMAKE_INSTALL_PREFIX=/usr/i486-mingw32 \
+        -DWITH_GLUTAPPLICATION=ON
     make
 }
 

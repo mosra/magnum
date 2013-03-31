@@ -1,13 +1,10 @@
-# - Find HarfBuzz
+# - Find OpenGL ES 3
 #
-# This module tries to find HarfBuzz library and then defines:
-#  HARFBUZZ_FOUND          - True if HarfBuzz library is found
-#  HARFBUZZ_INCLUDE_DIRS   - Include dirs
-#  HARFBUZZ_LIBRARIES      - HarfBuzz libraries
+# This module defines:
 #
-# Additionally these variables are defined for internal usage:
-#  HARFBUZZ_INCLUDE_DIR    - Include dir (w/o dependencies)
-#  HARFBUZZ_LIBRARY        - HarfBuzz library (w/o dependencies)
+#  OPENGLES3_FOUND          - True if OpenGL ES 3 library is found
+#  OPENGLES3_LIBRARY        - OpenGL ES 3 library
+#  OPENGLES3_INCLUDE_DIR    - Include dir
 #
 
 #
@@ -35,23 +32,17 @@
 #
 
 # Library
-find_library(HARFBUZZ_LIBRARY NAMES harfbuzz)
+find_library(OPENGLES3_LIBRARY NAMES
+    GLESv2) # wtf?
 
 # Include dir
-find_path(HARFBUZZ_INCLUDE_DIR
-    NAMES hb.h
-    PATH_SUFFIXES harfbuzz
+find_path(OPENGLES3_INCLUDE_DIR
+    NAMES gl3.h
+    PATH_SUFFIXES GLES3
 )
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args("HarfBuzz" DEFAULT_MSG
-    HARFBUZZ_LIBRARY
-    HARFBUZZ_INCLUDE_DIR
+find_package_handle_standard_args("OpenGLES3" DEFAULT_MSG
+    OPENGLES3_LIBRARY
+    OPENGLES3_INCLUDE_DIR
 )
-
-set(HARFBUZZ_INCLUDE_DIRS ${HARFBUZZ_INCLUDE_DIR})
-set(HARFBUZZ_LIBRARIES ${HARFBUZZ_LIBRARY})
-
-mark_as_advanced(FORCE
-    HARFBUZZ_LIBRARY
-    HARFBUZZ_INCLUDE_DIR)

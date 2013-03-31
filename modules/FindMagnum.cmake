@@ -7,6 +7,8 @@
 #  MAGNUM_LIBRARIES             - Magnum library and dependent libraries
 #  MAGNUM_INCLUDE_DIRS          - Root include dir and include dirs of
 #   dependencies
+#  MAGNUM_PLUGINS_FONT_DIR      - Directory with font plugins
+#  MAGNUM_PLUGINS_IMAGECONVERTER_DIR - Directory with image converter plugins
 #  MAGNUM_PLUGINS_IMPORTER_DIR  - Directory with importer plugins
 # This command will try to find only the base library, not the optional
 # components. The base library depends on Corrade, OpenGL and GLEW
@@ -19,9 +21,7 @@
 #  Primitives       - Primitives library
 #  SceneGraph       - SceneGraph library
 #  Shaders          - Shaders library
-#  Text             - Text library (depends on TextureTools component,
-#                     FreeType library and possibly HarfBuzz library,
-#                     see below)
+#  Text             - Text library (depends on TextureTools component)
 #  TextureTools     - TextureTools library
 #  GlutApplication  - GLUT application (depends on GLUT library)
 #  GlxApplication   - GLX application (depends on GLX and X11 libraries)
@@ -47,12 +47,11 @@
 # Features of found Magnum library are exposed in these variables:
 #  MAGNUM_TARGET_GLES   - Defined if compiled for OpenGL ES
 #  MAGNUM_TARGET_GLES2  - Defined if compiled for OpenGL ES 2.0
+#  MAGNUM_TARGET_GLES3  - Defined if compiled for OpenGL ES 3.0
 #  MAGNUM_TARGET_DESKTOP_GLES - Defined if compiled with OpenGL ES
 #   emulation on desktop OpenGL
 #  MAGNUM_TARGET_NACL   - Defined if compiled for Google Chrome Native
 #   Client
-#  MAGNUM_USE_HARFBUZZ  - Defined if HarfBuzz library is used for text
-#   rendering
 #
 # Additionally these variables are defined for internal usage:
 #  MAGNUM_INCLUDE_DIR                   - Root include dir (w/o
@@ -63,6 +62,10 @@
 #   dependencies)
 #  MAGNUM_LIBRARY_INSTALL_DIR           - Library installation directory
 #  MAGNUM_PLUGINS_INSTALL_DIR           - Plugin installation directory
+#  MAGNUM_PLUGINS_FONT_INSTALL_DIR      - Font plugin installation
+#   directory
+#  MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR - Image converter plugin
+#   installation directory
 #  MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR  - Importer plugin installation
 #   directory
 #  MAGNUM_CMAKE_MODULE_INSTALL_DIR      - Installation dir for CMake
@@ -119,6 +122,10 @@ string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES2" _TARGET_GLES2)
 if(NOT _TARGET_GLES2 EQUAL -1)
     set(MAGNUM_TARGET_GLES2 1)
 endif()
+string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES3" _TARGET_GLES3)
+if(NOT _TARGET_GLES3 EQUAL -1)
+    set(MAGNUM_TARGET_GLES3 1)
+endif()
 string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_NACL" _TARGET_NACL)
 if(NOT _TARGET_NACL EQUAL -1)
     set(MAGNUM_TARGET_NACL 1)
@@ -126,10 +133,6 @@ endif()
 string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_DESKTOP_GLES" _TARGET_DESKTOP_GLES)
 if(NOT _TARGET_DESKTOP_GLES EQUAL -1)
     set(MAGNUM_TARGET_DESKTOP_GLES 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_USE_HARFBUZZ" _USE_HARFBUZZ)
-if(NOT _USE_HARFBUZZ EQUAL -1)
-    set(MAGNUM_USE_HARFBUZZ 1)
 endif()
 
 if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
@@ -249,19 +252,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
     # Text library
     if(${component} STREQUAL Text)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Font.h)
-
-        # Dependencies
-        find_package(Freetype)
-        if(NOT FREETYPE_FOUND)
-            unset(MAGNUM_${_COMPONENT}_LIBRARY)
-        endif()
-        if(MAGNUM_USE_HARFBUZZ)
-            find_package(HarfBuzz)
-            if(NOT HARFBUZZ_FOUND)
-                unset(MAGNUM_${_COMPONENT}_LIBRARY)
-            endif()
-        endif()
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES AbstractFont.h)
     endif()
 
     # TextureTools library
@@ -320,8 +311,8 @@ set(MAGNUM_INCLUDE_DIRS ${MAGNUM_INCLUDE_DIR}
     ${MAGNUM_INCLUDE_DIR}/OpenGL
     ${CORRADE_INCLUDE_DIR})
 set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARY}
-    ${CORRADE_UTILITY_LIBRARY}
-    ${CORRADE_PLUGINMANAGER_LIBRARY})
+    ${CORRADE_UTILITY_LIBRARIES}
+    ${CORRADE_PLUGINMANAGER_LIBRARIES})
 if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
     set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGL_gl_LIBRARY})
 else()
@@ -334,6 +325,8 @@ endif()
 # Installation dirs
 set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
 set(MAGNUM_PLUGINS_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum)
+set(MAGNUM_PLUGINS_FONT_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/fonts)
+set(MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/imageconverters)
 set(MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/importers)
 set(MAGNUM_CMAKE_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
@@ -343,14 +336,20 @@ mark_as_advanced(FORCE
     MAGNUM_INCLUDE_DIR
     MAGNUM_LIBRARY_INSTALL_DIR
     MAGNUM_PLUGINS_INSTALL_DIR
+    MAGNUM_PLUGINS_FONT_INSTALL_DIR
+    MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR
     MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR
     MAGNUM_CMAKE_MODULE_INSTALL_DIR
     MAGNUM_INCLUDE_INSTALL_DIR
     MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR)
 
-# Importer plugins dir
+# Plugin directories
 if(NOT WIN32)
+    set(MAGNUM_PLUGINS_FONT_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/fonts)
+    set(MAGNUM_PLUGINS_IMAGECONVERTER_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/imageconverters)
     set(MAGNUM_PLUGINS_IMPORTER_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/importers)
 else()
+    set(MAGNUM_PLUGINS_FONT_DIR fonts)
+    set(MAGNUM_PLUGINS_IMAGECONVERTER_DIR imageconverters)
     set(MAGNUM_PLUGINS_IMPORTER_DIR importers)
 endif()

@@ -201,16 +201,16 @@ class CubeMapTexture: public AbstractTexture {
             AbstractTexture::setMagnificationFilter(filter);
             return this;
         }
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES3
         inline CubeMapTexture* setBorderColor(const Color4<>& color) {
             AbstractTexture::setBorderColor(color);
             return this;
         }
-        #endif
         inline CubeMapTexture* setMaxAnisotropy(Float anisotropy) {
             AbstractTexture::setMaxAnisotropy(anisotropy);
             return this;
         }
+        #endif
         inline CubeMapTexture* generateMipmap() {
             AbstractTexture::generateMipmap();
             return this;
