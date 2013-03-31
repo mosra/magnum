@@ -37,6 +37,10 @@ set(MagnumTextureTools_HEADERS
 
     magnumTextureToolsVisibility.h)
 
+if(BUILD_STATIC)
+    set(MagnumTextureTools_HEADERS ${MagnumTextureTools_HEADERS} magnumTextureToolsResourceImport.hpp)
+endif()
+
 add_library(MagnumTextureTools ${SHARED_OR_STATIC} ${MagnumTextureTools_SRCS})
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
