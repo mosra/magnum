@@ -77,7 +77,7 @@ OpenGL ES 2.0.
 @see @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2",
     @ref MAGNUM_TARGET_GLES3_ "MAGNUM_TARGET_GLES3",
     @ref MAGNUM_TARGET_DESKTOP_GLES_ "MAGNUM_TARGET_DESKTOP_GLES",
-    @ref MAGNUM_TARGET_NACL_ "MAGNUM_TARGET_NACL", @ref building
+    @ref building
 */
 #define MAGNUM_TARGET_GLES_
 
@@ -88,7 +88,7 @@ OpenGL ES 2.0.
 Implies also @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES".
 @see @ref MAGNUM_TARGET_GLES3_ "MAGNUM_TARGET_GLES3",
     @ref MAGNUM_TARGET_DESKTOP_GLES_ "MAGNUM_TARGET_DESKTOP_GLES",
-    @ref MAGNUM_TARGET_NACL_ "MAGNUM_TARGET_NACL", @ref building
+    @ref building
 */
 #define MAGNUM_TARGET_GLES2_
 
@@ -99,7 +99,7 @@ Implies also @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES".
 Implies also @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES".
 @see @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2",
     @ref MAGNUM_TARGET_DESKTOP_GLES_ "MAGNUM_TARGET_DESKTOP_GLES",
-    @ref MAGNUM_TARGET_NACL_ "MAGNUM_TARGET_NACL", @ref building
+    @ref building
 */
 #define MAGNUM_TARGET_GLES3_
 
@@ -109,20 +109,9 @@ Implies also @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES".
 `MAGNUM_TARGET_DESKTOP_GLES` is defined if the engine is built for OpenGL ES
 3.0 or OpenGL ES 2.0 emulated within standard desktop OpenGL. Implies also
 @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES".
-@see @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2",
-    @ref MAGNUM_TARGET_NACL_ "MAGNUM_TARGET_NACL", @ref building
+@see @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2", @ref building
 */
 #define MAGNUM_TARGET_DESKTOP_GLES_
-
-/**
-@brief Google Chrome Native Client target
-
-`MAGNUM_TARGET_NACL` is defined if the engine is built for OpenGL ES 2.0 on
-Google Chrome Native Client. Implies also @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES"
-and @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES".
-@see @ref building
-*/
-#define MAGNUM_TARGET_NACL_
 
 #endif
 

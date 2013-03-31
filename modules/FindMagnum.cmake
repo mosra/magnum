@@ -50,8 +50,6 @@
 #  MAGNUM_TARGET_GLES3  - Defined if compiled for OpenGL ES 3.0
 #  MAGNUM_TARGET_DESKTOP_GLES - Defined if compiled with OpenGL ES
 #   emulation on desktop OpenGL
-#  MAGNUM_TARGET_NACL   - Defined if compiled for Google Chrome Native
-#   Client
 #
 # Additionally these variables are defined for internal usage:
 #  MAGNUM_INCLUDE_DIR                   - Root include dir (w/o
@@ -125,10 +123,6 @@ endif()
 string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES3" _TARGET_GLES3)
 if(NOT _TARGET_GLES3 EQUAL -1)
     set(MAGNUM_TARGET_GLES3 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_NACL" _TARGET_NACL)
-if(NOT _TARGET_NACL EQUAL -1)
-    set(MAGNUM_TARGET_NACL 1)
 endif()
 string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_DESKTOP_GLES" _TARGET_DESKTOP_GLES)
 if(NOT _TARGET_DESKTOP_GLES EQUAL -1)

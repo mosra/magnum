@@ -53,6 +53,15 @@ MagnumInfo::MagnumInfo(int& argc, char** argv): WindowlessGlxApplication(argc, a
         #ifdef CORRADE_GCC46_COMPATIBILITY
         d << "CORRADE_GCC46_COMPATIBILITY";
         #endif
+        #ifdef CORRADE_TARGET_NACL
+        d << "CORRADE_TARGET_NACL";
+        #endif
+        #ifdef CORRADE_TARGET_NACL_NEWLIB
+        d << "CORRADE_TARGET_NACL_NEWLIB";
+        #endif
+        #ifdef CORRADE_TARGET_NACL_GLIBC
+        d << "CORRADE_TARGET_NACL_GLIBC";
+        #endif
         #ifdef MAGNUM_TARGET_GLES
         d << "MAGNUM_TARGET_GLES";
         #endif
@@ -61,9 +70,6 @@ MagnumInfo::MagnumInfo(int& argc, char** argv): WindowlessGlxApplication(argc, a
         #endif
         #ifdef MAGNUM_TARGET_DESKTOP_GLES
         d << "MAGNUM_TARGET_DESKTOP_GLES";
-        #endif
-        #ifdef MAGNUM_TARGET_NACL
-        d << "MAGNUM_TARGET_NACL";
         #endif
     }
     Debug() << "";
