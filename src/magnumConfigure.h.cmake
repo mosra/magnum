@@ -22,6 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#cmakedefine MAGNUM_BUILD_STATIC
 #cmakedefine MAGNUM_TARGET_GLES
 #cmakedefine MAGNUM_TARGET_GLES2
 #cmakedefine MAGNUM_TARGET_GLES3

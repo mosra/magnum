@@ -53,6 +53,12 @@ MagnumInfo::MagnumInfo(int& argc, char** argv): WindowlessGlxApplication(argc, a
         #ifdef CORRADE_GCC46_COMPATIBILITY
         d << "CORRADE_GCC46_COMPATIBILITY";
         #endif
+        #ifdef CORRADE_BUILD_STATIC
+        d << "CORRADE_BUILD_STATIC";
+        #endif
+        #ifdef MAGNUM_BUILD_STATIC
+        d << "MAGNUM_BUILD_STATIC";
+        #endif
         #ifdef CORRADE_TARGET_NACL
         d << "CORRADE_TARGET_NACL";
         #endif

@@ -45,6 +45,7 @@
 # / MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS to simplify porting.
 #
 # Features of found Magnum library are exposed in these variables:
+#  MAGNUM_BUILD_STATIC  - Defined if compiled as static libraries
 #  MAGNUM_TARGET_GLES   - Defined if compiled for OpenGL ES
 #  MAGNUM_TARGET_GLES2  - Defined if compiled for OpenGL ES 2.0
 #  MAGNUM_TARGET_GLES3  - Defined if compiled for OpenGL ES 3.0
@@ -111,7 +112,10 @@ find_path(MAGNUM_INCLUDE_DIR
 # Configuration
 file(READ ${MAGNUM_INCLUDE_DIR}/magnumConfigure.h _magnumConfigure)
 
-# Built for specific target?
+string(FIND "${_magnumConfigure}" "#define MAGNUM_BUILD_STATIC" _BUILD_STATIC)
+if(NOT _BUILD_STATIC EQUAL -1)
+    set(MAGNUM_BUILD_STATIC 1)
+endif()
 string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES" _TARGET_GLES)
 if(NOT _TARGET_GLES EQUAL -1)
     set(MAGNUM_TARGET_GLES 1)
