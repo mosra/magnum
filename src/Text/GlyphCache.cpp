@@ -72,7 +72,9 @@ void GlyphCache::initialize(const AbstractTexture::InternalFormat internalFormat
 
 std::vector<Rectanglei> GlyphCache::reserve(const std::vector<Vector2i>& sizes) {
     CORRADE_ASSERT(glyphs.empty(), "Text::GlyphCache::reserve(): reserving space in non-empty cache is not yet implemented", {});
+    #ifndef CORRADE_GCC44_COMPATIBILITY
     glyphs.reserve(glyphs.size() + sizes.size());
+    #endif
     return TextureTools::atlas(_size, sizes, _padding);
 }
 
