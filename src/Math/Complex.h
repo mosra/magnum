@@ -343,7 +343,12 @@ template<class T> class Complex {
          * @see isNormalized()
          */
         inline T length() const {
+            /** @todo Remove when NaCl's newlib has this fixed */
+            #ifndef CORRADE_TARGET_NACL_NEWLIB
             return std::hypot(_real, _imaginary);
+            #else
+            return std::sqrt(dot());
+            #endif
         }
 
         /**
