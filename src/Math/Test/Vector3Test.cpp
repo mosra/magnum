@@ -161,7 +161,12 @@ void Vector3Test::convert() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vec3, Vector3>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Vector3, Vec3>::value));
+    {
+        #ifdef CORRADE_GCC44_COMPATIBILITY
+        CORRADE_EXPECT_FAIL("GCC 4.4 doesn't have explicit conversion operators");
+        #endif
+        CORRADE_VERIFY(!(std::is_convertible<Vector3, Vec3>::value));
+    }
 }
 
 void Vector3Test::access() {

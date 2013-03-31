@@ -67,7 +67,12 @@ void UnitTest::construct() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Float, Sec>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Sec, Float>::value));
+    {
+        #ifdef CORRADE_GCC44_COMPATIBILITY
+        CORRADE_EXPECT_FAIL("GCC 4.4 doesn't have explicit conversion operators");
+        #endif
+        CORRADE_VERIFY(!(std::is_convertible<Sec, Float>::value));
+    }
 }
 
 void UnitTest::constructDefault() {
