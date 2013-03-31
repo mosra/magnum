@@ -1,3 +1,5 @@
+#ifndef Magnum_TextureTools_magnumTextureToolsResourceImport_hpp
+#define Magnum_TextureTools_magnumTextureToolsResourceImport_hpp
 /*
     This file is part of Magnum.
 
@@ -22,8 +24,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#cmakedefine MAGNUM_BUILD_STATIC
-#cmakedefine MAGNUM_TARGET_GLES
-#cmakedefine MAGNUM_TARGET_GLES2
-#cmakedefine MAGNUM_TARGET_GLES3
-#cmakedefine MAGNUM_TARGET_DESKTOP_GLES
+#include "magnumConfigure.h"
+
+#ifdef MAGNUM_BUILD_STATIC
+#include <Utility/Resource.h>
+static int magnumTextureToolsResourceImport() {
+    RESOURCE_INITIALIZE(MagnumTextureTools_RCS)
+    return 0;
+} AUTOMATIC_INITIALIZER(magnumTextureToolsResourceImport)
+#endif
+
+#endif

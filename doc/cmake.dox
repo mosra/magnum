@@ -95,6 +95,8 @@ convenience aliases `MAGNUM_APPLICATION_LIBRARIES` /
 Features of found %Magnum library are exposed in these CMake variables, they
 are also available as preprocessor variables if including Magnum.h:
 
+- `MAGNUM_BUILD_STATIC` -- Defined if built as static libraries. Default are
+  shared libraries.
 - `MAGNUM_TARGET_GLES` -- Defined if compiled for OpenGL ES
 - `MAGNUM_TARGET_GLES2` -- Defined if compiled for OpenGL ES 2.0
 - `MAGNUM_TARGET_GLES3` -- Defined if compiled for OpenGL ES 3.0

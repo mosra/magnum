@@ -73,6 +73,10 @@ endif()
 
 find_package(Corrade REQUIRED)
 
+if(BUILD_STATIC)
+    set(MAGNUM_BUILD_STATIC 1)
+endif()
+
 # If targeting NaCl, set explicit OpenGL ES 2.0 support
 if(CORRADE_TARGET_NACL)
     set(TARGET_GLES 1)

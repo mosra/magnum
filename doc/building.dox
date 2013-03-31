@@ -74,8 +74,11 @@ optional features.
     make
     make install
 
-If you want to build with another compiler (e.g. Clang), pass
-`-DCMAKE_CXX_COMPILER=clang++` to CMake.
+The libraries are build as shared by default, pass `-DBUILD_STATIC=ON` to build
+them as static. If you plan them to use with shared libraries later, enable
+also position-independent code with `-DBUILD_STATIC_PIC=ON`. If you want to
+build with another compiler (e.g. Clang), pass `-DCMAKE_CXX_COMPILER=clang++`
+to CMake.
 
 @subsection building-optional Enabling or disabling features
 

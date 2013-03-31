@@ -70,6 +70,15 @@ using Corrade::Utility::Error;
 /** @todoc remove trailing underscores when Doxygen can handle `undef` */
 
 /**
+@brief Static library build
+
+`MAGNUM_BUILD_STATIC` is defined if build as static libraries. Default are
+shared libraries.
+@see @ref building-corrade
+*/
+#define MAGNUM_BUILD_STATIC_
+
+/**
 @brief OpenGL ES target
 
 `MAGNUM_TARGET_GLES` is defined if the engine is built for OpenGL ES 3.0 or
