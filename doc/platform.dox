@@ -58,13 +58,13 @@ using namespace Magnum;
 
 class MyApplication: public Platform::GlutApplication {
     public:
-        MyApplication(int& argc, char** argv);
+        MyApplication(const Arguments& arguments);
 
         void viewportEvent(const Vector2i& viewport) override;
         void drawEvent() override;
 };
 
-MyApplication::MyApplication(int& argc, char** argv): Platform::GlutApplication(argc, argv) {
+MyApplication::MyApplication(const Arguments& arguments): Platform::GlutApplication(arguments) {
     // Set clear color to dark blue
     Renderer::setClearColor({0.0f, 0.0f, 0.4f});
 }
@@ -104,12 +104,12 @@ using namespace Magnum;
 
 class MyApplication: public Platform::WindowlessGlxApplication {
     public:
-        MyApplication(int& argc, char** argv);
+        MyApplication(const Arguments& arguments);
 
         int exec() override;
 };
 
-MyApplication::MyApplication(int& argc, char** argv): Platform::WindowlessGlxApplication(argc, argv) {}
+MyApplication::MyApplication(const Arguments& arguments): Platform::WindowlessGlxApplication(arguments) {}
 
 int MyApplication::exec() {
     Debug() << "OpenGL version:" << Context::current()->versionString();

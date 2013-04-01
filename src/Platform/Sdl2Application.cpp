@@ -49,11 +49,11 @@ Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
 
 }
 
-Sdl2Application::Sdl2Application(int&, char**): context(nullptr), flags(Flag::Redraw) {
+Sdl2Application::Sdl2Application(const Arguments&): context(nullptr), flags(Flag::Redraw) {
     createContext(new Configuration);
 }
 
-Sdl2Application::Sdl2Application(int&, char**, Configuration* configuration): context(nullptr), flags(Flag::Redraw) {
+Sdl2Application::Sdl2Application(const Arguments&, Configuration* configuration): context(nullptr), flags(Flag::Redraw) {
     if(configuration) createContext(configuration);
 }
 

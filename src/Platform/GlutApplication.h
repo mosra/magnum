@@ -67,6 +67,9 @@ to simplify porting.
 */
 class GlutApplication {
     public:
+        /** @brief Application arguments */
+        typedef std::pair<int&, char**> Arguments;
+
         class Configuration;
         class InputEvent;
         class KeyEvent;
@@ -75,25 +78,23 @@ class GlutApplication {
 
         /**
          * @brief Default constructor
-         * @param argc      Count of arguments of `main()` function
-         * @param argv      Arguments of `main()` function
+         * @param arguments     Application arguments
          *
          * Creates application with default configuration. See Configuration
          * for more information.
          */
-        explicit GlutApplication(int& argc, char** argv);
+        explicit GlutApplication(const Arguments& arguments);
 
         /**
          * @brief Constructor
-         * @param argc          Count of arguments of `main()` function
-         * @param argv          Arguments of `main()` function
+         * @param arguments     Application arguments
          * @param configuration Configuration
          *
          * The @p configuration is deleted afterwards. If `nullptr` is passed
          * as @p configuration, the context is not created and must be created
          * with createContext().
          */
-        explicit GlutApplication(int& argc, char** argv, Configuration* configuration);
+        explicit GlutApplication(const Arguments& arguments, Configuration* configuration);
 
         virtual ~GlutApplication();
 
@@ -465,7 +466,7 @@ code to achieve better portability, see @ref portability-applications for more
 information.
 @code
 int main(int argc, char** argv) {
-    className app(argc, argv);
+    className app({argc, argv});
     return app.exec();
 }
 @endcode
@@ -474,7 +475,7 @@ When no other application header is included this macro is also aliased to
 */
 #define MAGNUM_GLUTAPPLICATION_MAIN(className)                              \
     int main(int argc, char** argv) {                                       \
-        className app(argc, argv);                                          \
+        className app({argc, argv});                                        \
         return app.exec();                                                  \
     }
 

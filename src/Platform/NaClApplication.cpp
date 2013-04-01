@@ -32,11 +32,11 @@
 
 namespace Magnum { namespace Platform {
 
-NaClApplication::NaClApplication(PP_Instance instance): Instance(instance), Graphics3DClient(this), MouseLock(this), c(nullptr) {
+NaClApplication::NaClApplication(const Arguments& arguments): Instance(arguments), Graphics3DClient(this), MouseLock(this), c(nullptr) {
     createContext(new Configuration);
 }
 
-NaClApplication::NaClApplication(PP_Instance instance, Configuration* configuration): Instance(instance), Graphics3DClient(this), MouseLock(this), c(nullptr) {
+NaClApplication::NaClApplication(const Arguments& arguments, Configuration* configuration): Instance(arguments), Graphics3DClient(this), MouseLock(this), c(nullptr) {
     if(configuration) createContext(configuration);
 }
 

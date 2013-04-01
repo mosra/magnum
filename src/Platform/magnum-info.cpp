@@ -32,12 +32,12 @@ namespace Magnum {
 
 class MagnumInfo: public Platform::WindowlessGlxApplication {
     public:
-        MagnumInfo(int& argc, char** argv);
+        explicit MagnumInfo(const Arguments& arguments);
 
         inline int exec() override { return 0; }
 };
 
-MagnumInfo::MagnumInfo(int& argc, char** argv): WindowlessGlxApplication(argc, argv) {
+MagnumInfo::MagnumInfo(const Arguments& arguments): WindowlessGlxApplication(arguments) {
     Context* c = Context::current();
 
     Debug() << "";

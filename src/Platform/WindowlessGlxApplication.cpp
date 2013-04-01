@@ -33,11 +33,11 @@
 
 namespace Magnum { namespace Platform {
 
-WindowlessGlxApplication::WindowlessGlxApplication(int&, char**) {
+WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&) {
     createContext(new Configuration);
 }
 
-WindowlessGlxApplication::WindowlessGlxApplication(int&, char**, Configuration* configuration) {
+WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, Configuration* configuration) {
     if(configuration) createContext(configuration);
 }
 
