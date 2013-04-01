@@ -28,6 +28,7 @@
  * @brief Class Magnum::Platform::WindowlessGlxApplication
  */
 
+#include <utility>
 #include "OpenGL.h"
 #include <GL/glx.h>
 #include <X11/Xlib.h>
@@ -64,13 +65,16 @@ If no other application header is included this class is also aliased to
 */
 class WindowlessGlxApplication {
     public:
+        /** @brief Application arguments */
+        typedef std::pair<int&, char**> Arguments;
+
         class Configuration;
 
-        /** @copydoc GlutApplication::GlutApplication(int&, char**) */
-        explicit WindowlessGlxApplication(int& argc, char** argv);
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&) */
+        explicit WindowlessGlxApplication(const Arguments& arguments);
 
-        /** @copydoc GlutApplication::GlutApplication(int&, char**, Configuration*) */
-        explicit WindowlessGlxApplication(int& argc, char** argv, Configuration* configuration);
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&, Configuration*) */
+        explicit WindowlessGlxApplication(const Arguments& arguments, Configuration* configuration);
 
         ~WindowlessGlxApplication();
 
@@ -116,7 +120,7 @@ Can be used as equivalent to the following code to achieve better portability,
 see @ref portability-applications for more information.
 @code
 int main(int argc, char** argv) {
-    className app(argc, argv);
+    className app({argc, argv});
     return app.exec();
 }
 @endcode
@@ -125,7 +129,7 @@ aliased to `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`.
 */
 #define MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN(className)                     \
     int main(int argc, char** argv) {                                       \
-        className app(argc, argv);                                          \
+        className app({argc, argv});                                        \
         return app.exec();                                                  \
     }
 

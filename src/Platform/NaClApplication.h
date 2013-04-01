@@ -73,6 +73,9 @@ to simplify porting.
 */
 class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public pp::MouseLock {
     public:
+        /** @brief Application arguments */
+        typedef PP_Instance Arguments;
+
         class Configuration;
         class InputEvent;
         class KeyEvent;
@@ -81,23 +84,23 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
 
         /**
          * @brief Default constructor
-         * @param instance  Module instance
+         * @param arguments     Application arguments
          *
          * Creates application with default configuration. See Configuration
          * for more information.
          */
-        explicit NaClApplication(PP_Instance instance);
+        explicit NaClApplication(const Arguments& arguments);
 
         /**
          * @brief Constructor
-         * @param instance      Module instance
+         * @param arguments     Application arguments
          * @param configuration Configuration
          *
          * The @p configuration is deleted afterwards. If `nullptr` is passed
          * as @p configuration, the context is not created and must be created
          * with createContext().
          */
-        explicit NaClApplication(PP_Instance instance, Configuration* configuration);
+        explicit NaClApplication(const Arguments& arguments, Configuration* configuration);
 
         ~NaClApplication();
 

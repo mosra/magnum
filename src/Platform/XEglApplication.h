@@ -56,11 +56,11 @@ to simplify porting.
 */
 class XEglApplication: public AbstractXApplication {
     public:
-        /** @copydoc GlutApplication::GlutApplication(int&, char**) */
-        inline explicit XEglApplication(int& argc, char** argv): AbstractXApplication(new EglContextHandler, argc, argv) {}
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&) */
+        inline explicit XEglApplication(const Arguments& arguments): AbstractXApplication(new EglContextHandler, arguments) {}
 
-        /** @copydoc GlutApplication::GlutApplication(int&, char**, Configuration*) */
-        inline explicit XEglApplication(int& argc, char** argv, Configuration* configuration): AbstractXApplication(new EglContextHandler, argc, argv, configuration) {}
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&, Configuration*) */
+        inline explicit XEglApplication(const Arguments& arguments, Configuration* configuration): AbstractXApplication(new EglContextHandler, arguments, configuration) {}
 };
 
 /** @hideinitializer
@@ -72,7 +72,7 @@ to achieve better portability, see @ref portability-applications for more
 information.
 @code
 int main(int argc, char** argv) {
-    className app(argc, argv);
+    className app({argc, argv});
     return app.exec();
 }
 @endcode
@@ -81,7 +81,7 @@ When no other application header is included this macro is also aliased to
 */
 #define MAGNUM_XEGLAPPLICATION_MAIN(className)                              \
     int main(int argc, char** argv) {                                       \
-        className app(argc, argv);                                          \
+        className app({argc, argv});                                        \
         return app.exec();                                                  \
     }
 

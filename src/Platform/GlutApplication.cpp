@@ -31,13 +31,13 @@ namespace Magnum { namespace Platform {
 
 GlutApplication* GlutApplication::instance = nullptr;
 
-GlutApplication::GlutApplication(int& argc, char** argv): c(nullptr) {
-    initialize(argc, argv);
+GlutApplication::GlutApplication(const Arguments& arguments): c(nullptr) {
+    initialize(arguments.first, arguments.second);
     createContext(new Configuration);
 }
 
-GlutApplication::GlutApplication(int& argc, char** argv, Configuration* configuration): c(nullptr) {
-    initialize(argc, argv);
+GlutApplication::GlutApplication(const Arguments& arguments, Configuration* configuration): c(nullptr) {
+    initialize(arguments.first, arguments.second);
     if(configuration) createContext(configuration);
 }
 

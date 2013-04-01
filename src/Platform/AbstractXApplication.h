@@ -55,6 +55,9 @@ Supports keyboard and mouse handling. See @ref platform for brief introduction.
 */
 class AbstractXApplication {
     public:
+        /** @brief Application arguments */
+        typedef std::pair<int&, char**> Arguments;
+
         class Configuration;
         class InputEvent;
         class KeyEvent;
@@ -64,26 +67,24 @@ class AbstractXApplication {
         /**
          * @brief Default constructor
          * @param contextHandler OpenGL context handler
-         * @param argc          Count of arguments of `main()` function
-         * @param argv          Arguments of `main()` function
+         * @param arguments     Application arguments
          *
          * Creates application with default configuration. See Configuration
          * for more information.
          */
-        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int& argc, char** argv);
+        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments);
 
         /**
          * @brief Constructor
          * @param contextHandler OpenGL context handler
-         * @param argc          Count of arguments of `main()` function
-         * @param argv          Arguments of `main()` function
+         * @param arguments     Application arguments
          * @param configuration Configuration
          *
          * The @p configuration is deleted afterwards. If `nullptr` is passed
          * as @p configuration, the context is not created and must be created
          * with createContext().
          */
-        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, int& argc, char** argv, Configuration* configuration);
+        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, Configuration* configuration);
 
         /**
          * @brief Destructor

@@ -68,17 +68,20 @@ to simplify porting.
 */
 class Sdl2Application {
     public:
+        /** @brief Application arguments */
+        typedef std::pair<int&, char**> Arguments;
+
         class Configuration;
         class InputEvent;
         class KeyEvent;
         class MouseEvent;
         class MouseMoveEvent;
 
-        /** @copydoc GlutApplication::GlutApplication(int&, char**) */
-        explicit Sdl2Application(int& argc, char** argv);
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&) */
+        explicit Sdl2Application(const Arguments& arguments);
 
-        /** @copydoc GlutApplication::GlutApplication(int&, char**, Configuration*) */
-        explicit Sdl2Application(int& argc, char** argv, Configuration* configuration);
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&, Configuration*) */
+        explicit Sdl2Application(const Arguments& arguments, Configuration* configuration);
 
         virtual ~Sdl2Application();
 
@@ -481,7 +484,7 @@ code to achieve better portability, see @ref portability-applications for more
 information.
 @code
 int main(int argc, char** argv) {
-    className app(argc, argv);
+    className app({argc, argv});
     return app.exec();
 }
 @endcode
@@ -490,7 +493,7 @@ When no other application header is included this macro is also aliased to
 */
 #define MAGNUM_SDL2APPLICATION_MAIN(className)                              \
     int main(int argc, char** argv) {                                       \
-        className app(argc, argv);                                          \
+        className app({argc, argv});                                        \
         return app.exec();                                                  \
     }
 

@@ -185,7 +185,7 @@ particular *Event class implementations:
 
 class MyApplication: public Platform::Application {
     public:
-        MyApplication(int& argc, char** argv): Platform::Application(argc, argv, "My Application");
+        MyApplication(const Arguments& arguments);
 
     protected:
         void viewportEvent(const Vector2i& size) override;
