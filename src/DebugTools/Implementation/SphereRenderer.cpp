@@ -41,8 +41,8 @@ template<UnsignedInt dimensions> SphereRenderer<dimensions>::SphereRenderer(Phys
 
 template<UnsignedInt dimensions> void SphereRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
     this->shader->setTransformationProjectionMatrix(projectionMatrix*
-        DimensionTraits<dimensions>::MatrixType::translation(sphere.position())*
-        DimensionTraits<dimensions>::MatrixType::scaling(typename DimensionTraits<dimensions>::VectorType(sphere.radius())))
+        DimensionTraits<dimensions>::MatrixType::translation(sphere.transformedPosition())*
+        DimensionTraits<dimensions>::MatrixType::scaling(typename DimensionTraits<dimensions>::VectorType(sphere.transformedRadius())))
         ->setColor(options->color())
         ->use();
     this->mesh->draw();
