@@ -96,7 +96,7 @@ void GlutApplication::staticMouseMoveEvent(int x, int y) {
     instance->mouseMoveEvent(e);
 }
 
-GlutApplication::Configuration::Configuration(): _title("Magnum GLUT Application"), _size(800, 600) {}
+GlutApplication::Configuration::Configuration(): _title("Magnum GLUT Application"), _size(800, 600), _sampleCount(0) {}
 GlutApplication::Configuration::~Configuration() = default;
 
 }}
