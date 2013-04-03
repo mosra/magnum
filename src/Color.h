@@ -46,11 +46,11 @@ template<class T> inline typename std::enable_if<std::is_floating_point<T>::valu
     std::tie(hue, saturation, value) = hsv;
 
     /* Remove repeats */
-    hue -= Math::Deg<T>(int(T(hue)/T(360))*T(360));
+    hue -= int(hue.toUnderlyingType()/T(360))*Math::Deg<T>(360);
     if(hue < Math::Deg<T>(0)) hue += Math::Deg<T>(360);
 
-    int h = int(T(hue)/T(60)) % 6;
-    T f = T(hue)/T(60) - h;
+    int h = int(hue.toUnderlyingType()/T(60)) % 6;
+    T f = hue.toUnderlyingType()/T(60) - h;
 
     T p = value * (T(1) - saturation);
     T q = value * (T(1) - f*saturation);

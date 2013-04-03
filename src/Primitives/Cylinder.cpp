@@ -60,7 +60,7 @@ void Cylinder::capVertexRing(Float y, Float textureCoordsV, const Vector3& norma
     Rad segmentAngleIncrement(2*Constants::pi()/segments);
 
     for(UnsignedInt i = 0; i != segments; ++i) {
-        Rad segmentAngle(i*segmentAngleIncrement);
+        Rad segmentAngle = i*segmentAngleIncrement;
         positions(0)->push_back({Math::sin(segmentAngle), y, Math::cos(segmentAngle)});
         normals(0)->push_back(normal);
 

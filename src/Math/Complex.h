@@ -93,7 +93,7 @@ template<class T> class Complex {
          * @see angle(), Matrix3::rotation(), Quaternion::rotation()
          */
         inline static Complex<T> rotation(Rad<T> angle) {
-            return {std::cos(T(angle)), std::sin(T(angle))};
+            return {std::cos(angle.toUnderlyingType()), std::sin(angle.toUnderlyingType())};
         }
 
         /**

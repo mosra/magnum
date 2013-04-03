@@ -58,21 +58,16 @@ typedef Unit<Sec_, Float> Sec;
 typedef Unit<Sec_, Int> Seci;
 
 inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, Sec value) {
-    return debug << Float(value);
+    return debug << value.toUnderlyingType();
 }
 
 void UnitTest::construct() {
     constexpr Sec a(25.0f);
-    CORRADE_COMPARE(Float(a), 25.0f);
+    CORRADE_COMPARE(a.toUnderlyingType(), 25.0f);
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Float, Sec>::value));
-    {
-        #ifdef CORRADE_GCC44_COMPATIBILITY
-        CORRADE_EXPECT_FAIL("GCC 4.4 doesn't have explicit conversion operators");
-        #endif
-        CORRADE_VERIFY(!(std::is_convertible<Sec, Float>::value));
-    }
+    CORRADE_VERIFY(!(std::is_convertible<Sec, Float>::value));
 }
 
 void UnitTest::constructDefault() {
@@ -143,17 +138,9 @@ void UnitTest::multiplyDivide() {
     constexpr Sec b(-4.5f);
     constexpr Sec c(5.0f);
 
-    /* The operation returns underlying type on GCC 4.4 because of non-explicit
-       conversion operators and conflicts with builtin operators */
-    #ifndef CORRADE_GCC44_COMPATIBILITY
     constexpr Sec d = a*-1.5f;
     constexpr Sec e = -1.5f*a;
     constexpr Sec f = b/-1.5f;
-    #else
-    constexpr Sec d(a*-1.5f);
-    constexpr Sec e(-1.5f*a);
-    constexpr Sec f(b/-1.5f);
-    #endif
     CORRADE_COMPARE(d, b);
     CORRADE_COMPARE(e, b);
     CORRADE_COMPARE(f, a);

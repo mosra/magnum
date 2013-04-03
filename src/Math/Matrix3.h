@@ -80,8 +80,8 @@ template<class T> class Matrix3: public Matrix<3, T> {
          *      Matrix4::rotation(Rad, const Vector3&)
          */
         static Matrix3<T> rotation(Rad<T> angle) {
-            T sine = std::sin(T(angle));
-            T cosine = std::cos(T(angle));
+            T sine = std::sin(angle.toUnderlyingType());
+            T cosine = std::cos(angle.toUnderlyingType());
 
             return {{ cosine,   sine, T(0)},
                     {  -sine, cosine, T(0)},

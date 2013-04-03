@@ -60,24 +60,24 @@ AngleTest::AngleTest() {
 void AngleTest::construct() {
     /* Default constructor */
     constexpr Deg m;
-    CORRADE_COMPARE(Float(m), 0.0f);
+    CORRADE_COMPARE(m.toUnderlyingType(), 0.0f);
     #ifndef MAGNUM_TARGET_GLES
     constexpr Degd a;
-    CORRADE_COMPARE(Double(a), 0.0);
+    CORRADE_COMPARE(a.toUnderlyingType(), 0.0);
     #else
     constexpr Deg a;
-    CORRADE_COMPARE(Float(a), 0.0f);
+    CORRADE_COMPARE(a.toUnderlyingType(), 0.0f);
     #endif
 
     /* Value constructor */
     constexpr Deg b(25.0);
-    CORRADE_COMPARE(Float(b), 25.0f);
+    CORRADE_COMPARE(b.toUnderlyingType(), 25.0f);
     #ifndef MAGNUM_TARGET_GLES
     constexpr Radd n(3.14);
-    CORRADE_COMPARE(Double(n), 3.14);
+    CORRADE_COMPARE(n.toUnderlyingType(), 3.14);
     #else
     constexpr Rad n(3.14);
-    CORRADE_COMPARE(Float(n), 3.14f);
+    CORRADE_COMPARE(n.toUnderlyingType(), 3.14f);
     #endif
 
     /* Copy constructor */
@@ -93,13 +93,13 @@ void AngleTest::construct() {
 
     /* Conversion operator */
     constexpr Rad p(n);
-    CORRADE_COMPARE(Float(p), 3.14f);
+    CORRADE_COMPARE(p.toUnderlyingType(), 3.14f);
     #ifndef MAGNUM_TARGET_GLES
     constexpr Degd d(b);
-    CORRADE_COMPARE(Double(d), 25.0);
+    CORRADE_COMPARE(d.toUnderlyingType(), 25.0);
     #else
     constexpr Deg d(b);
-    CORRADE_COMPARE(Float(d), 25.0f);
+    CORRADE_COMPARE(d.toUnderlyingType(), 25.0f);
     #endif
 }
 
@@ -130,10 +130,10 @@ void AngleTest::literals() {
 void AngleTest::conversion() {
     /* Implicit conversion should be allowed */
     constexpr Deg a = Rad(1.57079633f);
-    CORRADE_COMPARE(Float(a), 90.0f);
+    CORRADE_COMPARE(a.toUnderlyingType(), 90.0f);
 
     constexpr Rad b = Deg(90.0f);
-    CORRADE_COMPARE(Float(b), 1.57079633f);
+    CORRADE_COMPARE(b.toUnderlyingType(), 1.57079633f);
 }
 
 void AngleTest::debugDeg() {

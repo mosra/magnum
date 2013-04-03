@@ -54,10 +54,11 @@ template<template<class> class Derived, class T> class Unit {
         template<class U> inline constexpr explicit Unit(Unit<Derived, U> value): value(value.value) {}
 
         /** @brief Explicit conversion to underlying type */
+        inline constexpr T toUnderlyingType() const { return value; }
+
+        /** @brief Explicit conversion to underlying type */
         #ifndef CORRADE_GCC44_COMPATIBILITY
         inline constexpr explicit operator T() const { return value; }
-        #else
-        inline constexpr operator T() const { return value; }
         #endif
 
         /** @brief Equality comparison */
@@ -117,9 +118,6 @@ template<template<class> class Derived, class T> class Unit {
             return Unit<Derived, T>(value - other.value);
         }
 
-        /* These are conflicting with builtin operators because of non-explicit
-           conversion to T */
-        #ifndef CORRADE_GCC44_COMPATIBILITY
         /** @brief Multiply with number and assign */
         inline Unit<Derived, T>& operator*=(T number) {
             value *= number;
@@ -146,21 +144,17 @@ template<template<class> class Derived, class T> class Unit {
         inline constexpr T operator/(Unit<Derived, T> other) const {
             return value/other.value;
         }
-        #endif
 
     private:
         T value;
 };
 
-/* This is conflicting with builtin operator because of non-explicit conversion to T */
-#ifndef CORRADE_GCC44_COMPATIBILITY
 /** @relates Unit
 @brief Multiply number with value
 */
 template<template<class> class Derived, class T> inline constexpr Unit<Derived, T> operator*(typename std::common_type<T>::type number, const Unit<Derived, T>& value) {
     return value*number;
 }
-#endif
 
 }}
 

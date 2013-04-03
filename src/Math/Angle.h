@@ -231,14 +231,14 @@ See operator""_degf() for more information.
 inline constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(value); }
 #endif
 
-template<class T> inline constexpr Deg<T>::Deg(Unit<Rad, T> value): Unit<Math::Deg, T>(T(180)*T(value)/Math::Constants<T>::pi()) {}
-template<class T> inline constexpr Rad<T>::Rad(Unit<Deg, T> value): Unit<Math::Rad, T>(T(value)*Math::Constants<T>::pi()/T(180)) {}
+template<class T> inline constexpr Deg<T>::Deg(Unit<Rad, T> value): Unit<Math::Deg, T>(T(180)*value.toUnderlyingType()/Math::Constants<T>::pi()) {}
+template<class T> inline constexpr Rad<T>::Rad(Unit<Deg, T> value): Unit<Math::Rad, T>(value.toUnderlyingType()*Math::Constants<T>::pi()/T(180)) {}
 
 /** @debugoperator{Magnum::Math::Rad} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Unit<Rad, T>& value) {
     debug << "Rad(";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
-    debug << T(value) << ")";
+    debug << value.toUnderlyingType() << ")";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
     return debug;
 }
@@ -247,7 +247,7 @@ template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug deb
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Unit<Deg, T>& value) {
     debug << "Deg(";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
-    debug << T(value) << ")";
+    debug << value.toUnderlyingType() << ")";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
     return debug;
 }

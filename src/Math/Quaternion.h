@@ -170,7 +170,7 @@ template<class T> class Quaternion {
             CORRADE_ASSERT(normalizedAxis.isNormalized(),
                            "Math::Quaternion::rotation(): axis must be normalized", {});
 
-            return {normalizedAxis*std::sin(T(angle)/2), std::cos(T(angle)/2)};
+            return {normalizedAxis*std::sin(angle.toUnderlyingType()/2), std::cos(angle.toUnderlyingType()/2)};
         }
 
         /**

@@ -94,8 +94,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
             CORRADE_ASSERT(normalizedAxis.isNormalized(),
                            "Math::Matrix4::rotation(): axis must be normalized", {});
 
-            T sine = std::sin(T(angle));
-            T cosine = std::cos(T(angle));
+            T sine = std::sin(angle.toUnderlyingType());
+            T cosine = std::cos(angle.toUnderlyingType());
             T oneMinusCosine = T(1) - cosine;
 
             T xx = normalizedAxis.x()*normalizedAxis.x();
@@ -131,8 +131,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *      rotation() const, Quaternion::rotation(), Matrix3::rotation(Rad)
          */
         static Matrix4<T> rotationX(Rad<T> angle) {
-            T sine = std::sin(T(angle));
-            T cosine = std::cos(T(angle));
+            T sine = std::sin(angle.toUnderlyingType());
+            T cosine = std::cos(angle.toUnderlyingType());
 
             return {{T(1),   T(0),   T(0), T(0)},
                     {T(0), cosine,   sine, T(0)},
@@ -149,8 +149,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *      rotation() const, Quaternion::rotation(), Matrix3::rotation(Rad)
          */
         static Matrix4<T> rotationY(Rad<T> angle) {
-            T sine = std::sin(T(angle));
-            T cosine = std::cos(T(angle));
+            T sine = std::sin(angle.toUnderlyingType());
+            T cosine = std::cos(angle.toUnderlyingType());
 
             return {{cosine, T(0),  -sine, T(0)},
                     {  T(0), T(1),   T(0), T(0)},
@@ -167,8 +167,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *      rotation() const, Quaternion::rotation(), Matrix3::rotation(Rad)
          */
         static Matrix4<T> rotationZ(Rad<T> angle) {
-            T sine = std::sin(T(angle));
-            T cosine = std::cos(T(angle));
+            T sine = std::sin(angle.toUnderlyingType());
+            T cosine = std::cos(angle.toUnderlyingType());
 
             return {{cosine,   sine, T(0), T(0)},
                     { -sine, cosine, T(0), T(0)},
@@ -235,7 +235,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @see orthographicProjection(), Matrix3::projection()
          */
         static Matrix4<T> perspectiveProjection(Rad<T> fov, T aspectRatio, T near, T far) {
-            T xyScale = 2*std::tan(T(fov)/2)*near;
+            T xyScale = 2*std::tan(fov.toUnderlyingType()/2)*near;
 
             return perspectiveProjection(Vector2<T>(xyScale, xyScale/aspectRatio), near, far);
         }
