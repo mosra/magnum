@@ -60,7 +60,7 @@ class ShapeRendererOptions {
         inline constexpr ShapeRendererOptions(): _pointSize(0.25f) {}
 
         /** @brief Color of rendered shape */
-        inline constexpr Color3<> color() const { return _color; }
+        inline constexpr Color4<> color() const { return _color; }
 
         /**
          * @brief Set color of rendered shape
@@ -68,7 +68,7 @@ class ShapeRendererOptions {
          *
          * Default is black.
          */
-        inline ShapeRendererOptions* setColor(const Color3<>& color) {
+        inline ShapeRendererOptions* setColor(const Color4<>& color) {
             _color = color;
             return this;
         }
@@ -89,7 +89,7 @@ class ShapeRendererOptions {
         }
 
     private:
-        Color3<> _color;
+        Color4<> _color;
         Float _pointSize;
 };
 
