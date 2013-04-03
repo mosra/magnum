@@ -35,6 +35,7 @@ class FunctionsTest: public Corrade::TestSuite::Tester {
 
         void min();
         void max();
+        void sign();
         void abs();
         void sqrt();
         void clamp();
@@ -66,6 +67,7 @@ typedef Math::Vector3<Int> Vector3i;
 FunctionsTest::FunctionsTest() {
     addTests({&FunctionsTest::min,
               &FunctionsTest::max,
+              &FunctionsTest::sign,
               &FunctionsTest::abs,
               &FunctionsTest::sqrt,
               &FunctionsTest::clamp,
@@ -94,6 +96,13 @@ void FunctionsTest::min() {
 void FunctionsTest::max() {
     CORRADE_COMPARE(Math::max(5, 9), 9);
     CORRADE_COMPARE(Math::max(Vector3i(5, -3, 2), Vector3i(9, -5, 18)), Vector3i(9, -3, 18));
+}
+
+void FunctionsTest::sign() {
+    CORRADE_COMPARE(Math::sign(3516), 1);
+    CORRADE_COMPARE(Math::sign(0.0f), 0.0f);
+    CORRADE_COMPARE(Math::sign(-3.7), -1.0);
+    CORRADE_COMPARE(Math::sign(Vector3i(0, -3, 2)), Vector3i(0, -1, 1));
 }
 
 void FunctionsTest::abs() {
