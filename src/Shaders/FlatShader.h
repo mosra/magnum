@@ -64,7 +64,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatShader: public 
          * @brief Set color
          * @return Pointer to self (for method chaining)
          */
-        FlatShader<dimensions>* setColor(const Color3<>& color) {
+        FlatShader<dimensions>* setColor(const Color4<>& color) {
             setUniform(colorUniform, color);
             return this;
         }

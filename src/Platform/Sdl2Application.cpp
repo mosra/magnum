@@ -167,7 +167,7 @@ void Sdl2Application::setMouseLocked(bool enabled) {
     SDL_SetRelativeMouseMode(enabled ? SDL_TRUE : SDL_FALSE);
 }
 
-Sdl2Application::Configuration::Configuration(): _title("Magnum SDL2 Application"), _size(800, 600) {}
+Sdl2Application::Configuration::Configuration(): _title("Magnum SDL2 Application"), _size(800, 600), _sampleCount(0) {}
 Sdl2Application::Configuration::~Configuration() = default;
 
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseEvent::modifiers() {

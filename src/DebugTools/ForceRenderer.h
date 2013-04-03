@@ -47,7 +47,7 @@ class ForceRendererOptions {
         inline constexpr ForceRendererOptions(): _size(1.0f) {}
 
         /** @brief Color of rendered arrow */
-        inline constexpr Color3<> color() const { return _color; }
+        inline constexpr Color4<> color() const { return _color; }
 
         /**
          * @brief Set color of rendered arrow
@@ -55,7 +55,7 @@ class ForceRendererOptions {
          *
          * Default is black.
          */
-        inline ForceRendererOptions* setColor(const Color3<>& color) {
+        inline ForceRendererOptions* setColor(const Color4<>& color) {
             _color = color;
             return this;
         }
@@ -75,7 +75,7 @@ class ForceRendererOptions {
         }
 
     private:
-        Color3<> _color;
+        Color4<> _color;
         Float _size;
 };
 
