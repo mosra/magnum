@@ -161,6 +161,28 @@ template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& a
 }
 #endif
 
+/**
+@brief Sign
+
+Returns `1.0` if @f$ x > 0 @f$, `0.0` if @f$ @p x = 0 @f$ and `-1.0` if
+@f$ x < 0 @f$.
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> inline T sign(const T scalar);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type sign(const T& scalar) {
+    if(scalar > T(0)) return T(1);
+    if(scalar < T(0)) return T(-1);
+    return T(0);
+}
+template<std::size_t size, class T> Vector<size, T> sign(const Vector<size, T>& a) {
+    Vector<size, T> out;
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = sign(a[i]);
+    return out;
+}
+#endif
+
 /** @brief Absolute value */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T abs(const T& a);
