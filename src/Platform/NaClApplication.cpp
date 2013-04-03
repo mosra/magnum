@@ -49,8 +49,8 @@ void NaClApplication::createContext(NaClApplication::Configuration* configuratio
         PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
         PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
         PP_GRAPHICS3DATTRIB_STENCIL_SIZE, 8,
-        PP_GRAPHICS3DATTRIB_SAMPLES, 0,
-        PP_GRAPHICS3DATTRIB_SAMPLE_BUFFERS, 0,
+        PP_GRAPHICS3DATTRIB_SAMPLES, configuration->sampleCount(),
+        PP_GRAPHICS3DATTRIB_SAMPLE_BUFFERS, configuration->sampleCount() > 1? 1 : 0,
         PP_GRAPHICS3DATTRIB_WIDTH, configuration->size().x(),
         PP_GRAPHICS3DATTRIB_HEIGHT, configuration->size().y(),
         PP_GRAPHICS3DATTRIB_NONE
@@ -223,7 +223,7 @@ void NaClApplication::mouseLockCallback(void* applicationInstance, std::int32_t)
     instance->flags |= Flag::MouseLocked;
 }
 
-NaClApplication::Configuration::Configuration(): _size(640, 480) {}
+NaClApplication::Configuration::Configuration(): _size(640, 480), _sampleCount(0) {}
 NaClApplication::Configuration::~Configuration() = default;
 
 }}
