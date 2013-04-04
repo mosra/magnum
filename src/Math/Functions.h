@@ -164,8 +164,7 @@ template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& a
 /**
 @brief Sign
 
-Returns `1.0` if @f$ x > 0 @f$, `0.0` if @f$ @p x = 0 @f$ and `-1.0` if
-@f$ x < 0 @f$.
+Returns `1` if @p x > 0, `0` if @p x = 0 and `-1` if @p x < 0.
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T sign(const T scalar);
