@@ -1,4 +1,4 @@
-Magnum is 2D/3D graphics engine written in C++11 and OpenGL 3 Core Profile.
+Magnum is 2D/3D graphics engine written in C++11 and modern OpenGL.
 
 DESIGN GOALS
 ============
@@ -34,6 +34,17 @@ DESIGN GOALS
     done on top of pre-made skeleton classes, support for file formats is done
     using plugins and platform support is done by writing simple wrapper class.
 
+SUPPORTED PLATFORMS
+===================
+
+*   **OpenGL** 2.1 through 4.3, core profile functionality and modern
+    extensions
+*   **OpenGL ES** 2.0, 3.0 and extensions to match desktop OpenGL functionality
+*   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
+    GLUT or SDL2 toolkit)
+*   **Windows** (through GLUT or SDL2 toolkit)
+*   **Google Chrome Native Client** (natively using PPAPI)
+
 FEATURES
 ========
 
@@ -46,8 +57,6 @@ FEATURES
 *   Extensible scene graph which can be modified for each specific usage.
 *   Plugin-based data exchange framework, tools for manipulating meshes,
     textures and images.
-*   Integration with various windowing toolkits and also ability to create
-    windowless contexts.
 *   Pre-made shaders, primitives and other tools for easy prototyping and
     debugging.
 
