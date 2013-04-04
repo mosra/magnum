@@ -43,7 +43,8 @@ SUPPORTED PLATFORMS
 *   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
     GLUT or SDL2 toolkit)
 *   **Windows** (through GLUT or SDL2 toolkit)
-*   **Google Chrome Native Client** (natively using PPAPI)
+*   **Google Chrome Native Client** (natively using PPAPI, both `newlib`
+    and `glibc` toolchains are supported)
 
 FEATURES
 ========
