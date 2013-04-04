@@ -45,7 +45,7 @@ void NaClApplication::createContext(NaClApplication::Configuration* configuratio
 
     viewportSize = configuration->size();
 
-    std::int32_t attributes[] = {
+    const std::int32_t attributes[] = {
         PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
         PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
         PP_GRAPHICS3DATTRIB_STENCIL_SIZE, 8,
