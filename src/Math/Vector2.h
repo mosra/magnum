@@ -80,6 +80,20 @@ template<class T> class Vector2: public Vector<2, T> {
          */
         inline constexpr static Vector2<T> yScale(T scale) { return Vector2<T>(T(1), scale); }
 
+        /**
+         * @brief 2D cross product
+         *
+         * 2D version of cross product, equivalent to calling Vector3::cross()
+         * with Z coordinate set to `0` and extracting only Z coordinate from
+         * the result (X and Y coordinates are always zero).
+         * @f[
+         *      \boldsymbol a \times \boldsymbol b = a_xb_y - a_yb_x
+         * @f]
+         */
+        inline static T cross(const Vector2<T>& a, const Vector2<T>& b) {
+            return a.x()*b.y() - a.y()*b.x();
+        }
+
         /** @copydoc Vector::Vector() */
         inline constexpr /*implicit*/ Vector2() {}
 

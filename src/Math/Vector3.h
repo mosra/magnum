@@ -102,12 +102,12 @@ template<class T> class Vector3: public Vector<3, T> {
          * @brief Cross product
          *
          * @f[
-         * \boldsymbol a \times \boldsymbol b =
-         * \begin{pmatrix} c_0 \\ c_1 \\ c_2 \end{pmatrix} =
-         * \begin{pmatrix}a_1b_2 - a_2b_1 \\ a_2b_0 - a_0b_2 \\ a_0b_1 - a_1b_0 \end{pmatrix}
+         *      \boldsymbol a \times \boldsymbol b =
+         *      \begin{pmatrix}a_yb_z - a_zb_y \\ a_zb_y - a_xb_z \\ a_xb_y - a_yb_x \end{pmatrix}
          * @f]
+         * @see Vector2::cross()
          */
-        inline constexpr static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
+        inline static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
             return swizzle<'y', 'z', 'x'>(a)*swizzle<'z', 'x', 'y'>(b) -
                    swizzle<'z', 'x', 'y'>(a)*swizzle<'y', 'z', 'x'>(b);
         }

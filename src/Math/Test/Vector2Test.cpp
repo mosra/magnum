@@ -26,7 +26,7 @@
 #include <TestSuite/Tester.h>
 #include <Utility/Configuration.h>
 
-#include "Math/Vector2.h"
+#include "Math/Vector3.h"
 
 struct Vec2 {
     float x, y;
@@ -63,6 +63,7 @@ class Vector2Test: public Corrade::TestSuite::Tester {
         void convert();
 
         void access();
+        void cross();
         void axes();
         void scales();
 
@@ -70,6 +71,7 @@ class Vector2Test: public Corrade::TestSuite::Tester {
         void configuration();
 };
 
+typedef Math::Vector3<Int> Vector3i;
 typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector2<Int> Vector2i;
 
@@ -83,6 +85,7 @@ Vector2Test::Vector2Test() {
               &Vector2Test::convert,
 
               &Vector2Test::access,
+              &Vector2Test::cross,
               &Vector2Test::axes,
               &Vector2Test::scales,
 
@@ -160,6 +163,14 @@ void Vector2Test::access() {
     constexpr Float y = cvec.y();
     CORRADE_COMPARE(x, 1.0f);
     CORRADE_COMPARE(y, -2.0f);
+}
+
+void Vector2Test::cross() {
+    Vector2i a(1, -1);
+    Vector2i b(4, 3);
+
+    CORRADE_COMPARE(Vector2i::cross(a, b), 7);
+    CORRADE_COMPARE(Vector3i::cross({a, 0}, {b, 0}), Vector3i(0, 0, Vector2i::cross(a, b)));
 }
 
 void Vector2Test::axes() {
