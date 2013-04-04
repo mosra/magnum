@@ -47,12 +47,20 @@ void GlutApplication::initialize(int& argc, char** argv) {
 
     /* Init GLUT */
     glutInit(&argc, argv);
+    glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 }
 
 void GlutApplication::createContext(Configuration* configuration) {
-    CORRADE_ASSERT(!c, "GlutApplication::createContext(): context already created", );
+    if(!tryCreateContext(configuration)) {
+        Error() << "Platform::GlutApplication::createContext(): cannot create context";
+        delete configuration;
+        std::exit(1);
 
-    glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
+    } else delete configuration;
+}
+
+bool GlutApplication::tryCreateContext(Configuration* configuration) {
+    CORRADE_ASSERT(!c, "Platform::GlutApplication::tryCreateContext(): context already created", false);
 
     unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
 
@@ -61,7 +69,8 @@ void GlutApplication::createContext(Configuration* configuration) {
 
     glutInitDisplayMode(flags);
     glutInitWindowSize(configuration->size().x(), configuration->size().y());
-    glutCreateWindow(configuration->title().c_str());
+    if(!glutCreateWindow(configuration->title().c_str()))
+        return false;
     glutReshapeFunc(staticViewportEvent);
     glutSpecialFunc(staticKeyEvent);
     glutMouseFunc(staticMouseEvent);
@@ -71,7 +80,7 @@ void GlutApplication::createContext(Configuration* configuration) {
     ExtensionWrangler::initialize();
 
     c = new Context;
-    delete configuration;
+    return true;
 }
 
 GlutApplication::~GlutApplication() {

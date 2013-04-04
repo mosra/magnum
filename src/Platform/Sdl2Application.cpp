@@ -50,20 +50,33 @@ Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
 }
 
 Sdl2Application::Sdl2Application(const Arguments&): context(nullptr), flags(Flag::Redraw) {
+    initialize();
     createContext(new Configuration);
 }
 
 Sdl2Application::Sdl2Application(const Arguments&, Configuration* configuration): context(nullptr), flags(Flag::Redraw) {
+    initialize();
     if(configuration) createContext(configuration);
 }
 
-void Sdl2Application::createContext(Configuration* configuration) {
-    CORRADE_ASSERT(!context, "Sdl2Application::createContext(): context already created", );
-
+void Sdl2Application::initialize() {
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         Error() << "Cannot initialize SDL.";
         std::exit(1);
     }
+}
+
+void Sdl2Application::createContext(Configuration* configuration) {
+    if(!tryCreateContext(configuration)) {
+        Error() << "Platform::Sdl2Application::createContext(): cannot create context:" << SDL_GetError();
+        delete configuration;
+        std::exit(1);
+
+    } else delete configuration;
+}
+
+bool Sdl2Application::tryCreateContext(Configuration* configuration) {
+    CORRADE_ASSERT(!context, "Platform::Sdl2Application::tryCreateContext(): context already created", false);
 
     /* Enable double buffering and 24bt depth buffer */
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -81,7 +94,11 @@ void Sdl2Application::createContext(Configuration* configuration) {
         std::exit(2);
     }
 
-    context = SDL_GL_CreateContext(window);
+    if(!(context = SDL_GL_CreateContext(window))) {
+        SDL_DestroyWindow(window);
+        window = nullptr;
+        return false;
+    }
 
     /* This must be enabled, otherwise (on my NVidia) it crashes when creating
        VAO. WTF. */
@@ -96,7 +113,7 @@ void Sdl2Application::createContext(Configuration* configuration) {
     SDL_PushEvent(sizeEvent);
 
     c = new Context;
-    delete configuration;
+    return true;
 }
 
 Sdl2Application::~Sdl2Application() {

@@ -81,7 +81,8 @@ class GlutApplication {
          * @param arguments     Application arguments
          *
          * Creates application with default configuration. See Configuration
-         * for more information.
+         * for more information. The program exits if the context cannot be
+         * created, see tryCreateContext() for an alternative.
          */
         explicit GlutApplication(const Arguments& arguments);
 
@@ -92,7 +93,8 @@ class GlutApplication {
          *
          * The @p configuration is deleted afterwards. If `nullptr` is passed
          * as @p configuration, the context is not created and must be created
-         * with createContext().
+         * with createContext(). The program exits if the context cannot be
+         * created, see tryCreateContext() for an alternative.
          */
         explicit GlutApplication(const Arguments& arguments, Configuration* configuration);
 
@@ -112,9 +114,20 @@ class GlutApplication {
          * @brief Create context with given configuration
          *
          * The @p configuration is deleted afterwards. Must be called if and
-         * only if the context wasn't created by the constructor itself.
+         * only if the context wasn't created by the constructor itself. The
+         * program exits if the context cannot be created, see tryCreateContext()
+         * for an alternative.
          */
         void createContext(Configuration* configuration);
+
+        /**
+         * @brief Try to create context with given configuration
+         *
+         * Unlike createContext() the @p configuration is *not* deleted
+         * afterwards. Returns `false` if the context cannot be created, `true`
+         * otherwise.
+         */
+        bool tryCreateContext(Configuration* configuration);
 
         /** @{ @name Drawing functions */
 

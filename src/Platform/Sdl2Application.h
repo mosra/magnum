@@ -95,6 +95,9 @@ class Sdl2Application {
         /** @copydoc GlutApplication::createContext() */
         void createContext(Configuration* configuration);
 
+        /** @copydoc GlutApplication::tryCreateContext() */
+        bool tryCreateContext(Configuration* configuration);
+
         /** @{ @name Drawing functions */
 
         /** @copydoc GlutApplication::viewportEvent() */
@@ -166,6 +169,8 @@ class Sdl2Application {
 
         typedef Corrade::Containers::EnumSet<Flag, UnsignedByte> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
+
+        void initialize();
 
         SDL_Window* window;
         SDL_GLContext context;
