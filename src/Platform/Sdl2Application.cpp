@@ -86,10 +86,14 @@ bool Sdl2Application::tryCreateContext(Configuration* configuration) {
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, configuration->sampleCount() > 1 ? 1 : 0);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, configuration->sampleCount());
 
+    /* Flags: if not hidden, set as shown */
+    Uint32 flags(configuration->flags());
+    if(!(configuration->flags() & Configuration::Flag::Hidden)) flags |= SDL_WINDOW_SHOWN;
+
     if(!(window = SDL_CreateWindow(configuration->title().c_str(),
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
             configuration->size().x(), configuration->size().y(),
-            SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN))) {
+            SDL_WINDOW_OPENGL|flags))) {
         Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window";
         std::exit(2);
     }
@@ -183,7 +187,7 @@ void Sdl2Application::setMouseLocked(bool enabled) {
     SDL_SetRelativeMouseMode(enabled ? SDL_TRUE : SDL_FALSE);
 }
 
-Sdl2Application::Configuration::Configuration(): _title("Magnum SDL2 Application"), _size(800, 600), _sampleCount(0) {}
+Sdl2Application::Configuration::Configuration(): _title("Magnum SDL2 Application"), _size(800, 600), _flags(Flag::Resizable), _sampleCount(0) {}
 Sdl2Application::Configuration::~Configuration() = default;
 
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseEvent::modifiers() {
