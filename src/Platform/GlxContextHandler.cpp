@@ -84,7 +84,7 @@ void GlxContextHandler::createContext(Window nativeWindow) {
 
     /** @todo Use some extension wrangler for this, not GLEW, as it apparently needs context to create context, yo dawg wtf. */
     PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC) glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
-    context = glXCreateContextAttribsARB(display, configs[0], 0, True, attributes);
+    context = glXCreateContextAttribsARB(display, configs[0], nullptr, True, attributes);
     XFree(configs);
     if(!context) {
         Error() << "GlxContextHandler: cannot create context.";
