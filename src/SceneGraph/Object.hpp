@@ -321,6 +321,22 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
     /* No dirty objects left, done */
     if(objects.empty()) return;
 
+    /* Add non-clean parents to the list. Mark each added object as visited, so
+       they aren't added more than once */
+    for(std::size_t end = objects.size(), i = 0; i != end; ++i) {
+        Object<Transformation>* o = objects[i];
+        o->flags |= Flag::Visited;
+
+        Object<Transformation>* parent = o->parent();
+        while(parent && !(parent->flags & Flag::Visited) && parent->isDirty()) {
+            objects.push_back(parent);
+            parent = parent->parent();
+        }
+    }
+
+    /* Cleanup all marks */
+    for(auto o: objects) o->flags &= ~Flag::Visited;
+
     /* Compute absolute transformations */
     Scene<Transformation>* scene = objects[0]->scene();
     CORRADE_ASSERT(scene, "Object::setClean(): objects must be part of some scene", );
