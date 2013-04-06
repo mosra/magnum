@@ -147,7 +147,7 @@ window size 800x600 pixels). If you want something else, you can pass
 constructor. Using method chaining it can be done conveniently like this:
 @code
 MyApplication::MyApplication(int& argc, char** argv):
-    Platform::GlutApplication(argc, argv, (new Configuration())
+    Platform::GlutApplication(argc, argv, (new Configuration)
         ->setTitle("My Application")->setSize({800, 600}) {
     // ...
 }
@@ -161,7 +161,7 @@ instead of Configuration instance and then specify it later with
 MyApplication::MyApplication(int& argc, char** argv): Platform::GlutApplication(argc, argv, nullptr) {
     // ...
 
-    createContext((new Configuration())
+    createContext((new Configuration)
         ->setTitle("My Application")
         ->setSize(size));
 

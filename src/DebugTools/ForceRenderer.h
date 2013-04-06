@@ -90,9 +90,8 @@ See @ref debug-tools-renderers for more information.
 Example code:
 @code
 // Create some options
-DebugTools::ResourceManager::instance()->set("my", (new DebugTools::ForceRendererOptions()
-    ->setScale(5.0f)
-    ->setColor(Color3<>::fromHSV(120.0_degf, 1.0f, 0.7f)));
+DebugTools::ResourceManager::instance()->set("my", (new DebugTools::ForceRendererOptions)
+    ->setScale(5.0f)->setColor(Color3<>::fromHSV(120.0_degf, 1.0f, 0.7f)));
 
 // Create debug renderer for given object, use "my" options for it
 Object3D* object;
