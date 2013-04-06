@@ -147,7 +147,7 @@ window size 800x600 pixels). If you want something else, you can pass
 constructor. Using method chaining it can be done conveniently like this:
 @code
 MyApplication::MyApplication(int& argc, char** argv):
-    Platform::GlutApplication(argc, argv, (new Configuration())
+    Platform::GlutApplication(argc, argv, (new Configuration)
         ->setTitle("My Application")->setSize({800, 600}) {
     // ...
 }
@@ -161,9 +161,33 @@ instead of Configuration instance and then specify it later with
 MyApplication::MyApplication(int& argc, char** argv): Platform::GlutApplication(argc, argv, nullptr) {
     // ...
 
-    createContext((new Configuration())
+    createContext((new Configuration)
         ->setTitle("My Application")
         ->setSize(size));
+
+    // ...
+}
+@endcode
+
+The configuration passed to constructor and @ref GlutApplication::createContext() "createContext()"
+is automaticall deleted afterwards and if the context creation fails, the
+application exits. However, it is also possible to negotiate the context using
+@ref GlutApplication::tryCreateContext() "tryCreateContext()". The major
+difference is that this function returns `false` instead of exiting and it
+doesn't delete the configuration afterwards so you can reuse it. You can for
+example try enabling MSAA and if the context creation fails, fall back to
+no-AA rendering:
+@code
+MyApplication::MyApplication(int& argc, char** argv): Platform::GlutApplication(argc, argv, nullptr) {
+    // ...
+
+    auto conf = new Configuration;
+    conf->setTitle("My Application")
+        ->setSampleCount(16);
+
+    if(!tryCreateContext(conf))
+        createContext(conf->setSampleCount(0));
+    else delete conf;
 
     // ...
 }

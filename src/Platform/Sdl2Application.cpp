@@ -50,39 +50,59 @@ Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
 }
 
 Sdl2Application::Sdl2Application(const Arguments&): context(nullptr), flags(Flag::Redraw) {
+    initialize();
     createContext(new Configuration);
 }
 
 Sdl2Application::Sdl2Application(const Arguments&, Configuration* configuration): context(nullptr), flags(Flag::Redraw) {
+    initialize();
     if(configuration) createContext(configuration);
 }
 
-void Sdl2Application::createContext(Configuration* configuration) {
-    CORRADE_ASSERT(!context, "Sdl2Application::createContext(): context already created", );
-
+void Sdl2Application::initialize() {
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         Error() << "Cannot initialize SDL.";
         std::exit(1);
     }
+}
+
+void Sdl2Application::createContext(Configuration* configuration) {
+    if(!tryCreateContext(configuration)) {
+        Error() << "Platform::Sdl2Application::createContext(): cannot create context:" << SDL_GetError();
+        delete configuration;
+        std::exit(1);
+
+    } else delete configuration;
+}
+
+bool Sdl2Application::tryCreateContext(Configuration* configuration) {
+    CORRADE_ASSERT(!context, "Platform::Sdl2Application::tryCreateContext(): context already created", false);
 
     /* Enable double buffering and 24bt depth buffer */
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
     /* Multisampling */
-    if(configuration->sampleCount()) {
-        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, configuration->sampleCount());
-    }
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, configuration->sampleCount() > 1 ? 1 : 0);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, configuration->sampleCount());
 
-    window = SDL_CreateWindow(configuration->title().c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        configuration->size().x(), configuration->size().y(), SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-    if(!window) {
-        Error() << "Cannot create window.";
+    /* Flags: if not hidden, set as shown */
+    Uint32 flags(configuration->flags());
+    if(!(configuration->flags() & Configuration::Flag::Hidden)) flags |= SDL_WINDOW_SHOWN;
+
+    if(!(window = SDL_CreateWindow(configuration->title().c_str(),
+            SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+            configuration->size().x(), configuration->size().y(),
+            SDL_WINDOW_OPENGL|flags))) {
+        Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window";
         std::exit(2);
     }
 
-    context = SDL_GL_CreateContext(window);
+    if(!(context = SDL_GL_CreateContext(window))) {
+        SDL_DestroyWindow(window);
+        window = nullptr;
+        return false;
+    }
 
     /* This must be enabled, otherwise (on my NVidia) it crashes when creating
        VAO. WTF. */
@@ -97,7 +117,7 @@ void Sdl2Application::createContext(Configuration* configuration) {
     SDL_PushEvent(sizeEvent);
 
     c = new Context;
-    delete configuration;
+    return true;
 }
 
 Sdl2Application::~Sdl2Application() {
@@ -167,7 +187,7 @@ void Sdl2Application::setMouseLocked(bool enabled) {
     SDL_SetRelativeMouseMode(enabled ? SDL_TRUE : SDL_FALSE);
 }
 
-Sdl2Application::Configuration::Configuration(): _title("Magnum SDL2 Application"), _size(800, 600), _sampleCount(0) {}
+Sdl2Application::Configuration::Configuration(): _title("Magnum SDL2 Application"), _size(800, 600), _flags(Flag::Resizable), _sampleCount(0) {}
 Sdl2Application::Configuration::~Configuration() = default;
 
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseEvent::modifiers() {

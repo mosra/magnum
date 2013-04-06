@@ -42,7 +42,8 @@ class ObjectTest: public Corrade::TestSuite::Tester {
         void transformationsOrphan();
         void transformationsDuplicate();
         void setClean();
-        void bulkSetClean();
+        void setCleanListHierarchy();
+        void setCleanListBulk();
 };
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
@@ -71,7 +72,8 @@ ObjectTest::ObjectTest() {
               &ObjectTest::transformationsOrphan,
               &ObjectTest::transformationsDuplicate,
               &ObjectTest::setClean,
-              &ObjectTest::bulkSetClean});
+              &ObjectTest::setCleanListHierarchy,
+              &ObjectTest::setCleanListBulk});
 }
 
 void ObjectTest::parenting() {
@@ -305,10 +307,13 @@ void ObjectTest::setClean() {
 
     /* If the object itself is already clean, it shouldn't clean it again */
     childOne->cleanedAbsoluteTransformation = Matrix4(Matrix4::Zero);
+    CORRADE_VERIFY(!childOne->isDirty());
     childOne->setClean();
     CORRADE_COMPARE(childOne->cleanedAbsoluteTransformation, Matrix4(Matrix4::Zero));
 
     /* If any object in the hierarchy is already clean, it shouldn't clean it again */
+    CORRADE_VERIFY(!childOne->isDirty());
+    CORRADE_VERIFY(childTwo->isDirty());
     childTwo->setClean();
     CORRADE_COMPARE(childOne->cleanedAbsoluteTransformation, Matrix4(Matrix4::Zero));
 
@@ -332,7 +337,58 @@ void ObjectTest::setClean() {
     CORRADE_VERIFY(childThree->isDirty());
 }
 
-void ObjectTest::bulkSetClean() {
+void ObjectTest::setCleanListHierarchy() {
+    Scene3D scene;
+
+    class CachingFeature: public AbstractFeature<3> {
+        public:
+            CachingFeature(AbstractObject<3>* object): AbstractFeature<3>(object) {
+                setCachedTransformations(CachedTransformation::Absolute);
+            }
+
+            Matrix4 cleanedAbsoluteTransformation;
+
+            void clean(const Matrix4& absoluteTransformation) override {
+                cleanedAbsoluteTransformation = absoluteTransformation;
+            }
+    };
+
+    CachingObject* childOne = new CachingObject(&scene);
+    childOne->scale(Vector3(2.0f));
+
+    CachingObject* childTwo = new CachingObject(childOne);
+    childTwo->translate(Vector3::xAxis(1.0f));
+    CachingFeature* childTwoFeature = new CachingFeature(childTwo);
+
+    CachingObject* childThree = new CachingObject(childTwo);
+    childThree->rotate(Deg(90.0f), Vector3::yAxis());
+
+    /* Clean the object and all its dirty parents (but not children) */
+    Scene3D::setClean(std::vector<Object3D*>{childTwo});
+    CORRADE_VERIFY(!scene.isDirty());
+    CORRADE_VERIFY(!childOne->isDirty());
+    CORRADE_VERIFY(!childTwo->isDirty());
+    CORRADE_VERIFY(childThree->isDirty());
+
+    /* Verify the right matrices were passed */
+    CORRADE_COMPARE(childOne->cleanedAbsoluteTransformation, childOne->absoluteTransformationMatrix());
+    CORRADE_COMPARE(childTwo->cleanedAbsoluteTransformation, childTwo->absoluteTransformationMatrix());
+    CORRADE_COMPARE(childTwoFeature->cleanedAbsoluteTransformation, childTwo->absoluteTransformationMatrix());
+
+    /* If the object itself is already clean, it shouldn't clean it again */
+    childOne->cleanedAbsoluteTransformation = Matrix4(Matrix4::Zero);
+    CORRADE_VERIFY(!childOne->isDirty());
+    Scene3D::setClean(std::vector<Object3D*>{childOne});
+    CORRADE_COMPARE(childOne->cleanedAbsoluteTransformation, Matrix4(Matrix4::Zero));
+
+    /* If any object in the hierarchy is already clean, it shouldn't clean it again */
+    CORRADE_VERIFY(!childOne->isDirty());
+    childTwo->setDirty();
+    Scene3D::setClean(std::vector<Object3D*>{childTwo});
+    CORRADE_COMPARE(childOne->cleanedAbsoluteTransformation, Matrix4(Matrix4::Zero));
+}
+
+void ObjectTest::setCleanListBulk() {
     /* Verify it doesn't crash when passed empty list */
     Object3D::setClean(std::vector<Object3D*>());
 

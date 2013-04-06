@@ -50,7 +50,7 @@ void AbstractXApplication::createContext(AbstractXApplication::Configuration* co
     viewportSize = configuration->size();
 
     /* Get default X display */
-    display = XOpenDisplay(0);
+    display = XOpenDisplay(nullptr);
 
     /* Get visual ID */
     VisualID visualId = contextHandler->getVisualId(display);
@@ -62,7 +62,7 @@ void AbstractXApplication::createContext(AbstractXApplication::Configuration* co
     visInfo = XGetVisualInfo(display, VisualIDMask, &visTemplate, &visualCount);
     if(!visInfo) {
         Error() << "Cannot get X visual";
-        ::exit(1);
+        std::exit(1);
     }
 
     /* Create X Window */
@@ -74,7 +74,7 @@ void AbstractXApplication::createContext(AbstractXApplication::Configuration* co
     attr.event_mask = 0;
     unsigned long mask = CWBackPixel|CWBorderPixel|CWColormap|CWEventMask;
     window = XCreateWindow(display, root, 20, 20, configuration->size().x(), configuration->size().y(), 0, visInfo->depth, InputOutput, visInfo->visual, mask, &attr);
-    XSetStandardProperties(display, window, configuration->title().c_str(), 0, None, 0, 0, 0);
+    XSetStandardProperties(display, window, configuration->title().c_str(), nullptr, None, nullptr, 0, nullptr);
     XFree(visInfo);
 
     /* Be notified about closing the window */

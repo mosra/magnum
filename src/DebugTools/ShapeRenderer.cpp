@@ -29,6 +29,7 @@
 #include "Physics/AxisAlignedBox.h"
 #include "Physics/Box.h"
 #include "Physics/ObjectShape.h"
+#include "Physics/LineSegment.h"
 #include "Physics/Point.h"
 #include "Physics/ShapeGroup.h"
 #include "Physics/Sphere.h"
@@ -36,6 +37,7 @@
 
 #include "Implementation/AxisAlignedBoxRenderer.h"
 #include "Implementation/BoxRenderer.h"
+#include "Implementation/LineSegmentRenderer.h"
 #include "Implementation/PointRenderer.h"
 #include "Implementation/SphereRenderer.h"
 
@@ -51,6 +53,9 @@ template<> void createDebugMesh(ShapeRenderer<2>* renderer, Physics::AbstractSha
             break;
         case Physics::AbstractShape2D::Type::Box:
             renderer->renderers.push_back(new Implementation::BoxRenderer<2>(*static_cast<Physics::Box2D*>(shape)));
+            break;
+        case Physics::AbstractShape2D::Type::LineSegment:
+            renderer->renderers.push_back(new Implementation::LineSegmentRenderer<2>(*static_cast<Physics::LineSegment2D*>(shape)));
             break;
         case Physics::AbstractShape2D::Type::Point:
             renderer->renderers.push_back(new Implementation::PointRenderer<2>(*static_cast<Physics::Point2D*>(shape)));
@@ -75,6 +80,9 @@ template<> void createDebugMesh(ShapeRenderer<3>* renderer, Physics::AbstractSha
             break;
         case Physics::AbstractShape3D::Type::Box:
             renderer->renderers.push_back(new Implementation::BoxRenderer<3>(*static_cast<Physics::Box3D*>(shape)));
+            break;
+        case Physics::AbstractShape3D::Type::LineSegment:
+            renderer->renderers.push_back(new Implementation::LineSegmentRenderer<3>(*static_cast<Physics::LineSegment3D*>(shape)));
             break;
         case Physics::AbstractShape3D::Type::Point:
             renderer->renderers.push_back(new Implementation::PointRenderer<3>(*static_cast<Physics::Point3D*>(shape)));

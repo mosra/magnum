@@ -29,6 +29,7 @@ set(MagnumPrimitives_SRCS
     Cube.cpp
     Cylinder.cpp
     Icosphere.cpp
+    Line.cpp
     Plane.cpp
     Square.cpp
     UVSphere.cpp)
@@ -40,6 +41,7 @@ set(MagnumPrimitives_HEADERS
     Cube.h
     Cylinder.h
     Icosphere.h
+    Line.h
     Plane.h
     Square.h
     UVSphere.h

@@ -58,10 +58,9 @@ performed, after everything is properly initialized.
 In your draw event implementation don't forget to call nextFrame() after
 buffer swap. You can use previousFrameDuration() to compute animation speed.
 
-Example usage (in e.g. @ref Platform::GlutApplication "GlutApplication"
-subclass):
+Example usage:
 @code
-MyApplication::MyApplication(...): Platform::GlutApplication(...) {
+MyApplication::MyApplication(const Parameters& parameters): Platform::Application(parameters) {
     // Initialization ...
 
     timeline.setMinimalFrameTime(1/120.0f); // 120 FPS at max

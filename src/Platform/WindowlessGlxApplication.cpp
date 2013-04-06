@@ -74,7 +74,7 @@ void WindowlessGlxApplication::createContext(Configuration* configuration) {
 
     /** @todo Use some extension wrangler for this, not GLEW, as it apparently needs context to create context, yo dawg wtf. */
     PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC) glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
-    context = glXCreateContextAttribsARB(display, configs[0], 0, True, contextAttributes);
+    context = glXCreateContextAttribsARB(display, configs[0], nullptr, True, contextAttributes);
     if(!context) {
         Error() << "WindowlessGlxApplication: cannot create context.";
         std::exit(1);

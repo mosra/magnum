@@ -121,6 +121,9 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         /** @copydoc GlutApplication::createContext() */
         void createContext(Configuration* configuration);
 
+        /** @copydoc GlutApplication::tryCreateContext() */
+        bool tryCreateContext(Configuration* configuration);
+
         /** @{ @name Drawing functions */
 
         /** @copydoc GlutApplication::viewportEvent() */

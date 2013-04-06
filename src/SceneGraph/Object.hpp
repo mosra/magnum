@@ -180,8 +180,6 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     /* Remember object count for later */
     std::size_t objectCount = objects.size();
 
-    /** @bug What if there is one objects twice in the list */
-
     /* Mark all original objects as joints and create initial list of joints
        from them */
     for(std::size_t i = 0; i != objects.size(); ++i) {
@@ -322,6 +320,22 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
 
     /* No dirty objects left, done */
     if(objects.empty()) return;
+
+    /* Add non-clean parents to the list. Mark each added object as visited, so
+       they aren't added more than once */
+    for(std::size_t end = objects.size(), i = 0; i != end; ++i) {
+        Object<Transformation>* o = objects[i];
+        o->flags |= Flag::Visited;
+
+        Object<Transformation>* parent = o->parent();
+        while(parent && !(parent->flags & Flag::Visited) && parent->isDirty()) {
+            objects.push_back(parent);
+            parent = parent->parent();
+        }
+    }
+
+    /* Cleanup all marks */
+    for(auto o: objects) o->flags &= ~Flag::Visited;
 
     /* Compute absolute transformations */
     Scene<Transformation>* scene = objects[0]->scene();

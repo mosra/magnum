@@ -1,3 +1,5 @@
+#ifndef Magnum_DebugTools_Implementation_LineSegmentRendererTransformation_h
+#define Magnum_DebugTools_Implementation_LineSegmentRendererTransformation_h
 /*
     This file is part of Magnum.
 
@@ -22,32 +24,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "SphereRenderer.h"
-
-#include "Mesh.h"
-#include "DebugTools/ShapeRenderer.h"
-#include "Physics/Sphere.h"
-#include "Primitives/Circle.h"
-#include "Shaders/FlatShader.h"
-#include "Trade/MeshData2D.h"
+#include "DimensionTraits.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-AbstractSphereRenderer<2>::AbstractSphereRenderer(): AbstractShapeRenderer<2>("sphere2d", "sphere2d-vertices", {}) {
-    if(!mesh) this->createResources(Primitives::Circle::wireframe(40));
+template<UnsignedInt dimensions> typename DimensionTraits<dimensions>::MatrixType lineSegmentRendererTransformation(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b) {
+    auto transformation = DimensionTraits<dimensions>::MatrixType::translation(a);
+    transformation.right() = b - a;
+    return transformation;
 }
-
-template<UnsignedInt dimensions> SphereRenderer<dimensions>::SphereRenderer(Physics::Sphere<dimensions>& sphere): sphere(sphere) {}
-
-template<UnsignedInt dimensions> void SphereRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
-    this->shader->setTransformationProjectionMatrix(projectionMatrix*
-        DimensionTraits<dimensions>::MatrixType::translation(sphere.transformedPosition())*
-        DimensionTraits<dimensions>::MatrixType::scaling(typename DimensionTraits<dimensions>::VectorType(sphere.transformedRadius())))
-        ->setColor(options->color())
-        ->use();
-    this->mesh->draw();
-}
-
-template class SphereRenderer<2>;
 
 }}}
+
+#endif

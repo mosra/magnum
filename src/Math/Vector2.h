@@ -80,6 +80,20 @@ template<class T> class Vector2: public Vector<2, T> {
          */
         inline constexpr static Vector2<T> yScale(T scale) { return Vector2<T>(T(1), scale); }
 
+        /**
+         * @brief 2D cross product
+         *
+         * 2D version of cross product, equivalent to calling Vector3::cross()
+         * with Z coordinate set to `0` and extracting only Z coordinate from
+         * the result (X and Y coordinates are always zero).
+         * @f[
+         *      \boldsymbol a \times \boldsymbol b = a_xb_y - a_yb_x
+         * @f]
+         */
+        inline static T cross(const Vector2<T>& a, const Vector2<T>& b) {
+            return a.x()*b.y() - a.y()*b.x();
+        }
+
         /** @copydoc Vector::Vector() */
         inline constexpr /*implicit*/ Vector2() {}
 
@@ -112,6 +126,16 @@ template<class T> class Vector2: public Vector<2, T> {
         inline constexpr T x() const { return (*this)[0]; } /**< @overload */
         inline T& y() { return (*this)[1]; }                /**< @brief Y component */
         inline constexpr T y() const { return (*this)[1]; } /**< @overload */
+
+        /**
+         * @brief Perpendicular vector
+         *
+         * Returns vector rotated 90° counterclockwise. @f[
+         *      \boldsymbol v_\perp = \begin{pmatrix} -v_y \\ v_x \end{pmatrix}
+         * @f]
+         * @see dot(const Vector&, const Vector&), operator-() const
+         */
+        inline Vector2<T> perpendicular() const { return {-y(), x()}; }
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector2, 2)
 };

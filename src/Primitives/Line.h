@@ -1,3 +1,5 @@
+#ifndef Magnum_Primitives_Line_h
+#define Magnum_Primitives_Line_h
 /*
     This file is part of Magnum.
 
@@ -22,32 +24,44 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "SphereRenderer.h"
+/** @file
+ * @brief Class Magnum::Primitives::Line2D, Magnum::Primitives::Line3D
+ */
 
-#include "Mesh.h"
-#include "DebugTools/ShapeRenderer.h"
-#include "Physics/Sphere.h"
-#include "Primitives/Circle.h"
-#include "Shaders/FlatShader.h"
-#include "Trade/MeshData2D.h"
+#include "Trade/Trade.h"
 
-namespace Magnum { namespace DebugTools { namespace Implementation {
+#include "Primitives/magnumPrimitivesVisibility.h"
 
-AbstractSphereRenderer<2>::AbstractSphereRenderer(): AbstractShapeRenderer<2>("sphere2d", "sphere2d-vertices", {}) {
-    if(!mesh) this->createResources(Primitives::Circle::wireframe(40));
-}
+namespace Magnum { namespace Primitives {
 
-template<UnsignedInt dimensions> SphereRenderer<dimensions>::SphereRenderer(Physics::Sphere<dimensions>& sphere): sphere(sphere) {}
+/**
+@brief 2D line primitive
 
-template<UnsignedInt dimensions> void SphereRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
-    this->shader->setTransformationProjectionMatrix(projectionMatrix*
-        DimensionTraits<dimensions>::MatrixType::translation(sphere.transformedPosition())*
-        DimensionTraits<dimensions>::MatrixType::scaling(typename DimensionTraits<dimensions>::VectorType(sphere.transformedRadius())))
-        ->setColor(options->color())
-        ->use();
-    this->mesh->draw();
-}
+Unit-size line in direction of positive X axis. Non-indexed
+@ref Mesh::Primitive "Lines".
+*/
+class MAGNUM_PRIMITIVES_EXPORT Line2D {
+    public:
+        /** @brief Wireframe line */
+        static Trade::MeshData2D wireframe();
 
-template class SphereRenderer<2>;
+        Line2D() = delete;
+};
 
-}}}
+/**
+@brief 3D line primitive
+
+Unit-size line in direction of positive X axis. Non-indexed
+@ref Mesh::Primitive "Lines".
+*/
+class MAGNUM_PRIMITIVES_EXPORT Line3D {
+    public:
+        /** @brief Wireframe line */
+        static Trade::MeshData3D wireframe();
+
+        Line3D() = delete;
+};
+
+}}
+
+#endif

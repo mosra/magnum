@@ -26,7 +26,7 @@
 #include <TestSuite/Tester.h>
 #include <Utility/Configuration.h>
 
-#include "Math/Vector2.h"
+#include "Math/Vector3.h"
 
 struct Vec2 {
     float x, y;
@@ -63,13 +63,16 @@ class Vector2Test: public Corrade::TestSuite::Tester {
         void convert();
 
         void access();
+        void cross();
         void axes();
         void scales();
+        void perpendicular();
 
         void debug();
         void configuration();
 };
 
+typedef Math::Vector3<Int> Vector3i;
 typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector2<Int> Vector2i;
 
@@ -83,8 +86,10 @@ Vector2Test::Vector2Test() {
               &Vector2Test::convert,
 
               &Vector2Test::access,
+              &Vector2Test::cross,
               &Vector2Test::axes,
               &Vector2Test::scales,
+              &Vector2Test::perpendicular,
 
               &Vector2Test::debug,
               &Vector2Test::configuration});
@@ -167,6 +172,14 @@ void Vector2Test::access() {
     CORRADE_COMPARE(y, -2.0f);
 }
 
+void Vector2Test::cross() {
+    Vector2i a(1, -1);
+    Vector2i b(4, 3);
+
+    CORRADE_COMPARE(Vector2i::cross(a, b), 7);
+    CORRADE_COMPARE(Vector3i::cross({a, 0}, {b, 0}), Vector3i(0, 0, Vector2i::cross(a, b)));
+}
+
 void Vector2Test::axes() {
     constexpr Vector2 x = Vector2::xAxis(5.0f);
     constexpr Vector2 y = Vector2::yAxis(6.0f);
@@ -179,6 +192,13 @@ void Vector2Test::scales() {
     constexpr Vector2 y = Vector2::yScale(-0.2f);
     CORRADE_COMPARE(x, Vector2(-5.0f, 1.0f));
     CORRADE_COMPARE(y, Vector2(1.0f, -0.2f));
+}
+
+void Vector2Test::perpendicular() {
+    const Vector2 a(0.5f, -15.0f);
+    CORRADE_COMPARE(a.perpendicular(), Vector2(15.0f, 0.5f));
+    CORRADE_COMPARE(Vector2::dot(a.perpendicular(), a), 0.0f);
+    CORRADE_COMPARE(Vector2::xAxis().perpendicular(), Vector2::yAxis());
 }
 
 void Vector2Test::debug() {

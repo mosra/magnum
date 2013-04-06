@@ -22,32 +22,24 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "SphereRenderer.h"
+#include "Line.h"
 
-#include "Mesh.h"
-#include "DebugTools/ShapeRenderer.h"
-#include "Physics/Sphere.h"
-#include "Primitives/Circle.h"
-#include "Shaders/FlatShader.h"
+#include "Math/Vector3.h"
 #include "Trade/MeshData2D.h"
+#include "Trade/MeshData3D.h"
 
-namespace Magnum { namespace DebugTools { namespace Implementation {
+namespace Magnum { namespace Primitives {
 
-AbstractSphereRenderer<2>::AbstractSphereRenderer(): AbstractShapeRenderer<2>("sphere2d", "sphere2d-vertices", {}) {
-    if(!mesh) this->createResources(Primitives::Circle::wireframe(40));
+Trade::MeshData2D Line2D::wireframe() {
+    return Trade::MeshData2D(Mesh::Primitive::Lines, nullptr, {new std::vector<Vector2>{
+        {0.0f, 0.0f}, {1.0f, 0.0f}
+    }}, {});
 }
 
-template<UnsignedInt dimensions> SphereRenderer<dimensions>::SphereRenderer(Physics::Sphere<dimensions>& sphere): sphere(sphere) {}
-
-template<UnsignedInt dimensions> void SphereRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
-    this->shader->setTransformationProjectionMatrix(projectionMatrix*
-        DimensionTraits<dimensions>::MatrixType::translation(sphere.transformedPosition())*
-        DimensionTraits<dimensions>::MatrixType::scaling(typename DimensionTraits<dimensions>::VectorType(sphere.transformedRadius())))
-        ->setColor(options->color())
-        ->use();
-    this->mesh->draw();
+Trade::MeshData3D Line3D::wireframe() {
+    return Trade::MeshData3D(Mesh::Primitive::Lines, nullptr, {new std::vector<Vector3>{
+        {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f},
+    }}, {}, {});
 }
 
-template class SphereRenderer<2>;
-
-}}}
+}}

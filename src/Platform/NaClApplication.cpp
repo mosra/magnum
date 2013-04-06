@@ -36,16 +36,25 @@ NaClApplication::NaClApplication(const Arguments& arguments): Instance(arguments
     createContext(new Configuration);
 }
 
-NaClApplication::NaClApplication(const Arguments& arguments, Configuration* configuration): Instance(arguments), Graphics3DClient(this), MouseLock(this), c(nullptr) {
+NaClApplication::NaClApplication(const Arguments& arguments, Configuration* configuration): Instance(arguments), Graphics3DClient(this), MouseLock(this), graphics(nullptr), fullscreen(nullptr), c(nullptr) {
     if(configuration) createContext(configuration);
 }
 
-void NaClApplication::createContext(NaClApplication::Configuration* configuration) {
-    CORRADE_ASSERT(!c, "NaClApplication::createContext(): context already created", );
+void NaClApplication::createContext(Configuration* configuration) {
+    if(!tryCreateContext(configuration)) {
+        Error() << "Platform::NaClApplication::createContext(): cannot create context";
+        delete configuration;
+        std::exit(1);
+
+    } else delete configuration;
+}
+
+bool NaClApplication::tryCreateContext(Configuration* configuration) {
+    CORRADE_ASSERT(!c, "Platform::NaClApplication::tryCreateContext(): context already created", false);
 
     viewportSize = configuration->size();
 
-    std::int32_t attributes[] = {
+    const std::int32_t attributes[] = {
         PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
         PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
         PP_GRAPHICS3DATTRIB_STENCIL_SIZE, 8,
@@ -58,19 +67,18 @@ void NaClApplication::createContext(NaClApplication::Configuration* configuratio
 
     graphics = new pp::Graphics3D(this, attributes);
     if(graphics->is_null()) {
-        Error() << "Platform::NaClApplication::NaClApplication(): cannot create graphics";
-        std::exit(1);
+        delete graphics;
+        graphics = nullptr;
+        return false;
     }
     if(!BindGraphics(*graphics)) {
-        Error() << "Platform::NaClApplication::NaClApplication(): cannot bind graphics";
+        Error() << "Platform::NaClApplication::tryCreateContext(): cannot bind graphics";
         std::exit(1);
     }
 
     fullscreen = new pp::Fullscreen(this);
 
     glSetCurrentContextPPAPI(graphics->pp_resource());
-
-    c = new Context;
 
     /* Enable input handling for mouse and keyboard */
     RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE|PP_INPUTEVENT_CLASS_WHEEL);
@@ -79,7 +87,8 @@ void NaClApplication::createContext(NaClApplication::Configuration* configuratio
     /* Make sure viewportEvent() is called for first time */
     flags |= Flag::ViewportUpdated;
 
-    delete configuration;
+    c = new Context;
+    return true;
 }
 
 NaClApplication::~NaClApplication() {

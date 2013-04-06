@@ -60,7 +60,7 @@ template<class T> class Rectangle {
          *
          * Construct zero-area rectangle positioned at origin.
          */
-        inline constexpr Rectangle() = default;
+        inline constexpr Rectangle() {}
 
         /** @brief Construct rectangle from two corners */
         inline constexpr Rectangle(const Vector2<T>& bottomLeft, const Vector2<T>& topRight): _bottomLeft(bottomLeft), _topRight(topRight) {}

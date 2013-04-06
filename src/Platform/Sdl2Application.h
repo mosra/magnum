@@ -95,6 +95,9 @@ class Sdl2Application {
         /** @copydoc GlutApplication::createContext() */
         void createContext(Configuration* configuration);
 
+        /** @copydoc GlutApplication::tryCreateContext() */
+        bool tryCreateContext(Configuration* configuration);
+
         /** @{ @name Drawing functions */
 
         /** @copydoc GlutApplication::viewportEvent() */
@@ -167,6 +170,8 @@ class Sdl2Application {
         typedef Corrade::Containers::EnumSet<Flag, UnsignedByte> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
+        void initialize();
+
         SDL_Window* window;
         SDL_GLContext context;
 
@@ -191,6 +196,29 @@ class Sdl2Application::Configuration {
     Configuration& operator=(Configuration&&) = delete;
 
     public:
+        /**
+         * @brief Window flag
+         *
+         * @see Flags, setFlags()
+         */
+        enum class Flag: Uint32 {
+            Resizable = SDL_WINDOW_RESIZABLE,       /**< Resizable window */
+            Fullscreen = SDL_WINDOW_FULLSCREEN,     /**< Fullscreen window */
+            Hidden = SDL_WINDOW_HIDDEN,             /**< Hidden window */
+            Maximized = SDL_WINDOW_MAXIMIZED,       /**< Maximized window */
+            Minimized = SDL_WINDOW_MINIMIZED,       /**< Minimized window */
+            MouseLocked = SDL_WINDOW_INPUT_GRABBED  /**< Window with mouse locked */
+        };
+
+        /**
+         * @brief Window flags
+         *
+         * @see setFlags()
+         */
+        typedef Corrade::Containers::EnumSet<Flag, Uint32, SDL_WINDOW_RESIZABLE|
+            SDL_WINDOW_FULLSCREEN|SDL_WINDOW_HIDDEN|SDL_WINDOW_MAXIMIZED|
+            SDL_WINDOW_MINIMIZED|SDL_WINDOW_INPUT_GRABBED> Flags;
+
         explicit Configuration();
         ~Configuration();
 
@@ -222,6 +250,20 @@ class Sdl2Application::Configuration {
             return this;
         }
 
+        /** @brief Window flags */
+        inline Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set window flags
+         * @return Pointer to self (for method chaining)
+         *
+         * Default is @ref Flag "Flag::Resizable".
+         */
+        inline Configuration* setFlags(const Flags flags) {
+            _flags = flags;
+            return this;
+        }
+
         /** @brief Sample count */
         inline Int sampleCount() const { return _sampleCount; }
 
@@ -240,8 +282,11 @@ class Sdl2Application::Configuration {
     private:
         std::string _title;
         Vector2i _size;
+        Flags _flags;
         Int _sampleCount;
 };
+
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)
 
 /**
 @brief Base for input events
