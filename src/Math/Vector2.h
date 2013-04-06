@@ -123,6 +123,16 @@ template<class T> class Vector2: public Vector<2, T> {
         inline T& y() { return (*this)[1]; }                /**< @brief Y component */
         inline constexpr T y() const { return (*this)[1]; } /**< @overload */
 
+        /**
+         * @brief Perpendicular vector
+         *
+         * Returns vector rotated 90° counterclockwise. @f[
+         *      \boldsymbol v_\perp = \begin{pmatrix} -v_y \\ v_x \end{pmatrix}
+         * @f]
+         * @see dot(const Vector&, const Vector&), operator-() const
+         */
+        inline Vector2<T> perpendicular() const { return {-y(), x()}; }
+
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector2, 2)
 };
 

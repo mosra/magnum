@@ -84,10 +84,12 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Dot product
          *
-         * @f[
+         * Returns `0` if two vectors are orthogonal, `1` if two *normalized*
+         * vectors are parallel and `-1` if two *normalized* vectors are
+         * antiparallel. @f[
          *      \boldsymbol a \cdot \boldsymbol b = \sum_{i=0}^{n-1} \boldsymbol a_i \boldsymbol b_i
          * @f]
-         * @see dot() const
+         * @see dot() const, operator-(), Vector2::perpendicular()
          */
         inline static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
             return (a*b).sum();
@@ -270,6 +272,7 @@ template<std::size_t size, class T> class Vector {
          * The computation is done in-place. @f[
          *      \boldsymbol a_i = -\boldsymbol a_i
          * @f]
+         * @see Vector2::perpendicular()
          */
         Vector<size, T> operator-() const {
             Vector<size, T> out;
