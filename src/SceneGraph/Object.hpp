@@ -335,7 +335,8 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
     }
 
     /* Cleanup all marks */
-    for(auto o: objects) o->flags &= ~Flag::Visited;
+    for(auto it = objects.begin(); it != objects.end(); ++it)
+        (*it)->flags &= ~Flag::Visited;
 
     /* Compute absolute transformations */
     Scene<Transformation>* scene = objects[0]->scene();
