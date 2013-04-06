@@ -62,7 +62,7 @@ void AbstractXApplication::createContext(AbstractXApplication::Configuration* co
     visInfo = XGetVisualInfo(display, VisualIDMask, &visTemplate, &visualCount);
     if(!visInfo) {
         Error() << "Cannot get X visual";
-        ::exit(1);
+        std::exit(1);
     }
 
     /* Create X Window */
