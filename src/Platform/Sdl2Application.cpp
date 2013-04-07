@@ -93,10 +93,8 @@ bool Sdl2Application::tryCreateContext(Configuration* configuration) {
     if(!(window = SDL_CreateWindow(configuration->title().c_str(),
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
             configuration->size().x(), configuration->size().y(),
-            SDL_WINDOW_OPENGL|flags))) {
-        Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
-        std::exit(2);
-    }
+            SDL_WINDOW_OPENGL|flags)))
+        return false;
 
     if(!(context = SDL_GL_CreateContext(window))) {
         SDL_DestroyWindow(window);
