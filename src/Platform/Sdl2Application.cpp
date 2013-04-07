@@ -94,7 +94,7 @@ bool Sdl2Application::tryCreateContext(Configuration* configuration) {
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
             configuration->size().x(), configuration->size().y(),
             SDL_WINDOW_OPENGL|flags))) {
-        Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window";
+        Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
         std::exit(2);
     }
 
