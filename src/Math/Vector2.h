@@ -83,15 +83,16 @@ template<class T> class Vector2: public Vector<2, T> {
         /**
          * @brief 2D cross product
          *
-         * 2D version of cross product, equivalent to calling Vector3::cross()
-         * with Z coordinate set to `0` and extracting only Z coordinate from
-         * the result (X and Y coordinates are always zero).
-         * @f[
-         *      \boldsymbol a \times \boldsymbol b = a_xb_y - a_yb_x
+         * 2D version of cross product, also called perp-dot product,
+         * equivalent to calling Vector3::cross() with Z coordinate set to `0`
+         * and extracting only Z coordinate from the result (X and Y
+         * coordinates are always zero). @f[
+         *      \boldsymbol a \times \boldsymbol b = \boldsymbol a_\perp \cdot \boldsymbol b = a_xb_y - a_yb_x
          * @f]
+         * @see perpendicular(), dot(const Vector&, const Vector&)
          */
         inline static T cross(const Vector2<T>& a, const Vector2<T>& b) {
-            return a.x()*b.y() - a.y()*b.x();
+            return Vector<2, T>::dot(a.perpendicular(), b);
         }
 
         /** @copydoc Vector::Vector() */
@@ -129,7 +130,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * Returns vector rotated 90° counterclockwise. @f[
          *      \boldsymbol v_\perp = \begin{pmatrix} -v_y \\ v_x \end{pmatrix}
          * @f]
-         * @see dot(const Vector&, const Vector&), operator-() const
+         * @see cross(), dot(const Vector&, const Vector&), operator-() const
          */
         inline Vector2<T> perpendicular() const { return {-y(), x()}; }
 
