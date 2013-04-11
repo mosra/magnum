@@ -42,6 +42,13 @@ namespace Magnum { namespace Physics {
 */
 template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Point: public AbstractShape<dimensions> {
     public:
+        /**
+         * @brief Default constructor
+         *
+         * Creates point at origin.
+         */
+        inline explicit Point() {}
+
         /** @brief Constructor */
         inline explicit Point(const typename DimensionTraits<dimensions>::VectorType& position): _position(position), _transformedPosition(position) {}
 

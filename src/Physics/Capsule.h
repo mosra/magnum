@@ -46,6 +46,13 @@ applying transformation, the scale factor is averaged from all axes.
 */
 template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Capsule: public AbstractShape<dimensions> {
     public:
+        /**
+         * @brief Constructor
+         *
+         * Creates zero-sized capsule at origin.
+         */
+        inline explicit Capsule(): _radius(0.0f), _transformedRadius(0.0f) {}
+
         /** @brief Constructor */
         inline explicit Capsule(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b, Float radius): _a(a), _transformedA(a), _b(b), _transformedB(b), _radius(radius), _transformedRadius(radius) {}
 

@@ -43,6 +43,13 @@ namespace Magnum { namespace Physics {
 */
 template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Line: public AbstractShape<dimensions> {
     public:
+        /**
+         * @brief Default constructor
+         *
+         * Creates line with both points at origin.
+         */
+        inline explicit Line() {}
+
         /** @brief Constructor */
         inline explicit Line(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b): _a(a), _transformedA(a), _b(b), _transformedB(b) {}
 
