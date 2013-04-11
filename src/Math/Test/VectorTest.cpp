@@ -83,9 +83,7 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void sum();
         void product();
         void min();
-        void minAbs();
         void max();
-        void maxAbs();
 
         void projected();
         void projectedOntoNormalized();
@@ -130,9 +128,7 @@ VectorTest::VectorTest() {
               &VectorTest::sum,
               &VectorTest::product,
               &VectorTest::min,
-              &VectorTest::minAbs,
               &VectorTest::max,
-              &VectorTest::maxAbs,
 
               &VectorTest::projected,
               &VectorTest::projectedOntoNormalized,
@@ -331,21 +327,9 @@ void VectorTest::min() {
     CORRADE_COMPARE(Vector3(1.0f, -2.0f, 3.0f).min(), -2.0f);
 }
 
-void VectorTest::minAbs() {
-    /* Check that initial value is absolute and also all others */
-    CORRADE_COMPARE(Vector3(-2.0f, 1.0f, 3.0f).minAbs(), 1.0f);
-    CORRADE_COMPARE(Vector3(1.0f, -2.0f, 3.0f).minAbs(), 1.0f);
-}
-
 void VectorTest::max() {
     /* Check also that initial value isn't initialized to 0 */
     CORRADE_COMPARE(Vector3(-1.0f, -2.0f, -3.0f).max(), -1.0f);
-}
-
-void VectorTest::maxAbs() {
-    /* Check that initial value is absolute and also all others */
-    CORRADE_COMPARE(Vector3(-5.0f, 1.0f, 3.0f).maxAbs(), 5.0f);
-    CORRADE_COMPARE(Vector3(1.0f, -5.0f, 3.0f).maxAbs(), 5.0f);
 }
 
 void VectorTest::projected() {

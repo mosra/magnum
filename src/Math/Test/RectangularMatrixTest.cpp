@@ -54,12 +54,7 @@ class RectangularMatrixTest: public Corrade::TestSuite::Tester {
         void transposed();
         void diagonal();
 
-        void sum();
-        void product();
-        void min();
-        void minAbs();
-        void max();
-        void maxAbs();
+        void vector();
 
         void debug();
         void configuration();
@@ -95,12 +90,7 @@ RectangularMatrixTest::RectangularMatrixTest() {
               &RectangularMatrixTest::transposed,
               &RectangularMatrixTest::diagonal,
 
-              &RectangularMatrixTest::sum,
-              &RectangularMatrixTest::product,
-              &RectangularMatrixTest::min,
-              &RectangularMatrixTest::minAbs,
-              &RectangularMatrixTest::max,
-              &RectangularMatrixTest::maxAbs,
+              &RectangularMatrixTest::vector,
 
               &RectangularMatrixTest::debug,
               &RectangularMatrixTest::configuration});
@@ -338,50 +328,20 @@ void RectangularMatrixTest::diagonal() {
     CORRADE_COMPARE(b.diagonal(), diagonal);
 }
 
-void RectangularMatrixTest::sum() {
-    Matrix2 matrix(Vector2(1.0f, 2.0f),
-                   Vector2(3.0f, 4.0f));
-    CORRADE_COMPARE(matrix.sum(), 10.0f);
-}
+void RectangularMatrixTest::vector() {
+    typedef Vector<3, Int> Vector3i;
+    typedef RectangularMatrix<4, 3, Int> Matrix4x3i;
+    typedef Vector<12, Int> Vector12i;
 
-void RectangularMatrixTest::product() {
-    Matrix2 matrix(Vector2(1.0f, 2.0f),
-                   Vector2(3.0f, 4.0f));
-    CORRADE_COMPARE(matrix.product(), 24.0f);
-}
+    Matrix4x3i a(Vector3i(0, 1, 2),
+                 Vector3i(3, 4, 5),
+                 Vector3i(6, 7, 8),
+                 Vector3i(9, 10, 11));
 
-void RectangularMatrixTest::min() {
-    /* Check also that initial value isn't initialized to 0 */
-    Matrix2 matrix(Vector2(-2.0f, 1.0f),
-                   Vector2(3.0f, 4.0f));
-    CORRADE_COMPARE(matrix.min(), -2.0f);
-}
+    Vector12i b(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
 
-void RectangularMatrixTest::minAbs() {
-    /* Check that initial value is absolute and also all others */
-    Matrix2 a(Vector2(-2.0f, 1.0f),
-              Vector2(3.0f, 4.0f));
-    Matrix2 b(Vector2(3.0f, 4.0f),
-              Vector2(-2.0f, 1.0f));
-    CORRADE_COMPARE(a.minAbs(), 1.0f);
-    CORRADE_COMPARE(a.minAbs(), 1.0f);
-}
-
-void RectangularMatrixTest::max() {
-    /* Check also that initial value isn't initialized to 0 */
-    Matrix2 matrix(Vector2(-2.0f, -1.0f),
-                   Vector2(-3.0f, -4.0f));
-    CORRADE_COMPARE(matrix.max(), -1.0f);
-}
-
-void RectangularMatrixTest::maxAbs() {
-    /* Check that initial value is absolute and also all others */
-    Matrix2 a(Vector2(2.0f, 1.0f),
-              Vector2(3.0f, -4.0f));
-    Matrix2 b(Vector2(3.0f, -4.0f),
-              Vector2(2.0f, 1.0f));
-    CORRADE_COMPARE(a.maxAbs(), 4.0f);
-    CORRADE_COMPARE(b.maxAbs(), 4.0f);
+    CORRADE_COMPARE(a.toVector(), b);
+    CORRADE_COMPARE(Matrix4x3i::fromVector(b), a);
 }
 
 void RectangularMatrixTest::debug() {

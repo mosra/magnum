@@ -107,14 +107,14 @@ void SvdTest::testFloat() {
     /* Test composition (single precision is not enough, test for similarity) */
     Matrix8f u2(u[0], u[1], u[2], u[3], u[4], Vector8f(), Vector8f(), Vector8f());
     Matrix5x8f w2 = Matrix5x8f::fromDiagonal(w);
-    CORRADE_VERIFY((u2*w2*v.transposed()-af).maxAbs() < 1.0e-5f);
+    CORRADE_VERIFY(Math::abs((u2*w2*v.transposed()-af).toVector()).max() < 1.0e-5f);
 
     /* Test that V is unitary */
     CORRADE_COMPARE(v*v.transposed(), Matrix5f(Matrix5f::Identity));
     CORRADE_COMPARE(v.transposed()*v, Matrix5f(Matrix5f::Identity));
 
     /* Test W (single precision is not enough, test for similarity) */
-    CORRADE_VERIFY((w-expectedf).maxAbs() < 1.0e-5f);
+    CORRADE_VERIFY(Math::abs(w-expectedf).max() < 1.0e-5f);
 }
 
 }}}}
