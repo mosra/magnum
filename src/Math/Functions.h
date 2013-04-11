@@ -197,7 +197,11 @@ template<std::size_t size, class T> Vector<size, T> abs(const Vector<size, T>& a
 }
 #endif
 
-/** @brief Square root */
+/**
+@brief Square root
+
+@see sqrtInverted(), Vector::length()
+*/
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T sqrt(const T& a);
 #else
@@ -208,6 +212,25 @@ template<std::size_t size, class T> Vector<size, T> sqrt(const Vector<size, T>& 
     Vector<size, T> out;
     for(std::size_t i = 0; i != size; ++i)
         out[i] = std::sqrt(a[i]);
+    return out;
+}
+#endif
+
+/**
+@brief Inverse square root
+
+@see sqrt()
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> inline T sqrtInverted(const T& a);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type sqrtInverted(T a) {
+    return T(1)/std::sqrt(a);
+}
+template<std::size_t size, class T> Vector<size, T> sqrtInverted(const Vector<size, T>& a) {
+    Vector<size, T> out;
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = T(1)/std::sqrt(a[i]);
     return out;
 }
 #endif
