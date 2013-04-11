@@ -457,7 +457,7 @@ template<std::size_t size, class T> class Vector {
          * values. @f[
          *      |\boldsymbol a| = \sqrt{\boldsymbol a \cdot \boldsymbol a}
          * @f]
-         * @see isNormalized()
+         * @see Math::sqrt(), normalized()
          * @todo something like std::hypot() for possibly better precision?
          */
         inline T length() const {
@@ -479,7 +479,7 @@ template<std::size_t size, class T> class Vector {
          * Returns vector projected onto @p line. @f[
          *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b
          * @f]
-         * @see projectedOntoNormalized()
+         * @see dot(), projectedOntoNormalized()
          */
         inline Vector<size, T> projected(const Vector<size, T>& line) const {
             return line*dot(*this, line)/line.dot();
@@ -493,6 +493,7 @@ template<std::size_t size, class T> class Vector {
          *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b =
          *          (\boldsymbol a \cdot \boldsymbol b) \boldsymbol b
          * @f]
+         * @see dot()
          */
         inline Vector<size, T> projectedOntoNormalized(const Vector<size, T>& line) const {
             CORRADE_ASSERT(line.isNormalized(), "Math::Vector::projectedOntoNormalized(): line must be normalized", (Vector<size, T>(std::numeric_limits<T>::quiet_NaN())));
