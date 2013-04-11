@@ -78,6 +78,7 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void dot();
         void dotSelf();
         void length();
+        void lengthInverted();
         void normalized();
 
         void sum();
@@ -123,6 +124,7 @@ VectorTest::VectorTest() {
               &VectorTest::dot,
               &VectorTest::dotSelf,
               &VectorTest::length,
+              &VectorTest::lengthInverted,
               &VectorTest::normalized,
 
               &VectorTest::sum,
@@ -308,6 +310,10 @@ void VectorTest::dotSelf() {
 
 void VectorTest::length() {
     CORRADE_COMPARE(Vector4(1.0f, 2.0f, 3.0f, 4.0f).length(), 5.4772256f);
+}
+
+void VectorTest::lengthInverted() {
+    CORRADE_COMPARE(Vector4(1.0f, 2.0f, 3.0f, 4.0f).lengthInverted(), 0.182574f);
 }
 
 void VectorTest::normalized() {

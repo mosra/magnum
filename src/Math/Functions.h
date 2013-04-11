@@ -219,7 +219,7 @@ template<std::size_t size, class T> Vector<size, T> sqrt(const Vector<size, T>& 
 /**
 @brief Inverse square root
 
-@see sqrt()
+@see sqrt(), Vector::lengthInverted()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T sqrtInverted(const T& a);

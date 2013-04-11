@@ -457,11 +457,23 @@ template<std::size_t size, class T> class Vector {
          * values. @f[
          *      |\boldsymbol a| = \sqrt{\boldsymbol a \cdot \boldsymbol a}
          * @f]
-         * @see Math::sqrt(), normalized()
+         * @see lengthInverted(), Math::sqrt(), normalized()
          * @todo something like std::hypot() for possibly better precision?
          */
         inline T length() const {
             return std::sqrt(dot());
+        }
+
+        /**
+         * @brief Inverse vector length
+         *
+         * @f[
+         *      \frac{1}{|\boldsymbol a|} = \frac{1}{\sqrt{\boldsymbol a \cdot \boldsymbol a}}
+         * @f]
+         * @see length(), Math::sqrtInverted(), normalized()
+         */
+        inline T lengthInverted() const {
+            return T(1)/length();
         }
 
         /**
@@ -470,7 +482,7 @@ template<std::size_t size, class T> class Vector {
          * @see isNormalized()
          */
         inline Vector<size, T> normalized() const {
-            return *this/length();
+            return *this*lengthInverted();
         }
 
         /**
