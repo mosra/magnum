@@ -130,7 +130,6 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT AbstractShape {
         virtual bool collides(const AbstractShape<dimensions>* other) const;
 };
 
-
 /** @brief Abstract two-dimensional shape */
 typedef AbstractShape<2> AbstractShape2D;
 
