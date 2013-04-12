@@ -60,7 +60,7 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
          * Returns tuple with vertex positions, texture coordinates, indices
          * and rectangle spanning the rendered text.
          */
-        static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> render(AbstractFont* const font, const GlyphCache* const cache, Float size, const std::string& text);
+        static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> render(AbstractFont* font, const GlyphCache* cache, Float size, const std::string& text);
 
         /**
          * @brief Constructor
@@ -68,7 +68,7 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
          * @param cache         Glyph cache
          * @param size          Font size
          */
-        explicit AbstractTextRenderer(AbstractFont* const font, const GlyphCache* const cache, Float size);
+        explicit AbstractTextRenderer(AbstractFont* font, const GlyphCache* cache, Float size);
 
         virtual ~AbstractTextRenderer() = 0;
 
@@ -97,7 +97,7 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
          * Initially zero capacity is reserved.
          * @see capacity()
          */
-        void reserve(const UnsignedInt glyphCount, const Buffer::Usage vertexBufferUsage, const Buffer::Usage indexBufferUsage);
+        void reserve(UnsignedInt glyphCount, Buffer::Usage vertexBufferUsage, Buffer::Usage indexBufferUsage);
 
         /**
          * @brief Render text
@@ -117,7 +117,7 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
     #else
     private:
     #endif
-        static std::tuple<Mesh, Rectangle> MAGNUM_LOCAL render(AbstractFont* const font, const GlyphCache* const cache, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
+        static std::tuple<Mesh, Rectangle> MAGNUM_LOCAL render(AbstractFont* font, const GlyphCache* cache, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
 
         Mesh _mesh;
         Buffer vertexBuffer, indexBuffer;

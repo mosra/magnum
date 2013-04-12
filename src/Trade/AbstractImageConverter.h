@@ -91,7 +91,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public Corrade::PluginManager::Abstr
          * Returns converted image on success, `nullptr` otherwise.
          * @see features(), convertToData(), convertToFile()
          */
-        virtual Image2D* convertToImage(const Image2D* const image) const;
+        virtual Image2D* convertToImage(const Image2D* image) const;
 
         /**
          * @brief Convert image to raw data
@@ -100,7 +100,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public Corrade::PluginManager::Abstr
          * Returns data pointer and size on success, `nullptr` otherwise.
          * @see features(), convertToImage(), convertToFile()
          */
-        virtual std::pair<const unsigned char*, std::size_t> convertToData(const Image2D* const image) const;
+        virtual std::pair<const unsigned char*, std::size_t> convertToData(const Image2D* image) const;
 
         /**
          * @brief Convert image and save it to file
@@ -109,7 +109,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public Corrade::PluginManager::Abstr
          * Returns `true` on success, `false` otherwise.
          * @see features(), convertToImage(), convertToData()
          */
-        virtual bool convertToFile(const Image2D* const image, const std::string& filename) const;
+        virtual bool convertToFile(const Image2D* image, const std::string& filename) const;
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractImageConverter::Features)

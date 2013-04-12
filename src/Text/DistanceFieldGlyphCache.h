@@ -72,7 +72,7 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
          * Uploads image for one or more glyphs to given offset in original
          * cache texture. The texture is then converted to distance field.
          */
-        void setImage(const Vector2i& offset, Image2D* const image) override;
+        void setImage(const Vector2i& offset, Image2D* image) override;
 
         /**
          * @brief Set distance field cache image
@@ -80,7 +80,7 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
          * Uploads already computed distance field image to given offset in
          * distance field texture.
          */
-        void setDistanceFieldImage(const Vector2i& offset, Image2D* const image);
+        void setDistanceFieldImage(const Vector2i& offset, Image2D* image);
 
     private:
         const Vector2 scale;

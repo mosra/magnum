@@ -62,7 +62,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * @param size              Glyph cache texture size
          * @param internalFormat    Internal texture format
          */
-        explicit GlyphCache(const Vector2i& size, const Texture2D::InternalFormat internalFormat);
+        explicit GlyphCache(const Vector2i& size, Texture2D::InternalFormat internalFormat);
 
         /**
          * @brief Constructor
@@ -97,7 +97,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * second element is glyph region in texture atlas. If no glyph is
          * found, glyph on zero index is returned.
          */
-        inline std::pair<Vector2i, Rectanglei> operator[](const UnsignedInt glyph) const {
+        inline std::pair<Vector2i, Rectanglei> operator[](UnsignedInt glyph) const {
             auto it = glyphs.find(glyph);
             return it == glyphs.end() ? glyphs.at(0) : it->second;
         }
@@ -124,7 +124,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * You can obtain unused non-overlapping regions with reserve(). See
          * also setImage() to upload glyph image.
          */
-        void insert(const UnsignedInt glyph, Vector2i position, Rectanglei rectangle);
+        void insert(UnsignedInt glyph, Vector2i position, Rectanglei rectangle);
 
         /**
          * @brief Set cache image
@@ -132,7 +132,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * Uploads image for one or more glyphs to given offset in cache
          * texture.
          */
-        virtual void setImage(const Vector2i& offset, Image2D* const image);
+        virtual void setImage(const Vector2i& offset, Image2D* image);
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -142,7 +142,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
         /* Used from DistanceFieldGlyphCache */
         explicit MAGNUM_LOCAL GlyphCache(const Vector2i& size, const Vector2i& padding);
 
-        void MAGNUM_LOCAL initialize(const Texture2D::InternalFormat internalFormat, const Vector2i& size);
+        void MAGNUM_LOCAL initialize(Texture2D::InternalFormat internalFormat, const Vector2i& size);
 
         const Vector2i _size;
         Texture2D _texture;

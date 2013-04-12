@@ -96,7 +96,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public Corrade::PluginManager::AbstractPl
          *
          * Fills the cache with given characters.
          */
-        virtual void createGlyphCache(GlyphCache* const cache, const std::string& characters) = 0;
+        virtual void createGlyphCache(GlyphCache* cache, const std::string& characters) = 0;
 
         /**
          * @brief Layout the text using font own layouter
@@ -106,7 +106,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public Corrade::PluginManager::AbstractPl
          *
          * @see createGlyphCache()
          */
-        virtual AbstractLayouter* layout(const GlyphCache* const cache, const Float size, const std::string& text) = 0;
+        virtual AbstractLayouter* layout(const GlyphCache* cache, Float size, const std::string& text) = 0;
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -144,7 +144,7 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
          * Returns quad position, texture coordinates and advance to next
          * glyph.
          */
-        virtual std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(const Vector2& cursorPosition, const UnsignedInt i) = 0;
+        virtual std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(const Vector2& cursorPosition, UnsignedInt i) = 0;
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
