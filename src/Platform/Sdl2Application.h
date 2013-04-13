@@ -69,7 +69,10 @@ to simplify porting.
 class Sdl2Application {
     public:
         /** @brief Application arguments */
-        typedef std::pair<int&, char**> Arguments;
+        struct Arguments {
+            int& argc;      /**< @brief Argument count */
+            char** argv;    /**< @brief Argument values */
+        };
 
         class Configuration;
         class InputEvent;
