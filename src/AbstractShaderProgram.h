@@ -42,18 +42,6 @@ namespace Magnum {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<class> struct Attribute;
-
-    /* Used in setUniform(Int, const T&), otherwise it would not be possible to
-       pass enum values as uniforms */
-    struct NonEnumType {
-        template<class T> inline static typename std::enable_if<std::is_enum<T>::value, const typename std::conditional<std::is_convertible<T, UnsignedInt>::value, UnsignedInt, Int>::type&>::type cast(const T& value) {
-            return static_cast<const typename std::conditional<std::is_convertible<T, UnsignedInt>::value, UnsignedInt, Int>::type&>(value);
-        }
-
-        template<class T> inline static typename std::enable_if<!std::is_enum<T>::value, const T&>::type cast(const T& value) {
-            return value;
-        }
-    };
 }
 #endif
 
@@ -694,9 +682,32 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * Convenience alternative for setting one value, see
          * setUniform(Int, UnsignedInt, const Float*) for more information.
          */
-        template<class T> inline void setUniform(Int location, const T& value) {
-            setUniform(location, 1, &Implementation::NonEnumType::cast(value));
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class T> inline void setUniform(Int location, const T& value);
+        #else
+        inline void setUniform(Int location, Float value) {
+            setUniform(location, 1, &value);
         }
+        inline void setUniform(Int location, Int value) {
+            setUniform(location, 1, &value);
+        }
+        #ifndef MAGNUM_TARGET_GLES2
+        inline void setUniform(Int location, UnsignedInt value) {
+            setUniform(location, 1, &value);
+        }
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        inline void setUniform(Int location, Double value) {
+            setUniform(location, 1, &value);
+        }
+        #endif
+        template<std::size_t size, class T> inline void setUniform(Int location, const Math::Vector<size, T>& value) {
+            setUniform(location, 1, &value);
+        }
+        template<std::size_t cols, std::size_t rows, class T> inline void setUniform(Int location, const Math::RectangularMatrix<cols, rows, T>& value) {
+            setUniform(location, 1, &value);
+        }
+        #endif
 
         /**
          * @brief Set uniform values
