@@ -29,6 +29,7 @@
 #include <TestSuite/Compare/Container.h>
 
 #include "Math/Vector3.h"
+#include "Trade/MeshData3D.h"
 #include "Primitives/Capsule.h"
 
 using Corrade::TestSuite::Compare::Container;
@@ -49,7 +50,7 @@ CapsuleTest::CapsuleTest() {
 }
 
 void CapsuleTest::withoutTextureCoords() {
-    Capsule capsule(2, 2, 3, 1.0f);
+    Trade::MeshData3D capsule = Capsule::solid(2, 2, 3, 1.0f);
 
     CORRADE_COMPARE_AS(*capsule.positions(0), (std::vector<Vector3>{
         {0.0f, -1.5f, 0.0f},
@@ -114,7 +115,7 @@ void CapsuleTest::withoutTextureCoords() {
 }
 
 void CapsuleTest::withTextureCoords() {
-    Capsule capsule(2, 2, 3, 1.0f, Capsule::TextureCoords::Generate);
+    Trade::MeshData3D capsule = Capsule::solid(2, 2, 3, 1.0f, Capsule::TextureCoords::Generate);
 
     CORRADE_COMPARE_AS(*capsule.positions(0), (std::vector<Vector3>{
         {0.0f, -1.5f, 0.0f},

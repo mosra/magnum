@@ -27,6 +27,7 @@
 
 #include "Math/Vector3.h"
 #include "Primitives/Cylinder.h"
+#include "Trade/MeshData3D.h"
 
 using Corrade::TestSuite::Compare::Container;
 
@@ -46,7 +47,7 @@ CylinderTest::CylinderTest() {
 }
 
 void CylinderTest::withoutAnything() {
-    Cylinder cylinder(2, 3, 3.0f);
+    Trade::MeshData3D cylinder = Cylinder::solid(2, 3, 3.0f);
 
     CORRADE_COMPARE_AS(*cylinder.positions(0), (std::vector<Vector3>{
         {0.0f, -1.5f, 1.0f},
@@ -83,7 +84,7 @@ void CylinderTest::withoutAnything() {
 }
 
 void CylinderTest::withTextureCoordsAndCaps() {
-    Cylinder cylinder(2, 3, 3.0f, Cylinder::Flag::GenerateTextureCoords|Cylinder::Flag::CapEnds);
+    Trade::MeshData3D cylinder = Cylinder::solid(2, 3, 3.0f, Cylinder::Flag::GenerateTextureCoords|Cylinder::Flag::CapEnds);
 
     CORRADE_COMPARE_AS(*cylinder.positions(0), (std::vector<Vector3>{
         {0.0f, -1.5f, 0.0f},

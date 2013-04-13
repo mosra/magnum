@@ -32,7 +32,9 @@ set(MagnumPrimitives_SRCS
     Line.cpp
     Plane.cpp
     Square.cpp
-    UVSphere.cpp)
+    UVSphere.cpp
+
+    Implementation/Spheroid.cpp)
 
 set(MagnumPrimitives_HEADERS
     Capsule.h

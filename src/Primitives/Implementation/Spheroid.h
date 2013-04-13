@@ -1,3 +1,5 @@
+#ifndef Magnum_Primitives_Spheroid_h
+#define Magnum_Primitives_Spheroid_h
 /*
     This file is part of Magnum.
 
@@ -22,38 +24,31 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "UVSphere.h"
+#include "Trade/MeshData3D.h"
 
-#include "Math/Angle.h"
-#include "Implementation/Spheroid.h"
+namespace Magnum { namespace Primitives { namespace Implementation {
 
-namespace Magnum { namespace Primitives {
+class Spheroid: public Trade::MeshData3D {
+    public:
+        enum class TextureCoords: UnsignedByte {
+            DontGenerate,
+            Generate
+        };
 
-Trade::MeshData3D UVSphere::solid(UnsignedInt rings, UnsignedInt segments, TextureCoords textureCoords) {
-    CORRADE_ASSERT(rings >= 2 && segments >= 3, "UVSphere must have at least two rings and three segments", Trade::MeshData3D(Mesh::Primitive::Triangles, nullptr, {}, {}, {}));
+        Spheroid(UnsignedInt segments, TextureCoords textureCoords);
 
-    Implementation::Spheroid sphere(segments, textureCoords == TextureCoords::Generate ?
-        Implementation::Spheroid::TextureCoords::Generate :
-        Implementation::Spheroid::TextureCoords::DontGenerate);
+        void capVertex(Float y, Float normalY, Float textureCoordsV);
+        void hemisphereVertexRings(UnsignedInt count, Float centerY, Rad startRingAngle, Rad ringAngleIncrement, Float startTextureCoordsV, Float textureCoordsVIncrement);
+        void cylinderVertexRings(UnsignedInt count, Float startY, Float yIncrement, Float startTextureCoordsV, Float textureCoordsVIncrement);
+        void bottomFaceRing();
+        void faceRings(UnsignedInt count, UnsignedInt offset = 1);
+        void topFaceRing();
+        void capVertexRing(Float y, Float textureCoordsV, const Vector3& normal);
 
-    Float textureCoordsVIncrement = 1.0f/rings;
-    Rad ringAngleIncrement(Constants::pi()/rings);
+        UnsignedInt segments;
+        TextureCoords textureCoords;
+};
 
-    /* Bottom cap vertex */
-    sphere.capVertex(-1.0f, -1.0f, 0.0f);
+}}}
 
-    /* Vertex rings */
-    sphere.hemisphereVertexRings(rings-1, 0.0f, -Rad(Constants::pi())/2+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
-
-    /* Top cap vertex */
-    sphere.capVertex(1.0f, 1.0f, 1.0f);
-
-    /* Faces */
-    sphere.bottomFaceRing();
-    sphere.faceRings(rings-2);
-    sphere.topFaceRing();
-
-    return std::move(sphere);
-}
-
-}}
+#endif

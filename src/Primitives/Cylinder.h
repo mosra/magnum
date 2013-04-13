@@ -30,19 +30,17 @@
 
 #include <Containers/EnumSet.h>
 
-#include "Primitives/Capsule.h"
-
 #include "Primitives/magnumPrimitivesVisibility.h"
+#include "Trade/Trade.h"
 
 namespace Magnum { namespace Primitives {
 
 /**
 @brief 3D cylinder primitive
 
-Indexed @ref Mesh::Primitive "Triangles" with normals, optional 2D texture
-coordinates and optional capped ends.
+%Cylinder along Y axis of radius `1`.
 */
-class Cylinder: public Capsule {
+class MAGNUM_PRIMITIVES_EXPORT Cylinder {
     public:
         /**
          * @brief %Flags
@@ -58,7 +56,7 @@ class Cylinder: public Capsule {
         typedef Corrade::Containers::EnumSet<Flag, int> Flags;
 
         /**
-         * @brief Constructor
+         * @brief Solid cylinder
          * @param rings         Number of (face) rings. Must be larger or
          *      equal to 1.
          * @param segments      Number of (face) segments. Must be larger or
@@ -66,13 +64,12 @@ class Cylinder: public Capsule {
          * @param length        Cylinder length
          * @param flags         Flags
          *
-         * If texture coordinates are generated, vertices of one segment are
-         * duplicated for texture wrapping.
+         * Indexed @ref Mesh::Primitive "Triangles" with normals, optional 2D
+         * texture coordinates and optional capped ends. If texture coordinates
+         * are generated, vertices of one segment are duplicated for texture
+         * wrapping.
          */
-        explicit MAGNUM_PRIMITIVES_EXPORT Cylinder(UnsignedInt rings, UnsignedInt segments, Float length, Flags flags = Flags());
-
-    private:
-        void capVertexRing(Float y, Float textureCoordsV, const Vector3& normal);
+        static Trade::MeshData3D solid(UnsignedInt rings, UnsignedInt segments, Float length, Flags flags = Flags());
 };
 
 CORRADE_ENUMSET_OPERATORS(Cylinder::Flags)
