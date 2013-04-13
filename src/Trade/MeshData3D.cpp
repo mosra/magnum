@@ -30,9 +30,18 @@ namespace Magnum { namespace Trade {
 
 MeshData3D::MeshData3D(Mesh::Primitive primitive, std::vector<UnsignedInt>* indices, std::vector<std::vector<Vector3>*> positions, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D): _primitive(primitive), _indices(indices), _positions(std::move(positions)), _normals(std::move(normals)), _textureCoords2D(std::move(textureCoords2D)) {}
 
-MeshData3D::MeshData3D(MeshData3D&&) = default;
+MeshData3D::MeshData3D(MeshData3D&& other): _primitive(other._primitive), _indices(other._indices), _positions(std::move(other._positions)), _normals(std::move(other._normals)), _textureCoords2D(std::move(other._textureCoords2D)) {
+    other._indices = nullptr;
+}
 
-MeshData3D& MeshData3D::operator=(MeshData3D&&) = default;
+MeshData3D& MeshData3D::operator=(MeshData3D&& other) {
+    _primitive = other._primitive;
+    std::swap(_indices, other._indices);
+    std::swap(_positions, other._positions);
+    std::swap(_normals, other._normals);
+    std::swap(_textureCoords2D, other._textureCoords2D);
+    return *this;
+}
 
 MeshData3D::~MeshData3D() {
     delete _indices;
