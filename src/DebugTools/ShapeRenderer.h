@@ -57,7 +57,7 @@ See ShapeRenderer documentation for more information.
 */
 class ShapeRendererOptions {
     public:
-        inline constexpr ShapeRendererOptions(): _pointSize(0.25f) {}
+        inline constexpr ShapeRendererOptions(): _color(1.0f), _pointSize(0.25f) {}
 
         /** @brief Color of rendered shape */
         inline constexpr Color4<> color() const { return _color; }
@@ -66,7 +66,7 @@ class ShapeRendererOptions {
          * @brief Set color of rendered shape
          * @return Pointer to self (for method chaining)
          *
-         * Default is black.
+         * Default is 100% opaque white.
          */
         inline ShapeRendererOptions* setColor(const Color4<>& color) {
             _color = color;
