@@ -33,11 +33,11 @@
 
 namespace Magnum { namespace Platform {
 
-WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&) {
+WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&): c(nullptr) {
     createContext(new Configuration);
 }
 
-WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, Configuration* configuration) {
+WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, Configuration* configuration): c(nullptr) {
     if(configuration) createContext(configuration);
 }
 
@@ -104,6 +104,8 @@ void WindowlessGlxApplication::createContext(Configuration* configuration) {
 }
 
 WindowlessGlxApplication::~WindowlessGlxApplication() {
+    delete c;
+
     glXMakeCurrent(display, None, nullptr);
     glXDestroyContext(display, context);
 }
