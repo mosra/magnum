@@ -71,7 +71,7 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Capsule: public Abs
 
         /** @brief End point */
         inline typename DimensionTraits<dimensions>::VectorType b() const {
-            return _a;
+            return _b;
         }
 
         /** @brief Set start point */

@@ -66,7 +66,7 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Line: public Abstra
 
         /** @brief Second point */
         inline typename DimensionTraits<dimensions>::VectorType b() const {
-            return _a;
+            return _b;
         }
 
         /** @brief Set first point */
