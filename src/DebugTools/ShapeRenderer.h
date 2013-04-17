@@ -57,7 +57,31 @@ See ShapeRenderer documentation for more information.
 */
 class ShapeRendererOptions {
     public:
-        inline constexpr ShapeRendererOptions(): _color(1.0f), _pointSize(0.25f) {}
+        /**
+         * @brief Shape rendering mode
+         *
+         * @see setRenderMode()
+         */
+        enum class RenderMode: UnsignedByte {
+            Wireframe,
+            Solid
+        };
+
+        inline constexpr ShapeRendererOptions(): _color(1.0f), _pointSize(0.25f), _renderMode(RenderMode::Wireframe) {}
+
+        /** @brief Shape rendering mode */
+        inline constexpr RenderMode renderMode() const { return _renderMode; }
+
+        /**
+         * @brief Set shape rendering mode
+         * @return Pointer to self (for method chaining)
+         *
+         * Default is @ref RenderMode "RenderMode::Wireframe".
+         */
+        inline ShapeRendererOptions* setRenderMode(RenderMode mode) {
+            _renderMode = mode;
+            return this;
+        }
 
         /** @brief Color of rendered shape */
         inline constexpr Color4<> color() const { return _color; }
@@ -91,6 +115,7 @@ class ShapeRendererOptions {
     private:
         Color4<> _color;
         Float _pointSize;
+        RenderMode _renderMode;
 };
 
 /**

@@ -49,8 +49,8 @@ template<UnsignedInt dimensions> class AbstractShapeRenderer {
         /* Call only if the mesh resource isn't already present */
         void createResources(typename MeshData<dimensions>::Type data);
 
-        Resource<AbstractShaderProgram, Shaders::FlatShader<dimensions>> shader;
-        Resource<Mesh> mesh;
+        Resource<AbstractShaderProgram, Shaders::FlatShader<dimensions>> wireframeShader;
+        Resource<Mesh> wireframeMesh;
 
     private:
         Resource<Buffer> indexBuffer, vertexBuffer;

@@ -90,19 +90,19 @@ template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource,
 }
 
 template<UnsignedInt dimensions> AbstractShapeRenderer<dimensions>::AbstractShapeRenderer(ResourceKey meshKey, ResourceKey vertexBufferKey, ResourceKey indexBufferKey) {
-    shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader<dimensions>>(shaderKey<dimensions>());
-    mesh = ResourceManager::instance()->get<Mesh>(meshKey);
+    wireframeShader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader<dimensions>>(shaderKey<dimensions>());
+    wireframeMesh = ResourceManager::instance()->get<Mesh>(meshKey);
     vertexBuffer = ResourceManager::instance()->get<Buffer>(vertexBufferKey);
     indexBuffer = ResourceManager::instance()->get<Buffer>(indexBufferKey);
 
-    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shaderKey<dimensions>(),
+    if(!wireframeShader) ResourceManager::instance()->set<AbstractShaderProgram>(shaderKey<dimensions>(),
         new Shaders::FlatShader<dimensions>, ResourceDataState::Final, ResourcePolicy::Resident);
 }
 
 template<UnsignedInt dimensions> AbstractShapeRenderer<dimensions>::~AbstractShapeRenderer() {}
 
 template<UnsignedInt dimensions> void AbstractShapeRenderer<dimensions>::createResources(typename MeshData<dimensions>::Type data) {
-    create<dimensions>(data, this->mesh, this->vertexBuffer, this->indexBuffer);
+    create<dimensions>(data, this->wireframeMesh, this->vertexBuffer, this->indexBuffer);
 }
 
 template class AbstractShapeRenderer<2>;
