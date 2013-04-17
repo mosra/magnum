@@ -22,8 +22,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <TestSuite/Tester.h>
 #include <limits>
+#include <TestSuite/Tester.h>
 
 #include "Math/Geometry/Intersection.h"
 
@@ -43,24 +43,24 @@ IntersectionTest::IntersectionTest() {
 }
 
 void IntersectionTest::planeLine() {
-    Vector3 planePosition(-1.0f, 1.0f, 0.5f);
-    Vector3 planeNormal(0.0f, 0.0f, 1.0f);
+    const Vector3 planePosition(-1.0f, 1.0f, 0.5f);
+    const Vector3 planeNormal(0.0f, 0.0f, 1.0f);
 
     /* Inside line segment */
-    CORRADE_COMPARE((Intersection::planeLine(planePosition, planeNormal,
-        Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 0.0f, 2.0f))), 0.75f);
+    CORRADE_COMPARE(Intersection::planeLine(planePosition, planeNormal,
+        {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 2.0f}), 0.75f);
 
     /* Outside line segment */
-    CORRADE_COMPARE((Intersection::planeLine(planePosition, planeNormal,
-        Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f))), -0.5f);
+    CORRADE_COMPARE(Intersection::planeLine(planePosition, planeNormal,
+        {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}), -0.5f);
 
     /* Line lies on the plane */
     CORRADE_COMPARE(Intersection::planeLine(planePosition, planeNormal,
-        Vector3(1.0f, 0.5f, 0.5f), Vector3(-1.0f, 0.5f, 0.0f)), std::numeric_limits<Float>::quiet_NaN());
+        {1.0f, 0.5f, 0.5f}, {-1.0f, 0.5f, 0.0f}), std::numeric_limits<Float>::quiet_NaN());
 
-    /* Line is parallell to the plane */
-    CORRADE_COMPARE((Intersection::planeLine(planePosition, planeNormal,
-        Vector3(1.0f, 0.0f, 1.0f), Vector3(-1.0f, 0.0f, 0.0f))), -std::numeric_limits<Float>::infinity());
+    /* Line is parallel to the plane */
+    CORRADE_COMPARE(Intersection::planeLine(planePosition, planeNormal,
+        {1.0f, 0.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}), -std::numeric_limits<Float>::infinity());
 }
 
 }}}}
