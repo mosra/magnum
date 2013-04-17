@@ -41,7 +41,8 @@ class CapsuleTest: public Corrade::TestSuite::Tester, ShapeTestBase {
 
 CapsuleTest::CapsuleTest() {
     addTests({&CapsuleTest::applyTransformation,
-              &CapsuleTest::collisionPoint});
+              &CapsuleTest::collisionPoint,
+              &CapsuleTest::collisionSphere});
 }
 
 void CapsuleTest::applyTransformation() {
