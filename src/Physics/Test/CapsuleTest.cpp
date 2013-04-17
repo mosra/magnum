@@ -51,7 +51,8 @@ void CapsuleTest::applyTransformation() {
     capsule.applyTransformationMatrix(Matrix4::rotation(Deg(90.0f), Vector3::zAxis()));
     CORRADE_COMPARE(capsule.transformedA(), Vector3(-2.0f, 1.0f, 3.0f));
     CORRADE_COMPARE(capsule.transformedB(), Vector3(2.0f, -1.0f, -3.0f));
-    CORRADE_COMPARE(capsule.radius(), 7.0f);
+    CORRADE_COMPARE(capsule.transformedRadius(), 7.0f);
+}
 
     /* Apply average scaling to radius */
     capsule.applyTransformationMatrix(Matrix4::scaling({Constants::sqrt3(), -Constants::sqrt2(), 2.0f}));
