@@ -55,7 +55,7 @@ std::size_t Mesh::indexSize(IndexType type) {
         case IndexType::UnsignedInt: return 4;
     }
 
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
 }
 
 Mesh::Mesh(Primitive primitive): _primitive(primitive), _vertexCount(0), _indexCount(0)

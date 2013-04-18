@@ -600,7 +600,7 @@ std::size_t FloatAttribute::size(GLint components, DataType dataType) {
         #endif
     }
 
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     return 0;
 }
 
@@ -618,7 +618,7 @@ std::size_t IntAttribute::size(GLint components, DataType dataType) {
             return 4*components;
     }
 
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     return 0;
 }
 #endif
@@ -630,7 +630,7 @@ std::size_t DoubleAttribute::size(GLint components, DataType dataType) {
             return 8*components;
     }
 
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     return 0;
 }
 #endif
@@ -665,7 +665,7 @@ std::size_t Attribute<Math::Vector<4, Float>>::size(GLint components, DataType d
         #endif
     }
 
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     return 0;
 }
 

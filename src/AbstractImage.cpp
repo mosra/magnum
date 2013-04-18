@@ -129,10 +129,10 @@ std::size_t AbstractImage::pixelSize(Format format, Type type) {
         case Format::StencilIndex:
         #endif
         case Format::DepthStencil:
-            CORRADE_INTERNAL_ASSERT(false);
+            CORRADE_ASSERT_UNREACHABLE();
     }
 
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     return 0;
 }
 

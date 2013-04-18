@@ -71,7 +71,7 @@ std::size_t BufferState::indexForTarget(Buffer::Target target) {
         #endif
     }
 
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
 }
 
 }}
