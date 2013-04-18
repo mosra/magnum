@@ -142,7 +142,9 @@ template<class Transformation> void Object<Transformation>::setClean() {
 
         /* Compose transformation and clean object */
         absoluteTransformation = Transformation::compose(absoluteTransformation, o->transformation());
+        CORRADE_INTERNAL_ASSERT(o->isDirty());
         o->setClean(absoluteTransformation);
+        CORRADE_ASSERT(!o->isDirty(), "SceneGraph::Object::setClean(): original implementation was not called", );
     }
 }
 
@@ -343,8 +345,11 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
     std::vector<typename Transformation::DataType> transformations(scene->transformations(objects));
 
     /* Go through all objects and clean them */
-    for(std::size_t i = 0; i != objects.size(); ++i)
+    for(std::size_t i = 0; i != objects.size(); ++i) {
+        CORRADE_INTERNAL_ASSERT(objects[i]->isDirty());
         objects[i]->setClean(transformations[i]);
+        CORRADE_ASSERT(!objects[i]->isDirty(), "SceneGraph::Object::setClean(): original implementation was not called", );
+    }
 }
 
 template<class Transformation> void Object<Transformation>::setClean(const typename Transformation::DataType& absoluteTransformation) {
