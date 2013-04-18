@@ -41,6 +41,7 @@ class FunctionsTest: public Corrade::TestSuite::Tester {
         void sqrtInverted();
         void clamp();
         void lerp();
+        void fma();
         void normalizeUnsigned();
         void normalizeSigned();
         void denormalizeUnsigned();
@@ -74,6 +75,7 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::sqrtInverted,
               &FunctionsTest::clamp,
               &FunctionsTest::lerp,
+              &FunctionsTest::fma,
               &FunctionsTest::normalizeUnsigned,
               &FunctionsTest::normalizeSigned,
               &FunctionsTest::denormalizeUnsigned,
@@ -146,6 +148,14 @@ void FunctionsTest::lerp() {
     Vector3ub c(0, 128, 64);
     Vector3ub d(16, 0, 32);
     CORRADE_COMPARE(Math::lerp(c, d, 0.25f), Vector3ub(4, 96, 56));
+}
+
+void FunctionsTest::fma() {
+    CORRADE_COMPARE(Math::fma(2.0f, 3.0f, 0.75f), 6.75f);
+    CORRADE_COMPARE(Math::fma(Vector3( 2.0f,  1.5f,  0.5f),
+                              Vector3( 3.0f,  2.0f, -1.0f),
+                              Vector3(0.75f, 0.25f,  0.1f)),
+                              Vector3(6.75f, 3.25f, -0.4f));
 }
 
 void FunctionsTest::normalizeUnsigned() {

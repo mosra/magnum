@@ -281,6 +281,22 @@ template<std::size_t size, class T, class U> inline Vector<size, T> lerp(const V
 #endif
 
 /**
+@brief Fused multiply-add
+
+Computes and returns @f$ ab + c @f$.
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> inline T fma(const T& a, const T& b, const T& c);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type fma(T a, T b, T c) {
+    return std::fma(a, b, c);
+}
+template<std::size_t size, class T> inline Vector<size, T> fma(const Vector<size, T>& a, const Vector<size, T>& b, const Vector<size, T>& c) {
+    return a*b + c;
+}
+#endif
+
+/**
 @brief Normalize integral value
 
 Converts integral value from full range of given *unsigned* integral type to
