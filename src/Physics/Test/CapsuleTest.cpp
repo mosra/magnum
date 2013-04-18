@@ -22,6 +22,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Math/Matrix4.h"
+#include "Magnum.h"
 #include "Physics/Capsule.h"
 #include "Physics/Point.h"
 #include "Physics/Sphere.h"
@@ -30,32 +32,33 @@
 
 namespace Magnum { namespace Physics { namespace Test {
 
-class CapsuleTest: public Corrade::TestSuite::Tester, ShapeTestBase {
+class CapsuleTest: public Corrade::TestSuite::Tester {
     public:
         CapsuleTest();
 
-        void applyTransformation();
+        void transformed();
+        void transformedAverageScaling();
         void collisionPoint();
         void collisionSphere();
 };
 
 CapsuleTest::CapsuleTest() {
-    addTests({&CapsuleTest::applyTransformation,
+    addTests({&CapsuleTest::transformed,
               &CapsuleTest::collisionPoint,
               &CapsuleTest::collisionSphere});
 }
 
-void CapsuleTest::applyTransformation() {
-    Physics::Capsule3D capsule({1.0f, 2.0f, 3.0f}, {-1.0f, -2.0f, -3.0f}, 7.0f);
+void CapsuleTest::transformed() {
+    const Physics::Capsule3D capsule({1.0f, 2.0f, 3.0f}, {-1.0f, -2.0f, -3.0f}, 7.0f);
 
-    capsule.applyTransformationMatrix(Matrix4::rotation(Deg(90.0f), Vector3::zAxis()));
-    CORRADE_COMPARE(capsule.transformedA(), Vector3(-2.0f, 1.0f, 3.0f));
-    CORRADE_COMPARE(capsule.transformedB(), Vector3(2.0f, -1.0f, -3.0f));
-    CORRADE_COMPARE(capsule.transformedRadius(), 7.0f);
+    const auto transformed = capsule.transformed(Matrix4::rotation(Deg(90.0f), Vector3::zAxis()));
+    CORRADE_COMPARE(transformed.a(), Vector3(-2.0f, 1.0f, 3.0f));
+    CORRADE_COMPARE(transformed.b(), Vector3(2.0f, -1.0f, -3.0f));
+    CORRADE_COMPARE(transformed.radius(), 7.0f);
 
     /* Apply average scaling to radius */
-    capsule.applyTransformationMatrix(Matrix4::scaling({Constants::sqrt3(), -Constants::sqrt2(), 2.0f}));
-    CORRADE_COMPARE(capsule.transformedRadius(), Constants::sqrt3()*7.0f);
+    const auto scaled = capsule.transformed(Matrix4::scaling({Constants::sqrt3(), -Constants::sqrt2(), 2.0f}));
+    CORRADE_COMPARE(scaled.radius(), Constants::sqrt3()*7.0f);
 }
 
 void CapsuleTest::collisionPoint() {
@@ -63,11 +66,6 @@ void CapsuleTest::collisionPoint() {
     Physics::Point3D point({2.0f, 0.0f, 0.0f});
     Physics::Point3D point1({2.9f, 1.0f, 0.0f});
     Physics::Point3D point2({1.0f, 3.1f, 0.0f});
-
-    randomTransformation(capsule);
-    randomTransformation(point);
-    randomTransformation(point1);
-    randomTransformation(point2);
 
     VERIFY_COLLIDES(capsule, point);
     VERIFY_COLLIDES(capsule, point1);
@@ -79,11 +77,6 @@ void CapsuleTest::collisionSphere() {
     Physics::Sphere3D sphere({3.0f, 0.0f, 0.0f}, 0.9f);
     Physics::Sphere3D sphere1({3.5f, 1.0f, 0.0f}, 0.6f);
     Physics::Sphere3D sphere2({1.0f, 4.1f, 0.0f}, 1.0f);
-
-    randomTransformation(capsule);
-    randomTransformation(sphere);
-    randomTransformation(sphere1);
-    randomTransformation(sphere2);
 
     VERIFY_COLLIDES(capsule, sphere);
     VERIFY_COLLIDES(capsule, sphere1);

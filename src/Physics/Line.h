@@ -29,9 +29,8 @@
  */
 
 #include "Math/Vector3.h"
-#include "AbstractShape.h"
-
-#include "corradeCompatibility.h"
+#include "DimensionTraits.h"
+#include "Physics/magnumPhysicsVisibility.h"
 
 namespace Magnum { namespace Physics {
 
@@ -41,32 +40,28 @@ namespace Magnum { namespace Physics {
 @see Line2D, Line3D
 @todo collision detection of two Line2D
 */
-template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Line: public AbstractShape<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Line {
     public:
+        enum: UnsignedInt {
+            Dimensions = dimensions /**< Dimension count */
+        };
+
         /**
          * @brief Default constructor
          *
          * Creates line with both points at origin.
          */
-        inline explicit Line() {}
+        inline constexpr explicit Line() {}
 
         /** @brief Constructor */
-        inline explicit Line(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b): _a(a), _transformedA(a), _b(b), _transformedB(b) {}
+        inline constexpr explicit Line(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b): _a(a), _b(b) {}
 
-        inline typename AbstractShape<dimensions>::Type type() const override {
-            return AbstractShape<dimensions>::Type::Line;
-        }
-
-        void applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) override;
+        /** @brief Transformed shape */
+        Line<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;
 
         /** @brief First point */
-        inline typename DimensionTraits<dimensions>::VectorType a() const {
+        inline constexpr typename DimensionTraits<dimensions>::VectorType a() const {
             return _a;
-        }
-
-        /** @brief Second point */
-        inline typename DimensionTraits<dimensions>::VectorType b() const {
-            return _b;
         }
 
         /** @brief Set first point */
@@ -74,24 +69,18 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Line: public Abstra
             _a = a;
         }
 
+        /** @brief Second point */
+        inline constexpr typename DimensionTraits<dimensions>::VectorType b() const {
+            return _b;
+        }
+
         /** @brief Set second point */
         inline void setB(const typename DimensionTraits<dimensions>::VectorType& b) {
             _b = b;
         }
 
-        /** @brief Transformed first point */
-        inline typename DimensionTraits<dimensions>::VectorType transformedA() const {
-            return _transformedA;
-        }
-
-        /** @brief Transformed second point */
-        inline typename DimensionTraits<dimensions>::VectorType transformedB() const {
-            return _transformedB;
-        }
-
     private:
-        typename DimensionTraits<dimensions>::VectorType _a, _transformedA,
-            _b, _transformedB;
+        typename DimensionTraits<dimensions>::VectorType _a, _b;
 };
 
 /** @brief Infinite two-dimensional line */

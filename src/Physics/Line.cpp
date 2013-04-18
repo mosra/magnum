@@ -29,9 +29,9 @@
 
 namespace Magnum { namespace Physics {
 
-template<UnsignedInt dimensions> void Line<dimensions>::applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
-    _transformedA = matrix.transformPoint(_a);
-    _transformedB = matrix.transformPoint(_b);
+template<UnsignedInt dimensions> Line<dimensions> Line<dimensions>::transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const {
+    return Line<dimensions>(matrix.transformPoint(_a),
+                            matrix.transformPoint(_b));
 }
 
 /* Explicitly instantiate the templates */

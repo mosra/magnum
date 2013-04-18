@@ -29,10 +29,9 @@
  */
 
 #include "Math/Vector3.h"
-#include "AbstractShape.h"
-#include "Physics.h"
-
-#include "corradeCompatibility.h"
+#include "DimensionTraits.h"
+#include "Physics/Physics.h"
+#include "Physics/magnumPhysicsVisibility.h"
 
 namespace Magnum { namespace Physics {
 
@@ -44,28 +43,27 @@ applying transformation, the scale factor is averaged from all axes.
 @see Sphere2D, Sphere3D
 @todo Assert for asymmetric scaling
 */
-template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Sphere: public AbstractShape<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Sphere {
     public:
+        enum: UnsignedInt {
+            Dimensions = dimensions /**< Dimension count */
+        };
+
         /**
          * @brief Default constructor
          *
          * Creates zero-sized sphere at origin.
          */
-        inline explicit Sphere(): _radius(0.0f), _transformedRadius(0.0f) {}
+        inline constexpr explicit Sphere(): _radius(0.0f) {}
 
         /** @brief Constructor */
-        inline explicit Sphere(const typename DimensionTraits<dimensions>::VectorType& position, Float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
+        inline constexpr explicit Sphere(const typename DimensionTraits<dimensions>::VectorType& position, Float radius): _position(position), _radius(radius) {}
 
-        inline typename AbstractShape<dimensions>::Type type() const override {
-            return AbstractShape<dimensions>::Type::Sphere;
-        }
-
-        void applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) override;
-
-        bool collides(const AbstractShape<dimensions>* other) const override;
+        /** @brief Transformed shape */
+        Sphere<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;
 
         /** @brief Position */
-        inline typename DimensionTraits<dimensions>::VectorType position() const {
+        inline constexpr typename DimensionTraits<dimensions>::VectorType position() const {
             return _position;
         }
 
@@ -75,20 +73,10 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Sphere: public Abst
         }
 
         /** @brief Radius */
-        inline Float radius() const { return _radius; }
+        inline constexpr Float radius() const { return _radius; }
 
         /** @brief Set radius */
         inline void setRadius(Float radius) { _radius = radius; }
-
-        /** @brief Transformed position */
-        inline typename DimensionTraits<dimensions>::VectorType transformedPosition() const {
-            return _transformedPosition;
-        }
-
-        /** @brief Transformed radius */
-        inline Float transformedRadius() const {
-            return _transformedRadius;
-        }
 
         /** @brief Collision with point */
         bool operator%(const Point<dimensions>& other) const;
@@ -103,9 +91,8 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Sphere: public Abst
         bool operator%(const Sphere<dimensions>& other) const;
 
     private:
-        typename DimensionTraits<dimensions>::VectorType _position,
-            _transformedPosition;
-        Float _radius, _transformedRadius;
+        typename DimensionTraits<dimensions>::VectorType _position;
+        Float _radius;
 };
 
 /** @brief Two-dimensional sphere */

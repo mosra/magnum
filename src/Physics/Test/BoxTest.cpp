@@ -25,6 +25,7 @@
 #include <TestSuite/Tester.h>
 
 #include "Math/Matrix4.h"
+#include "Magnum.h"
 #include "Physics/Box.h"
 
 namespace Magnum { namespace Physics { namespace Test {
@@ -33,18 +34,17 @@ class BoxTest: public Corrade::TestSuite::Tester {
     public:
         BoxTest();
 
-        void applyTransformation();
+        void transformed();
 };
 
 BoxTest::BoxTest() {
-    addTests({&BoxTest::applyTransformation});
+    addTests({&BoxTest::transformed});
 }
 
-void BoxTest::applyTransformation() {
-    Physics::Box3D box(Matrix4::translation({1.0f, 2.0f, -3.0f}));
-
-    box.applyTransformationMatrix(Matrix4::scaling({2.0f, -1.0f, 1.5f}));
-    CORRADE_COMPARE(box.transformedTransformation(), Matrix4::scaling({2.0f, -1.0f, 1.5f})*Matrix4::translation({1.0f, 2.0f, -3.0f}));
+void BoxTest::transformed() {
+    const auto box = Physics::Box3D(Matrix4::translation({1.0f, 2.0f, -3.0f}))
+        .transformed(Matrix4::scaling({2.0f, -1.0f, 1.5f}));
+    CORRADE_COMPARE(box.transformation(), Matrix4::scaling({2.0f, -1.0f, 1.5f})*Matrix4::translation({1.0f, 2.0f, -3.0f}));
 }
 
 }}}

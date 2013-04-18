@@ -22,6 +22,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Math/Matrix4.h"
+#include "Magnum.h"
 #include "Physics/LineSegment.h"
 #include "Physics/Point.h"
 #include "Physics/Sphere.h"
@@ -30,11 +32,11 @@
 
 namespace Magnum { namespace Physics { namespace Test {
 
-class SphereTest: public Corrade::TestSuite::Tester, ShapeTestBase {
+class SphereTest: public Corrade::TestSuite::Tester {
     public:
         SphereTest();
 
-        void applyTransformation();
+        void transformed();
         void collisionPoint();
         void collisionLine();
         void collisionLineSegment();
@@ -42,38 +44,34 @@ class SphereTest: public Corrade::TestSuite::Tester, ShapeTestBase {
 };
 
 SphereTest::SphereTest() {
-    addTests({&SphereTest::applyTransformation,
+    addTests({&SphereTest::transformed,
               &SphereTest::collisionPoint,
               &SphereTest::collisionLine,
               &SphereTest::collisionLineSegment,
               &SphereTest::collisionSphere});
 }
 
-void SphereTest::applyTransformation() {
-    Physics::Sphere3D sphere({1.0f, 2.0f, 3.0f}, 7.0f);
+void SphereTest::transformed() {
+    const Physics::Sphere3D sphere({1.0f, 2.0f, 3.0f}, 7.0f);
 
-    sphere.applyTransformationMatrix(Matrix4::rotation(Deg(90.0f), Vector3::yAxis()));
-    CORRADE_COMPARE(sphere.transformedPosition(), Vector3(3.0f, 2.0f, -1.0f));
-    CORRADE_COMPARE(sphere.transformedRadius(), 7.0f);
+    const auto transformed = sphere.transformed(Matrix4::rotation(Deg(90.0f), Vector3::yAxis()));
+    CORRADE_COMPARE(transformed.position(), Vector3(3.0f, 2.0f, -1.0f));
+    CORRADE_COMPARE(transformed.radius(), 7.0f);
 
     /* Symmetric scaling */
-    sphere.applyTransformationMatrix(Matrix4::scaling(Vector3(2.0f)));
-    CORRADE_COMPARE(sphere.transformedPosition(), Vector3(2.0f, 4.0f, 6.0f));
-    CORRADE_COMPARE(sphere.transformedRadius(), 14.0f);
+    const auto scaled = sphere.transformed(Matrix4::scaling(Vector3(2.0f)));
+    CORRADE_COMPARE(scaled.position(), Vector3(2.0f, 4.0f, 6.0f));
+    CORRADE_COMPARE(scaled.radius(), 14.0f);
 
     /* Apply average scaling to radius */
-    sphere.applyTransformationMatrix(Matrix4::scaling({Constants::sqrt3(), -Constants::sqrt2(), 2.0f}));
-    CORRADE_COMPARE(sphere.transformedRadius(), Constants::sqrt3()*7.0f);
+    const auto nonEven = sphere.transformed(Matrix4::scaling({Constants::sqrt3(), -Constants::sqrt2(), 2.0f}));
+    CORRADE_COMPARE(nonEven.radius(), Constants::sqrt3()*7.0f);
 }
 
 void SphereTest::collisionPoint() {
     Physics::Sphere3D sphere({1.0f, 2.0f, 3.0f}, 2.0f);
     Physics::Point3D point({1.0f, 3.0f, 3.0f});
     Physics::Point3D point2({1.0f, 3.0f, 1.0f});
-
-    randomTransformation(sphere);
-    randomTransformation(point);
-    randomTransformation(point2);
 
     VERIFY_COLLIDES(sphere, point);
     VERIFY_NOT_COLLIDES(sphere, point2);
@@ -84,10 +82,6 @@ void SphereTest::collisionLine() {
     Physics::Line3D line({1.0f, 1.5f, 3.5f}, {1.0f, 2.5f, 2.5f});
     Physics::Line3D line2({1.0f, 2.0f, 5.1f}, {1.0f, 3.0f, 5.1f});
 
-    randomTransformation(sphere);
-    randomTransformation(line);
-    randomTransformation(line2);
-
     VERIFY_COLLIDES(sphere, line);
     VERIFY_NOT_COLLIDES(sphere, line2);
 }
@@ -97,10 +91,6 @@ void SphereTest::collisionLineSegment() {
     Physics::LineSegment3D line({1.0f, 2.0f, 4.9f}, {1.0f, 2.0f, 7.0f});
     Physics::LineSegment3D line2({1.0f, 2.0f, 5.1f}, {1.0f, 2.0f, 7.0f});
 
-    randomTransformation(sphere);
-    randomTransformation(line);
-    randomTransformation(line2);
-
     VERIFY_COLLIDES(sphere, line);
     VERIFY_NOT_COLLIDES(sphere, line2);
 }
@@ -109,10 +99,6 @@ void SphereTest::collisionSphere() {
     Physics::Sphere3D sphere({1.0f, 2.0f, 3.0f}, 2.0f);
     Physics::Sphere3D sphere1({1.0f, 3.0f, 5.0f}, 1.0f);
     Physics::Sphere3D sphere2({1.0f, 3.0f, 0.0f}, 1.0f);
-
-    randomTransformation(sphere);
-    randomTransformation(sphere1);
-    randomTransformation(sphere2);
 
     VERIFY_COLLIDES(sphere, sphere1);
     VERIFY_NOT_COLLIDES(sphere, sphere2);

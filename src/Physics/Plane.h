@@ -29,38 +29,34 @@
  */
 
 #include "Math/Vector3.h"
-#include "AbstractShape.h"
-#include "Physics.h"
-
-#include "corradeCompatibility.h"
+#include "Magnum.h"
+#include "Physics/Physics.h"
+#include "Physics/magnumPhysicsVisibility.h"
 
 namespace Magnum { namespace Physics {
 
 /** @brief Infinite plane, defined by position and normal (3D only) */
-class MAGNUM_PHYSICS_EXPORT Plane: public AbstractShape<3> {
+class MAGNUM_PHYSICS_EXPORT Plane {
     public:
+        enum: UnsignedInt {
+            Dimensions = 3 /**< Dimension count */
+        };
+
         /**
          * @brief Default constructor
          *
          * Creates plane with zero-sized normal at origin.
          */
-        inline explicit Plane() {}
+        inline constexpr explicit Plane() {}
 
         /** @brief Constructor */
-        inline explicit Plane(const Vector3& position, const Vector3& normal): _position(position), _transformedPosition(position), _normal(normal), _transformedNormal(normal) {}
+        inline constexpr explicit Plane(const Vector3& position, const Vector3& normal): _position(position), _normal(normal) {}
 
-        inline Type type() const override { return Type::Plane; }
-
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        void applyTransformationMatrix(const Matrix4& matrix) override;
-        bool collides(const AbstractShape<3>* other) const override;
-        #else
-        void applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) override;
-        bool collides(const AbstractShape* other) const override;
-        #endif
+        /** @brief Transformed shape */
+        Plane transformed(const Matrix4& matrix) const;
 
         /** @brief Position */
-        inline Vector3 position() const { return _position; }
+        inline constexpr Vector3 position() const { return _position; }
 
         /** @brief Set position */
         inline void setPosition(const Vector3& position) {
@@ -68,21 +64,11 @@ class MAGNUM_PHYSICS_EXPORT Plane: public AbstractShape<3> {
         }
 
         /** @brief Normal */
-        inline Vector3 normal() const { return _normal; }
+        inline constexpr Vector3 normal() const { return _normal; }
 
         /** @brief Set normal */
         inline void setNormal(const Vector3& normal) {
             _normal = normal;
-        }
-
-        /** @brief Transformed position */
-        inline Vector3 transformedPosition() const {
-            return _transformedPosition;
-        }
-
-        /** @brief Transformed normal */
-        inline Vector3 transformedNormal() const {
-            return _transformedNormal;
         }
 
         /** @brief Collision with line */
@@ -92,8 +78,7 @@ class MAGNUM_PHYSICS_EXPORT Plane: public AbstractShape<3> {
         bool operator%(const LineSegment3D& other) const;
 
     private:
-        Vector3 _position, _transformedPosition,
-            _normal, _transformedNormal;
+        Vector3 _position, _normal;
 };
 
 /** @collisionoperator{Line,Plane} */

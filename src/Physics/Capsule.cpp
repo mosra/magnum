@@ -28,37 +28,27 @@
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Math/Geometry/Distance.h"
-#include "Point.h"
-#include "Sphere.h"
+#include "Magnum.h"
+#include "Physics/Point.h"
+#include "Physics/Sphere.h"
 
 using namespace Magnum::Math::Geometry;
 
 namespace Magnum { namespace Physics {
 
-template<UnsignedInt dimensions> void Capsule<dimensions>::applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
-    _transformedA = matrix.transformPoint(_a);
-    _transformedB = matrix.transformPoint(_b);
-    Float scaling = (matrix.rotationScaling()*typename DimensionTraits<dimensions>::VectorType(1/Constants::sqrt3())).length();
-    _transformedRadius = scaling*_radius;
-}
-
-template<UnsignedInt dimensions> bool Capsule<dimensions>::collides(const AbstractShape<dimensions>* other) const {
-    if(other->type() == AbstractShape<dimensions>::Type::Point)
-        return *this % *static_cast<const Point<dimensions>*>(other);
-    if(other->type() == AbstractShape<dimensions>::Type::Sphere)
-        return *this % *static_cast<const Sphere<dimensions>*>(other);
-
-    return AbstractShape<dimensions>::collides(other);
+template<UnsignedInt dimensions> Capsule<dimensions> Capsule<dimensions>::transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const {
+    return Capsule<dimensions>(matrix.transformPoint(_a), matrix.transformPoint(_b),
+        (matrix.rotationScaling()*typename DimensionTraits<dimensions>::VectorType(1/Constants::sqrt3())).length()*_radius);
 }
 
 template<UnsignedInt dimensions> bool Capsule<dimensions>::operator%(const Point<dimensions>& other) const {
-    return Distance::lineSegmentPointSquared(transformedA(), transformedB(), other.transformedPosition()) <
-        Math::pow<2>(transformedRadius());
+    return Distance::lineSegmentPointSquared(_a, _b, other.position()) <
+        Math::pow<2>(_radius);
 }
 
 template<UnsignedInt dimensions> bool Capsule<dimensions>::operator%(const Sphere<dimensions>& other) const {
-    return Distance::lineSegmentPointSquared(transformedA(), transformedB(), other.transformedPosition()) <
-        Math::pow<2>(transformedRadius()+other.transformedRadius());
+    return Distance::lineSegmentPointSquared(_a, _b, other.position()) <
+        Math::pow<2>(_radius+other.radius());
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

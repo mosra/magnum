@@ -25,6 +25,7 @@
 #include <TestSuite/Tester.h>
 
 #include "Math/Matrix4.h"
+#include "Magnum.h"
 #include "Physics/Point.h"
 
 namespace Magnum { namespace Physics { namespace Test {
@@ -33,17 +34,17 @@ class PointTest: public Corrade::TestSuite::Tester {
     public:
         PointTest();
 
-        void applyTransformation();
+        void transformed();
 };
 
 PointTest::PointTest() {
-    addTests({&PointTest::applyTransformation});
+    addTests({&PointTest::transformed});
 }
 
-void PointTest::applyTransformation() {
-    Physics::Point3D point({1.0f, 2.0f, 3.0f});
-    point.applyTransformationMatrix(Matrix4::translation({5.0f, 6.0f, 7.0f}));
-    CORRADE_COMPARE(point.transformedPosition(), Vector3(6.0f, 8.0f, 10.0f));
+void PointTest::transformed() {
+    const auto point = Physics::Point3D({1.0f, 2.0f, 3.0f})
+        .transformed(Matrix4::translation({5.0f, 6.0f, 7.0f}));
+    CORRADE_COMPARE(point.position(), Vector3(6.0f, 8.0f, 10.0f));
 }
 
 }}}

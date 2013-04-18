@@ -24,12 +24,10 @@
 
 #include "Box.h"
 
-#include "Math/Matrix4.h"
-
 namespace Magnum { namespace Physics {
 
-template<UnsignedInt dimensions> void Box<dimensions>::applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
-    _transformedTransformation = matrix*_transformation;
+template<UnsignedInt dimensions> Box<dimensions> Box<dimensions>::transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const {
+    return Box<dimensions>(matrix*_transformation);
 }
 
 template class Box<2>;

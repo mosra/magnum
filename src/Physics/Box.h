@@ -30,9 +30,8 @@
 
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
-#include "AbstractShape.h"
-
-#include "corradeCompatibility.h"
+#include "DimensionTraits.h"
+#include "Physics/magnumPhysicsVisibility.h"
 
 namespace Magnum { namespace Physics {
 
@@ -45,26 +44,27 @@ radius.
 @see Box2D, Box3D
 @todo Assert for skew
 */
-template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Box: public AbstractShape<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Box {
     public:
+        enum: UnsignedInt {
+            Dimensions = dimensions /**< Dimension count */
+        };
+
         /**
          * @brief Default constructor
          *
          * Creates zero-sized box positioned at origin.
          */
-        inline explicit Box(): _transformation(DimensionTraits<dimensions>::MatrixType::Zero), _transformedTransformation(DimensionTraits<dimensions>::MatrixType::Zero) {}
+        inline constexpr explicit Box(): _transformation(DimensionTraits<dimensions>::MatrixType::Zero) {}
 
         /** @brief Constructor */
-        inline explicit Box(const typename DimensionTraits<dimensions>::MatrixType& transformation): _transformation(transformation), _transformedTransformation(transformation) {}
+        inline constexpr explicit Box(const typename DimensionTraits<dimensions>::MatrixType& transformation): _transformation(transformation) {}
 
-        inline typename AbstractShape<dimensions>::Type type() const override {
-            return AbstractShape<dimensions>::Type::Box;
-        }
-
-        void applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) override;
+        /** @brief Transformed shape */
+        Box<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;
 
         /** @brief Transformation */
-        inline typename DimensionTraits<dimensions>::MatrixType transformation() const {
+        inline constexpr typename DimensionTraits<dimensions>::MatrixType transformation() const {
             return _transformation;
         }
 
@@ -73,14 +73,8 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Box: public Abstrac
             _transformation = transformation;
         }
 
-        /** @brief Transformed transformation */
-        inline typename DimensionTraits<dimensions>::MatrixType transformedTransformation() const {
-            return _transformedTransformation;
-        }
-
     private:
-        typename DimensionTraits<dimensions>::MatrixType _transformation,
-            _transformedTransformation;
+        typename DimensionTraits<dimensions>::MatrixType _transformation;
 };
 
 /** @brief Two-dimensional box */

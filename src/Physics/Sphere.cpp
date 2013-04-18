@@ -28,8 +28,9 @@
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Math/Geometry/Distance.h"
-#include "LineSegment.h"
-#include "Point.h"
+#include "Magnum.h"
+#include "Physics/LineSegment.h"
+#include "Physics/Point.h"
 
 using namespace Magnum::Math::Geometry;
 
@@ -47,43 +48,25 @@ namespace {
     }
 }
 
-template<UnsignedInt dimensions> void Sphere<dimensions>::applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
-    _transformedPosition = matrix.transformPoint(_position);
-    Float scaling = (matrix.rotationScaling()*unitVector<dimensions>()).length();
-    _transformedRadius = scaling*_radius;
-}
-
-template<UnsignedInt dimensions> bool Sphere<dimensions>::collides(const AbstractShape<dimensions>* other) const {
-    if(other->type() == AbstractShape<dimensions>::Type::Point)
-        return *this % *static_cast<const Point<dimensions>*>(other);
-    if(other->type() == AbstractShape<dimensions>::Type::Line)
-        return *this % *static_cast<const Line<dimensions>*>(other);
-    if(other->type() == AbstractShape<dimensions>::Type::LineSegment)
-        return *this % *static_cast<const LineSegment<dimensions>*>(other);
-    if(other->type() == AbstractShape<dimensions>::Type::Sphere)
-        return *this % *static_cast<const Sphere<dimensions>*>(other);
-
-    return AbstractShape<dimensions>::collides(other);
+template<UnsignedInt dimensions> Sphere<dimensions> Sphere<dimensions>::transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const {
+    return Sphere<dimensions>(matrix.transformPoint(_position),
+        (matrix.rotationScaling()*unitVector<dimensions>()).length()*_radius);
 }
 
 template<UnsignedInt dimensions> bool Sphere<dimensions>::operator%(const Point<dimensions>& other) const {
-    return (other.transformedPosition()-transformedPosition()).dot() <
-        Math::pow<2>(transformedRadius());
+    return (other.position()-_position).dot() < Math::pow<2>(_radius);
 }
 
 template<UnsignedInt dimensions> bool Sphere<dimensions>::operator%(const Line<dimensions>& other) const {
-    return Distance::linePointSquared(other.transformedA(), other.transformedB(), transformedPosition()) <
-        Math::pow<2>(transformedRadius());
+    return Distance::linePointSquared(other.a(), other.b(), _position) < Math::pow<2>(_radius);
 }
 
 template<UnsignedInt dimensions> bool Sphere<dimensions>::operator%(const LineSegment<dimensions>& other) const {
-    return Distance::lineSegmentPointSquared(other.transformedA(), other.transformedB(), transformedPosition()) <
-        Math::pow<2>(transformedRadius());
+    return Distance::lineSegmentPointSquared(other.a(), other.b(), _position) < Math::pow<2>(_radius);
 }
 
 template<UnsignedInt dimensions> bool Sphere<dimensions>::operator%(const Sphere<dimensions>& other) const {
-    return (other.transformedPosition()-transformedPosition()).dot() <
-        Math::pow<2>(transformedRadius()+other.transformedRadius());
+    return (other._position-_position).dot() < Math::pow<2>(_radius+other._radius);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

@@ -22,6 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Math/Matrix4.h"
 #include "Physics/LineSegment.h"
 #include "Physics/Point.h"
 #include "Physics/Plane.h"
@@ -30,32 +31,32 @@
 
 namespace Magnum { namespace Physics { namespace Test {
 
-class PlaneTest: public Corrade::TestSuite::Tester, ShapeTestBase {
+class PlaneTest: public Corrade::TestSuite::Tester {
     public:
         PlaneTest();
 
-        void applyTransformation();
+        void transformed();
         void collisionLine();
         void collisionLineSegment();
 };
 
 PlaneTest::PlaneTest() {
-    addTests({&PlaneTest::applyTransformation,
+    addTests({&PlaneTest::transformed,
               &PlaneTest::collisionLine,
               &PlaneTest::collisionLineSegment});
 }
 
-void PlaneTest::applyTransformation() {
-    Physics::Plane plane({1.0f, 2.0f, 3.0f}, {Constants::sqrt2(), -Constants::sqrt2(), 0});
+void PlaneTest::transformed() {
+    const Physics::Plane plane({1.0f, 2.0f, 3.0f}, {Constants::sqrt2(), -Constants::sqrt2(), 0});
 
-    plane.applyTransformationMatrix(Matrix4::rotation(Deg(90.0f), Vector3::xAxis()));
-    CORRADE_COMPARE(plane.transformedPosition(), Vector3(1.0f, -3.0f, 2.0f));
-    CORRADE_COMPARE(plane.transformedNormal(), Vector3(Constants::sqrt2(), 0, -Constants::sqrt2()));
+    const auto transformed = plane.transformed(Matrix4::rotation(Deg(90.0f), Vector3::xAxis()));
+    CORRADE_COMPARE(transformed.position(), Vector3(1.0f, -3.0f, 2.0f));
+    CORRADE_COMPARE(transformed.normal(), Vector3(Constants::sqrt2(), 0, -Constants::sqrt2()));
 
     /* The normal should stay normalized */
-    plane.applyTransformationMatrix(Matrix4::scaling({1.5f, 2.0f, 3.0f}));
-    CORRADE_COMPARE(plane.transformedPosition(), Vector3(1.5f, 4.0f, 9.0f));
-    CORRADE_COMPARE(plane.transformedNormal(), Vector3(Constants::sqrt2(), -Constants::sqrt2(), 0));
+    const auto scaled = plane.transformed(Matrix4::scaling({1.5f, 2.0f, 3.0f}));
+    CORRADE_COMPARE(scaled.position(), Vector3(1.5f, 4.0f, 9.0f));
+    CORRADE_COMPARE(scaled.normal(), Vector3(Constants::sqrt2(), -Constants::sqrt2(), 0));
 }
 
 void PlaneTest::collisionLine() {
@@ -63,11 +64,6 @@ void PlaneTest::collisionLine() {
     Physics::Line3D line({0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f});
     Physics::Line3D line2({0.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 0.0f});
     Physics::Line3D line3({0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 0.0f});
-
-    randomTransformation(plane);
-    randomTransformation(line);
-    randomTransformation(line2);
-    randomTransformation(line3);
 
     VERIFY_COLLIDES(plane, line);
     VERIFY_COLLIDES(plane, line2);
@@ -79,11 +75,6 @@ void PlaneTest::collisionLineSegment() {
     Physics::LineSegment3D line({0.0f, -0.1f, 0.0f}, {0.0f, 7.0f, 0.0f});
     Physics::LineSegment3D line2({0.0f, 0.1f, 0.0f}, {0.0f, 7.0f, 0.0f});
     Physics::LineSegment3D line3({0.0f, -7.0f, 0.0f}, {0.0f, -0.1f, 0.0f});
-
-    randomTransformation(plane);
-    randomTransformation(line);
-    randomTransformation(line2);
-    randomTransformation(line3);
 
     VERIFY_COLLIDES(plane, line);
     VERIFY_NOT_COLLIDES(plane, line2);

@@ -29,9 +29,8 @@
  */
 
 #include "Math/Vector3.h"
-#include "AbstractShape.h"
-
-#include "corradeCompatibility.h"
+#include "DimensionTraits.h"
+#include "Physics/magnumPhysicsVisibility.h"
 
 namespace Magnum { namespace Physics {
 
@@ -40,26 +39,27 @@ namespace Magnum { namespace Physics {
 
 @see Point2D, Point3D
 */
-template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Point: public AbstractShape<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Point {
     public:
+        enum: UnsignedInt {
+            Dimensions = dimensions /**< Dimension count */
+        };
+
         /**
          * @brief Default constructor
          *
          * Creates point at origin.
          */
-        inline explicit Point() {}
+        inline constexpr explicit Point() {}
 
         /** @brief Constructor */
-        inline explicit Point(const typename DimensionTraits<dimensions>::VectorType& position): _position(position), _transformedPosition(position) {}
+        inline constexpr explicit Point(const typename DimensionTraits<dimensions>::VectorType& position): _position(position) {}
 
-        inline typename AbstractShape<dimensions>::Type type() const override {
-            return AbstractShape<dimensions>::Type::Point;
-        }
-
-        void applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) override;
+        /** @brief Transformed shape */
+        Point<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;
 
         /** @brief Position */
-        inline typename DimensionTraits<dimensions>::VectorType position() const {
+        inline constexpr typename DimensionTraits<dimensions>::VectorType position() const {
             return _position;
         }
 
@@ -68,13 +68,8 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Point: public Abstr
             _position = position;
         }
 
-        /** @brief Transformed position */
-        inline typename DimensionTraits<dimensions>::VectorType transformedPosition() const {
-            return _transformedPosition;
-        }
-
     private:
-        typename DimensionTraits<dimensions>::VectorType _position, _transformedPosition;
+        typename DimensionTraits<dimensions>::VectorType _position;
 };
 
 /** @brief Two-dimensional point */

@@ -22,9 +22,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <TestSuite/Tester.h>
-
 #include "Math/Matrix4.h"
+#include "Magnum.h"
 #include "Physics/AxisAlignedBox.h"
 #include "Physics/Point.h"
 
@@ -32,35 +31,30 @@
 
 namespace Magnum { namespace Physics { namespace Test {
 
-class AxisAlignedBoxTest: public Corrade::TestSuite::Tester, ShapeTestBase {
+class AxisAlignedBoxTest: public Corrade::TestSuite::Tester {
     public:
         AxisAlignedBoxTest();
 
-        void applyTransformation();
+        void transformed();
         void collisionPoint();
 };
 
 AxisAlignedBoxTest::AxisAlignedBoxTest() {
-    addTests({&AxisAlignedBoxTest::applyTransformation,
+    addTests({&AxisAlignedBoxTest::transformed,
               &AxisAlignedBoxTest::collisionPoint});
 }
 
-void AxisAlignedBoxTest::applyTransformation() {
-    Physics::AxisAlignedBox3D box({-1.0f, -2.0f, -3.0f}, {1.0f, 2.0f, 3.0f});
-
-    box.applyTransformationMatrix(Matrix4::translation(Vector3(1.0f))*Matrix4::scaling({2.0f, -1.0f, 1.5f}));
-    CORRADE_COMPARE(box.transformedMin(), Vector3(-1.0f, 3.0f, -3.5f));
-    CORRADE_COMPARE(box.transformedMax(), Vector3(3.0f, -1.0f, 5.5f));
+void AxisAlignedBoxTest::transformed() {
+    const auto box = Physics::AxisAlignedBox3D({-1.0f, -2.0f, -3.0f}, {1.0f, 2.0f, 3.0f})
+        .transformed(Matrix4::translation(Vector3(1.0f))*Matrix4::scaling({2.0f, -1.0f, 1.5f}));
+    CORRADE_COMPARE(box.min(), Vector3(-1.0f, 3.0f, -3.5f));
+    CORRADE_COMPARE(box.max(), Vector3(3.0f, -1.0f, 5.5f));
 }
 
 void AxisAlignedBoxTest::collisionPoint() {
     Physics::AxisAlignedBox3D box({-1.0f, -2.0f, -3.0f}, {1.0f, 2.0f, 3.0f});
     Physics::Point3D point1({-1.5f, -1.0f, 2.0f});
     Physics::Point3D point2({0.5f, 1.0f, -2.5f});
-
-    randomTransformation(box);
-    randomTransformation(point1);
-    randomTransformation(point2);
 
     VERIFY_NOT_COLLIDES(box, point1);
     VERIFY_COLLIDES(box, point2);

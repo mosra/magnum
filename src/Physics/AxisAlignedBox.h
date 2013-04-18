@@ -29,10 +29,9 @@
  */
 
 #include "Math/Vector3.h"
-#include "Physics/AbstractShape.h"
+#include "DimensionTraits.h"
 #include "Physics/Physics.h"
-
-#include "corradeCompatibility.h"
+#include "Physics/magnumPhysicsVisibility.h"
 
 namespace Magnum { namespace Physics {
 
@@ -44,28 +43,27 @@ radius.
 @see AxisAlignedBox2D, AxisAlignedBox3D
 @todo Assert for rotation
 */
-template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT AxisAlignedBox: public AbstractShape<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT AxisAlignedBox {
     public:
+        enum: UnsignedInt {
+            Dimensions = dimensions /**< Dimension count */
+        };
+
         /**
          * @brief Default constructor
          *
          * Creates zero sized box positioned at origin.
          */
-        inline explicit AxisAlignedBox() {}
+        inline constexpr explicit AxisAlignedBox() {}
 
         /** @brief Constructor */
-        inline explicit AxisAlignedBox(const typename DimensionTraits<dimensions>::VectorType& min, const typename DimensionTraits<dimensions>::VectorType& max): _min(min), _max(max), _transformedMin(min), _transformedMax(max) {}
+        inline constexpr explicit AxisAlignedBox(const typename DimensionTraits<dimensions>::VectorType& min, const typename DimensionTraits<dimensions>::VectorType& max): _min(min), _max(max) {}
 
-        inline typename AbstractShape<dimensions>::Type type() const override {
-            return AbstractShape<dimensions>::Type::AxisAlignedBox;
-        }
-
-        void applyTransformationMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) override;
-
-        bool collides(const AbstractShape<dimensions>* other) const override;
+        /** @brief Transformed shape */
+        AxisAlignedBox<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;
 
         /** @brief Minimal coordinates */
-        inline typename DimensionTraits<dimensions>::VectorType min() const {
+        inline constexpr typename DimensionTraits<dimensions>::VectorType min() const {
             return _min;
         }
 
@@ -75,29 +73,20 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT AxisAlignedBox: pub
         }
 
         /** @brief Maximal coordinates */
-        inline typename DimensionTraits<dimensions>::VectorType max() const { return _max; }
+        inline constexpr typename DimensionTraits<dimensions>::VectorType max() const {
+            return _max;
+        }
 
         /** @brief Set maximal coordinates */
         inline void setMax(const typename DimensionTraits<dimensions>::VectorType& max) {
             _max = max;
         }
 
-        /** @brief Transformed minimal coordinates */
-        inline typename DimensionTraits<dimensions>::VectorType transformedMin() const {
-            return _transformedMin;
-        }
-
-        /** @brief Transformed maximal coordinates */
-        inline typename DimensionTraits<dimensions>::VectorType transformedMax() const {
-            return _transformedMax;
-        }
-
         /** @brief Collision with point */
         bool operator%(const Point<dimensions>& other) const;
 
     private:
-        typename DimensionTraits<dimensions>::VectorType _min, _max,
-            _transformedMin, _transformedMax;
+        typename DimensionTraits<dimensions>::VectorType _min, _max;
 };
 
 /** @brief Two-dimensional axis-aligned box */
