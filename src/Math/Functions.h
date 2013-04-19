@@ -289,7 +289,12 @@ Computes and returns @f$ ab + c @f$.
 template<class T> inline T fma(const T& a, const T& b, const T& c);
 #else
 template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type fma(T a, T b, T c) {
+    /** @todo Remove when NaCl's newlib has this fixed */
+    #ifndef CORRADE_TARGET_NACL_NEWLIB
     return std::fma(a, b, c);
+    #else
+    return a*b + c;
+    #endif
 }
 template<std::size_t size, class T> inline Vector<size, T> fma(const Vector<size, T>& a, const Vector<size, T>& b, const Vector<size, T>& c) {
     return a*b + c;
