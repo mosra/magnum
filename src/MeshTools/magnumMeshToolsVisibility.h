@@ -24,14 +24,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef _WIN32
-    #if defined(MagnumMeshTools_EXPORTS) || defined(MagnumMeshToolsObjects_EXPORTS)
-        #define MAGNUM_MESHTOOLS_EXPORT __declspec(dllexport)
-    #else
-        #define MAGNUM_MESHTOOLS_EXPORT __declspec(dllimport)
-    #endif
+#include <Utility/Visibility.h>
+
+#if defined(MagnumMeshTools_EXPORTS) || defined(MagnumMeshToolsObjects_EXPORTS)
+    #define MAGNUM_MESHTOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
 #else
-    #define MAGNUM_MESHTOOLS_EXPORT __attribute__ ((visibility ("default")))
+    #define MAGNUM_MESHTOOLS_EXPORT CORRADE_VISIBILITY_IMPORT
 #endif
 
 #endif

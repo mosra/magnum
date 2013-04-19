@@ -24,16 +24,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef _WIN32
-    #ifdef MagnumText_EXPORTS
-        #define MAGNUM_TEXT_EXPORT __declspec(dllexport)
-    #else
-        #define MAGNUM_TEXT_EXPORT __declspec(dllimport)
-    #endif
-    #define MAGNUM_TEXT_LOCAL
+#include <Utility/Visibility.h>
+
+#ifdef MagnumText_EXPORTS
+    #define MAGNUM_TEXT_EXPORT CORRADE_VISIBILITY_EXPORT
 #else
-    #define MAGNUM_TEXT_EXPORT __attribute__ ((visibility ("default")))
-    #define MAGNUM_TEXT_LOCAL __attribute__ ((visibility ("hidden")))
+    #define MAGNUM_TEXT_EXPORT CORRADE_VISIBILITY_IMPORT
 #endif
+#define MAGNUM_TEXT_LOCAL CORRADE_VISIBILITY_LOCAL
 
 #endif
