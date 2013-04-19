@@ -25,31 +25,31 @@
 #include <sstream>
 #include <TestSuite/Tester.h>
 
-#include "Physics/AbstractShape.h"
+#include "Physics/shapeImplementation.h"
 
 namespace Magnum { namespace Physics { namespace Test {
 
-class AbstractShapeTest: public Corrade::TestSuite::Tester {
+class ShapeImplementationTest: public Corrade::TestSuite::Tester {
     public:
-        AbstractShapeTest();
+        ShapeImplementationTest();
 
         void debug();
 };
 
-AbstractShapeTest::AbstractShapeTest() {
-    addTests({&AbstractShapeTest::debug});
+ShapeImplementationTest::ShapeImplementationTest() {
+    addTests({&ShapeImplementationTest::debug});
 }
 
-void AbstractShapeTest::debug() {
+void ShapeImplementationTest::debug() {
     std::ostringstream o;
-    Debug(&o) << AbstractShape2D::Type::ShapeGroup;
-    CORRADE_COMPARE(o.str(), "AbstractShape2D::Type::ShapeGroup\n");
+    Debug(&o) << Implementation::ShapeDimensionTraits<2>::Type::ShapeGroup;
+    CORRADE_COMPARE(o.str(), "Physics::Shape2D::Type::ShapeGroup\n");
 
     o.str({});
-    Debug(&o) << AbstractShape3D::Type::Plane;
-    CORRADE_COMPARE(o.str(), "AbstractShape3D::Type::Plane\n");
+    Debug(&o) << Implementation::ShapeDimensionTraits<3>::Type::Plane;
+    CORRADE_COMPARE(o.str(), "Physics::Shape3D::Type::Plane\n");
 }
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Physics::Test::AbstractShapeTest)
+CORRADE_TEST_MAIN(Magnum::Physics::Test::ShapeImplementationTest)

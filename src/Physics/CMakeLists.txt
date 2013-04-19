@@ -33,7 +33,11 @@ set(MagnumPhysics_SRCS
     ObjectShape.cpp
     ObjectShapeGroup.cpp
     ShapeGroup.cpp
-    Sphere.cpp)
+    Sphere.cpp
+
+    shapeImplementation.cpp
+
+    Implementation/CollisionDispatch.cpp)
 
 set(MagnumPhysics_HEADERS
     AbstractShape.h
@@ -50,7 +54,8 @@ set(MagnumPhysics_HEADERS
     ShapeGroup.h
     Sphere.h
 
-    magnumPhysicsVisibility.h)
+    magnumPhysicsVisibility.h
+    shapeImplementation.h)
 
 add_library(MagnumPhysics ${SHARED_OR_STATIC} ${MagnumPhysics_SRCS})
 if(BUILD_STATIC_PIC)

@@ -26,8 +26,11 @@
 
 #include "Math/Matrix4.h"
 #include "Physics/Point.h"
-#include "Physics/LineSegment.h"
+#include "Physics/AxisAlignedBox.h"
 #include "Physics/ShapeGroup.h"
+#include "Physics/Sphere.h"
+
+#include "ShapeTestBase.h"
 
 namespace Magnum { namespace Physics { namespace Test {
 
@@ -35,40 +38,91 @@ class ShapeGroupTest: public Corrade::TestSuite::Tester {
     public:
         ShapeGroupTest();
 
-        void copy();
-        void reference();
+        void negated();
+        void anded();
+        void ored();
+        void multipleUnary();
+        void hierarchy();
+        void empty();
 };
 
 ShapeGroupTest::ShapeGroupTest() {
-    addTests({&ShapeGroupTest::copy,
-              &ShapeGroupTest::reference});
+    addTests({&ShapeGroupTest::negated,
+              &ShapeGroupTest::anded,
+              &ShapeGroupTest::ored,
+              &ShapeGroupTest::multipleUnary,
+              &ShapeGroupTest::hierarchy,
+              &ShapeGroupTest::empty});
 }
 
-void ShapeGroupTest::copy() {
-    ShapeGroup3D group;
-    {
-        Physics::Point3D point({1.0f, 2.0f, 3.0f});
-        Physics::LineSegment3D segment({2.0f, 1.0f, 30.0f}, {1.0f, -20.0f, 3.0f});
+void ShapeGroupTest::negated() {
+    const Physics::ShapeGroup2D a = !Physics::Point2D(Vector2::xAxis(0.5f));
 
-        group = !(point || segment);
-    }
+    CORRADE_COMPARE(a.size(), 1);
+    CORRADE_COMPARE(a.type(0), ShapeGroup2D::Type::Point);
+    CORRADE_COMPARE(a.get<Physics::Point2D>(0).position(), Vector2::xAxis(0.5f));
 
-    /* Just to test that it doesn't crash */
-    group.applyTransformationMatrix(Matrix4::translation(Vector3::xAxis(1.0f)));
-
-    CORRADE_VERIFY(true);
+    VERIFY_NOT_COLLIDES(a, Physics::Sphere2D({}, 1.0f));
 }
 
-void ShapeGroupTest::reference() {
-    Physics::Point3D point({1.0f, 2.0f, 3.0f});
-    Physics::LineSegment3D segment({2.0f, 1.0f, 30.0f}, {1.0f, -20.0f, 3.0f});
+void ShapeGroupTest::anded() {
+    const Physics::ShapeGroup2D a = Physics::Sphere2D({}, 1.0f) && Physics::Point2D(Vector2::xAxis(0.5f));
 
-    ShapeGroup3D group = !(std::ref(point) || std::ref(segment));
+    CORRADE_COMPARE(a.size(), 2);
+    CORRADE_COMPARE(a.type(0), ShapeGroup2D::Type::Sphere);
+    CORRADE_COMPARE(a.type(1), ShapeGroup2D::Type::Point);
+    CORRADE_COMPARE(a.get<Physics::Sphere2D>(0).position(), Vector2());
+    CORRADE_COMPARE(a.get<Physics::Sphere2D>(0).radius(), 1.0f);
+    CORRADE_COMPARE(a.get<Physics::Point2D>(1).position(), Vector2::xAxis(0.5f));
 
-    group.applyTransformationMatrix(Matrix4::translation(Vector3(1.0f)));
+    VERIFY_NOT_COLLIDES(a, Physics::Point2D());
+    VERIFY_COLLIDES(a, Physics::Sphere2D(Vector2::xAxis(0.5f), 0.25f));
+}
 
-    CORRADE_VERIFY((point.transformedPosition() == Vector3(2.0f, 3.0f, 4.0f)));
-    CORRADE_VERIFY((segment.transformedA() == Vector3(3.0f, 2.0f, 31.0f)));
+void ShapeGroupTest::ored() {
+    const Physics::ShapeGroup2D a = Physics::Sphere2D({}, 1.0f) || Physics::Point2D(Vector2::xAxis(1.5f));
+
+    CORRADE_COMPARE(a.size(), 2);
+    CORRADE_COMPARE(a.type(0), ShapeGroup2D::Type::Sphere);
+    CORRADE_COMPARE(a.type(1), ShapeGroup2D::Type::Point);
+    CORRADE_COMPARE(a.get<Physics::Sphere2D>(0).position(), Vector2());
+    CORRADE_COMPARE(a.get<Physics::Sphere2D>(0).radius(), 1.0f);
+    CORRADE_COMPARE(a.get<Physics::Point2D>(1).position(), Vector2::xAxis(1.5f));
+
+    VERIFY_COLLIDES(a, Physics::Point2D());
+    VERIFY_COLLIDES(a, Physics::Sphere2D(Vector2::xAxis(1.5f), 0.25f));
+}
+
+void ShapeGroupTest::multipleUnary() {
+    const Physics::ShapeGroup2D a = !!!!Physics::Point2D(Vector2::xAxis(0.5f));
+
+    CORRADE_COMPARE(a.size(), 1);
+    CORRADE_COMPARE(a.type(0), ShapeGroup2D::Type::Point);
+    CORRADE_COMPARE(a.get<Physics::Point2D>(0).position(), Vector2::xAxis(0.5f));
+
+    VERIFY_COLLIDES(a, Physics::Sphere2D({}, 1.0f));
+}
+
+void ShapeGroupTest::hierarchy() {
+    const Physics::ShapeGroup3D a = Physics::Sphere3D({}, 1.0f) &&
+        (Physics::Point3D(Vector3::xAxis(1.5f)) || !Physics::AxisAlignedBox3D({}, Vector3(0.5f)));
+
+    CORRADE_COMPARE(a.size(), 3);
+    CORRADE_COMPARE(a.type(0), ShapeGroup3D::Type::Sphere);
+    CORRADE_COMPARE(a.type(1), ShapeGroup3D::Type::Point);
+    CORRADE_COMPARE(a.type(2), ShapeGroup3D::Type::AxisAlignedBox);
+    CORRADE_COMPARE(a.get<Physics::Point3D>(1).position(), Vector3::xAxis(1.5f));
+
+    VERIFY_COLLIDES(a, Physics::Sphere3D(Vector3::xAxis(1.5f), 0.6f));
+    VERIFY_NOT_COLLIDES(a, Physics::Point3D(Vector3(0.25f)));
+}
+
+void ShapeGroupTest::empty() {
+    const Physics::ShapeGroup2D a;
+
+    CORRADE_COMPARE(a.size(), 0);
+
+    VERIFY_NOT_COLLIDES(a, Physics::Sphere2D({}, 1.0f));
 }
 
 }}}

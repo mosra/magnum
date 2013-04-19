@@ -1,5 +1,5 @@
-#ifndef Magnum_Physics_magnumPhysicsVisibility_h
-#define Magnum_Physics_magnumPhysicsVisibility_h
+#ifndef Magnum_Physics_Implementation_CollisionDispatch_h
+#define Magnum_Physics_Implementation_CollisionDispatch_h
 /*
     This file is part of Magnum.
 
@@ -24,13 +24,23 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Utility/Visibility.h>
+#include "Types.h"
 
-#ifdef MagnumPhysics_EXPORTS
-    #define MAGNUM_PHYSICS_EXPORT CORRADE_VISIBILITY_EXPORT
-#else
-    #define MAGNUM_PHYSICS_EXPORT CORRADE_VISIBILITY_IMPORT
-#endif
-#define MAGNUM_PHYSICS_LOCAL CORRADE_VISIBILITY_LOCAL
+namespace Magnum { namespace Physics { namespace Implementation {
+
+template<UnsignedInt> struct AbstractShape;
+
+/*
+Shape collision double-dispatch:
+
+The collision is symmetric, i.e. it doesn't matter if we test Point vs. Sphere
+or Sphere vs. Point. Each type is specified by unique prime number. Then we
+multiply the two numbers together and switch() on the result. Because of
+multiplying two prime numbers, there is no ambiguity (the result is unique for
+each combination).
+*/
+template<UnsignedInt dimensions> bool collides(const AbstractShape<dimensions>* a, const AbstractShape<dimensions>* b);
+
+}}}
 
 #endif

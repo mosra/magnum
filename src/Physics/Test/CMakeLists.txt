@@ -22,7 +22,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-corrade_add_test(PhysicsAbstractShapeTest AbstractShapeTest.cpp LIBRARIES MagnumPhysics)
+corrade_add_test(PhysicsShapeImplementationTest ShapeImplementationTest.cpp LIBRARIES MagnumPhysics)
 corrade_add_test(PhysicsAxisAlignedBoxTest AxisAlignedBoxTest.cpp LIBRARIES MagnumPhysics)
 corrade_add_test(PhysicsBoxTest BoxTest.cpp LIBRARIES MagnumPhysics)
 corrade_add_test(PhysicsCapsuleTest CapsuleTest.cpp LIBRARIES MagnumPhysics)
