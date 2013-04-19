@@ -346,7 +346,9 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
 
     /* Go through all objects and clean them */
     for(std::size_t i = 0; i != objects.size(); ++i) {
-        CORRADE_INTERNAL_ASSERT(objects[i]->isDirty());
+        /* The object might be duplicated in the list, don't clean it more than once */
+        if(!objects[i]->isDirty()) continue;
+
         objects[i]->setClean(transformations[i]);
         CORRADE_ASSERT(!objects[i]->isDirty(), "SceneGraph::Object::setClean(): original implementation was not called", );
     }
