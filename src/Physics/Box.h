@@ -47,6 +47,13 @@ radius.
 */
 template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Box: public AbstractShape<dimensions> {
     public:
+        /**
+         * @brief Default constructor
+         *
+         * Creates zero-sized box positioned at origin.
+         */
+        inline explicit Box(): _transformation(DimensionTraits<dimensions>::MatrixType::Zero), _transformedTransformation(DimensionTraits<dimensions>::MatrixType::Zero) {}
+
         /** @brief Constructor */
         inline explicit Box(const typename DimensionTraits<dimensions>::MatrixType& transformation): _transformation(transformation), _transformedTransformation(transformation) {}
 

@@ -46,6 +46,13 @@ radius.
 */
 template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT AxisAlignedBox: public AbstractShape<dimensions> {
     public:
+        /**
+         * @brief Default constructor
+         *
+         * Creates zero sized box positioned at origin.
+         */
+        inline explicit AxisAlignedBox() {}
+
         /** @brief Constructor */
         inline explicit AxisAlignedBox(const typename DimensionTraits<dimensions>::VectorType& min, const typename DimensionTraits<dimensions>::VectorType& max): _min(min), _max(max), _transformedMin(min), _transformedMax(max) {}
 

@@ -39,6 +39,13 @@ namespace Magnum { namespace Physics {
 /** @brief Infinite plane, defined by position and normal (3D only) */
 class MAGNUM_PHYSICS_EXPORT Plane: public AbstractShape<3> {
     public:
+        /**
+         * @brief Default constructor
+         *
+         * Creates plane with zero-sized normal at origin.
+         */
+        inline explicit Plane() {}
+
         /** @brief Constructor */
         inline explicit Plane(const Vector3& position, const Vector3& normal): _position(position), _transformedPosition(position), _normal(normal), _transformedNormal(normal) {}
 

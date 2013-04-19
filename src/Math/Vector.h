@@ -308,7 +308,7 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Add vector
          *
-         * @see operator+=()
+         * @see operator+=(), sum()
          */
         inline Vector<size, T> operator+(const Vector<size, T>& other) const {
             return Vector<size, T>(*this) += other;
@@ -416,7 +416,7 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Multiply vector component-wise
          *
-         * @see operator*=(const Vector<size, U>&)
+         * @see operator*=(const Vector<size, U>&), product()
          */
         template<class U> inline Vector<size, T> operator*(const Vector<size, U>& other) const {
             return Vector<size, T>(*this) *= other;
@@ -465,11 +465,23 @@ template<std::size_t size, class T> class Vector {
          * values. @f[
          *      |\boldsymbol a| = \sqrt{\boldsymbol a \cdot \boldsymbol a}
          * @f]
-         * @see isNormalized()
+         * @see lengthInverted(), Math::sqrt(), normalized()
          * @todo something like std::hypot() for possibly better precision?
          */
         inline T length() const {
             return std::sqrt(dot());
+        }
+
+        /**
+         * @brief Inverse vector length
+         *
+         * @f[
+         *      \frac{1}{|\boldsymbol a|} = \frac{1}{\sqrt{\boldsymbol a \cdot \boldsymbol a}}
+         * @f]
+         * @see length(), Math::sqrtInverted(), normalized()
+         */
+        inline T lengthInverted() const {
+            return T(1)/length();
         }
 
         /**
@@ -478,7 +490,7 @@ template<std::size_t size, class T> class Vector {
          * @see isNormalized()
          */
         inline Vector<size, T> normalized() const {
-            return *this/length();
+            return *this*lengthInverted();
         }
 
         /**
@@ -487,7 +499,7 @@ template<std::size_t size, class T> class Vector {
          * Returns vector projected onto @p line. @f[
          *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b
          * @f]
-         * @see projectedOntoNormalized()
+         * @see dot(), projectedOntoNormalized()
          */
         inline Vector<size, T> projected(const Vector<size, T>& line) const {
             return line*dot(*this, line)/line.dot();
@@ -501,13 +513,18 @@ template<std::size_t size, class T> class Vector {
          *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b =
          *          (\boldsymbol a \cdot \boldsymbol b) \boldsymbol b
          * @f]
+         * @see dot()
          */
         inline Vector<size, T> projectedOntoNormalized(const Vector<size, T>& line) const {
             CORRADE_ASSERT(line.isNormalized(), "Math::Vector::projectedOntoNormalized(): line must be normalized", (Vector<size, T>(std::numeric_limits<T>::quiet_NaN())));
             return line*dot(*this, line);
         }
 
-        /** @brief Sum of values in the vector */
+        /**
+         * @brief Sum of values in the vector
+         *
+         * @see operator+()
+         */
         T sum() const {
             T out(_data[0]);
 
@@ -517,7 +534,11 @@ template<std::size_t size, class T> class Vector {
             return out;
         }
 
-        /** @brief Product of values in the vector */
+        /**
+         * @brief Product of values in the vector
+         *
+         * @see operator*(const Vector&)
+         */
         T product() const {
             T out(_data[0]);
 
@@ -527,7 +548,11 @@ template<std::size_t size, class T> class Vector {
             return out;
         }
 
-        /** @brief Minimal value in the vector */
+        /**
+         * @brief Minimal value in the vector
+         *
+         * @see Math::min()
+         */
         T min() const {
             T out(_data[0]);
 
@@ -537,32 +562,16 @@ template<std::size_t size, class T> class Vector {
             return out;
         }
 
-        /** @brief Minimal absolute value in the vector */
-        T minAbs() const {
-            T out(std::abs(_data[0]));
-
-            for(std::size_t i = 1; i != size; ++i)
-                out = std::min(out, std::abs(_data[i]));
-
-            return out;
-        }
-
-        /** @brief Maximal value in the vector */
+        /**
+         * @brief Maximal value in the vector
+         *
+         * @see Math::max()
+         */
         T max() const {
             T out(_data[0]);
 
             for(std::size_t i = 1; i != size; ++i)
                 out = std::max(out, _data[i]);
-
-            return out;
-        }
-
-        /** @brief Maximal absolute value in the vector */
-        T maxAbs() const {
-            T out(std::abs(_data[0]));
-
-            for(std::size_t i = 1; i != size; ++i)
-                out = std::max(out, std::abs(_data[i]));
 
             return out;
         }

@@ -25,28 +25,35 @@
 #include "UVSphere.h"
 
 #include "Math/Angle.h"
+#include "Implementation/Spheroid.h"
 
 namespace Magnum { namespace Primitives {
 
-UVSphere::UVSphere(UnsignedInt rings, UnsignedInt segments, TextureCoords textureCoords): Capsule(segments, textureCoords) {
-    CORRADE_ASSERT(rings >= 2 && segments >= 3, "UVSphere must have at least two rings and three segments", );
+Trade::MeshData3D UVSphere::solid(UnsignedInt rings, UnsignedInt segments, TextureCoords textureCoords) {
+    CORRADE_ASSERT(rings >= 2 && segments >= 3, "UVSphere must have at least two rings and three segments", Trade::MeshData3D(Mesh::Primitive::Triangles, nullptr, {}, {}, {}));
+
+    Implementation::Spheroid sphere(segments, textureCoords == TextureCoords::Generate ?
+        Implementation::Spheroid::TextureCoords::Generate :
+        Implementation::Spheroid::TextureCoords::DontGenerate);
 
     Float textureCoordsVIncrement = 1.0f/rings;
     Rad ringAngleIncrement(Constants::pi()/rings);
 
     /* Bottom cap vertex */
-    capVertex(-1.0f, -1.0f, 0.0f);
+    sphere.capVertex(-1.0f, -1.0f, 0.0f);
 
     /* Vertex rings */
-    hemisphereVertexRings(rings-1, 0.0f, -Rad(Constants::pi())/2+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
+    sphere.hemisphereVertexRings(rings-1, 0.0f, -Rad(Constants::pi())/2+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
 
     /* Top cap vertex */
-    capVertex(1.0f, 1.0f, 1.0f);
+    sphere.capVertex(1.0f, 1.0f, 1.0f);
 
     /* Faces */
-    bottomFaceRing();
-    faceRings(rings-2);
-    topFaceRing();
+    sphere.bottomFaceRing();
+    sphere.faceRings(rings-2);
+    sphere.topFaceRing();
+
+    return std::move(sphere);
 }
 
 }}

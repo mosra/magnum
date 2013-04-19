@@ -96,6 +96,17 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             return out;
         }
 
+        /**
+         * @brief Construct matrix from vector
+         *
+         * Rolls the vector into matrix, i.e. first `rows` elements of the
+         * vector will make first column of resulting matrix.
+         * @see toVector()
+         */
+        inline static RectangularMatrix<cols, rows, T> fromVector(const Vector<cols*rows, T>& vector) {
+            return *reinterpret_cast<const RectangularMatrix<cols, rows, T>*>(vector.data());
+        }
+
         /** @brief Construct zero-filled matrix */
         inline constexpr /*implicit*/ RectangularMatrix() {}
 
@@ -386,64 +397,17 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             return out;
         }
 
-        /** @brief Sum of values in the matrix */
-        T sum() const {
-            T out(_data[0].sum());
-
-            for(std::size_t i = 1; i != cols; ++i)
-                out += _data[i].sum();
-
-            return out;
-        }
-
-        /** @brief Product of values in the matrix */
-        T product() const {
-            T out(_data[0].product());
-
-            for(std::size_t i = 1; i != cols; ++i)
-                out *= _data[i].product();
-
-            return out;
-        }
-
-        /** @brief Minimal value in the matrix */
-        T min() const {
-            T out(_data[0].min());
-
-            for(std::size_t i = 1; i != cols; ++i)
-                out = std::min(out, _data[i].min());
-
-            return out;
-        }
-
-        /** @brief Minimal absolute value in the matrix */
-        T minAbs() const {
-            T out(_data[0].minAbs());
-
-            for(std::size_t i = 1; i != cols; ++i)
-                out = std::min(out, _data[i].minAbs());
-
-            return out;
-        }
-
-        /** @brief Maximal value in the matrix */
-        T max() const {
-            T out(_data[0].max());
-
-            for(std::size_t i = 1; i != cols; ++i)
-                out = std::max(out, _data[i].max());
-
-            return out;
-        }
-
-        /** @brief Maximal absolute value in the matrix */
-        T maxAbs() const {
-            T out(_data[0].maxAbs());
-
-            for(std::size_t i = 1; i != cols; ++i)
-                out = std::max(out, _data[i].maxAbs());
-
-            return out;
+        /**
+         * @brief Convert matrix to vector
+         *
+         * Returns the matrix unrolled into one large vector, i.e. first column
+         * of the matrix will make first `rows` elements of resulting vector.
+         * Useful for performing vector operations with the matrix (e.g.
+         * summing the elements etc.).
+         * @see fromVector()
+         */
+        inline Vector<rows*cols, T> toVector() const {
+            return *reinterpret_cast<const Vector<rows*cols, T>*>(data());
         }
 
     private:

@@ -24,14 +24,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef _WIN32
-    #ifdef MagnumDebugTools_EXPORTS
-        #define MAGNUM_DEBUGTOOLS_EXPORT __declspec(dllexport)
-    #else
-        #define MAGNUM_DEBUGTOOLS_EXPORT __declspec(dllimport)
-    #endif
+#include <Utility/Visibility.h>
+
+#ifdef MagnumDebugTools_EXPORTS
+    #define MAGNUM_DEBUGTOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
 #else
-    #define MAGNUM_DEBUGTOOLS_EXPORT __attribute__ ((visibility ("default")))
+    #define MAGNUM_DEBUGTOOLS_EXPORT CORRADE_VISIBILITY_IMPORT
 #endif
 
 #endif

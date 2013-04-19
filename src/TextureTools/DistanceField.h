@@ -67,7 +67,7 @@ http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnifica
 
 @attention This is GPU-only implementation, so it expects active context.
 */
-void MAGNUM_TEXTURETOOLS_EXPORT distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectangle, const Int radius);
+void MAGNUM_TEXTURETOOLS_EXPORT distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectangle, Int radius);
 
 }}
 

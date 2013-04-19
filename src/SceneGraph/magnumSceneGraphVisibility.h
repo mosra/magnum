@@ -24,16 +24,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef _WIN32
-    #if defined(MagnumSceneGraph_EXPORTS) || defined(MagnumSceneGraphObjects_EXPORTS)
-        #define MAGNUM_SCENEGRAPH_EXPORT __declspec(dllexport)
-    #else
-        #define MAGNUM_SCENEGRAPH_EXPORT __declspec(dllimport)
-    #endif
-    #define MAGNUM_SCENEGRAPH_LOCAL
+#include <Utility/Visibility.h>
+
+#if defined(MagnumSceneGraph_EXPORTS) || defined(MagnumSceneGraphObjects_EXPORTS)
+    #define MAGNUM_SCENEGRAPH_EXPORT CORRADE_VISIBILITY_EXPORT
 #else
-    #define MAGNUM_SCENEGRAPH_EXPORT __attribute__ ((visibility ("default")))
-    #define MAGNUM_SCENEGRAPH_LOCAL __attribute__ ((visibility ("hidden")))
+    #define MAGNUM_SCENEGRAPH_EXPORT CORRADE_VISIBILITY_IMPORT
 #endif
+#define MAGNUM_SCENEGRAPH_LOCAL CORRADE_VISIBILITY_LOCAL
 
 #endif

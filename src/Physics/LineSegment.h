@@ -39,6 +39,13 @@ namespace Magnum { namespace Physics {
 */
 template<UnsignedInt dimensions> class LineSegment: public Line<dimensions> {
     public:
+        /**
+         * @brief Default constructor
+         *
+         * Creates line segment with both points at origin.
+         */
+        inline explicit LineSegment() {}
+
         /** @brief Constructor */
         inline explicit LineSegment(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b): Line<dimensions>(a, b) {}
 

@@ -66,7 +66,10 @@ If no other application header is included this class is also aliased to
 class WindowlessGlxApplication {
     public:
         /** @brief Application arguments */
-        typedef std::pair<int&, char**> Arguments;
+        struct Arguments {
+            int& argc;      /**< @brief Argument count */
+            char** argv;    /**< @brief Argument values */
+        };
 
         class Configuration;
 

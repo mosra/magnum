@@ -62,7 +62,7 @@ void AbstractFramebuffer::bindInternal(Target target) {
     } else if(target == Target::ReadDraw) {
         if(state->readBinding == _id && state->drawBinding == _id) return;
         state->readBinding = state->drawBinding = _id;
-    } else CORRADE_INTERNAL_ASSERT(false);
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     glBindFramebuffer(static_cast<GLenum>(target), _id);
 }

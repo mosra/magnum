@@ -28,30 +28,37 @@
  * @brief Class Magnum::Primitives::UVSphere
  */
 
-#include "Primitives/Capsule.h"
-
 #include "Primitives/magnumPrimitivesVisibility.h"
+#include "Trade/Trade.h"
 
 namespace Magnum { namespace Primitives {
 
 /**
 @brief 3D UV sphere primitive
 
-Indexed @ref Mesh::Primitive "Triangles" with normals and optional 2D texture
-coordinates.
+Sphere with radius `1`.
 */
-class UVSphere: public Capsule {
+class MAGNUM_PRIMITIVES_EXPORT UVSphere {
     public:
+        /** @brief Whether to generate texture coordinates */
+        enum class TextureCoords: UnsignedByte {
+            Generate,       /**< Generate texture coordinates */
+            DontGenerate    /**< Don't generate texture coordinates */
+        };
+
         /**
-         * @brief Constructor
-         * @param rings         Number of (face) rings. Must be larger or equal to 2.
-         * @param segments      Number of (face) segments. Must be larger or equal to 3.
+         * @brief Solid UV sphere
+         * @param rings         Number of (face) rings. Must be larger or equal
+         *      to 2.
+         * @param segments      Number of (face) segments. Must be larger or
+         *      equal to 3.
          * @param textureCoords Whether to generate texture coordinates.
          *
-         * If texture coordinates are generated, vertices of one segment are
-         * duplicated for texture wrapping.
+         * Indexed @ref Mesh::Primitive "Triangles" with normals and optional
+         * 2D texture coordinates. If texture coordinates are generated,
+         * vertices of one segment are duplicated for texture wrapping.
          */
-        explicit MAGNUM_PRIMITIVES_EXPORT UVSphere(UnsignedInt rings, UnsignedInt segments, TextureCoords textureCoords = TextureCoords::DontGenerate);
+        static Trade::MeshData3D solid(UnsignedInt rings, UnsignedInt segments, TextureCoords textureCoords = TextureCoords::DontGenerate);
 };
 
 }}

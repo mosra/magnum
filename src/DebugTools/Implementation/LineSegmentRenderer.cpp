@@ -51,15 +51,15 @@ namespace {
 }
 
 template<UnsignedInt dimensions> LineSegmentRenderer<dimensions>::LineSegmentRenderer(Physics::Line<dimensions>& line): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), line(line) {
-    if(!this->mesh) this->createResources(meshData<dimensions>());
+    if(!this->wireframeMesh) this->createResources(meshData<dimensions>());
 }
 
 template<UnsignedInt dimensions> void LineSegmentRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
-    this->shader->setTransformationProjectionMatrix(projectionMatrix*
+    this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
         Implementation::lineSegmentRendererTransformation<dimensions>(line.transformedA(), line.transformedB()))
         ->setColor(options->color())
         ->use();
-    this->mesh->draw();
+    this->wireframeMesh->draw();
 }
 
 template class LineSegmentRenderer<2>;

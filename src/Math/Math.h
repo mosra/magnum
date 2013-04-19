@@ -32,6 +32,8 @@
 
 namespace Magnum { namespace Math {
 
+/** @todo Denormals to zero */
+
 /** @todoc Remove `ifndef` when Doxygen is sane again */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* Class Constants used only statically */

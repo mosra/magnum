@@ -126,7 +126,7 @@ perform the operations component-wise.
 /**
 @brief Minimum
 
-@see min(), clamp()
+@see min(), clamp(), Vector::min()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T min(T a, T b);
@@ -145,7 +145,7 @@ template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size
 /**
 @brief Maximum
 
-@see max(), clamp()
+@see max(), clamp(), Vector::max()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T max(const T& a, const T& b);
@@ -197,7 +197,11 @@ template<std::size_t size, class T> Vector<size, T> abs(const Vector<size, T>& a
 }
 #endif
 
-/** @brief Square root */
+/**
+@brief Square root
+
+@see sqrtInverted(), Vector::length()
+*/
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T sqrt(const T& a);
 #else
@@ -208,6 +212,25 @@ template<std::size_t size, class T> Vector<size, T> sqrt(const Vector<size, T>& 
     Vector<size, T> out;
     for(std::size_t i = 0; i != size; ++i)
         out[i] = std::sqrt(a[i]);
+    return out;
+}
+#endif
+
+/**
+@brief Inverse square root
+
+@see sqrt(), Vector::lengthInverted()
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> inline T sqrtInverted(const T& a);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type sqrtInverted(T a) {
+    return T(1)/std::sqrt(a);
+}
+template<std::size_t size, class T> Vector<size, T> sqrtInverted(const Vector<size, T>& a) {
+    Vector<size, T> out;
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = T(1)/std::sqrt(a[i]);
     return out;
 }
 #endif
@@ -254,6 +277,22 @@ template<class T, class U> inline T lerp(T a, T b, U t) {
 }
 template<std::size_t size, class T, class U> inline Vector<size, T> lerp(const Vector<size, T>& a, const Vector<size, T>& b, U t) {
     return (U(1) - t)*a + t*b;
+}
+#endif
+
+/**
+@brief Fused multiply-add
+
+Computes and returns @f$ ab + c @f$.
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> inline T fma(const T& a, const T& b, const T& c);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type fma(T a, T b, T c) {
+    return std::fma(a, b, c);
+}
+template<std::size_t size, class T> inline Vector<size, T> fma(const Vector<size, T>& a, const Vector<size, T>& b, const Vector<size, T>& c) {
+    return a*b + c;
 }
 #endif
 

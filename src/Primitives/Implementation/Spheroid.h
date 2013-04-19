@@ -1,5 +1,5 @@
-#ifndef Magnum_Primitives_magnumPrimitivesVisibility_h
-#define Magnum_Primitives_magnumPrimitivesVisibility_h
+#ifndef Magnum_Primitives_Spheroid_h
+#define Magnum_Primitives_Spheroid_h
 /*
     This file is part of Magnum.
 
@@ -24,12 +24,31 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Utility/Visibility.h>
+#include "Trade/MeshData3D.h"
 
-#ifdef MagnumPrimitives_EXPORTS
-    #define MAGNUM_PRIMITIVES_EXPORT CORRADE_VISIBILITY_EXPORT
-#else
-    #define MAGNUM_PRIMITIVES_EXPORT CORRADE_VISIBILITY_IMPORT
-#endif
+namespace Magnum { namespace Primitives { namespace Implementation {
+
+class Spheroid: public Trade::MeshData3D {
+    public:
+        enum class TextureCoords: UnsignedByte {
+            DontGenerate,
+            Generate
+        };
+
+        Spheroid(UnsignedInt segments, TextureCoords textureCoords);
+
+        void capVertex(Float y, Float normalY, Float textureCoordsV);
+        void hemisphereVertexRings(UnsignedInt count, Float centerY, Rad startRingAngle, Rad ringAngleIncrement, Float startTextureCoordsV, Float textureCoordsVIncrement);
+        void cylinderVertexRings(UnsignedInt count, Float startY, Float yIncrement, Float startTextureCoordsV, Float textureCoordsVIncrement);
+        void bottomFaceRing();
+        void faceRings(UnsignedInt count, UnsignedInt offset = 1);
+        void topFaceRing();
+        void capVertexRing(Float y, Float textureCoordsV, const Vector3& normal);
+
+        UnsignedInt segments;
+        TextureCoords textureCoords;
+};
+
+}}}
 
 #endif

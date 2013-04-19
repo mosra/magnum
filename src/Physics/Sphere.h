@@ -46,6 +46,13 @@ applying transformation, the scale factor is averaged from all axes.
 */
 template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Sphere: public AbstractShape<dimensions> {
     public:
+        /**
+         * @brief Default constructor
+         *
+         * Creates zero-sized sphere at origin.
+         */
+        inline explicit Sphere(): _radius(0.0f), _transformedRadius(0.0f) {}
+
         /** @brief Constructor */
         inline explicit Sphere(const typename DimensionTraits<dimensions>::VectorType& position, Float radius): _position(position), _transformedPosition(position), _radius(radius), _transformedRadius(radius) {}
 

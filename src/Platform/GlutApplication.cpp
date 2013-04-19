@@ -32,12 +32,12 @@ namespace Magnum { namespace Platform {
 GlutApplication* GlutApplication::instance = nullptr;
 
 GlutApplication::GlutApplication(const Arguments& arguments): c(nullptr) {
-    initialize(arguments.first, arguments.second);
+    initialize(arguments.argc, arguments.argv);
     createContext(new Configuration);
 }
 
 GlutApplication::GlutApplication(const Arguments& arguments, Configuration* configuration): c(nullptr) {
-    initialize(arguments.first, arguments.second);
+    initialize(arguments.argc, arguments.argv);
     if(configuration) createContext(configuration);
 }
 

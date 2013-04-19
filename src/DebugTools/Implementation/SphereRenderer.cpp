@@ -34,18 +34,18 @@
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
 AbstractSphereRenderer<2>::AbstractSphereRenderer(): AbstractShapeRenderer<2>("sphere2d", "sphere2d-vertices", {}) {
-    if(!mesh) this->createResources(Primitives::Circle::wireframe(40));
+    if(!wireframeMesh) createResources(Primitives::Circle::wireframe(40));
 }
 
 template<UnsignedInt dimensions> SphereRenderer<dimensions>::SphereRenderer(Physics::Sphere<dimensions>& sphere): sphere(sphere) {}
 
 template<UnsignedInt dimensions> void SphereRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
-    this->shader->setTransformationProjectionMatrix(projectionMatrix*
+    this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
         DimensionTraits<dimensions>::MatrixType::translation(sphere.transformedPosition())*
         DimensionTraits<dimensions>::MatrixType::scaling(typename DimensionTraits<dimensions>::VectorType(sphere.transformedRadius())))
         ->setColor(options->color())
         ->use();
-    this->mesh->draw();
+    this->wireframeMesh->draw();
 }
 
 template class SphereRenderer<2>;

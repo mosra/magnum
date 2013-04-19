@@ -63,7 +63,7 @@ template<class T> inline typename std::enable_if<std::is_floating_point<T>::valu
         case 3: return {p, q, value};
         case 4: return {t, p, value};
         case 5: return {value, p, q};
-        default: CORRADE_INTERNAL_ASSERT(false);
+        default: CORRADE_ASSERT_UNREACHABLE();
     }
 }
 template<class T> inline typename std::enable_if<std::is_integral<T>::value, Color3<T>>::type fromHSV(typename Color3<T>::HSV hsv) {
