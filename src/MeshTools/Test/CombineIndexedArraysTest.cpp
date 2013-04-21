@@ -22,6 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <functional>
 #include <sstream>
 #include <TestSuite/Tester.h>
 
@@ -46,24 +47,29 @@ CombineIndexedArraysTest::CombineIndexedArraysTest() {
 void CombineIndexedArraysTest::wrongIndexCount() {
     std::stringstream ss;
     Error::setOutput(&ss);
+    std::vector<UnsignedInt> a{0, 1, 0};
+    std::vector<UnsignedInt> b{3, 4};
     std::vector<UnsignedInt> array;
     std::vector<UnsignedInt> result = MeshTools::combineIndexedArrays(
-        std::tuple<const std::vector<UnsignedInt>&, std::vector<UnsignedInt>&>(std::vector<UnsignedInt>{0, 1, 0}, array),
-        std::tuple<const std::vector<UnsignedInt>&, std::vector<UnsignedInt>&>(std::vector<UnsignedInt>{3, 4}, array));
+        std::make_tuple(std::cref(a), std::ref(array)),
+        std::make_tuple(std::cref(b), std::ref(array)));
 
     CORRADE_COMPARE(result.size(), 0);
     CORRADE_COMPARE(ss.str(), "MeshTools::combineIndexedArrays(): index arrays don't have the same length, nothing done.\n");
 }
 
 void CombineIndexedArraysTest::combine() {
+    std::vector<UnsignedInt> a{0, 1, 0};
+    std::vector<UnsignedInt> b{3, 4, 3};
+    std::vector<UnsignedInt> c{6, 7, 6};
     std::vector<UnsignedInt> array1{ 0, 1 };
     std::vector<UnsignedInt> array2{ 0, 1, 2, 3, 4 };
     std::vector<UnsignedInt> array3{ 0, 1, 2, 3, 4, 5, 6, 7 };
 
     std::vector<UnsignedInt> result = MeshTools::combineIndexedArrays(
-        std::tuple<const std::vector<UnsignedInt>&, std::vector<UnsignedInt>&>(std::vector<UnsignedInt>{0, 1, 0}, array1),
-        std::tuple<const std::vector<UnsignedInt>&, std::vector<UnsignedInt>&>(std::vector<UnsignedInt>{3, 4, 3}, array2),
-        std::tuple<const std::vector<UnsignedInt>&, std::vector<UnsignedInt>&>(std::vector<UnsignedInt>{6, 7, 6}, array3));
+        std::make_tuple(std::cref(a), std::ref(array1)),
+        std::make_tuple(std::cref(b), std::ref(array2)),
+        std::make_tuple(std::cref(c), std::ref(array3)));
 
     CORRADE_COMPARE(result, (std::vector<UnsignedInt>{0, 1, 0}));
     CORRADE_COMPARE(array1, (std::vector<UnsignedInt>{0, 1}));
