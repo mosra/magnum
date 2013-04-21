@@ -44,7 +44,7 @@ cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT WI
 option(WITH_MAGNUMINFO "Build magnum-info utility" ON)
 
 # Application libraries
-if(${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
+if(CORRADE_TARGET_NACL)
     option(WITH_NACLAPPLICATION "Build NaClApplication library" OFF)
 else()
     option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
