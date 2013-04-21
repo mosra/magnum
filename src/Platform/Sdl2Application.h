@@ -34,8 +34,8 @@
 #ifdef _WIN32 /* Windows version of SDL2 redefines main(), we don't want that */
 #define SDL_MAIN_HANDLED
 #endif
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_scancode.h>
+#include <SDL.h>
+#include <SDL_scancode.h>
 #include <Corrade/Containers/EnumSet.h>
 
 namespace Magnum {
