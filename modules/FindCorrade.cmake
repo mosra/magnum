@@ -28,6 +28,7 @@
 #   Native Client with `newlib` toolchain
 #  CORRADE_TARGET_NACL_GLIBC    - Defined if compiled for Google Chrome
 #   Native Client with `glibc` toolchain
+#  CORRADE_TARGET_EMSCRIPTEN    - Defined if compiled for Emscripten
 #
 # Corrade provides these macros and functions:
 #
@@ -171,6 +172,10 @@ endif()
 string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_NACL_GLIBC" _TARGET_NACL_GLIBC)
 if(NOT _TARGET_NACL_GLIBC EQUAL -1)
     set(CORRADE_TARGET_NACL_GLIBC 1)
+endif()
+string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_EMSCRIPTEN" _TARGET_EMSCRIPTEN)
+if(NOT _TARGET_EMSCRIPTEN EQUAL -1)
+    set(CORRADE_TARGET_EMSCRIPTEN 1)
 endif()
 
 set(CORRADE_UTILITY_LIBRARIES ${CORRADE_UTILITY_LIBRARY})
