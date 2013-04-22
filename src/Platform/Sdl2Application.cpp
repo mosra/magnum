@@ -24,8 +24,6 @@
 
 #include "Sdl2Application.h"
 
-#include <Utility/utilities.h>
-
 #include "Context.h"
 #include "ExtensionWrangler.h"
 
@@ -178,7 +176,7 @@ void Sdl2Application::mainLoop() {
     if(flags & Flag::Redraw) {
         flags &= ~Flag::Redraw;
         drawEvent();
-    } else Corrade::Utility::sleep(5);
+    } else SDL_WaitEvent(nullptr);
 }
 
 void Sdl2Application::setMouseLocked(bool enabled) {
