@@ -174,6 +174,7 @@ class Sdl2Application {
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
         void initialize();
+        void mainLoop();
 
         SDL_Window* window;
         SDL_GLContext context;
