@@ -77,6 +77,9 @@ void MyApplication::drawEvent() {
     timeline.nextFrame();
 }
 @endcode
+@todo FPS should be governed by Application (imagine more than one simultaenous
+    timeline and the harm it could do, also vsync etc. can't be handled in
+    platform-independent way here)
 */
 class MAGNUM_EXPORT Timeline {
     public:
