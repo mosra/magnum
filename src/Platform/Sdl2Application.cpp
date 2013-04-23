@@ -24,6 +24,10 @@
 
 #include "Sdl2Application.h"
 
+#ifdef CORRADE_TARGET_EMSCRIPTEN
+#include <emscripten/emscripten.h>
+#endif
+
 #include "Context.h"
 
 namespace Magnum { namespace Platform {
@@ -46,6 +50,13 @@ Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
 
 }
 
+#ifdef CORRADE_TARGET_EMSCRIPTEN
+Sdl2Application* Sdl2Application::instance = nullptr;
+void Sdl2Application::staticMainLoop() {
+    instance->mainLoop();
+}
+#endif
+
 /** @todo Delegating constructor when support for GCC 4.6 is dropped */
 
 Sdl2Application::Sdl2Application(const Arguments&, const Configuration& configuration): context(nullptr), flags(Flag::Redraw) {
@@ -65,6 +76,11 @@ Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t): context(null
 }
 
 void Sdl2Application::initialize() {
+    #ifdef CORRADE_TARGET_EMSCRIPTEN
+    CORRADE_ASSERT(!instance, "Platform::Sdl2Application::Sdl2Application(): the instance is already created", );
+    instance = this;
+    #endif
+
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         Error() << "Cannot initialize SDL.";
         std::exit(1);
@@ -93,6 +109,8 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     Uint32 flags(configuration.flags());
     if(!(configuration.flags() & Configuration::Flag::Hidden)) flags |= SDL_WINDOW_SHOWN;
 
+    /** @todo Remove when Emscripten has proper SDL2 support */
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     if(!(window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
             configuration.size().x(), configuration.size().y(),
@@ -104,30 +122,59 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         window = nullptr;
         return false;
     }
+    #else
+    context = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF);
+    #endif
 
     /* Push resize event, so viewportEvent() is called at startup */
-    SDL_Event* sizeEvent = new SDL_Event;
-    sizeEvent->type = SDL_WINDOWEVENT;
-    sizeEvent->window.event = SDL_WINDOWEVENT_RESIZED;
-    sizeEvent->window.data1 = configuration.size().x();
-    sizeEvent->window.data2 = configuration.size().y();
-    SDL_PushEvent(sizeEvent);
+//     SDL_Event* sizeEvent = new SDL_Event;
+//     sizeEvent->type = SDL_WINDOWEVENT;
+//     sizeEvent->window.event = SDL_WINDOWEVENT_RESIZED;
+//     sizeEvent->window.data1 = configuration.size().x();
+//     sizeEvent->window.data2 = configuration.size().y();
+//     SDL_PushEvent(sizeEvent);
 
     c = new Context;
     return true;
 }
 
+void Sdl2Application::swapBuffers() {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    SDL_GL_SwapWindow(window);
+    #else
+    SDL_Flip(context);
+    #endif
+}
+
 Sdl2Application::~Sdl2Application() {
     delete c;
 
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     SDL_GL_DeleteContext(context);
     SDL_DestroyWindow(window);
+    #else
+    SDL_FreeSurface(context);
+    CORRADE_INTERNAL_ASSERT(instance == this);
+    instance = nullptr;
+    #endif
     SDL_Quit();
 }
 
 int Sdl2Application::exec() {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     while(!(flags & Flag::Exit)) mainLoop();
+    #else
+    emscripten_set_main_loop(staticMainLoop, 0, true);
+    #endif
     return 0;
+}
+
+void Sdl2Application::exit() {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    flags |= Flag::Exit;
+    #else
+    emscripten_cancel_main_loop();
+    #endif
 }
 
 void Sdl2Application::mainLoop() {
@@ -171,7 +218,11 @@ void Sdl2Application::mainLoop() {
             }
 
             case SDL_QUIT:
+                #ifndef CORRADE_TARGET_EMSCRIPTEN
                 flags |= Flag::Exit;
+                #else
+                emscripten_cancel_main_loop();
+                #endif
                 return;
         }
     }
@@ -179,12 +230,23 @@ void Sdl2Application::mainLoop() {
     if(flags & Flag::Redraw) {
         flags &= ~Flag::Redraw;
         drawEvent();
-    } else SDL_WaitEvent(nullptr);
+        return;
+    }
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    SDL_WaitEvent(nullptr);
+    #endif
 }
 
 void Sdl2Application::setMouseLocked(bool enabled) {
+    /** @todo Implement this in Emscripten */
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     SDL_SetWindowGrab(window, enabled ? SDL_TRUE : SDL_FALSE);
     SDL_SetRelativeMouseMode(enabled ? SDL_TRUE : SDL_FALSE);
+    #else
+    CORRADE_ASSERT(false, "Sdl2Application::setMouseLocked(): not implemented", );
+    static_cast<void>(enabled);
+    #endif
 }
 
 Sdl2Application::Configuration::Configuration(): _title("Magnum SDL2 Application"), _size(800, 600), _flags(Flag::Resizable), _sampleCount(0) {}

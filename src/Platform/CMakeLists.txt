@@ -89,6 +89,11 @@ if(WITH_NACLAPPLICATION OR WITH_WINDOWLESSNACLAPPLICATION)
     install(FILES NaClApplication.js WebApplication.css DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
 endif()
 
+# JavaScript and CSS stuff for Emscripten
+if(WITH_SDL2APPLICATION AND CORRADE_TARGET_EMSCRIPTEN)
+    install(FILES EmscriptenApplication.js WebApplication.css DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
+endif()
+
 # GLX application
 if(WITH_GLXAPPLICATION)
     set(NEED_ABSTRACTXAPPLICATION 1)

@@ -38,6 +38,8 @@
 #endif
 #include <SDL.h>
 #include <SDL_scancode.h>
+#include <Containers/EnumSet.h>
+#include <Corrade.h>
 
 namespace Magnum {
 
@@ -66,6 +68,44 @@ MAGNUM_SDL2APPLICATION_MAIN(MyApplication)
 If no other application header is included this class is also aliased to
 `Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
 to simplify porting.
+
+@section NaClApplication-html Usage with Emscripten
+
+If you are targetting @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", you need to
+provide HTML markup for your application. Template one is below, you can modify
+it to your liking. The markup references two files, `EmscriptenApplication.js`
+and `WebApplication.css`, both are in `Platform/` directory in the source tree
+and are also installed into `share/magnum/` inside your Emscripten toolchain.
+@code
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Magnum Emscripten Application</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="WebApplication.css" />
+  </head>
+  <body>
+    <h1>Magnum Emscripten Application</h1>
+    <div id="listener">
+      <canvas id="module"></canvas>
+      <div id="status">Initialization...</div>
+      <div id="statusDescription" />
+      <script src="EmscriptenApplication.js"></script>
+      <script async="async" src="application.js"></script>
+    </div>
+  </body>
+</html>
+@endcode
+
+You can modify all the files to your liking, but the HTML file must contain at
+least the `&lt;canvas&gt;` enclosed in listener `&lt;div&gt;`. The JavaScript
+file contains event listeners which print loading status on the page. The
+status displayed in the remaining two `&lt;div&gt;`s, if they are available.
+The CSS file contains rudimentary style to avoid eye bleeding.
+
+The application redirects @ref Corrade::Utility::Debug "Debug",
+@ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error"
+output to JavaScript console.
 */
 class Sdl2Application {
     public:
@@ -97,7 +137,7 @@ class Sdl2Application {
         int exec();
 
         /** @brief Exit application main loop */
-        void exit() { flags |= Flag::Exit; }
+        void exit();
 
     protected:
         /* Nobody will need to have (and delete) Sdl2Application*, thus this is
@@ -119,7 +159,7 @@ class Sdl2Application {
         virtual void drawEvent() = 0;
 
         /** @copydoc GlutApplication::swapBuffers() */
-        void swapBuffers() { SDL_GL_SwapWindow(window); }
+        void swapBuffers();
 
         /** @copydoc GlutApplication::redraw() */
         void redraw() { flags |= Flag::Redraw; }
@@ -174,17 +214,28 @@ class Sdl2Application {
     private:
         enum class Flag: UnsignedByte {
             Redraw = 1 << 0,
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
             Exit = 1 << 1
+            #endif
         };
 
         typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
+        #ifdef CORRADE_TARGET_EMSCRIPTEN
+        static Sdl2Application* instance;
+        static void staticMainLoop();
+        #endif
+
         void initialize();
         void mainLoop();
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_Window* window;
         SDL_GLContext context;
+        #else
+        SDL_Surface* context;
+        #endif
 
         Context* c;
 
