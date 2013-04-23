@@ -65,8 +65,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
 
 find_package(Corrade REQUIRED)
 
-# If targeting NaCl, set explicit OpenGL ES 2.0 support
-if(CORRADE_TARGET_NACL)
+# If targeting NaCl or Emscripten, set explicit OpenGL ES 2.0 support
+if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN)
     set(TARGET_GLES 1)
     set(TARGET_GLES2 1)
 
