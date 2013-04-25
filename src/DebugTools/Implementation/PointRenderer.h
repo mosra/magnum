@@ -34,12 +34,12 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<UnsignedInt dimensions> class PointRenderer: public AbstractShapeRenderer<dimensions> {
     public:
-        PointRenderer(Physics::Point<dimensions>& point);
+        PointRenderer(const Physics::Implementation::AbstractShape<dimensions>* point);
 
         void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) override;
 
     private:
-        Physics::Point<dimensions>& point;
+        const Physics::Point<dimensions>& point;
 };
 
 }}}

@@ -32,6 +32,7 @@
 #include "Resource.h"
 #include "SceneGraph/Drawable.h"
 #include "Physics/Physics.h"
+#include "Physics/shapeImplementation.h"
 
 #include "magnumDebugToolsVisibility.h"
 
@@ -45,7 +46,7 @@ template<UnsignedInt> class ShapeRenderer;
 namespace Implementation {
     template<UnsignedInt> class AbstractShapeRenderer;
 
-    template<UnsignedInt dimensions> void createDebugMesh(ShapeRenderer<dimensions>* renderer, Physics::AbstractShape<dimensions>* shape);
+    template<UnsignedInt dimensions> void createDebugMesh(ShapeRenderer<dimensions>* renderer, const Physics::Implementation::AbstractShape<dimensions>* shape);
 }
 
 /**
@@ -138,7 +139,7 @@ new DebugTools::ShapeRenderer2D(shape, "red", debugDrawables);
 @see ShapeRenderer2D, ShapeRenderer3D
 */
 template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: public SceneGraph::Drawable<dimensions> {
-    friend void Implementation::createDebugMesh<>(ShapeRenderer<dimensions>*, Physics::AbstractShape<dimensions>*);
+    friend void Implementation::createDebugMesh<>(ShapeRenderer<dimensions>*, const Physics::Implementation::AbstractShape<dimensions>*);
 
     public:
         /**
@@ -150,11 +151,10 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: p
          * @param drawables Drawable group
          *
          * The renderer is automatically added to shape's object features,
-         * @p shape must be available for the whole lifetime of the renderer.
-         *
-         * @attention Passed object must have assigned shape.
+         * @p shape must be available for the whole lifetime of the renderer
+         * and if it is group, it must not change its internal structure.
          */
-        explicit ShapeRenderer(Physics::ObjectShape<dimensions>* shape, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions>* drawables = nullptr);
+        explicit ShapeRenderer(Physics::AbstractObjectShape<dimensions>* shape, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions>* drawables = nullptr);
 
         ~ShapeRenderer();
 

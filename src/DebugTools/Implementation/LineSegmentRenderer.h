@@ -34,12 +34,12 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<UnsignedInt dimensions> class LineSegmentRenderer: public AbstractShapeRenderer<dimensions> {
     public:
-        LineSegmentRenderer(Physics::Line<dimensions>& line);
+        LineSegmentRenderer(const Physics::Implementation::AbstractShape<dimensions>* line);
 
         void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) override;
 
     private:
-        Physics::Line<dimensions>& line;
+        const Physics::LineSegment<dimensions>& line;
 };
 
 }}}

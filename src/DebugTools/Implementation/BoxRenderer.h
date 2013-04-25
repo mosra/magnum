@@ -34,12 +34,12 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<UnsignedInt dimensions> class BoxRenderer: public AbstractBoxRenderer<dimensions> {
     public:
-        BoxRenderer(Physics::Box<dimensions>& box);
+        BoxRenderer(const Physics::Implementation::AbstractShape<dimensions>* box);
 
         void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) override;
 
     private:
-        Physics::Box<dimensions>& box;
+        const Physics::Box<dimensions>& box;
 };
 
 }}}

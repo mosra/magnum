@@ -31,10 +31,10 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<UnsignedInt dimensions> BoxRenderer<dimensions>::BoxRenderer(Physics::Box<dimensions>& box): box(box) {}
+template<UnsignedInt dimensions> BoxRenderer<dimensions>::BoxRenderer(const Physics::Implementation::AbstractShape<dimensions>* box): box(static_cast<const Physics::Implementation::Shape<Physics::Box<dimensions>>*>(box)->shape) {}
 
 template<UnsignedInt dimensions> void BoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
-    this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*box.transformedTransformation())
+    this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*box.transformation())
         ->setColor(options->color())
         ->use();
     this->wireframeMesh->draw();

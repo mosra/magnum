@@ -41,12 +41,12 @@ template<> class AbstractSphereRenderer<2>: public AbstractShapeRenderer<2> {
 
 template<UnsignedInt dimensions> class SphereRenderer: public AbstractSphereRenderer<dimensions> {
     public:
-        SphereRenderer(Physics::Sphere<dimensions>& sphere);
+        SphereRenderer(const Physics::Implementation::AbstractShape<dimensions>* sphere);
 
         void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) override;
 
     private:
-        Physics::Sphere<dimensions>& sphere;
+        const Physics::Sphere<dimensions>& sphere;
 };
 
 }}}

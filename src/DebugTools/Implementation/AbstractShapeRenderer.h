@@ -31,9 +31,15 @@
 #include "Shaders/Shaders.h"
 #include "Trade/Trade.h"
 
-namespace Magnum { namespace DebugTools { namespace Implementation {
+namespace Magnum {
 
-template<UnsignedInt dimensions> struct MeshData;
+namespace Physics { namespace Implementation {
+    template<UnsignedInt> struct AbstractShape;
+}}
+
+namespace DebugTools { namespace Implementation {
+
+template<UnsignedInt> struct MeshData;
 
 template<> struct MeshData<2> { typedef Trade::MeshData2D Type; };
 template<> struct MeshData<3> { typedef Trade::MeshData3D Type; };

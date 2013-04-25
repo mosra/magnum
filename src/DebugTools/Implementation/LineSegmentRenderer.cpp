@@ -26,7 +26,7 @@
 
 #include "Mesh.h"
 #include "DebugTools/ShapeRenderer.h"
-#include "Physics/Line.h"
+#include "Physics/LineSegment.h"
 #include "Primitives/Line.h"
 #include "Shaders/Flat.h"
 #include "Trade/MeshData2D.h"
@@ -50,13 +50,13 @@ namespace {
     template<> inline Trade::MeshData3D meshData<3>() { return Primitives::Line3D::wireframe(); }
 }
 
-template<UnsignedInt dimensions> LineSegmentRenderer<dimensions>::LineSegmentRenderer(Physics::Line<dimensions>& line): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), line(line) {
+template<UnsignedInt dimensions> LineSegmentRenderer<dimensions>::LineSegmentRenderer(const Physics::Implementation::AbstractShape<dimensions>* line): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), line(static_cast<const Physics::Implementation::Shape<Physics::LineSegment<dimensions>>*>(line)->shape) {
     if(!this->wireframeMesh) this->createResources(meshData<dimensions>());
 }
 
 template<UnsignedInt dimensions> void LineSegmentRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
     this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
-        Implementation::lineSegmentRendererTransformation<dimensions>(line.transformedA(), line.transformedB()))
+        Implementation::lineSegmentRendererTransformation<dimensions>(line.a(), line.b()))
         ->setColor(options->color())
         ->use();
     this->wireframeMesh->draw();
