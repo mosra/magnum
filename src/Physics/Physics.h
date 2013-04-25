@@ -34,9 +34,9 @@ namespace Magnum { namespace Physics {
 
 /** @todoc remove when doxygen is sane again */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt> class AbstractShape;
-typedef AbstractShape<2> AbstractShape2D;
-typedef AbstractShape<3> AbstractShape3D;
+template<UnsignedInt> class AbstractObjectShape;
+typedef AbstractObjectShape<2> AbstractObjectShape2D;
+typedef AbstractObjectShape<3> AbstractObjectShape3D;
 
 template<UnsignedInt> class AxisAlignedBox;
 typedef AxisAlignedBox<2> AxisAlignedBox2D;
@@ -58,9 +58,7 @@ template<UnsignedInt> class LineSegment;
 typedef LineSegment<2> LineSegment2D;
 typedef LineSegment<3> LineSegment3D;
 
-template<UnsignedInt> class ObjectShape;
-typedef ObjectShape<2> ObjectShape2D;
-typedef ObjectShape<3> ObjectShape3D;
+template<class> class ObjectShape;
 
 template<UnsignedInt> class ObjectShapeGroup;
 typedef ObjectShapeGroup<2> ObjectShapeGroup2D;

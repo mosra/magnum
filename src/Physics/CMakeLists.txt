@@ -23,7 +23,7 @@
 #
 
 set(MagnumPhysics_SRCS
-    AbstractShape.cpp
+    AbstractObjectShape.cpp
     AxisAlignedBox.cpp
     Box.cpp
     Capsule.cpp
@@ -40,7 +40,7 @@ set(MagnumPhysics_SRCS
     Implementation/CollisionDispatch.cpp)
 
 set(MagnumPhysics_HEADERS
-    AbstractShape.h
+    AbstractObjectShape.h
     AxisAlignedBox.h
     Box.h
     Capsule.h

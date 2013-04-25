@@ -25,15 +25,19 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::ObjectShape, typedef Magnum::Physics::ObjectShape2D, Magnum::Physics::ObjectShape3D
+ * @brief Class Magnum::Physics::ObjectShape
  */
 
-#include "SceneGraph/AbstractGroupedFeature.h"
+#include "Physics/AbstractObjectShape.h"
 #include "Physics/Physics.h"
 
 #include "magnumPhysicsVisibility.h"
 
 namespace Magnum { namespace Physics {
+
+namespace Implementation {
+    template<class> struct ObjectShapeHelper;
+}
 
 /**
 @brief Object shape
@@ -45,95 +49,110 @@ collide with each other.
 @section ObjectShape-usage Usage
 
 Add the feature to the object and some shape group (you can also use
-ObjectShapeGroup::add() and ObjectShapeGroup::remove() later) and then set
-desired object shape using setShape().
+ObjectShapeGroup::add() and ObjectShapeGroup::remove() later) and configure the
+shape.
 @code
 Physics::ObjectShapeGroup3D shapes;
 
 Object3D* object;
-auto shape = new Physics::ObjectShape3D(object, &shapes);
-shape->setShape(Physics::Sphere3D({}, 0.75f) || Physics::AxisAlignedBox3D({}, {3.0f, 1.5f, 2.0f}));
+auto shape = new Physics::ObjectShape<Physics::Sphere3D>(object, {{}, 0.75f}, &shapes);
 @endcode
 
-@see @ref scenegraph, ObjectShape2D, ObjectShape3D, ObjectShapeGroup2D,
-    ObjectShapeGroup3D, DebugTools::ShapeRenderer
+@see @ref scenegraph, ObjectShapeGroup2D, ObjectShapeGroup3D,
+    DebugTools::ShapeRenderer
 */
-template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShape: public SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>> {
+template<class T> class MAGNUM_PHYSICS_EXPORT ObjectShape: public AbstractObjectShape<T::Dimensions> {
+    friend struct Implementation::ObjectShapeHelper<T>;
+
     public:
         /**
          * @brief Constructor
          * @param object    Object holding this feature
+         * @param shape     Shape
          * @param group     Group this shape belongs to
-         *
-         * Creates empty object shape.
-         * @see setShape()
          */
-        explicit ObjectShape(SceneGraph::AbstractObject<dimensions>* object, ObjectShapeGroup<dimensions>* group = nullptr);
+        template<class ...U> explicit ObjectShape(SceneGraph::AbstractObject<T::Dimensions>* object, const T& shape, ObjectShapeGroup<T::Dimensions>* group = nullptr): AbstractObjectShape<T::Dimensions>(object, group) {
+            Implementation::ObjectShapeHelper<T>::set(*this, shape);
+        }
 
-        /**
-         * @brief Destructor
-         *
-         * Deletes associated shape.
-         */
-        ~ObjectShape();
+        /** @overload */
+        template<class ...U> explicit ObjectShape(SceneGraph::AbstractObject<T::Dimensions>* object, T&& shape, ObjectShapeGroup<T::Dimensions>* group = nullptr): AbstractObjectShape<T::Dimensions>(object, group) {
+            Implementation::ObjectShapeHelper<T>::set(*this, std::move(shape));
+        }
+
+        /** @overload */
+        template<class ...U> explicit ObjectShape(SceneGraph::AbstractObject<T::Dimensions>* object, ObjectShapeGroup<T::Dimensions>* group = nullptr): AbstractObjectShape<T::Dimensions>(object, group) {}
 
         /** @brief Shape */
-        inline AbstractShape<dimensions>* shape() { return _shape; }
-        inline const AbstractShape<dimensions>* shape() const { return _shape; } /**< @overload */
-
-        /**
-         * @brief Set shape
-         * @return Pointer to self (for method chaining)
-         */
-        inline ObjectShape<dimensions>* setShape(AbstractShape<dimensions>* shape) {
-            _shape = shape;
-            this->object()->setDirty();
-            return this;
-        }
+        inline const T& shape() const { return _shape.shape; }
 
         /**
          * @brief Set shape
          * @return Pointer to self (for method chaining)
          *
-         * Convenience overload for setShape(AbstractShape*), allowing you to
-         * use e.g. ShapeGroup operators:
-         * @code
-         * Physics::ObjectShape3D* shape;
-         * shape->setShape(Physics::Sphere3D({}, 0.75f) || Physics::AxisAlignedBox3D({}, {3.0f, 1.5f, 2.0f}));
-         * @endcode
+         * Marks the feature as dirty.
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class T> inline ObjectShape<dimensions>* setShape(T&& shape) {
-        #else
-        template<class T> inline typename std::enable_if<std::is_base_of<Physics::AbstractShape<dimensions>, T>::value, ObjectShape<dimensions>*>::type setShape(T&& shape) {
-        #endif
-            return setShape(new T(std::move(shape)));
-        }
+        ObjectShape<T>* setShape(const T& shape);
 
         /**
-         * @brief Object shape group containing this shape
+         * @brief Transformed shape
          *
-         * If the shape doesn't belong to any group, returns `nullptr`.
+         * Cleans the feature before returning the shape.
          */
-        ObjectShapeGroup<dimensions>* group();
-        const ObjectShapeGroup<dimensions>* group() const; /**< @overload */
+        const T& transformedShape();
 
     protected:
         /** Marks also the group as dirty */
         void markDirty() override;
 
         /** Applies transformation to associated shape. */
-        void clean(const typename DimensionTraits<dimensions>::MatrixType& absoluteTransformationMatrix) override;
+        void clean(const typename DimensionTraits<T::Dimensions>::MatrixType& absoluteTransformationMatrix) override;
 
     private:
-        AbstractShape<dimensions>* _shape;
+        const Implementation::AbstractShape<T::Dimensions>* abstractTransformedShape() const override {
+            return &_transformedShape;
+        }
+
+        Implementation::Shape<T> _shape, _transformedShape;
 };
 
-/** @brief Two-dimensional object shape */
-typedef ObjectShape<2> ObjectShape2D;
+template<class T> inline ObjectShape<T>* ObjectShape<T>::setShape(const T& shape) {
+    Implementation::ObjectShapeHelper<T>::set(*this, shape);
+    this->object()->setDirty();
+    return this;
+}
 
-/** @brief Three-dimensional object shape */
-typedef ObjectShape<3> ObjectShape3D;
+template<class T> inline const T& ObjectShape<T>::transformedShape() {
+    this->object()->setClean();
+    return _transformedShape.shape;
+}
+
+template<class T> void ObjectShape<T>::markDirty() {
+    if(this->group()) this->group()->setDirty();
+}
+
+template<class T> void ObjectShape<T>::clean(const typename DimensionTraits<T::Dimensions>::MatrixType& absoluteTransformationMatrix) {
+    Implementation::ObjectShapeHelper<T>::transform(*this, absoluteTransformationMatrix);
+}
+
+namespace Implementation {
+    template<class T> struct ObjectShapeHelper {
+        inline static void set(ObjectShape<T>& objectShape, const T& shape) {
+            objectShape._shape.shape = shape;
+        }
+
+        inline static void transform(ObjectShape<T>& objectShape, const typename DimensionTraits<T::Dimensions>::MatrixType& absoluteTransformationMatrix) {
+            objectShape._transformedShape.shape = objectShape._shape.shape.transformed(absoluteTransformationMatrix);
+        }
+    };
+
+    template<UnsignedInt dimensions> struct MAGNUM_PHYSICS_EXPORT ObjectShapeHelper<ShapeGroup<dimensions>> {
+        static void set(ObjectShape<ShapeGroup<dimensions>>& objectShape, const ShapeGroup<dimensions>& shape);
+        static void set(ObjectShape<ShapeGroup<dimensions>>& objectShape, ShapeGroup<dimensions>&& shape);
+
+        static void transform(ObjectShape<ShapeGroup<dimensions>>& objectShape, const typename DimensionTraits<dimensions>::MatrixType& absoluteTransformationMatrix);
+    };
+}
 
 }}
 

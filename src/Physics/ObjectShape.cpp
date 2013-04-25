@@ -24,40 +24,25 @@
 
 #include "ObjectShape.h"
 
-#include <algorithm>
+#include "Physics/ShapeGroup.h"
 
-#include "AbstractShape.h"
-#include "ObjectShapeGroup.h"
+namespace Magnum { namespace Physics { namespace Implementation {
 
-namespace Magnum { namespace Physics {
-
-template<UnsignedInt dimensions> ObjectShape<dimensions>::ObjectShape(SceneGraph::AbstractObject<dimensions>* object, ObjectShapeGroup<dimensions>* group): SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>>(object, group), _shape(nullptr) {
-    this->setCachedTransformations(SceneGraph::AbstractFeature<dimensions>::CachedTransformation::Absolute);
+template<UnsignedInt dimensions> void ObjectShapeHelper<ShapeGroup<dimensions>>::set(ObjectShape<ShapeGroup<dimensions>>& objectShape, const ShapeGroup<dimensions>& shape) {
+    objectShape._transformedShape.shape = objectShape._shape.shape = shape;
 }
 
-template<UnsignedInt dimensions> ObjectShape<dimensions>::~ObjectShape() {
-    delete _shape;
+template<UnsignedInt dimensions> void ObjectShapeHelper<ShapeGroup<dimensions>>::set(ObjectShape<ShapeGroup<dimensions>>& objectShape, ShapeGroup<dimensions>&& shape) {
+    objectShape._transformedShape.shape = objectShape._shape.shape = std::move(shape);
 }
 
-template<UnsignedInt dimensions> ObjectShapeGroup<dimensions>* ObjectShape<dimensions>::group() {
-    return static_cast<ObjectShapeGroup<dimensions>*>(SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>>::group());
+template<UnsignedInt dimensions> void ObjectShapeHelper<ShapeGroup<dimensions>>::transform(ObjectShape<ShapeGroup<dimensions>>& objectShape, const typename DimensionTraits<dimensions>::MatrixType& absoluteTransformationMatrix) {
+    CORRADE_INTERNAL_ASSERT(objectShape._shape.shape.size() == objectShape._transformedShape.shape.size());
+    for(std::size_t i = 0; i != objectShape.shape().size(); ++i)
+        objectShape._shape.shape._shapes[i]->transform(absoluteTransformationMatrix, objectShape._transformedShape.shape._shapes[i]);
 }
 
-template<UnsignedInt dimensions> const ObjectShapeGroup<dimensions>* ObjectShape<dimensions>::group() const {
-    return static_cast<const ObjectShapeGroup<dimensions>*>(SceneGraph::AbstractGroupedFeature<dimensions, ObjectShape<dimensions>>::group());
-}
+template struct MAGNUM_PHYSICS_EXPORT ObjectShapeHelper<ShapeGroup<2>>;
+template struct MAGNUM_PHYSICS_EXPORT ObjectShapeHelper<ShapeGroup<3>>;
 
-template<UnsignedInt dimensions> void ObjectShape<dimensions>::markDirty() {
-    group()->setDirty();
-}
-
-template<UnsignedInt dimensions> void ObjectShape<dimensions>::clean(const typename DimensionTraits<dimensions>::MatrixType& absoluteTransformationMatrix) {
-    if(_shape) _shape->applyTransformationMatrix(absoluteTransformationMatrix);
-}
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template class MAGNUM_PHYSICS_EXPORT ObjectShape<2>;
-template class MAGNUM_PHYSICS_EXPORT ObjectShape<3>;
-#endif
-
-}}
+}}}

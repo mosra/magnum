@@ -27,7 +27,9 @@
 #include "Physics/ObjectShapeGroup.h"
 #include "Physics/ObjectShape.h"
 #include "Physics/Point.h"
+#include "Physics/ShapeGroup.h"
 #include "Physics/Sphere.h"
+#include "SceneGraph/MatrixTransformation2D.h"
 #include "SceneGraph/MatrixTransformation3D.h"
 #include "SceneGraph/Scene.h"
 
@@ -39,90 +41,102 @@ class ObjectShapeTest: public Corrade::TestSuite::Tester {
 
         void clean();
         void firstCollision();
+        void shapeGroup();
 };
 
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation2D<>> Scene2D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D<>> Object2D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
 
 ObjectShapeTest::ObjectShapeTest() {
     addTests({&ObjectShapeTest::clean,
-              &ObjectShapeTest::firstCollision});
+              &ObjectShapeTest::firstCollision,
+              &ObjectShapeTest::shapeGroup});
 }
 
 void ObjectShapeTest::clean() {
     Scene3D scene;
-    ObjectShapeGroup3D group;
+    ObjectShapeGroup3D shapes;
 
     Object3D a(&scene);
-    ObjectShape3D* shape = new ObjectShape3D(&a, &group);
-    shape->setShape(Physics::Point3D({1.0f, -2.0f, 3.0f}));
+    auto shape = new Physics::ObjectShape<Physics::Point3D>(&a, {{1.0f, -2.0f, 3.0f}}, &shapes);
     a.scale(Vector3(-2.0f));
 
     Object3D b(&scene);
-    new ObjectShape3D(&b, &group);
+    new Physics::ObjectShape<Physics::Point3D>(&b, &shapes);
 
     /* Everything is dirty at the beginning */
-    CORRADE_VERIFY(group.isDirty());
+    CORRADE_VERIFY(shapes.isDirty());
     CORRADE_VERIFY(a.isDirty());
     CORRADE_VERIFY(b.isDirty());
 
     /* Cleaning object will not clean anything other */
     a.setClean();
-    CORRADE_VERIFY(group.isDirty());
+    CORRADE_VERIFY(shapes.isDirty());
     CORRADE_VERIFY(!a.isDirty());
     CORRADE_VERIFY(b.isDirty());
 
     /* Verify that the feature was actually cleaned */
-    CORRADE_COMPARE(static_cast<const Physics::Point3D*>(shape->shape())->transformedPosition(),
+    CORRADE_COMPARE(shape->transformedShape().position(),
         Vector3(-2.0f, 4.0f, -6.0f));
 
     /* Setting group clean will clean whole group */
     a.setDirty();
-    group.setClean();
-    CORRADE_VERIFY(!group.isDirty());
+    shapes.setClean();
+    CORRADE_VERIFY(!shapes.isDirty());
     CORRADE_VERIFY(!a.isDirty());
     CORRADE_VERIFY(!b.isDirty());
 
     /* Setting object dirty will set also the group, but not other objects */
     b.setDirty();
-    CORRADE_VERIFY(group.isDirty());
+    CORRADE_VERIFY(shapes.isDirty());
     CORRADE_VERIFY(!a.isDirty());
     CORRADE_VERIFY(b.isDirty());
 }
 
 void ObjectShapeTest::firstCollision() {
     Scene3D scene;
-    ObjectShapeGroup3D group;
+    ObjectShapeGroup3D shapes;
 
     Object3D a(&scene);
-    ObjectShape3D* aShape = new ObjectShape3D(&a, &group);
-    aShape->setShape(Physics::Sphere3D({1.0f, -2.0f, 3.0f}, 1.5f));
+    auto aShape = new ObjectShape<Physics::Sphere3D>(&a, {{1.0f, -2.0f, 3.0f}, 1.5f}, &shapes);
 
     Object3D b(&scene);
-    ObjectShape3D* bShape = new ObjectShape3D(&b, &group);
-    bShape->setShape(Physics::Point3D({3.0f, -2.0f, 3.0f}));
+    auto bShape = new ObjectShape<Physics::Point3D>(&b, {{3.0f, -2.0f, 3.0f}}, &shapes);
 
     Object3D c(&scene);
-    ObjectShape3D* cShape = new ObjectShape3D(&c, &group);
-
-    /* No-op if the object has no shape */
-    CORRADE_VERIFY(group.isDirty());
-    CORRADE_VERIFY(!group.firstCollision(cShape));
-    CORRADE_VERIFY(group.isDirty());
+    new ObjectShape<Physics::ShapeGroup3D>(&c, &shapes);
 
     /* No collisions initially */
-    CORRADE_VERIFY(!group.firstCollision(aShape));
-    CORRADE_VERIFY(!group.firstCollision(bShape));
-    CORRADE_VERIFY(!group.isDirty());
+    CORRADE_VERIFY(!shapes.firstCollision(aShape));
+    CORRADE_VERIFY(!shapes.firstCollision(bShape));
+    CORRADE_VERIFY(!shapes.isDirty());
 
     /* Move point into sphere */
     b.translate(Vector3::xAxis(-1.0f));
 
     /* Collision */
-    CORRADE_VERIFY(group.isDirty());
-    CORRADE_VERIFY(group.firstCollision(aShape) == bShape);
-    CORRADE_VERIFY(group.firstCollision(bShape) == aShape);
-    CORRADE_VERIFY(!group.isDirty());
+    CORRADE_VERIFY(shapes.isDirty());
+    CORRADE_VERIFY(shapes.firstCollision(aShape) == bShape);
+    CORRADE_VERIFY(shapes.firstCollision(bShape) == aShape);
+    CORRADE_VERIFY(!shapes.isDirty());
+}
+
+void ObjectShapeTest::shapeGroup() {
+    Scene2D scene;
+    ObjectShapeGroup2D shapes;
+
+    /* Verify construction */
+    Object2D a(&scene);
+    auto shape = new ObjectShape<Physics::ShapeGroup2D>(&a, Physics::Sphere2D({}, 0.5f) || Physics::Point2D({0.25f, -1.0f}));
+    CORRADE_COMPARE(shape->transformedShape().size(), 2);
+
+    /* Verify the original shape is updated */
+    const auto& point = shape->transformedShape().get<Physics::Point2D>(1);
+    a.translate(Vector2::xAxis(5.0f));
+    a.setClean();
+    CORRADE_COMPARE(point.position(), Vector2(5.25f, -1.0f));
 }
 
 }}}

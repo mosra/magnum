@@ -30,7 +30,7 @@
 
 #include <vector>
 
-#include "Physics/ObjectShape.h"
+#include "Physics/Physics.h"
 #include "SceneGraph/FeatureGroup.h"
 
 #include "magnumPhysicsVisibility.h"
@@ -43,8 +43,8 @@ namespace Magnum { namespace Physics {
 See ObjectShape for more information.
 @see @ref scenegraph, ObjectShapeGroup2D, ObjectShapeGroup3D
 */
-template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShapeGroup: public SceneGraph::FeatureGroup<dimensions, ObjectShape<dimensions>> {
-    friend class ObjectShape<dimensions>;
+template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShapeGroup: public SceneGraph::FeatureGroup<dimensions, AbstractObjectShape<dimensions>> {
+    friend class AbstractObjectShape<dimensions>;
 
     public:
         /**
@@ -86,7 +86,7 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT ObjectShapeGroup: p
          * collisions, returns `nullptr`. Calls setClean() before the
          * operation.
          */
-        ObjectShape<dimensions>* firstCollision(const ObjectShape<dimensions>* shape);
+        AbstractObjectShape<dimensions>* firstCollision(const AbstractObjectShape<dimensions>* shape);
 
     private:
         bool dirty;
