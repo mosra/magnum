@@ -94,12 +94,6 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
         unsigned char* _data;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-extern template class MAGNUM_EXPORT Image<1>;
-extern template class MAGNUM_EXPORT Image<2>;
-extern template class MAGNUM_EXPORT Image<3>;
-#endif
-
 /** @brief One-dimensional image */
 typedef Image<1> Image1D;
 

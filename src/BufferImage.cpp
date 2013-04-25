@@ -34,9 +34,9 @@ template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const typ
     _buffer.setData(pixelSize(format, type)*size.product(), data, usage);
 }
 
-template class BufferImage<1>;
-template class BufferImage<2>;
-template class BufferImage<3>;
+template class MAGNUM_EXPORT BufferImage<1>;
+template class MAGNUM_EXPORT BufferImage<2>;
+template class MAGNUM_EXPORT BufferImage<3>;
 #endif
 
 }
