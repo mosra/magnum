@@ -190,6 +190,7 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
          * @todo Provide also simpler representations from which could benefit
          *      other transformation implementations, as they won't need to
          *      e.g. create transformation matrix from quaternion?
+         * @todo Move outside templated class so it's easier to type
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         typedef Implementation::FeatureCachedTransformation CachedTransformation;

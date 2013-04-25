@@ -40,7 +40,8 @@ namespace Magnum { namespace Math {
 
 namespace Implementation {
 
-/* No assertions fired, for internal use */
+/* No assertions fired, for internal use. Not private member because used from
+   outside the class. */
 template<class T> inline Quaternion<T> quaternionFromMatrix(const Matrix<3, T>& m) {
     const Vector<3, T> diagonal = m.diagonal();
     const T trace = diagonal.sum();

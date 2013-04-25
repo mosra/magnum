@@ -38,7 +38,8 @@
 namespace Magnum { namespace Math {
 
 namespace Implementation {
-    /* No assertions fired, for internal use */
+    /* No assertions fired, for internal use. Not private member because used
+       from outside the class. */
     template<class T> inline static Complex<T> complexFromMatrix(const Matrix<2, T>& matrix) {
         return {matrix[0][0], matrix[0][1]};
     }
