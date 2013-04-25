@@ -51,10 +51,10 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Line {
          *
          * Creates line with both points at origin.
          */
-        inline constexpr explicit Line() {}
+        inline constexpr /*implicit*/ Line() {}
 
         /** @brief Constructor */
-        inline constexpr explicit Line(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b): _a(a), _b(b) {}
+        inline constexpr /*implicit*/ Line(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b): _a(a), _b(b) {}
 
         /** @brief Transformed shape */
         Line<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;

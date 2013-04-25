@@ -54,10 +54,10 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Capsule {
          *
          * Creates zero-sized capsule at origin.
          */
-        inline constexpr explicit Capsule(): _radius(0.0f) {}
+        inline constexpr /*implicit*/ Capsule(): _radius(0.0f) {}
 
         /** @brief Constructor */
-        inline constexpr explicit Capsule(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b, Float radius): _a(a), _b(b), _radius(radius) {}
+        inline constexpr /*implicit*/ Capsule(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b, Float radius): _a(a), _b(b), _radius(radius) {}
 
         /** @brief Transformed shape */
         Capsule<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;

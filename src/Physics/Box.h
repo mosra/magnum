@@ -55,10 +55,10 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Box {
          *
          * Creates zero-sized box positioned at origin.
          */
-        inline constexpr explicit Box(): _transformation(DimensionTraits<dimensions>::MatrixType::Zero) {}
+        inline constexpr /*implicit*/ Box(): _transformation(DimensionTraits<dimensions>::MatrixType::Zero) {}
 
         /** @brief Constructor */
-        inline constexpr explicit Box(const typename DimensionTraits<dimensions>::MatrixType& transformation): _transformation(transformation) {}
+        inline constexpr /*implicit*/ Box(const typename DimensionTraits<dimensions>::MatrixType& transformation): _transformation(transformation) {}
 
         /** @brief Transformed shape */
         Box<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;

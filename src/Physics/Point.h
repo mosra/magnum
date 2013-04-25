@@ -50,10 +50,10 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Point {
          *
          * Creates point at origin.
          */
-        inline constexpr explicit Point() {}
+        inline constexpr /*implicit*/ Point() {}
 
         /** @brief Constructor */
-        inline constexpr explicit Point(const typename DimensionTraits<dimensions>::VectorType& position): _position(position) {}
+        inline constexpr /*implicit*/ Point(const typename DimensionTraits<dimensions>::VectorType& position): _position(position) {}
 
         /** @brief Transformed shape */
         Point<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;

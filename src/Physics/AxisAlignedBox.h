@@ -54,10 +54,10 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT AxisAlignedBox {
          *
          * Creates zero sized box positioned at origin.
          */
-        inline constexpr explicit AxisAlignedBox() {}
+        inline constexpr /*implicit*/ AxisAlignedBox() {}
 
         /** @brief Constructor */
-        inline constexpr explicit AxisAlignedBox(const typename DimensionTraits<dimensions>::VectorType& min, const typename DimensionTraits<dimensions>::VectorType& max): _min(min), _max(max) {}
+        inline constexpr /*implicit*/ AxisAlignedBox(const typename DimensionTraits<dimensions>::VectorType& min, const typename DimensionTraits<dimensions>::VectorType& max): _min(min), _max(max) {}
 
         /** @brief Transformed shape */
         AxisAlignedBox<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;

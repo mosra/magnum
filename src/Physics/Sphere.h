@@ -54,10 +54,10 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT Sphere {
          *
          * Creates zero-sized sphere at origin.
          */
-        inline constexpr explicit Sphere(): _radius(0.0f) {}
+        inline constexpr /*implicit*/ Sphere(): _radius(0.0f) {}
 
         /** @brief Constructor */
-        inline constexpr explicit Sphere(const typename DimensionTraits<dimensions>::VectorType& position, Float radius): _position(position), _radius(radius) {}
+        inline constexpr /*implicit*/ Sphere(const typename DimensionTraits<dimensions>::VectorType& position, Float radius): _position(position), _radius(radius) {}
 
         /** @brief Transformed shape */
         Sphere<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;

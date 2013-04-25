@@ -47,10 +47,10 @@ class MAGNUM_PHYSICS_EXPORT Plane {
          *
          * Creates plane with zero-sized normal at origin.
          */
-        inline constexpr explicit Plane() {}
+        inline constexpr /*implicit*/ Plane() {}
 
         /** @brief Constructor */
-        inline constexpr explicit Plane(const Vector3& position, const Vector3& normal): _position(position), _normal(normal) {}
+        inline constexpr /*implicit*/ Plane(const Vector3& position, const Vector3& normal): _position(position), _normal(normal) {}
 
         /** @brief Transformed shape */
         Plane transformed(const Matrix4& matrix) const;
