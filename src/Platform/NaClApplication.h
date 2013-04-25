@@ -520,7 +520,6 @@ class NaClApplication::MouseMoveEvent: public NaClApplication::InputEvent {
 
 CORRADE_ENUMSET_OPERATORS(NaClApplication::Flags)
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<class Application> class NaClModule: public pp::Module {
         public:
@@ -537,7 +536,6 @@ namespace Implementation {
             }
     };
 }
-#endif
 
 /** @hideinitializer
 @brief Entry point for NaCl application

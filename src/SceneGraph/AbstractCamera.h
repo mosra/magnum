@@ -47,11 +47,9 @@ enum class AspectRatioPolicy: UnsignedByte {
     Clip            /**< Clip on smaller side of view */
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<UnsignedInt dimensions, class T> typename DimensionTraits<dimensions, T>::MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Vector2i& viewport);
 }
-#endif
 
 /**
 @brief Base for cameras

@@ -35,7 +35,6 @@
 
 namespace Magnum { namespace MeshTools {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
 class MAGNUM_MESHTOOLS_EXPORT Tipsify {
@@ -59,7 +58,6 @@ class MAGNUM_MESHTOOLS_EXPORT Tipsify {
 };
 
 }
-#endif
 
 /**
 @brief %Tipsify the mesh

@@ -578,7 +578,6 @@ void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const
 }
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
 std::size_t FloatAttribute::size(GLint components, DataType dataType) {
@@ -837,6 +836,5 @@ Debug operator<<(Debug debug, Attribute<Math::Vector<4, Float>>::DataType value)
 }
 
 }
-#endif
 
 }

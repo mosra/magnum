@@ -39,11 +39,9 @@
 
 namespace Magnum {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<class> struct Attribute;
 }
-#endif
 
 /**
 @brief Base for shader program implementations
@@ -1168,7 +1166,6 @@ template<class T> Debug operator<<(Debug debug, AbstractShaderProgram::Attribute
 template<class T> Debug operator<<(Debug debug, AbstractShaderProgram::Attribute<T>::DataType);
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
 /* Base for sized attributes */
@@ -1423,7 +1420,6 @@ template<class T> struct Attribute<Math::Matrix3<T>>: Attribute<Math::Matrix<3, 
 template<class T> struct Attribute<Math::Matrix4<T>>: Attribute<Math::Matrix<4, T>> {};
 
 }
-#endif
 
 }
 

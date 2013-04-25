@@ -37,7 +37,6 @@
 
 namespace Magnum { namespace MeshTools {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
 class CombineIndexedArrays {
@@ -96,7 +95,6 @@ class CombineIndexedArrays {
 };
 
 }
-#endif
 
 /**
 @brief Combine indexed arrays

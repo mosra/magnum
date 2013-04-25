@@ -38,7 +38,6 @@
 
 namespace Magnum { namespace MeshTools {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
 class Interleave {
@@ -133,7 +132,6 @@ class Interleave {
 };
 
 }
-#endif
 
 /**
 @brief %Interleave vertex attributes

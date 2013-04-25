@@ -37,14 +37,12 @@
 
 namespace Magnum { namespace Math {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     /* No assertions fired, for internal use */
     template<class T> inline static Complex<T> complexFromMatrix(const Matrix<2, T>& matrix) {
         return {matrix[0][0], matrix[0][1]};
     }
 }
-#endif
 
 /**
 @brief %Complex number

@@ -42,11 +42,9 @@
 
 namespace Magnum { namespace Math {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<std::size_t, class, class> struct VectorConverter;
 }
-#endif
 
 /**
 @brief %Vector

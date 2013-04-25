@@ -52,7 +52,6 @@
 
 namespace Magnum { namespace Math {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<class T> struct TypeTraitsDefault {
         TypeTraitsDefault() = delete;
@@ -62,7 +61,6 @@ namespace Implementation {
         }
     };
 }
-#endif
 
 /**
 @brief Traits class for numeric types
@@ -115,7 +113,6 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
  * http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
  */
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 /* Integral scalar types */
 namespace Implementation {
     template<class T> struct TypeTraitsIntegral: TypeTraitsDefault<T> {
@@ -123,6 +120,7 @@ namespace Implementation {
     };
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template<> struct TypeTraits<UnsignedByte>: Implementation::TypeTraitsIntegral<UnsignedByte> {
     typedef Float FloatingPointType;
 };

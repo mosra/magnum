@@ -33,7 +33,6 @@
 
 namespace Magnum {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Math { namespace Implementation {
     template<std::size_t size> struct Component<size, 'r'>: public ComponentAtPosition<size, 0> {};
     template<std::size_t size> struct Component<size, 'g'>: public ComponentAtPosition<size, 1> {};
@@ -53,7 +52,6 @@ namespace Implementation {
     template<class T> struct TypeForSize<4, Color3<T>> { typedef Color4<T> Type; };
     template<class T> struct TypeForSize<4, Color4<T>> { typedef Color4<T> Type; };
 }
-#endif
 
 /**
 @brief Swizzle Vector components

@@ -32,11 +32,9 @@
 
 namespace Magnum { namespace Math {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<std::size_t size, class T> class MatrixDeterminant;
 }
-#endif
 
 /**
 @brief Square matrix

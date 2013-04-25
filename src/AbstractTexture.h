@@ -1158,15 +1158,17 @@ class MAGNUM_EXPORT AbstractTexture {
          */
         AbstractTexture* generateMipmap();
 
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #else
     protected:
-        #ifndef DOXYGEN_GENERATING_OUTPUT
+    #endif
         template<UnsignedInt textureDimensions> struct DataHelper {};
 
         /* Unlike bind() this also sets the binding layer as active */
         void MAGNUM_LOCAL bindInternal();
 
         GLenum _target;
-        #endif
 
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);

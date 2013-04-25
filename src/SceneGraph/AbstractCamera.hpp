@@ -36,7 +36,6 @@ using namespace std;
 
 namespace Magnum { namespace SceneGraph {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
 template<UnsignedInt dimensions, class T> class Camera {};
@@ -70,7 +69,6 @@ template<UnsignedInt dimensions, class T> typename DimensionTraits<dimensions, T
 }
 
 }
-#endif
 
 template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::AbstractCamera(AbstractObject<dimensions, T>* object): AbstractFeature<dimensions, T>(object), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {
     AbstractFeature<dimensions, T>::setCachedTransformations(AbstractFeature<dimensions, T>::CachedTransformation::InvertedAbsolute);

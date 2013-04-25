@@ -89,7 +89,6 @@ enum class ResourcePolicy: UnsignedByte {
 
 template<class> class AbstractResourceLoader;
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     struct ResourceKeyHash {
         inline std::size_t operator()(ResourceKey key) const {
@@ -271,7 +270,6 @@ namespace Implementation {
             std::size_t _lastChange;
     };
 }
-#endif
 
 /**
 @brief %Resource manager

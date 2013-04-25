@@ -103,11 +103,9 @@ inline Debug operator<<(Debug debug, const ResourceKey& value) {
     return debug << static_cast<const Corrade::Utility::HashDigest<sizeof(std::size_t)>&>(value);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<class> class ResourceManagerData;
 }
-#endif
 
 /**
 @brief %Resource reference

@@ -38,7 +38,6 @@
 
 namespace Magnum { namespace Math {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<UnsignedInt exponent> struct Pow {
         Pow() = delete;
@@ -53,7 +52,6 @@ namespace Implementation {
         template<class T> inline constexpr static T pow(T) { return 1; }
     };
 }
-#endif
 
 /**
  * @brief Integral power

@@ -36,7 +36,6 @@
 
 namespace Magnum { namespace MeshTools {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
 template<class Vertex, std::size_t vertexSize = Vertex::Size> class Clean {
@@ -126,7 +125,6 @@ template<class Vertex, std::size_t vertexSize = Vertex::Size> class Clean {
 };
 
 }
-#endif
 
 /**
 @brief %Clean the mesh

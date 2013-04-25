@@ -35,7 +35,6 @@
 
 namespace Magnum { namespace Math { namespace Algorithms {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
 template<class T> T pythagoras(T a, T b) {
@@ -56,7 +55,6 @@ template<> inline constexpr Double smallestDelta<Double>() { return 1.0e-64; }
 #endif
 
 }
-#endif
 
 /**
 @brief Singular Value Decomposition

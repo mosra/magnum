@@ -36,7 +36,6 @@
 
 namespace Magnum {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
 /* Convert color from HSV */
@@ -133,7 +132,6 @@ template<class T> inline constexpr typename std::enable_if<std::is_integral<T>::
 }
 
 }
-#endif
 
 /**
 @brief Three-component (RGB) color

@@ -75,8 +75,6 @@ AbstractTexture::SubImage3DImplementation AbstractTexture::subImage3DImplementat
 AbstractTexture::InvalidateImplementation AbstractTexture::invalidateImplementation = &AbstractTexture::invalidateImplementationNoOp;
 AbstractTexture::InvalidateSubImplementation AbstractTexture::invalidateSubImplementation = &AbstractTexture::invalidateSubImplementationNoOp;
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-
 /* Check correctness of binary OR in setMinificationFilter(). If nobody fucks
    anything up, this assert should produce the same results on all dimensions,
    thus testing only on AbstractTexture. */
@@ -90,7 +88,6 @@ static_assert((filter_or(Nearest, Base) == GL_NEAREST) &&
               (filter_or(Linear, Linear) == GL_LINEAR_MIPMAP_LINEAR),
     "Unsupported constants for GL texture filtering");
 #undef filter_or
-#endif
 
 Int AbstractTexture::maxSupportedLayerCount() {
     return Context::current()->state()->texture->maxSupportedLayerCount;
@@ -198,7 +195,6 @@ void AbstractTexture::mipmapImplementationDSA() {
 }
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 void AbstractTexture::bindInternal() {
     Implementation::TextureState* const textureState = Context::current()->state()->texture;
 
@@ -215,7 +211,6 @@ void AbstractTexture::bindInternal() {
     if(textureState->bindings[internalLayer] != _id)
         glBindTexture(_target, (textureState->bindings[internalLayer] = _id));
 }
-#endif
 
 void AbstractTexture::initializeContextBasedFunctionality(Context* context) {
     Implementation::TextureState* const textureState = context->state()->texture;

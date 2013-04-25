@@ -43,7 +43,6 @@
 
 namespace Magnum { namespace DebugTools {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
 template<> void createDebugMesh(ShapeRenderer<2>* renderer, Physics::AbstractShape<2>* shape) {
@@ -98,7 +97,6 @@ template<> void createDebugMesh(ShapeRenderer<3>* renderer, Physics::AbstractSha
 }
 
 }
-#endif
 
 template<UnsignedInt dimensions> ShapeRenderer<dimensions>::ShapeRenderer(Physics::ObjectShape<dimensions>* shape, ResourceKey options, SceneGraph::DrawableGroup<dimensions>* drawables): SceneGraph::Drawable<dimensions>(shape->object(), drawables), options(ResourceManager::instance()->get<ShapeRendererOptions>(options)) {
     CORRADE_ASSERT(shape->shape() != nullptr, "DebugTools::ShapeRenderer: cannot create renderer for empty shape", );

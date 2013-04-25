@@ -27,11 +27,9 @@
 
 namespace Magnum { namespace SceneGraph {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template class AbstractCamera<2, Float>;
 template class AbstractCamera<3, Float>;
 template class Camera2D<Float>;
 template class Camera3D<Float>;
-#endif
 
 }}

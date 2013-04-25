@@ -38,7 +38,6 @@
 
 namespace Magnum { namespace Math {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
 /* No assertions fired, for internal use */
@@ -75,7 +74,6 @@ template<class T> inline Quaternion<T> quaternionFromMatrix(const Matrix<3, T>& 
 }
 
 }
-#endif
 
 /**
 @brief %Quaternion

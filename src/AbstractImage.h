@@ -512,11 +512,13 @@ class MAGNUM_EXPORT AbstractImage {
         /** @brief Data type of pixel data */
         inline Type type() const { return _type; }
 
-    #ifndef DOXYGEN_GENERATING_OUTPUT
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #else
     protected:
+    #endif
         Format _format;
         Type _type;
-    #endif
 };
 
 inline AbstractImage::~AbstractImage() {}

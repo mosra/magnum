@@ -260,8 +260,11 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         void read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, BufferImage2D* image, Buffer::Usage usage);
         #endif
 
-    #ifndef DOXYGEN_GENERATING_OUTPUT
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #else
     protected:
+    #endif
         void MAGNUM_LOCAL bindInternal(Target target);
         Target MAGNUM_LOCAL bindInternal();
         void MAGNUM_LOCAL setViewportInternal();
@@ -283,7 +286,6 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 
         GLuint _id;
         Rectanglei _viewport;
-    #endif
 
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);

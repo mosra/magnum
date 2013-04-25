@@ -32,7 +32,6 @@
 
 namespace Magnum { namespace Math {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<std::size_t size, std::size_t position> struct ComponentAtPosition {
         static_assert(size > position, "Swizzle parameter out of range of base vector");
@@ -52,7 +51,6 @@ namespace Implementation {
         template<class T> inline constexpr static T value(const Math::Vector<size, T>&) { return T(1); }
     };
 }
-#endif
 
 /**
 @brief Swizzle Vector components

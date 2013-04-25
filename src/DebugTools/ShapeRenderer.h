@@ -42,13 +42,11 @@ namespace Magnum { namespace DebugTools {
 template<UnsignedInt> class ShapeRenderer;
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<UnsignedInt> class AbstractShapeRenderer;
 
     template<UnsignedInt dimensions> void createDebugMesh(ShapeRenderer<dimensions>* renderer, Physics::AbstractShape<dimensions>* shape);
 }
-#endif
 
 /**
 @brief Shape renderer options
@@ -140,9 +138,7 @@ new DebugTools::ShapeRenderer2D(shape, "red", debugDrawables);
 @see ShapeRenderer2D, ShapeRenderer3D
 */
 template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: public SceneGraph::Drawable<dimensions> {
-    #ifndef DOXYGEN_GENERATING_OUTPUT
     friend void Implementation::createDebugMesh<>(ShapeRenderer<dimensions>*, Physics::AbstractShape<dimensions>*);
-    #endif
 
     public:
         /**

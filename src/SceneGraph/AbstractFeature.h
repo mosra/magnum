@@ -36,7 +36,6 @@
 
 namespace Magnum { namespace SceneGraph {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     enum class FeatureCachedTransformation: UnsignedByte {
         Absolute = 1 << 0,
@@ -47,7 +46,6 @@ namespace Implementation {
 
     CORRADE_ENUMSET_OPERATORS(FeatureCachedTransformations)
 }
-#endif
 
 /**
 @brief Base for object features

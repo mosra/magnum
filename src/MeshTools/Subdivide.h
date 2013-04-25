@@ -33,7 +33,6 @@
 
 namespace Magnum { namespace MeshTools {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
 template<class Vertex, class Interpolator> class Subdivide {
@@ -91,7 +90,6 @@ template<class Vertex, class Interpolator> class Subdivide {
 };
 
 }
-#endif
 
 /**
 @brief %Subdivide the mesh

@@ -37,11 +37,9 @@
 
 namespace Magnum {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     struct State;
 }
-#endif
 
 /**
 @brief OpenGL version

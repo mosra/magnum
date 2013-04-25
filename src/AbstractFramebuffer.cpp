@@ -34,21 +34,18 @@
 
 namespace Magnum {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 AbstractFramebuffer::DrawBuffersImplementation AbstractFramebuffer::drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDefault;
 AbstractFramebuffer::DrawBufferImplementation AbstractFramebuffer::drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDefault;
 AbstractFramebuffer::ReadBufferImplementation AbstractFramebuffer::readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDefault;
 
 AbstractFramebuffer::Target AbstractFramebuffer::readTarget = AbstractFramebuffer::Target::ReadDraw;
 AbstractFramebuffer::Target AbstractFramebuffer::drawTarget = AbstractFramebuffer::Target::ReadDraw;
-#endif
 
 void AbstractFramebuffer::bind(Target target) {
     bindInternal(target);
     setViewportInternal();
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 void AbstractFramebuffer::bindInternal(Target target) {
     Implementation::FramebufferState* state = Context::current()->state()->framebuffer;
 
@@ -85,7 +82,6 @@ AbstractFramebuffer::Target AbstractFramebuffer::bindInternal() {
     glBindFramebuffer(GLenum(readTarget), _id);
     return readTarget;
 }
-#endif
 
 void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& sourceRectangle, const Rectanglei& destinationRectangle, AbstractFramebuffer::BlitMask mask, AbstractFramebuffer::BlitFilter filter) {
     source.bindInternal(AbstractFramebuffer::Target::Read);
@@ -111,7 +107,6 @@ AbstractFramebuffer* AbstractFramebuffer::setViewport(const Rectanglei& rectangl
     return this;
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 void AbstractFramebuffer::setViewportInternal() {
     Implementation::FramebufferState* state = Context::current()->state()->framebuffer;
 
@@ -125,7 +120,6 @@ void AbstractFramebuffer::setViewportInternal() {
     state->viewport = _viewport;
     glViewport(_viewport.left(), _viewport.bottom(), _viewport.width(), _viewport.height());
 }
-#endif
 
 void AbstractFramebuffer::clear(ClearMask mask) {
     bindInternal(drawTarget);
@@ -152,7 +146,6 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Abs
 }
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attachments) {
     /** @todo Re-enable when extension wrangler is available for ES2 */
     #ifndef MAGNUM_TARGET_GLES2
@@ -175,7 +168,6 @@ void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attach
     static_cast<void>(rectangle);
     #endif
 }
-#endif
 
 void AbstractFramebuffer::initializeContextBasedFunctionality(Context* context) {
     #ifndef MAGNUM_TARGET_GLES

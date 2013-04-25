@@ -31,7 +31,6 @@
 
 namespace Magnum { namespace MeshTools {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace {
 
 template<class> constexpr Mesh::IndexType indexType();
@@ -65,7 +64,6 @@ std::tuple<std::size_t, Mesh::IndexType, char*> compressIndicesInternal(const st
 }
 
 }
-#endif
 
 std::tuple<std::size_t, Mesh::IndexType, char*> compressIndices(const std::vector<UnsignedInt>& indices) {
     return compressIndicesInternal(indices, *std::max_element(indices.begin(), indices.end()));
