@@ -169,7 +169,9 @@ void Sdl2Application::mainLoop() {
                 break;
             }
 
-            case SDL_QUIT: return;
+            case SDL_QUIT:
+                flags |= Flag::Exit;
+                return;
         }
     }
 
