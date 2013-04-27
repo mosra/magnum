@@ -288,8 +288,8 @@ template<UnsignedInt dimensions> template<class T, class U> ShapeGroup<dimension
 
 template<UnsignedInt dimensions> template<class T> inline const T& ShapeGroup<dimensions>::get(std::size_t i) const {
     CORRADE_ASSERT(_shapes[i]->type() == Implementation::TypeOf<T>::type(),
-        "Physics::ShapeGroup::get(): given shape is not of type" << Implementation::TypeOf<T>::type(),
-        *static_cast<T*>(nullptr));
+        "Physics::ShapeGroup::get(): given shape is not of type" << Implementation::TypeOf<T>::type() <<
+        "but" << _shapes[i]->type(), *static_cast<T*>(nullptr));
     return static_cast<Implementation::Shape<T>*>(_shapes[i])->shape;
 }
 
