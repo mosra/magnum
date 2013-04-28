@@ -28,7 +28,7 @@
 #include "DebugTools/ResourceManager.h"
 #include "MeshTools/Interleave.h"
 #include "SceneGraph/AbstractCamera.h"
-#include "Shaders/VertexColorShader.h"
+#include "Shaders/VertexColor.h"
 
 namespace Magnum { namespace DebugTools {
 
@@ -144,8 +144,8 @@ const std::array<UnsignedByte, 18> Renderer<3>::indices{{
 
 template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(SceneGraph::AbstractObject<dimensions>* object, ResourceKey options, SceneGraph::DrawableGroup<dimensions>* drawables): SceneGraph::Drawable<dimensions>(object, drawables), options(ResourceManager::instance()->get<ObjectRendererOptions>(options)) {
     /* Shader */
-    shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::VertexColorShader<dimensions>>(Renderer<dimensions>::shader());
-    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(), new Shaders::VertexColorShader<dimensions>);
+    shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::VertexColor<dimensions>>(Renderer<dimensions>::shader());
+    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(), new Shaders::VertexColor<dimensions>);
 
     /* Mesh and vertex buffer */
     mesh = ResourceManager::instance()->get<Mesh>(Renderer<dimensions>::mesh());
@@ -167,8 +167,8 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Scen
     mesh->setPrimitive(Mesh::Primitive::Lines)
         ->setIndexCount(Renderer<dimensions>::indices.size())
         ->addInterleavedVertexBuffer(vertexBuffer, 0,
-            typename Shaders::VertexColorShader<dimensions>::Position(),
-            typename Shaders::VertexColorShader<dimensions>::Color())
+            typename Shaders::VertexColor<dimensions>::Position(),
+            typename Shaders::VertexColor<dimensions>::Color())
         ->setIndexBuffer(indexBuffer, 0, Mesh::IndexType::UnsignedByte, 0, Renderer<dimensions>::positions.size());
     ResourceManager::instance()->set<Mesh>(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }

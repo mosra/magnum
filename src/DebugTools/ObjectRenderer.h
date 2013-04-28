@@ -104,7 +104,7 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: 
 
     private:
         Resource<ObjectRendererOptions> options;
-        Resource<AbstractShaderProgram, Shaders::VertexColorShader<dimensions>> shader;
+        Resource<AbstractShaderProgram, Shaders::VertexColor<dimensions>> shader;
         Resource<Mesh> mesh;
         Resource<Buffer> vertexBuffer, indexBuffer;
 };

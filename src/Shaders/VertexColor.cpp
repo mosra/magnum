@@ -22,7 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "VertexColorShader.h"
+#include "VertexColor.h"
 
 #include <Utility/Resource.h>
 
@@ -33,11 +33,11 @@ namespace Magnum { namespace Shaders {
 
 namespace {
     template<UnsignedInt> constexpr const char* vertexShaderName();
-    template<> constexpr const char* vertexShaderName<2>() { return "VertexColorShader2D.vert"; }
-    template<> constexpr const char* vertexShaderName<3>() { return "VertexColorShader3D.vert"; }
+    template<> constexpr const char* vertexShaderName<2>() { return "VertexColor2D.vert"; }
+    template<> constexpr const char* vertexShaderName<3>() { return "VertexColor3D.vert"; }
 }
 
-template<UnsignedInt dimensions> VertexColorShader<dimensions>::VertexColorShader(): transformationProjectionMatrixUniform(0) {
+template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transformationProjectionMatrixUniform(0) {
     Corrade::Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
@@ -53,7 +53,7 @@ template<UnsignedInt dimensions> VertexColorShader<dimensions>::VertexColorShade
 
     Shader fragmentShader(v, Shader::Type::Fragment);
     fragmentShader.addSource(rs.get("compatibility.glsl"));
-    fragmentShader.addSource(rs.get("VertexColorShader.frag"));
+    fragmentShader.addSource(rs.get("VertexColor.frag"));
     attachShader(fragmentShader);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -82,7 +82,7 @@ template<UnsignedInt dimensions> VertexColorShader<dimensions>::VertexColorShade
     #endif
 }
 
-template class VertexColorShader<2>;
-template class VertexColorShader<3>;
+template class VertexColor<2>;
+template class VertexColor<3>;
 
 }}

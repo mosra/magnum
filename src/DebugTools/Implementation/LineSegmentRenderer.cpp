@@ -28,7 +28,7 @@
 #include "DebugTools/ShapeRenderer.h"
 #include "Physics/Line.h"
 #include "Primitives/Line.h"
-#include "Shaders/FlatShader.h"
+#include "Shaders/Flat.h"
 #include "Trade/MeshData2D.h"
 #include "Trade/MeshData3D.h"
 

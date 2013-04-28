@@ -1,5 +1,5 @@
-#ifndef Magnum_Shaders_FlatShader_h
-#define Magnum_Shaders_FlatShader_h
+#ifndef Magnum_Shaders_AbstractVector_h
+#define Magnum_Shaders_AbstractVector_h
 /*
     This file is part of Magnum.
 
@@ -25,60 +25,42 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::FlatShader
+ * @brief Class Magnum::Shaders::AbstractVector, typedef Magnum::Shaders::AbstractVector2D, Magnum::Shaders::AbstractVector3D
  */
 
-#include "Math/Matrix3.h"
-#include "Math/Matrix4.h"
 #include "AbstractShaderProgram.h"
 #include "Color.h"
 #include "DimensionTraits.h"
 
-#include "magnumShadersVisibility.h"
-
 namespace Magnum { namespace Shaders {
 
 /**
-@brief Flat shader
+@brief Base for vector shaders
 
-Draws whole mesh with one color.
-@see FlatShader2D, FlatShader3D
+@see AbstractVector2D, AbstractVector3D
 */
-template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatShader: public AbstractShaderProgram {
+template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
         typedef Attribute<0, typename DimensionTraits<dimensions>::VectorType> Position;
 
-        explicit FlatShader();
+        /** @brief Texture coordinates */
+        typedef Attribute<1, Vector2> TextureCoordinates;
 
-        /**
-         * @brief Set transformation and projection matrix
-         * @return Pointer to self (for method chaining)
-         */
-        FlatShader<dimensions>* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
-            setUniform(transformationProjectionMatrixUniform, matrix);
-            return this;
-        }
+        enum: Int {
+            VectorTextureLayer = 16 /**< Layer for vector texture */
+        };
 
-        /**
-         * @brief Set color
-         * @return Pointer to self (for method chaining)
-         */
-        FlatShader<dimensions>* setColor(const Color4<>& color) {
-            setUniform(colorUniform, color);
-            return this;
-        }
-
-    private:
-        Int transformationProjectionMatrixUniform,
-            colorUniform;
+        virtual ~AbstractVector() = 0;
 };
 
-/** @brief 2D flat shader */
-typedef FlatShader<2> FlatShader2D;
+template<UnsignedInt dimensions> inline AbstractVector<dimensions>::~AbstractVector() {}
 
-/** @brief 3D flat shader */
-typedef FlatShader<3> FlatShader3D;
+/** @brief Base for two-dimensional text shaders */
+typedef AbstractVector<2> AbstractVector2D;
+
+/** @brief Base for three-dimensional text shader */
+typedef AbstractVector<3> AbstractVector3D;
 
 }}
 

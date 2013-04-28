@@ -22,16 +22,23 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "PhongShader.h"
+#include "Vector.h"
 
 #include <Utility/Resource.h>
 
+#include "Context.h"
 #include "Extensions.h"
 #include "Shader.h"
 
 namespace Magnum { namespace Shaders {
 
-PhongShader::PhongShader(): transformationMatrixUniform(0), projectionMatrixUniform(1), normalMatrixUniform(2), lightUniform(3), diffuseColorUniform(4), ambientColorUniform(5), specularColorUniform(6), lightColorUniform(7), shininessUniform(8) {
+namespace {
+    template<UnsignedInt> constexpr const char* vertexShaderName();
+    template<> constexpr const char* vertexShaderName<2>() { return "AbstractVector2D.vert"; }
+    template<> constexpr const char* vertexShaderName<3>() { return "AbstractVector3D.vert"; }
+}
+
+template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationProjectionMatrixUniform(0), colorUniform(1) {
     Corrade::Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
@@ -42,13 +49,13 @@ PhongShader::PhongShader(): transformationMatrixUniform(0), projectionMatrixUnif
 
     Shader vertexShader(v, Shader::Type::Vertex);
     vertexShader.addSource(rs.get("compatibility.glsl"));
-    vertexShader.addSource(rs.get("PhongShader.vert"));
-    attachShader(vertexShader);
+    vertexShader.addSource(rs.get(vertexShaderName<dimensions>()));
+    AbstractShaderProgram::attachShader(vertexShader);
 
     Shader fragmentShader(v, Shader::Type::Fragment);
     fragmentShader.addSource(rs.get("compatibility.glsl"));
-    fragmentShader.addSource(rs.get("PhongShader.frag"));
-    attachShader(fragmentShader);
+    fragmentShader.addSource(rs.get("Vector.frag"));
+    AbstractShaderProgram::attachShader(fragmentShader);
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||
@@ -57,34 +64,27 @@ PhongShader::PhongShader(): transformationMatrixUniform(0), projectionMatrixUnif
     if(!Context::current()->isVersionSupported(Version::GLES300))
     #endif
     {
-        bindAttributeLocation(Position::Location, "position");
-        bindAttributeLocation(Normal::Location, "normal");
+        AbstractShaderProgram::bindAttributeLocation(AbstractVector<dimensions>::Position::Location, "position");
+        AbstractShaderProgram::bindAttributeLocation(AbstractVector<dimensions>::TextureCoordinates::Location, "textureCoordinates");
     }
 
-    link();
+    AbstractShaderProgram::link();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
     #endif
     {
-        transformationMatrixUniform = uniformLocation("transformationMatrix");
-        projectionMatrixUniform = uniformLocation("projectionMatrix");
-        normalMatrixUniform = uniformLocation("normalMatrix");
-        lightUniform = uniformLocation("light");
-        diffuseColorUniform = uniformLocation("diffuseColor");
-        ambientColorUniform = uniformLocation("ambientColor");
-        specularColorUniform = uniformLocation("specularColor");
-        lightColorUniform = uniformLocation("lightColor");
-        shininessUniform = uniformLocation("shininess");
+        transformationProjectionMatrixUniform = AbstractShaderProgram::uniformLocation("transformationProjectionMatrix");
+        colorUniform = AbstractShaderProgram::uniformLocation("color");
     }
 
-    /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
-    #ifdef MAGNUM_TARGET_GLES
-    setAmbientColor({});
-    setSpecularColor(Vector3(1.0f));
-    setLightColor(Vector3(1.0f));
-    setShininess(80.0f);
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>())
+        AbstractShaderProgram::setUniform(AbstractShaderProgram::uniformLocation("vectorTexture"), AbstractVector<dimensions>::VectorTextureLayer);
     #endif
 }
+
+template class Vector<2>;
+template class Vector<3>;
 
 }}

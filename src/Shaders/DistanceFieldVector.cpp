@@ -22,7 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "DistanceFieldVectorShader.h"
+#include "DistanceFieldVector.h"
 
 #include <Utility/Resource.h>
 
@@ -34,11 +34,11 @@ namespace Magnum { namespace Shaders {
 
 namespace {
     template<UnsignedInt> constexpr const char* vertexShaderName();
-    template<> constexpr const char* vertexShaderName<2>() { return "AbstractVectorShader2D.vert"; }
-    template<> constexpr const char* vertexShaderName<3>() { return "AbstractVectorShader3D.vert"; }
+    template<> constexpr const char* vertexShaderName<2>() { return "AbstractVector2D.vert"; }
+    template<> constexpr const char* vertexShaderName<3>() { return "AbstractVector3D.vert"; }
 }
 
-template<UnsignedInt dimensions> DistanceFieldVectorShader<dimensions>::DistanceFieldVectorShader(): transformationProjectionMatrixUniform(0), colorUniform(1), outlineColorUniform(2), outlineRangeUniform(3), smoothnessUniform(4) {
+template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldVector(): transformationProjectionMatrixUniform(0), colorUniform(1), outlineColorUniform(2), outlineRangeUniform(3), smoothnessUniform(4) {
     Corrade::Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
@@ -54,7 +54,7 @@ template<UnsignedInt dimensions> DistanceFieldVectorShader<dimensions>::Distance
 
     Shader fragmentShader(v, Shader::Type::Fragment);
     fragmentShader.addSource(rs.get("compatibility.glsl"));
-    fragmentShader.addSource(rs.get("DistanceFieldVectorShader.frag"));
+    fragmentShader.addSource(rs.get("DistanceFieldVector.frag"));
     AbstractShaderProgram::attachShader(fragmentShader);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -64,8 +64,8 @@ template<UnsignedInt dimensions> DistanceFieldVectorShader<dimensions>::Distance
     if(!Context::current()->isVersionSupported(Version::GLES300))
     #endif
     {
-        AbstractShaderProgram::bindAttributeLocation(AbstractVectorShader<dimensions>::Position::Location, "position");
-        AbstractShaderProgram::bindAttributeLocation(AbstractVectorShader<dimensions>::TextureCoordinates::Location, "textureCoordinates");
+        AbstractShaderProgram::bindAttributeLocation(AbstractVector<dimensions>::Position::Location, "position");
+        AbstractShaderProgram::bindAttributeLocation(AbstractVector<dimensions>::TextureCoordinates::Location, "textureCoordinates");
     }
 
     AbstractShaderProgram::link();
@@ -84,11 +84,11 @@ template<UnsignedInt dimensions> DistanceFieldVectorShader<dimensions>::Distance
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>())
         AbstractShaderProgram::setUniform(AbstractShaderProgram::uniformLocation("vectorTexture"),
-                                          AbstractVectorShader<dimensions>::VectorTextureLayer);
+                                          AbstractVector<dimensions>::VectorTextureLayer);
     #endif
 }
 
-template class DistanceFieldVectorShader<2>;
-template class DistanceFieldVectorShader<3>;
+template class DistanceFieldVector<2>;
+template class DistanceFieldVector<3>;
 
 }}

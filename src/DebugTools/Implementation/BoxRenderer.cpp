@@ -27,7 +27,7 @@
 #include "Mesh.h"
 #include "DebugTools/ShapeRenderer.h"
 #include "Physics/Box.h"
-#include "Shaders/FlatShader.h"
+#include "Shaders/Flat.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 

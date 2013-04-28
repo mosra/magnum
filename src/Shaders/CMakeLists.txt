@@ -23,29 +23,29 @@
 #
 
 corrade_add_resource(MagnumShaders_RCS MagnumShaders
-    AbstractVectorShader2D.vert AbstractVectorShader3D.vert
-    FlatShader2D.vert FlatShader3D.vert FlatShader.frag
-    PhongShader.vert PhongShader.frag
-    VectorShader.frag DistanceFieldVectorShader.frag
-    VertexColorShader2D.vert VertexColorShader3D.vert VertexColorShader.frag
+    AbstractVector2D.vert AbstractVector3D.vert
+    Flat2D.vert Flat3D.vert Flat.frag
+    Phong.vert Phong.frag
+    Vector.frag DistanceFieldVector.frag
+    VertexColor2D.vert VertexColor3D.vert VertexColor.frag
     compatibility.glsl)
 
 set(MagnumShaders_SRCS
-    DistanceFieldVectorShader.cpp
-    FlatShader.cpp
-    PhongShader.cpp
-    VectorShader.cpp
-    VertexColorShader.cpp
+    DistanceFieldVector.cpp
+    Flat.cpp
+    Phong.cpp
+    Vector.cpp
+    VertexColor.cpp
     ${MagnumShaders_RCS})
 
 set(MagnumShaders_HEADERS
-    DistanceFieldVectorShader.h
-    AbstractVectorShader.h
-    FlatShader.h
-    PhongShader.h
+    DistanceFieldVector.h
+    AbstractVector.h
+    Flat.h
+    Phong.h
     Shaders.h
-    VectorShader.h
-    VertexColorShader.h
+    Vector.h
+    VertexColor.h
 
     magnumShadersVisibility.h)
 

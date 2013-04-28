@@ -27,7 +27,7 @@
 #include "Context.h"
 #include "Extensions.h"
 #include "Mesh.h"
-#include "Shaders/AbstractVectorShader.h"
+#include "Shaders/AbstractVector.h"
 #include "Text/AbstractFont.h"
 
 namespace Magnum { namespace Text {
@@ -179,9 +179,9 @@ template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimens
     auto r = AbstractTextRenderer::render(font, cache, size, text, vertexBuffer, indexBuffer, usage);
     Mesh& mesh = std::get<0>(r);
     mesh.addInterleavedVertexBuffer(vertexBuffer, 0,
-            typename Shaders::AbstractVectorShader<dimensions>::Position(
-                Shaders::AbstractVectorShader<dimensions>::Position::Components::Two),
-            typename Shaders::AbstractVectorShader<dimensions>::TextureCoordinates());
+            typename Shaders::AbstractVector<dimensions>::Position(
+                Shaders::AbstractVector<dimensions>::Position::Components::Two),
+            typename Shaders::AbstractVector<dimensions>::TextureCoordinates());
     return std::move(r);
 }
 
@@ -203,8 +203,8 @@ AbstractTextRenderer::~AbstractTextRenderer() {}
 template<UnsignedInt dimensions> TextRenderer<dimensions>::TextRenderer(AbstractFont* const font, const GlyphCache* const cache, const Float size): AbstractTextRenderer(font, cache, size) {
     /* Finalize mesh configuration */
     _mesh.addInterleavedVertexBuffer(&vertexBuffer, 0,
-            typename Shaders::AbstractVectorShader<dimensions>::Position(Shaders::AbstractVectorShader<dimensions>::Position::Components::Two),
-            typename Shaders::AbstractVectorShader<dimensions>::TextureCoordinates());
+            typename Shaders::AbstractVector<dimensions>::Position(Shaders::AbstractVector<dimensions>::Position::Components::Two),
+            typename Shaders::AbstractVector<dimensions>::TextureCoordinates());
 }
 
 void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usage vertexBufferUsage, const Buffer::Usage indexBufferUsage) {

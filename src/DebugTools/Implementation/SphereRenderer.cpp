@@ -28,7 +28,7 @@
 #include "DebugTools/ShapeRenderer.h"
 #include "Physics/Sphere.h"
 #include "Primitives/Circle.h"
-#include "Shaders/FlatShader.h"
+#include "Shaders/Flat.h"
 #include "Trade/MeshData2D.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {

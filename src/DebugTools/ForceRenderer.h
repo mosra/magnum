@@ -128,7 +128,7 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: p
         const typename DimensionTraits<dimensions, Float>::VectorType* const force;
 
         Resource<ForceRendererOptions> options;
-        Resource<AbstractShaderProgram, Shaders::FlatShader<dimensions>> shader;
+        Resource<AbstractShaderProgram, Shaders::Flat<dimensions>> shader;
         Resource<Mesh> mesh;
         Resource<Buffer> vertexBuffer, indexBuffer;
 };

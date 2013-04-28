@@ -1,5 +1,5 @@
-#ifndef Magnum_Shaders_DistanceFieldVectorShader_h
-#define Magnum_Shaders_DistanceFieldVectorShader_h
+#ifndef Magnum_Shaders_DistanceFieldVector_h
+#define Magnum_Shaders_DistanceFieldVector_h
 /*
     This file is part of Magnum.
 
@@ -25,12 +25,12 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::DistanceFieldVectorShader, typedef Magnum::Shaders::DistanceFieldVectorShader2D, Magnum::Shaders::DistanceFieldVectorShader3D
+ * @brief Class Magnum::Shaders::DistanceFieldVector, typedef Magnum::Shaders::DistanceFieldVector2D, Magnum::Shaders::DistanceFieldVector3D
  */
 
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
-#include "AbstractVectorShader.h"
+#include "AbstractVector.h"
 
 #include "magnumShadersVisibility.h"
 
@@ -42,14 +42,14 @@ namespace Magnum { namespace Shaders {
 Renders vector art in form of signed distance field. See TextureTools::distanceField()
 for more information. Note that the final rendered outlook will greatly depend
 on radius of input distance field and value passed to setSmoothness().
-@see DistanceFieldVectorShader2D, DistanceFieldVectorShader3D
+@see DistanceFieldVector2D, DistanceFieldVector3D
 */
-template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVectorShader: public AbstractVectorShader<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector: public AbstractVector<dimensions> {
     public:
-        DistanceFieldVectorShader();
+        DistanceFieldVector();
 
         /** @brief Set transformation and projection matrix */
-        inline DistanceFieldVectorShader* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
+        inline DistanceFieldVector* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
             AbstractShaderProgram::setUniform(transformationProjectionMatrixUniform, matrix);
             return this;
         }
@@ -60,7 +60,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          *
          * @see setOutlineColor()
          */
-        inline DistanceFieldVectorShader* setColor(const Color4<>& color) {
+        inline DistanceFieldVector* setColor(const Color4<>& color) {
             AbstractShaderProgram::setUniform(colorUniform, color);
             return this;
         }
@@ -71,7 +71,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          *
          * @see setOutlineRange(), setColor()
          */
-        inline DistanceFieldVectorShader* setOutlineColor(const Color4<>& color) {
+        inline DistanceFieldVector* setOutlineColor(const Color4<>& color) {
             AbstractShaderProgram::setUniform(outlineColorUniform, color);
             return this;
         }
@@ -90,7 +90,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          *
          * @see setOutlineColor()
          */
-        inline DistanceFieldVectorShader* setOutlineRange(Float start, Float end) {
+        inline DistanceFieldVector* setOutlineRange(Float start, Float end) {
             AbstractShaderProgram::setUniform(outlineRangeUniform, Vector2(start, end));
             return this;
         }
@@ -103,7 +103,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * values will make them look more crisp (but possibly aliased). Initial
          * value is `0.04f`.
          */
-        inline DistanceFieldVectorShader* setSmoothness(Float value) {
+        inline DistanceFieldVector* setSmoothness(Float value) {
             AbstractShaderProgram::setUniform(smoothnessUniform, value);
             return this;
         }
@@ -117,10 +117,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
 };
 
 /** @brief Two-dimensional distance field vector shader */
-typedef DistanceFieldVectorShader<2> DistanceFieldVectorShader2D;
+typedef DistanceFieldVector<2> DistanceFieldVector2D;
 
 /** @brief Three-dimensional distance field vector shader */
-typedef DistanceFieldVectorShader<3> DistanceFieldVectorShader3D;
+typedef DistanceFieldVector<3> DistanceFieldVector3D;
 
 }}
 

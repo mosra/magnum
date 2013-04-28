@@ -1,5 +1,5 @@
-#ifndef Magnum_Shaders_VertexColorShader_h
-#define Magnum_Shaders_VertexColorShader_h
+#ifndef Magnum_Shaders_Flat_h
+#define Magnum_Shaders_Flat_h
 /*
     This file is part of Magnum.
 
@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::VertexColorShader
+ * @brief Class Magnum::Shaders::Flat
  */
 
 #include "Math/Matrix3.h"
@@ -39,41 +39,46 @@
 namespace Magnum { namespace Shaders {
 
 /**
-@brief Vertex color shader
+@brief Flat shader
 
-Draws vertex-colored mesh.
-@see VertexColorShader2D, VertexColorShader3D
+Draws whole mesh with one color.
+@see Flat2D, Flat3D
 */
-template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorShader: public AbstractShaderProgram {
+template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
         typedef Attribute<0, typename DimensionTraits<dimensions>::VectorType> Position;
 
-        /** @brief Vertex color */
-        typedef Attribute<1, Color3<>> Color;
-
-        explicit VertexColorShader();
+        explicit Flat();
 
         /**
          * @brief Set transformation and projection matrix
          * @return Pointer to self (for method chaining)
-         *
-         * Default is identity matrix.
          */
-        inline VertexColorShader<dimensions>* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
+        Flat<dimensions>* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
             setUniform(transformationProjectionMatrixUniform, matrix);
             return this;
         }
 
+        /**
+         * @brief Set color
+         * @return Pointer to self (for method chaining)
+         */
+        Flat<dimensions>* setColor(const Color4<>& color) {
+            setUniform(colorUniform, color);
+            return this;
+        }
+
     private:
-        Int transformationProjectionMatrixUniform;
+        Int transformationProjectionMatrixUniform,
+            colorUniform;
 };
 
-/** @brief 2D vertex color shader */
-typedef VertexColorShader<2> VertexColorShader2D;
+/** @brief 2D flat shader */
+typedef Flat<2> Flat2D;
 
-/** @brief 3D vertex color shader */
-typedef VertexColorShader<3> VertexColorShader3D;
+/** @brief 3D flat shader */
+typedef Flat<3> Flat3D;
 
 }}
 

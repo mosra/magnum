@@ -1,5 +1,5 @@
-#ifndef Magnum_Shaders_PhongShader_h
-#define Magnum_Shaders_PhongShader_h
+#ifndef Magnum_Shaders_Phong_h
+#define Magnum_Shaders_Phong_h
 /*
     This file is part of Magnum.
 
@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::PhongShader
+ * @brief Class Magnum::Shaders::Phong
  */
 
 #include "Math/Matrix4.h"
@@ -42,12 +42,12 @@ namespace Magnum { namespace Shaders {
 If supported, uses GLSL 3.20 and @extension{ARB,explicit_attrib_location},
 otherwise falls back to GLSL 1.20.
 */
-class MAGNUM_SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
+class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Vector3> Position; /**< @brief Vertex position */
         typedef Attribute<1, Vector3> Normal;   /**< @brief Normal direction */
 
-        explicit PhongShader();
+        explicit Phong();
 
         /**
          * @brief Set ambient color
@@ -55,7 +55,7 @@ class MAGNUM_SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
          *
          * If not set, default value is `(0.0f, 0.0f, 0.0f)`.
          */
-        inline PhongShader* setAmbientColor(const Color3<>& color) {
+        inline Phong* setAmbientColor(const Color3<>& color) {
             setUniform(ambientColorUniform, color);
             return this;
         }
@@ -64,7 +64,7 @@ class MAGNUM_SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
          * @brief Set diffuse color
          * @return Pointer to self (for method chaining)
          */
-        inline PhongShader* setDiffuseColor(const Color3<>& color) {
+        inline Phong* setDiffuseColor(const Color3<>& color) {
             setUniform(diffuseColorUniform, color);
             return this;
         }
@@ -75,7 +75,7 @@ class MAGNUM_SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
          */
-        inline PhongShader* setSpecularColor(const Color3<>& color) {
+        inline Phong* setSpecularColor(const Color3<>& color) {
             setUniform(specularColorUniform, color);
             return this;
         }
@@ -87,7 +87,7 @@ class MAGNUM_SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
          * The larger value, the harder surface (smaller specular highlight).
          * If not set, default value is `80.0f`.
          */
-        inline PhongShader* setShininess(Float shininess) {
+        inline Phong* setShininess(Float shininess) {
             setUniform(shininessUniform, shininess);
             return this;
         }
@@ -96,7 +96,7 @@ class MAGNUM_SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
          * @brief Set transformation and normal matrix
          * @return Pointer to self (for method chaining)
          */
-        inline PhongShader* setTransformationMatrix(const Matrix4& matrix) {
+        inline Phong* setTransformationMatrix(const Matrix4& matrix) {
             setUniform(transformationMatrixUniform, matrix);
             setUniform(normalMatrixUniform, matrix.rotation());
             return this;
@@ -106,7 +106,7 @@ class MAGNUM_SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
          * @brief Set projection matrix
          * @return Pointer to self (for method chaining)
          */
-        inline PhongShader* setProjectionMatrix(const Matrix4& matrix) {
+        inline Phong* setProjectionMatrix(const Matrix4& matrix) {
             setUniform(projectionMatrixUniform, matrix);
             return this;
         }
@@ -115,7 +115,7 @@ class MAGNUM_SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
          * @brief Set light position
          * @return Pointer to self (for method chaining)
          */
-        inline PhongShader* setLightPosition(const Vector3& light) {
+        inline Phong* setLightPosition(const Vector3& light) {
             setUniform(lightUniform, light);
             return this;
         }
@@ -126,7 +126,7 @@ class MAGNUM_SHADERS_EXPORT PhongShader: public AbstractShaderProgram {
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
          */
-        inline PhongShader* setLightColor(const Color3<>& color) {
+        inline Phong* setLightColor(const Color3<>& color) {
             setUniform(lightColorUniform, color);
             return this;
         }

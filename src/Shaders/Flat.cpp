@@ -22,11 +22,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "VectorShader.h"
+#include "Flat.h"
 
 #include <Utility/Resource.h>
 
-#include "Context.h"
 #include "Extensions.h"
 #include "Shader.h"
 
@@ -34,11 +33,11 @@ namespace Magnum { namespace Shaders {
 
 namespace {
     template<UnsignedInt> constexpr const char* vertexShaderName();
-    template<> constexpr const char* vertexShaderName<2>() { return "AbstractVectorShader2D.vert"; }
-    template<> constexpr const char* vertexShaderName<3>() { return "AbstractVectorShader3D.vert"; }
+    template<> constexpr const char* vertexShaderName<2>() { return "Flat2D.vert"; }
+    template<> constexpr const char* vertexShaderName<3>() { return "Flat3D.vert"; }
 }
 
-template<UnsignedInt dimensions> VectorShader<dimensions>::VectorShader(): transformationProjectionMatrixUniform(0), colorUniform(1) {
+template<UnsignedInt dimensions> Flat<dimensions>::Flat(): transformationProjectionMatrixUniform(0), colorUniform(1) {
     Corrade::Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
@@ -50,12 +49,12 @@ template<UnsignedInt dimensions> VectorShader<dimensions>::VectorShader(): trans
     Shader vertexShader(v, Shader::Type::Vertex);
     vertexShader.addSource(rs.get("compatibility.glsl"));
     vertexShader.addSource(rs.get(vertexShaderName<dimensions>()));
-    AbstractShaderProgram::attachShader(vertexShader);
+    attachShader(vertexShader);
 
     Shader fragmentShader(v, Shader::Type::Fragment);
     fragmentShader.addSource(rs.get("compatibility.glsl"));
-    fragmentShader.addSource(rs.get("VectorShader.frag"));
-    AbstractShaderProgram::attachShader(fragmentShader);
+    fragmentShader.addSource(rs.get("Flat.frag"));
+    attachShader(fragmentShader);
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||
@@ -64,27 +63,21 @@ template<UnsignedInt dimensions> VectorShader<dimensions>::VectorShader(): trans
     if(!Context::current()->isVersionSupported(Version::GLES300))
     #endif
     {
-        AbstractShaderProgram::bindAttributeLocation(AbstractVectorShader<dimensions>::Position::Location, "position");
-        AbstractShaderProgram::bindAttributeLocation(AbstractVectorShader<dimensions>::TextureCoordinates::Location, "textureCoordinates");
+        bindAttributeLocation(Position::Location, "position");
     }
 
-    AbstractShaderProgram::link();
+    link();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
     #endif
     {
-        transformationProjectionMatrixUniform = AbstractShaderProgram::uniformLocation("transformationProjectionMatrix");
-        colorUniform = AbstractShaderProgram::uniformLocation("color");
+        transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+        colorUniform = uniformLocation("color");
     }
-
-    #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>())
-        AbstractShaderProgram::setUniform(AbstractShaderProgram::uniformLocation("vectorTexture"), AbstractVectorShader<dimensions>::VectorTextureLayer);
-    #endif
 }
 
-template class VectorShader<2>;
-template class VectorShader<3>;
+template class Flat<2>;
+template class Flat<3>;
 
 }}

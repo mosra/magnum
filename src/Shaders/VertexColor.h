@@ -1,5 +1,5 @@
-#ifndef Magnum_Shaders_AbstractVectorShader_h
-#define Magnum_Shaders_AbstractVectorShader_h
+#ifndef Magnum_Shaders_VertexColor_h
+#define Magnum_Shaders_VertexColor_h
 /*
     This file is part of Magnum.
 
@@ -25,42 +25,55 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::AbstractVectorShader, typedef Magnum::Shaders::AbstractVectorShader2D, Magnum::Shaders::AbstractVectorShader3D
+ * @brief Class Magnum::Shaders::VertexColor
  */
 
+#include "Math/Matrix3.h"
+#include "Math/Matrix4.h"
 #include "AbstractShaderProgram.h"
 #include "Color.h"
 #include "DimensionTraits.h"
 
+#include "magnumShadersVisibility.h"
+
 namespace Magnum { namespace Shaders {
 
 /**
-@brief Base for vector shaders
+@brief Vertex color shader
 
-@see AbstractVectorShader2D, AbstractVectorShader3D
+Draws vertex-colored mesh.
+@see VertexColor2D, VertexColor3D
 */
-template<UnsignedInt dimensions> class AbstractVectorShader: public AbstractShaderProgram {
+template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
         typedef Attribute<0, typename DimensionTraits<dimensions>::VectorType> Position;
 
-        /** @brief Texture coordinates */
-        typedef Attribute<1, Vector2> TextureCoordinates;
+        /** @brief Vertex color */
+        typedef Attribute<1, Color3<>> Color;
 
-        enum: Int {
-            VectorTextureLayer = 16 /**< Layer for vector texture */
-        };
+        explicit VertexColor();
 
-        virtual ~AbstractVectorShader() = 0;
+        /**
+         * @brief Set transformation and projection matrix
+         * @return Pointer to self (for method chaining)
+         *
+         * Default is identity matrix.
+         */
+        inline VertexColor<dimensions>* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
+            setUniform(transformationProjectionMatrixUniform, matrix);
+            return this;
+        }
+
+    private:
+        Int transformationProjectionMatrixUniform;
 };
 
-template<UnsignedInt dimensions> inline AbstractVectorShader<dimensions>::~AbstractVectorShader() {}
+/** @brief 2D vertex color shader */
+typedef VertexColor<2> VertexColor2D;
 
-/** @brief Base for two-dimensional text shaders */
-typedef AbstractVectorShader<2> AbstractVectorShader2D;
-
-/** @brief Base for three-dimensional text shader */
-typedef AbstractVectorShader<3> AbstractVectorShader3D;
+/** @brief 3D vertex color shader */
+typedef VertexColor<3> VertexColor3D;
 
 }}
 

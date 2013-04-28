@@ -28,7 +28,7 @@
 #include "DebugTools/ShapeRenderer.h"
 #include "Physics/Point.h"
 #include "Primitives/Crosshair.h"
-#include "Shaders/FlatShader.h"
+#include "Shaders/Flat.h"
 #include "Trade/MeshData2D.h"
 #include "Trade/MeshData3D.h"
 

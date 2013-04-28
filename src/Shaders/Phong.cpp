@@ -22,7 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "FlatShader.h"
+#include "Phong.h"
 
 #include <Utility/Resource.h>
 
@@ -31,13 +31,7 @@
 
 namespace Magnum { namespace Shaders {
 
-namespace {
-    template<UnsignedInt> constexpr const char* vertexShaderName();
-    template<> constexpr const char* vertexShaderName<2>() { return "FlatShader2D.vert"; }
-    template<> constexpr const char* vertexShaderName<3>() { return "FlatShader3D.vert"; }
-}
-
-template<UnsignedInt dimensions> FlatShader<dimensions>::FlatShader(): transformationProjectionMatrixUniform(0), colorUniform(1) {
+Phong::Phong(): transformationMatrixUniform(0), projectionMatrixUniform(1), normalMatrixUniform(2), lightUniform(3), diffuseColorUniform(4), ambientColorUniform(5), specularColorUniform(6), lightColorUniform(7), shininessUniform(8) {
     Corrade::Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
@@ -48,12 +42,12 @@ template<UnsignedInt dimensions> FlatShader<dimensions>::FlatShader(): transform
 
     Shader vertexShader(v, Shader::Type::Vertex);
     vertexShader.addSource(rs.get("compatibility.glsl"));
-    vertexShader.addSource(rs.get(vertexShaderName<dimensions>()));
+    vertexShader.addSource(rs.get("Phong.vert"));
     attachShader(vertexShader);
 
     Shader fragmentShader(v, Shader::Type::Fragment);
     fragmentShader.addSource(rs.get("compatibility.glsl"));
-    fragmentShader.addSource(rs.get("FlatShader.frag"));
+    fragmentShader.addSource(rs.get("Phong.frag"));
     attachShader(fragmentShader);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -64,6 +58,7 @@ template<UnsignedInt dimensions> FlatShader<dimensions>::FlatShader(): transform
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
+        bindAttributeLocation(Normal::Location, "normal");
     }
 
     link();
@@ -72,12 +67,24 @@ template<UnsignedInt dimensions> FlatShader<dimensions>::FlatShader(): transform
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
     #endif
     {
-        transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
-        colorUniform = uniformLocation("color");
+        transformationMatrixUniform = uniformLocation("transformationMatrix");
+        projectionMatrixUniform = uniformLocation("projectionMatrix");
+        normalMatrixUniform = uniformLocation("normalMatrix");
+        lightUniform = uniformLocation("light");
+        diffuseColorUniform = uniformLocation("diffuseColor");
+        ambientColorUniform = uniformLocation("ambientColor");
+        specularColorUniform = uniformLocation("specularColor");
+        lightColorUniform = uniformLocation("lightColor");
+        shininessUniform = uniformLocation("shininess");
     }
-}
 
-template class FlatShader<2>;
-template class FlatShader<3>;
+    /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
+    #ifdef MAGNUM_TARGET_GLES
+    setAmbientColor({});
+    setSpecularColor(Vector3(1.0f));
+    setLightColor(Vector3(1.0f));
+    setShininess(80.0f);
+    #endif
+}
 
 }}
