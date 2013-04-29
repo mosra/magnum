@@ -24,9 +24,11 @@
 
 #include "Query.h"
 
+#include <Utility/Assert.h>
+
 namespace Magnum {
 
-AbstractQuery::AbstractQuery() {
+AbstractQuery::AbstractQuery(): target() {
     /** @todo Get some extension wrangler instead to avoid undeclared glGenQueries() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
     glGenQueries(1, &_id);
@@ -41,6 +43,8 @@ AbstractQuery::~AbstractQuery() {
 }
 
 bool AbstractQuery::resultAvailable() {
+    CORRADE_ASSERT(!target, "AbstractQuery::resultAvailable(): the query is currently running", false);
+
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     GLuint result;
@@ -53,6 +57,8 @@ bool AbstractQuery::resultAvailable() {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> bool AbstractQuery::result<bool>() {
+    CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
+
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     GLuint result;
@@ -64,6 +70,8 @@ template<> bool AbstractQuery::result<bool>() {
 }
 
 template<> UnsignedInt AbstractQuery::result<UnsignedInt>() {
+    CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
+
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     UnsignedInt result;
@@ -76,18 +84,24 @@ template<> UnsignedInt AbstractQuery::result<UnsignedInt>() {
 
 #ifndef MAGNUM_TARGET_GLES
 template<> Int AbstractQuery::result<Int>() {
+    CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
+
     Int result;
     glGetQueryObjectiv(_id, GL_QUERY_RESULT, &result);
     return result;
 }
 
 template<> UnsignedLong AbstractQuery::result<UnsignedLong>() {
+    CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
+
     UnsignedLong result;
     glGetQueryObjectui64v(_id, GL_QUERY_RESULT, &result);
     return result;
 }
 
 template<> Long AbstractQuery::result<Long>() {
+    CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
+
     Long result;
     glGetQueryObjecti64v(_id, GL_QUERY_RESULT, &result);
     return result;
@@ -95,65 +109,23 @@ template<> Long AbstractQuery::result<Long>() {
 #endif
 #endif
 
-#ifndef MAGNUM_TARGET_GLES2
-PrimitiveQuery::PrimitiveQuery(): target(nullptr) {}
-
-PrimitiveQuery::~PrimitiveQuery() { delete target; }
-
-void PrimitiveQuery::begin(Target target) {
-    glBeginQuery(static_cast<GLenum>(target), id());
-    this->target = new Target(target);
-}
-
-void PrimitiveQuery::end() {
-    if(!target) return;
-
-    glEndQuery(static_cast<GLenum>(*target));
-    delete target;
-    target = nullptr;
-}
-#endif
-
-SampleQuery::SampleQuery(): target(nullptr) {}
-
-SampleQuery::~SampleQuery() { delete target; }
-
-void SampleQuery::begin(Target target) {
-    /** @todo Re-enable when extension wrangler is available for ES */
-    #ifndef MAGNUM_TARGET_GLES2
-    glBeginQuery(static_cast<GLenum>(target), id());
-    #endif
-    this->target = new Target(target);
-}
-
-void SampleQuery::end() {
-    if(!target) return;
+void AbstractQuery::begin(GLenum target) {
+    CORRADE_ASSERT(!this->target, "AbstractQuery::begin(): the query is already running", );
 
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
-    glEndQuery(static_cast<GLenum>(*target));
+    glBeginQuery(this->target = target, id());
     #endif
-    delete target;
-    target = nullptr;
 }
 
-#ifndef MAGNUM_TARGET_GLES
-TimeQuery::TimeQuery(): target(nullptr) {}
+void AbstractQuery::end() {
+    CORRADE_ASSERT(target, "AbstractQuery::end(): the query is not running", );
 
-TimeQuery::~TimeQuery() { delete target; }
-
-void TimeQuery::begin(Target target) {
-    glBeginQuery(static_cast<GLenum>(target), id());
-    this->target = new Target(target);
+    /** @todo Re-enable when extension wrangler is available for ES */
+    #ifndef MAGNUM_TARGET_GLES2
+    glEndQuery(target);
+    #endif
+    target = {};
 }
-
-void TimeQuery::end() {
-    if(!target) return;
-
-    glEndQuery(static_cast<GLenum>(*target));
-    delete target;
-    target = nullptr;
-}
-#endif
 
 }

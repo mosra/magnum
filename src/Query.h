@@ -28,8 +28,9 @@
  * @brief Class Magnum::AbstractQuery, Magnum::Query, Magnum::SampleQuery, Magnum::TimeQuery
  */
 
-#include "Magnum.h"
 #include "OpenGL.h"
+#include "Types.h"
+#include "magnumConfigure.h"
 #include "magnumVisibility.h"
 
 namespace Magnum {
@@ -44,6 +45,7 @@ information.
 */
 class MAGNUM_EXPORT AbstractQuery {
     public:
+        #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
          * @brief Constructor
          *
@@ -51,6 +53,7 @@ class MAGNUM_EXPORT AbstractQuery {
          * @see @fn_gl{GenQueries}
          */
         explicit AbstractQuery();
+        #endif
 
         /**
          * @brief Destructor
@@ -58,7 +61,7 @@ class MAGNUM_EXPORT AbstractQuery {
          * Deletes assigned OpenGL query.
          * @see @fn_gl{DeleteQueries}
          */
-        virtual ~AbstractQuery() = 0;
+        ~AbstractQuery();
 
         /** @brief OpenGL query ID */
         inline GLuint id() const { return _id; }
@@ -86,8 +89,22 @@ class MAGNUM_EXPORT AbstractQuery {
          */
         template<class T> T result();
 
+        /**
+         * @brief End query
+         *
+         * The result can be then retrieved by calling result().
+         * @see @fn_gl{EndQuery}
+         */
+        void end();
+
+    protected:
+        explicit AbstractQuery();
+
+        void begin(GLenum target);
+
     private:
         GLuint _id;
+        GLenum target;
 };
 
 
@@ -124,7 +141,7 @@ UnsignedInt primitiveCount = q.result<UnsignedInt>();
 @requires_gl30 %Extension @extension{EXT,transform_feedback}
 @requires_gles30 Only sample queries are available on OpenGL ES 2.0.
 */
-class MAGNUM_EXPORT PrimitiveQuery: public AbstractQuery {
+class PrimitiveQuery: public AbstractQuery {
     public:
         /** @brief Query target */
         enum Target: GLenum {
@@ -142,28 +159,15 @@ class MAGNUM_EXPORT PrimitiveQuery: public AbstractQuery {
             TransformFeedbackPrimitivesWritten = GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN
         };
 
-        explicit PrimitiveQuery();
-
-        ~PrimitiveQuery();
-
         /**
          * @brief Begin query
          *
          * Begins counting of given @p target until end() is called.
          * @see @fn_gl{BeginQuery}
          */
-        void begin(Target target);
-
-        /**
-         * @brief End query
-         *
-         * The result can be then retrieved by calling result().
-         * @see @fn_gl{EndQuery}
-         */
-        void end();
-
-    private:
-        Target* target;
+        inline void begin(Target target) {
+            AbstractQuery::begin(GLenum(target));
+        }
 };
 #endif
 
@@ -203,7 +207,7 @@ q.endConditionalRender();
 @endcode
 @requires_gles30 %Extension @es_extension{EXT,occlusion_query_boolean}
 */
-class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
+class SampleQuery: public AbstractQuery {
     public:
         /** @brief Query target */
         enum Target: GLenum {
@@ -273,15 +277,10 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
         };
         #endif
 
-        explicit SampleQuery();
-
-        ~SampleQuery();
-
         /** @copydoc PrimitiveQuery::begin() */
-        void begin(Target target);
-
-        /** @copydoc PrimitiveQuery::end() */
-        void end();
+        inline void begin(Target target) {
+            AbstractQuery::begin(GLenum(target));
+        }
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -306,9 +305,6 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
             glEndConditionalRender();
         }
         #endif
-
-    private:
-        Target* target;
 };
 
 #ifndef MAGNUM_TARGET_GLES
@@ -353,10 +349,6 @@ class TimeQuery: public AbstractQuery {
             TimeElapsed = GL_TIME_ELAPSED
         };
 
-        explicit TimeQuery();
-
-        ~TimeQuery();
-
         /**
          * @brief Query timestamp
          *
@@ -367,13 +359,9 @@ class TimeQuery: public AbstractQuery {
         }
 
         /** @copydoc PrimitiveQuery::begin() */
-        void begin(Target target);
-
-        /** @copydoc PrimitiveQuery::end() */
-        void end();
-
-    private:
-        Target* target;
+        inline void begin(Target target) {
+            AbstractQuery::begin(GLenum(target));
+        }
 };
 #endif
 
