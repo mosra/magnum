@@ -96,16 +96,16 @@ template<> Long AbstractQuery::result<Long>() {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-Query::Query(): target(nullptr) {}
+PrimitiveQuery::PrimitiveQuery(): target(nullptr) {}
 
-Query::~Query() { delete target; }
+PrimitiveQuery::~PrimitiveQuery() { delete target; }
 
-void Query::begin(Query::Target target) {
+void PrimitiveQuery::begin(Target target) {
     glBeginQuery(static_cast<GLenum>(target), id());
     this->target = new Target(target);
 }
 
-void Query::end() {
+void PrimitiveQuery::end() {
     if(!target) return;
 
     glEndQuery(static_cast<GLenum>(*target));
@@ -118,7 +118,7 @@ SampleQuery::SampleQuery(): target(nullptr) {}
 
 SampleQuery::~SampleQuery() { delete target; }
 
-void SampleQuery::begin(SampleQuery::Target target) {
+void SampleQuery::begin(Target target) {
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glBeginQuery(static_cast<GLenum>(target), id());
@@ -138,7 +138,22 @@ void SampleQuery::end() {
 }
 
 #ifndef MAGNUM_TARGET_GLES
-TimeQuery::TimeQuery() = default;
+TimeQuery::TimeQuery(): target(nullptr) {}
+
+TimeQuery::~TimeQuery() { delete target; }
+
+void TimeQuery::begin(Target target) {
+    glBeginQuery(static_cast<GLenum>(target), id());
+    this->target = new Target(target);
+}
+
+void TimeQuery::end() {
+    if(!target) return;
+
+    glEndQuery(static_cast<GLenum>(*target));
+    delete target;
+    target = nullptr;
+}
 #endif
 
 }
