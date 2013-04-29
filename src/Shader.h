@@ -142,10 +142,7 @@ class MAGNUM_EXPORT Shader {
          * one source.
          * @see addFile()
          */
-        inline Shader& addSource(const std::string& source) {
-            if(_state == State::Initialized) sources.push_back(source);
-            return *this;
-        }
+        Shader& addSource(const std::string& source);
 
         /**
          * @brief Add source file

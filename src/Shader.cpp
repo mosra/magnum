@@ -79,6 +79,14 @@ Shader& Shader::operator=(Shader&& other) {
     return *this;
 }
 
+Shader& Shader::addSource(const std::string& source) {
+    if(_state == State::Initialized)
+        /* Fix line numbers, so line 41 of third added file is marked as 3(41).
+           Source 0 is the #version string added in constructor. */
+        sources.push_back("#line 1 " + std::to_string(sources.size()) + '\n' + source);
+    return *this;
+}
+
 Shader& Shader::addFile(const std::string& filename) {
     /* Open file */
     std::ifstream file(filename.c_str());
