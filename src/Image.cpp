@@ -34,8 +34,10 @@ template<UnsignedInt dimensions> void Image<dimensions>::setData(const typename 
     _data = reinterpret_cast<unsigned char*>(data);
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_EXPORT Image<1>;
 template class MAGNUM_EXPORT Image<2>;
 template class MAGNUM_EXPORT Image<3>;
+#endif
 
 }

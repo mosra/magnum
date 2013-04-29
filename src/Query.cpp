@@ -51,6 +51,7 @@ bool AbstractQuery::resultAvailable() {
     #endif
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template<> bool AbstractQuery::result<bool>() {
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
@@ -91,6 +92,7 @@ template<> Long AbstractQuery::result<Long>() {
     glGetQueryObjecti64v(_id, GL_QUERY_RESULT, &result);
     return result;
 }
+#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
