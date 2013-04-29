@@ -438,10 +438,17 @@ class MAGNUM_EXPORT Mesh {
          * @see primitive(), setPrimitive()
          */
         enum class Primitive: GLenum {
-            /**
-             * Single points
-             */
+            /** Single points. */
             Points = GL_POINTS,
+
+            /**
+             * First two vertices define first line segment, each following
+             * vertex defines another segment.
+             */
+            LineStrip = GL_LINE_STRIP,
+
+            /** Line strip, last and first vertex are connected together. */
+            LineLoop = GL_LINE_LOOP,
 
             /**
              * Each pair of vertices defines a single line, lines aren't
@@ -449,20 +456,19 @@ class MAGNUM_EXPORT Mesh {
              */
             Lines = GL_LINES,
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
-             * Polyline
+             * Line strip with adjacency information.
+             * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
              */
-            LineStrip = GL_LINE_STRIP,
+            LineStripAdjacency = GL_LINE_STRIP_ADJACENCY,
 
             /**
-             * Polyline, last vertex is connected to first.
+             * Lines with adjacency information.
+             * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
              */
-            LineLoop = GL_LINE_LOOP,
-
-            /**
-             * Each three vertices define one triangle.
-             */
-            Triangles = GL_TRIANGLES,
+            LinesAdjacency = GL_LINES_ADJACENCY,
+            #endif
 
             /**
              * First three vertices define first triangle, each following
@@ -474,7 +480,30 @@ class MAGNUM_EXPORT Mesh {
              * First vertex is center, each following vertex is connected to
              * previous and center vertex.
              */
-            TriangleFan = GL_TRIANGLE_FAN
+            TriangleFan = GL_TRIANGLE_FAN,
+
+            /** Each three vertices define one triangle. */
+            Triangles = GL_TRIANGLES,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Triangle strip with adjacency information.
+             * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+             */
+            TriangleStripAdjacency = GL_TRIANGLE_STRIP_ADJACENCY,
+
+            /**
+             * Triangles with adjacency information.
+             * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+             */
+            TrianglesAdjacency = GL_TRIANGLES_ADJACENCY,
+
+            /**
+             * Patches.
+             * @requires_gl40 %Extension @extension{ARB,tessellation_shader}
+             */
+            Patches = GL_PATCHES
+            #endif
         };
 
         /**
