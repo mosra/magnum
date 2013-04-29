@@ -152,13 +152,19 @@ void AbstractShaderProgram::link() {
 
     /* Show error log and delete shader */
     if(status == GL_FALSE) {
-        Error() << "AbstractShaderProgram: linking failed with the following message:\n"
-                << message;
+        Error out;
+        out.setFlag(Debug::NewLineAtTheEnd, false);
+        out.setFlag(Debug::SpaceAfterEachValue, false);
+        out << "AbstractShaderProgram: linking failed with the following message:\n"
+            << message;
 
     /* Or just warnings, if there are any */
     } else if(message[0] != 0) {
-        Debug() << "AbstractShaderProgram: linking succeeded with the following message:\n"
-                << message;
+        Debug out;
+        out.setFlag(Debug::NewLineAtTheEnd, false);
+        out.setFlag(Debug::SpaceAfterEachValue, false);
+        out << "AbstractShaderProgram: linking succeeded with the following message:\n"
+            << message;
     }
 
     state = status == GL_FALSE ? Failed : Linked;

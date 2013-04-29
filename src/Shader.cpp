@@ -149,14 +149,17 @@ GLuint Shader::compile() {
             case Type::Fragment:    err << "fragment";      break;
         }
 
+        err.setFlag(Debug::NewLineAtTheEnd, false);
+        err.setFlag(Debug::SpaceAfterEachValue, false);
+
         /* Show error log and delete shader */
         if(status == GL_FALSE) {
-            err << "shader failed to compile with the following message:\n"
+            err << " shader failed to compile with the following message:\n"
                 << message;
 
         /* Or just warnings, if there are any */
         } else if(message[0] != 0) {
-            err << "shader was successfully compiled with the following message:\n"
+            err << " shader was successfully compiled with the following message:\n"
                 << message;
         }
     }
