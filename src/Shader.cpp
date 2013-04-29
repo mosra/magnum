@@ -79,15 +79,10 @@ Shader& Shader::operator=(Shader&& other) {
     return *this;
 }
 
-bool Shader::addFile(const std::string& filename) {
+Shader& Shader::addFile(const std::string& filename) {
     /* Open file */
     std::ifstream file(filename.c_str());
-    if(!file.good()) {
-        file.close();
-
-        Error() << "Shader file " << '\'' + filename + '\'' << " cannot be opened.";
-        return false;
-    }
+    CORRADE_ASSERT(file.good(), "Shader file " << '\'' + filename + '\'' << " cannot be opened.", *this);
 
     /* Get size of shader and initialize buffer */
     file.seekg(0, std::ios::end);
@@ -104,7 +99,7 @@ bool Shader::addFile(const std::string& filename) {
     addSource(source);
     delete[] source;
 
-    return true;
+    return *this;
 }
 
 GLuint Shader::compile() {

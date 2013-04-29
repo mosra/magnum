@@ -85,8 +85,8 @@ Int TransformationUniform = 0,
 @code
 MyShader() {
     // Load shaders from file and attach them to the program
-    attachShader(Shader::fromFile(Version::430, Shader::Type::Vertex, "PhongShader.vert"));
-    attachShader(Shader::fromFile(Version::430, Shader::Type::Fragment, "PhongShader.frag"));
+    attachShader(Shader(Version::GL430, Shader::Type::Vertex).attachFile("PhongShader.vert"));
+    attachShader(Shader(Version::GL430, Shader::Type::Fragment).attachFile("PhongShader.frag"));
 
     // Link
     link();

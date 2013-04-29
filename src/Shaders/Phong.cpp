@@ -40,15 +40,13 @@ Phong::Phong(): transformationMatrixUniform(0), projectionMatrixUniform(1), norm
     Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    Shader vertexShader(v, Shader::Type::Vertex);
-    vertexShader.addSource(rs.get("compatibility.glsl"));
-    vertexShader.addSource(rs.get("Phong.vert"));
-    attachShader(vertexShader);
+    attachShader(Shader(v, Shader::Type::Vertex)
+        .addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("Phong.vert")));
 
-    Shader fragmentShader(v, Shader::Type::Fragment);
-    fragmentShader.addSource(rs.get("compatibility.glsl"));
-    fragmentShader.addSource(rs.get("Phong.frag"));
-    attachShader(fragmentShader);
+    attachShader(Shader(v, Shader::Type::Fragment)
+        .addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("Phong.frag")));
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||

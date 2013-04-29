@@ -94,55 +94,13 @@ class MAGNUM_EXPORT Shader {
         };
 
         /**
-         * @brief Load shader from source
-         * @param version   Target version
-         * @param type      %Shader type
-         * @param source    %Shader source
-         * @return Shader instance
-         *
-         * Loads the shader from one source. Shorthand for
-         * @code
-         * Shader s(version, type);
-         * s.addData(data);
-         * @endcode
-         * Note that it is also possible to create shader from more than one
-         * source.
-         */
-        inline static Shader fromData(Version version, Type type, const std::string& source) {
-            Shader s(version, type);
-            s.addSource(source);
-            return s;
-        }
-
-        /**
-         * @brief Load shader from file
-         * @param version   Target version
-         * @param type      %Shader type
-         * @param filename  Source filename
-         * @return Shader instance
-         *
-         * Loads the shader from from one file. Shorthand for
-         * @code
-         * Shader s(version, type);
-         * s.addFile(filename);
-         * @endcode
-         * Note that it is also possible to create shader from more than one
-         * source.
-         */
-        inline static Shader fromFile(Version version, Type type, const char* filename) {
-            Shader s(version, type);
-            s.addFile(filename);
-            return s;
-        }
-
-        /**
          * @brief Constructor
          * @param version   Target version
          * @param type      %Shader type
          *
          * Creates empty OpenGL shader and adds @c \#version directive at the
          * beginning. Sources can be added with addSource() or addFile().
-         * @see fromData(), fromFile(), @fn_gl{CreateShader}
+         * @see @fn_gl{CreateShader}
          */
         explicit Shader(Version version, Type type);
 
@@ -177,24 +135,27 @@ class MAGNUM_EXPORT Shader {
         /**
          * @brief Add shader source
          * @param source    String with shader source
+         * @return Reference to self (for method chaining)
          *
          * If the shader is not compiled already, adds given source to source
          * list. Note that it is possible to compile shader from more than
          * one source.
          * @see addFile()
          */
-        inline void addSource(const std::string& source) {
+        inline Shader& addSource(const std::string& source) {
             if(_state == State::Initialized) sources.push_back(source);
+            return *this;
         }
 
         /**
          * @brief Add source file
          * @param filename  Name of source file to read from
-         * @return False if reading the file fails, true otherwise.
+         * @return Reference to self (for method chaining)
          *
+         * The file must exist and must be readable.
          * @see addSource()
          */
-        bool addFile(const std::string& filename);
+        Shader& addFile(const std::string& filename);
 
         /**
          * @brief Compile shader

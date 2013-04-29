@@ -86,5 +86,10 @@ Scene3D scene;
     ->rotateX(90.0_degf)
     ->translate({-1.5f, 0.5f, 7.0f});
 @endcode
+
+In most cases method chaining methods return pointer to the object, because
+most of the objects are commonly created on the heap. The only exception are
+Shader methods, which return reference, because the class is commonly created
+as local variable in shader constructors.
 */
 }
