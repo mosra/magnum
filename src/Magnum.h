@@ -377,7 +377,12 @@ typedef ImageWrapper<2> ImageWrapper2D;
 typedef ImageWrapper<3> ImageWrapper3D;
 
 class Mesh;
-class Query;
+
+/* AbstractQuery is not used directly */
+class PrimitiveQuery;
+class SampleQuery;
+class TimeQuery;
+
 class Renderbuffer;
 
 enum class ResourceState: UnsignedByte;
