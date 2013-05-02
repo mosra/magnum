@@ -125,6 +125,7 @@ perform the operations component-wise.
 @brief Minimum
 
 @see min(), clamp(), Vector::min()
+@todo initializer list versions
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T min(T a, T b);
@@ -144,6 +145,7 @@ template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size
 @brief Maximum
 
 @see max(), clamp(), Vector::max()
+@todo initializer list versions
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T max(const T& a, const T& b);
