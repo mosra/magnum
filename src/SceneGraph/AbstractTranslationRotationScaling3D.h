@@ -55,6 +55,16 @@ class AbstractTranslationRotationScaling3D: public AbstractTranslationRotation3D
          * @see Vector3::xScale(), Vector3::yScale(), Vector3::zScale()
          */
         virtual AbstractTranslationRotationScaling3D<T>* scale(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) = 0;
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        AbstractTranslationRotationScaling3D<T>* resetTransformation() override = 0;
+        AbstractTranslationRotationScaling3D<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) = 0;
+        AbstractTranslationRotationScaling3D<T>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) = 0;
+        AbstractTranslationRotationScaling3D<T>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) = 0;
+        AbstractTranslationRotationScaling3D<T>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) = 0;
+        AbstractTranslationRotationScaling3D<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override = 0;
+        #endif
 };
 
 }}

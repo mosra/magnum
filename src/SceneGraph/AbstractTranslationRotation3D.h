@@ -107,6 +107,11 @@ class AbstractTranslationRotation3D: public AbstractTransformation<3, T> {
         virtual AbstractTranslationRotation3D<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             return rotate(angle, Math::Vector3<T>::zAxis(), type);
         }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        AbstractTranslationRotation3D<T>* resetTransformation() override = 0;
+        #endif
 };
 
 }}

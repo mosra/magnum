@@ -63,6 +63,11 @@ class AbstractTranslationRotation2D: public AbstractTransformation<2, T> {
          * @return Pointer to self (for method chaining)
          */
         virtual AbstractTranslationRotation2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) = 0;
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        AbstractTranslationRotation2D<T>* resetTransformation() override = 0;
+        #endif
 };
 
 }}
