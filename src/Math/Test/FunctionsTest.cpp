@@ -34,7 +34,9 @@ class FunctionsTest: public Corrade::TestSuite::Tester {
         FunctionsTest();
 
         void min();
+        void minList();
         void max();
+        void maxList();
         void sign();
         void abs();
         void sqrt();
@@ -68,7 +70,9 @@ typedef Math::Vector3<Int> Vector3i;
 
 FunctionsTest::FunctionsTest() {
     addTests({&FunctionsTest::min,
+              &FunctionsTest::minList,
               &FunctionsTest::max,
+              &FunctionsTest::maxList,
               &FunctionsTest::sign,
               &FunctionsTest::abs,
               &FunctionsTest::sqrt,
@@ -97,9 +101,23 @@ void FunctionsTest::min() {
     CORRADE_COMPARE(Math::min(Vector3i(5, -3, 2), Vector3i(9, -5, 18)), Vector3i(5, -5, 2));
 }
 
+void FunctionsTest::minList() {
+    CORRADE_COMPARE(Math::min({5, -2, 9}), -2);
+    CORRADE_COMPARE(Math::min({Vector3i(5, -3, 2),
+                               Vector3i(-2, 14, 7),
+                               Vector3i(9, -5, 18)}), Vector3i(-2, -5, 2));
+}
+
 void FunctionsTest::max() {
     CORRADE_COMPARE(Math::max(5, 9), 9);
     CORRADE_COMPARE(Math::max(Vector3i(5, -3, 2), Vector3i(9, -5, 18)), Vector3i(9, -3, 18));
+}
+
+void FunctionsTest::maxList() {
+    CORRADE_COMPARE(Math::max({5, -2, 9}), 9);
+    CORRADE_COMPARE(Math::max({Vector3i(5, -3, 2),
+                               Vector3i(-2, 14, 7),
+                               Vector3i(9, -5, 18)}), Vector3i(9, 14, 18));
 }
 
 void FunctionsTest::sign() {
