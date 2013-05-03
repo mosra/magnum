@@ -224,7 +224,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
     # DebugTools library
     if(${component} STREQUAL DebugTools)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Profiler.h)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES DebugTools.h)
     endif()
 
     # Mesh tools library
@@ -234,7 +234,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
     # Physics library
     if(${component} STREQUAL Physics)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES AbstractShape.h)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Physics.h)
     endif()
 
     # Primitives library
@@ -244,17 +244,17 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
     # Scene graph library
     if(${component} STREQUAL SceneGraph)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Scene.h)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES SceneGraph.h)
     endif()
 
     # Shaders library
     if(${component} STREQUAL Shaders)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES PhongShader.h)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Shaders.h)
     endif()
 
     # Text library
     if(${component} STREQUAL Text)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES AbstractFont.h)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Text.h)
     endif()
 
     # TextureTools library
