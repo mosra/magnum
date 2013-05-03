@@ -76,7 +76,7 @@ void MyApplication::viewportEvent(const Vector2i& size) {
 
 void MyApplication::drawEvent() {
     // Clear the window
-    defaultFramebuffer.clear();
+    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color);
 
     // The context is double-buffered, swap buffers
     swapBuffers();
