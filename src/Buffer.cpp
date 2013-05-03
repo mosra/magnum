@@ -101,8 +101,9 @@ Buffer::Target Buffer::bindInternal(Target hint) {
     if(hintBinding == _id) return hint;
 
     /* Return first target in which the buffer is bound */
+    /** @todo wtf there is one more? */
     for(std::size_t i = 1; i != Implementation::BufferState::TargetCount; ++i)
-        if(bindings[i] == _id) return Implementation::BufferState::targetForIndex[i];
+        if(bindings[i] == _id) return Implementation::BufferState::targetForIndex[i-1];
 
     /* Bind the buffer to hint target otherwise */
     hintBinding = _id;
