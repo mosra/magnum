@@ -412,6 +412,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
 
         /**
          * @brief Set resource data
+         * @return Pointer to self (for method chaining)
          *
          * If @p policy is set to `ResourcePolicy::ReferenceCounted`, there
          * must be already at least one reference to given resource, otherwise
@@ -428,18 +429,21 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          *      subsequent updates are not possible.
          * @see referenceCount(), state()
          */
-        template<class T> inline void set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
+        template<class T> inline ResourceManager<Types...>* set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
             this->Implementation::ResourceManagerData<T>::set(key, data, state, policy);
+            return this;
         }
 
         /**
          * @brief Set resource data
+         * @return Pointer to self (for method chaining)
          *
          * Same as above function with state set to @ref ResourceDataState "ResourceDataState::Final"
          * and policy to @ref ResourcePolicy "ResourcePolicy::Resident".
          */
-        template<class T> inline void set(ResourceKey key, T* data) {
+        template<class T> inline ResourceManager<Types...>* set(ResourceKey key, T* data) {
             this->Implementation::ResourceManagerData<T>::set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);
+            return this;
         }
 
         /** @brief Fallback for not found resources */
@@ -452,19 +456,31 @@ template<class... Types> class ResourceManager: private Implementation::Resource
             return this->Implementation::ResourceManagerData<T>::fallback();
         }
 
-        /** @brief Set fallback for not found resources */
-        template<class T> inline void setFallback(T* data) {
-            return this->Implementation::ResourceManagerData<T>::setFallback(data);
+        /**
+         * @brief Set fallback for not found resources
+         * @return Pointer to self (for method chaining)
+         */
+        template<class T> inline ResourceManager<Types...>* setFallback(T* data) {
+            this->Implementation::ResourceManagerData<T>::setFallback(data);
+            return this;
         }
 
-        /** @brief Free all resources of given type which are not referenced */
-        template<class T> inline void free() {
-            return this->Implementation::ResourceManagerData<T>::free();
+        /**
+         * @brief Free all resources of given type which are not referenced
+         * @return Pointer to self (for method chaining)
+         */
+        template<class T> inline ResourceManager<Types...>* free() {
+            this->Implementation::ResourceManagerData<T>::free();
+            return this;
         }
 
-        /** @brief Free all resources which are not referenced */
-        inline void free() {
+        /**
+         * @brief Free all resources which are not referenced
+         * @return Pointer to self (for method chaining)
+         */
+        inline ResourceManager<Types...>* free() {
             freeInternal(std::common_type<Types>()...);
+            return this;
         }
 
         /** @brief Loader for given type of resources */
@@ -479,11 +495,13 @@ template<class... Types> class ResourceManager: private Implementation::Resource
 
         /**
          * @brief Set loader for given type of resources
+         * @return Pointer to self (for method chaining)
          *
          * See AbstractResourceLoader documentation for more information.
          */
-        template<class T> inline void setLoader(AbstractResourceLoader<T>* loader) {
-            return this->Implementation::ResourceManagerData<T>::setLoader(loader);
+        template<class T> inline ResourceManager<Types...>* setLoader(AbstractResourceLoader<T>* loader) {
+            this->Implementation::ResourceManagerData<T>::setLoader(loader);
+            return this;
         }
 
     private:
