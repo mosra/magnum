@@ -52,7 +52,7 @@ template<UnsignedInt dimensions> bool AbstractShape<dimensions>::collides(const 
 }
 
 template<UnsignedInt dimensions> void AbstractShape<dimensions>::markDirty() {
-    group()->setDirty();
+    if(group()) group()->setDirty();
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

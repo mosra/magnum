@@ -102,9 +102,6 @@ template<class T> class MAGNUM_PHYSICS_EXPORT Shape: public AbstractShape<T::Dim
         const T& transformedShape();
 
     protected:
-        /** Marks also the group as dirty */
-        void markDirty() override;
-
         /** Applies transformation to associated shape. */
         void clean(const typename DimensionTraits<T::Dimensions>::MatrixType& absoluteTransformationMatrix) override;
 
@@ -125,10 +122,6 @@ template<class T> inline Shape<T>* Shape<T>::setShape(const T& shape) {
 template<class T> inline const T& Shape<T>::transformedShape() {
     this->object()->setClean();
     return _transformedShape.shape;
-}
-
-template<class T> void Shape<T>::markDirty() {
-    if(this->group()) this->group()->setDirty();
 }
 
 template<class T> void Shape<T>::clean(const typename DimensionTraits<T::Dimensions>::MatrixType& absoluteTransformationMatrix) {
