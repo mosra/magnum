@@ -32,6 +32,10 @@
 
 namespace Magnum { namespace Math {
 
+namespace Implementation {
+    template<std::size_t, std::size_t, class, class> struct RectangularMatrixConverter;
+}
+
 /**
 @brief Rectangular matrix
 @tparam cols    Column count
@@ -140,11 +144,26 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
         #endif
 
+        /** @brief Construct matrix from external representation */
+        #ifndef CORRADE_GCC46_COMPATIBILITY
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> inline constexpr explicit RectangularMatrix(const U& other): RectangularMatrix(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(other)) {}
+        #else
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> inline explicit RectangularMatrix(const U& other) {
+            *this = Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(other);
+        }
+        #endif
+
         /** @brief Copy constructor */
         inline constexpr RectangularMatrix(const RectangularMatrix<cols, rows, T>&) = default;
 
         /** @brief Assignment operator */
         inline RectangularMatrix<cols, rows, T>& operator=(const RectangularMatrix<cols, rows, T>&) = default;
+
+        /** @brief Convert matrix to external representation */
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(std::declval<RectangularMatrix<cols, rows, T>>()))> inline constexpr explicit operator U() const {
+            /** @bug Why this is not constexpr under GCC 4.6? */
+            return Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(*this);
+        }
 
         /**
          * @brief Raw data

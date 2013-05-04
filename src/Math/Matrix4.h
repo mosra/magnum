@@ -280,6 +280,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */
         template<class U> inline constexpr explicit Matrix4(const RectangularMatrix<4, 4, U>& other): Matrix<4, T>(other) {}
 
+        /** @brief Construct matrix from external representation */
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(std::declval<U>()))> inline constexpr explicit Matrix4(const U& other): Matrix<4, T>(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(other)) {}
+
         /** @brief Copy constructor */
         inline constexpr Matrix4(const RectangularMatrix<4, 4, T>& other): Matrix<4, T>(other) {}
 

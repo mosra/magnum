@@ -28,7 +28,34 @@
 
 #include "Math/Matrix4.h"
 
-namespace Magnum { namespace Math { namespace Test {
+struct Mat4 {
+    float a[16];
+};
+
+namespace Magnum { namespace Math {
+
+namespace Implementation {
+
+template<> struct RectangularMatrixConverter<4, 4, float, Mat4> {
+    inline constexpr static RectangularMatrix<4, 4, Float> from(const Mat4& other) {
+        return RectangularMatrix<4, 4, Float>(
+            Vector<4, Float>(other.a[0], other.a[1], other.a[2], other.a[3]),
+            Vector<4, Float>(other.a[4], other.a[5], other.a[6], other.a[7]),
+            Vector<4, Float>(other.a[8], other.a[9], other.a[10], other.a[11]),
+            Vector<4, Float>(other.a[12], other.a[13], other.a[14], other.a[15]));
+    }
+
+    inline constexpr static Mat4 to(const RectangularMatrix<4, 4, Float>& other) {
+        return Mat4{other[0][0], other[0][1], other[0][2], other[0][3],
+                    other[1][0], other[1][1], other[1][2], other[1][3],
+                    other[2][0], other[2][1], other[2][2], other[2][3],
+                    other[3][0], other[3][1], other[3][2], other[3][3]};
+    }
+};
+
+}
+
+namespace Test {
 
 class Matrix4Test: public Corrade::TestSuite::Tester {
     public:
@@ -39,6 +66,8 @@ class Matrix4Test: public Corrade::TestSuite::Tester {
         void constructZero();
         void constructConversion();
         void constructCopy();
+
+        void convert();
 
         void isRigidTransformation();
 
@@ -76,6 +105,8 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::constructZero,
               &Matrix4Test::constructConversion,
               &Matrix4Test::constructCopy,
+
+              &Matrix4Test::convert,
 
               &Matrix4Test::isRigidTransformation,
 
@@ -169,6 +200,31 @@ void Matrix4Test::constructCopy() {
                                {4.5f,  4.0f, 7.0f,  2.0f},
                                {1.0f,  2.0f, 3.0f, -1.0f},
                                {7.9f, -1.0f, 8.0f, -1.5f}));
+}
+
+void Matrix4Test::convert() {
+    constexpr Mat4 a{3.0f,  5.0f, 8.0f, -3.0f,
+                     4.5f,  4.0f, 7.0f,  2.0f,
+                     1.0f,  2.0f, 3.0f, -1.0f,
+                     7.9f, -1.0f, 8.0f, -1.5f};
+    constexpr Matrix4 b({3.0f,  5.0f, 8.0f, -3.0f},
+                        {4.5f,  4.0f, 7.0f,  2.0f},
+                        {1.0f,  2.0f, 3.0f, -1.0f},
+                        {7.9f, -1.0f, 8.0f, -1.5f});
+
+    constexpr Matrix4 c(b);
+    CORRADE_COMPARE(c, b);
+
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr /* Not constexpr under GCC < 4.7 */
+    #endif
+    Mat4 d(b);
+    for(std::size_t i = 0; i != 16; ++i)
+        CORRADE_COMPARE(d.a[i], a.a[i]);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Mat4, Matrix4>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Matrix4, Mat4>::value));
 }
 
 void Matrix4Test::isRigidTransformation() {

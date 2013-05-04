@@ -28,7 +28,32 @@
 
 #include "Math/Matrix.h"
 
-namespace Magnum { namespace Math { namespace Test {
+struct Mat3 {
+    float a[9];
+};
+
+namespace Magnum { namespace Math {
+
+namespace Implementation {
+
+template<> struct RectangularMatrixConverter<3, 3, float, Mat3> {
+    inline constexpr static RectangularMatrix<3, 3, Float> from(const Mat3& other) {
+        return RectangularMatrix<3, 3, Float>(
+            Vector<3, Float>(other.a[0], other.a[1], other.a[2]),
+            Vector<3, Float>(other.a[3], other.a[4], other.a[5]),
+            Vector<3, Float>(other.a[6], other.a[7], other.a[8]));
+    }
+
+    inline constexpr static Mat3 to(const RectangularMatrix<3, 3, Float>& other) {
+        return Mat3{other[0][0], other[0][1], other[0][2],
+                    other[1][0], other[1][1], other[1][2],
+                    other[2][0], other[2][1], other[2][2]};
+    }
+};
+
+}
+
+namespace Test {
 
 class MatrixTest: public Corrade::TestSuite::Tester {
     public:
@@ -39,6 +64,8 @@ class MatrixTest: public Corrade::TestSuite::Tester {
         void constructZero();
         void constructConversion();
         void constructCopy();
+
+        void convert();
 
         void isOrthogonal();
 
@@ -66,6 +93,8 @@ MatrixTest::MatrixTest() {
               &MatrixTest::constructZero,
               &MatrixTest::constructConversion,
               &MatrixTest::constructCopy,
+
+              &MatrixTest::convert,
 
               &MatrixTest::isOrthogonal,
 
@@ -147,6 +176,29 @@ void MatrixTest::constructCopy() {
                                Vector4(4.5f,  4.0f, 7.0f,  2.0f),
                                Vector4(1.0f,  2.0f, 3.0f, -1.0f),
                                Vector4(7.9f, -1.0f, 8.0f, -1.5f)));
+}
+
+void MatrixTest::convert() {
+    constexpr Mat3 a{1.5f,  2.0f, -3.5f,
+                     2.0f, -3.1f,  0.4f,
+                     9.5f, -1.5f,  0.1f};
+    constexpr Matrix3 b(Vector3(1.5f, 2.0f, -3.5f),
+                        Vector3(2.0f, -3.1f,  0.4f),
+                        Vector3(9.5f, -1.5f,  0.1f));
+
+    constexpr Matrix3 c(b);
+    CORRADE_COMPARE(c, b);
+
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr /* Not constexpr under GCC < 4.7 */
+    #endif
+    Mat3 d(b);
+    for(std::size_t i = 0; i != 9; ++i)
+        CORRADE_COMPARE(d.a[i], a.a[i]);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Mat3, Matrix3>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Matrix3, Mat3>::value));
 }
 
 void MatrixTest::isOrthogonal() {

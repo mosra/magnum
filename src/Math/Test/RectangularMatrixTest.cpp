@@ -28,7 +28,30 @@
 
 #include "Math/RectangularMatrix.h"
 
-namespace Magnum { namespace Math { namespace Test {
+struct Mat2x3 {
+    float a[6];
+};
+
+namespace Magnum { namespace Math {
+
+namespace Implementation {
+
+template<> struct RectangularMatrixConverter<2, 3, float, Mat2x3> {
+    inline constexpr static RectangularMatrix<2, 3, Float> from(const Mat2x3& other) {
+        return RectangularMatrix<2, 3, Float>(
+            Vector<3, Float>(other.a[0], other.a[1], other.a[2]),
+            Vector<3, Float>(other.a[3], other.a[4], other.a[5]));
+    }
+
+    inline constexpr static Mat2x3 to(const RectangularMatrix<2, 3, Float>& other) {
+        return Mat2x3{other[0][0], other[0][1], other[0][2],
+                      other[1][0], other[1][1], other[1][2]};
+    }
+};
+
+}
+
+namespace Test {
 
 class RectangularMatrixTest: public Corrade::TestSuite::Tester {
     public:
@@ -41,6 +64,7 @@ class RectangularMatrixTest: public Corrade::TestSuite::Tester {
         void constructFromDiagonal();
         void constructCopy();
 
+        void convert();
         void data();
         void row();
 
@@ -77,6 +101,7 @@ RectangularMatrixTest::RectangularMatrixTest() {
               &RectangularMatrixTest::constructFromDiagonal,
               &RectangularMatrixTest::constructCopy,
 
+              &RectangularMatrixTest::convert,
               &RectangularMatrixTest::data,
               &RectangularMatrixTest::row,
 
@@ -166,6 +191,31 @@ void RectangularMatrixTest::constructCopy() {
     CORRADE_COMPARE(b, Matrix3x4(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
                                  Vector4(5.0f,  6.0f,  7.0f,  8.0f),
                                  Vector4(9.0f, 10.0f, 11.0f, 12.0f)));
+}
+
+void RectangularMatrixTest::convert() {
+    typedef RectangularMatrix<2, 3, Float> Matrix2x3;
+    constexpr Mat2x3 a{1.5f,  2.0f, -3.5f,
+                       2.0f, -3.1f,  0.4f};
+    constexpr Matrix2x3 b(Vector3(1.5f, 2.0f, -3.5f),
+                          Vector3(2.0f, -3.1f,  0.4f));
+
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr /* Not constexpr under GCC < 4.7 */
+    #endif
+    Matrix2x3 c(b);
+    CORRADE_COMPARE(c, b);
+
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr /* Not constexpr under GCC < 4.7 */
+    #endif
+    Mat2x3 d(b);
+    for(std::size_t i = 0; i != 5; ++i)
+        CORRADE_COMPARE(d.a[i], a.a[i]);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Mat2x3, Matrix2x3>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Matrix2x3, Mat2x3>::value));
 }
 
 void RectangularMatrixTest::data() {
