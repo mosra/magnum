@@ -47,7 +47,7 @@ template<> struct ShapeDimensionTraits<2> {
         Capsule = 7,
         AxisAlignedBox = 11,
         Box = 13,
-        ShapeGroup = 17
+        Composition = 17
     };
 };
 
@@ -61,7 +61,7 @@ template<> struct ShapeDimensionTraits<3> {
         AxisAlignedBox = 11,
         Box = 13,
         Plane = 17,
-        ShapeGroup = 19
+        Composition = 19
     };
 };
 
@@ -112,9 +112,9 @@ template<> struct TypeOf<Physics::Plane> {
         return ShapeDimensionTraits<3>::Type::Plane;
     }
 };
-template<UnsignedInt dimensions> struct TypeOf<Physics::ShapeGroup<dimensions>> {
+template<UnsignedInt dimensions> struct TypeOf<Physics::Composition<dimensions>> {
     inline constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
-        return ShapeDimensionTraits<dimensions>::Type::ShapeGroup;
+        return ShapeDimensionTraits<dimensions>::Type::Composition;
     }
 };
 

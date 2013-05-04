@@ -34,9 +34,9 @@ namespace Magnum { namespace Physics {
 
 /** @todoc remove when doxygen is sane again */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt> class AbstractObjectShape;
-typedef AbstractObjectShape<2> AbstractObjectShape2D;
-typedef AbstractObjectShape<3> AbstractObjectShape3D;
+template<UnsignedInt> class AbstractShape;
+typedef AbstractShape<2> AbstractShape2D;
+typedef AbstractShape<3> AbstractShape3D;
 
 template<UnsignedInt> class AxisAlignedBox;
 typedef AxisAlignedBox<2> AxisAlignedBox2D;
@@ -50,6 +50,10 @@ template<UnsignedInt> class Capsule;
 typedef Capsule<2> Capsule2D;
 typedef Capsule<3> Capsule3D;
 
+template<UnsignedInt> class Composition;
+typedef Composition<2> Composition2D;
+typedef Composition<3> Composition3D;
+
 template<UnsignedInt> class Line;
 typedef Line<2> Line2D;
 typedef Line<3> Line3D;
@@ -58,17 +62,7 @@ template<UnsignedInt> class LineSegment;
 typedef LineSegment<2> LineSegment2D;
 typedef LineSegment<3> LineSegment3D;
 
-template<class> class ObjectShape;
-
-template<UnsignedInt> class ObjectShapeGroup;
-typedef ObjectShapeGroup<2> ObjectShapeGroup2D;
-typedef ObjectShapeGroup<3> ObjectShapeGroup3D;
-
-class Plane;
-
-template<UnsignedInt> class Point;
-typedef Point<2> Point2D;
-typedef Point<3> Point3D;
+template<class> class Shape;
 
 template<UnsignedInt> class ShapeGroup;
 typedef ShapeGroup<2> ShapeGroup2D;
@@ -78,6 +72,12 @@ template<UnsignedInt> class Sphere;
 typedef Sphere<2> Sphere2D;
 typedef Sphere<3> Sphere3D;
 #endif
+
+class Plane;
+
+template<UnsignedInt> class Point;
+typedef Point<2> Point2D;
+typedef Point<3> Point3D;
 
 }}
 

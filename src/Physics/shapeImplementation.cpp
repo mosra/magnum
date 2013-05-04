@@ -38,7 +38,7 @@ Debug operator<<(Debug debug, ShapeDimensionTraits<2>::Type value) {
         _val(Capsule)
         _val(AxisAlignedBox)
         _val(Box)
-        _val(ShapeGroup)
+        _val(Composition)
         #undef _val
     }
 
@@ -56,7 +56,7 @@ Debug operator<<(Debug debug, ShapeDimensionTraits<3>::Type value) {
         _val(AxisAlignedBox)
         _val(Box)
         _val(Plane)
-        _val(ShapeGroup)
+        _val(Composition)
         #undef _val
     }
 

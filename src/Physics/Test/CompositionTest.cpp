@@ -27,16 +27,16 @@
 #include "Math/Matrix4.h"
 #include "Physics/Point.h"
 #include "Physics/AxisAlignedBox.h"
-#include "Physics/ShapeGroup.h"
+#include "Physics/Composition.h"
 #include "Physics/Sphere.h"
 
 #include "ShapeTestBase.h"
 
 namespace Magnum { namespace Physics { namespace Test {
 
-class ShapeGroupTest: public Corrade::TestSuite::Tester {
+class CompositionTest: public Corrade::TestSuite::Tester {
     public:
-        ShapeGroupTest();
+        CompositionTest();
 
         void negated();
         void anded();
@@ -46,31 +46,31 @@ class ShapeGroupTest: public Corrade::TestSuite::Tester {
         void empty();
 };
 
-ShapeGroupTest::ShapeGroupTest() {
-    addTests({&ShapeGroupTest::negated,
-              &ShapeGroupTest::anded,
-              &ShapeGroupTest::ored,
-              &ShapeGroupTest::multipleUnary,
-              &ShapeGroupTest::hierarchy,
-              &ShapeGroupTest::empty});
+CompositionTest::CompositionTest() {
+    addTests({&CompositionTest::negated,
+              &CompositionTest::anded,
+              &CompositionTest::ored,
+              &CompositionTest::multipleUnary,
+              &CompositionTest::hierarchy,
+              &CompositionTest::empty});
 }
 
-void ShapeGroupTest::negated() {
-    const Physics::ShapeGroup2D a = !Physics::Point2D(Vector2::xAxis(0.5f));
+void CompositionTest::negated() {
+    const Physics::Composition2D a = !Physics::Point2D(Vector2::xAxis(0.5f));
 
     CORRADE_COMPARE(a.size(), 1);
-    CORRADE_COMPARE(a.type(0), ShapeGroup2D::Type::Point);
+    CORRADE_COMPARE(a.type(0), Composition2D::Type::Point);
     CORRADE_COMPARE(a.get<Physics::Point2D>(0).position(), Vector2::xAxis(0.5f));
 
     VERIFY_NOT_COLLIDES(a, Physics::Sphere2D({}, 1.0f));
 }
 
-void ShapeGroupTest::anded() {
-    const Physics::ShapeGroup2D a = Physics::Sphere2D({}, 1.0f) && Physics::Point2D(Vector2::xAxis(0.5f));
+void CompositionTest::anded() {
+    const Physics::Composition2D a = Physics::Sphere2D({}, 1.0f) && Physics::Point2D(Vector2::xAxis(0.5f));
 
     CORRADE_COMPARE(a.size(), 2);
-    CORRADE_COMPARE(a.type(0), ShapeGroup2D::Type::Sphere);
-    CORRADE_COMPARE(a.type(1), ShapeGroup2D::Type::Point);
+    CORRADE_COMPARE(a.type(0), Composition2D::Type::Sphere);
+    CORRADE_COMPARE(a.type(1), Composition2D::Type::Point);
     CORRADE_COMPARE(a.get<Physics::Sphere2D>(0).position(), Vector2());
     CORRADE_COMPARE(a.get<Physics::Sphere2D>(0).radius(), 1.0f);
     CORRADE_COMPARE(a.get<Physics::Point2D>(1).position(), Vector2::xAxis(0.5f));
@@ -79,12 +79,12 @@ void ShapeGroupTest::anded() {
     VERIFY_COLLIDES(a, Physics::Sphere2D(Vector2::xAxis(0.5f), 0.25f));
 }
 
-void ShapeGroupTest::ored() {
-    const Physics::ShapeGroup2D a = Physics::Sphere2D({}, 1.0f) || Physics::Point2D(Vector2::xAxis(1.5f));
+void CompositionTest::ored() {
+    const Physics::Composition2D a = Physics::Sphere2D({}, 1.0f) || Physics::Point2D(Vector2::xAxis(1.5f));
 
     CORRADE_COMPARE(a.size(), 2);
-    CORRADE_COMPARE(a.type(0), ShapeGroup2D::Type::Sphere);
-    CORRADE_COMPARE(a.type(1), ShapeGroup2D::Type::Point);
+    CORRADE_COMPARE(a.type(0), Composition2D::Type::Sphere);
+    CORRADE_COMPARE(a.type(1), Composition2D::Type::Point);
     CORRADE_COMPARE(a.get<Physics::Sphere2D>(0).position(), Vector2());
     CORRADE_COMPARE(a.get<Physics::Sphere2D>(0).radius(), 1.0f);
     CORRADE_COMPARE(a.get<Physics::Point2D>(1).position(), Vector2::xAxis(1.5f));
@@ -93,32 +93,32 @@ void ShapeGroupTest::ored() {
     VERIFY_COLLIDES(a, Physics::Sphere2D(Vector2::xAxis(1.5f), 0.25f));
 }
 
-void ShapeGroupTest::multipleUnary() {
-    const Physics::ShapeGroup2D a = !!!!Physics::Point2D(Vector2::xAxis(0.5f));
+void CompositionTest::multipleUnary() {
+    const Physics::Composition2D a = !!!!Physics::Point2D(Vector2::xAxis(0.5f));
 
     CORRADE_COMPARE(a.size(), 1);
-    CORRADE_COMPARE(a.type(0), ShapeGroup2D::Type::Point);
+    CORRADE_COMPARE(a.type(0), Composition2D::Type::Point);
     CORRADE_COMPARE(a.get<Physics::Point2D>(0).position(), Vector2::xAxis(0.5f));
 
     VERIFY_COLLIDES(a, Physics::Sphere2D({}, 1.0f));
 }
 
-void ShapeGroupTest::hierarchy() {
-    const Physics::ShapeGroup3D a = Physics::Sphere3D({}, 1.0f) &&
+void CompositionTest::hierarchy() {
+    const Physics::Composition3D a = Physics::Sphere3D({}, 1.0f) &&
         (Physics::Point3D(Vector3::xAxis(1.5f)) || !Physics::AxisAlignedBox3D({}, Vector3(0.5f)));
 
     CORRADE_COMPARE(a.size(), 3);
-    CORRADE_COMPARE(a.type(0), ShapeGroup3D::Type::Sphere);
-    CORRADE_COMPARE(a.type(1), ShapeGroup3D::Type::Point);
-    CORRADE_COMPARE(a.type(2), ShapeGroup3D::Type::AxisAlignedBox);
+    CORRADE_COMPARE(a.type(0), Composition3D::Type::Sphere);
+    CORRADE_COMPARE(a.type(1), Composition3D::Type::Point);
+    CORRADE_COMPARE(a.type(2), Composition3D::Type::AxisAlignedBox);
     CORRADE_COMPARE(a.get<Physics::Point3D>(1).position(), Vector3::xAxis(1.5f));
 
     VERIFY_COLLIDES(a, Physics::Sphere3D(Vector3::xAxis(1.5f), 0.6f));
     VERIFY_NOT_COLLIDES(a, Physics::Point3D(Vector3(0.25f)));
 }
 
-void ShapeGroupTest::empty() {
-    const Physics::ShapeGroup2D a;
+void CompositionTest::empty() {
+    const Physics::Composition2D a;
 
     CORRADE_COMPARE(a.size(), 0);
 
@@ -127,4 +127,4 @@ void ShapeGroupTest::empty() {
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Physics::Test::ShapeGroupTest)
+CORRADE_TEST_MAIN(Magnum::Physics::Test::CompositionTest)

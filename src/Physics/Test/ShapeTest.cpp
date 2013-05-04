@@ -24,10 +24,10 @@
 
 #include <TestSuite/Tester.h>
 
-#include "Physics/ObjectShapeGroup.h"
-#include "Physics/ObjectShape.h"
-#include "Physics/Point.h"
 #include "Physics/ShapeGroup.h"
+#include "Physics/Shape.h"
+#include "Physics/Point.h"
+#include "Physics/Composition.h"
 #include "Physics/Sphere.h"
 #include "SceneGraph/MatrixTransformation2D.h"
 #include "SceneGraph/MatrixTransformation3D.h"
@@ -35,9 +35,9 @@
 
 namespace Magnum { namespace Physics { namespace Test {
 
-class ObjectShapeTest: public Corrade::TestSuite::Tester {
+class ShapeTest: public Corrade::TestSuite::Tester {
     public:
-        ObjectShapeTest();
+        ShapeTest();
 
         void clean();
         void firstCollision();
@@ -49,22 +49,22 @@ typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D<>> Object2D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
 
-ObjectShapeTest::ObjectShapeTest() {
-    addTests({&ObjectShapeTest::clean,
-              &ObjectShapeTest::firstCollision,
-              &ObjectShapeTest::shapeGroup});
+ShapeTest::ShapeTest() {
+    addTests({&ShapeTest::clean,
+              &ShapeTest::firstCollision,
+              &ShapeTest::shapeGroup});
 }
 
-void ObjectShapeTest::clean() {
+void ShapeTest::clean() {
     Scene3D scene;
-    ObjectShapeGroup3D shapes;
+    ShapeGroup3D shapes;
 
     Object3D a(&scene);
-    auto shape = new Physics::ObjectShape<Physics::Point3D>(&a, {{1.0f, -2.0f, 3.0f}}, &shapes);
+    auto shape = new Physics::Shape<Physics::Point3D>(&a, {{1.0f, -2.0f, 3.0f}}, &shapes);
     a.scale(Vector3(-2.0f));
 
     Object3D b(&scene);
-    new Physics::ObjectShape<Physics::Point3D>(&b, &shapes);
+    new Physics::Shape<Physics::Point3D>(&b, &shapes);
 
     /* Everything is dirty at the beginning */
     CORRADE_VERIFY(shapes.isDirty());
@@ -95,18 +95,18 @@ void ObjectShapeTest::clean() {
     CORRADE_VERIFY(b.isDirty());
 }
 
-void ObjectShapeTest::firstCollision() {
+void ShapeTest::firstCollision() {
     Scene3D scene;
-    ObjectShapeGroup3D shapes;
+    ShapeGroup3D shapes;
 
     Object3D a(&scene);
-    auto aShape = new ObjectShape<Physics::Sphere3D>(&a, {{1.0f, -2.0f, 3.0f}, 1.5f}, &shapes);
+    auto aShape = new Shape<Physics::Sphere3D>(&a, {{1.0f, -2.0f, 3.0f}, 1.5f}, &shapes);
 
     Object3D b(&scene);
-    auto bShape = new ObjectShape<Physics::Point3D>(&b, {{3.0f, -2.0f, 3.0f}}, &shapes);
+    auto bShape = new Shape<Physics::Point3D>(&b, {{3.0f, -2.0f, 3.0f}}, &shapes);
 
     Object3D c(&scene);
-    new ObjectShape<Physics::ShapeGroup3D>(&c, &shapes);
+    new Shape<Physics::Composition3D>(&c, &shapes);
 
     /* No collisions initially */
     CORRADE_VERIFY(!shapes.firstCollision(aShape));
@@ -123,13 +123,13 @@ void ObjectShapeTest::firstCollision() {
     CORRADE_VERIFY(!shapes.isDirty());
 }
 
-void ObjectShapeTest::shapeGroup() {
+void ShapeTest::shapeGroup() {
     Scene2D scene;
-    ObjectShapeGroup2D shapes;
+    ShapeGroup2D shapes;
 
     /* Verify construction */
     Object2D a(&scene);
-    auto shape = new ObjectShape<Physics::ShapeGroup2D>(&a, Physics::Sphere2D({}, 0.5f) || Physics::Point2D({0.25f, -1.0f}));
+    auto shape = new Shape<Physics::Composition2D>(&a, Physics::Sphere2D({}, 0.5f) || Physics::Point2D({0.25f, -1.0f}));
     CORRADE_COMPARE(shape->transformedShape().size(), 2);
 
     /* Verify the original shape is updated */
@@ -141,4 +141,4 @@ void ObjectShapeTest::shapeGroup() {
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Physics::Test::ObjectShapeTest)
+CORRADE_TEST_MAIN(Magnum::Physics::Test::ShapeTest)

@@ -25,8 +25,8 @@
 #include "ShapeRenderer.h"
 
 #include "ResourceManager.h"
-#include "Physics/ObjectShape.h"
-#include "Physics/ShapeGroup.h"
+#include "Physics/Composition.h"
+#include "Physics/Shape.h"
 #include "SceneGraph/AbstractCamera.h"
 
 #include "Implementation/AxisAlignedBoxRenderer.h"
@@ -41,25 +41,25 @@ namespace Implementation {
 
 template<> void createDebugMesh(ShapeRenderer<2>* renderer, const Physics::Implementation::AbstractShape<2>* shape) {
     switch(shape->type()) {
-        case Physics::AbstractObjectShape2D::Type::AxisAlignedBox:
+        case Physics::AbstractShape2D::Type::AxisAlignedBox:
             renderer->renderers.push_back(new Implementation::AxisAlignedBoxRenderer<2>(shape));
             break;
-        case Physics::AbstractObjectShape2D::Type::Box:
+        case Physics::AbstractShape2D::Type::Box:
             renderer->renderers.push_back(new Implementation::BoxRenderer<2>(shape));
             break;
-        case Physics::AbstractObjectShape2D::Type::LineSegment:
+        case Physics::AbstractShape2D::Type::LineSegment:
             renderer->renderers.push_back(new Implementation::LineSegmentRenderer<2>(shape));
             break;
-        case Physics::AbstractObjectShape2D::Type::Point:
+        case Physics::AbstractShape2D::Type::Point:
             renderer->renderers.push_back(new Implementation::PointRenderer<2>(shape));
             break;
-        case Physics::AbstractObjectShape2D::Type::ShapeGroup: {
-            const Physics::ShapeGroup2D& group =
-                static_cast<const Physics::Implementation::Shape<Physics::ShapeGroup2D>*>(shape)->shape;
-            for(std::size_t i = 0; i != group.size(); ++i)
-                createDebugMesh(renderer, Physics::Implementation::getAbstractShape(group, i));
+        case Physics::AbstractShape2D::Type::Composition: {
+            const Physics::Composition2D& composition =
+                static_cast<const Physics::Implementation::Shape<Physics::Composition2D>*>(shape)->shape;
+            for(std::size_t i = 0; i != composition.size(); ++i)
+                createDebugMesh(renderer, Physics::Implementation::getAbstractShape(composition, i));
         } break;
-        case Physics::AbstractObjectShape2D::Type::Sphere:
+        case Physics::AbstractShape2D::Type::Sphere:
             renderer->renderers.push_back(new Implementation::SphereRenderer<2>(shape));
             break;
         default:
@@ -69,23 +69,23 @@ template<> void createDebugMesh(ShapeRenderer<2>* renderer, const Physics::Imple
 
 template<> void createDebugMesh(ShapeRenderer<3>* renderer, const Physics::Implementation::AbstractShape<3>* shape) {
     switch(shape->type()) {
-        case Physics::AbstractObjectShape3D::Type::AxisAlignedBox:
+        case Physics::AbstractShape3D::Type::AxisAlignedBox:
             renderer->renderers.push_back(new Implementation::AxisAlignedBoxRenderer<3>(shape));
             break;
-        case Physics::AbstractObjectShape3D::Type::Box:
+        case Physics::AbstractShape3D::Type::Box:
             renderer->renderers.push_back(new Implementation::BoxRenderer<3>(shape));
             break;
-        case Physics::AbstractObjectShape3D::Type::LineSegment:
+        case Physics::AbstractShape3D::Type::LineSegment:
             renderer->renderers.push_back(new Implementation::LineSegmentRenderer<3>(shape));
             break;
-        case Physics::AbstractObjectShape3D::Type::Point:
+        case Physics::AbstractShape3D::Type::Point:
             renderer->renderers.push_back(new Implementation::PointRenderer<3>(shape));
             break;
-        case Physics::AbstractObjectShape3D::Type::ShapeGroup: {
-            const Physics::ShapeGroup3D& group =
-                static_cast<const Physics::Implementation::Shape<Physics::ShapeGroup3D>*>(shape)->shape;
-            for(std::size_t i = 0; i != group.size(); ++i)
-                createDebugMesh(renderer, Physics::Implementation::getAbstractShape(group, i));
+        case Physics::AbstractShape3D::Type::Composition: {
+            const Physics::Composition3D& composition =
+                static_cast<const Physics::Implementation::Shape<Physics::Composition3D>*>(shape)->shape;
+            for(std::size_t i = 0; i != composition.size(); ++i)
+                createDebugMesh(renderer, Physics::Implementation::getAbstractShape(composition, i));
         } break;
         default:
             Warning() << "DebugTools::ShapeRenderer3D::createShapeRenderer(): type" << shape->type() << "not implemented";
@@ -94,7 +94,7 @@ template<> void createDebugMesh(ShapeRenderer<3>* renderer, const Physics::Imple
 
 }
 
-template<UnsignedInt dimensions> ShapeRenderer<dimensions>::ShapeRenderer(Physics::AbstractObjectShape<dimensions>* shape, ResourceKey options, SceneGraph::DrawableGroup<dimensions>* drawables): SceneGraph::Drawable<dimensions>(shape->object(), drawables), options(ResourceManager::instance()->get<ShapeRendererOptions>(options)) {
+template<UnsignedInt dimensions> ShapeRenderer<dimensions>::ShapeRenderer(Physics::AbstractShape<dimensions>* shape, ResourceKey options, SceneGraph::DrawableGroup<dimensions>* drawables): SceneGraph::Drawable<dimensions>(shape->object(), drawables), options(ResourceManager::instance()->get<ShapeRendererOptions>(options)) {
     Implementation::createDebugMesh(this, Physics::Implementation::getAbstractShape(shape));
 }
 

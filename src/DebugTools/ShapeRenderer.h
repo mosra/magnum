@@ -144,7 +144,7 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: p
     public:
         /**
          * @brief Constructor
-         * @param shape     Object for which to create debug renderer
+         * @param shape     Shape for which to create debug renderer
          * @param options   Options resource key. See
          *      @ref ShapeRenderer-usage "class documentation" for more
          *      information.
@@ -154,7 +154,7 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: p
          * @p shape must be available for the whole lifetime of the renderer
          * and if it is group, it must not change its internal structure.
          */
-        explicit ShapeRenderer(Physics::AbstractObjectShape<dimensions>* shape, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions>* drawables = nullptr);
+        explicit ShapeRenderer(Physics::AbstractShape<dimensions>* shape, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions>* drawables = nullptr);
 
         ~ShapeRenderer();
 

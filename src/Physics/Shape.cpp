@@ -22,27 +22,27 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "ObjectShape.h"
+#include "Shape.h"
 
-#include "Physics/ShapeGroup.h"
+#include "Physics/Composition.h"
 
 namespace Magnum { namespace Physics { namespace Implementation {
 
-template<UnsignedInt dimensions> void ObjectShapeHelper<ShapeGroup<dimensions>>::set(ObjectShape<ShapeGroup<dimensions>>& objectShape, const ShapeGroup<dimensions>& shape) {
-    objectShape._transformedShape.shape = objectShape._shape.shape = shape;
+template<UnsignedInt dimensions> void ShapeHelper<Composition<dimensions>>::set(Physics::Shape<Composition<dimensions>>& shape, const Composition<dimensions>& composition) {
+    shape._transformedShape.shape = shape._shape.shape = composition;
 }
 
-template<UnsignedInt dimensions> void ObjectShapeHelper<ShapeGroup<dimensions>>::set(ObjectShape<ShapeGroup<dimensions>>& objectShape, ShapeGroup<dimensions>&& shape) {
-    objectShape._transformedShape.shape = objectShape._shape.shape = std::move(shape);
+template<UnsignedInt dimensions> void ShapeHelper<Composition<dimensions>>::set(Physics::Shape<Composition<dimensions>>& shape, Composition<dimensions>&& composition) {
+    shape._transformedShape.shape = shape._shape.shape = std::move(composition);
 }
 
-template<UnsignedInt dimensions> void ObjectShapeHelper<ShapeGroup<dimensions>>::transform(ObjectShape<ShapeGroup<dimensions>>& objectShape, const typename DimensionTraits<dimensions>::MatrixType& absoluteTransformationMatrix) {
-    CORRADE_INTERNAL_ASSERT(objectShape._shape.shape.size() == objectShape._transformedShape.shape.size());
-    for(std::size_t i = 0; i != objectShape.shape().size(); ++i)
-        objectShape._shape.shape._shapes[i]->transform(absoluteTransformationMatrix, objectShape._transformedShape.shape._shapes[i]);
+template<UnsignedInt dimensions> void ShapeHelper<Composition<dimensions>>::transform(Physics::Shape<Composition<dimensions>>& shape, const typename DimensionTraits<dimensions>::MatrixType& absoluteTransformationMatrix) {
+    CORRADE_INTERNAL_ASSERT(shape._shape.shape.size() == shape._transformedShape.shape.size());
+    for(std::size_t i = 0; i != shape.shape().size(); ++i)
+        shape._shape.shape._shapes[i]->transform(absoluteTransformationMatrix, shape._transformedShape.shape._shapes[i]);
 }
 
-template struct MAGNUM_PHYSICS_EXPORT ObjectShapeHelper<ShapeGroup<2>>;
-template struct MAGNUM_PHYSICS_EXPORT ObjectShapeHelper<ShapeGroup<3>>;
+template struct MAGNUM_PHYSICS_EXPORT ShapeHelper<Composition<2>>;
+template struct MAGNUM_PHYSICS_EXPORT ShapeHelper<Composition<3>>;
 
 }}}

@@ -22,42 +22,42 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "AbstractObjectShape.h"
+#include "AbstractShape.h"
 
 #include <Utility/Debug.h>
 
-#include "Physics/ObjectShapeGroup.h"
+#include "Physics/ShapeGroup.h"
 #include "Physics/Implementation/CollisionDispatch.h"
 
 namespace Magnum { namespace Physics {
 
-template<UnsignedInt dimensions> AbstractObjectShape<dimensions>::AbstractObjectShape(SceneGraph::AbstractObject<dimensions>* object, ObjectShapeGroup<dimensions>* group): SceneGraph::AbstractGroupedFeature<dimensions, AbstractObjectShape<dimensions>>(object, group) {
+template<UnsignedInt dimensions> AbstractShape<dimensions>::AbstractShape(SceneGraph::AbstractObject<dimensions>* object, ShapeGroup<dimensions>* group): SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>>(object, group) {
     this->setCachedTransformations(SceneGraph::AbstractFeature<dimensions>::CachedTransformation::Absolute);
 }
 
-template<UnsignedInt dimensions> ObjectShapeGroup<dimensions>* AbstractObjectShape<dimensions>::group() {
-    return static_cast<ObjectShapeGroup<dimensions>*>(SceneGraph::AbstractGroupedFeature<dimensions, AbstractObjectShape<dimensions>>::group());
+template<UnsignedInt dimensions> ShapeGroup<dimensions>* AbstractShape<dimensions>::group() {
+    return static_cast<ShapeGroup<dimensions>*>(SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>>::group());
 }
 
-template<UnsignedInt dimensions> const ObjectShapeGroup<dimensions>* AbstractObjectShape<dimensions>::group() const {
-    return static_cast<const ObjectShapeGroup<dimensions>*>(SceneGraph::AbstractGroupedFeature<dimensions, AbstractObjectShape<dimensions>>::group());
+template<UnsignedInt dimensions> const ShapeGroup<dimensions>* AbstractShape<dimensions>::group() const {
+    return static_cast<const ShapeGroup<dimensions>*>(SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>>::group());
 }
 
-template<UnsignedInt dimensions> auto AbstractObjectShape<dimensions>::type() const -> Type {
+template<UnsignedInt dimensions> auto AbstractShape<dimensions>::type() const -> Type {
     return abstractTransformedShape()->type();
 }
 
-template<UnsignedInt dimensions> bool AbstractObjectShape<dimensions>::collides(const AbstractObjectShape<dimensions>* other) const {
+template<UnsignedInt dimensions> bool AbstractShape<dimensions>::collides(const AbstractShape<dimensions>* other) const {
     return Implementation::collides(abstractTransformedShape(), other->abstractTransformedShape());
 }
 
-template<UnsignedInt dimensions> void AbstractObjectShape<dimensions>::markDirty() {
+template<UnsignedInt dimensions> void AbstractShape<dimensions>::markDirty() {
     group()->setDirty();
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template class MAGNUM_PHYSICS_EXPORT AbstractObjectShape<2>;
-template class MAGNUM_PHYSICS_EXPORT AbstractObjectShape<3>;
+template class MAGNUM_PHYSICS_EXPORT AbstractShape<2>;
+template class MAGNUM_PHYSICS_EXPORT AbstractShape<3>;
 #endif
 
 }}

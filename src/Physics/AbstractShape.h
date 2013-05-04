@@ -1,5 +1,5 @@
-#ifndef Magnum_Physics_AbstractObjectShape_h
-#define Magnum_Physics_AbstractObjectShape_h
+#ifndef Magnum_Physics_AbstractShape_h
+#define Magnum_Physics_AbstractShape_h
 /*
     This file is part of Magnum.
 
@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Physics::AbstractObjectShape, typedef Magnum::Physics::AbstractObjectShape2D, Magnum::Physics::AbstractObjectShape3D
+ * @brief Class Magnum::Physics::AbstractShape, typedef Magnum::Physics::AbstractShape2D, Magnum::Physics::AbstractShape3D
  */
 
 #include "Magnum.h"
@@ -37,19 +37,19 @@
 namespace Magnum { namespace Physics {
 
 namespace Implementation {
-    template<UnsignedInt dimensions> inline const AbstractShape<dimensions>* getAbstractShape(const AbstractObjectShape<dimensions>* objectShape) {
-        return objectShape->abstractTransformedShape();
+    template<UnsignedInt dimensions> inline const AbstractShape<dimensions>* getAbstractShape(const Physics::AbstractShape<dimensions>* shape) {
+        return shape->abstractTransformedShape();
     }
 }
 
 /**
 @brief Base class for object shapes
 
-This class is not directly instantiable, see ObjectShape instead.
-@see AbstractObjectShape2D, AbstractObjectShape3D
+This class is not directly instantiable, see Shape instead.
+@see AbstractShape2D, AbstractShape3D
 */
-template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT AbstractObjectShape: public SceneGraph::AbstractGroupedFeature<dimensions, AbstractObjectShape<dimensions>> {
-    friend const Implementation::AbstractShape<dimensions>* Implementation::getAbstractShape<>(const AbstractObjectShape<dimensions>* objectShape);
+template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT AbstractShape: public SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>> {
+    friend const Implementation::AbstractShape<dimensions>* Implementation::getAbstractShape<>(const AbstractShape<dimensions>*);
 
     public:
         enum: UnsignedInt {
@@ -66,7 +66,7 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT AbstractObjectShape
             Capsule,        /**< Capsule */
             AxisAlignedBox, /**< @ref AxisAlignedBox "Axis aligned box" */
             Box,            /**< Box */
-            ShapeGroup,     /**< @ref ShapeGroup "Shape group" */
+            Composition,    /**< @ref Composition "Shape group" */
             Plane           /**< Plane (3D only) */
         };
         #else
@@ -78,15 +78,15 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT AbstractObjectShape
          * @param object    Object holding this feature
          * @param group     Group this shape belongs to
          */
-        explicit AbstractObjectShape(SceneGraph::AbstractObject<dimensions>* object, ObjectShapeGroup<dimensions>* group = nullptr);
+        explicit AbstractShape(SceneGraph::AbstractObject<dimensions>* object, ShapeGroup<dimensions>* group = nullptr);
 
         /**
-         * @brief Object shape group containing this shape
+         * @brief Shape group containing this shape
          *
          * If the shape doesn't belong to any group, returns `nullptr`.
          */
-        ObjectShapeGroup<dimensions>* group();
-        const ObjectShapeGroup<dimensions>* group() const; /**< @overload */
+        ShapeGroup<dimensions>* group();
+        const ShapeGroup<dimensions>* group() const; /**< @overload */
 
         /**
          * @brief Shape type
@@ -98,7 +98,7 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT AbstractObjectShape
          *
          * Default implementation returns false.
          */
-        bool collides(const AbstractObjectShape<dimensions>* other) const;
+        bool collides(const AbstractShape<dimensions>* other) const;
 
     protected:
         /** Marks also the group as dirty */
@@ -109,10 +109,10 @@ template<UnsignedInt dimensions> class MAGNUM_PHYSICS_EXPORT AbstractObjectShape
 };
 
 /** @brief Base class for two-dimensional object shapes */
-typedef AbstractObjectShape<2> AbstractObjectShape2D;
+typedef AbstractShape<2> AbstractShape2D;
 
 /** @brief Base class for three-dimensional object shapes */
-typedef AbstractObjectShape<3> AbstractObjectShape3D;
+typedef AbstractShape<3> AbstractShape3D;
 
 }}
 

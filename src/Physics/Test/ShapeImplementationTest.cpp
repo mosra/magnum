@@ -42,8 +42,8 @@ ShapeImplementationTest::ShapeImplementationTest() {
 
 void ShapeImplementationTest::debug() {
     std::ostringstream o;
-    Debug(&o) << Implementation::ShapeDimensionTraits<2>::Type::ShapeGroup;
-    CORRADE_COMPARE(o.str(), "Physics::Shape2D::Type::ShapeGroup\n");
+    Debug(&o) << Implementation::ShapeDimensionTraits<2>::Type::Composition;
+    CORRADE_COMPARE(o.str(), "Physics::Shape2D::Type::Composition\n");
 
     o.str({});
     Debug(&o) << Implementation::ShapeDimensionTraits<3>::Type::Plane;

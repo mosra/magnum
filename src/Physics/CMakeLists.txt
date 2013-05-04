@@ -23,15 +23,15 @@
 #
 
 set(MagnumPhysics_SRCS
-    AbstractObjectShape.cpp
+    AbstractShape.cpp
     AxisAlignedBox.cpp
     Box.cpp
     Capsule.cpp
+    Composition.cpp
     Line.cpp
     Plane.cpp
     Point.cpp
-    ObjectShape.cpp
-    ObjectShapeGroup.cpp
+    Shape.cpp
     ShapeGroup.cpp
     Sphere.cpp
 
@@ -40,18 +40,18 @@ set(MagnumPhysics_SRCS
     Implementation/CollisionDispatch.cpp)
 
 set(MagnumPhysics_HEADERS
-    AbstractObjectShape.h
+    AbstractShape.h
     AxisAlignedBox.h
     Box.h
     Capsule.h
+    Composition.h
     Line.h
     LineSegment.h
-    ObjectShape.h
-    ObjectShapeGroup.h
+    Shape.h
+    ShapeGroup.h
     Physics.h
     Plane.h
     Point.h
-    ShapeGroup.h
     Sphere.h
 
     magnumPhysicsVisibility.h
