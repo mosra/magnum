@@ -172,6 +172,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * Upper-left 2x2 part of the matrix.
          * @see from(const Matrix<2, T>&, const Vector2&), rotation() const,
          *      rotation(T), Matrix4::rotationScaling() const
+         * @todo extract rotation with assert for no scaling
          */
         inline constexpr Matrix<2, T> rotationScaling() const {
             return {(*this)[0].xy(),

@@ -303,6 +303,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * Upper-left 3x3 part of the matrix.
          * @see from(const Matrix<3, T>&, const Vector3&), rotation() const,
          *      rotation(T, const Vector3&), Matrix3::rotationScaling() const
+         * @todo extract rotation with assert for no scaling
          */
         inline constexpr Matrix<3, T> rotationScaling() const {
             /* Not Matrix3, because it is for affine 2D transformations */
