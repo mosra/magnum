@@ -35,7 +35,11 @@
 
 namespace Magnum { namespace Shapes {
 
-/** @brief Infinite plane, defined by position and normal (3D only) */
+/**
+@brief Infinite plane, defined by position and normal (3D only)
+
+See @ref shapes for brief introduction.
+*/
 class MAGNUM_SHAPES_EXPORT Plane {
     public:
         enum: UnsignedInt {

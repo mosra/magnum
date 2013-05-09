@@ -31,7 +31,7 @@ namespace Magnum {
 - @subpage matrix-vector -- @copybrief matrix-vector
 - @subpage transformations -- @copybrief transformations
 - @subpage scenegraph -- @copybrief scenegraph
-- @subpage collision-detection -- @copybrief collision-detection
+- @subpage shapes -- @copybrief shapes
 - @subpage debug-tools -- @copybrief debug-tools
 */
 }

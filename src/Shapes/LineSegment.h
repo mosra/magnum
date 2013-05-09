@@ -35,6 +35,7 @@ namespace Magnum { namespace Shapes {
 /**
 @brief %Line segment, defined by starting and ending point
 
+See @ref shapes for brief introduction.
 @see LineSegment2D, LineSegment3D
 */
 template<UnsignedInt dimensions> class LineSegment: public Line<dimensions> {

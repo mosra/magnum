@@ -39,7 +39,8 @@ namespace Magnum { namespace Shapes {
 @brief %Capsule defined by cylinder start and end point and radius
 
 Unlike other elements the capsule doesn't support asymmetric scaling. When
-applying transformation, the scale factor is averaged from all axes.
+applying transformation, the scale factor is averaged from all axes. See
+@ref shapes for brief introduction.
 @see Capsule2D, Capsule3D
 @todo Assert for asymmetric scaling
 */

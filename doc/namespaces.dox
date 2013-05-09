@@ -161,7 +161,7 @@ component in CMake. See @ref building and @ref cmake for more information.
 /** @namespace Magnum::Shapes
 @brief %Shape library
 
-Collision detection system. See @ref collision-detection for introduction.
+Collision detection system. See @ref shapes for introduction.
 
 This library is built when `WITH_SHAPES` is enabled and found as `%Shapes`
 component in CMake. See @ref building and @ref cmake for more information.

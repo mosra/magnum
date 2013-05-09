@@ -38,8 +38,7 @@ namespace Magnum { namespace Shapes {
 /**
 @brief Axis-aligned box
 
-Unit-size means that half extents are equal to 1, equivalent to e.g. sphere
-radius.
+See @ref shapes for brief introduction.
 @see AxisAlignedBox2D, AxisAlignedBox3D
 @todo Assert for rotation
 */

@@ -37,6 +37,7 @@ namespace Magnum { namespace Shapes {
 /**
 @brief Infinite line, defined by two points
 
+See @ref shapes for brief introduction.
 @see Line2D, Line3D
 @todo collision detection of two Line2D
 */

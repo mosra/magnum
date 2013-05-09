@@ -132,7 +132,7 @@ DebugTools::ResourceManager::instance()->set("red", (new DebugTools::ShapeRender
     ->setColor({1.0f, 0.0f, 0.0f}));
 
 // Create debug renderer for given shape, use "red" options for it
-Shapes::ObjectShape2D* shape;
+Shapes::AbstractShape2D* shape;
 new DebugTools::ShapeRenderer2D(shape, "red", debugDrawables);
 @endcode
 

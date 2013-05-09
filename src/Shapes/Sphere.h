@@ -39,7 +39,8 @@ namespace Magnum { namespace Shapes {
 @brief %Sphere defined by position and radius
 
 Unlike other elements the sphere doesn't support asymmetric scaling. When
-applying transformation, the scale factor is averaged from all axes.
+applying transformation, the scale factor is averaged from all axes. See
+@ref shapes for brief introduction.
 @see Sphere2D, Sphere3D
 @todo Assert for asymmetric scaling
 */

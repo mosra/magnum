@@ -40,7 +40,7 @@ namespace Magnum { namespace Shapes {
 /**
 @brief Group of shapes
 
-See Shape for more information.
+See Shape for more information. See @ref shapes for brief introduction.
 @see @ref scenegraph, ShapeGroup2D, ShapeGroup3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT ShapeGroup: public SceneGraph::FeatureGroup<dimensions, AbstractShape<dimensions>> {

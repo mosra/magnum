@@ -39,7 +39,7 @@ namespace Magnum { namespace Shapes {
 @brief Unit-size box with assigned transformation matrix
 
 Unit-size means that half extents are equal to 1, equivalent to e.g. sphere
-radius.
+radius. See @ref shapes for brief introduction.
 @todo Use quat + position + size instead?
 @see Box2D, Box3D
 @todo Assert for skew

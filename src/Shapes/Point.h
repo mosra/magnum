@@ -37,6 +37,7 @@ namespace Magnum { namespace Shapes {
 /**
 @brief %Point
 
+See @ref shapes for brief introduction.
 @see Point2D, Point3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Point {

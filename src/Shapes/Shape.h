@@ -44,18 +44,22 @@ namespace Implementation {
 
 Adds shape for collision detection to object. Each %Shape is part of
 some ShapeGroup, which essentially maintains a set of objects which can
-collide with each other.
+collide with each other. See @ref shapes for brief introduction.
 
-@section Shape-usage Usage
-
-Add the feature to the object and some shape group (you can also use
-ShapeGroup::add() and ShapeGroup::remove() later) and configure the
-shape.
+The shape contains original shape with relative transformation under shape()
+and also caches a shape with absolute transformation under transformedShape(),
+which can be used for collision detection. To conveniently use collision
+detection among many object, you need to add the shape to ShapeGroup, which
+then provides collision detection for given group of shapes. You can also use
+ShapeGroup::add() and ShapeGroup::remove() later to manage e.g. collision
+islands.
 @code
 Shapes::ShapeGroup3D shapes;
 
 Object3D* object;
 auto shape = new Shapes::Shape<Shapes::Sphere3D>(object, {{}, 0.75f}, &shapes);
+
+Shapes::AbstractShape3D* firstCollision = shapes.firstCollision(shape);
 @endcode
 
 @see @ref scenegraph, ShapeGroup2D, ShapeGroup3D,

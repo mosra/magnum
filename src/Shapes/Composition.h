@@ -60,8 +60,7 @@ enum class CompositionOperation: UnsignedByte {
 /**
 @brief Composition of shapes
 
-Result of logical operations on shapes.
-See @ref collision-detection for brief introduction.
+Result of logical operations on shapes. See @ref shapes for brief introduction.
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
     friend Implementation::AbstractShape<dimensions>* Implementation::getAbstractShape<>(Composition<dimensions>&, std::size_t);
@@ -220,7 +219,7 @@ template<class T> inline Composition<T::Dimensions> operator!(T a);
 [Short-circuit evaluation](http://en.wikipedia.org/wiki/Short-circuit_evaluation)
 is used here, so this operation can be used for providing simplified shape
 version, because collision with @p b is computed only if @p a collides.
-See @ref collision-detection-shape-simplification for an example.
+See @ref shapes-simplification for an example.
 */
 template<class T> inline Composition<T::Dimensions> operator&&(T a, T b);
 

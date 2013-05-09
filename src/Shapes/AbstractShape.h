@@ -45,7 +45,8 @@ namespace Implementation {
 /**
 @brief Base class for object shapes
 
-This class is not directly instantiable, see Shape instead.
+This class is not directly instantiable, see Shape instead. See @ref shapes for
+brief introduction.
 @see AbstractShape2D, AbstractShape3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: public SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>> {
