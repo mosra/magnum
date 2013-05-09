@@ -45,9 +45,9 @@ template<> struct RectangularMatrixConverter<3, 3, float, Mat3> {
     }
 
     inline constexpr static Mat3 to(const RectangularMatrix<3, 3, Float>& other) {
-        return Mat3{other[0][0], other[0][1], other[0][2],
-                    other[1][0], other[1][1], other[1][2],
-                    other[2][0], other[2][1], other[2][2]};
+        return Mat3{{other[0][0], other[0][1], other[0][2],
+                     other[1][0], other[1][1], other[1][2],
+                     other[2][0], other[2][1], other[2][2]}};
     }
 };
 
@@ -179,9 +179,9 @@ void MatrixTest::constructCopy() {
 }
 
 void MatrixTest::convert() {
-    constexpr Mat3 a{1.5f,  2.0f, -3.5f,
-                     2.0f, -3.1f,  0.4f,
-                     9.5f, -1.5f,  0.1f};
+    constexpr Mat3 a{{1.5f,  2.0f, -3.5f,
+                      2.0f, -3.1f,  0.4f,
+                      9.5f, -1.5f,  0.1f}};
     constexpr Matrix3 b(Vector3(1.5f, 2.0f, -3.5f),
                         Vector3(2.0f, -3.1f,  0.4f),
                         Vector3(9.5f, -1.5f,  0.1f));

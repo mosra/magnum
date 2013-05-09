@@ -46,10 +46,10 @@ template<> struct RectangularMatrixConverter<4, 4, float, Mat4> {
     }
 
     inline constexpr static Mat4 to(const RectangularMatrix<4, 4, Float>& other) {
-        return Mat4{other[0][0], other[0][1], other[0][2], other[0][3],
-                    other[1][0], other[1][1], other[1][2], other[1][3],
-                    other[2][0], other[2][1], other[2][2], other[2][3],
-                    other[3][0], other[3][1], other[3][2], other[3][3]};
+        return Mat4{{other[0][0], other[0][1], other[0][2], other[0][3],
+                     other[1][0], other[1][1], other[1][2], other[1][3],
+                     other[2][0], other[2][1], other[2][2], other[2][3],
+                     other[3][0], other[3][1], other[3][2], other[3][3]}};
     }
 };
 
@@ -203,10 +203,10 @@ void Matrix4Test::constructCopy() {
 }
 
 void Matrix4Test::convert() {
-    constexpr Mat4 a{3.0f,  5.0f, 8.0f, -3.0f,
-                     4.5f,  4.0f, 7.0f,  2.0f,
-                     1.0f,  2.0f, 3.0f, -1.0f,
-                     7.9f, -1.0f, 8.0f, -1.5f};
+    constexpr Mat4 a{{3.0f,  5.0f, 8.0f, -3.0f,
+                      4.5f,  4.0f, 7.0f,  2.0f,
+                      1.0f,  2.0f, 3.0f, -1.0f,
+                      7.9f, -1.0f, 8.0f, -1.5f}};
     constexpr Matrix4 b({3.0f,  5.0f, 8.0f, -3.0f},
                         {4.5f,  4.0f, 7.0f,  2.0f},
                         {1.0f,  2.0f, 3.0f, -1.0f},

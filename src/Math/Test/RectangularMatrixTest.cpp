@@ -44,8 +44,8 @@ template<> struct RectangularMatrixConverter<2, 3, float, Mat2x3> {
     }
 
     inline constexpr static Mat2x3 to(const RectangularMatrix<2, 3, Float>& other) {
-        return Mat2x3{other[0][0], other[0][1], other[0][2],
-                      other[1][0], other[1][1], other[1][2]};
+        return Mat2x3{{other[0][0], other[0][1], other[0][2],
+                       other[1][0], other[1][1], other[1][2]}};
     }
 };
 
@@ -195,8 +195,8 @@ void RectangularMatrixTest::constructCopy() {
 
 void RectangularMatrixTest::convert() {
     typedef RectangularMatrix<2, 3, Float> Matrix2x3;
-    constexpr Mat2x3 a{1.5f,  2.0f, -3.5f,
-                       2.0f, -3.1f,  0.4f};
+    constexpr Mat2x3 a{{1.5f,  2.0f, -3.5f,
+                        2.0f, -3.1f,  0.4f}};
     constexpr Matrix2x3 b(Vector3(1.5f, 2.0f, -3.5f),
                           Vector3(2.0f, -3.1f,  0.4f));
 
