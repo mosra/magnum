@@ -36,6 +36,7 @@ class ObjectTest: public Corrade::TestSuite::Tester {
 
         void parenting();
         void scene();
+        void setParentKeepTransformation();
         void absoluteTransformation();
         void transformations();
         void transformationsRelative();
@@ -66,6 +67,7 @@ class CachingObject: public Object3D, AbstractFeature<3> {
 ObjectTest::ObjectTest() {
     addTests({&ObjectTest::parenting,
               &ObjectTest::scene,
+              &ObjectTest::setParentKeepTransformation,
               &ObjectTest::absoluteTransformation,
               &ObjectTest::transformations,
               &ObjectTest::transformationsRelative,
@@ -118,6 +120,31 @@ void ObjectTest::scene() {
 
     CORRADE_VERIFY(childTwo->scene() == &scene);
     CORRADE_VERIFY(childOfOrphan->scene() == nullptr);
+}
+
+void ObjectTest::setParentKeepTransformation() {
+    Object3D root;
+    root.rotateZ(Deg(35.0f));
+
+    Object3D* childOne = new Object3D(&root);
+    Object3D* childTwo = new Object3D(&root);
+
+    childOne->translate(Vector3::xAxis(2.0f));
+    childTwo->rotateY(Deg(90.0f));
+
+    /* Old parent and new parent must share the same scene */
+    std::ostringstream o;
+    Error::setOutput(&o);
+    Scene3D scene;
+    childOne->setParentKeepTransformation(&scene);
+    CORRADE_COMPARE(o.str(), "SceneGraph::Object::setParentKeepTransformation(): both parents must be in the same scene\n");
+    CORRADE_COMPARE(childOne->parent(), &root);
+
+    /* Reparent to another and keep absolute transformation */
+    auto transformation = childOne->absoluteTransformation();
+    childOne->setParentKeepTransformation(childTwo);
+    CORRADE_VERIFY(childOne->parent() == childTwo);
+    CORRADE_COMPARE(childOne->absoluteTransformation(), transformation);
 }
 
 void ObjectTest::absoluteTransformation() {

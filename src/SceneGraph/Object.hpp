@@ -87,6 +87,17 @@ template<class Transformation> Object<Transformation>* Object<Transformation>::s
     return this;
 }
 
+template<class Transformation> Object<Transformation>* Object<Transformation>::setParentKeepTransformation(Object<Transformation>* parent) {
+    CORRADE_ASSERT(scene() == parent->scene(), "SceneGraph::Object::setParentKeepTransformation(): both parents must be in the same scene", this);
+
+    const auto transformation = Transformation::compose(
+        Transformation::inverted(parent->absoluteTransformation()), absoluteTransformation());
+    setParent(parent);
+    this->setTransformation(transformation);
+
+    return this;
+}
+
 template<class Transformation> typename Transformation::DataType Object<Transformation>::absoluteTransformation() const {
     if(!parent()) return Transformation::transformation();
     return Transformation::compose(parent()->absoluteTransformation(), Transformation::transformation());
