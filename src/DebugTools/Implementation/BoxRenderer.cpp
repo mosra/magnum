@@ -26,12 +26,12 @@
 
 #include "Mesh.h"
 #include "DebugTools/ShapeRenderer.h"
-#include "Physics/Box.h"
+#include "Shapes/Box.h"
 #include "Shaders/Flat.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<UnsignedInt dimensions> BoxRenderer<dimensions>::BoxRenderer(const Physics::Implementation::AbstractShape<dimensions>* box): box(static_cast<const Physics::Implementation::Shape<Physics::Box<dimensions>>*>(box)->shape) {}
+template<UnsignedInt dimensions> BoxRenderer<dimensions>::BoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>* box): box(static_cast<const Shapes::Implementation::Shape<Shapes::Box<dimensions>>*>(box)->shape) {}
 
 template<UnsignedInt dimensions> void BoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
     this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*box.transformation())

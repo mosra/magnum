@@ -26,7 +26,7 @@
 
 #include "Mesh.h"
 #include "DebugTools/ShapeRenderer.h"
-#include "Physics/Point.h"
+#include "Shapes/Point.h"
 #include "Primitives/Crosshair.h"
 #include "Shaders/Flat.h"
 #include "Trade/MeshData2D.h"
@@ -48,7 +48,7 @@ namespace {
     template<> inline Trade::MeshData3D meshData<3>() { return Primitives::Crosshair3D::wireframe(); }
 }
 
-template<UnsignedInt dimensions> PointRenderer<dimensions>::PointRenderer(const Physics::Implementation::AbstractShape<dimensions>* point): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), point(static_cast<const Physics::Implementation::Shape<Physics::Point<dimensions>>*>(point)->shape) {
+template<UnsignedInt dimensions> PointRenderer<dimensions>::PointRenderer(const Shapes::Implementation::AbstractShape<dimensions>* point): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), point(static_cast<const Shapes::Implementation::Shape<Shapes::Point<dimensions>>*>(point)->shape) {
     if(!this->wireframeMesh) this->createResources(meshData<dimensions>());
 }
 

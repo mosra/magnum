@@ -33,7 +33,7 @@
 
 namespace Magnum {
 
-namespace Physics { namespace Implementation {
+namespace Shapes { namespace Implementation {
     template<UnsignedInt> struct AbstractShape;
 }}
 

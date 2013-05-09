@@ -46,9 +46,9 @@ available, each namespace has its own:
  - Math/Math.h
  - Magnum.h
  - DebugTools/DebugTools.h
- - Physics/Physics.h
  - SceneGraph/SceneGraph.h
  - Shaders/Shaders.h
+ - Shapes/Shapes.h
  - Text/Text.h
  - Trade/Trade.h
 

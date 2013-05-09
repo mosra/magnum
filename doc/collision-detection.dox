@@ -22,7 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-namespace Magnum { namespace Physics {
+namespace Magnum { namespace Shapes {
 /** @page collision-detection Collision detection
 @brief Collection of simple shapes for high performance collision detection.
 
@@ -37,23 +37,23 @@ together using various operations.
 
 @subsection collision-detection-shapes1D One-dimensional shapes
 
-- @ref Physics::Point "Physics::Point*D" - @copybrief Physics::Point
-- @ref Physics::Line "Physics::Line*D" - @copybrief Physics::Line
-- @ref Physics::LineSegment "Physics::LineSegment*D" - @copybrief Physics::LineSegment
+- @ref Shapes::Point "Shapes::Point*D" - @copybrief Shapes::Point
+- @ref Shapes::Line "Shapes::Line*D" - @copybrief Shapes::Line
+- @ref Shapes::LineSegment "Shapes::LineSegment*D" - @copybrief Shapes::LineSegment
 
 Because of numerical instability it's not possible to detect collisions of
 line and point. Collision of two lines can be detected only in 2D.
 
 @subsection collision-detection-shapes2D Two-dimensional shapes
 
-- Physics::Plane - @copybrief Physics::Plane
+- Shapes::Plane - @copybrief Shapes::Plane
 
 @subsection collision-detection-shapes3D Three-dimensional shapes
 
-- @ref Physics::Sphere "Physics::Sphere*D" - @copybrief Physics::Sphere
-- @ref Physics::Capsule "Physics::Capsule*D" - @copybrief Physics::Capsule
-- @ref Physics::AxisAlignedBox "Physics::AxisAlignedBox*D" - @copybrief Physics::AxisAlignedBox
-- @ref Physics::Box "Physics::Box*D" - @copybrief Physics::Box
+- @ref Shapes::Sphere "Shapes::Sphere*D" - @copybrief Shapes::Sphere
+- @ref Shapes::Capsule "Shapes::Capsule*D" - @copybrief Shapes::Capsule
+- @ref Shapes::AxisAlignedBox "Shapes::AxisAlignedBox*D" - @copybrief Shapes::AxisAlignedBox
+- @ref Shapes::Box "Shapes::Box*D" - @copybrief Shapes::Box
 
 The easiest (and most efficient) shape combination for detecting collisions
 is point and sphere, followed by two spheres. Computing collision of two boxes
@@ -66,10 +66,10 @@ operations: AND, OR and NOT. These operations are mapped to operator&&(),
 operator||() and operator!(), so for example creating negation of logical OR
 of line segment and point is simple as this:
 @code
-Physics::LineSegment3D segment;
-Physics::Point3D point;
+Shapes::LineSegment3D segment;
+Shapes::Point3D point;
 
-Physics::ShapeGroup3D group = !(segment || point);
+Shapes::ShapeGroup3D group = !(segment || point);
 @endcode
 
 @note Logical operations are not the same as set operations -- intersection of
@@ -90,10 +90,10 @@ was not possible to change their properties such as sphere radius without
 recreating the group again. You can, however, explicitly pass a reference to
 original object, so you can change it later:
 @code
-Physics::LineSegment3D segment;
-Physics::Point3D point;
+Shapes::LineSegment3D segment;
+Shapes::Point3D point;
 
-Physics::ShapeGroup3D group = !(segment || std::ref(point));
+Shapes::ShapeGroup3D group = !(segment || std::ref(point));
 
 point.setPosition({1.0f, -6.0f, 0.5f});
 @endcode
@@ -112,11 +112,11 @@ was detected with the simplified shape. It is in fact logical AND using
 operator&&() - the collision is initially detected on first (simplified) shape
 and then on the other:
 @code
-Physics::Sphere3D sphere;
-Physics::Box3D box;
-Physics::AxisAlignedBox3D simplified;
+Shapes::Sphere3D sphere;
+Shapes::Box3D box;
+Shapes::AxisAlignedBox3D simplified;
 
-Physics::ShapeGroup3D object = simplified && (sphere || box);
+Shapes::ShapeGroup3D object = simplified && (sphere || box);
 @endcode
 
 @section collision-detection-shape-collisions Detecting shape collisions
@@ -124,8 +124,8 @@ Physics::ShapeGroup3D object = simplified && (sphere || box);
 Shape pairs which have collision detection implemented can be tested for
 collision using operator%(), for example:
 @code
-Physics::Point3D point;
-Physics::Sphere3D sphere;
+Shapes::Point3D point;
+Shapes::Sphere3D sphere;
 
 bool collide = point % sphere;
 @endcode

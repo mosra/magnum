@@ -51,13 +51,13 @@ components. The base library depends on %Corrade, OpenGL and GLEW libraries (or
 OpenGL ES libraries). Additional dependencies are specified by the components.
 The optional components are:
 
-- `%DebugTools` -- DebugTools library (depends on `%MeshTools`, `%Physics`,
-   `%Primitives`, `%SceneGraph` and `%Shaders` components)
+- `%DebugTools` -- DebugTools library (depends on `%MeshTools`,
+  `%Primitives`, `%SceneGraph`, `%Shaders` and `%Shapes` components)
 - `%MeshTools` -- MeshTools library
-- `%Physics` -- Physics library (depends on `%SceneGraph` component)
 - `%Primitives` -- Primitives library
 - `%SceneGraph` -- SceneGraph library
 - `%Shaders` -- Shaders library
+- `%Shapes` -- Shapes library (depends on `%SceneGraph` component)
 - `%Text` -- Text library (depends on `%TextureTools` component)
 - `%TextureTools` -- TextureTools library
 

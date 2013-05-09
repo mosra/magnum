@@ -26,7 +26,7 @@
 
 #include "Mesh.h"
 #include "DebugTools/ShapeRenderer.h"
-#include "Physics/Sphere.h"
+#include "Shapes/Sphere.h"
 #include "Primitives/Circle.h"
 #include "Shaders/Flat.h"
 #include "Trade/MeshData2D.h"
@@ -37,7 +37,7 @@ AbstractSphereRenderer<2>::AbstractSphereRenderer(): AbstractShapeRenderer<2>("s
     if(!wireframeMesh) createResources(Primitives::Circle::wireframe(40));
 }
 
-template<UnsignedInt dimensions> SphereRenderer<dimensions>::SphereRenderer(const Physics::Implementation::AbstractShape<dimensions>* sphere): sphere(static_cast<const Physics::Implementation::Shape<Physics::Sphere<dimensions>>*>(sphere)->shape) {}
+template<UnsignedInt dimensions> SphereRenderer<dimensions>::SphereRenderer(const Shapes::Implementation::AbstractShape<dimensions>* sphere): sphere(static_cast<const Shapes::Implementation::Shape<Shapes::Sphere<dimensions>>*>(sphere)->shape) {}
 
 template<UnsignedInt dimensions> void SphereRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
     this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*

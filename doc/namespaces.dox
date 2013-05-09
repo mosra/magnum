@@ -155,16 +155,15 @@ This library is built when `WITH_SHADERS` is enabled and found as `%Shaders`
 component in CMake. See @ref building and @ref cmake for more information.
 */
 
-/** @dir Physics
- * @brief Namespace Magnum::Physics
+/** @dir Shapes
+ * @brief Namespace Magnum::Shapes
  */
-/** @namespace Magnum::Physics
-@brief %Physics library
+/** @namespace Magnum::Shapes
+@brief %Shape library
 
-Collision detection system and rigid body objects. See @ref collision-detection
-for introduction.
+Collision detection system. See @ref collision-detection for introduction.
 
-This library is built when `WITH_PHYSICS` is enabled and found as `%Physics`
+This library is built when `WITH_SHAPES` is enabled and found as `%Shapes`
 component in CMake. See @ref building and @ref cmake for more information.
 */
 

@@ -14,13 +14,13 @@
 # components. The base library depends on Corrade, OpenGL and GLEW
 # libraries. Additional dependencies are specified by the components. The
 # optional components are:
-#  DebugTools       - DebugTools library (depends on MeshTools, Physics,
-#                     Primitives, SceneGraph and Shaders components)
+#  DebugTools       - DebugTools library (depends on MeshTools, Primitives,
+#                     SceneGraph, Shaders and Shapes components)
 #  MeshTools        - MeshTools library
-#  Physics          - Physics library (depends on SceneGraph component)
 #  Primitives       - Primitives library
 #  SceneGraph       - SceneGraph library
 #  Shaders          - Shaders library
+#  Shapes           - Shapes library (depends on SceneGraph component)
 #  Text             - Text library (depends on TextureTools component)
 #  TextureTools     - TextureTools library
 #  GlutApplication  - GLUT application (depends on GLUT library)
@@ -232,11 +232,6 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES CompressIndices.h)
     endif()
 
-    # Physics library
-    if(${component} STREQUAL Physics)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Physics.h)
-    endif()
-
     # Primitives library
     if(${component} STREQUAL Primitives)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Cube.h)
@@ -250,6 +245,11 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     # Shaders library
     if(${component} STREQUAL Shaders)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Shaders.h)
+    endif()
+
+    # Shapes library
+    if(${component} STREQUAL Shapes)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Shapes.h)
     endif()
 
     # Text library

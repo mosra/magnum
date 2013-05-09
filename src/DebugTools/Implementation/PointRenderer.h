@@ -26,7 +26,7 @@
 
 #include "AbstractShapeRenderer.h"
 
-#include "Physics/Physics.h"
+#include "Shapes/Shapes.h"
 
 #include "corradeCompatibility.h"
 
@@ -34,12 +34,12 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<UnsignedInt dimensions> class PointRenderer: public AbstractShapeRenderer<dimensions> {
     public:
-        PointRenderer(const Physics::Implementation::AbstractShape<dimensions>* point);
+        PointRenderer(const Shapes::Implementation::AbstractShape<dimensions>* point);
 
         void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) override;
 
     private:
-        const Physics::Point<dimensions>& point;
+        const Shapes::Point<dimensions>& point;
 };
 
 }}}

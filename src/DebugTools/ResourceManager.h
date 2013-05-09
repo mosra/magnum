@@ -36,7 +36,7 @@
 #include "../ResourceManager.h"
 
 #include "SceneGraph/SceneGraph.h"
-#include "Physics/Physics.h"
+#include "Shapes/Shapes.h"
 #include "DebugTools.h"
 
 #include "magnumDebugToolsVisibility.h"

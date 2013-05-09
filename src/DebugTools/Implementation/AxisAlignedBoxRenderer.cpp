@@ -26,12 +26,12 @@
 
 #include "Mesh.h"
 #include "DebugTools/ShapeRenderer.h"
-#include "Physics/AxisAlignedBox.h"
+#include "Shapes/AxisAlignedBox.h"
 #include "Shaders/Flat.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<UnsignedInt dimensions> AxisAlignedBoxRenderer<dimensions>::AxisAlignedBoxRenderer(const Physics::Implementation::AbstractShape<dimensions>* axisAlignedBox): axisAlignedBox(static_cast<const Physics::Implementation::Shape<Physics::AxisAlignedBox<dimensions>>*>(axisAlignedBox)->shape) {}
+template<UnsignedInt dimensions> AxisAlignedBoxRenderer<dimensions>::AxisAlignedBoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>* axisAlignedBox): axisAlignedBox(static_cast<const Shapes::Implementation::Shape<Shapes::AxisAlignedBox<dimensions>>*>(axisAlignedBox)->shape) {}
 
 template<UnsignedInt dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
     this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*

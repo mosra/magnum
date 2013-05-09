@@ -26,7 +26,7 @@
 
 #include "AbstractShapeRenderer.h"
 
-#include "Physics/Physics.h"
+#include "Shapes/Shapes.h"
 
 #include "corradeCompatibility.h"
 
@@ -34,12 +34,12 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<UnsignedInt dimensions> class LineSegmentRenderer: public AbstractShapeRenderer<dimensions> {
     public:
-        LineSegmentRenderer(const Physics::Implementation::AbstractShape<dimensions>* line);
+        LineSegmentRenderer(const Shapes::Implementation::AbstractShape<dimensions>* line);
 
         void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) override;
 
     private:
-        const Physics::LineSegment<dimensions>& line;
+        const Shapes::LineSegment<dimensions>& line;
 };
 
 }}}

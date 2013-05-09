@@ -100,9 +100,9 @@ void setPolygonMode(PolygonMode mode);
 Additionally to @c \@todoc, @c \@debugoperator @c \@configurationvalue and
 @c \@configurationvalueref (same as in Corrade), these are defined:
 
-@subsubsection documentation-commands-collisionoperator Physics collision operators
+@subsubsection documentation-commands-collisionoperator Shape collision operators
 
-Out-of-class operators for collision in Physics namespace should be marked with
+Out-of-class operators for collision in Shapes namespace should be marked with
 @c \@collisionoperator, e.g.:
 @code
 // @collisionoperator{Point,Sphere}

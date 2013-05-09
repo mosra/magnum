@@ -31,8 +31,8 @@
 #include "Color.h"
 #include "Resource.h"
 #include "SceneGraph/Drawable.h"
-#include "Physics/Physics.h"
-#include "Physics/shapeImplementation.h"
+#include "Shapes/Shapes.h"
+#include "Shapes/shapeImplementation.h"
 
 #include "magnumDebugToolsVisibility.h"
 
@@ -46,7 +46,7 @@ template<UnsignedInt> class ShapeRenderer;
 namespace Implementation {
     template<UnsignedInt> class AbstractShapeRenderer;
 
-    template<UnsignedInt dimensions> void createDebugMesh(ShapeRenderer<dimensions>* renderer, const Physics::Implementation::AbstractShape<dimensions>* shape);
+    template<UnsignedInt dimensions> void createDebugMesh(ShapeRenderer<dimensions>* renderer, const Shapes::Implementation::AbstractShape<dimensions>* shape);
 }
 
 /**
@@ -103,7 +103,7 @@ class ShapeRendererOptions {
          * @brief Set point size
          * @return Pointer to self (for method chaining)
          *
-         * Size of rendered crosshairs, representing Physics::Point shapes.
+         * Size of rendered crosshairs, representing Shapes::Point shapes.
          * Default is `0.25f`.
          */
         inline ShapeRendererOptions* setPointSize(Float size) {
@@ -132,14 +132,14 @@ DebugTools::ResourceManager::instance()->set("red", (new DebugTools::ShapeRender
     ->setColor({1.0f, 0.0f, 0.0f}));
 
 // Create debug renderer for given shape, use "red" options for it
-Physics::ObjectShape2D* shape;
+Shapes::ObjectShape2D* shape;
 new DebugTools::ShapeRenderer2D(shape, "red", debugDrawables);
 @endcode
 
 @see ShapeRenderer2D, ShapeRenderer3D
 */
 template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: public SceneGraph::Drawable<dimensions> {
-    friend void Implementation::createDebugMesh<>(ShapeRenderer<dimensions>*, const Physics::Implementation::AbstractShape<dimensions>*);
+    friend void Implementation::createDebugMesh<>(ShapeRenderer<dimensions>*, const Shapes::Implementation::AbstractShape<dimensions>*);
 
     public:
         /**
@@ -154,7 +154,7 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: p
          * @p shape must be available for the whole lifetime of the renderer
          * and if it is group, it must not change its internal structure.
          */
-        explicit ShapeRenderer(Physics::AbstractShape<dimensions>* shape, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions>* drawables = nullptr);
+        explicit ShapeRenderer(Shapes::AbstractShape<dimensions>* shape, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions>* drawables = nullptr);
 
         ~ShapeRenderer();
 

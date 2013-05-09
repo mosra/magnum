@@ -97,17 +97,17 @@ below). Using `WITH_*` CMake parameters you can specify which parts will be buil
 and which not:
 
  - `WITH_DEBUGTOOLS` - DebugTools library. Enables also building of MeshTools,
-   Physics, Primitives, SceneGraph and Shaders libraries.
+   Primitives, SceneGraph, Shaders and Shapes libraries.
  - `WITH_MESHTOOLS` - MeshTools library. Enabled automatically if `WITH_DEBUGTOOLS`
    is enabled.
- - `WITH_PHYSICS` - Physics library. Enables also building of SceneGraph
-   library. Enabled automatically if `WITH_DEBUGTOOLS` is enabled.
  - `WITH_PRIMITIVES` - Primitives library. Enabled automatically if `WITH_DEBUGTOOLS`
    is enabled.
  - `WITH_SCENEGRAPH` - SceneGraph library. Enabled automatically if `WITH_DEBUGTOOLS`
-   or `WITH_PHYSICS` is enabled.
+   or `WITH_SHAPES` is enabled.
  - `WITH_SHADERS` - Shaders library. Enabled automatically if `WITH_DEBUGTOOLS`
    is enabled.
+ - `WITH_SHAPES` - Shapes library. Enables also building of SceneGraph library.
+   Enabled automatically if `WITH_DEBUGTOOLS` is enabled.
  - `WITH_TEXT` - Text library. Enables also building of TextureTools library.
  - `WITH_TEXTURETOOLS` - TextureTools library. Enabled automatically if `WITH_TEXT`
    is enabled.

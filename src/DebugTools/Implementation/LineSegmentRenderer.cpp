@@ -26,7 +26,7 @@
 
 #include "Mesh.h"
 #include "DebugTools/ShapeRenderer.h"
-#include "Physics/LineSegment.h"
+#include "Shapes/LineSegment.h"
 #include "Primitives/Line.h"
 #include "Shaders/Flat.h"
 #include "Trade/MeshData2D.h"
@@ -50,7 +50,7 @@ namespace {
     template<> inline Trade::MeshData3D meshData<3>() { return Primitives::Line3D::wireframe(); }
 }
 
-template<UnsignedInt dimensions> LineSegmentRenderer<dimensions>::LineSegmentRenderer(const Physics::Implementation::AbstractShape<dimensions>* line): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), line(static_cast<const Physics::Implementation::Shape<Physics::LineSegment<dimensions>>*>(line)->shape) {
+template<UnsignedInt dimensions> LineSegmentRenderer<dimensions>::LineSegmentRenderer(const Shapes::Implementation::AbstractShape<dimensions>* line): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), line(static_cast<const Shapes::Implementation::Shape<Shapes::LineSegment<dimensions>>*>(line)->shape) {
     if(!this->wireframeMesh) this->createResources(meshData<dimensions>());
 }
 
