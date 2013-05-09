@@ -30,7 +30,7 @@
 
 #include <vector>
 
-#include "Physics/Physics.h"
+#include "Physics/AbstractShape.h"
 #include "SceneGraph/FeatureGroup.h"
 
 #include "magnumPhysicsVisibility.h"
