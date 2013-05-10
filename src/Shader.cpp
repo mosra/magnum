@@ -80,6 +80,8 @@ Shader& Shader::operator=(Shader&& other) {
 }
 
 Shader& Shader::addSource(const std::string& source) {
+    if(source.empty()) return *this;
+
     if(_state == State::Initialized)
         /* Fix line numbers, so line 41 of third added file is marked as 3(41).
            Source 0 is the #version string added in constructor. */

@@ -139,7 +139,7 @@ class MAGNUM_EXPORT Shader {
          *
          * If the shader is not compiled already, adds given source to source
          * list. Note that it is possible to compile shader from more than
-         * one source.
+         * one source. If passed string is empty, the function does nothing.
          * @see addFile()
          */
         Shader& addSource(const std::string& source);
