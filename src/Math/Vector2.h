@@ -87,7 +87,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * equivalent to calling Vector3::cross() with Z coordinate set to `0`
          * and extracting only Z coordinate from the result (X and Y
          * coordinates are always zero). @f[
-         *      \boldsymbol a \times \boldsymbol b = \boldsymbol a_\perp \cdot \boldsymbol b = a_xb_y - a_yb_x
+         *      \boldsymbol a \times \boldsymbol b = \boldsymbol a_\bot \cdot \boldsymbol b = a_xb_y - a_yb_x
          * @f]
          * @see perpendicular(), dot(const Vector&, const Vector&)
          */
@@ -128,7 +128,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * @brief Perpendicular vector
          *
          * Returns vector rotated 90° counterclockwise. @f[
-         *      \boldsymbol v_\perp = \begin{pmatrix} -v_y \\ v_x \end{pmatrix}
+         *      \boldsymbol v_\bot = \begin{pmatrix} -v_y \\ v_x \end{pmatrix}
          * @f]
          * @see cross(), dot(const Vector&, const Vector&), operator-() const
          */
