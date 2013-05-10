@@ -1,5 +1,3 @@
-#ifndef Magnum_Shaders_Shader_h
-#define Magnum_Shaders_Shader_h
 /*
     This file is part of Magnum.
 
@@ -24,41 +22,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for Magnum::Shaders namespace
- */
+layout(location = 0) uniform mat4 transformationProjectionMatrix;
 
-#include "Types.h"
+layout(location = 0) in vec4 position;
 
-namespace Magnum { namespace Shaders {
-
-/** @todoc remove when doxygen is sane again */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-
-template<UnsignedInt> class DistanceFieldVector;
-typedef DistanceFieldVector<2> DistanceFieldVector2D;
-typedef DistanceFieldVector<3> DistanceFieldVector3D;
-
-template<UnsignedInt> class AbstractVector;
-typedef AbstractVector<2> AbstractVector2D;
-typedef AbstractVector<3> AbstractVector3D;
-
-template<UnsignedInt> class Flat;
-typedef Flat<2> Flat2D;
-typedef Flat<3> Flat3D;
-
-class MeshVisualizer;
-class Phong;
-
-template<UnsignedInt> class Vector;
-typedef Vector<2> Vector2D;
-typedef Vector<3> Vector3D;
-
-template<UnsignedInt> class VertexColor;
-typedef VertexColor<2> VertexColor2D;
-typedef VertexColor<3> VertexColor3D;
-#endif
-
-}}
-
-#endif
+void main() {
+    gl_Position = transformationProjectionMatrix*position;
+}

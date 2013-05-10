@@ -1,5 +1,3 @@
-#ifndef Magnum_Shaders_Shader_h
-#define Magnum_Shaders_Shader_h
 /*
     This file is part of Magnum.
 
@@ -24,41 +22,25 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for Magnum::Shaders namespace
- */
+layout(location = 2) uniform vec4 color = vec4(1.0, 1.0, 1.0, 1.0);
 
-#include "Types.h"
-
-namespace Magnum { namespace Shaders {
-
-/** @todoc remove when doxygen is sane again */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-
-template<UnsignedInt> class DistanceFieldVector;
-typedef DistanceFieldVector<2> DistanceFieldVector2D;
-typedef DistanceFieldVector<3> DistanceFieldVector3D;
-
-template<UnsignedInt> class AbstractVector;
-typedef AbstractVector<2> AbstractVector2D;
-typedef AbstractVector<3> AbstractVector3D;
-
-template<UnsignedInt> class Flat;
-typedef Flat<2> Flat2D;
-typedef Flat<3> Flat3D;
-
-class MeshVisualizer;
-class Phong;
-
-template<UnsignedInt> class Vector;
-typedef Vector<2> Vector2D;
-typedef Vector<3> Vector3D;
-
-template<UnsignedInt> class VertexColor;
-typedef VertexColor<2> VertexColor2D;
-typedef VertexColor<3> VertexColor3D;
+#ifdef WIREFRAME_RENDERING
+layout(location = 3) uniform vec4 wireframeColor = vec4(0.0, 0.0, 0.0, 1.0);
+layout(location = 4) uniform float wireframeWidth = 1.0;
+layout(location = 5) uniform float smoothness = 2.0;
+noperspective in vec3 dist;
 #endif
 
-}}
+out vec4 fragmentColor;
 
-#endif
+void main() {
+    #ifdef WIREFRAME_RENDERING
+    /* Distance to nearest side */
+    const float nearest = min(min(dist.x, dist.y), dist.z);
+
+    /* Smooth step between face color and wireframe color based on distance */
+    fragmentColor = mix(wireframeColor, color, smoothstep(wireframeWidth-smoothness, wireframeWidth+smoothness, nearest));
+    #else
+    fragmentColor = color;
+    #endif
+}
