@@ -79,13 +79,15 @@ Shader& Shader::operator=(Shader&& other) {
     return *this;
 }
 
-Shader& Shader::addSource(const std::string& source) {
+Shader& Shader::addSource(std::string source) {
     if(source.empty()) return *this;
 
-    if(_state == State::Initialized)
+    if(_state == State::Initialized) {
         /* Fix line numbers, so line 41 of third added file is marked as 3(41).
            Source 0 is the #version string added in constructor. */
-        sources.push_back("#line 1 " + std::to_string(sources.size()) + '\n' + source);
+        sources.push_back("#line 1 " + std::to_string(sources.size()) + '\n');
+        sources.push_back(std::move(source));
+    }
     return *this;
 }
 
@@ -96,18 +98,15 @@ Shader& Shader::addFile(const std::string& filename) {
 
     /* Get size of shader and initialize buffer */
     file.seekg(0, std::ios::end);
-    std::size_t size = file.tellg();
-    char* source = new char[size+1];
-    source[size] = '\0';
+    std::string source(file.tellg(), '\0');
 
     /* Read data, close */
     file.seekg(0, std::ios::beg);
-    file.read(source, size);
+    file.read(&source[0], source.size());
     file.close();
 
-    /* Add to sources and free the buffer */
-    addSource(source);
-    delete[] source;
+    /* Move to sources */
+    addSource(std::move(source));
 
     return *this;
 }

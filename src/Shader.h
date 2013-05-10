@@ -142,7 +142,7 @@ class MAGNUM_EXPORT Shader {
          * one source. If passed string is empty, the function does nothing.
          * @see addFile()
          */
-        Shader& addSource(const std::string& source);
+        Shader& addSource(std::string source);
 
         /**
          * @brief Add source file
