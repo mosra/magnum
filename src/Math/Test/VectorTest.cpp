@@ -80,6 +80,7 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void length();
         void lengthInverted();
         void normalized();
+        void resized();
 
         void sum();
         void product();
@@ -126,6 +127,7 @@ VectorTest::VectorTest() {
               &VectorTest::length,
               &VectorTest::lengthInverted,
               &VectorTest::normalized,
+              &VectorTest::resized,
 
               &VectorTest::sum,
               &VectorTest::product,
@@ -317,7 +319,15 @@ void VectorTest::lengthInverted() {
 }
 
 void VectorTest::normalized() {
-    CORRADE_COMPARE(Vector4(1.0f, 1.0f, 1.0f, 1.0f).normalized(), Vector4(0.5f, 0.5f, 0.5f, 0.5f));
+    const auto vec = Vector4(1.0f, 1.0f, 1.0f, 1.0f).normalized();
+    CORRADE_COMPARE(vec, Vector4(0.5f, 0.5f, 0.5f, 0.5f));
+    CORRADE_COMPARE(vec.length(), 1.0f);
+}
+
+void VectorTest::resized() {
+    const auto vec = Vector4(2.0f, 2.0f, 0.0f, 1.0f).resized(9.0f);
+    CORRADE_COMPARE(vec, Vector4(6.0f, 6.0f, 0.0f, 3.0f));
+    CORRADE_COMPARE(vec.length(), 9.0f);
 }
 
 void VectorTest::sum() {

@@ -455,7 +455,7 @@ template<std::size_t size, class T> class Vector {
          * values. @f[
          *      |\boldsymbol a| = \sqrt{\boldsymbol a \cdot \boldsymbol a}
          * @f]
-         * @see lengthInverted(), Math::sqrt(), normalized()
+         * @see lengthInverted(), Math::sqrt(), normalized(), resized()
          * @todo something like std::hypot() for possibly better precision?
          */
         inline T length() const {
@@ -468,7 +468,7 @@ template<std::size_t size, class T> class Vector {
          * @f[
          *      \frac{1}{|\boldsymbol a|} = \frac{1}{\sqrt{\boldsymbol a \cdot \boldsymbol a}}
          * @f]
-         * @see length(), Math::sqrtInverted(), normalized()
+         * @see length(), Math::sqrtInverted(), normalized(), resized()
          */
         inline T lengthInverted() const {
             return T(1)/length();
@@ -477,10 +477,25 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Normalized vector (of unit length)
          *
-         * @see isNormalized()
+         * @see isNormalized(), lengthInverted(), resized()
          */
         inline Vector<size, T> normalized() const {
             return *this*lengthInverted();
+        }
+
+        /**
+         * @brief Resized vector
+         *
+         * Convenience equivalent to the following code. Due to operation order
+         * this function is faster than the obvious way of sizing normalized()
+         * vector.
+         * @code
+         * vec*(vec.lengthInverted()*length) // the brackets are important
+         * @endcode
+         * @see normalized()
+         */
+        inline Vector<size, T> resized(T length) const {
+            return *this*(lengthInverted()*length);
         }
 
         /**
@@ -701,7 +716,12 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
         return Math::Vector<size, T>::operator/(other);                     \
     }                                                                       \
                                                                             \
-    inline Type<T> normalized() const { return Math::Vector<size, T>::normalized(); } \
+    inline Type<T> normalized() const {                                     \
+        return Math::Vector<size, T>::normalized();                         \
+    }                                                                       \
+    inline Type<T> resized(T length) const {                                \
+        return Math::Vector<size, T>::resized(length);                      \
+    }                                                                       \
     inline Type<T> projected(const Math::Vector<size, T>& other) const {    \
         return Math::Vector<size, T>::projected(other);                     \
     }
