@@ -28,7 +28,6 @@
  * @brief Class Magnum::SceneGraph::AbstractGroupedFeature, alias Magnum::SceneGraph::AbstractGroupedFeature2D, Magnum::SceneGraph::AbstractGroupedFeature3D
  */
 
-#include <algorithm>
 #include <vector>
 
 #include "AbstractFeature.h"
@@ -52,6 +51,16 @@ class Drawable: public SceneGraph::AbstractGroupedFeature3D<Drawable> {
 
 typedef SceneGraph::FeatureGroup3D<Drawable> DrawableGroup;
 @endcode
+
+@section AbstractGroupedFeature-explicit-specializations Explicit template specializations
+
+The following specialization are explicitly compiled into %SceneGraph library.
+For other specializations (e.g. using Double type) you have to use
+AbstractGroupedFeature.hpp implementation file to avoid linker errors. See also
+@ref compilation-speedup-hpp for more information.
+
+ - @ref AbstractFeatureGroup "AbstractFeatureGroup<2, Float>"
+ - @ref AbstractFeatureGroup "AbstractFeatureGroup<3, Float>"
 
 @see @ref scenegraph, AbstractGroupedFeature2D, AbstractGroupedFeature3D,
     FeatureGroup, FeatureGroup2D, FeatureGroup3D

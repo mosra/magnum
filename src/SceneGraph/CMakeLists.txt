@@ -61,6 +61,7 @@ set(MagnumSceneGraph_HEADERS
     RigidMatrixTransformation2D.h
     RigidMatrixTransformation3D.h
     FeatureGroup.h
+    FeatureGroup.hpp
     MatrixTransformation2D.h
     MatrixTransformation3D.h
     Object.h

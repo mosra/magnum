@@ -1,3 +1,5 @@
+#ifndef Magnum_SceneGraph_FeatureGroup_hpp
+#define Magnum_SceneGraph_FeatureGroup_hpp
 /*
     This file is part of Magnum.
 
@@ -22,17 +24,27 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Object.hpp"
-#include "FeatureGroup.hpp"
+/** @file
+ * @brief @ref compilation-speedup-hpp "Template implementation" for FeatureGroup.h
+ */
+
+#include "FeatureGroup.h"
+
+#include <algorithm>
 
 namespace Magnum { namespace SceneGraph {
 
-template class AbstractObject<2>;
-template class AbstractObject<3>;
-template class AbstractTransformation<2>;
-template class AbstractTransformation<3>;
+template<UnsignedInt dimensions, class T> AbstractFeatureGroup<dimensions, T>::AbstractFeatureGroup() = default;
+template<UnsignedInt dimensions, class T> AbstractFeatureGroup<dimensions, T>::~AbstractFeatureGroup() = default;
 
-template class AbstractFeatureGroup<2>;
-template class AbstractFeatureGroup<3>;
+template<UnsignedInt dimensions, class T> void AbstractFeatureGroup<dimensions, T>::add(AbstractFeature<dimensions, T>* feature) {
+    features.push_back(feature);
+}
+
+template<UnsignedInt dimensions, class T> void AbstractFeatureGroup<dimensions, T>::remove(AbstractFeature<dimensions, T>* feature) {
+    features.erase(std::find(features.begin(), features.end(), feature));
+}
 
 }}
+
+#endif
