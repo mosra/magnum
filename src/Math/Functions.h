@@ -26,7 +26,6 @@
 
 #include <cmath>
 #include <type_traits>
-#include <algorithm> /* for std::min(std::initializer_list) */
 #include <limits>
 
 #include "Math/Vector.h"
@@ -142,19 +141,12 @@ template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size
 #endif
 
 /** @overload */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T> inline T min(std::initializer_list<T> list);
-#else
-template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type min(std::initializer_list<T> list) {
-    return std::min(std::move(list));
-}
-template<std::size_t size, class T> inline Vector<size, T> min(std::initializer_list<Vector<size, T>> list) {
-    Vector<size, T> out(*list.begin());
+template<class T> inline T min(std::initializer_list<T> list) {
+    T out(*list.begin());
     for(auto it = list.begin()+1; it != list.end(); ++it)
         out = min(out, *it);
     return out;
 }
-#endif
 
 /**
 @brief Maximum
@@ -176,19 +168,12 @@ template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& a
 #endif
 
 /** @overload */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T> inline T max(std::initializer_list<T> list);
-#else
-template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type max(std::initializer_list<T> list) {
-    return std::max(std::move(list));
-}
-template<std::size_t size, class T> inline Vector<size, T> max(std::initializer_list<Vector<size, T>> list) {
-    Vector<size, T> out(*list.begin());
+template<class T> inline T max(std::initializer_list<T> list) {
+    T out(*list.begin());
     for(auto it = list.begin()+1; it != list.end(); ++it)
         out = max(out, *it);
     return out;
 }
-#endif
 
 /**
 @brief Sign
