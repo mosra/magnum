@@ -1,3 +1,5 @@
+#ifndef Magnum_SceneGraph_AbstractFeature_hpp
+#define Magnum_SceneGraph_AbstractFeature_hpp
 /*
     This file is part of Magnum.
 
@@ -22,20 +24,26 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Object.hpp"
-#include "AbstractFeature.hpp"
-#include "FeatureGroup.hpp"
+/** @file
+ * @brief @ref compilation-speedup-hpp "Template implementation" for AbstractFeature.h
+ */
+
+#include "AbstractFeature.h"
 
 namespace Magnum { namespace SceneGraph {
 
-template class AbstractObject<2>;
-template class AbstractObject<3>;
-template class AbstractTransformation<2>;
-template class AbstractTransformation<3>;
+template<UnsignedInt dimensions, class T> AbstractFeature<dimensions, T>::AbstractFeature(AbstractObject<dimensions, T>* object) {
+    object->Corrade::Containers::template LinkedList<AbstractFeature<dimensions, T>>::insert(this);
+}
 
-template class AbstractFeature<2>;
-template class AbstractFeature<3>;
-template class AbstractFeatureGroup<2>;
-template class AbstractFeatureGroup<3>;
+template<UnsignedInt dimensions, class T> AbstractFeature<dimensions, T>::~AbstractFeature() = default;
+
+template<UnsignedInt dimensions, class T> void AbstractFeature<dimensions, T>::markDirty() {}
+
+template<UnsignedInt dimensions, class T> void AbstractFeature<dimensions, T>::clean(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
+
+template<UnsignedInt dimensions, class T> void AbstractFeature<dimensions, T>::cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
 
 }}
+
+#endif

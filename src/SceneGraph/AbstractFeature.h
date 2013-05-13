@@ -123,10 +123,20 @@ which is derived from
 @ref AbstractTranslationRotation3D "AbstractTranslationRotation3D<>",
 which is automatically extracted from the pointer in our constructor.
 
+@section AbstractFeature-explicit-specializations Explicit template specializations
+
+The following specialization are explicitly compiled into %SceneGraph library.
+For other specializations (e.g. using Double type) you have to use
+AbstractFeature.hpp implementation file to avoid linker errors. See also
+@ref compilation-speedup-hpp for more information.
+
+ - @ref AbstractFeature "AbstractFeature<2, Float>"
+ - @ref AbstractFeature "AbstractFeature<3, Float>"
+
 @see AbstractFeature2D, AbstractFeature3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt dimensions, class T> class AbstractFeature: private Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature: private Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>
 #else
 template<UnsignedInt dimensions, class T = Float> class AbstractFeature
 #endif
@@ -140,9 +150,7 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
          * @brief Constructor
          * @param object    %Object holding this feature
          */
-        inline explicit AbstractFeature(AbstractObject<dimensions, T>* object) {
-            object->Corrade::Containers::template LinkedList<AbstractFeature<dimensions, T>>::insert(this);
-        }
+        explicit AbstractFeature(AbstractObject<dimensions, T>* object);
 
         virtual ~AbstractFeature() = 0;
 
@@ -229,7 +237,9 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
          *
          * @see @ref scenegraph-caching, clean(), cleanInverted()
          */
-        inline CachedTransformations cachedTransformations() const { return _cachedTransformations; }
+        inline CachedTransformations cachedTransformations() const {
+            return _cachedTransformations;
+        }
 
     protected:
         /**
@@ -242,7 +252,9 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
          * Nothing is enabled by default.
          * @see @ref scenegraph-caching
          */
-        inline void setCachedTransformations(CachedTransformations transformations) { _cachedTransformations = transformations; }
+        inline void setCachedTransformations(CachedTransformations transformations) {
+            _cachedTransformations = transformations;
+        }
 
         /**
          * @brief Mark feature as dirty
@@ -254,7 +266,7 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
          * Default implementation does nothing.
          * @see @ref scenegraph-caching
          */
-        inline virtual void markDirty() {}
+        virtual void markDirty();
 
         /**
          * @brief Clean data based on absolute transformation
@@ -288,10 +300,6 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
     private:
         CachedTransformations _cachedTransformations;
 };
-
-template<UnsignedInt dimensions, class T> inline AbstractFeature<dimensions, T>::~AbstractFeature() {}
-template<UnsignedInt dimensions, class T> inline void AbstractFeature<dimensions, T>::clean(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
-template<UnsignedInt dimensions, class T> inline void AbstractFeature<dimensions, T>::cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**

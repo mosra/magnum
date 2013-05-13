@@ -41,6 +41,7 @@ set(MagnumSceneGraph_HEADERS
     AbstractCamera.h
     AbstractCamera.hpp
     AbstractFeature.h
+    AbstractFeature.hpp
     AbstractGroupedFeature.h
     AbstractObject.h
     AbstractTransformation.h
