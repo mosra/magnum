@@ -36,7 +36,7 @@
 
 namespace Magnum { namespace SceneGraph {
 
-/** @relates AbstractCamera
+/**
 @brief Camera aspect ratio policy
 
 @see AbstractCamera::setAspectRatioPolicy()

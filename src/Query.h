@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::AbstractQuery, Magnum::Query, Magnum::SampleQuery, Magnum::TimeQuery
+ * @brief Class Magnum::AbstractQuery, Magnum::PrimitiveQuery, Magnum::SampleQuery, Magnum::TimeQuery
  */
 
 #include "OpenGL.h"
@@ -53,7 +53,6 @@ class MAGNUM_EXPORT AbstractQuery {
          * @see @fn_gl{GenQueries}
          */
         explicit AbstractQuery();
-        #endif
 
         /**
          * @brief Destructor
@@ -62,6 +61,7 @@ class MAGNUM_EXPORT AbstractQuery {
          * @see @fn_gl{DeleteQueries}
          */
         ~AbstractQuery();
+        #endif
 
         /** @brief OpenGL query ID */
         inline GLuint id() const { return _id; }
@@ -98,7 +98,10 @@ class MAGNUM_EXPORT AbstractQuery {
         void end();
 
     protected:
+        #ifndef DOXYGEN_GENERATING_OUTPUT
         explicit AbstractQuery();
+        ~AbstractQuery();
+        #endif
 
         void begin(GLenum target);
 
