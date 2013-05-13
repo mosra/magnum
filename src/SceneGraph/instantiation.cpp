@@ -22,14 +22,40 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Camera2D.hpp"
-#include "Camera3D.hpp"
+#include "SceneGraph/AbstractFeature.hpp"
+#include "SceneGraph/Camera2D.hpp"
+#include "SceneGraph/Camera3D.hpp"
+#include "SceneGraph/DualComplexTransformation.h"
+#include "SceneGraph/DualQuaternionTransformation.h"
+#include "SceneGraph/FeatureGroup.hpp"
+#include "SceneGraph/MatrixTransformation2D.h"
+#include "SceneGraph/MatrixTransformation3D.h"
+#include "SceneGraph/Object.hpp"
+#include "SceneGraph/RigidMatrixTransformation2D.h"
+#include "SceneGraph/RigidMatrixTransformation3D.h"
 
 namespace Magnum { namespace SceneGraph {
+
+template class AbstractObject<2, Float>;
+template class AbstractObject<3, Float>;
+template class AbstractTransformation<2, Float>;
+template class AbstractTransformation<3, Float>;
+
+template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<2, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<3, Float>;
+template class AbstractFeatureGroup<2, Float>;
+template class AbstractFeatureGroup<3, Float>;
 
 template class AbstractCamera<2, Float>;
 template class AbstractCamera<3, Float>;
 template class Camera2D<Float>;
 template class Camera3D<Float>;
+
+template class MAGNUM_SCENEGRAPH_EXPORT Object<DualComplexTransformation<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT Object<DualQuaternionTransformation<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT Object<MatrixTransformation2D<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT Object<MatrixTransformation3D<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT Object<RigidMatrixTransformation2D<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT Object<RigidMatrixTransformation3D<Float>>;
 
 }}

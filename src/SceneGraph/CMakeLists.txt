@@ -24,18 +24,11 @@
 
 # Files shared between main library and unit test library
 set(MagnumSceneGraph_SRCS
-    Animable.cpp
-    Camera.cpp
-    DualComplexTransformation.cpp
-    DualQuaternionTransformation.cpp
-    RigidMatrixTransformation2D.cpp
-    RigidMatrixTransformation3D.cpp
-    Object.cpp)
+    Animable.cpp)
 
 # Files compiled with different flags for main library and unit test library
 set(MagnumSceneGraph_GracefulAssert_SRCS
-    MatrixTransformation2D.cpp
-    MatrixTransformation3D.cpp)
+    instantiation.cpp)
 
 set(MagnumSceneGraph_HEADERS
     AbstractCamera.h
