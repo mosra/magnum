@@ -36,6 +36,7 @@
 
 namespace Magnum { namespace SceneGraph {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template class AbstractObject<2, Float>;
 template class AbstractObject<3, Float>;
 template class AbstractTransformation<2, Float>;
@@ -57,5 +58,6 @@ template class MAGNUM_SCENEGRAPH_EXPORT Object<MatrixTransformation2D<Float>>;
 template class MAGNUM_SCENEGRAPH_EXPORT Object<MatrixTransformation3D<Float>>;
 template class MAGNUM_SCENEGRAPH_EXPORT Object<RigidMatrixTransformation2D<Float>>;
 template class MAGNUM_SCENEGRAPH_EXPORT Object<RigidMatrixTransformation3D<Float>>;
+#endif
 
 }}
