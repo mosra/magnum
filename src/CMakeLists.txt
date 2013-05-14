@@ -140,14 +140,8 @@ endif()
 
 # Files shared between main library and math unit test library
 set(MagnumMath_SRCS
-    Math/Angle.cpp
-    Math/Complex.cpp
-    Math/DualComplex.cpp
-    Math/DualQuaternion.cpp
     Math/Functions.cpp
-    Math/Quaternion.cpp
-    Math/RectangularMatrix.cpp
-    Math/Vector.cpp)
+    Math/instantiation.cpp)
 
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
