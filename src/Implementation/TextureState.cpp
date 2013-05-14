@@ -1,5 +1,3 @@
-#ifndef Magnum_Implementation_TextureState_h
-#define Magnum_Implementation_TextureState_h
 /*
     This file is part of Magnum.
 
@@ -24,23 +22,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <vector>
-
-#include "OpenGL.h"
+#include "TextureState.h"
 
 namespace Magnum { namespace Implementation {
 
-struct TextureState {
-    explicit TextureState();
-    ~TextureState();
+TextureState::TextureState(): maxSupportedLayerCount(0), maxSupportedAnisotropy(0.0f), currentLayer(0) {}
 
-    GLint maxSupportedLayerCount;
-    GLfloat maxSupportedAnisotropy;
-    GLint currentLayer;
-
-    std::vector<GLuint> bindings;
-};
+TextureState::~TextureState() = default;
 
 }}
-
-#endif

@@ -26,6 +26,7 @@
 
 #include "Math/Geometry/Rectangle.h"
 #include "Magnum.h"
+#include "OpenGL.h"
 
 namespace Magnum { namespace Implementation {
 
