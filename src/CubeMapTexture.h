@@ -72,6 +72,7 @@ cube map textures is signed three-part vector from the center of the cube,
 which intersects one of the six sides of the cube map. See also
 AbstractShaderProgram for more information.
 
+@see @ref Renderer::Feature "Renderer::Feature::SeamlessCubeMapTexture"
 @see CubeMapTextureArray
 */
 class CubeMapTexture: public AbstractTexture {
@@ -85,21 +86,6 @@ class CubeMapTexture: public AbstractTexture {
             PositiveZ = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,     /**< +Z cube side */
             NegativeZ = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z      /**< -Z cube side */
         };
-
-        #ifndef MAGNUM_TARGET_GLES
-        /**
-         * @brief Enable/disable seamless cube map textures
-         *
-         * Initially disabled on desktop OpenGL.
-         * @see @fn_gl{Enable}/@fn_gl{Disable} with @def_gl{TEXTURE_CUBE_MAP_SEAMLESS}
-         * @requires_gl32 %Extension @extension{ARB,seamless_cube_map}
-         * @requires_gl Not available in OpenGL ES 2.0, always enabled in
-         *      OpenGL ES 3.0.
-         */
-        inline static void setSeamless(bool enabled) {
-            enabled ? glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS) : glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-        }
-        #endif
 
         /**
          * @brief Constructor

@@ -30,11 +30,9 @@
 
 #include <Containers/EnumSet.h>
 
-#include "AbstractImage.h"
-#include "Buffer.h"
-#include "CubeMapTexture.h"
-#include "Color.h"
-#include "Renderbuffer.h"
+#include "Magnum.h"
+#include "OpenGL.h"
+#include "magnumVisibility.h"
 
 namespace Magnum {
 
@@ -67,7 +65,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Features
          *
-         * If not specified otherwise, all features are disabled by default.
+         * All features are disabled by default unless specified otherwise.
          * @see setFeature()
          */
         enum class Feature: GLenum {
@@ -77,10 +75,37 @@ class MAGNUM_EXPORT Renderer {
              */
             Blending = GL_BLEND,
 
-            DepthTest = GL_DEPTH_TEST,      /**< Depth test */
-            Dithering = GL_DITHER,          /**< Dithering (enabled by default) */
+            /**
+             * Seamless cube map texture.
+             * @see CubeMapTexture, CubeMapTextureArray
+             * @requires_gl32 %Extension @extension{ARB,seamless_cube_map}
+             * @requires_gl Not available in OpenGL ES 2.0, always enabled in
+             *      OpenGL ES 3.0.
+             */
+            SeamlessCubeMapTexture = GL_TEXTURE_CUBE_MAP_SEAMLESS,
 
-            FaceCulling = GL_CULL_FACE,     /**< Back face culling */
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Depth clamping. If enabled, ignores near and far clipping plane.
+             * @requires_gl32 %Extension @extension{ARB,depth_clamp}
+             * @requires_gl Depth clamping is not available in OpenGL ES.
+             */
+            DepthClamp = GL_DEPTH_CLAMP,
+            #endif
+
+            /**
+             * Depth test
+             * @see setClearDepth(), setDepthFunction(), setDepthMask()
+             */
+            DepthTest = GL_DEPTH_TEST,
+
+            Dithering = GL_DITHER,          /**< Dithering. Enabled by default. */
+
+            /**
+             * Back face culling
+             * @see setFrontFace()
+             */
+            FaceCulling = GL_CULL_FACE,
 
             #ifndef MAGNUM_TARGET_GLES
             /**
@@ -94,20 +119,51 @@ class MAGNUM_EXPORT Renderer {
 
             #ifndef MAGNUM_TARGET_GLES
             /**
-             * Multisampling (enabled by default)
+             * Multisampling. Enabled by default. Note that the actual presence
+             * of this feature in default framebuffer depends on context
+             * configuration, see for example Platform::GlutApplication::Configuration::setSampleCount().
              * @requires_gl Always enabled in OpenGL ES.
              */
             Multisampling = GL_MULTISAMPLE,
             #endif
 
+            /**
+             * Offset filled polygons
+             * @see @ref Magnum::Renderer::Feature "Feature::PolygonOffsetLine",
+             *      @ref Magnum::Renderer::Feature "Feature::PolygonOffsetPoint",
+             *      setPolygonOffset()
+             */
+            PolygonOffsetFill = GL_POLYGON_OFFSET_FILL,
+
             #ifndef MAGNUM_TARGET_GLES
             /**
-             * Depth clamping. If enabled, ignores near and far clipping plane.
-             * @requires_gl32 %Extension @extension{ARB,depth_clamp}
-             * @requires_gl Depth clamping is not available in OpenGL ES.
+             * Offset lines
+             * @see @ref Magnum::Renderer::Feature "Feature::PolygonOffsetFill",
+             *      @ref Magnum::Renderer::Feature "Feature::PolygonOffsetPoint",
+             *      setPolygonOffset()
+             * @requires_gl Only @ref Magnum::Renderer::Feature "Feature::PolygonOffsetFill"
+             *      is available in OpenGL ES.
              */
-            DepthClamp = GL_DEPTH_CLAMP,
+            PolygonOffsetLine = GL_POLYGON_OFFSET_LINE,
+
+            /**
+             * Offset points
+             * @see @ref Magnum::Renderer::Feature "Feature::PolygonOffsetFill",
+             *      @ref Magnum::Renderer::Feature "Feature::PolygonOffsetLine",
+             *      setPolygonOffset()
+             * @requires_gl Only @ref Magnum::Renderer::Feature "Feature::PolygonOffsetFill"
+             *      is available in OpenGL ES.
+             */
+            PolygonOffsetPoint = GL_POLYGON_OFFSET_POINT,
             #endif
+
+            /**
+             * Programmable point size. If enabled, the point size is taken
+             * from vertex/geometry shader builtin `gl_PointSize`.
+             * @see setPointSize()
+             * @requires_gl Always enabled on OpenGL ES.
+             */
+            ProgramPointSize = GL_PROGRAM_POINT_SIZE,
 
             /**
              * Scissor test
@@ -115,7 +171,12 @@ class MAGNUM_EXPORT Renderer {
              */
             ScissorTest = GL_SCISSOR_TEST,
 
-            StencilTest = GL_STENCIL_TEST   /**< Stencil test */
+            /**
+             * Stencil test
+             * @see setClearStencil(), setStencilFunction(),
+             *      setStencilOperation(), setStencilMask()
+             */
+            StencilTest = GL_STENCIL_TEST
         };
 
         /**
@@ -123,21 +184,16 @@ class MAGNUM_EXPORT Renderer {
          *
          * @see @fn_gl{Enable}/@fn_gl{Disable}
          */
-        inline static void setFeature(Feature feature, bool enabled) {
-            enabled ? glEnable(static_cast<GLenum>(feature)) : glDisable(static_cast<GLenum>(feature));
-        }
+        static void setFeature(Feature feature, bool enabled);
 
         /**
          * @brief Which polygon facing to cull
          *
-         * Initial value is `PolygonFacing::Back`. If set to both front and
-         * back, only points and lines are drawn.
-         * @attention You have to also enable face culling with setFeature().
-         * @see @fn_gl{CullFace}
+         * Initial value is @ref PolygonFacing "PolygonFacing::Back". If set to
+         * both front and back, only points and lines are drawn.
+         * @see @ref Feature "Feature::FaceCulling", @fn_gl{CullFace}
          */
-        inline static void setFaceCullingMode(PolygonFacing mode) {
-            glCullFace(static_cast<GLenum>(mode));
-        }
+        static void setFaceCullingMode(PolygonFacing mode);
 
         /*@}*/
 
@@ -146,40 +202,165 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Set clear color
          *
-         * Initial value is `{0.0f, 0.0f, 0.0f, 1.0f}`.
+         * Initial value is fully opaque black.
          * @see @fn_gl{ClearColor}
          */
-        inline static void setClearColor(const Color4<>& color) {
-            glClearColor(color.r(), color.g(), color.b(), color.a());
-        }
+        static void setClearColor(const Color4<>& color);
 
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Set clear depth
          *
          * Initial value is `1.0`.
-         * @see @fn_gl{ClearDepth}
+         * @see @ref Feature "Feature::DepthTest", @fn_gl{ClearDepth}
          * @requires_gl See setClearDepth(Float), which is available in OpenGL ES.
          */
-        inline static void setClearDepth(Double depth) { glClearDepth(depth); }
+        static void setClearDepth(Double depth);
         #endif
 
         /**
          * @overload
          *
-         * @see @fn_gl{ClearDepth}
+         * @see @ref Feature "Feature::DepthTest", @fn_gl{ClearDepth}
          * @requires_gl41 %Extension @extension{ARB,ES2_compatibility}
          * @todo Call double version if the extension is not available
          */
-        inline static void setClearDepth(Float depth) { glClearDepthf(depth); }
+        static void setClearDepth(Float depth);
 
         /**
          * @brief Set clear stencil
          *
          * Initial value is `0`.
-         * @see @fn_gl{ClearStencil}
+         * @see @ref Feature "Feature::StencilTest", @fn_gl{ClearStencil}
          */
-        inline static void setClearStencil(Int stencil) { glClearStencil(stencil); }
+        static void setClearStencil(Int stencil);
+
+        /*@}*/
+
+        /** @name Polygon drawing settings */
+
+        /**
+         * @brief Front facing polygon winding
+         *
+         * @see setFrontFace()
+         */
+        enum FrontFace: GLenum {
+            /** @brief Counterclockwise polygons are front facing (default). */
+            CounterClockWise = GL_CCW,
+
+            /** @brief Clockwise polygons are front facing. */
+            ClockWise = GL_CW
+        };
+
+        /**
+         * @brief Set front-facing polygon winding
+         *
+         * Initial value is `FrontFace::%CounterClockWise`.
+         * @see @fn_gl{FrontFace}
+         */
+        static void setFrontFace(FrontFace mode);
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Provoking vertex
+         *
+         * @see setProvokingVertex()
+         * @requires_gl32 %Extension @extension{ARB,provoking_vertex}. Older
+         *      versions behave always like
+         *      @ref Magnum::Renderer::ProvokingVertex "ProvokingVertex::LastVertexConvention".
+         * @requires_gl OpenGL ES behaves always like
+         *      @ref Magnum::Renderer::ProvokingVertex "ProvokingVertex::LastVertexConvention".
+         */
+        enum class ProvokingVertex: GLenum {
+            /** @brief Use first vertex of each polygon. */
+            FirstVertexConvention = GL_FIRST_VERTEX_CONVENTION,
+
+            /** @brief Use last vertex of each polygon (default). */
+            LastVertexConvention = GL_LAST_VERTEX_CONVENTION
+        };
+
+        /**
+         * @brief Set provoking vertex
+         *
+         * Initial value is @ref ProvokingVertex "ProvokingVertex::LastVertexConvention".
+         * @see @fn_gl{ProvokingVertex}
+         * @requires_gl32 %Extension @extension{ARB,provoking_vertex}. Older
+         *      versions behave always like the default.
+         * @requires_gl OpenGL ES behaves always like the default.
+         */
+        static void setProvokingVertex(ProvokingVertex mode);
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Polygon mode
+         *
+         * @see setPolygonMode()
+         * @requires_gl OpenGL ES behaves always like @ref Magnum::Renderer::PolygonMode "PolygonMode::Fill".
+         *      See @ref Magnum::Mesh::setPrimitive() "Mesh::setPrimitive()"
+         *      for possible workaround.
+         */
+        enum class PolygonMode: GLenum {
+            /**
+             * Interior of the polygon is filled (default).
+             */
+            Fill = GL_FILL,
+
+            /**
+             * Boundary edges are filled. See also setLineWidth().
+             */
+            Line = GL_LINE,
+
+            /**
+             * Starts of boundary edges are drawn as points. See also
+             * setPointSize().
+             */
+            Point = GL_POINT
+        };
+
+        /**
+         * @brief Set polygon drawing mode
+         *
+         * Initial value is @ref PolygonMode "PolygonMode::Fill".
+         * @see @fn_gl{PolygonMode}
+         * @requires_gl OpenGL ES behaves always like the default. See
+         *      @ref Magnum::Mesh::setPrimitive() "Mesh::setPrimitive()" for
+         *      possible workaround.
+         */
+        static void setPolygonMode(PolygonMode mode);
+        #endif
+
+        /**
+         * @brief Set polygon offset
+         * @param factor    Scale factor
+         * @param units     Offset units
+         *
+         * @see @ref Feature "Feature::PolygonOffsetFill",
+         *      @ref Feature "Feature::PolygonOffsetLine",
+         *      @ref Feature "Feature::PolygonOffsetPoint",
+         *      @fn_gl{PolygonOffset}
+         */
+        static void setPolygonOffset(Float factor, Float units);
+
+        /**
+         * @brief Set line width
+         *
+         * Initial value is `1.0f`.
+         * @see @fn_gl{LineWidth}
+         */
+        static void setLineWidth(Float width);
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Set point size
+         *
+         * Initial value is `1.0f`.
+         * @see @ref Feature "Feature::ProgramPointSize", @fn_gl{PointSize}
+         * @requires_gl In OpenGL ES use `gl_PointSize` builtin vertex shader
+         *      variable.
+         */
+        static void setPointSize(Float size);
+        #endif
 
         /*@}*/
 
@@ -187,17 +368,10 @@ class MAGNUM_EXPORT Renderer {
 
         /**
          * @brief Set scissor rectangle
-         * @param bottomLeft    Bottom left corner. Initial value is `(0, 0)`.
-         * @param size          Scissor rectangle size. Initial value is
-         *      size of the window when the context is first attached to a
-         *      window.
          *
-         * @attention You have to enable scissoring with setFeature() first.
-         * @see @fn_gl{Scissor}
+         * @see @ref Feature "Feature::ScissorTest", @fn_gl{Scissor}
          */
-        inline static void setScissor(const Vector2i& bottomLeft, const Vector2i& size) {
-            glScissor(bottomLeft.x(), bottomLeft.y(), size.x(), size.y());
-        }
+        static void setScissor(const Rectanglei& rectangle);
 
         /*@}*/
 
@@ -206,7 +380,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Stencil function
          *
-         * @see setStencilFunction()
+         * @see setStencilFunction(), @ref DepthFunction
          */
         enum class StencilFunction: GLenum {
             Never = GL_NEVER,           /**< Never pass the test. */
@@ -268,29 +442,27 @@ class MAGNUM_EXPORT Renderer {
          * @brief Set stencil function
          * @param facing            Affected polygon facing
          * @param function          Stencil function. Initial value is
-         *      `StencilFunction::Always`.
+         *      @ref StencilFunction "StencilFunction::Always".
          * @param referenceValue    Reference value. Initial value is `0`.
          * @param mask              Mask for both reference and buffer value.
          *      Initial value is all `1`s.
          *
-         * @attention You have to enable stencil test with setFeature() first.
-         * @see setStencilFunction(StencilFunction, Int, UnsignedInt),
+         * @see @ref Feature "Feature::StencilTest",
+         *      setStencilFunction(StencilFunction, Int, UnsignedInt),
+         *      setStencilOperation(),
          *      @fn_gl{StencilFuncSeparate}
          */
-        inline static void setStencilFunction(PolygonFacing facing, StencilFunction function, Int referenceValue, UnsignedInt mask) {
-            glStencilFuncSeparate(static_cast<GLenum>(facing), static_cast<GLenum>(function), referenceValue, mask);
-        }
+        static void setStencilFunction(PolygonFacing facing, StencilFunction function, Int referenceValue, UnsignedInt mask);
 
         /**
          * @brief Set stencil function
          *
          * The same as setStencilFunction(PolygonFacing, StencilFunction, Int, UnsignedInt)
-         * with `facing` set to `PolygonFacing::FrontAndBack`.
-         * @see @fn_gl{StencilFunc}
+         * with @p facing set to @ref PolygonFacing "PolygonFacing::FrontAndBack".
+         * @see @ref Feature "Feature::StencilTest", setStencilOperation(),
+         *      @fn_gl{StencilFunc}
          */
-        inline static void setStencilFunction(StencilFunction function, Int referenceValue, UnsignedInt mask) {
-            glStencilFunc(static_cast<GLenum>(function), referenceValue, mask);
-        }
+        static void setStencilFunction(StencilFunction function, Int referenceValue, UnsignedInt mask);
 
         /**
          * @brief Set stencil operation
@@ -301,25 +473,22 @@ class MAGNUM_EXPORT Renderer {
          * @param depthPass         Action when both stencil and depth test
          *      pass
          *
-         * Initial value for all fields is `StencilOperation::Keep`.
-         * @attention You have to enable stencil test with setFeature() first.
-         * @see setStencilOperation(StencilOperation, StencilOperation, StencilOperation),
-         *      @fn_gl{StencilOpSeparate}
+         * Initial value for all fields is @ref StencilOperation "StencilOperation::Keep".
+         * @see @ref Feature "Feature::StencilTest",
+         *      setStencilOperation(StencilOperation, StencilOperation, StencilOperation),
+         *      setStencilFunction(), @fn_gl{StencilOpSeparate}
          */
-        inline static void setStencilOperation(PolygonFacing facing, StencilOperation stencilFail, StencilOperation depthFail, StencilOperation depthPass) {
-            glStencilOpSeparate(static_cast<GLenum>(facing), static_cast<GLenum>(stencilFail), static_cast<GLenum>(depthFail), static_cast<GLenum>(depthPass));
-        }
+        static void setStencilOperation(PolygonFacing facing, StencilOperation stencilFail, StencilOperation depthFail, StencilOperation depthPass);
 
         /**
          * @brief Set stencil operation
          *
          * The same as setStencilOperation(PolygonFacing, StencilOperation, StencilOperation, StencilOperation)
-         * with `facing` set to `PolygonFacing::FrontAndBack`.
-         * @see @fn_gl{StencilOp}
+         * with @p facing set to @ref PolygonFacing "PolygonFacing::FrontAndBack".
+         * @see @ref Feature "Feature::StencilTest", setStencilFunction(),
+         *      @fn_gl{StencilOp}
          */
-        inline static void setStencilOperation(StencilOperation stencilFail, StencilOperation depthFail, StencilOperation depthPass) {
-            glStencilOp(static_cast<GLenum>(stencilFail), static_cast<GLenum>(depthFail), static_cast<GLenum>(depthPass));
-        }
+        static void setStencilOperation(StencilOperation stencilFail, StencilOperation depthFail, StencilOperation depthPass);
 
         /*@}*/
 
@@ -335,13 +504,10 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Set depth function
          *
-         * Initial value is `DepthFunction::Less`.
-         * @attention You have to enable depth test with setFeature() first.
-         * @see @fn_gl{DepthFunc}
+         * Initial value is @ref DepthFunction "DepthFunction::Less".
+         * @see @ref Feature "Feature::DepthTest", @fn_gl{DepthFunc}
          */
-        inline static void setDepthFunction(DepthFunction function) {
-            glDepthFunc(static_cast<GLenum>(function));
-        }
+        static void setDepthFunction(DepthFunction function);
 
         /*@}*/
 
@@ -352,45 +518,38 @@ class MAGNUM_EXPORT Renderer {
          *
          * Set to `false` to disallow writing to given color channel. Initial
          * values are all `true`.
-         * @see @fn_gl{ColorMask}
+         * @see setDepthMask(), setStencilMask(), @fn_gl{ColorMask}
          * @todo Masking only given draw buffer
          */
-        inline static void setColorMask(GLboolean allowRed, GLboolean allowGreen, GLboolean allowBlue, GLboolean allowAlpha) {
-            glColorMask(allowRed, allowGreen, allowBlue, allowAlpha);
-        }
+        static void setColorMask(GLboolean allowRed, GLboolean allowGreen, GLboolean allowBlue, GLboolean allowAlpha);
 
         /**
          * @brief Mask depth writes
          *
          * Set to `false` to disallow writing to depth buffer. Initial value
          * is `true`.
-         * @see @fn_gl{DepthMask}
+         * @see setColorMask(), setStencilMask(), @fn_gl{DepthMask}
          */
-        inline static void setDepthMask(GLboolean allow) {
-            glDepthMask(allow);
-        }
+        static void setDepthMask(GLboolean allow);
 
         /**
          * @brief Mask stencil writes
          *
          * Set given bit to `0` to disallow writing stencil value for given
          * faces to it. Initial value is all `1`s.
-         * @see setStencilMask(UnsignedInt), @fn_gl{StencilMaskSeparate}
+         * @see setStencilMask(UnsignedInt), setColorMask(), setDepthMask(),
+         *      @fn_gl{StencilMaskSeparate}
          */
-        inline static void setStencilMask(PolygonFacing facing, UnsignedInt allowBits) {
-            glStencilMaskSeparate(static_cast<GLenum>(facing), allowBits);
-        }
+        static void setStencilMask(PolygonFacing facing, UnsignedInt allowBits);
 
         /**
          * @brief Mask stencil writes
          *
-         * The same as setStencilMask(PolygonFacing, UnsignedInt) with `facing` set
-         * to `PolygonFacing::FrontAndBack`.
+         * The same as calling setStencilMask(PolygonFacing, UnsignedInt) with
+         * `facing` set to @ref PolygonFacing "PolygonFacing::FrontAndBack".
          * @see @fn_gl{StencilMask}
          */
-        inline static void setStencilMask(UnsignedInt allowBits) {
-            glStencilMask(allowBits);
-        }
+        static void setStencilMask(UnsignedInt allowBits);
 
         /*@}*/
 
@@ -559,67 +718,55 @@ class MAGNUM_EXPORT Renderer {
          * @brief Set blend equation
          *
          * How to combine source color (pixel value) with destination color
-         * (framebuffer). Initial value is `BlendEquation::Add`.
-         * @attention You have to enable blending with setFeature() first.
-         * @see setBlendEquation(BlendEquation, BlendEquation),
-         *      @fn_gl{BlendEquation}
+         * (framebuffer). Initial value is @ref BlendEquation "BlendEquation::Add".
+         * @see @ref Feature "Feature::Blending", setBlendEquation(BlendEquation, BlendEquation),
+         *      setBlendFunction(), setBlendColor(), @fn_gl{BlendEquation}
          */
-        inline static void setBlendEquation(BlendEquation equation) {
-            glBlendEquation(static_cast<GLenum>(equation));
-        }
+        static void setBlendEquation(BlendEquation equation);
 
         /**
          * @brief Set blend equation separately for RGB and alpha components
          *
          * See setBlendEquation(BlendEquation) for more information.
-         * @attention You have to enable blending with setFeature() first.
-         * @see @fn_gl{BlendEquationSeparate}
+         * @see @ref Feature "Feature::Blending", setBlendFunction(),
+         *      setBlendColor(), @fn_gl{BlendEquationSeparate}
          */
-        inline static void setBlendEquation(BlendEquation rgb, BlendEquation alpha) {
-            glBlendEquationSeparate(static_cast<GLenum>(rgb), static_cast<GLenum>(alpha));
-        }
+        static void setBlendEquation(BlendEquation rgb, BlendEquation alpha);
 
         /**
          * @brief Set blend function
          * @param source        How the source blending factor is computed
-         *      from pixel value. Initial value is `BlendFunction::One`.
+         *      from pixel value. Initial value is @ref BlendFunction "BlendFunction::One".
          * @param destination   How the destination blending factor is
-         *      computed from framebuffer. Initial value is
-         *      `BlendFunction::Zero`.
+         *      computed from framebuffer. Initial value is @ref BlendFunction "BlendFunction::Zero".
          *
-         * @attention You have to enable blending with setFeature() first.
-         * @see setBlendFunction(BlendFunction, BlendFunction, BlendFunction, BlendFunction),
-         *      @fn_gl{BlendFunc}
+         * @see @ref Feature "Feature::Blending",
+         *      setBlendFunction(BlendFunction, BlendFunction, BlendFunction, BlendFunction),
+         *      setBlendEquation(), setBlendColor(), @fn_gl{BlendFunc}
          */
-        inline static void setBlendFunction(BlendFunction source, BlendFunction destination) {
-            glBlendFunc(static_cast<GLenum>(source), static_cast<GLenum>(destination));
-        }
+        static void setBlendFunction(BlendFunction source, BlendFunction destination);
 
         /**
          * @brief Set blend function separately for RGB and alpha components
          *
          * See setBlendFunction(BlendFunction, BlendFunction) for more information.
-         * @attention You have to enable blending with setFeature() first.
-         * @see @fn_gl{BlendFuncSeparate}
+         * @see @ref Feature "Feature::Blending", setBlendEquation(),
+         *      setBlendColor(), @fn_gl{BlendFuncSeparate}
          */
-        inline static void setBlendFunction(BlendFunction sourceRgb, BlendFunction destinationRgb, BlendFunction sourceAlpha, BlendFunction destinationAlpha) {
-            glBlendFuncSeparate(static_cast<GLenum>(sourceRgb), static_cast<GLenum>(destinationRgb), static_cast<GLenum>(sourceAlpha), static_cast<GLenum>(destinationAlpha));
-        }
+        static void setBlendFunction(BlendFunction sourceRgb, BlendFunction destinationRgb, BlendFunction sourceAlpha, BlendFunction destinationAlpha);
 
         /**
          * @brief Set blend color
          *
          * Sets constant color used in setBlendFunction() by
-         * `BlendFunction::ConstantColor`,
-         * `BlendFunction::OneMinusConstantColor`,
-         * `BlendFunction::ConstantAlpha` and
-         * `BlendFunction::OneMinusConstantAlpha`.
-         * @attention You have to enable blending with setFeature() first.
-         * @see @fn_gl{BlendColor}
+         * @ref BlendFunction "BlendFunction::ConstantColor",
+         * @ref BlendFunction "BlendFunction::OneMinusConstantColor",
+         * @ref BlendFunction "BlendFunction::ConstantAlpha" and
+         * @ref BlendFunction "BlendFunction::OneMinusConstantAlpha".
+         * @see @ref Feature "Feature::Blending", setBlendEquation(),
+         *      setBlendFunction(), @fn_gl{BlendColor}
          */
-        inline static void setBlendColor(const Color4<>& color) {
-            glBlendColor(color.r(), color.g(), color.b(), color.a());
-        }
+        static void setBlendColor(const Color4<>& color);
 
         /*@}*/
 
@@ -655,14 +802,11 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Set logical operation
          *
-         * @attention You have to enable logical operation with setFeature() first.
-         * @see @fn_gl{LogicOp}
+         * @see @ref Feature "Feature::LogicOperation", @fn_gl{LogicOp}
          * @requires_gl Logical operations on framebuffer are not available in
          *      OpenGL ES.
          */
-        inline static void setLogicOperation(LogicOperation operation) {
-            glLogicOp(static_cast<GLenum>(operation));
-        }
+        static void setLogicOperation(LogicOperation operation);
 
         /*@}*/
         #endif

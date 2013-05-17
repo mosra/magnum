@@ -60,6 +60,7 @@ set(Magnum_SRCS
     OpenGL.cpp
     Query.cpp
     Renderbuffer.cpp
+    Renderer.cpp
     Resource.cpp
     Shader.cpp
     Timeline.cpp
