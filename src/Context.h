@@ -210,6 +210,8 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Vendor string
          *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls.
          * @see rendererString(), @fn_gl{GetString} with @def_gl{VENDOR}
          */
         inline std::string vendorString() const {
@@ -219,6 +221,8 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief %Renderer string
          *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls.
          * @see vendorString(), @fn_gl{GetString} with @def_gl{RENDERER}
          */
         inline std::string rendererString() const {
@@ -228,6 +232,8 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Version string
          *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls.
          * @see shadingLanguageVersionString(), version(), @fn_gl{GetString}
          *      with @def_gl{VERSION}
          */
@@ -238,6 +244,8 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Shading language version string
          *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls.
          * @see versionString(), version(), @fn_gl{GetString} with
          *      @def_gl{SHADING_LANGUAGE_VERSION}
          */
