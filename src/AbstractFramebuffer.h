@@ -236,34 +236,31 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @brief Read block of pixels from framebuffer to image
          * @param offset            Offset in the framebuffer
          * @param size              %Image size
-         * @param format            Format of pixel data
-         * @param type              Data type of pixel data
          * @param image             %Image where to put the data
+         *
+         * %Image parameters like format and type of pixel data are taken from
+         * given image.
          *
          * If @extension{ARB,robustness} is available, the operation is
          * protected from buffer overflow.
          * @see @fn_gl{BindFramebuffer}, @fn_gl{ReadPixels} or
          *      @fn_gl_extension{ReadnPixels,ARB,robustness}
-         * @todo Read size, format & type from image?
          */
-        void read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, Image2D* image);
+        void read(const Vector2i& offset, const Vector2i& size, Image2D* image);
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Read block of pixels from framebuffer to buffer image
          * @param offset            Offset in the framebuffer
          * @param size              %Image size
-         * @param format            Format of pixel data
-         * @param type              Data type of pixel data
          * @param image             %Buffer image where to put the data
          * @param usage             %Buffer usage
          *
          * See read(const Vector2i&, const Vector2i&, Image2D*) for more
          * information.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
-         * @todo Read size, format & type from image?
          */
-        void read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, BufferImage2D* image, Buffer::Usage usage);
+        void read(const Vector2i& offset, const Vector2i& size, BufferImage2D* image, Buffer::Usage usage);
         #endif
 
     #ifdef DOXYGEN_GENERATING_OUTPUT

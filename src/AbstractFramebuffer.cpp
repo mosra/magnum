@@ -128,25 +128,25 @@ void AbstractFramebuffer::clear(ClearMask mask) {
     glClear(static_cast<GLbitfield>(mask));
 }
 
-void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, Image2D* image) {
+void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Image2D* image) {
     bindInternal(readTarget);
-    const std::size_t dataSize = AbstractImage::pixelSize(format, type)*size.product();
+    const std::size_t dataSize = image->pixelSize()*size.product();
     char* const data = new char[dataSize];
-    readImplementation(offset, size, format, type, dataSize, data);
-    image->setData(size, format, type, data);
+    readImplementation(offset, size, image->format(), image->type(), dataSize, data);
+    image->setData(size, image->format(), image->type(), data);
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, BufferImage2D* image, Buffer::Usage usage) {
+void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, BufferImage2D* image, Buffer::Usage usage) {
     bindInternal(readTarget);
     /* If the buffer doesn't have sufficient size, resize it */
     /** @todo Explicitly reset also when buffer usage changes */
-    if(image->size() != size || image->format() != format || image->type() != type)
-        image->setData(size, format, type, nullptr, usage);
+    if(image->size() != size)
+        image->setData(size, image->format(), image->type(), nullptr, usage);
 
     image->buffer()->bind(Buffer::Target::PixelPack);
     /** @todo De-duplicate buffer size computation */
-    readImplementation(offset, size, format, type, AbstractImage::pixelSize(format, type)*size.product(), nullptr);
+    readImplementation(offset, size, image->format(), image->type(), image->pixelSize()*size.product(), nullptr);
 }
 #endif
 
