@@ -40,6 +40,7 @@
 #include "Framebuffer.h"
 #include "Mesh.h"
 #include "Renderbuffer.h"
+#include "Renderer.h"
 
 #include "Implementation/State.h"
 
@@ -368,6 +369,7 @@ Context::Context() {
     Framebuffer::initializeContextBasedFunctionality(this);
     Mesh::initializeContextBasedFunctionality(this);
     Renderbuffer::initializeContextBasedFunctionality(this);
+    Renderer::initializeContextBasedFunctionality(this);
 }
 
 Context::~Context() {

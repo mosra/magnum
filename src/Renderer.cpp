@@ -26,8 +26,16 @@
 
 #include "Color.h"
 #include "Math/Geometry/Rectangle.h"
+#include "Context.h"
+#include "Extensions.h"
 
 namespace Magnum {
+
+#ifndef MAGNUM_TARGET_GLES
+Renderer::ClearDepthfImplementation Renderer::clearDepthfImplementation = &Renderer::clearDepthfImplementationDefault;
+#else
+Renderer::ClearDepthfImplementation Renderer::clearDepthfImplementation = &Renderer::clearDepthfImplementationES;
+#endif
 
 void Renderer::setFeature(const Feature feature, const bool enabled) {
     enabled ? glEnable(GLenum(feature)) : glDisable(GLenum(feature));
@@ -46,10 +54,6 @@ void Renderer::setClearDepth(const Double depth) {
     glClearDepth(depth);
 }
 #endif
-
-void Renderer::setClearDepth(const Float depth) {
-    glClearDepthf(depth);
-}
 
 void Renderer::setClearStencil(const Int stencil) {
     glClearStencil(stencil);
@@ -148,5 +152,27 @@ void Renderer::setLogicOperation(const LogicOperation operation) {
     glLogicOp(GLenum(operation));
 }
 #endif
+
+void Renderer::initializeContextBasedFunctionality(Context* context) {
+    #ifndef MAGNUM_TARGET_GLES
+    if(context->isExtensionSupported<Extensions::GL::ARB::ES2_compatibility>()) {
+        Debug() << "Renderer: using" << Extensions::GL::ARB::ES2_compatibility::string() << "features";
+
+        clearDepthfImplementation = &Renderer::clearDepthfImplementationES;
+    }
+    #else
+    static_cast<void>(context);
+    #endif
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void Renderer::clearDepthfImplementationDefault(const GLfloat depth) {
+    glClearDepth(depth);
+}
+#endif
+
+void Renderer::clearDepthfImplementationES(const GLfloat depth) {
+    glClearDepthf(depth);
+}
 
 }

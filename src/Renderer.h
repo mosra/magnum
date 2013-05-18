@@ -43,6 +43,8 @@ Access to global renderer configuration.
 @todo @extension{ARB,viewport_array}
 */
 class MAGNUM_EXPORT Renderer {
+    friend class Context;
+
     public:
         Renderer() = delete;
 
@@ -226,10 +228,12 @@ class MAGNUM_EXPORT Renderer {
          * @overload
          *
          * @see @ref Feature "Feature::DepthTest", @fn_gl{ClearDepth}
-         * @requires_gl41 %Extension @extension{ARB,ES2_compatibility}
-         * @todo Call double version if the extension is not available
+         * If OpenGL ES, OpenGL 4.1 or extension @extension{ARB,ES2_compatibility}
+         * is not available, this function behaves exactly as setClearDepth(Double).
          */
-        static void setClearDepth(Float depth);
+        inline static void setClearDepth(Float depth) {
+            clearDepthfImplementation(depth);
+        }
 
         /**
          * @brief Set clear stencil
@@ -835,6 +839,16 @@ class MAGNUM_EXPORT Renderer {
         }
 
         /*@}*/
+
+    private:
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+
+        typedef void(*ClearDepthfImplementation)(GLfloat);
+        #ifndef MAGNUM_TARGET_GLES
+        static void MAGNUM_LOCAL clearDepthfImplementationDefault(GLfloat depth);
+        #endif
+        static void MAGNUM_LOCAL clearDepthfImplementationES(GLfloat depth);
+        static ClearDepthfImplementation clearDepthfImplementation;
 };
 
 }
