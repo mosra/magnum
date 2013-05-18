@@ -286,6 +286,16 @@ Context::Context() {
     #endif
     _version = static_cast<Version>(_majorVersion*100+_minorVersion*10);
 
+    /* Context flags are supported since GL 3.0 */
+    #ifndef MAGNUM_TARGET_GLES
+    /**
+     * @todo According to KHR_debug specs this should be also present in ES2
+     *      if KHR_debug is available, but in headers it is nowhere to be found
+     */
+    if(isVersionSupported(Version::GL300))
+        glGetIntegerv(GL_CONTEXT_FLAGS, reinterpret_cast<GLint*>(&_flags));
+    #endif
+
     /* Get first future (not supported) version */
     std::vector<Version> versions{
         #ifndef MAGNUM_TARGET_GLES

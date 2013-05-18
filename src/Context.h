@@ -30,6 +30,7 @@
 
 #include <bitset>
 #include <vector>
+#include <Containers/EnumSet.h>
 
 #include "Magnum.h"
 #include "OpenGL.h"
@@ -145,12 +146,35 @@ class MAGNUM_EXPORT Context {
 
     public:
         /**
+         * @brief Context flag
+         *
+         * @see Flags, flags()
+         */
+        enum class Flag: GLint {
+            #ifndef MAGNUM_TARGET_GLES3
+            /**
+             * Debug context
+             * @requires_gl43 %Extension @es_extension{KHR,debug}
+             * @requires_es_extension %Extension @es_extension{KHR,debug}
+             */
+            Debug = GL_CONTEXT_FLAG_DEBUG_BIT
+            #endif
+        };
+
+        /**
+         * @brief Context flags
+         *
+         * @see flags()
+         */
+        typedef Corrade::Containers::EnumSet<Flag, GLint> Flags;
+
+        /**
          * @brief Constructor
          *
          * Constructed automatically, see class documentation for more
          * information.
          * @see @fn_gl{Get} with @def_gl{MAJOR_VERSION}, @def_gl{MINOR_VERSION},
-         *      @fn_gl{GetString} with @def_gl{EXTENSIONS}
+         *      @def_gl{CONTEXT_FLAGS}, @fn_gl{GetString} with @def_gl{EXTENSIONS}
          */
         explicit Context();
 
@@ -220,6 +244,9 @@ class MAGNUM_EXPORT Context {
         inline std::string shadingLanguageVersionString() const {
             return reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
         }
+
+        /** @brief Context flags */
+        inline Flags flags() const { return _flags; }
 
         /**
          * @brief Supported extensions
@@ -302,6 +329,7 @@ class MAGNUM_EXPORT Context {
         Version _version;
         Int _majorVersion;
         Int _minorVersion;
+        Flags _flags;
 
         std::bitset<128> extensionStatus;
         std::vector<Extension> _supportedExtensions;
