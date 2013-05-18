@@ -41,9 +41,11 @@ void Renderer::setClearColor(const Color4<>& color) {
     glClearColor(color.r(), color.g(), color.b(), color.a());
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void Renderer::setClearDepth(const Double depth) {
     glClearDepth(depth);
 }
+#endif
 
 void Renderer::setClearDepth(const Float depth) {
     glClearDepthf(depth);
@@ -57,6 +59,7 @@ void Renderer::setFrontFace(const FrontFace mode) {
     glFrontFace(GLenum(mode));
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void Renderer::setProvokingVertex(const ProvokingVertex mode) {
     glProvokingVertex(GLenum(mode));
 }
@@ -64,6 +67,7 @@ void Renderer::setProvokingVertex(const ProvokingVertex mode) {
 void Renderer::setPolygonMode(const PolygonMode mode) {
     glPolygonMode(GL_FRONT_AND_BACK, GLenum(mode));
 }
+#endif
 
 void Renderer::setPolygonOffset(const Float factor, const Float units) {
     glPolygonOffset(factor, units);
@@ -73,9 +77,11 @@ void Renderer::setLineWidth(const Float width) {
     glLineWidth(width);
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void Renderer::setPointSize(const Float size) {
     glPointSize(size);
 }
+#endif
 
 void Renderer::setScissor(const Rectanglei& rectangle) {
     glScissor(rectangle.left(), rectangle.bottom(), rectangle.width(), rectangle.height());
@@ -137,8 +143,10 @@ void Renderer::setBlendColor(const Color4<>& color) {
     glBlendColor(color.r(), color.g(), color.b(), color.a());
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void Renderer::setLogicOperation(const LogicOperation operation) {
     glLogicOp(GLenum(operation));
 }
+#endif
 
 }

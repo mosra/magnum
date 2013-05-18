@@ -75,15 +75,6 @@ class MAGNUM_EXPORT Renderer {
              */
             Blending = GL_BLEND,
 
-            /**
-             * Seamless cube map texture.
-             * @see CubeMapTexture, CubeMapTextureArray
-             * @requires_gl32 %Extension @extension{ARB,seamless_cube_map}
-             * @requires_gl Not available in OpenGL ES 2.0, always enabled in
-             *      OpenGL ES 3.0.
-             */
-            SeamlessCubeMapTexture = GL_TEXTURE_CUBE_MAP_SEAMLESS,
-
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Depth clamping. If enabled, ignores near and far clipping plane.
@@ -157,6 +148,7 @@ class MAGNUM_EXPORT Renderer {
             PolygonOffsetPoint = GL_POLYGON_OFFSET_POINT,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Programmable point size. If enabled, the point size is taken
              * from vertex/geometry shader builtin `gl_PointSize`.
@@ -164,12 +156,24 @@ class MAGNUM_EXPORT Renderer {
              * @requires_gl Always enabled on OpenGL ES.
              */
             ProgramPointSize = GL_PROGRAM_POINT_SIZE,
+            #endif
 
             /**
              * Scissor test
              * @see setScissor()
              */
             ScissorTest = GL_SCISSOR_TEST,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Seamless cube map texture.
+             * @see CubeMapTexture, CubeMapTextureArray
+             * @requires_gl32 %Extension @extension{ARB,seamless_cube_map}
+             * @requires_gl Not available in OpenGL ES 2.0, always enabled in
+             *      OpenGL ES 3.0.
+             */
+            SeamlessCubeMapTexture = GL_TEXTURE_CUBE_MAP_SEAMLESS,
+            #endif
 
             /**
              * Stencil test
@@ -289,9 +293,7 @@ class MAGNUM_EXPORT Renderer {
          * @requires_gl OpenGL ES behaves always like the default.
          */
         static void setProvokingVertex(ProvokingVertex mode);
-        #endif
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Polygon mode
          *
