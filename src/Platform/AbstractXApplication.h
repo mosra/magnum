@@ -178,6 +178,7 @@ CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Flags)
 
 Double-buffered OpenGL context.
 @see AbstractXApplication(), createContext()
+@todo GLX_ARB_create_context_robustness/EGL_EXT_create_context_robustness
 */
 class AbstractXApplication::Configuration {
     Configuration(const Configuration&) = delete;

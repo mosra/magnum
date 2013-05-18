@@ -27,6 +27,7 @@
 #include "BufferState.h"
 #include "FramebufferState.h"
 #include "MeshState.h"
+#include "RendererState.h"
 #include "ShaderProgramState.h"
 #include "TextureState.h"
 
@@ -36,12 +37,14 @@ State::State():
     buffer(new BufferState),
     framebuffer(new FramebufferState),
     mesh(new MeshState),
+    renderer(new RendererState),
     shaderProgram(new ShaderProgramState),
     texture(new TextureState) {}
 
 State::~State() {
     delete texture;
     delete shaderProgram;
+    delete renderer;
     delete mesh;
     delete framebuffer;
     delete buffer;

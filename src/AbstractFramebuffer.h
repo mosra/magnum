@@ -41,12 +41,14 @@ namespace Magnum {
 
 See DefaultFramebuffer and Framebuffer for more information.
 
-@section AbstractFramebuffer-performance-optimization Performance optimizations
+@section AbstractFramebuffer-performance-optimization Performance optimizations and security
 
 The engine tracks currently bound framebuffer and current viewport to avoid
 unnecessary calls to @fn_gl{BindFramebuffer} and @fn_gl{Viewport} when
 switching framebuffers.
 
+If @extension{ARB,robustness} is available, read() operations are protected
+from buffer overflow.
 @todo @extension{ARB,viewport_array}
 */
 class MAGNUM_EXPORT AbstractFramebuffer {
@@ -238,7 +240,10 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @param type              Data type of pixel data
          * @param image             %Image where to put the data
          *
-         * @see @fn_gl{BindFramebuffer}, @fn_gl{ReadPixels}
+         * If @extension{ARB,robustness} is available, the operation is
+         * protected from buffer overflow.
+         * @see @fn_gl{BindFramebuffer}, @fn_gl{ReadPixels} or
+         *      @fn_gl_extension{ReadnPixels,ARB,robustness}
          * @todo Read size, format & type from image?
          */
         void read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, Image2D* image);
@@ -253,7 +258,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @param image             %Buffer image where to put the data
          * @param usage             %Buffer usage
          *
-         * @see @fn_gl{BindFramebuffer}, @fn_gl{ReadPixels}
+         * See read(const Vector2i&, const Vector2i&, Image2D*) for more
+         * information.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
          * @todo Read size, format & type from image?
          */
@@ -304,6 +310,13 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL readBufferImplementationDSA(GLenum buffer);
         #endif
+
+        typedef void(*ReadImplementation)(const Vector2i&, const Vector2i&, AbstractImage::Format, AbstractImage::Type, std::size_t, GLvoid*);
+        static void MAGNUM_LOCAL readImplementationDefault(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, std::size_t dataSize, GLvoid* data);
+        #ifndef MAGNUM_TARGET_GLES3
+        static void MAGNUM_LOCAL readImplementationRobustness(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, std::size_t dataSize, GLvoid* data);
+        #endif
+        static ReadImplementation MAGNUM_LOCAL readImplementation;
 };
 
 inline AbstractFramebuffer::~AbstractFramebuffer() {}

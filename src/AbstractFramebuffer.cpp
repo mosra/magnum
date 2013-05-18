@@ -34,6 +34,8 @@
 
 namespace Magnum {
 
+AbstractFramebuffer::ReadImplementation AbstractFramebuffer::readImplementation = &AbstractFramebuffer::readImplementationDefault;
+
 AbstractFramebuffer::DrawBuffersImplementation AbstractFramebuffer::drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDefault;
 AbstractFramebuffer::DrawBufferImplementation AbstractFramebuffer::drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDefault;
 AbstractFramebuffer::ReadBufferImplementation AbstractFramebuffer::readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDefault;
@@ -128,8 +130,9 @@ void AbstractFramebuffer::clear(ClearMask mask) {
 
 void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, Image2D* image) {
     bindInternal(readTarget);
-    char* data = new char[AbstractImage::pixelSize(format, type)*size.product()];
-    glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), data);
+    const std::size_t dataSize = AbstractImage::pixelSize(format, type)*size.product();
+    char* const data = new char[dataSize];
+    readImplementation(offset, size, format, type, dataSize, data);
     image->setData(size, format, type, data);
 }
 
@@ -142,7 +145,8 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Abs
         image->setData(size, format, type, nullptr, usage);
 
     image->buffer()->bind(Buffer::Target::PixelPack);
-    glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), nullptr);
+    /** @todo De-duplicate buffer size computation */
+    readImplementation(offset, size, format, type, AbstractImage::pixelSize(format, type)*size.product(), nullptr);
 }
 #endif
 
@@ -184,6 +188,26 @@ void AbstractFramebuffer::initializeContextBasedFunctionality(Context* context) 
         drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDSA;
         drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDSA;
         readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDSA;
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES3
+    #ifndef MAGNUM_TARGET_GLES
+    if(context->isExtensionSupported<Extensions::GL::ARB::robustness>())
+    #else
+    if(context->isExtensionSupported<Extensions::GL::EXT::robustness>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
+        Debug() << "AbstractFramebuffer: using" << Extensions::GL::ARB::robustness::string() << "features";
+        #else
+        //Debug() << "AbstractFramebuffer: using" << Extensions::GL::EXT::robustness::string() << "features";
+        #endif
+
+        /** @todo Enable when extension wrangler for ES is available */
+        #ifndef MAGNUM_TARGET_GLES
+        readImplementation = &AbstractFramebuffer::readImplementationRobustness;
+        #endif
     }
     #else
     static_cast<void>(context);
@@ -240,6 +264,28 @@ void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
 #ifndef MAGNUM_TARGET_GLES
 void AbstractFramebuffer::readBufferImplementationDSA(GLenum buffer) {
     glFramebufferReadBufferEXT(_id, buffer);
+}
+#endif
+
+void AbstractFramebuffer::readImplementationDefault(const Vector2i& offset, const Vector2i& size, const AbstractImage::Format format, const AbstractImage::Type type, const std::size_t, GLvoid* const data) {
+    glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), data);
+}
+
+#ifndef MAGNUM_TARGET_GLES3
+void AbstractFramebuffer::readImplementationRobustness(const Vector2i& offset, const Vector2i& size, const AbstractImage::Format format, const AbstractImage::Type type, const std::size_t dataSize, GLvoid* const data) {
+    /** @todo Enable when extension wrangler for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glReadnPixelsARB(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), dataSize, data);
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glReadnPixelsEXT(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), data);
+    static_cast<void>(offset);
+    static_cast<void>(size);
+    static_cast<void>(format);
+    static_cast<void>(type);
+    static_cast<void>(dataSize);
+    static_cast<void>(data);
+    #endif
 }
 #endif
 

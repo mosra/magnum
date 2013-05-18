@@ -28,6 +28,8 @@
 #include "Math/Geometry/Rectangle.h"
 #include "Context.h"
 #include "Extensions.h"
+#include "Implementation/State.h"
+#include "Implementation/RendererState.h"
 
 namespace Magnum {
 
@@ -35,6 +37,9 @@ namespace Magnum {
 Renderer::ClearDepthfImplementation Renderer::clearDepthfImplementation = &Renderer::clearDepthfImplementationDefault;
 #else
 Renderer::ClearDepthfImplementation Renderer::clearDepthfImplementation = &Renderer::clearDepthfImplementationES;
+#endif
+#ifndef MAGNUM_TARGET_GLES3
+Renderer::GraphicsResetStatusImplementation Renderer::graphicsResetStatusImplementation = &Renderer::graphicsResetStatusImplementationDefault;
 #endif
 
 void Renderer::setFeature(const Feature feature, const bool enabled) {
@@ -153,12 +158,45 @@ void Renderer::setLogicOperation(const LogicOperation operation) {
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES3
+Renderer::ResetNotificationStrategy Renderer::resetNotificationStrategy() {
+    ResetNotificationStrategy& strategy = Context::current()->state()->renderer->resetNotificationStrategy;
+
+    if(strategy == ResetNotificationStrategy()) {
+        #ifndef MAGNUM_TARGET_GLES
+        glGetIntegerv(GL_RESET_NOTIFICATION_STRATEGY_ARB, reinterpret_cast<GLint*>(&strategy));
+        #else
+        glGetIntegerv(GL_RESET_NOTIFICATION_STRATEGY_EXT, reinterpret_cast<GLint*>(&strategy));
+        #endif
+    }
+
+    return strategy;
+}
+#endif
+
 void Renderer::initializeContextBasedFunctionality(Context* context) {
     #ifndef MAGNUM_TARGET_GLES
     if(context->isExtensionSupported<Extensions::GL::ARB::ES2_compatibility>()) {
         Debug() << "Renderer: using" << Extensions::GL::ARB::ES2_compatibility::string() << "features";
 
         clearDepthfImplementation = &Renderer::clearDepthfImplementationES;
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES3
+    #ifndef MAGNUM_TARGET_GLES
+    if(context->isExtensionSupported<Extensions::GL::ARB::robustness>())
+    #else
+    if(context->isExtensionSupported<Extensions::GL::EXT::robustness>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
+        Debug() << "Renderer: using" << Extensions::GL::ARB::robustness::string() << "features";
+        #else
+        Debug() << "Renderer: using" << Extensions::GL::EXT::robustness::string() << "features";
+        #endif
+
+        graphicsResetStatusImplementation = &Renderer::graphicsResetStatusImplementationRobustness;
     }
     #else
     static_cast<void>(context);
@@ -174,5 +212,21 @@ void Renderer::clearDepthfImplementationDefault(const GLfloat depth) {
 void Renderer::clearDepthfImplementationES(const GLfloat depth) {
     glClearDepthf(depth);
 }
+
+#ifndef MAGNUM_TARGET_GLES3
+Renderer::GraphicsResetStatus Renderer::graphicsResetStatusImplementationDefault() {
+    return GraphicsResetStatus::NoError;
+}
+
+Renderer::GraphicsResetStatus Renderer::graphicsResetStatusImplementationRobustness() {
+    /** @todo Enable when extension wrangler for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    return GraphicsResetStatus(glGetGraphicsResetStatusARB());
+    #else
+    //return GraphicsResetStatus(glGetGraphicsResetStatusEXT());
+    CORRADE_INTERNAL_ASSERT(false);
+    #endif
+}
+#endif
 
 }

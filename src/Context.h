@@ -157,7 +157,18 @@ class MAGNUM_EXPORT Context {
              * @requires_gl43 %Extension @es_extension{KHR,debug}
              * @requires_es_extension %Extension @es_extension{KHR,debug}
              */
-            Debug = GL_CONTEXT_FLAG_DEBUG_BIT
+            Debug = GL_CONTEXT_FLAG_DEBUG_BIT,
+            #endif
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Context with robust buffer access
+             * @requires_extension %Extension @extension{EXT,robustness}
+             * @requires_es_extension %Extension @es_extension{EXT,robustness}
+             * @todo In ES available under glGetIntegerv(CONTEXT_ROBUST_ACCESS_EXT),
+             *      how to make it compatible?
+             */
+            Robustness = GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB
             #endif
         };
 

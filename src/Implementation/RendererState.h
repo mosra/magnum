@@ -1,5 +1,5 @@
-#ifndef Magnum_Implementation_State_h
-#define Magnum_Implementation_State_h
+#ifndef Magnum_Implementation_RendererState_h
+#define Magnum_Implementation_RendererState_h
 /*
     This file is part of Magnum.
 
@@ -24,25 +24,20 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Renderer.h"
+
 namespace Magnum { namespace Implementation {
 
-struct BufferState;
-struct FramebufferState;
-struct MeshState;
-struct RendererState;
-struct ShaderProgramState;
-struct TextureState;
+struct RendererState {
+    inline constexpr RendererState()
+        #ifndef MAGNUM_TARGET_GLES3
+        : resetNotificationStrategy()
+        #endif
+    {}
 
-struct State {
-    State();
-    ~State();
-
-    BufferState* const buffer;
-    FramebufferState* const framebuffer;
-    MeshState* const mesh;
-    RendererState* const renderer;
-    ShaderProgramState* const shaderProgram;
-    TextureState* const texture;
+    #ifndef MAGNUM_TARGET_GLES3
+    Renderer::ResetNotificationStrategy resetNotificationStrategy;
+    #endif
 };
 
 }}

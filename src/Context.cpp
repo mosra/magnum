@@ -80,6 +80,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
     static const std::vector<Extension> extensions{
         _extension(GL,AMD,vertex_shader_layer),             // done
         _extension(GL,AMD,shader_trinary_minmax),           // done
+        _extension(GL,ARB,robustness),
         _extension(GL,EXT,texture_filter_anisotropic),      // done
         _extension(GL,EXT,direct_state_access),
         _extension(GL,GREMEDY,string_marker)};              // done
@@ -211,6 +212,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,debug_marker),
         _extension(GL,EXT,separate_shader_objects),
         _extension(GL,EXT,sRGB),
+        _extension(GL,EXT,robustness),
         _extension(GL,NV,read_buffer_front),
         _extension(GL,NV,read_stencil),
         _extension(GL,NV,texture_border_clamp),             // done

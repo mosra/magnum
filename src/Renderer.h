@@ -838,6 +838,95 @@ class MAGNUM_EXPORT Renderer {
             glFinish();
         }
 
+        #ifndef MAGNUM_TARGET_GLES3
+        /**
+         * @brief Graphics reset notification strategy
+         *
+         * @see resetNotificationStrategy()
+         * @requires_extension %Extension @extension{ARB,robustness}
+         * @requires_es_extension %Extension @es_extension{EXT,robustness}
+         */
+        enum class ResetNotificationStrategy: GLint {
+            /**
+             * No reset notification, thus graphicsResetStatus() will always
+             * return @ref GraphicsResetStatus "GraphicsResetStatus::NoError".
+             * However this doesn't mean that the context cannot be lost.
+             */
+            #ifndef MAGNUM_TARGET_GLES
+            NoResetNotification = GL_NO_RESET_NOTIFICATION_ARB,
+            #else
+            NoResetNotification = GL_NO_RESET_NOTIFICATION_EXT,
+            #endif
+
+            /**
+             * Graphics reset will result in context loss, cause of the reset
+             * can be queried with graphicsResetStatus().
+             */
+            #ifndef MAGNUM_TARGET_GLES
+            LoseContextOnReset = GL_LOSE_CONTEXT_ON_RESET_ARB
+            #else
+            LoseContextOnReset = GL_LOSE_CONTEXT_ON_RESET_EXT
+            #endif
+        };
+
+        /**
+         * @brief Graphics reset notification strategy
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If OpenGL extension @extension{ARB,robustness} or ES
+         * extension @es_extension{EXT,robustness} is not available, this
+         * function always returns @ref ResetNotificationStrategy "ResetNotificationStrategy::NoResetNotification".
+         * @see graphicsResetStatus(), @fn_gl{Get} with @def_gl{RESET_NOTIFICATION_STRATEGY_ARB}
+         */
+        static ResetNotificationStrategy resetNotificationStrategy();
+
+        /**
+         * @brief Graphics reset status
+         *
+         * @see resetNotificationStrategy(), graphicsResetStatus()
+         * @requires_extension %Extension @extension{ARB,robustness}
+         * @requires_es_extension %Extension @es_extension{EXT,robustness}
+         */
+        enum class GraphicsResetStatus: GLenum {
+            /** No reset occured since last call. */
+            NoError = GL_NO_ERROR,
+
+            /** Reset attributable to the current context has been detected. */
+            #ifndef MAGNUM_TARGET_GLES
+            GuiltyContextReset = GL_GUILTY_CONTEXT_RESET_ARB,
+            #else
+            GuiltyContextReset = GL_GUILTY_CONTEXT_RESET_EXT,
+            #endif
+
+            /** Reset not attributable to the current context has been detected. */
+            #ifndef MAGNUM_TARGET_GLES
+            InnocentContextReset = GL_INNOCENT_CONTEXT_RESET_ARB,
+            #else
+            InnocentContextReset = GL_INNOCENT_CONTEXT_RESET_EXT,
+            #endif
+
+            /** Reset with unknown cause has been detected. */
+            #ifndef MAGNUM_TARGET_GLES
+            UnknownContextReset = GL_UNKNOWN_CONTEXT_RESET_ARB
+            #else
+            UnknownContextReset = GL_UNKNOWN_CONTEXT_RESET_EXT
+            #endif
+        };
+
+        /**
+         * @brief Check graphics reset status
+         *
+         * Reset causes all context state to be lost. If OpenGL extension
+         * @extension{ARB,robustness} or ES extension @es_extension{EXT,robustness}
+         * is not available, this function always returns
+         * @ref GraphicsResetStatus "GraphicsResetStatus::NoError".
+         * @see resetNotificationStrategy(), @fn_gl_extension{GetGraphicsResetStatus,ARB,robustness}
+         */
+        inline static GraphicsResetStatus graphicsResetStatus() {
+            return graphicsResetStatusImplementation();
+        }
+        #endif
+
         /*@}*/
 
     private:
@@ -849,6 +938,13 @@ class MAGNUM_EXPORT Renderer {
         #endif
         static void MAGNUM_LOCAL clearDepthfImplementationES(GLfloat depth);
         static ClearDepthfImplementation clearDepthfImplementation;
+
+        #ifndef MAGNUM_TARGET_GLES3
+        typedef GraphicsResetStatus(*GraphicsResetStatusImplementation)();
+        static GraphicsResetStatus MAGNUM_LOCAL graphicsResetStatusImplementationDefault();
+        static GraphicsResetStatus MAGNUM_LOCAL graphicsResetStatusImplementationRobustness();
+        static GraphicsResetStatusImplementation graphicsResetStatusImplementation;
+        #endif
 };
 
 }
