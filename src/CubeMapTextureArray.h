@@ -129,6 +129,36 @@ class CubeMapTextureArray: public AbstractTexture {
             return this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Read given mip level of texture to image
+         * @param coordinate        Coordinate
+         * @param level             Mip level
+         * @param image             %Image where to put the data
+         *
+         * See Texture::image(Int, Image*) for more information.
+         * @requires_gl %Texture image queries are not available in OpenGL ES.
+         */
+        inline void image(Coordinate coordinate, Int level, Image3D* image) {
+            AbstractTexture::image<3>(GL_TEXTURE_CUBE_MAP_POSITIVE_X + GLenum(coordinate), level, image);
+        }
+
+        /**
+         * @brief Read given mip level of texture to buffer image
+         * @param coordinate        Coordinate
+         * @param level             Mip level
+         * @param image             %Buffer image where to put the data
+         * @param usage             %Buffer usage
+         *
+         * See Texture::image(Int, BufferImage*, Buffer::Usage) for more
+         * information.
+         * @requires_gl %Texture image queries are not available in OpenGL ES.
+         */
+        inline void image(Coordinate coordinate, Int level, BufferImage3D* image, Buffer::Usage usage) {
+            AbstractTexture::image<3>(GL_TEXTURE_CUBE_MAP_POSITIVE_X + GLenum(coordinate), level, image, usage);
+        }
+        #endif
+
         /**
          * @brief Set image data
          * @param level             Mip level

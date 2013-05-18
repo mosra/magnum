@@ -250,6 +250,47 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Read given mip level of texture to image
+         * @param level             Mip level
+         * @param image             %Image where to put the data
+         *
+         * %Image parameters like format and type of pixel data are taken from
+         * given image, image size is taken from the texture using imageSize().
+         *
+         * If @extension{EXT,direct_state_access} is not available, the
+         * texture is bound to some layer before the operation. If
+         * @extension{ARB,robustness} is available, the operation is protected
+         * from buffer overflow. However, if both @extension{EXT,direct_state_access}
+         * and @extension{ARB,robustness} are available, the DSA version is
+         * used, because it is better for performance and there isn't any
+         * function combining both features.
+         * @requires_gl %Texture image queries are not available in OpenGL ES.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{GetTexLevelParameter} or @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or @def_gl{TEXTURE_DEPTH},
+         *      then @fn_gl{GetTexImage}, @fn_gl_extension{GetTextureImage,EXT,direct_state_access}
+         *      or @fn_gl_extension{GetnTexImage,ARB,robustness}
+         */
+        inline void image(Int level, Image<dimensions>* image) {
+            AbstractTexture::image<dimensions>(_target, level, image);
+        }
+
+        /**
+         * @brief Read given mip level of texture to buffer image
+         * @param level             Mip level
+         * @param image             %Buffer image where to put the data
+         * @param usage             %Buffer usage
+         *
+         * See image(Int, Image*) for more information.
+         * @requires_gl %Texture image queries are not available in OpenGL ES.
+         */
+        inline void image(Int level, BufferImage<dimensions>* image, Buffer::Usage usage) {
+            AbstractTexture::image<dimensions>(_target, level, image, usage);
+        }
+        #endif
+
         /**
          * @brief Set image data
          * @param level             Mip level

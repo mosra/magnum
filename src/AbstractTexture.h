@@ -43,7 +43,7 @@ namespace Magnum {
 See Texture, CubeMapTexture and CubeMapTextureArray documentation for more
 information and usage examples.
 
-@section AbstractTexture-performance-optimization Performance optimizations
+@section AbstractTexture-performance-optimization Performance optimizations and security
 
 The engine tracks currently bound textures in all available layers to avoid
 unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}. %Texture
@@ -57,6 +57,12 @@ function to avoid unnecessary calls to @fn_gl{ActiveTexture}. Also all texture
 configuration and data updating functions use DSA functions to avoid
 unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}. See
 respective function documentation for more information.
+
+If extension @extension{ARB,robustness} is available, image reading operations
+(such as Texture::image()) are protected from buffer overflow. However, if both
+@extension{EXT,direct_state_access} and @extension{ARB,robustness} are
+available, the DSA version is used, because it is better for performance and
+there isn't any function combining both features.
 
 To achieve least state changes, fully configure each texture in one run --
 method chaining comes in handy -- and try to have often used textures in
@@ -1168,6 +1174,11 @@ class MAGNUM_EXPORT AbstractTexture {
         /* Unlike bind() this also sets the binding layer as active */
         void MAGNUM_LOCAL bindInternal();
 
+        #ifndef MAGNUM_TARGET_GLES
+        template<UnsignedInt dimensions> void MAGNUM_LOCAL image(GLenum target, GLint level, Image<dimensions>* image);
+        template<UnsignedInt dimensions> void MAGNUM_LOCAL image(GLenum target, GLint level, BufferImage<dimensions>* image, Buffer::Usage usage);
+        #endif
+
         GLenum _target;
 
     private:
@@ -1235,6 +1246,14 @@ class MAGNUM_EXPORT AbstractTexture {
         void MAGNUM_LOCAL storageImplementationDSA(GLenum target, GLsizei levels, InternalFormat internalFormat, const Vector3i& size);
         #endif
         static Storage3DImplementation storage3DImplementation;
+
+        #ifndef MAGNUM_TARGET_GLES
+        typedef void(AbstractTexture::*GetImageImplementation)(GLenum, GLint, AbstractImage::Format, AbstractImage::Type, std::size_t, GLvoid*);
+        void MAGNUM_LOCAL getImageImplementationDefault(GLenum target, GLint level, AbstractImage::Format format, AbstractImage::Type type, std::size_t dataSize, GLvoid* data);
+        void MAGNUM_LOCAL getImageImplementationDSA(GLenum target, GLint level, AbstractImage::Format format, AbstractImage::Type type, std::size_t dataSize, GLvoid* data);
+        void MAGNUM_LOCAL getImageImplementationRobustness(GLenum target, GLint level, AbstractImage::Format format, AbstractImage::Type type, std::size_t dataSize, GLvoid* data);
+        static MAGNUM_LOCAL GetImageImplementation getImageImplementation;
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         typedef void(AbstractTexture::*Image1DImplementation)(GLenum, GLint, InternalFormat, const Math::Vector<1, GLsizei>&, AbstractImage::Format, AbstractImage::Type, const GLvoid*);
