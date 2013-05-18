@@ -64,7 +64,7 @@ class MAGNUM_EXPORT AbstractImage {
         /**
          * @brief Format of pixel data
          *
-         * @see pixelSize()
+         * @see pixelSize(Format, Type)
          */
         enum class Format: GLenum {
             /**
@@ -263,7 +263,7 @@ class MAGNUM_EXPORT AbstractImage {
         /**
          * @brief Data type of pixel data
          *
-         * @see pixelSize()
+         * @see pixelSize(Format, Type)
          */
         enum class Type: GLenum {
             /** Each component unsigned byte. */
@@ -493,6 +493,8 @@ class MAGNUM_EXPORT AbstractImage {
          * @brief Pixel size (in bytes)
          * @param format            Format of the pixel
          * @param type              Data type of the pixel
+         *
+         * @see pixelSize() const
          */
         static std::size_t pixelSize(Format format, Type type);
 
@@ -511,6 +513,15 @@ class MAGNUM_EXPORT AbstractImage {
 
         /** @brief Data type of pixel data */
         inline Type type() const { return _type; }
+
+        /**
+         * @brief Pixel size (in bytes)
+         *
+         * Convenience member alternative for pixelSize(Format, Type).
+         */
+        inline std::size_t pixelSize() const {
+            return pixelSize(_format, _type);
+        }
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:

@@ -31,7 +31,7 @@ template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const typ
     _format = format;
     _type = type;
     _size = size;
-    _buffer.setData(pixelSize(format, type)*size.product(), data, usage);
+    _buffer.setData(pixelSize()*size.product(), data, usage);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
