@@ -72,8 +72,8 @@ AbstractTexture::SubImage2DImplementation AbstractTexture::subImage2DImplementat
 AbstractTexture::SubImage3DImplementation AbstractTexture::subImage3DImplementation =
     &AbstractTexture::subImageImplementationDefault;
 
-AbstractTexture::InvalidateImplementation AbstractTexture::invalidateImplementation = &AbstractTexture::invalidateImplementationNoOp;
-AbstractTexture::InvalidateSubImplementation AbstractTexture::invalidateSubImplementation = &AbstractTexture::invalidateSubImplementationNoOp;
+AbstractTexture::InvalidateImageImplementation AbstractTexture::invalidateImageImplementation = &AbstractTexture::invalidateImageImplementationNoOp;
+AbstractTexture::InvalidateSubImageImplementation AbstractTexture::invalidateSubImageImplementation = &AbstractTexture::invalidateSubImageImplementationNoOp;
 
 /* Check correctness of binary OR in setMinificationFilter(). If nobody fucks
    anything up, this assert should produce the same results on all dimensions,
@@ -244,8 +244,8 @@ void AbstractTexture::initializeContextBasedFunctionality(Context* context) {
     if(context->isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>()) {
         Debug() << "AbstractTexture: using" << Extensions::GL::ARB::invalidate_subdata::string() << "features";
 
-        invalidateImplementation = &AbstractTexture::invalidateImplementationARB;
-        invalidateSubImplementation = &AbstractTexture::invalidateSubImplementationARB;
+        invalidateImageImplementation = &AbstractTexture::invalidateImageImplementationARB;
+        invalidateSubImageImplementation = &AbstractTexture::invalidateSubImageImplementationARB;
     }
     #endif
 }
@@ -440,18 +440,18 @@ void AbstractTexture::subImageImplementationDSA(GLenum target, GLint level, cons
 }
 #endif
 
-void AbstractTexture::invalidateImplementationNoOp(GLint) {}
+void AbstractTexture::invalidateImageImplementationNoOp(GLint) {}
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::invalidateImplementationARB(GLint level) {
+void AbstractTexture::invalidateImageImplementationARB(GLint level) {
     glInvalidateTexImage(_id, level);
 }
 #endif
 
-void AbstractTexture::invalidateSubImplementationNoOp(GLint, const Vector3i&, const Vector3i&) {}
+void AbstractTexture::invalidateSubImageImplementationNoOp(GLint, const Vector3i&, const Vector3i&) {}
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::invalidateSubImplementationARB(GLint level, const Vector3i& offset, const Vector3i& size) {
+void AbstractTexture::invalidateSubImageImplementationARB(GLint level, const Vector3i& offset, const Vector3i& size) {
     glInvalidateTexSubImage(_id, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z());
 }
 #endif

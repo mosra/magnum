@@ -144,7 +144,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * See Texture::setImage() for more information.
          */
         template<class T> inline CubeMapTextureArray* setImage(Int level, InternalFormat internalFormat, T* image) {
-            DataHelper<3>::set(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, internalFormat, image);
+            DataHelper<3>::setImage(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, internalFormat, image);
             return this;
         }
 
@@ -168,7 +168,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @see setSubImage(Int, Coordinate, Int, const Math::Vector<2, Int>&, const Image*)
          */
         template<class Image> inline CubeMapTextureArray* setSubImage(Int level, const Vector3i& offset, const Image* image) {
-            DataHelper<3>::setSub(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, offset, image, Vector3i(Math::Vector<Image::Dimensions, GLsizei>()));
+            DataHelper<3>::setSubImage(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, offset, image, Vector3i(Math::Vector<Image::Dimensions, GLsizei>()));
             return this;
         }
 
@@ -187,7 +187,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @see setSubImage(Int, const Math::Vector<3, Int>&, const Image*)
          */
         template<class Image> inline CubeMapTextureArray* setSubImage(Int layer, Coordinate coordinate, Int level, const Vector2i& offset, const Image* image) {
-            DataHelper<3>::setSub(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, Vector3i(offset, layer*6+static_cast<GLsizei>(coordinate)), image, Vector2i(Math::Vector<Image::Dimensions, GLsizei>()));
+            DataHelper<3>::setSubImage(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, Vector3i(offset, layer*6+static_cast<GLsizei>(coordinate)), image, Vector2i(Math::Vector<Image::Dimensions, GLsizei>()));
             return this;
         }
 
@@ -204,7 +204,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * See Texture::invalidateSubImage() for more information.
          */
         inline void invalidateSubImage(Int level, const Vector3i& offset, const Vector3i& size) {
-            DataHelper<3>::invalidateSub(this, level, offset, size);
+            DataHelper<3>::invalidateSubImage(this, level, offset, size);
         }
 
         /* Overloads to remove WTF-factor from method chaining order */

@@ -141,7 +141,7 @@ class CubeMapTexture: public AbstractTexture {
          * See Texture::setImage() for more information.
          */
         template<class Image> inline CubeMapTexture* setImage(Coordinate coordinate, Int level, InternalFormat internalFormat, Image* image) {
-            DataHelper<2>::set(this, static_cast<GLenum>(coordinate), level, internalFormat, image);
+            DataHelper<2>::setImage(this, static_cast<GLenum>(coordinate), level, internalFormat, image);
             return this;
         }
 
@@ -157,7 +157,7 @@ class CubeMapTexture: public AbstractTexture {
          * See Texture::setSubImage() for more information.
          */
         template<class Image> inline CubeMapTexture* setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, const Image* image) {
-            DataHelper<2>::setSub(this, static_cast<GLenum>(coordinate), level, offset, image);
+            DataHelper<2>::setSubImage(this, static_cast<GLenum>(coordinate), level, offset, image);
             return this;
         }
 
@@ -174,7 +174,7 @@ class CubeMapTexture: public AbstractTexture {
          * See Texture::invalidateSubImage() for more information.
          */
         inline void invalidateSubImage(Int level, const Vector3i& offset, const Vector3i& size) {
-            DataHelper<3>::invalidateSub(this, level, offset, size);
+            DataHelper<3>::invalidateSubImage(this, level, offset, size);
         }
 
         /* Overloads to remove WTF-factor from method chaining order */

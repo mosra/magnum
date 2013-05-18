@@ -273,7 +273,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}
          */
         template<class Image> inline Texture<Dimensions>* setImage(Int level, InternalFormat internalFormat, Image* image) {
-            DataHelper<Dimensions>::set(this, _target, level, internalFormat, image);
+            DataHelper<Dimensions>::setImage(this, _target, level, internalFormat, image);
             return this;
         }
 
@@ -303,7 +303,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access}
          */
         template<class Image> inline Texture<Dimensions>* setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, Image* image) {
-            DataHelper<Dimensions>::setSub(this, _target, level, offset, image);
+            DataHelper<Dimensions>::setSubImage(this, _target, level, offset, image);
             return this;
         }
 
@@ -318,7 +318,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @see invalidateImage(), @fn_gl{InvalidateTexSubImage}
          */
         inline void invalidateSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {
-            DataHelper<dimensions>::invalidateSub(this, level, offset, size);
+            DataHelper<dimensions>::invalidateSubImage(this, level, offset, size);
         }
 
         /* Overloads to remove WTF-factor from method chaining order */

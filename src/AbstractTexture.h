@@ -1141,7 +1141,7 @@ class MAGNUM_EXPORT AbstractTexture {
          *      @fn_gl{InvalidateTexImage}
          */
         inline void invalidateImage(Int level) {
-            (this->*invalidateImplementation)(level);
+            (this->*invalidateImageImplementation)(level);
         }
 
         /**
@@ -1278,19 +1278,19 @@ class MAGNUM_EXPORT AbstractTexture {
         #endif
         static SubImage3DImplementation subImage3DImplementation;
 
-        typedef void(AbstractTexture::*InvalidateImplementation)(GLint);
-        void MAGNUM_LOCAL invalidateImplementationNoOp(GLint level);
+        typedef void(AbstractTexture::*InvalidateImageImplementation)(GLint);
+        void MAGNUM_LOCAL invalidateImageImplementationNoOp(GLint level);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL invalidateImplementationARB(GLint level);
+        void MAGNUM_LOCAL invalidateImageImplementationARB(GLint level);
         #endif
-        static InvalidateImplementation invalidateImplementation;
+        static InvalidateImageImplementation invalidateImageImplementation;
 
-        typedef void(AbstractTexture::*InvalidateSubImplementation)(GLint, const Vector3i&, const Vector3i&);
-        void MAGNUM_LOCAL invalidateSubImplementationNoOp(GLint level, const Vector3i& offset, const Vector3i& size);
+        typedef void(AbstractTexture::*InvalidateSubImageImplementation)(GLint, const Vector3i&, const Vector3i&);
+        void MAGNUM_LOCAL invalidateSubImageImplementationNoOp(GLint level, const Vector3i& offset, const Vector3i& size);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL invalidateSubImplementationARB(GLint level, const Vector3i& offset, const Vector3i& size);
+        void MAGNUM_LOCAL invalidateSubImageImplementationARB(GLint level, const Vector3i& offset, const Vector3i& size);
         #endif
-        static InvalidateSubImplementation invalidateSubImplementation;
+        static InvalidateSubImageImplementation invalidateSubImageImplementation;
 
         void MAGNUM_LOCAL destroy();
         void MAGNUM_LOCAL move();
@@ -1334,16 +1334,16 @@ template<> struct AbstractTexture::DataHelper<1> {
         (texture->*storage1DImplementation)(target, levels, internalFormat, size);
     }
 
-    template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type set(AbstractTexture* texture, GLenum target, GLint level, InternalFormat internalFormat, Image* image) {
+    template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type setImage(AbstractTexture* texture, GLenum target, GLint level, InternalFormat internalFormat, Image* image) {
         (texture->*image1DImplementation)(target, level, internalFormat, image->size(), image->format(), image->type(), Implementation::ImageHelper<Image>::dataOrPixelUnpackBuffer(image));
     }
 
-    template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type setSub(AbstractTexture* texture, GLenum target, GLint level, const Math::Vector<1, GLint>& offset, Image* image) {
+    template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type setSubImage(AbstractTexture* texture, GLenum target, GLint level, const Math::Vector<1, GLint>& offset, Image* image) {
         (texture->*subImage1DImplementation)(target, level, offset, image->size(), image->format(), image->type(), Implementation::ImageHelper<Image>::dataOrPixelUnpackBuffer(image));
     }
 
-    inline static void invalidateSub(AbstractTexture* texture, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLint>& size) {
-        (texture->*invalidateSubImplementation)(level, {offset[0], 0, 0}, {size[0], 1, 1});
+    inline static void invalidateSubImage(AbstractTexture* texture, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLint>& size) {
+        (texture->*invalidateSubImageImplementation)(level, {offset[0], 0, 0}, {size[0], 1, 1});
     }
 };
 #endif
@@ -1369,20 +1369,20 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
         (texture->*storage2DImplementation)(target, levels, internalFormat, size);
     }
 
-    template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type set(AbstractTexture* texture, GLenum target, GLint level, InternalFormat internalFormat, Image* image) {
+    template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type setImage(AbstractTexture* texture, GLenum target, GLint level, InternalFormat internalFormat, Image* image) {
         (texture->*image2DImplementation)(target, level, internalFormat, image->size(), image->format(), image->type(), Implementation::ImageHelper<Image>::dataOrPixelUnpackBuffer(image));
     }
 
-    template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type setSub(AbstractTexture* texture, GLenum target, GLint level, const Vector2i& offset, Image* image) {
+    template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type setSubImage(AbstractTexture* texture, GLenum target, GLint level, const Vector2i& offset, Image* image) {
         (texture->*subImage2DImplementation)(target, level, offset, image->size(), image->format(), image->type(), Implementation::ImageHelper<Image>::dataOrPixelUnpackBuffer(image));
     }
 
-    template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type setSub(AbstractTexture* texture, GLenum target, GLint level, const Vector2i& offset, Image* image) {
+    template<class Image> inline static typename std::enable_if<Image::Dimensions == 1, void>::type setSubImage(AbstractTexture* texture, GLenum target, GLint level, const Vector2i& offset, Image* image) {
         (texture->*subImage2DImplementation)(target, level, offset, Vector2i(image->size(), 1), image->format(), image->type(), Implementation::ImageHelper<Image>::dataOrPixelUnpackBuffer(image));
     }
 
-    inline static void invalidateSub(AbstractTexture* texture, GLint level, const Vector2i& offset, const Vector2i& size) {
-        (texture->*invalidateSubImplementation)(level, {offset, 0}, {size, 1});
+    inline static void invalidateSubImage(AbstractTexture* texture, GLint level, const Vector2i& offset, const Vector2i& size) {
+        (texture->*invalidateSubImageImplementation)(level, {offset, 0}, {size, 1});
     }
 };
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
@@ -1407,20 +1407,20 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
         (texture->*storage3DImplementation)(target, levels, internalFormat, size);
     }
 
-    template<class Image> inline static typename std::enable_if<Image::Dimensions == 3, void>::type set(AbstractTexture* texture, GLenum target, GLint level, InternalFormat internalFormat, Image* image) {
+    template<class Image> inline static typename std::enable_if<Image::Dimensions == 3, void>::type setImage(AbstractTexture* texture, GLenum target, GLint level, InternalFormat internalFormat, Image* image) {
         (texture->*image3DImplementation)(target, level, internalFormat, image->size(), image->format(), image->type(), Implementation::ImageHelper<Image>::dataOrPixelUnpackBuffer(image));
     }
 
-    template<class Image> inline static typename std::enable_if<Image::Dimensions == 3, void>::type setSub(AbstractTexture* texture, GLenum target, GLint level, const Vector3i& offset, Image* image) {
+    template<class Image> inline static typename std::enable_if<Image::Dimensions == 3, void>::type setSubImage(AbstractTexture* texture, GLenum target, GLint level, const Vector3i& offset, Image* image) {
         (texture->*subImage3DImplementation)(target, level, offset, image->size(), image->format(), image->type(), Implementation::ImageHelper<Image>::dataOrPixelUnpackBuffer(image));
     }
 
-    template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type setSub(AbstractTexture* texture, GLenum target, GLint level, const Vector3i& offset, Image* image) {
+    template<class Image> inline static typename std::enable_if<Image::Dimensions == 2, void>::type setSubImage(AbstractTexture* texture, GLenum target, GLint level, const Vector3i& offset, Image* image) {
         (texture->*subImage3DImplementation)(target, level, offset, Vector3i(image->size(), 1), image->format(), image->type(), Implementation::ImageHelper<Image>::dataOrPixelUnpackBuffer(image));
     }
 
-    inline static void invalidateSub(AbstractTexture* texture, GLint level, const Vector3i& offset, const Vector3i& size) {
-        (texture->*invalidateSubImplementation)(level, offset, size);
+    inline static void invalidateSubImage(AbstractTexture* texture, GLint level, const Vector3i& offset, const Vector3i& size) {
+        (texture->*invalidateSubImageImplementation)(level, offset, size);
     }
 };
 #endif
