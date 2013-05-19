@@ -46,14 +46,14 @@ data from e.g. Image. Example configuration of high quality texture with
 trilinear anisotropic filtering, i.e. the best you can ask for:
 @code
 void* data;
-Image2D image({4096, 4096}, Image2D::Components::RGBA, Image2D::ComponentType::UnsignedByte, data);
+Image2D image({4096, 4096}, ImageFormat::RGBA, ImageType::UnsignedByte, data);
 
 Texture2D texture;
 texture.setMagnificationFilter(Texture2D::Filter::Linear)
     ->setMinificationFilter(Texture2D::Filter::Linear, Texture2D::Mipmap::Linear)
     ->setWrapping(Texture2D::Wrapping::ClampToEdge)
     ->setMaxAnisotropy(Texture2D::maxSupportedAnisotropy)
-    ->setStorage(Math::log2(4096)+1, Texture2D::Format::RGBA8, {4096, 4096})
+    ->setStorage(Math::log2(4096)+1, TextureFormat::RGBA8, {4096, 4096})
     ->setSubImage(0, {}, &image)
     ->generateMipmap();
 @endcode
@@ -84,11 +84,11 @@ array with 16 layers of 64x64 images:
 Texture3D texture(Texture3D::Target::Texture2DArray);
 texture.setMagnificationFilter(Texture2D::Filter::Linear)
     // ...
-    ->setStorage(levels, Texture2D::Format::RGBA8, {64, 64,16});
+    ->setStorage(levels, TextureFormat::RGBA8, {64, 64,16});
 
 for(std::size_t i = 0; i != 16; ++i) {
     void* data = ...;
-    Image2D image({64, 64}, Image3D::Components::RGBA, Image3D::ComponentType::UnsignedByte, image);
+    Image2D image({64, 64}, ImageFormat::RGBA, ImageType::UnsignedByte, image);
     texture->setSubImage(0, Vector3i::zAxis(i), image);
 }
 
@@ -245,7 +245,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @requires_gl42 %Extension @extension{ARB,texture_storage}
          * @requires_gles30 %Extension @es_extension{EXT,texture_storage}
          */
-        inline Texture<Dimensions>* setStorage(Int levels, InternalFormat internalFormat, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {
+        inline Texture<Dimensions>* setStorage(Int levels, TextureFormat internalFormat, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {
             DataHelper<Dimensions>::setStorage(this, _target, levels, internalFormat, size);
             return this;
         }
@@ -313,7 +313,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}
          */
-        template<class Image> inline Texture<Dimensions>* setImage(Int level, InternalFormat internalFormat, Image* image) {
+        template<class Image> inline Texture<Dimensions>* setImage(Int level, TextureFormat internalFormat, Image* image) {
             DataHelper<Dimensions>::setImage(this, _target, level, internalFormat, image);
             return this;
         }

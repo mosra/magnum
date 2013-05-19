@@ -48,16 +48,16 @@ calling setStorage() or by passing properly sized empty Image to setImage().
 Example: array with 16 layers of cube map faces, each face consisting of six
 64x64 images:
 @code
-Image3D dummy({64, 64, 16*6}, Image3D::Components::RGBA, Image3D::ComponentType::UnsignedByte, nullptr);
+Image3D dummy({64, 64, 16*6}, ImageFormat::RGBA, ImageType::UnsignedByte, nullptr);
 
 CubeMapTextureArray texture;
 texture.setMagnificationFilter(CubeMapTextureArray::Filter::Linear)
     // ...
-    ->setStorage(Math::log2(64)+1, CubeMapTextureArray::Format::RGBA8, {64, 64, 16});
+    ->setStorage(Math::log2(64)+1, TextureFormat::RGBA8, {64, 64, 16});
 
 for(std::size_t i = 0; i != 16; ++i) {
     void* dataPositiveX = ...;
-    Image2D imagePositiveX({64, 64}, Image3D::Components::RGBA, Image3D::ComponentType::UnsignedByte, imagePositiveX);
+    Image2D imagePositiveX({64, 64}, ImageFormat::RGBA, ImageType::UnsignedByte, imagePositiveX);
     // ...
     texture->setSubImage(i, CubeMapTextureArray::Coordinate::PositiveX, 0, {}, imagePositiveX);
     texture->setSubImage(i, CubeMapTextureArray::Coordinate::NegativeX, 0, {}, imageNegativeX);
@@ -124,7 +124,7 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * See Texture::setStorage() for more information.
          */
-        inline CubeMapTextureArray* setStorage(Int levels, InternalFormat internalFormat, const Vector3i& size) {
+        inline CubeMapTextureArray* setStorage(Int levels, TextureFormat internalFormat, const Vector3i& size) {
             DataHelper<3>::setStorage(this, _target, levels, internalFormat, size);
             return this;
         }
@@ -173,7 +173,7 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * See Texture::setImage() for more information.
          */
-        template<class T> inline CubeMapTextureArray* setImage(Int level, InternalFormat internalFormat, T* image) {
+        template<class T> inline CubeMapTextureArray* setImage(Int level, TextureFormat internalFormat, T* image) {
             DataHelper<3>::setImage(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, internalFormat, image);
             return this;
         }

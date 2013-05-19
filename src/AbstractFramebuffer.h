@@ -31,7 +31,6 @@
 #include <Containers/EnumSet.h>
 
 #include "Math/Geometry/Rectangle.h"
-#include "AbstractImage.h"
 #include "Buffer.h"
 
 namespace Magnum {
@@ -308,10 +307,10 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         void MAGNUM_LOCAL readBufferImplementationDSA(GLenum buffer);
         #endif
 
-        typedef void(*ReadImplementation)(const Vector2i&, const Vector2i&, AbstractImage::Format, AbstractImage::Type, std::size_t, GLvoid*);
-        static void MAGNUM_LOCAL readImplementationDefault(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, std::size_t dataSize, GLvoid* data);
+        typedef void(*ReadImplementation)(const Vector2i&, const Vector2i&, ImageFormat, ImageType, std::size_t, GLvoid*);
+        static void MAGNUM_LOCAL readImplementationDefault(const Vector2i& offset, const Vector2i& size, ImageFormat format, ImageType type, std::size_t dataSize, GLvoid* data);
         #ifndef MAGNUM_TARGET_GLES3
-        static void MAGNUM_LOCAL readImplementationRobustness(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, std::size_t dataSize, GLvoid* data);
+        static void MAGNUM_LOCAL readImplementationRobustness(const Vector2i& offset, const Vector2i& size, ImageFormat format, ImageType type, std::size_t dataSize, GLvoid* data);
         #endif
         static ReadImplementation MAGNUM_LOCAL readImplementation;
 };

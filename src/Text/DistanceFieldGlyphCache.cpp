@@ -26,15 +26,16 @@
 
 #include "Extensions.h"
 #include "Image.h"
+#include "TextureFormat.h"
 #include "TextureTools/DistanceField.h"
 
 namespace Magnum { namespace Text {
 
 namespace {
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
-    const AbstractTexture::InternalFormat internalFormat = AbstractTexture::InternalFormat::R8;
+    const TextureFormat internalFormat = TextureFormat::R8;
     #else
-    const AbstractTexture::InternalFormat internalFormat = AbstractTexture::InternalFormat::Red;
+    const TextureFormat internalFormat = TextureFormat::Red;
     #endif
 }
 

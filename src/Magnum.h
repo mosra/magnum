@@ -34,6 +34,10 @@
 #include "Types.h"
 #include "magnumConfigure.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
+#endif
+
 namespace Corrade {
     namespace Utility {
         class Debug;
@@ -346,6 +350,7 @@ typedef BufferImage<3> BufferImage3D;
 
 #ifndef MAGNUM_TARGET_GLES
 class BufferTexture;
+enum class BufferTextureFormat: GLenum;
 #endif
 
 template<class T = Float> class Color3;
@@ -371,6 +376,9 @@ typedef Image<1> Image1D;
 typedef Image<2> Image2D;
 typedef Image<3> Image3D;
 
+enum class ImageFormat: GLenum;
+enum class ImageType: GLenum;
+
 template<UnsignedInt> class ImageWrapper;
 typedef ImageWrapper<1> ImageWrapper1D;
 typedef ImageWrapper<2> ImageWrapper2D;
@@ -384,6 +392,7 @@ class SampleQuery;
 class TimeQuery;
 
 class Renderbuffer;
+enum class RenderbufferFormat: GLenum;
 
 enum class ResourceState: UnsignedByte;
 enum class ResourceDataState: UnsignedByte;
@@ -400,6 +409,8 @@ typedef Texture<1> Texture1D;
 #endif
 typedef Texture<2> Texture2D;
 typedef Texture<3> Texture3D;
+
+enum class TextureFormat: GLenum;
 
 class Timeline;
 #endif

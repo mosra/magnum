@@ -62,7 +62,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * @param size              Glyph cache texture size
          * @param internalFormat    Internal texture format
          */
-        explicit GlyphCache(const Vector2i& size, Texture2D::InternalFormat internalFormat);
+        explicit GlyphCache(const Vector2i& size, TextureFormat internalFormat);
 
         /**
          * @brief Constructor
@@ -142,7 +142,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
         /* Used from DistanceFieldGlyphCache */
         explicit MAGNUM_LOCAL GlyphCache(const Vector2i& size, const Vector2i& padding);
 
-        void MAGNUM_LOCAL initialize(Texture2D::InternalFormat internalFormat, const Vector2i& size);
+        void MAGNUM_LOCAL initialize(TextureFormat internalFormat, const Vector2i& size);
 
         const Vector2i _size;
         Texture2D _texture;

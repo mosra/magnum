@@ -56,6 +56,7 @@ set(Magnum_SRCS
     DefaultFramebuffer.cpp
     Framebuffer.cpp
     Image.cpp
+    ImageFormat.cpp
     Mesh.cpp
     OpenGL.cpp
     Query.cpp
@@ -110,18 +111,21 @@ set(Magnum_HEADERS
     Extensions.h
     Framebuffer.h
     Image.h
+    ImageFormat.h
     ImageWrapper.h
     Magnum.h
     Mesh.h
     OpenGL.h
     Query.h
     Renderbuffer.h
+    RenderbufferFormat.h
     Renderer.h
     Resource.h
     ResourceManager.h
     Shader.h
     Swizzle.h
     Texture.h
+    TextureFormat.h
     Timeline.h
     Types.h
 

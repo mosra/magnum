@@ -63,13 +63,13 @@ void Renderbuffer::initializeContextBasedFunctionality(Context* context) {
     #endif
 }
 
-void Renderbuffer::storageImplementationDefault(Renderbuffer::InternalFormat internalFormat, const Vector2i& size) {
+void Renderbuffer::storageImplementationDefault(RenderbufferFormat internalFormat, const Vector2i& size) {
     bind();
     glRenderbufferStorage(GL_RENDERBUFFER, GLenum(internalFormat), size.x(), size.y());
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Renderbuffer::storageImplementationDSA(Renderbuffer::InternalFormat internalFormat, const Vector2i& size) {
+void Renderbuffer::storageImplementationDSA(RenderbufferFormat internalFormat, const Vector2i& size) {
     glNamedRenderbufferStorageEXT(_id, GLenum(internalFormat), size.x(), size.y());
 }
 #endif

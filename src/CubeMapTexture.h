@@ -54,13 +54,13 @@ See Texture documentation for introduction.
 Common usage is to fully configure all texture parameters and then set the
 data from e.g. set of Image objects:
 @code
-Image2D positiveX({256, 256}, Image2D::Components::RGBA, Image2D::ComponentType::UnsignedByte, dataPositiveX);
+Image2D positiveX({256, 256}, ImageFormat::RGBA, ImageType::UnsignedByte, dataPositiveX);
 // ...
 
 CubeMapTexture texture;
 texture.setMagnificationFilter(Texture2D::Filter::Linear)
     // ...
-    ->setStorage(Math::log2(256)+1, Texture2D::Format::RGBA8, {256, 256})
+    ->setStorage(Math::log2(256)+1, TextureFormat::RGBA8, {256, 256})
     ->setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, {}, &positiveX)
     ->setSubImage(CubeMapTexture::Coordinate::NegativeX, 0, {}, &negativeX)
     // ...
@@ -124,7 +124,7 @@ class CubeMapTexture: public AbstractTexture {
          *
          * See Texture::setStorage() for more information.
          */
-        inline CubeMapTexture* setStorage(Int levels, InternalFormat internalFormat, const Vector2i& size) {
+        inline CubeMapTexture* setStorage(Int levels, TextureFormat internalFormat, const Vector2i& size) {
             DataHelper<2>::setStorage(this, _target, levels, internalFormat, size);
             return this;
         }
@@ -170,7 +170,7 @@ class CubeMapTexture: public AbstractTexture {
          *
          * See Texture::setImage() for more information.
          */
-        template<class Image> inline CubeMapTexture* setImage(Coordinate coordinate, Int level, InternalFormat internalFormat, Image* image) {
+        template<class Image> inline CubeMapTexture* setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, Image* image) {
             DataHelper<2>::setImage(this, static_cast<GLenum>(coordinate), level, internalFormat, image);
             return this;
         }

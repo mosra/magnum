@@ -26,7 +26,7 @@
 
 namespace Magnum {
 
-template<UnsignedInt dimensions> void Image<dimensions>::setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, GLvoid* data) {
+template<UnsignedInt dimensions> void Image<dimensions>::setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ImageFormat format, ImageType type, void* data) {
     delete[] _data;
     _format = format;
     _type = type;

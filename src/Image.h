@@ -55,7 +55,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        inline explicit Image(const typename DimensionTraits<Dimensions, Int>::VectorType& size, Format format, Type type, GLvoid* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
+        inline explicit Image(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ImageFormat format, ImageType type, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
 
         /**
          * @brief Constructor
@@ -65,7 +65,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          * Dimensions and data pointer are set to zero, call setData() to fill
          * the image with data.
          */
-        inline explicit Image(Format format, Type type): AbstractImage(format, type), _data(nullptr) {}
+        inline explicit Image(ImageFormat format, ImageType type): AbstractImage(format, type), _data(nullptr) {}
 
         /** @brief Destructor */
         inline ~Image() { delete[] _data; }
@@ -87,7 +87,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          * Deletes previous data and replaces them with new. Note that the
          * data are not copied, but they are deleted on destruction.
          */
-        void setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, Format format, Type type, GLvoid* data);
+        void setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ImageFormat format, ImageType type, void* data);
 
     private:
         Math::Vector<Dimensions, Int> _size;
