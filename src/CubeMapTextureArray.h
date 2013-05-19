@@ -81,7 +81,7 @@ also AbstractShaderProgram for more information.
 class CubeMapTextureArray: public AbstractTexture {
     public:
         /** @brief Cube map coordinate */
-        enum Coordinate: GLsizei {
+        enum class Coordinate: GLsizei {
             PositiveX = 0,  /**< +X cube side */
             NegativeX = 1,  /**< -X cube side */
             PositiveY = 2,  /**< +Y cube side */

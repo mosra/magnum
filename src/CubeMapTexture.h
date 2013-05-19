@@ -78,7 +78,7 @@ AbstractShaderProgram for more information.
 class CubeMapTexture: public AbstractTexture {
     public:
         /** @brief Cube map coordinate */
-        enum Coordinate: GLenum {
+        enum class Coordinate: GLenum {
             PositiveX = GL_TEXTURE_CUBE_MAP_POSITIVE_X,     /**< +X cube side */
             NegativeX = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,     /**< -X cube side */
             PositiveY = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,     /**< +Y cube side */
