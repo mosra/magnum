@@ -454,9 +454,9 @@ template<> struct AbstractTexture::DataHelper<1> {
 #endif
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
     enum class Target: GLenum {
-        Texture2D = GL_TEXTURE_2D
+        Texture2D = GL_TEXTURE_2D,
         #ifndef MAGNUM_TARGET_GLES
-        ,
+        Texture2DMultisample = GL_TEXTURE_2D_MULTISAMPLE,
         Texture1DArray = GL_TEXTURE_1D_ARRAY,
         Rectangle = GL_TEXTURE_RECTANGLE
         #endif
@@ -494,7 +494,10 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     enum class Target: GLenum {
         #ifndef MAGNUM_TARGET_GLES2
         Texture3D = GL_TEXTURE_3D,
-        Texture2DArray = GL_TEXTURE_2D_ARRAY
+        Texture2DArray = GL_TEXTURE_2D_ARRAY,
+        #ifndef MAGNUM_TARGET_GLES
+        Texture2DMultisampleArray = GL_TEXTURE_2D_MULTISAMPLE_ARRAY,
+        #endif
         #else
         Texture3D = GL_TEXTURE_3D_OES
         #endif

@@ -65,9 +65,10 @@ buffer.setData(data, Buffer::Usage::StaticDraw);
 @endcode
 
 The texture is bound to layer specified by shader via bind(). In shader, the
-texture is used via `samplerBuffer`.  Unlike in classic textures, coordinates
-for buffer textures are integer coordinates passed to `texelFetch()`. See also
-AbstractShaderProgram documentation for more information.
+texture is used via `samplerBuffer`, `isamplerBuffer` or `usamplerBuffer`.
+Unlike in classic textures, coordinates for buffer textures are integer
+coordinates passed to `texelFetch()`. See also AbstractShaderProgram
+documentation for more information.
 
 @section BufferTexture-performance-optimization Performance optimizations
 If extension @extension{EXT,direct_state_access} is available, setBuffer()
@@ -76,6 +77,7 @@ functions use DSA to avoid unnecessary calls to @fn_gl{ActiveTexture} and
 "relevant section in AbstractTexture documentation" and respective function
 documentation for more information.
 
+@see Texture, CubeMapTexture, CubeMapTextureArray
 @requires_gl31 %Extension @extension{ARB,texture_buffer_object}
 @requires_gl Texture buffers are not available in OpenGL ES.
 */

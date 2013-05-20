@@ -67,14 +67,14 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
     textures. See also setMagnificationFilter() and setBorderColor().
 
 The texture is bound to layer specified by shader via bind(). In shader, the
-texture is used via `sampler1D`, `sampler2D` or `sampler3D` depending on
-dimension count. See also AbstractShaderProgram documentation for more
-information.
+texture is used via `sampler2D` and friends, see @ref Target enum documentation
+for more information. See also AbstractShaderProgram documentation for more
+information about usage in shaders.
 
 @section Texture-array Texture arrays
 
-You can create texture arrays by passing @ref Texture::Target "Texture2D::Target::Texture1DArray"
-or @ref Texture::Target "Texture3D::Target::Texture2DArray" to constructor.
+You can create texture arrays by passing @ref Target "Texture2D::Target::Texture1DArray"
+or @ref Target "Texture3D::Target::Texture2DArray" to constructor.
 
 It is possible to specify each layer separately using setSubImage(), but you
 have to allocate the memory for all layers first either by calling setStorage()
@@ -99,21 +99,36 @@ Similar approach can be used for any other texture types (e.g. setting
 Texture3D data using 2D layers, Texture2D data using one-dimensional chunks
 etc.).
 
+@requires_gl30 %Extension @extension{EXT,texture_array} for texture arrays.
+@requires_gles30 %Array textures are not available in OpenGL ES 2.0.
+
+@section Texture-multisample Multisample textures
+
+You can create multisample textures by passing @ref Target "Texture2D::Target::Texture2DMultisample"
+or @ref Target "Texture3D::Target::Texture2DMultisampleArray" to constructor.
+
+@todoc finish this when fully implemented
+
+@requires_gl32 %Extension @extension{ARB,texture_multisample} for multisample
+    textures.
+@requires_gl Multisample textures are not available in OpenGL ES.
+
 @section Texture-rectangle Rectangle textures
 
-Rectangle texture is created by passing @ref Texture::Target "Texture::Target::Rectangle"
-to constructor. In shader, the texture is used via sampler2DRect`. Unlike
-`sampler2D`, which accepts coordinates between 0 and 1, `sampler2DRect`
+Rectangle texture is created by passing @ref Target "Target::Rectangle" to
+constructor. In shader, the texture is used via `sampler2DRect` and friends.
+Unlike `sampler2D`, which accepts coordinates between 0 and 1, `sampler2DRect`
 accepts coordinates between 0 and `textureSizeInGivenDirection-1`. Note that
 rectangle textures don't support mipmapping and repeating wrapping modes, see
 @ref Sampler::Filter "Sampler::Filter", @ref Sampler::Mipmap "Sampler::Mipmap"
 and generateMipmap() documentation for more information.
 
+@requires_gl31 %Extension @extension{ARB,texture_rectangle} for rectangle
+    textures.
 @requires_gl Rectangle textures are not available in OpenGL ES.
-@requires_gl31 %Extension @extension{ARB,texture_rectangle} (rectangle
-    textures)
 
-@see Texture1D, Texture2D, Texture3D, CubeMapTexture, CubeMapTextureArray
+@see Texture1D, Texture2D, Texture3D, CubeMapTexture, CubeMapTextureArray,
+    BufferTexture
 @todo @extension{AMD,sparse_texture}
  */
 template<UnsignedInt dimensions> class Texture: public AbstractTexture {
@@ -128,22 +143,30 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          */
         enum class Target: GLenum {
             /**
-             * One-dimensional texture
+             * One-dimensional texture.  Use `sampler1D`, `sampler1DShadow`,
+             * `isampler1D` or `usampler1D` in shader.
              * @requires_gl Only 2D and 3D textures are available in OpenGL
              *      ES.
              */
             Texture1D = GL_TEXTURE_1D,
 
-            Texture2D = GL_TEXTURE_2D, /**< Two-dimensional texture */
+            /**
+             * Two-dimensional texture. Use `sampler2D`, `sampler2DShadow`,
+             * `isampler2D` or `usampler2D` in shader.
+             */
+            Texture2D = GL_TEXTURE_2D,
 
             /**
-             * Three-dimensional texture
+             * Three-dimensional texture. Use `sampler3D`, `isampler3D` or
+             * `usampler3D` in shader.
              * @requires_gles30 %Extension @es_extension{OES,texture_3D}
              */
             Texture3D = GL_TEXTURE_3D,
 
             /**
-             * One-dimensional texture array (i.e. two dimensions in total)
+             * One-dimensional texture array (i.e. two dimensions in total).
+             * Use `sampler1DArray`, `sampler1DArrayShadow`, `isampler1DArray`
+             * or `usampler1DArray` in shader.
              * @requires_gl30 %Extension @extension{EXT,texture_array}
              * @requires_gl Only 2D and 3D textures are available in OpenGL
              *      ES.
@@ -151,15 +174,38 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             Texture1DArray = GL_TEXTURE_1D_ARRAY,
 
             /**
-             * Two-dimensional texture array (i.e. three dimensions in total)
+             * Two-dimensional texture array (i.e. three dimensions in total).
+             * Use `sampler2DArray`, `sampler2DArrayShadow`, `isampler2DArray`
+             * or `usampler2DArray` in shader.
              * @requires_gl30 %Extension @extension{EXT,texture_array}
-             * @requires_gles30 Array textures are not available in OpenGL ES
+             * @requires_gles30 %Array textures are not available in OpenGL ES
              *      2.0.
              */
             Texture2DArray = GL_TEXTURE_2D_ARRAY,
 
             /**
-             * Rectangle texture (i.e. two dimensions)
+             * Multisampled two-dimensional texture. Use `sampler2DMS`,
+             * `isampler2DMS` or `usampler2DMS` in shader.
+             * @requires_gl32 %Extension @extension{ARB,texture_multisample}
+             * @requires_gl Multisample textures are not available in OpenGL
+             *      ES.
+             */
+            Texture2DMultisample = GL_TEXTURE_2D_MULTISAMPLE,
+
+            /**
+             * Multisampled two-dimensional texture array (i.e. three
+             * dimensions in total). Use `sampler2DMSArray`,
+             * `isampler2DMSArray` or `usampler2DMSArray` in shader.
+             * @requires_gl32 %Extension @extension{ARB,texture_multisample}
+             * @requires_gl Multisample textures are not available in OpenGL
+             *      ES.
+             */
+            Texture2DMultisampleArray = GL_TEXTURE_2D_MULTISAMPLE_ARRAY,
+
+            /**
+             * Rectangle texture (i.e. two dimensions). Use `sampler2DRect`,
+             * `sampler2DRectShadow`, `isampler2DRect` or `usampler2DRect` in
+             * shader.
              * @requires_gl31 %Extension @extension{ARB,texture_rectangle}
              * @requires_gl Rectangle textures are not available in OpenGL ES.
              */
