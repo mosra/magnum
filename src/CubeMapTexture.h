@@ -58,7 +58,7 @@ Image2D positiveX({256, 256}, ImageFormat::RGBA, ImageType::UnsignedByte, dataPo
 // ...
 
 CubeMapTexture texture;
-texture.setMagnificationFilter(Texture2D::Filter::Linear)
+texture.setMagnificationFilter(Sampler::Filter::Linear)
     // ...
     ->setStorage(Math::log2(256)+1, TextureFormat::RGBA8, {256, 256})
     ->setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, {}, &positiveX)
@@ -100,7 +100,7 @@ class CubeMapTexture: public AbstractTexture {
          *
          * See Texture::setWrapping() for more information.
          */
-        inline CubeMapTexture* setWrapping(const Array3D<Wrapping>& wrapping) {
+        inline CubeMapTexture* setWrapping(const Array3D<Sampler::Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(this, wrapping);
             return this;
         }
@@ -209,11 +209,11 @@ class CubeMapTexture: public AbstractTexture {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline CubeMapTexture* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::Base) {
+        inline CubeMapTexture* setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
             return this;
         }
-        inline CubeMapTexture* setMagnificationFilter(Filter filter) {
+        inline CubeMapTexture* setMagnificationFilter(Sampler::Filter filter) {
             AbstractTexture::setMagnificationFilter(filter);
             return this;
         }

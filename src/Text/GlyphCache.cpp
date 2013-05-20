@@ -65,9 +65,9 @@ void GlyphCache::initialize(const TextureFormat internalFormat, const Vector2i& 
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::EXT::texture_storage);
     #endif
 
-    _texture.setWrapping(Texture2D::Wrapping::ClampToEdge)
-        ->setMinificationFilter(Texture2D::Filter::Linear)
-        ->setMagnificationFilter(Texture2D::Filter::Linear)
+    _texture.setWrapping(Sampler::Wrapping::ClampToEdge)
+        ->setMinificationFilter(Sampler::Filter::Linear)
+        ->setMagnificationFilter(Sampler::Filter::Linear)
         ->setStorage(1, internalFormat, size);
 }
 

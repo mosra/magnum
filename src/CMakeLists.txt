@@ -63,6 +63,7 @@ set(Magnum_SRCS
     Renderbuffer.cpp
     Renderer.cpp
     Resource.cpp
+    Sampler.cpp
     Shader.cpp
     Timeline.cpp
 
@@ -122,6 +123,7 @@ set(Magnum_HEADERS
     Renderer.h
     Resource.h
     ResourceManager.h
+    Sampler.h
     Shader.h
     Swizzle.h
     Texture.h

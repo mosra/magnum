@@ -401,6 +401,7 @@ template<class T, class U = T> class Resource;
 class ResourceKey;
 template<class...> class ResourceManager;
 
+class Sampler;
 class Shader;
 
 template<UnsignedInt> class Texture;

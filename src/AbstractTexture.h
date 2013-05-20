@@ -31,10 +31,9 @@
 #include "Array.h"
 #ifndef MAGNUM_TARGET_GLES2
 #include "Buffer.h"
-#else
-#include "OpenGL.h"
 #endif
 #include "Color.h"
+#include "Sampler.h"
 
 namespace Magnum {
 
@@ -94,86 +93,6 @@ class MAGNUM_EXPORT AbstractTexture {
 
     public:
         /**
-         * @brief %Texture filtering
-         *
-         * @see setMagnificationFilter() and setMinificationFilter()
-         */
-        enum class Filter: GLint {
-            Nearest = GL_NEAREST,   /**< Nearest neighbor filtering */
-
-            /**
-             * Linear interpolation filtering.
-             * @requires_gles30 %Extension @es_extension{OES,texture_float_linear} /
-             *      @es_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
-             *      for linear interpolation of textures with
-             *      @ref Magnum::TextureFormat "TextureFormat::HalfFloat" /
-             *      @ref Magnum::TextureFormat "TextureFormat::Float" in OpenGL
-             *      ES 2.0.
-             */
-            Linear = GL_LINEAR
-        };
-
-        /**
-         * @brief Mip level selection
-         *
-         * @see setMinificationFilter()
-         */
-        enum class Mipmap: GLint {
-            Base = GL_NEAREST & ~GL_NEAREST, /**< Select base mip level */
-
-            /**
-             * Select nearest mip level. **Unavailable on rectangle textures.**
-             */
-            Nearest = GL_NEAREST_MIPMAP_NEAREST & ~GL_NEAREST,
-
-            /**
-             * Linear interpolation of nearest mip levels. **Unavailable on
-             * rectangle textures.**
-             * @requires_gles30 %Extension @es_extension{OES,texture_float_linear} /
-             *      @es_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
-             *      for linear interpolation of textures with
-             *      @ref Magnum::TextureFormat "TextureFormat::HalfFloat" /
-             *      @ref Magnum::TextureFormat "TextureFormat::Float" in OpenGL
-             *      ES 2.0.
-             */
-            Linear = GL_NEAREST_MIPMAP_LINEAR & ~GL_NEAREST
-        };
-
-        /**
-         * @brief %Texture wrapping
-         *
-         * @see @ref Texture::setWrapping() "setWrapping()"
-         */
-        enum class Wrapping: GLint {
-            /** Repeat texture. **Unavailable on rectangle textures.** */
-            Repeat = GL_REPEAT,
-
-            /**
-             * Repeat mirrored texture. **Unavailable on rectangle textures.**
-             */
-            MirroredRepeat = GL_MIRRORED_REPEAT,
-
-            /**
-             * Clamp to edge. Coordinates out of the range will be clamped to
-             * first / last column / row in given direction.
-             */
-            ClampToEdge = GL_CLAMP_TO_EDGE,
-
-            #ifndef MAGNUM_TARGET_GLES3
-            /**
-             * Clamp to border color. Coordinates out of range will be clamped
-             * to border color (set with setBorderColor()).
-             * @requires_es_extension %Extension @es_extension{NV,texture_border_clamp}
-             */
-            #ifndef MAGNUM_TARGET_GLES
-            ClampToBorder = GL_CLAMP_TO_BORDER
-            #else
-            ClampToBorder = GL_CLAMP_TO_BORDER_NV
-            #endif
-            #endif
-        };
-
-        /**
          * @brief Max supported layer count
          *
          * The result is cached, repeated queries don't result in repeated
@@ -183,19 +102,6 @@ class MAGNUM_EXPORT AbstractTexture {
          *      @fn_gl{ActiveTexture}
          */
         static Int maxSupportedLayerCount();
-
-        #ifndef MAGNUM_TARGET_GLES3
-        /**
-         * @brief Max supported anisotropy
-         *
-         * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls.
-         * @see setMaxAnisotropy(), @fn_gl{Get} with @def_gl{MAX_TEXTURE_MAX_ANISOTROPY_EXT}
-         * @requires_extension %Extension @extension{EXT,texture_filter_anisotropic}
-         * @requires_es_extension %Extension @es_extension2{EXT,texture_filter_anisotropic,texture_filter_anisotropic}
-         */
-        static Float maxSupportedAnisotropy();
-        #endif
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         inline explicit AbstractTexture(GLenum target): _target(target) {
@@ -244,17 +150,16 @@ class MAGNUM_EXPORT AbstractTexture {
          * Sets filter used when the object pixel size is smaller than the
          * texture size. If @extension{EXT,direct_state_access} is not
          * available, the texture is bound to some layer before the operation.
-         * Initial value is (@ref AbstractTexture::Filter "Filter::Nearest",
-         * @ref AbstractTexture::Mipmap "Mipmap::Linear").
+         * Initial value is (@ref Sampler::Filter "Sampler::Filter::Nearest",
+         * @ref Sampler::Mipmap "Sampler::Mipmap::Linear").
          * @attention For rectangle textures only some modes are supported,
-         *      see @ref AbstractTexture::Filter "Filter" and
-         *      @ref AbstractTexture::Mipmap "Mipmap" documentation for more
-         *      information.
+         *      see @ref Sampler::Filter "Sampler::Filter" and @ref Sampler::Mipmap "Sampler::Mipmap"
+         *      documentation for more information.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_MIN_FILTER}
          */
-        AbstractTexture* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::Base);
+        AbstractTexture* setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base);
 
         /**
          * @brief Set magnification filter
@@ -264,12 +169,12 @@ class MAGNUM_EXPORT AbstractTexture {
          * Sets filter used when the object pixel size is larger than largest
          * texture size. If @extension{EXT,direct_state_access} is not
          * available, the texture is bound to some layer before the operation.
-         * Initial value is @ref AbstractTexture::Filter "Filter::Linear".
+         * Initial value is @ref Sampler::Filter "Sampler::Filter::Linear".
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_MAG_FILTER}
          */
-        inline AbstractTexture* setMagnificationFilter(Filter filter) {
+        inline AbstractTexture* setMagnificationFilter(Sampler::Filter filter) {
             (this->*parameteriImplementation)(GL_TEXTURE_MAG_FILTER, static_cast<GLint>(filter));
             return this;
         }
@@ -279,10 +184,10 @@ class MAGNUM_EXPORT AbstractTexture {
          * @brief Set border color
          * @return Pointer to self (for method chaining)
          *
-         * Border color when @ref AbstractTexture::Wrapping "wrapping" is set
-         * to `ClampToBorder`. If @extension{EXT,direct_state_access} is not
-         * available, the texture is bound to some layer before the operation.
-         * Initial value is `{0.0f, 0.0f, 0.0f, 0.0f}`.
+         * Border color when wrapping is set to @ref Sampler::Wrapping "Sampler::Wrapping::ClampToBorder".
+         * If @extension{EXT,direct_state_access} is not available, the texture
+         * is bound to some layer before the operation. Initial value is
+         * `{0.0f, 0.0f, 0.0f, 0.0f}`.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_BORDER_COLOR}
@@ -526,7 +431,7 @@ template<> struct AbstractTexture::DataHelper<1> {
 
     static Math::Vector<1, GLint> imageSize(AbstractTexture* texture, GLenum target, GLint level);
 
-    inline static void setWrapping(AbstractTexture* texture, const Array1D<Wrapping>& wrapping) {
+    inline static void setWrapping(AbstractTexture* texture, const Array1D<Sampler::Wrapping>& wrapping) {
         (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.x()));
     }
 
@@ -563,7 +468,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
     static Vector2i imageSize(AbstractTexture* texture, GLenum target, GLint level);
     #endif
 
-    static void setWrapping(AbstractTexture* texture, const Array2D<Wrapping>& wrapping);
+    static void setWrapping(AbstractTexture* texture, const Array2D<Sampler::Wrapping>& wrapping);
 
     inline static void setStorage(AbstractTexture* texture, GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size) {
         (texture->*storage2DImplementation)(target, levels, internalFormat, size);
@@ -601,7 +506,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     static Vector3i imageSize(AbstractTexture* texture, GLenum target, GLint level);
     #endif
 
-    static void setWrapping(AbstractTexture* texture, const Array3D<Wrapping>& wrapping);
+    static void setWrapping(AbstractTexture* texture, const Array3D<Sampler::Wrapping>& wrapping);
 
     inline static void setStorage(AbstractTexture* texture, GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size) {
         (texture->*storage3DImplementation)(target, levels, internalFormat, size);

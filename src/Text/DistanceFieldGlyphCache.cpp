@@ -51,9 +51,9 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, c
 
 void DistanceFieldGlyphCache::setImage(const Vector2i& offset, Image2D* const image) {
     Texture2D input;
-    input.setWrapping(Texture2D::Wrapping::ClampToEdge)
-        ->setMinificationFilter(Texture2D::Filter::Linear)
-        ->setMagnificationFilter(Texture2D::Filter::Linear)
+    input.setWrapping(Sampler::Wrapping::ClampToEdge)
+        ->setMinificationFilter(Sampler::Filter::Linear)
+        ->setMagnificationFilter(Sampler::Filter::Linear)
         ->setImage(0, internalFormat, image);
 
     /* Create distance field from input texture */

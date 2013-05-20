@@ -51,7 +51,7 @@ Example: array with 16 layers of cube map faces, each face consisting of six
 Image3D dummy({64, 64, 16*6}, ImageFormat::RGBA, ImageType::UnsignedByte, nullptr);
 
 CubeMapTextureArray texture;
-texture.setMagnificationFilter(CubeMapTextureArray::Filter::Linear)
+texture.setMagnificationFilter(Sampler::Filter::Linear)
     // ...
     ->setStorage(Math::log2(64)+1, TextureFormat::RGBA8, {64, 64, 16});
 
@@ -103,7 +103,7 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * See Texture::setWrapping() for more information.
          */
-        inline CubeMapTextureArray* setWrapping(const Array3D<Wrapping>& wrapping) {
+        inline CubeMapTextureArray* setWrapping(const Array3D<Sampler::Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(this, wrapping);
             return this;
         }
@@ -239,11 +239,11 @@ class CubeMapTextureArray: public AbstractTexture {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline CubeMapTextureArray* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::Base) {
+        inline CubeMapTextureArray* setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
             return this;
         }
-        inline CubeMapTextureArray* setMagnificationFilter(Filter filter) {
+        inline CubeMapTextureArray* setMagnificationFilter(Sampler::Filter filter) {
             AbstractTexture::setMagnificationFilter(filter);
             return this;
         }

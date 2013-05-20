@@ -49,10 +49,10 @@ void* data;
 Image2D image({4096, 4096}, ImageFormat::RGBA, ImageType::UnsignedByte, data);
 
 Texture2D texture;
-texture.setMagnificationFilter(Texture2D::Filter::Linear)
-    ->setMinificationFilter(Texture2D::Filter::Linear, Texture2D::Mipmap::Linear)
-    ->setWrapping(Texture2D::Wrapping::ClampToEdge)
-    ->setMaxAnisotropy(Texture2D::maxSupportedAnisotropy)
+texture.setMagnificationFilter(Sampler::Filter::Linear)
+    ->setMinificationFilter(Sampler::Filter::Linear, Texture2D::Mipmap::Linear)
+    ->setWrapping(Sampler::Wrapping::ClampToEdge)
+    ->setMaxAnisotropy(Sampler::maxSupportedAnisotropy())
     ->setStorage(Math::log2(4096)+1, TextureFormat::RGBA8, {4096, 4096})
     ->setSubImage(0, {}, &image)
     ->generateMipmap();
@@ -82,7 +82,7 @@ or by passing properly sized empty Image to setImage(). Example: 2D texture
 array with 16 layers of 64x64 images:
 @code
 Texture3D texture(Texture3D::Target::Texture2DArray);
-texture.setMagnificationFilter(Texture2D::Filter::Linear)
+texture.setMagnificationFilter(Sampler::Filter::Linear)
     // ...
     ->setStorage(levels, TextureFormat::RGBA8, {64, 64,16});
 
@@ -106,8 +106,8 @@ to constructor. In shader, the texture is used via sampler2DRect`. Unlike
 `sampler2D`, which accepts coordinates between 0 and 1, `sampler2DRect`
 accepts coordinates between 0 and `textureSizeInGivenDirection-1`. Note that
 rectangle textures don't support mipmapping and repeating wrapping modes, see
-@ref Texture::Filter "Filter", @ref Texture::Mipmap "Mipmap" and
-generateMipmap() documentation for more information.
+@ref Sampler::Filter "Sampler::Filter", @ref Sampler::Mipmap "Sampler::Mipmap"
+and generateMipmap() documentation for more information.
 
 @requires_gl Rectangle textures are not available in OpenGL ES.
 @requires_gl31 %Extension @extension{ARB,texture_rectangle} (rectangle
@@ -209,16 +209,16 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * textures and (0, textureSizeInGivenDirection-1) for rectangle
          * textures. If @extension{EXT,direct_state_access} is not available,
          * the texture is bound to some layer before the operation. Initial
-         * value is @ref AbstractTexture::Wrapping "Wrapping::Repeat".
+         * value is @ref Sampler::Wrapping "Sampler::Wrapping::Repeat".
          * @attention For rectangle textures only some modes are supported,
-         *      see @ref AbstractTexture::Wrapping "Wrapping" documentation
+         *      see @ref Sampler::Wrapping "Sampler::Wrapping" documentation
          *      for more information.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_WRAP_S}, @def_gl{TEXTURE_WRAP_T},
          *      @def_gl{TEXTURE_WRAP_R}
          */
-        inline Texture<Dimensions>* setWrapping(const Array<Dimensions, Wrapping>& wrapping) {
+        inline Texture<Dimensions>* setWrapping(const Array<Dimensions, Sampler::Wrapping>& wrapping) {
             DataHelper<Dimensions>::setWrapping(this, wrapping);
             return this;
         }
@@ -364,11 +364,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline Texture<Dimensions>* setMinificationFilter(Filter filter, Mipmap mipmap = Mipmap::Base) {
+        inline Texture<Dimensions>* setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
             return this;
         }
-        inline Texture<Dimensions>* setMagnificationFilter(Filter filter) {
+        inline Texture<Dimensions>* setMagnificationFilter(Sampler::Filter filter) {
             AbstractTexture::setMagnificationFilter(filter);
             return this;
         }

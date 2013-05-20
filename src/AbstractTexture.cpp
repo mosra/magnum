@@ -78,38 +78,9 @@ AbstractTexture::SubImage3DImplementation AbstractTexture::subImage3DImplementat
 AbstractTexture::InvalidateImageImplementation AbstractTexture::invalidateImageImplementation = &AbstractTexture::invalidateImageImplementationNoOp;
 AbstractTexture::InvalidateSubImageImplementation AbstractTexture::invalidateSubImageImplementation = &AbstractTexture::invalidateSubImageImplementationNoOp;
 
-/* Check correctness of binary OR in setMinificationFilter(). If nobody fucks
-   anything up, this assert should produce the same results on all dimensions,
-   thus testing only on AbstractTexture. */
-#define filter_or(filter, mipmap) \
-    (static_cast<GLint>(AbstractTexture::Filter::filter)|static_cast<GLint>(AbstractTexture::Mipmap::mipmap))
-static_assert((filter_or(Nearest, Base) == GL_NEAREST) &&
-              (filter_or(Nearest, Nearest) == GL_NEAREST_MIPMAP_NEAREST) &&
-              (filter_or(Nearest, Linear) == GL_NEAREST_MIPMAP_LINEAR) &&
-              (filter_or(Linear, Base) == GL_LINEAR) &&
-              (filter_or(Linear, Nearest) == GL_LINEAR_MIPMAP_NEAREST) &&
-              (filter_or(Linear, Linear) == GL_LINEAR_MIPMAP_LINEAR),
-    "Unsupported constants for GL texture filtering");
-#undef filter_or
-
 Int AbstractTexture::maxSupportedLayerCount() {
     return Context::current()->state()->texture->maxSupportedLayerCount;
 }
-
-#ifndef MAGNUM_TARGET_GLES3
-Float AbstractTexture::maxSupportedAnisotropy() {
-    GLfloat& value = Context::current()->state()->texture->maxSupportedAnisotropy;
-
-    /** @todo Re-enable when extension header is available */
-    #ifndef MAGNUM_TARGET_GLES
-    /* Get the value, if not already cached */
-    if(value == 0.0f)
-        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &value);
-    #endif
-
-    return value;
-}
-#endif
 
 void AbstractTexture::destroy() {
     /* Moved out */
@@ -168,9 +139,9 @@ void AbstractTexture::bindImplementationDSA(GLint layer) {
 }
 #endif
 
-AbstractTexture* AbstractTexture::setMinificationFilter(Filter filter, Mipmap mipmap) {
+AbstractTexture* AbstractTexture::setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap) {
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE || mipmap == Mipmap::Base, "AbstractTexture: rectangle textures cannot have mipmaps", this);
+    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE || mipmap == Sampler::Mipmap::Base, "AbstractTexture: rectangle textures cannot have mipmaps", this);
     #endif
 
     (this->*parameteriImplementation)(GL_TEXTURE_MIN_FILTER,
@@ -562,16 +533,16 @@ Vector3i AbstractTexture::DataHelper<3>::imageSize(AbstractTexture* texture, GLe
 }
 #endif
 
-void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture* texture, const Array2D<Wrapping>& wrapping) {
+void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture* texture, const Array2D<Sampler::Wrapping>& wrapping) {
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(texture->_target != GL_TEXTURE_RECTANGLE || ((wrapping.x() == Wrapping::ClampToEdge || wrapping.x() == Wrapping::ClampToBorder) && (wrapping.y() == Wrapping::ClampToEdge || wrapping.y() == Wrapping::ClampToEdge)), "AbstractTexture: rectangle texture wrapping must either clamp to border or to edge", );
+    CORRADE_ASSERT(texture->_target != GL_TEXTURE_RECTANGLE || ((wrapping.x() == Sampler::Wrapping::ClampToEdge || wrapping.x() == Sampler::Wrapping::ClampToBorder) && (wrapping.y() == Sampler::Wrapping::ClampToEdge || wrapping.y() == Sampler::Wrapping::ClampToEdge)), "AbstractTexture: rectangle texture wrapping must either clamp to border or to edge", );
     #endif
 
     (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.x()));
     (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping.y()));
 }
 
-void AbstractTexture::DataHelper<3>::setWrapping(AbstractTexture* texture, const Array3D<Wrapping>& wrapping) {
+void AbstractTexture::DataHelper<3>::setWrapping(AbstractTexture* texture, const Array3D<Sampler::Wrapping>& wrapping) {
     (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.x()));
     (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapping.y()));
     #ifndef MAGNUM_TARGET_GLES
