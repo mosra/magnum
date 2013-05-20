@@ -35,9 +35,9 @@ namespace Magnum { namespace Trade { namespace TgaImageConverter {
 /**
 @brief TGA image converter
 
-Supports images with format @ref AbstractImage::Format "AbstractImage::Format::BGR",
-@ref AbstractImage::Format "AbstractImage::Format::BGRA" or @ref AbstractImage::Format "AbstractImage::Format::Red"
-and type @ref AbstractImage::Type "AbstractImage::Type::UnsignedByte".
+Supports images with format @ref ImageFormat "ImageFormat::BGR",
+@ref ImageFormat "ImageFormat::BGRA" or @ref ImageFormat "ImageFormat::Red" and
+type @ref ImageType "ImageType::UnsignedByte".
 */
 class TgaImageConverter: public AbstractImageConverter {
     public:

@@ -27,6 +27,7 @@
 #include <fstream>
 #include <tuple>
 #include <Image.h>
+#include <ImageFormat.h>
 
 #include "TgaImporter/TgaHeader.h"
 
@@ -41,26 +42,26 @@ TgaImageConverter::Features TgaImageConverter::features() const {
 }
 
 std::pair<const unsigned char*, std::size_t> TgaImageConverter::convertToData(const Image2D* const image) const {
-    if(image->format() != AbstractImage::Format::BGR &&
-       image->format() != AbstractImage::Format::BGRA &&
-       image->format() != AbstractImage::Format::Red) {
+    if(image->format() != ImageFormat::BGR &&
+       image->format() != ImageFormat::BGRA &&
+       image->format() != ImageFormat::Red) {
         Error() << "Trade::TgaImageConverter::TgaImageConverter::convertToData(): unsupported image format" << image->format();
         return {nullptr, 0};
     }
 
-    if(image->type() != AbstractImage::Type::UnsignedByte) {
+    if(image->type() != ImageType::UnsignedByte) {
         Error() << "Trade::TgaImageConverter::TgaImageConverter::convertToData(): unsupported image type" << image->type();
         return {nullptr, 0};
     }
 
     /* Initialize data buffer */
-    const UnsignedByte pixelSize = Image2D::pixelSize(image->format(), image->type());
+    const UnsignedByte pixelSize = image->pixelSize();
     const std::size_t size = sizeof(TgaImporter::TgaHeader) + pixelSize*image->size().product();
     unsigned char* data = new unsigned char[size]();
 
     /* Fill header */
     auto header = reinterpret_cast<TgaImporter::TgaHeader*>(data);
-    header->imageType = image->format() == AbstractImage::Format::Red ? 3 : 2;
+    header->imageType = image->format() == ImageFormat::Red ? 3 : 2;
     header->bpp = pixelSize*8;
     header->width = image->size().x();
     header->height = image->size().y();

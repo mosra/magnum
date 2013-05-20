@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <Utility/Endianness.h>
 #include <Math/Vector2.h>
+#include <ImageFormat.h>
 #include <Swizzle.h>
 #include <Trade/ImageData.h>
 
@@ -96,7 +97,7 @@ ImageData2D* TgaImporter::image2D(UnsignedInt id) {
     header.height = Endianness::littleEndian(header.height);
 
     /* Image format */
-    ImageData2D::Format format;
+    ImageFormat format;
     if(header.colorMapType != 0) {
         Error() << "Trade::TgaImporter::TgaImporter::image2D(): paletted files are not supported";
         return nullptr;
@@ -107,16 +108,16 @@ ImageData2D* TgaImporter::image2D(UnsignedInt id) {
         switch(header.bpp) {
             case 24:
                 #ifndef MAGNUM_TARGET_GLES
-                format = ImageData2D::Format::BGR;
+                format = ImageFormat::BGR;
                 #else
-                format = ImageData2D::Format::RGB;
+                format = ImageFormat::RGB;
                 #endif
                 break;
             case 32:
                 #ifndef MAGNUM_TARGET_GLES
-                format = ImageData2D::Format::BGRA;
+                format = ImageFormat::BGRA;
                 #else
-                format = ImageData2D::Format::RGBA;
+                format = ImageFormat::RGBA;
                 #endif
                 break;
             default:
@@ -126,7 +127,7 @@ ImageData2D* TgaImporter::image2D(UnsignedInt id) {
 
     /* Grayscale */
     } else if(header.imageType == 3) {
-        format = ImageData2D::Format::Red;
+        format = ImageFormat::Red;
         if(header.bpp != 8) {
             Error() << "Trade::TgaImporter::TgaImporter::image2D(): unsupported grayscale bits-per-pixel:" << header.bpp;
             return nullptr;
@@ -156,7 +157,7 @@ ImageData2D* TgaImporter::image2D(UnsignedInt id) {
     }
     #endif
 
-    return new ImageData2D(dimensions, format, ImageData2D::Type::UnsignedByte, buffer);
+    return new ImageData2D(dimensions, format, ImageType::UnsignedByte, buffer);
 }
 
 }}}

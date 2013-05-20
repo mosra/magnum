@@ -25,6 +25,7 @@
 #include <sstream>
 #include <TestSuite/Tester.h>
 #include <Utility/Directory.h>
+#include <ImageFormat.h>
 #include <Trade/ImageData.h>
 
 #include "TgaImporter/TgaImporter.h"
@@ -145,12 +146,12 @@ void TgaImporterTest::colorBits24() {
     Trade::ImageData2D* image = importer.image2D(0);
     CORRADE_VERIFY(image);
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(image->format(), Trade::ImageData2D::Format::BGR);
+    CORRADE_COMPARE(image->format(), ImageFormat::BGR);
     #else
-    CORRADE_COMPARE(image->format(), Trade::ImageData2D::Format::RGB);
+    CORRADE_COMPARE(image->format(), ImageFormat::RGB);
     #endif
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
-    CORRADE_COMPARE(image->type(), Trade::ImageData2D::Type::UnsignedByte);
+    CORRADE_COMPARE(image->type(), ImageType::UnsignedByte);
     CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(image->data()), 2*3*3), std::string(pixels, 2*3*3));
 
     delete image;
@@ -178,12 +179,12 @@ void TgaImporterTest::colorBits32() {
     Trade::ImageData2D* image = importer.image2D(0);
     CORRADE_VERIFY(image);
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(image->format(), Trade::ImageData2D::Format::BGRA);
+    CORRADE_COMPARE(image->format(), ImageFormat::BGRA);
     #else
-    CORRADE_COMPARE(image->format(), Trade::ImageData2D::Format::RGBA);
+    CORRADE_COMPARE(image->format(), ImageFormat::RGBA);
     #endif
-    CORRADE_COMPARE(image->size(), Math::Vector2<GLsizei>(2, 3));
-    CORRADE_COMPARE(image->type(), Trade::ImageData2D::Type::UnsignedByte);
+    CORRADE_COMPARE(image->size(), Vector2i(2, 3));
+    CORRADE_COMPARE(image->type(), ImageType::UnsignedByte);
     CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(image->data()), 2*3*3), std::string(pixels, 2*3*3));
 
     delete image;
@@ -201,9 +202,9 @@ void TgaImporterTest::grayscaleBits8() {
 
     Trade::ImageData2D* image = importer.image2D(0);
     CORRADE_VERIFY(image);
-    CORRADE_COMPARE(image->format(), Trade::ImageData2D::Format::Red);
+    CORRADE_COMPARE(image->format(), ImageFormat::Red);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
-    CORRADE_COMPARE(image->type(), Trade::ImageData2D::Type::UnsignedByte);
+    CORRADE_COMPARE(image->type(), ImageType::UnsignedByte);
     CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(image->data()), 2*3), std::string(data + 18, 2*3));
 }
 
@@ -230,9 +231,9 @@ void TgaImporterTest::file() {
 
     Trade::ImageData2D* image = importer.image2D(0);
     CORRADE_VERIFY(image);
-    CORRADE_COMPARE(image->format(), Trade::ImageData2D::Format::Red);
+    CORRADE_COMPARE(image->format(), ImageFormat::Red);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
-    CORRADE_COMPARE(image->type(), Trade::ImageData2D::Type::UnsignedByte);
+    CORRADE_COMPARE(image->type(), ImageType::UnsignedByte);
     CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(image->data()), 2*3), std::string(data + 18, 2*3));
 }
 

@@ -27,6 +27,7 @@
 #include <TestSuite/Tester.h>
 #include <Utility/Directory.h>
 #include <Image.h>
+#include <ImageFormat.h>
 #include <Trade/ImageData.h>
 #include <TgaImageConverter/TgaImageConverter.h>
 #include <TgaImporter/TgaImporter.h>
@@ -49,7 +50,7 @@ class TgaImageConverterTest: public Corrade::TestSuite::Tester {
 };
 
 namespace {
-    const Image2D original({2, 3}, Image2D::Format::BGR, Image2D::Type::UnsignedByte, new char[18] {
+    const Image2D original({2, 3}, ImageFormat::BGR, ImageType::UnsignedByte, new char[18] {
         1, 2, 3, 2, 3, 4,
         3, 4, 5, 4, 5, 6,
         5, 6, 7, 6, 7, 8
@@ -65,7 +66,7 @@ TgaImageConverterTest::TgaImageConverterTest() {
 }
 
 void TgaImageConverterTest::wrongFormat() {
-    Image2D image({}, Image2D::Format::RG, Image2D::Type::UnsignedByte, nullptr);
+    Image2D image({}, ImageFormat::RG, ImageType::UnsignedByte, nullptr);
 
     std::ostringstream out;
     Error::setOutput(&out);
@@ -73,11 +74,11 @@ void TgaImageConverterTest::wrongFormat() {
     const unsigned char* data;
     std::tie(data, std::ignore) = TgaImageConverter().convertToData(&image);
     CORRADE_VERIFY(!data);
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::TgaImageConverter::convertToData(): unsupported image format AbstractImage::Format::RG\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::TgaImageConverter::convertToData(): unsupported image format ImageFormat::RG\n");
 }
 
 void TgaImageConverterTest::wrongType() {
-    Image2D image({}, Image2D::Format::Red, Image2D::Type::Float, nullptr);
+    Image2D image({}, ImageFormat::Red, ImageType::Float, nullptr);
 
     std::ostringstream out;
     Error::setOutput(&out);
@@ -85,7 +86,7 @@ void TgaImageConverterTest::wrongType() {
     const unsigned char* data;
     std::tie(data, std::ignore) = TgaImageConverter().convertToData(&image);
     CORRADE_VERIFY(!data);
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::TgaImageConverter::convertToData(): unsupported image type AbstractImage::Type::Float\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::TgaImageConverter::convertToData(): unsupported image type ImageType::Float\n");
 }
 
 void TgaImageConverterTest::data() {
@@ -99,8 +100,8 @@ void TgaImageConverterTest::data() {
     CORRADE_VERIFY(converted);
 
     CORRADE_COMPARE(converted->size(), Vector2i(2, 3));
-    CORRADE_COMPARE(converted->format(), Trade::ImageData2D::Format::BGR);
-    CORRADE_COMPARE(converted->type(), Trade::ImageData2D::Type::UnsignedByte);
+    CORRADE_COMPARE(converted->format(), ImageFormat::BGR);
+    CORRADE_COMPARE(converted->type(), ImageType::UnsignedByte);
     CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(converted->data()), 2*3*3),
                     std::string(reinterpret_cast<const char*>(original.data()), 2*3*3));
 }
@@ -116,8 +117,8 @@ void TgaImageConverterTest::file() {
     CORRADE_VERIFY(converted);
 
     CORRADE_COMPARE(converted->size(), Vector2i(2, 3));
-    CORRADE_COMPARE(converted->format(), Trade::ImageData2D::Format::BGR);
-    CORRADE_COMPARE(converted->type(), Trade::ImageData2D::Type::UnsignedByte);
+    CORRADE_COMPARE(converted->format(), ImageFormat::BGR);
+    CORRADE_COMPARE(converted->type(), ImageType::UnsignedByte);
     CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(converted->data()), 2*3*3),
                     std::string(reinterpret_cast<const char*>(original.data()), 2*3*3));
 
