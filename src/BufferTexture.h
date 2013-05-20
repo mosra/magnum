@@ -121,7 +121,7 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
          * be then filled with data of proper format at any time using Buffer
          * own data setting functions.
          * @requires_gl43 %Extension @extension{ARB,texture_buffer_range}
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBuffer}
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBufferRange}
          *      or @fn_gl_extension{TextureBufferRange,EXT,direct_state_access}
          */
         inline void setBuffer(BufferTextureFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size) {
