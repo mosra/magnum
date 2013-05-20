@@ -210,6 +210,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,texture_format_BGRA8888),
         _extension(GL,EXT,read_format_bgra),
         _extension(GL,EXT,debug_marker),
+        _extension(GL,EXT,disjoint_timer_query),
         _extension(GL,EXT,separate_shader_objects),
         _extension(GL,EXT,sRGB),
         _extension(GL,EXT,robustness),

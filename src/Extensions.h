@@ -208,6 +208,7 @@ namespace GL {
         _extension(GL,EXT,robustness,               GLES200,    None) // #105
         _extension(GL,EXT,texture_storage,          GLES200, GLES300) // #108
         _extension(GL,EXT,map_buffer_range,         GLES200, GLES300) // #121
+        _extension(GL,EXT,disjoint_timer_query,     GLES200,    None) // #150
     } namespace NV {
         _extension(GL,NV,draw_buffers,              GLES200, GLES300) // #91
         _extension(GL,NV,read_buffer,               GLES200, GLES300) // #93

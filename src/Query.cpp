@@ -32,6 +32,9 @@ AbstractQuery::AbstractQuery(): target() {
     /** @todo Get some extension wrangler instead to avoid undeclared glGenQueries() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
     glGenQueries(1, &_id);
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glGenQueriesEXT(1, &_id);
     #endif
 }
 
@@ -39,6 +42,9 @@ AbstractQuery::~AbstractQuery() {
     /** @todo Get some extension wrangler instead to avoid undeclared glGenQueries() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
     glDeleteQueries(1, &_id);
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glDeleteQueriesEXT(1, &_id);
     #endif
 }
 
@@ -46,13 +52,14 @@ bool AbstractQuery::resultAvailable() {
     CORRADE_ASSERT(!target, "AbstractQuery::resultAvailable(): the query is currently running", false);
 
     /** @todo Re-enable when extension wrangler is available for ES */
-    #ifndef MAGNUM_TARGET_GLES2
     GLuint result;
+    #ifndef MAGNUM_TARGET_GLES2
     glGetQueryObjectuiv(_id, GL_QUERY_RESULT_AVAILABLE, &result);
-    return result == GL_TRUE;
     #else
-    return false;
+    CORRADE_INTERNAL_ASSERT(false);
+    //glGetQueryObjectuivEXT(_id, GL_QUERY_RESULT_AVAILABLE, &result);
     #endif
+    return result == GL_TRUE;
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -60,50 +67,70 @@ template<> bool AbstractQuery::result<bool>() {
     CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
 
     /** @todo Re-enable when extension wrangler is available for ES */
-    #ifndef MAGNUM_TARGET_GLES2
     GLuint result;
+    #ifndef MAGNUM_TARGET_GLES2
     glGetQueryObjectuiv(_id, GL_QUERY_RESULT, &result);
-    return result == GL_TRUE;
     #else
-    return false;
+    CORRADE_INTERNAL_ASSERT(false);
+    //glGetQueryObjectuivEXT(_id, GL_QUERY_RESULT, &result);
     #endif
+    return result == GL_TRUE;
 }
 
 template<> UnsignedInt AbstractQuery::result<UnsignedInt>() {
     CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
 
     /** @todo Re-enable when extension wrangler is available for ES */
-    #ifndef MAGNUM_TARGET_GLES2
     UnsignedInt result;
+    #ifndef MAGNUM_TARGET_GLES2
     glGetQueryObjectuiv(_id, GL_QUERY_RESULT, &result);
-    return result;
     #else
-    return 0;
+    CORRADE_INTERNAL_ASSERT(false);
+    //glGetQueryObjectuivEXT(_id, GL_QUERY_RESULT, &result);
     #endif
+    return result;
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES3
 template<> Int AbstractQuery::result<Int>() {
     CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
 
+    /** @todo Re-enable when extension wrangler is available for ES */
     Int result;
+    #ifndef MAGNUM_TARGET_GLES2
     glGetQueryObjectiv(_id, GL_QUERY_RESULT, &result);
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glGetQueryObjectivEXT(_id, GL_QUERY_RESULT, &result);
+    #endif
     return result;
 }
 
 template<> UnsignedLong AbstractQuery::result<UnsignedLong>() {
     CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
 
+    /** @todo Re-enable when extension wrangler is available for ES */
     UnsignedLong result;
+    #ifndef MAGNUM_TARGET_GLES2
     glGetQueryObjectui64v(_id, GL_QUERY_RESULT, &result);
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glGetQueryObjectui64vEXT(_id, GL_QUERY_RESULT, &result);
+    #endif
     return result;
 }
 
 template<> Long AbstractQuery::result<Long>() {
     CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
 
+    /** @todo Re-enable when extension wrangler is available for ES */
     Long result;
+    #ifndef MAGNUM_TARGET_GLES2
     glGetQueryObjecti64v(_id, GL_QUERY_RESULT, &result);
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glGetQueryObjecti64vEXT(_id, GL_QUERY_RESULT, &result);
+    #endif
     return result;
 }
 #endif
@@ -115,6 +142,10 @@ void AbstractQuery::begin(GLenum target) {
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glBeginQuery(this->target = target, id());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    static_cast<void>(target);
+    //glBeginQueryEXT(this->target = target, id());
     #endif
 }
 
@@ -124,6 +155,9 @@ void AbstractQuery::end() {
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glEndQuery(target);
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glEndQueryEXT(target);
     #endif
     target = {};
 }

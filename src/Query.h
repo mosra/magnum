@@ -28,6 +28,8 @@
  * @brief Class Magnum::AbstractQuery, Magnum::PrimitiveQuery, Magnum::SampleQuery, Magnum::TimeQuery
  */
 
+#include <Utility/Assert.h>
+
 #include "OpenGL.h"
 #include "Types.h"
 #include "magnumConfigure.h"
@@ -84,8 +86,9 @@ class MAGNUM_EXPORT AbstractQuery {
          * @requires_gl33 %Extension @extension{ARB,timer_query} (result type
          *      @ref Magnum::UnsignedInt "UnsignedInt" and @ref Magnum::Long
          *      "Long")
-         * @requires_gl Result types @ref Magnum::Int "Int", @ref Magnum::UnsignedLong "UnsignedLong"
-         *      and @ref Magnum::Long "Long" are not available in OpenGL ES.
+         * @requires_es_extension %Extension @es_extension{EXT,disjoint_timer_query}
+         *      for result types @ref Magnum::Int "Int", @ref Magnum::UnsignedLong "UnsignedLong"
+         *      @ref Magnum::Long "Long".
          */
         template<class T> T result();
 
@@ -114,7 +117,7 @@ class MAGNUM_EXPORT AbstractQuery {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> bool MAGNUM_EXPORT AbstractQuery::result<bool>();
 template<> UnsignedInt MAGNUM_EXPORT AbstractQuery::result<UnsignedInt>();
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES3
 template<> Int MAGNUM_EXPORT AbstractQuery::result<Int>();
 template<> UnsignedLong MAGNUM_EXPORT AbstractQuery::result<UnsignedLong>();
 template<> Long MAGNUM_EXPORT AbstractQuery::result<Long>();
@@ -310,7 +313,7 @@ class SampleQuery: public AbstractQuery {
         #endif
 };
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES3
 /**
 @brief Query for elapsed time
 
@@ -341,15 +344,20 @@ UnsignedInt timeElapsed2 = q3.result<UnsignedInt>()-tmp;
 @endcode
 Using the latter results in fewer OpenGL calls when doing more measures.
 @requires_gl33 %Extension @extension{ARB,timer_query}
-@requires_gl Timer query is not available in OpenGL ES.
+@requires_es_extension %Extension @es_extension{EXT,disjoint_timer_query}
 @todo timestamp with glGet + example usage
+@todo @es_extension{EXT,disjoint_timer_query} -- GL_GPU_DISJOINT_EXT support? where?
 */
 class TimeQuery: public AbstractQuery {
     public:
         /** @brief Query target */
         enum class Target: GLenum {
             /** Elapsed time */
+            #ifndef MAGNUM_TARGET_GLES
             TimeElapsed = GL_TIME_ELAPSED
+            #else
+            TimeElapsed = GL_TIME_ELAPSED_EXT
+            #endif
         };
 
         /**
@@ -358,7 +366,13 @@ class TimeQuery: public AbstractQuery {
          * @see @fn_gl{QueryCounter} with @def_gl{TIMESTAMP}
          */
         inline void timestamp() {
+            /** @todo Enable when extension wrangler for ES is available */
+            #ifndef MAGNUM_TARGET_GLES
             glQueryCounter(id(), GL_TIMESTAMP);
+            #else
+            //glQueryCounterEXT(id(), GL_TIMESTAMP);
+            CORRADE_INTERNAL_ASSERT(false);
+            #endif
         }
 
         /** @copydoc PrimitiveQuery::begin() */
