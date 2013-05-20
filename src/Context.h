@@ -157,7 +157,11 @@ class MAGNUM_EXPORT Context {
              * @requires_gl43 %Extension @es_extension{KHR,debug}
              * @requires_es_extension %Extension @es_extension{KHR,debug}
              */
+            #ifndef MAGNUM_TARGET_GLES
             Debug = GL_CONTEXT_FLAG_DEBUG_BIT,
+            #else
+            Debug = GL_CONTEXT_FLAG_DEBUG_BIT_KHR,
+            #endif
             #endif
 
             #ifndef MAGNUM_TARGET_GLES
