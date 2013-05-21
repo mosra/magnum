@@ -40,25 +40,25 @@ AbstractFramebuffer::DrawBuffersImplementation AbstractFramebuffer::drawBuffersI
 AbstractFramebuffer::DrawBufferImplementation AbstractFramebuffer::drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDefault;
 AbstractFramebuffer::ReadBufferImplementation AbstractFramebuffer::readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDefault;
 
-AbstractFramebuffer::Target AbstractFramebuffer::readTarget = AbstractFramebuffer::Target::ReadDraw;
-AbstractFramebuffer::Target AbstractFramebuffer::drawTarget = AbstractFramebuffer::Target::ReadDraw;
+FramebufferTarget AbstractFramebuffer::readTarget = FramebufferTarget::ReadDraw;
+FramebufferTarget AbstractFramebuffer::drawTarget = FramebufferTarget::ReadDraw;
 
-void AbstractFramebuffer::bind(Target target) {
+void AbstractFramebuffer::bind(FramebufferTarget target) {
     bindInternal(target);
     setViewportInternal();
 }
 
-void AbstractFramebuffer::bindInternal(Target target) {
+void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
     Implementation::FramebufferState* state = Context::current()->state()->framebuffer;
 
     /* If already bound, done, otherwise update tracked state */
-    if(target == Target::Read) {
+    if(target == FramebufferTarget::Read) {
         if(state->readBinding == _id) return;
         state->readBinding = _id;
-    } else if(target == Target::Draw) {
+    } else if(target == FramebufferTarget::Draw) {
         if(state->drawBinding == _id) return;
         state->drawBinding = _id;
-    } else if(target == Target::ReadDraw) {
+    } else if(target == FramebufferTarget::ReadDraw) {
         if(state->readBinding == _id && state->drawBinding == _id) return;
         state->readBinding = state->drawBinding = _id;
     } else CORRADE_ASSERT_UNREACHABLE();
@@ -66,28 +66,28 @@ void AbstractFramebuffer::bindInternal(Target target) {
     glBindFramebuffer(static_cast<GLenum>(target), _id);
 }
 
-AbstractFramebuffer::Target AbstractFramebuffer::bindInternal() {
+FramebufferTarget AbstractFramebuffer::bindInternal() {
     Implementation::FramebufferState* state = Context::current()->state()->framebuffer;
 
     /* Return target to which the framebuffer is already bound */
     if(state->readBinding == _id && state->drawBinding == _id)
-        return Target::ReadDraw;
+        return FramebufferTarget::ReadDraw;
     if(state->readBinding == _id)
-        return Target::Read;
+        return FramebufferTarget::Read;
     if(state->drawBinding == _id)
-        return Target::Draw;
+        return FramebufferTarget::Draw;
 
     /* Or bind it, if not already */
     state->readBinding = _id;
-    if(readTarget == Target::ReadDraw) state->drawBinding = _id;
+    if(readTarget == FramebufferTarget::ReadDraw) state->drawBinding = _id;
 
     glBindFramebuffer(GLenum(readTarget), _id);
     return readTarget;
 }
 
-void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& sourceRectangle, const Rectanglei& destinationRectangle, AbstractFramebuffer::BlitMask mask, AbstractFramebuffer::BlitFilter filter) {
-    source.bindInternal(AbstractFramebuffer::Target::Read);
-    destination.bindInternal(AbstractFramebuffer::Target::Draw);
+void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& sourceRectangle, const Rectanglei& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter) {
+    source.bindInternal(FramebufferTarget::Read);
+    destination.bindInternal(FramebufferTarget::Draw);
     /** @todo Get some extension wrangler instead to avoid undeclared glBlitFramebuffer() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
     glBlitFramebuffer(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), static_cast<GLbitfield>(mask), static_cast<GLenum>(filter));
@@ -123,7 +123,7 @@ void AbstractFramebuffer::setViewportInternal() {
     glViewport(_viewport.left(), _viewport.bottom(), _viewport.width(), _viewport.height());
 }
 
-void AbstractFramebuffer::clear(ClearMask mask) {
+void AbstractFramebuffer::clear(FramebufferClearMask mask) {
     bindInternal(drawTarget);
     glClear(static_cast<GLbitfield>(mask));
 }
@@ -178,8 +178,8 @@ void AbstractFramebuffer::initializeContextBasedFunctionality(Context* context) 
     if(context->isExtensionSupported<Extensions::GL::EXT::framebuffer_blit>()) {
         Debug() << "AbstractFramebuffer: using" << Extensions::GL::EXT::framebuffer_blit::string() << "features";
 
-        readTarget = Target::Read;
-        drawTarget = Target::Draw;
+        readTarget = FramebufferTarget::Read;
+        drawTarget = FramebufferTarget::Draw;
     }
 
     if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {

@@ -329,7 +329,11 @@ using Math::operator "" _radf;
 /** @todoc Remove `ifndef` when Doxygen is sane again */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* Forward declarations for all types in root namespace */
+
+/* FramebufferClear[Mask], FramebufferBlit[Mask], FramebufferBlitFilter,
+   FramebufferTarget enums used only directly with framebuffer instance */
 class AbstractFramebuffer;
+
 class AbstractImage;
 class AbstractShaderProgram;
 class AbstractTexture;

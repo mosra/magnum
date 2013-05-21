@@ -89,7 +89,7 @@ void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectan
 
     Framebuffer framebuffer(rectangle);
     framebuffer.attachTexture2D(Framebuffer::ColorAttachment(0), output, 0);
-    framebuffer.bind(Framebuffer::Target::Draw);
+    framebuffer.bind(FramebufferTarget::Draw);
 
     DistanceFieldShader shader;
     shader.setRadius(radius)
