@@ -24,14 +24,11 @@
 
 #include "AbstractShaderProgram.h"
 
-#include <fstream>
-#include <type_traits>
-
 #include "Math/RectangularMatrix.h"
-#include "Shader.h"
-#include "Implementation/State.h"
-#include "Implementation/ShaderProgramState.h"
 #include "Extensions.h"
+#include "Shader.h"
+#include "Implementation/ShaderProgramState.h"
+#include "Implementation/State.h"
 
 #define LINKER_MESSAGE_MAX_LENGTH 1024
 
