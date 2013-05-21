@@ -62,7 +62,7 @@ Shader::Shader(Version version, Type type): _type(type), _state(State::Initializ
     CORRADE_ASSERT_UNREACHABLE();
 }
 
-Shader::Shader(Shader&& other): _type(other._type), _state(other._state), sources(other.sources), shader(other.shader) {
+Shader::Shader(Shader&& other): _type(other._type), _state(other._state), sources(std::move(other.sources)), shader(other.shader) {
     other.shader = 0;
 }
 
@@ -71,7 +71,7 @@ Shader& Shader::operator=(Shader&& other) {
 
     _type = other._type;
     _state = other._state;
-    sources = other.sources;
+    sources = std::move(other.sources);
     shader = other.shader;
 
     other.shader = 0;
