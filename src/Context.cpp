@@ -329,25 +329,31 @@ Context::Context() {
             futureExtensions.insert(std::make_pair(extension._string, extension));
 
     /* Check for presence of extensions in future versions */
-    #ifndef MAGNUM_TARGET_GLES
-    if(isVersionSupported(Version::GL300)) {
-    #else
-    if(isVersionSupported(Version::GLES300)) {
+    #ifndef MAGNUM_TARGET_GLES2
+    GLint extensionCount = 0;
+    glGetIntegerv(GL_NUM_EXTENSIONS, &extensionCount);
+    #ifndef MAGNUM_TARGET_GLES3
+    if(extensionCount || isVersionSupported(Version::GL300))
     #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        GLuint index = 0;
-        const char* extension;
-        while((extension = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, index++)))) {
+    {
+        _supportedExtensions.reserve(extensionCount);
+        for(GLint i = 0; i != extensionCount; ++i) {
+            const std::string extension(reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i)));
             auto found = futureExtensions.find(extension);
             if(found != futureExtensions.end()) {
                 _supportedExtensions.push_back(found->second);
                 extensionStatus.set(found->second._index);
             }
         }
-        #endif
+    }
+    #ifndef MAGNUM_TARGET_GLES3
+    else
+    #endif
+    #endif
 
+    #ifndef MAGNUM_TARGET_GLES3
     /* OpenGL 2.1 / OpenGL ES 2.0 doesn't have glGetStringi() */
-    } else {
+    {
         /* Don't crash when glGetString() returns nullptr */
         const char* e = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
         if(e) {
@@ -361,6 +367,7 @@ Context::Context() {
             }
         }
     }
+    #endif
 
     /* Set this context as current */
     CORRADE_ASSERT(!_current, "Context: Another context currently active", );
@@ -389,6 +396,26 @@ Context::~Context() {
     CORRADE_ASSERT(_current == this, "Context: Cannot destroy context which is not currently active", );
     delete _state;
     _current = nullptr;
+}
+
+std::vector<std::string> Context::shadingLanguageVersionStrings() const {
+    #ifndef MAGNUM_TARGET_GLES
+    GLint versionCount = 0;
+    glGetIntegerv(GL_NUM_SHADING_LANGUAGE_VERSIONS, &versionCount);
+
+    /* The implementation doesn't yet support this query (< OpenGL 4.3) */
+    if(!versionCount)
+        return {shadingLanguageVersionString()};
+
+    /* Get all of them */
+    std::vector<std::string> versions;
+    versions.reserve(versionCount);
+    for(GLint i = 0; i != versionCount; ++i)
+        versions.push_back(reinterpret_cast<const char*>(glGetStringi(GL_SHADING_LANGUAGE_VERSION, i)));
+    return std::move(versions);
+    #else
+    return {shadingLanguageVersionString()};
+    #endif
 }
 
 Version Context::supportedVersion(std::initializer_list<Version> versions) const {

@@ -189,7 +189,8 @@ class MAGNUM_EXPORT Context {
          * Constructed automatically, see class documentation for more
          * information.
          * @see @fn_gl{Get} with @def_gl{MAJOR_VERSION}, @def_gl{MINOR_VERSION},
-         *      @def_gl{CONTEXT_FLAGS}, @fn_gl{GetString} with @def_gl{EXTENSIONS}
+         *      @def_gl{CONTEXT_FLAGS}, @def_gl{NUM_EXTENSIONS},
+         *      @fn_gl{GetString} with @def_gl{EXTENSIONS}
          */
         explicit Context();
 
@@ -267,6 +268,16 @@ class MAGNUM_EXPORT Context {
         inline std::string shadingLanguageVersionString() const {
             return reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
         }
+
+        /**
+         * @brief Shading language version strings
+         *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls.
+         * @see versionString(), version(), @fn_gl{Get} with @def_gl{NUM_SHADING_LANGUAGE_VERSIONS},
+         *      @fn_gl{GetString} with @def_gl{SHADING_LANGUAGE_VERSION}
+         */
+        std::vector<std::string> shadingLanguageVersionStrings() const;
 
         /** @brief Context flags */
         inline Flags flags() const { return _flags; }
