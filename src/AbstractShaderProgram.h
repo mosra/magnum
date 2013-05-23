@@ -292,224 +292,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
     AbstractShaderProgram& operator=(AbstractShaderProgram&&) = delete;
 
     public:
-        /**
-         * @brief Base struct for attribute location and type
-         *
-         * Template parameter @p location is vertex attribute location, number
-         * between `0` and maxSupportedVertexAttributeCount(). To ensure
-         * compatibility, you should always have vertex attribute with
-         * location `0`.
-         *
-         * Template parameter @p T is the type which is used for shader
-         * attribute, e.g. @ref Vector4i for `ivec4`. DataType is type of
-         * passed data when adding vertex buffers to mesh. By default it is
-         * the same as type used in shader (e.g. @ref DataType "DataType::Int"
-         * for @ref Vector4i). It's also possible to pass integer data to
-         * floating-point shader inputs. In this case you may want to
-         * normalize the values (e.g. color components from 0-255 to
-         * 0.0f - 1.0f) -- see @ref DataOption "DataOption::Normalize".
-         *
-         * Only some types are allowed as attribute types, see
-         * @ref AbstractShaderProgram-types or TypeTraits::AttributeType for
-         * more information.
-         *
-         * See @ref AbstractShaderProgram-subclassing for example usage in
-         * shaders and @ref Mesh-configuration for example usage when adding
-         * vertex buffers to mesh.
-         */
-        template<UnsignedInt location, class T> class Attribute {
-            public:
-                enum: UnsignedInt {
-                    Location = location /**< Location to which the attribute is bound */
-                };
-
-                /**
-                 * @brief Type
-                 *
-                 * Type used in shader code.
-                 * @see DataType
-                 */
-                typedef typename Implementation::Attribute<T>::Type Type;
-
-                /**
-                 * @brief Component count
-                 *
-                 * Count of components passed to the shader. If passing smaller
-                 * count of components than corresponding type has, unspecified
-                 * components are set to default values (second and third to `0`,
-                 * fourth to `1`).
-                 */
-                #ifdef DOXYGEN_GENERATING_OUTPUT
-                enum class Components: GLint {
-                    /**
-                     * Only first component is specified. Second, third and
-                     * fourth component are set to `0`, `0`, `1`, respectively.
-                     * Only for scalar and vector types, not matrices.
-                     */
-                    One = 1,
-
-                    /**
-                     * First two components are specified. Third and fourth
-                     * component are set to `0`, `1`, respectively. Only for
-                     * two, three and four-component vector types and 2x2, 3x2
-                     * and 4x2 matrix types.
-                     */
-                    Two = 2,
-
-                    /**
-                     * First three components are specified. Fourth component is
-                     * set to `1`. Only for three and four-component vector
-                     * types, 2x3, 3x3 and 4x3 matrix types.
-                     */
-                    Three = 3,
-
-                    /**
-                     * All four components are specified. Only for four-component
-                     * vector types and 2x4, 3x4 and 4x4 matrix types.
-                     */
-                    Four = 4
-
-                    #ifndef MAGNUM_TARGET_GLES
-                    ,
-                    /**
-                     * Four components with BGRA ordering. Only for four-component
-                     * float vector type.
-                     * @requires_gl32 %Extension @extension{ARB,vertex_array_bgra}
-                     * @requires_gl Only RGBA component ordering is supported
-                     *      in OpenGL ES.
-                     */
-                    BGRA = 1 << 1
-                    #endif
-                };
-                #else
-                typedef typename Implementation::Attribute<T>::Components Components;
-                #endif
-
-                /**
-                 * @brief Data type
-                 *
-                 * Type of data passed to shader.
-                 * @see Type, DataOptions, Attribute()
-                 */
-                #ifdef DOXYGEN_GENERATING_OUTPUT
-                enum class DataType: GLenum {
-                    UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte */
-                    Byte = GL_BYTE,                     /**< Byte */
-                    UnsignedShort = GL_UNSIGNED_SHORT,  /**< Unsigned short */
-                    Short = GL_SHORT,                   /**< Short */
-                    UnsignedInt = GL_UNSIGNED_INT,      /**< Unsigned int */
-                    Int = GL_INT,                       /**< Int */
-
-                    /**
-                     * Half float. Only for float attribute types.
-                     * @requires_gl30 %Extension @extension{NV,half_float}
-                     * @requires_gles30 %Extension @es_extension{OES,vertex_half_float}
-                     */
-                    HalfFloat = GL_HALF_FLOAT,
-
-                    /** Float. Only for float attribute types. */
-                    Float = GL_FLOAT,
-
-                    #ifndef MAGNUM_TARGET_GLES
-                    /**
-                     * Double. Only for float and double attribute types.
-                     * @requires_gl Only floats are available in OpenGL ES.
-                     */
-                    Double = GL_DOUBLE,
-                    #endif
-
-                    /* GL_FIXED not supported */
-
-                    #ifndef MAGNUM_TARGET_GLES2
-                    /**
-                     * Unsigned 2.10.10.10 packed integer. Only for
-                     * four-component float vector attribute type.
-                     * @todo How about (incompatible) @es_extension{OES,vertex_type_10_10_10_2}?
-                     * @requires_gl33 %Extension @extension{ARB,vertex_type_2_10_10_10_rev}
-                     * @requires_gles30 (no extension providing this functionality)
-                     */
-                    UnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
-
-                    /**
-                     * Signed 2.10.10.10 packed integer. Only for
-                     * four-component float vector attribute type.
-                     * @requires_gl33 %Extension @extension{ARB,vertex_type_2_10_10_10_rev}
-                     * @requires_gles30 (no extension providing this functionality)
-                     */
-                    Int2101010Rev = GL_INT_2_10_10_10_REV
-                    #endif
-                };
-                #else
-                typedef typename Implementation::Attribute<T>::DataType DataType;
-                #endif
-
-                /**
-                 * @brief Data option
-                 * @see DataOptions, Attribute()
-                 */
-                #ifdef DOXYGEN_GENERATING_OUTPUT
-                enum class DataOption: UnsignedByte {
-                    /**
-                     * Normalize integer components. Only for float attribute
-                     * types. Default is to not normalize.
-                     */
-                    Normalize = 1 << 0
-                };
-                #else
-                typedef typename Implementation::Attribute<T>::DataOption DataOption;
-                #endif
-
-                /**
-                 * @brief Data options
-                 * @see Attribute()
-                 */
-                #ifdef DOXYGEN_GENERATING_OUTPUT
-                typedef typename Corrade::Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
-                #else
-                typedef typename Implementation::Attribute<T>::DataOptions DataOptions;
-                #endif
-
-                /**
-                 * @brief Constructor
-                 * @param components    Component count
-                 * @param dataType      Type of passed data. Default is the
-                 *      same as type used in shader (e.g. DataType::Integer
-                 *      for Vector4i).
-                 * @param dataOptions   Data options. Default is no options.
-                 */
-                inline constexpr Attribute(Components components, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(components), _dataType(dataType), _dataOptions(dataOptions) {}
-
-                /**
-                 * @brief Constructor
-                 * @param dataType      Type of passed data. Default is the
-                 *      same as type used in shader (e.g. DataType::Integer
-                 *      for Vector4i).
-                 * @param dataOptions   Data options. Default is no options.
-                 *
-                 * Component count is set to the same value as in type used in
-                 * shader (e.g. @ref Components "Components::Three" for Vector3).
-                 */
-                inline constexpr Attribute(DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(Implementation::Attribute<T>::DefaultComponents), _dataType(dataType), _dataOptions(dataOptions) {}
-
-                /** @brief Component count of passed data */
-                inline constexpr Components components() const { return _components; }
-
-                /** @brief Type of passed data */
-                inline constexpr DataType dataType() const { return _dataType; }
-
-                /** @brief Size of passed data */
-                inline std::size_t dataSize() const {
-                    return Implementation::Attribute<T>::size(GLint(_components)*Implementation::Attribute<T>::vectorCount(), _dataType);
-                }
-
-                /** @brief Data options */
-                inline constexpr DataOptions dataOptions() const { return _dataOptions; }
-
-            private:
-                const Components _components;
-                const DataType _dataType;
-                const DataOptions _dataOptions;
-        };
+        template<UnsignedInt, class> class Attribute;
 
         /**
          * @brief Max supported vertex attribute count
@@ -1133,6 +916,216 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         #endif
 
         GLuint _id;
+};
+
+/**
+@brief Base struct for attribute location and type
+
+Template parameter @p location is vertex attribute location, number between `0`
+and maxSupportedVertexAttributeCount(). To ensure compatibility, you should
+always have vertex attribute with location `0`.
+
+Template parameter @p T is the type which is used for shader attribute, e.g.
+@ref Vector4i for `ivec4`. DataType is type of passed data when adding vertex
+buffers to mesh. By default it is the same as type used in shader (e.g.
+@ref DataType "DataType::Int" for @ref Vector4i). It's also possible to pass
+integer data to floating-point shader inputs. In this case you may want to
+normalize the values (e.g. color components from 0-255 to 0.0f - 1.0f) -- see
+@ref DataOption "DataOption::Normalize".
+
+Only some types are allowed as attribute types, see @ref AbstractShaderProgram-types
+or TypeTraits::AttributeType for more information.
+
+See @ref AbstractShaderProgram-subclassing for example usage in shaders and
+@ref Mesh-configuration for example usage when adding vertex buffers to mesh.
+*/
+template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
+    public:
+        enum: UnsignedInt {
+            Location = location /**< Location to which the attribute is bound */
+        };
+
+        /**
+         * @brief Type
+         *
+         * Type used in shader code.
+         * @see DataType
+         */
+        typedef typename Implementation::Attribute<T>::Type Type;
+
+        /**
+         * @brief Component count
+         *
+         * Count of components passed to the shader. If passing smaller count
+         * of components than corresponding type has, unspecified components
+         * are set to default values (second and third to `0`, fourth to `1`).
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        enum class Components: GLint {
+            /**
+             * Only first component is specified. Second, third and fourth
+             * component are set to `0`, `0`, `1`, respectively. Only for
+             * scalar and vector types, not matrices.
+             */
+            One = 1,
+
+            /**
+             * First two components are specified. Third and fourth component
+             * are set to `0`, `1`, respectively. Only for two, three and
+             * four-component vector types and 2x2, 3x2 and 4x2 matrix types.
+             */
+            Two = 2,
+
+            /**
+             * First three components are specified. Fourth component is set to
+             * `1`. Only for three and four-component vector types, 2x3, 3x3
+             * and 4x3 matrix types.
+             */
+            Three = 3,
+
+            /**
+             * All four components are specified. Only for four-component
+             * vector types and 2x4, 3x4 and 4x4 matrix types.
+             */
+            Four = 4,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Four components with BGRA ordering. Only for four-component
+             * float vector type.
+             * @requires_gl32 %Extension @extension{ARB,vertex_array_bgra}
+             * @requires_gl Only RGBA component ordering is supported in OpenGL
+             *      ES.
+             */
+            BGRA = 1 << 1
+            #endif
+        };
+        #else
+        typedef typename Implementation::Attribute<T>::Components Components;
+        #endif
+
+        /**
+         * @brief Data type
+         *
+         * Type of data passed to shader.
+         * @see Type, DataOptions, Attribute()
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        enum class DataType: GLenum {
+            UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte */
+            Byte = GL_BYTE,                     /**< Byte */
+            UnsignedShort = GL_UNSIGNED_SHORT,  /**< Unsigned short */
+            Short = GL_SHORT,                   /**< Short */
+            UnsignedInt = GL_UNSIGNED_INT,      /**< Unsigned int */
+            Int = GL_INT,                       /**< Int */
+
+            /**
+             * Half float. Only for float attribute types.
+             * @requires_gl30 %Extension @extension{NV,half_float}
+             * @requires_gles30 %Extension @es_extension{OES,vertex_half_float}
+             */
+            HalfFloat = GL_HALF_FLOAT,
+
+            /** Float. Only for float attribute types. */
+            Float = GL_FLOAT,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Double. Only for float and double attribute types.
+             * @requires_gl Only floats are available in OpenGL ES.
+             */
+            Double = GL_DOUBLE,
+            #endif
+
+            /* GL_FIXED not supported */
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * Unsigned 2.10.10.10 packed integer. Only for four-component
+             * float vector attribute type.
+             * @todo How about (incompatible) @es_extension{OES,vertex_type_10_10_10_2}?
+             * @requires_gl33 %Extension @extension{ARB,vertex_type_2_10_10_10_rev}
+             * @requires_gles30 (no extension providing this functionality)
+             */
+            UnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
+
+            /**
+             * Signed 2.10.10.10 packed integer. Only for four-component float
+             * vector attribute type.
+             * @requires_gl33 %Extension @extension{ARB,vertex_type_2_10_10_10_rev}
+             * @requires_gles30 (no extension providing this functionality)
+             */
+            Int2101010Rev = GL_INT_2_10_10_10_REV
+            #endif
+        };
+        #else
+        typedef typename Implementation::Attribute<T>::DataType DataType;
+        #endif
+
+        /**
+         * @brief Data option
+         * @see DataOptions, Attribute()
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        enum class DataOption: UnsignedByte {
+            /**
+             * Normalize integer components. Only for float attribute types.
+             * Default is to not normalize.
+             */
+            Normalize = 1 << 0
+        };
+        #else
+        typedef typename Implementation::Attribute<T>::DataOption DataOption;
+        #endif
+
+        /**
+         * @brief Data options
+         * @see Attribute()
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        typedef typename Corrade::Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
+        #else
+        typedef typename Implementation::Attribute<T>::DataOptions DataOptions;
+        #endif
+
+        /**
+         * @brief Constructor
+         * @param components    Component count
+         * @param dataType      Type of passed data. Default is the same as
+         *      type used in shader (e.g. DataType::Integer for Vector4i).
+         * @param dataOptions   Data options. Default is no options.
+         */
+        inline constexpr Attribute(Components components, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(components), _dataType(dataType), _dataOptions(dataOptions) {}
+
+        /**
+         * @brief Constructor
+         * @param dataType      Type of passed data. Default is the same as
+         *      type used in shader (e.g. DataType::Integer for Vector4i).
+         * @param dataOptions   Data options. Default is no options.
+         *
+         * Component count is set to the same value as in type used in shader
+         * (e.g. @ref Components "Components::Three" for Vector3).
+         */
+        inline constexpr Attribute(DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(Implementation::Attribute<T>::DefaultComponents), _dataType(dataType), _dataOptions(dataOptions) {}
+
+        /** @brief Component count of passed data */
+        inline constexpr Components components() const { return _components; }
+
+        /** @brief Type of passed data */
+        inline constexpr DataType dataType() const { return _dataType; }
+
+        /** @brief Size of passed data */
+        inline std::size_t dataSize() const {
+            return Implementation::Attribute<T>::size(GLint(_components)*Implementation::Attribute<T>::vectorCount(), _dataType);
+        }
+
+        /** @brief Data options */
+        inline constexpr DataOptions dataOptions() const { return _dataOptions; }
+
+    private:
+        const Components _components;
+        const DataType _dataType;
+        const DataOptions _dataOptions;
 };
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
