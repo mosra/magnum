@@ -96,6 +96,25 @@ AbstractShaderProgram::~AbstractShaderProgram() {
     if(_id) glDeleteProgram(_id);
 }
 
+std::pair<bool, std::string> AbstractShaderProgram::validate() {
+    glValidateProgram(_id);
+
+    /* Check validation status */
+    GLint success, logLength;
+    glGetProgramiv(_id, GL_VALIDATE_STATUS, &success);
+    glGetProgramiv(_id, GL_INFO_LOG_LENGTH, &logLength);
+
+    /* Error or warning message. The string is returned null-terminated, scrap
+       the \0 at the end afterwards */
+    std::string message(logLength, '\n');
+    if(!message.empty()) {
+        glGetProgramInfoLog(_id, message.size(), nullptr, &message[0]);
+        message.resize(logLength-1);
+    }
+
+    return {success, std::move(message)};
+}
+
 void AbstractShaderProgram::use() {
     /* Use only if the program isn't already in use */
     GLuint& current = Context::current()->state()->shaderProgram->current;

@@ -323,6 +323,16 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         inline GLuint id() const { return _id; }
 
         /**
+         * @brief Validate program
+         *
+         * Returns validation status and optional validation message.
+         * @see @fn_gl{ValidateProgram}, @fn_gl{GetProgram} with
+         *      @def_gl{VALIDATE_STATUS}, @def_gl{INFO_LOG_LENGTH},
+         *      @fn_gl{GetProgramInfoLog}
+         */
+        std::pair<bool, std::string> validate();
+
+        /**
          * @brief Use shader for rendering
          *
          * @see @fn_gl{UseProgram}
