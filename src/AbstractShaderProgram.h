@@ -35,8 +35,6 @@
 #include "OpenGL.h"
 #include "magnumVisibility.h"
 
-/** @todo early asserts (no bool returns?) */
-
 namespace Magnum {
 
 namespace Implementation {
@@ -84,12 +82,19 @@ Int TransformationUniform = 0,
    gets uniform locations, for example:
 @code
 MyShader() {
-    // Load shaders from file and attach them to the program
-    attachShader(Shader(Version::GL430, Shader::Type::Vertex).attachFile("PhongShader.vert"));
-    attachShader(Shader(Version::GL430, Shader::Type::Fragment).attachFile("PhongShader.frag"));
+    // Load shaders, compile them and attach them to the program
+    Shader vert(Version::GL430, Shader::Type::Vertex);
+    vert.attachFile("PhongShader.vert");
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
+    attachShader(vert);
 
-    // Link
-    link();
+    Shader frag(Version::GL430, Shader::Type::Fragment);
+    frag.attachFile("PhongShader.vert");
+    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+    attachShader(frag);
+
+    // Link the program together
+    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 }
 @endcode
  - **Uniform setting functions**, which will provide public interface for
@@ -521,9 +526,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * Creates one OpenGL shader program.
          * @see @fn_gl{CreateProgram}
          */
-        inline explicit AbstractShaderProgram(): state(Initialized) {
-            _id = glCreateProgram();
-        }
+        explicit AbstractShaderProgram();
 
         /**
          * @brief Destructor
@@ -535,12 +538,10 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /**
          * @brief Use shader for rendering
-         * @return False if the program wasn't successfully linked, true
-         *      otherwise.
          *
          * @see @fn_gl{UseProgram}
          */
-        bool use();
+        void use();
 
     protected:
         #ifndef MAGNUM_TARGET_GLES2
@@ -548,8 +549,6 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @brief Allow retrieving program binary
          *
          * Initially disabled.
-         * @note This function should be called after attachShader() calls and
-         *      before link().
          * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_BINARY_RETRIEVABLE_HINT}
          * @requires_gl41 %Extension @extension{ARB,get_program_binary}
          * @requires_gles30 Always allowed in OpenGL ES 2.0.
@@ -563,8 +562,6 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @brief Allow the program to be bound to individual pipeline stages
          *
          * Initially disabled.
-         * @note This function should be called after attachShader() calls and
-         *      before link().
          * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_SEPARABLE}
          * @requires_gl41 %Extension @extension{ARB,separate_shader_objects}
          * @requires_es_extension %Extension @es_extension{EXT,separate_shader_objects}
@@ -579,20 +576,11 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         }
 
         /**
-         * @brief Load shader
-         * @return False if the shader wasn't successfully compiled, true
-         *      otherwise.
+         * @brief Attach shader
          *
-         * Compiles the shader, if it is not already, and prepares it for
-         * linking.
-         * @see Shader::compile(), @fn_gl{AttachShader}
+         * @fn_gl{AttachShader}
          */
-        bool attachShader(Shader& shader);
-
-        /** @overload */
-        inline bool attachShader(Shader&& shader) {
-            return attachShader(shader);
-        }
+        void attachShader(Shader& shader);
 
         /**
          * @brief Bind attribute to given location
@@ -601,8 +589,6 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *
          * Binds attribute to location which is used later for binding vertex
          * buffers.
-         * @note This function should be called after attachShader() calls and
-         *      before link().
          * @deprecated Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
@@ -621,8 +607,6 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * Binds fragment data to location which is used later for framebuffer
          * operations. See also Framebuffer::BlendFunction for more
          * information about using color input index.
-         * @note This function should be called after attachShader() calls and
-         *      before link().
          * @deprecated Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
@@ -652,18 +636,19 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         /**
          * @brief Link the shader
          *
-         * Binds previously specified attributes to given indexes and links the
-         * shader program together.
+         * Returns `false` if linking failed, `true` otherwise. Compiler
+         * message (if any) is printed to error output. All attached shaders
+         * must be explicitly compiled with Shader::compile() before linking.
          * @see @fn_gl{LinkProgram}, @fn_gl{GetProgram} with
-         *      @def_gl{LINK_STATUS}, @fn_gl{GetProgramInfoLog}
+         *      @def_gl{LINK_STATUS} and @def_gl{INFO_LOG_LENGTH},
+         *      @fn_gl{GetProgramInfoLog}
          */
-        void link();
+        bool link();
 
         /**
          * @brief Get uniform location
          * @param name          Uniform name
          *
-         * @note This function should be called after link().
          * @deprecated Preferred usage is to specify uniform location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-uniform-location "class documentation"
@@ -717,8 +702,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @extension{EXT,direct_state_access} is available, the shader is
          * marked for use before the operation.
          * @see setUniform(Int, const T&), @fn_gl{UseProgram}, @fn_gl{Uniform}
-         *      or `glProgramUniform()` from
-         *      @extension{ARB,separate_shader_objects}/@extension{EXT,direct_state_access}.
+         *      or @fn_gl{ProgramUniform}/@fn_gl_extension{ProgramUniform,EXT,direct_state_access}.
          */
         inline void setUniform(Int location, UnsignedInt count, const Float* values) {
             (this->*uniform1fvImplementation)(location, count, values);
@@ -984,12 +968,6 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         #endif
 
     private:
-        enum State {
-            Initialized,
-            Linked,
-            Failed
-        };
-
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
 
         typedef void(AbstractShaderProgram::*Uniform1fvImplementation)(GLint, GLsizei, const GLfloat*);
@@ -1155,7 +1133,6 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         #endif
 
         GLuint _id;
-        State state;
 };
 
 #ifdef DOXYGEN_GENERATING_OUTPUT

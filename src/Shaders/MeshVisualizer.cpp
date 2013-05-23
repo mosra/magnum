@@ -39,19 +39,27 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
 
     Corrade::Utility::Resource rs("MagnumShaders");
 
-    attachShader(Shader(Version::GL330, Shader::Type::Vertex)
-        .addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
+    Shader vert(Version::GL330, Shader::Type::Vertex);
+    vert.addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         .addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("MeshVisualizer.vert")));
+        .addSource(rs.get("MeshVisualizer.vert"));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
+    attachShader(vert);
 
-    if(flags & Flag::Wireframe) attachShader(Shader(Version::GL330, Shader::Type::Geometry)
-        .addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("MeshVisualizer.geom")));
+    if(flags & Flag::Wireframe) {
+        Shader geom(Version::GL330, Shader::Type::Geometry);
+        geom.addSource(rs.get("compatibility.glsl"))
+            .addSource(rs.get("MeshVisualizer.geom"));
+        CORRADE_INTERNAL_ASSERT_OUTPUT(geom.compile());
+        attachShader(geom);
+    }
 
-    attachShader(Shader(Version::GL330, Shader::Type::Fragment)
-        .addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
+    Shader frag(Version::GL330, Shader::Type::Fragment);
+    frag.addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         .addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("MeshVisualizer.frag")));
+        .addSource(rs.get("MeshVisualizer.frag"));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+    attachShader(frag);
 
     link();
 }

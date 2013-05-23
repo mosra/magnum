@@ -46,13 +46,17 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(): transformationProject
     Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    attachShader(Shader(v, Shader::Type::Vertex)
-        .addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get(vertexShaderName<dimensions>())));
+    Shader frag(v, Shader::Type::Vertex);
+    frag.addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get(vertexShaderName<dimensions>()));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+    attachShader(frag);
 
-    attachShader(Shader(v, Shader::Type::Fragment)
-        .addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("Flat.frag")));
+    Shader vert(v, Shader::Type::Fragment);
+    vert.addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("Flat.frag"));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
+    attachShader(vert);
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||
@@ -64,7 +68,7 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(): transformationProject
         bindAttributeLocation(Position::Location, "position");
     }
 
-    link();
+    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())

@@ -40,13 +40,17 @@ Phong::Phong(): transformationMatrixUniform(0), projectionMatrixUniform(1), norm
     Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    attachShader(Shader(v, Shader::Type::Vertex)
-        .addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("Phong.vert")));
+    Shader vert(v, Shader::Type::Vertex);
+    vert.addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("Phong.vert"));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
+    attachShader(vert);
 
-    attachShader(Shader(v, Shader::Type::Fragment)
-        .addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("Phong.frag")));
+    Shader frag(v, Shader::Type::Fragment);
+    frag.addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("Phong.frag"));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+    attachShader(frag);
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||
@@ -59,7 +63,7 @@ Phong::Phong(): transformationMatrixUniform(0), projectionMatrixUniform(1), norm
         bindAttributeLocation(Normal::Location, "normal");
     }
 
-    link();
+    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())

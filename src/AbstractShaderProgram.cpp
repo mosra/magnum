@@ -30,8 +30,6 @@
 #include "Implementation/ShaderProgramState.h"
 #include "Implementation/State.h"
 
-#define LINKER_MESSAGE_MAX_LENGTH 1024
-
 namespace Magnum {
 
 AbstractShaderProgram::Uniform1fvImplementation AbstractShaderProgram::uniform1fvImplementation = &AbstractShaderProgram::uniformImplementationDefault;
@@ -88,67 +86,58 @@ Int AbstractShaderProgram::maxSupportedVertexAttributeCount() {
     return value;
 }
 
+AbstractShaderProgram::AbstractShaderProgram(): _id(glCreateProgram()) {}
+
 AbstractShaderProgram::~AbstractShaderProgram() {
     /* Remove current usage from the state */
     GLuint& current = Context::current()->state()->shaderProgram->current;
     if(current == _id) current = 0;
 
-    glDeleteProgram(_id);
+    if(_id) glDeleteProgram(_id);
 }
 
-bool AbstractShaderProgram::use() {
-    if(state != Linked) return false;
-
+void AbstractShaderProgram::use() {
     /* Use only if the program isn't already in use */
     GLuint& current = Context::current()->state()->shaderProgram->current;
     if(current != _id) glUseProgram(current = _id);
-    return true;
 }
 
-bool AbstractShaderProgram::attachShader(Shader& shader) {
-    GLuint _shader = shader.compile();
-    if(!_shader) return false;
-
-    glAttachShader(_id, _shader);
-    return true;
+void AbstractShaderProgram::attachShader(Shader& shader) {
+    glAttachShader(_id, shader.id());
 }
 
 void AbstractShaderProgram::bindAttributeLocation(UnsignedInt location, const std::string& name) {
-    CORRADE_ASSERT(state == Initialized, "AbstractShaderProgram: attribute cannot be bound after linking.", );
-
     glBindAttribLocation(_id, location, name.c_str());
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::bindFragmentDataLocation(UnsignedInt location, const std::string& name) {
-    CORRADE_ASSERT(state == Initialized, "AbstractShaderProgram: fragment data location cannot be bound after linking.", );
-
     glBindFragDataLocation(_id, location, name.c_str());
 }
 void AbstractShaderProgram::bindFragmentDataLocationIndexed(UnsignedInt location, UnsignedInt index, const std::string& name) {
-    CORRADE_ASSERT(state == Initialized, "AbstractShaderProgram: fragment data location cannot be bound after linking.", );
-
     glBindFragDataLocationIndexed(_id, location, index, name.c_str());
 }
 #endif
 
-void AbstractShaderProgram::link() {
-    /* Already compiled or failed, exit */
-    if(state != Initialized) return;
-
+bool AbstractShaderProgram::link() {
     /* Link shader program */
     glLinkProgram(_id);
 
     /* Check link status */
-    GLint status;
-    glGetProgramiv(_id, GL_LINK_STATUS, &status);
+    GLint success, logLength;
+    glGetProgramiv(_id, GL_LINK_STATUS, &success);
+    glGetProgramiv(_id, GL_INFO_LOG_LENGTH, &logLength);
 
-    /* Display errors or warnings */
-    char message[LINKER_MESSAGE_MAX_LENGTH];
-    glGetProgramInfoLog(_id, LINKER_MESSAGE_MAX_LENGTH, nullptr, message);
+    /* Error or warning message. The string is returned null-terminated, scrap
+       the \0 at the end afterwards */
+    std::string message(logLength, '\n');
+    if(!message.empty()) {
+        glGetProgramInfoLog(_id, message.size(), nullptr, &message[0]);
+        message.resize(logLength-1);
+    }
 
     /* Show error log and delete shader */
-    if(status == GL_FALSE) {
+    if(!success) {
         Error out;
         out.setFlag(Debug::NewLineAtTheEnd, false);
         out.setFlag(Debug::SpaceAfterEachValue, false);
@@ -156,7 +145,7 @@ void AbstractShaderProgram::link() {
             << message;
 
     /* Or just warnings, if there are any */
-    } else if(message[0] != 0) {
+    } else if(!message.empty()) {
         Debug out;
         out.setFlag(Debug::NewLineAtTheEnd, false);
         out.setFlag(Debug::SpaceAfterEachValue, false);
@@ -164,13 +153,10 @@ void AbstractShaderProgram::link() {
             << message;
     }
 
-    state = status == GL_FALSE ? Failed : Linked;
+    return success;
 }
 
 Int AbstractShaderProgram::uniformLocation(const std::string& name) {
-    /** @todo What if linking just failed (not programmer error?) */
-    CORRADE_ASSERT(state == Linked, "AbstractShaderProgram: uniform location cannot be retrieved before linking.", -1);
-
     GLint location = glGetUniformLocation(_id, name.c_str());
     if(location == -1)
         Warning() << "AbstractShaderProgram: location of uniform \'" + name + "\' cannot be retrieved!";

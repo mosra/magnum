@@ -46,13 +46,17 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transfo
     Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    attachShader(Shader(v, Shader::Type::Vertex)
-        .addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get(vertexShaderName<dimensions>())));
+    Shader vert(v, Shader::Type::Vertex);
+    vert.addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get(vertexShaderName<dimensions>()));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
+    attachShader(vert);
 
-    attachShader(Shader(v, Shader::Type::Fragment)
-        .addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("VertexColor.frag")));
+    Shader frag(v, Shader::Type::Fragment);
+    frag.addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("VertexColor.frag"));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+    attachShader(frag);
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||
@@ -65,7 +69,7 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transfo
         bindAttributeLocation(Color::Location, "color");
     }
 
-    link();
+    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())

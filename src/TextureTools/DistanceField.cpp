@@ -70,14 +70,18 @@ DistanceFieldShader::DistanceFieldShader() {
 
     Corrade::Utility::Resource rs("MagnumTextureTools");
 
-    attachShader(Shader(Version::GL330, Shader::Type::Vertex)
-        .addSource(rs.get("DistanceFieldShader.vert")));
+    Shader vert(Version::GL330, Shader::Type::Vertex);
+    vert.addSource(rs.get("DistanceFieldShader.vert"));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
+    attachShader(vert);
 
-    attachShader(Shader(Version::GL330, Shader::Type::Fragment)
-        .addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("DistanceFieldShader.frag")));
+    Shader frag(Version::GL330, Shader::Type::Fragment);
+    frag.addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("DistanceFieldShader.frag"));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+    attachShader(frag);
 
-    link();
+    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 }
 
 }
