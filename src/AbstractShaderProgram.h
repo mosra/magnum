@@ -319,6 +319,9 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          */
         virtual ~AbstractShaderProgram() = 0;
 
+        /** @brief OpenGL program ID */
+        inline GLuint id() const { return _id; }
+
         /**
          * @brief Use shader for rendering
          *
