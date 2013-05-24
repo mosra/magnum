@@ -36,8 +36,8 @@ namespace Magnum {
 #ifndef MAGNUM_TARGET_GLES2
 Buffer::CopyImplementation Buffer::copyImplementation = &Buffer::copyImplementationDefault;
 #endif
-Buffer::SetDataImplementation Buffer::setDataImplementation = &Buffer::setDataImplementationDefault;
-Buffer::SetSubDataImplementation Buffer::setSubDataImplementation = &Buffer::setSubDataImplementationDefault;
+Buffer::DataImplementation Buffer::dataImplementation = &Buffer::dataImplementationDefault;
+Buffer::SubDataImplementation Buffer::subDataImplementation = &Buffer::subDataImplementationDefault;
 Buffer::InvalidateImplementation Buffer::invalidateImplementation = &Buffer::invalidateImplementationNoOp;
 Buffer::InvalidateSubImplementation Buffer::invalidateSubImplementation = &Buffer::invalidateSubImplementationNoOp;
 #ifndef MAGNUM_TARGET_GLES3
@@ -53,8 +53,8 @@ void Buffer::initializeContextBasedFunctionality(Context* context) {
         Debug() << "Buffer: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
 
         copyImplementation = &Buffer::copyImplementationDSA;
-        setDataImplementation = &Buffer::setDataImplementationDSA;
-        setSubDataImplementation = &Buffer::setSubDataImplementationDSA;
+        dataImplementation = &Buffer::dataImplementationDSA;
+        subDataImplementation = &Buffer::subDataImplementationDSA;
         mapImplementation = &Buffer::mapImplementationDSA;
         mapRangeImplementation = &Buffer::mapRangeImplementationDSA;
         flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDSA;
@@ -123,22 +123,22 @@ void Buffer::copyImplementationDSA(Buffer* read, Buffer* write, GLintptr readOff
 #endif
 #endif
 
-void Buffer::setDataImplementationDefault(GLsizeiptr size, const GLvoid* data, Buffer::Usage usage) {
+void Buffer::dataImplementationDefault(GLsizeiptr size, const GLvoid* data, Buffer::Usage usage) {
     glBufferData(static_cast<GLenum>(bindInternal(_targetHint)), size, data, static_cast<GLenum>(usage));
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::setDataImplementationDSA(GLsizeiptr size, const GLvoid* data, Buffer::Usage usage) {
+void Buffer::dataImplementationDSA(GLsizeiptr size, const GLvoid* data, Buffer::Usage usage) {
     glNamedBufferDataEXT(_id, size, data, static_cast<GLenum>(usage));
 }
 #endif
 
-void Buffer::setSubDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
+void Buffer::subDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
     glBufferSubData(static_cast<GLenum>(bindInternal(_targetHint)), offset, size, data);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::setSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
+void Buffer::subDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
     glNamedBufferSubDataEXT(_id, offset, size, data);
 }
 #endif

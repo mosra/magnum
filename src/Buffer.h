@@ -533,7 +533,7 @@ class MAGNUM_EXPORT Buffer {
          *      @fn_gl_extension{NamedBufferData,EXT,direct_state_access}
          */
         inline Buffer* setData(GLsizeiptr size, const GLvoid* data, Usage usage) {
-            (this->*setDataImplementation)(size, data, usage);
+            (this->*dataImplementation)(size, data, usage);
             return this;
         }
 
@@ -582,7 +582,7 @@ class MAGNUM_EXPORT Buffer {
          *      or @fn_gl_extension{NamedBufferSubData,EXT,direct_state_access}
          */
         inline Buffer* setSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
-            (this->*setSubDataImplementation)(offset, size, data);
+            (this->*subDataImplementation)(offset, size, data);
             return this;
         }
 
@@ -746,19 +746,19 @@ class MAGNUM_EXPORT Buffer {
         static CopyImplementation copyImplementation;
         #endif
 
-        typedef void(Buffer::*SetDataImplementation)(GLsizeiptr, const GLvoid*, Usage);
-        void MAGNUM_LOCAL setDataImplementationDefault(GLsizeiptr size, const GLvoid* data, Usage usage);
+        typedef void(Buffer::*DataImplementation)(GLsizeiptr, const GLvoid*, Usage);
+        void MAGNUM_LOCAL dataImplementationDefault(GLsizeiptr size, const GLvoid* data, Usage usage);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL setDataImplementationDSA(GLsizeiptr size, const GLvoid* data, Usage usage);
+        void MAGNUM_LOCAL dataImplementationDSA(GLsizeiptr size, const GLvoid* data, Usage usage);
         #endif
-        static SetDataImplementation setDataImplementation;
+        static DataImplementation dataImplementation;
 
-        typedef void(Buffer::*SetSubDataImplementation)(GLintptr, GLsizeiptr, const GLvoid*);
-        void MAGNUM_LOCAL setSubDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data);
+        typedef void(Buffer::*SubDataImplementation)(GLintptr, GLsizeiptr, const GLvoid*);
+        void MAGNUM_LOCAL subDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL setSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data);
+        void MAGNUM_LOCAL subDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data);
         #endif
-        static SetSubDataImplementation setSubDataImplementation;
+        static SubDataImplementation subDataImplementation;
 
         typedef void(Buffer::*InvalidateImplementation)();
         void MAGNUM_LOCAL invalidateImplementationNoOp();
