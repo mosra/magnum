@@ -74,7 +74,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         explicit AbstractImporter();
 
         /** @brief Plugin manager constructor */
-        explicit AbstractImporter(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin);
+        explicit AbstractImporter(Corrade::PluginManager::AbstractManager* manager, std::string plugin);
 
         /** @brief Features supported by this importer */
         virtual Features features() const = 0;

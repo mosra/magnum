@@ -79,7 +79,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public Corrade::PluginManager::Abstr
         explicit AbstractImageConverter();
 
         /** @brief Plugin manager constructor */
-        explicit AbstractImageConverter(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin);
+        explicit AbstractImageConverter(Corrade::PluginManager::AbstractManager* manager, std::string plugin);
 
         /** @brief Features supported by this converter */
         virtual Features features() const = 0;

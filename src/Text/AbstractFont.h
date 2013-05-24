@@ -60,7 +60,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public Corrade::PluginManager::AbstractPl
         explicit AbstractFont();
 
         /** @brief Plugin manager constructor */
-        explicit AbstractFont(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin);
+        explicit AbstractFont(Corrade::PluginManager::AbstractManager* manager, std::string plugin);
 
         /**
          * @brief Open font from file
