@@ -36,6 +36,7 @@
 namespace Magnum { namespace Math {
 
 namespace Implementation {
+    /** @todo C++14: use std::make_index_sequence and std::integer_sequence */
     template<std::size_t ...> struct Sequence {};
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
