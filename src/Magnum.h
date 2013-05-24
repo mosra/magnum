@@ -63,6 +63,9 @@ namespace Math {
     #endif
 }
 
+/* Bring whole Corrade namespace */
+using namespace Corrade;
+
 /* Bring debugging facility from Corrade::Utility namespace */
 using Corrade::Utility::Debug;
 using Corrade::Utility::Warning;

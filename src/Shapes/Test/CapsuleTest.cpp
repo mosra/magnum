@@ -32,7 +32,7 @@
 
 namespace Magnum { namespace Shapes { namespace Test {
 
-class CapsuleTest: public Corrade::TestSuite::Tester {
+class CapsuleTest: public TestSuite::Tester {
     public:
         CapsuleTest();
 

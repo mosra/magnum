@@ -154,7 +154,7 @@ class AbstractXApplication {
             Exit = 1 << 1
         };
 
-        typedef Corrade::Containers::EnumSet<Flag, unsigned int> Flags;
+        typedef Containers::EnumSet<Flag, unsigned int> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
         Display* display;
@@ -261,7 +261,7 @@ class AbstractXApplication::InputEvent {
          *
          * @see modifiers()
          */
-        typedef Corrade::Containers::EnumSet<Modifier, unsigned int> Modifiers;
+        typedef Containers::EnumSet<Modifier, unsigned int> Modifiers;
 
         inline virtual ~InputEvent() {}
 

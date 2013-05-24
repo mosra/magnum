@@ -159,7 +159,7 @@ int AbstractXApplication::exec() {
         if(flags & Flag::Redraw) {
             flags &= ~Flag::Redraw;
             drawEvent();
-        } else Corrade::Utility::sleep(5);
+        } else Utility::sleep(5);
     }
 
     return 0;

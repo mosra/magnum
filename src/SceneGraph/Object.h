@@ -44,7 +44,7 @@ namespace Implementation {
         Joint = 1 << 2
     };
 
-    typedef Corrade::Containers::EnumSet<ObjectFlag, UnsignedByte> ObjectFlags;
+    typedef Containers::EnumSet<ObjectFlag, UnsignedByte> ObjectFlags;
 
     CORRADE_ENUMSET_OPERATORS(ObjectFlags)
 }
@@ -90,11 +90,11 @@ See @ref compilation-speedup-hpp for more information.
 */
 template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public AbstractObject<Transformation::Dimensions, typename Transformation::Type>, public Transformation
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    , private Corrade::Containers::LinkedList<Object<Transformation>>, private Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>
+    , private Containers::LinkedList<Object<Transformation>>, private Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>
     #endif
 {
-    friend class Corrade::Containers::LinkedList<Object<Transformation>>;
-    friend class Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>;
+    friend class Containers::LinkedList<Object<Transformation>>;
+    friend class Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>;
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     Object(const Object<Transformation>&) = delete;
@@ -149,57 +149,57 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
 
         /** @brief Parent object or `nullptr`, if this is root object */
         inline Object<Transformation>* parent() {
-            return Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::list();
+            return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::list();
         }
 
         /** @overload */
         inline const Object<Transformation>* parent() const {
-            return Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::list();
+            return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::list();
         }
 
         /** @brief Previous sibling object or `nullptr`, if this is first object */
         inline Object<Transformation>* previousSibling() {
-            return Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::previous();
+            return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::previous();
         }
 
         /** @overload */
         inline const Object<Transformation>* previousSibling() const {
-            return Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::previous();
+            return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::previous();
         }
 
         /** @brief Next sibling object or `nullptr`, if this is last object */
         inline Object<Transformation>* nextSibling() {
-            return Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::next();
+            return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::next();
         }
 
         /** @overload */
         inline const Object<Transformation>* nextSibling() const {
-            return Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::next();
+            return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::next();
         }
 
         /** @brief Whether this object has children */
         inline bool hasChildren() const {
-            return !Corrade::Containers::LinkedList<Object<Transformation>>::isEmpty();
+            return !Containers::LinkedList<Object<Transformation>>::isEmpty();
         }
 
         /** @brief First child object or `nullptr`, if this object has no children */
         inline Object<Transformation>* firstChild() {
-            return Corrade::Containers::LinkedList<Object<Transformation>>::first();
+            return Containers::LinkedList<Object<Transformation>>::first();
         }
 
         /** @overload */
         inline const Object<Transformation>* firstChild() const {
-            return Corrade::Containers::LinkedList<Object<Transformation>>::first();
+            return Containers::LinkedList<Object<Transformation>>::first();
         }
 
         /** @brief Last child object or `nullptr`, if this object has no children */
         inline Object<Transformation>* lastChild() {
-            return Corrade::Containers::LinkedList<Object<Transformation>>::last();
+            return Containers::LinkedList<Object<Transformation>>::last();
         }
 
         /** @overload */
         inline const Object<Transformation>* lastChild() const {
-            return Corrade::Containers::LinkedList<Object<Transformation>>::last();
+            return Containers::LinkedList<Object<Transformation>>::last();
         }
 
         /**

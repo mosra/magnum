@@ -30,7 +30,7 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class SubdivideTest: public Corrade::TestSuite::Tester {
+class SubdivideTest: public TestSuite::Tester {
     public:
         SubdivideTest();
 

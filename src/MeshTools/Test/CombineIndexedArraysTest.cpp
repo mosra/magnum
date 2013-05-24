@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class CombineIndexedArraysTest: public Corrade::TestSuite::Tester {
+class CombineIndexedArraysTest: public TestSuite::Tester {
     public:
         CombineIndexedArraysTest();
 

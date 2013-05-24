@@ -39,7 +39,7 @@ namespace {
 }
 
 template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldVector(): transformationProjectionMatrixUniform(0), colorUniform(1), outlineColorUniform(2), outlineRangeUniform(3), smoothnessUniform(4) {
-    Corrade::Utility::Resource rs("MagnumShaders");
+    Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
     Version v = Context::current()->supportedVersion({Version::GL320, Version::GL210});

@@ -32,11 +32,9 @@
 #include "Trade/MeshData3D.h"
 #include "Primitives/Capsule.h"
 
-using Corrade::TestSuite::Compare::Container;
-
 namespace Magnum { namespace Primitives { namespace Test {
 
-class CapsuleTest: public Corrade::TestSuite::Tester {
+class CapsuleTest: public TestSuite::Tester {
     public:
         CapsuleTest();
 
@@ -76,7 +74,7 @@ void CapsuleTest::withoutTextureCoords() {
         {-0.612372f, 1.20711f, -0.353553f},
 
         {0.0f, 1.5f, 0.0f}
-    }), Container);
+    }), TestSuite::Compare::Container);
 
     CORRADE_COMPARE_AS(*capsule.normals(0), (std::vector<Vector3>{
         {0.0f, -1.0f, 0.0f},
@@ -102,7 +100,7 @@ void CapsuleTest::withoutTextureCoords() {
         {-0.612372f, 0.707107f, -0.353553f},
 
         {0.0f, 1.0f, 0.0f}
-    }), Container);
+    }), TestSuite::Compare::Container);
 
     CORRADE_COMPARE_AS(*capsule.indices(), (std::vector<UnsignedInt>{
         0, 2, 1, 0, 3, 2, 0, 1, 3,
@@ -111,7 +109,7 @@ void CapsuleTest::withoutTextureCoords() {
         7, 8, 11, 7, 11, 10, 8, 9, 12, 8, 12, 11, 9, 7, 10, 9, 10, 12,
         10, 11, 14, 10, 14, 13, 11, 12, 15, 11, 15, 14, 12, 10, 13, 12, 13, 15,
         13, 14, 16, 14, 15, 16, 15, 13, 16
-    }), Container);
+    }), TestSuite::Compare::Container);
 }
 
 void CapsuleTest::withTextureCoords() {
@@ -146,7 +144,7 @@ void CapsuleTest::withTextureCoords() {
         {0.0f, 1.20711f, 0.707107f},
 
         {0.0f, 1.5f, 0.0f}
-    }), Container);
+    }), TestSuite::Compare::Container);
 
     CORRADE_COMPARE_AS(*capsule.textureCoords2D(0), (std::vector<Vector2>{
         {0.5f, 0.0f},
@@ -177,7 +175,7 @@ void CapsuleTest::withTextureCoords() {
         {1.0f, 0.833333f},
 
         {0.5f, 1.0f}
-    }), Container);
+    }), TestSuite::Compare::Container);
 
     CORRADE_COMPARE_AS(*capsule.indices(), (std::vector<UnsignedInt>{
         0, 2, 1, 0, 3, 2, 0, 4, 3,
@@ -186,7 +184,7 @@ void CapsuleTest::withTextureCoords() {
         9, 10, 14, 9, 14, 13, 10, 11, 15, 10, 15, 14, 11, 12, 16, 11, 16, 15,
         13, 14, 18, 13, 18, 17, 14, 15, 19, 14, 19, 18, 15, 16, 20, 15, 20, 19,
         17, 18, 21, 18, 19, 21, 19, 20, 21
-    }), Container);
+    }), TestSuite::Compare::Container);
 }
 
 }}}

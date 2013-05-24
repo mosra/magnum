@@ -38,7 +38,7 @@ namespace {
 }
 
 template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transformationProjectionMatrixUniform(0) {
-    Corrade::Utility::Resource rs("MagnumShaders");
+    Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
     Version v = Context::current()->supportedVersion({Version::GL320, Version::GL210});

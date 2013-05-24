@@ -33,7 +33,7 @@ namespace Magnum { namespace SceneGraph { namespace Test {
 typedef Object<DualQuaternionTransformation<>> Object3D;
 typedef Scene<DualQuaternionTransformation<>> Scene3D;
 
-class DualQuaternionTransformationTest: public Corrade::TestSuite::Tester {
+class DualQuaternionTransformationTest: public TestSuite::Tester {
     public:
         explicit DualQuaternionTransformationTest();
 

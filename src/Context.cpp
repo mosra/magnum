@@ -359,7 +359,7 @@ Context::Context() {
         /* Don't crash when glGetString() returns nullptr */
         const char* e = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
         if(e) {
-            std::vector<std::string> extensions = Corrade::Utility::String::split(e, ' ');
+            std::vector<std::string> extensions = Utility::String::split(e, ' ');
             for(const std::string& extension: extensions) {
                 auto found = futureExtensions.find(extension);
                 if(found != futureExtensions.end()) {

@@ -32,7 +32,7 @@
 
 namespace Magnum { namespace Shapes { namespace Test {
 
-class SphereTest: public Corrade::TestSuite::Tester {
+class SphereTest: public TestSuite::Tester {
     public:
         SphereTest();
 

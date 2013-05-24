@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace Shapes { namespace Test {
 
-class AxisAlignedBoxTest: public Corrade::TestSuite::Tester {
+class AxisAlignedBoxTest: public TestSuite::Tester {
     public:
         AxisAlignedBoxTest();
 

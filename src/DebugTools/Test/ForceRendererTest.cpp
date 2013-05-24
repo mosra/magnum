@@ -28,7 +28,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation { namespace Test {
 
-class ForceRendererTest: public Corrade::TestSuite::Tester {
+class ForceRendererTest: public TestSuite::Tester {
     public:
         explicit ForceRendererTest();
 

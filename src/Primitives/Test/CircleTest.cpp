@@ -30,7 +30,7 @@
 
 namespace Magnum { namespace Primitives { namespace Test {
 
-class CircleTest: public Corrade::TestSuite::Tester {
+class CircleTest: public TestSuite::Tester {
     public:
         explicit CircleTest();
 

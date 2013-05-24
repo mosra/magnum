@@ -181,7 +181,7 @@ class MAGNUM_EXPORT Context {
          *
          * @see flags()
          */
-        typedef Corrade::Containers::EnumSet<Flag, GLint> Flags;
+        typedef Containers::EnumSet<Flag, GLint> Flags;
 
         /**
          * @brief Constructor

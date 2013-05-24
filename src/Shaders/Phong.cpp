@@ -32,7 +32,7 @@
 namespace Magnum { namespace Shaders {
 
 Phong::Phong(): transformationMatrixUniform(0), projectionMatrixUniform(1), normalMatrixUniform(2), lightUniform(3), diffuseColorUniform(4), ambientColorUniform(5), specularColorUniform(6), lightColorUniform(7), shininessUniform(8) {
-    Corrade::Utility::Resource rs("MagnumShaders");
+    Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
     Version v = Context::current()->supportedVersion({Version::GL320, Version::GL210});

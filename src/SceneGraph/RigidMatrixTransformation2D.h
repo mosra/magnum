@@ -170,7 +170,7 @@ class RigidMatrixTransformation2D: public AbstractTranslationRotation2D<T> {
          * @return Pointer to self (for method chaining)
          */
         inline RigidMatrixTransformation2D<T>* move(Object<RigidMatrixTransformation2D<T>>* under) {
-            static_cast<Object<RigidMatrixTransformation2D>*>(this)->Corrade::Containers::template LinkedList<Object<RigidMatrixTransformation2D<T>>>::move(this, under);
+            static_cast<Object<RigidMatrixTransformation2D>*>(this)->Containers::template LinkedList<Object<RigidMatrixTransformation2D<T>>>::move(this, under);
             return this;
         }
 

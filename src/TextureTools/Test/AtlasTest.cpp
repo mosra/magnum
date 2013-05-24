@@ -30,7 +30,7 @@
 
 namespace Magnum { namespace TextureTools { namespace Test {
 
-class AtlasTest: public Corrade::TestSuite::Tester {
+class AtlasTest: public TestSuite::Tester {
     public:
         explicit AtlasTest();
 

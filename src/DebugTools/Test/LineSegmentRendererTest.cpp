@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Test {
 
-class LineSegmentRendererTest: public Corrade::TestSuite::Tester {
+class LineSegmentRendererTest: public TestSuite::Tester {
     public:
         explicit LineSegmentRendererTest();
 

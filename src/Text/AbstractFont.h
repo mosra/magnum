@@ -52,7 +52,7 @@ information. See TextRenderer for information about text rendering.
 
 Plugin implements functions open(), close(), createGlyphCache() and layout().
 */
-class MAGNUM_TEXT_EXPORT AbstractFont: public Corrade::PluginManager::AbstractPlugin {
+class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
     PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.1")
 
     public:
@@ -60,7 +60,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public Corrade::PluginManager::AbstractPl
         explicit AbstractFont();
 
         /** @brief Plugin manager constructor */
-        explicit AbstractFont(Corrade::PluginManager::AbstractManager* manager, std::string plugin);
+        explicit AbstractFont(PluginManager::AbstractManager* manager, std::string plugin);
 
         /**
          * @brief Open font from file

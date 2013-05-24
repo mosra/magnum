@@ -42,7 +42,7 @@ namespace Implementation {
         InvertedAbsolute = 1 << 1
     };
 
-    typedef Corrade::Containers::EnumSet<FeatureCachedTransformation, UnsignedByte> FeatureCachedTransformations;
+    typedef Containers::EnumSet<FeatureCachedTransformation, UnsignedByte> FeatureCachedTransformations;
 
     CORRADE_ENUMSET_OPERATORS(FeatureCachedTransformations)
 }
@@ -136,13 +136,13 @@ AbstractFeature.hpp implementation file to avoid linker errors. See also
 @see AbstractFeature2D, AbstractFeature3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature: private Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature: private Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>
 #else
 template<UnsignedInt dimensions, class T = Float> class AbstractFeature
 #endif
 {
-    friend class Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>;
-    friend class Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
+    friend class Containers::LinkedList<AbstractFeature<dimensions, T>>;
+    friend class Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
     template<class Transformation> friend class Object;
 
     public:
@@ -156,32 +156,32 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
 
         /** @brief %Object holding this feature */
         inline AbstractObject<dimensions, T>* object() {
-            return Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
+            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
         }
 
         /** @overload */
         inline const AbstractObject<dimensions, T>* object() const {
-            return Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
+            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
         }
 
         /** @brief Previous feature or `nullptr`, if this is first feature */
         inline AbstractFeature<dimensions, T>* previousFeature() {
-            return Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::previous();
+            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::previous();
         }
 
         /** @overload */
         inline const AbstractFeature<dimensions, T>* previousFeature() const {
-            return Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::previous();
+            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::previous();
         }
 
         /** @brief Next feature or `nullptr`, if this is last feature */
         inline AbstractFeature<dimensions, T>* nextFeature() {
-            return Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::next();
+            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::next();
         }
 
         /** @overload */
         inline const AbstractFeature<dimensions, T>* nextFeature() const {
-            return Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::next();
+            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::next();
         }
 
         /**
@@ -229,7 +229,7 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
         #ifndef DOXYGEN_GENERATING_OUTPUT
         typedef Implementation::FeatureCachedTransformations CachedTransformations;
         #else
-        typedef Corrade::Containers::EnumSet<CachedTransformation, UnsignedByte> CachedTransformations;
+        typedef Containers::EnumSet<CachedTransformation, UnsignedByte> CachedTransformations;
         #endif
 
         /**

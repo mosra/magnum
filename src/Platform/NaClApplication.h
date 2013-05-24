@@ -218,7 +218,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
             WillBeFullscreen = 1 << 4,
             MouseLocked = 1 << 5
         };
-        typedef Corrade::Containers::EnumSet<Flag, UnsignedByte> Flags;
+        typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
 
         inline void Graphics3DContextLost() override {
             CORRADE_ASSERT(false, "NaClApplication: context unexpectedly lost", );
@@ -334,7 +334,7 @@ class NaClApplication::InputEvent {
          *
          * @see modifiers()
          */
-        typedef Corrade::Containers::EnumSet<Modifier, std::uint32_t> Modifiers;
+        typedef Containers::EnumSet<Modifier, std::uint32_t> Modifiers;
 
         inline virtual ~InputEvent() {}
 

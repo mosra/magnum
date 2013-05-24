@@ -28,7 +28,7 @@
 
 namespace Magnum { namespace Test {
 
-class AbstractShaderProgramTest: public Corrade::TestSuite::Tester {
+class AbstractShaderProgramTest: public TestSuite::Tester {
     public:
         explicit AbstractShaderProgramTest();
 

@@ -33,7 +33,7 @@
 namespace Magnum { namespace SceneGraph {
 
 template<UnsignedInt dimensions, class T> AbstractFeature<dimensions, T>::AbstractFeature(AbstractObject<dimensions, T>* object) {
-    object->Corrade::Containers::template LinkedList<AbstractFeature<dimensions, T>>::insert(this);
+    object->Containers::template LinkedList<AbstractFeature<dimensions, T>>::insert(this);
 }
 
 template<UnsignedInt dimensions, class T> AbstractFeature<dimensions, T>::~AbstractFeature() = default;

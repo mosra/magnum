@@ -151,7 +151,7 @@ class DualComplexTransformation: public AbstractTranslationRotation2D<T> {
          * @return Pointer to self (for method chaining)
          */
         inline DualComplexTransformation<T>* move(Object<DualComplexTransformation<T>>* under) {
-            static_cast<Object<DualComplexTransformation>*>(this)->Corrade::Containers::template LinkedList<Object<DualComplexTransformation<T>>>::move(this, under);
+            static_cast<Object<DualComplexTransformation>*>(this)->Containers::template LinkedList<Object<DualComplexTransformation<T>>>::move(this, under);
             return this;
         }
 

@@ -27,11 +27,9 @@
 
 #include "MeshTools/CompressIndices.h"
 
-using Corrade::Utility::Endianness;
-
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class CompressIndicesTest: public Corrade::TestSuite::Tester {
+class CompressIndicesTest: public TestSuite::Tester {
     public:
         CompressIndicesTest();
 
@@ -70,7 +68,7 @@ void CompressIndicesTest::compressShort() {
 
     CORRADE_COMPARE(indexCount, 4);
     CORRADE_VERIFY(indexType == Mesh::IndexType::UnsignedShort);
-    if(!Endianness::isBigEndian()) {
+    if(!Utility::Endianness::isBigEndian()) {
         CORRADE_COMPARE(std::vector<char>(data, data+indexCount*Mesh::indexSize(indexType)),
             (std::vector<char>{ 0x01, 0x00,
                            0x00, 0x01,
@@ -97,7 +95,7 @@ void CompressIndicesTest::compressInt() {
     CORRADE_COMPARE(indexCount, 3);
     CORRADE_VERIFY(indexType == Mesh::IndexType::UnsignedInt);
 
-    if(!Endianness::isBigEndian()) {
+    if(!Utility::Endianness::isBigEndian()) {
         CORRADE_COMPARE(std::vector<char>(data, data+indexCount*Mesh::indexSize(indexType)),
             (std::vector<char>{ 0x00, 0x00, 0x01, 0x00,
                            0x03, 0x00, 0x00, 0x00,

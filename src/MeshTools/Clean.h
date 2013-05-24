@@ -33,6 +33,7 @@
 #include <Utility/MurmurHash2.h>
 
 #include "Math/Vector.h"
+#include "Magnum.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -110,7 +111,7 @@ template<class Vertex, std::size_t vertexSize = Vertex::Size> class Clean {
         class IndexHash {
             public:
                 inline std::size_t operator()(const Math::Vector<vertexSize, std::size_t>& data) const {
-                    return *reinterpret_cast<const std::size_t*>(Corrade::Utility::MurmurHash2()(reinterpret_cast<const char*>(&data), sizeof(data)).byteArray());
+                    return *reinterpret_cast<const std::size_t*>(Utility::MurmurHash2()(reinterpret_cast<const char*>(&data), sizeof(data)).byteArray());
                 }
         };
 

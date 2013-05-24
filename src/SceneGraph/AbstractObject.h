@@ -57,13 +57,13 @@ for(AbstractFeature* feature = o->firstFeature(); feature; feature = feature->ne
 @see AbstractObject2D, AbstractObject3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractObject: private Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractObject: private Containers::LinkedList<AbstractFeature<dimensions, T>>
 #else
 template<UnsignedInt dimensions, class T = Float> class AbstractObject
 #endif
 {
-    friend class Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>;
-    friend class Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
+    friend class Containers::LinkedList<AbstractFeature<dimensions, T>>;
+    friend class Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
     friend class AbstractFeature<dimensions, T>;
 
     public:
@@ -75,27 +75,27 @@ template<UnsignedInt dimensions, class T = Float> class AbstractObject
 
         /** @brief Whether this object has features */
         inline bool hasFeatures() const {
-            return !Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>::isEmpty();
+            return !Containers::LinkedList<AbstractFeature<dimensions, T>>::isEmpty();
         }
 
         /** @brief First object feature or `nullptr`, if this object has no features */
         inline FeatureType* firstFeature() {
-            return Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>::first();
+            return Containers::LinkedList<AbstractFeature<dimensions, T>>::first();
         }
 
         /** @overload */
         inline const FeatureType* firstFeature() const {
-            return Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>::first();
+            return Containers::LinkedList<AbstractFeature<dimensions, T>>::first();
         }
 
         /** @brief Last object feature or `nullptr`, if this object has no features */
         inline FeatureType* lastFeature() {
-            return Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>::last();
+            return Containers::LinkedList<AbstractFeature<dimensions, T>>::last();
         }
 
         /** @overload */
         inline const FeatureType* lastFeature() const {
-            return Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>::last();
+            return Containers::LinkedList<AbstractFeature<dimensions, T>>::last();
         }
 
         /**

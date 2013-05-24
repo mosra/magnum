@@ -28,7 +28,7 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class CleanTest: public Corrade::TestSuite::Tester {
+class CleanTest: public TestSuite::Tester {
     public:
         CleanTest();
 

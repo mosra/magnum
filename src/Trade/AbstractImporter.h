@@ -31,9 +31,9 @@
 #include <Containers/EnumSet.h>
 #include <PluginManager/AbstractPlugin.h>
 
-#include "Trade/Trade.h"
-
+#include "Magnum.h"
 #include "magnumVisibility.h"
+#include "Trade/Trade.h"
 
 namespace Magnum { namespace Trade {
 
@@ -53,7 +53,7 @@ be done in data parsing functions, because the user might want to import only
 some data. This is obviously not the case for single-data formats like images,
 as the file contains all data user wants to import.
 */
-class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlugin {
+class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
     PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.2.1")
 
     public:
@@ -68,13 +68,13 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         };
 
         /** @brief Set of features supported by this importer */
-        typedef Corrade::Containers::EnumSet<Feature, UnsignedByte> Features;
+        typedef Containers::EnumSet<Feature, UnsignedByte> Features;
 
         /** @brief Default constructor */
         explicit AbstractImporter();
 
         /** @brief Plugin manager constructor */
-        explicit AbstractImporter(Corrade::PluginManager::AbstractManager* manager, std::string plugin);
+        explicit AbstractImporter(PluginManager::AbstractManager* manager, std::string plugin);
 
         /** @brief Features supported by this importer */
         virtual Features features() const = 0;

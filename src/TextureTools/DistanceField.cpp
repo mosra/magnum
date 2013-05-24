@@ -68,7 +68,7 @@ DistanceFieldShader::DistanceFieldShader() {
 
     /** @todo compatibility! */
 
-    Corrade::Utility::Resource rs("MagnumTextureTools");
+    Utility::Resource rs("MagnumTextureTools");
 
     Shader vert(Version::GL330, Shader::Type::Vertex);
     vert.addSource(rs.get("DistanceFieldShader.vert"));

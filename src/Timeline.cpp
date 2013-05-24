@@ -27,6 +27,8 @@
 #include <Utility/Debug.h>
 #include <Utility/utilities.h>
 
+#include "Magnum.h"
+
 using namespace std::chrono;
 
 namespace Magnum {
@@ -53,7 +55,7 @@ void Timeline::nextFrame() {
     _previousFrameDuration = duration/1e6f;
 
     if(_previousFrameDuration < _minimalFrameTime) {
-        Corrade::Utility::sleep(_minimalFrameTime*1000 - duration/1000);
+        Utility::sleep(_minimalFrameTime*1000 - duration/1000);
         now = high_resolution_clock::now();
         _previousFrameDuration = duration_cast<microseconds>(now-_previousFrameTime).count()/1e6f;
     }

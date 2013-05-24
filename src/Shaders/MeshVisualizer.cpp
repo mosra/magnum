@@ -37,7 +37,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::explicit_attrib_location);
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::explicit_uniform_location);
 
-    Corrade::Utility::Resource rs("MagnumShaders");
+    Utility::Resource rs("MagnumShaders");
 
     Shader vert(Version::GL330, Shader::Type::Vertex);
     vert.addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")

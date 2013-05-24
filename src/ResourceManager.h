@@ -169,7 +169,7 @@ namespace Implementation {
 
                 /* If nothing is referencing reference-counted resource, we're done */
                 if(policy == ResourcePolicy::ReferenceCounted && (it == _data.end() || it->second.referenceCount == 0)) {
-                    Corrade::Utility::Warning() << "ResourceManager: Reference-counted resource with key" << key << "isn't referenced from anywhere, deleting it immediately";
+                    Warning() << "ResourceManager: Reference-counted resource with key" << key << "isn't referenced from anywhere, deleting it immediately";
                     delete data;
 
                     /* Delete also already present resource (it could be here

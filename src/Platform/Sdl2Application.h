@@ -170,7 +170,7 @@ class Sdl2Application {
             Exit = 1 << 1
         };
 
-        typedef Corrade::Containers::EnumSet<Flag, UnsignedByte> Flags;
+        typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
         void initialize();
@@ -219,7 +219,7 @@ class Sdl2Application::Configuration {
          *
          * @see setFlags()
          */
-        typedef Corrade::Containers::EnumSet<Flag, Uint32, SDL_WINDOW_RESIZABLE|
+        typedef Containers::EnumSet<Flag, Uint32, SDL_WINDOW_RESIZABLE|
             SDL_WINDOW_FULLSCREEN|SDL_WINDOW_HIDDEN|SDL_WINDOW_MAXIMIZED|
             SDL_WINDOW_MINIMIZED|SDL_WINDOW_INPUT_GRABBED> Flags;
 
@@ -327,7 +327,7 @@ class Sdl2Application::InputEvent {
          * @see KeyEvent::modifiers(), MouseEvent::modifiers(),
          *      MouseMoveEvent::modifiers()
          */
-        typedef Corrade::Containers::EnumSet<Modifier, Uint16> Modifiers;
+        typedef Containers::EnumSet<Modifier, Uint16> Modifiers;
 
         inline virtual ~InputEvent() {}
 

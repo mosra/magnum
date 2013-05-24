@@ -32,7 +32,7 @@ namespace Magnum { namespace SceneGraph { namespace Test {
 typedef Object<MatrixTransformation2D<>> Object2D;
 typedef Scene<MatrixTransformation2D<>> Scene2D;
 
-class MatrixTransformation2DTest: public Corrade::TestSuite::Tester {
+class MatrixTransformation2DTest: public TestSuite::Tester {
     public:
         explicit MatrixTransformation2DTest();
 

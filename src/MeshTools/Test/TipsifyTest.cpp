@@ -24,11 +24,12 @@
 
 #include <TestSuite/Tester.h>
 
+#include "Magnum.h"
 #include "MeshTools/Tipsify.h"
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class TipsifyTest: public Corrade::TestSuite::Tester {
+class TipsifyTest: public TestSuite::Tester {
     public:
         TipsifyTest();
 

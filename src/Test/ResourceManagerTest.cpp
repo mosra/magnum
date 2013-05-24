@@ -32,7 +32,7 @@
 
 namespace Magnum { namespace Test {
 
-class ResourceManagerTest: public Corrade::TestSuite::Tester {
+class ResourceManagerTest: public TestSuite::Tester {
     public:
         ResourceManagerTest();
 

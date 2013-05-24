@@ -28,7 +28,7 @@
 
 namespace Magnum { namespace Test {
 
-class SwizzleTest: public Corrade::TestSuite::Tester {
+class SwizzleTest: public TestSuite::Tester {
     public:
         SwizzleTest();
 

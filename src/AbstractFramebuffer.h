@@ -51,7 +51,7 @@ enum class FramebufferClear: GLbitfield {
  *
  * @see AbstractFramebuffer::clear()
  */
-typedef Corrade::Containers::EnumSet<FramebufferClear, GLbitfield,
+typedef Containers::EnumSet<FramebufferClear, GLbitfield,
     GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT> FramebufferClearMask;
 
 /**
@@ -76,7 +76,7 @@ enum class FramebufferBlit: GLbitfield {
  * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
  *      @es_extension{NV,framebuffer_blit}
  */
-typedef Corrade::Containers::EnumSet<FramebufferBlit, GLbitfield,
+typedef Containers::EnumSet<FramebufferBlit, GLbitfield,
     GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT> FramebufferBlitMask;
 
 /**

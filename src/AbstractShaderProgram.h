@@ -1096,7 +1096,7 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
          * @see Attribute()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        typedef typename Corrade::Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
+        typedef typename Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
         #else
         typedef typename Implementation::Attribute<T>::DataOptions DataOptions;
         #endif
@@ -1239,7 +1239,7 @@ struct FloatAttribute {
     enum class DataOption: UnsignedByte {
         Normalized = 1 << 0
     };
-    typedef Corrade::Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
+    typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
 
     static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
@@ -1264,7 +1264,7 @@ struct IntAttribute {
     constexpr static DataType DefaultDataType = DataType::Int;
 
     enum class DataOption: UnsignedByte {};
-    typedef Corrade::Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
+    typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
 
     static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
@@ -1279,7 +1279,7 @@ struct UnsignedIntAttribute {
     constexpr static DataType DefaultDataType = DataType::UnsignedInt;
 
     typedef IntAttribute::DataOption DataOption;
-    typedef Corrade::Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
+    typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
 
     inline static std::size_t size(GLint components, DataType dataType) {
         return IntAttribute::size(components, dataType);
@@ -1298,7 +1298,7 @@ struct DoubleAttribute {
     constexpr static DataType DefaultDataType = DataType::Double;
 
     enum class DataOption: UnsignedByte {};
-    typedef Corrade::Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
+    typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
 
     static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
@@ -1350,7 +1350,7 @@ template<> struct Attribute<Math::Vector<4, Float>> {
     enum class DataOption: UnsignedByte {
         Normalized = 1 << 0
     };
-    typedef Corrade::Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
+    typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
 
     inline constexpr static std::size_t vectorCount() { return 1; }
 

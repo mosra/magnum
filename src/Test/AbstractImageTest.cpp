@@ -30,7 +30,7 @@
 
 namespace Magnum { namespace Test {
 
-class AbstractImageTest: public Corrade::TestSuite::Tester {
+class AbstractImageTest: public TestSuite::Tester {
     public:
         explicit AbstractImageTest();
 

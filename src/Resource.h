@@ -78,7 +78,7 @@ See ResourceManager for more information.
 @see ResourceManager::referenceCount(), ResourceManager::state(),
     ResourceManager::get(), ResourceManager::set(), Resource::key()
 */
-class ResourceKey: public Corrade::Utility::MurmurHash2::Digest {
+class ResourceKey: public Utility::MurmurHash2::Digest {
     public:
         /**
          * @brief Default constructor
@@ -89,18 +89,18 @@ class ResourceKey: public Corrade::Utility::MurmurHash2::Digest {
         inline constexpr ResourceKey() {}
 
         /** @brief Constructor */
-        inline ResourceKey(const std::string& key): Corrade::Utility::MurmurHash2::Digest(Corrade::Utility::MurmurHash2()(key)) {}
+        inline ResourceKey(const std::string& key): Utility::MurmurHash2::Digest(Utility::MurmurHash2()(key)) {}
 
         /**
          * @brief Constructor
          * @todo constexpr
          */
-        template<std::size_t size> inline constexpr ResourceKey(const char(&key)[size]): Corrade::Utility::MurmurHash2::Digest(Corrade::Utility::MurmurHash2()(key)) {}
+        template<std::size_t size> inline constexpr ResourceKey(const char(&key)[size]): Utility::MurmurHash2::Digest(Utility::MurmurHash2()(key)) {}
 };
 
 /** @debugoperator{Magnum::ResourceKey} */
 inline Debug operator<<(Debug debug, const ResourceKey& value) {
-    return debug << static_cast<const Corrade::Utility::HashDigest<sizeof(std::size_t)>&>(value);
+    return debug << static_cast<const Utility::HashDigest<sizeof(std::size_t)>&>(value);
 }
 
 namespace Implementation {
