@@ -32,11 +32,9 @@
 
 #include "configure.h"
 
-using Corrade::Utility::Directory;
-
 namespace Magnum { namespace Trade { namespace TgaImporter { namespace Test {
 
-class TgaImporterTest: public Corrade::TestSuite::Tester {
+class TgaImporterTest: public TestSuite::Tester {
     public:
         TgaImporterTest();
 
@@ -227,7 +225,7 @@ void TgaImporterTest::file() {
         3, 4,
         5, 6
     };
-    CORRADE_VERIFY(importer.openFile(Directory::join(TGAIMPORTER_TEST_DIR, "file.tga")));
+    CORRADE_VERIFY(importer.openFile(Utility::Directory::join(TGAIMPORTER_TEST_DIR, "file.tga")));
 
     Trade::ImageData2D* image = importer.image2D(0);
     CORRADE_VERIFY(image);

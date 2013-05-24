@@ -34,11 +34,9 @@
 
 #include "configure.h"
 
-using Corrade::Utility::Directory;
-
 namespace Magnum { namespace Trade { namespace TgaImageConverter { namespace Test {
 
-class TgaImageConverterTest: public Corrade::TestSuite::Tester {
+class TgaImageConverterTest: public TestSuite::Tester {
     public:
         explicit TgaImageConverterTest();
 
@@ -107,8 +105,8 @@ void TgaImageConverterTest::data() {
 }
 
 void TgaImageConverterTest::file() {
-    const std::string filename = Directory::join(TGAIMAGECONVERTER_TEST_DIR, "file.tga");
-    Directory::rm(filename);
+    const std::string filename = Utility::Directory::join(TGAIMAGECONVERTER_TEST_DIR, "file.tga");
+    Utility::Directory::rm(filename);
     CORRADE_VERIFY(TgaImageConverter().convertToFile(&original, filename));
 
     TgaImporter::TgaImporter importer;
@@ -122,7 +120,7 @@ void TgaImageConverterTest::file() {
     CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(converted->data()), 2*3*3),
                     std::string(reinterpret_cast<const char*>(original.data()), 2*3*3));
 
-    Directory::rm(filename);
+    Utility::Directory::rm(filename);
 }
 
 }}}}

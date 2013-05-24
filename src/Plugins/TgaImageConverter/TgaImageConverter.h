@@ -45,7 +45,7 @@ class TgaImageConverter: public AbstractImageConverter {
         explicit TgaImageConverter();
 
         /** @brief Plugin manager constructor */
-        explicit TgaImageConverter(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin);
+        explicit TgaImageConverter(PluginManager::AbstractManager* manager, std::string plugin);
 
         Features features() const override;
         std::pair<const unsigned char*, std::size_t> convertToData(const Image2D* const image) const override;

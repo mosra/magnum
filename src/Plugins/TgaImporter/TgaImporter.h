@@ -57,7 +57,7 @@ class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         explicit TgaImporter();
 
         /** @brief Plugin manager constructor */
-        explicit TgaImporter(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin);
+        explicit TgaImporter(PluginManager::AbstractManager* manager, std::string plugin);
 
         virtual ~TgaImporter();
 

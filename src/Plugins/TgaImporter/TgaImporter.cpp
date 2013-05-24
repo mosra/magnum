@@ -35,13 +35,11 @@
 
 #include "TgaHeader.h"
 
-using Corrade::Utility::Endianness;
-
 namespace Magnum { namespace Trade { namespace TgaImporter {
 
 TgaImporter::TgaImporter(): in(nullptr) {}
 
-TgaImporter::TgaImporter(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin): AbstractImporter(manager, std::move(plugin)), in(nullptr) {}
+TgaImporter::TgaImporter(PluginManager::AbstractManager* manager, std::string plugin): AbstractImporter(manager, std::move(plugin)), in(nullptr) {}
 
 TgaImporter::~TgaImporter() { close(); }
 
@@ -93,8 +91,8 @@ ImageData2D* TgaImporter::image2D(UnsignedInt id) {
     in->read(reinterpret_cast<char*>(&header), sizeof(TgaHeader));
 
     /* Convert to machine endian */
-    header.width = Endianness::littleEndian(header.width);
-    header.height = Endianness::littleEndian(header.height);
+    header.width = Utility::Endianness::littleEndian(header.width);
+    header.height = Utility::Endianness::littleEndian(header.height);
 
     /* Image format */
     ImageFormat format;
@@ -146,11 +144,11 @@ ImageData2D* TgaImporter::image2D(UnsignedInt id) {
     Vector2i dimensions(header.width, header.height);
 
     #ifdef MAGNUM_TARGET_GLES
-    if(format == ImageData2D::Format::RGB) {
+    if(format == ImageFormat::RGB) {
         auto data = reinterpret_cast<Math::Vector3<UnsignedByte>*>(buffer);
         std::transform(data, data + dimensions.product(), data,
             [](Math::Vector3<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r'>(pixel); });
-    } else if(format == ImageData2D::Format::RGBA) {
+    } else if(format == ImageFormat::RGBA) {
         auto data = reinterpret_cast<Math::Vector4<UnsignedByte>*>(buffer);
         std::transform(data, data + dimensions.product(), data,
             [](Math::Vector4<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r', 'a'>(pixel); });

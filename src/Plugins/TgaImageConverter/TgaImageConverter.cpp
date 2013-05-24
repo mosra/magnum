@@ -35,7 +35,7 @@ namespace Magnum { namespace Trade { namespace TgaImageConverter {
 
 TgaImageConverter::TgaImageConverter() = default;
 
-TgaImageConverter::TgaImageConverter(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin): AbstractImageConverter(manager, std::move(plugin)) {}
+TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager* manager, std::string plugin): AbstractImageConverter(manager, std::move(plugin)) {}
 
 TgaImageConverter::Features TgaImageConverter::features() const {
     return Feature::ConvertToData|Feature::ConvertToFile;
