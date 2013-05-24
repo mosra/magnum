@@ -84,7 +84,7 @@ class MAGNUM_EXPORT Renderbuffer {
         /**
          * @brief Set renderbuffer storage
          * @param internalFormat    Internal format
-         * @param size              Renderbuffer size
+         * @param size              %Renderbuffer size
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
@@ -96,6 +96,26 @@ class MAGNUM_EXPORT Renderbuffer {
             (this->*storageImplementation)(internalFormat, size);
         }
 
+        /**
+         * @brief Set multisample renderbuffer storage
+         * @param samples           Sample count
+         * @param internalFormat    Internal format
+         * @param size              %Renderbuffer size
+         *
+         * If @extension{EXT,direct_state_access} is not available and the
+         * framebufferbuffer is not currently bound, it is bound before the
+         * operation.
+         * @see @fn_gl{BindRenderbuffer}, @fn_gl{RenderbufferStorage} or
+         *      @fn_gl_extension{NamedRenderbufferStorage,EXT,direct_state_access}
+         * @requires_gl30 %Extension @extension{EXT,framebuffer_multisample}
+         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_multisample}
+         *      or @es_extension{NV,framebuffer_multisample}
+         * @todo How about @es_extension{APPLE,framebuffer_multisample}?
+         */
+        inline void setStorageMultisample(Int samples, RenderbufferFormat internalFormat, const Vector2i& size) {
+            (this->*storageMultisampleImplementation)(samples, internalFormat, size);
+        }
+
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
 
@@ -105,6 +125,18 @@ class MAGNUM_EXPORT Renderbuffer {
         void MAGNUM_LOCAL storageImplementationDSA(RenderbufferFormat internalFormat, const Vector2i& size);
         #endif
         static StorageImplementation storageImplementation;
+
+        typedef void(Renderbuffer::*StorageMultisampleImplementation)(GLsizei, RenderbufferFormat, const Vector2i&);
+        #ifndef MAGNUM_TARGET_GLES2
+        void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
+        #else
+        void MAGNUM_LOCAL storageMultisampleImplementationANGLE(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
+        void MAGNUM_LOCAL storageMultisampleImplementationNV(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL storageMultisampleImplementationDSA(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
+        #endif
+        static StorageMultisampleImplementation storageMultisampleImplementation;
 
         void MAGNUM_LOCAL bind();
 

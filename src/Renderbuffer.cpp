@@ -33,6 +33,12 @@
 namespace Magnum {
 
 Renderbuffer::StorageImplementation Renderbuffer::storageImplementation = &Renderbuffer::storageImplementationDefault;
+Renderbuffer::StorageMultisampleImplementation Renderbuffer::storageMultisampleImplementation =
+    #ifndef MAGNUM_TARGET_GLES2
+    &Renderbuffer::storageMultisampleImplementationDefault;
+    #else
+    nullptr;
+    #endif
 
 Renderbuffer::~Renderbuffer() {
     /* If bound, remove itself from state */
@@ -57,6 +63,17 @@ void Renderbuffer::initializeContextBasedFunctionality(Context* context) {
         Debug() << "Renderbuffer: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
 
         storageImplementation = &Renderbuffer::storageImplementationDSA;
+        storageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationDSA;
+    }
+    #elif !defined(MAGNUM_TARGET_GLES3)
+    if(context->isExtensionSupported<Extensions::GL::ANGLE::framebuffer_multisample>()) {
+        Debug() << "Renderbuffer: using" << Extensions::GL::ANGLE::framebuffer_multisample::string() << "features";
+
+        storageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationANGLE;
+    } else if (context->isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>()) {
+        Debug() << "Renderbuffer: using" << Extensions::GL::NV::framebuffer_multisample::string() << "features";
+
+        storageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationNV;
     }
     #else
     static_cast<void>(context);
@@ -71,6 +88,31 @@ void Renderbuffer::storageImplementationDefault(RenderbufferFormat internalForma
 #ifndef MAGNUM_TARGET_GLES
 void Renderbuffer::storageImplementationDSA(RenderbufferFormat internalFormat, const Vector2i& size) {
     glNamedRenderbufferStorageEXT(_id, GLenum(internalFormat), size.x(), size.y());
+}
+#endif
+
+/** @todo Enable when extension wrangler for ES is done */
+
+#ifndef MAGNUM_TARGET_GLES2
+void Renderbuffer::storageMultisampleImplementationDefault(const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
+    bind();
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GLenum(internalFormat), size.x(), size.y());
+}
+#else
+void Renderbuffer::storageMultisampleImplementationANGLE(GLsizei, RenderbufferFormat, const Vector2i&) {
+    CORRADE_INTERNAL_ASSERT(false);
+    //glRenderbufferStorageMultisampleANGLE(GL_RENDERBUFFER, samples, internalFormat, size.x(), size.y());
+}
+
+void Renderbuffer::storageMultisampleImplementationNV(GLsizei, RenderbufferFormat, const Vector2i&) {
+    CORRADE_INTERNAL_ASSERT(false);
+    //glRenderbufferStorageMultisampleANGLE(GL_RENDERBUFFER, samples, internalFormat, size.x(), size.y());
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void Renderbuffer::storageMultisampleImplementationDSA(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size) {
+    glNamedRenderbufferStorageMultisampleEXT(_id, samples, GLenum(internalFormat), size.x(), size.y());
 }
 #endif
 
