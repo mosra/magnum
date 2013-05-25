@@ -146,6 +146,7 @@ UnsignedInt primitiveCount = q.result<UnsignedInt>();
 @endcode
 @requires_gl30 %Extension @extension{EXT,transform_feedback}
 @requires_gles30 Only sample queries are available on OpenGL ES 2.0.
+@todo glBeginQueryIndexed
 */
 class PrimitiveQuery: public AbstractQuery {
     public:
