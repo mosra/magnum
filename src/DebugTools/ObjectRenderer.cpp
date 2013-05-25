@@ -37,10 +37,10 @@ namespace {
 template<UnsignedInt> struct Renderer;
 
 template<> struct Renderer<2> {
-    inline static ResourceKey shader() { return {"VertexColorShader2D"}; }
-    inline static ResourceKey vertexBuffer() { return {"object2d-vertices"}; }
-    inline static ResourceKey indexBuffer() { return {"object2d-indices"}; }
-    inline static ResourceKey mesh() { return {"object2d"}; }
+    static ResourceKey shader() { return {"VertexColorShader2D"}; }
+    static ResourceKey vertexBuffer() { return {"object2d-vertices"}; }
+    static ResourceKey indexBuffer() { return {"object2d-indices"}; }
+    static ResourceKey mesh() { return {"object2d"}; }
 
     static const std::array<Vector2, 8> positions;
     static const std::array<Color3<>, 8> colors;
@@ -82,10 +82,10 @@ const std::array<UnsignedByte, 12> Renderer<2>::indices{{
 }};
 
 template<> struct Renderer<3> {
-    inline static ResourceKey shader() { return {"VertexColorShader3D"}; }
-    inline static ResourceKey vertexBuffer() { return {"object3d-vertices"}; }
-    inline static ResourceKey indexBuffer() { return {"object3d-indices"}; }
-    inline static ResourceKey mesh() { return {"object3d"}; }
+    static ResourceKey shader() { return {"VertexColorShader3D"}; }
+    static ResourceKey vertexBuffer() { return {"object3d-vertices"}; }
+    static ResourceKey indexBuffer() { return {"object3d-indices"}; }
+    static ResourceKey mesh() { return {"object3d"}; }
 
     static const std::array<Vector3, 12> positions;
     static const std::array<Color3<>, 12> colors;

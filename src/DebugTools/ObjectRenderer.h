@@ -43,10 +43,10 @@ See ObjectRenderer documentation for more information.
 */
 class ObjectRendererOptions {
     public:
-        inline constexpr ObjectRendererOptions(): _size(1.0f) {}
+        constexpr ObjectRendererOptions(): _size(1.0f) {}
 
         /** @brief Size of the rendered axes */
-        inline constexpr Float size() const { return _size; }
+        constexpr Float size() const { return _size; }
 
         /**
          * @brief Set size of the rendered axes
@@ -54,7 +54,7 @@ class ObjectRendererOptions {
          *
          * Default is `1.0f`.
          */
-        inline ObjectRendererOptions* setSize(Float size) {
+        ObjectRendererOptions* setSize(Float size) {
             _size = size;
             return this;
         }

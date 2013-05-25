@@ -42,7 +42,7 @@ namespace Implementation {
 
 class Interleave {
     public:
-        inline Interleave(): _attributeCount(0), _stride(0), _data(nullptr) {}
+        Interleave(): _attributeCount(0), _stride(0), _data(nullptr) {}
 
         template<class ...T> std::tuple<std::size_t, std::size_t, char*> operator()(const T&... attributes) {
             /* Compute buffer size and stride */
@@ -75,30 +75,30 @@ class Interleave {
             buffer->setData(attribute, usage);
         }
 
-        template<class T, class ...U> inline static typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type attributeCount(const T& first, const U&... next) {
+        template<class T, class ...U> static typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type attributeCount(const T& first, const U&... next) {
             CORRADE_ASSERT(sizeof...(next) == 0 || attributeCount(next...) == first.size() || attributeCount(next...) == ~std::size_t(0), "MeshTools::interleave(): attribute arrays don't have the same length, nothing done.", 0);
 
             return first.size();
         }
 
-        template<class... T> inline static std::size_t attributeCount(std::size_t, const T&... next) {
+        template<class... T> static std::size_t attributeCount(std::size_t, const T&... next) {
             return attributeCount(next...);
         }
 
-        template<class ...T> inline static std::size_t attributeCount(std::size_t) {
+        template<class ...T> static std::size_t attributeCount(std::size_t) {
             return ~std::size_t(0);
         }
 
-        template<class T, class ...U> inline static typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type stride(const T&, const U&... next) {
+        template<class T, class ...U> static typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type stride(const T&, const U&... next) {
             return sizeof(typename T::value_type) + stride(next...);
         }
 
-        template<class... T> inline static std::size_t stride(std::size_t gap, const T&... next) {
+        template<class... T> static std::size_t stride(std::size_t gap, const T&... next) {
             return gap + stride(next...);
         }
 
     private:
-        template<class T, class ...U> inline void write(char* startingOffset, const T& first, const U&... next) {
+        template<class T, class ...U> void write(char* startingOffset, const T& first, const U&... next) {
             write(startingOffset+writeOne(startingOffset, first), next...);
         }
 
@@ -122,9 +122,9 @@ class Interleave {
         }
 
         /* Terminator functions for recursive calls */
-        inline static std::size_t attributeCount() { return 0; }
-        inline static std::size_t stride() { return 0; }
-        inline void write(char*) {}
+        static std::size_t attributeCount() { return 0; }
+        static std::size_t stride() { return 0; }
+        void write(char*) {}
 
         std::size_t _attributeCount;
         std::size_t _stride;

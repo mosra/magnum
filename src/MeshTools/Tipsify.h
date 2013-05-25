@@ -39,7 +39,7 @@ namespace Implementation {
 
 class MAGNUM_MESHTOOLS_EXPORT Tipsify {
     public:
-        inline Tipsify(std::vector<UnsignedInt>& indices, UnsignedInt vertexCount): indices(indices), vertexCount(vertexCount) {}
+        Tipsify(std::vector<UnsignedInt>& indices, UnsignedInt vertexCount): indices(indices), vertexCount(vertexCount) {}
 
         void operator()(std::size_t cacheSize);
 

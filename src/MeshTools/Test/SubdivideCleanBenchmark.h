@@ -39,7 +39,7 @@ class SubdivideCleanBenchmark: public QObject {
         void subdivideAndCleanMeshBetween();
 
     private:
-        static inline Magnum::Vector4 interpolator(const Magnum::Vector4& a, const Magnum::Vector4& b) {
+        static Magnum::Vector4 interpolator(const Magnum::Vector4& a, const Magnum::Vector4& b) {
             return (a+b).xyz().normalized();
         }
 };

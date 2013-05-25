@@ -64,7 +64,7 @@ class CombineIndexedArrays {
         }
 
     private:
-        template<class ...T> inline static std::size_t indexCount(const std::vector<UnsignedInt>& first, const std::vector<T>&... next) {
+        template<class ...T> static std::size_t indexCount(const std::vector<UnsignedInt>& first, const std::vector<T>&... next) {
             CORRADE_ASSERT(sizeof...(next) == 0 || indexCount(next...) == first.size(), "MeshTools::combineIndexedArrays(): index arrays don't have the same length, nothing done.", 0);
 
             return first.size();
@@ -89,9 +89,9 @@ class CombineIndexedArrays {
         }
 
         /* Terminator functions for recursive calls */
-        inline static std::size_t indexCount() { return 0; }
-        template<std::size_t size> inline static void writeCombinedIndices(std::vector<Math::Vector<size, UnsignedInt>>&) {}
-        template<std::size_t size> inline static void writeCombinedArrays(const std::vector<Math::Vector<size, UnsignedInt>>&) {}
+        static std::size_t indexCount() { return 0; }
+        template<std::size_t size> static void writeCombinedIndices(std::vector<Math::Vector<size, UnsignedInt>>&) {}
+        template<std::size_t size> static void writeCombinedArrays(const std::vector<Math::Vector<size, UnsignedInt>>&) {}
 };
 
 }

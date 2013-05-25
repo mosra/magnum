@@ -54,7 +54,7 @@ class SubdivideTest: public TestSuite::Tester {
                 Type data;
         };
 
-        inline static Vector1 interpolator(Vector1 a, Vector1 b) { return (a[0]+b[0])/2; }
+        static Vector1 interpolator(Vector1 a, Vector1 b) { return (a[0]+b[0])/2; }
 };
 
 SubdivideTest::SubdivideTest() {

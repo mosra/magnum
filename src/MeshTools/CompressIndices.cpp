@@ -34,9 +34,9 @@ namespace Magnum { namespace MeshTools {
 namespace {
 
 template<class> constexpr Mesh::IndexType indexType();
-template<> inline constexpr Mesh::IndexType indexType<UnsignedByte>() { return Mesh::IndexType::UnsignedByte; }
-template<> inline constexpr Mesh::IndexType indexType<UnsignedShort>() { return Mesh::IndexType::UnsignedShort; }
-template<> inline constexpr Mesh::IndexType indexType<UnsignedInt>() { return Mesh::IndexType::UnsignedInt; }
+template<> constexpr Mesh::IndexType indexType<UnsignedByte>() { return Mesh::IndexType::UnsignedByte; }
+template<> constexpr Mesh::IndexType indexType<UnsignedShort>() { return Mesh::IndexType::UnsignedShort; }
+template<> constexpr Mesh::IndexType indexType<UnsignedInt>() { return Mesh::IndexType::UnsignedInt; }
 
 template<class T> inline std::tuple<std::size_t, Mesh::IndexType, char*> compress(const std::vector<UnsignedInt>& indices) {
     char* buffer = new char[indices.size()*sizeof(T)];

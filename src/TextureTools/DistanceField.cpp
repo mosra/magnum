@@ -45,12 +45,12 @@ class DistanceFieldShader: public AbstractShaderProgram {
 
         explicit DistanceFieldShader();
 
-        inline DistanceFieldShader* setRadius(Int radius) {
+        DistanceFieldShader* setRadius(Int radius) {
             setUniform(radiusUniform, radius);
             return this;
         }
 
-        inline DistanceFieldShader* setScaling(Vector2 scaling) {
+        DistanceFieldShader* setScaling(Vector2 scaling) {
             setUniform(scalingUniform, scaling);
             return this;
         }

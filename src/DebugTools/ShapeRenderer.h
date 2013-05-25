@@ -66,10 +66,10 @@ class ShapeRendererOptions {
             Solid
         };
 
-        inline constexpr ShapeRendererOptions(): _color(1.0f), _pointSize(0.25f), _renderMode(RenderMode::Wireframe) {}
+        constexpr ShapeRendererOptions(): _color(1.0f), _pointSize(0.25f), _renderMode(RenderMode::Wireframe) {}
 
         /** @brief Shape rendering mode */
-        inline constexpr RenderMode renderMode() const { return _renderMode; }
+        constexpr RenderMode renderMode() const { return _renderMode; }
 
         /**
          * @brief Set shape rendering mode
@@ -77,13 +77,13 @@ class ShapeRendererOptions {
          *
          * Default is @ref RenderMode "RenderMode::Wireframe".
          */
-        inline ShapeRendererOptions* setRenderMode(RenderMode mode) {
+        ShapeRendererOptions* setRenderMode(RenderMode mode) {
             _renderMode = mode;
             return this;
         }
 
         /** @brief Color of rendered shape */
-        inline constexpr Color4<> color() const { return _color; }
+        constexpr Color4<> color() const { return _color; }
 
         /**
          * @brief Set color of rendered shape
@@ -91,13 +91,13 @@ class ShapeRendererOptions {
          *
          * Default is 100% opaque white.
          */
-        inline ShapeRendererOptions* setColor(const Color4<>& color) {
+        ShapeRendererOptions* setColor(const Color4<>& color) {
             _color = color;
             return this;
         }
 
         /** @brief Point size */
-        inline constexpr Float pointSize() const { return _pointSize; }
+        constexpr Float pointSize() const { return _pointSize; }
 
         /**
          * @brief Set point size
@@ -106,7 +106,7 @@ class ShapeRendererOptions {
          * Size of rendered crosshairs, representing Shapes::Point shapes.
          * Default is `0.25f`.
          */
-        inline ShapeRendererOptions* setPointSize(Float size) {
+        ShapeRendererOptions* setPointSize(Float size) {
             _pointSize = size;
             return this;
         }

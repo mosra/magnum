@@ -171,7 +171,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT Profiler {
          * Same as calling `start(Profiler::otherSection)`.
          * @note Does nothing if profiling is disabled.
          */
-        inline void start() { start(otherSection); }
+        void start() { start(otherSection); }
 
         /**
          * @brief Stop profiling
