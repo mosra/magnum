@@ -54,25 +54,25 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
         typedef Math::Matrix4<T> DataType;
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline static Math::Matrix4<T> fromMatrix(const Math::Matrix4<T>& matrix) {
+        static Math::Matrix4<T> fromMatrix(const Math::Matrix4<T>& matrix) {
             CORRADE_ASSERT(matrix.isRigidTransformation(),
                 "SceneGraph::RigidMatrixTransformation3D::fromMatrix(): the matrix doesn't represent rigid transformation", {});
             return matrix;
         }
 
-        inline constexpr static Math::Matrix4<T> toMatrix(const Math::Matrix4<T>& transformation) {
+        constexpr static Math::Matrix4<T> toMatrix(const Math::Matrix4<T>& transformation) {
             return transformation;
         }
 
-        inline static Math::Matrix4<T> compose(const Math::Matrix4<T>& parent, const Math::Matrix4<T>& child) {
+        static Math::Matrix4<T> compose(const Math::Matrix4<T>& parent, const Math::Matrix4<T>& child) {
             return parent*child;
         }
 
-        inline static Math::Matrix4<T> inverted(const Math::Matrix4<T>& transformation) {
+        static Math::Matrix4<T> inverted(const Math::Matrix4<T>& transformation) {
             return transformation.invertedRigid();
         }
 
-        inline Math::Matrix4<T> transformation() const {
+        Math::Matrix4<T> transformation() const {
             return _transformation;
         }
         #endif
@@ -105,7 +105,7 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
             return this;
         }
 
-        inline RigidMatrixTransformation3D<T>* resetTransformation() override {
+        RigidMatrixTransformation3D<T>* resetTransformation() override {
             setTransformation({});
             return this;
         }
@@ -119,7 +119,7 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
          * Expects that the matrix represents rigid transformation.
          * @see Matrix4::isRigidTransformation()
          */
-        inline RigidMatrixTransformation3D<T>* transform(const Math::Matrix4<T>& transformation, TransformationType type = TransformationType::Global) {
+        RigidMatrixTransformation3D<T>* transform(const Math::Matrix4<T>& transformation, TransformationType type = TransformationType::Global) {
             CORRADE_ASSERT(transformation.isRigidTransformation(),
                 "SceneGraph::RigidMatrixTransformation3D::transform(): the matrix doesn't represent rigid transformation", this);
             transformInternal(transformation, type);
@@ -130,7 +130,7 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
          * @copydoc AbstractTranslationRotationScaling3D::translate()
          * Same as calling transform() with Matrix4::translation().
          */
-        inline RigidMatrixTransformation3D<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) override {
+        RigidMatrixTransformation3D<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) override {
             transformInternal(Math::Matrix4<T>::translation(vector), type);
             return this;
         }
@@ -146,7 +146,7 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
          * @see rotateX(), rotateY(), rotateZ(), Vector3::xAxis(),
          *      Vector3::yAxis(), Vector3::zAxis(), normalizeRotation()
          */
-        inline RigidMatrixTransformation3D<T>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) override {
+        RigidMatrixTransformation3D<T>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) override {
             transformInternal(Math::Matrix4<T>::rotation(angle, normalizedAxis), type);
             return this;
         }
@@ -160,7 +160,7 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
          * Same as calling transform() with Matrix4::rotationX().
          * @see normalizeRotation()
          */
-        inline RigidMatrixTransformation3D<T>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
+        RigidMatrixTransformation3D<T>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
             transformInternal(Math::Matrix4<T>::rotationX(angle), type);
             return this;
         }
@@ -174,7 +174,7 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
          * Same as calling transform() with Matrix4::rotationY().
          * @see normalizeRotation()
          */
-        inline RigidMatrixTransformation3D<T>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
+        RigidMatrixTransformation3D<T>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
             transformInternal(Math::Matrix4<T>::rotationY(angle), type);
             return this;
         }
@@ -188,7 +188,7 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
          * Same as calling transform() with Matrix4::rotationZ().
          * @see normalizeRotation()
          */
-        inline RigidMatrixTransformation3D<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
+        RigidMatrixTransformation3D<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
             transformInternal(Math::Matrix4<T>::rotationZ(angle), type);
             return this;
         }
@@ -202,18 +202,18 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
          *
          * Same as calling transform() with Matrix4::reflection().
          */
-        inline RigidMatrixTransformation3D<T>* reflect(const Math::Vector3<T>& normal, TransformationType type = TransformationType::Global) {
+        RigidMatrixTransformation3D<T>* reflect(const Math::Vector3<T>& normal, TransformationType type = TransformationType::Global) {
             transformInternal(Math::Matrix4<T>::reflection(normal), type);
             return this;
         }
 
     protected:
         /* Allow construction only from Object */
-        inline explicit RigidMatrixTransformation3D() = default;
+        explicit RigidMatrixTransformation3D() = default;
 
     private:
         /* No assertions fired, for internal use */
-        inline void setTransformationInternal(const Math::Matrix4<T>& transformation) {
+        void setTransformationInternal(const Math::Matrix4<T>& transformation) {
             /* Setting transformation is forbidden for the scene */
             /** @todo Assert for this? */
             /** @todo Do this in some common code so we don't need to include Object? */
@@ -224,7 +224,7 @@ class RigidMatrixTransformation3D: public AbstractTranslationRotation3D<T> {
         }
 
         /* No assertions fired, for internal use */
-        inline void transformInternal(const Math::Matrix4<T>& transformation, TransformationType type) {
+        void transformInternal(const Math::Matrix4<T>& transformation, TransformationType type) {
             setTransformation(type == TransformationType::Global ?
                 transformation*_transformation : _transformation*transformation);
         }

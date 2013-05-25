@@ -108,7 +108,7 @@ parameter:
 @code
 class TransformingFeature: public SceneGraph::AbstractFeature3D<> {
     public:
-        template<class T> inline TransformingFeature(SceneGraph::Object<T>* object):
+        template<class T> TransformingFeature(SceneGraph::Object<T>* object):
             SceneGraph::AbstractFeature3D<>(object), transformation(object) {}
 
     private:
@@ -155,32 +155,32 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
         virtual ~AbstractFeature() = 0;
 
         /** @brief %Object holding this feature */
-        inline AbstractObject<dimensions, T>* object() {
+        AbstractObject<dimensions, T>* object() {
             return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
         }
 
         /** @overload */
-        inline const AbstractObject<dimensions, T>* object() const {
+        const AbstractObject<dimensions, T>* object() const {
             return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
         }
 
         /** @brief Previous feature or `nullptr`, if this is first feature */
-        inline AbstractFeature<dimensions, T>* previousFeature() {
+        AbstractFeature<dimensions, T>* previousFeature() {
             return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::previous();
         }
 
         /** @overload */
-        inline const AbstractFeature<dimensions, T>* previousFeature() const {
+        const AbstractFeature<dimensions, T>* previousFeature() const {
             return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::previous();
         }
 
         /** @brief Next feature or `nullptr`, if this is last feature */
-        inline AbstractFeature<dimensions, T>* nextFeature() {
+        AbstractFeature<dimensions, T>* nextFeature() {
             return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::next();
         }
 
         /** @overload */
-        inline const AbstractFeature<dimensions, T>* nextFeature() const {
+        const AbstractFeature<dimensions, T>* nextFeature() const {
             return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::next();
         }
 
@@ -237,7 +237,7 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
          *
          * @see @ref scenegraph-caching, clean(), cleanInverted()
          */
-        inline CachedTransformations cachedTransformations() const {
+        CachedTransformations cachedTransformations() const {
             return _cachedTransformations;
         }
 
@@ -252,7 +252,7 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
          * Nothing is enabled by default.
          * @see @ref scenegraph-caching
          */
-        inline void setCachedTransformations(CachedTransformations transformations) {
+        void setCachedTransformations(CachedTransformations transformations) {
             _cachedTransformations = transformations;
         }
 

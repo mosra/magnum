@@ -82,7 +82,7 @@ class AbstractGroupedFeature: public AbstractFeature<dimensions, T> {
          * Adds the feature to the object and to group, if specified.
          * @see FeatureGroup::add()
          */
-        inline explicit AbstractGroupedFeature(AbstractObject<dimensions, T>* object, FeatureGroup<dimensions, Derived, T>* group = nullptr): AbstractFeature<dimensions, T>(object), _group(nullptr) {
+        explicit AbstractGroupedFeature(AbstractObject<dimensions, T>* object, FeatureGroup<dimensions, Derived, T>* group = nullptr): AbstractFeature<dimensions, T>(object), _group(nullptr) {
             if(group) group->add(static_cast<Derived*>(this));
         }
 
@@ -92,17 +92,17 @@ class AbstractGroupedFeature: public AbstractFeature<dimensions, T> {
          * Removes the feature from object and from group, if it belongs to
          * any.
          */
-        inline ~AbstractGroupedFeature() {
+        ~AbstractGroupedFeature() {
             if(_group) _group->remove(static_cast<Derived*>(this));
         }
 
         /** @brief Group this feature belongs to */
-        inline FeatureGroup<dimensions, Derived, T>* group() {
+        FeatureGroup<dimensions, Derived, T>* group() {
             return _group;
         }
 
         /** @overload */
-        inline const FeatureGroup<dimensions, Derived, T>* group() const {
+        const FeatureGroup<dimensions, Derived, T>* group() const {
             return _group;
         }
 

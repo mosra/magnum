@@ -42,13 +42,13 @@ template<UnsignedInt dimensions, class T> class Camera {};
 
 template<class T> class Camera<2, T> {
     public:
-        inline constexpr static Math::Matrix3<T> aspectRatioScale(const Math::Vector2<T>& scale) {
+        constexpr static Math::Matrix3<T> aspectRatioScale(const Math::Vector2<T>& scale) {
             return Math::Matrix3<T>::scaling({scale.x(), scale.y()});
         }
 };
 template<class T> class Camera<3, T> {
     public:
-        inline constexpr static Math::Matrix4<T> aspectRatioScale(const Math::Vector2<T>& scale) {
+        constexpr static Math::Matrix4<T> aspectRatioScale(const Math::Vector2<T>& scale) {
             return Math::Matrix4<T>::scaling({scale.x(), scale.y(), 1.0f});
         }
 };

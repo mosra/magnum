@@ -83,18 +83,18 @@ class FeatureGroup: public AbstractFeatureGroup<dimensions, T> {
         virtual ~FeatureGroup();
 
         /** @brief Whether the group is empty */
-        inline bool isEmpty() const { return this->features.empty(); }
+        bool isEmpty() const { return this->features.empty(); }
 
         /** @brief Count of features in the group */
-        inline std::size_t size() const { return this->features.size(); }
+        std::size_t size() const { return this->features.size(); }
 
         /** @brief Feature at given index */
-        inline Feature* operator[](std::size_t index) {
+        Feature* operator[](std::size_t index) {
             return static_cast<Feature*>(this->features[index]);
         }
 
         /** @overload */
-        inline const Feature* operator[](std::size_t index) const {
+        const Feature* operator[](std::size_t index) const {
             return static_cast<Feature*>(this->features[index]);
         }
 

@@ -42,7 +42,7 @@ template<class Transformation> class Scene: public Object<Transformation> {
     public:
         explicit Scene() = default;
 
-        inline bool isScene() const { return true; }
+        bool isScene() const { return true; }
 };
 
 }}

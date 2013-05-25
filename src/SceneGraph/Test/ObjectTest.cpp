@@ -52,7 +52,7 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 
 class CachingObject: public Object3D, AbstractFeature<3> {
     public:
-        inline CachingObject(Object3D* parent = nullptr): Object3D(parent), AbstractFeature<3>(this) {
+        CachingObject(Object3D* parent = nullptr): Object3D(parent), AbstractFeature<3>(this) {
             setCachedTransformations(CachedTransformation::Absolute);
         }
 

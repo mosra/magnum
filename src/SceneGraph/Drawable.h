@@ -131,7 +131,7 @@ class Drawable: public AbstractGroupedFeature<dimensions, Drawable<dimensions, T
          * Adds the feature to the object and also to the group, if specified.
          * Otherwise you can use DrawableGroup::add().
          */
-        inline explicit Drawable(AbstractObject<dimensions, T>* object, DrawableGroup<dimensions, T>* drawables = nullptr): AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>(object, drawables) {}
+        explicit Drawable(AbstractObject<dimensions, T>* object, DrawableGroup<dimensions, T>* drawables = nullptr): AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>(object, drawables) {}
 
         /**
          * @brief Draw the object using given camera

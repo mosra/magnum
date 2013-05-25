@@ -52,23 +52,23 @@ class DualComplexTransformation: public AbstractTranslationRotation2D<T> {
         typedef Math::DualComplex<T> DataType;
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline static Math::DualComplex<T> fromMatrix(const Math::Matrix3<T>& matrix) {
+        static Math::DualComplex<T> fromMatrix(const Math::Matrix3<T>& matrix) {
             return Math::DualComplex<T>::fromMatrix(matrix);
         }
 
-        inline constexpr static Math::Matrix3<T> toMatrix(const Math::DualComplex<T>& transformation) {
+        constexpr static Math::Matrix3<T> toMatrix(const Math::DualComplex<T>& transformation) {
             return transformation.toMatrix();
         }
 
-        inline static Math::DualComplex<T> compose(const Math::DualComplex<T>& parent, const Math::DualComplex<T>& child) {
+        static Math::DualComplex<T> compose(const Math::DualComplex<T>& parent, const Math::DualComplex<T>& child) {
             return parent*child;
         }
 
-        inline static Math::DualComplex<T> inverted(const Math::DualComplex<T>& transformation) {
+        static Math::DualComplex<T> inverted(const Math::DualComplex<T>& transformation) {
             return transformation.invertedNormalized();
         }
 
-        inline Math::DualComplex<T> transformation() const {
+        Math::DualComplex<T> transformation() const {
             return _transformation;
         }
         #endif
@@ -100,7 +100,7 @@ class DualComplexTransformation: public AbstractTranslationRotation2D<T> {
             return this;
         }
 
-        inline DualComplexTransformation<T>* resetTransformation() override {
+        DualComplexTransformation<T>* resetTransformation() override {
             setTransformationInternal({});
             return this;
         }
@@ -114,7 +114,7 @@ class DualComplexTransformation: public AbstractTranslationRotation2D<T> {
          * Expects that the dual complex number is normalized.
          * @see DualComplex::isNormalized()
          */
-        inline DualComplexTransformation<T>* transform(const Math::DualComplex<T>& transformation, TransformationType type = TransformationType::Global) {
+        DualComplexTransformation<T>* transform(const Math::DualComplex<T>& transformation, TransformationType type = TransformationType::Global) {
             CORRADE_ASSERT(transformation.isNormalized(),
                 "SceneGraph::DualComplexTransformation::transform(): the dual complex number is not normalized", this);
             transformInternal(transformation, type);
@@ -125,7 +125,7 @@ class DualComplexTransformation: public AbstractTranslationRotation2D<T> {
          * @copydoc AbstractTranslationRotationScaling2D::translate()
          * Same as calling transform() with DualComplex::translation().
          */
-        inline DualComplexTransformation<T>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) override {
+        DualComplexTransformation<T>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) override {
             transformInternal(Math::DualComplex<T>::translation(vector), type);
             return this;
         }
@@ -139,7 +139,7 @@ class DualComplexTransformation: public AbstractTranslationRotation2D<T> {
          * Same as calling transform() with DualComplex::rotation().
          * @see normalizeRotation()
          */
-        inline DualComplexTransformation<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
+        DualComplexTransformation<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
             transformInternal(Math::DualComplex<T>::rotation(angle), type);
             return this;
         }
@@ -150,18 +150,18 @@ class DualComplexTransformation: public AbstractTranslationRotation2D<T> {
          *      if you want to move it above all.
          * @return Pointer to self (for method chaining)
          */
-        inline DualComplexTransformation<T>* move(Object<DualComplexTransformation<T>>* under) {
+        DualComplexTransformation<T>* move(Object<DualComplexTransformation<T>>* under) {
             static_cast<Object<DualComplexTransformation>*>(this)->Containers::template LinkedList<Object<DualComplexTransformation<T>>>::move(this, under);
             return this;
         }
 
     protected:
         /* Allow construction only from Object */
-        inline explicit DualComplexTransformation() = default;
+        explicit DualComplexTransformation() = default;
 
     private:
         /* No assertions fired, for internal use */
-        inline void setTransformationInternal(const Math::DualComplex<T>& transformation) {
+        void setTransformationInternal(const Math::DualComplex<T>& transformation) {
             /* Setting transformation is forbidden for the scene */
             /** @todo Assert for this? */
             /** @todo Do this in some common code so we don't need to include Object? */
@@ -172,7 +172,7 @@ class DualComplexTransformation: public AbstractTranslationRotation2D<T> {
         }
 
         /* No assertions fired, for internal use */
-        inline void transformInternal(const Math::DualComplex<T>& transformation, TransformationType type) {
+        void transformInternal(const Math::DualComplex<T>& transformation, TransformationType type) {
             setTransformation(type == TransformationType::Global ?
                 transformation*_transformation : _transformation*transformation);
         }

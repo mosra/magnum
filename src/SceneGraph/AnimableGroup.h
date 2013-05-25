@@ -52,14 +52,14 @@ class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup: public FeatureGroup<dimensions, An
         /**
          * @brief Constructor
          */
-        inline explicit AnimableGroup(): _runningCount(0), wakeUp(false) {}
+        explicit AnimableGroup(): _runningCount(0), wakeUp(false) {}
 
         /**
          * @brief Count of running animations
          *
          * @see step()
          */
-        inline std::size_t runningCount() const { return _runningCount; }
+        std::size_t runningCount() const { return _runningCount; }
 
         /**
          * @brief Perform animation step

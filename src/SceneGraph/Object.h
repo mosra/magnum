@@ -117,7 +117,7 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
          * @brief Constructor
          * @param parent    Parent object
          */
-        inline explicit Object(Object<Transformation>* parent = nullptr): counter(0xFFFFu), flags(Flag::Dirty) {
+        explicit Object(Object<Transformation>* parent = nullptr): counter(0xFFFFu), flags(Flag::Dirty) {
             setParent(parent);
         }
 
@@ -127,7 +127,7 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
          * Removes itself from parent's children list and destroys all own
          * children.
          */
-        inline virtual ~Object() {}
+        virtual ~Object() {}
 
         /**
          * @{ @name Scene hierarchy
@@ -136,7 +136,7 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
          */
 
         /** @brief Whether this object is scene */
-        virtual inline bool isScene() const { return false; }
+        virtual bool isScene() const { return false; }
 
         /**
          * @brief %Scene
@@ -148,57 +148,57 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
         const Scene<Transformation>* scene() const;
 
         /** @brief Parent object or `nullptr`, if this is root object */
-        inline Object<Transformation>* parent() {
+        Object<Transformation>* parent() {
             return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::list();
         }
 
         /** @overload */
-        inline const Object<Transformation>* parent() const {
+        const Object<Transformation>* parent() const {
             return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::list();
         }
 
         /** @brief Previous sibling object or `nullptr`, if this is first object */
-        inline Object<Transformation>* previousSibling() {
+        Object<Transformation>* previousSibling() {
             return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::previous();
         }
 
         /** @overload */
-        inline const Object<Transformation>* previousSibling() const {
+        const Object<Transformation>* previousSibling() const {
             return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::previous();
         }
 
         /** @brief Next sibling object or `nullptr`, if this is last object */
-        inline Object<Transformation>* nextSibling() {
+        Object<Transformation>* nextSibling() {
             return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::next();
         }
 
         /** @overload */
-        inline const Object<Transformation>* nextSibling() const {
+        const Object<Transformation>* nextSibling() const {
             return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::next();
         }
 
         /** @brief Whether this object has children */
-        inline bool hasChildren() const {
+        bool hasChildren() const {
             return !Containers::LinkedList<Object<Transformation>>::isEmpty();
         }
 
         /** @brief First child object or `nullptr`, if this object has no children */
-        inline Object<Transformation>* firstChild() {
+        Object<Transformation>* firstChild() {
             return Containers::LinkedList<Object<Transformation>>::first();
         }
 
         /** @overload */
-        inline const Object<Transformation>* firstChild() const {
+        const Object<Transformation>* firstChild() const {
             return Containers::LinkedList<Object<Transformation>>::first();
         }
 
         /** @brief Last child object or `nullptr`, if this object has no children */
-        inline Object<Transformation>* lastChild() {
+        Object<Transformation>* lastChild() {
             return Containers::LinkedList<Object<Transformation>>::last();
         }
 
         /** @overload */
-        inline const Object<Transformation>* lastChild() const {
+        const Object<Transformation>* lastChild() const {
             return Containers::LinkedList<Object<Transformation>>::last();
         }
 
@@ -223,11 +223,11 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
 
         /** @{ @name Object transformation */
 
-        inline typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType transformationMatrix() const override {
+        typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType transformationMatrix() const override {
             return Transformation::toMatrix(Transformation::transformation());
         }
 
-        inline typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType absoluteTransformationMatrix() const override {
+        typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType absoluteTransformationMatrix() const override {
             return Transformation::toMatrix(absoluteTransformation());
         }
 
@@ -251,7 +251,7 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
 
         /*@}*/
 
-        inline bool isDirty() const override { return !!(flags & Flag::Dirty); }
+        bool isDirty() const override { return !!(flags & Flag::Dirty); }
         void setDirty() override;
         void setClean() override;
 

@@ -74,27 +74,27 @@ template<UnsignedInt dimensions, class T = Float> class AbstractObject
         virtual ~AbstractObject();
 
         /** @brief Whether this object has features */
-        inline bool hasFeatures() const {
+        bool hasFeatures() const {
             return !Containers::LinkedList<AbstractFeature<dimensions, T>>::isEmpty();
         }
 
         /** @brief First object feature or `nullptr`, if this object has no features */
-        inline FeatureType* firstFeature() {
+        FeatureType* firstFeature() {
             return Containers::LinkedList<AbstractFeature<dimensions, T>>::first();
         }
 
         /** @overload */
-        inline const FeatureType* firstFeature() const {
+        const FeatureType* firstFeature() const {
             return Containers::LinkedList<AbstractFeature<dimensions, T>>::first();
         }
 
         /** @brief Last object feature or `nullptr`, if this object has no features */
-        inline FeatureType* lastFeature() {
+        FeatureType* lastFeature() {
             return Containers::LinkedList<AbstractFeature<dimensions, T>>::last();
         }
 
         /** @overload */
-        inline const FeatureType* lastFeature() const {
+        const FeatureType* lastFeature() const {
             return Containers::LinkedList<AbstractFeature<dimensions, T>>::last();
         }
 

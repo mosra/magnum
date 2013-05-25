@@ -162,10 +162,10 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
         ~Animable();
 
         /** @brief Animation duration */
-        inline Float duration() const { return _duration; }
+        Float duration() const { return _duration; }
 
         /** @brief Animation state */
-        inline AnimationState state() const { return currentState; }
+        AnimationState state() const { return currentState; }
 
         /**
          * @brief Set animation state
@@ -185,7 +185,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
          *
          * @see repeatCount()
          */
-        inline bool isRepeated() const { return _repeated; }
+        bool isRepeated() const { return _repeated; }
 
         /**
          * @brief Enable/disable repeated animation
@@ -194,7 +194,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
          * Default is `false`.
          * @see setRepeatCount()
          */
-        inline Animable<dimensions, T>* setRepeated(bool repeated) {
+        Animable<dimensions, T>* setRepeated(bool repeated) {
             _repeated = repeated;
             return this;
         }
@@ -204,7 +204,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
          *
          * @see isRepeated()
          */
-        inline UnsignedShort repeatCount() const { return _repeatCount; }
+        UnsignedShort repeatCount() const { return _repeatCount; }
 
         /**
          * @brief Set repeat count
@@ -214,7 +214,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
          * infinitely repeated animation. Default is `0`.
          * @see setRepeated()
          */
-        inline Animable<dimensions, T>* setRepeatCount(UnsignedShort count) {
+        Animable<dimensions, T>* setRepeatCount(UnsignedShort count) {
             _repeatCount = count;
             return this;
         }
@@ -236,7 +236,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
          * infinite non-repeating animation. Default is `0.0f`.
          */
         /* Protected so only animation implementer can change it */
-        inline Animable<dimensions, T>* setDuration(Float duration) {
+        Animable<dimensions, T>* setDuration(Float duration) {
             _duration = duration;
             return this;
         }
@@ -274,7 +274,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
          *
          * @see setState()
          */
-        inline virtual void animationStarted() {}
+        virtual void animationStarted() {}
 
         /**
          * @brief Action on animation pause
@@ -288,7 +288,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
          *
          * @see setState()
          */
-        inline virtual void animationPaused() {}
+        virtual void animationPaused() {}
 
         /**
          * @brief Action on animation resume
@@ -302,7 +302,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
          *
          * @see setState()
          */
-        inline virtual void animationResumed() {}
+        virtual void animationResumed() {}
 
         /**
          * @brief Action on animation stop
@@ -319,7 +319,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimension
          *
          * @see setState()
          */
-        inline virtual void animationStopped() {}
+        virtual void animationStopped() {}
 
     private:
         Float _duration;
