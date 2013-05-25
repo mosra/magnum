@@ -72,7 +72,7 @@ Color3 or Color4 specialization is returned.
 @see @ref matrix-vector-component-access, Math::swizzle(), Vector4::xyz(),
     Color4::rgb(), Vector4::xy(), Vector3::xy()
 */
-template<char ...components, class T> inline constexpr typename Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector) {
+template<char ...components, class T> constexpr typename Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector) {
     return {Math::Implementation::Component<T::Size, components>::value(vector)...};
 }
 

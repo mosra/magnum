@@ -437,7 +437,7 @@ class MAGNUM_EXPORT Buffer {
          *
          * @see @fn_gl{BindBuffer}
          */
-        inline static void unbind(Target target) { bind(target, 0); }
+        static void unbind(Target target) { bind(target, 0); }
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -457,7 +457,7 @@ class MAGNUM_EXPORT Buffer {
          * @requires_gl31 %Extension @extension{ARB,copy_buffer}
          * @requires_gles30 %Buffer copying is not available in OpenGL ES 2.0.
          */
-        inline static void copy(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
+        static void copy(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
             copyImplementation(read, write, readOffset, writeOffset, size);
         }
         #endif
@@ -470,7 +470,7 @@ class MAGNUM_EXPORT Buffer {
          * Generates new OpenGL buffer.
          * @see @fn_gl{GenBuffers}
          */
-        inline explicit Buffer(Target targetHint = Target::Array): _targetHint(targetHint) {
+        explicit Buffer(Target targetHint = Target::Array): _targetHint(targetHint) {
             glGenBuffers(1, &_id);
         }
 
@@ -483,10 +483,10 @@ class MAGNUM_EXPORT Buffer {
         virtual ~Buffer();
 
         /** @brief OpenGL buffer ID */
-        inline GLuint id() const { return _id; }
+        GLuint id() const { return _id; }
 
         /** @brief Target hint */
-        inline Target targetHint() const { return _targetHint; }
+        Target targetHint() const { return _targetHint; }
 
         /**
          * @brief Set target hint
@@ -503,7 +503,7 @@ class MAGNUM_EXPORT Buffer {
          *      http://www.opengl.org/wiki/Vertex_Specification#Index_buffers
          *      ... damned GL state
          */
-        inline Buffer* setTargetHint(Target hint) {
+        Buffer* setTargetHint(Target hint) {
             _targetHint = hint;
             return this;
         }
@@ -518,7 +518,7 @@ class MAGNUM_EXPORT Buffer {
          * @todo Don't allow user to bind buffers?
          * @see @fn_gl{BindBuffer}
          */
-        inline void bind(Target target) { bind(target, _id); }
+        void bind(Target target) { bind(target, _id); }
 
         /**
          * @brief Buffer size
@@ -571,7 +571,7 @@ class MAGNUM_EXPORT Buffer {
          * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{BufferData} or
          *      @fn_gl_extension{NamedBufferData,EXT,direct_state_access}
          */
-        inline Buffer* setData(GLsizeiptr size, const GLvoid* data, Usage usage) {
+        Buffer* setData(GLsizeiptr size, const GLvoid* data, Usage usage) {
             (this->*dataImplementation)(size, data, usage);
             return this;
         }
@@ -584,7 +584,7 @@ class MAGNUM_EXPORT Buffer {
          *
          * @see setData(GLsizeiptr, const GLvoid*, Usage).
          */
-        template<std::size_t size, class T> inline Buffer* setData(const T(&data)[size], Usage usage) {
+        template<std::size_t size, class T> Buffer* setData(const T(&data)[size], Usage usage) {
             setData(size*sizeof(T), data, usage);
             return this;
         }
@@ -597,13 +597,13 @@ class MAGNUM_EXPORT Buffer {
          *
          * @see setData(GLsizeiptr, const GLvoid*, Usage)
          */
-        template<class T> inline Buffer* setData(const std::vector<T>& data, Usage usage) {
+        template<class T> Buffer* setData(const std::vector<T>& data, Usage usage) {
             setData(data.size()*sizeof(T), data.data(), usage);
             return this;
         }
 
         /** @overload */
-        template<std::size_t size, class T> inline void setData(const std::array<T, size>& data, Usage usage) {
+        template<std::size_t size, class T> void setData(const std::array<T, size>& data, Usage usage) {
             setData(data.size()*sizeof(T), data.data(), usage);
         }
 
@@ -620,7 +620,7 @@ class MAGNUM_EXPORT Buffer {
          * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{BufferSubData}
          *      or @fn_gl_extension{NamedBufferSubData,EXT,direct_state_access}
          */
-        inline Buffer* setSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
+        Buffer* setSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
             (this->*subDataImplementation)(offset, size, data);
             return this;
         }
@@ -633,7 +633,7 @@ class MAGNUM_EXPORT Buffer {
          *
          * @see setSubData(GLintptr, GLsizeiptr, const GLvoid*)
          */
-        template<std::size_t size, class T> inline Buffer* setSubData(GLintptr offset, const T(&data)[size]) {
+        template<std::size_t size, class T> Buffer* setSubData(GLintptr offset, const T(&data)[size]) {
             setSubData(offset, size*sizeof(T), data);
             return this;
         }
@@ -646,13 +646,13 @@ class MAGNUM_EXPORT Buffer {
          *
          * @see setSubData(GLintptr, GLsizeiptr, const GLvoid*)
          */
-        template<class T> inline Buffer* setSubData(GLintptr offset, const std::vector<T>& data) {
+        template<class T> Buffer* setSubData(GLintptr offset, const std::vector<T>& data) {
             setSubData(offset, data.size()*sizeof(T), data.data());
             return this;
         }
 
         /** @overload */
-        template<std::size_t size, class T> inline Buffer* setSubData(GLintptr offset, const std::array<T, size>& data) {
+        template<std::size_t size, class T> Buffer* setSubData(GLintptr offset, const std::array<T, size>& data) {
             setSubData(offset, data.size()*sizeof(T), data.data());
             return this;
         }
@@ -666,7 +666,7 @@ class MAGNUM_EXPORT Buffer {
          * is not available, this function does nothing.
          * @see @ref MapFlag "MapFlag::InvalidateBuffer", @fn_gl{InvalidateBufferData}
          */
-        inline Buffer* invalidateData() {
+        Buffer* invalidateData() {
             (this->*invalidateImplementation)();
             return this;
         }
@@ -681,7 +681,7 @@ class MAGNUM_EXPORT Buffer {
          * is not available, this function does nothing.
          * @see @ref MapFlag "MapFlag::InvalidateRange", @fn_gl{InvalidateBufferData}
          */
-        inline Buffer* invalidateSubData(GLintptr offset, GLsizeiptr length) {
+        Buffer* invalidateSubData(GLintptr offset, GLsizeiptr length) {
             (this->*invalidateSubImplementation)(offset, length);
             return this;
         }
@@ -704,7 +704,7 @@ class MAGNUM_EXPORT Buffer {
          *      OpenGL ES 2.0, use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      in OpenGL ES 3.0 instead.
          */
-        inline void* map(MapAccess access) {
+        void* map(MapAccess access) {
             return (this->*mapImplementation)(access);
         }
         #endif
@@ -725,7 +725,7 @@ class MAGNUM_EXPORT Buffer {
          * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
          * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
          */
-        inline void* map(GLintptr offset, GLsizeiptr length, MapFlags flags) {
+        void* map(GLintptr offset, GLsizeiptr length, MapFlags flags) {
             return (this->*mapRangeImplementation)(offset, length, flags);
         }
 
@@ -747,7 +747,7 @@ class MAGNUM_EXPORT Buffer {
          * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
          * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
          */
-        inline Buffer* flushMappedRange(GLintptr offset, GLsizeiptr length) {
+        Buffer* flushMappedRange(GLintptr offset, GLsizeiptr length) {
             (this->*flushMappedRangeImplementation)(offset, length);
             return this;
         }
@@ -766,7 +766,7 @@ class MAGNUM_EXPORT Buffer {
          *      @fn_gl_extension{UnmapNamedBuffer,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension{OES,mapbuffer}
          */
-        inline bool unmap() {
+        bool unmap() {
             return (this->*unmapImplementation)();
         }
 

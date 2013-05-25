@@ -29,7 +29,7 @@
 namespace Magnum { namespace Implementation {
 
 struct RendererState {
-    inline constexpr RendererState()
+    constexpr RendererState()
         #ifndef MAGNUM_TARGET_GLES3
         : resetNotificationStrategy()
         #endif

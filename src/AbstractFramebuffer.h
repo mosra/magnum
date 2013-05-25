@@ -186,7 +186,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
          *      @es_extension{NV,framebuffer_blit}
          */
-        inline static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& rectangle, FramebufferBlitMask mask) {
+        static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& rectangle, FramebufferBlitMask mask) {
             blit(source, destination, rectangle, rectangle, mask, FramebufferBlitFilter::Nearest);
         }
 
@@ -205,7 +205,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         void bind(FramebufferTarget target);
 
         /** @brief Viewport rectangle */
-        inline Rectanglei viewport() const { return _viewport; }
+        Rectanglei viewport() const { return _viewport; }
 
         /**
          * @brief Set viewport
@@ -315,8 +315,6 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         #endif
         static ReadImplementation MAGNUM_LOCAL readImplementation;
 };
-
-inline AbstractFramebuffer::~AbstractFramebuffer() {}
 
 CORRADE_ENUMSET_OPERATORS(FramebufferClearMask)
 CORRADE_ENUMSET_OPERATORS(FramebufferBlitMask)

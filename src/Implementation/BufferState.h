@@ -43,7 +43,7 @@ struct BufferState {
     static std::size_t indexForTarget(Buffer::Target target);
     static const Buffer::Target targetForIndex[TargetCount-1];
 
-    inline constexpr BufferState(): bindings() {}
+    constexpr BufferState(): bindings() {}
 
     /* Currently bound buffer for all targets */
     GLuint bindings[TargetCount];

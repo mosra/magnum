@@ -362,7 +362,7 @@ class MAGNUM_EXPORT Mesh {
         Mesh& operator=(Mesh&& other);
 
         /** @brief Primitive type */
-        inline Primitive primitive() const { return _primitive; }
+        Primitive primitive() const { return _primitive; }
 
         /**
          * @brief Set primitive type
@@ -372,13 +372,13 @@ class MAGNUM_EXPORT Mesh {
          * @see setVertexCount(), addVertexBuffer(),
          *      addInterleavedVertexBuffer(), addVertexBufferStride()
          */
-        inline Mesh* setPrimitive(Primitive primitive) {
+        Mesh* setPrimitive(Primitive primitive) {
             _primitive = primitive;
             return this;
         }
 
         /** @brief Vertex count */
-        inline Int vertexCount() const { return _vertexCount; }
+        Int vertexCount() const { return _vertexCount; }
 
         /**
          * @brief Set vertex count
@@ -388,13 +388,13 @@ class MAGNUM_EXPORT Mesh {
          * @see setPrimitive(), addVertexBuffer(), addInterleavedVertexBuffer(),
          *      addVertexBufferStride(), MeshTools::interleave()
          */
-        inline Mesh* setVertexCount(Int vertexCount) {
+        Mesh* setVertexCount(Int vertexCount) {
             _vertexCount = vertexCount;
             return this;
         }
 
         /** @brief Index count */
-        inline Int indexCount() const { return _indexCount; }
+        Int indexCount() const { return _indexCount; }
 
         /**
          * @brief Set index count
@@ -403,7 +403,7 @@ class MAGNUM_EXPORT Mesh {
          * Default is zero.
          * @see setIndexBuffer(), MeshTools::compressIndices()
          */
-        inline Mesh* setIndexCount(Int count) {
+        Mesh* setIndexCount(Int count) {
             _indexCount = count;
             return this;
         }
@@ -457,13 +457,7 @@ class MAGNUM_EXPORT Mesh {
          *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access}
          *      if @extension{APPLE,vertex_array_object} is available
          */
-        template<class ...T> inline Mesh* addVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes) {
-            CORRADE_ASSERT(sizeof...(attributes) == 1 || _vertexCount != 0,
-                "Mesh::addVertexBuffer(): vertex count must be set before binding attributes", this);
-
-            addVertexBufferInternal(buffer, offset, attributes...);
-            return this;
-        }
+        template<class ...T> Mesh* addVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes);
 
         /**
          * @brief Add buffer with interleaved vertex attributes for use with given shader
@@ -574,7 +568,7 @@ class MAGNUM_EXPORT Mesh {
          *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
          *      @extension{APPLE,vertex_array_object} is available)
          */
-        inline Mesh* setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type) {
+        Mesh* setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type) {
             return setIndexBuffer(buffer, offset, type, 0, 0);
         }
 
@@ -788,6 +782,15 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::Primitive value);
 
 /** @debugoperator{Magnum::Mesh} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::IndexType value);
+
+template<class ...T> inline Mesh* Mesh::addVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes) {
+    CORRADE_ASSERT(sizeof...(attributes) == 1 || _vertexCount != 0,
+        "Mesh::addVertexBuffer(): vertex count must be set before binding attributes", this);
+
+    addVertexBufferInternal(buffer, offset, attributes...);
+    return this;
+}
+
 
 }
 

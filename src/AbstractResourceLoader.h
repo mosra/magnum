@@ -98,18 +98,16 @@ template<class T> class AbstractResourceLoader {
     friend class Implementation::ResourceManagerData<T>;
 
     public:
-        inline explicit AbstractResourceLoader(): manager(nullptr), _requestedCount(0), _loadedCount(0), _notFoundCount(0) {}
+        explicit AbstractResourceLoader(): manager(nullptr), _requestedCount(0), _loadedCount(0), _notFoundCount(0) {}
 
-        inline virtual ~AbstractResourceLoader() {
-            if(manager) manager->_loader = nullptr;
-        }
+        virtual ~AbstractResourceLoader();
 
         /**
          * @brief Count of requested resources
          *
          * Count of resources requested by calling load().
          */
-        inline std::size_t requestedCount() const { return _requestedCount; }
+        std::size_t requestedCount() const { return _requestedCount; }
 
         /**
          * @brief Count of not found resources
@@ -117,7 +115,7 @@ template<class T> class AbstractResourceLoader {
          * Count of resources requested by calling load(), but not found by
          * the loader.
          */
-        inline std::size_t notFoundCount() const { return _notFoundCount; }
+        std::size_t notFoundCount() const { return _notFoundCount; }
 
         /**
          * @brief Count of loaded resources
@@ -125,7 +123,7 @@ template<class T> class AbstractResourceLoader {
          * Count of resources requested by calling load(), but not found by
          * the loader.
          */
-        inline std::size_t loadedCount() const { return _loadedCount; }
+        std::size_t loadedCount() const { return _loadedCount; }
 
         /**
          * @brief %Resource name corresponding to given key
@@ -160,12 +158,7 @@ template<class T> class AbstractResourceLoader {
          * ResourceManager::set() for more information.
          * @see loadedCount()
          */
-        inline void set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
-            CORRADE_ASSERT(state == ResourceDataState::Mutable || state == ResourceDataState::Final,
-                "AbstractResourceLoader::set(): state must be either Mutable or Final", );
-            ++_loadedCount;
-            manager->set(key, data, state, policy);
-        }
+        void set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy);
 
         /**
          * @brief Mark resource as not found
@@ -174,11 +167,7 @@ template<class T> class AbstractResourceLoader {
          * ResourceManager::setNotFound() for more information.
          * @see notFountCount()
          */
-        inline void setNotFound(ResourceKey key) {
-            ++_notFoundCount;
-            /** @todo What policy for notfound resources? */
-            manager->set(key, nullptr, ResourceDataState::NotFound, ResourcePolicy::Resident);
-        }
+        void setNotFound(ResourceKey key);
 
     private:
         Implementation::ResourceManagerData<T>* manager;
@@ -187,12 +176,29 @@ template<class T> class AbstractResourceLoader {
         std::size_t _notFoundCount;
 };
 
-template<class T> inline std::string AbstractResourceLoader<T>::name(ResourceKey) const { return {}; }
+template<class T> AbstractResourceLoader<T>::~AbstractResourceLoader() {
+    if(manager) manager->_loader = nullptr;
+}
 
-template<class T> inline void AbstractResourceLoader<T>::load(ResourceKey key) {
+template<class T> std::string AbstractResourceLoader<T>::name(ResourceKey) const { return {}; }
+
+template<class T> void AbstractResourceLoader<T>::load(ResourceKey key) {
     ++_requestedCount;
     /** @todo What policy for loading resources? */
     manager->set(key, nullptr, ResourceDataState::Loading, ResourcePolicy::Resident);
+}
+
+template<class T> void AbstractResourceLoader<T>::set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
+    CORRADE_ASSERT(state == ResourceDataState::Mutable || state == ResourceDataState::Final,
+        "AbstractResourceLoader::set(): state must be either Mutable or Final", );
+    ++_loadedCount;
+    manager->set(key, data, state, policy);
+}
+
+template<class T> inline void AbstractResourceLoader<T>::setNotFound(ResourceKey key) {
+    ++_notFoundCount;
+    /** @todo What policy for notfound resources? */
+    manager->set(key, nullptr, ResourceDataState::NotFound, ResourcePolicy::Resident);
 }
 
 }

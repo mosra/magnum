@@ -311,7 +311,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @requires_gles30 Draw attachments for default framebuffer are
          *      available only in OpenGL ES 3.0.
          */
-        inline DefaultFramebuffer* mapForDraw(DrawAttachment attachment) {
+        DefaultFramebuffer* mapForDraw(DrawAttachment attachment) {
             (this->*drawBufferImplementation)(static_cast<GLenum>(attachment));
             return this;
         }
@@ -329,7 +329,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
-        inline DefaultFramebuffer* mapForRead(ReadAttachment attachment) {
+        DefaultFramebuffer* mapForRead(ReadAttachment attachment) {
             (this->*readBufferImplementation)(static_cast<GLenum>(attachment));
             return this;
         }
@@ -367,7 +367,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline DefaultFramebuffer* setViewport(const Rectanglei& rectangle) {
+        DefaultFramebuffer* setViewport(const Rectanglei& rectangle) {
             AbstractFramebuffer::setViewport(rectangle);
             return this;
         }

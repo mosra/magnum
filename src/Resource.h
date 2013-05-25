@@ -86,16 +86,16 @@ class ResourceKey: public Utility::MurmurHash2::Digest {
          * Creates zero key. Note that it is not the same as calling other
          * constructors with empty string.
          */
-        inline constexpr ResourceKey() {}
+        constexpr ResourceKey() {}
 
         /** @brief Constructor */
-        inline ResourceKey(const std::string& key): Utility::MurmurHash2::Digest(Utility::MurmurHash2()(key)) {}
+        ResourceKey(const std::string& key): Utility::MurmurHash2::Digest(Utility::MurmurHash2()(key)) {}
 
         /**
          * @brief Constructor
          * @todo constexpr
          */
-        template<std::size_t size> inline constexpr ResourceKey(const char(&key)[size]): Utility::MurmurHash2::Digest(Utility::MurmurHash2()(key)) {}
+        template<std::size_t size> constexpr ResourceKey(const char(&key)[size]): Utility::MurmurHash2::Digest(Utility::MurmurHash2()(key)) {}
 };
 
 /** @debugoperator{Magnum::ResourceKey} */
@@ -112,10 +112,10 @@ namespace Implementation {
 
 See ResourceManager for more information.
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T, class U>
-#else
+#ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T, class U = T>
+#else
+template<class T, class U>
 #endif
 class Resource {
     friend class Implementation::ResourceManagerData<T>;
@@ -127,60 +127,39 @@ class Resource {
          * Creates empty resource. Resources are acquired from the manager by
          * calling ResourceManager::get().
          */
-        inline explicit Resource(): manager(nullptr), lastCheck(0), _state(ResourceState::Final), data(nullptr) {}
+        explicit Resource(): manager(nullptr), lastCheck(0), _state(ResourceState::Final), data(nullptr) {}
 
         /** @brief Copy constructor */
-        inline Resource(const Resource<T, U>& other): manager(other.manager), _key(other._key), lastCheck(other.lastCheck), _state(other._state), data(other.data) {
+        Resource(const Resource<T, U>& other): manager(other.manager), _key(other._key), lastCheck(other.lastCheck), _state(other._state), data(other.data) {
             if(manager) manager->incrementReferenceCount(_key);
         }
 
         /** @brief Move constructor */
-        inline Resource(Resource<T, U>&& other): manager(other.manager), _key(other._key), lastCheck(other.lastCheck), _state(other._state), data(other.data) {
+        Resource(Resource<T, U>&& other): manager(other.manager), _key(other._key), lastCheck(other.lastCheck), _state(other._state), data(other.data) {
+            /** @brief Make other's state well-defined */
             other.manager = nullptr;
         }
 
         /** @brief Destructor */
-        inline ~Resource() {
+        ~Resource() {
             if(manager) manager->decrementReferenceCount(_key);
         }
 
-        /** @brief Assignment operator */
-        Resource<T, U>& operator=(const Resource<T, U>& other) {
-            if(manager) manager->decrementReferenceCount(_key);
+        /** @brief Copy assignment */
+        Resource<T, U>& operator=(const Resource<T, U>& other);
 
-            manager = other.manager;
-            _key = other._key;
-            lastCheck = other.lastCheck;
-            _state = other._state;
-            data = other.data;
-
-            if(manager) manager->incrementReferenceCount(_key);
-            return *this;
-        }
-
-        /** @brief Assignment move operator */
-        Resource<T, U>& operator=(Resource<T, U>&& other) {
-            if(manager) manager->decrementReferenceCount(_key);
-
-            manager = other.manager;
-            _key = other._key;
-            lastCheck = other.lastCheck;
-            _state = other._state;
-            data = other.data;
-
-            other.manager = nullptr;
-            return *this;
-        }
+        /** @brief Move assignment */
+        Resource<T, U>& operator=(Resource<T, U>&& other);
 
         /** @brief Resource key */
-        inline ResourceKey key() const { return _key; }
+        ResourceKey key() const { return _key; }
 
         /**
          * @brief %Resource state
          *
          * @see operator bool(), ResourceManager::state()
          */
-        inline ResourceState state() {
+        ResourceState state() {
             acquire();
             return _state;
         }
@@ -193,7 +172,7 @@ class Resource {
          * @ref ResourceState "ResourceState::Loading" or
          * @ref ResourceState "ResourceState::NotFound"), true otherwise.
          */
-        inline operator bool() {
+        operator bool() {
             acquire();
             return data;
         }
@@ -204,61 +183,32 @@ class Resource {
          * The resource must be loaded before accessing it. Use boolean
          * conversion operator or state() for testing whether it is loaded.
          */
-        inline operator U*() {
+        operator U*() {
             acquire();
             CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), nullptr);
             return static_cast<U*>(data);
         }
 
         /** @overload */
-        inline U* operator->() {
+        U* operator->() {
             acquire();
             CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), nullptr);
             return static_cast<U*>(data);
         }
 
         /** @overload */
-        inline U& operator*() {
+        U& operator*() {
             acquire();
             CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), *static_cast<U*>(data));
             return *static_cast<U*>(data);
         }
 
     private:
-        inline Resource(Implementation::ResourceManagerData<T>* manager, ResourceKey key): manager(manager), _key(key), lastCheck(0), _state(ResourceState::NotLoaded), data(nullptr) {
+        Resource(Implementation::ResourceManagerData<T>* manager, ResourceKey key): manager(manager), _key(key), lastCheck(0), _state(ResourceState::NotLoaded), data(nullptr) {
             manager->incrementReferenceCount(key);
         }
 
-        void acquire() {
-            /* The data are already final, nothing to do */
-            if(_state == ResourceState::Final) return;
-
-            /* Nothing changed since last check */
-            if(manager->lastChange() < lastCheck) return;
-
-            /* Acquire new data and save last check time */
-            const typename Implementation::ResourceManagerData<T>::Data& d = manager->data(_key);
-            lastCheck = manager->lastChange();
-
-            /* Try to get the data */
-            data = d.data;
-            _state = static_cast<ResourceState>(d.state);
-
-            /* Data are not available */
-            if(!data) {
-                /* Fallback found, add *Fallback to state */
-                if((data = manager->fallback())) {
-                    if(_state == ResourceState::Loading)
-                        _state = ResourceState::LoadingFallback;
-                    else if(_state == ResourceState::NotFound)
-                        _state = ResourceState::NotFoundFallback;
-                    else _state = ResourceState::NotLoadedFallback;
-
-                /* Fallback not found and loading didn't start yet */
-                } else if(_state != ResourceState::Loading && _state != ResourceState::NotFound)
-                    _state = ResourceState::NotLoaded;
-            }
-        }
+        void acquire();
 
         Implementation::ResourceManagerData<T>* manager;
         ResourceKey _key;
@@ -266,6 +216,64 @@ class Resource {
         ResourceState _state;
         T* data;
 };
+
+template<class T, class U> Resource<T, U>& Resource<T, U>::operator=(const Resource<T, U>& other) {
+    if(manager) manager->decrementReferenceCount(_key);
+
+    manager = other.manager;
+    _key = other._key;
+    lastCheck = other.lastCheck;
+    _state = other._state;
+    data = other.data;
+
+    if(manager) manager->incrementReferenceCount(_key);
+    return *this;
+}
+
+template<class T, class U> Resource<T, U>& Resource<T, U>::operator=(Resource<T, U>&& other) {
+    /** @todo Just swap the values */
+    if(manager) manager->decrementReferenceCount(_key);
+
+    manager = other.manager;
+    _key = other._key;
+    lastCheck = other.lastCheck;
+    _state = other._state;
+    data = other.data;
+
+    other.manager = nullptr;
+    return *this;
+}
+
+template<class T, class U> void Resource<T, U>::acquire() {
+    /* The data are already final, nothing to do */
+    if(_state == ResourceState::Final) return;
+
+    /* Nothing changed since last check */
+    if(manager->lastChange() < lastCheck) return;
+
+    /* Acquire new data and save last check time */
+    const typename Implementation::ResourceManagerData<T>::Data& d = manager->data(_key);
+    lastCheck = manager->lastChange();
+
+    /* Try to get the data */
+    data = d.data;
+    _state = static_cast<ResourceState>(d.state);
+
+    /* Data are not available */
+    if(!data) {
+        /* Fallback found, add *Fallback to state */
+        if((data = manager->fallback())) {
+            if(_state == ResourceState::Loading)
+                _state = ResourceState::LoadingFallback;
+            else if(_state == ResourceState::NotFound)
+                _state = ResourceState::NotFoundFallback;
+            else _state = ResourceState::NotLoadedFallback;
+
+        /* Fallback not found and loading didn't start yet */
+        } else if(_state != ResourceState::Loading && _state != ResourceState::NotFound)
+            _state = ResourceState::NotLoaded;
+    }
+}
 
 }
 

@@ -139,7 +139,7 @@ in @c \@see block with @c \@fn_gl command. If only specific definition is used
 in the function, document it with @c \@def_gl command. Example usage:
 @code
 // @see @fn_gl{Enable}/@fn_gl{Disable} with @def_gl{TEXTURE_CUBE_MAP_SEAMLESS}
-inline static void setSeamless(bool enabled) {
+static void setSeamless(bool enabled) {
     enabled ? glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS) : glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 }
 @endcode

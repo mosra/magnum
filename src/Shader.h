@@ -111,7 +111,7 @@ class MAGNUM_EXPORT Shader {
         Shader& operator=(Shader&& other);
 
         /** @brief OpenGL shader ID */
-        inline GLuint id() const { return _id; }
+        GLuint id() const { return _id; }
 
         /**
          * @brief Add shader source

@@ -90,10 +90,10 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
     BufferTexture& operator=(BufferTexture&&) = delete;
 
     public:
-        inline explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
+        explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
 
         /** @copydoc AbstractTexture::bind() */
-        inline void bind(Int layer) { AbstractTexture::bind(layer); }
+        void bind(Int layer) { AbstractTexture::bind(layer); }
 
         /**
          * @brief Set texture buffer
@@ -106,7 +106,7 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBuffer}
          *      or @fn_gl_extension{TextureBuffer,EXT,direct_state_access}
          */
-        inline void setBuffer(BufferTextureFormat internalFormat, Buffer* buffer) {
+        void setBuffer(BufferTextureFormat internalFormat, Buffer* buffer) {
             (this->*setBufferImplementation)(internalFormat, buffer);
         }
 
@@ -124,7 +124,7 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBufferRange}
          *      or @fn_gl_extension{TextureBufferRange,EXT,direct_state_access}
          */
-        inline void setBuffer(BufferTextureFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size) {
+        void setBuffer(BufferTextureFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size) {
             (this->*setBufferRangeImplementation)(internalFormat, buffer, offset, size);
         }
 

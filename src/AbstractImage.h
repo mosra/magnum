@@ -66,25 +66,23 @@ class MAGNUM_EXPORT AbstractImage {
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
          */
-        inline explicit AbstractImage(ImageFormat format, ImageType type): _format(format), _type(type) {}
+        explicit AbstractImage(ImageFormat format, ImageType type): _format(format), _type(type) {}
 
         /** @brief Destructor */
         virtual ~AbstractImage() = 0;
 
         /** @brief Format of pixel data */
-        inline ImageFormat format() const { return _format; }
+        ImageFormat format() const { return _format; }
 
         /** @brief Data type of pixel data */
-        inline ImageType type() const { return _type; }
+        ImageType type() const { return _type; }
 
         /**
          * @brief Pixel size (in bytes)
          *
          * Convenience member alternative for pixelSize(Format, Type).
          */
-        inline std::size_t pixelSize() const {
-            return pixelSize(_format, _type);
-        }
+        std::size_t pixelSize() const { return pixelSize(_format, _type); }
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -94,8 +92,6 @@ class MAGNUM_EXPORT AbstractImage {
         ImageFormat _format;
         ImageType _type;
 };
-
-inline AbstractImage::~AbstractImage() {}
 
 }
 

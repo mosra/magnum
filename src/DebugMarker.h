@@ -53,7 +53,7 @@ class MAGNUM_EXPORT DebugMarker {
         DebugMarker() = delete;
 
         /** @brief Put string mark into OpenGL command stream */
-        inline static void mark(const std::string& string) {
+        static void mark(const std::string& string) {
             markImplementation(string);
         }
 

@@ -89,10 +89,10 @@ class MAGNUM_EXPORT Timeline {
          * Creates stopped timeline.
          * @see start()
          */
-        inline explicit Timeline(): _minimalFrameTime(0), _previousFrameDuration(0), running(false) {}
+        explicit Timeline(): _minimalFrameTime(0), _previousFrameDuration(0), running(false) {}
 
         /** @brief Minimal frame time (in seconds) */
-        inline Float minimalFrameTime() const { return _minimalFrameTime; }
+        Float minimalFrameTime() const { return _minimalFrameTime; }
 
         /**
          * @brief Set minimal frame time
@@ -101,7 +101,7 @@ class MAGNUM_EXPORT Timeline {
          * Default value is 0.
          * @see nextFrame()
          */
-        inline Timeline* setMinimalFrameTime(Float seconds) {
+        Timeline* setMinimalFrameTime(Float seconds) {
             _minimalFrameTime = seconds;
             return this;
         }
@@ -144,7 +144,7 @@ class MAGNUM_EXPORT Timeline {
          *
          * If the timeline is stopped, the function returns `0.0f`.
          */
-        inline Float previousFrameDuration() const { return _previousFrameDuration; }
+        Float previousFrameDuration() const { return _previousFrameDuration; }
 
     private:
         std::chrono::high_resolution_clock::time_point _startTime;

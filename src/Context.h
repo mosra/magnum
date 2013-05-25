@@ -109,13 +109,13 @@ class MAGNUM_EXPORT Extension {
         static const std::vector<Extension>& extensions(Version version);
 
         /** @brief Minimal version required by this extension */
-        inline constexpr Version requiredVersion() const { return _requiredVersion; }
+        constexpr Version requiredVersion() const { return _requiredVersion; }
 
         /** @brief Version in which this extension was adopted to core */
-        inline constexpr Version coreVersion() const { return _coreVersion; }
+        constexpr Version coreVersion() const { return _coreVersion; }
 
         /** @brief %Extension string */
-        inline constexpr const char* string() const { return _string; }
+        constexpr const char* string() const { return _string; }
 
     private:
         /* GCC 4.6 doesn't like const members, as std::vector doesn't have
@@ -125,7 +125,7 @@ class MAGNUM_EXPORT Extension {
         Version _coreVersion;
         const char* _string;
 
-        inline constexpr Extension(std::size_t index, Version requiredVersion, Version coreVersion, const char* string): _index(index), _requiredVersion(requiredVersion), _coreVersion(coreVersion), _string(string) {}
+        constexpr Extension(std::size_t index, Version requiredVersion, Version coreVersion, const char* string): _index(index), _requiredVersion(requiredVersion), _coreVersion(coreVersion), _string(string) {}
 };
 
 /**
@@ -197,7 +197,7 @@ class MAGNUM_EXPORT Context {
         ~Context();
 
         /** @brief Current context */
-        inline static Context* current() { return _current; }
+        static Context* current() { return _current; }
 
         /**
          * @brief OpenGL version
@@ -205,7 +205,7 @@ class MAGNUM_EXPORT Context {
          * @see majorVersion(), minorVersion(), versionString(),
          *      shadingLanguageVersionString()
          */
-        inline Version version() const { return _version; }
+        Version version() const { return _version; }
 
         /**
          * @brief Major OpenGL version (e.g. `4`)
@@ -213,7 +213,7 @@ class MAGNUM_EXPORT Context {
          * @see minorVersion(), version(), versionString(),
          *      shadingLanguageVersionString()
          */
-        inline Int majorVersion() const { return _majorVersion; }
+        Int majorVersion() const { return _majorVersion; }
 
         /**
          * @brief Minor OpenGL version (e.g. `3`)
@@ -221,7 +221,7 @@ class MAGNUM_EXPORT Context {
          * @see majorVersion(), version(), versionString(),
          *      shadingLanguageVersionString()
          */
-        inline Int minorVersion() const { return _minorVersion; }
+        Int minorVersion() const { return _minorVersion; }
 
         /**
          * @brief Vendor string
@@ -230,7 +230,7 @@ class MAGNUM_EXPORT Context {
          * OpenGL calls.
          * @see rendererString(), @fn_gl{GetString} with @def_gl{VENDOR}
          */
-        inline std::string vendorString() const {
+        std::string vendorString() const {
             return reinterpret_cast<const char*>(glGetString(GL_VENDOR));
         }
 
@@ -241,7 +241,7 @@ class MAGNUM_EXPORT Context {
          * OpenGL calls.
          * @see vendorString(), @fn_gl{GetString} with @def_gl{RENDERER}
          */
-        inline std::string rendererString() const {
+        std::string rendererString() const {
             return reinterpret_cast<const char*>(glGetString(GL_RENDERER));
         }
 
@@ -253,7 +253,7 @@ class MAGNUM_EXPORT Context {
          * @see shadingLanguageVersionString(), version(), @fn_gl{GetString}
          *      with @def_gl{VERSION}
          */
-        inline std::string versionString() const {
+        std::string versionString() const {
             return reinterpret_cast<const char*>(glGetString(GL_VERSION));
         }
 
@@ -265,7 +265,7 @@ class MAGNUM_EXPORT Context {
          * @see versionString(), version(), @fn_gl{GetString} with
          *      @def_gl{SHADING_LANGUAGE_VERSION}
          */
-        inline std::string shadingLanguageVersionString() const {
+        std::string shadingLanguageVersionString() const {
             return reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
         }
 
@@ -280,7 +280,7 @@ class MAGNUM_EXPORT Context {
         std::vector<std::string> shadingLanguageVersionStrings() const;
 
         /** @brief Context flags */
-        inline Flags flags() const { return _flags; }
+        Flags flags() const { return _flags; }
 
         /**
          * @brief Supported extensions
@@ -290,7 +290,7 @@ class MAGNUM_EXPORT Context {
          *
          * @see isExtensionSupported(), Extension::extensions()
          */
-        inline const std::vector<Extension>& supportedExtensions() const {
+        const std::vector<Extension>& supportedExtensions() const {
             return _supportedExtensions;
         }
 
@@ -299,7 +299,7 @@ class MAGNUM_EXPORT Context {
          *
          * @see supportedVersion(), MAGNUM_ASSERT_VERSION_SUPPORTED()
          */
-        inline bool isVersionSupported(Version version) const {
+        bool isVersionSupported(Version version) const {
             return _version >= version;
         }
 
@@ -335,7 +335,7 @@ class MAGNUM_EXPORT Context {
          * @see isExtensionSupported(const Extension&) const,
          *      MAGNUM_ASSERT_EXTENSION_SUPPORTED()
          */
-        template<class T> inline bool isExtensionSupported() const {
+        template<class T> bool isExtensionSupported() const {
             return isVersionSupported(T::coreVersion()) || (isVersionSupported(T::requiredVersion()) && extensionStatus[T::Index]);
         }
 
@@ -349,12 +349,12 @@ class MAGNUM_EXPORT Context {
          * @see supportedExtensions(), Extension::extensions(),
          *      MAGNUM_ASSERT_EXTENSION_SUPPORTED()
          */
-        inline bool isExtensionSupported(const Extension& extension) const {
+        bool isExtensionSupported(const Extension& extension) const {
             return isVersionSupported(extension._coreVersion) || (isVersionSupported(extension._requiredVersion) && extensionStatus[extension._index]);
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline Implementation::State* state() { return _state; }
+        Implementation::State* state() { return _state; }
         #endif
 
     private:

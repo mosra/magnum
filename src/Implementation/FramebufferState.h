@@ -31,7 +31,7 @@
 namespace Magnum { namespace Implementation {
 
 struct FramebufferState {
-    inline constexpr FramebufferState(): readBinding(0), drawBinding(0), renderbufferBinding(0) {}
+    constexpr FramebufferState(): readBinding(0), drawBinding(0), renderbufferBinding(0) {}
 
     GLuint readBinding, drawBinding, renderbufferBinding;
     Rectanglei viewport;

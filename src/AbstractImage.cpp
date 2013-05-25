@@ -30,6 +30,8 @@
 
 namespace Magnum {
 
+AbstractImage::~AbstractImage() {}
+
 std::size_t AbstractImage::pixelSize(ImageFormat format, ImageType type) {
     std::size_t size = 0;
     switch(type) {

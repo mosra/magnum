@@ -224,10 +224,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * Creates one OpenGL texture.
          * @see @fn_gl{GenTextures}
          */
-        inline explicit Texture(Target target = DataHelper<Dimensions>::target()): AbstractTexture(static_cast<GLenum>(target)) {}
+        explicit Texture(Target target = DataHelper<Dimensions>::target()): AbstractTexture(static_cast<GLenum>(target)) {}
 
         /** @brief %Texture target */
-        inline constexpr Target target() const { return static_cast<Target>(_target); }
+        constexpr Target target() const { return static_cast<Target>(_target); }
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -241,7 +241,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or @def_gl{TEXTURE_DEPTH}.
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
-        inline typename DimensionTraits<Dimensions, Int>::VectorType imageSize(Int level) {
+        typename DimensionTraits<Dimensions, Int>::VectorType imageSize(Int level) {
             return DataHelper<Dimensions>::imageSize(this, _target, level);
         }
         #endif
@@ -264,7 +264,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      with @def_gl{TEXTURE_WRAP_S}, @def_gl{TEXTURE_WRAP_T},
          *      @def_gl{TEXTURE_WRAP_R}
          */
-        inline Texture<Dimensions>* setWrapping(const Array<Dimensions, Sampler::Wrapping>& wrapping) {
+        Texture<Dimensions>* setWrapping(const Array<Dimensions, Sampler::Wrapping>& wrapping) {
             DataHelper<Dimensions>::setWrapping(this, wrapping);
             return this;
         }
@@ -291,7 +291,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @requires_gl42 %Extension @extension{ARB,texture_storage}
          * @requires_gles30 %Extension @es_extension{EXT,texture_storage}
          */
-        inline Texture<Dimensions>* setStorage(Int levels, TextureFormat internalFormat, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {
+        Texture<Dimensions>* setStorage(Int levels, TextureFormat internalFormat, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {
             DataHelper<Dimensions>::setStorage(this, _target, levels, internalFormat, size);
             return this;
         }
@@ -319,7 +319,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      then @fn_gl{GetTexImage}, @fn_gl_extension{GetTextureImage,EXT,direct_state_access}
          *      or @fn_gl_extension{GetnTexImage,ARB,robustness}
          */
-        inline void image(Int level, Image<dimensions>* image) {
+        void image(Int level, Image<dimensions>* image) {
             AbstractTexture::image<dimensions>(_target, level, image);
         }
 
@@ -332,7 +332,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * See image(Int, Image*) for more information.
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
-        inline void image(Int level, BufferImage<dimensions>* image, Buffer::Usage usage) {
+        void image(Int level, BufferImage<dimensions>* image, Buffer::Usage usage) {
             AbstractTexture::image<dimensions>(_target, level, image, usage);
         }
         #endif
@@ -359,7 +359,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}
          */
-        template<class Image> inline Texture<Dimensions>* setImage(Int level, TextureFormat internalFormat, Image* image) {
+        template<class Image> Texture<Dimensions>* setImage(Int level, TextureFormat internalFormat, Image* image) {
             DataHelper<Dimensions>::setImage(this, _target, level, internalFormat, image);
             return this;
         }
@@ -389,7 +389,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access}
          */
-        template<class Image> inline Texture<Dimensions>* setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, Image* image) {
+        template<class Image> Texture<Dimensions>* setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, Image* image) {
             DataHelper<Dimensions>::setSubImage(this, _target, level, offset, image);
             return this;
         }
@@ -404,31 +404,31 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * is not available, this function does nothing.
          * @see invalidateImage(), @fn_gl{InvalidateTexSubImage}
          */
-        inline void invalidateSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {
+        void invalidateSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {
             DataHelper<dimensions>::invalidateSubImage(this, level, offset, size);
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline Texture<Dimensions>* setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
+        Texture<Dimensions>* setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
             return this;
         }
-        inline Texture<Dimensions>* setMagnificationFilter(Sampler::Filter filter) {
+        Texture<Dimensions>* setMagnificationFilter(Sampler::Filter filter) {
             AbstractTexture::setMagnificationFilter(filter);
             return this;
         }
         #ifndef MAGNUM_TARGET_GLES3
-        inline Texture<Dimensions>* setBorderColor(const Color4<>& color) {
+        Texture<Dimensions>* setBorderColor(const Color4<>& color) {
             AbstractTexture::setBorderColor(color);
             return this;
         }
-        inline Texture<Dimensions>* setMaxAnisotropy(Float anisotropy) {
+        Texture<Dimensions>* setMaxAnisotropy(Float anisotropy) {
             AbstractTexture::setMaxAnisotropy(anisotropy);
             return this;
         }
         #endif
-        inline Texture<Dimensions>* generateMipmap() {
+        Texture<Dimensions>* generateMipmap() {
             AbstractTexture::generateMipmap();
             return this;
         }

@@ -231,7 +231,7 @@ class MAGNUM_EXPORT Renderer {
          * If OpenGL ES, OpenGL 4.1 or extension @extension{ARB,ES2_compatibility}
          * is not available, this function behaves exactly as setClearDepth(Double).
          */
-        inline static void setClearDepth(Float depth) {
+        static void setClearDepth(Float depth) {
             clearDepthfImplementation(depth);
         }
 
@@ -824,9 +824,7 @@ class MAGNUM_EXPORT Renderer {
          *
          * @see finish(), @fn_gl{Flush}
          */
-        inline static void flush() {
-            glFlush();
-        }
+        static void flush() { glFlush(); }
 
         /**
          * @brief Finish the pipeline
@@ -834,9 +832,7 @@ class MAGNUM_EXPORT Renderer {
          * Blocks until all commands in the pipeline are finished.
          * @see flush(), @fn_gl{Finish}
          */
-        inline static void finish() {
-            glFinish();
-        }
+        static void finish() { glFinish(); }
 
         #ifndef MAGNUM_TARGET_GLES3
         /**
@@ -922,7 +918,7 @@ class MAGNUM_EXPORT Renderer {
          * @ref GraphicsResetStatus "GraphicsResetStatus::NoError".
          * @see resetNotificationStrategy(), @fn_gl_extension{GetGraphicsResetStatus,ARB,robustness}
          */
-        inline static GraphicsResetStatus graphicsResetStatus() {
+        static GraphicsResetStatus graphicsResetStatus() {
             return graphicsResetStatusImplementation();
         }
         #endif

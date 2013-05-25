@@ -66,7 +66,7 @@ class MAGNUM_EXPORT AbstractQuery {
         #endif
 
         /** @brief OpenGL query ID */
-        inline GLuint id() const { return _id; }
+        GLuint id() const { return _id; }
 
         /**
          * @brief Whether the result is available
@@ -172,7 +172,7 @@ class PrimitiveQuery: public AbstractQuery {
          * Begins counting of given @p target until end() is called.
          * @see @fn_gl{BeginQuery}
          */
-        inline void begin(Target target) {
+        void begin(Target target) {
             AbstractQuery::begin(GLenum(target));
         }
 };
@@ -285,7 +285,7 @@ class SampleQuery: public AbstractQuery {
         #endif
 
         /** @copydoc PrimitiveQuery::begin() */
-        inline void begin(Target target) {
+        void begin(Target target) {
             AbstractQuery::begin(GLenum(target));
         }
 
@@ -297,7 +297,7 @@ class SampleQuery: public AbstractQuery {
          * @requires_gl30 %Extension @extension{NV,conditional_render}
          * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
-        inline void beginConditionalRender(ConditionalRenderMode mode) {
+        void beginConditionalRender(ConditionalRenderMode mode) {
             glBeginConditionalRender(id(), static_cast<GLenum>(mode));
         }
 
@@ -308,7 +308,7 @@ class SampleQuery: public AbstractQuery {
          * @requires_gl30 %Extension @extension{NV,conditional_render}
          * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
-        inline void endConditionalRender() {
+        void endConditionalRender() {
             glEndConditionalRender();
         }
         #endif
@@ -366,7 +366,7 @@ class TimeQuery: public AbstractQuery {
          *
          * @see @fn_gl{QueryCounter} with @def_gl{TIMESTAMP}
          */
-        inline void timestamp() {
+        void timestamp() {
             /** @todo Enable when extension wrangler for ES is available */
             #ifndef MAGNUM_TARGET_GLES
             glQueryCounter(id(), GL_TIMESTAMP);
@@ -377,7 +377,7 @@ class TimeQuery: public AbstractQuery {
         }
 
         /** @copydoc PrimitiveQuery::begin() */
-        inline void begin(Target target) {
+        void begin(Target target) {
             AbstractQuery::begin(GLenum(target));
         }
 };

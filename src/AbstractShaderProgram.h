@@ -320,7 +320,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         virtual ~AbstractShaderProgram() = 0;
 
         /** @brief OpenGL program ID */
-        inline GLuint id() const { return _id; }
+        GLuint id() const { return _id; }
 
         /**
          * @brief Validate program
@@ -349,7 +349,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl41 %Extension @extension{ARB,get_program_binary}
          * @requires_gles30 Always allowed in OpenGL ES 2.0.
          */
-        inline void setRetrievableBinary(bool enabled) {
+        void setRetrievableBinary(bool enabled) {
             glProgramParameteri(_id, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, enabled ? GL_TRUE : GL_FALSE);
         }
         #endif
@@ -362,7 +362,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl41 %Extension @extension{ARB,separate_shader_objects}
          * @requires_es_extension %Extension @es_extension{EXT,separate_shader_objects}
          */
-        inline void setSeparable(bool enabled) {
+        void setSeparable(bool enabled) {
             /** @todo Remove when extension wrangler is available for ES */
             #ifndef MAGNUM_TARGET_GLES
             glProgramParameteri(_id, GL_PROGRAM_SEPARABLE, enabled ? GL_TRUE : GL_FALSE);
@@ -464,26 +464,26 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class T> inline void setUniform(Int location, const T& value);
         #else
-        inline void setUniform(Int location, Float value) {
+        void setUniform(Int location, Float value) {
             setUniform(location, 1, &value);
         }
-        inline void setUniform(Int location, Int value) {
+        void setUniform(Int location, Int value) {
             setUniform(location, 1, &value);
         }
         #ifndef MAGNUM_TARGET_GLES2
-        inline void setUniform(Int location, UnsignedInt value) {
+        void setUniform(Int location, UnsignedInt value) {
             setUniform(location, 1, &value);
         }
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        inline void setUniform(Int location, Double value) {
+        void setUniform(Int location, Double value) {
             setUniform(location, 1, &value);
         }
         #endif
-        template<std::size_t size, class T> inline void setUniform(Int location, const Math::Vector<size, T>& value) {
+        template<std::size_t size, class T> void setUniform(Int location, const Math::Vector<size, T>& value) {
             setUniform(location, 1, &value);
         }
-        template<std::size_t cols, std::size_t rows, class T> inline void setUniform(Int location, const Math::RectangularMatrix<cols, rows, T>& value) {
+        template<std::size_t cols, std::size_t rows, class T> void setUniform(Int location, const Math::RectangularMatrix<cols, rows, T>& value) {
             setUniform(location, 1, &value);
         }
         #endif
@@ -500,42 +500,42 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @see setUniform(Int, const T&), @fn_gl{UseProgram}, @fn_gl{Uniform}
          *      or @fn_gl{ProgramUniform}/@fn_gl_extension{ProgramUniform,EXT,direct_state_access}.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Float* values) {
+        void setUniform(Int location, UnsignedInt count, const Float* values) {
             (this->*uniform1fvImplementation)(location, count, values);
         }
 
         /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        inline void setUniform(Int location, UnsignedInt count, const Math::Vector<2, Float>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<2, Float>* values) {
             (this->*uniform2fvImplementation)(location, count, values);
         }
 
         /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        inline void setUniform(Int location, UnsignedInt count, const Math::Vector<3, Float>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<3, Float>* values) {
             (this->*uniform3fvImplementation)(location, count, values);
         }
 
         /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        inline void setUniform(Int location, UnsignedInt count, const Math::Vector<4, Float>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<4, Float>* values) {
             (this->*uniform4fvImplementation)(location, count, values);
         }
 
         /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        inline void setUniform(Int location, UnsignedInt count, const Int* values) {
+        void setUniform(Int location, UnsignedInt count, const Int* values) {
             (this->*uniform1ivImplementation)(location, count, values);
         }
 
         /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        inline void setUniform(Int location, UnsignedInt count, const Math::Vector<2, Int>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<2, Int>* values) {
             (this->*uniform2ivImplementation)(location, count, values);
         }
 
         /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        inline void setUniform(Int location, UnsignedInt count, const Math::Vector<3, Int>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<3, Int>* values) {
             (this->*uniform3ivImplementation)(location, count, values);
         }
 
         /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        inline void setUniform(Int location, UnsignedInt count, const Math::Vector<4, Int>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<4, Int>* values) {
             (this->*uniform4ivImplementation)(location, count, values);
         }
 
@@ -545,7 +545,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
-        inline void setUniform(Int location, UnsignedInt count, const UnsignedInt* values) {
+        void setUniform(Int location, UnsignedInt count, const UnsignedInt* values) {
             (this->*uniform1uivImplementation)(location, count, values);
         }
 
@@ -554,7 +554,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::Vector<2, UnsignedInt>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<2, UnsignedInt>* values) {
             (this->*uniform2uivImplementation)(location, count, values);
         }
 
@@ -563,7 +563,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::Vector<3, UnsignedInt>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<3, UnsignedInt>* values) {
             (this->*uniform3uivImplementation)(location, count, values);
         }
 
@@ -572,7 +572,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::Vector<4, UnsignedInt>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<4, UnsignedInt>* values) {
             (this->*uniform4uivImplementation)(location, count, values);
         }
         #endif
@@ -583,7 +583,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Double* values) {
+        void setUniform(Int location, UnsignedInt count, const Double* values) {
             (this->*uniform1dvImplementation)(location, count, values);
         }
 
@@ -592,7 +592,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::Vector<2, Double>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<2, Double>* values) {
             (this->*uniform2dvImplementation)(location, count, values);
         }
 
@@ -601,7 +601,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::Vector<3, Double>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<3, Double>* values) {
             (this->*uniform3dvImplementation)(location, count, values);
         }
 
@@ -610,23 +610,23 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::Vector<4, Double>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<4, Double>* values) {
             (this->*uniform4dvImplementation)(location, count, values);
         }
         #endif
 
         /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 2, Float>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 2, Float>* values) {
             (this->*uniformMatrix2fvImplementation)(location, count, values);
         }
 
         /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 3, Float>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 3, Float>* values) {
             (this->*uniformMatrix3fvImplementation)(location, count, values);
         }
 
         /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 4, Float>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 4, Float>* values) {
             (this->*uniformMatrix4fvImplementation)(location, count, values);
         }
 
@@ -635,7 +635,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @copydoc setUniform(Int, UnsignedInt, const Float*)
          * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 3, Float>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 3, Float>* values) {
             (this->*uniformMatrix2x3fvImplementation)(location, count, values);
         }
 
@@ -643,7 +643,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @copydoc setUniform(Int, UnsignedInt, const Float*)
          * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 2, Float>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 2, Float>* values) {
             (this->*uniformMatrix3x2fvImplementation)(location, count, values);
         }
 
@@ -651,7 +651,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @copydoc setUniform(Int, UnsignedInt, const Float*)
          * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 4, Float>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 4, Float>* values) {
             (this->*uniformMatrix2x4fvImplementation)(location, count, values);
         }
 
@@ -659,7 +659,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @copydoc setUniform(Int, UnsignedInt, const Float*)
          * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 2, Float>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 2, Float>* values) {
             (this->*uniformMatrix4x2fvImplementation)(location, count, values);
         }
 
@@ -667,7 +667,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @copydoc setUniform(Int, UnsignedInt, const Float*)
          * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 4, Float>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 4, Float>* values) {
             (this->*uniformMatrix3x4fvImplementation)(location, count, values);
         }
 
@@ -675,7 +675,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @copydoc setUniform(Int, UnsignedInt, const Float*)
          * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 3, Float>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 3, Float>* values) {
             (this->*uniformMatrix4x3fvImplementation)(location, count, values);
         }
         #endif
@@ -686,7 +686,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 2, Double>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 2, Double>* values) {
             (this->*uniformMatrix2dvImplementation)(location, count, values);
         }
 
@@ -695,7 +695,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 3, Double>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 3, Double>* values) {
             (this->*uniformMatrix3dvImplementation)(location, count, values);
         }
 
@@ -704,7 +704,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 4, Double>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 4, Double>* values) {
             (this->*uniformMatrix4dvImplementation)(location, count, values);
         }
 
@@ -713,7 +713,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 3, Double>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 3, Double>* values) {
             (this->*uniformMatrix2x3dvImplementation)(location, count, values);
         }
 
@@ -722,7 +722,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 2, Double>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 2, Double>* values) {
             (this->*uniformMatrix3x2dvImplementation)(location, count, values);
         }
 
@@ -731,7 +731,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 4, Double>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 4, Double>* values) {
             (this->*uniformMatrix2x4dvImplementation)(location, count, values);
         }
 
@@ -740,7 +740,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 2, Double>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 2, Double>* values) {
             (this->*uniformMatrix4x2dvImplementation)(location, count, values);
         }
 
@@ -749,7 +749,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 4, Double>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 4, Double>* values) {
             (this->*uniformMatrix3x4dvImplementation)(location, count, values);
         }
 
@@ -758,7 +758,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        inline void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 3, Double>* values) {
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 3, Double>* values) {
             (this->*uniformMatrix4x3dvImplementation)(location, count, values);
         }
         #endif
@@ -1108,7 +1108,7 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
          *      type used in shader (e.g. DataType::Integer for Vector4i).
          * @param dataOptions   Data options. Default is no options.
          */
-        inline constexpr Attribute(Components components, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(components), _dataType(dataType), _dataOptions(dataOptions) {}
+        constexpr Attribute(Components components, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(components), _dataType(dataType), _dataOptions(dataOptions) {}
 
         /**
          * @brief Constructor
@@ -1119,21 +1119,21 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
          * Component count is set to the same value as in type used in shader
          * (e.g. @ref Components "Components::Three" for Vector3).
          */
-        inline constexpr Attribute(DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(Implementation::Attribute<T>::DefaultComponents), _dataType(dataType), _dataOptions(dataOptions) {}
+        constexpr Attribute(DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(Implementation::Attribute<T>::DefaultComponents), _dataType(dataType), _dataOptions(dataOptions) {}
 
         /** @brief Component count of passed data */
-        inline constexpr Components components() const { return _components; }
+        constexpr Components components() const { return _components; }
 
         /** @brief Type of passed data */
-        inline constexpr DataType dataType() const { return _dataType; }
+        constexpr DataType dataType() const { return _dataType; }
 
         /** @brief Size of passed data */
-        inline std::size_t dataSize() const {
+        std::size_t dataSize() const {
             return Implementation::Attribute<T>::size(GLint(_components)*Implementation::Attribute<T>::vectorCount(), _dataType);
         }
 
         /** @brief Data options */
-        inline constexpr DataOptions dataOptions() const { return _dataOptions; }
+        constexpr DataOptions dataOptions() const { return _dataOptions; }
 
     private:
         const Components _components;
@@ -1156,7 +1156,7 @@ template<std::size_t cols, std::size_t rows> struct SizedAttribute;
 
 /* Vector attribute sizes */
 template<std::size_t cols> struct SizedVectorAttribute {
-    inline constexpr static std::size_t vectorCount() { return cols; }
+    constexpr static std::size_t vectorCount() { return cols; }
 };
 template<> struct SizedAttribute<1, 1>: SizedVectorAttribute<1> {
     enum class Components: GLint { One = 1 };
@@ -1281,7 +1281,7 @@ struct UnsignedIntAttribute {
     typedef IntAttribute::DataOption DataOption;
     typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
 
-    inline static std::size_t size(GLint components, DataType dataType) {
+    static std::size_t size(GLint components, DataType dataType) {
         return IntAttribute::size(components, dataType);
     }
 };
@@ -1352,7 +1352,7 @@ template<> struct Attribute<Math::Vector<4, Float>> {
     };
     typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
 
-    inline constexpr static std::size_t vectorCount() { return 1; }
+    constexpr static std::size_t vectorCount() { return 1; }
 
     static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
 };

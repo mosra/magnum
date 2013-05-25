@@ -66,9 +66,7 @@ class MAGNUM_EXPORT Renderbuffer {
          * Generates new OpenGL renderbuffer.
          * @see @fn_gl{GenRenderbuffers}
          */
-        inline explicit Renderbuffer() {
-            glGenRenderbuffers(1, &_id);
-        }
+        explicit Renderbuffer() { glGenRenderbuffers(1, &_id); }
 
         /**
          * @brief Destructor
@@ -79,7 +77,7 @@ class MAGNUM_EXPORT Renderbuffer {
         ~Renderbuffer();
 
         /** @brief OpenGL internal renderbuffer ID */
-        inline GLuint id() const { return _id; }
+        GLuint id() const { return _id; }
 
         /**
          * @brief Set renderbuffer storage
@@ -92,7 +90,7 @@ class MAGNUM_EXPORT Renderbuffer {
          * @see @fn_gl{BindRenderbuffer}, @fn_gl{RenderbufferStorage} or
          *      @fn_gl_extension{NamedRenderbufferStorage,EXT,direct_state_access}
          */
-        inline void setStorage(RenderbufferFormat internalFormat, const Vector2i& size) {
+        void setStorage(RenderbufferFormat internalFormat, const Vector2i& size) {
             (this->*storageImplementation)(internalFormat, size);
         }
 
@@ -112,7 +110,7 @@ class MAGNUM_EXPORT Renderbuffer {
          *      or @es_extension{NV,framebuffer_multisample}
          * @todo How about @es_extension{APPLE,framebuffer_multisample}?
          */
-        inline void setStorageMultisample(Int samples, RenderbufferFormat internalFormat, const Vector2i& size) {
+        void setStorageMultisample(Int samples, RenderbufferFormat internalFormat, const Vector2i& size) {
             (this->*storageMultisampleImplementation)(samples, internalFormat, size);
         }
 
