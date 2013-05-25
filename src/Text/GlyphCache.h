@@ -81,13 +81,13 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          *
          * Size of unscaled glyph cache texture.
          */
-        inline Vector2i textureSize() const { return _size; }
+        Vector2i textureSize() const { return _size; }
 
         /** @brief Count of glyphs in the cache */
-        inline std::size_t glyphCount() const { return glyphs.size(); }
+        std::size_t glyphCount() const { return glyphs.size(); }
 
         /** @brief Cache texture */
-        inline Texture2D* texture() { return &_texture; }
+        Texture2D* texture() { return &_texture; }
 
         /**
          * @brief Parameters of given glyph
@@ -97,7 +97,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * second element is glyph region in texture atlas. If no glyph is
          * found, glyph on zero index is returned.
          */
-        inline std::pair<Vector2i, Rectanglei> operator[](UnsignedInt glyph) const {
+        std::pair<Vector2i, Rectanglei> operator[](UnsignedInt glyph) const {
             auto it = glyphs.find(glyph);
             return it == glyphs.end() ? glyphs.at(0) : it->second;
         }

@@ -87,7 +87,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         virtual void close() = 0;
 
         /** @brief Font size */
-        inline Float size() const { return _size; }
+        Float size() const { return _size; }
 
         /**
          * @brief Create glyph cache for given character set
@@ -132,7 +132,7 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
         virtual ~AbstractLayouter() = 0;
 
         /** @brief Count of glyphs in laid out text */
-        inline UnsignedInt glyphCount() const {
+        UnsignedInt glyphCount() const {
             return _glyphCount;
         }
 

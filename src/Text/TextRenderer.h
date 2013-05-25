@@ -77,13 +77,13 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
          *
          * @see reserve()
          */
-        inline UnsignedInt capacity() const { return _capacity; }
+        UnsignedInt capacity() const { return _capacity; }
 
         /** @brief Rectangle spanning the rendered text */
-        inline Rectangle rectangle() const { return _rectangle; }
+        Rectangle rectangle() const { return _rectangle; }
 
         /** @brief Text mesh */
-        inline Mesh* mesh() { return &_mesh; }
+        Mesh* mesh() { return &_mesh; }
 
         /**
          * @brief Reserve capacity for rendered glyphs
