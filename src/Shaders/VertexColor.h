@@ -60,7 +60,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
          *
          * Default is identity matrix.
          */
-        inline VertexColor<dimensions>* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
+        VertexColor<dimensions>* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
             setUniform(transformationProjectionMatrixUniform, matrix);
             return this;
         }

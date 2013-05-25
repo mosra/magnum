@@ -49,7 +49,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
         DistanceFieldVector();
 
         /** @brief Set transformation and projection matrix */
-        inline DistanceFieldVector* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
+        DistanceFieldVector* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
             AbstractShaderProgram::setUniform(transformationProjectionMatrixUniform, matrix);
             return this;
         }
@@ -60,7 +60,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          *
          * @see setOutlineColor()
          */
-        inline DistanceFieldVector* setColor(const Color4<>& color) {
+        DistanceFieldVector* setColor(const Color4<>& color) {
             AbstractShaderProgram::setUniform(colorUniform, color);
             return this;
         }
@@ -71,7 +71,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          *
          * @see setOutlineRange(), setColor()
          */
-        inline DistanceFieldVector* setOutlineColor(const Color4<>& color) {
+        DistanceFieldVector* setOutlineColor(const Color4<>& color) {
             AbstractShaderProgram::setUniform(outlineColorUniform, color);
             return this;
         }
@@ -90,7 +90,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          *
          * @see setOutlineColor()
          */
-        inline DistanceFieldVector* setOutlineRange(Float start, Float end) {
+        DistanceFieldVector* setOutlineRange(Float start, Float end) {
             AbstractShaderProgram::setUniform(outlineRangeUniform, Vector2(start, end));
             return this;
         }
@@ -103,7 +103,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * values will make them look more crisp (but possibly aliased). Initial
          * value is `0.04f`.
          */
-        inline DistanceFieldVector* setSmoothness(Float value) {
+        DistanceFieldVector* setSmoothness(Float value) {
             AbstractShaderProgram::setUniform(smoothnessUniform, value);
             return this;
         }

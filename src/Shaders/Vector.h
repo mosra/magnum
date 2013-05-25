@@ -51,7 +51,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
          * @brief Set transformation and projection matrix
          * @return Pointer to self (for method chaining)
          */
-        inline Vector* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
+        Vector* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
             AbstractShaderProgram::setUniform(transformationProjectionMatrixUniform, matrix);
             return this;
         }
@@ -60,7 +60,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
          * @brief Set fill color
          * @return Pointer to self (for method chaining)
          */
-        inline Vector* setColor(const Color4<>& color) {
+        Vector* setColor(const Color4<>& color) {
             AbstractShaderProgram::setUniform(colorUniform, color);
             return this;
         }

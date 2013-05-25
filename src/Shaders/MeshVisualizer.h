@@ -71,7 +71,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * @brief Set transformation and projection matrix
          * @return Pointer to self (for method chaining)
          */
-        inline MeshVisualizer* setTransformationProjectionMatrix(const Matrix4& matrix) {
+        MeshVisualizer* setTransformationProjectionMatrix(const Matrix4& matrix) {
             setUniform(transformationProjectionMatrixUniform, matrix);
             return this;
         }
@@ -82,7 +82,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          *
          * Has effect only if @ref Flag "Flag::Wireframe" is enabled.
          */
-        inline MeshVisualizer* setViewportSize(const Vector2& size) {
+        MeshVisualizer* setViewportSize(const Vector2& size) {
             setUniform(viewportSizeUniform, size);
             return this;
         }
@@ -93,7 +93,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          *
          * Initial value is fully opaque white.
          */
-        inline MeshVisualizer* setColor(const Color4<>& color) {
+        MeshVisualizer* setColor(const Color4<>& color) {
             setUniform(colorUniform, color);
             return this;
         }
@@ -105,7 +105,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * Initial value is fully opaque black. Has effect only if
          * @ref Flag "Flag::Wireframe" is enabled.
          */
-        inline MeshVisualizer* setWireframeColor(const Color4<>& color) {
+        MeshVisualizer* setWireframeColor(const Color4<>& color) {
             if(flags & Flag::Wireframe) setUniform(wireframeColorUniform, color);
             return this;
         }
@@ -117,7 +117,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * Initial value is `1.0f`. Has effect only if
          * @ref Flag "Flag::Wireframe" is enabled.
          */
-        inline MeshVisualizer* setWireframeWidth(Float width) {
+        MeshVisualizer* setWireframeWidth(Float width) {
             if(flags & Flag::Wireframe) setUniform(wireframeWidthUniform, width);
             return this;
         }

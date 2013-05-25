@@ -55,7 +55,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          *
          * If not set, default value is `(0.0f, 0.0f, 0.0f)`.
          */
-        inline Phong* setAmbientColor(const Color3<>& color) {
+        Phong* setAmbientColor(const Color3<>& color) {
             setUniform(ambientColorUniform, color);
             return this;
         }
@@ -64,7 +64,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @brief Set diffuse color
          * @return Pointer to self (for method chaining)
          */
-        inline Phong* setDiffuseColor(const Color3<>& color) {
+        Phong* setDiffuseColor(const Color3<>& color) {
             setUniform(diffuseColorUniform, color);
             return this;
         }
@@ -75,7 +75,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
          */
-        inline Phong* setSpecularColor(const Color3<>& color) {
+        Phong* setSpecularColor(const Color3<>& color) {
             setUniform(specularColorUniform, color);
             return this;
         }
@@ -87,7 +87,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * The larger value, the harder surface (smaller specular highlight).
          * If not set, default value is `80.0f`.
          */
-        inline Phong* setShininess(Float shininess) {
+        Phong* setShininess(Float shininess) {
             setUniform(shininessUniform, shininess);
             return this;
         }
@@ -96,7 +96,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @brief Set transformation and normal matrix
          * @return Pointer to self (for method chaining)
          */
-        inline Phong* setTransformationMatrix(const Matrix4& matrix) {
+        Phong* setTransformationMatrix(const Matrix4& matrix) {
             setUniform(transformationMatrixUniform, matrix);
             setUniform(normalMatrixUniform, matrix.rotation());
             return this;
@@ -106,7 +106,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @brief Set projection matrix
          * @return Pointer to self (for method chaining)
          */
-        inline Phong* setProjectionMatrix(const Matrix4& matrix) {
+        Phong* setProjectionMatrix(const Matrix4& matrix) {
             setUniform(projectionMatrixUniform, matrix);
             return this;
         }
@@ -115,7 +115,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @brief Set light position
          * @return Pointer to self (for method chaining)
          */
-        inline Phong* setLightPosition(const Vector3& light) {
+        Phong* setLightPosition(const Vector3& light) {
             setUniform(lightUniform, light);
             return this;
         }
@@ -126,7 +126,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
          */
-        inline Phong* setLightColor(const Color3<>& color) {
+        Phong* setLightColor(const Color3<>& color) {
             setUniform(lightColorUniform, color);
             return this;
         }
