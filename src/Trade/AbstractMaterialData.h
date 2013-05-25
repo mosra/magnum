@@ -59,7 +59,7 @@ class MAGNUM_EXPORT AbstractMaterialData {
         virtual ~AbstractMaterialData() = 0;
 
         /** @brief Material type */
-        inline Type type() const { return _type; }
+        Type type() const { return _type; }
 
     private:
         Type _type;

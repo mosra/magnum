@@ -76,10 +76,10 @@ class MAGNUM_EXPORT ObjectData2D {
         virtual ~ObjectData2D();
 
         /** @brief Child objects */
-        inline std::vector<UnsignedInt>& children() { return _children; }
+        std::vector<UnsignedInt>& children() { return _children; }
 
         /** @brief Transformation (relative to parent) */
-        inline Matrix3 transformation() const { return _transformation; }
+        Matrix3 transformation() const { return _transformation; }
 
         /**
          * @brief Instance type
@@ -88,14 +88,14 @@ class MAGNUM_EXPORT ObjectData2D {
          * If the instance is of type InstanceType::Mesh, the instance can be
          * casted to MeshObjectData2D and provide more information.
          */
-        inline InstanceType instanceType() const { return _instanceType; }
+        InstanceType instanceType() const { return _instanceType; }
 
         /**
          * @brief Instance ID
          * @return ID of given camera / light / mesh etc., specified by
          *      instanceType()
          */
-        inline Int instanceId() const { return _instanceId; }
+        Int instanceId() const { return _instanceId; }
 
     private:
         std::vector<UnsignedInt> _children;

@@ -69,17 +69,17 @@ class MAGNUM_EXPORT MeshData3D {
         MeshData3D& operator=(MeshData3D&&);
 
         /** @brief Primitive */
-        inline Mesh::Primitive primitive() const { return _primitive; }
+        Mesh::Primitive primitive() const { return _primitive; }
 
         /**
          * @brief Indices
          * @return Indices or nullptr if the mesh is not indexed.
          */
-        inline std::vector<UnsignedInt>* indices() { return _indices; }
-        inline const std::vector<UnsignedInt>* indices() const { return _indices; } /**< @overload */
+        std::vector<UnsignedInt>* indices() { return _indices; }
+        const std::vector<UnsignedInt>* indices() const { return _indices; } /**< @overload */
 
         /** @brief Count of vertex position arrays */
-        inline UnsignedInt positionArrayCount() const { return _positions.size(); }
+        UnsignedInt positionArrayCount() const { return _positions.size(); }
 
         /**
          * @brief Positions
@@ -87,11 +87,11 @@ class MAGNUM_EXPORT MeshData3D {
          * @return Positions or nullptr if there is no vertex array with given
          *      ID.
          */
-        inline std::vector<Vector3>* positions(UnsignedInt id) { return _positions[id]; }
-        inline const std::vector<Vector3>* positions(UnsignedInt id) const { return _positions[id]; } /**< @overload */
+        std::vector<Vector3>* positions(UnsignedInt id) { return _positions[id]; }
+        const std::vector<Vector3>* positions(UnsignedInt id) const { return _positions[id]; } /**< @overload */
 
         /** @brief Count of normal arrays */
-        inline UnsignedInt normalArrayCount() const { return _normals.size(); }
+        UnsignedInt normalArrayCount() const { return _normals.size(); }
 
         /**
          * @brief Normals
@@ -99,11 +99,11 @@ class MAGNUM_EXPORT MeshData3D {
          * @return Normals or nullptr if there is no normal array with given
          *      ID.
          */
-        inline std::vector<Vector3>* normals(UnsignedInt id) { return _normals[id]; }
-        inline const std::vector<Vector3>* normals(UnsignedInt id) const { return _normals[id]; } /**< @overload */
+        std::vector<Vector3>* normals(UnsignedInt id) { return _normals[id]; }
+        const std::vector<Vector3>* normals(UnsignedInt id) const { return _normals[id]; } /**< @overload */
 
         /** @brief Count of 2D texture coordinate arrays */
-        inline UnsignedInt textureCoords2DArrayCount() const { return _textureCoords2D.size(); }
+        UnsignedInt textureCoords2DArrayCount() const { return _textureCoords2D.size(); }
 
         /**
          * @brief 2D texture coordinates
@@ -111,8 +111,8 @@ class MAGNUM_EXPORT MeshData3D {
          * @return %Texture coordinates or nullptr if there is no texture
          *      coordinates array with given ID.
          */
-        inline std::vector<Vector2>* textureCoords2D(UnsignedInt id) { return _textureCoords2D[id]; }
-        inline const std::vector<Vector2>* textureCoords2D(UnsignedInt id) const { return _textureCoords2D[id]; } /**< @overload */
+        std::vector<Vector2>* textureCoords2D(UnsignedInt id) { return _textureCoords2D[id]; }
+        const std::vector<Vector2>* textureCoords2D(UnsignedInt id) const { return _textureCoords2D[id]; } /**< @overload */
 
     private:
         Mesh::Primitive _primitive;

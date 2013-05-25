@@ -54,10 +54,10 @@ class MAGNUM_EXPORT SceneData {
         explicit SceneData(std::vector<UnsignedInt> children2D, std::vector<UnsignedInt> children3D);
 
         /** @brief Two-dimensional child objects */
-        inline const std::vector<UnsignedInt>& children2D() const { return _children2D; }
+        const std::vector<UnsignedInt>& children2D() const { return _children2D; }
 
         /** @brief Three-dimensional child objects */
-        inline const std::vector<UnsignedInt>& children3D() const { return _children3D; }
+        const std::vector<UnsignedInt>& children3D() const { return _children3D; }
 
     private:
         std::vector<UnsignedInt> _children2D,

@@ -57,7 +57,7 @@ class MAGNUM_EXPORT MeshObjectData3D: public ObjectData3D {
         explicit MeshObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, UnsignedInt instance, UnsignedInt material);
 
         /** @brief Material ID */
-        inline UnsignedInt material() const { return _material; }
+        UnsignedInt material() const { return _material; }
 
     private:
         UnsignedInt _material;
