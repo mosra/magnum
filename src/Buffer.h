@@ -31,6 +31,7 @@
 #include <cstddef>
 #include <array>
 #include <vector>
+#include <Containers/Containers.h>
 #include <Containers/EnumSet.h>
 
 #include "Magnum.h"
@@ -520,6 +521,44 @@ class MAGNUM_EXPORT Buffer {
         inline void bind(Target target) { bind(target, _id); }
 
         /**
+         * @brief Buffer size
+         *
+         * If @extension{EXT,direct_state_access} is not available and the
+         * buffer is not already bound somewhere, it is bound to hinted target
+         * before the operation.
+         * @see @fn_gl{BindBuffer} and @fn_gl{GetBufferParameter} or
+         *      @fn_gl_extension{GetNamedBufferParameter,EXT,direct_state_access}
+         *      with @def_gl{BUFFER_SIZE}
+         */
+        Int size();
+
+        /**
+         * @brief Buffer data
+         *
+         * Returns data of whole buffer. If @extension{EXT,direct_state_access}
+         * is not available and the buffer is not already bound somewhere, it
+         * is bound to hinted target before the operation.
+         * @see size(), subData(), setData(), @fn_gl{BindBuffer} and @fn_gl{GetBufferParameter} or
+         *      @fn_gl_extension{GetNamedBufferParameter,EXT,direct_state_access}
+         *      with @def_gl{BUFFER_SIZE}, @fn_gl{GetBufferSubData} or
+         *      @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access}
+         */
+        Containers::Array<char> data();
+
+        /**
+         * @brief Buffer subdata
+         * @param offset    Offset in the buffer
+         * @param size      Data size
+         *
+         * Returns data of given buffer portion. If @extension{EXT,direct_state_access}
+         * is not available and the buffer is not already bound somewhere, it
+         * is bound to hinted target before the operation.
+         * @see size(), data(), setSubData(), @fn_gl{BindBuffer} and @fn_gl{GetBufferSubData}
+         *      or @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access}
+         */
+        Containers::Array<char> subData(GLintptr offset, GLsizeiptr size);
+
+        /**
          * @brief Set buffer data
          * @param size      Data size
          * @param data      Pointer to data
@@ -745,6 +784,20 @@ class MAGNUM_EXPORT Buffer {
         #endif
         static CopyImplementation copyImplementation;
         #endif
+
+        typedef void(Buffer::*GetParameterImplementation)(GLenum, GLint*);
+        void MAGNUM_LOCAL getParameterImplementationDefault(GLenum value, GLint* data);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL getParameterImplementationDSA(GLenum value, GLint* data);
+        #endif
+        static MAGNUM_LOCAL GetParameterImplementation getParameterImplementation;
+
+        typedef void(Buffer::*GetSubDataImplementation)(GLintptr, GLsizeiptr, GLvoid*);
+        void MAGNUM_LOCAL getSubDataImplementationDefault(GLintptr offset, GLsizeiptr size, GLvoid* data);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL getSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, GLvoid* data);
+        #endif
+        static MAGNUM_LOCAL GetSubDataImplementation getSubDataImplementation;
 
         typedef void(Buffer::*DataImplementation)(GLsizeiptr, const GLvoid*, Usage);
         void MAGNUM_LOCAL dataImplementationDefault(GLsizeiptr size, const GLvoid* data, Usage usage);

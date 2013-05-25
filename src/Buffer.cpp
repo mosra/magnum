@@ -24,6 +24,7 @@
 
 #include "Buffer.h"
 
+#include <Containers/Array.h>
 #include <Utility/Debug.h>
 
 #include "Context.h"
@@ -36,6 +37,8 @@ namespace Magnum {
 #ifndef MAGNUM_TARGET_GLES2
 Buffer::CopyImplementation Buffer::copyImplementation = &Buffer::copyImplementationDefault;
 #endif
+Buffer::GetParameterImplementation Buffer::getParameterImplementation = &Buffer::getParameterImplementationDefault;
+Buffer::GetSubDataImplementation Buffer::getSubDataImplementation = &Buffer::getSubDataImplementationDefault;
 Buffer::DataImplementation Buffer::dataImplementation = &Buffer::dataImplementationDefault;
 Buffer::SubDataImplementation Buffer::subDataImplementation = &Buffer::subDataImplementationDefault;
 Buffer::InvalidateImplementation Buffer::invalidateImplementation = &Buffer::invalidateImplementationNoOp;
@@ -53,6 +56,8 @@ void Buffer::initializeContextBasedFunctionality(Context* context) {
         Debug() << "Buffer: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
 
         copyImplementation = &Buffer::copyImplementationDSA;
+        getParameterImplementation = &Buffer::getParameterImplementationDSA;
+        getSubDataImplementation = &Buffer::getSubDataImplementationDSA;
         dataImplementation = &Buffer::dataImplementationDSA;
         subDataImplementation = &Buffer::subDataImplementationDSA;
         mapImplementation = &Buffer::mapImplementationDSA;
@@ -111,6 +116,26 @@ Buffer::Target Buffer::bindInternal(Target hint) {
     return hint;
 }
 
+Int Buffer::size() {
+    /**
+     * @todo there is something like glGetBufferParameteri64v in 3.2 (I
+     *      couldn't find any matching extension, though)
+     */
+    GLint size;
+    (this->*getParameterImplementation)(GL_BUFFER_SIZE, &size);
+    return size;
+}
+
+Containers::Array<char> Buffer::data() {
+    return subData(0, size());
+}
+
+Containers::Array<char> Buffer::subData(const GLintptr offset, const GLsizeiptr size) {
+    Containers::Array<char> data(size);
+    if(size) (this->*getSubDataImplementation)(offset, size, data);
+    return std::move(data);
+}
+
 #ifndef MAGNUM_TARGET_GLES2
 void Buffer::copyImplementationDefault(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
     glCopyBufferSubData(static_cast<GLenum>(read->bindInternal(Target::CopyRead)), static_cast<GLenum>(write->bindInternal(Target::CopyWrite)), readOffset, writeOffset, size);
@@ -121,6 +146,26 @@ void Buffer::copyImplementationDSA(Buffer* read, Buffer* write, GLintptr readOff
     glNamedCopyBufferSubDataEXT(read->_id, write->_id, readOffset, writeOffset, size);
 }
 #endif
+#endif
+
+void Buffer::getParameterImplementationDefault(const GLenum value, GLint* const data) {
+    glGetBufferParameteriv(GLenum(bindInternal(_targetHint)), value, data);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void Buffer::getParameterImplementationDSA(const GLenum value, GLint* const data) {
+    glGetNamedBufferParameterivEXT(_id, value, data);
+}
+#endif
+
+void Buffer::getSubDataImplementationDefault(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
+    glGetBufferSubData(GLenum(bindInternal(_targetHint)), offset, size, data);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void Buffer::getSubDataImplementationDSA(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
+    glGetNamedBufferSubDataEXT(_id, offset, size, data);
+}
 #endif
 
 void Buffer::dataImplementationDefault(GLsizeiptr size, const GLvoid* data, Buffer::Usage usage) {
