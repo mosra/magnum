@@ -88,7 +88,7 @@ template<class T> class MAGNUM_SHAPES_EXPORT Shape: public AbstractShape<T::Dime
         template<class ...U> explicit Shape(SceneGraph::AbstractObject<T::Dimensions>* object, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {}
 
         /** @brief Shape */
-        inline const T& shape() const { return _shape.shape; }
+        const T& shape() const { return _shape.shape; }
 
         /**
          * @brief Set shape
@@ -134,11 +134,11 @@ template<class T> void Shape<T>::clean(const typename DimensionTraits<T::Dimensi
 
 namespace Implementation {
     template<class T> struct ShapeHelper {
-        inline static void set(Shapes::Shape<T>& shape, const T& s) {
+        static void set(Shapes::Shape<T>& shape, const T& s) {
             shape._shape.shape = s;
         }
 
-        inline static void transform(Shapes::Shape<T>& shape, const typename DimensionTraits<T::Dimensions>::MatrixType& absoluteTransformationMatrix) {
+        static void transform(Shapes::Shape<T>& shape, const typename DimensionTraits<T::Dimensions>::MatrixType& absoluteTransformationMatrix) {
             shape._transformedShape.shape = shape._shape.shape.transformed(absoluteTransformationMatrix);
         }
     };

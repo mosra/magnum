@@ -51,21 +51,21 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Point {
          *
          * Creates point at origin.
          */
-        inline constexpr /*implicit*/ Point() {}
+        constexpr /*implicit*/ Point() {}
 
         /** @brief Constructor */
-        inline constexpr /*implicit*/ Point(const typename DimensionTraits<dimensions>::VectorType& position): _position(position) {}
+        constexpr /*implicit*/ Point(const typename DimensionTraits<dimensions>::VectorType& position): _position(position) {}
 
         /** @brief Transformed shape */
         Point<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;
 
         /** @brief Position */
-        inline constexpr typename DimensionTraits<dimensions>::VectorType position() const {
+        constexpr typename DimensionTraits<dimensions>::VectorType position() const {
             return _position;
         }
 
         /** @brief Set position */
-        inline void setPosition(const typename DimensionTraits<dimensions>::VectorType& position) {
+        void setPosition(const typename DimensionTraits<dimensions>::VectorType& position) {
             _position = position;
         }
 

@@ -93,7 +93,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
          *
          * Creates empty hierarchy.
          */
-        inline explicit Composition(): _shapeCount(0), _nodeCount(0), _shapes(nullptr), _nodes(nullptr) {}
+        explicit Composition(): _shapeCount(0), _nodeCount(0), _shapes(nullptr), _nodes(nullptr) {}
 
         /**
          * @brief Unary operation constructor
@@ -128,19 +128,19 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
         Composition<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;
 
         /** @brief Count of shapes in the hierarchy */
-        inline std::size_t size() const { return _shapeCount; }
+        std::size_t size() const { return _shapeCount; }
 
         /** @brief Type of shape at given position */
-        inline Type type(std::size_t i) const { return _shapes[i]->type(); }
+        Type type(std::size_t i) const { return _shapes[i]->type(); }
 
         /** @brief Shape at given position */
         template<class T> const T& get(std::size_t i) const;
 
         /** @brief Collision with another shape */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class T> inline bool operator%(const T& other) const {
+        template<class T> bool operator%(const T& other) const {
         #else
-        template<class T> inline auto operator%(const T& other) const -> typename std::enable_if<std::is_same<decltype(Implementation::TypeOf<T>::type()), typename Implementation::ShapeDimensionTraits<dimensions>::Type>::value, bool>::type {
+        template<class T> auto operator%(const T& other) const -> typename std::enable_if<std::is_same<decltype(Implementation::TypeOf<T>::type()), typename Implementation::ShapeDimensionTraits<dimensions>::Type>::value, bool>::type {
         #endif
             Implementation::Shape<T> a(other);
             return collides(&a);
@@ -152,32 +152,32 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
             CompositionOperation operation;
         };
 
-        inline bool collides(const Implementation::AbstractShape<dimensions>* a) const {
+        bool collides(const Implementation::AbstractShape<dimensions>* a) const {
             return collides(a, 0, 0, _shapeCount);
         }
 
         bool collides(const Implementation::AbstractShape<dimensions>* a, std::size_t node, std::size_t shapeBegin, std::size_t shapeEnd) const;
 
-        template<class T> inline constexpr static std::size_t shapeCount(const T&) {
+        template<class T> constexpr static std::size_t shapeCount(const T&) {
             return 1;
         }
-        inline constexpr static std::size_t shapeCount(const Composition<dimensions>& hierarchy) {
+        constexpr static std::size_t shapeCount(const Composition<dimensions>& hierarchy) {
             return hierarchy._shapeCount;
         }
-        template<class T> inline constexpr static std::size_t nodeCount(const T&) {
+        template<class T> constexpr static std::size_t nodeCount(const T&) {
             return 0;
         }
-        inline constexpr static std::size_t nodeCount(const Composition<dimensions>& hierarchy) {
+        constexpr static std::size_t nodeCount(const Composition<dimensions>& hierarchy) {
             return hierarchy._nodeCount;
         }
 
-        template<class T> inline void copyShapes(std::size_t offset, const T& shape) {
+        template<class T> void copyShapes(std::size_t offset, const T& shape) {
             _shapes[offset] = new Implementation::Shape<T>(shape);
         }
         void copyShapes(std::size_t offset, Composition<dimensions>&& other);
         void copyShapes(std::size_t offset, const Composition<dimensions>& other);
 
-        template<class T> inline void copyNodes(std::size_t, const T&) {}
+        template<class T> void copyNodes(std::size_t, const T&) {}
         void copyNodes(std::size_t offset, const Composition<dimensions>& other);
 
         std::size_t _shapeCount, _nodeCount;

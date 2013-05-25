@@ -53,31 +53,31 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AxisAlignedBox {
          *
          * Creates zero sized box positioned at origin.
          */
-        inline constexpr /*implicit*/ AxisAlignedBox() {}
+        constexpr /*implicit*/ AxisAlignedBox() {}
 
         /** @brief Constructor */
-        inline constexpr /*implicit*/ AxisAlignedBox(const typename DimensionTraits<dimensions>::VectorType& min, const typename DimensionTraits<dimensions>::VectorType& max): _min(min), _max(max) {}
+        constexpr /*implicit*/ AxisAlignedBox(const typename DimensionTraits<dimensions>::VectorType& min, const typename DimensionTraits<dimensions>::VectorType& max): _min(min), _max(max) {}
 
         /** @brief Transformed shape */
         AxisAlignedBox<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;
 
         /** @brief Minimal coordinates */
-        inline constexpr typename DimensionTraits<dimensions>::VectorType min() const {
+        constexpr typename DimensionTraits<dimensions>::VectorType min() const {
             return _min;
         }
 
         /** @brief Set minimal coordinates */
-        inline void setMin(const typename DimensionTraits<dimensions>::VectorType& min) {
+        void setMin(const typename DimensionTraits<dimensions>::VectorType& min) {
             _min = min;
         }
 
         /** @brief Maximal coordinates */
-        inline constexpr typename DimensionTraits<dimensions>::VectorType max() const {
+        constexpr typename DimensionTraits<dimensions>::VectorType max() const {
             return _max;
         }
 
         /** @brief Set maximal coordinates */
-        inline void setMax(const typename DimensionTraits<dimensions>::VectorType& max) {
+        void setMax(const typename DimensionTraits<dimensions>::VectorType& max) {
             _max = max;
         }
 

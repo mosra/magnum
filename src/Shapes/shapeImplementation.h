@@ -73,47 +73,47 @@ Debug MAGNUM_SHAPES_EXPORT operator<<(Debug debug, ShapeDimensionTraits<3>::Type
 template<class> struct TypeOf;
 
 template<UnsignedInt dimensions> struct TypeOf<Shapes::Point<dimensions>> {
-    inline constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
+    constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
         return ShapeDimensionTraits<dimensions>::Type::Point;
     }
 };
 template<UnsignedInt dimensions> struct TypeOf<Shapes::Line<dimensions>> {
-    inline constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
+    constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
         return ShapeDimensionTraits<dimensions>::Type::Line;
     }
 };
 template<UnsignedInt dimensions> struct TypeOf<Shapes::LineSegment<dimensions>> {
-    inline constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
+    constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
         return ShapeDimensionTraits<dimensions>::Type::LineSegment;
     }
 };
 template<UnsignedInt dimensions> struct TypeOf<Shapes::Sphere<dimensions>> {
-    inline constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
+    constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
         return ShapeDimensionTraits<dimensions>::Type::Sphere;
     }
 };
 template<UnsignedInt dimensions> struct TypeOf<Shapes::Capsule<dimensions>> {
-    inline constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
+    constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
         return ShapeDimensionTraits<dimensions>::Type::Capsule;
     }
 };
 template<UnsignedInt dimensions> struct TypeOf<Shapes::AxisAlignedBox<dimensions>> {
-    inline constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
+    constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
         return ShapeDimensionTraits<dimensions>::Type::AxisAlignedBox;
     }
 };
 template<UnsignedInt dimensions> struct TypeOf<Shapes::Box<dimensions>> {
-    inline constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
+    constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
         return ShapeDimensionTraits<dimensions>::Type::Box;
     }
 };
 template<> struct TypeOf<Shapes::Plane> {
-    inline constexpr static typename ShapeDimensionTraits<3>::Type type() {
+    constexpr static typename ShapeDimensionTraits<3>::Type type() {
         return ShapeDimensionTraits<3>::Type::Plane;
     }
 };
 template<UnsignedInt dimensions> struct TypeOf<Shapes::Composition<dimensions>> {
-    inline constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
+    constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
         return ShapeDimensionTraits<dimensions>::Type::Composition;
     }
 };

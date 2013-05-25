@@ -51,27 +51,27 @@ class MAGNUM_SHAPES_EXPORT Plane {
          *
          * Creates plane with zero-sized normal at origin.
          */
-        inline constexpr /*implicit*/ Plane() {}
+        constexpr /*implicit*/ Plane() {}
 
         /** @brief Constructor */
-        inline constexpr /*implicit*/ Plane(const Vector3& position, const Vector3& normal): _position(position), _normal(normal) {}
+        constexpr /*implicit*/ Plane(const Vector3& position, const Vector3& normal): _position(position), _normal(normal) {}
 
         /** @brief Transformed shape */
         Plane transformed(const Matrix4& matrix) const;
 
         /** @brief Position */
-        inline constexpr Vector3 position() const { return _position; }
+        constexpr Vector3 position() const { return _position; }
 
         /** @brief Set position */
-        inline void setPosition(const Vector3& position) {
+        void setPosition(const Vector3& position) {
             _position = position;
         }
 
         /** @brief Normal */
-        inline constexpr Vector3 normal() const { return _normal; }
+        constexpr Vector3 normal() const { return _normal; }
 
         /** @brief Set normal */
-        inline void setNormal(const Vector3& normal) {
+        void setNormal(const Vector3& normal) {
             _normal = normal;
         }
 

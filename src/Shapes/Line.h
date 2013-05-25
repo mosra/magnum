@@ -52,31 +52,31 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Line {
          *
          * Creates line with both points at origin.
          */
-        inline constexpr /*implicit*/ Line() {}
+        constexpr /*implicit*/ Line() {}
 
         /** @brief Constructor */
-        inline constexpr /*implicit*/ Line(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b): _a(a), _b(b) {}
+        constexpr /*implicit*/ Line(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b): _a(a), _b(b) {}
 
         /** @brief Transformed shape */
         Line<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;
 
         /** @brief First point */
-        inline constexpr typename DimensionTraits<dimensions>::VectorType a() const {
+        constexpr typename DimensionTraits<dimensions>::VectorType a() const {
             return _a;
         }
 
         /** @brief Set first point */
-        inline void setA(const typename DimensionTraits<dimensions>::VectorType& a) {
+        void setA(const typename DimensionTraits<dimensions>::VectorType& a) {
             _a = a;
         }
 
         /** @brief Second point */
-        inline constexpr typename DimensionTraits<dimensions>::VectorType b() const {
+        constexpr typename DimensionTraits<dimensions>::VectorType b() const {
             return _b;
         }
 
         /** @brief Set second point */
-        inline void setB(const typename DimensionTraits<dimensions>::VectorType& b) {
+        void setB(const typename DimensionTraits<dimensions>::VectorType& b) {
             _b = b;
         }
 

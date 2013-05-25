@@ -36,10 +36,10 @@
 namespace Magnum { namespace Shapes { namespace Implementation {
 
 namespace {
-    inline constexpr UnsignedInt operator*(ShapeDimensionTraits<2>::Type a, ShapeDimensionTraits<2>::Type b) {
+    constexpr UnsignedInt operator*(ShapeDimensionTraits<2>::Type a, ShapeDimensionTraits<2>::Type b) {
         return UnsignedInt(a)*UnsignedInt(b);
     }
-    inline constexpr UnsignedInt operator*(ShapeDimensionTraits<3>::Type a, ShapeDimensionTraits<3>::Type b) {
+    constexpr UnsignedInt operator*(ShapeDimensionTraits<3>::Type a, ShapeDimensionTraits<3>::Type b) {
         return UnsignedInt(a)*UnsignedInt(b);
     }
 }

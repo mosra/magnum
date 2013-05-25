@@ -55,39 +55,39 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Capsule {
          *
          * Creates zero-sized capsule at origin.
          */
-        inline constexpr /*implicit*/ Capsule(): _radius(0.0f) {}
+        constexpr /*implicit*/ Capsule(): _radius(0.0f) {}
 
         /** @brief Constructor */
-        inline constexpr /*implicit*/ Capsule(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b, Float radius): _a(a), _b(b), _radius(radius) {}
+        constexpr /*implicit*/ Capsule(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b, Float radius): _a(a), _b(b), _radius(radius) {}
 
         /** @brief Transformed shape */
         Capsule<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;
 
         /** @brief Start point */
-        inline constexpr typename DimensionTraits<dimensions>::VectorType a() const {
+        constexpr typename DimensionTraits<dimensions>::VectorType a() const {
             return _a;
         }
 
         /** @brief Set start point */
-        inline void setA(const typename DimensionTraits<dimensions>::VectorType& a) {
+        void setA(const typename DimensionTraits<dimensions>::VectorType& a) {
             _a = a;
         }
 
         /** @brief End point */
-        inline constexpr typename DimensionTraits<dimensions>::VectorType b() const {
+        constexpr typename DimensionTraits<dimensions>::VectorType b() const {
             return _b;
         }
 
         /** @brief Set end point */
-        inline void setB(const typename DimensionTraits<dimensions>::VectorType& b) {
+        void setB(const typename DimensionTraits<dimensions>::VectorType& b) {
             _b = b;
         }
 
         /** @brief Radius */
-        inline constexpr Float radius() const { return _radius; }
+        constexpr Float radius() const { return _radius; }
 
         /** @brief Set radius */
-        inline void setRadius(Float radius) { _radius = radius; }
+        void setRadius(Float radius) { _radius = radius; }
 
         /** @brief Collision with point */
         bool operator%(const Point<dimensions>& other) const;

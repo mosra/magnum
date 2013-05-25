@@ -55,29 +55,29 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Sphere {
          *
          * Creates zero-sized sphere at origin.
          */
-        inline constexpr /*implicit*/ Sphere(): _radius(0.0f) {}
+        constexpr /*implicit*/ Sphere(): _radius(0.0f) {}
 
         /** @brief Constructor */
-        inline constexpr /*implicit*/ Sphere(const typename DimensionTraits<dimensions>::VectorType& position, Float radius): _position(position), _radius(radius) {}
+        constexpr /*implicit*/ Sphere(const typename DimensionTraits<dimensions>::VectorType& position, Float radius): _position(position), _radius(radius) {}
 
         /** @brief Transformed shape */
         Sphere<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;
 
         /** @brief Position */
-        inline constexpr typename DimensionTraits<dimensions>::VectorType position() const {
+        constexpr typename DimensionTraits<dimensions>::VectorType position() const {
             return _position;
         }
 
         /** @brief Set position */
-        inline void setPosition(const typename DimensionTraits<dimensions>::VectorType& position) {
+        void setPosition(const typename DimensionTraits<dimensions>::VectorType& position) {
             _position = position;
         }
 
         /** @brief Radius */
-        inline constexpr Float radius() const { return _radius; }
+        constexpr Float radius() const { return _radius; }
 
         /** @brief Set radius */
-        inline void setRadius(Float radius) { _radius = radius; }
+        void setRadius(Float radius) { _radius = radius; }
 
         /** @brief Collision with point */
         bool operator%(const Point<dimensions>& other) const;

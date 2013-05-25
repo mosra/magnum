@@ -45,18 +45,18 @@ template<UnsignedInt dimensions> class LineSegment: public Line<dimensions> {
          *
          * Creates line segment with both points at origin.
          */
-        inline constexpr /*implicit*/ LineSegment() {}
+        constexpr /*implicit*/ LineSegment() {}
 
         /** @brief Constructor */
-        inline constexpr /*implicit*/ LineSegment(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b): Line<dimensions>(a, b) {}
+        constexpr /*implicit*/ LineSegment(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b): Line<dimensions>(a, b) {}
 
         /** @brief Transformed shape */
-        inline LineSegment<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const {
+        LineSegment<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const {
             return Line<dimensions>::transformed(matrix);
         }
 
     private:
-        inline constexpr LineSegment(const Line<dimensions>& line): Line<dimensions>(line) {}
+        constexpr LineSegment(const Line<dimensions>& line): Line<dimensions>(line) {}
 };
 
 /** @brief Two-dimensional line segment */

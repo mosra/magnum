@@ -55,21 +55,21 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Box {
          *
          * Creates zero-sized box positioned at origin.
          */
-        inline constexpr /*implicit*/ Box(): _transformation(DimensionTraits<dimensions>::MatrixType::Zero) {}
+        constexpr /*implicit*/ Box(): _transformation(DimensionTraits<dimensions>::MatrixType::Zero) {}
 
         /** @brief Constructor */
-        inline constexpr /*implicit*/ Box(const typename DimensionTraits<dimensions>::MatrixType& transformation): _transformation(transformation) {}
+        constexpr /*implicit*/ Box(const typename DimensionTraits<dimensions>::MatrixType& transformation): _transformation(transformation) {}
 
         /** @brief Transformed shape */
         Box<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;
 
         /** @brief Transformation */
-        inline constexpr typename DimensionTraits<dimensions>::MatrixType transformation() const {
+        constexpr typename DimensionTraits<dimensions>::MatrixType transformation() const {
             return _transformation;
         }
 
         /** @brief Set transformation */
-        inline void setTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) {
+        void setTransformation(const typename DimensionTraits<dimensions>::MatrixType& transformation) {
             _transformation = transformation;
         }
 

@@ -52,13 +52,13 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT ShapeGroup: public S
          *
          * Marks the group as dirty.
          */
-        inline explicit ShapeGroup(): dirty(true) {}
+        explicit ShapeGroup(): dirty(true) {}
 
         /**
          * @brief Whether the group is dirty
          * @return True if any object in the group is dirty, false otherwise.
          */
-        inline bool isDirty() const { return dirty; }
+        bool isDirty() const { return dirty; }
 
         /**
          * @brief Set the group as dirty
@@ -69,7 +69,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT ShapeGroup: public S
          *
          * @see setClean()
          */
-        inline void setDirty() { dirty = true; }
+        void setDirty() { dirty = true; }
 
         /**
          * @brief Set the group and all bodies as clean
