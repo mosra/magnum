@@ -124,16 +124,16 @@ std::sin(Float(Rad<Float>(angleInDegrees)); // required explicit conversion hint
 template<class T> class Deg: public Unit<Deg, T> {
     public:
         /** @brief Default constructor */
-        inline constexpr /*implicit*/ Deg() {}
+        constexpr /*implicit*/ Deg() {}
 
         /** @brief Explicit constructor from unitless type */
-        inline constexpr explicit Deg(T value): Unit<Math::Deg, T>(value) {}
+        constexpr explicit Deg(T value): Unit<Math::Deg, T>(value) {}
 
         /** @brief Copy constructor */
-        inline constexpr /*implicit*/ Deg(Unit<Math::Deg, T> value): Unit<Math::Deg, T>(value) {}
+        constexpr /*implicit*/ Deg(Unit<Math::Deg, T> value): Unit<Math::Deg, T>(value) {}
 
         /** @brief Construct from another underlying type */
-        template<class U> inline constexpr explicit Deg(Unit<Math::Deg, U> value): Unit<Math::Deg, T>(value) {}
+        template<class U> constexpr explicit Deg(Unit<Math::Deg, U> value): Unit<Math::Deg, T>(value) {}
 
         /**
          * @brief Construct degrees from radians
@@ -143,7 +143,7 @@ template<class T> class Deg: public Unit<Deg, T> {
          *      deg = 180 \frac {rad} \pi
          * @f]
          */
-        inline constexpr /*implicit*/ Deg(Unit<Rad, T> value);
+        constexpr /*implicit*/ Deg(Unit<Rad, T> value);
 };
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
@@ -160,7 +160,7 @@ Double cosine = Math::cos(1.047_rad); // cosine = 0.5
 @note Not available on GCC < 4.7. Use Deg::Deg(T) instead.
 @requires_gl Only single-precision types are available in OpenGL ES.
 */
-inline constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(value); }
+constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(value); }
 #endif
 
 /** @relates Deg
@@ -175,7 +175,7 @@ Float tangent = Math::tan(1.047_radf); // tangent = 1.732f
 @note Not available on GCC < 4.7. Use Deg::Deg(T) instead.
 @requires_gl Only single-precision types are available in OpenGL ES.
 */
-inline constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(value); }
+constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(value); }
 #endif
 
 /**
@@ -187,16 +187,16 @@ See Deg for more information.
 template<class T> class Rad: public Unit<Rad, T> {
     public:
         /** @brief Default constructor */
-        inline constexpr /*implicit*/ Rad() {}
+        constexpr /*implicit*/ Rad() {}
 
         /** @brief Construct from unitless type */
-        inline constexpr explicit Rad(T value): Unit<Math::Rad, T>(value) {}
+        constexpr explicit Rad(T value): Unit<Math::Rad, T>(value) {}
 
         /** @brief Copy constructor */
-        inline constexpr /*implicit*/ Rad(Unit<Math::Rad, T> value): Unit<Math::Rad, T>(value) {}
+        constexpr /*implicit*/ Rad(Unit<Math::Rad, T> value): Unit<Math::Rad, T>(value) {}
 
         /** @brief Construct from another underlying type */
-        template<class U> inline constexpr explicit Rad(Unit<Math::Rad, U> value): Unit<Math::Rad, T>(value) {}
+        template<class U> constexpr explicit Rad(Unit<Math::Rad, U> value): Unit<Math::Rad, T>(value) {}
 
         /**
          * @brief Construct radians from degrees
@@ -206,7 +206,7 @@ template<class T> class Rad: public Unit<Rad, T> {
          *      rad = deg \frac \pi 180
          * @f]
          */
-        inline constexpr /*implicit*/ Rad(Unit<Deg, T> value);
+        constexpr /*implicit*/ Rad(Unit<Deg, T> value);
 };
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
@@ -218,7 +218,7 @@ See operator""_rad() for more information.
 @see Magnum::operator""_rad(), operator""_radf(), operator""_deg()
 @note Not available on GCC < 4.7. Use Rad::Rad(T) instead.
 */
-inline constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(value); }
+constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(value); }
 #endif
 
 /** @relates Rad
@@ -228,11 +228,11 @@ See operator""_degf() for more information.
 @see Magnum::operator""_radf(), operator""_rad(), operator""_degf()
 @note Not available on GCC < 4.7. Use Rad::Rad(T) instead.
 */
-inline constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(value); }
+constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(value); }
 #endif
 
-template<class T> inline constexpr Deg<T>::Deg(Unit<Rad, T> value): Unit<Math::Deg, T>(T(180)*T(value)/Math::Constants<T>::pi()) {}
-template<class T> inline constexpr Rad<T>::Rad(Unit<Deg, T> value): Unit<Math::Rad, T>(T(value)*Math::Constants<T>::pi()/T(180)) {}
+template<class T> constexpr Deg<T>::Deg(Unit<Rad, T> value): Unit<Math::Deg, T>(T(180)*T(value)/Math::Constants<T>::pi()) {}
+template<class T> constexpr Rad<T>::Rad(Unit<Deg, T> value): Unit<Math::Rad, T>(T(value)*Math::Constants<T>::pi()/T(180)) {}
 
 /** @debugoperator{Magnum::Math::Rad} */
 template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Unit<Rad, T>& value) {

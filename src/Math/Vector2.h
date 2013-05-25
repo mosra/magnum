@@ -51,7 +51,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * @endcode
          * @see yAxis(), xScale(), Matrix3::right()
          */
-        inline constexpr static Vector2<T> xAxis(T length = T(1)) { return Vector2<T>(length, T()); }
+        constexpr static Vector2<T> xAxis(T length = T(1)) { return Vector2<T>(length, T()); }
 
         /**
          * @brief %Vector in direction of Y axis (up)
@@ -59,7 +59,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * See xAxis() for more information.
          * @see yScale(), Matrix3::up()
          */
-        inline constexpr static Vector2<T> yAxis(T length = T(1)) { return Vector2<T>(T(), length); }
+        constexpr static Vector2<T> yAxis(T length = T(1)) { return Vector2<T>(T(), length); }
 
         /**
          * @brief Scaling vector in direction of X axis (width)
@@ -70,7 +70,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * @endcode
          * @see yScale(), xAxis()
          */
-        inline constexpr static Vector2<T> xScale(T scale) { return Vector2<T>(scale, T(1)); }
+        constexpr static Vector2<T> xScale(T scale) { return Vector2<T>(scale, T(1)); }
 
         /**
          * @brief Scaling vector in direction of Y axis (height)
@@ -78,7 +78,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * See xScale() for more information.
          * @see yAxis()
          */
-        inline constexpr static Vector2<T> yScale(T scale) { return Vector2<T>(T(1), scale); }
+        constexpr static Vector2<T> yScale(T scale) { return Vector2<T>(T(1), scale); }
 
         /**
          * @brief 2D cross product
@@ -91,15 +91,15 @@ template<class T> class Vector2: public Vector<2, T> {
          * @f]
          * @see perpendicular(), dot(const Vector&, const Vector&)
          */
-        inline static T cross(const Vector2<T>& a, const Vector2<T>& b) {
+        static T cross(const Vector2<T>& a, const Vector2<T>& b) {
             return Vector<2, T>::dot(a.perpendicular(), b);
         }
 
         /** @copydoc Vector::Vector() */
-        inline constexpr /*implicit*/ Vector2() {}
+        constexpr /*implicit*/ Vector2() {}
 
         /** @copydoc Vector::Vector(T) */
-        inline constexpr explicit Vector2(T value): Vector<2, T>(value) {}
+        constexpr explicit Vector2(T value): Vector<2, T>(value) {}
 
         /**
          * @brief Constructor
@@ -108,21 +108,21 @@ template<class T> class Vector2: public Vector<2, T> {
          *      \boldsymbol v = \begin{pmatrix} x \\ y \end{pmatrix}
          * @f]
          */
-        inline constexpr /*implicit*/ Vector2(T x, T y): Vector<2, T>(x, y) {}
+        constexpr /*implicit*/ Vector2(T x, T y): Vector<2, T>(x, y) {}
 
         /** @copydoc Vector::Vector(const Vector<size, U>&) */
-        template<class U> inline constexpr explicit Vector2(const Vector<2, U>& other): Vector<2, T>(other) {}
+        template<class U> constexpr explicit Vector2(const Vector<2, U>& other): Vector<2, T>(other) {}
 
         /** @brief Construct vector from external representation */
-        template<class U, class V = decltype(Implementation::VectorConverter<2, T, U>::from(std::declval<U>()))> inline constexpr explicit Vector2(const U& other): Vector<2, T>(Implementation::VectorConverter<2, T, U>::from(other)) {}
+        template<class U, class V = decltype(Implementation::VectorConverter<2, T, U>::from(std::declval<U>()))> constexpr explicit Vector2(const U& other): Vector<2, T>(Implementation::VectorConverter<2, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        inline constexpr Vector2(const Vector<2, T>& other): Vector<2, T>(other) {}
+        constexpr Vector2(const Vector<2, T>& other): Vector<2, T>(other) {}
 
-        inline T& x() { return (*this)[0]; }                /**< @brief X component */
-        inline constexpr T x() const { return (*this)[0]; } /**< @overload */
-        inline T& y() { return (*this)[1]; }                /**< @brief Y component */
-        inline constexpr T y() const { return (*this)[1]; } /**< @overload */
+        T& x() { return (*this)[0]; }                   /**< @brief X component */
+        constexpr T x() const { return (*this)[0]; }    /**< @overload */
+        T& y() { return (*this)[1]; }                   /**< @brief Y component */
+        constexpr T y() const { return (*this)[1]; }    /**< @overload */
 
         /**
          * @brief Perpendicular vector
@@ -132,7 +132,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * @f]
          * @see cross(), dot(const Vector&, const Vector&), operator-() const
          */
-        inline Vector2<T> perpendicular() const { return {-y(), x()}; }
+        Vector2<T> perpendicular() const { return {-y(), x()}; }
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector2, 2)
 };

@@ -42,14 +42,14 @@ namespace Implementation {
     template<UnsignedInt exponent> struct Pow {
         Pow() = delete;
 
-        template<class T> inline constexpr static T pow(T base) {
+        template<class T> constexpr static T pow(T base) {
             return base*Pow<exponent-1>::pow(base);
         }
     };
     template<> struct Pow<0> {
         Pow() = delete;
 
-        template<class T> inline constexpr static T pow(T) { return 1; }
+        template<class T> constexpr static T pow(T) { return 1; }
     };
 }
 
@@ -58,7 +58,7 @@ namespace Implementation {
  *
  * Returns integral power of base to the exponent.
  */
-template<UnsignedInt exponent, class T> inline constexpr T pow(T base) {
+template<UnsignedInt exponent, class T> constexpr T pow(T base) {
     return Implementation::Pow<exponent>::pow(base);
 }
 

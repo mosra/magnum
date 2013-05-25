@@ -53,7 +53,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * @endcode
          * @see yAxis(), zAxis(), xScale(), Matrix4::right()
          */
-        inline constexpr static Vector3<T> xAxis(T length = T(1)) { return Vector3<T>(length, T(), T()); }
+        constexpr static Vector3<T> xAxis(T length = T(1)) { return Vector3<T>(length, T(), T()); }
 
         /**
          * @brief %Vector in direction of Y axis (up)
@@ -61,7 +61,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * See xAxis() for more information.
          * @see yScale(), Matrix4::up()
          */
-        inline constexpr static Vector3<T> yAxis(T length = T(1)) { return Vector3<T>(T(), length, T()); }
+        constexpr static Vector3<T> yAxis(T length = T(1)) { return Vector3<T>(T(), length, T()); }
 
         /**
          * @brief %Vector in direction of Z axis (backward)
@@ -69,7 +69,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * See xAxis() for more information.
          * @see zScale(), Matrix4::backward()
          */
-        inline constexpr static Vector3<T> zAxis(T length = T(1)) { return Vector3<T>(T(), T(), length); }
+        constexpr static Vector3<T> zAxis(T length = T(1)) { return Vector3<T>(T(), T(), length); }
 
         /**
          * @brief Scaling vector in direction of X axis (width)
@@ -80,7 +80,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * @endcode
          * @see yScale(), zScale(), xAxis()
          */
-        inline constexpr static Vector3<T> xScale(T scale) { return Vector3<T>(scale, T(1), T(1)); }
+        constexpr static Vector3<T> xScale(T scale) { return Vector3<T>(scale, T(1), T(1)); }
 
         /**
          * @brief Scaling vector in direction of Y axis (height)
@@ -88,7 +88,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * See xScale() for more information.
          * @see yAxis()
          */
-        inline constexpr static Vector3<T> yScale(T scale) { return Vector3<T>(T(1), scale, T(1)); }
+        constexpr static Vector3<T> yScale(T scale) { return Vector3<T>(T(1), scale, T(1)); }
 
         /**
          * @brief Scaling vector in direction of Z axis (depth)
@@ -96,7 +96,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * See xScale() for more information.
          * @see zAxis()
          */
-        inline constexpr static Vector3<T> zScale(T scale) { return Vector3<T>(T(1), T(1), scale); }
+        constexpr static Vector3<T> zScale(T scale) { return Vector3<T>(T(1), T(1), scale); }
 
         /**
          * @brief Cross product
@@ -107,16 +107,16 @@ template<class T> class Vector3: public Vector<3, T> {
          * @f]
          * @see Vector2::cross()
          */
-        inline static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
+        static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
             return swizzle<'y', 'z', 'x'>(a)*swizzle<'z', 'x', 'y'>(b) -
                    swizzle<'z', 'x', 'y'>(a)*swizzle<'y', 'z', 'x'>(b);
         }
 
         /** @copydoc Vector::Vector() */
-        inline constexpr /*implicit*/ Vector3() {}
+        constexpr /*implicit*/ Vector3() {}
 
         /** @copydoc Vector::Vector(T) */
-        inline constexpr explicit Vector3(T value): Vector<3, T>(value) {}
+        constexpr explicit Vector3(T value): Vector<3, T>(value) {}
 
         /**
          * @brief Constructor
@@ -125,7 +125,7 @@ template<class T> class Vector3: public Vector<3, T> {
          *      \boldsymbol v = \begin{pmatrix} x \\ y \\ z \end{pmatrix}
          * @f]
          */
-        inline constexpr /*implicit*/ Vector3(T x, T y, T z): Vector<3, T>(x, y, z) {}
+        constexpr /*implicit*/ Vector3(T x, T y, T z): Vector<3, T>(x, y, z) {}
 
         /**
          * @brief Constructor
@@ -134,23 +134,23 @@ template<class T> class Vector3: public Vector<3, T> {
          *      \boldsymbol v = \begin{pmatrix} v_x \\ v_y \\ z \end{pmatrix}
          * @f]
          */
-        inline constexpr /*implicit*/ Vector3(const Vector2<T>& xy, T z): Vector<3, T>(xy[0], xy[1], z) {}
+        constexpr /*implicit*/ Vector3(const Vector2<T>& xy, T z): Vector<3, T>(xy[0], xy[1], z) {}
 
         /** @copydoc Vector::Vector(const Vector<size, U>&) */
-        template<class U> inline constexpr explicit Vector3(const Vector<3, U>& other): Vector<3, T>(other) {}
+        template<class U> constexpr explicit Vector3(const Vector<3, U>& other): Vector<3, T>(other) {}
 
         /** @brief Construct vector from external representation */
-        template<class U, class V = decltype(Implementation::VectorConverter<3, T, U>::from(std::declval<U>()))> inline constexpr explicit Vector3(const U& other): Vector<3, T>(Implementation::VectorConverter<3, T, U>::from(other)) {}
+        template<class U, class V = decltype(Implementation::VectorConverter<3, T, U>::from(std::declval<U>()))> constexpr explicit Vector3(const U& other): Vector<3, T>(Implementation::VectorConverter<3, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        inline constexpr Vector3(const Vector<3, T>& other): Vector<3, T>(other) {}
+        constexpr Vector3(const Vector<3, T>& other): Vector<3, T>(other) {}
 
-        inline T& x() { return (*this)[0]; }                /**< @brief X component */
-        inline constexpr T x() const { return (*this)[0]; } /**< @overload */
-        inline T& y() { return (*this)[1]; }                /**< @brief Y component */
-        inline constexpr T y() const { return (*this)[1]; } /**< @overload */
-        inline T& z() { return (*this)[2]; }                /**< @brief Z component */
-        inline constexpr T z() const { return (*this)[2]; } /**< @overload */
+        T& x() { return (*this)[0]; }                   /**< @brief X component */
+        constexpr T x() const { return (*this)[0]; }    /**< @overload */
+        T& y() { return (*this)[1]; }                   /**< @brief Y component */
+        constexpr T y() const { return (*this)[1]; }    /**< @overload */
+        T& z() { return (*this)[2]; }                   /**< @brief Z component */
+        constexpr T z() const { return (*this)[2]; }    /**< @overload */
 
         /**
          * @brief XY part of the vector
@@ -158,8 +158,8 @@ template<class T> class Vector3: public Vector<3, T> {
          *
          * @see swizzle()
          */
-        inline Vector2<T>& xy() { return Vector2<T>::from(Vector<3, T>::data()); }
-        inline constexpr const Vector2<T> xy() const { return {x(), y()}; } /**< @overload */
+        Vector2<T>& xy() { return Vector2<T>::from(Vector<3, T>::data()); }
+        constexpr const Vector2<T> xy() const { return {x(), y()}; } /**< @overload */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector3, 3)
 };

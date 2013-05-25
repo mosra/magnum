@@ -77,11 +77,11 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @attention Use with caution, the function doesn't check whether the
          *      array is long enough.
          */
-        inline constexpr static RectangularMatrix<cols, rows, T>& from(T* data) {
+        constexpr static RectangularMatrix<cols, rows, T>& from(T* data) {
             return *reinterpret_cast<RectangularMatrix<cols, rows, T>*>(data);
         }
         /** @overload */
-        inline constexpr static const RectangularMatrix<cols, rows, T>& from(const T* data) {
+        constexpr static const RectangularMatrix<cols, rows, T>& from(const T* data) {
             return *reinterpret_cast<const RectangularMatrix<cols, rows, T>*>(data);
         }
 
@@ -91,14 +91,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @see diagonal()
          * @todo make this constexpr
          */
-        inline static RectangularMatrix<cols, rows, T> fromDiagonal(const Vector<DiagonalSize, T>& diagonal) {
-            RectangularMatrix<cols, rows, T> out;
-
-            for(std::size_t i = 0; i != DiagonalSize; ++i)
-                out[i][i] = diagonal[i];
-
-            return out;
-        }
+        static RectangularMatrix<cols, rows, T> fromDiagonal(const Vector<DiagonalSize, T>& diagonal);
 
         /**
          * @brief Construct matrix from vector
@@ -107,12 +100,12 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * vector will make first column of resulting matrix.
          * @see toVector()
          */
-        inline static RectangularMatrix<cols, rows, T> fromVector(const Vector<cols*rows, T>& vector) {
+        static RectangularMatrix<cols, rows, T> fromVector(const Vector<cols*rows, T>& vector) {
             return *reinterpret_cast<const RectangularMatrix<cols, rows, T>*>(vector.data());
         }
 
         /** @brief Construct zero-filled matrix */
-        inline constexpr /*implicit*/ RectangularMatrix() {}
+        constexpr /*implicit*/ RectangularMatrix() {}
 
         /**
          * @brief Construct matrix from column vectors
@@ -121,7 +114,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * @todo Creating matrix from arbitrary combination of matrices with n rows
          */
-        template<class ...U> inline constexpr /*implicit*/ RectangularMatrix(const Vector<rows, T>& first, const U&... next): _data{first, next...} {
+        template<class ...U> constexpr /*implicit*/ RectangularMatrix(const Vector<rows, T>& first, const U&... next): _data{first, next...} {
             static_assert(sizeof...(next)+1 == cols, "Improper number of arguments passed to RectangularMatrix constructor");
         }
 
@@ -137,30 +130,30 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @endcode
          */
         #ifndef CORRADE_GCC46_COMPATIBILITY
-        template<class U> inline constexpr explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other): RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), other) {}
+        template<class U> constexpr explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other): RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), other) {}
         #else
-        template<class U> inline explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other) {
+        template<class U> explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other) {
             *this = RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), other);
         }
         #endif
 
         /** @brief Construct matrix from external representation */
         #ifndef CORRADE_GCC46_COMPATIBILITY
-        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> inline constexpr explicit RectangularMatrix(const U& other): RectangularMatrix(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(other)) {}
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> constexpr explicit RectangularMatrix(const U& other): RectangularMatrix(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(other)) {}
         #else
-        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> inline explicit RectangularMatrix(const U& other) {
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> explicit RectangularMatrix(const U& other) {
             *this = Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(other);
         }
         #endif
 
         /** @brief Copy constructor */
-        inline constexpr RectangularMatrix(const RectangularMatrix<cols, rows, T>&) = default;
+        constexpr RectangularMatrix(const RectangularMatrix<cols, rows, T>&) = default;
 
         /** @brief Assignment operator */
-        inline RectangularMatrix<cols, rows, T>& operator=(const RectangularMatrix<cols, rows, T>&) = default;
+        RectangularMatrix<cols, rows, T>& operator=(const RectangularMatrix<cols, rows, T>&) = default;
 
         /** @brief Convert matrix to external representation */
-        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(std::declval<RectangularMatrix<cols, rows, T>>()))> inline constexpr explicit operator U() const {
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(std::declval<RectangularMatrix<cols, rows, T>>()))> constexpr explicit operator U() const {
             /** @bug Why this is not constexpr under GCC 4.6? */
             return Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(*this);
         }
@@ -172,8 +165,8 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * @see operator[]
          */
-        inline T* data() { return _data[0].data(); }
-        inline constexpr const T* data() const { return _data[0].data(); } /**< @overload */
+        T* data() { return _data[0].data(); }
+        constexpr const T* data() const { return _data[0].data(); } /**< @overload */
 
         /**
          * @brief %Matrix column
@@ -186,13 +179,8 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * @see row(), data()
          */
-        inline Vector<rows, T>& operator[](std::size_t col) {
-            return _data[col];
-        }
-        /** @overload */
-        inline constexpr const Vector<rows, T>& operator[](std::size_t col) const {
-            return _data[col];
-        }
+        Vector<rows, T>& operator[](std::size_t col) { return _data[col]; }
+        constexpr const Vector<rows, T>& operator[](std::size_t col) const { return _data[col]; } /** @overload */
 
         /**
          * @brief %Matrix row
@@ -201,17 +189,10 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * is slower than accessing columns due to the way the matrix is stored.
          * @see operator[]()
          */
-        inline Vector<cols, T> row(std::size_t row) const {
-            Vector<cols, T> out;
-
-            for(std::size_t i = 0; i != cols; ++i)
-                out[i] = _data[i][row];
-
-            return out;
-        }
+        Vector<cols, T> row(std::size_t row) const;
 
         /** @brief Equality comparison */
-        inline bool operator==(const RectangularMatrix<cols, rows, T>& other) const {
+        bool operator==(const RectangularMatrix<cols, rows, T>& other) const {
             for(std::size_t i = 0; i != cols; ++i)
                 if(_data[i] != other._data[i]) return false;
 
@@ -224,9 +205,18 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @see Vector::operator<(), Vector::operator<=(), Vector::operator>=(),
          *      Vector::operator>()
          */
-        inline bool operator!=(const RectangularMatrix<cols, rows, T>& other) const {
+        bool operator!=(const RectangularMatrix<cols, rows, T>& other) const {
             return !operator==(other);
         }
+
+        /**
+         * @brief Negated matrix
+         *
+         * The computation is done column-wise. @f[
+         *      \boldsymbol B_j = -\boldsymbol A_j
+         * @f]
+         */
+        RectangularMatrix<cols, rows, T> operator-() const;
 
         /**
          * @brief Add and assign matrix
@@ -247,24 +237,8 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * @see operator+=()
          */
-        inline RectangularMatrix<cols, rows, T> operator+(const RectangularMatrix<cols, rows, T>& other) const {
+        RectangularMatrix<cols, rows, T> operator+(const RectangularMatrix<cols, rows, T>& other) const {
             return RectangularMatrix<cols, rows, T>(*this)+=other;
-        }
-
-        /**
-         * @brief Negated matrix
-         *
-         * The computation is done column-wise in-place. @f[
-         *      \boldsymbol A_j = -\boldsymbol A_j
-         * @f]
-         */
-        RectangularMatrix<cols, rows, T> operator-() const {
-            RectangularMatrix<cols, rows, T> out;
-
-            for(std::size_t i = 0; i != cols; ++i)
-                out._data[i] = -_data[i];
-
-            return out;
         }
 
         /**
@@ -286,7 +260,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * @see operator-=()
          */
-        inline RectangularMatrix<cols, rows, T> operator-(const RectangularMatrix<cols, rows, T>& other) const {
+        RectangularMatrix<cols, rows, T> operator-(const RectangularMatrix<cols, rows, T>& other) const {
             return RectangularMatrix<cols, rows, T>(*this)-=other;
         }
 
@@ -316,7 +290,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>>::type operator*(U number) const {
         #else
-        template<class U> inline RectangularMatrix<cols, rows, T> operator*(U number) const {
+        template<class U> RectangularMatrix<cols, rows, T> operator*(U number) const {
         #endif
             return RectangularMatrix<cols, rows, T>(*this)*=number;
         }
@@ -347,7 +321,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>>::type operator/(U number) const {
         #else
-        template<class U> inline RectangularMatrix<cols, rows, T> operator/(U number) const {
+        template<class U> RectangularMatrix<cols, rows, T> operator/(U number) const {
         #endif
             return RectangularMatrix<cols, rows, T>(*this)/=number;
         }
@@ -359,16 +333,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *      (\boldsymbol {AB})_{ji} = \sum_{k=0}^{m-1} \boldsymbol A_{ki} \boldsymbol B_{jk}
          * @f]
          */
-        template<std::size_t size> RectangularMatrix<size, rows, T> operator*(const RectangularMatrix<size, cols, T>& other) const {
-            RectangularMatrix<size, rows, T> out;
-
-            for(std::size_t col = 0; col != size; ++col)
-                for(std::size_t row = 0; row != rows; ++row)
-                    for(std::size_t pos = 0; pos != cols; ++pos)
-                        out[col][row] += _data[pos][row]*other._data[col][pos];
-
-            return out;
-        }
+        template<std::size_t size> RectangularMatrix<size, rows, T> operator*(const RectangularMatrix<size, cols, T>& other) const;
 
         /**
          * @brief Multiply vector
@@ -387,29 +352,15 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * @see row()
          */
-        RectangularMatrix<rows, cols, T> transposed() const {
-            RectangularMatrix<rows, cols, T> out;
-
-            for(std::size_t col = 0; col != cols; ++col)
-                for(std::size_t row = 0; row != rows; ++row)
-                    out[row][col] = _data[col][row];
-
-            return out;
-        }
+        RectangularMatrix<rows, cols, T> transposed() const;
 
         /**
          * @brief Values on diagonal
          *
          * @see fromDiagonal()
+         * @todo constexpr
          */
-        Vector<DiagonalSize, T> diagonal() const {
-            Vector<DiagonalSize, T> out;
-
-            for(std::size_t i = 0; i != DiagonalSize; ++i)
-                out[i] = _data[i][i];
-
-            return out;
-        }
+        Vector<DiagonalSize, T> diagonal() const;
 
         /**
          * @brief Convert matrix to vector
@@ -420,13 +371,13 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * summing the elements etc.).
          * @see fromVector()
          */
-        inline Vector<rows*cols, T> toVector() const {
+        Vector<rows*cols, T> toVector() const {
             return *reinterpret_cast<const Vector<rows*cols, T>*>(data());
         }
 
     private:
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
-        template<class U, std::size_t ...sequence> inline constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix): _data{Vector<rows, T>(matrix[sequence])...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix): _data{Vector<rows, T>(matrix[sequence])...} {}
 
         Vector<rows, T> _data[cols];
 };
@@ -453,9 +404,9 @@ The computation is done column-wise. @f[
 @see RectangularMatrix::operator/(U) const
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<std::size_t cols, std::size_t rows, class T, class U> RectangularMatrix<cols, rows, T> operator/(U number, const RectangularMatrix<cols, rows, T>& matrix) {
+template<std::size_t cols, std::size_t rows, class T, class U> inline RectangularMatrix<cols, rows, T> operator/(U number, const RectangularMatrix<cols, rows, T>& matrix) {
 #else
-template<std::size_t cols, std::size_t rows, class T, class U> typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>>::type operator/(U number, const RectangularMatrix<cols, rows, T>& matrix) {
+template<std::size_t cols, std::size_t rows, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>>::type operator/(U number, const RectangularMatrix<cols, rows, T>& matrix) {
 #endif
     RectangularMatrix<cols, rows, T> out;
 
@@ -522,50 +473,107 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
 #endif
 
 #define MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(cols, rows, ...)   \
-    inline constexpr static __VA_ARGS__& from(T* data) {                    \
+    constexpr static __VA_ARGS__& from(T* data) {                           \
         return *reinterpret_cast<__VA_ARGS__*>(data);                       \
     }                                                                       \
-    inline constexpr static const __VA_ARGS__& from(const T* data) {        \
+    constexpr static const __VA_ARGS__& from(const T* data) {               \
         return *reinterpret_cast<const __VA_ARGS__*>(data);                 \
     }                                                                       \
                                                                             \
-    inline __VA_ARGS__& operator=(const Math::RectangularMatrix<cols, rows, T>& other) { \
+    __VA_ARGS__& operator=(const Math::RectangularMatrix<cols, rows, T>& other) { \
         Math::RectangularMatrix<cols, rows, T>::operator=(other);           \
         return *this;                                                       \
     }                                                                       \
                                                                             \
-    inline __VA_ARGS__ operator-() const {                                  \
+    __VA_ARGS__ operator-() const {                                         \
         return Math::RectangularMatrix<cols, rows, T>::operator-();         \
     }                                                                       \
-    inline __VA_ARGS__& operator+=(const Math::RectangularMatrix<cols, rows, T>& other) { \
+    __VA_ARGS__& operator+=(const Math::RectangularMatrix<cols, rows, T>& other) { \
         Math::RectangularMatrix<cols, rows, T>::operator+=(other);          \
         return *this;                                                       \
     }                                                                       \
-    inline __VA_ARGS__ operator+(const Math::RectangularMatrix<cols, rows, T>& other) const { \
+    __VA_ARGS__ operator+(const Math::RectangularMatrix<cols, rows, T>& other) const { \
         return Math::RectangularMatrix<cols, rows, T>::operator+(other);    \
     }                                                                       \
-    inline __VA_ARGS__& operator-=(const Math::RectangularMatrix<cols, rows, T>& other) { \
+    __VA_ARGS__& operator-=(const Math::RectangularMatrix<cols, rows, T>& other) { \
         Math::RectangularMatrix<cols, rows, T>::operator-=(other);          \
         return *this;                                                       \
     }                                                                       \
-    inline __VA_ARGS__ operator-(const Math::RectangularMatrix<cols, rows, T>& other) const { \
+    __VA_ARGS__ operator-(const Math::RectangularMatrix<cols, rows, T>& other) const { \
         return Math::RectangularMatrix<cols, rows, T>::operator-(other);    \
     }                                                                       \
-    template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, __VA_ARGS__&>::type operator*=(U number) { \
+    template<class U> typename std::enable_if<std::is_arithmetic<U>::value, __VA_ARGS__&>::type operator*=(U number) { \
         Math::RectangularMatrix<cols, rows, T>::operator*=(number);         \
         return *this;                                                       \
     }                                                                       \
-    template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, __VA_ARGS__>::type operator*(U number) const { \
+    template<class U> typename std::enable_if<std::is_arithmetic<U>::value, __VA_ARGS__>::type operator*(U number) const { \
         return Math::RectangularMatrix<cols, rows, T>::operator*(number);   \
     }                                                                       \
-    template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, __VA_ARGS__&>::type operator/=(U number) { \
+    template<class U> typename std::enable_if<std::is_arithmetic<U>::value, __VA_ARGS__&>::type operator/=(U number) { \
         Math::RectangularMatrix<cols, rows, T>::operator/=(number);         \
         return *this;                                                       \
     }                                                                       \
-    template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, __VA_ARGS__>::type operator/(U number) const { \
+    template<class U> typename std::enable_if<std::is_arithmetic<U>::value, __VA_ARGS__>::type operator/(U number) const { \
         return Math::RectangularMatrix<cols, rows, T>::operator/(number);   \
     }
 #endif
+
+template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<cols, rows, T> RectangularMatrix<cols, rows, T>::fromDiagonal(const Vector<DiagonalSize, T>& diagonal) {
+    RectangularMatrix<cols, rows, T> out;
+
+    for(std::size_t i = 0; i != DiagonalSize; ++i)
+        out[i][i] = diagonal[i];
+
+    return out;
+}
+
+template<std::size_t cols, std::size_t rows, class T> inline Vector<cols, T> RectangularMatrix<cols, rows, T>::row(std::size_t row) const {
+    Vector<cols, T> out;
+
+    for(std::size_t i = 0; i != cols; ++i)
+        out[i] = _data[i][row];
+
+    return out;
+}
+
+template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<cols, rows, T> RectangularMatrix<cols, rows, T>::operator-() const {
+    RectangularMatrix<cols, rows, T> out;
+
+    for(std::size_t i = 0; i != cols; ++i)
+        out._data[i] = -_data[i];
+
+    return out;
+}
+
+template<std::size_t cols, std::size_t rows, class T> template<std::size_t size> inline RectangularMatrix<size, rows, T> RectangularMatrix<cols, rows, T>::operator*(const RectangularMatrix<size, cols, T>& other) const {
+    RectangularMatrix<size, rows, T> out;
+
+    for(std::size_t col = 0; col != size; ++col)
+        for(std::size_t row = 0; row != rows; ++row)
+            for(std::size_t pos = 0; pos != cols; ++pos)
+                out[col][row] += _data[pos][row]*other._data[col][pos];
+
+    return out;
+}
+
+template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<rows, cols, T> RectangularMatrix<cols, rows, T>::transposed() const {
+    RectangularMatrix<rows, cols, T> out;
+
+    for(std::size_t col = 0; col != cols; ++col)
+        for(std::size_t row = 0; row != rows; ++row)
+            out[row][col] = _data[col][row];
+
+    return out;
+}
+
+template<std::size_t cols, std::size_t rows, class T> auto RectangularMatrix<cols, rows, T>::diagonal() const -> Vector<DiagonalSize, T> {
+    Vector<DiagonalSize, T> out;
+
+    for(std::size_t i = 0; i != DiagonalSize; ++i)
+        out[i] = _data[i][i];
+
+    return out;
+}
 
 }}
 

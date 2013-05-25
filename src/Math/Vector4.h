@@ -43,10 +43,10 @@ See @ref matrix-vector for brief introduction.
 template<class T> class Vector4: public Vector<4, T> {
     public:
         /** @copydoc Vector::Vector() */
-        inline constexpr /*implicit*/ Vector4() {}
+        constexpr /*implicit*/ Vector4() {}
 
         /** @copydoc Vector::Vector(T) */
-        inline constexpr explicit Vector4(T value): Vector<4, T>(value) {}
+        constexpr explicit Vector4(T value): Vector<4, T>(value) {}
 
         /**
          * @brief Constructor
@@ -55,7 +55,7 @@ template<class T> class Vector4: public Vector<4, T> {
          *      \boldsymbol v = \begin{pmatrix} x \\ y \\ z \\ w \end{pmatrix}
          * @f]
          */
-        inline constexpr /*implicit*/ Vector4(T x, T y, T z, T w): Vector<4, T>(x, y, z, w) {}
+        constexpr /*implicit*/ Vector4(T x, T y, T z, T w): Vector<4, T>(x, y, z, w) {}
 
         /**
          * @brief Constructor
@@ -64,25 +64,25 @@ template<class T> class Vector4: public Vector<4, T> {
          *      \boldsymbol v = \begin{pmatrix} v_x \\ v_y \\ v_z \\ w \end{pmatrix}
          * @f]
          */
-        inline constexpr /*implicit*/ Vector4(const Vector3<T>& xyz, T w): Vector<4, T>(xyz[0], xyz[1], xyz[2], w) {}
+        constexpr /*implicit*/ Vector4(const Vector3<T>& xyz, T w): Vector<4, T>(xyz[0], xyz[1], xyz[2], w) {}
 
         /** @copydoc Vector::Vector(const Vector<size, U>&) */
-        template<class U> inline constexpr explicit Vector4(const Vector<4, U>& other): Vector<4, T>(other) {}
+        template<class U> constexpr explicit Vector4(const Vector<4, U>& other): Vector<4, T>(other) {}
 
         /** @brief Construct vector from external representation */
-        template<class U, class V = decltype(Implementation::VectorConverter<4, T, U>::from(std::declval<U>()))> inline constexpr explicit Vector4(const U& other): Vector<4, T>(Implementation::VectorConverter<4, T, U>::from(other)) {}
+        template<class U, class V = decltype(Implementation::VectorConverter<4, T, U>::from(std::declval<U>()))> constexpr explicit Vector4(const U& other): Vector<4, T>(Implementation::VectorConverter<4, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        inline constexpr Vector4(const Vector<4, T>& other): Vector<4, T>(other) {}
+        constexpr Vector4(const Vector<4, T>& other): Vector<4, T>(other) {}
 
-        inline T& x() { return (*this)[0]; }                /**< @brief X component */
-        inline constexpr T x() const { return (*this)[0]; } /**< @overload */
-        inline T& y() { return (*this)[1]; }                /**< @brief Y component */
-        inline constexpr T y() const { return (*this)[1]; } /**< @overload */
-        inline T& z() { return (*this)[2]; }                /**< @brief Z component */
-        inline constexpr T z() const { return (*this)[2]; } /**< @overload */
-        inline T& w() { return (*this)[3]; }                /**< @brief W component */
-        inline constexpr T w() const { return (*this)[3]; } /**< @overload */
+        T& x() { return (*this)[0]; }                   /**< @brief X component */
+        constexpr T x() const { return (*this)[0]; }    /**< @overload */
+        T& y() { return (*this)[1]; }                   /**< @brief Y component */
+        constexpr T y() const { return (*this)[1]; }    /**< @overload */
+        T& z() { return (*this)[2]; }                   /**< @brief Z component */
+        constexpr T z() const { return (*this)[2]; }    /**< @overload */
+        T& w() { return (*this)[3]; }                   /**< @brief W component */
+        constexpr T w() const { return (*this)[3]; }    /**< @overload */
 
         /**
          * @brief XYZ part of the vector
@@ -90,8 +90,8 @@ template<class T> class Vector4: public Vector<4, T> {
          *
          * @see swizzle()
          */
-        inline Vector3<T>& xyz() { return Vector3<T>::from(Vector<4, T>::data()); }
-        inline constexpr const Vector3<T> xyz() const { return {x(), y(), z()}; } /**< @overload */
+        Vector3<T>& xyz() { return Vector3<T>::from(Vector<4, T>::data()); }
+        constexpr const Vector3<T> xyz() const { return {x(), y(), z()}; } /**< @overload */
 
         /**
          * @brief XY part of the vector
@@ -99,8 +99,8 @@ template<class T> class Vector4: public Vector<4, T> {
          *
          * @see swizzle()
          */
-        inline Vector2<T>& xy() { return Vector2<T>::from(Vector<4, T>::data()); }
-        inline constexpr const Vector2<T> xy() const { return {x(), y()}; } /**< @overload */
+        Vector2<T>& xy() { return Vector2<T>::from(Vector<4, T>::data()); }
+        constexpr const Vector2<T> xy() const { return {x(), y()}; } /**< @overload */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector4, 4)
 };

@@ -47,10 +47,10 @@ template<class T> struct Constants {
      *
      * @see Deg, Rad
      */
-    static inline constexpr T pi();
+    static constexpr T pi();
 
-    static inline constexpr T sqrt2();  /**< @brief Square root of 2 */
-    static inline constexpr T sqrt3();  /**< @brief Square root of 3 */
+    static constexpr T sqrt2();  /**< @brief Square root of 2 */
+    static constexpr T sqrt3();  /**< @brief Square root of 3 */
     #endif
 };
 
@@ -59,17 +59,17 @@ template<class T> struct Constants {
 template<> struct Constants<Double> {
     Constants() = delete;
 
-    static inline constexpr Double pi()    { return 3.141592653589793; }
-    static inline constexpr Double sqrt2() { return 1.414213562373095; }
-    static inline constexpr Double sqrt3() { return 1.732050807568877; }
+    static constexpr Double pi()    { return 3.141592653589793; }
+    static constexpr Double sqrt2() { return 1.414213562373095; }
+    static constexpr Double sqrt3() { return 1.732050807568877; }
 };
 #endif
 template<> struct Constants<Float> {
     Constants() = delete;
 
-    static inline constexpr Float pi()    { return 3.141592654f; }
-    static inline constexpr Float sqrt2() { return 1.414213562f; }
-    static inline constexpr Float sqrt3() { return 1.732050808f; }
+    static constexpr Float pi()    { return 3.141592654f; }
+    static constexpr Float sqrt2() { return 1.414213562f; }
+    static constexpr Float sqrt3() { return 1.732050808f; }
 };
 #endif
 

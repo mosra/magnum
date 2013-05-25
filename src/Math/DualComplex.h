@@ -58,7 +58,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @see angle(), Complex::rotation(), Matrix3::rotation(),
          *      DualQuaternion::rotation()
          */
-        inline static DualComplex<T> rotation(Rad<T> angle) {
+        static DualComplex<T> rotation(Rad<T> angle) {
             return {Complex<T>::rotation(angle), {{}, {}}};
         }
 
@@ -72,7 +72,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @see translation() const, Matrix3::translation(const Vector2&),
          *      DualQuaternion::translation(), Vector2::xAxis(), Vector2::yAxis()
          */
-        inline static DualComplex<T> translation(const Vector2<T>& vector) {
+        static DualComplex<T> translation(const Vector2<T>& vector) {
             return {{}, {vector.x(), vector.y()}};
         }
 
@@ -83,7 +83,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @see toMatrix(), Complex::fromMatrix(),
          *      Matrix3::isRigidTransformation()
          */
-        inline static DualComplex<T> fromMatrix(const Matrix3<T>& matrix) {
+        static DualComplex<T> fromMatrix(const Matrix3<T>& matrix) {
             CORRADE_ASSERT(matrix.isRigidTransformation(),
                 "Math::DualComplex::fromMatrix(): the matrix doesn't represent rigid transformation", {});
             return {Implementation::complexFromMatrix(matrix.rotationScaling()), Complex<T>(matrix.translation())};
@@ -98,9 +98,9 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @todoc Remove workaround when Doxygen is predictable
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        inline constexpr /*implicit*/ DualComplex();
+        constexpr /*implicit*/ DualComplex();
         #else
-        inline constexpr /*implicit*/ DualComplex(): Dual<Complex<T>>({}, {T(0), T(0)}) {}
+        constexpr /*implicit*/ DualComplex(): Dual<Complex<T>>({}, {T(0), T(0)}) {}
         #endif
 
         /**
@@ -110,7 +110,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          *      \hat c = c_0 + \epsilon c_\epsilon
          * @f]
          */
-        inline constexpr /*implicit*/ DualComplex(const Complex<T>& real, const Complex<T>& dual = Complex<T>(T(0), T(0))): Dual<Complex<T>>(real, dual) {}
+        constexpr /*implicit*/ DualComplex(const Complex<T>& real, const Complex<T>& dual = Complex<T>(T(0), T(0))): Dual<Complex<T>>(real, dual) {}
 
         /**
          * @brief Construct dual complex number from vector
@@ -121,9 +121,9 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @todoc Remove workaround when Doxygen is predictable
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        inline constexpr explicit DualComplex(const Vector2<T>& vector);
+        constexpr explicit DualComplex(const Vector2<T>& vector);
         #else
-        inline constexpr explicit DualComplex(const Vector2<T>& vector): Dual<Complex<T>>({}, Complex<T>(vector)) {}
+        constexpr explicit DualComplex(const Vector2<T>& vector): Dual<Complex<T>>({}, Complex<T>(vector)) {}
         #endif
 
         /**
@@ -134,7 +134,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f]
          * @see Complex::dot(), normalized()
          */
-        inline bool isNormalized() const {
+        bool isNormalized() const {
             return Implementation::isNormalizedSquared(lengthSquared());
         }
 
@@ -143,7 +143,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          *
          * @see Complex::angle()
          */
-        inline constexpr Complex<T> rotation() const {
+        constexpr Complex<T> rotation() const {
             return this->real();
         }
 
@@ -155,7 +155,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f]
          * @see translation(const Vector2&)
          */
-        inline Vector2<T> translation() const {
+        Vector2<T> translation() const {
             return Vector2<T>(this->dual());
         }
 
@@ -164,7 +164,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          *
          * @see fromMatrix(), Complex::toMatrix()
          */
-        inline Matrix3<T> toMatrix() const {
+        Matrix3<T> toMatrix() const {
             return Matrix3<T>::from(this->real().toMatrix(), translation());
         }
 
@@ -176,7 +176,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f]
          * @todo can this be done similarly to dual quaternions?
          */
-        inline DualComplex<T> operator*(const DualComplex<T>& other) const {
+        DualComplex<T> operator*(const DualComplex<T>& other) const {
             return {this->real()*other.real(), this->real()*other.dual() + this->dual()};
         }
 
@@ -188,7 +188,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f]
          * @see dualConjugated(), conjugated(), Complex::conjugated()
          */
-        inline DualComplex<T> complexConjugated() const {
+        DualComplex<T> complexConjugated() const {
             return {this->real().conjugated(), this->dual().conjugated()};
         }
 
@@ -200,7 +200,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f]
          * @see complexConjugated(), conjugated(), Dual::conjugated()
          */
-        inline DualComplex<T> dualConjugated() const {
+        DualComplex<T> dualConjugated() const {
             return Dual<Complex<T>>::conjugated();
         }
 
@@ -213,7 +213,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @see complexConjugated(), dualConjugated(), Complex::conjugated(),
          *      Dual::conjugated()
          */
-        inline DualComplex<T> conjugated() const {
+        DualComplex<T> conjugated() const {
             return {this->real().conjugated(), {-this->dual().real(), this->dual().imaginary()}};
         }
 
@@ -226,7 +226,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f]
          * @todo Can this be done similarly to dual quaternins?
          */
-        inline T lengthSquared() const {
+        T lengthSquared() const {
             return this->real().dot();
         }
 
@@ -239,7 +239,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f]
          * @todo can this be done similarly to dual quaternions?
          */
-        inline T length() const {
+        T length() const {
             return this->real().length();
         }
 
@@ -252,7 +252,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @see isNormalized()
          * @todo can this be done similarly to dual quaternions?
          */
-        inline DualComplex<T> normalized() const {
+        DualComplex<T> normalized() const {
             return {this->real()/length(), this->dual()};
         }
 
@@ -265,7 +265,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f]
          * @todo can this be done similarly to dual quaternions?
          */
-        inline DualComplex<T> inverted() const {
+        DualComplex<T> inverted() const {
             return DualComplex<T>(this->real().inverted(), {{}, {}})*DualComplex<T>({}, -this->dual());
         }
 
@@ -278,7 +278,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @see isNormalized(), inverted()
          * @todo can this be done similarly to dual quaternions?
          */
-        inline DualComplex<T> invertedNormalized() const {
+        DualComplex<T> invertedNormalized() const {
             return DualComplex<T>(this->real().invertedNormalized(), {{}, {}})*DualComplex<T>({}, -this->dual());
         }
 
@@ -292,35 +292,35 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @see DualComplex(const Vector2&), dual(), Matrix3::transformPoint(),
          *      Complex::transformVector(), DualQuaternion::transformPoint()
          */
-        inline Vector2<T> transformPoint(const Vector2<T>& vector) const {
+        Vector2<T> transformPoint(const Vector2<T>& vector) const {
             return Vector2<T>(((*this)*DualComplex<T>(vector)).dual());
         }
 
         /* Verbatim copy of DUAL_SUBCLASS_IMPLEMENTATION(), as we need to hide
            Dual's operator*() and operator/() */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline DualComplex<T> operator-() const {
+        DualComplex<T> operator-() const {
             return Dual<Complex<T>>::operator-();
         }
-        inline DualComplex<T>& operator+=(const Dual<Complex<T>>& other) {
+        DualComplex<T>& operator+=(const Dual<Complex<T>>& other) {
             Dual<Complex<T>>::operator+=(other);
             return *this;
         }
-        inline DualComplex<T> operator+(const Dual<Complex<T>>& other) const {
+        DualComplex<T> operator+(const Dual<Complex<T>>& other) const {
             return Dual<Complex<T>>::operator+(other);
         }
-        inline DualComplex<T>& operator-=(const Dual<Complex<T>>& other) {
+        DualComplex<T>& operator-=(const Dual<Complex<T>>& other) {
             Dual<Complex<T>>::operator-=(other);
             return *this;
         }
-        inline DualComplex<T> operator-(const Dual<Complex<T>>& other) const {
+        DualComplex<T> operator-(const Dual<Complex<T>>& other) const {
             return Dual<Complex<T>>::operator-(other);
         }
         #endif
 
     private:
         /* Used by Dual operators and dualConjugated() */
-        inline constexpr DualComplex(const Dual<Complex<T>>& other): Dual<Complex<T>>(other) {}
+        constexpr DualComplex(const Dual<Complex<T>>& other): Dual<Complex<T>>(other) {}
 
         /* Just to be sure nobody uses this, as it wouldn't probably work with
            our operator*() */

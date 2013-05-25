@@ -36,7 +36,7 @@ namespace Implementation {
     template<std::size_t size, std::size_t position> struct ComponentAtPosition {
         static_assert(size > position, "Swizzle parameter out of range of base vector");
 
-        template<class T> inline constexpr static T value(const Math::Vector<size, T>& vector) { return vector[position]; }
+        template<class T> constexpr static T value(const Math::Vector<size, T>& vector) { return vector[position]; }
     };
 
     template<std::size_t size, char component> struct Component {};
@@ -45,10 +45,10 @@ namespace Implementation {
     template<std::size_t size> struct Component<size, 'z'>: public ComponentAtPosition<size, 2> {};
     template<std::size_t size> struct Component<size, 'w'>: public ComponentAtPosition<size, 3> {};
     template<std::size_t size> struct Component<size, '0'> {
-        template<class T> inline constexpr static T value(const Math::Vector<size, T>&) { return T(0); }
+        template<class T> constexpr static T value(const Math::Vector<size, T>&) { return T(0); }
     };
     template<std::size_t size> struct Component<size, '1'> {
-        template<class T> inline constexpr static T value(const Math::Vector<size, T>&) { return T(1); }
+        template<class T> constexpr static T value(const Math::Vector<size, T>&) { return T(1); }
     };
 }
 
@@ -72,7 +72,7 @@ present in this lightweight implementation for Math namespace.
 @see @ref matrix-vector-component-access, Vector4::xyz(),
     Vector4::xy(), Vector3::xy()
 */
-template<char ...components, std::size_t size, class T> inline constexpr Vector<sizeof...(components), T> swizzle(const Vector<size, T>& vector) {
+template<char ...components, std::size_t size, class T> constexpr Vector<sizeof...(components), T> swizzle(const Vector<size, T>& vector) {
     return {Implementation::Component<size, components>::value(vector)...};
 }
 

@@ -37,7 +37,7 @@ namespace Magnum { namespace Math {
 namespace Implementation {
 
 template<> struct RectangularMatrixConverter<4, 4, float, Mat4> {
-    inline constexpr static RectangularMatrix<4, 4, Float> from(const Mat4& other) {
+    constexpr static RectangularMatrix<4, 4, Float> from(const Mat4& other) {
         return RectangularMatrix<4, 4, Float>(
             Vector<4, Float>(other.a[0], other.a[1], other.a[2], other.a[3]),
             Vector<4, Float>(other.a[4], other.a[5], other.a[6], other.a[7]),
@@ -45,7 +45,7 @@ template<> struct RectangularMatrixConverter<4, 4, float, Mat4> {
             Vector<4, Float>(other.a[12], other.a[13], other.a[14], other.a[15]));
     }
 
-    inline constexpr static Mat4 to(const RectangularMatrix<4, 4, Float>& other) {
+    constexpr static Mat4 to(const RectangularMatrix<4, 4, Float>& other) {
         return Mat4{{other[0][0], other[0][1], other[0][2], other[0][3],
                      other[1][0], other[1][1], other[1][2], other[1][3],
                      other[2][0], other[2][1], other[2][2], other[2][3],

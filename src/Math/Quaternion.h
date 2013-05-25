@@ -38,44 +38,6 @@
 
 namespace Magnum { namespace Math {
 
-namespace Implementation {
-
-/* No assertions fired, for internal use. Not private member because used from
-   outside the class. */
-template<class T> inline Quaternion<T> quaternionFromMatrix(const Matrix<3, T>& m) {
-    const Vector<3, T> diagonal = m.diagonal();
-    const T trace = diagonal.sum();
-
-    /* Diagonal is positive */
-    if(trace > T(0)) {
-        const T s = std::sqrt(trace + T(1));
-        const T t = T(0.5)/s;
-        return {Vector3<T>(m[1][2] - m[2][1],
-                           m[2][0] - m[0][2],
-                           m[0][1] - m[1][0])*t, s*T(0.5)};
-    }
-
-    /* Diagonal is negative */
-    std::size_t i = 0;
-    if(diagonal[1] > diagonal[0]) i = 1;
-    if(diagonal[2] > diagonal[i]) i = 2;
-
-    const std::size_t j = (i + 1) % 3;
-    const std::size_t k = (i + 2) % 3;
-
-    const T s = std::sqrt(diagonal[i] - diagonal[j] - diagonal[k] + T(1));
-    const T t = (s == T(0) ? T(0) : T(0.5)/s);
-
-    Vector3<T> vec;
-    vec[i] = s*T(0.5);
-    vec[j] = (m[i][j] + m[j][i])*t;
-    vec[k] = (m[i][k] + m[k][i])*t;
-
-    return {vec, (m[j][k] - m[k][j])*t};
-}
-
-}
-
 /**
 @brief %Quaternion
 @tparam T   Underlying data type
@@ -95,7 +57,7 @@ template<class T> class Quaternion {
          * @f]
          * @see dot() const
          */
-        inline static T dot(const Quaternion<T>& a, const Quaternion<T>& b) {
+        static T dot(const Quaternion<T>& a, const Quaternion<T>& b) {
             /** @todo Use four-component SIMD implementation when available */
             return Vector3<T>::dot(a.vector(), b.vector()) + a.scalar()*b.scalar();
         }
@@ -108,11 +70,7 @@ template<class T> class Quaternion {
          * @f]
          * @see isNormalized(), Complex::angle(), Vector::angle()
          */
-        inline static Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
-            CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-                           "Math::Quaternion::angle(): quaternions must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
-            return Rad<T>(angleInternal(normalizedA, normalizedB));
-        }
+        static Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB);
 
         /**
          * @brief Linear interpolation of two quaternions
@@ -125,12 +83,7 @@ template<class T> class Quaternion {
          * @f]
          * @see isNormalized(), slerp(), Math::lerp()
          */
-        inline static Quaternion<T> lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
-            CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-                           "Math::Quaternion::lerp(): quaternions must be normalized",
-                           Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
-            return ((T(1) - t)*normalizedA + t*normalizedB).normalized();
-        }
+        static Quaternion<T> lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t);
 
         /**
          * @brief Spherical linear interpolation of two quaternions
@@ -145,13 +98,7 @@ template<class T> class Quaternion {
          * @f]
          * @see isNormalized(), lerp()
          */
-        inline static Quaternion<T> slerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
-            CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-                           "Math::Quaternion::slerp(): quaternions must be normalized",
-                           Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
-            T a = angleInternal(normalizedA, normalizedB);
-            return (std::sin((T(1) - t)*a)*normalizedA + std::sin(t*a)*normalizedB)/std::sin(a);
-        }
+        static Quaternion<T> slerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t);
 
         /**
          * @brief Rotation quaternion
@@ -165,12 +112,7 @@ template<class T> class Quaternion {
          *      Matrix4::rotation(), Complex::rotation(), Vector3::xAxis(),
          *      Vector3::yAxis(), Vector3::zAxis(), Vector::isNormalized()
          */
-        inline static Quaternion<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis) {
-            CORRADE_ASSERT(normalizedAxis.isNormalized(),
-                           "Math::Quaternion::rotation(): axis must be normalized", {});
-
-            return {normalizedAxis*std::sin(T(angle)/2), std::cos(T(angle)/2)};
-        }
+        static Quaternion<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis);
 
         /**
          * @brief Create quaternion from rotation matrix
@@ -178,11 +120,7 @@ template<class T> class Quaternion {
          * Expects that the matrix is orthogonal (i.e. pure rotation).
          * @see toMatrix(), DualComplex::fromMatrix(), Matrix::isOrthogonal()
          */
-        inline static Quaternion<T> fromMatrix(const Matrix<3, T>& matrix) {
-            CORRADE_ASSERT(matrix.isOrthogonal(),
-                "Math::Quaternion::fromMatrix(): the matrix is not orthogonal", {});
-            return Implementation::quaternionFromMatrix(matrix);
-        }
+        static Quaternion<T> fromMatrix(const Matrix<3, T>& matrix);
 
         /**
          * @brief Default constructor
@@ -191,7 +129,7 @@ template<class T> class Quaternion {
          *      q = [\boldsymbol 0, 1]
          * @f]
          */
-        inline constexpr /*implicit*/ Quaternion(): _scalar(T(1)) {}
+        constexpr /*implicit*/ Quaternion(): _scalar(T(1)) {}
 
         /**
          * @brief Construct quaternion from vector and scalar
@@ -200,7 +138,7 @@ template<class T> class Quaternion {
          *      q = [\boldsymbol v, s]
          * @f]
          */
-        inline constexpr /*implicit*/ Quaternion(const Vector3<T>& vector, T scalar): _vector(vector), _scalar(scalar) {}
+        constexpr /*implicit*/ Quaternion(const Vector3<T>& vector, T scalar): _vector(vector), _scalar(scalar) {}
 
         /**
          * @brief Construct quaternion from vector
@@ -210,15 +148,15 @@ template<class T> class Quaternion {
          * @f]
          * @see transformVector(), transformVectorNormalized()
          */
-        inline constexpr explicit Quaternion(const Vector3<T>& vector): _vector(vector), _scalar(T(0)) {}
+        constexpr explicit Quaternion(const Vector3<T>& vector): _vector(vector), _scalar(T(0)) {}
 
         /** @brief Equality comparison */
-        inline bool operator==(const Quaternion<T>& other) const {
+        bool operator==(const Quaternion<T>& other) const {
             return _vector == other._vector && TypeTraits<T>::equals(_scalar, other._scalar);
         }
 
         /** @brief Non-equality comparison */
-        inline bool operator!=(const Quaternion<T>& other) const {
+        bool operator!=(const Quaternion<T>& other) const {
             return !operator==(other);
         }
 
@@ -230,15 +168,15 @@ template<class T> class Quaternion {
          * @f]
          * @see dot(), normalized()
          */
-        inline bool isNormalized() const {
+        bool isNormalized() const {
             return Implementation::isNormalizedSquared(dot());
         }
 
         /** @brief %Vector part */
-        inline constexpr Vector3<T> vector() const { return _vector; }
+        constexpr Vector3<T> vector() const { return _vector; }
 
         /** @brief %Scalar part */
-        inline constexpr T scalar() const { return _scalar; }
+        constexpr T scalar() const { return _scalar; }
 
         /**
          * @brief Rotation angle of unit quaternion
@@ -248,12 +186,7 @@ template<class T> class Quaternion {
          * @f]
          * @see isNormalized(), axis(), rotation()
          */
-        inline Rad<T> angle() const {
-            CORRADE_ASSERT(isNormalized(),
-                           "Math::Quaternion::angle(): quaternion must be normalized",
-                           Rad<T>(std::numeric_limits<T>::quiet_NaN()));
-            return Rad<T>(T(2)*std::acos(_scalar));
-        }
+        Rad<T> angle() const;
 
         /**
          * @brief Rotation axis of unit quaternion
@@ -265,12 +198,7 @@ template<class T> class Quaternion {
          * @f]
          * @see isNormalized(), angle(), rotation()
          */
-        inline Vector3<T> axis() const {
-            CORRADE_ASSERT(isNormalized(),
-                           "Math::Quaternion::axis(): quaternion must be normalized",
-                           {});
-            return _vector/std::sqrt(1-pow2(_scalar));
-        }
+        Vector3<T> axis() const;
 
         /**
          * @brief Convert quaternion to rotation matrix
@@ -278,19 +206,7 @@ template<class T> class Quaternion {
          * @see fromMatrix(), DualQuaternion::toMatrix(),
          *      Matrix4::from(const Matrix<3, T>&, const Vector3<T>&)
          */
-        Matrix<3, T> toMatrix() const {
-            return {
-                Vector<3, T>(T(1) - 2*pow2(_vector.y()) - 2*pow2(_vector.z()),
-                    2*_vector.x()*_vector.y() + 2*_vector.z()*_scalar,
-                        2*_vector.x()*_vector.z() - 2*_vector.y()*_scalar),
-                Vector<3, T>(2*_vector.x()*_vector.y() - 2*_vector.z()*_scalar,
-                    T(1) - 2*pow2(_vector.x()) - 2*pow2(_vector.z()),
-                        2*_vector.y()*_vector.z() + 2*_vector.x()*_scalar),
-                Vector<3, T>(2*_vector.x()*_vector.z() + 2*_vector.y()*_scalar,
-                    2*_vector.y()*_vector.z() - 2*_vector.x()*_scalar,
-                        T(1) - 2*pow2(_vector.x()) - 2*pow2(_vector.y()))
-            };
-        }
+        Matrix<3, T> toMatrix() const;
 
         /**
          * @brief Add and assign quaternion
@@ -299,7 +215,7 @@ template<class T> class Quaternion {
          *      p + q = [\boldsymbol p_V + \boldsymbol q_V, p_S + q_S]
          * @f]
          */
-        inline Quaternion<T>& operator+=(const Quaternion<T>& other) {
+        Quaternion<T>& operator+=(const Quaternion<T>& other) {
             _vector += other._vector;
             _scalar += other._scalar;
             return *this;
@@ -310,7 +226,7 @@ template<class T> class Quaternion {
          *
          * @see operator+=()
          */
-        inline Quaternion<T> operator+(const Quaternion<T>& other) const {
+        Quaternion<T> operator+(const Quaternion<T>& other) const {
             return Quaternion<T>(*this) += other;
         }
 
@@ -321,9 +237,7 @@ template<class T> class Quaternion {
          *      -q = [-\boldsymbol q_V, -q_S]
          * @f]
          */
-        inline Quaternion<T> operator-() const {
-            return {-_vector, -_scalar};
-        }
+        Quaternion<T> operator-() const { return {-_vector, -_scalar}; }
 
         /**
          * @brief Subtract and assign quaternion
@@ -332,7 +246,7 @@ template<class T> class Quaternion {
          *      p - q = [\boldsymbol p_V - \boldsymbol q_V, p_S - q_S]
          * @f]
          */
-        inline Quaternion<T>& operator-=(const Quaternion<T>& other) {
+        Quaternion<T>& operator-=(const Quaternion<T>& other) {
             _vector -= other._vector;
             _scalar -= other._scalar;
             return *this;
@@ -343,7 +257,7 @@ template<class T> class Quaternion {
          *
          * @see operator-=()
          */
-        inline Quaternion<T> operator-(const Quaternion<T>& other) const {
+        Quaternion<T> operator-(const Quaternion<T>& other) const {
             return Quaternion<T>(*this) -= other;
         }
 
@@ -354,7 +268,7 @@ template<class T> class Quaternion {
          *      q \cdot a = [\boldsymbol q_V \cdot a, q_S \cdot a]
          * @f]
          */
-        inline Quaternion<T>& operator*=(T scalar) {
+        Quaternion<T>& operator*=(T scalar) {
             _vector *= scalar;
             _scalar *= scalar;
             return *this;
@@ -365,7 +279,7 @@ template<class T> class Quaternion {
          *
          * @see operator*=(T)
          */
-        inline Quaternion<T> operator*(T scalar) const {
+        Quaternion<T> operator*(T scalar) const {
             return Quaternion<T>(*this) *= scalar;
         }
 
@@ -376,7 +290,7 @@ template<class T> class Quaternion {
          *      \frac q a = [\frac {\boldsymbol q_V} a, \frac {q_S} a]
          * @f]
          */
-        inline Quaternion<T>& operator/=(T scalar) {
+        Quaternion<T>& operator/=(T scalar) {
             _vector /= scalar;
             _scalar /= scalar;
             return *this;
@@ -387,7 +301,7 @@ template<class T> class Quaternion {
          *
          * @see operator/=(T)
          */
-        inline Quaternion<T> operator/(T scalar) const {
+        Quaternion<T> operator/(T scalar) const {
             return Quaternion<T>(*this) /= scalar;
         }
 
@@ -399,10 +313,7 @@ template<class T> class Quaternion {
          *             p_S q_S - \boldsymbol p_V \cdot \boldsymbol q_V]
          * @f]
          */
-        inline Quaternion<T> operator*(const Quaternion<T>& other) const {
-            return {_scalar*other._vector + other._scalar*_vector + Vector3<T>::cross(_vector, other._vector),
-                    _scalar*other._scalar - Vector3<T>::dot(_vector, other._vector)};
-        }
+        Quaternion<T> operator*(const Quaternion<T>& other) const;
 
         /**
          * @brief Dot product of the quaternion
@@ -413,9 +324,7 @@ template<class T> class Quaternion {
          * @f]
          * @see isNormalized(), dot(const Quaternion&, const Quaternion&)
          */
-        inline T dot() const {
-            return dot(*this, *this);
-        }
+        T dot() const { return dot(*this, *this); }
 
         /**
          * @brief %Quaternion length
@@ -426,18 +335,14 @@ template<class T> class Quaternion {
          * @f]
          * @see isNormalized()
          */
-        inline T length() const {
-            return std::sqrt(dot());
-        }
+        T length() const { return std::sqrt(dot()); }
 
         /**
          * @brief Normalized quaternion (of unit length)
          *
          * @see isNormalized()
          */
-        inline Quaternion<T> normalized() const {
-            return (*this)/length();
-        }
+        Quaternion<T> normalized() const { return (*this)/length(); }
 
         /**
          * @brief Conjugated quaternion
@@ -446,9 +351,7 @@ template<class T> class Quaternion {
          *      q^* = [-\boldsymbol q_V, q_S]
          * @f]
          */
-        inline Quaternion<T> conjugated() const {
-            return {-_vector, _scalar};
-        }
+        Quaternion<T> conjugated() const { return {-_vector, _scalar}; }
 
         /**
          * @brief Inverted quaternion
@@ -458,9 +361,7 @@ template<class T> class Quaternion {
          *      q^{-1} = \frac{q^*}{|q|^2} = \frac{q^*}{q \cdot q}
          * @f]
          */
-        inline Quaternion<T> inverted() const {
-            return conjugated()/dot();
-        }
+        Quaternion<T> inverted() const { return conjugated()/dot(); }
 
         /**
          * @brief Inverted normalized quaternion
@@ -471,12 +372,7 @@ template<class T> class Quaternion {
          * @f]
          * @see isNormalized(), inverted()
          */
-        inline Quaternion<T> invertedNormalized() const {
-            CORRADE_ASSERT(isNormalized(),
-                           "Math::Quaternion::invertedNormalized(): quaternion must be normalized",
-                           Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
-            return conjugated();
-        }
+        Quaternion<T> invertedNormalized() const;
 
         /**
          * @brief Rotate vector with quaternion
@@ -488,7 +384,7 @@ template<class T> class Quaternion {
          * @see Quaternion(const Vector3&), vector(), Matrix4::transformVector(),
          *      DualQuaternion::transformPoint(), Complex::transformVector()
          */
-        inline Vector3<T> transformVector(const Vector3<T>& vector) const {
+        Vector3<T> transformVector(const Vector3<T>& vector) const {
             return ((*this)*Quaternion<T>(vector)*inverted()).vector();
         }
 
@@ -502,21 +398,16 @@ template<class T> class Quaternion {
          * @see isNormalized(), Quaternion(const Vector3&), vector(), Matrix4::transformVector(),
          *      DualQuaternion::transformPointNormalized(), Complex::transformVector()
          */
-        inline Vector3<T> transformVectorNormalized(const Vector3<T>& vector) const {
-            CORRADE_ASSERT(isNormalized(),
-                           "Math::Quaternion::transformVectorNormalized(): quaternion must be normalized",
-                           Vector3<T>(std::numeric_limits<T>::quiet_NaN()));
-            return ((*this)*Quaternion<T>(vector)*conjugated()).vector();
-        }
+        Vector3<T> transformVectorNormalized(const Vector3<T>& vector) const;
 
     private:
         /* Used to avoid including Functions.h */
-        inline constexpr static T pow2(T value) {
+        constexpr static T pow2(T value) {
             return value*value;
         }
 
         /* Used in angle() and slerp() (no assertions) */
-        inline static T angleInternal(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
+        static T angleInternal(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
             return std::acos(dot(normalizedA, normalizedB));
         }
 
@@ -561,6 +452,116 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
 extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Quaternion<Double>&);
 #endif
 #endif
+
+namespace Implementation {
+
+/* No assertions fired, for internal use. Not private member because used from
+   outside the class. */
+template<class T> Quaternion<T> quaternionFromMatrix(const Matrix<3, T>& m) {
+    const Vector<3, T> diagonal = m.diagonal();
+    const T trace = diagonal.sum();
+
+    /* Diagonal is positive */
+    if(trace > T(0)) {
+        const T s = std::sqrt(trace + T(1));
+        const T t = T(0.5)/s;
+        return {Vector3<T>(m[1][2] - m[2][1],
+                           m[2][0] - m[0][2],
+                           m[0][1] - m[1][0])*t, s*T(0.5)};
+    }
+
+    /* Diagonal is negative */
+    std::size_t i = 0;
+    if(diagonal[1] > diagonal[0]) i = 1;
+    if(diagonal[2] > diagonal[i]) i = 2;
+
+    const std::size_t j = (i + 1) % 3;
+    const std::size_t k = (i + 2) % 3;
+
+    const T s = std::sqrt(diagonal[i] - diagonal[j] - diagonal[k] + T(1));
+    const T t = (s == T(0) ? T(0) : T(0.5)/s);
+
+    Vector3<T> vec;
+    vec[i] = s*T(0.5);
+    vec[j] = (m[i][j] + m[j][i])*t;
+    vec[k] = (m[i][k] + m[k][i])*t;
+
+    return {vec, (m[j][k] - m[k][j])*t};
+}
+
+}
+
+template<class T> inline Rad<T> Quaternion<T>::angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+        "Math::Quaternion::angle(): quaternions must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
+    return Rad<T>(angleInternal(normalizedA, normalizedB));
+}
+
+template<class T> inline Quaternion<T> Quaternion<T>::lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, const T t) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+        "Math::Quaternion::lerp(): quaternions must be normalized", Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
+    return ((T(1) - t)*normalizedA + t*normalizedB).normalized();
+}
+
+template<class T> inline Quaternion<T> Quaternion<T>::slerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, const T t) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+        "Math::Quaternion::slerp(): quaternions must be normalized", Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
+    const T a = angleInternal(normalizedA, normalizedB);
+    return (std::sin((T(1) - t)*a)*normalizedA + std::sin(t*a)*normalizedB)/std::sin(a);
+}
+
+template<class T> inline Quaternion<T> Quaternion<T>::rotation(const Rad<T> angle, const Vector3<T>& normalizedAxis) {
+    CORRADE_ASSERT(normalizedAxis.isNormalized(),
+        "Math::Quaternion::rotation(): axis must be normalized", {});
+    return {normalizedAxis*std::sin(T(angle)/2), std::cos(T(angle)/2)};
+}
+
+template<class T> inline Quaternion<T> Quaternion<T>::fromMatrix(const Matrix<3, T>& matrix) {
+    CORRADE_ASSERT(matrix.isOrthogonal(), "Math::Quaternion::fromMatrix(): the matrix is not orthogonal", {});
+    return Implementation::quaternionFromMatrix(matrix);
+}
+
+template<class T> inline Rad<T> Quaternion<T>::angle() const {
+    CORRADE_ASSERT(isNormalized(), "Math::Quaternion::angle(): quaternion must be normalized",
+        Rad<T>(std::numeric_limits<T>::quiet_NaN()));
+    return Rad<T>(T(2)*std::acos(_scalar));
+}
+
+template<class T> inline Vector3<T> Quaternion<T>::axis() const {
+    CORRADE_ASSERT(isNormalized(), "Math::Quaternion::axis(): quaternion must be normalized", {});
+    return _vector/std::sqrt(1-pow2(_scalar));
+}
+
+template<class T> Matrix<3, T> Quaternion<T>::toMatrix() const {
+    return {
+        Vector<3, T>(T(1) - 2*pow2(_vector.y()) - 2*pow2(_vector.z()),
+            2*_vector.x()*_vector.y() + 2*_vector.z()*_scalar,
+                2*_vector.x()*_vector.z() - 2*_vector.y()*_scalar),
+        Vector<3, T>(2*_vector.x()*_vector.y() - 2*_vector.z()*_scalar,
+            T(1) - 2*pow2(_vector.x()) - 2*pow2(_vector.z()),
+                2*_vector.y()*_vector.z() + 2*_vector.x()*_scalar),
+        Vector<3, T>(2*_vector.x()*_vector.z() + 2*_vector.y()*_scalar,
+            2*_vector.y()*_vector.z() - 2*_vector.x()*_scalar,
+                T(1) - 2*pow2(_vector.x()) - 2*pow2(_vector.y()))
+    };
+}
+
+template<class T> inline Quaternion<T> Quaternion<T>::operator*(const Quaternion<T>& other) const {
+    return {_scalar*other._vector + other._scalar*_vector + Vector3<T>::cross(_vector, other._vector),
+            _scalar*other._scalar - Vector3<T>::dot(_vector, other._vector)};
+}
+
+template<class T> inline Quaternion<T> Quaternion<T>::invertedNormalized() const {
+    CORRADE_ASSERT(isNormalized(), "Math::Quaternion::invertedNormalized(): quaternion must be normalized",
+        Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
+    return conjugated();
+}
+
+template<class T> inline Vector3<T> Quaternion<T>::transformVectorNormalized(const Vector3< T >& vector) const {
+    CORRADE_ASSERT(isNormalized(), "Math::Quaternion::transformVectorNormalized(): quaternion must be normalized",
+        Vector3<T>(std::numeric_limits<T>::quiet_NaN()));
+    return ((*this)*Quaternion<T>(vector)*conjugated()).vector();
+}
 
 }}
 
