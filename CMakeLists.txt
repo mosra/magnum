@@ -41,7 +41,7 @@ cmake_dependent_option(WITH_SHADERS "Build Shaders library" ON "NOT WITH_DEBUGTO
 cmake_dependent_option(WITH_SHAPES "Build Shapes library" ON "NOT WITH_DEBUGTOOLS" ON)
 option(WITH_TEXT "Build Text library" ON)
 cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT WITH_TEXT" ON)
-option(WITH_MAGNUMINFO "Build magnum-info utility" ON)
+option(WITH_MAGNUMINFO "Build magnum-info utility" OFF)
 
 # Application libraries
 if(CORRADE_TARGET_NACL)
