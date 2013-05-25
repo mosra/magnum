@@ -34,4 +34,8 @@ corrade_add_test(RendererTest RendererTest.cpp LIBRARIES Magnum)
 corrade_add_test(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(SwizzleTest SwizzleTest.cpp LIBRARIES MagnumMathTestLib)
 
+if(BUILD_GL_TESTS)
+    corrade_add_test(BufferGLTest BufferGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+endif()
+
 set_target_properties(ResourceManagerTest PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
