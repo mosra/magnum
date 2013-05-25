@@ -86,15 +86,17 @@ class Sdl2Application {
         /** @copydoc GlutApplication::GlutApplication(const Arguments&, Configuration*) */
         explicit Sdl2Application(const Arguments& arguments, Configuration* configuration);
 
-        virtual ~Sdl2Application();
-
         /** @copydoc GlutApplication::exec() */
         int exec();
 
         /** @brief Exit application main loop */
-        inline void exit() { flags |= Flag::Exit; }
+        void exit() { flags |= Flag::Exit; }
 
     protected:
+        /* Nobody will need to have (and delete) Sdl2Application*, thus this is
+           faster than public pure virtual destructor */
+        virtual ~Sdl2Application();
+
         /** @copydoc GlutApplication::createContext() */
         void createContext(Configuration* configuration);
 
@@ -110,10 +112,10 @@ class Sdl2Application {
         virtual void drawEvent() = 0;
 
         /** @copydoc GlutApplication::swapBuffers() */
-        inline void swapBuffers() { SDL_GL_SwapWindow(window); }
+        void swapBuffers() { SDL_GL_SwapWindow(window); }
 
         /** @copydoc GlutApplication::redraw() */
-        inline void redraw() { flags |= Flag::Redraw; }
+        void redraw() { flags |= Flag::Redraw; }
 
         /*@}*/
 
@@ -135,9 +137,7 @@ class Sdl2Application {
 
     public:
         /** @brief Whether mouse is locked */
-        inline bool isMouseLocked() const {
-            return SDL_GetRelativeMouseMode();
-        }
+        bool isMouseLocked() const { return SDL_GetRelativeMouseMode(); }
 
         /**
          * @brief Enable or disable mouse locking
@@ -227,7 +227,7 @@ class Sdl2Application::Configuration {
         ~Configuration();
 
         /** @brief Window title */
-        inline std::string title() const { return _title; }
+        std::string title() const { return _title; }
 
         /**
          * @brief Set window title
@@ -235,13 +235,13 @@ class Sdl2Application::Configuration {
          *
          * Default is `"Magnum SDL2 Application"`.
          */
-        inline Configuration* setTitle(std::string title) {
+        Configuration* setTitle(std::string title) {
             _title = std::move(title);
             return this;
         }
 
         /** @brief Window size */
-        inline Vector2i size() const { return _size; }
+        Vector2i size() const { return _size; }
 
         /**
          * @brief Set window size
@@ -249,13 +249,13 @@ class Sdl2Application::Configuration {
          *
          * Default is `{800, 600}`.
          */
-        inline Configuration* setSize(const Vector2i& size) {
+        Configuration* setSize(const Vector2i& size) {
             _size = size;
             return this;
         }
 
         /** @brief Window flags */
-        inline Flags flags() const { return _flags; }
+        Flags flags() const { return _flags; }
 
         /**
          * @brief Set window flags
@@ -263,13 +263,13 @@ class Sdl2Application::Configuration {
          *
          * Default is @ref Flag "Flag::Resizable".
          */
-        inline Configuration* setFlags(const Flags flags) {
+        Configuration* setFlags(const Flags flags) {
             _flags = flags;
             return this;
         }
 
         /** @brief Sample count */
-        inline Int sampleCount() const { return _sampleCount; }
+        Int sampleCount() const { return _sampleCount; }
 
         /**
          * @brief Set sample count
@@ -278,7 +278,7 @@ class Sdl2Application::Configuration {
          * Default is `0`, thus no multisampling. See also
          * @ref Renderer::Feature "Renderer::Feature::Multisampling".
          */
-        inline Configuration* setSampleCount(Int count) {
+        Configuration* setSampleCount(Int count) {
             _sampleCount = count;
             return this;
         }
@@ -329,17 +329,17 @@ class Sdl2Application::InputEvent {
          */
         typedef Containers::EnumSet<Modifier, Uint16> Modifiers;
 
-        inline virtual ~InputEvent() {}
-
         /** @copydoc GlutApplication::InputEvent::setAccepted() */
-        inline void setAccepted(bool accepted = true) { _accepted = accepted; }
+        void setAccepted(bool accepted = true) { _accepted = accepted; }
 
         /** @copydoc GlutApplication::InputEvent::isAccepted() */
-        inline bool isAccepted() { return _accepted; }
+        constexpr bool isAccepted() const { return _accepted; }
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
-        inline InputEvent(): _accepted(false) {}
+        constexpr explicit InputEvent(): _accepted(false) {}
+
+        ~InputEvent() = default;
     #endif
 
     private:
@@ -434,13 +434,13 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
         };
 
         /** @brief Key */
-        inline Key key() const { return _key; }
+        constexpr Key key() const { return _key; }
 
         /** @brief Modifiers */
-        inline Modifiers modifiers() const { return _modifiers; }
+        constexpr Modifiers modifiers() const { return _modifiers; }
 
     private:
-        inline KeyEvent(Key key, Modifiers modifiers): _key(key), _modifiers(modifiers) {}
+        constexpr KeyEvent(Key key, Modifiers modifiers): _key(key), _modifiers(modifiers) {}
 
         const Key _key;
         const Modifiers _modifiers;
@@ -469,10 +469,10 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         };
 
         /** @brief Button */
-        inline Button button() const { return _button; }
+        constexpr Button button() const { return _button; }
 
         /** @brief Position */
-        inline Vector2i position() const { return _position; }
+        constexpr Vector2i position() const { return _position; }
 
         /**
          * @brief Modifiers
@@ -482,7 +482,7 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        inline MouseEvent(Button button, const Vector2i& position): _button(button), _position(position), modifiersLoaded(false) {}
+        constexpr MouseEvent(Button button, const Vector2i& position): _button(button), _position(position), modifiersLoaded(false) {}
 
         const Button _button;
         const Vector2i _position;
@@ -500,14 +500,14 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
 
     public:
         /** @brief Position */
-        inline Vector2i position() const { return _position; }
+        constexpr Vector2i position() const { return _position; }
 
         /**
          * @brief Relative position
          *
          * Position relative to previous event.
          */
-        inline Vector2i relativePosition() const { return _relativePosition; }
+        constexpr Vector2i relativePosition() const { return _relativePosition; }
 
         /**
          * @brief Modifiers
@@ -517,7 +517,7 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        inline MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition): _position(position), _relativePosition(relativePosition), modifiersLoaded(false) {}
+        constexpr MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition): _position(position), _relativePosition(relativePosition), modifiersLoaded(false) {}
 
         const Vector2i _position, _relativePosition;
         bool modifiersLoaded;

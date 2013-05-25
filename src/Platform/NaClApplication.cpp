@@ -232,7 +232,4 @@ void NaClApplication::mouseLockCallback(void* applicationInstance, std::int32_t)
     instance->flags |= Flag::MouseLocked;
 }
 
-NaClApplication::Configuration::Configuration(): _size(640, 480), _sampleCount(0) {}
-NaClApplication::Configuration::~Configuration() = default;
-
 }}

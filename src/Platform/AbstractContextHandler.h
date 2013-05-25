@@ -63,7 +63,7 @@ template<class Display, class VisualId, class Window> class AbstractContextHandl
          *
          * Default is to disable.
          */
-        virtual inline ExtensionWrangler::ExperimentalFeatures experimentalExtensionWranglerFeatures() const {
+        virtual ExtensionWrangler::ExperimentalFeatures experimentalExtensionWranglerFeatures() const {
             return ExtensionWrangler::ExperimentalFeatures::Disable;
         }
 

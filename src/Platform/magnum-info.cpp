@@ -34,7 +34,7 @@ class MagnumInfo: public Platform::WindowlessGlxApplication {
     public:
         explicit MagnumInfo(const Arguments& arguments);
 
-        inline int exec() override { return 0; }
+        int exec() override { return 0; }
 };
 
 MagnumInfo::MagnumInfo(const Arguments& arguments): WindowlessGlxApplication(arguments) {

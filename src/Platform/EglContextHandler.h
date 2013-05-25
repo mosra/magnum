@@ -66,11 +66,11 @@ class EglContextHandler: public AbstractContextHandler<EGLNativeDisplayType, Vis
         VisualId getVisualId(EGLNativeDisplayType nativeDisplay) override;
         void createContext(EGLNativeWindowType nativeWindow) override;
 
-        inline void makeCurrent() override {
+        void makeCurrent() override {
             eglMakeCurrent(display, surface, surface, context);
         }
 
-        inline void swapBuffers() override {
+        void swapBuffers() override {
             eglSwapBuffers(display, surface);
         }
 
