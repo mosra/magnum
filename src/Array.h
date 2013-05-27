@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
+/** @file /Array.h
  * @brief Class Magnum::Array, Magnum::Array1D, Magnum::Array2D, Magnum::Array3D
  */
 

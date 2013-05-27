@@ -180,7 +180,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @see row(), data()
          */
         Vector<rows, T>& operator[](std::size_t col) { return _data[col]; }
-        constexpr const Vector<rows, T>& operator[](std::size_t col) const { return _data[col]; } /** @overload */
+        constexpr const Vector<rows, T>& operator[](std::size_t col) const { return _data[col]; } /**< @overload */
 
         /**
          * @brief %Matrix row
