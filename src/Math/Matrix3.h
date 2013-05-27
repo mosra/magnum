@@ -53,7 +53,11 @@ template<class T> class Matrix3: public Matrix<3, T> {
          *      Matrix4::translation(const Vector3&), Vector2::xAxis(),
          *      Vector2::yAxis()
          */
-        constexpr static Matrix3<T> translation(const Vector2<T>& vector);
+        constexpr static Matrix3<T> translation(const Vector2<T>& vector) {
+            return {{      T(1),       T(0), T(0)},
+                    {      T(0),       T(1), T(0)},
+                    {vector.x(), vector.y(), T(1)}};
+        }
 
         /**
          * @brief 2D scaling matrix
@@ -62,7 +66,11 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @see rotationScaling() const, Matrix4::scaling(const Vector3&),
          *      Vector2::xScale(), Vector2::yScale()
          */
-        constexpr static Matrix3<T> scaling(const Vector2<T>& vector);
+        constexpr static Matrix3<T> scaling(const Vector2<T>& vector) {
+            return {{vector.x(),       T(0), T(0)},
+                    {      T(0), vector.y(), T(0)},
+                    {      T(0),       T(0), T(1)}};
+        }
 
         /**
          * @brief 2D rotation matrix
@@ -122,7 +130,11 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @p value allows you to specify value on diagonal.
          * @todo Use constexpr implementation in Matrix, when done
          */
-        constexpr /*implicit*/ Matrix3(typename Matrix<3, T>::IdentityType = (Matrix<3, T>::Identity), T value = T(1));
+        constexpr /*implicit*/ Matrix3(typename Matrix<3, T>::IdentityType = (Matrix<3, T>::Identity), T value = T(1)): Matrix<3, T>(
+            Vector<3, T>(value,  T(0),  T(0)),
+            Vector<3, T>( T(0), value,  T(0)),
+            Vector<3, T>( T(0),  T(0), value)
+        ) {}
 
         /** @brief %Matrix from column vectors */
         constexpr /*implicit*/ Matrix3(const Vector3<T>& first, const Vector3<T>& second, const Vector3<T>& third): Matrix<3, T>(first, second, third) {}
@@ -248,24 +260,6 @@ MAGNUM_MATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(Matrix3, 3)
 /** @debugoperator{Magnum::Math::Matrix3} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Matrix3<T>& value) {
     return debug << static_cast<const Matrix<3, T>&>(value);
-}
-
-template<class T> constexpr Matrix3<T>::Matrix3(typename Matrix<3, T>::IdentityType, const T value): Matrix<3, T>(
-    Vector<3, T>(value,  T(0),  T(0)),
-    Vector<3, T>( T(0), value,  T(0)),
-    Vector<3, T>( T(0),  T(0), value)
-) {}
-
-template<class T> constexpr Matrix3<T> Matrix3<T>::translation(const Vector2<T>& vector) {
-    return {{      T(1),       T(0), T(0)},
-            {      T(0),       T(1), T(0)},
-            {vector.x(), vector.y(), T(1)}};
-}
-
-template<class T> constexpr Matrix3<T> Matrix3<T>::scaling(const Vector2< T >& vector) {
-    return {{vector.x(),       T(0), T(0)},
-            {      T(0), vector.y(), T(0)},
-            {      T(0),       T(0), T(1)}};
 }
 
 template<class T> Matrix3<T> Matrix3<T>::rotation(const Rad<T> angle) {
