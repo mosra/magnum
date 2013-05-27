@@ -44,24 +44,26 @@ template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::~Abstra
 template<UnsignedInt dimensions, class T> AbstractTransformation<dimensions, T>::AbstractTransformation() {}
 template<UnsignedInt dimensions, class T> AbstractTransformation<dimensions, T>::~AbstractTransformation() {}
 
+template<class Transformation> Object<Transformation>::~Object() = default;
+
 template<class Transformation> Scene<Transformation>* Object<Transformation>::scene() {
-    return static_cast<Scene<Transformation>*>(sceneObject());
+    Object<Transformation>* p(this);
+    while(p && !p->isScene()) p = p->parent();
+    return static_cast<Scene<Transformation>*>(p);
 }
 
 template<class Transformation> const Scene<Transformation>* Object<Transformation>::scene() const {
-    return static_cast<const Scene<Transformation>*>(sceneObject());
-}
-
-template<class Transformation> Object<Transformation>* Object<Transformation>::sceneObject() {
-    Object<Transformation>* p(this);
-    while(p && !p->isScene()) p = p->parent();
-    return p;
-}
-
-template<class Transformation> const Object<Transformation>* Object<Transformation>::sceneObject() const {
     const Object<Transformation>* p(this);
     while(p && !p->isScene()) p = p->parent();
-    return p;
+    return static_cast<const Scene<Transformation>*>(p);
+}
+
+template<class Transformation> Object<Transformation>* Object<Transformation>::doScene() {
+    return scene();
+}
+
+template<class Transformation> const Object<Transformation>* Object<Transformation>::doScene() const {
+    return scene();
 }
 
 template<class Transformation> Object<Transformation>* Object<Transformation>::setParent(Object<Transformation>* parent) {
@@ -159,13 +161,17 @@ template<class Transformation> void Object<Transformation>::setClean() {
     }
 }
 
-template<class Transformation> std::vector<typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType> Object<Transformation>::transformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType& initialTransformationMatrix) const {
+template<class Transformation> std::vector<typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType> Object<Transformation>::doTransformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType& initialTransformationMatrix) const {
     std::vector<Object<Transformation>*> castObjects(objects.size());
     for(std::size_t i = 0; i != objects.size(); ++i)
         /** @todo Ensure this doesn't crash, somehow */
         castObjects[i] = static_cast<Object<Transformation>*>(objects[i]);
 
-    std::vector<typename Transformation::DataType> transformations = this->transformations(std::move(castObjects), Transformation::fromMatrix(initialTransformationMatrix));
+    return transformationMatrices(std::move(castObjects), initialTransformationMatrix);
+}
+
+template<class Transformation> std::vector<typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType> Object<Transformation>::transformationMatrices(const std::vector<Object<Transformation>*>& objects, const typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType& initialTransformationMatrix) const {
+    std::vector<typename Transformation::DataType> transformations = this->transformations(std::move(objects), Transformation::fromMatrix(initialTransformationMatrix));
     std::vector<typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType> transformationMatrices(transformations.size());
     for(std::size_t i = 0; i != objects.size(); ++i)
         transformationMatrices[i] = Transformation::toMatrix(transformations[i]);
@@ -317,7 +323,7 @@ template<class Transformation> typename Transformation::DataType Object<Transfor
     }
 }
 
-template<class Transformation> void Object<Transformation>::setClean(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) const {
+template<class Transformation> void Object<Transformation>::doSetClean(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) {
     std::vector<Object<Transformation>*> castObjects(objects.size());
     for(std::size_t i = 0; i != objects.size(); ++i)
         /** @todo Ensure this doesn't crash, somehow */

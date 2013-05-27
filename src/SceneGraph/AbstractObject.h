@@ -56,10 +56,10 @@ for(AbstractFeature* feature = o->firstFeature(); feature; feature = feature->ne
 
 @see AbstractObject2D, AbstractObject3D
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractObject: private Containers::LinkedList<AbstractFeature<dimensions, T>>
-#else
+#ifdef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt dimensions, class T = Float> class AbstractObject
+#else
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractObject: private Containers::LinkedList<AbstractFeature<dimensions, T>>
 #endif
 {
     friend class Containers::LinkedList<AbstractFeature<dimensions, T>>;
@@ -99,17 +99,13 @@ template<UnsignedInt dimensions, class T = Float> class AbstractObject
         }
 
         /**
-         * @brief %Scene object
-         * @return Root object which is also scene or `nullptr`, if the object
-         *      is not part of any scene.
-         *
-         * @todo Rename to scene() when I fully understand and fix covariant
-         *      return issues.
+         * @brief %Scene
+         * @return %Scene or `nullptr`, if the object is not part of any scene.
          */
-        virtual AbstractObject<dimensions, T>* sceneObject() = 0;
+        AbstractObject<dimensions, T>* scene() { return doScene(); }
 
         /** @overload */
-        virtual const AbstractObject<dimensions, T>* sceneObject() const = 0;
+        const AbstractObject<dimensions, T>* scene() const { return doScene(); }
 
         /** @{ @name Object transformation */
 
@@ -118,14 +114,18 @@ template<UnsignedInt dimensions, class T = Float> class AbstractObject
          *
          * @see Object::transformation()
          */
-        virtual typename DimensionTraits<dimensions, T>::MatrixType transformationMatrix() const = 0;
+        typename DimensionTraits<dimensions, T>::MatrixType transformationMatrix() const {
+            return doTransformationMatrix();
+        }
 
         /**
          * @brief Transformation matrix relative to root object
          *
          * @see Object::absoluteTransformation()
          */
-        virtual typename DimensionTraits<dimensions, T>::MatrixType absoluteTransformationMatrix() const = 0;
+        typename DimensionTraits<dimensions, T>::MatrixType absoluteTransformationMatrix() const {
+            return doAbsoluteTransformationMatrix();
+        }
 
         /**
          * @brief Transformation matrices of given set of objects relative to this object
@@ -133,10 +133,12 @@ template<UnsignedInt dimensions, class T = Float> class AbstractObject
          * All transformations are premultiplied with @p initialTransformationMatrix,
          * if specified.
          * @warning This function cannot check if all objects are of the same
-         *      Object type, use typesafe Object::transformations() when
+         *      Object type, use typesafe Object::transformationMatrices() when
          *      possible.
          */
-        virtual std::vector<typename DimensionTraits<dimensions, T>::MatrixType> transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const typename DimensionTraits<dimensions, T>::MatrixType& initialTransformationMatrix = (typename DimensionTraits<dimensions, T>::MatrixType())) const = 0;
+        std::vector<typename DimensionTraits<dimensions, T>::MatrixType> transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const typename DimensionTraits<dimensions, T>::MatrixType& initialTransformationMatrix = (typename DimensionTraits<dimensions, T>::MatrixType())) const {
+            return doTransformationMatrices(objects, initialTransformationMatrix);
+        }
 
         /*@}*/
 
@@ -145,6 +147,18 @@ template<UnsignedInt dimensions, class T = Float> class AbstractObject
          *
          * See @ref scenegraph-caching for more information.
          */
+
+        /**
+         * @brief Clean absolute transformations of given set of objects
+         *
+         * Only dirty objects in the list are cleaned.
+         * @warning This function cannot check if all objects are of the same
+         *      Object type, use typesafe Object::setClean() when possible.
+         */
+        static void setClean(const std::vector<AbstractObject<dimensions, T>*>& objects) {
+            if(objects.empty()) return;
+            objects.front()->doSetClean(objects);
+        }
 
         /**
          * @brief Whether absolute transformation is dirty
@@ -156,7 +170,7 @@ template<UnsignedInt dimensions, class T = Float> class AbstractObject
          *
          * @see @ref scenegraph-caching
          */
-        virtual bool isDirty() const = 0;
+        bool isDirty() const { return doIsDirty(); }
 
         /**
          * @brief Set object absolute transformation as dirty
@@ -167,7 +181,7 @@ template<UnsignedInt dimensions, class T = Float> class AbstractObject
          * function does nothing.
          * @see @ref scenegraph-caching, setClean(), isDirty()
          */
-        virtual void setDirty() = 0;
+        void setDirty() { doSetDirty(); }
 
         /**
          * @brief Clean object absolute transformation
@@ -182,19 +196,22 @@ template<UnsignedInt dimensions, class T = Float> class AbstractObject
          * each object individually.
          * @see @ref scenegraph-caching, setDirty(), isDirty()
          */
-        virtual void setClean() = 0;
-
-        /**
-         * @brief Clean absolute transformations of given set of objects
-         *
-         * Only dirty objects in the list are cleaned.
-         * @warning This function cannot check if all objects are of the same
-         *      Object type, use typesafe Object::setClean(const std::vector& objects) when
-         *      possible.
-         */
-        virtual void setClean(const std::vector<AbstractObject<dimensions, T>*>& objects) const = 0;
+        void setClean() { doSetClean(); }
 
         /*@}*/
+
+    private:
+        virtual AbstractObject<dimensions, T>* doScene() = 0;
+        virtual const AbstractObject<dimensions, T>* doScene() const = 0;
+
+        virtual typename DimensionTraits<dimensions, T>::MatrixType doTransformationMatrix() const = 0;
+        virtual typename DimensionTraits<dimensions, T>::MatrixType doAbsoluteTransformationMatrix() const = 0;
+        virtual std::vector<typename DimensionTraits<dimensions, T>::MatrixType> doTransformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const typename DimensionTraits<dimensions, T>::MatrixType& initialTransformationMatrix) const = 0;
+
+        virtual bool doIsDirty() const = 0;
+        virtual void doSetDirty() = 0;
+        virtual void doSetClean() = 0;
+        virtual void doSetClean(const std::vector<AbstractObject<dimensions, T>*>& objects) = 0;
 };
 
 #ifndef CORRADE_GCC46_COMPATIBILITY

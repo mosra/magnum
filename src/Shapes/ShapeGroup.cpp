@@ -35,7 +35,7 @@ template<UnsignedInt dimensions> void ShapeGroup<dimensions>::setClean() {
         for(std::size_t i = 0; i != this->size(); ++i)
             objects[i] = (*this)[i]->object();
 
-        objects[0]->setClean(objects);
+        SceneGraph::AbstractObject<dimensions>::setClean(objects);
     }
 
     dirty = false;
