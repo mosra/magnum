@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractFeature, alias Magnum::SceneGraph::AbstractFeature2D, Magnum::SceneGraph::AbstractFeature3D
+ * @brief Class Magnum::SceneGraph::AbstractFeature, alias Magnum::SceneGraph::AbstractFeature2D, Magnum::SceneGraph::AbstractFeature3D, enum Magnum::SceneGraph::CachedTransformation, enum set Magnum::SceneGraph::CachedTransformations
  */
 
 #include <Containers/EnumSet.h>
@@ -36,16 +36,41 @@
 
 namespace Magnum { namespace SceneGraph {
 
-namespace Implementation {
-    enum class FeatureCachedTransformation: UnsignedByte {
-        Absolute = 1 << 0,
-        InvertedAbsolute = 1 << 1
-    };
+/**
+@brief Which transformation to cache in given feature
 
-    typedef Containers::EnumSet<FeatureCachedTransformation, UnsignedByte> FeatureCachedTransformations;
+@see @ref scenegraph-caching, CachedTransformations,
+    AbstractFeature::setCachedTransformations(), AbstractFeature::clean(),
+    AbstractFeature::cleanInverted()
+@todo Provide also simpler representations from which could benefit
+    other transformation implementations, as they won't need to
+    e.g. create transformation matrix from quaternion?
+ */
+enum class CachedTransformation: UnsignedByte {
+    /**
+     * Absolute transformation is cached.
+     *
+     * If enabled, clean() is called when cleaning object.
+     */
+    Absolute = 1 << 0,
 
-    CORRADE_ENUMSET_OPERATORS(FeatureCachedTransformations)
-}
+    /**
+     * Inverted absolute transformation is cached.
+     *
+     * If enabled, cleanInverted() is called when cleaning object.
+     */
+    InvertedAbsolute = 1 << 1
+};
+
+/**
+@brief Which transformations to cache in this feature
+
+@see @ref scenegraph-caching, AbstractFeature::setCachedTransformations(),
+    AbstractFeature::clean(), AbstractFeature::cleanInverted()
+*/
+typedef Containers::EnumSet<CachedTransformation, UnsignedByte> CachedTransformations;
+
+CORRADE_ENUMSET_OPERATORS(CachedTransformations)
 
 /**
 @brief Base for object features
@@ -189,48 +214,6 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
          *
          * See @ref scenegraph-caching for more information.
          */
-
-        /**
-         * @brief Which transformation to cache in this feature
-         *
-         * @see @ref scenegraph-caching, CachedTransformations,
-         *      setCachedTransformations(), clean(), cleanInverted()
-         * @todo Provide also simpler representations from which could benefit
-         *      other transformation implementations, as they won't need to
-         *      e.g. create transformation matrix from quaternion?
-         * @todo Move outside templated class so it's easier to type
-         */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Implementation::FeatureCachedTransformation CachedTransformation;
-        #else
-        enum class CachedTransformation: UnsignedByte {
-            /**
-             * Absolute transformation is cached.
-             *
-             * If enabled, clean() is called when cleaning object.
-             */
-            Absolute = 1 << 0,
-
-            /**
-             * Inverted absolute transformation is cached.
-             *
-             * If enabled, cleanInverted() is called when cleaning object.
-             */
-            InvertedAbsolute = 1 << 1
-        };
-        #endif
-
-        /**
-         * @brief Which transformations to cache in this feature
-         *
-         * @see @ref scenegraph-caching, setCachedTransformations(), clean(),
-         *      cleanInverted()
-         */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Implementation::FeatureCachedTransformations CachedTransformations;
-        #else
-        typedef Containers::EnumSet<CachedTransformation, UnsignedByte> CachedTransformations;
-        #endif
 
         /**
          * @brief Which transformations are cached

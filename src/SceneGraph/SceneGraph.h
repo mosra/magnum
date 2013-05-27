@@ -44,6 +44,8 @@ template<class T = Float> using AbstractCamera2D = AbstractCamera<2, T>;
 template<class T = Float> using AbstractCamera3D = AbstractCamera<3, T>;
 #endif
 
+/* Enum CachedTransformation and CachedTransformations used only directly */
+
 template<UnsignedInt dimensions, class T = Float> class AbstractFeature;
 #ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = Float> using AbstractFeature2D = AbstractFeature<2, T>;

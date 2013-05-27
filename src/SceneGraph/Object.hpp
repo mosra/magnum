@@ -373,8 +373,7 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
 
 template<class Transformation> void Object<Transformation>::setClean(const typename Transformation::DataType& absoluteTransformation) {
     /* "Lazy storage" for transformation matrix and inverted transformation matrix */
-    typedef typename AbstractFeature<Transformation::Dimensions, typename Transformation::Type>::CachedTransformation CachedTransformation;
-    typename AbstractFeature<Transformation::Dimensions, typename Transformation::Type>::CachedTransformations cached;
+    CachedTransformations cached;
     MatrixType matrix, invertedMatrix;
 
     /* Clean all features */
