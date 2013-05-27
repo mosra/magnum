@@ -67,6 +67,9 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
     friend class AbstractFeature<dimensions, T>;
 
     public:
+        /** @brief Matrix type */
+        typedef typename DimensionTraits<dimensions, T>::MatrixType MatrixType;
+
         /** @brief Feature object type */
         typedef AbstractFeature<dimensions, T> FeatureType;
 
@@ -114,7 +117,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          *
          * @see Object::transformation()
          */
-        typename DimensionTraits<dimensions, T>::MatrixType transformationMatrix() const {
+        MatrixType transformationMatrix() const {
             return doTransformationMatrix();
         }
 
@@ -123,7 +126,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          *
          * @see Object::absoluteTransformation()
          */
-        typename DimensionTraits<dimensions, T>::MatrixType absoluteTransformationMatrix() const {
+        MatrixType absoluteTransformationMatrix() const {
             return doAbsoluteTransformationMatrix();
         }
 
@@ -136,7 +139,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          *      Object type, use typesafe Object::transformationMatrices() when
          *      possible.
          */
-        std::vector<typename DimensionTraits<dimensions, T>::MatrixType> transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const typename DimensionTraits<dimensions, T>::MatrixType& initialTransformationMatrix = (typename DimensionTraits<dimensions, T>::MatrixType())) const {
+        std::vector<MatrixType> transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const {
             return doTransformationMatrices(objects, initialTransformationMatrix);
         }
 
@@ -204,9 +207,9 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
         virtual AbstractObject<dimensions, T>* doScene() = 0;
         virtual const AbstractObject<dimensions, T>* doScene() const = 0;
 
-        virtual typename DimensionTraits<dimensions, T>::MatrixType doTransformationMatrix() const = 0;
-        virtual typename DimensionTraits<dimensions, T>::MatrixType doAbsoluteTransformationMatrix() const = 0;
-        virtual std::vector<typename DimensionTraits<dimensions, T>::MatrixType> doTransformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const typename DimensionTraits<dimensions, T>::MatrixType& initialTransformationMatrix) const = 0;
+        virtual MatrixType doTransformationMatrix() const = 0;
+        virtual MatrixType doAbsoluteTransformationMatrix() const = 0;
+        virtual std::vector<MatrixType> doTransformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix) const = 0;
 
         virtual bool doIsDirty() const = 0;
         virtual void doSetDirty() = 0;

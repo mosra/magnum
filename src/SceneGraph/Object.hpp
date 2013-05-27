@@ -161,7 +161,7 @@ template<class Transformation> void Object<Transformation>::setClean() {
     }
 }
 
-template<class Transformation> std::vector<typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType> Object<Transformation>::doTransformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType& initialTransformationMatrix) const {
+template<class Transformation> auto Object<Transformation>::doTransformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
     std::vector<Object<Transformation>*> castObjects(objects.size());
     for(std::size_t i = 0; i != objects.size(); ++i)
         /** @todo Ensure this doesn't crash, somehow */
@@ -170,9 +170,9 @@ template<class Transformation> std::vector<typename DimensionTraits<Transformati
     return transformationMatrices(std::move(castObjects), initialTransformationMatrix);
 }
 
-template<class Transformation> std::vector<typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType> Object<Transformation>::transformationMatrices(const std::vector<Object<Transformation>*>& objects, const typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType& initialTransformationMatrix) const {
+template<class Transformation> auto Object<Transformation>::transformationMatrices(const std::vector<Object<Transformation>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
     std::vector<typename Transformation::DataType> transformations = this->transformations(std::move(objects), Transformation::fromMatrix(initialTransformationMatrix));
-    std::vector<typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType> transformationMatrices(transformations.size());
+    std::vector<MatrixType> transformationMatrices(transformations.size());
     for(std::size_t i = 0; i != objects.size(); ++i)
         transformationMatrices[i] = Transformation::toMatrix(transformations[i]);
 
@@ -375,8 +375,7 @@ template<class Transformation> void Object<Transformation>::setClean(const typen
     /* "Lazy storage" for transformation matrix and inverted transformation matrix */
     typedef typename AbstractFeature<Transformation::Dimensions, typename Transformation::Type>::CachedTransformation CachedTransformation;
     typename AbstractFeature<Transformation::Dimensions, typename Transformation::Type>::CachedTransformations cached;
-    typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType
-        matrix, invertedMatrix;
+    MatrixType matrix, invertedMatrix;
 
     /* Clean all features */
     for(AbstractFeature<Transformation::Dimensions, typename Transformation::Type>* i = this->firstFeature(); i; i = i->nextFeature()) {

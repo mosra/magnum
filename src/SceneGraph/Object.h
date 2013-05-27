@@ -104,6 +104,9 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
     #endif
 
     public:
+        /** @brief Matrix type */
+        typedef typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType MatrixType;
+
         /**
          * @brief Constructor
          * @param parent    Parent object
@@ -211,7 +214,7 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
          *
          * @see transformation()
          */
-        typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType transformationMatrix() const {
+        MatrixType transformationMatrix() const {
             return Transformation::toMatrix(Transformation::transformation());
         }
 
@@ -220,7 +223,7 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
          *
          * @see absoluteTransformation()
          */
-        typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType absoluteTransformationMatrix() const {
+        MatrixType absoluteTransformationMatrix() const {
             return Transformation::toMatrix(absoluteTransformation());
         }
 
@@ -238,7 +241,7 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
          * if specified.
          * @see transformations()
          */
-        std::vector<typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType> transformationMatrices(const std::vector<Object<Transformation>*>& objects, const typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType& initialTransformationMatrix = (typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType())) const;
+        std::vector<MatrixType> transformationMatrices(const std::vector<Object<Transformation>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
 
         /**
          * @brief Transformations of given group of objects relative to this object
@@ -288,20 +291,20 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
         Object<Transformation>* doScene() override final;
         const Object<Transformation>* doScene() const override final;
 
-        typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType MAGNUM_SCENEGRAPH_LOCAL doTransformationMatrix() const override final {
+        MatrixType MAGNUM_SCENEGRAPH_LOCAL doTransformationMatrix() const override final {
             return transformationMatrix();
         }
-        typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType MAGNUM_SCENEGRAPH_LOCAL doAbsoluteTransformationMatrix() const override final {
+        MatrixType MAGNUM_SCENEGRAPH_LOCAL doAbsoluteTransformationMatrix() const override final {
             return absoluteTransformationMatrix();
         }
 
-        std::vector<typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType> doTransformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType& initialTransformationMatrix) const override final;
+        std::vector<MatrixType> doTransformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const MatrixType& initialTransformationMatrix) const override final;
 
         typename Transformation::DataType MAGNUM_SCENEGRAPH_LOCAL computeJointTransformation(const std::vector<Object<Transformation>*>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const;
 
-        bool doIsDirty() const override final { return isDirty(); }
-        void doSetDirty() override final { setDirty(); }
-        void doSetClean() override final { setClean(); }
+        bool MAGNUM_SCENEGRAPH_LOCAL doIsDirty() const override final { return isDirty(); }
+        void MAGNUM_SCENEGRAPH_LOCAL doSetDirty() override final { setDirty(); }
+        void MAGNUM_SCENEGRAPH_LOCAL doSetClean() override final { setClean(); }
         void doSetClean(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) override final;
 
         void MAGNUM_SCENEGRAPH_LOCAL setClean(const typename Transformation::DataType& absoluteTransformation);
