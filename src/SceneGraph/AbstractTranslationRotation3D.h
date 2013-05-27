@@ -55,7 +55,10 @@ class AbstractTranslationRotation3D: public AbstractTransformation<3, T> {
          *
          * @see Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()
          */
-        virtual AbstractTranslationRotation3D<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) = 0;
+        AbstractTranslationRotation3D<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
+            doTranslate(vector, type);
+            return this;
+        }
 
         /**
          * @brief Rotate object
@@ -67,7 +70,10 @@ class AbstractTranslationRotation3D: public AbstractTransformation<3, T> {
          * @see rotateX(), rotateY(), rotateZ(), Vector3::xAxis(),
          *      Vector3::yAxis(), Vector3::zAxis()
          */
-        virtual AbstractTranslationRotation3D<T>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) = 0;
+        AbstractTranslationRotation3D<T>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
+            doRotate(angle, normalizedAxis, type);
+            return this;
+        }
 
         /**
          * @brief Rotate object around X axis
@@ -78,8 +84,9 @@ class AbstractTranslationRotation3D: public AbstractTransformation<3, T> {
          * In some implementations faster than calling
          * `rotate(angle, Vector3::xAxis())`.
          */
-        virtual AbstractTranslationRotation3D<T>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            return rotate(angle, Math::Vector3<T>::xAxis(), type);
+        AbstractTranslationRotation3D<T>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+            doRotateX(angle, type);
+            return this;
         }
 
         /**
@@ -91,8 +98,9 @@ class AbstractTranslationRotation3D: public AbstractTransformation<3, T> {
          * In some implementations faster than calling
          * `rotate(angle, Vector3::yAxis())`.
          */
-        virtual AbstractTranslationRotation3D<T>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            return rotate(angle, Math::Vector3<T>::yAxis(), type);
+        AbstractTranslationRotation3D<T>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+            doRotateX(angle, type);
+            return this;
         }
 
         /**
@@ -104,14 +112,56 @@ class AbstractTranslationRotation3D: public AbstractTransformation<3, T> {
          * In some implementations faster than calling
          * `rotate(angle, Vector3::zAxis())`.
          */
-        virtual AbstractTranslationRotation3D<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            return rotate(angle, Math::Vector3<T>::zAxis(), type);
+        AbstractTranslationRotation3D<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+            doRotateZ(angle, type);
+            return this;
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        AbstractTranslationRotation3D<T>* resetTransformation() override = 0;
+        AbstractTranslationRotation3D<T>* resetTransformation() {
+            AbstractTransformation<2, T>::resetTransformation();
+            return this;
+        }
         #endif
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /** @brief Polymorphic implementation for translate() */
+        virtual void doTranslate(const Math::Vector3<T>& vector, TransformationType type) = 0;
+
+        /** @brief Polymorphic implementation for rotate() */
+        virtual void doRotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) = 0;
+
+        /**
+         * @brief Polymorphic implementation for rotateX()
+         *
+         * Default implementation calls rotate() with Math::Vector3::xAxis().
+         */
+        virtual void doRotateX(Math::Rad<T> angle, TransformationType type) {
+            rotate(angle, Math::Vector3<T>::xAxis(), type);
+        }
+
+        /**
+         * @brief Polymorphic implementation for rotateY()
+         *
+         * Default implementation calls rotate() with Math::Vector3::yAxis().
+         */
+        virtual void doRotateY(Math::Rad<T> angle, TransformationType type) {
+            rotate(angle, Math::Vector3<T>::yAxis(), type);
+        }
+
+        /**
+         * @brief Polymorphic implementation for rotateZ()
+         *
+         * Default implementation calls rotate() with Math::Vector3::zAxis().
+         */
+        virtual void doRotateZ(Math::Rad<T> angle, TransformationType type) {
+            rotate(angle, Math::Vector3<T>::zAxis(), type);
+        }
 };
 
 }}
