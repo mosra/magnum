@@ -251,6 +251,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,vertex_half_float),
         _extension(GL,OES,packed_depth_stencil),
         _extension(GL,OES,depth_texture),
+        _extension(GL,OES,standard_derivatives),            // done
         _extension(GL,OES,vertex_array_object),
         _extension(GL,OES,required_internalformat)};
     #endif

@@ -192,6 +192,42 @@ class MAGNUM_EXPORT Renderer {
          */
         static void setFeature(Feature feature, bool enabled);
 
+        /**
+         * @brief Hint
+         *
+         * @see setHint()
+         */
+        enum class Hint: GLenum {
+            /**
+             * Accuracy of derivative calculation in fragment shader.
+             * @requires_gles30 %Extension @es_extension{OES,standard_derivatives}
+             */
+            #ifndef MAGNUM_TARGET_GLES2
+            FragmentShaderDerivative = GL_FRAGMENT_SHADER_DERIVATIVE_HINT
+            #else
+            FragmentShaderDerivative = GL_FRAGMENT_SHADER_DERIVATIVE_HINT_OES
+            #endif
+        };
+
+        /**
+         * @brief Hint mode
+         *
+         * @see setHint()
+         */
+        enum class HintMode: GLenum {
+            Fastest = GL_FASTEST,   /**< Most efficient option. */
+            Nicest = GL_NICEST,     /**< Most correct or highest quality option. */
+            DontCare = GL_DONT_CARE /**< No preference. */
+        };
+
+        /**
+         * @brief Set hint
+         *
+         * Initial value is @ref HintMode "HintMode::DontCare" for all targets.
+         * @see @fn_gl{Hint}
+         */
+        static void setHint(Hint target, HintMode mode);
+
         /*@}*/
 
         /** @{ @name Clearing values */

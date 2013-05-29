@@ -46,6 +46,10 @@ void Renderer::setFeature(const Feature feature, const bool enabled) {
     enabled ? glEnable(GLenum(feature)) : glDisable(GLenum(feature));
 }
 
+void Renderer::setHint(const Hint target, const HintMode mode) {
+    glHint(GLenum(target), GLenum(mode));
+}
+
 void Renderer::setClearColor(const Color4<>& color) {
     glClearColor(color.r(), color.g(), color.b(), color.a());
 }

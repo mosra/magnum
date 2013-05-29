@@ -236,6 +236,7 @@ namespace GL {
         _extension(GL,OES,vertex_half_float,        GLES200, GLES300) // #38
         _extension(GL,OES,packed_depth_stencil,     GLES200, GLES300) // #43
         _extension(GL,OES,depth_texture,            GLES200, GLES300) // #44
+        _extension(GL,OES,standard_derivatives,     GLES200, GLES300) // #45
         _extension(GL,OES,vertex_array_object,      GLES200, GLES300) // #71
         _extension(GL,OES,required_internalformat,  GLES200, GLES300) // #?
     }
