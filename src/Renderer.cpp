@@ -46,10 +46,6 @@ void Renderer::setFeature(const Feature feature, const bool enabled) {
     enabled ? glEnable(GLenum(feature)) : glDisable(GLenum(feature));
 }
 
-void Renderer::setFaceCullingMode(const PolygonFacing mode) {
-    glCullFace(GLenum(mode));
-}
-
 void Renderer::setClearColor(const Color4<>& color) {
     glClearColor(color.r(), color.g(), color.b(), color.a());
 }
@@ -66,6 +62,10 @@ void Renderer::setClearStencil(const Int stencil) {
 
 void Renderer::setFrontFace(const FrontFace mode) {
     glFrontFace(GLenum(mode));
+}
+
+void Renderer::setFaceCullingMode(const PolygonFacing mode) {
+    glCullFace(GLenum(mode));
 }
 
 #ifndef MAGNUM_TARGET_GLES

@@ -192,15 +192,6 @@ class MAGNUM_EXPORT Renderer {
          */
         static void setFeature(Feature feature, bool enabled);
 
-        /**
-         * @brief Which polygon facing to cull
-         *
-         * Initial value is @ref PolygonFacing "PolygonFacing::Back". If set to
-         * both front and back, only points and lines are drawn.
-         * @see @ref Feature "Feature::FaceCulling", @fn_gl{CullFace}
-         */
-        static void setFaceCullingMode(PolygonFacing mode);
-
         /*@}*/
 
         /** @{ @name Clearing values */
@@ -264,9 +255,19 @@ class MAGNUM_EXPORT Renderer {
          * @brief Set front-facing polygon winding
          *
          * Initial value is `FrontFace::%CounterClockWise`.
-         * @see @fn_gl{FrontFace}
+         * @see setFaceCullingMode(), @fn_gl{FrontFace}
          */
         static void setFrontFace(FrontFace mode);
+
+        /**
+         * @brief Which polygon facing to cull
+         *
+         * Initial value is @ref PolygonFacing "PolygonFacing::Back". If set to
+         * both front and back, only points and lines are drawn.
+         * @see @ref Feature "Feature::FaceCulling", setFrontFace(),
+         *      @fn_gl{CullFace}
+         */
+        static void setFaceCullingMode(PolygonFacing mode);
 
         #ifndef MAGNUM_TARGET_GLES
         /**
