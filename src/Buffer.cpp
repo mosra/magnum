@@ -38,7 +38,9 @@ namespace Magnum {
 Buffer::CopyImplementation Buffer::copyImplementation = &Buffer::copyImplementationDefault;
 #endif
 Buffer::GetParameterImplementation Buffer::getParameterImplementation = &Buffer::getParameterImplementationDefault;
+#ifndef MAGNUM_TARGET_GLES
 Buffer::GetSubDataImplementation Buffer::getSubDataImplementation = &Buffer::getSubDataImplementationDefault;
+#endif
 Buffer::DataImplementation Buffer::dataImplementation = &Buffer::dataImplementationDefault;
 Buffer::SubDataImplementation Buffer::subDataImplementation = &Buffer::subDataImplementationDefault;
 Buffer::InvalidateImplementation Buffer::invalidateImplementation = &Buffer::invalidateImplementationNoOp;
@@ -126,6 +128,7 @@ Int Buffer::size() {
     return size;
 }
 
+#ifndef MAGNUM_TARGET_GLES
 Containers::Array<char> Buffer::data() {
     return subData(0, size());
 }
@@ -135,6 +138,7 @@ Containers::Array<char> Buffer::subData(const GLintptr offset, const GLsizeiptr 
     if(size) (this->*getSubDataImplementation)(offset, size, data);
     return std::move(data);
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void Buffer::copyImplementationDefault(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
@@ -158,11 +162,11 @@ void Buffer::getParameterImplementationDSA(const GLenum value, GLint* const data
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES
 void Buffer::getSubDataImplementationDefault(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
     glGetBufferSubData(GLenum(bindInternal(_targetHint)), offset, size, data);
 }
 
-#ifndef MAGNUM_TARGET_GLES
 void Buffer::getSubDataImplementationDSA(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
     glGetNamedBufferSubDataEXT(_id, offset, size, data);
 }

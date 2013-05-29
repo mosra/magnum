@@ -521,7 +521,7 @@ class MAGNUM_EXPORT Buffer {
         void bind(Target target) { bind(target, _id); }
 
         /**
-         * @brief Buffer size
+         * @brief %Buffer size
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * buffer is not already bound somewhere, it is bound to hinted target
@@ -532,8 +532,9 @@ class MAGNUM_EXPORT Buffer {
          */
         Int size();
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
-         * @brief Buffer data
+         * @brief %Buffer data
          *
          * Returns data of whole buffer. If @extension{EXT,direct_state_access}
          * is not available and the buffer is not already bound somewhere, it
@@ -542,11 +543,13 @@ class MAGNUM_EXPORT Buffer {
          *      @fn_gl_extension{GetNamedBufferParameter,EXT,direct_state_access}
          *      with @def_gl{BUFFER_SIZE}, @fn_gl{GetBufferSubData} or
          *      @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access}
+         * @requires_gl %Buffer data queries are not available in OpenGL ES.
+         *      Use @ref Magnum::Buffer::map() "map()" instead.
          */
         Containers::Array<char> data();
 
         /**
-         * @brief Buffer subdata
+         * @brief %Buffer subdata
          * @param offset    Offset in the buffer
          * @param size      Data size
          *
@@ -555,8 +558,11 @@ class MAGNUM_EXPORT Buffer {
          * is bound to hinted target before the operation.
          * @see size(), data(), setSubData(), @fn_gl{BindBuffer} and @fn_gl{GetBufferSubData}
          *      or @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access}
+         * @requires_gl %Buffer data queries are not available in OpenGL ES.
+         *      Use @ref Magnum::Buffer::map() "map()" instead.
          */
         Containers::Array<char> subData(GLintptr offset, GLsizeiptr size);
+        #endif
 
         /**
          * @brief Set buffer data
@@ -792,12 +798,12 @@ class MAGNUM_EXPORT Buffer {
         #endif
         static MAGNUM_LOCAL GetParameterImplementation getParameterImplementation;
 
+        #ifndef MAGNUM_TARGET_GLES
         typedef void(Buffer::*GetSubDataImplementation)(GLintptr, GLsizeiptr, GLvoid*);
         void MAGNUM_LOCAL getSubDataImplementationDefault(GLintptr offset, GLsizeiptr size, GLvoid* data);
-        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL getSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, GLvoid* data);
-        #endif
         static MAGNUM_LOCAL GetSubDataImplementation getSubDataImplementation;
+        #endif
 
         typedef void(Buffer::*DataImplementation)(GLsizeiptr, const GLvoid*, Usage);
         void MAGNUM_LOCAL dataImplementationDefault(GLsizeiptr size, const GLvoid* data, Usage usage);
