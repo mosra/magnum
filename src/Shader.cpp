@@ -163,7 +163,7 @@ bool Shader::compile() {
         Error out;
         out.setFlag(Debug::NewLineAtTheEnd, false);
         out.setFlag(Debug::SpaceAfterEachValue, false);
-        out << "Shader:" << shaderName(_type)
+        out << "Shader: " << shaderName(_type)
             << " shader failed to compile with the following message:\n"
             << message;
 
@@ -172,7 +172,7 @@ bool Shader::compile() {
         Error out;
         out.setFlag(Debug::NewLineAtTheEnd, false);
         out.setFlag(Debug::SpaceAfterEachValue, false);
-        out << "Shader:" << shaderName(_type)
+        out << "Shader: " << shaderName(_type)
             << " shader was successfully compiled with the following message:\n"
             << message;
     }
