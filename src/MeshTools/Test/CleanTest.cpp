@@ -35,21 +35,7 @@ class CleanTest: public TestSuite::Tester {
         void cleanMesh();
 };
 
-class Vector1 {
-    public:
-        static const std::size_t Size = 1;
-        typedef Int Type;
-
-        Vector1(): data(0) {}
-        Vector1(Type i): data(i) {}
-        Type operator[](std::size_t) const { return data; }
-        Type& operator[](std::size_t) { return data; }
-        bool operator==(Vector1 i) const { return i.data == data; }
-        Vector1 operator-(Vector1 i) const { return data-i.data; }
-
-    private:
-        Type data;
-};
+typedef Math::Vector<1, int> Vector1;
 
 CleanTest::CleanTest() {
     addTests({&CleanTest::cleanMesh});

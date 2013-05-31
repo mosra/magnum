@@ -36,26 +36,15 @@ class SubdivideTest: public TestSuite::Tester {
 
         void wrongIndexCount();
         void subdivide();
-
-    private:
-        class Vector1 {
-            public:
-                static const std::size_t Size = 1;
-                typedef Int Type;
-
-                Vector1(): data(0) {}
-                Vector1(Type i): data(i) {}
-                Type operator[](std::size_t) const { return data; }
-                Type& operator[](std::size_t) { return data; }
-                bool operator==(Vector1 i) const { return i.data == data; }
-                Vector1 operator-(Vector1 i) const { return data-i.data; }
-
-            private:
-                Type data;
-        };
-
-        static Vector1 interpolator(Vector1 a, Vector1 b) { return (a[0]+b[0])/2; }
 };
+
+namespace {
+
+typedef Math::Vector<1, Int> Vector1;
+
+inline Vector1 interpolator(Vector1 a, Vector1 b) { return (a[0]+b[0])/2; }
+
+}
 
 SubdivideTest::SubdivideTest() {
     addTests({&SubdivideTest::wrongIndexCount,

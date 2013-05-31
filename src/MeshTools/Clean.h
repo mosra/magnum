@@ -32,7 +32,7 @@
 #include <limits>
 #include <Utility/MurmurHash2.h>
 
-#include "Math/Vector.h"
+#include "Math/Functions.h"
 #include "Magnum.h"
 
 namespace Magnum { namespace MeshTools {
@@ -92,32 +92,23 @@ template<class Vertex, std::size_t vertexSize> void Clean<Vertex, vertexSize>::o
     if(indices.empty()) return;
 
     /* Get mesh bounds */
-    Vertex min, max;
-    for(std::size_t i = 0; i != Vertex::Size; ++i) {
-        min[i] = std::numeric_limits<typename Vertex::Type>::max();
-        max[i] = std::numeric_limits<typename Vertex::Type>::min();
+    Vertex min = vertices[0], max = vertices[0];
+    for(const auto& v: vertices) {
+        min = Math::min(v, min);
+        max = Math::max(v, max);
     }
-    for(auto it = vertices.cbegin(); it != vertices.cend(); ++it)
-        for(std::size_t i = 0; i != vertexSize; ++i)
-            if((*it)[i] < min[i])
-                min[i] = (*it)[i];
-            else if((*it)[i] > max[i])
-                max[i] = (*it)[i];
 
-    /* Make epsilon so large that std::size_t can index all vertices
-        inside mesh bounds. */
-    Vertex size = max-min;
-    for(std::size_t i = 0; i != Vertex::Size; ++i)
-        if(static_cast<typename Vertex::Type>(size[i]/std::numeric_limits<std::size_t>::max()) > epsilon)
-            epsilon = static_cast<typename Vertex::Type>(size[i]/std::numeric_limits<std::size_t>::max());
+    /* Make epsilon so large that std::size_t can index all vertices inside
+       mesh bounds. */
+    epsilon = Math::max(epsilon, static_cast<typename Vertex::Type>((max-min).max()/std::numeric_limits<std::size_t>::max()));
 
     /* First go with original vertex coordinates, then move them by
-        epsilon/2 in each direction. */
+       epsilon/2 in each direction. */
     Vertex moved;
     for(std::size_t moving = 0; moving <= vertexSize; ++moving) {
 
         /* Under each index is pointer to face which contains given vertex
-            and index of vertex in the face. */
+           and index of vertex in the face. */
         std::unordered_map<Math::Vector<vertexSize, std::size_t>, HashedVertex, IndexHash> table;
 
         /* Reserve space for all vertices */
@@ -131,8 +122,8 @@ template<class Vertex, std::size_t vertexSize> void Clean<Vertex, vertexSize>::o
                 index[ii] = (vertices[*it][ii]+moved[ii]-min[ii])/epsilon;
 
             /* Try inserting the vertex into table, if it already
-                exists, change vertex pointer of the face to already
-                existing vertex */
+               exists, change vertex pointer of the face to already
+               existing vertex */
             HashedVertex v(*it, table.size());
             auto result = table.insert(std::pair<Math::Vector<vertexSize, std::size_t>, HashedVertex>(Math::Vector<vertexSize, std::size_t>::from(index), v));
             *it = result.first->second.newIndex;
