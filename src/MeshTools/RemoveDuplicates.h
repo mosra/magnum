@@ -78,6 +78,7 @@ template<class Vertex, std::size_t vertexSize = Vertex::Size> class RemoveDuplic
     be melt together.
 
 Removes duplicate vertices from the mesh.
+@see duplicate()
 
 @todo Different (no cycle) implementation for integral vertices
 @todo Interpolate vertices, not collapse them to first in the cell

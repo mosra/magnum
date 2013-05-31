@@ -35,6 +35,7 @@ set(MagnumMeshTools_GracefulAssert_SRCS
 set(MagnumMeshTools_HEADERS
     CombineIndexedArrays.h
     CompressIndices.h
+    Duplicate.h
     FlipNormals.h
     GenerateFlatNormals.h
     Interleave.h
