@@ -53,7 +53,7 @@ information. See TextRenderer for information about text rendering.
 Plugin implements functions open(), close(), createGlyphCache() and layout().
 */
 class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
-    PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.1")
+    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.1")
 
     public:
         /** @brief Default constructor */

@@ -29,9 +29,9 @@
 #ifdef MAGNUM_BUILD_STATIC
 #include <Utility/Resource.h>
 static int magnumShadersResourceImport() {
-    RESOURCE_INITIALIZE(MagnumShaders_RCS)
+    CORRADE_RESOURCE_INITIALIZE(MagnumShaders_RCS)
     return 0;
-} AUTOMATIC_INITIALIZER(magnumShadersResourceImport)
+} CORRADE_AUTOMATIC_INITIALIZER(magnumShadersResourceImport)
 #endif
 
 #endif

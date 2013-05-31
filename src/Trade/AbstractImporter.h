@@ -54,7 +54,7 @@ some data. This is obviously not the case for single-data formats like images,
 as the file contains all data user wants to import.
 */
 class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
-    PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.2.1")
+    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.2.1")
 
     public:
         /**

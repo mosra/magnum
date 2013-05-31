@@ -22,14 +22,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-corrade_add_resource(MagnumShaders_RCS MagnumShaders
-    AbstractVector2D.vert AbstractVector3D.vert
-    Flat2D.vert Flat3D.vert Flat.frag
-    MeshVisualizer.vert MeshVisualizer.geom MeshVisualizer.frag
-    Phong.vert Phong.frag
-    Vector.frag DistanceFieldVector.frag
-    VertexColor2D.vert VertexColor3D.vert VertexColor.frag
-    compatibility.glsl)
+corrade_add_resource(MagnumShaders_RCS resources.conf)
 
 set(MagnumShaders_SRCS
     DistanceFieldVector.cpp

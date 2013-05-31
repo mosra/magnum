@@ -49,7 +49,7 @@ convertToData() or convertToFile() functions based on what features are
 supported.
 */
 class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin {
-    PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImageConverter/0.1")
+    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImageConverter/0.1")
 
     public:
         /**
