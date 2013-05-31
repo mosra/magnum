@@ -88,12 +88,21 @@ Int AbstractShaderProgram::maxSupportedVertexAttributeCount() {
 
 AbstractShaderProgram::AbstractShaderProgram(): _id(glCreateProgram()) {}
 
+AbstractShaderProgram::AbstractShaderProgram(AbstractShaderProgram&& other) noexcept: _id(other._id) {
+    other._id = 0;
+}
+
 AbstractShaderProgram::~AbstractShaderProgram() {
     /* Remove current usage from the state */
     GLuint& current = Context::current()->state()->shaderProgram->current;
     if(current == _id) current = 0;
 
     if(_id) glDeleteProgram(_id);
+}
+
+AbstractShaderProgram& AbstractShaderProgram::operator=(AbstractShaderProgram&& other) noexcept {
+    std::swap(_id, other._id);
+    return *this;
 }
 
 std::pair<bool, std::string> AbstractShaderProgram::validate() {

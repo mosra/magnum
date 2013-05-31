@@ -286,11 +286,6 @@ comes in handy.
 class MAGNUM_EXPORT AbstractShaderProgram {
     friend class Context;
 
-    AbstractShaderProgram(const AbstractShaderProgram&) = delete;
-    AbstractShaderProgram(AbstractShaderProgram&&) = delete;
-    AbstractShaderProgram& operator=(const AbstractShaderProgram&) = delete;
-    AbstractShaderProgram& operator=(AbstractShaderProgram&&) = delete;
-
     public:
         template<UnsignedInt, class> class Attribute;
 
@@ -311,6 +306,12 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          */
         explicit AbstractShaderProgram();
 
+        /** @brief Copying is not allowed */
+        AbstractShaderProgram(const AbstractShaderProgram&) = delete;
+
+        /** @brief Move constructor */
+        AbstractShaderProgram(AbstractShaderProgram&& other) noexcept;
+
         /**
          * @brief Destructor
          *
@@ -318,6 +319,12 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @see @fn_gl{DeleteProgram}
          */
         virtual ~AbstractShaderProgram() = 0;
+
+        /** @brief Copying is not allowed */
+        AbstractShaderProgram& operator=(const AbstractShaderProgram&) = delete;
+
+        /** @brief Move assignment */
+        AbstractShaderProgram& operator=(AbstractShaderProgram&& other) noexcept;
 
         /** @brief OpenGL program ID */
         GLuint id() const { return _id; }
