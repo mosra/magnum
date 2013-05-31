@@ -24,5 +24,5 @@
 
 #include "TgaImageConverter.h"
 
-PLUGIN_REGISTER(TgaImageConverter, Magnum::Trade::TgaImageConverter::TgaImageConverter,
-                "cz.mosra.magnum.Trade.AbstractImageConverter/0.1")
+CORRADE_PLUGIN_REGISTER(TgaImageConverter, Magnum::Trade::TgaImageConverter::TgaImageConverter,
+    "cz.mosra.magnum.Trade.AbstractImageConverter/0.1")
