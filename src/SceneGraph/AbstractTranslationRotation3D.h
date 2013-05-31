@@ -120,7 +120,7 @@ class AbstractTranslationRotation3D: public AbstractTransformation<3, T> {
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         AbstractTranslationRotation3D<T>* resetTransformation() {
-            AbstractTransformation<2, T>::resetTransformation();
+            AbstractTransformation<3, T>::resetTransformation();
             return this;
         }
         #endif
