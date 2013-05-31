@@ -22,19 +22,19 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "SubdivideCleanBenchmark.h"
+#include "SubdivideRemoveDuplicatesBenchmark.h"
 
 #include <QtTest/QTest>
 
 #include "Primitives/Icosphere.h"
-#include "MeshTools/Clean.h"
+#include "MeshTools/RemoveDuplicates.h"
 #include "MeshTools/Subdivide.h"
 
-QTEST_APPLESS_MAIN(Magnum::MeshTools::Test::SubdivideCleanBenchmark)
+QTEST_APPLESS_MAIN(Magnum::MeshTools::Test::SubdivideRemoveDuplicatesBenchmark)
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-void SubdivideCleanBenchmark::subdivide() {
+void SubdivideRemoveDuplicatesBenchmark::subdivide() {
     QBENCHMARK {
         Primitives::Icosphere<0> icosphere;
 
@@ -47,7 +47,7 @@ void SubdivideCleanBenchmark::subdivide() {
     }
 }
 
-void SubdivideCleanBenchmark::subdivideAndCleanMeshAfter() {
+void SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesMeshAfter() {
     QBENCHMARK {
         Primitives::Icosphere<0> icosphere;
 
@@ -58,25 +58,25 @@ void SubdivideCleanBenchmark::subdivideAndCleanMeshAfter() {
         MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
         MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
 
-        MeshTools::clean(*icosphere.indices(), *icosphere.positions(0));
+        MeshTools::removeDuplicates(*icosphere.indices(), *icosphere.positions(0));
     }
 }
 
-void SubdivideCleanBenchmark::subdivideAndCleanMeshBetween() {
+void SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesMeshBetween() {
     QBENCHMARK {
         Primitives::Icosphere<0> icosphere;
 
         /* Subdivide 5 times */
         MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
-        MeshTools::clean(*icosphere.indices(), *icosphere.positions(0));
+        MeshTools::removeDuplicates(*icosphere.indices(), *icosphere.positions(0));
         MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
-        MeshTools::clean(*icosphere.indices(), *icosphere.positions(0));
+        MeshTools::removeDuplicates(*icosphere.indices(), *icosphere.positions(0));
         MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
-        MeshTools::clean(*icosphere.indices(), *icosphere.positions(0));
+        MeshTools::removeDuplicates(*icosphere.indices(), *icosphere.positions(0));
         MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
-        MeshTools::clean(*icosphere.indices(), *icosphere.positions(0));
+        MeshTools::removeDuplicates(*icosphere.indices(), *icosphere.positions(0));
         MeshTools::subdivide(*icosphere.indices(), *icosphere.positions(0), interpolator);
-        MeshTools::clean(*icosphere.indices(), *icosphere.positions(0));
+        MeshTools::removeDuplicates(*icosphere.indices(), *icosphere.positions(0));
     }
 }
 

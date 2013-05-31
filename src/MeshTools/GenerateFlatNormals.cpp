@@ -25,7 +25,7 @@
 #include "GenerateFlatNormals.h"
 
 #include "Math/Vector3.h"
-#include "MeshTools/Clean.h"
+#include "MeshTools/RemoveDuplicates.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -48,8 +48,8 @@ std::tuple<std::vector<UnsignedInt>, std::vector<Vector3>> generateFlatNormals(c
         normals.push_back(normal);
     }
 
-    /* Clean duplicate normals and return */
-    MeshTools::clean(normalIndices, normals);
+    /* Remove duplicate normals and return */
+    MeshTools::removeDuplicates(normalIndices, normals);
     return std::make_tuple(normalIndices, normals);
 }
 

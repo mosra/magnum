@@ -29,8 +29,8 @@
  */
 
 #include "Math/Vector3.h"
+#include "MeshTools/RemoveDuplicates.h"
 #include "MeshTools/Subdivide.h"
-#include "MeshTools/Clean.h"
 #include "Trade/MeshData3D.h"
 
 #include "Primitives/magnumPrimitivesVisibility.h"
@@ -72,7 +72,7 @@ template<std::size_t subdivisions> class Icosphere {
                     return (a+b).normalized();
                 });
 
-            MeshTools::clean(*indices(), *normals(0));
+            MeshTools::removeDuplicates(*indices(), *normals(0));
             positions(0)->assign(normals(0)->begin(), normals(0)->end());
         }
 };

@@ -1,3 +1,5 @@
+#ifndef Magnum_MeshTools_Test_SubdivideRemoveDuplicatesBenchmark_h
+#define Magnum_MeshTools_Test_SubdivideRemoveDuplicatesBenchmark_h
 /*
     This file is part of Magnum.
 
@@ -22,35 +24,26 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <TestSuite/Tester.h>
+#include <QtCore/QObject>
 
-#include "MeshTools/Clean.h"
+#include "Magnum.h"
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class CleanTest: public TestSuite::Tester {
-    public:
-        CleanTest();
+class SubdivideRemoveDuplicatesBenchmark: public QObject {
+    Q_OBJECT
 
-        void cleanMesh();
+    private slots:
+        void subdivide();
+        void subdivideAndRemoveDuplicatesMeshAfter();
+        void subdivideAndRemoveDuplicatesMeshBetween();
+
+    private:
+        static Magnum::Vector4 interpolator(const Magnum::Vector4& a, const Magnum::Vector4& b) {
+            return (a+b).xyz().normalized();
+        }
 };
-
-typedef Math::Vector<1, int> Vector1;
-
-CleanTest::CleanTest() {
-    addTests({&CleanTest::cleanMesh});
-}
-
-void CleanTest::cleanMesh() {
-    std::vector<Vector1> positions{1, 2, 1, 4};
-    std::vector<UnsignedInt> indices{0, 1, 2, 1, 2, 3};
-    MeshTools::clean(indices, positions);
-
-    /* Verify cleanup */
-    CORRADE_VERIFY(positions == (std::vector<Vector1>{1, 2, 4}));
-    CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{0, 1, 0, 1, 0, 2}));
-}
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::MeshTools::Test::CleanTest)
+#endif

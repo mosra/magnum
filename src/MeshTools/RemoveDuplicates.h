@@ -1,5 +1,5 @@
-#ifndef Magnum_MeshTools_Clean_h
-#define Magnum_MeshTools_Clean_h
+#ifndef Magnum_MeshTools_RemoveDuplicates_h
+#define Magnum_MeshTools_RemoveDuplicates_h
 /*
     This file is part of Magnum.
 
@@ -25,11 +25,12 @@
 */
 
 /** @file
- * @brief Function Magnum::MeshTools::clean()
+ * @brief Function Magnum::MeshTools::removeDuplicates()
  */
 
-#include <unordered_map>
 #include <limits>
+#include <unordered_map>
+#include <vector>
 #include <Utility/MurmurHash2.h>
 
 #include "Math/Functions.h"
@@ -39,9 +40,9 @@ namespace Magnum { namespace MeshTools {
 
 namespace Implementation {
 
-template<class Vertex, std::size_t vertexSize = Vertex::Size> class Clean {
+template<class Vertex, std::size_t vertexSize = Vertex::Size> class RemoveDuplicates {
     public:
-        Clean(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
+        RemoveDuplicates(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
 
         void operator()(typename Vertex::Type epsilon = Math::TypeTraits<typename Vertex::Type>::epsilon());
 
@@ -66,7 +67,7 @@ template<class Vertex, std::size_t vertexSize = Vertex::Size> class Clean {
 }
 
 /**
-@brief %Clean the mesh
+@brief %Remove duplicate vertices from the mesh
 @tparam Vertex          Vertex data type
 @tparam vertexSize      How many initial vertex fields are important (for
     example, when dealing with perspective in 3D space, only first three
@@ -82,13 +83,13 @@ Removes duplicate vertices from the mesh.
 @todo Interpolate vertices, not collapse them to first in the cell
 @todo Ability to specify other attributes for interpolation
 */
-template<class Vertex, std::size_t vertexSize = Vertex::Size> inline void clean(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices, typename Vertex::Type epsilon = Math::TypeTraits<typename Vertex::Type>::epsilon()) {
-    Implementation::Clean<Vertex, vertexSize>(indices, vertices)(epsilon);
+template<class Vertex, std::size_t vertexSize = Vertex::Size> inline void removeDuplicates(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices, typename Vertex::Type epsilon = Math::TypeTraits<typename Vertex::Type>::epsilon()) {
+    Implementation::RemoveDuplicates<Vertex, vertexSize>(indices, vertices)(epsilon);
 }
 
 namespace Implementation {
 
-template<class Vertex, std::size_t vertexSize> void Clean<Vertex, vertexSize>::operator()(typename Vertex::Type epsilon) {
+template<class Vertex, std::size_t vertexSize> void RemoveDuplicates<Vertex, vertexSize>::operator()(typename Vertex::Type epsilon) {
     if(indices.empty()) return;
 
     /* Get mesh bounds */

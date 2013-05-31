@@ -33,7 +33,7 @@
 #include <tuple>
 
 #include "Math/Vector.h"
-#include "MeshTools/Clean.h"
+#include "MeshTools/RemoveDuplicates.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -55,7 +55,7 @@ class CombineIndexedArrays {
             writeCombinedIndices(indexCombinations, std::get<0>(indexedArrays)...);
 
             /* Make the combinations unique */
-            MeshTools::clean(result, indexCombinations);
+            MeshTools::removeDuplicates(result, indexCombinations);
 
             /* Write combined arrays */
             writeCombinedArrays(indexCombinations, std::get<1>(indexedArrays)...);

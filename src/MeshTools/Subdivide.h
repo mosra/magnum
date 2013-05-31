@@ -68,7 +68,7 @@ template<class Vertex, class Interpolator> class Subdivide {
 @param interpolator     Functor or function pointer which interpolates
     two adjacent vertices: `Vertex interpolator(Vertex a, Vertex b)`
 
-Goes through all triangle faces and subdivides them into four new. Cleaning
+Goes through all triangle faces and subdivides them into four new. Removing
 duplicate vertices in the mesh is up to user.
 */
 template<class Vertex, class Interpolator> inline void subdivide(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices, Interpolator interpolator) {

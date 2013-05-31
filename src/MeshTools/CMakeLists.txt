@@ -33,12 +33,12 @@ set(MagnumMeshTools_GracefulAssert_SRCS
     GenerateFlatNormals.cpp)
 
 set(MagnumMeshTools_HEADERS
-    Clean.h
     CombineIndexedArrays.h
     CompressIndices.h
     FlipNormals.h
     GenerateFlatNormals.h
     Interleave.h
+    RemoveDuplicates.h
     Subdivide.h
     Tipsify.h
     Transform.h
