@@ -50,7 +50,7 @@ std::tuple<std::vector<UnsignedInt>, std::vector<Vector3>> generateFlatNormals(c
 
     /* Remove duplicate normals and return */
     MeshTools::removeDuplicates(normalIndices, normals);
-    return std::make_tuple(normalIndices, normals);
+    return std::make_tuple(std::move(normalIndices), std::move(normals));
 }
 
 }}
