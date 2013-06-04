@@ -27,6 +27,10 @@
 #include <fstream>
 #include <Utility/Assert.h>
 
+#ifdef CORRADE_TARGET_NACL_NEWLIB
+#include <sstream>
+#endif
+
 /* libgles-omap3-dev_4.03.00.02-r15.6 on BeagleBoard/Ångström linux 2011.3 doesn't have GLchar */
 #ifdef MAGNUM_TARGET_GLES
 typedef char GLchar;
@@ -101,14 +105,21 @@ Shader& Shader::operator=(Shader&& other) {
 
 Shader& Shader::addSource(std::string source) {
     if(!source.empty()) {
+        #ifdef CORRADE_TARGET_NACL_NEWLIB
+        std::ostringstream converter;
+        converter << (sources.size()+1)/2;
+        #endif
+
         /* Fix line numbers, so line 41 of third added file is marked as 3(41).
            Source 0 is the #version string added in constructor. */
         sources.push_back("#line 1 " +
             /* This shouldn't be ambiguous. But is. */
             #ifndef CORRADE_GCC44_COMPATIBILITY
             std::to_string((sources.size()+1)/2) +
-            #else
+            #elif !defined(CORRADE_TARGET_NACL_NEWLIB)
             std::to_string(static_cast<unsigned long long int>(sources.size()+1)/2) +
+            #else
+            converter.str() +
             #endif
             '\n');
         sources.push_back(std::move(source));
