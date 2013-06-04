@@ -44,8 +44,8 @@ index array `{1, 1, 0, 3, 2, 2}` will be converted to `{b, b, a, d, c, c}`.
 template<class T> std::vector<T> duplicate(const std::vector<UnsignedInt>& indices, const std::vector<T>& vertices) {
     std::vector<T> out;
     out.reserve(indices.size());
-    for(const UnsignedInt index: indices)
-        out.push_back(vertices[index]);
+    for(auto it = indices.begin(); it != indices.end(); ++it)
+        out.push_back(vertices[*it]);
     return std::move(out);
 }
 

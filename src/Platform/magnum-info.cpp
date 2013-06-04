@@ -92,8 +92,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): WindowlessGlxApplication(arg
 
     Debug() << "Supported GLSL versions:";
     const std::vector<std::string> shadingLanguageVersions = c->shadingLanguageVersionStrings();
-    for(const auto& version: shadingLanguageVersions)
-        Debug() << "   " << version;
+    for(auto it = shadingLanguageVersions.begin(); it != shadingLanguageVersions.end(); ++it)
+        Debug() << "   " << *it;
 
     Debug() << "";
 

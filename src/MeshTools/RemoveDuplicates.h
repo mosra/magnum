@@ -95,9 +95,9 @@ template<class Vertex, std::size_t vertexSize> void RemoveDuplicates<Vertex, ver
 
     /* Get mesh bounds */
     Vertex min = vertices[0], max = vertices[0];
-    for(const auto& v: vertices) {
-        min = Math::min(v, min);
-        max = Math::max(v, max);
+    for(auto it = vertices.begin(); it != vertices.end(); ++it) {
+        min = Math::min(*it, min);
+        max = Math::max(*it, max);
     }
 
     /* Make epsilon so large that std::size_t can index all vertices inside
