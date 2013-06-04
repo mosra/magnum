@@ -33,6 +33,10 @@
 #include "Math/Geometry/Rectangle.h"
 #include "Buffer.h"
 
+#ifdef CORRADE_GCC45_COMPATIBILITY
+#include "ImageFormat.h"
+#endif
+
 namespace Magnum {
 
 /**

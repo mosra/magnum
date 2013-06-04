@@ -35,6 +35,11 @@
 #include "Color.h"
 #include "Sampler.h"
 
+#ifdef CORRADE_GCC45_COMPATIBILITY
+#include "ImageFormat.h"
+#include "TextureFormat.h"
+#endif
+
 namespace Magnum {
 
 /**

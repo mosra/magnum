@@ -33,6 +33,10 @@
 #include "Magnum.h"
 #include "magnumVisibility.h"
 
+#ifdef CORRADE_GCC45_COMPATIBILITY
+#include "ImageFormat.h"
+#endif
+
 namespace Magnum {
 
 /**

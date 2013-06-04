@@ -357,7 +357,9 @@ typedef BufferImage<3> BufferImage3D;
 
 #ifndef MAGNUM_TARGET_GLES
 class BufferTexture;
+#ifndef CORRADE_GCC45_COMPATIBILITY
 enum class BufferTextureFormat: GLenum;
+#endif
 #endif
 
 template<class T = Float> class Color3;
@@ -385,8 +387,10 @@ typedef Image<1> Image1D;
 typedef Image<2> Image2D;
 typedef Image<3> Image3D;
 
+#ifndef CORRADE_GCC45_COMPATIBILITY
 enum class ImageFormat: GLenum;
 enum class ImageType: GLenum;
+#endif
 
 template<UnsignedInt> class ImageWrapper;
 typedef ImageWrapper<1> ImageWrapper1D;
@@ -401,7 +405,9 @@ class SampleQuery;
 class TimeQuery;
 
 class Renderbuffer;
+#ifndef CORRADE_GCC45_COMPATIBILITY
 enum class RenderbufferFormat: GLenum;
+#endif
 
 #ifndef CORRADE_GCC45_COMPATIBILITY
 enum class ResourceState: UnsignedByte;
@@ -422,7 +428,9 @@ typedef Texture<1> Texture1D;
 typedef Texture<2> Texture2D;
 typedef Texture<3> Texture3D;
 
+#ifndef CORRADE_GCC45_COMPATIBILITY
 enum class TextureFormat: GLenum;
+#endif
 
 class Timeline;
 #endif

@@ -32,6 +32,10 @@
 #include "OpenGL.h"
 #include "magnumVisibility.h"
 
+#ifdef CORRADE_GCC45_COMPATIBILITY
+#include "RenderbufferFormat.h"
+#endif
+
 namespace Magnum {
 
 /**
