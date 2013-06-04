@@ -36,113 +36,6 @@
 namespace Magnum {
 
 /**
-@brief %Buffer texture
-
-This texture is, unlike classic textures such as Texture or CubeMapTexture,
-used as simple data source, without any unnecessary interpolation and
-wrapping methods.
-
-@section BufferTexture-usage Usage
-
-%Texture data are stored in buffer and after binding the buffer to the texture
-using setBuffer(), you can fill the buffer at any time using data setting
-functions in Buffer itself.
-
-Note that the buffer is not managed (e.g. deleted on destruction) by the
-texture, so you have to manage it on your own. On the other hand it allows you
-to use one buffer for more textures or store more than one data in it.
-
-Example usage:
-@code
-Buffer* buffer;
-BufferTexture texture;
-texture.setBuffer(BufferTextureFormat::RGB32F, buffer);
-
-constexpr static Vector3 data[] = {
-    // ...
-};
-buffer.setData(data, Buffer::Usage::StaticDraw);
-@endcode
-
-The texture is bound to layer specified by shader via bind(). In shader, the
-texture is used via `samplerBuffer`, `isamplerBuffer` or `usamplerBuffer`.
-Unlike in classic textures, coordinates for buffer textures are integer
-coordinates passed to `texelFetch()`. See also AbstractShaderProgram
-documentation for more information.
-
-@section BufferTexture-performance-optimization Performance optimizations
-If extension @extension{EXT,direct_state_access} is available, setBuffer()
-functions use DSA to avoid unnecessary calls to @fn_gl{ActiveTexture} and
-@fn_gl{BindTexture}. See @ref AbstractTexture-performance-optimization
-"relevant section in AbstractTexture documentation" and respective function
-documentation for more information.
-
-@see Texture, CubeMapTexture, CubeMapTextureArray
-@requires_gl31 %Extension @extension{ARB,texture_buffer_object}
-@requires_gl Texture buffers are not available in OpenGL ES.
-*/
-class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
-    friend class Context;
-
-    BufferTexture(const BufferTexture&) = delete;
-    BufferTexture(BufferTexture&&) = delete;
-    BufferTexture& operator=(const BufferTexture&) = delete;
-    BufferTexture& operator=(BufferTexture&&) = delete;
-
-    public:
-        explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
-
-        /** @copydoc AbstractTexture::bind() */
-        void bind(Int layer) { AbstractTexture::bind(layer); }
-
-        /**
-         * @brief Set texture buffer
-         * @param internalFormat    Internal format
-         * @param buffer            %Buffer with data
-         *
-         * Binds given buffer to this texture. The buffer itself can be then
-         * filled with data of proper format at any time using Buffer own data
-         * setting functions.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBuffer}
-         *      or @fn_gl_extension{TextureBuffer,EXT,direct_state_access}
-         */
-        void setBuffer(BufferTextureFormat internalFormat, Buffer* buffer) {
-            (this->*setBufferImplementation)(internalFormat, buffer);
-        }
-
-        /**
-         * @brief Set texture buffer
-         * @param internalFormat    Internal format
-         * @param buffer            %Buffer
-         * @param offset            Offset
-         * @param size              Data size
-         *
-         * Binds range of given buffer to this texture. The buffer itself can
-         * be then filled with data of proper format at any time using Buffer
-         * own data setting functions.
-         * @requires_gl43 %Extension @extension{ARB,texture_buffer_range}
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBufferRange}
-         *      or @fn_gl_extension{TextureBufferRange,EXT,direct_state_access}
-         */
-        void setBuffer(BufferTextureFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size) {
-            (this->*setBufferRangeImplementation)(internalFormat, buffer, offset, size);
-        }
-
-    private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
-
-        typedef void(BufferTexture::*SetBufferImplementation)(BufferTextureFormat, Buffer*);
-        void MAGNUM_LOCAL setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer* buffer);
-        void MAGNUM_LOCAL setBufferImplementationDSA(BufferTextureFormat internalFormat, Buffer* buffer);
-        static SetBufferImplementation setBufferImplementation;
-
-        typedef void(BufferTexture::*SetBufferRangeImplementation)(BufferTextureFormat, Buffer*, GLintptr, GLsizeiptr);
-        void MAGNUM_LOCAL setBufferRangeImplementationDefault(BufferTextureFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size);
-        void MAGNUM_LOCAL setBufferRangeImplementationDSA(BufferTextureFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size);
-        static SetBufferRangeImplementation setBufferRangeImplementation;
-};
-
-/**
 @brief Internal buffer texture format
 
 @see BufferTexture
@@ -255,6 +148,113 @@ enum class BufferTextureFormat: GLenum {
 
     /** RGBA, each component float. */
     RGBA32F = GL_RGBA32F
+};
+
+/**
+@brief %Buffer texture
+
+This texture is, unlike classic textures such as Texture or CubeMapTexture,
+used as simple data source, without any unnecessary interpolation and
+wrapping methods.
+
+@section BufferTexture-usage Usage
+
+%Texture data are stored in buffer and after binding the buffer to the texture
+using setBuffer(), you can fill the buffer at any time using data setting
+functions in Buffer itself.
+
+Note that the buffer is not managed (e.g. deleted on destruction) by the
+texture, so you have to manage it on your own. On the other hand it allows you
+to use one buffer for more textures or store more than one data in it.
+
+Example usage:
+@code
+Buffer* buffer;
+BufferTexture texture;
+texture.setBuffer(BufferTextureFormat::RGB32F, buffer);
+
+constexpr static Vector3 data[] = {
+    // ...
+};
+buffer.setData(data, Buffer::Usage::StaticDraw);
+@endcode
+
+The texture is bound to layer specified by shader via bind(). In shader, the
+texture is used via `samplerBuffer`, `isamplerBuffer` or `usamplerBuffer`.
+Unlike in classic textures, coordinates for buffer textures are integer
+coordinates passed to `texelFetch()`. See also AbstractShaderProgram
+documentation for more information.
+
+@section BufferTexture-performance-optimization Performance optimizations
+If extension @extension{EXT,direct_state_access} is available, setBuffer()
+functions use DSA to avoid unnecessary calls to @fn_gl{ActiveTexture} and
+@fn_gl{BindTexture}. See @ref AbstractTexture-performance-optimization
+"relevant section in AbstractTexture documentation" and respective function
+documentation for more information.
+
+@see Texture, CubeMapTexture, CubeMapTextureArray
+@requires_gl31 %Extension @extension{ARB,texture_buffer_object}
+@requires_gl Texture buffers are not available in OpenGL ES.
+*/
+class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
+    friend class Context;
+
+    BufferTexture(const BufferTexture&) = delete;
+    BufferTexture(BufferTexture&&) = delete;
+    BufferTexture& operator=(const BufferTexture&) = delete;
+    BufferTexture& operator=(BufferTexture&&) = delete;
+
+    public:
+        explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
+
+        /** @copydoc AbstractTexture::bind() */
+        void bind(Int layer) { AbstractTexture::bind(layer); }
+
+        /**
+         * @brief Set texture buffer
+         * @param internalFormat    Internal format
+         * @param buffer            %Buffer with data
+         *
+         * Binds given buffer to this texture. The buffer itself can be then
+         * filled with data of proper format at any time using Buffer own data
+         * setting functions.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBuffer}
+         *      or @fn_gl_extension{TextureBuffer,EXT,direct_state_access}
+         */
+        void setBuffer(BufferTextureFormat internalFormat, Buffer* buffer) {
+            (this->*setBufferImplementation)(internalFormat, buffer);
+        }
+
+        /**
+         * @brief Set texture buffer
+         * @param internalFormat    Internal format
+         * @param buffer            %Buffer
+         * @param offset            Offset
+         * @param size              Data size
+         *
+         * Binds range of given buffer to this texture. The buffer itself can
+         * be then filled with data of proper format at any time using Buffer
+         * own data setting functions.
+         * @requires_gl43 %Extension @extension{ARB,texture_buffer_range}
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBufferRange}
+         *      or @fn_gl_extension{TextureBufferRange,EXT,direct_state_access}
+         */
+        void setBuffer(BufferTextureFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size) {
+            (this->*setBufferRangeImplementation)(internalFormat, buffer, offset, size);
+        }
+
+    private:
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+
+        typedef void(BufferTexture::*SetBufferImplementation)(BufferTextureFormat, Buffer*);
+        void MAGNUM_LOCAL setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer* buffer);
+        void MAGNUM_LOCAL setBufferImplementationDSA(BufferTextureFormat internalFormat, Buffer* buffer);
+        static SetBufferImplementation setBufferImplementation;
+
+        typedef void(BufferTexture::*SetBufferRangeImplementation)(BufferTextureFormat, Buffer*, GLintptr, GLsizeiptr);
+        void MAGNUM_LOCAL setBufferRangeImplementationDefault(BufferTextureFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size);
+        void MAGNUM_LOCAL setBufferRangeImplementationDSA(BufferTextureFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size);
+        static SetBufferRangeImplementation setBufferRangeImplementation;
 };
 
 }

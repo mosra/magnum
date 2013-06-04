@@ -35,35 +35,23 @@
 
 namespace Magnum { namespace Shapes { namespace Implementation {
 
-namespace {
-    constexpr UnsignedInt operator*(ShapeDimensionTraits<2>::Type a, ShapeDimensionTraits<2>::Type b) {
-        return UnsignedInt(a)*UnsignedInt(b);
-    }
-    constexpr UnsignedInt operator*(ShapeDimensionTraits<3>::Type a, ShapeDimensionTraits<3>::Type b) {
-        return UnsignedInt(a)*UnsignedInt(b);
-    }
-}
-
 template<> bool collides(const AbstractShape<2>* const a, const AbstractShape<2>* const b) {
     if(a->type() < b->type()) return collides(b, a);
 
-    switch(a->type()*b->type()) {
-        case ShapeDimensionTraits<2>::Type::Sphere*ShapeDimensionTraits<2>::Type::Point:
-            return static_cast<const Shape<Sphere2D>*>(a)->shape % static_cast<const Shape<Point2D>*>(b)->shape;
-        case ShapeDimensionTraits<2>::Type::Sphere*ShapeDimensionTraits<2>::Type::Line:
-            return static_cast<const Shape<Sphere2D>*>(a)->shape % static_cast<const Shape<Line2D>*>(b)->shape;
-        case ShapeDimensionTraits<2>::Type::Sphere*ShapeDimensionTraits<2>::Type::LineSegment:
-            return static_cast<const Shape<Sphere2D>*>(a)->shape % static_cast<const Shape<LineSegment2D>*>(b)->shape;
-        case ShapeDimensionTraits<2>::Type::Sphere*ShapeDimensionTraits<2>::Type::Sphere:
-            return static_cast<const Shape<Sphere2D>*>(a)->shape % static_cast<const Shape<Sphere2D>*>(b)->shape;
+    switch(UnsignedInt(a->type())*UnsignedInt(b->type())) {
+        #define _c(aType, aClass, bType, bClass) \
+            case UnsignedInt(ShapeDimensionTraits<2>::Type::aType)*UnsignedInt(ShapeDimensionTraits<2>::Type::bType): \
+                return static_cast<const Shape<aClass>*>(a)->shape % static_cast<const Shape<bClass>*>(b)->shape;
+        _c(Sphere, Sphere2D, Point, Point2D)
+        _c(Sphere, Sphere2D, Line, Line2D)
+        _c(Sphere, Sphere2D, LineSegment, LineSegment2D)
+        _c(Sphere, Sphere2D, Sphere, Sphere2D)
 
-        case ShapeDimensionTraits<2>::Type::Capsule*ShapeDimensionTraits<2>::Type::Point:
-            return static_cast<const Shape<Capsule2D>*>(a)->shape % static_cast<const Shape<Point2D>*>(b)->shape;
-        case ShapeDimensionTraits<2>::Type::Capsule*ShapeDimensionTraits<2>::Type::Sphere:
-            return static_cast<const Shape<Capsule2D>*>(a)->shape % static_cast<const Shape<Sphere2D>*>(b)->shape;
+        _c(Capsule, Capsule2D, Point, Point2D)
+        _c(Capsule, Capsule2D, Sphere, Sphere2D)
 
-        case ShapeDimensionTraits<2>::Type::AxisAlignedBox*ShapeDimensionTraits<2>::Type::Point:
-            return static_cast<const Shape<AxisAlignedBox2D>*>(a)->shape % static_cast<const Shape<Point2D>*>(b)->shape;
+        _c(AxisAlignedBox, AxisAlignedBox2D, Point, Point2D)
+        #undef _c
     }
 
     return false;
@@ -72,28 +60,23 @@ template<> bool collides(const AbstractShape<2>* const a, const AbstractShape<2>
 template<> bool collides(const AbstractShape<3>* const a, const AbstractShape<3>* const b) {
     if(a->type() < b->type()) return collides(b, a);
 
-    switch(a->type()*b->type()) {
-        case ShapeDimensionTraits<3>::Type::Sphere*ShapeDimensionTraits<3>::Type::Point:
-            return static_cast<const Shape<Sphere3D>*>(a)->shape % static_cast<const Shape<Point3D>*>(b)->shape;
-        case ShapeDimensionTraits<3>::Type::Sphere*ShapeDimensionTraits<3>::Type::Line:
-            return static_cast<const Shape<Sphere3D>*>(a)->shape % static_cast<const Shape<Line3D>*>(b)->shape;
-        case ShapeDimensionTraits<3>::Type::Sphere*ShapeDimensionTraits<3>::Type::LineSegment:
-            return static_cast<const Shape<Sphere3D>*>(a)->shape % static_cast<const Shape<LineSegment3D>*>(b)->shape;
-        case ShapeDimensionTraits<3>::Type::Sphere*ShapeDimensionTraits<3>::Type::Sphere:
-            return static_cast<const Shape<Sphere3D>*>(a)->shape % static_cast<const Shape<Sphere3D>*>(b)->shape;
+    switch(UnsignedInt(a->type())*UnsignedInt(b->type())) {
+        #define _c(aType, aClass, bType, bClass) \
+            case UnsignedInt(ShapeDimensionTraits<3>::Type::aType)*UnsignedInt(ShapeDimensionTraits<3>::Type::bType): \
+                return static_cast<const Shape<aClass>*>(a)->shape % static_cast<const Shape<bClass>*>(b)->shape;
+        _c(Sphere, Sphere3D, Point, Point3D)
+        _c(Sphere, Sphere3D, Line, Line3D)
+        _c(Sphere, Sphere3D, LineSegment, LineSegment3D)
+        _c(Sphere, Sphere3D, Sphere, Sphere3D)
 
-        case ShapeDimensionTraits<3>::Type::Capsule*ShapeDimensionTraits<3>::Type::Point:
-            return static_cast<const Shape<Capsule3D>*>(a)->shape % static_cast<const Shape<Point3D>*>(b)->shape;
-        case ShapeDimensionTraits<3>::Type::Capsule*ShapeDimensionTraits<3>::Type::Sphere:
-            return static_cast<const Shape<Capsule3D>*>(a)->shape % static_cast<const Shape<Sphere3D>*>(b)->shape;
+        _c(Capsule, Capsule3D, Point, Point3D)
+        _c(Capsule, Capsule3D, Sphere, Sphere3D)
 
-        case ShapeDimensionTraits<3>::Type::AxisAlignedBox*ShapeDimensionTraits<3>::Type::Point:
-            return static_cast<const Shape<AxisAlignedBox3D>*>(a)->shape % static_cast<const Shape<Point3D>*>(b)->shape;
+        _c(AxisAlignedBox, AxisAlignedBox3D, Point, Point3D)
 
-        case ShapeDimensionTraits<3>::Type::Plane*ShapeDimensionTraits<3>::Type::Line:
-            return static_cast<const Shape<Plane>*>(a)->shape % static_cast<const Shape<Line3D>*>(b)->shape;
-        case ShapeDimensionTraits<3>::Type::Plane*ShapeDimensionTraits<3>::Type::LineSegment:
-            return static_cast<const Shape<Plane>*>(a)->shape % static_cast<const Shape<LineSegment3D>*>(b)->shape;
+        _c(Plane, Plane, Line, Line3D)
+        _c(Plane, Plane, LineSegment, LineSegment3D)
+        #undef _c
     }
 
     return false;
