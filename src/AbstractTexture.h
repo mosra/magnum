@@ -496,7 +496,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
         Texture3D = GL_TEXTURE_3D,
         Texture2DArray = GL_TEXTURE_2D_ARRAY,
         #ifndef MAGNUM_TARGET_GLES
-        Texture2DMultisampleArray = GL_TEXTURE_2D_MULTISAMPLE_ARRAY,
+        Texture2DMultisampleArray = GL_TEXTURE_2D_MULTISAMPLE_ARRAY
         #endif
         #else
         Texture3D = GL_TEXTURE_3D_OES
