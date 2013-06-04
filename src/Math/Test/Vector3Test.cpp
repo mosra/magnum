@@ -37,11 +37,11 @@ namespace Magnum { namespace Math {
 namespace Implementation {
 
 template<> struct VectorConverter<3, float, Vec3> {
-    inline constexpr static Vector<3, Float> from(const Vec3& other) {
+    constexpr static Vector<3, Float> from(const Vec3& other) {
         return {other.x, other.y, other.z};
     }
 
-    inline constexpr static Vec3 to(const Vector<3, Float>& other) {
+    constexpr static Vec3 to(const Vector<3, Float>& other) {
         return {other[0], other[1], other[2]};
     }
 };

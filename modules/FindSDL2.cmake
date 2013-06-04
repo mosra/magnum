@@ -31,17 +31,24 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# Library
-find_library(SDL2_LIBRARY SDL2)
+# In Emscripten SDL is linked automatically, thus no need to find the library.
+# Also the includes are in SDL subdirectory, not SDL2.
+if(CORRADE_TARGET_EMSCRIPTEN)
+    set(PATH_SUFFIXES SDL)
+else()
+    find_library(SDL2_LIBRARY SDL2)
+    set(SDL2_LIBRARY_NEEDED SDL2_LIBRARY)
+    set(PATH_SUFFIXES SDL2)
+endif()
 
 # Include dir
 find_path(SDL2_INCLUDE_DIR
     NAMES SDL.h SDL_scancode.h
-    PATH_SUFFIXES SDL2
+    PATH_SUFFIXES ${PATH_SUFFIXES}
 )
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args("SDL2" DEFAULT_MSG
-    SDL2_LIBRARY
+    ${SDL2_LIBRARY_NEEDED}
     SDL2_INCLUDE_DIR
 )

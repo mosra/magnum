@@ -31,9 +31,9 @@
 #include <Containers/EnumSet.h>
 #include <PluginManager/AbstractPlugin.h>
 
-#include "Trade/Trade.h"
-
+#include "Magnum.h"
 #include "magnumVisibility.h"
+#include "Trade/Trade.h"
 
 namespace Magnum { namespace Trade {
 
@@ -53,8 +53,8 @@ be done in data parsing functions, because the user might want to import only
 some data. This is obviously not the case for single-data formats like images,
 as the file contains all data user wants to import.
 */
-class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlugin {
-    PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.2.1")
+class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
+    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.2.1")
 
     public:
         /**
@@ -68,13 +68,13 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         };
 
         /** @brief Set of features supported by this importer */
-        typedef Corrade::Containers::EnumSet<Feature, UnsignedByte> Features;
+        typedef Containers::EnumSet<Feature, UnsignedByte> Features;
 
         /** @brief Default constructor */
         explicit AbstractImporter();
 
         /** @brief Plugin manager constructor */
-        explicit AbstractImporter(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin);
+        explicit AbstractImporter(PluginManager::AbstractManager* manager, std::string plugin);
 
         /** @brief Features supported by this importer */
         virtual Features features() const = 0;
@@ -98,7 +98,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
          * Convenience alternative to above function useful when array size is
          * known at compile-time.
          */
-        template<std::size_t size, class T> inline bool openData(const T(&data)[size]) {
+        template<std::size_t size, class T> bool openData(const T(&data)[size]) {
             return openData(data, size*sizeof(T));
         }
 
@@ -129,10 +129,10 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
          * @note The function is not const, because the value will probably
          *      be lazy-populated.
          */
-        virtual inline Int defaultScene() { return -1; }
+        virtual Int defaultScene() { return -1; }
 
         /** @brief %Scene count */
-        virtual inline UnsignedInt sceneCount() const { return 0; }
+        virtual UnsignedInt sceneCount() const { return 0; }
 
         /**
          * @brief %Scene ID for given name
@@ -160,7 +160,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         virtual SceneData* scene(UnsignedInt id);
 
         /** @brief %Light count */
-        virtual inline UnsignedInt lightCount() const { return 0; }
+        virtual UnsignedInt lightCount() const { return 0; }
 
         /**
          * @brief %Light ID for given name
@@ -188,7 +188,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         virtual LightData* light(UnsignedInt id);
 
         /** @brief Camera count */
-        virtual inline UnsignedInt cameraCount() const { return 0; }
+        virtual UnsignedInt cameraCount() const { return 0; }
 
         /**
          * @brief Camera ID for given name
@@ -216,7 +216,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         virtual CameraData* camera(UnsignedInt id);
 
         /** @brief Two-dimensional object count */
-        virtual inline UnsignedInt object2DCount() const { return 0; }
+        virtual UnsignedInt object2DCount() const { return 0; }
 
         /**
          * @brief Two-dimensional object ID for given name
@@ -244,7 +244,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         virtual ObjectData2D* object2D(UnsignedInt id);
 
         /** @brief Three-dimensional object count */
-        virtual inline UnsignedInt object3DCount() const { return 0; }
+        virtual UnsignedInt object3DCount() const { return 0; }
 
         /**
          * @brief Three-dimensional object ID for given name
@@ -272,7 +272,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         virtual ObjectData3D* object3D(UnsignedInt id);
 
         /** @brief Two-dimensional mesh count */
-        virtual inline UnsignedInt mesh2DCount() const { return 0; }
+        virtual UnsignedInt mesh2DCount() const { return 0; }
 
         /**
          * @brief Two-dimensional mesh ID for given name
@@ -300,7 +300,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         virtual MeshData2D* mesh2D(UnsignedInt id);
 
         /** @brief Three-dimensional mesh count */
-        virtual inline UnsignedInt mesh3DCount() const { return 0; }
+        virtual UnsignedInt mesh3DCount() const { return 0; }
 
         /**
          * @brief Three-dimensional mesh ID for given name
@@ -328,7 +328,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         virtual MeshData3D* mesh3D(UnsignedInt id);
 
         /** @brief Material count */
-        virtual inline UnsignedInt materialCount() const { return 0; }
+        virtual UnsignedInt materialCount() const { return 0; }
 
         /**
          * @brief Material ID for given name
@@ -356,7 +356,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         virtual AbstractMaterialData* material(UnsignedInt id);
 
         /** @brief %Texture count */
-        virtual inline UnsignedInt textureCount() const { return 0; }
+        virtual UnsignedInt textureCount() const { return 0; }
 
         /**
          * @brief %Texture ID for given name
@@ -384,7 +384,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         virtual TextureData* texture(UnsignedInt id);
 
         /** @brief One-dimensional image count */
-        virtual inline UnsignedInt image1DCount() const { return 0; }
+        virtual UnsignedInt image1DCount() const { return 0; }
 
         /**
          * @brief One-dimensional image ID for given name
@@ -412,7 +412,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         virtual ImageData1D* image1D(UnsignedInt id);
 
         /** @brief Two-dimensional image count */
-        virtual inline UnsignedInt image2DCount() const { return 0; }
+        virtual UnsignedInt image2DCount() const { return 0; }
 
         /**
          * @brief Two-dimensional image ID for given name
@@ -440,7 +440,7 @@ class MAGNUM_EXPORT AbstractImporter: public Corrade::PluginManager::AbstractPlu
         virtual ImageData2D* image2D(UnsignedInt id);
 
         /** @brief Three-dimensional image count */
-        virtual inline UnsignedInt image3DCount() const { return 0; }
+        virtual UnsignedInt image3DCount() const { return 0; }
 
         /**
          * @brief Three-dimensional image ID for given name

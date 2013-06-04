@@ -40,6 +40,7 @@
 #include "Framebuffer.h"
 #include "Mesh.h"
 #include "Renderbuffer.h"
+#include "Renderer.h"
 
 #include "Implementation/State.h"
 
@@ -79,6 +80,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
     static const std::vector<Extension> extensions{
         _extension(GL,AMD,vertex_shader_layer),             // done
         _extension(GL,AMD,shader_trinary_minmax),           // done
+        _extension(GL,ARB,robustness),                      // done
         _extension(GL,EXT,texture_filter_anisotropic),      // done
         _extension(GL,EXT,direct_state_access),
         _extension(GL,GREMEDY,string_marker)};              // done
@@ -208,8 +210,10 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,texture_format_BGRA8888),
         _extension(GL,EXT,read_format_bgra),
         _extension(GL,EXT,debug_marker),
+        _extension(GL,EXT,disjoint_timer_query),
         _extension(GL,EXT,separate_shader_objects),
         _extension(GL,EXT,sRGB),
+        _extension(GL,EXT,robustness),
         _extension(GL,NV,read_buffer_front),
         _extension(GL,NV,read_stencil),
         _extension(GL,NV,texture_border_clamp),             // done
@@ -220,6 +224,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,texture_3D)};
     static const std::vector<Extension> extensionsES300{
         _extension(GL,ANGLE,framebuffer_blit),
+        _extension(GL,ANGLE,framebuffer_multisample),
         _extension(GL,ANGLE,depth_texture),                 // done
         _extension(GL,APPLE,framebuffer_multisample),
         _extension(GL,ARM,rgba8),
@@ -235,6 +240,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,NV,read_depth),
         _extension(GL,NV,read_depth_stencil),
         _extension(GL,NV,framebuffer_blit),                 // done
+        _extension(GL,NV,framebuffer_multisample),
         _extension(GL,OES,depth24),
         _extension(GL,OES,element_index_uint),
         _extension(GL,OES,rgb8_rgba8),
@@ -245,6 +251,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,vertex_half_float),
         _extension(GL,OES,packed_depth_stencil),
         _extension(GL,OES,depth_texture),
+        _extension(GL,OES,standard_derivatives),            // done
         _extension(GL,OES,vertex_array_object),
         _extension(GL,OES,required_internalformat)};
     #endif
@@ -285,6 +292,16 @@ Context::Context() {
     #endif
     _version = static_cast<Version>(_majorVersion*100+_minorVersion*10);
 
+    /* Context flags are supported since GL 3.0 */
+    #ifndef MAGNUM_TARGET_GLES
+    /**
+     * @todo According to KHR_debug specs this should be also present in ES2
+     *      if KHR_debug is available, but in headers it is nowhere to be found
+     */
+    if(isVersionSupported(Version::GL300))
+        glGetIntegerv(GL_CONTEXT_FLAGS, reinterpret_cast<GLint*>(&_flags));
+    #endif
+
     /* Get first future (not supported) version */
     std::vector<Version> versions{
         #ifndef MAGNUM_TARGET_GLES
@@ -317,29 +334,35 @@ Context::Context() {
     }
 
     /* Check for presence of extensions in future versions */
-    #ifndef MAGNUM_TARGET_GLES
-    if(isVersionSupported(Version::GL300)) {
-    #else
-    if(isVersionSupported(Version::GLES300)) {
+    #ifndef MAGNUM_TARGET_GLES2
+    GLint extensionCount = 0;
+    glGetIntegerv(GL_NUM_EXTENSIONS, &extensionCount);
+    #ifndef MAGNUM_TARGET_GLES3
+    if(extensionCount || isVersionSupported(Version::GL300))
     #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        GLuint index = 0;
-        const char* extension;
-        while((extension = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, index++)))) {
+    {
+        _supportedExtensions.reserve(extensionCount);
+        for(GLint i = 0; i != extensionCount; ++i) {
+            const std::string extension(reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i)));
             auto found = futureExtensions.find(extension);
             if(found != futureExtensions.end()) {
                 _supportedExtensions.push_back(found->second);
                 extensionStatus.set(found->second._index);
             }
         }
-        #endif
+    }
+    #ifndef MAGNUM_TARGET_GLES3
+    else
+    #endif
+    #endif
 
+    #ifndef MAGNUM_TARGET_GLES3
     /* OpenGL 2.1 / OpenGL ES 2.0 doesn't have glGetStringi() */
-    } else {
+    {
         /* Don't crash when glGetString() returns nullptr */
         const char* e = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
         if(e) {
-            std::vector<std::string> extensions = Corrade::Utility::String::split(e, ' ');
+            std::vector<std::string> extensions = Utility::String::split(e, ' ');
             for(auto it = extensions.begin(); it != extensions.end(); ++it) {
                 auto found = futureExtensions.find(*it);
                 if(found != futureExtensions.end()) {
@@ -349,6 +372,7 @@ Context::Context() {
             }
         }
     }
+    #endif
 
     /* Set this context as current */
     CORRADE_ASSERT(!_current, "Context: Another context currently active", );
@@ -370,12 +394,33 @@ Context::Context() {
     Framebuffer::initializeContextBasedFunctionality(this);
     Mesh::initializeContextBasedFunctionality(this);
     Renderbuffer::initializeContextBasedFunctionality(this);
+    Renderer::initializeContextBasedFunctionality(this);
 }
 
 Context::~Context() {
     CORRADE_ASSERT(_current == this, "Context: Cannot destroy context which is not currently active", );
     delete _state;
     _current = nullptr;
+}
+
+std::vector<std::string> Context::shadingLanguageVersionStrings() const {
+    #ifndef MAGNUM_TARGET_GLES
+    GLint versionCount = 0;
+    glGetIntegerv(GL_NUM_SHADING_LANGUAGE_VERSIONS, &versionCount);
+
+    /* The implementation doesn't yet support this query (< OpenGL 4.3) */
+    if(!versionCount)
+        return {shadingLanguageVersionString()};
+
+    /* Get all of them */
+    std::vector<std::string> versions;
+    versions.reserve(versionCount);
+    for(GLint i = 0; i != versionCount; ++i)
+        versions.push_back(reinterpret_cast<const char*>(glGetStringi(GL_SHADING_LANGUAGE_VERSION, i)));
+    return std::move(versions);
+    #else
+    return {shadingLanguageVersionString()};
+    #endif
 }
 
 Version Context::supportedVersion(std::initializer_list<Version> versions) const {

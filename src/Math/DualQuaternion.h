@@ -58,7 +58,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      DualComplex::rotation(), Vector3::xAxis(), Vector3::yAxis(),
          *      Vector3::zAxis(), Vector::isNormalized()
          */
-        inline static DualQuaternion<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis) {
+        static DualQuaternion<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis) {
             return {Quaternion<T>::rotation(angle, normalizedAxis), {{}, T(0)}};
         }
 
@@ -75,7 +75,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      DualComplex::translation(), Vector3::xAxis(), Vector3::yAxis(),
          *      Vector3::zAxis()
          */
-        inline static DualQuaternion<T> translation(const Vector3<T>& vector) {
+        static DualQuaternion<T> translation(const Vector3<T>& vector) {
             return {{}, {vector/T(2), T(0)}};
         }
 
@@ -86,7 +86,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @see toMatrix(), Quaternion::fromMatrix(),
          *      Matrix4::isRigidTransformation()
          */
-        inline static DualQuaternion<T> fromMatrix(const Matrix4<T>& matrix) {
+        static DualQuaternion<T> fromMatrix(const Matrix4<T>& matrix) {
             CORRADE_ASSERT(matrix.isRigidTransformation(),
                 "Math::DualQuaternion::fromMatrix(): the matrix doesn't represent rigid transformation", {});
 
@@ -103,9 +103,9 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @todoc Remove workaround when Doxygen is predictable
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        inline constexpr /*implicit*/ DualQuaternion();
+        constexpr /*implicit*/ DualQuaternion();
         #else
-        inline constexpr /*implicit*/ DualQuaternion(): Dual<Quaternion<T>>({}, {{}, T(0)}) {}
+        constexpr /*implicit*/ DualQuaternion(): Dual<Quaternion<T>>({}, {{}, T(0)}) {}
         #endif
 
         /**
@@ -115,7 +115,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      \hat q = q_0 + \epsilon q_\epsilon
          * @f]
          */
-        inline constexpr /*implicit*/ DualQuaternion(const Quaternion<T>& real, const Quaternion<T>& dual = Quaternion<T>({}, T(0))): Dual<Quaternion<T>>(real, dual) {}
+        constexpr /*implicit*/ DualQuaternion(const Quaternion<T>& real, const Quaternion<T>& dual = Quaternion<T>({}, T(0))): Dual<Quaternion<T>>(real, dual) {}
 
         /**
          * @brief Construct dual quaternion from vector
@@ -127,9 +127,9 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @todoc Remove workaround when Doxygen is predictable
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        inline constexpr explicit DualQuaternion(const Vector3<T>& vector);
+        constexpr explicit DualQuaternion(const Vector3<T>& vector);
         #else
-        inline constexpr explicit DualQuaternion(const Vector3<T>& vector): Dual<Quaternion<T>>({}, {vector, T(0)}) {}
+        constexpr explicit DualQuaternion(const Vector3<T>& vector): Dual<Quaternion<T>>({}, {vector, T(0)}) {}
         #endif
 
         /**
@@ -140,7 +140,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f]
          * @see lengthSquared(), normalized()
          */
-        inline bool isNormalized() const {
+        bool isNormalized() const {
             /* Comparing dual part classically, as comparing sqrt() of it would
                lead to overly strict precision */
             Dual<T> a = lengthSquared();
@@ -153,7 +153,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *
          * @see Quaternion::angle(), Quaternion::axis()
          */
-        inline constexpr Quaternion<T> rotation() const {
+        constexpr Quaternion<T> rotation() const {
             return this->real();
         }
 
@@ -165,7 +165,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f]
          * @see translation(const Vector3&)
          */
-        inline Vector3<T> translation() const {
+        Vector3<T> translation() const {
             return (this->dual()*this->real().conjugated()).vector()*T(2);
         }
 
@@ -186,7 +186,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f]
          * @see dualConjugated(), conjugated(), Quaternion::conjugated()
          */
-        inline DualQuaternion<T> quaternionConjugated() const {
+        DualQuaternion<T> quaternionConjugated() const {
             return {this->real().conjugated(), this->dual().conjugated()};
         }
 
@@ -198,7 +198,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f]
          * @see quaternionConjugated(), conjugated(), Dual::conjugated()
          */
-        inline DualQuaternion<T> dualConjugated() const {
+        DualQuaternion<T> dualConjugated() const {
             return Dual<Quaternion<T>>::conjugated();
         }
 
@@ -211,7 +211,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @see quaternionConjugated(), dualConjugated(), Quaternion::conjugated(),
          *      Dual::conjugated()
          */
-        inline DualQuaternion<T> conjugated() const {
+        DualQuaternion<T> conjugated() const {
             return {this->real().conjugated(), {this->dual().vector(), -this->dual().scalar()}};
         }
 
@@ -223,7 +223,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      |\hat q|^2 = \sqrt{\hat q^* \hat q}^2 = q_0 \cdot q_0 + \epsilon 2 (q_0 \cdot q_\epsilon)
          * @f]
          */
-        inline Dual<T> lengthSquared() const {
+        Dual<T> lengthSquared() const {
             return {this->real().dot(), T(2)*Quaternion<T>::dot(this->real(), this->dual())};
         }
 
@@ -235,7 +235,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      |\hat q| = \sqrt{\hat q^* \hat q} = |q_0| + \epsilon \frac{q_0 \cdot q_\epsilon}{|q_0|}
          * @f]
          */
-        inline Dual<T> length() const {
+        Dual<T> length() const {
             return Math::sqrt(lengthSquared());
         }
 
@@ -244,7 +244,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *
          * @see isNormalized()
          */
-        inline DualQuaternion<T> normalized() const {
+        DualQuaternion<T> normalized() const {
             return (*this)/length();
         }
 
@@ -256,7 +256,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      \hat q^{-1} = \frac{\hat q^*}{|\hat q|^2}
          * @f]
          */
-        inline DualQuaternion<T> inverted() const {
+        DualQuaternion<T> inverted() const {
             return quaternionConjugated()/lengthSquared();
         }
 
@@ -269,7 +269,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f]
          * @see isNormalized(), inverted()
          */
-        inline DualQuaternion<T> invertedNormalized() const {
+        DualQuaternion<T> invertedNormalized() const {
             CORRADE_ASSERT(isNormalized(),
                            "Math::DualQuaternion::invertedNormalized(): dual quaternion must be normalized", {});
             return quaternionConjugated();
@@ -285,7 +285,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @see DualQuaternion(const Vector3&), dual(), Matrix4::transformPoint(),
          *      Quaternion::transformVector(), DualComplex::transformPoint()
          */
-        inline Vector3<T> transformPoint(const Vector3<T>& vector) const {
+        Vector3<T> transformPoint(const Vector3<T>& vector) const {
             return ((*this)*DualQuaternion<T>(vector)*inverted().dualConjugated()).dual().vector();
         }
 
@@ -300,7 +300,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      Matrix4::transformPoint(), Quaternion::transformVectorNormalized(),
          *      DualComplex::transformPointNormalized()
          */
-        inline Vector3<T> transformPointNormalized(const Vector3<T>& vector) const {
+        Vector3<T> transformPointNormalized(const Vector3<T>& vector) const {
             CORRADE_ASSERT(isNormalized(),
                            "Math::DualQuaternion::transformPointNormalized(): dual quaternion must be normalized",
                            Vector3<T>(std::numeric_limits<T>::quiet_NaN()));
@@ -311,7 +311,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
 
     private:
         /* Used by Dual operators and dualConjugated() */
-        inline constexpr DualQuaternion(const Dual<Quaternion<T>>& other): Dual<Quaternion<T>>(other) {}
+        constexpr DualQuaternion(const Dual<Quaternion<T>>& other): Dual<Quaternion<T>>(other) {}
 };
 
 /** @debugoperator{Magnum::Math::DualQuaternion} */

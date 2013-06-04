@@ -26,9 +26,9 @@
 
 #include "Mesh.h"
 #include "DebugTools/ShapeRenderer.h"
-#include "Physics/Point.h"
+#include "Shapes/Point.h"
 #include "Primitives/Crosshair.h"
-#include "Shaders/FlatShader.h"
+#include "Shaders/Flat.h"
 #include "Trade/MeshData2D.h"
 #include "Trade/MeshData3D.h"
 
@@ -48,14 +48,14 @@ namespace {
     template<> inline Trade::MeshData3D meshData<3>() { return Primitives::Crosshair3D::wireframe(); }
 }
 
-template<UnsignedInt dimensions> PointRenderer<dimensions>::PointRenderer(Physics::Point<dimensions>& point): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), point(point) {
+template<UnsignedInt dimensions> PointRenderer<dimensions>::PointRenderer(const Shapes::Implementation::AbstractShape<dimensions>* point): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), point(static_cast<const Shapes::Implementation::Shape<Shapes::Point<dimensions>>*>(point)->shape) {
     if(!this->wireframeMesh) this->createResources(meshData<dimensions>());
 }
 
 template<UnsignedInt dimensions> void PointRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
     /* Half scale, because the point is 2x2(x2) */
     this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
-        DimensionTraits<dimensions>::MatrixType::translation(point.transformedPosition())*
+        DimensionTraits<dimensions>::MatrixType::translation(point.position())*
         DimensionTraits<dimensions>::MatrixType::scaling(typename DimensionTraits<dimensions>::VectorType(options->pointSize()/2)))
         ->setColor(options->color())
         ->use();

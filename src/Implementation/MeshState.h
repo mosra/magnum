@@ -29,7 +29,7 @@
 namespace Magnum { namespace Implementation {
 
 struct MeshState {
-    inline constexpr MeshState(): currentVAO(0) {}
+    constexpr MeshState(): currentVAO(0) {}
 
     GLuint currentVAO;
 };

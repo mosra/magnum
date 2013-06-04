@@ -26,211 +26,118 @@
 
 #include <Utility/Assert.h>
 
+#include "ImageFormat.h"
+
 namespace Magnum {
 
-std::size_t AbstractImage::pixelSize(Format format, Type type) {
+AbstractImage::~AbstractImage() {}
+
+std::size_t AbstractImage::pixelSize(ImageFormat format, ImageType type) {
     std::size_t size = 0;
     switch(type) {
-        case Type::UnsignedByte:
+        case ImageType::UnsignedByte:
         #ifndef MAGNUM_TARGET_GLES2
-        case Type::Byte:
+        case ImageType::Byte:
         #endif
             size = 1; break;
-        case Type::UnsignedShort:
+        case ImageType::UnsignedShort:
         #ifndef MAGNUM_TARGET_GLES2
-        case Type::Short:
+        case ImageType::Short:
         #endif
-        case Type::HalfFloat:
+        case ImageType::HalfFloat:
             size = 2; break;
-        case Type::UnsignedInt:
+        case ImageType::UnsignedInt:
         #ifndef MAGNUM_TARGET_GLES2
-        case Type::Int:
+        case ImageType::Int:
         #endif
-        case Type::Float:
+        case ImageType::Float:
             size = 4; break;
 
         #ifndef MAGNUM_TARGET_GLES
-        case Type::UnsignedByte332:
-        case Type::UnsignedByte233Rev:
+        case ImageType::UnsignedByte332:
+        case ImageType::UnsignedByte233Rev:
             return 1;
         #endif
-        case Type::UnsignedShort565:
+        case ImageType::UnsignedShort565:
         #ifndef MAGNUM_TARGET_GLES
-        case Type::UnsignedShort565Rev:
+        case ImageType::UnsignedShort565Rev:
         #endif
-        case Type::UnsignedShort4444:
+        case ImageType::UnsignedShort4444:
         #ifndef MAGNUM_TARGET_GLES3
-        case Type::UnsignedShort4444Rev:
+        case ImageType::UnsignedShort4444Rev:
         #endif
-        case Type::UnsignedShort5551:
+        case ImageType::UnsignedShort5551:
         #ifndef MAGNUM_TARGET_GLES3
-        case Type::UnsignedShort1555Rev:
+        case ImageType::UnsignedShort1555Rev:
         #endif
             return 2;
         #ifndef MAGNUM_TARGET_GLES
-        case Type::UnsignedInt8888:
-        case Type::UnsignedInt8888Rev:
-        case Type::UnsignedInt1010102:
+        case ImageType::UnsignedInt8888:
+        case ImageType::UnsignedInt8888Rev:
+        case ImageType::UnsignedInt1010102:
         #endif
-        case Type::UnsignedInt2101010Rev:
+        case ImageType::UnsignedInt2101010Rev:
         #ifndef MAGNUM_TARGET_GLES2
-        case Type::UnsignedInt10F11F11FRev:
-        case Type::UnsignedInt5999Rev:
+        case ImageType::UnsignedInt10F11F11FRev:
+        case ImageType::UnsignedInt5999Rev:
         #endif
-        case Type::UnsignedInt248:
+        case ImageType::UnsignedInt248:
             return 4;
         #ifndef MAGNUM_TARGET_GLES2
-        case Type::Float32UnsignedInt248Rev:
+        case ImageType::Float32UnsignedInt248Rev:
             return 8;
         #endif
     }
 
     switch(format) {
-        case Format::Red:
+        case ImageFormat::Red:
         #ifndef MAGNUM_TARGET_GLES2
-        case Format::RedInteger:
+        case ImageFormat::RedInteger:
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        case Format::Green:
-        case Format::Blue:
-        case Format::GreenInteger:
-        case Format::BlueInteger:
+        case ImageFormat::Green:
+        case ImageFormat::Blue:
+        case ImageFormat::GreenInteger:
+        case ImageFormat::BlueInteger:
         #endif
             return 1*size;
-        case Format::RG:
+        case ImageFormat::RG:
         #ifndef MAGNUM_TARGET_GLES2
-        case Format::RGInteger:
+        case ImageFormat::RGInteger:
         #endif
             return 2*size;
-        case Format::RGB:
+        case ImageFormat::RGB:
         #ifndef MAGNUM_TARGET_GLES2
-        case Format::RGBInteger:
+        case ImageFormat::RGBInteger:
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        case Format::BGR:
-        case Format::BGRInteger:
+        case ImageFormat::BGR:
+        case ImageFormat::BGRInteger:
         #endif
             return 3*size;
-        case Format::RGBA:
+        case ImageFormat::RGBA:
         #ifndef MAGNUM_TARGET_GLES2
-        case Format::RGBAInteger:
+        case ImageFormat::RGBAInteger:
         #endif
         #ifndef MAGNUM_TARGET_GLES3
-        case Format::BGRA:
+        case ImageFormat::BGRA:
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        case Format::BGRAInteger:
+        case ImageFormat::BGRAInteger:
         #endif
             return 4*size;
 
         /* Handled above */
-        case Format::DepthComponent:
+        case ImageFormat::DepthComponent:
         #ifndef MAGNUM_TARGET_GLES3
-        case Format::StencilIndex:
+        case ImageFormat::StencilIndex:
         #endif
-        case Format::DepthStencil:
+        case ImageFormat::DepthStencil:
             CORRADE_ASSERT_UNREACHABLE();
     }
 
     CORRADE_ASSERT_UNREACHABLE();
     return 0;
 }
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, AbstractImage::Format value) {
-    switch(value) {
-        #define _c(value) case AbstractImage::Format::value: return debug << "AbstractImage::Format::" #value;
-        _c(Red)
-        #ifndef MAGNUM_TARGET_GLES
-        _c(Green)
-        _c(Blue)
-        #endif
-        _c(RG)
-        _c(RGB)
-        _c(RGBA)
-        #ifndef MAGNUM_TARGET_GLES
-        _c(BGR)
-        #endif
-        #ifndef MAGNUM_TARGET_GLES3
-        _c(BGRA)
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(RedInteger)
-        #ifndef MAGNUM_TARGET_GLES
-        _c(GreenInteger)
-        _c(BlueInteger)
-        #endif
-        _c(RGInteger)
-        _c(RGBInteger)
-        _c(RGBAInteger)
-        #ifndef MAGNUM_TARGET_GLES
-        _c(BGRInteger)
-        _c(BGRAInteger)
-        #endif
-        #endif
-        _c(DepthComponent)
-        #ifndef MAGNUM_TARGET_GLES3
-        _c(StencilIndex)
-        #endif
-        _c(DepthStencil)
-        #undef _c
-    }
-
-    return debug << "AbstractImage::Format::(invalid)";
-}
-
-Debug operator<<(Debug debug, AbstractImage::Type value) {
-    switch(value) {
-        #define _c(value) case AbstractImage::Type::value: return debug << "AbstractImage::Type::" #value;
-        _c(UnsignedByte)
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(Byte)
-        #endif
-        _c(UnsignedShort)
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(Short)
-        #endif
-        _c(UnsignedInt)
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(Int)
-        #endif
-        _c(HalfFloat)
-        _c(Float)
-        #ifndef MAGNUM_TARGET_GLES
-        _c(UnsignedByte332)
-        _c(UnsignedByte233Rev)
-        #endif
-        _c(UnsignedShort565)
-        #ifndef MAGNUM_TARGET_GLES
-        _c(UnsignedShort565Rev)
-        #endif
-        _c(UnsignedShort4444)
-        #ifndef MAGNUM_TARGET_GLES3
-        _c(UnsignedShort4444Rev)
-        #endif
-        _c(UnsignedShort5551)
-        #ifndef MAGNUM_TARGET_GLES3
-        _c(UnsignedShort1555Rev)
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        _c(UnsignedInt8888)
-        _c(UnsignedInt8888Rev)
-        _c(UnsignedInt1010102)
-        #endif
-        _c(UnsignedInt2101010Rev)
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(UnsignedInt10F11F11FRev)
-        _c(UnsignedInt5999Rev)
-        #endif
-        _c(UnsignedInt248)
-        #ifndef MAGNUM_TARGET_GLES2
-        _c(Float32UnsignedInt248Rev)
-        #endif
-        #undef _c
-    }
-
-    return debug << "AbstractImage::Type::(invalid)";
-}
-#endif
 
 }

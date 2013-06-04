@@ -26,7 +26,7 @@
 
 namespace Magnum {
 
-template<UnsignedInt dimensions> void Image<dimensions>::setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, GLvoid* data) {
+template<UnsignedInt dimensions> void Image<dimensions>::setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ImageFormat format, ImageType type, void* data) {
     delete[] _data;
     _format = format;
     _type = type;
@@ -34,8 +34,10 @@ template<UnsignedInt dimensions> void Image<dimensions>::setData(const typename 
     _data = reinterpret_cast<unsigned char*>(data);
 }
 
-template class Image<1>;
-template class Image<2>;
-template class Image<3>;
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template class MAGNUM_EXPORT Image<1>;
+template class MAGNUM_EXPORT Image<2>;
+template class MAGNUM_EXPORT Image<3>;
+#endif
 
 }

@@ -35,10 +35,11 @@
 
 namespace Magnum { namespace Math {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
+    /** @todo C++14: use std::make_index_sequence and std::integer_sequence */
     template<std::size_t ...> struct Sequence {};
 
+    #ifndef DOXYGEN_GENERATING_OUTPUT
     /* E.g. GenerateSequence<3>::Type is Sequence<0, 1, 2> */
     template<std::size_t N, std::size_t ...sequence> struct GenerateSequence:
         GenerateSequence<N-1, N-1, sequence...> {};
@@ -46,10 +47,10 @@ namespace Implementation {
     template<std::size_t ...sequence> struct GenerateSequence<0, sequence...> {
         typedef Sequence<sequence...> Type;
     };
+    #endif
 
-    template<class T> inline constexpr T repeat(T value, std::size_t) { return value; }
+    template<class T> constexpr T repeat(T value, std::size_t) { return value; }
 }
-#endif
 
 /**
 @brief %Vector storing boolean values
@@ -68,7 +69,7 @@ template<std::size_t size> class BoolVector {
         static const std::size_t DataSize = (size-1)/8+1;   /**< @brief %Vector storage size */
 
         /** @brief Construct zero-filled boolean vector */
-        inline constexpr BoolVector(): _data() {}
+        constexpr BoolVector(): _data() {}
 
         /**
          * @brief Construct boolean vector from segment values
@@ -76,9 +77,9 @@ template<std::size_t size> class BoolVector {
          * @param next  Values for next Bbit segments
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class ...T> inline constexpr /*implicit*/ BoolVector(UnsignedByte first, T... next);
+        template<class ...T> constexpr /*implicit*/ BoolVector(UnsignedByte first, T... next);
         #else
-        template<class ...T, class U = typename std::enable_if<sizeof...(T)+1 == DataSize, bool>::type> inline constexpr /*implicit*/ BoolVector(UnsignedByte first, T... next): _data{first, UnsignedByte(next)...} {}
+        template<class ...T, class U = typename std::enable_if<sizeof...(T)+1 == DataSize, bool>::type> constexpr /*implicit*/ BoolVector(UnsignedByte first, T... next): _data{first, UnsignedByte(next)...} {}
         #endif
 
         /** @brief Construct boolean vector with one value for all fields */
@@ -86,19 +87,19 @@ template<std::size_t size> class BoolVector {
         inline explicit BoolVector(T value);
         #else
         #ifndef CORRADE_GCC46_COMPATIBILITY
-        template<class T, class U = typename std::enable_if<std::is_same<bool, T>::value && size != 1, bool>::type> inline constexpr explicit BoolVector(T value): BoolVector(typename Implementation::GenerateSequence<DataSize>::Type(), value ? FullSegmentMask : 0) {}
+        template<class T, class U = typename std::enable_if<std::is_same<bool, T>::value && size != 1, bool>::type> constexpr explicit BoolVector(T value): BoolVector(typename Implementation::GenerateSequence<DataSize>::Type(), value ? FullSegmentMask : 0) {}
         #else
-        template<class T, class U = typename std::enable_if<std::is_same<bool, T>::value && size != 1, bool>::type> inline explicit BoolVector(T value) {
+        template<class T, class U = typename std::enable_if<std::is_same<bool, T>::value && size != 1, bool>::type> explicit BoolVector(T value) {
             *this = BoolVector(typename Implementation::GenerateSequence<DataSize>::Type(), value ? FullSegmentMask : 0);
         }
         #endif
         #endif
 
         /** @brief Copy constructor */
-        inline constexpr BoolVector(const BoolVector<size>&) = default;
+        constexpr BoolVector(const BoolVector<size>&) = default;
 
         /** @brief Copy assignment */
-        inline BoolVector<size>& operator=(const BoolVector<size>&) = default;
+        BoolVector<size>& operator=(const BoolVector<size>&) = default;
 
         /**
          * @brief Raw data
@@ -106,84 +107,46 @@ template<std::size_t size> class BoolVector {
          *
          * @see operator[](), set()
          */
-        inline UnsignedByte* data() { return _data; }
-        inline constexpr const UnsignedByte* data() const { return _data; } /**< @overload */
+        UnsignedByte* data() { return _data; }
+        constexpr const UnsignedByte* data() const { return _data; } /**< @overload */
 
         /** @brief Bit at given position */
-        inline constexpr bool operator[](std::size_t i) const {
+        constexpr bool operator[](std::size_t i) const {
             return (_data[i/8] >> i%8) & 0x01;
         }
 
         /** @brief Set bit at given position */
-        inline BoolVector<size>& set(std::size_t i, bool value) {
+        BoolVector<size>& set(std::size_t i, bool value) {
             _data[i/8] |= ((value & 0x01) << i%8);
             return *this;
         }
 
         /** @brief Equality comparison */
-        inline bool operator==(const BoolVector<size>& other) const {
-            for(std::size_t i = 0; i != size/8; ++i)
-                if(_data[i] != other._data[i]) return false;
-
-            /* Check last segment */
-            if(size%8 && (_data[DataSize-1] & LastSegmentMask) != (other._data[DataSize-1] & LastSegmentMask))
-                return false;
-
-            return true;
-        }
+        bool operator==(const BoolVector<size>& other) const;
 
         /** @brief Non-equality comparison */
-        inline bool operator!=(const BoolVector<size>& other) const {
+        bool operator!=(const BoolVector<size>& other) const {
             return !operator==(other);
         }
 
         /** @brief Whether all bits are set */
-        bool all() const {
-            /* Check all full segments */
-            for(std::size_t i = 0; i != size/8; ++i)
-                if(_data[i] != FullSegmentMask) return false;
-
-            /* Check last segment */
-            if(size%8 && (_data[DataSize-1] & LastSegmentMask) != LastSegmentMask)
-                return false;
-
-            return true;
-        }
+        bool all() const;
 
         /** @brief Whether no bits are set */
-        bool none() const {
-            /* Check all full segments */
-            for(std::size_t i = 0; i != size/8; ++i)
-                if(_data[i]) return false;
-
-            /* Check last segment */
-            if(size%8 && (_data[DataSize-1] & LastSegmentMask))
-                return false;
-
-            return true;
-        }
+        bool none() const;
 
         /** @brief Whether any bit is set */
-        inline bool any() const {
-            return !none();
-        }
+        bool any() const { return !none(); }
 
         /** @brief Bitwise inversion */
-        inline BoolVector<size> operator~() const {
-            BoolVector<size> out;
-
-            for(std::size_t i = 0; i != DataSize; ++i)
-                out._data[i] = ~_data[i];
-
-            return out;
-        }
+        BoolVector<size> operator~() const;
 
         /**
          * @brief Bitwise AND and assign
          *
          * The computation is done in-place.
          */
-        inline BoolVector<size>& operator&=(const BoolVector<size>& other) {
+        BoolVector<size>& operator&=(const BoolVector<size>& other) {
             for(std::size_t i = 0; i != DataSize; ++i)
                 _data[i] &= other._data[i];
 
@@ -195,7 +158,7 @@ template<std::size_t size> class BoolVector {
          *
          * @see operator&=()
          */
-        inline BoolVector<size> operator&(const BoolVector<size>& other) const {
+        BoolVector<size> operator&(const BoolVector<size>& other) const {
             return BoolVector<size>(*this) &= other;
         }
 
@@ -204,7 +167,7 @@ template<std::size_t size> class BoolVector {
          *
          * The computation is done in-place.
          */
-        inline BoolVector<size>& operator|=(const BoolVector<size>& other) {
+        BoolVector<size>& operator|=(const BoolVector<size>& other) {
             for(std::size_t i = 0; i != DataSize; ++i)
                 _data[i] |= other._data[i];
 
@@ -216,7 +179,7 @@ template<std::size_t size> class BoolVector {
          *
          * @see operator|=()
          */
-        inline BoolVector<size> operator|(const BoolVector<size>& other) const {
+        BoolVector<size> operator|(const BoolVector<size>& other) const {
             return BoolVector<size>(*this) |= other;
         }
 
@@ -225,7 +188,7 @@ template<std::size_t size> class BoolVector {
          *
          * The computation is done in-place.
          */
-        inline BoolVector<size>& operator^=(const BoolVector<size>& other) {
+        BoolVector<size>& operator^=(const BoolVector<size>& other) {
             for(std::size_t i = 0; i != DataSize; ++i)
                 _data[i] ^= other._data[i];
 
@@ -237,7 +200,7 @@ template<std::size_t size> class BoolVector {
          *
          * @see operator^=()
          */
-        inline BoolVector<size> operator^(const BoolVector<size>& other) const {
+        BoolVector<size> operator^(const BoolVector<size>& other) const {
             return BoolVector<size>(*this) ^= other;
         }
 
@@ -248,7 +211,7 @@ template<std::size_t size> class BoolVector {
         };
 
         /* Implementation for Vector<size, T>::Vector(U) */
-        template<std::size_t ...sequence> inline constexpr explicit BoolVector(Implementation::Sequence<sequence...>, UnsignedByte value): _data{Implementation::repeat(value, sequence)...} {}
+        template<std::size_t ...sequence> constexpr explicit BoolVector(Implementation::Sequence<sequence...>, UnsignedByte value): _data{Implementation::repeat(value, sequence)...} {}
 
         UnsignedByte _data[(size-1)/8+1];
 };
@@ -264,6 +227,50 @@ template<std::size_t size> Corrade::Utility::Debug operator<<(Corrade::Utility::
     debug << ")";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
     return debug;
+}
+
+template<std::size_t size> inline bool BoolVector<size>::operator==(const BoolVector< size >& other) const {
+    for(std::size_t i = 0; i != size/8; ++i)
+        if(_data[i] != other._data[i]) return false;
+
+    /* Check last segment */
+    if(size%8 && (_data[DataSize-1] & LastSegmentMask) != (other._data[DataSize-1] & LastSegmentMask))
+        return false;
+
+    return true;
+}
+
+template<std::size_t size> inline bool BoolVector<size>::all() const {
+    /* Check all full segments */
+    for(std::size_t i = 0; i != size/8; ++i)
+        if(_data[i] != FullSegmentMask) return false;
+
+    /* Check last segment */
+    if(size%8 && (_data[DataSize-1] & LastSegmentMask) != LastSegmentMask)
+        return false;
+
+    return true;
+}
+
+template<std::size_t size> inline bool BoolVector<size>::none() const {
+    /* Check all full segments */
+    for(std::size_t i = 0; i != size/8; ++i)
+        if(_data[i]) return false;
+
+    /* Check last segment */
+    if(size%8 && (_data[DataSize-1] & LastSegmentMask))
+        return false;
+
+    return true;
+}
+
+template<std::size_t size> inline BoolVector<size> BoolVector<size>::operator~() const {
+    BoolVector<size> out;
+
+    for(std::size_t i = 0; i != DataSize; ++i)
+        out._data[i] = ~_data[i];
+
+    return out;
 }
 
 }}

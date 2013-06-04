@@ -28,7 +28,7 @@
 #include "Mesh.h"
 #include "DebugTools/ResourceManager.h"
 #include "SceneGraph/AbstractCamera.h"
-#include "Shaders/FlatShader.h"
+#include "Shaders/Flat.h"
 
 #include "DebugTools/Implementation/ForceRendererTransformation.h"
 
@@ -66,8 +66,8 @@ const std::array<UnsignedByte, 6> indices{{
 
 template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneGraph::AbstractObject<dimensions>* object, const typename DimensionTraits<dimensions, Float>::VectorType& forcePosition, const typename DimensionTraits<dimensions, Float>::VectorType* force, ResourceKey options, SceneGraph::DrawableGroup<dimensions>* drawables): SceneGraph::Drawable<dimensions>(object, drawables), forcePosition(forcePosition), force(force), options(ResourceManager::instance()->get<ForceRendererOptions>(options)) {
     /* Shader */
-    shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader<dimensions>>(shaderKey<dimensions>());
-    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(), new Shaders::FlatShader<dimensions>);
+    shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::Flat<dimensions>>(shaderKey<dimensions>());
+    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(), new Shaders::Flat<dimensions>);
 
     /* Mesh and vertex buffer */
     mesh = ResourceManager::instance()->get<Mesh>("force");
@@ -89,7 +89,7 @@ template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneG
     mesh->setPrimitive(Mesh::Primitive::Lines)
         ->setIndexCount(indices.size())
         ->addVertexBuffer(vertexBuffer, 0,
-            typename Shaders::FlatShader<dimensions>::Position(Shaders::FlatShader<dimensions>::Position::Components::Two))
+            typename Shaders::Flat<dimensions>::Position(Shaders::Flat<dimensions>::Position::Components::Two))
         ->setIndexBuffer(indexBuffer, 0, Mesh::IndexType::UnsignedByte, 0, positions.size());
     ResourceManager::instance()->set<Mesh>(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }

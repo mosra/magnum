@@ -24,6 +24,7 @@
 
 #include "Buffer.h"
 
+#include <Containers/Array.h>
 #include <Utility/Debug.h>
 
 #include "Context.h"
@@ -36,8 +37,12 @@ namespace Magnum {
 #ifndef MAGNUM_TARGET_GLES2
 Buffer::CopyImplementation Buffer::copyImplementation = &Buffer::copyImplementationDefault;
 #endif
-Buffer::SetDataImplementation Buffer::setDataImplementation = &Buffer::setDataImplementationDefault;
-Buffer::SetSubDataImplementation Buffer::setSubDataImplementation = &Buffer::setSubDataImplementationDefault;
+Buffer::GetParameterImplementation Buffer::getParameterImplementation = &Buffer::getParameterImplementationDefault;
+#ifndef MAGNUM_TARGET_GLES
+Buffer::GetSubDataImplementation Buffer::getSubDataImplementation = &Buffer::getSubDataImplementationDefault;
+#endif
+Buffer::DataImplementation Buffer::dataImplementation = &Buffer::dataImplementationDefault;
+Buffer::SubDataImplementation Buffer::subDataImplementation = &Buffer::subDataImplementationDefault;
 Buffer::InvalidateImplementation Buffer::invalidateImplementation = &Buffer::invalidateImplementationNoOp;
 Buffer::InvalidateSubImplementation Buffer::invalidateSubImplementation = &Buffer::invalidateSubImplementationNoOp;
 #ifndef MAGNUM_TARGET_GLES3
@@ -53,8 +58,10 @@ void Buffer::initializeContextBasedFunctionality(Context* context) {
         Debug() << "Buffer: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
 
         copyImplementation = &Buffer::copyImplementationDSA;
-        setDataImplementation = &Buffer::setDataImplementationDSA;
-        setSubDataImplementation = &Buffer::setSubDataImplementationDSA;
+        getParameterImplementation = &Buffer::getParameterImplementationDSA;
+        getSubDataImplementation = &Buffer::getSubDataImplementationDSA;
+        dataImplementation = &Buffer::dataImplementationDSA;
+        subDataImplementation = &Buffer::subDataImplementationDSA;
         mapImplementation = &Buffer::mapImplementationDSA;
         mapRangeImplementation = &Buffer::mapRangeImplementationDSA;
         flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDSA;
@@ -101,14 +108,37 @@ Buffer::Target Buffer::bindInternal(Target hint) {
     if(hintBinding == _id) return hint;
 
     /* Return first target in which the buffer is bound */
+    /** @todo wtf there is one more? */
     for(std::size_t i = 1; i != Implementation::BufferState::TargetCount; ++i)
-        if(bindings[i] == _id) return Implementation::BufferState::targetForIndex[i];
+        if(bindings[i] == _id) return Implementation::BufferState::targetForIndex[i-1];
 
     /* Bind the buffer to hint target otherwise */
     hintBinding = _id;
     glBindBuffer(static_cast<GLenum>(hint), _id);
     return hint;
 }
+
+Int Buffer::size() {
+    /**
+     * @todo there is something like glGetBufferParameteri64v in 3.2 (I
+     *      couldn't find any matching extension, though)
+     */
+    GLint size;
+    (this->*getParameterImplementation)(GL_BUFFER_SIZE, &size);
+    return size;
+}
+
+#ifndef MAGNUM_TARGET_GLES
+Containers::Array<char> Buffer::data() {
+    return subData(0, size());
+}
+
+Containers::Array<char> Buffer::subData(const GLintptr offset, const GLsizeiptr size) {
+    Containers::Array<char> data(size);
+    if(size) (this->*getSubDataImplementation)(offset, size, data);
+    return std::move(data);
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void Buffer::copyImplementationDefault(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
@@ -122,22 +152,42 @@ void Buffer::copyImplementationDSA(Buffer* read, Buffer* write, GLintptr readOff
 #endif
 #endif
 
-void Buffer::setDataImplementationDefault(GLsizeiptr size, const GLvoid* data, Buffer::Usage usage) {
+void Buffer::getParameterImplementationDefault(const GLenum value, GLint* const data) {
+    glGetBufferParameteriv(GLenum(bindInternal(_targetHint)), value, data);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void Buffer::getParameterImplementationDSA(const GLenum value, GLint* const data) {
+    glGetNamedBufferParameterivEXT(_id, value, data);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void Buffer::getSubDataImplementationDefault(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
+    glGetBufferSubData(GLenum(bindInternal(_targetHint)), offset, size, data);
+}
+
+void Buffer::getSubDataImplementationDSA(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
+    glGetNamedBufferSubDataEXT(_id, offset, size, data);
+}
+#endif
+
+void Buffer::dataImplementationDefault(GLsizeiptr size, const GLvoid* data, Buffer::Usage usage) {
     glBufferData(static_cast<GLenum>(bindInternal(_targetHint)), size, data, static_cast<GLenum>(usage));
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::setDataImplementationDSA(GLsizeiptr size, const GLvoid* data, Buffer::Usage usage) {
+void Buffer::dataImplementationDSA(GLsizeiptr size, const GLvoid* data, Buffer::Usage usage) {
     glNamedBufferDataEXT(_id, size, data, static_cast<GLenum>(usage));
 }
 #endif
 
-void Buffer::setSubDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
+void Buffer::subDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
     glBufferSubData(static_cast<GLenum>(bindInternal(_targetHint)), offset, size, data);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::setSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
+void Buffer::subDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
     glNamedBufferSubDataEXT(_id, offset, size, data);
 }
 #endif

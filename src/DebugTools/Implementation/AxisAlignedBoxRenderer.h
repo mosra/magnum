@@ -26,7 +26,7 @@
 
 #include "AbstractBoxRenderer.h"
 
-#include "Physics/Physics.h"
+#include "Shapes/Shapes.h"
 
 #include "corradeCompatibility.h"
 
@@ -34,12 +34,12 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<UnsignedInt dimensions> class AxisAlignedBoxRenderer: public AbstractBoxRenderer<dimensions> {
     public:
-        AxisAlignedBoxRenderer(Physics::AxisAlignedBox<dimensions>& axisAlignedBox);
+        AxisAlignedBoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>* axisAlignedBox);
 
         void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) override;
 
     private:
-        Physics::AxisAlignedBox<dimensions>& axisAlignedBox;
+        const Shapes::AxisAlignedBox<dimensions>& axisAlignedBox;
 };
 
 }}}

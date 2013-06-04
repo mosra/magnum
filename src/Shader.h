@@ -41,8 +41,7 @@ namespace Magnum {
 /**
 @brief %Shader
 
-Allows loading and compiling the shader from file or directly from source
-string. See AbstractShaderProgram for more information.
+See AbstractShaderProgram for more information.
  */
 class MAGNUM_EXPORT Shader {
     Shader(const Shader&) = delete;
@@ -86,55 +85,6 @@ class MAGNUM_EXPORT Shader {
             Fragment = GL_FRAGMENT_SHADER   /**< Fragment shader */
         };
 
-        /** @brief %Shader state */
-        enum class State {
-            Initialized,    /**< %Shader is loaded */
-            Compiled,       /**< %Shader is compiled */
-            Failed          /**< Compilation failed */
-        };
-
-        /**
-         * @brief Load shader from source
-         * @param version   Target version
-         * @param type      %Shader type
-         * @param source    %Shader source
-         * @return Shader instance
-         *
-         * Loads the shader from one source. Shorthand for
-         * @code
-         * Shader s(version, type);
-         * s.addData(data);
-         * @endcode
-         * Note that it is also possible to create shader from more than one
-         * source.
-         */
-        inline static Shader fromData(Version version, Type type, const std::string& source) {
-            Shader s(version, type);
-            s.addSource(source);
-            return s;
-        }
-
-        /**
-         * @brief Load shader from file
-         * @param version   Target version
-         * @param type      %Shader type
-         * @param filename  Source filename
-         * @return Shader instance
-         *
-         * Loads the shader from from one file. Shorthand for
-         * @code
-         * Shader s(version, type);
-         * s.addFile(filename);
-         * @endcode
-         * Note that it is also possible to create shader from more than one
-         * source.
-         */
-        inline static Shader fromFile(Version version, Type type, const char* filename) {
-            Shader s(version, type);
-            s.addFile(filename);
-            return s;
-        }
-
         /**
          * @brief Constructor
          * @param version   Target version
@@ -142,7 +92,7 @@ class MAGNUM_EXPORT Shader {
          *
          * Creates empty OpenGL shader and adds @c \#version directive at the
          * beginning. Sources can be added with addSource() or addFile().
-         * @see fromData(), fromFile(), @fn_gl{CreateShader}
+         * @see @fn_gl{CreateShader}
          */
         explicit Shader(Version version, Type type);
 
@@ -152,7 +102,7 @@ class MAGNUM_EXPORT Shader {
          * Deletes associated OpenGL shader.
          * @see @fn_gl{DeleteShader}
          */
-        inline ~Shader() { if(shader) glDeleteShader(shader); }
+        ~Shader();
 
         /** @brief Move constructor */
         Shader(Shader&& other);
@@ -160,63 +110,47 @@ class MAGNUM_EXPORT Shader {
         /** @brief Move assignment operator */
         Shader& operator=(Shader&& other);
 
-        /**
-         * @brief %Shader type
-         *
-         * Set in constructor.
-         */
-        inline Type type() const { return _type; }
-
-        /**
-         * @brief Compilation state
-         *
-         * Changes after calling compile().
-         */
-        inline State state() const { return _state; }
+        /** @brief OpenGL shader ID */
+        GLuint id() const { return _id; }
 
         /**
          * @brief Add shader source
          * @param source    String with shader source
+         * @return Reference to self (for method chaining)
          *
-         * If the shader is not compiled already, adds given source to source
-         * list. Note that it is possible to compile shader from more than
-         * one source.
+         * Adds given source to source list, preceeded with @c \#line directive
+         * marking first line of the source as `n(1)` where n is number of
+         * added source. If passed string is empty, the function does nothing.
          * @see addFile()
          */
-        inline void addSource(const std::string& source) {
-            if(_state == State::Initialized) sources.push_back(source);
-        }
+        Shader& addSource(std::string source);
 
         /**
          * @brief Add source file
          * @param filename  Name of source file to read from
-         * @return False if reading the file fails, true otherwise.
+         * @return Reference to self (for method chaining)
          *
-         * @see addSource()
+         * The file must exist and must be readable. Calls addSource() with
+         * the contents.
          */
-        bool addFile(const std::string& filename);
+        Shader& addFile(const std::string& filename);
 
         /**
          * @brief Compile shader
-         * @return Compiled shader or 0 if compilation failed.
          *
-         * If the shader has any sources present and hasn't been compiled
-         * before, it tries to compile it. If compilation fails or no sources
-         * are present, returns 0. If the shader was compiled already, returns
-         * already existing shader.
-         * @see state(), @fn_gl{ShaderSource}, @fn_gl{CompileShader},
-         *      @fn_gl{GetShader} with @def_gl{COMPILE_STATUS},
+         * Returns `false` if compilation failed, `true` otherwise. Compiler
+         * message (if any) is printed to error output.
+         * @see @fn_gl{ShaderSource}, @fn_gl{CompileShader}, @fn_gl{GetShader}
+         *      with @def_gl{COMPILE_STATUS} and @def_gl{INFO_LOG_LENGTH},
          *      @fn_gl{GetShaderInfoLog}
          */
-        GLuint compile();
+        bool compile();
 
     private:
         Type _type;
-        State _state;
+        GLuint _id;
 
         std::vector<std::string> sources;
-
-        GLuint shader;
 };
 
 }

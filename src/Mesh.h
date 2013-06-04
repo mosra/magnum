@@ -244,204 +244,23 @@ class MAGNUM_EXPORT Mesh {
     Mesh& operator=(const Mesh&) = delete;
 
     public:
-        /** @name Polygon drawing settings */
-
-        /**
-         * @brief Front facing polygon winding
-         *
-         * @see setFrontFace()
-         */
-        enum FrontFace: GLenum {
-            /** @brief Counterclockwise polygons are front facing (default). */
-            CounterClockWise = GL_CCW,
-
-            /** @brief Clockwise polygons are front facing. */
-            ClockWise = GL_CW
-        };
-
-        /**
-         * @brief Set front-facing polygon winding
-         *
-         * Initial value is `FrontFace::%CounterClockWise`.
-         * @see @fn_gl{FrontFace}
-         */
-        inline static void setFrontFace(FrontFace mode) {
-            glFrontFace(static_cast<GLenum>(mode));
-        }
-
-        #ifndef MAGNUM_TARGET_GLES
-        /**
-         * @brief Provoking vertex
-         *
-         * @see setProvokingVertex()
-         * @requires_gl32 %Extension @extension{ARB,provoking_vertex}. Older
-         *      versions behave always like
-         *      @ref Magnum::Mesh::ProvokingVertex "ProvokingVertex::LastVertexConvention".
-         * @requires_gl OpenGL ES behaves always like
-         *      @ref Magnum::Mesh::ProvokingVertex "ProvokingVertex::LastVertexConvention".
-         */
-        enum class ProvokingVertex: GLenum {
-            /** @brief Use first vertex of each polygon. */
-            FirstVertexConvention = GL_FIRST_VERTEX_CONVENTION,
-
-            /** @brief Use last vertex of each polygon (default). */
-            LastVertexConvention = GL_LAST_VERTEX_CONVENTION
-        };
-
-        /**
-         * @brief Set provoking vertex
-         *
-         * Initial value is @ref ProvokingVertex "ProvokingVertex::LastVertexConvention".
-         * @see @fn_gl{ProvokingVertex}
-         * @requires_gl32 %Extension @extension{ARB,provoking_vertex}. Older
-         *      versions behave always like the default.
-         * @requires_gl OpenGL ES behaves always like the default.
-         */
-        inline static void setProvokingVertex(ProvokingVertex mode) {
-            glProvokingVertex(static_cast<GLenum>(mode));
-        }
-        #endif
-
-        #ifndef MAGNUM_TARGET_GLES
-        /**
-         * @brief Polygon mode
-         *
-         * @see setPolygonMode()
-         * @requires_gl OpenGL ES behaves always like @ref Magnum::Mesh::PolygonMode "PolygonMode::Fill".
-         *      See setPrimitive() for possible workaround.
-         */
-        enum class PolygonMode: GLenum {
-            /**
-             * Interior of the polygon is filled (default).
-             */
-            Fill = GL_FILL,
-
-            /**
-             * Boundary edges are filled. See also setLineWidth().
-             */
-            Line = GL_LINE,
-
-            /**
-             * Starts of boundary edges are drawn as points. See also
-             * setPointSize().
-             */
-            Point = GL_POINT
-        };
-        #endif
-
-        #ifndef MAGNUM_TARGET_GLES
-        /**
-         * @brief Set polygon drawing mode
-         *
-         * Initial value is @ref PolygonMode "PolygonMode::Fill".
-         * @see @fn_gl{PolygonMode}
-         * @requires_gl OpenGL ES behaves always like the default. See
-         *      setPrimitive() for possible workaround.
-         */
-        inline static void setPolygonMode(PolygonMode mode) {
-            glPolygonMode(GL_FRONT_AND_BACK, static_cast<GLenum>(mode));
-        }
-        #endif
-
-        /**
-         * @brief Mode affected by polygon offset
-         *
-         * @see setPolygonOffsetMode(), setPolygonOffset()
-         */
-        enum class PolygonOffsetMode: GLenum {
-            /** Offset filled polygons. */
-            Fill = GL_POLYGON_OFFSET_FILL
-
-            #ifndef MAGNUM_TARGET_GLES
-            ,
-
-            /**
-             * Offset lines.
-             * @requires_gl Only @ref Magnum::Mesh::PolygonOffsetMode "PolygonOffsetMode::Fill"
-             *      is available in OpenGL ES.
-             */
-            Line = GL_POLYGON_OFFSET_LINE,
-
-            /**
-             * Offset points.
-             * @requires_gl Only @ref Magnum::Mesh::PolygonOffsetMode "PolygonOffsetMode::Fill"
-             *      is available in OpenGL ES.
-             */
-            Point = GL_POLYGON_OFFSET_POINT
-            #endif
-        };
-
-        /**
-         * @brief Enable/disable polygon offset for given mode
-         *
-         * Initially disabled for all modes.
-         * @see setPolygonOffset(), @fn_gl{Enable}/@fn_gl{Disable}
-         */
-        inline static void setPolygonOffsetMode(PolygonOffsetMode mode, bool enabled) {
-            enabled ? glEnable(static_cast<GLenum>(mode)) : glDisable(static_cast<GLenum>(mode));
-        }
-
-        /**
-         * @brief Set polygon offset
-         * @param factor    Scale factor
-         * @param units     Offset units
-         *
-         * @attention You have to call setPolygonOffsetMode() to enable
-         *      polygon offset for desired polygon modes.
-         * @see @fn_gl{PolygonOffset}
-         */
-        inline static void setPolygonOffset(Float factor, Float units) {
-            glPolygonOffset(factor, units);
-        }
-
-        /**
-         * @brief Set line width
-         *
-         * Initial value is `1.0f`.
-         * @see @fn_gl{LineWidth}
-         */
-        inline static void setLineWidth(Float width) {
-            glLineWidth(width);
-        }
-
-        #ifndef MAGNUM_TARGET_GLES
-        /**
-         * @brief Set point size
-         *
-         * Initial value is `1.0f`.
-         * @see setProgramPointSize(), @fn_gl{PointSize}
-         * @requires_gl Set directly in vertex shader using @c gl_PointSize
-         *      builtin variable.
-         */
-        inline static void setPointSize(Float size) {
-            glPointSize(size);
-        }
-
-        /**
-         * @brief Enable/disable programmable point size
-         *
-         * If enabled, the point size is taken from vertex/geometry shader
-         * builtin `gl_PointSize`. Initially disabled on desktop OpenGL.
-         * @see setPointSize(), @fn_gl{Enable}/@fn_gl{Disable} with @def_gl{PROGRAM_POINT_SIZE}
-         * @requires_gl Always enabled on OpenGL ES.
-         */
-        inline static void setProgramPointSize(bool enabled) {
-            enabled ? glEnable(GL_PROGRAM_POINT_SIZE) : glDisable(GL_PROGRAM_POINT_SIZE);
-        }
-        #endif
-
-        /*@}*/
-
         /**
          * @brief Primitive type
          *
          * @see primitive(), setPrimitive()
          */
         enum class Primitive: GLenum {
-            /**
-             * Single points
-             */
+            /** Single points. */
             Points = GL_POINTS,
+
+            /**
+             * First two vertices define first line segment, each following
+             * vertex defines another segment.
+             */
+            LineStrip = GL_LINE_STRIP,
+
+            /** Line strip, last and first vertex are connected together. */
+            LineLoop = GL_LINE_LOOP,
 
             /**
              * Each pair of vertices defines a single line, lines aren't
@@ -449,20 +268,19 @@ class MAGNUM_EXPORT Mesh {
              */
             Lines = GL_LINES,
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
-             * Polyline
+             * Line strip with adjacency information.
+             * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
              */
-            LineStrip = GL_LINE_STRIP,
+            LineStripAdjacency = GL_LINE_STRIP_ADJACENCY,
 
             /**
-             * Polyline, last vertex is connected to first.
+             * Lines with adjacency information.
+             * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
              */
-            LineLoop = GL_LINE_LOOP,
-
-            /**
-             * Each three vertices define one triangle.
-             */
-            Triangles = GL_TRIANGLES,
+            LinesAdjacency = GL_LINES_ADJACENCY,
+            #endif
 
             /**
              * First three vertices define first triangle, each following
@@ -474,7 +292,30 @@ class MAGNUM_EXPORT Mesh {
              * First vertex is center, each following vertex is connected to
              * previous and center vertex.
              */
-            TriangleFan = GL_TRIANGLE_FAN
+            TriangleFan = GL_TRIANGLE_FAN,
+
+            /** Each three vertices define one triangle. */
+            Triangles = GL_TRIANGLES,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Triangle strip with adjacency information.
+             * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+             */
+            TriangleStripAdjacency = GL_TRIANGLE_STRIP_ADJACENCY,
+
+            /**
+             * Triangles with adjacency information.
+             * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+             */
+            TrianglesAdjacency = GL_TRIANGLES_ADJACENCY,
+
+            /**
+             * Patches.
+             * @requires_gl40 %Extension @extension{ARB,tessellation_shader}
+             */
+            Patches = GL_PATCHES
+            #endif
         };
 
         /**
@@ -521,7 +362,7 @@ class MAGNUM_EXPORT Mesh {
         Mesh& operator=(Mesh&& other);
 
         /** @brief Primitive type */
-        inline Primitive primitive() const { return _primitive; }
+        Primitive primitive() const { return _primitive; }
 
         /**
          * @brief Set primitive type
@@ -531,13 +372,13 @@ class MAGNUM_EXPORT Mesh {
          * @see setVertexCount(), addVertexBuffer(),
          *      addInterleavedVertexBuffer(), addVertexBufferStride()
          */
-        inline Mesh* setPrimitive(Primitive primitive) {
+        Mesh* setPrimitive(Primitive primitive) {
             _primitive = primitive;
             return this;
         }
 
         /** @brief Vertex count */
-        inline Int vertexCount() const { return _vertexCount; }
+        Int vertexCount() const { return _vertexCount; }
 
         /**
          * @brief Set vertex count
@@ -547,13 +388,13 @@ class MAGNUM_EXPORT Mesh {
          * @see setPrimitive(), addVertexBuffer(), addInterleavedVertexBuffer(),
          *      addVertexBufferStride(), MeshTools::interleave()
          */
-        inline Mesh* setVertexCount(Int vertexCount) {
+        Mesh* setVertexCount(Int vertexCount) {
             _vertexCount = vertexCount;
             return this;
         }
 
         /** @brief Index count */
-        inline Int indexCount() const { return _indexCount; }
+        Int indexCount() const { return _indexCount; }
 
         /**
          * @brief Set index count
@@ -562,7 +403,7 @@ class MAGNUM_EXPORT Mesh {
          * Default is zero.
          * @see setIndexBuffer(), MeshTools::compressIndices()
          */
-        inline Mesh* setIndexCount(Int count) {
+        Mesh* setIndexCount(Int count) {
             _indexCount = count;
             return this;
         }
@@ -616,13 +457,7 @@ class MAGNUM_EXPORT Mesh {
          *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access}
          *      if @extension{APPLE,vertex_array_object} is available
          */
-        template<class ...T> inline Mesh* addVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes) {
-            CORRADE_ASSERT(sizeof...(attributes) == 1 || _vertexCount != 0,
-                "Mesh::addVertexBuffer(): vertex count must be set before binding attributes", this);
-
-            addVertexBufferInternal(buffer, offset, attributes...);
-            return this;
-        }
+        template<class ...T> Mesh* addVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes);
 
         /**
          * @brief Add buffer with interleaved vertex attributes for use with given shader
@@ -733,7 +568,7 @@ class MAGNUM_EXPORT Mesh {
          *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
          *      @extension{APPLE,vertex_array_object} is available)
          */
-        inline Mesh* setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type) {
+        Mesh* setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type) {
             return setIndexBuffer(buffer, offset, type, 0, 0);
         }
 
@@ -947,6 +782,15 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::Primitive value);
 
 /** @debugoperator{Magnum::Mesh} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::IndexType value);
+
+template<class ...T> inline Mesh* Mesh::addVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes) {
+    CORRADE_ASSERT(sizeof...(attributes) == 1 || _vertexCount != 0,
+        "Mesh::addVertexBuffer(): vertex count must be set before binding attributes", this);
+
+    addVertexBufferInternal(buffer, offset, attributes...);
+    return this;
+}
+
 
 }
 

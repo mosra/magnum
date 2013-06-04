@@ -22,9 +22,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-corrade_add_resource(MagnumTextureTools_RCS MagnumTextureTools
-    DistanceFieldShader.vert DistanceFieldShader.frag
-    ../Shaders/compatibility.glsl ALIAS compatibility.glsl)
+corrade_add_resource(MagnumTextureTools_RCS resources.conf)
 
 set(MagnumTextureTools_SRCS
     Atlas.cpp

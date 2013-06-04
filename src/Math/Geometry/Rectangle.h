@@ -51,7 +51,7 @@ template<class T> class Rectangle {
          * @param bottomLeft    Bottom left rectangle corner
          * @param size          %Rectangle size
          */
-        inline static Rectangle<T> fromSize(const Vector2<T>& bottomLeft, const Vector2<T>& size) {
+        static Rectangle<T> fromSize(const Vector2<T>& bottomLeft, const Vector2<T>& size) {
             return {bottomLeft, bottomLeft+size};
         }
 
@@ -60,10 +60,10 @@ template<class T> class Rectangle {
          *
          * Construct zero-area rectangle positioned at origin.
          */
-        inline constexpr Rectangle() {}
+        constexpr Rectangle() {}
 
         /** @brief Construct rectangle from two corners */
-        inline constexpr Rectangle(const Vector2<T>& bottomLeft, const Vector2<T>& topRight): _bottomLeft(bottomLeft), _topRight(topRight) {}
+        constexpr Rectangle(const Vector2<T>& bottomLeft, const Vector2<T>& topRight): _bottomLeft(bottomLeft), _topRight(topRight) {}
 
         /**
          * @brief Construct rectangle from another of different type
@@ -75,64 +75,62 @@ template<class T> class Rectangle {
          * Rectangle<Byte> integral(floatingPoint); // {{1, 2}, {-15, 7}}
          * @endcode
          */
-        template<class U> inline constexpr explicit Rectangle(const Rectangle<U>& other): _bottomLeft(other._bottomLeft), _topRight(other._topRight) {}
+        template<class U> constexpr explicit Rectangle(const Rectangle<U>& other): _bottomLeft(other._bottomLeft), _topRight(other._topRight) {}
 
         /** @brief Copy constructor */
-        inline constexpr Rectangle(const Rectangle<T>&) = default;
+        constexpr Rectangle(const Rectangle<T>&) = default;
 
         /** @brief Assignment operator */
-        inline Rectangle<T>& operator=(const Rectangle<T>&) = default;
+        Rectangle<T>& operator=(const Rectangle<T>&) = default;
 
         /** @brief Equality operator */
-        inline constexpr bool operator==(const Rectangle<T>& other) const {
+        constexpr bool operator==(const Rectangle<T>& other) const {
             return _bottomLeft == other._bottomLeft && _topRight == other._topRight;
         }
 
         /** @brief Non-equality operator */
-        inline constexpr bool operator!=(const Rectangle<T>& other) const {
+        constexpr bool operator!=(const Rectangle<T>& other) const {
             return !operator==(other);
         }
 
         /** @brief Bottom left corner */
-        inline Vector2<T>& bottomLeft() { return _bottomLeft; }
-        inline constexpr Vector2<T> bottomLeft() const { return _bottomLeft; } /**< @overload */
+        Vector2<T>& bottomLeft() { return _bottomLeft; }
+        constexpr Vector2<T> bottomLeft() const { return _bottomLeft; } /**< @overload */
 
         /** @brief Bottom right corner */
-        inline constexpr Vector2<T> bottomRight() const { return {_topRight.x(), _bottomLeft.y()}; } /**< @overload */
+        constexpr Vector2<T> bottomRight() const { return {_topRight.x(), _bottomLeft.y()}; } /**< @overload */
 
         /** @brief Top left corner */
-        inline constexpr Vector2<T> topLeft() const { return {_bottomLeft.x(), _topRight.y()}; } /**< @overload */
+        constexpr Vector2<T> topLeft() const { return {_bottomLeft.x(), _topRight.y()}; } /**< @overload */
 
         /** @brief Top right corner */
-        inline Vector2<T>& topRight() { return _topRight; }
-        inline constexpr Vector2<T> topRight() const { return _topRight; } /**< @overload */
+        Vector2<T>& topRight() { return _topRight; }
+        constexpr Vector2<T> topRight() const { return _topRight; } /**< @overload */
 
         /** @brief Bottom edge */
-        inline T& bottom() { return _bottomLeft.y(); }
-        inline constexpr T bottom() const { return _bottomLeft.y(); } /**< @overload */
+        T& bottom() { return _bottomLeft.y(); }
+        constexpr T bottom() const { return _bottomLeft.y(); } /**< @overload */
 
         /** @brief Top edge */
-        inline T& top() { return _topRight.y(); }
-        inline constexpr T top() const { return _topRight.y(); } /**< @overload */
+        T& top() { return _topRight.y(); }
+        constexpr T top() const { return _topRight.y(); } /**< @overload */
 
         /** @brief Left edge */
-        inline T& left() { return _bottomLeft.x(); }
-        inline constexpr T left() const { return _bottomLeft.x(); } /**< @overload */
+        T& left() { return _bottomLeft.x(); }
+        constexpr T left() const { return _bottomLeft.x(); } /**< @overload */
 
         /** @brief Right edge */
-        inline T& right() { return _topRight.x(); }
-        inline constexpr T right() const { return _topRight.x(); } /**< @overload */
+        T& right() { return _topRight.x(); }
+        constexpr T right() const { return _topRight.x(); } /**< @overload */
 
         /** @brief %Rectangle size */
-        inline constexpr Vector2<T> size() const {
-            return _topRight-_bottomLeft;
-        }
+        constexpr Vector2<T> size() const { return _topRight-_bottomLeft; }
 
         /** @brief %Rectangle width */
-        inline constexpr T width() const { return _topRight.x() - _bottomLeft.x(); }
+        constexpr T width() const { return _topRight.x() - _bottomLeft.x(); }
 
         /** @brief %Rectangle height */
-        inline constexpr T height() const { return _topRight.y() - _bottomLeft.y(); }
+        constexpr T height() const { return _topRight.y() - _bottomLeft.y(); }
 
     private:
         Vector2<T> _bottomLeft;

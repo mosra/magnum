@@ -34,32 +34,33 @@
 
 namespace Magnum {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
+AbstractFramebuffer::ReadImplementation AbstractFramebuffer::readImplementation = &AbstractFramebuffer::readImplementationDefault;
+
 AbstractFramebuffer::DrawBuffersImplementation AbstractFramebuffer::drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDefault;
 AbstractFramebuffer::DrawBufferImplementation AbstractFramebuffer::drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDefault;
 AbstractFramebuffer::ReadBufferImplementation AbstractFramebuffer::readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDefault;
 
-AbstractFramebuffer::Target AbstractFramebuffer::readTarget = AbstractFramebuffer::Target::ReadDraw;
-AbstractFramebuffer::Target AbstractFramebuffer::drawTarget = AbstractFramebuffer::Target::ReadDraw;
-#endif
+FramebufferTarget AbstractFramebuffer::readTarget = FramebufferTarget::ReadDraw;
+FramebufferTarget AbstractFramebuffer::drawTarget = FramebufferTarget::ReadDraw;
 
-void AbstractFramebuffer::bind(Target target) {
+AbstractFramebuffer::~AbstractFramebuffer() {}
+
+void AbstractFramebuffer::bind(FramebufferTarget target) {
     bindInternal(target);
     setViewportInternal();
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-void AbstractFramebuffer::bindInternal(Target target) {
+void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
     Implementation::FramebufferState* state = Context::current()->state()->framebuffer;
 
     /* If already bound, done, otherwise update tracked state */
-    if(target == Target::Read) {
+    if(target == FramebufferTarget::Read) {
         if(state->readBinding == _id) return;
         state->readBinding = _id;
-    } else if(target == Target::Draw) {
+    } else if(target == FramebufferTarget::Draw) {
         if(state->drawBinding == _id) return;
         state->drawBinding = _id;
-    } else if(target == Target::ReadDraw) {
+    } else if(target == FramebufferTarget::ReadDraw) {
         if(state->readBinding == _id && state->drawBinding == _id) return;
         state->readBinding = state->drawBinding = _id;
     } else CORRADE_ASSERT_UNREACHABLE();
@@ -67,29 +68,28 @@ void AbstractFramebuffer::bindInternal(Target target) {
     glBindFramebuffer(static_cast<GLenum>(target), _id);
 }
 
-AbstractFramebuffer::Target AbstractFramebuffer::bindInternal() {
+FramebufferTarget AbstractFramebuffer::bindInternal() {
     Implementation::FramebufferState* state = Context::current()->state()->framebuffer;
 
     /* Return target to which the framebuffer is already bound */
     if(state->readBinding == _id && state->drawBinding == _id)
-        return Target::ReadDraw;
+        return FramebufferTarget::ReadDraw;
     if(state->readBinding == _id)
-        return Target::Read;
+        return FramebufferTarget::Read;
     if(state->drawBinding == _id)
-        return Target::Draw;
+        return FramebufferTarget::Draw;
 
     /* Or bind it, if not already */
     state->readBinding = _id;
-    if(readTarget == Target::ReadDraw) state->drawBinding = _id;
+    if(readTarget == FramebufferTarget::ReadDraw) state->drawBinding = _id;
 
     glBindFramebuffer(GLenum(readTarget), _id);
     return readTarget;
 }
-#endif
 
-void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& sourceRectangle, const Rectanglei& destinationRectangle, AbstractFramebuffer::BlitMask mask, AbstractFramebuffer::BlitFilter filter) {
-    source.bindInternal(AbstractFramebuffer::Target::Read);
-    destination.bindInternal(AbstractFramebuffer::Target::Draw);
+void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& sourceRectangle, const Rectanglei& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter) {
+    source.bindInternal(FramebufferTarget::Read);
+    destination.bindInternal(FramebufferTarget::Draw);
     /** @todo Get some extension wrangler instead to avoid undeclared glBlitFramebuffer() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
     glBlitFramebuffer(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), static_cast<GLbitfield>(mask), static_cast<GLenum>(filter));
@@ -111,7 +111,6 @@ AbstractFramebuffer* AbstractFramebuffer::setViewport(const Rectanglei& rectangl
     return this;
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 void AbstractFramebuffer::setViewportInternal() {
     Implementation::FramebufferState* state = Context::current()->state()->framebuffer;
 
@@ -125,34 +124,34 @@ void AbstractFramebuffer::setViewportInternal() {
     state->viewport = _viewport;
     glViewport(_viewport.left(), _viewport.bottom(), _viewport.width(), _viewport.height());
 }
-#endif
 
-void AbstractFramebuffer::clear(ClearMask mask) {
+void AbstractFramebuffer::clear(FramebufferClearMask mask) {
     bindInternal(drawTarget);
     glClear(static_cast<GLbitfield>(mask));
 }
 
-void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, Image2D* image) {
+void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Image2D* image) {
     bindInternal(readTarget);
-    char* data = new char[AbstractImage::pixelSize(format, type)*size.product()];
-    glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), data);
-    image->setData(size, format, type, data);
+    const std::size_t dataSize = image->pixelSize()*size.product();
+    char* const data = new char[dataSize];
+    readImplementation(offset, size, image->format(), image->type(), dataSize, data);
+    image->setData(size, image->format(), image->type(), data);
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, AbstractImage::Format format, AbstractImage::Type type, BufferImage2D* image, Buffer::Usage usage) {
+void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, BufferImage2D* image, Buffer::Usage usage) {
     bindInternal(readTarget);
     /* If the buffer doesn't have sufficient size, resize it */
     /** @todo Explicitly reset also when buffer usage changes */
-    if(image->size() != size || image->format() != format || image->type() != type)
-        image->setData(size, format, type, nullptr, usage);
+    if(image->size() != size)
+        image->setData(size, image->format(), image->type(), nullptr, usage);
 
     image->buffer()->bind(Buffer::Target::PixelPack);
-    glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), nullptr);
+    /** @todo De-duplicate buffer size computation */
+    readImplementation(offset, size, image->format(), image->type(), image->pixelSize()*size.product(), nullptr);
 }
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attachments) {
     /** @todo Re-enable when extension wrangler is available for ES2 */
     #ifndef MAGNUM_TARGET_GLES2
@@ -175,15 +174,14 @@ void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attach
     static_cast<void>(rectangle);
     #endif
 }
-#endif
 
 void AbstractFramebuffer::initializeContextBasedFunctionality(Context* context) {
     #ifndef MAGNUM_TARGET_GLES
     if(context->isExtensionSupported<Extensions::GL::EXT::framebuffer_blit>()) {
         Debug() << "AbstractFramebuffer: using" << Extensions::GL::EXT::framebuffer_blit::string() << "features";
 
-        readTarget = Target::Read;
-        drawTarget = Target::Draw;
+        readTarget = FramebufferTarget::Read;
+        drawTarget = FramebufferTarget::Draw;
     }
 
     if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
@@ -192,6 +190,26 @@ void AbstractFramebuffer::initializeContextBasedFunctionality(Context* context) 
         drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDSA;
         drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDSA;
         readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDSA;
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES3
+    #ifndef MAGNUM_TARGET_GLES
+    if(context->isExtensionSupported<Extensions::GL::ARB::robustness>())
+    #else
+    if(context->isExtensionSupported<Extensions::GL::EXT::robustness>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
+        Debug() << "AbstractFramebuffer: using" << Extensions::GL::ARB::robustness::string() << "features";
+        #else
+        //Debug() << "AbstractFramebuffer: using" << Extensions::GL::EXT::robustness::string() << "features";
+        #endif
+
+        /** @todo Enable when extension wrangler for ES is available */
+        #ifndef MAGNUM_TARGET_GLES
+        readImplementation = &AbstractFramebuffer::readImplementationRobustness;
+        #endif
     }
     #else
     static_cast<void>(context);
@@ -248,6 +266,28 @@ void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
 #ifndef MAGNUM_TARGET_GLES
 void AbstractFramebuffer::readBufferImplementationDSA(GLenum buffer) {
     glFramebufferReadBufferEXT(_id, buffer);
+}
+#endif
+
+void AbstractFramebuffer::readImplementationDefault(const Vector2i& offset, const Vector2i& size, const ImageFormat format, const ImageType type, const std::size_t, GLvoid* const data) {
+    glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), data);
+}
+
+#ifndef MAGNUM_TARGET_GLES3
+void AbstractFramebuffer::readImplementationRobustness(const Vector2i& offset, const Vector2i& size, const ImageFormat format, const ImageType type, const std::size_t dataSize, GLvoid* const data) {
+    /** @todo Enable when extension wrangler for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glReadnPixelsARB(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), dataSize, data);
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glReadnPixelsEXT(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), data);
+    static_cast<void>(offset);
+    static_cast<void>(size);
+    static_cast<void>(format);
+    static_cast<void>(type);
+    static_cast<void>(dataSize);
+    static_cast<void>(data);
+    #endif
 }
 #endif
 

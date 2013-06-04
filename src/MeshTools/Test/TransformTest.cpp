@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class TransformTest: public Corrade::TestSuite::Tester {
+class TransformTest: public TestSuite::Tester {
     public:
         explicit TransformTest();
 

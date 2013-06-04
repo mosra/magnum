@@ -142,7 +142,18 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation {
          * @brief Reset object transformation
          * @return Pointer to self (for method chaining)
          */
-        virtual AbstractTransformation<dimensions, T>* resetTransformation() = 0;
+        AbstractTransformation<dimensions, T>* resetTransformation() {
+            doResetTransformation();
+            return this;
+        }
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /** @brief Polymorphic implementation for resetTransformation() */
+        virtual void doResetTransformation() = 0;
 };
 
 /** @brief Transformation type */

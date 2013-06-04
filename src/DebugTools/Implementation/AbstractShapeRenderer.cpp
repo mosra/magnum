@@ -29,7 +29,7 @@
 #include "Mesh.h"
 #include "DebugTools/ResourceManager.h"
 #include "MeshTools/CompressIndices.h"
-#include "Shaders/FlatShader.h"
+#include "Shaders/Flat.h"
 #include "Trade/MeshData2D.h"
 #include "Trade/MeshData3D.h"
 
@@ -53,7 +53,7 @@ template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource,
     Mesh* mesh = new Mesh;
     mesh->setPrimitive(data.primitive())
         ->setVertexCount(data.positions(0)->size())
-        ->addVertexBuffer(buffer, 0, Shaders::FlatShader2D::Position());
+        ->addVertexBuffer(buffer, 0, Shaders::Flat2D::Position());
     ResourceManager::instance()->set(meshResource.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Index buffer, if needed, if not, resource key doesn't have to be set */
@@ -75,7 +75,7 @@ template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource,
     Mesh* mesh = new Mesh;
     mesh->setPrimitive(data.primitive())
         ->setVertexCount(data.positions(0)->size())
-        ->addVertexBuffer(vertexBuffer, 0, Shaders::FlatShader3D::Position());
+        ->addVertexBuffer(vertexBuffer, 0, Shaders::Flat3D::Position());
     ResourceManager::instance()->set(meshResource.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Index buffer, if needed, if not, resource key doesn't have to be set */
@@ -90,13 +90,13 @@ template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource,
 }
 
 template<UnsignedInt dimensions> AbstractShapeRenderer<dimensions>::AbstractShapeRenderer(ResourceKey meshKey, ResourceKey vertexBufferKey, ResourceKey indexBufferKey) {
-    wireframeShader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::FlatShader<dimensions>>(shaderKey<dimensions>());
+    wireframeShader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::Flat<dimensions>>(shaderKey<dimensions>());
     wireframeMesh = ResourceManager::instance()->get<Mesh>(meshKey);
     vertexBuffer = ResourceManager::instance()->get<Buffer>(vertexBufferKey);
     indexBuffer = ResourceManager::instance()->get<Buffer>(indexBufferKey);
 
     if(!wireframeShader) ResourceManager::instance()->set<AbstractShaderProgram>(shaderKey<dimensions>(),
-        new Shaders::FlatShader<dimensions>, ResourceDataState::Final, ResourcePolicy::Resident);
+        new Shaders::Flat<dimensions>, ResourceDataState::Final, ResourcePolicy::Resident);
 }
 
 template<UnsignedInt dimensions> AbstractShapeRenderer<dimensions>::~AbstractShapeRenderer() {}

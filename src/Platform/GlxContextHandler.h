@@ -56,17 +56,15 @@ class GlxContextHandler: public AbstractContextHandler<Display*, VisualID, Windo
         void createContext(Window nativeWindow) override;
 
         /* This must be enabled, otherwise (on my NVidia) it crashes when creating VAO. WTF. */
-        inline ExtensionWrangler::ExperimentalFeatures experimentalExtensionWranglerFeatures() const override {
+        ExtensionWrangler::ExperimentalFeatures experimentalExtensionWranglerFeatures() const override {
             return ExtensionWrangler::ExperimentalFeatures::Enable;
         }
 
-        inline void makeCurrent() override {
+        void makeCurrent() override {
             glXMakeCurrent(display, window, context);
         }
 
-        inline void swapBuffers() override {
-            glXSwapBuffers(display, window);
-        }
+        void swapBuffers() override { glXSwapBuffers(display, window); }
 
     private:
         Display* display;

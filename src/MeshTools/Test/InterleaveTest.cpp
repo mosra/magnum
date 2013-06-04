@@ -29,8 +29,6 @@
 #include "Utility/Debug.h"
 #include "MeshTools/Interleave.h"
 
-using Corrade::Utility::Endianness;
-
 namespace Magnum { namespace MeshTools { namespace Test {
 
 class InterleaveTest: public Corrade::TestSuite::Tester {
@@ -95,7 +93,7 @@ void InterleaveTest::write() {
     CORRADE_COMPARE(attributeCount, std::size_t(3));
     CORRADE_COMPARE(stride, std::size_t(7));
     std::size_t size = attributeCount*stride;
-    if(!Endianness::isBigEndian()) {
+    if(!Utility::Endianness::isBigEndian()) {
         CORRADE_COMPARE(std::vector<char>(data, data+size), (std::vector<char>{
             0x00, 0x03, 0x00, 0x00, 0x00, 0x06, 0x00,
             0x01, 0x04, 0x00, 0x00, 0x00, 0x07, 0x00,
@@ -124,7 +122,7 @@ void InterleaveTest::writeGaps() {
     CORRADE_COMPARE(attributeCount, std::size_t(3));
     CORRADE_COMPARE(stride, std::size_t(12));
     std::size_t size = attributeCount*stride;
-    if(!Endianness::isBigEndian()) {
+    if(!Utility::Endianness::isBigEndian()) {
         CORRADE_COMPARE(std::vector<char>(data, data+size), (std::vector<char>{
             0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00,
             0x01, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00,

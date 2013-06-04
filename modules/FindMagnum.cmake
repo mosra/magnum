@@ -14,13 +14,13 @@
 # components. The base library depends on Corrade, OpenGL and GLEW
 # libraries. Additional dependencies are specified by the components. The
 # optional components are:
-#  DebugTools       - DebugTools library (depends on MeshTools, Physics,
-#                     Primitives, SceneGraph and Shaders components)
+#  DebugTools       - DebugTools library (depends on MeshTools, Primitives,
+#                     SceneGraph, Shaders and Shapes components)
 #  MeshTools        - MeshTools library
-#  Physics          - Physics library (depends on SceneGraph component)
 #  Primitives       - Primitives library
 #  SceneGraph       - SceneGraph library
 #  Shaders          - Shaders library
+#  Shapes           - Shapes library (depends on SceneGraph component)
 #  Text             - Text library (depends on TextureTools component)
 #  TextureTools     - TextureTools library
 #  GlutApplication  - GLUT application (depends on GLUT library)
@@ -224,17 +224,12 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
     # DebugTools library
     if(${component} STREQUAL DebugTools)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Profiler.h)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES DebugTools.h)
     endif()
 
     # Mesh tools library
     if(${component} STREQUAL MeshTools)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES CompressIndices.h)
-    endif()
-
-    # Physics library
-    if(${component} STREQUAL Physics)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES AbstractShape.h)
     endif()
 
     # Primitives library
@@ -244,17 +239,22 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
     # Scene graph library
     if(${component} STREQUAL SceneGraph)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Scene.h)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES SceneGraph.h)
     endif()
 
     # Shaders library
     if(${component} STREQUAL Shaders)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES PhongShader.h)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Shaders.h)
+    endif()
+
+    # Shapes library
+    if(${component} STREQUAL Shapes)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Shapes.h)
     endif()
 
     # Text library
     if(${component} STREQUAL Text)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES AbstractFont.h)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Text.h)
     endif()
 
     # TextureTools library

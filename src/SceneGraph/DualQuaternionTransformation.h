@@ -52,25 +52,25 @@ class DualQuaternionTransformation: public AbstractTranslationRotation3D<T> {
         typedef Math::DualQuaternion<T> DataType;
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline static Math::DualQuaternion<T> fromMatrix(const Math::Matrix4<T>& matrix) {
+        static Math::DualQuaternion<T> fromMatrix(const Math::Matrix4<T>& matrix) {
             CORRADE_ASSERT(matrix.isRigidTransformation(),
                 "SceneGraph::DualQuaternionTransformation::fromMatrix(): the matrix doesn't represent rigid transformation", {});
             return Math::DualQuaternion<T>::fromMatrix(matrix);
         }
 
-        inline constexpr static Math::Matrix4<T> toMatrix(const Math::DualQuaternion<T>& transformation) {
+        constexpr static Math::Matrix4<T> toMatrix(const Math::DualQuaternion<T>& transformation) {
             return transformation.toMatrix();
         }
 
-        inline static Math::DualQuaternion<T> compose(const Math::DualQuaternion<T>& parent, const Math::DualQuaternion<T>& child) {
+        static Math::DualQuaternion<T> compose(const Math::DualQuaternion<T>& parent, const Math::DualQuaternion<T>& child) {
             return parent*child;
         }
 
-        inline static Math::DualQuaternion<T> inverted(const Math::DualQuaternion<T>& transformation) {
+        static Math::DualQuaternion<T> inverted(const Math::DualQuaternion<T>& transformation) {
             return transformation.invertedNormalized();
         }
 
-        inline Math::DualQuaternion<T> transformation() const {
+        Math::DualQuaternion<T> transformation() const {
             return _transformation;
         }
         #endif
@@ -83,9 +83,9 @@ class DualQuaternionTransformation: public AbstractTranslationRotation3D<T> {
          * the object subsequently.
          * @see DualQuaternion::normalized()
          */
-        DualQuaternionTransformation<T>* normalizeRotation() {
+        Object<DualQuaternionTransformation<T>>* normalizeRotation() {
             setTransformation(_transformation.normalized());
-            return this;
+            return static_cast<Object<DualQuaternionTransformation<T>>*>(this);
         }
 
         /**
@@ -95,16 +95,18 @@ class DualQuaternionTransformation: public AbstractTranslationRotation3D<T> {
          * Expects that the dual quaternion is normalized.
          * @see DualQuaternion::isNormalized()
          */
-        DualQuaternionTransformation<T>* setTransformation(const Math::DualQuaternion<T>& transformation) {
+        Object<DualQuaternionTransformation<T>>* setTransformation(const Math::DualQuaternion<T>& transformation) {
             CORRADE_ASSERT(transformation.isNormalized(),
-                "SceneGraph::DualQuaternionTransformation::setTransformation(): the dual quaternion is not normalized", this);
+                "SceneGraph::DualQuaternionTransformation::setTransformation(): the dual quaternion is not normalized",
+                static_cast<Object<DualQuaternionTransformation<T>>*>(this));
             setTransformationInternal(transformation);
-            return this;
+            return static_cast<Object<DualQuaternionTransformation<T>>*>(this);
         }
 
-        inline DualQuaternionTransformation<T>* resetTransformation() override {
+        /** @copydoc AbstractTranslationRotationScaling3D::resetTransformation() */
+        Object<DualQuaternionTransformation<T>>* resetTransformation() {
             setTransformation({});
-            return this;
+            return static_cast<Object<DualQuaternionTransformation<T>>*>(this);
         }
 
         /**
@@ -116,20 +118,21 @@ class DualQuaternionTransformation: public AbstractTranslationRotation3D<T> {
          * Expects that the dual quaternion is normalized.
          * @see DualQuaternion::isNormalized()
          */
-        inline DualQuaternionTransformation<T>* transform(const Math::DualQuaternion<T>& transformation, TransformationType type = TransformationType::Global) {
+        Object<DualQuaternionTransformation<T>>* transform(const Math::DualQuaternion<T>& transformation, TransformationType type = TransformationType::Global) {
             CORRADE_ASSERT(transformation.isNormalized(),
-                "SceneGraph::DualQuaternionTransformation::transform(): the dual quaternion is not normalized", this);
+                "SceneGraph::DualQuaternionTransformation::transform(): the dual quaternion is not normalized",
+                static_cast<Object<DualQuaternionTransformation<T>>*>(this));
             transformInternal(transformation, type);
-            return this;
+            return static_cast<Object<DualQuaternionTransformation<T>>*>(this);
         }
 
         /**
          * @copydoc AbstractTranslationRotationScaling3D::translate()
          * Same as calling transform() with DualQuaternion::translation().
          */
-        inline DualQuaternionTransformation<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) override {
+        Object<DualQuaternionTransformation<T>>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
             transformInternal(Math::DualQuaternion<T>::translation(vector), type);
-            return this;
+            return static_cast<Object<DualQuaternionTransformation<T>>*>(this);
         }
 
         /**
@@ -143,24 +146,21 @@ class DualQuaternionTransformation: public AbstractTranslationRotation3D<T> {
          * @see Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis(),
          *      normalizeRotation()
          */
-        inline DualQuaternionTransformation<T>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) override {
+        Object<DualQuaternionTransformation<T>>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
             transformInternal(Math::DualQuaternion<T>::rotation(angle, normalizedAxis), type);
-            return this;
+            return static_cast<Object<DualQuaternionTransformation<T>>*>(this);
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline DualQuaternionTransformation<T>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
-            AbstractTranslationRotation3D<T>::rotateX(angle, type);
-            return this;
+        Object<DualQuaternionTransformation<T>>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+            return rotate(angle, Math::Vector3<T>::xAxis(), type);
         }
-        inline DualQuaternionTransformation<T>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
-            AbstractTranslationRotation3D<T>::rotateY(angle, type);
-            return this;
+        Object<DualQuaternionTransformation<T>>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+            return rotate(angle, Math::Vector3<T>::yAxis(), type);
         }
-        inline DualQuaternionTransformation<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) override {
-            AbstractTranslationRotation3D<T>::rotateZ(angle, type);
-            return this;
+        Object<DualQuaternionTransformation<T>>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+            return rotate(angle, Math::Vector3<T>::zAxis(), type);
         }
         #endif
 
@@ -169,8 +169,18 @@ class DualQuaternionTransformation: public AbstractTranslationRotation3D<T> {
         explicit DualQuaternionTransformation();
 
     private:
+        void doResetTransformation() override final { resetTransformation(); }
+
+        void doTranslate(const Math::Vector3<T>& vector, TransformationType type) override final {
+            translate(vector, type);
+        }
+
+        void doRotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) override final {
+            rotate(angle, normalizedAxis, type);
+        }
+
         /* No assertions fired, for internal use */
-        inline void setTransformationInternal(const Math::DualQuaternion<T>& transformation) {
+        void setTransformationInternal(const Math::DualQuaternion<T>& transformation) {
             /* Setting transformation is forbidden for the scene */
             /** @todo Assert for this? */
             /** @todo Do this in some common code so we don't need to include Object? */
@@ -181,7 +191,7 @@ class DualQuaternionTransformation: public AbstractTranslationRotation3D<T> {
         }
 
         /* No assertions fired, for internal use */
-        inline void transformInternal(const Math::DualQuaternion<T>& transformation, TransformationType type) {
+        void transformInternal(const Math::DualQuaternion<T>& transformation, TransformationType type) {
             setTransformation(type == TransformationType::Global ?
                 transformation*_transformation : _transformation*transformation);
         }

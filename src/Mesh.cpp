@@ -343,12 +343,21 @@ Debug operator<<(Debug debug, Mesh::Primitive value) {
     switch(value) {
         #define _c(value) case Mesh::Primitive::value: return debug << "Mesh::Primitive::" #value;
         _c(Points)
-        _c(Lines)
         _c(LineStrip)
         _c(LineLoop)
-        _c(Triangles)
+        _c(Lines)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(LineStripAdjacency)
+        _c(LinesAdjacency)
+        #endif
         _c(TriangleStrip)
         _c(TriangleFan)
+        _c(Triangles)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(TriangleStripAdjacency)
+        _c(TrianglesAdjacency)
+        _c(Patches)
+        #endif
         #undef _c
     }
 
@@ -376,12 +385,21 @@ std::string ConfigurationValue<Magnum::Mesh::Primitive>::toString(Magnum::Mesh::
     switch(value) {
         #define _c(value) case Magnum::Mesh::Primitive::value: return #value;
         _c(Points)
-        _c(Lines)
         _c(LineStrip)
         _c(LineLoop)
-        _c(Triangles)
+        _c(Lines)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(LineStripAdjacency)
+        _c(LinesAdjacency)
+        #endif
         _c(TriangleStrip)
         _c(TriangleFan)
+        _c(Triangles)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(TriangleStripAdjacency)
+        _c(TrianglesAdjacency)
+        _c(Patches)
+        #endif
         #undef _c
     }
 
@@ -390,12 +408,21 @@ std::string ConfigurationValue<Magnum::Mesh::Primitive>::toString(Magnum::Mesh::
 
 Magnum::Mesh::Primitive ConfigurationValue<Magnum::Mesh::Primitive>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
     #define _c(value) if(stringValue == #value) return Magnum::Mesh::Primitive::value;
-    _c(Lines)
     _c(LineStrip)
     _c(LineLoop)
-    _c(Triangles)
+    _c(Lines)
+    #ifndef MAGNUM_TARGET_GLES
+    _c(LineStripAdjacency)
+    _c(LinesAdjacency)
+    #endif
     _c(TriangleStrip)
     _c(TriangleFan)
+    _c(Triangles)
+    #ifndef MAGNUM_TARGET_GLES
+    _c(TriangleStripAdjacency)
+    _c(TrianglesAdjacency)
+    _c(Patches)
+    #endif
     #undef _c
 
     return Magnum::Mesh::Primitive::Points;

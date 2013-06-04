@@ -24,23 +24,17 @@
 
 # Files shared between main library and unit test library
 set(MagnumSceneGraph_SRCS
-    Animable.cpp
-    Camera.cpp
-    DualComplexTransformation.cpp
-    DualQuaternionTransformation.cpp
-    RigidMatrixTransformation2D.cpp
-    RigidMatrixTransformation3D.cpp
-    Object.cpp)
+    Animable.cpp)
 
 # Files compiled with different flags for main library and unit test library
 set(MagnumSceneGraph_GracefulAssert_SRCS
-    MatrixTransformation2D.cpp
-    MatrixTransformation3D.cpp)
+    instantiation.cpp)
 
 set(MagnumSceneGraph_HEADERS
     AbstractCamera.h
     AbstractCamera.hpp
     AbstractFeature.h
+    AbstractFeature.hpp
     AbstractGroupedFeature.h
     AbstractObject.h
     AbstractTransformation.h
@@ -61,6 +55,7 @@ set(MagnumSceneGraph_HEADERS
     RigidMatrixTransformation2D.h
     RigidMatrixTransformation3D.h
     FeatureGroup.h
+    FeatureGroup.hpp
     MatrixTransformation2D.h
     MatrixTransformation3D.h
     Object.h
@@ -95,7 +90,7 @@ if(BUILD_TESTS)
         $<TARGET_OBJECTS:MagnumSceneGraphObjects>
         ${MagnumSceneGraph_GracefulAssert_SRCS})
     set_target_properties(MagnumSceneGraphTestLib PROPERTIES COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT -DMagnumSceneGraph_EXPORTS")
-    target_link_libraries(MagnumSceneGraphTestLib Magnum)
+    target_link_libraries(MagnumSceneGraphTestLib MagnumMathTestLib)
 
     add_subdirectory(Test)
 endif()

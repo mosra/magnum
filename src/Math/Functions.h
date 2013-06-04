@@ -38,29 +38,27 @@
 
 namespace Magnum { namespace Math {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<UnsignedInt exponent> struct Pow {
         Pow() = delete;
 
-        template<class T> inline constexpr static T pow(T base) {
+        template<class T> constexpr static T pow(T base) {
             return base*Pow<exponent-1>::pow(base);
         }
     };
     template<> struct Pow<0> {
         Pow() = delete;
 
-        template<class T> inline constexpr static T pow(T) { return 1; }
+        template<class T> constexpr static T pow(T) { return 1; }
     };
 }
-#endif
 
 /**
  * @brief Integral power
  *
  * Returns integral power of base to the exponent.
  */
-template<UnsignedInt exponent, class T> inline constexpr T pow(T base) {
+template<UnsignedInt exponent, class T> constexpr T pow(T base) {
     return Implementation::Pow<exponent>::pow(base);
 }
 
@@ -142,6 +140,14 @@ template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size
 }
 #endif
 
+/** @overload */
+template<class T> inline T min(std::initializer_list<T> list) {
+    T out(*list.begin());
+    for(auto it = list.begin()+1; it != list.end(); ++it)
+        out = min(out, *it);
+    return out;
+}
+
 /**
 @brief Maximum
 
@@ -160,6 +166,14 @@ template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& a
     return out;
 }
 #endif
+
+/** @overload */
+template<class T> inline T max(std::initializer_list<T> list) {
+    T out(*list.begin());
+    for(auto it = list.begin()+1; it != list.end(); ++it)
+        out = max(out, *it);
+    return out;
+}
 
 /**
 @brief Sign

@@ -63,8 +63,8 @@ Example usage:
 MyApplication::MyApplication(const Parameters& parameters): Platform::Application(parameters) {
     // Initialization ...
 
-    timeline.setMinimalFrameTime(1/120.0f); // 120 FPS at max
-    timeline.start();
+    timeline.setMinimalFrameTime(1/120.0f)  // 120 FPS at max
+        ->start();
 }
 
 void MyApplication::drawEvent() {
@@ -78,6 +78,9 @@ void MyApplication::drawEvent() {
     timeline.nextFrame();
 }
 @endcode
+@todo FPS should be governed by Application (imagine more than one simultaenous
+    timeline and the harm it could do, also vsync etc. can't be handled in
+    platform-independent way here)
 */
 class MAGNUM_EXPORT Timeline {
     public:
@@ -87,21 +90,21 @@ class MAGNUM_EXPORT Timeline {
          * Creates stopped timeline.
          * @see start()
          */
-        inline constexpr explicit Timeline(): _minimalFrameTime(0), _previousFrameDuration(0), running(false) {}
+        explicit Timeline(): _minimalFrameTime(0), _previousFrameDuration(0), running(false) {}
 
         /** @brief Minimal frame time (in seconds) */
-        inline constexpr Float minimalFrameTime() const {
-            return _minimalFrameTime;
-        }
+        Float minimalFrameTime() const { return _minimalFrameTime; }
 
         /**
          * @brief Set minimal frame time
+         * @return Pointer to self (for method chaining)
          *
          * Default value is 0.
          * @see nextFrame()
          */
-        inline void setMinimalFrameTime(Float seconds) {
+        Timeline* setMinimalFrameTime(Float seconds) {
             _minimalFrameTime = seconds;
+            return this;
         }
 
         /**
@@ -142,9 +145,7 @@ class MAGNUM_EXPORT Timeline {
          *
          * If the timeline is stopped, the function returns `0.0f`.
          */
-        inline constexpr Float previousFrameDuration() const {
-            return _previousFrameDuration;
-        }
+        Float previousFrameDuration() const { return _previousFrameDuration; }
 
     private:
         std::chrono::high_resolution_clock::time_point _startTime;

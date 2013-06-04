@@ -30,7 +30,7 @@
 
 namespace Magnum { namespace Test {
 
-class ColorTest: public Corrade::TestSuite::Tester {
+class ColorTest: public TestSuite::Tester {
     public:
         ColorTest();
 
@@ -178,7 +178,7 @@ void ColorTest::debug() {
 }
 
 void ColorTest::configuration() {
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     Color3f color3(0.5f, 0.75f, 1.0f);
     std::string value3("0.5 0.75 1");

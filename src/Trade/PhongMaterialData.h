@@ -49,16 +49,16 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
         explicit PhongMaterialData(const Vector3& ambientColor, const Vector3& diffuseColor, const Vector3& specularColor, Float shininess);
 
         /** @brief Ambient color */
-        inline Vector3 ambientColor() const { return _ambientColor; }
+        Vector3 ambientColor() const { return _ambientColor; }
 
         /** @brief Diffuse color */
-        inline Vector3 diffuseColor() const { return _diffuseColor; }
+        Vector3 diffuseColor() const { return _diffuseColor; }
 
         /** @brief Specular color */
-        inline Vector3 specularColor() const { return _specularColor; }
+        Vector3 specularColor() const { return _specularColor; }
 
         /** @brief Shininess */
-        inline Float shininess() const { return _shininess; }
+        Float shininess() const { return _shininess; }
 
     private:
         Vector3 _ambientColor,

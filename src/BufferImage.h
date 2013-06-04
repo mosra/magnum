@@ -58,15 +58,15 @@ template<UnsignedInt dimensions> class MAGNUM_EXPORT BufferImage: public Abstrac
          * Dimensions and buffer are empty, call setData() to fill the image
          * with data.
          */
-        inline explicit BufferImage(Format format, Type type): AbstractImage(format, type) {
+        explicit BufferImage(ImageFormat format, ImageType type): AbstractImage(format, type) {
             _buffer.setTargetHint(Buffer::Target::PixelPack);
         }
 
         /** @brief %Image size */
-        inline typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
+        typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
         /** @brief %Image buffer */
-        inline Buffer* buffer() { return &_buffer; }
+        Buffer* buffer() { return &_buffer; }
 
         /**
          * @brief Set image data
@@ -81,7 +81,7 @@ template<UnsignedInt dimensions> class MAGNUM_EXPORT BufferImage: public Abstrac
          *
          * @see Buffer::setData()
          */
-        void setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, Format format, Type type, const GLvoid* data, Buffer::Usage usage);
+        void setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ImageFormat format, ImageType type, const void* data, Buffer::Usage usage);
 
     private:
         Math::Vector<Dimensions, Int> _size;

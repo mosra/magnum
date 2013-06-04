@@ -31,7 +31,8 @@
 #include "Color.h"
 #include "Resource.h"
 #include "SceneGraph/Drawable.h"
-#include "Physics/Physics.h"
+#include "Shapes/Shapes.h"
+#include "Shapes/shapeImplementation.h"
 
 #include "magnumDebugToolsVisibility.h"
 
@@ -42,13 +43,11 @@ namespace Magnum { namespace DebugTools {
 template<UnsignedInt> class ShapeRenderer;
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<UnsignedInt> class AbstractShapeRenderer;
 
-    template<UnsignedInt dimensions> void createDebugMesh(ShapeRenderer<dimensions>* renderer, Physics::AbstractShape<dimensions>* shape);
+    template<UnsignedInt dimensions> void createDebugMesh(ShapeRenderer<dimensions>* renderer, const Shapes::Implementation::AbstractShape<dimensions>* shape);
 }
-#endif
 
 /**
 @brief Shape renderer options
@@ -67,10 +66,10 @@ class ShapeRendererOptions {
             Solid
         };
 
-        inline constexpr ShapeRendererOptions(): _color(1.0f), _pointSize(0.25f), _renderMode(RenderMode::Wireframe) {}
+        constexpr ShapeRendererOptions(): _color(1.0f), _pointSize(0.25f), _renderMode(RenderMode::Wireframe) {}
 
         /** @brief Shape rendering mode */
-        inline constexpr RenderMode renderMode() const { return _renderMode; }
+        constexpr RenderMode renderMode() const { return _renderMode; }
 
         /**
          * @brief Set shape rendering mode
@@ -78,13 +77,13 @@ class ShapeRendererOptions {
          *
          * Default is @ref RenderMode "RenderMode::Wireframe".
          */
-        inline ShapeRendererOptions* setRenderMode(RenderMode mode) {
+        ShapeRendererOptions* setRenderMode(RenderMode mode) {
             _renderMode = mode;
             return this;
         }
 
         /** @brief Color of rendered shape */
-        inline constexpr Color4<> color() const { return _color; }
+        constexpr Color4<> color() const { return _color; }
 
         /**
          * @brief Set color of rendered shape
@@ -92,22 +91,22 @@ class ShapeRendererOptions {
          *
          * Default is 100% opaque white.
          */
-        inline ShapeRendererOptions* setColor(const Color4<>& color) {
+        ShapeRendererOptions* setColor(const Color4<>& color) {
             _color = color;
             return this;
         }
 
         /** @brief Point size */
-        inline constexpr Float pointSize() const { return _pointSize; }
+        constexpr Float pointSize() const { return _pointSize; }
 
         /**
          * @brief Set point size
          * @return Pointer to self (for method chaining)
          *
-         * Size of rendered crosshairs, representing Physics::Point shapes.
+         * Size of rendered crosshairs, representing Shapes::Point shapes.
          * Default is `0.25f`.
          */
-        inline ShapeRendererOptions* setPointSize(Float size) {
+        ShapeRendererOptions* setPointSize(Float size) {
             _pointSize = size;
             return this;
         }
@@ -133,32 +132,29 @@ DebugTools::ResourceManager::instance()->set("red", (new DebugTools::ShapeRender
     ->setColor({1.0f, 0.0f, 0.0f}));
 
 // Create debug renderer for given shape, use "red" options for it
-Physics::ObjectShape2D* shape;
+Shapes::AbstractShape2D* shape;
 new DebugTools::ShapeRenderer2D(shape, "red", debugDrawables);
 @endcode
 
 @see ShapeRenderer2D, ShapeRenderer3D
 */
 template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: public SceneGraph::Drawable<dimensions> {
-    #ifndef DOXYGEN_GENERATING_OUTPUT
-    friend void Implementation::createDebugMesh<>(ShapeRenderer<dimensions>*, Physics::AbstractShape<dimensions>*);
-    #endif
+    friend void Implementation::createDebugMesh<>(ShapeRenderer<dimensions>*, const Shapes::Implementation::AbstractShape<dimensions>*);
 
     public:
         /**
          * @brief Constructor
-         * @param shape     Object for which to create debug renderer
+         * @param shape     Shape for which to create debug renderer
          * @param options   Options resource key. See
          *      @ref ShapeRenderer-usage "class documentation" for more
          *      information.
          * @param drawables Drawable group
          *
          * The renderer is automatically added to shape's object features,
-         * @p shape must be available for the whole lifetime of the renderer.
-         *
-         * @attention Passed object must have assigned shape.
+         * @p shape must be available for the whole lifetime of the renderer
+         * and if it is group, it must not change its internal structure.
          */
-        explicit ShapeRenderer(Physics::ObjectShape<dimensions>* shape, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions>* drawables = nullptr);
+        explicit ShapeRenderer(Shapes::AbstractShape<dimensions>* shape, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions>* drawables = nullptr);
 
         ~ShapeRenderer();
 

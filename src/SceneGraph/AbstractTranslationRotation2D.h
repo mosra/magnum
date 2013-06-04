@@ -54,7 +54,10 @@ class AbstractTranslationRotation2D: public AbstractTransformation<2, T> {
          *
          * @see Vector2::xAxis(), Vector2::yAxis()
          */
-        virtual AbstractTranslationRotation2D<T>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) = 0;
+        AbstractTranslationRotation2D<T>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
+            doTranslate(vector, type);
+            return this;
+        }
 
         /**
          * @brief Rotate object
@@ -62,7 +65,29 @@ class AbstractTranslationRotation2D: public AbstractTransformation<2, T> {
          * @param type      Transformation type
          * @return Pointer to self (for method chaining)
          */
-        virtual AbstractTranslationRotation2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) = 0;
+        AbstractTranslationRotation2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+            doRotate(angle, type);
+            return this;
+        }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        AbstractTranslationRotation2D<T>* resetTransformation() {
+            AbstractTransformation<2, T>::resetTransformation();
+            return this;
+        }
+        #endif
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /** @brief Polymorphic implementation for translate() */
+        virtual void doTranslate(const Math::Vector2<T>& vector, TransformationType type) = 0;
+
+        /** @brief Polymorphic implementation for rotate() */
+        virtual void doRotate(Math::Rad<T> angle, TransformationType type) = 0;
 };
 
 template<class T> inline AbstractTranslationRotation2D<T>::AbstractTranslationRotation2D() = default;

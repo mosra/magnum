@@ -28,7 +28,7 @@
 
 namespace Magnum { namespace Test {
 
-class ArrayTest: public Corrade::TestSuite::Tester {
+class ArrayTest: public TestSuite::Tester {
     public:
         ArrayTest();
 

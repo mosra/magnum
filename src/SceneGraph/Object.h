@@ -37,7 +37,6 @@
 
 namespace Magnum { namespace SceneGraph {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     enum class ObjectFlag: UnsignedByte {
         Dirty = 1 << 0,
@@ -45,11 +44,10 @@ namespace Implementation {
         Joint = 1 << 2
     };
 
-    typedef Corrade::Containers::EnumSet<ObjectFlag, UnsignedByte> ObjectFlags;
+    typedef Containers::EnumSet<ObjectFlag, UnsignedByte> ObjectFlags;
 
     CORRADE_ENUMSET_OPERATORS(ObjectFlags)
 }
-#endif
 
 /**
 @brief %Object
@@ -92,11 +90,11 @@ See @ref compilation-speedup-hpp for more information.
 */
 template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public AbstractObject<Transformation::Dimensions, typename Transformation::Type>, public Transformation
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    , private Corrade::Containers::LinkedList<Object<Transformation>>, private Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>
+    , private Containers::LinkedList<Object<Transformation>>, private Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>
     #endif
 {
-    friend class Corrade::Containers::LinkedList<Object<Transformation>>;
-    friend class Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>;
+    friend class Containers::LinkedList<Object<Transformation>>;
+    friend class Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>;
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     Object(const Object<Transformation>&) = delete;
@@ -106,20 +104,14 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
     #endif
 
     public:
-        /**
-         * @brief Clean absolute transformations of given set of objects
-         *
-         * Only dirty objects in the list are cleaned.
-         * @see setClean(), AbstractObject::setClean()
-         */
-        /* `objects` passed by copy intentionally (to avoid copy internally) */
-        static void setClean(std::vector<Object<Transformation>*> objects);
+        /** @brief Matrix type */
+        typedef typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType MatrixType;
 
         /**
          * @brief Constructor
          * @param parent    Parent object
          */
-        inline explicit Object(Object<Transformation>* parent = nullptr): counter(0xFFFFu), flags(Flag::Dirty) {
+        explicit Object(Object<Transformation>* parent = nullptr): counter(0xFFFFu), flags(Flag::Dirty) {
             setParent(parent);
         }
 
@@ -129,7 +121,7 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
          * Removes itself from parent's children list and destroys all own
          * children.
          */
-        inline virtual ~Object() {}
+        ~Object();
 
         /**
          * @{ @name Scene hierarchy
@@ -137,88 +129,101 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
          * See @ref scenegraph-hierarchy for more information.
          */
 
-        /** @brief Whether this object is scene */
-        virtual inline bool isScene() const { return false; }
-
-        /**
-         * @brief %Scene
-         * @return %Scene or `nullptr`, if the object is not part of any scene.
-         */
+        /** @copydoc AbstractObject::scene() */
         Scene<Transformation>* scene();
-
-        /** @overload */
-        const Scene<Transformation>* scene() const;
+        const Scene<Transformation>* scene() const; /**< @overload */
 
         /** @brief Parent object or `nullptr`, if this is root object */
-        inline Object<Transformation>* parent() {
-            return Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::list();
+        Object<Transformation>* parent() {
+            return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::list();
         }
 
         /** @overload */
-        inline const Object<Transformation>* parent() const {
-            return Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::list();
+        const Object<Transformation>* parent() const {
+            return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::list();
         }
 
         /** @brief Previous sibling object or `nullptr`, if this is first object */
-        inline Object<Transformation>* previousSibling() {
-            return Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::previous();
+        Object<Transformation>* previousSibling() {
+            return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::previous();
         }
 
         /** @overload */
-        inline const Object<Transformation>* previousSibling() const {
-            return Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::previous();
+        const Object<Transformation>* previousSibling() const {
+            return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::previous();
         }
 
         /** @brief Next sibling object or `nullptr`, if this is last object */
-        inline Object<Transformation>* nextSibling() {
-            return Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::next();
+        Object<Transformation>* nextSibling() {
+            return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::next();
         }
 
         /** @overload */
-        inline const Object<Transformation>* nextSibling() const {
-            return Corrade::Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::next();
+        const Object<Transformation>* nextSibling() const {
+            return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::next();
         }
 
         /** @brief Whether this object has children */
-        inline bool hasChildren() const {
-            return !Corrade::Containers::LinkedList<Object<Transformation>>::isEmpty();
+        bool hasChildren() const {
+            return !Containers::LinkedList<Object<Transformation>>::isEmpty();
         }
 
         /** @brief First child object or `nullptr`, if this object has no children */
-        inline Object<Transformation>* firstChild() {
-            return Corrade::Containers::LinkedList<Object<Transformation>>::first();
+        Object<Transformation>* firstChild() {
+            return Containers::LinkedList<Object<Transformation>>::first();
         }
 
         /** @overload */
-        inline const Object<Transformation>* firstChild() const {
-            return Corrade::Containers::LinkedList<Object<Transformation>>::first();
+        const Object<Transformation>* firstChild() const {
+            return Containers::LinkedList<Object<Transformation>>::first();
         }
 
         /** @brief Last child object or `nullptr`, if this object has no children */
-        inline Object<Transformation>* lastChild() {
-            return Corrade::Containers::LinkedList<Object<Transformation>>::last();
+        Object<Transformation>* lastChild() {
+            return Containers::LinkedList<Object<Transformation>>::last();
         }
 
         /** @overload */
-        inline const Object<Transformation>* lastChild() const {
-            return Corrade::Containers::LinkedList<Object<Transformation>>::last();
+        const Object<Transformation>* lastChild() const {
+            return Containers::LinkedList<Object<Transformation>>::last();
         }
 
         /**
          * @brief Set parent object
          * @return Pointer to self (for method chaining)
+         *
+         * @see setParentKeepTransformation()
          */
         Object<Transformation>* setParent(Object<Transformation>* parent);
+
+        /**
+         * @brief Set parent object and keep absolute transformation
+         * @return Pointer to self (for method chaining)
+         *
+         * While setParent() preserves only relative transformation of the
+         * object, this funcition preserves absolute transformation.
+         */
+        Object<Transformation>* setParentKeepTransformation(Object<Transformation>* parent);
 
         /*@}*/
 
         /** @{ @name Object transformation */
 
-        inline typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType transformationMatrix() const override {
+        /**
+         * @brief Transformation matrix
+         *
+         * @see transformation()
+         */
+        MatrixType transformationMatrix() const {
             return Transformation::toMatrix(Transformation::transformation());
         }
 
-        inline typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType absoluteTransformationMatrix() const override {
+        /**
+         * @brief Transformation matrix relative to root object
+         *
+         * @see absoluteTransformation()
+         */
+        MatrixType absoluteTransformationMatrix() const {
             return Transformation::toMatrix(absoluteTransformation());
         }
 
@@ -230,11 +235,20 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
         typename Transformation::DataType absoluteTransformation() const;
 
         /**
+         * @brief Transformation matrices of given set of objects relative to this object
+         *
+         * All transformations are premultiplied with @p initialTransformationMatrix,
+         * if specified.
+         * @see transformations()
+         */
+        std::vector<MatrixType> transformationMatrices(const std::vector<Object<Transformation>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
+
+        /**
          * @brief Transformations of given group of objects relative to this object
          *
          * All transformations can be premultiplied with @p initialTransformation,
          * if specified.
-         * @see AbstractObject::transformationMatrices()
+         * @see transformationMatrices()
          */
         /* `objects` passed by copy intentionally (to allow move from
            transformationMatrices() and avoid copy in the function itself) */
@@ -242,9 +256,36 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
 
         /*@}*/
 
-        inline bool isDirty() const override { return !!(flags & Flag::Dirty); }
-        void setDirty() override;
-        void setClean() override;
+        /**
+         * @{ @name Transformation caching
+         *
+         * See @ref scenegraph-caching for more information.
+         */
+
+        /**
+         * @brief Clean absolute transformations of given set of objects
+         *
+         * Only dirty objects in the list are cleaned.
+         * @see setClean()
+         */
+        /* `objects` passed by copy intentionally (to avoid copy internally) */
+        static void setClean(std::vector<Object<Transformation>*> objects);
+
+        /** @copydoc AbstractObject::isDirty() */
+        bool isDirty() const { return !!(flags & Flag::Dirty); }
+
+        /** @copydoc AbstractObject::setDirty() */
+        void setDirty();
+
+        /** @copydoc AbstractObject::setClean() */
+        void setClean();
+
+        /*@}*/
+
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    public:
+        virtual bool isScene() const { return false; }
+    #endif
 
     private:
         /* GCC 4.4 doesn't support lambda functions */
@@ -254,14 +295,24 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
         };
         #endif
 
-        Object<Transformation>* sceneObject() override;
-        const Object<Transformation>* sceneObject() const override;
+        Object<Transformation>* doScene() override final;
+        const Object<Transformation>* doScene() const override final;
 
-        std::vector<typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType> transformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType& initialTransformationMatrix = (typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType())) const override;
+        MatrixType MAGNUM_SCENEGRAPH_LOCAL doTransformationMatrix() const override final {
+            return transformationMatrix();
+        }
+        MatrixType MAGNUM_SCENEGRAPH_LOCAL doAbsoluteTransformationMatrix() const override final {
+            return absoluteTransformationMatrix();
+        }
+
+        std::vector<MatrixType> doTransformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const MatrixType& initialTransformationMatrix) const override final;
 
         typename Transformation::DataType MAGNUM_SCENEGRAPH_LOCAL computeJointTransformation(const std::vector<Object<Transformation>*>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const;
 
-        void setClean(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) const override;
+        bool MAGNUM_SCENEGRAPH_LOCAL doIsDirty() const override final { return isDirty(); }
+        void MAGNUM_SCENEGRAPH_LOCAL doSetDirty() override final { setDirty(); }
+        void MAGNUM_SCENEGRAPH_LOCAL doSetClean() override final { setClean(); }
+        void doSetClean(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) override final;
 
         void MAGNUM_SCENEGRAPH_LOCAL setClean(const typename Transformation::DataType& absoluteTransformation);
 

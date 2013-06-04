@@ -57,10 +57,15 @@ to simplify porting.
 class XEglApplication: public AbstractXApplication {
     public:
         /** @copydoc GlutApplication::GlutApplication(const Arguments&) */
-        inline explicit XEglApplication(const Arguments& arguments): AbstractXApplication(new EglContextHandler, arguments) {}
+        explicit XEglApplication(const Arguments& arguments): AbstractXApplication(new EglContextHandler, arguments) {}
 
         /** @copydoc GlutApplication::GlutApplication(const Arguments&, Configuration*) */
-        inline explicit XEglApplication(const Arguments& arguments, Configuration* configuration): AbstractXApplication(new EglContextHandler, arguments, configuration) {}
+        explicit XEglApplication(const Arguments& arguments, Configuration* configuration): AbstractXApplication(new EglContextHandler, arguments, configuration) {}
+
+    protected:
+        /* Nobody will need to have (and delete) XEglApplication*, thus this is
+           faster than public pure virtual destructor */
+        ~XEglApplication() = default;
 };
 
 /** @hideinitializer

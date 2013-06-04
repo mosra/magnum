@@ -29,6 +29,7 @@
  */
 
 #include <unordered_map>
+#include <Utility/utilities.h>
 
 #include "Resource.h"
 
@@ -89,199 +90,72 @@ enum class ResourcePolicy: UnsignedByte {
 
 template<class> class AbstractResourceLoader;
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    struct ResourceKeyHash {
-        inline std::size_t operator()(ResourceKey key) const {
-            /* GCC 4.4 thinks reinterpret_cast will break strict aliasing, doing it with bit cast instead */
-            return Corrade::Utility::bitCast<std::size_t>(key);
+
+struct ResourceKeyHash {
+    std::size_t operator()(ResourceKey key) const {
+        /* GCC 4.4 thinks reinterpret_cast will break strict aliasing, doing it with bit cast instead */
+        return Corrade::Utility::bitCast<std::size_t>(key);
+    }
+};
+
+template<class T> class ResourceManagerData {
+    template<class, class> friend class Magnum::Resource;
+    friend class AbstractResourceLoader<T>;
+
+    ResourceManagerData(const ResourceManagerData<T>&) = delete;
+    ResourceManagerData(ResourceManagerData<T>&&) = delete;
+    ResourceManagerData<T>& operator=(const ResourceManagerData<T>&) = delete;
+    ResourceManagerData<T>& operator=(ResourceManagerData<T>&&) = delete;
+
+    public:
+        virtual ~ResourceManagerData();
+
+        std::size_t lastChange() const { return _lastChange; }
+
+        std::size_t count() const { return _data.size(); }
+
+        std::size_t referenceCount(ResourceKey key) const;
+
+        ResourceState state(ResourceKey key) const;
+
+        template<class U> Resource<T, U> get(ResourceKey key);
+
+        void set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy);
+
+        T* fallback() { return _fallback; }
+        const T* fallback() const { return _fallback; }
+
+        void setFallback(T* data);
+
+        void free();
+
+        AbstractResourceLoader<T>* loader() { return _loader; }
+        const AbstractResourceLoader<T>* loader() const { return _loader; }
+
+        void setLoader(AbstractResourceLoader<T>* loader);
+
+    protected:
+        ResourceManagerData(): _fallback(nullptr), _loader(nullptr), _lastChange(0) {}
+
+    private:
+        struct Data;
+
+        const Data& data(ResourceKey key) { return _data[key]; }
+
+        void incrementReferenceCount(ResourceKey key) {
+            ++_data[key].referenceCount;
         }
-    };
 
-    template<class T> class ResourceManagerData {
-        template<class, class> friend class Magnum::Resource;
-        friend class AbstractResourceLoader<T>;
+        void decrementReferenceCount(ResourceKey key);
 
-        ResourceManagerData(const ResourceManagerData<T>&) = delete;
-        ResourceManagerData(ResourceManagerData<T>&&) = delete;
-        ResourceManagerData<T>& operator=(const ResourceManagerData<T>&) = delete;
-        ResourceManagerData<T>& operator=(ResourceManagerData<T>&&) = delete;
+        std::unordered_map<ResourceKey, Data, ResourceKeyHash> _data;
+        T* _fallback;
+        AbstractResourceLoader<T>* _loader;
+        std::size_t _lastChange;
+};
 
-        public:
-            inline virtual ~ResourceManagerData() {
-                delete _fallback;
-
-                if(_loader) {
-                    _loader->manager = nullptr;
-                    delete _loader;
-                }
-            }
-
-            inline std::size_t lastChange() const { return _lastChange; }
-
-            inline std::size_t count() const { return _data.size(); }
-
-            std::size_t referenceCount(ResourceKey key) const {
-                auto it = _data.find(key);
-                if(it == _data.end()) return 0;
-                return it->second.referenceCount;
-            }
-
-            ResourceState state(ResourceKey key) const {
-                auto it = _data.find(key);
-
-                /* Resource not loaded */
-                if(it == _data.end() || !it->second.data) {
-                    /* Fallback found, add *Fallback to state */
-                    if(_fallback) {
-                        if(it != _data.end() && it->second.state == ResourceDataState::Loading)
-                            return ResourceState::LoadingFallback;
-                        else if(it != _data.end() && it->second.state == ResourceDataState::NotFound)
-                            return ResourceState::NotFoundFallback;
-                        else return ResourceState::NotLoadedFallback;
-                    }
-
-                    /* Fallback not found, loading didn't start yet */
-                    if(it == _data.end() || (it->second.state != ResourceDataState::Loading && it->second.state != ResourceDataState::NotFound))
-                        return ResourceState::NotLoaded;
-                }
-
-                /* Loading / NotFound without fallback, Mutable / Final */
-                return static_cast<ResourceState>(it->second.state);
-            }
-
-            template<class U> inline Resource<T, U> get(ResourceKey key) {
-                /* Ask loader for the data, if they aren't there yet */
-                if(_loader && _data.find(key) == _data.end())
-                    _loader->load(key);
-
-                return Resource<T, U>(this, key);
-            }
-
-            void set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
-                auto it = _data.find(key);
-
-                /* NotFound / Loading state shouldn't have any data */
-                CORRADE_ASSERT((data == nullptr) == (state == ResourceDataState::NotFound || state == ResourceDataState::Loading),
-                    "ResourceManager::set(): data should be null if and only if state is NotFound or Loading", );
-
-                /* Cannot change resource with already final state */
-                CORRADE_ASSERT(it == _data.end() || it->second.state != ResourceDataState::Final,
-                    "ResourceManager::set(): cannot change already final resource" << key, );
-
-                /* If nothing is referencing reference-counted resource, we're done */
-                if(policy == ResourcePolicy::ReferenceCounted && (it == _data.end() || it->second.referenceCount == 0)) {
-                    Corrade::Utility::Warning() << "ResourceManager: Reference-counted resource with key" << key << "isn't referenced from anywhere, deleting it immediately";
-                    delete data;
-
-                    /* Delete also already present resource (it could be here
-                       because previous policy could be other than
-                       ReferenceCounted) */
-                    if(it != _data.end()) _data.erase(it);
-
-                    return;
-
-                /* Insert it, if not already here */
-                } else if(it == _data.end())
-                    it = _data.insert(std::make_pair(key, Data())).first;
-
-                /* Replace previous data */
-                delete it->second.data;
-                it->second.data = data;
-                it->second.state = state;
-                it->second.policy = policy;
-                ++_lastChange;
-            }
-
-            inline T* fallback() { return _fallback; }
-            inline const T* fallback() const { return _fallback; }
-
-            inline void setFallback(T* data) {
-                delete _fallback;
-                _fallback = data;
-            }
-
-            void free() {
-                /* Delete all non-referenced non-resident resources */
-                for(auto it = _data.begin(); it != _data.end(); ) {
-                    if(it->second.policy != ResourcePolicy::Resident && !it->second.referenceCount)
-                        it = _data.erase(it);
-                    else ++it;
-                }
-            }
-
-            inline AbstractResourceLoader<T>* loader() { return _loader; }
-            inline const AbstractResourceLoader<T>* loader() const { return _loader; }
-
-            inline void setLoader(AbstractResourceLoader<T>* loader) {
-                /* Delete previous loader */
-                delete _loader;
-
-                /* Add new loader */
-                _loader = loader;
-                if(_loader) _loader->manager = this;
-            }
-
-        protected:
-            inline ResourceManagerData(): _fallback(nullptr), _loader(nullptr), _lastChange(0) {}
-
-        private:
-            struct Data {
-                Data& operator=(const Data&) = delete;
-                Data& operator=(Data&&) = delete;
-
-                inline Data(): data(nullptr), state(ResourceDataState::Mutable), policy(ResourcePolicy::Manual), referenceCount(0) {}
-
-                /* Fugly hack for GCC 4.5, because std::pair doesn't have move constructor yet */
-                #ifndef CORRADE_GCC45_COMPATIBILITY
-                Data(const Data&) = delete;
-                #else
-                Data(const Data& other): data(other.data), state(other.state), policy(other.policy), referenceCount(other.referenceCount) {
-                    const_cast<Data&>(other).data = nullptr;
-                    const_cast<Data&>(other).referenceCount = 0;
-                }
-                #endif
-
-                inline Data(Data&& other): data(other.data), state(other.state), policy(other.policy), referenceCount(other.referenceCount) {
-                    other.data = nullptr;
-                    other.referenceCount = 0;
-                }
-
-                inline ~Data() {
-                    CORRADE_ASSERT(referenceCount == 0,
-                        "ResourceManager::~ResourceManager(): destroyed while data are still referenced", );
-                    delete data;
-                }
-
-                T* data;
-                ResourceDataState state;
-                ResourcePolicy policy;
-                std::size_t referenceCount;
-            };
-
-            inline const Data& data(ResourceKey key) {
-                return _data[key];
-            }
-
-            inline void incrementReferenceCount(ResourceKey key) {
-                ++_data[key].referenceCount;
-            }
-
-            inline void decrementReferenceCount(ResourceKey key) {
-                auto it = _data.find(key);
-
-                /* Free the resource if it is reference counted */
-                if(--it->second.referenceCount == 0 && it->second.policy == ResourcePolicy::ReferenceCounted)
-                    _data.erase(it);
-            }
-
-            std::unordered_map<ResourceKey, Data, ResourceKeyHash> _data;
-            T* _fallback;
-            AbstractResourceLoader<T>* _loader;
-            std::size_t _lastChange;
-    };
 }
-#endif
 
 /**
 @brief %Resource manager
@@ -354,10 +228,7 @@ cube->draw();
 template<class... Types> class ResourceManager: private Implementation::ResourceManagerData<Types>... {
     public:
         /** @brief Global instance */
-        inline static ResourceManager<Types...>* instance() {
-            CORRADE_ASSERT(internalInstance(), "ResourceManager::instance(): no instance exists", nullptr);
-            return internalInstance();
-        }
+        static ResourceManager<Types...>* instance();
 
         /**
          * @brief Constructor
@@ -367,10 +238,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          *      created.
          * @see instance()
          */
-        inline ResourceManager() {
-            CORRADE_ASSERT(!internalInstance(), "ResourceManager::ResourceManager(): another instance is already created", );
-            internalInstance() = this;
-        }
+        explicit ResourceManager();
 
         /**
          * @brief Destructor
@@ -378,13 +246,10 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * Sets global instance pointer to `nullptr`.
          * @see instance()
          */
-        inline ~ResourceManager() {
-            CORRADE_INTERNAL_ASSERT(internalInstance() == this);
-            internalInstance() = nullptr;
-        }
+        ~ResourceManager();
 
         /** @brief Count of resources of given type */
-        template<class T> inline std::size_t count() {
+        template<class T> std::size_t count() {
             return this->Implementation::ResourceManagerData<T>::count();
         }
 
@@ -400,7 +265,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * Resource<AbstractShaderProgram, MyShader> shader = manager->get<AbstractShaderProgram, MyShader>("shader");
          * @endcode
          */
-        template<class T, class U = T> inline Resource<T, U> get(ResourceKey key) {
+        template<class T, class U = T> Resource<T, U> get(ResourceKey key) {
             return this->Implementation::ResourceManagerData<T>::template get<U>(key);
         }
 
@@ -409,7 +274,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          *
          * @see set()
          */
-        template<class T> inline std::size_t referenceCount(ResourceKey key) const {
+        template<class T> std::size_t referenceCount(ResourceKey key) const {
             return this->Implementation::ResourceManagerData<T>::referenceCount(key);
         }
 
@@ -418,12 +283,13 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          *
          * @see set(), Resource::state()
          */
-        template<class T> inline ResourceState state(ResourceKey key) const {
+        template<class T> ResourceState state(ResourceKey key) const {
             return this->Implementation::ResourceManagerData<T>::state(key);
         }
 
         /**
          * @brief Set resource data
+         * @return Pointer to self (for method chaining)
          *
          * If @p policy is set to `ResourcePolicy::ReferenceCounted`, there
          * must be already at least one reference to given resource, otherwise
@@ -440,70 +306,87 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          *      subsequent updates are not possible.
          * @see referenceCount(), state()
          */
-        template<class T> inline void set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
+        template<class T> ResourceManager<Types...>* set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
             this->Implementation::ResourceManagerData<T>::set(key, data, state, policy);
+            return this;
         }
 
         /**
          * @brief Set resource data
+         * @return Pointer to self (for method chaining)
          *
          * Same as above function with state set to @ref ResourceDataState "ResourceDataState::Final"
          * and policy to @ref ResourcePolicy "ResourcePolicy::Resident".
          */
-        template<class T> inline void set(ResourceKey key, T* data) {
+        template<class T> ResourceManager<Types...>* set(ResourceKey key, T* data) {
             this->Implementation::ResourceManagerData<T>::set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);
+            return this;
         }
 
         /** @brief Fallback for not found resources */
-        template<class T> inline T* fallback() {
+        template<class T> T* fallback() {
             return this->Implementation::ResourceManagerData<T>::fallback();
         }
 
         /** @overload */
-        template<class T> inline const T* fallback() const {
+        template<class T> const T* fallback() const {
             return this->Implementation::ResourceManagerData<T>::fallback();
         }
 
-        /** @brief Set fallback for not found resources */
-        template<class T> inline void setFallback(T* data) {
-            return this->Implementation::ResourceManagerData<T>::setFallback(data);
+        /**
+         * @brief Set fallback for not found resources
+         * @return Pointer to self (for method chaining)
+         */
+        template<class T> ResourceManager<Types...>* setFallback(T* data) {
+            this->Implementation::ResourceManagerData<T>::setFallback(data);
+            return this;
         }
 
-        /** @brief Free all resources of given type which are not referenced */
-        template<class T> inline void free() {
-            return this->Implementation::ResourceManagerData<T>::free();
+        /**
+         * @brief Free all resources of given type which are not referenced
+         * @return Pointer to self (for method chaining)
+         */
+        template<class T> ResourceManager<Types...>* free() {
+            this->Implementation::ResourceManagerData<T>::free();
+            return this;
         }
 
-        /** @brief Free all resources which are not referenced */
-        inline void free() {
+        /**
+         * @brief Free all resources which are not referenced
+         * @return Pointer to self (for method chaining)
+         */
+        ResourceManager<Types...>* free() {
             freeInternal(std::common_type<Types>()...);
+            return this;
         }
 
         /** @brief Loader for given type of resources */
-        template<class T> inline AbstractResourceLoader<T>* loader() {
+        template<class T> AbstractResourceLoader<T>* loader() {
             return this->Implementation::ResourceManagerData<T>::loader();
         }
 
         /** @overload */
-        template<class T> inline const AbstractResourceLoader<T>* loader() const {
+        template<class T> const AbstractResourceLoader<T>* loader() const {
             return this->Implementation::ResourceManagerData<T>::loader();
         }
 
         /**
          * @brief Set loader for given type of resources
+         * @return Pointer to self (for method chaining)
          *
          * See AbstractResourceLoader documentation for more information.
          */
-        template<class T> inline void setLoader(AbstractResourceLoader<T>* loader) {
-            return this->Implementation::ResourceManagerData<T>::setLoader(loader);
+        template<class T> ResourceManager<Types...>* setLoader(AbstractResourceLoader<T>* loader) {
+            this->Implementation::ResourceManagerData<T>::setLoader(loader);
+            return this;
         }
 
     private:
-        template<class FirstType, class ...NextTypes> inline void freeInternal(std::common_type<FirstType>, std::common_type<NextTypes>... t) {
+        template<class FirstType, class ...NextTypes> void freeInternal(std::common_type<FirstType>, std::common_type<NextTypes>... t) {
             free<FirstType>();
             freeInternal(t...);
         }
-        inline void freeInternal() const {}
+        void freeInternal() const {}
 
         static ResourceManager<Types...>*& internalInstance();
 };
@@ -514,6 +397,171 @@ template<class ...Types> ResourceManager<Types...>*& ResourceManager<Types...>::
     return _instance;
 }
 #endif
+
+namespace Implementation {
+
+template<class T> ResourceManagerData<T>::~ResourceManagerData() {
+    delete _fallback;
+
+    if(_loader) {
+        _loader->manager = nullptr;
+        delete _loader;
+    }
+}
+
+template<class T> std::size_t ResourceManagerData<T>::referenceCount(const ResourceKey key) const {
+    auto it = _data.find(key);
+    if(it == _data.end()) return 0;
+    return it->second.referenceCount;
+}
+
+template<class T> ResourceState ResourceManagerData<T>::state(const ResourceKey key) const {
+    const auto it = _data.find(key);
+
+    /* Resource not loaded */
+    if(it == _data.end() || !it->second.data) {
+        /* Fallback found, add *Fallback to state */
+        if(_fallback) {
+            if(it != _data.end() && it->second.state == ResourceDataState::Loading)
+                return ResourceState::LoadingFallback;
+            else if(it != _data.end() && it->second.state == ResourceDataState::NotFound)
+                return ResourceState::NotFoundFallback;
+            else return ResourceState::NotLoadedFallback;
+        }
+
+        /* Fallback not found, loading didn't start yet */
+        if(it == _data.end() || (it->second.state != ResourceDataState::Loading && it->second.state != ResourceDataState::NotFound))
+            return ResourceState::NotLoaded;
+    }
+
+    /* Loading / NotFound without fallback, Mutable / Final */
+    return static_cast<ResourceState>(it->second.state);
+}
+
+template<class T> template<class U> Resource<T, U> ResourceManagerData<T>::get(ResourceKey key) {
+    /* Ask loader for the data, if they aren't there yet */
+    if(_loader && _data.find(key) == _data.end())
+        _loader->load(key);
+
+    return Resource<T, U>(this, key);
+}
+
+template<class T> void ResourceManagerData<T>::set(const ResourceKey key, T* const data, const ResourceDataState state, const ResourcePolicy policy) {
+    auto it = _data.find(key);
+
+    /* NotFound / Loading state shouldn't have any data */
+    CORRADE_ASSERT((data == nullptr) == (state == ResourceDataState::NotFound || state == ResourceDataState::Loading),
+        "ResourceManager::set(): data should be null if and only if state is NotFound or Loading", );
+
+    /* Cannot change resource with already final state */
+    CORRADE_ASSERT(it == _data.end() || it->second.state != ResourceDataState::Final,
+        "ResourceManager::set(): cannot change already final resource" << key, );
+
+    /* If nothing is referencing reference-counted resource, we're done */
+    if(policy == ResourcePolicy::ReferenceCounted && (it == _data.end() || it->second.referenceCount == 0)) {
+        Warning() << "ResourceManager: Reference-counted resource with key" << key << "isn't referenced from anywhere, deleting it immediately";
+        delete data;
+
+        /* Delete also already present resource (it could be here
+            because previous policy could be other than
+            ReferenceCounted) */
+        if(it != _data.end()) _data.erase(it);
+
+        return;
+
+    /* Insert it, if not already here */
+    } else if(it == _data.end())
+        it = _data.insert(std::make_pair(key, Data())).first;
+
+    /* Replace previous data */
+    delete it->second.data;
+    it->second.data = data;
+    it->second.state = state;
+    it->second.policy = policy;
+    ++_lastChange;
+}
+
+template<class T> void ResourceManagerData<T>::setFallback(T* const data) {
+    delete _fallback;
+    _fallback = data;
+}
+
+template<class T> void ResourceManagerData<T>::free() {
+    /* Delete all non-referenced non-resident resources */
+    for(auto it = _data.begin(); it != _data.end(); ) {
+        if(it->second.policy != ResourcePolicy::Resident && !it->second.referenceCount)
+            it = _data.erase(it);
+        else ++it;
+    }
+}
+
+template<class T> void ResourceManagerData<T>::setLoader(AbstractResourceLoader<T>* const loader) {
+    /* Delete previous loader */
+    delete _loader;
+
+    /* Add new loader */
+    if((_loader = loader)) _loader->manager = this;
+}
+
+template<class T> void ResourceManagerData<T>::decrementReferenceCount(ResourceKey key) {
+    auto it = _data.find(key);
+
+    /* Free the resource if it is reference counted */
+    if(--it->second.referenceCount == 0 && it->second.policy == ResourcePolicy::ReferenceCounted)
+        _data.erase(it);
+}
+
+template<class T> struct ResourceManagerData<T>::Data {
+    Data& operator=(const Data&) = delete;
+    Data& operator=(Data&&) = delete;
+
+    Data(): data(nullptr), state(ResourceDataState::Mutable), policy(ResourcePolicy::Manual), referenceCount(0) {}
+
+    /* Fugly hack for GCC 4.5, because std::pair doesn't have move constructor yet */
+    #ifndef CORRADE_GCC45_COMPATIBILITY
+    Data(const Data&) = delete;
+    #else
+    Data(const Data& other): data(other.data), state(other.state), policy(other.policy), referenceCount(other.referenceCount) {
+        const_cast<Data&>(other).data = nullptr;
+        const_cast<Data&>(other).referenceCount = 0;
+    }
+    #endif
+
+    Data(Data&& other): data(other.data), state(other.state), policy(other.policy), referenceCount(other.referenceCount) {
+        other.data = nullptr;
+        other.referenceCount = 0;
+    }
+
+    ~Data();
+
+    T* data;
+    ResourceDataState state;
+    ResourcePolicy policy;
+    std::size_t referenceCount;
+};
+
+template<class T> inline ResourceManagerData<T>::Data::~Data() {
+    CORRADE_ASSERT(referenceCount == 0,
+        "ResourceManager::~ResourceManager(): destroyed while data are still referenced", );
+    delete data;
+}
+
+}
+
+template<class ...Types> ResourceManager<Types...>* ResourceManager<Types...>::instance() {
+    CORRADE_ASSERT(internalInstance(), "ResourceManager::instance(): no instance exists", nullptr);
+    return internalInstance();
+}
+
+template<class ...Types> ResourceManager<Types...>::ResourceManager() {
+    CORRADE_ASSERT(!internalInstance(), "ResourceManager::ResourceManager(): another instance is already created", );
+    internalInstance() = this;
+}
+
+template<class ...Types> ResourceManager<Types...>::~ResourceManager() {
+    CORRADE_INTERNAL_ASSERT(internalInstance() == this);
+    internalInstance() = nullptr;
+}
 
 }
 

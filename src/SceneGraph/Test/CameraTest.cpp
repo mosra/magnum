@@ -34,7 +34,7 @@
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
-class CameraTest: public Corrade::TestSuite::Tester {
+class CameraTest: public TestSuite::Tester {
     public:
         CameraTest();
 
@@ -160,7 +160,7 @@ void CameraTest::projectionSizeViewport() {
 void CameraTest::draw() {
     class Drawable: public SceneGraph::Drawable<3> {
         public:
-            inline Drawable(AbstractObject<3>* object, DrawableGroup<3>* group, Matrix4& result): SceneGraph::Drawable<3>(object, group), result(result) {}
+            Drawable(AbstractObject<3>* object, DrawableGroup<3>* group, Matrix4& result): SceneGraph::Drawable<3>(object, group), result(result) {}
 
         protected:
             void draw(const Matrix4& transformationMatrix, AbstractCamera<3>*) {

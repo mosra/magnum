@@ -35,27 +35,28 @@ namespace Magnum { namespace Shaders {
 /** @todoc remove when doxygen is sane again */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 
-template<UnsignedInt> class DistanceFieldVectorShader;
-typedef DistanceFieldVectorShader<2> DistanceFieldVectorShader2D;
-typedef DistanceFieldVectorShader<3> DistanceFieldVectorShader3D;
+template<UnsignedInt> class DistanceFieldVector;
+typedef DistanceFieldVector<2> DistanceFieldVector2D;
+typedef DistanceFieldVector<3> DistanceFieldVector3D;
 
-template<UnsignedInt> class AbstractVectorShader;
-typedef AbstractVectorShader<2> AbstractVectorShader2D;
-typedef AbstractVectorShader<3> AbstractVectorShader3D;
+template<UnsignedInt> class AbstractVector;
+typedef AbstractVector<2> AbstractVector2D;
+typedef AbstractVector<3> AbstractVector3D;
 
-template<UnsignedInt> class FlatShader;
-typedef FlatShader<2> FlatShader2D;
-typedef FlatShader<3> FlatShader3D;
+template<UnsignedInt> class Flat;
+typedef Flat<2> Flat2D;
+typedef Flat<3> Flat3D;
 
-class PhongShader;
+class MeshVisualizer;
+class Phong;
 
-template<UnsignedInt> class VectorShader;
-typedef VectorShader<2> VectorShader2D;
-typedef VectorShader<3> VectorShader3D;
+template<UnsignedInt> class Vector;
+typedef Vector<2> Vector2D;
+typedef Vector<3> Vector3D;
 
-template<UnsignedInt> class VertexColorShader;
-typedef VertexColorShader<2> VertexColorShader2D;
-typedef VertexColorShader<3> VertexColorShader3D;
+template<UnsignedInt> class VertexColor;
+typedef VertexColor<2> VertexColor2D;
+typedef VertexColor<3> VertexColor3D;
 #endif
 
 }}

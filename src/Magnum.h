@@ -34,6 +34,10 @@
 #include "Types.h"
 #include "magnumConfigure.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
+#endif
+
 namespace Corrade {
     namespace Utility {
         class Debug;
@@ -58,6 +62,9 @@ namespace Math {
     constexpr Deg<Float> operator "" _degf(long double);
     #endif
 }
+
+/* Bring whole Corrade namespace */
+using namespace Corrade;
 
 /* Bring debugging facility from Corrade::Utility namespace */
 using Corrade::Utility::Debug;
@@ -325,7 +332,11 @@ using Math::operator "" _radf;
 /** @todoc Remove `ifndef` when Doxygen is sane again */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* Forward declarations for all types in root namespace */
+
+/* FramebufferClear[Mask], FramebufferBlit[Mask], FramebufferBlitFilter,
+   FramebufferTarget enums used only directly with framebuffer instance */
 class AbstractFramebuffer;
+
 class AbstractImage;
 class AbstractShaderProgram;
 class AbstractTexture;
@@ -346,6 +357,7 @@ typedef BufferImage<3> BufferImage3D;
 
 #ifndef MAGNUM_TARGET_GLES
 class BufferTexture;
+enum class BufferTextureFormat: GLenum;
 #endif
 
 template<class T = Float> class Color3;
@@ -373,14 +385,23 @@ typedef Image<1> Image1D;
 typedef Image<2> Image2D;
 typedef Image<3> Image3D;
 
+enum class ImageFormat: GLenum;
+enum class ImageType: GLenum;
+
 template<UnsignedInt> class ImageWrapper;
 typedef ImageWrapper<1> ImageWrapper1D;
 typedef ImageWrapper<2> ImageWrapper2D;
 typedef ImageWrapper<3> ImageWrapper3D;
 
 class Mesh;
-class Query;
+
+/* AbstractQuery is not used directly */
+class PrimitiveQuery;
+class SampleQuery;
+class TimeQuery;
+
 class Renderbuffer;
+enum class RenderbufferFormat: GLenum;
 
 #ifndef CORRADE_GCC45_COMPATIBILITY
 enum class ResourceState: UnsignedByte;
@@ -391,6 +412,7 @@ template<class T, class U = T> class Resource;
 class ResourceKey;
 template<class...> class ResourceManager;
 
+class Sampler;
 class Shader;
 
 template<UnsignedInt> class Texture;
@@ -399,6 +421,8 @@ typedef Texture<1> Texture1D;
 #endif
 typedef Texture<2> Texture2D;
 typedef Texture<3> Texture3D;
+
+enum class TextureFormat: GLenum;
 
 class Timeline;
 #endif

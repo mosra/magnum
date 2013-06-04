@@ -33,46 +33,13 @@
 
 namespace Magnum { namespace MeshTools {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
 template<class Vertex, class Interpolator> class Subdivide {
     public:
-        inline Subdivide(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
+        Subdivide(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
 
-        void operator()(Interpolator interpolator) {
-            CORRADE_ASSERT(!(indices.size()%3), "MeshTools::subdivide(): index count is not divisible by 3!", );
-
-            std::size_t indexCount = indices.size();
-            indices.reserve(indices.size()*4);
-
-            /* Subdivide each face to four new */
-            for(std::size_t i = 0; i != indexCount; i += 3) {
-                /* Interpolate each side */
-                UnsignedInt newVertices[3];
-                for(int j = 0; j != 3; ++j)
-                    newVertices[j] = addVertex(interpolator(vertices[indices[i+j]], vertices[indices[i+(j+1)%3]]));
-
-                /*
-                 * Add three new faces (0, 1, 3) and update original (2)
-                 *
-                 *                orig 0
-                 *                /   \
-                 *               /  0  \
-                 *              /       \
-                 *          new 0 ----- new 2
-                 *          /   \       /  \
-                 *         /  1  \  2  / 3  \
-                 *        /       \   /      \
-                 *   orig 1 ----- new 1 ---- orig 2
-                 */
-                addFace(indices[i], newVertices[0], newVertices[2]);
-                addFace(newVertices[0], indices[i+1], newVertices[1]);
-                addFace(newVertices[2], newVertices[1], indices[i+2]);
-                for(std::size_t j = 0; j != 3; ++j)
-                    indices[i+j] = newVertices[j];
-            }
-        }
+        void operator()(Interpolator interpolator);
 
     private:
         std::vector<UnsignedInt>& indices;
@@ -91,7 +58,6 @@ template<class Vertex, class Interpolator> class Subdivide {
 };
 
 }
-#endif
 
 /**
 @brief %Subdivide the mesh
@@ -102,11 +68,49 @@ template<class Vertex, class Interpolator> class Subdivide {
 @param interpolator     Functor or function pointer which interpolates
     two adjacent vertices: `Vertex interpolator(Vertex a, Vertex b)`
 
-Goes through all triangle faces and subdivides them into four new. Cleaning
+Goes through all triangle faces and subdivides them into four new. Removing
 duplicate vertices in the mesh is up to user.
 */
 template<class Vertex, class Interpolator> inline void subdivide(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices, Interpolator interpolator) {
     Implementation::Subdivide<Vertex, Interpolator>(indices, vertices)(interpolator);
+}
+
+namespace Implementation {
+
+template<class Vertex, class Interpolator> void Subdivide<Vertex, Interpolator>::operator()(Interpolator interpolator) {
+    CORRADE_ASSERT(!(indices.size()%3), "MeshTools::subdivide(): index count is not divisible by 3!", );
+
+    std::size_t indexCount = indices.size();
+    indices.reserve(indices.size()*4);
+
+    /* Subdivide each face to four new */
+    for(std::size_t i = 0; i != indexCount; i += 3) {
+        /* Interpolate each side */
+        UnsignedInt newVertices[3];
+        for(int j = 0; j != 3; ++j)
+            newVertices[j] = addVertex(interpolator(vertices[indices[i+j]], vertices[indices[i+(j+1)%3]]));
+
+        /*
+            * Add three new faces (0, 1, 3) and update original (2)
+            *
+            *                orig 0
+            *                /   \
+            *               /  0  \
+            *              /       \
+            *          new 0 ----- new 2
+            *          /   \       /  \
+            *         /  1  \  2  / 3  \
+            *        /       \   /      \
+            *   orig 1 ----- new 1 ---- orig 2
+            */
+        addFace(indices[i], newVertices[0], newVertices[2]);
+        addFace(newVertices[0], indices[i+1], newVertices[1]);
+        addFace(newVertices[2], newVertices[1], indices[i+2]);
+        for(std::size_t j = 0; j != 3; ++j)
+            indices[i+j] = newVertices[j];
+    }
+}
+
 }
 
 }}

@@ -90,22 +90,24 @@ class AbstractXApplication {
         explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, Configuration* configuration);
 
         /**
-         * @brief Destructor
-         *
-         * Deletes context and destroys the window.
-         */
-        virtual ~AbstractXApplication() = 0;
-
-        /**
          * @brief Execute main loop
          * @return Value for returning from `main()`.
          */
         int exec();
 
         /** @brief Exit application main loop */
-        inline void exit() { flags |= Flag::Exit; }
+        void exit() { flags |= Flag::Exit; }
 
     protected:
+        /**
+         * @brief Destructor
+         *
+         * Deletes context and destroys the window.
+         */
+        /* Nobody will need to have (and delete) AbstractXApplication*, thus
+           this is faster than public pure virtual destructor */
+        ~AbstractXApplication();
+
         /** @copydoc GlutApplication::createContext() */
         void createContext(Configuration* configuration);
 
@@ -118,10 +120,10 @@ class AbstractXApplication {
         virtual void drawEvent() = 0;
 
         /** @copydoc GlutApplication::swapBuffers() */
-        inline void swapBuffers() { contextHandler->swapBuffers(); }
+        void swapBuffers() { contextHandler->swapBuffers(); }
 
         /** @copydoc GlutApplication::redraw() */
-        inline void redraw() { flags |= Flag::Redraw; }
+        void redraw() { flags |= Flag::Redraw; }
 
         /*@}*/
 
@@ -154,7 +156,7 @@ class AbstractXApplication {
             Exit = 1 << 1
         };
 
-        typedef Corrade::Containers::EnumSet<Flag, unsigned int> Flags;
+        typedef Containers::EnumSet<Flag, unsigned int> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
         Display* display;
@@ -178,6 +180,7 @@ CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Flags)
 
 Double-buffered OpenGL context.
 @see AbstractXApplication(), createContext()
+@todo GLX_ARB_create_context_robustness/EGL_EXT_create_context_robustness
 */
 class AbstractXApplication::Configuration {
     Configuration(const Configuration&) = delete;
@@ -190,7 +193,7 @@ class AbstractXApplication::Configuration {
         ~Configuration();
 
         /** @brief Window title */
-        inline std::string title() const { return _title; }
+        std::string title() const { return _title; }
 
         /**
          * @brief Set window title
@@ -198,13 +201,13 @@ class AbstractXApplication::Configuration {
          *
          * Default is `"Magnum X Application"`.
          */
-        inline Configuration* setTitle(std::string title) {
+        Configuration* setTitle(std::string title) {
             _title = std::move(title);
             return this;
         }
 
         /** @brief Window size */
-        inline Vector2i size() const { return _size; }
+        Vector2i size() const { return _size; }
 
         /**
          * @brief Set window size
@@ -212,7 +215,7 @@ class AbstractXApplication::Configuration {
          *
          * Default is `{800, 600}`.
          */
-        inline Configuration* setSize(const Vector2i& size) {
+        Configuration* setSize(const Vector2i& size) {
             _size = size;
             return this;
         }
@@ -260,22 +263,22 @@ class AbstractXApplication::InputEvent {
          *
          * @see modifiers()
          */
-        typedef Corrade::Containers::EnumSet<Modifier, unsigned int> Modifiers;
-
-        inline virtual ~InputEvent() {}
+        typedef Containers::EnumSet<Modifier, unsigned int> Modifiers;
 
         /** @copydoc GlutApplication::InputEvent::setAccepted() */
-        inline void setAccepted(bool accepted = true) { _accepted = accepted; }
+        void setAccepted(bool accepted = true) { _accepted = accepted; }
 
         /** @copydoc GlutApplication::InputEvent::isAccepted() */
-        inline bool isAccepted() { return _accepted; }
+        constexpr bool isAccepted() const { return _accepted; }
 
         /** @brief Modifiers */
-        inline Modifiers modifiers() const { return _modifiers; }
+        constexpr Modifiers modifiers() const { return _modifiers; }
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
-        inline InputEvent(Modifiers modifiers): _modifiers(modifiers), _accepted(false) {}
+        constexpr InputEvent(Modifiers modifiers): _modifiers(modifiers), _accepted(false) {}
+
+        ~InputEvent() = default;
     #endif
 
     private:
@@ -373,13 +376,13 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
         };
 
         /** @brief Key */
-        inline Key key() const { return _key; }
+        constexpr Key key() const { return _key; }
 
         /** @brief Position */
-        inline Vector2i position() const { return _position; }
+        constexpr Vector2i position() const { return _position; }
 
     private:
-        inline KeyEvent(Key key, Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _key(key), _position(position) {}
+        constexpr KeyEvent(Key key, Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _key(key), _position(position) {}
 
         const Key _key;
         const Vector2i _position;
@@ -408,13 +411,13 @@ class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent 
         };
 
         /** @brief Button */
-        inline Button button() const { return _button; }
+        constexpr Button button() const { return _button; }
 
         /** @brief Position */
-        inline Vector2i position() const { return _position; }
+        constexpr Vector2i position() const { return _position; }
 
     private:
-        inline MouseEvent(Button button, Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _button(button), _position(position) {}
+        constexpr MouseEvent(Button button, Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _button(button), _position(position) {}
 
         const Button _button;
         const Vector2i _position;
@@ -430,10 +433,10 @@ class AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEv
 
     public:
         /** @brief Position */
-        inline Vector2i position() const { return _position; }
+        constexpr Vector2i position() const { return _position; }
 
     private:
-        inline MouseMoveEvent(Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _position(position) {}
+        constexpr MouseMoveEvent(Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _position(position) {}
 
         const Vector2i _position;
 };

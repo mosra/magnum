@@ -27,16 +27,18 @@
 namespace Magnum {
 
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const typename DimensionTraits<Dimensions, GLsizei>::VectorType& size, Format format, Type type, const GLvoid* data, Buffer::Usage usage) {
+template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ImageFormat format, ImageType type, const void* data, Buffer::Usage usage) {
     _format = format;
     _type = type;
     _size = size;
-    _buffer.setData(pixelSize(format, type)*size.product(), data, usage);
+    _buffer.setData(pixelSize()*size.product(), data, usage);
 }
 
-template class BufferImage<1>;
-template class BufferImage<2>;
-template class BufferImage<3>;
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template class MAGNUM_EXPORT BufferImage<1>;
+template class MAGNUM_EXPORT BufferImage<2>;
+template class MAGNUM_EXPORT BufferImage<3>;
+#endif
 #endif
 
 }

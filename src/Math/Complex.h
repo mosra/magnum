@@ -37,14 +37,13 @@
 
 namespace Magnum { namespace Math {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
-    /* No assertions fired, for internal use */
-    template<class T> inline static Complex<T> complexFromMatrix(const Matrix<2, T>& matrix) {
+    /* No assertions fired, for internal use. Not private member because used
+       from outside the class. */
+    template<class T> constexpr static Complex<T> complexFromMatrix(const Matrix<2, T>& matrix) {
         return {matrix[0][0], matrix[0][1]};
     }
 }
-#endif
 
 /**
 @brief %Complex number
@@ -65,7 +64,7 @@ template<class T> class Complex {
          * @f]
          * @see dot() const
          */
-        inline static T dot(const Complex<T>& a, const Complex<T>& b) {
+        static T dot(const Complex<T>& a, const Complex<T>& b) {
             return a._real*b._real + a._imaginary*b._imaginary;
         }
 
@@ -77,7 +76,7 @@ template<class T> class Complex {
          * @f]
          * @see isNormalized(), Quaternion::angle(), Vector::angle()
          */
-        inline static Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
+        static Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
             CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
                            "Math::Complex::angle(): complex numbers must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
             return Rad<T>(std::acos(normalizedA._real*normalizedB._real + normalizedA._imaginary*normalizedB._imaginary));
@@ -92,7 +91,7 @@ template<class T> class Complex {
          * @f]
          * @see angle(), Matrix3::rotation(), Quaternion::rotation()
          */
-        inline static Complex<T> rotation(Rad<T> angle) {
+        static Complex<T> rotation(Rad<T> angle) {
             return {std::cos(angle.toUnderlyingType()), std::sin(angle.toUnderlyingType())};
         }
 
@@ -102,7 +101,7 @@ template<class T> class Complex {
          * Expects that the matrix is orthogonal (i.e. pure rotation).
          * @see toMatrix(), DualComplex::fromMatrix(), Matrix::isOrthogonal()
          */
-        inline static Complex<T> fromMatrix(const Matrix<2, T>& matrix) {
+        static Complex<T> fromMatrix(const Matrix<2, T>& matrix) {
             CORRADE_ASSERT(matrix.isOrthogonal(),
                 "Math::Complex::fromMatrix(): the matrix is not orthogonal", {});
             return Implementation::complexFromMatrix(matrix);
@@ -115,7 +114,7 @@ template<class T> class Complex {
          *      c = 1 + i0
          * @f]
          */
-        inline constexpr /*implicit*/ Complex(): _real(T(1)), _imaginary(T(0)) {}
+        constexpr /*implicit*/ Complex(): _real(T(1)), _imaginary(T(0)) {}
 
         /**
          * @brief Construct complex number from real and imaginary part
@@ -124,7 +123,7 @@ template<class T> class Complex {
          *      c = a + ib
          * @f]
          */
-        inline constexpr /*implicit*/ Complex(T real, T imaginary): _real(real), _imaginary(imaginary) {}
+        constexpr /*implicit*/ Complex(T real, T imaginary): _real(real), _imaginary(imaginary) {}
 
         /**
          * @brief Construct complex number from vector
@@ -134,16 +133,16 @@ template<class T> class Complex {
          * @f]
          * @see operator Vector2(), transformVector()
          */
-        inline constexpr explicit Complex(const Vector2<T>& vector): _real(vector.x()), _imaginary(vector.y()) {}
+        constexpr explicit Complex(const Vector2<T>& vector): _real(vector.x()), _imaginary(vector.y()) {}
 
         /** @brief Equality comparison */
-        inline bool operator==(const Complex<T>& other) const {
+        bool operator==(const Complex<T>& other) const {
             return TypeTraits<T>::equals(_real, other._real) &&
                    TypeTraits<T>::equals(_imaginary, other._imaginary);
         }
 
         /** @brief Non-equality comparison */
-        inline bool operator!=(const Complex<T>& other) const {
+        bool operator!=(const Complex<T>& other) const {
             return !operator==(other);
         }
 
@@ -155,15 +154,15 @@ template<class T> class Complex {
          * @f]
          * @see dot(), normalized()
          */
-        inline bool isNormalized() const {
+        bool isNormalized() const {
             return Implementation::isNormalizedSquared(dot());
         }
 
         /** @brief Real part */
-        inline constexpr T real() const { return _real; }
+        constexpr T real() const { return _real; }
 
         /** @brief Imaginary part */
-        inline constexpr T imaginary() const { return _imaginary; }
+        constexpr T imaginary() const { return _imaginary; }
 
         /**
          * @brief Convert complex number to vector
@@ -173,9 +172,9 @@ template<class T> class Complex {
          * @f]
          */
         #ifndef CORRADE_GCC44_COMPATIBILITY
-        inline constexpr explicit operator Vector2<T>() const {
+        constexpr explicit operator Vector2<T>() const {
         #else
-        inline constexpr operator Vector2<T>() const {
+        constexpr operator Vector2<T>() const {
         #endif
             return {_real, _imaginary};
         }
@@ -188,7 +187,7 @@ template<class T> class Complex {
          * @f]
          * @see rotation()
          */
-        inline Rad<T> angle() const {
+        Rad<T> angle() const {
             return Rad<T>(std::atan2(_imaginary, _real));
         }
 
@@ -216,7 +215,7 @@ template<class T> class Complex {
          *      c_0 + c_1 = (a_0 + a_1) + i(b_0 + b_1)
          * @f]
          */
-        inline Complex<T>& operator+=(const Complex<T>& other) {
+        Complex<T>& operator+=(const Complex<T>& other) {
             _real += other._real;
             _imaginary += other._imaginary;
             return *this;
@@ -227,7 +226,7 @@ template<class T> class Complex {
          *
          * @see operator+=()
          */
-        inline Complex<T> operator+(const Complex<T>& other) const {
+        Complex<T> operator+(const Complex<T>& other) const {
             return Complex<T>(*this) += other;
         }
 
@@ -238,7 +237,7 @@ template<class T> class Complex {
          *      -c = -a -ib
          * @f]
          */
-        inline Complex<T> operator-() const {
+        Complex<T> operator-() const {
             return {-_real, -_imaginary};
         }
 
@@ -249,7 +248,7 @@ template<class T> class Complex {
          *      c_0 - c_1 = (a_0 - a_1) + i(b_0 - b_1)
          * @f]
          */
-        inline Complex<T>& operator-=(const Complex<T>& other) {
+        Complex<T>& operator-=(const Complex<T>& other) {
             _real -= other._real;
             _imaginary -= other._imaginary;
             return *this;
@@ -260,7 +259,7 @@ template<class T> class Complex {
          *
          * @see operator-=()
          */
-        inline Complex<T> operator-(const Complex<T>& other) const {
+        Complex<T> operator-(const Complex<T>& other) const {
             return Complex<T>(*this) -= other;
         }
 
@@ -271,7 +270,7 @@ template<class T> class Complex {
          *      c \cdot t = ta + itb
          * @f]
          */
-        inline Complex<T>& operator*=(T scalar) {
+        Complex<T>& operator*=(T scalar) {
             _real *= scalar;
             _imaginary *= scalar;
             return *this;
@@ -282,7 +281,7 @@ template<class T> class Complex {
          *
          * @see operator*=(T)
          */
-        inline Complex<T> operator*(T scalar) const {
+        Complex<T> operator*(T scalar) const {
             return Complex<T>(*this) *= scalar;
         }
 
@@ -293,7 +292,7 @@ template<class T> class Complex {
          *      \frac c t = \frac a t + i \frac b t
          * @f]
          */
-        inline Complex<T>& operator/=(T scalar) {
+        Complex<T>& operator/=(T scalar) {
             _real /= scalar;
             _imaginary /= scalar;
             return *this;
@@ -304,7 +303,7 @@ template<class T> class Complex {
          *
          * @see operator/=(T)
          */
-        inline Complex<T> operator/(T scalar) const {
+        Complex<T> operator/(T scalar) const {
             return Complex<T>(*this) /= scalar;
         }
 
@@ -315,7 +314,7 @@ template<class T> class Complex {
          *      c_0 c_1 = (a_0 + ib_0)(a_1 + ib_1) = (a_0 a_1 - b_0 b_1) + i(a_1 b_0 + a_0 b_1)
          * @f]
          */
-        inline Complex<T> operator*(const Complex<T>& other) const {
+        Complex<T> operator*(const Complex<T>& other) const {
             return {_real*other._real - _imaginary*other._imaginary,
                     _imaginary*other._real + _real*other._imaginary};
         }
@@ -329,7 +328,7 @@ template<class T> class Complex {
          * @f]
          * @see dot(const Complex&, const Complex&), isNormalized()
          */
-        inline T dot() const {
+        T dot() const {
             return dot(*this, *this);
         }
 
@@ -342,7 +341,7 @@ template<class T> class Complex {
          * @f]
          * @see isNormalized()
          */
-        inline T length() const {
+        T length() const {
             /** @todo Remove when NaCl's newlib has this fixed */
             #ifndef CORRADE_TARGET_NACL_NEWLIB
             return std::hypot(_real, _imaginary);
@@ -356,7 +355,7 @@ template<class T> class Complex {
          *
          * @see isNormalized()
          */
-        inline Complex<T> normalized() const {
+        Complex<T> normalized() const {
             return (*this)/length();
         }
 
@@ -367,7 +366,7 @@ template<class T> class Complex {
          *      c^* = a - ib
          * @f]
          */
-        inline Complex<T> conjugated() const {
+        Complex<T> conjugated() const {
             return {_real, -_imaginary};
         }
 
@@ -379,7 +378,7 @@ template<class T> class Complex {
          *      c^{-1} = \frac{c^*}{|c|^2} = \frac{c^*}{c \cdot c}
          * @f]
          */
-        inline Complex<T> inverted() const {
+        Complex<T> inverted() const {
             return conjugated()/dot();
         }
 
@@ -392,7 +391,7 @@ template<class T> class Complex {
          * @f]
          * @see isNormalized(), inverted()
          */
-        inline Complex<T> invertedNormalized() const {
+        Complex<T> invertedNormalized() const {
             CORRADE_ASSERT(isNormalized(),
                            "Math::Complex::invertedNormalized(): complex number must be normalized",
                            Complex<T>(std::numeric_limits<T>::quiet_NaN(), {}));
@@ -407,7 +406,7 @@ template<class T> class Complex {
          * @f]
          * @see Complex(const Vector2&), operator Vector2(), Matrix3::transformVector()
          */
-        inline Vector2<T> transformVector(const Vector2<T>& vector) const {
+        Vector2<T> transformVector(const Vector2<T>& vector) const {
             return Vector2<T>((*this)*Complex<T>(vector));
         }
 

@@ -151,7 +151,7 @@ Simplified example:
 @code
 class Bomb: public Object3D, SceneGraph::Drawable3D<>, SceneGraph:.Animable3D<> {
     public:
-        inline Bomb(Object3D* parent): Object3D(parent), SceneGraph::Drawable3D<>(this), SceneGraph::Animable3D<>(this) {}
+        Bomb(Object3D* parent): Object3D(parent), SceneGraph::Drawable3D<>(this), SceneGraph::Animable3D<>(this) {}
 
     protected:
         // drawing implementation for Drawable feature

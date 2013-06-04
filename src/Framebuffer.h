@@ -114,13 +114,13 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
                  * @brief Constructor
                  * @param id        Color attachment id
                  */
-                inline constexpr explicit ColorAttachment(UnsignedInt id): attachment(GL_COLOR_ATTACHMENT0 + id) {}
+                constexpr explicit ColorAttachment(UnsignedInt id): attachment(GL_COLOR_ATTACHMENT0 + id) {}
 
                 #ifndef DOXYGEN_GENERATING_OUTPUT
                 #ifndef CORRADE_GCC44_COMPATIBILITY
-                inline constexpr explicit operator GLenum() const { return attachment; }
+                constexpr explicit operator GLenum() const { return attachment; }
                 #else
-                inline constexpr operator GLenum() const { return attachment; }
+                constexpr operator GLenum() const { return attachment; }
                 #endif
                 #endif
 
@@ -139,18 +139,18 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
                 static const DrawAttachment None;
 
                 /** @brief Color attachment */
-                inline constexpr /*implicit*/ DrawAttachment(Framebuffer::ColorAttachment attachment): attachment(GLenum(attachment)) {}
+                constexpr /*implicit*/ DrawAttachment(Framebuffer::ColorAttachment attachment): attachment(GLenum(attachment)) {}
 
                 #ifndef DOXYGEN_GENERATING_OUTPUT
                 #ifndef CORRADE_GCC44_COMPATIBILITY
-                inline constexpr explicit operator GLenum() const { return attachment; }
+                constexpr explicit operator GLenum() const { return attachment; }
                 #else
-                inline constexpr operator GLenum() const { return attachment; }
+                constexpr operator GLenum() const { return attachment; }
                 #endif
                 #endif
 
             private:
-                inline constexpr explicit DrawAttachment(GLenum attachment): attachment(attachment) {}
+                constexpr explicit DrawAttachment(GLenum attachment): attachment(attachment) {}
 
                 GLenum attachment;
         };
@@ -180,18 +180,18 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
                 #endif
 
                 /** @brief Color buffer */
-                inline constexpr /*implicit*/ BufferAttachment(Framebuffer::ColorAttachment attachment): attachment(GLenum(attachment)) {}
+                constexpr /*implicit*/ BufferAttachment(Framebuffer::ColorAttachment attachment): attachment(GLenum(attachment)) {}
 
                 #ifndef DOXYGEN_GENERATING_OUTPUT
                 #ifndef CORRADE_GCC44_COMPATIBILITY
-                inline constexpr explicit operator GLenum() const { return attachment; }
+                constexpr explicit operator GLenum() const { return attachment; }
                 #else
-                inline constexpr operator GLenum() const { return attachment; }
+                constexpr operator GLenum() const { return attachment; }
                 #endif
                 #endif
 
             private:
-                inline constexpr explicit BufferAttachment(GLenum attachment): attachment(attachment) {}
+                constexpr explicit BufferAttachment(GLenum attachment): attachment(attachment) {}
 
                 GLenum attachment;
         };
@@ -212,18 +212,18 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
                 static const InvalidationAttachment Stencil;
 
                 /** @brief Invalidate color buffer */
-                inline constexpr /*implicit*/ InvalidationAttachment(Framebuffer::ColorAttachment attachment): attachment(GLenum(attachment)) {}
+                constexpr /*implicit*/ InvalidationAttachment(Framebuffer::ColorAttachment attachment): attachment(GLenum(attachment)) {}
 
                 #ifndef DOXYGEN_GENERATING_OUTPUT
                 #ifndef CORRADE_GCC44_COMPATIBILITY
-                inline constexpr explicit operator GLenum() const { return attachment; }
+                constexpr explicit operator GLenum() const { return attachment; }
                 #else
-                inline constexpr operator GLenum() const { return attachment; }
+                constexpr operator GLenum() const { return attachment; }
                 #endif
                 #endif
 
             private:
-                inline constexpr explicit InvalidationAttachment(GLenum attachment): attachment(attachment) {}
+                constexpr explicit InvalidationAttachment(GLenum attachment): attachment(attachment) {}
 
                 GLenum attachment;
         };
@@ -282,7 +282,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl{DrawBuffers} in OpenGL ES 3.0
          * @requires_gles30 %Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
          */
-        inline Framebuffer* mapForDraw(DrawAttachment attachment) {
+        Framebuffer* mapForDraw(DrawAttachment attachment) {
             (this->*drawBufferImplementation)(GLenum(attachment));
             return this;
         }
@@ -330,7 +330,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
-        inline Framebuffer* mapForRead(ColorAttachment attachment) {
+        Framebuffer* mapForRead(ColorAttachment attachment) {
             (this->*readBufferImplementation)(GLenum(attachment));
             return this;
         }
@@ -347,7 +347,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferRenderbuffer} or
          *      @fn_gl_extension{NamedFramebufferRenderbuffer,EXT,direct_state_access}
          */
-        inline Framebuffer* attachRenderbuffer(BufferAttachment attachment, Renderbuffer* renderbuffer) {
+        Framebuffer* attachRenderbuffer(BufferAttachment attachment, Renderbuffer* renderbuffer) {
             (this->*renderbufferImplementation)(attachment, renderbuffer);
             return this;
         }
@@ -367,7 +367,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access}
          * @requires_gl Only 2D and 3D textures are available in OpenGL ES.
          */
-        inline Framebuffer* attachTexture1D(BufferAttachment attachment, Texture1D* texture, Int level) {
+        Framebuffer* attachTexture1D(BufferAttachment attachment, Texture1D* texture, Int level) {
             (this->*texture1DImplementation)(attachment, texture, level);
             return this;
         }
@@ -402,7 +402,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @see attachTexture2D(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
          *      or @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
          */
-        inline Framebuffer* attachCubeMapTexture(BufferAttachment attachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, Int level) {
+        Framebuffer* attachCubeMapTexture(BufferAttachment attachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, Int level) {
             (this->*texture2DImplementation)(attachment, GLenum(coordinate), texture->id(), level);
             return this;
         }
@@ -422,7 +422,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{NamedFramebufferTexture3D,EXT,direct_state_access}
          * @requires_es_extension %Extension @es_extension{OES,texture_3D}
          */
-        inline Framebuffer* attachTexture3D(BufferAttachment attachment, Texture3D* texture, Int level, Int layer) {
+        Framebuffer* attachTexture3D(BufferAttachment attachment, Texture3D* texture, Int level, Int layer) {
             /** @todo Check for texture target compatibility */
             (this->*texture3DImplementation)(attachment, texture, level, layer);
             return this;
@@ -430,7 +430,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline Framebuffer* setViewport(const Rectanglei& rectangle) {
+        Framebuffer* setViewport(const Rectanglei& rectangle) {
             AbstractFramebuffer::setViewport(rectangle);
             return this;
         }

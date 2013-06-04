@@ -33,7 +33,7 @@ namespace Magnum { namespace SceneGraph { namespace Test {
 typedef Object<RigidMatrixTransformation3D<>> Object3D;
 typedef Scene<RigidMatrixTransformation3D<>> Scene3D;
 
-class RigidMatrixTransformation3DTest: public Corrade::TestSuite::Tester {
+class RigidMatrixTransformation3DTest: public TestSuite::Tester {
     public:
         explicit RigidMatrixTransformation3DTest();
 

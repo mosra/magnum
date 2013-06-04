@@ -54,7 +54,46 @@ class AbstractTranslationRotationScaling3D: public AbstractTranslationRotation3D
          *
          * @see Vector3::xScale(), Vector3::yScale(), Vector3::zScale()
          */
-        virtual AbstractTranslationRotationScaling3D<T>* scale(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) = 0;
+        AbstractTranslationRotationScaling3D<T>* scale(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
+            doScale(vector, type);
+            return this;
+        }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        AbstractTranslationRotationScaling3D<T>* resetTransformation() {
+            AbstractTranslationRotation3D<T>::resetTransformation();
+            return this;
+        }
+        AbstractTranslationRotationScaling3D<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
+            AbstractTranslationRotation3D<T>::translate(vector, type);
+            return this;
+        }
+        AbstractTranslationRotationScaling3D<T>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
+            AbstractTranslationRotation3D<T>::rotate(angle, normalizedAxis, type);
+            return this;
+        }
+        AbstractTranslationRotationScaling3D<T>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+            AbstractTranslationRotation3D<T>::rotateX(angle, type);
+            return this;
+        }
+        AbstractTranslationRotationScaling3D<T>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+            AbstractTranslationRotation3D<T>::rotateY(angle, type);
+            return this;
+        }
+        AbstractTranslationRotationScaling3D<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+            AbstractTranslationRotation3D<T>::rotateZ(angle, type);
+            return this;
+        }
+        #endif
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /** @brief Polymorphic implementation for scale() */
+        virtual void doScale(const Math::Vector3<T>& vector, TransformationType type) = 0;
 };
 
 template<class T> inline AbstractTranslationRotationScaling3D<T>::AbstractTranslationRotationScaling3D() = default;

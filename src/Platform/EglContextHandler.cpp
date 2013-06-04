@@ -99,7 +99,7 @@ void EglContextHandler::createContext(EGLNativeWindowType window) {
         Error() << "Cannot create EGL context:" << errorString(eglGetError());
         std::exit(1);
     }
-    if(!(surface = eglCreateWindowSurface(display, config, window, NULL))) {
+    if(!(surface = eglCreateWindowSurface(display, config, window, nullptr))) {
         Error() << "Cannot create window surface:" << errorString(eglGetError());
         std::exit(1);
     }

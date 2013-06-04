@@ -120,6 +120,7 @@ namespace GL {
         _extension(GL,ARB,shader_precision,             GL400, GL410) // #98
         _extension(GL,ARB,vertex_attrib_64bit,          GL300, GL410) // #99
         _extension(GL,ARB,viewport_array,               GL210, GL410) // #100
+        _extension(GL,ARB,robustness,                   GL210,  None) // #105
         _extension(GL,ARB,base_instance,                GL210, GL420) // #107
         _extension(GL,ARB,shading_language_420pack,     GL300, GL420) // #108
         _extension(GL,ARB,transform_feedback_instanced, GL210, GL420) // #109
@@ -186,6 +187,7 @@ namespace GL {
     #line 1
     namespace ANGLE {
         _extension(GL,ANGLE,framebuffer_blit,       GLES200, GLES300) // #83
+        _extension(GL,ANGLE,framebuffer_multisample, GLES200, GLES300) // #84
         _extension(GL,ANGLE,depth_texture,          GLES200, GLES300) // #138
     } namespace APPLE {
         _extension(GL,APPLE,framebuffer_multisample, GLES200, GLES300) // #78
@@ -204,8 +206,10 @@ namespace GL {
         _extension(GL,EXT,separate_shader_objects,  GLES200,    None) // #101
         _extension(GL,EXT,texture_rg,               GLES200, GLES300) // #103
         _extension(GL,EXT,sRGB,                     GLES200,    None) // #105
+        _extension(GL,EXT,robustness,               GLES200,    None) // #105
         _extension(GL,EXT,texture_storage,          GLES200, GLES300) // #108
         _extension(GL,EXT,map_buffer_range,         GLES200, GLES300) // #121
+        _extension(GL,EXT,disjoint_timer_query,     GLES200,    None) // #150
     } namespace NV {
         _extension(GL,NV,draw_buffers,              GLES200, GLES300) // #91
         _extension(GL,NV,read_buffer,               GLES200, GLES300) // #93
@@ -214,6 +218,7 @@ namespace GL {
         _extension(GL,NV,read_stencil,              GLES200,    None) // #94
         _extension(GL,NV,read_depth_stencil,        GLES200, GLES300) // #94
         _extension(GL,NV,framebuffer_blit,          GLES200, GLES300) // #142
+        _extension(GL,NV,framebuffer_multisample,   GLES200, GLES300) // #143
         _extension(GL,NV,texture_border_clamp,      GLES200,    None) // #149
     } namespace OES {
         _extension(GL,OES,depth24,                  GLES200, GLES300) // #24
@@ -231,6 +236,7 @@ namespace GL {
         _extension(GL,OES,vertex_half_float,        GLES200, GLES300) // #38
         _extension(GL,OES,packed_depth_stencil,     GLES200, GLES300) // #43
         _extension(GL,OES,depth_texture,            GLES200, GLES300) // #44
+        _extension(GL,OES,standard_derivatives,     GLES200, GLES300) // #45
         _extension(GL,OES,vertex_array_object,      GLES200, GLES300) // #71
         _extension(GL,OES,required_internalformat,  GLES200, GLES300) // #?
     }

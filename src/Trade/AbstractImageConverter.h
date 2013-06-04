@@ -48,8 +48,8 @@ Plugin implements function features() and one or more of convertToImage(),
 convertToData() or convertToFile() functions based on what features are
 supported.
 */
-class MAGNUM_EXPORT AbstractImageConverter: public Corrade::PluginManager::AbstractPlugin {
-    PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImageConverter/0.1")
+class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin {
+    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImageConverter/0.1")
 
     public:
         /**
@@ -73,13 +73,13 @@ class MAGNUM_EXPORT AbstractImageConverter: public Corrade::PluginManager::Abstr
          *
          * @see features()
          */
-        typedef Corrade::Containers::EnumSet<Feature, UnsignedByte> Features;
+        typedef Containers::EnumSet<Feature, UnsignedByte> Features;
 
         /** @brief Default constructor */
         explicit AbstractImageConverter();
 
         /** @brief Plugin manager constructor */
-        explicit AbstractImageConverter(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin);
+        explicit AbstractImageConverter(PluginManager::AbstractManager* manager, std::string plugin);
 
         /** @brief Features supported by this converter */
         virtual Features features() const = 0;

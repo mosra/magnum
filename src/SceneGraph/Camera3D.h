@@ -108,14 +108,14 @@ class MAGNUM_SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3, T> {
         Camera3D<T>* setPerspective(Math::Rad<T> fov, T aspectRatio, T near, T far);
 
         /** @brief Near clipping plane */
-        inline T near() const { return _near; }
+        T near() const { return _near; }
 
         /** @brief Far clipping plane */
-        inline T far() const { return _far; }
+        T far() const { return _far; }
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline Camera3D<T>* setAspectRatioPolicy(AspectRatioPolicy policy) {
+        Camera3D<T>* setAspectRatioPolicy(AspectRatioPolicy policy) {
             AbstractCamera<3, T>::setAspectRatioPolicy(policy);
             return this;
         }

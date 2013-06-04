@@ -25,11 +25,14 @@
 */
 
 /** @file
- * @brief Class Magnum::AbstractQuery, Magnum::Query, Magnum::SampleQuery, Magnum::TimeQuery
+ * @brief Class Magnum::AbstractQuery, Magnum::PrimitiveQuery, Magnum::SampleQuery, Magnum::TimeQuery
  */
 
-#include "Magnum.h"
+#include <Utility/Assert.h>
+
 #include "OpenGL.h"
+#include "Types.h"
+#include "magnumConfigure.h"
 #include "magnumVisibility.h"
 
 namespace Magnum {
@@ -37,12 +40,14 @@ namespace Magnum {
 /**
 @brief Base class for queries
 
-See Query, SampleQuery, TimeQuery documentation for more information.
+See PrimitiveQuery, SampleQuery and TimeQuery documentation for more
+information.
 @todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
 @requires_gles30 %Extension @es_extension{EXT,occlusion_query_boolean}
 */
 class MAGNUM_EXPORT AbstractQuery {
     public:
+        #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
          * @brief Constructor
          *
@@ -57,10 +62,11 @@ class MAGNUM_EXPORT AbstractQuery {
          * Deletes assigned OpenGL query.
          * @see @fn_gl{DeleteQueries}
          */
-        virtual ~AbstractQuery() = 0;
+        ~AbstractQuery();
+        #endif
 
         /** @brief OpenGL query ID */
-        inline GLuint id() const { return _id; }
+        GLuint id() const { return _id; }
 
         /**
          * @brief Whether the result is available
@@ -80,20 +86,38 @@ class MAGNUM_EXPORT AbstractQuery {
          * @requires_gl33 %Extension @extension{ARB,timer_query} (result type
          *      @ref Magnum::UnsignedInt "UnsignedInt" and @ref Magnum::Long
          *      "Long")
-         * @requires_gl Result types @ref Magnum::Int "Int", @ref Magnum::UnsignedLong "UnsignedLong"
-         *      and @ref Magnum::Long "Long" are not available in OpenGL ES.
+         * @requires_es_extension %Extension @es_extension{EXT,disjoint_timer_query}
+         *      for result types @ref Magnum::Int "Int", @ref Magnum::UnsignedLong "UnsignedLong"
+         *      @ref Magnum::Long "Long".
          */
         template<class T> T result();
 
+        /**
+         * @brief End query
+         *
+         * The result can be then retrieved by calling result().
+         * @see @fn_gl{EndQuery}
+         */
+        void end();
+
+    protected:
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        explicit AbstractQuery();
+        ~AbstractQuery();
+        #endif
+
+        void begin(GLenum target);
+
     private:
         GLuint _id;
+        GLenum target;
 };
 
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> bool MAGNUM_EXPORT AbstractQuery::result<bool>();
 template<> UnsignedInt MAGNUM_EXPORT AbstractQuery::result<UnsignedInt>();
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES3
 template<> Int MAGNUM_EXPORT AbstractQuery::result<Int>();
 template<> UnsignedLong MAGNUM_EXPORT AbstractQuery::result<UnsignedLong>();
 template<> Long MAGNUM_EXPORT AbstractQuery::result<Long>();
@@ -102,7 +126,7 @@ template<> Long MAGNUM_EXPORT AbstractQuery::result<Long>();
 
 #ifndef MAGNUM_TARGET_GLES2
 /**
-@brief %Query for primitives and elapsed time
+@brief Query for primitives and elapsed time
 
 Queries count of generated primitives from vertex shader, geometry shader or
 transform feedback and elapsed time. Example usage:
@@ -122,10 +146,11 @@ UnsignedInt primitiveCount = q.result<UnsignedInt>();
 @endcode
 @requires_gl30 %Extension @extension{EXT,transform_feedback}
 @requires_gles30 Only sample queries are available on OpenGL ES 2.0.
+@todo glBeginQueryIndexed
 */
-class MAGNUM_EXPORT Query: public AbstractQuery {
+class PrimitiveQuery: public AbstractQuery {
     public:
-        /** @brief %Query target */
+        /** @brief Query target */
         enum Target: GLenum {
             #ifndef MAGNUM_TARGET_GLES
             /**
@@ -139,23 +164,7 @@ class MAGNUM_EXPORT Query: public AbstractQuery {
 
             /** Count of primitives written to transform feedback buffer. */
             TransformFeedbackPrimitivesWritten = GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN
-
-            #ifndef MAGNUM_TARGET_GLES
-            ,
-
-            /**
-             * Elapsed time
-             * @requires_gl33 %Extension @extension{ARB,timer_query}
-             * @requires_gl Only transform feedback query is available in
-             *      OpenGL ES.
-             */
-            TimeElapsed = GL_TIME_ELAPSED
-            #endif
         };
-
-        explicit Query();
-
-        ~Query();
 
         /**
          * @brief Begin query
@@ -163,23 +172,14 @@ class MAGNUM_EXPORT Query: public AbstractQuery {
          * Begins counting of given @p target until end() is called.
          * @see @fn_gl{BeginQuery}
          */
-        void begin(Target target);
-
-        /**
-         * @brief End query
-         *
-         * The result can be then retrieved by calling result().
-         * @see @fn_gl{EndQuery}
-         */
-        void end();
-
-    private:
-        Target* target;
+        void begin(Target target) {
+            AbstractQuery::begin(GLenum(target));
+        }
 };
 #endif
 
 /**
-@brief %Query for samples
+@brief Query for samples
 
 Queries count of samples passed from fragment shader or boolean value
 indicating whether any samples passed. Can be used for example for conditional
@@ -214,9 +214,9 @@ q.endConditionalRender();
 @endcode
 @requires_gles30 %Extension @es_extension{EXT,occlusion_query_boolean}
 */
-class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
+class SampleQuery: public AbstractQuery {
     public:
-        /** @brief %Query target */
+        /** @brief Query target */
         enum Target: GLenum {
             #ifndef MAGNUM_TARGET_GLES
             /**
@@ -284,15 +284,10 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
         };
         #endif
 
-        explicit SampleQuery();
-
-        ~SampleQuery();
-
-        /** @copydoc Query::begin() */
-        void begin(Target target);
-
-        /** @copydoc Query::end() */
-        void end();
+        /** @copydoc PrimitiveQuery::begin() */
+        void begin(Target target) {
+            AbstractQuery::begin(GLenum(target));
+        }
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -302,7 +297,7 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
          * @requires_gl30 %Extension @extension{NV,conditional_render}
          * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
-        inline void beginConditionalRender(ConditionalRenderMode mode) {
+        void beginConditionalRender(ConditionalRenderMode mode) {
             glBeginConditionalRender(id(), static_cast<GLenum>(mode));
         }
 
@@ -313,25 +308,21 @@ class MAGNUM_EXPORT SampleQuery: public AbstractQuery {
          * @requires_gl30 %Extension @extension{NV,conditional_render}
          * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
-        inline void endConditionalRender() {
+        void endConditionalRender() {
             glEndConditionalRender();
         }
         #endif
-
-    private:
-        Target* target;
 };
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES3
 /**
-@brief %Query for elapsed time
+@brief Query for elapsed time
 
-Queries timestamp after all previous OpenGL calls have been processed. It is
-similar to @ref Query::Target "Query::Target::TimeElapsed" query, but this
-query just retrieves timestamp, not time duration between Query::begin() and
-Query::end() calls. Example usage, compared to @ref Query::Target "Query::Target::TimeElapsed":
+Queries timestamp after all previous OpenGL calls have been processed. It can
+query either duration of sequence of commands or absolute timestamp. Example
+usage of both methods:
 @code
-Query q1, q2;
+TimeQuery q1, q2;
 q1.begin(Query::Target::TimeElapsed);
 // rendering...
 q1.end();
@@ -352,22 +343,42 @@ UnsignedInt tmp = q2.result<UnsignedInt>();
 UnsignedInt timeElapsed1 = tmp-q1.result<UnsignedInt>();
 UnsignedInt timeElapsed2 = q3.result<UnsignedInt>()-tmp;
 @endcode
-Using this query results in fewer OpenGL calls when doing more measures.
+Using the latter results in fewer OpenGL calls when doing more measures.
 @requires_gl33 %Extension @extension{ARB,timer_query}
-@requires_gl Timer query is not available in OpenGL ES.
+@requires_es_extension %Extension @es_extension{EXT,disjoint_timer_query}
 @todo timestamp with glGet + example usage
+@todo @es_extension{EXT,disjoint_timer_query} -- GL_GPU_DISJOINT_EXT support? where?
 */
 class TimeQuery: public AbstractQuery {
     public:
-        explicit TimeQuery();
+        /** @brief Query target */
+        enum class Target: GLenum {
+            /** Elapsed time */
+            #ifndef MAGNUM_TARGET_GLES
+            TimeElapsed = GL_TIME_ELAPSED
+            #else
+            TimeElapsed = GL_TIME_ELAPSED_EXT
+            #endif
+        };
 
         /**
          * @brief Query timestamp
          *
          * @see @fn_gl{QueryCounter} with @def_gl{TIMESTAMP}
          */
-        inline void timestamp() {
+        void timestamp() {
+            /** @todo Enable when extension wrangler for ES is available */
+            #ifndef MAGNUM_TARGET_GLES
             glQueryCounter(id(), GL_TIMESTAMP);
+            #else
+            //glQueryCounterEXT(id(), GL_TIMESTAMP);
+            CORRADE_INTERNAL_ASSERT(false);
+            #endif
+        }
+
+        /** @copydoc PrimitiveQuery::begin() */
+        void begin(Target target) {
+            AbstractQuery::begin(GLenum(target));
         }
 };
 #endif

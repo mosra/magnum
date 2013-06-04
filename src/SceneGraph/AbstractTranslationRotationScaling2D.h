@@ -54,7 +54,34 @@ class AbstractTranslationRotationScaling2D: public AbstractTranslationRotation2D
          *
          * @see Vector2::xScale(), Vector2::yScale()
          */
-        virtual AbstractTranslationRotationScaling2D<T>* scale(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) = 0;
+        AbstractTranslationRotationScaling2D<T>* scale(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
+            doScale(vector, type);
+            return this;
+        }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        AbstractTranslationRotationScaling2D<T>* resetTransformation() {
+            AbstractTranslationRotation2D<T>::resetTransformation();
+            return this;
+        }
+        AbstractTranslationRotationScaling2D<T>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
+            AbstractTranslationRotation2D<T>::translate(vector, type);
+            return this;
+        }
+        AbstractTranslationRotationScaling2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+            AbstractTranslationRotation2D<T>::rotate(angle, type);
+            return this;
+        }
+        #endif
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /** @brief Polymorphic implementation for scale() */
+        virtual void doScale(const Math::Vector2<T>& vector, TransformationType type) = 0;
 };
 
 template<class T> inline AbstractTranslationRotationScaling2D<T>::AbstractTranslationRotationScaling2D() = default;

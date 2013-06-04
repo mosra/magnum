@@ -33,7 +33,7 @@ namespace Magnum { namespace SceneGraph { namespace Test {
 typedef Object<DualComplexTransformation<>> Object2D;
 typedef Scene<DualComplexTransformation<>> Scene2D;
 
-class DualComplexTransformationTest: public Corrade::TestSuite::Tester {
+class DualComplexTransformationTest: public TestSuite::Tester {
     public:
         explicit DualComplexTransformationTest();
 

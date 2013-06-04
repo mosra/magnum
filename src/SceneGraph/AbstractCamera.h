@@ -36,7 +36,7 @@
 
 namespace Magnum { namespace SceneGraph {
 
-/** @relates AbstractCamera
+/**
 @brief Camera aspect ratio policy
 
 @see AbstractCamera::setAspectRatioPolicy()
@@ -47,11 +47,9 @@ enum class AspectRatioPolicy: UnsignedByte {
     Clip            /**< Clip on smaller side of view */
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<UnsignedInt dimensions, class T> typename DimensionTraits<dimensions, T>::MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Vector2i& viewport);
 }
-#endif
 
 /**
 @brief Base for cameras
@@ -90,7 +88,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
         virtual ~AbstractCamera() = 0;
 
         /** @brief Aspect ratio policy */
-        inline AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }
+        AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }
 
         /**
          * @brief Set aspect ratio policy
@@ -104,7 +102,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
          * Camera matrix describes world position relative to the camera and is
          * applied as first.
          */
-        inline typename DimensionTraits<dimensions, T>::MatrixType cameraMatrix() {
+        typename DimensionTraits<dimensions, T>::MatrixType cameraMatrix() {
             AbstractFeature<dimensions, T>::object()->setClean();
             return _cameraMatrix;
         }
@@ -116,7 +114,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
          * as last.
          * @see projectionSize()
          */
-        inline typename DimensionTraits<dimensions, T>::MatrixType projectionMatrix() const { return _projectionMatrix; }
+        typename DimensionTraits<dimensions, T>::MatrixType projectionMatrix() const { return _projectionMatrix; }
 
         /**
          * @brief Size of (near) XY plane in current projection
@@ -124,12 +122,12 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
          * Returns size of near XY plane computed from projection matrix.
          * @see projectionMatrix()
          */
-        inline Math::Vector2<T> projectionSize() const {
+        Math::Vector2<T> projectionSize() const {
             return {T(2.0)/_projectionMatrix[0].x(), T(2.0)/_projectionMatrix[1].y()};
         }
 
         /** @brief Viewport size */
-        inline Vector2i viewport() const { return _viewport; }
+        Vector2i viewport() const { return _viewport; }
 
         /**
          * @brief Set viewport size
@@ -149,12 +147,12 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
 
     protected:
         /** Recalculates camera matrix */
-        inline void cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType& invertedAbsoluteTransformationMatrix) override {
+        void cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType& invertedAbsoluteTransformationMatrix) override {
             _cameraMatrix = invertedAbsoluteTransformationMatrix;
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline void fixAspectRatio() {
+        void fixAspectRatio() {
             _projectionMatrix = Implementation::aspectRatioFix<dimensions, T>(_aspectRatioPolicy, {rawProjectionMatrix[0].x(), rawProjectionMatrix[1].y()}, _viewport)*rawProjectionMatrix;
         }
 

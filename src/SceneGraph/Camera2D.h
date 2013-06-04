@@ -82,7 +82,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Camera2D: public AbstractCamera<2, T> {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline Camera2D<T>* setAspectRatioPolicy(AspectRatioPolicy policy) {
+        Camera2D<T>* setAspectRatioPolicy(AspectRatioPolicy policy) {
             AbstractCamera<2, T>::setAspectRatioPolicy(policy);
             return this;
         }

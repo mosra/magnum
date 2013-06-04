@@ -26,12 +26,13 @@
 
 #include <vector>
 
-#include "Magnum.h"
+#include "OpenGL.h"
 
 namespace Magnum { namespace Implementation {
 
 struct TextureState {
-    inline TextureState(): maxSupportedLayerCount(0), maxSupportedAnisotropy(0.0f), currentLayer(0) {}
+    explicit TextureState();
+    ~TextureState();
 
     GLint maxSupportedLayerCount;
     GLfloat maxSupportedAnisotropy;

@@ -43,24 +43,23 @@ void BufferTexture::initializeContextBasedFunctionality(Context* context) {
     }
 }
 
-void BufferTexture::setBufferImplementationDefault(InternalFormat internalFormat, Buffer* buffer) {
+void BufferTexture::setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer* buffer) {
     bindInternal();
     glTexBuffer(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer->id());
 }
 
-void BufferTexture::setBufferImplementationDSA(InternalFormat internalFormat, Buffer* buffer) {
+void BufferTexture::setBufferImplementationDSA(BufferTextureFormat internalFormat, Buffer* buffer) {
     glTextureBufferEXT(id(), GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer->id());
 }
 
-void BufferTexture::setBufferRangeImplementationDefault(InternalFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size) {
+void BufferTexture::setBufferRangeImplementationDefault(BufferTextureFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size) {
     bindInternal();
     glTexBufferRange(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer->id(), offset, size);
 }
 
-void BufferTexture::setBufferRangeImplementationDSA(InternalFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size) {
+void BufferTexture::setBufferRangeImplementationDSA(BufferTextureFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size) {
     glTextureBufferRangeEXT(id(), GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer->id(), offset, size);
 }
-
 
 }
 #endif

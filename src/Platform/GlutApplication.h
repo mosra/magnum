@@ -101,18 +101,20 @@ class GlutApplication {
          */
         explicit GlutApplication(const Arguments& arguments, Configuration* configuration);
 
-        virtual ~GlutApplication();
-
         /**
          * @brief Execute main loop
          * @return Value for returning from `main()`.
          */
-        inline int exec() {
+        int exec() {
             glutMainLoop();
             return 0;
         }
 
     protected:
+        /* Nobody will need to have (and delete) GlutApplication*, thus this is
+           faster than public pure virtual destructor */
+        ~GlutApplication();
+
         /**
          * @brief Create context with given configuration
          *
@@ -159,9 +161,7 @@ class GlutApplication {
          *
          * Paints currently rendered framebuffer on screen.
          */
-        inline void swapBuffers() {
-            glutSwapBuffers();
-        }
+        void swapBuffers() { glutSwapBuffers(); }
 
         /**
          * @brief Redraw immediately
@@ -169,9 +169,7 @@ class GlutApplication {
          * Marks the window for redrawing, resulting in call to drawEvent()
          * in the next iteration.
          */
-        virtual inline void redraw() {
-            glutPostRedisplay();
-        }
+        virtual void redraw() { glutPostRedisplay(); }
 
         /*@}*/
 
@@ -205,17 +203,17 @@ class GlutApplication {
          * When mouse tracking is enabled, mouseMoveEvent() is called even
          * when no button is pressed. Mouse tracking is disabled by default.
          */
-        inline void setMouseTracking(bool enabled) {
+        void setMouseTracking(bool enabled) {
             glutPassiveMotionFunc(enabled ? staticMouseMoveEvent : nullptr);
         }
 
         /** @brief Set mouse cursor */
-        inline void setMouseCursor(MouseCursor cursor) {
+        void setMouseCursor(MouseCursor cursor) {
             glutSetCursor(static_cast<int>(cursor));
         }
 
         /** @brief Warp mouse cursor to given coordinates */
-        inline void warpMouseCursor(const Vector2i& position) {
+        void warpMouseCursor(const Vector2i& position) {
             glutWarpPointer(position.x(), position.y());
         }
 
@@ -250,7 +248,7 @@ class GlutApplication {
     private:
         void initialize(int& argc, char** argv);
 
-        inline static void staticViewportEvent(int x, int y) {
+        static void staticViewportEvent(int x, int y) {
             instance->viewportEvent({x, y});
         }
 
@@ -260,7 +258,7 @@ class GlutApplication {
 
         static void staticMouseMoveEvent(int x, int y);
 
-        inline static void staticDrawEvent() {
+        static void staticDrawEvent() {
             instance->drawEvent();
         }
 
@@ -286,7 +284,7 @@ class GlutApplication::Configuration {
         ~Configuration();
 
         /** @brief Window title */
-        inline std::string title() const { return _title; }
+        std::string title() const { return _title; }
 
         /**
          * @brief Set window title
@@ -294,13 +292,13 @@ class GlutApplication::Configuration {
          *
          * Default is `"Magnum GLUT Application"`.
          */
-        inline Configuration* setTitle(std::string title) {
+        Configuration* setTitle(std::string title) {
             _title = std::move(title);
             return this;
         }
 
         /** @brief Window size */
-        inline Vector2i size() const { return _size; }
+        Vector2i size() const { return _size; }
 
         /**
          * @brief Set window size
@@ -308,13 +306,13 @@ class GlutApplication::Configuration {
          *
          * Default is `{800, 600}`.
          */
-        inline Configuration* setSize(const Vector2i& size) {
+        Configuration* setSize(const Vector2i& size) {
             _size = size;
             return this;
         }
 
         /** @brief Sample count */
-        inline Int sampleCount() const { return _sampleCount; }
+        Int sampleCount() const { return _sampleCount; }
 
         /**
          * @brief Set sample count
@@ -324,7 +322,7 @@ class GlutApplication::Configuration {
          * ignored, GLUT either enables it or disables. See also
          * @ref Renderer::Feature "Renderer::Feature::Multisampling".
          */
-        inline Configuration* setSampleCount(Int count) {
+        Configuration* setSampleCount(Int count) {
             _sampleCount = count;
             return this;
         }
@@ -348,23 +346,21 @@ class GlutApplication::InputEvent {
     InputEvent& operator=(InputEvent&&) = delete;
 
     public:
-        inline virtual ~InputEvent() {}
-
         /**
          * @brief Set event as accepted
          *
          * If the event is ignored (i.e., not set as accepted), it might be
          * propagated elsewhere. By default is each event ignored.
          */
-        inline void setAccepted(bool accepted = true) { _accepted = accepted; }
+        void setAccepted(bool accepted = true) { _accepted = accepted; }
 
         /** @brief Whether the event is accepted */
-        inline bool isAccepted() { return _accepted; }
+        constexpr bool isAccepted() const { return _accepted; }
 
-    #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
-        inline InputEvent(): _accepted(false) {}
-    #endif
+        constexpr InputEvent(): _accepted(false) {}
+
+        ~InputEvent() = default;
 
     private:
         bool _accepted;
@@ -408,13 +404,13 @@ class GlutApplication::KeyEvent: public GlutApplication::InputEvent {
         };
 
         /** @brief Key */
-        inline Key key() const { return _key; }
+        constexpr Key key() const { return _key; }
 
         /** @brief Position */
-        inline Vector2i position() const { return _position; }
+        constexpr Vector2i position() const { return _position; }
 
     private:
-        inline KeyEvent(Key key, const Vector2i& position): _key(key), _position(position) {}
+        constexpr KeyEvent(Key key, const Vector2i& position): _key(key), _position(position) {}
 
         const Key _key;
         const Vector2i _position;
@@ -443,13 +439,13 @@ class GlutApplication::MouseEvent: public GlutApplication::InputEvent {
         };
 
         /** @brief Button */
-        inline Button button() const { return _button; }
+        constexpr Button button() const { return _button; }
 
         /** @brief Position */
-        inline Vector2i position() const { return _position; }
+        constexpr Vector2i position() const { return _position; }
 
     private:
-        inline MouseEvent(Button button, const Vector2i& position): _button(button), _position(position) {}
+        constexpr MouseEvent(Button button, const Vector2i& position): _button(button), _position(position) {}
 
         const Button _button;
         const Vector2i _position;
@@ -465,10 +461,10 @@ class GlutApplication::MouseMoveEvent: public GlutApplication::InputEvent {
 
     public:
         /** @brief Position */
-        inline Vector2i position() const { return _position; }
+        constexpr Vector2i position() const { return _position; }
 
     private:
-        inline MouseMoveEvent(const Vector2i& position): _position(position) {}
+        constexpr MouseMoveEvent(const Vector2i& position): _position(position) {}
 
         const Vector2i _position;
 };

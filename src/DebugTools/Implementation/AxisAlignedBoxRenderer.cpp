@@ -26,17 +26,17 @@
 
 #include "Mesh.h"
 #include "DebugTools/ShapeRenderer.h"
-#include "Physics/AxisAlignedBox.h"
-#include "Shaders/FlatShader.h"
+#include "Shapes/AxisAlignedBox.h"
+#include "Shaders/Flat.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<UnsignedInt dimensions> AxisAlignedBoxRenderer<dimensions>::AxisAlignedBoxRenderer(Physics::AxisAlignedBox<dimensions>& axisAlignedBox): axisAlignedBox(axisAlignedBox) {}
+template<UnsignedInt dimensions> AxisAlignedBoxRenderer<dimensions>::AxisAlignedBoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>* axisAlignedBox): axisAlignedBox(static_cast<const Shapes::Implementation::Shape<Shapes::AxisAlignedBox<dimensions>>*>(axisAlignedBox)->shape) {}
 
 template<UnsignedInt dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
     this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
-        DimensionTraits<dimensions>::MatrixType::translation((axisAlignedBox.transformedMin()+axisAlignedBox.transformedMax())/2)*
-        DimensionTraits<dimensions>::MatrixType::scaling(axisAlignedBox.transformedMax()-axisAlignedBox.transformedMin()))
+        DimensionTraits<dimensions>::MatrixType::translation((axisAlignedBox.min()+axisAlignedBox.max())/2)*
+        DimensionTraits<dimensions>::MatrixType::scaling(axisAlignedBox.max()-axisAlignedBox.min()))
         ->setColor(options->color())
         ->use();
     this->wireframeMesh->draw();

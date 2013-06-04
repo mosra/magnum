@@ -45,103 +45,103 @@ template<template<class> class Derived, class T> class Unit {
         typedef T Type;             /**< @brief Underlying data type */
 
         /** @brief Default constructor */
-        inline constexpr /*implicit*/ Unit(): value(T(0)) {}
+        constexpr /*implicit*/ Unit(): value(T(0)) {}
 
         /** @brief Explicit conversion from unitless type */
-        inline constexpr explicit Unit(T value): value(value) {}
+        constexpr explicit Unit(T value): value(value) {}
 
         /** @brief Construct from another underlying type */
-        template<class U> inline constexpr explicit Unit(Unit<Derived, U> value): value(value.value) {}
+        template<class U> constexpr explicit Unit(Unit<Derived, U> value): value(value.value) {}
 
         /** @brief Explicit conversion to underlying type */
-        inline constexpr T toUnderlyingType() const { return value; }
+        constexpr T toUnderlyingType() const { return value; }
 
         /** @brief Explicit conversion to underlying type */
         #ifndef CORRADE_GCC44_COMPATIBILITY
-        inline constexpr explicit operator T() const { return value; }
+        constexpr explicit operator T() const { return value; }
         #endif
 
         /** @brief Equality comparison */
-        inline constexpr bool operator==(Unit<Derived, T> other) const {
+        constexpr bool operator==(Unit<Derived, T> other) const {
             return TypeTraits<T>::equals(value, other.value);
         }
 
         /** @brief Non-equality comparison */
-        inline constexpr bool operator!=(Unit<Derived, T> other) const {
+        constexpr bool operator!=(Unit<Derived, T> other) const {
             return !operator==(other);
         }
 
         /** @brief Less than comparison */
-        inline constexpr bool operator<(Unit<Derived, T> other) const {
+        constexpr bool operator<(Unit<Derived, T> other) const {
             return value < other.value;
         }
 
         /** @brief Greater than comparison */
-        inline constexpr bool operator>(Unit<Derived, T> other) const {
+        constexpr bool operator>(Unit<Derived, T> other) const {
             return value > other.value;
         }
 
         /** @brief Less than or equal comparison */
-        inline constexpr bool operator<=(Unit<Derived, T> other) const {
+        constexpr bool operator<=(Unit<Derived, T> other) const {
             return !operator>(other);
         }
 
         /** @brief Greater than or equal comparison */
-        inline constexpr bool operator>=(Unit<Derived, T> other) const {
+        constexpr bool operator>=(Unit<Derived, T> other) const {
             return !operator<(other);
         }
 
         /** @brief Negated value */
-        inline constexpr Unit<Derived, T> operator-() const {
+        constexpr Unit<Derived, T> operator-() const {
             return Unit<Derived, T>(-value);
         }
 
         /** @brief Add and assign value */
-        inline Unit<Derived, T>& operator+=(Unit<Derived, T> other) {
+        Unit<Derived, T>& operator+=(Unit<Derived, T> other) {
             value += other.value;
             return *this;
         }
 
         /** @brief Add value */
-        inline constexpr Unit<Derived, T> operator+(Unit<Derived, T> other) const {
+        constexpr Unit<Derived, T> operator+(Unit<Derived, T> other) const {
             return Unit<Derived, T>(value + other.value);
         }
 
         /** @brief Subtract and assign value */
-        inline Unit<Derived, T>& operator-=(Unit<Derived, T> other) {
+        Unit<Derived, T>& operator-=(Unit<Derived, T> other) {
             value -= other.value;
             return *this;
         }
 
         /** @brief Subtract value */
-        inline constexpr Unit<Derived, T> operator-(Unit<Derived, T> other) const {
+        constexpr Unit<Derived, T> operator-(Unit<Derived, T> other) const {
             return Unit<Derived, T>(value - other.value);
         }
 
         /** @brief Multiply with number and assign */
-        inline Unit<Derived, T>& operator*=(T number) {
+        Unit<Derived, T>& operator*=(T number) {
             value *= number;
             return *this;
         }
 
         /** @brief Multiply with number */
-        inline constexpr Unit<Derived, T> operator*(T number) const {
+        constexpr Unit<Derived, T> operator*(T number) const {
             return Unit<Derived, T>(value*number);
         }
 
         /** @brief Divide with number and assign */
-        inline Unit<Derived, T>& operator/=(T number) {
+        Unit<Derived, T>& operator/=(T number) {
             value /= number;
             return *this;
         }
 
         /** @brief Divide with number */
-        inline constexpr Unit<Derived, T> operator/(T number) const {
+        constexpr Unit<Derived, T> operator/(T number) const {
             return Unit<Derived, T>(value/number);
         }
 
         /** @brief Ratio of two values */
-        inline constexpr T operator/(Unit<Derived, T> other) const {
+        constexpr T operator/(Unit<Derived, T> other) const {
             return value/other.value;
         }
 
@@ -152,7 +152,7 @@ template<template<class> class Derived, class T> class Unit {
 /** @relates Unit
 @brief Multiply number with value
 */
-template<template<class> class Derived, class T> inline constexpr Unit<Derived, T> operator*(typename std::common_type<T>::type number, const Unit<Derived, T>& value) {
+template<template<class> class Derived, class T> constexpr Unit<Derived, T> operator*(typename std::common_type<T>::type number, const Unit<Derived, T>& value) {
     return value*number;
 }
 

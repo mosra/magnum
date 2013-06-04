@@ -31,9 +31,15 @@
 #include "Shaders/Shaders.h"
 #include "Trade/Trade.h"
 
-namespace Magnum { namespace DebugTools { namespace Implementation {
+namespace Magnum {
 
-template<UnsignedInt dimensions> struct MeshData;
+namespace Shapes { namespace Implementation {
+    template<UnsignedInt> struct AbstractShape;
+}}
+
+namespace DebugTools { namespace Implementation {
+
+template<UnsignedInt> struct MeshData;
 
 template<> struct MeshData<2> { typedef Trade::MeshData2D Type; };
 template<> struct MeshData<3> { typedef Trade::MeshData3D Type; };
@@ -49,7 +55,7 @@ template<UnsignedInt dimensions> class AbstractShapeRenderer {
         /* Call only if the mesh resource isn't already present */
         void createResources(typename MeshData<dimensions>::Type data);
 
-        Resource<AbstractShaderProgram, Shaders::FlatShader<dimensions>> wireframeShader;
+        Resource<AbstractShaderProgram, Shaders::Flat<dimensions>> wireframeShader;
         Resource<Mesh> wireframeMesh;
 
     private:

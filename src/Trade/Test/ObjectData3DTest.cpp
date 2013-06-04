@@ -29,7 +29,7 @@
 
 namespace Magnum { namespace Trade { namespace Test {
 
-class ObjectData3DTest: public Corrade::TestSuite::Tester {
+class ObjectData3DTest: public TestSuite::Tester {
     public:
         explicit ObjectData3DTest();
 

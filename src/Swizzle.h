@@ -33,7 +33,6 @@
 
 namespace Magnum {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Math { namespace Implementation {
     template<std::size_t size> struct Component<size, 'r'>: public ComponentAtPosition<size, 0> {};
     template<std::size_t size> struct Component<size, 'g'>: public ComponentAtPosition<size, 1> {};
@@ -53,7 +52,6 @@ namespace Implementation {
     template<class T> struct TypeForSize<4, Color3<T>> { typedef Color4<T> Type; };
     template<class T> struct TypeForSize<4, Color4<T>> { typedef Color4<T> Type; };
 }
-#endif
 
 /**
 @brief Swizzle Vector components
@@ -74,7 +72,7 @@ Color3 or Color4 specialization is returned.
 @see @ref matrix-vector-component-access, Math::swizzle(), Vector4::xyz(),
     Color4::rgb(), Vector4::xy(), Vector3::xy()
 */
-template<char ...components, class T> inline constexpr typename Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector) {
+template<char ...components, class T> constexpr typename Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector) {
     return {Math::Implementation::Component<T::Size, components>::value(vector)...};
 }
 

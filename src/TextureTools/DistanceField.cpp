@@ -45,12 +45,12 @@ class DistanceFieldShader: public AbstractShaderProgram {
 
         explicit DistanceFieldShader();
 
-        inline DistanceFieldShader* setRadius(Int radius) {
+        DistanceFieldShader* setRadius(Int radius) {
             setUniform(radiusUniform, radius);
             return this;
         }
 
-        inline DistanceFieldShader* setScaling(Vector2 scaling) {
+        DistanceFieldShader* setScaling(Vector2 scaling) {
             setUniform(scalingUniform, scaling);
             return this;
         }
@@ -68,15 +68,20 @@ DistanceFieldShader::DistanceFieldShader() {
 
     /** @todo compatibility! */
 
-    Corrade::Utility::Resource rs("MagnumTextureTools");
-    attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("DistanceFieldShader.vert")));
+    Utility::Resource rs("MagnumTextureTools");
 
-    Shader fragmentShader(Version::GL330, Shader::Type::Fragment);
-    fragmentShader.addSource(rs.get("compatibility.glsl"));
-    fragmentShader.addSource(rs.get("DistanceFieldShader.frag"));
-    attachShader(fragmentShader);
+    Shader vert(Version::GL330, Shader::Type::Vertex);
+    vert.addSource(rs.get("DistanceFieldShader.vert"));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
+    attachShader(vert);
 
-    link();
+    Shader frag(Version::GL330, Shader::Type::Fragment);
+    frag.addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("DistanceFieldShader.frag"));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+    attachShader(frag);
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 }
 
 }
@@ -88,7 +93,7 @@ void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectan
 
     Framebuffer framebuffer(rectangle);
     framebuffer.attachTexture2D(Framebuffer::ColorAttachment(0), output, 0);
-    framebuffer.bind(Framebuffer::Target::Draw);
+    framebuffer.bind(FramebufferTarget::Draw);
 
     DistanceFieldShader shader;
     shader.setRadius(radius)

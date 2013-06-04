@@ -41,27 +41,29 @@ namespace Magnum { namespace SceneGraph {
 template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::AbstractObject() {}
 template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::~AbstractObject() {}
 
-template<UnsignedInt dimensions, class T> inline AbstractTransformation<dimensions, T>::AbstractTransformation() {}
-template<UnsignedInt dimensions, class T> inline AbstractTransformation<dimensions, T>::~AbstractTransformation() {}
+template<UnsignedInt dimensions, class T> AbstractTransformation<dimensions, T>::AbstractTransformation() {}
+template<UnsignedInt dimensions, class T> AbstractTransformation<dimensions, T>::~AbstractTransformation() {}
+
+template<class Transformation> Object<Transformation>::~Object() = default;
 
 template<class Transformation> Scene<Transformation>* Object<Transformation>::scene() {
-    return static_cast<Scene<Transformation>*>(sceneObject());
+    Object<Transformation>* p(this);
+    while(p && !p->isScene()) p = p->parent();
+    return static_cast<Scene<Transformation>*>(p);
 }
 
 template<class Transformation> const Scene<Transformation>* Object<Transformation>::scene() const {
-    return static_cast<const Scene<Transformation>*>(sceneObject());
-}
-
-template<class Transformation> Object<Transformation>* Object<Transformation>::sceneObject() {
-    Object<Transformation>* p(this);
-    while(p && !p->isScene()) p = p->parent();
-    return p;
-}
-
-template<class Transformation> const Object<Transformation>* Object<Transformation>::sceneObject() const {
     const Object<Transformation>* p(this);
     while(p && !p->isScene()) p = p->parent();
-    return p;
+    return static_cast<const Scene<Transformation>*>(p);
+}
+
+template<class Transformation> Object<Transformation>* Object<Transformation>::doScene() {
+    return scene();
+}
+
+template<class Transformation> const Object<Transformation>* Object<Transformation>::doScene() const {
+    return scene();
 }
 
 template<class Transformation> Object<Transformation>* Object<Transformation>::setParent(Object<Transformation>* parent) {
@@ -78,12 +80,23 @@ template<class Transformation> Object<Transformation>* Object<Transformation>::s
     }
 
     /* Remove the object from old parent children list */
-    if(this->parent()) this->parent()->Corrade::Containers::template LinkedList<Object<Transformation>>::cut(this);
+    if(this->parent()) this->parent()->Containers::template LinkedList<Object<Transformation>>::cut(this);
 
     /* Add the object to list of new parent */
-    if(parent) parent->Corrade::Containers::LinkedList<Object<Transformation>>::insert(this);
+    if(parent) parent->Containers::LinkedList<Object<Transformation>>::insert(this);
 
     setDirty();
+    return this;
+}
+
+template<class Transformation> Object<Transformation>* Object<Transformation>::setParentKeepTransformation(Object<Transformation>* parent) {
+    CORRADE_ASSERT(scene() == parent->scene(), "SceneGraph::Object::setParentKeepTransformation(): both parents must be in the same scene", this);
+
+    const auto transformation = Transformation::compose(
+        Transformation::inverted(parent->absoluteTransformation()), absoluteTransformation());
+    setParent(parent);
+    this->setTransformation(transformation);
+
     return this;
 }
 
@@ -148,14 +161,18 @@ template<class Transformation> void Object<Transformation>::setClean() {
     }
 }
 
-template<class Transformation> std::vector<typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType> Object<Transformation>::transformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType& initialTransformationMatrix) const {
+template<class Transformation> auto Object<Transformation>::doTransformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
     std::vector<Object<Transformation>*> castObjects(objects.size());
     for(std::size_t i = 0; i != objects.size(); ++i)
         /** @todo Ensure this doesn't crash, somehow */
         castObjects[i] = static_cast<Object<Transformation>*>(objects[i]);
 
-    std::vector<typename Transformation::DataType> transformations = this->transformations(std::move(castObjects), Transformation::fromMatrix(initialTransformationMatrix));
-    std::vector<typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType> transformationMatrices(transformations.size());
+    return transformationMatrices(std::move(castObjects), initialTransformationMatrix);
+}
+
+template<class Transformation> auto Object<Transformation>::transformationMatrices(const std::vector<Object<Transformation>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
+    std::vector<typename Transformation::DataType> transformations = this->transformations(std::move(objects), Transformation::fromMatrix(initialTransformationMatrix));
+    std::vector<MatrixType> transformationMatrices(transformations.size());
     for(std::size_t i = 0; i != objects.size(); ++i)
         transformationMatrices[i] = Transformation::toMatrix(transformations[i]);
 
@@ -306,7 +323,7 @@ template<class Transformation> typename Transformation::DataType Object<Transfor
     }
 }
 
-template<class Transformation> void Object<Transformation>::setClean(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) const {
+template<class Transformation> void Object<Transformation>::doSetClean(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) {
     std::vector<Object<Transformation>*> castObjects(objects.size());
     for(std::size_t i = 0; i != objects.size(); ++i)
         /** @todo Ensure this doesn't crash, somehow */
@@ -357,10 +374,8 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
 
 template<class Transformation> void Object<Transformation>::setClean(const typename Transformation::DataType& absoluteTransformation) {
     /* "Lazy storage" for transformation matrix and inverted transformation matrix */
-    typedef typename AbstractFeature<Transformation::Dimensions, typename Transformation::Type>::CachedTransformation CachedTransformation;
-    typename AbstractFeature<Transformation::Dimensions, typename Transformation::Type>::CachedTransformations cached;
-    typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType
-        matrix, invertedMatrix;
+    CachedTransformations cached;
+    MatrixType matrix, invertedMatrix;
 
     /* Clean all features */
     for(AbstractFeature<Transformation::Dimensions, typename Transformation::Type>* i = this->firstFeature(); i; i = i->nextFeature()) {

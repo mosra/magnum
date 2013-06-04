@@ -57,10 +57,15 @@ to simplify porting.
 class GlxApplication: public AbstractXApplication {
     public:
         /** @copydoc GlutApplication::GlutApplication(const Arguments&) */
-        inline explicit GlxApplication(const Arguments& arguments): AbstractXApplication(new GlxContextHandler, arguments) {}
+        explicit GlxApplication(const Arguments& arguments): AbstractXApplication(new GlxContextHandler, arguments) {}
 
         /** @copydoc GlutApplication::GlutApplication(const Arguments&, Configuration*) */
-        inline explicit GlxApplication(const Arguments& arguments, Configuration* configuration): AbstractXApplication(new GlxContextHandler, arguments, configuration) {}
+        explicit GlxApplication(const Arguments& arguments, Configuration* configuration): AbstractXApplication(new GlxContextHandler, arguments, configuration) {}
+
+    protected:
+        /* Nobody will need to have (and delete) GlxApplication*, thus this is
+           faster than public pure virtual destructor */
+        ~GlxApplication() = default;
 };
 
 /** @hideinitializer

@@ -55,10 +55,10 @@ endif()
 target_link_libraries(MagnumDebugTools
     Magnum
     MagnumMeshTools
-    MagnumPhysics
     MagnumPrimitives
     MagnumSceneGraph
-    MagnumShaders)
+    MagnumShaders
+    MagnumShapes)
 
 install(TARGETS MagnumDebugTools DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumDebugTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/DebugTools)

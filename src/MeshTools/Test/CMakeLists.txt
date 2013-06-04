@@ -22,14 +22,15 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-corrade_add_test(MeshToolsCleanTest CleanTest.cpp)
 corrade_add_test(MeshToolsCombineIndexedArraysTest CombineIndexedArraysTest.cpp)
 corrade_add_test(MeshToolsCompressIndicesTest CompressIndicesTest.cpp LIBRARIES MagnumMeshTools)
+corrade_add_test(MeshToolsDuplicateTest DuplicateTest.cpp)
 corrade_add_test(MeshToolsFlipNormalsTest FlipNormalsTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsGenerateFlatNormalsTest GenerateFlatNormalsTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsInterleaveTest InterleaveTest.cpp)
+corrade_add_test(MeshToolsRemoveDuplicatesTest RemoveDuplicatesTest.cpp)
 corrade_add_test(MeshToolsSubdivideTest SubdivideTest.cpp)
-# corrade_add_test(MeshToolsSubdivideCleanBenchmark SubdivideCleanBenchmark.h SubdivideCleanBenchmark.cpp MagnumPrimitives)
+# corrade_add_test(MeshToolsSubdivideRemoveDuplicatesBenchmark SubdivideRemoveDuplicatesBenchmark.h SubdivideRemoveDuplicatesBenchmark.cpp MagnumPrimitives)
 corrade_add_test(MeshToolsTipsifyTest TipsifyTest.cpp LIBRARIES MagnumMeshTools)
 corrade_add_test(MeshToolsTransformTest TransformTest.cpp LIBRARIES MagnumMeshTools)
 

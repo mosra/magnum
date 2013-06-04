@@ -50,7 +50,7 @@ template<class T> class Dual {
          *
          * Both parts are default-constructed.
          */
-        inline constexpr /*implicit*/ Dual(): _real(), _dual() {}
+        constexpr /*implicit*/ Dual(): _real(), _dual() {}
 
         /**
          * @brief Construct dual number from real and dual part
@@ -59,24 +59,24 @@ template<class T> class Dual {
          *      \hat a = a_0 + \epsilon a_\epsilon
          * @f]
          */
-        inline constexpr /*implicit*/ Dual(const T& real, const T& dual = T()): _real(real), _dual(dual) {}
+        constexpr /*implicit*/ Dual(const T& real, const T& dual = T()): _real(real), _dual(dual) {}
 
         /** @brief Equality comparison */
-        inline bool operator==(const Dual<T>& other) const {
+        bool operator==(const Dual<T>& other) const {
             return TypeTraits<T>::equals(_real, other._real) &&
                    TypeTraits<T>::equals(_dual, other._dual);
         }
 
         /** @brief Non-equality comparison */
-        inline bool operator!=(const Dual<T>& other) const {
+        bool operator!=(const Dual<T>& other) const {
             return !operator==(other);
         }
 
         /** @brief Real part */
-        inline constexpr T real() const { return _real; }
+        constexpr T real() const { return _real; }
 
         /** @brief %Dual part */
-        inline constexpr T dual() const { return _dual; }
+        constexpr T dual() const { return _dual; }
 
         /**
          * @brief Add and assign dual number
@@ -85,7 +85,7 @@ template<class T> class Dual {
          *      \hat a + \hat b = a_0 + b_0 + \epsilon (a_\epsilon + b_\epsilon)
          * @f]
          */
-        inline Dual<T>& operator+=(const Dual<T>& other) {
+        Dual<T>& operator+=(const Dual<T>& other) {
             _real += other._real;
             _dual += other._dual;
             return *this;
@@ -96,7 +96,7 @@ template<class T> class Dual {
          *
          * @see operator+=()
          */
-        inline Dual<T> operator+(const Dual<T>& other) const {
+        Dual<T> operator+(const Dual<T>& other) const {
             return Dual<T>(*this)+=other;
         }
 
@@ -107,7 +107,7 @@ template<class T> class Dual {
          *      -\hat a = -a_0 - \epsilon a_\epsilon
          * @f]
          */
-        inline Dual<T> operator-() const {
+        Dual<T> operator-() const {
             return {-_real, -_dual};
         }
 
@@ -118,7 +118,7 @@ template<class T> class Dual {
          *      \hat a - \hat b = a_0 - b_0 + \epsilon (a_\epsilon - b_\epsilon)
          * @f]
          */
-        inline Dual<T>& operator-=(const Dual<T>& other) {
+        Dual<T>& operator-=(const Dual<T>& other) {
             _real -= other._real;
             _dual -= other._dual;
             return *this;
@@ -129,7 +129,7 @@ template<class T> class Dual {
          *
          * @see operator-=()
          */
-        inline Dual<T> operator-(const Dual<T>& other) const {
+        Dual<T> operator-(const Dual<T>& other) const {
             return Dual<T>(*this)-=other;
         }
 
@@ -140,7 +140,7 @@ template<class T> class Dual {
          *      \hat a \hat b = a_0 b_0 + \epsilon (a_0 b_\epsilon + a_\epsilon b_0)
          * @f]
          */
-        template<class U> inline Dual<T> operator*(const Dual<U>& other) const {
+        template<class U> Dual<T> operator*(const Dual<U>& other) const {
             return {_real*other._real, _real*other._dual + _dual*other._real};
         }
 
@@ -151,7 +151,7 @@ template<class T> class Dual {
          *      \frac{\hat a}{\hat b} = \frac{a_0}{b_0} + \epsilon \frac{a_\epsilon b_0 - a_0 b_\epsilon}{b_0^2}
          * @f]
          */
-        template<class U> inline Dual<T> operator/(const Dual<U>& other) const {
+        template<class U> Dual<T> operator/(const Dual<U>& other) const {
             return {_real/other._real, (_dual*other._real - _real*other._dual)/(other._real*other._real)};
         }
 
@@ -162,7 +162,7 @@ template<class T> class Dual {
          *      \overline{\hat a} = a_0 - \epsilon a_\epsilon
          * @f]
          */
-        inline Dual<T> conjugated() const {
+        Dual<T> conjugated() const {
             return {_real, -_dual};
         }
 
@@ -172,27 +172,27 @@ template<class T> class Dual {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(Type, Underlying)               \
-    inline Type<T> operator-() const {                                      \
+    Type<T> operator-() const {                                             \
         return Dual<Underlying<T>>::operator-();                            \
     }                                                                       \
-    inline Type<T>& operator+=(const Dual<Underlying<T>>& other) {          \
+    Type<T>& operator+=(const Dual<Underlying<T>>& other) {                 \
         Dual<Underlying<T>>::operator+=(other);                             \
         return *this;                                                       \
     }                                                                       \
-    inline Type<T> operator+(const Dual<Underlying<T>>& other) const {      \
+    Type<T> operator+(const Dual<Underlying<T>>& other) const {             \
         return Dual<Underlying<T>>::operator+(other);                       \
     }                                                                       \
-    inline Type<T>& operator-=(const Dual<Underlying<T>>& other) {          \
+    Type<T>& operator-=(const Dual<Underlying<T>>& other) {                 \
         Dual<Underlying<T>>::operator-=(other);                             \
         return *this;                                                       \
     }                                                                       \
-    inline Type<T> operator-(const Dual<Underlying<T>>& other) const {      \
+    Type<T> operator-(const Dual<Underlying<T>>& other) const {             \
         return Dual<Underlying<T>>::operator-(other);                       \
     }                                                                       \
-    template<class U> inline Type<T> operator*(const Dual<U>& other) const { \
+    template<class U> Type<T> operator*(const Dual<U>& other) const {       \
         return Dual<Underlying<T>>::operator*(other);                       \
     }                                                                       \
-    template<class U> inline Type<T> operator/(const Dual<U>& other) const { \
+    template<class U> Type<T> operator/(const Dual<U>& other) const {       \
         return Dual<Underlying<T>>::operator/(other);                       \
     }
 #endif

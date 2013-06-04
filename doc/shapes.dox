@@ -1,0 +1,120 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum { namespace Shapes {
+/** @page shapes Collision detection
+@brief Collection of simple shapes for high performance collision detection.
+
+The essential thing in collision detection is to define a complex object with
+collection of simple shapes, for which it is easy to detect collisions. These
+shapes can be either one-, two- or three-dimensional and they can be grouped
+together using various operations.
+
+@tableofcontents
+
+@section shapes-collection Available shapes
+
+@subsection shapes-1D One-dimensional shapes
+
+- @ref Shapes::Point "Shapes::Point*D" -- @copybrief Shapes::Point
+- @ref Shapes::Line "Shapes::Line*D" -- @copybrief Shapes::Line
+- @ref Shapes::LineSegment "Shapes::LineSegment*D" -- @copybrief Shapes::LineSegment
+
+Because of numerical instability it's not possible to detect collisions of
+line and point. Collision of two lines can be detected only in 2D.
+
+@subsection shapes-2D Two-dimensional shapes
+
+- Shapes::Plane -- @copybrief Shapes::Plane
+
+@subsection shapes-3D Three-dimensional shapes
+
+- @ref Shapes::Sphere "Shapes::Sphere*D" -- @copybrief Shapes::Sphere
+- @ref Shapes::Capsule "Shapes::Capsule*D" -- @copybrief Shapes::Capsule
+- @ref Shapes::AxisAlignedBox "Shapes::AxisAlignedBox*D" -- @copybrief Shapes::AxisAlignedBox
+- @ref Shapes::Box "Shapes::Box*D" -- @copybrief Shapes::Box
+
+The easiest (and most efficient) shape combination for detecting collisions
+is point and sphere, followed by two spheres. Computing collision of two boxes
+is least efficient.
+
+@section shapes-composition Creating shape compositions
+
+%Shapes can be composed together using one of three available logical
+operations: AND, OR and NOT. These operations are mapped to operator&&(),
+operator||() and operator!(), so for example creating negation of logical OR
+of line segment and point is simple as this:
+@code
+Shapes::LineSegment3D segment;
+Shapes::Point3D point;
+
+Shapes::Composition3D composition = !(segment || point);
+@endcode
+
+@note Logical operations are not the same as set operations -- intersection of
+    two spheres will not generate any collision if they are disjoint, but
+    logical AND will if the object collides with both of them.
+
+@subsection shapes-simplification Providing simplified version of shape for better performance
+
+If there are many shapes composed together, it might hurt performance of
+collision detection, because it might be testing collision with more shapes
+than necessary. It's then good to specify simplified version of such shape,
+so the collision detection is done on the complex one if and only if collision
+was detected with the simplified shape. It is in fact logical AND using
+operator&&() - the collision is initially detected on first (simplified) shape
+and then on the other:
+@code
+Shapes::Sphere3D sphere;
+Shapes::Box3D box;
+Shapes::AxisAlignedBox3D simplified;
+
+Shapes::Composition3D composition = simplified && (sphere || box);
+@endcode
+
+@section shapes-collisions Detecting shape collisions
+
+%Shape pairs which have collision detection implemented can be tested for
+collision using operator%(), for example:
+@code
+Shapes::Point3D point;
+Shapes::Sphere3D sphere;
+
+bool collide = point % sphere;
+@endcode
+
+@section shapes-scenegraph Integration with scene graph
+
+%Shape can be attached to object in the scene using Shapes::Shape feature and
+then used for collision detection. You can also use DebugTools::ShapeRenderer
+to visualize the shape for debugging purposes.
+@code
+Object3D object;
+auto shape = Shapes::Shape<Shapes::Sphere3D>(object, {{}, 23.0f});
+@endcode
+
+See also @ref scenegraph for introduction.
+
+*/
+}}}

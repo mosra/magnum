@@ -30,7 +30,7 @@
 
 namespace Magnum { namespace Test {
 
-class MeshTest: public Corrade::TestSuite::Tester {
+class MeshTest: public TestSuite::Tester {
     public:
         MeshTest();
 
@@ -60,7 +60,7 @@ void MeshTest::debugIndexType() {
 }
 
 void MeshTest::configurationPrimitive() {
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     c.setValue("primitive", Mesh::Primitive::LineStrip);
     CORRADE_COMPARE(c.value<std::string>("primitive"), "LineStrip");
@@ -68,7 +68,7 @@ void MeshTest::configurationPrimitive() {
 }
 
 void MeshTest::configurationIndexType() {
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     c.setValue("type", Mesh::IndexType::UnsignedByte);
     CORRADE_COMPARE(c.value<std::string>("type"), "UnsignedByte");

@@ -58,7 +58,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *      Matrix3::translation(const Vector2&), Vector3::xAxis(),
          *      Vector3::yAxis(), Vector3::zAxis()
          */
-        inline constexpr static Matrix4<T> translation(const Vector3<T>& vector) {
+        constexpr static Matrix4<T> translation(const Vector3<T>& vector) {
             return {{      T(1),       T(0),       T(0), T(0)},
                     {      T(0),       T(1),       T(0), T(0)},
                     {      T(0),       T(0),       T(1), T(0)},
@@ -72,7 +72,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @see rotationScaling() const, Matrix3::scaling(const Vector2&),
          *      Vector3::xScale(), Vector3::yScale(), Vector3::zScale()
          */
-        inline constexpr static Matrix4<T> scaling(const Vector3<T>& vector) {
+        constexpr static Matrix4<T> scaling(const Vector3<T>& vector) {
             return {{vector.x(),       T(0),       T(0), T(0)},
                     {      T(0), vector.y(),       T(0), T(0)},
                     {      T(0),       T(0), vector.z(), T(0)},
@@ -90,37 +90,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *      Matrix3::rotation(Rad), Vector3::xAxis(), Vector3::yAxis(),
          *      Vector3::zAxis(), Vector::isNormalized()
          */
-        static Matrix4<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis) {
-            CORRADE_ASSERT(normalizedAxis.isNormalized(),
-                           "Math::Matrix4::rotation(): axis must be normalized", {});
-
-            T sine = std::sin(angle.toUnderlyingType());
-            T cosine = std::cos(angle.toUnderlyingType());
-            T oneMinusCosine = T(1) - cosine;
-
-            T xx = normalizedAxis.x()*normalizedAxis.x();
-            T xy = normalizedAxis.x()*normalizedAxis.y();
-            T xz = normalizedAxis.x()*normalizedAxis.z();
-            T yy = normalizedAxis.y()*normalizedAxis.y();
-            T yz = normalizedAxis.y()*normalizedAxis.z();
-            T zz = normalizedAxis.z()*normalizedAxis.z();
-
-            return {
-                {cosine + xx*oneMinusCosine,
-                    xy*oneMinusCosine + normalizedAxis.z()*sine,
-                        xz*oneMinusCosine - normalizedAxis.y()*sine,
-                           T(0)},
-                {xy*oneMinusCosine - normalizedAxis.z()*sine,
-                    cosine + yy*oneMinusCosine,
-                        yz*oneMinusCosine + normalizedAxis.x()*sine,
-                           T(0)},
-                {xz*oneMinusCosine + normalizedAxis.y()*sine,
-                    yz*oneMinusCosine - normalizedAxis.x()*sine,
-                        cosine + zz*oneMinusCosine,
-                           T(0)},
-                {T(0), T(0), T(0), T(1)}
-            };
-        }
+        static Matrix4<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis);
 
         /**
          * @brief 3D rotation around X axis
@@ -130,15 +100,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @see rotation(Rad, const Vector3&), rotationY(), rotationZ(),
          *      rotation() const, Quaternion::rotation(), Matrix3::rotation(Rad)
          */
-        static Matrix4<T> rotationX(Rad<T> angle) {
-            T sine = std::sin(angle.toUnderlyingType());
-            T cosine = std::cos(angle.toUnderlyingType());
-
-            return {{T(1),   T(0),   T(0), T(0)},
-                    {T(0), cosine,   sine, T(0)},
-                    {T(0),  -sine, cosine, T(0)},
-                    {T(0),   T(0),   T(0), T(1)}};
-        }
+        static Matrix4<T> rotationX(Rad<T> angle);
 
         /**
          * @brief 3D rotation around Y axis
@@ -148,15 +110,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @see rotation(Rad, const Vector3&), rotationX(), rotationZ(),
          *      rotation() const, Quaternion::rotation(), Matrix3::rotation(Rad)
          */
-        static Matrix4<T> rotationY(Rad<T> angle) {
-            T sine = std::sin(angle.toUnderlyingType());
-            T cosine = std::cos(angle.toUnderlyingType());
-
-            return {{cosine, T(0),  -sine, T(0)},
-                    {  T(0), T(1),   T(0), T(0)},
-                    {  sine, T(0), cosine, T(0)},
-                    {  T(0), T(0),   T(0), T(1)}};
-        }
+        static Matrix4<T> rotationY(Rad<T> angle);
 
         /**
          * @brief 3D rotation matrix around Z axis
@@ -166,15 +120,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @see rotation(Rad, const Vector3&), rotationX(), rotationY(),
          *      rotation() const, Quaternion::rotation(), Matrix3::rotation(Rad)
          */
-        static Matrix4<T> rotationZ(Rad<T> angle) {
-            T sine = std::sin(angle.toUnderlyingType());
-            T cosine = std::cos(angle.toUnderlyingType());
-
-            return {{cosine,   sine, T(0), T(0)},
-                    { -sine, cosine, T(0), T(0)},
-                    {  T(0),   T(0), T(1), T(0)},
-                    {  T(0),   T(0), T(0), T(1)}};
-        }
+        static Matrix4<T> rotationZ(Rad<T> angle);
 
         /**
          * @brief 3D reflection matrix
@@ -183,11 +129,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * Expects that the normal is normalized.
          * @see Matrix3::reflection(), Vector::isNormalized()
          */
-        static Matrix4<T> reflection(const Vector3<T>& normal) {
-            CORRADE_ASSERT(normal.isNormalized(),
-                           "Math::Matrix4::reflection(): normal must be normalized", {});
-            return from(Matrix<3, T>() - T(2)*normal*RectangularMatrix<1, 3, T>(normal).transposed(), {});
-        }
+        static Matrix4<T> reflection(const Vector3<T>& normal);
 
         /**
          * @brief 3D orthographic projection matrix
@@ -197,15 +139,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * @see perspectiveProjection(), Matrix3::projection()
          */
-        static Matrix4<T> orthographicProjection(const Vector2<T>& size, T near, T far) {
-            Vector2<T> xyScale = T(2.0)/size;
-            T zScale = T(2.0)/(near-far);
-
-            return {{xyScale.x(),        T(0),             T(0), T(0)},
-                    {       T(0), xyScale.y(),             T(0), T(0)},
-                    {       T(0),        T(0),           zScale, T(0)},
-                    {       T(0),        T(0), near*zScale-T(1), T(1)}};
-        }
+        static Matrix4<T> orthographicProjection(const Vector2<T>& size, T near, T far);
 
         /**
          * @brief 3D perspective projection matrix
@@ -215,15 +149,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * @see orthographicProjection(), Matrix3::projection()
          */
-        static Matrix4<T> perspectiveProjection(const Vector2<T>& size, T near, T far) {
-            Vector2<T> xyScale = 2*near/size;
-            T zScale = T(1.0)/(near-far);
-
-            return {{xyScale.x(),        T(0),                 T(0),  T(0)},
-                    {       T(0), xyScale.y(),                 T(0),  T(0)},
-                    {       T(0),        T(0),    (far+near)*zScale, T(-1)},
-                    {       T(0),        T(0), T(2)*far*near*zScale,  T(0)}};
-        }
+        static Matrix4<T> perspectiveProjection(const Vector2<T>& size, T near, T far);
 
         /**
          * @brief 3D perspective projection matrix
@@ -235,8 +161,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @see orthographicProjection(), Matrix3::projection()
          */
         static Matrix4<T> perspectiveProjection(Rad<T> fov, T aspectRatio, T near, T far) {
-            T xyScale = 2*std::tan(fov.toUnderlyingType()/2)*near;
-
+            const T xyScale = 2*std::tan(fov.toUnderlyingType()/2)*near;
             return perspectiveProjection(Vector2<T>(xyScale, xyScale/aspectRatio), near, far);
         }
 
@@ -249,7 +174,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * @see rotationScaling() const, translation() const
          */
-        inline constexpr static Matrix4<T> from(const Matrix<3, T>& rotationScaling, const Vector3<T>& translation) {
+        constexpr static Matrix4<T> from(const Matrix<3, T>& rotationScaling, const Vector3<T>& translation) {
             return {{rotationScaling[0], T(0)},
                     {rotationScaling[1], T(0)},
                     {rotationScaling[2], T(0)},
@@ -257,7 +182,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
         }
 
         /** @copydoc Matrix::Matrix(ZeroType) */
-        inline constexpr explicit Matrix4(typename Matrix<4, T>::ZeroType): Matrix<4, T>(Matrix<4, T>::Zero) {}
+        constexpr explicit Matrix4(typename Matrix<4, T>::ZeroType): Matrix<4, T>(Matrix<4, T>::Zero) {}
 
         /**
          * @brief Default constructor
@@ -267,7 +192,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @p value allows you to specify value on diagonal.
          * @todo Use constexpr implementation in Matrix, when done
          */
-        inline constexpr /*implicit*/ Matrix4(typename Matrix<4, T>::IdentityType = (Matrix<4, T>::Identity), T value = T(1)): Matrix<4, T>(
+        constexpr /*implicit*/ Matrix4(typename Matrix<4, T>::IdentityType = (Matrix<4, T>::Identity), T value = T(1)): Matrix<4, T>(
             Vector<4, T>(value,  T(0),  T(0),  T(0)),
             Vector<4, T>( T(0), value,  T(0),  T(0)),
             Vector<4, T>( T(0),  T(0), value,  T(0)),
@@ -275,13 +200,16 @@ template<class T> class Matrix4: public Matrix<4, T> {
         ) {}
 
         /** @brief %Matrix from column vectors */
-        inline constexpr /*implicit*/ Matrix4(const Vector4<T>& first, const Vector4<T>& second, const Vector4<T>& third, const Vector4<T>& fourth): Matrix<4, T>(first, second, third, fourth) {}
+        constexpr /*implicit*/ Matrix4(const Vector4<T>& first, const Vector4<T>& second, const Vector4<T>& third, const Vector4<T>& fourth): Matrix<4, T>(first, second, third, fourth) {}
 
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */
-        template<class U> inline constexpr explicit Matrix4(const RectangularMatrix<4, 4, U>& other): Matrix<4, T>(other) {}
+        template<class U> constexpr explicit Matrix4(const RectangularMatrix<4, 4, U>& other): Matrix<4, T>(other) {}
+
+        /** @brief Construct matrix from external representation */
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(std::declval<U>()))> constexpr explicit Matrix4(const U& other): Matrix<4, T>(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        inline constexpr Matrix4(const RectangularMatrix<4, 4, T>& other): Matrix<4, T>(other) {}
+        constexpr Matrix4(const RectangularMatrix<4, 4, T>& other): Matrix<4, T>(other) {}
 
         /**
          * @brief Check whether the matrix represents rigid transformation
@@ -290,7 +218,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * no scaling or projection).
          * @see isOrthogonal()
          */
-        inline bool isRigidTransformation() const {
+        bool isRigidTransformation() const {
             return rotationScaling().isOrthogonal() && row(3) == Vector4<T>(T(0), T(0), T(0), T(1));
         }
 
@@ -300,9 +228,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * Upper-left 3x3 part of the matrix.
          * @see from(const Matrix<3, T>&, const Vector3&), rotation() const,
          *      rotation(T, const Vector3&), Matrix3::rotationScaling() const
+         * @todo extract rotation with assert for no scaling
          */
-        inline constexpr Matrix<3, T> rotationScaling() const {
-            /* Not Matrix3, because it is for affine 2D transformations */
+        /* Not Matrix3, because it is for affine 2D transformations */
+        constexpr Matrix<3, T> rotationScaling() const {
             return {(*this)[0].xyz(),
                     (*this)[1].xyz(),
                     (*this)[2].xyz()};
@@ -316,12 +245,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *      Matrix3::rotation() const
          * @todo assert uniform scaling (otherwise this would be garbage)
          */
-        inline Matrix<3, T> rotation() const {
-            /* Not Matrix3, because it is for affine 2D transformations */
-            return {(*this)[0].xyz().normalized(),
-                    (*this)[1].xyz().normalized(),
-                    (*this)[2].xyz().normalized()};
-        }
+        /* Not Matrix3, because it is for affine 2D transformations */
+        Matrix<3, T> rotation() const;
 
         /** @todo uniform scaling extraction */
 
@@ -331,8 +256,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * First three elements of first column.
          * @see up(), backward(), Vector3::xAxis(), Matrix3::right()
          */
-        inline Vector3<T>& right() { return (*this)[0].xyz(); }
-        inline constexpr Vector3<T> right() const { return (*this)[0].xyz(); } /**< @overload */
+        Vector3<T>& right() { return (*this)[0].xyz(); }
+        constexpr Vector3<T> right() const { return (*this)[0].xyz(); } /**< @overload */
 
         /**
          * @brief Up-pointing 3D vector
@@ -340,8 +265,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * First three elements of second column.
          * @see right(), backward(), Vector3::yAxis(), Matrix3::up()
          */
-        inline Vector3<T>& up() { return (*this)[1].xyz(); }
-        inline constexpr Vector3<T> up() const { return (*this)[1].xyz(); } /**< @overload */
+        Vector3<T>& up() { return (*this)[1].xyz(); }
+        constexpr Vector3<T> up() const { return (*this)[1].xyz(); } /**< @overload */
 
         /**
          * @brief Backward-pointing 3D vector
@@ -349,8 +274,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * First three elements of third column.
          * @see right(), up(), Vector3::yAxis()
          */
-        inline Vector3<T>& backward() { return (*this)[2].xyz(); }
-        inline constexpr Vector3<T> backward() const { return (*this)[2].xyz(); } /**< @overload */
+        Vector3<T>& backward() { return (*this)[2].xyz(); }
+        constexpr Vector3<T> backward() const { return (*this)[2].xyz(); } /**< @overload */
 
         /**
          * @brief 3D translation part of the matrix
@@ -359,8 +284,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @see from(const Matrix<3, T>&, const Vector3&),
          *      translation(const Vector3&), Matrix3::translation()
          */
-        inline Vector3<T>& translation() { return (*this)[3].xyz(); }
-        inline constexpr Vector3<T> translation() const { return (*this)[3].xyz(); } /**< @overload */
+        Vector3<T>& translation() { return (*this)[3].xyz(); }
+        constexpr Vector3<T> translation() const { return (*this)[3].xyz(); } /**< @overload */
 
         /**
          * @brief Inverted rigid transformation matrix
@@ -370,13 +295,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @see isRigidTransformation(), invertedOrthogonal(),
          *      rotationScaling() const, translation() const
          */
-        inline Matrix4<T> invertedRigid() const {
-            CORRADE_ASSERT(isRigidTransformation(),
-                "Math::Matrix4::invertedRigid(): the matrix doesn't represent rigid transformation", {});
-
-            Matrix<3, T> inverseRotation = rotationScaling().transposed();
-            return from(inverseRotation, inverseRotation*-translation());
-        }
+        Matrix4<T> invertedRigid() const;
 
         /**
          * @brief Transform 3D vector with the matrix
@@ -388,7 +307,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @see Quaternion::transformVector(), Matrix3::transformVector()
          * @todo extract 3x3 matrix and multiply directly? (benchmark that)
          */
-        inline Vector3<T> transformVector(const Vector3<T>& vector) const {
+        Vector3<T> transformVector(const Vector3<T>& vector) const {
             /* Workaround for GCC 4.4 strict-aliasing fascism */
             #ifndef CORRADE_GCC44_COMPATIBILITY
             return ((*this)*Vector4<T>(vector, T(0))).xyz();
@@ -407,7 +326,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @f]
          * @see DualQuaternion::transformPoint(), Matrix3::transformPoint()
          */
-        inline Vector3<T> transformPoint(const Vector3<T>& vector) const {
+        Vector3<T> transformPoint(const Vector3<T>& vector) const {
             /* Workaround for GCC 4.4 strict-aliasing fascism */
             #ifndef CORRADE_GCC44_COMPATIBILITY
             return ((*this)*Vector4<T>(vector, T(1))).xyz();
@@ -426,6 +345,108 @@ MAGNUM_MATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(Matrix4, 4)
 /** @debugoperator{Magnum::Math::Matrix4} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Matrix4<T>& value) {
     return debug << static_cast<const Matrix<4, T>&>(value);
+}
+
+template<class T> Matrix4<T> Matrix4<T>::rotation(const Rad<T> angle, const Vector3<T>& normalizedAxis) {
+    CORRADE_ASSERT(normalizedAxis.isNormalized(),
+                   "Math::Matrix4::rotation(): axis must be normalized", {});
+
+    const T sine = std::sin(angle.toUnderlyingType());
+    const T cosine = std::cos(angle.toUnderlyingType());
+    const T oneMinusCosine = T(1) - cosine;
+
+    const T xx = normalizedAxis.x()*normalizedAxis.x();
+    const T xy = normalizedAxis.x()*normalizedAxis.y();
+    const T xz = normalizedAxis.x()*normalizedAxis.z();
+    const T yy = normalizedAxis.y()*normalizedAxis.y();
+    const T yz = normalizedAxis.y()*normalizedAxis.z();
+    const T zz = normalizedAxis.z()*normalizedAxis.z();
+
+    return {
+        {cosine + xx*oneMinusCosine,
+            xy*oneMinusCosine + normalizedAxis.z()*sine,
+                xz*oneMinusCosine - normalizedAxis.y()*sine,
+                   T(0)},
+        {xy*oneMinusCosine - normalizedAxis.z()*sine,
+            cosine + yy*oneMinusCosine,
+                yz*oneMinusCosine + normalizedAxis.x()*sine,
+                   T(0)},
+        {xz*oneMinusCosine + normalizedAxis.y()*sine,
+            yz*oneMinusCosine - normalizedAxis.x()*sine,
+                cosine + zz*oneMinusCosine,
+                   T(0)},
+        {T(0), T(0), T(0), T(1)}
+    };
+}
+
+template<class T> Matrix4<T> Matrix4<T>::rotationX(const Rad<T> angle) {
+    const T sine = std::sin(angle.toUnderlyingType());
+    const T cosine = std::cos(angle.toUnderlyingType());
+
+    return {{T(1),   T(0),   T(0), T(0)},
+            {T(0), cosine,   sine, T(0)},
+            {T(0),  -sine, cosine, T(0)},
+            {T(0),   T(0),   T(0), T(1)}};
+}
+
+template<class T> Matrix4<T> Matrix4<T>::rotationY(const Rad<T> angle) {
+    const T sine = std::sin(angle.toUnderlyingType());
+    const T cosine = std::cos(angle.toUnderlyingType());
+
+    return {{cosine, T(0),  -sine, T(0)},
+            {  T(0), T(1),   T(0), T(0)},
+            {  sine, T(0), cosine, T(0)},
+            {  T(0), T(0),   T(0), T(1)}};
+}
+
+template<class T> Matrix4<T> Matrix4<T>::rotationZ(const Rad<T> angle) {
+    const T sine = std::sin(angle.toUnderlyingType());
+    const T cosine = std::cos(angle.toUnderlyingType());
+
+    return {{cosine,   sine, T(0), T(0)},
+            { -sine, cosine, T(0), T(0)},
+            {  T(0),   T(0), T(1), T(0)},
+            {  T(0),   T(0), T(0), T(1)}};
+}
+
+template<class T> Matrix4<T> Matrix4<T>::reflection(const Vector3<T>& normal) {
+    CORRADE_ASSERT(normal.isNormalized(),
+                    "Math::Matrix4::reflection(): normal must be normalized", {});
+    return from(Matrix<3, T>() - T(2)*normal*RectangularMatrix<1, 3, T>(normal).transposed(), {});
+}
+
+template<class T> Matrix4<T> Matrix4<T>::orthographicProjection(const Vector2<T>& size, const T near, const T far) {
+    const Vector2<T> xyScale = T(2.0)/size;
+    const T zScale = T(2.0)/(near-far);
+
+    return {{xyScale.x(),        T(0),             T(0), T(0)},
+            {       T(0), xyScale.y(),             T(0), T(0)},
+            {       T(0),        T(0),           zScale, T(0)},
+            {       T(0),        T(0), near*zScale-T(1), T(1)}};
+}
+
+template<class T> Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>& size, const T near, const T far) {
+    Vector2<T> xyScale = 2*near/size;
+    T zScale = T(1.0)/(near-far);
+
+    return {{xyScale.x(),        T(0),                 T(0),  T(0)},
+            {       T(0), xyScale.y(),                 T(0),  T(0)},
+            {       T(0),        T(0),    (far+near)*zScale, T(-1)},
+            {       T(0),        T(0), T(2)*far*near*zScale,  T(0)}};
+}
+
+template<class T> inline Matrix<3, T> Matrix4<T>::rotation() const {
+    return {(*this)[0].xyz().normalized(),
+            (*this)[1].xyz().normalized(),
+            (*this)[2].xyz().normalized()};
+}
+
+template<class T> Matrix4<T> Matrix4<T>::invertedRigid() const {
+    CORRADE_ASSERT(isRigidTransformation(),
+        "Math::Matrix4::invertedRigid(): the matrix doesn't represent rigid transformation", {});
+
+    Matrix<3, T> inverseRotation = rotationScaling().transposed();
+    return from(inverseRotation, inverseRotation*-translation());
 }
 
 }}

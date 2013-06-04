@@ -56,16 +56,20 @@ set(Magnum_SRCS
     DefaultFramebuffer.cpp
     Framebuffer.cpp
     Image.cpp
+    ImageFormat.cpp
     Mesh.cpp
     OpenGL.cpp
     Query.cpp
     Renderbuffer.cpp
+    Renderer.cpp
     Resource.cpp
+    Sampler.cpp
     Shader.cpp
     Timeline.cpp
 
     Implementation/BufferState.cpp
     Implementation/State.cpp
+    Implementation/TextureState.cpp
 
     Trade/AbstractImageConverter.cpp
     Trade/AbstractImporter.cpp
@@ -108,18 +112,22 @@ set(Magnum_HEADERS
     Extensions.h
     Framebuffer.h
     Image.h
+    ImageFormat.h
     ImageWrapper.h
     Magnum.h
     Mesh.h
     OpenGL.h
     Query.h
     Renderbuffer.h
+    RenderbufferFormat.h
     Renderer.h
     Resource.h
     ResourceManager.h
+    Sampler.h
     Shader.h
     Swizzle.h
     Texture.h
+    TextureFormat.h
     Timeline.h
     Types.h
 
@@ -140,14 +148,8 @@ endif()
 
 # Files shared between main library and math unit test library
 set(MagnumMath_SRCS
-    Math/Angle.cpp
-    Math/Complex.cpp
-    Math/DualComplex.cpp
-    Math/DualQuaternion.cpp
     Math/Functions.cpp
-    Math/Quaternion.cpp
-    Math/RectangularMatrix.cpp
-    Math/Vector.cpp)
+    Math/instantiation.cpp)
 
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
@@ -194,10 +196,6 @@ if(WITH_MESHTOOLS)
     add_subdirectory(MeshTools)
 endif()
 
-if(WITH_PHYSICS)
-    add_subdirectory(Physics)
-endif()
-
 if(WITH_PRIMITIVES)
     add_subdirectory(Primitives)
 endif()
@@ -208,6 +206,10 @@ endif()
 
 if(WITH_SHADERS)
     add_subdirectory(Shaders)
+endif()
+
+if(WITH_SHAPES)
+    add_subdirectory(Shapes)
 endif()
 
 if(WITH_TEXT)

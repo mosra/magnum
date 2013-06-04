@@ -44,10 +44,10 @@ See ForceRenderer documentation for more information.
 */
 class ForceRendererOptions {
     public:
-        inline constexpr ForceRendererOptions(): _color(1.0f), _size(1.0f) {}
+        constexpr ForceRendererOptions(): _color(1.0f), _size(1.0f) {}
 
         /** @brief Color of rendered arrow */
-        inline constexpr Color4<> color() const { return _color; }
+        constexpr Color4<> color() const { return _color; }
 
         /**
          * @brief Set color of rendered arrow
@@ -55,13 +55,13 @@ class ForceRendererOptions {
          *
          * Default is 100% opaque white.
          */
-        inline ForceRendererOptions* setColor(const Color4<>& color) {
+        ForceRendererOptions* setColor(const Color4<>& color) {
             _color = color;
             return this;
         }
 
         /** @brief Scale of rendered arrow */
-        inline constexpr Float scale() const { return _size; }
+        constexpr Float scale() const { return _size; }
 
         /**
          * @brief Set scale of rendered arrow
@@ -69,7 +69,7 @@ class ForceRendererOptions {
          *
          * Default is `1.0f`.
          */
-        inline ForceRendererOptions* setSize(Float size) {
+        ForceRendererOptions* setSize(Float size) {
             _size = size;
             return this;
         }
@@ -128,7 +128,7 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: p
         const typename DimensionTraits<dimensions, Float>::VectorType* const force;
 
         Resource<ForceRendererOptions> options;
-        Resource<AbstractShaderProgram, Shaders::FlatShader<dimensions>> shader;
+        Resource<AbstractShaderProgram, Shaders::Flat<dimensions>> shader;
         Resource<Mesh> mesh;
         Resource<Buffer> vertexBuffer, indexBuffer;
 };

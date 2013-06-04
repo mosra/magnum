@@ -42,7 +42,8 @@ template<class Transformation> class Scene: public Object<Transformation> {
     public:
         explicit Scene();
 
-        inline bool isScene() const { return true; }
+    private:
+        bool isScene() const override final { return true; }
 };
 
 template<class Transformation> inline Scene<Transformation>::Scene() = default;

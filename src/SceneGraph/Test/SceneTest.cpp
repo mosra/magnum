@@ -29,7 +29,7 @@
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
-class SceneTest: public Corrade::TestSuite::Tester {
+class SceneTest: public TestSuite::Tester {
     public:
         SceneTest();
 

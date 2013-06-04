@@ -29,7 +29,6 @@
  */
 
 #include "Math/Functions.h"
-#include "Math/Matrix.h"
 #include "Math/Vector3.h"
 
 namespace Magnum { namespace Math { namespace Geometry {
@@ -46,14 +45,15 @@ class Distance {
          * @param point     Point
          *
          * The distance *d* is computed from point **p** and line defined by **a**
-         * and **b** using @ref Matrix::determinant() "determinant": @f[
-         *      d = \frac{|det(b - a a - point)|} {|b - a|}
+         * and **b** using @ref Vector2::cross() "perp-dot product": @f[
+         *      d = \frac{|(\boldsymbol b - \boldsymbol a)_\bot \cdot (\boldsymbol a - \boldsymbol p)|} {|\boldsymbol b - \boldsymbol a|}
          * @f]
          * Source: http://mathworld.wolfram.com/Point-LineDistance2-Dimensional.html
          * @see linePointSquared(const Vector2&, const Vector2&, const Vector2&)
          */
-        template<class T> inline static T linePoint(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
-            return std::abs(Matrix<2, T>(b - a, a - point).determinant())/(b - a).length();
+        template<class T> static T linePoint(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
+            const Vector2<T> bMinusA = b - a;
+            return std::abs(Vector2<T>::cross(bMinusA, a - point))/bMinusA.length();
         }
 
         /**
@@ -66,9 +66,9 @@ class Distance {
          * for comparing distance with other values, because it doesn't
          * compute the square root.
          */
-        template<class T> inline static T linePointSquared(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
-            Vector2<T> bMinusA = b - a;
-            return Math::pow<2>(Matrix<2, T>(bMinusA, a - point).determinant())/bMinusA.dot();
+        template<class T> static T linePointSquared(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
+            const Vector2<T> bMinusA = b - a;
+            return Math::pow<2>(Vector2<T>::cross(bMinusA, a - point))/bMinusA.dot();
         }
 
         /**
@@ -85,7 +85,7 @@ class Distance {
          * Source: http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
          * @see linePointSquared(const Vector3&, const Vector3&, const Vector3&)
          */
-        template<class T> inline static T linePoint(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
+        template<class T> static T linePoint(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
             return std::sqrt(linePointSquared(a, b, point));
         }
 
@@ -126,25 +126,7 @@ class Distance {
          *
          * @see lineSegmentPointSquared()
          */
-        template<class T> inline static T lineSegmentPoint(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
-            Vector2<T> pointMinusA = point - a;
-            Vector2<T> pointMinusB = point - b;
-            Vector2<T> bMinusA = b - a;
-            T pointDistanceA = pointMinusA.dot();
-            T pointDistanceB = pointMinusB.dot();
-            T bDistanceA = bMinusA.dot();
-
-            /* Point is before A */
-            if(pointDistanceB > bDistanceA + pointDistanceA)
-                return std::sqrt(pointDistanceA);
-
-            /* Point is after B */
-            if(pointDistanceA > bDistanceA + pointDistanceB)
-                return std::sqrt(pointDistanceB);
-
-            /* Between A and B */
-            return std::abs(Matrix<2, T>(bMinusA, -pointMinusA).determinant())/std::sqrt(bDistanceA);
-        }
+        template<class T> static T lineSegmentPoint(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point);
 
         /**
          * @brief %Distance of point from line segment in 2D, squared
@@ -152,25 +134,7 @@ class Distance {
          * More efficient than lineSegmentPoint() for comparing distance with
          * other values, because it doesn't compute the square root.
          */
-        template<class T> static T lineSegmentPointSquared(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
-            Vector2<T> pointMinusA = point - a;
-            Vector2<T> pointMinusB = point - b;
-            Vector2<T> bMinusA = b - a;
-            T pointDistanceA = pointMinusA.dot();
-            T pointDistanceB = pointMinusB.dot();
-            T bDistanceA = bMinusA.dot();
-
-            /* Point is before A */
-            if(pointDistanceB > bDistanceA + pointDistanceA)
-                return pointDistanceA;
-
-            /* Point is after B */
-            if(pointDistanceA > bDistanceA + pointDistanceB)
-                return pointDistanceB;
-
-            /* Between A and B */
-            return Math::pow<2>(Matrix<2, T>(bMinusA, -pointMinusA).determinant())/bDistanceA;
-        }
+        template<class T> static T lineSegmentPointSquared(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point);
 
         /**
          * @brief %Dístance of point from line segment in 3D
@@ -183,7 +147,7 @@ class Distance {
          *
          * @see lineSegmentPointSquared(const Vector3&, const Vector3&, const Vector3&)
          */
-        template<class T> inline static T lineSegmentPoint(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
+        template<class T> static T lineSegmentPoint(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
             return std::sqrt(lineSegmentPointSquared(a, b, point));
         }
 
@@ -193,25 +157,85 @@ class Distance {
          * More efficient than lineSegmentPoint(const Vector3&, const Vector3&, const Vector3&) for comparing distance with
          * other values, because it doesn't compute the square root.
          */
-        template<class T> static T lineSegmentPointSquared(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
-            Vector3<T> pointMinusA = point - a;
-            Vector3<T> pointMinusB = point - b;
-            T pointDistanceA = pointMinusA.dot();
-            T pointDistanceB = pointMinusB.dot();
-            T bDistanceA = (b - a).dot();
-
-            /* Point is before A */
-            if(pointDistanceB > bDistanceA + pointDistanceA)
-                return pointDistanceA;
-
-            /* Point is after B */
-            if(pointDistanceA > bDistanceA + pointDistanceB)
-                return pointDistanceB;
-
-            /* Between A and B */
-            return Vector3<T>::cross(pointMinusA, pointMinusB).dot()/bDistanceA;
-        }
+        template<class T> static T lineSegmentPointSquared(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point);
 };
+
+/** @todoc Remove workaround when Doxygen is sane */
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> static
+#else
+template<class T>
+#endif
+T Distance::lineSegmentPoint(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
+    const Vector2<T> pointMinusA = point - a;
+    const Vector2<T> pointMinusB = point - b;
+    const Vector2<T> bMinusA = b - a;
+    const T pointDistanceA = pointMinusA.dot();
+    const T pointDistanceB = pointMinusB.dot();
+    const T bDistanceA = bMinusA.dot();
+
+    /* Point is before A */
+    if(pointDistanceB > bDistanceA + pointDistanceA)
+        return std::sqrt(pointDistanceA);
+
+    /* Point is after B */
+    if(pointDistanceA > bDistanceA + pointDistanceB)
+        return std::sqrt(pointDistanceB);
+
+    /* Between A and B */
+    return std::abs(Vector2<T>::cross(bMinusA, -pointMinusA))/std::sqrt(bDistanceA);
+}
+
+/** @todoc Remove workaround when Doxygen is sane */
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> static
+#else
+template<class T>
+#endif
+T Distance::lineSegmentPointSquared(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
+    const Vector2<T> pointMinusA = point - a;
+    const Vector2<T> pointMinusB = point - b;
+    const Vector2<T> bMinusA = b - a;
+    const T pointDistanceA = pointMinusA.dot();
+    const T pointDistanceB = pointMinusB.dot();
+    const T bDistanceA = bMinusA.dot();
+
+    /* Point is before A */
+    if(pointDistanceB > bDistanceA + pointDistanceA)
+        return pointDistanceA;
+
+    /* Point is after B */
+    if(pointDistanceA > bDistanceA + pointDistanceB)
+        return pointDistanceB;
+
+    /* Between A and B */
+    return Math::pow<2>(Vector2<T>::cross(bMinusA, -pointMinusA))/bDistanceA;
+}
+
+/** @todoc Remove workaround when Doxygen is sane */
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> static
+#else
+template<class T>
+#endif
+T Distance::lineSegmentPointSquared(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
+    const Vector3<T> pointMinusA = point - a;
+    const Vector3<T> pointMinusB = point - b;
+    const T pointDistanceA = pointMinusA.dot();
+    const T pointDistanceB = pointMinusB.dot();
+    const T bDistanceA = (b - a).dot();
+
+    /* Point is before A */
+    if(pointDistanceB > bDistanceA + pointDistanceA)
+        return pointDistanceA;
+
+    /* Point is after B */
+    if(pointDistanceA > bDistanceA + pointDistanceB)
+        return pointDistanceB;
+
+    /* Between A and B */
+    return Vector3<T>::cross(pointMinusA, pointMinusB).dot()/bDistanceA;
+}
 
 }}}
 

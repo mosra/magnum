@@ -28,7 +28,7 @@
 #include "DebugTools/ResourceManager.h"
 #include "MeshTools/Interleave.h"
 #include "SceneGraph/AbstractCamera.h"
-#include "Shaders/VertexColorShader.h"
+#include "Shaders/VertexColor.h"
 
 namespace Magnum { namespace DebugTools {
 
@@ -37,10 +37,10 @@ namespace {
 template<UnsignedInt> struct Renderer;
 
 template<> struct Renderer<2> {
-    inline static ResourceKey shader() { return {"VertexColorShader2D"}; }
-    inline static ResourceKey vertexBuffer() { return {"object2d-vertices"}; }
-    inline static ResourceKey indexBuffer() { return {"object2d-indices"}; }
-    inline static ResourceKey mesh() { return {"object2d"}; }
+    static ResourceKey shader() { return {"VertexColorShader2D"}; }
+    static ResourceKey vertexBuffer() { return {"object2d-vertices"}; }
+    static ResourceKey indexBuffer() { return {"object2d-indices"}; }
+    static ResourceKey mesh() { return {"object2d"}; }
 
     static const std::array<Vector2, 8> positions;
     static const std::array<Color3<>, 8> colors;
@@ -82,10 +82,10 @@ const std::array<UnsignedByte, 12> Renderer<2>::indices{{
 }};
 
 template<> struct Renderer<3> {
-    inline static ResourceKey shader() { return {"VertexColorShader3D"}; }
-    inline static ResourceKey vertexBuffer() { return {"object3d-vertices"}; }
-    inline static ResourceKey indexBuffer() { return {"object3d-indices"}; }
-    inline static ResourceKey mesh() { return {"object3d"}; }
+    static ResourceKey shader() { return {"VertexColorShader3D"}; }
+    static ResourceKey vertexBuffer() { return {"object3d-vertices"}; }
+    static ResourceKey indexBuffer() { return {"object3d-indices"}; }
+    static ResourceKey mesh() { return {"object3d"}; }
 
     static const std::array<Vector3, 12> positions;
     static const std::array<Color3<>, 12> colors;
@@ -144,8 +144,8 @@ const std::array<UnsignedByte, 18> Renderer<3>::indices{{
 
 template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(SceneGraph::AbstractObject<dimensions>* object, ResourceKey options, SceneGraph::DrawableGroup<dimensions>* drawables): SceneGraph::Drawable<dimensions>(object, drawables), options(ResourceManager::instance()->get<ObjectRendererOptions>(options)) {
     /* Shader */
-    shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::VertexColorShader<dimensions>>(Renderer<dimensions>::shader());
-    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(), new Shaders::VertexColorShader<dimensions>);
+    shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::VertexColor<dimensions>>(Renderer<dimensions>::shader());
+    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(), new Shaders::VertexColor<dimensions>);
 
     /* Mesh and vertex buffer */
     mesh = ResourceManager::instance()->get<Mesh>(Renderer<dimensions>::mesh());
@@ -167,8 +167,8 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Scen
     mesh->setPrimitive(Mesh::Primitive::Lines)
         ->setIndexCount(Renderer<dimensions>::indices.size())
         ->addInterleavedVertexBuffer(vertexBuffer, 0,
-            typename Shaders::VertexColorShader<dimensions>::Position(),
-            typename Shaders::VertexColorShader<dimensions>::Color())
+            typename Shaders::VertexColor<dimensions>::Position(),
+            typename Shaders::VertexColor<dimensions>::Color())
         ->setIndexBuffer(indexBuffer, 0, Mesh::IndexType::UnsignedByte, 0, Renderer<dimensions>::positions.size());
     ResourceManager::instance()->set<Mesh>(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }

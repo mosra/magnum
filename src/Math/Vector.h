@@ -42,11 +42,9 @@
 
 namespace Magnum { namespace Math {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<std::size_t, class, class> struct VectorConverter;
 }
-#endif
 
 /**
 @brief %Vector
@@ -73,11 +71,11 @@ template<std::size_t size, class T> class Vector {
          * @attention Use with caution, the function doesn't check whether the
          *      array is long enough.
          */
-        inline constexpr static Vector<size, T>& from(T* data) {
+        constexpr static Vector<size, T>& from(T* data) {
             return *reinterpret_cast<Vector<size, T>*>(data);
         }
         /** @overload */
-        inline constexpr static const Vector<size, T>& from(const T* data) {
+        constexpr static const Vector<size, T>& from(const T* data) {
             return *reinterpret_cast<const Vector<size, T>*>(data);
         }
 
@@ -91,7 +89,7 @@ template<std::size_t size, class T> class Vector {
          * @f]
          * @see dot() const, operator-(), Vector2::perpendicular()
          */
-        inline static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
+        static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
             return (a*b).sum();
         }
 
@@ -103,11 +101,7 @@ template<std::size_t size, class T> class Vector {
          * @f]
          * @see isNormalized(), Quaternion::angle(), Complex::angle()
          */
-        inline static Rad<T> angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
-            CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-                           "Math::Vector::angle(): vectors must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
-            return Rad<T>(std::acos(dot(normalizedA, normalizedB)));
-        }
+        static Rad<T> angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB);
 
         /**
          * @brief Default constructor
@@ -116,7 +110,7 @@ template<std::size_t size, class T> class Vector {
          *      \boldsymbol v = \boldsymbol 0
          * @f]
          */
-        inline constexpr /*implicit*/ Vector(): _data() {}
+        constexpr /*implicit*/ Vector(): _data() {}
 
         /** @todo Creating Vector from combination of vector and scalar types */
 
@@ -126,19 +120,19 @@ template<std::size_t size, class T> class Vector {
          * @param next  Next values
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> inline constexpr /*implicit*/ Vector(T first, U... next);
+        template<class ...U> constexpr /*implicit*/ Vector(T first, U... next);
         #else
-        template<class ...U, class V = typename std::enable_if<sizeof...(U)+1 == size, T>::type> inline constexpr /*implicit*/ Vector(T first, U... next): _data{first, next...} {}
+        template<class ...U, class V = typename std::enable_if<sizeof...(U)+1 == size, T>::type> constexpr /*implicit*/ Vector(T first, U... next): _data{first, next...} {}
         #endif
 
         /** @brief Construct vector with one value for all fields */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        inline explicit Vector(T value);
+        constexpr explicit Vector(T value);
         #else
         #ifndef CORRADE_GCC46_COMPATIBILITY
-        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> inline constexpr explicit Vector(U value): Vector(typename Implementation::GenerateSequence<size>::Type(), value) {}
+        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> constexpr explicit Vector(U value): Vector(typename Implementation::GenerateSequence<size>::Type(), value) {}
         #else
-        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> inline explicit Vector(U value) {
+        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> explicit Vector(U value) {
             *this = Vector(typename Implementation::GenerateSequence<size>::Type(), value);
         }
         #endif
@@ -156,37 +150,37 @@ template<std::size_t size, class T> class Vector {
          * @endcode
          */
         #ifndef CORRADE_GCC46_COMPATIBILITY
-        template<class U> inline constexpr explicit Vector(const Vector<size, U>& other): Vector(typename Implementation::GenerateSequence<size>::Type(), other) {}
+        template<class U> constexpr explicit Vector(const Vector<size, U>& other): Vector(typename Implementation::GenerateSequence<size>::Type(), other) {}
         #else
-        template<class U> inline explicit Vector(const Vector<size, U>& other) {
+        template<class U> explicit Vector(const Vector<size, U>& other) {
             *this = Vector(typename Implementation::GenerateSequence<size>::Type(), other);
         }
         #endif
 
         /** @brief Construct vector from external representation */
         #ifndef CORRADE_GCC46_COMPATIBILITY
-        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> inline constexpr explicit Vector(const U& other): Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> constexpr explicit Vector(const U& other): Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
         #else
         #ifndef CORRADE_GCC44_COMPATIBILITY
-        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> inline explicit Vector(const U& other) {
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> explicit Vector(const U& other) {
         #else
-        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(*static_cast<const U*>(nullptr)))> inline explicit Vector(const U& other) {
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(*static_cast<const U*>(nullptr)))> explicit Vector(const U& other) {
         #endif
             *this = Implementation::VectorConverter<size, T, U>::from(other);
         }
         #endif
 
         /** @brief Copy constructor */
-        inline constexpr Vector(const Vector<size, T>&) = default;
+        constexpr Vector(const Vector<size, T>&) = default;
 
         /** @brief Assignment operator */
-        inline Vector<size, T>& operator=(const Vector<size, T>&) = default;
+        Vector<size, T>& operator=(const Vector<size, T>&) = default;
 
         /** @brief Convert vector to external representation */
         #ifndef CORRADE_GCC44_COMPATIBILITY
-        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(std::declval<Vector<size, T>>()))> inline constexpr explicit operator U() const {
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(std::declval<Vector<size, T>>()))> constexpr explicit operator U() const {
         #else
-        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(*static_cast<const Vector<size, T>*>(nullptr)))> inline constexpr operator U() const {
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(*static_cast<const Vector<size, T>*>(nullptr)))> constexpr operator U() const {
         #endif
             /** @bug Why this is not constexpr under GCC 4.6? */
             return Implementation::VectorConverter<size, T, U>::to(*this);
@@ -198,19 +192,19 @@ template<std::size_t size, class T> class Vector {
          *
          * @see operator[]()
          */
-        inline T* data() { return _data; }
-        inline constexpr const T* data() const { return _data; } /**< @overload */
+        T* data() { return _data; }
+        constexpr const T* data() const { return _data; } /**< @overload */
 
         /**
          * @brief Value at given position
          *
          * @see data()
          */
-        inline T& operator[](std::size_t pos) { return _data[pos]; }
-        inline constexpr T operator[](std::size_t pos) const { return _data[pos]; } /**< @overload */
+        T& operator[](std::size_t pos) { return _data[pos]; }
+        constexpr T operator[](std::size_t pos) const { return _data[pos]; } /**< @overload */
 
         /** @brief Equality comparison */
-        inline bool operator==(const Vector<size, T>& other) const {
+        bool operator==(const Vector<size, T>& other) const {
             for(std::size_t i = 0; i != size; ++i)
                 if(!TypeTraits<T>::equals(_data[i], other._data[i])) return false;
 
@@ -218,49 +212,21 @@ template<std::size_t size, class T> class Vector {
         }
 
         /** @brief Non-equality comparison */
-        inline bool operator!=(const Vector<size, T>& other) const {
+        bool operator!=(const Vector<size, T>& other) const {
             return !operator==(other);
         }
 
         /** @brief Component-wise less than */
-        inline BoolVector<size> operator<(const Vector<size, T>& other) const {
-            BoolVector<size> out;
-
-            for(std::size_t i = 0; i != size; ++i)
-                out.set(i, _data[i] < other._data[i]);
-
-            return out;
-        }
+        BoolVector<size> operator<(const Vector<size, T>& other) const;
 
         /** @brief Component-wise less than or equal */
-        inline BoolVector<size> operator<=(const Vector<size, T>& other) const {
-            BoolVector<size> out;
-
-            for(std::size_t i = 0; i != size; ++i)
-                out.set(i, _data[i] <= other._data[i]);
-
-            return out;
-        }
+        BoolVector<size> operator<=(const Vector<size, T>& other) const;
 
         /** @brief Component-wise greater than or equal */
-        inline BoolVector<size> operator>=(const Vector<size, T>& other) const {
-            BoolVector<size> out;
-
-            for(std::size_t i = 0; i != size; ++i)
-                out.set(i, _data[i] >= other._data[i]);
-
-            return out;
-        }
+        BoolVector<size> operator>=(const Vector<size, T>& other) const;
 
         /** @brief Component-wise greater than */
-        inline BoolVector<size> operator>(const Vector<size, T>& other) const {
-            BoolVector<size> out;
-
-            for(std::size_t i = 0; i != size; ++i)
-                out.set(i, _data[i] > other._data[i]);
-
-            return out;
-        }
+        BoolVector<size> operator>(const Vector<size, T>& other) const;
 
         /**
          * @brief Whether the vector is normalized
@@ -270,26 +236,19 @@ template<std::size_t size, class T> class Vector {
          * @f]
          * @see dot(), normalized()
          */
-        inline bool isNormalized() const {
+        bool isNormalized() const {
             return Implementation::isNormalizedSquared(dot());
         }
 
         /**
          * @brief Negated vector
          *
-         * The computation is done in-place. @f[
-         *      \boldsymbol a_i = -\boldsymbol a_i
+         * @f[
+         *      \boldsymbol b_i = -\boldsymbol a_i
          * @f]
          * @see Vector2::perpendicular()
          */
-        Vector<size, T> operator-() const {
-            Vector<size, T> out;
-
-            for(std::size_t i = 0; i != size; ++i)
-                out._data[i] = -_data[i];
-
-            return out;
-        }
+        Vector<size, T> operator-() const;
 
         /**
          * @brief Add and assign vector
@@ -310,7 +269,7 @@ template<std::size_t size, class T> class Vector {
          *
          * @see operator+=(), sum()
          */
-        inline Vector<size, T> operator+(const Vector<size, T>& other) const {
+        Vector<size, T> operator+(const Vector<size, T>& other) const {
             return Vector<size, T>(*this) += other;
         }
 
@@ -333,7 +292,7 @@ template<std::size_t size, class T> class Vector {
          *
          * @see operator-=()
          */
-        inline Vector<size, T> operator-(const Vector<size, T>& other) const {
+        Vector<size, T> operator-(const Vector<size, T>& other) const {
             return Vector<size, T>(*this) -= other;
         }
 
@@ -347,7 +306,7 @@ template<std::size_t size, class T> class Vector {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class U> Vector<size, T>& operator*=(U number) {
         #else
-        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>&>::type operator*=(U number) {
+        template<class U> typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>&>::type operator*=(U number) {
         #endif
             for(std::size_t i = 0; i != size; ++i)
                 _data[i] *= number;
@@ -361,9 +320,9 @@ template<std::size_t size, class T> class Vector {
          * @see operator*=(U), operator*(U, const Vector<size, T>&)
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class U> inline Vector<size, T> operator*(U number) const {
+        template<class U> Vector<size, T> operator*(U number) const {
         #else
-        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator*(U number) const {
+        template<class U> typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator*(U number) const {
         #endif
             return Vector<size, T>(*this) *= number;
         }
@@ -378,7 +337,7 @@ template<std::size_t size, class T> class Vector {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class U> Vector<size, T>& operator/=(U number) {
         #else
-        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>&>::type operator/=(U number) {
+        template<class U> typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>&>::type operator/=(U number) {
         #endif
             for(std::size_t i = 0; i != size; ++i)
                 _data[i] /= number;
@@ -392,9 +351,9 @@ template<std::size_t size, class T> class Vector {
          * @see operator/=(), operator/(U, const Vector<size, T>&)
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class U> inline Vector<size, T> operator/(U number) const {
+        template<class U> Vector<size, T> operator/(U number) const {
         #else
-        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator/(U number) const {
+        template<class U> typename std::enable_if<std::is_arithmetic<U>::value, Vector<size, T>>::type operator/(U number) const {
         #endif
             return Vector<size, T>(*this) /= number;
         }
@@ -418,7 +377,7 @@ template<std::size_t size, class T> class Vector {
          *
          * @see operator*=(const Vector<size, U>&), product()
          */
-        template<class U> inline Vector<size, T> operator*(const Vector<size, U>& other) const {
+        template<class U> Vector<size, T> operator*(const Vector<size, U>& other) const {
             return Vector<size, T>(*this) *= other;
         }
 
@@ -441,7 +400,7 @@ template<std::size_t size, class T> class Vector {
          *
          * @see operator/=(const Vector<size, U>&)
          */
-        template<class U> inline Vector<size, T> operator/(const Vector<size, U>& other) const {
+        template<class U> Vector<size, T> operator/(const Vector<size, U>& other) const {
             return Vector<size, T>(*this) /= other;
         }
 
@@ -454,9 +413,7 @@ template<std::size_t size, class T> class Vector {
          * @f]
          * @see dot(const Vector&, const Vector&), isNormalized()
          */
-        inline T dot() const {
-            return dot(*this, *this);
-        }
+        T dot() const { return dot(*this, *this); }
 
         /**
          * @brief %Vector length
@@ -465,12 +422,10 @@ template<std::size_t size, class T> class Vector {
          * values. @f[
          *      |\boldsymbol a| = \sqrt{\boldsymbol a \cdot \boldsymbol a}
          * @f]
-         * @see lengthInverted(), Math::sqrt(), normalized()
+         * @see lengthInverted(), Math::sqrt(), normalized(), resized()
          * @todo something like std::hypot() for possibly better precision?
          */
-        inline T length() const {
-            return std::sqrt(dot());
-        }
+        T length() const { return std::sqrt(dot()); }
 
         /**
          * @brief Inverse vector length
@@ -478,19 +433,30 @@ template<std::size_t size, class T> class Vector {
          * @f[
          *      \frac{1}{|\boldsymbol a|} = \frac{1}{\sqrt{\boldsymbol a \cdot \boldsymbol a}}
          * @f]
-         * @see length(), Math::sqrtInverted(), normalized()
+         * @see length(), Math::sqrtInverted(), normalized(), resized()
          */
-        inline T lengthInverted() const {
-            return T(1)/length();
-        }
+        T lengthInverted() const { return T(1)/length(); }
 
         /**
          * @brief Normalized vector (of unit length)
          *
-         * @see isNormalized()
+         * @see isNormalized(), lengthInverted(), resized()
          */
-        inline Vector<size, T> normalized() const {
-            return *this*lengthInverted();
+        Vector<size, T> normalized() const { return *this*lengthInverted(); }
+
+        /**
+         * @brief Resized vector
+         *
+         * Convenience equivalent to the following code. Due to operation order
+         * this function is faster than the obvious way of sizing normalized()
+         * vector.
+         * @code
+         * vec*(vec.lengthInverted()*length) // the brackets are important
+         * @endcode
+         * @see normalized()
+         */
+        Vector<size, T> resized(T length) const {
+            return *this*(lengthInverted()*length);
         }
 
         /**
@@ -501,7 +467,7 @@ template<std::size_t size, class T> class Vector {
          * @f]
          * @see dot(), projectedOntoNormalized()
          */
-        inline Vector<size, T> projected(const Vector<size, T>& line) const {
+        Vector<size, T> projected(const Vector<size, T>& line) const {
             return line*dot(*this, line)/line.dot();
         }
 
@@ -515,73 +481,42 @@ template<std::size_t size, class T> class Vector {
          * @f]
          * @see dot()
          */
-        inline Vector<size, T> projectedOntoNormalized(const Vector<size, T>& line) const {
-            CORRADE_ASSERT(line.isNormalized(), "Math::Vector::projectedOntoNormalized(): line must be normalized", (Vector<size, T>(std::numeric_limits<T>::quiet_NaN())));
-            return line*dot(*this, line);
-        }
+        Vector<size, T> projectedOntoNormalized(const Vector<size, T>& line) const;
 
         /**
          * @brief Sum of values in the vector
          *
          * @see operator+()
          */
-        T sum() const {
-            T out(_data[0]);
-
-            for(std::size_t i = 1; i != size; ++i)
-                out += _data[i];
-
-            return out;
-        }
+        T sum() const;
 
         /**
          * @brief Product of values in the vector
          *
          * @see operator*(const Vector&)
          */
-        T product() const {
-            T out(_data[0]);
-
-            for(std::size_t i = 1; i != size; ++i)
-                out *= _data[i];
-
-            return out;
-        }
+        T product() const;
 
         /**
          * @brief Minimal value in the vector
          *
          * @see Math::min()
          */
-        T min() const {
-            T out(_data[0]);
-
-            for(std::size_t i = 1; i != size; ++i)
-                out = std::min(out, _data[i]);
-
-            return out;
-        }
+        T min() const;
 
         /**
          * @brief Maximal value in the vector
          *
          * @see Math::max()
          */
-        T max() const {
-            T out(_data[0]);
-
-            for(std::size_t i = 1; i != size; ++i)
-                out = std::max(out, _data[i]);
-
-            return out;
-        }
+        T max() const;
 
     private:
         /* Implementation for Vector<size, T>::Vector(const Vector<size, U>&) */
-        template<class U, std::size_t ...sequence> inline constexpr explicit Vector(Implementation::Sequence<sequence...>, const Vector<sizeof...(sequence), U>& vector): _data{T(vector._data[sequence])...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, const Vector<sizeof...(sequence), U>& vector): _data{T(vector._data[sequence])...} {}
 
         /* Implementation for Vector<size, T>::Vector(U) */
-        template<std::size_t ...sequence> inline constexpr explicit Vector(Implementation::Sequence<sequence...>, T value): _data{Implementation::repeat(value, sequence)...} {}
+        template<std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, T value): _data{Implementation::repeat(value, sequence)...} {}
 
         T _data[size];
 };
@@ -653,66 +588,71 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Type, size)                   \
-    inline constexpr static Type<T>& from(T* data) {                        \
+    constexpr static Type<T>& from(T* data) {                               \
         return *reinterpret_cast<Type<T>*>(data);                           \
     }                                                                       \
-    inline constexpr static const Type<T>& from(const T* data) {            \
+    constexpr static const Type<T>& from(const T* data) {                   \
         return *reinterpret_cast<const Type<T>*>(data);                     \
     }                                                                       \
                                                                             \
-    inline Type<T>& operator=(const Type<T>& other) {                       \
+    Type<T>& operator=(const Type<T>& other) {                              \
         Math::Vector<size, T>::operator=(other);                            \
         return *this;                                                       \
     }                                                                       \
                                                                             \
-    inline Type<T> operator-() const {                                      \
+    Type<T> operator-() const {                                             \
         return Math::Vector<size, T>::operator-();                          \
     }                                                                       \
-    inline Type<T>& operator+=(const Math::Vector<size, T>& other) {        \
+    Type<T>& operator+=(const Math::Vector<size, T>& other) {               \
         Math::Vector<size, T>::operator+=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    inline Type<T> operator+(const Math::Vector<size, T>& other) const {    \
+    Type<T> operator+(const Math::Vector<size, T>& other) const {           \
         return Math::Vector<size, T>::operator+(other);                     \
     }                                                                       \
-    inline Type<T>& operator-=(const Math::Vector<size, T>& other) {        \
+    Type<T>& operator-=(const Math::Vector<size, T>& other) {               \
         Math::Vector<size, T>::operator-=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    inline Type<T> operator-(const Math::Vector<size, T>& other) const {    \
+    Type<T> operator-(const Math::Vector<size, T>& other) const {           \
         return Math::Vector<size, T>::operator-(other);                     \
     }                                                                       \
-    template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Type<T>&>::type operator*=(U number) { \
+    template<class U> typename std::enable_if<std::is_arithmetic<U>::value, Type<T>&>::type operator*=(U number) { \
         Math::Vector<size, T>::operator*=(number);                          \
         return *this;                                                       \
     }                                                                       \
-    template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Type<T>>::type operator*(U number) const { \
+    template<class U> typename std::enable_if<std::is_arithmetic<U>::value, Type<T>>::type operator*(U number) const { \
         return Math::Vector<size, T>::operator*(number);                    \
     }                                                                       \
-    template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Type<T>&>::type operator/=(U number) { \
+    template<class U> typename std::enable_if<std::is_arithmetic<U>::value, Type<T>&>::type operator/=(U number) { \
         Math::Vector<size, T>::operator/=(number);                          \
         return *this;                                                       \
     }                                                                       \
-    template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Type<T>>::type operator/(U number) const { \
+    template<class U> typename std::enable_if<std::is_arithmetic<U>::value, Type<T>>::type operator/(U number) const { \
         return Math::Vector<size, T>::operator/(number);                    \
     }                                                                       \
-    template<class U> inline Type<T>& operator*=(const Math::Vector<size, U>& other) { \
+    template<class U> Type<T>& operator*=(const Math::Vector<size, U>& other) { \
         Math::Vector<size, T>::operator*=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    template<class U> inline Type<T> operator*(const Math::Vector<size, U>& other) const { \
+    template<class U> Type<T> operator*(const Math::Vector<size, U>& other) const { \
         return Math::Vector<size, T>::operator*(other);                     \
     }                                                                       \
-    template<class U> inline Type<T>& operator/=(const Math::Vector<size, U>& other) { \
+    template<class U> Type<T>& operator/=(const Math::Vector<size, U>& other) { \
         Math::Vector<size, T>::operator/=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    template<class U> inline Type<T> operator/(const Math::Vector<size, U>& other) const { \
+    template<class U> Type<T> operator/(const Math::Vector<size, U>& other) const { \
         return Math::Vector<size, T>::operator/(other);                     \
     }                                                                       \
                                                                             \
-    inline Type<T> normalized() const { return Math::Vector<size, T>::normalized(); } \
-    inline Type<T> projected(const Math::Vector<size, T>& other) const {    \
+    Type<T> normalized() const {                                            \
+        return Math::Vector<size, T>::normalized();                         \
+    }                                                                       \
+    Type<T> resized(T length) const {                                       \
+        return Math::Vector<size, T>::resized(length);                      \
+    }                                                                       \
+    Type<T> projected(const Math::Vector<size, T>& other) const {           \
         return Math::Vector<size, T>::projected(other);                     \
     }
 
@@ -724,6 +664,99 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
         return number/Math::Vector<size, T>(vector);                        \
     }
 #endif
+
+template<std::size_t size, class T> inline Rad<T> Vector<size, T>::angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+        "Math::Vector::angle(): vectors must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
+    return Rad<T>(std::acos(dot(normalizedA, normalizedB)));
+}
+
+template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::operator<(const Vector<size, T>& other) const {
+    BoolVector<size> out;
+
+    for(std::size_t i = 0; i != size; ++i)
+        out.set(i, _data[i] < other._data[i]);
+
+    return out;
+}
+
+template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::operator<=(const Vector<size, T>& other) const {
+    BoolVector<size> out;
+
+    for(std::size_t i = 0; i != size; ++i)
+        out.set(i, _data[i] <= other._data[i]);
+
+    return out;
+}
+
+template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::operator>=(const Vector<size, T>& other) const {
+    BoolVector<size> out;
+
+    for(std::size_t i = 0; i != size; ++i)
+        out.set(i, _data[i] >= other._data[i]);
+
+    return out;
+}
+
+template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::operator>(const Vector<size, T>& other) const {
+    BoolVector<size> out;
+
+    for(std::size_t i = 0; i != size; ++i)
+        out.set(i, _data[i] > other._data[i]);
+
+    return out;
+}
+
+template<std::size_t size, class T> inline Vector<size, T> Vector<size, T>::operator-() const {
+    Vector<size, T> out;
+
+    for(std::size_t i = 0; i != size; ++i)
+        out._data[i] = -_data[i];
+
+    return out;
+}
+
+template<std::size_t size, class T> inline Vector<size, T> Vector<size, T>::projectedOntoNormalized(const Vector<size, T>& line) const {
+    CORRADE_ASSERT(line.isNormalized(), "Math::Vector::projectedOntoNormalized(): line must be normalized",
+        (Vector<size, T>(std::numeric_limits<T>::quiet_NaN())));
+    return line*dot(*this, line);
+}
+
+template<std::size_t size, class T> inline T Vector<size, T>::sum() const {
+    T out(_data[0]);
+
+    for(std::size_t i = 1; i != size; ++i)
+        out += _data[i];
+
+    return out;
+}
+
+template<std::size_t size, class T> inline T Vector<size, T>::product() const {
+    T out(_data[0]);
+
+    for(std::size_t i = 1; i != size; ++i)
+        out *= _data[i];
+
+    return out;
+}
+
+template<std::size_t size, class T> inline T Vector<size, T>::min() const {
+    T out(_data[0]);
+
+    for(std::size_t i = 1; i != size; ++i)
+        out = std::min(out, _data[i]);
+
+    return out;
+}
+
+template<std::size_t size, class T> inline T Vector<size, T>::max() const {
+    T out(_data[0]);
+
+    for(std::size_t i = 1; i != size; ++i)
+        out = std::max(out, _data[i]);
+
+    return out;
+}
 
 }}
 

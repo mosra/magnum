@@ -34,7 +34,7 @@ class MagnumInfo: public Platform::WindowlessGlxApplication {
     public:
         explicit MagnumInfo(const Arguments& arguments);
 
-        inline int exec() override { return 0; }
+        int exec() override { return 0; }
 };
 
 MagnumInfo::MagnumInfo(const Arguments& arguments): WindowlessGlxApplication(arguments) {
@@ -89,7 +89,12 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): WindowlessGlxApplication(arg
     Debug() << "Vendor:" << c->vendorString();
     Debug() << "Renderer:" << c->rendererString();
     Debug() << "OpenGL version:" << c->version() << '(' + c->versionString() + ')';
-    Debug() << "GLSL version:" << c->version() << '(' + c->shadingLanguageVersionString() + ')';
+
+    Debug() << "Supported GLSL versions:";
+    const std::vector<std::string> shadingLanguageVersions = c->shadingLanguageVersionStrings();
+    for(const auto& version: shadingLanguageVersions)
+        Debug() << "   " << version;
+
     Debug() << "";
 
     /* Get first future (not supported) version */

@@ -33,11 +33,10 @@
 #include <tuple>
 
 #include "Math/Vector.h"
-#include "MeshTools/Clean.h"
+#include "MeshTools/RemoveDuplicates.h"
 
 namespace Magnum { namespace MeshTools {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
 class CombineIndexedArrays {
@@ -56,7 +55,7 @@ class CombineIndexedArrays {
             writeCombinedIndices(indexCombinations, std::get<0>(indexedArrays)...);
 
             /* Make the combinations unique */
-            MeshTools::clean(result, indexCombinations);
+            MeshTools::removeDuplicates(result, indexCombinations);
 
             /* Write combined arrays */
             writeCombinedArrays(indexCombinations, std::get<1>(indexedArrays)...);
@@ -65,7 +64,7 @@ class CombineIndexedArrays {
         }
 
     private:
-        template<class ...T> inline static std::size_t indexCount(const std::vector<UnsignedInt>& first, const std::vector<T>&... next) {
+        template<class ...T> static std::size_t indexCount(const std::vector<UnsignedInt>& first, const std::vector<T>&... next) {
             CORRADE_ASSERT(sizeof...(next) == 0 || indexCount(next...) == first.size(), "MeshTools::combineIndexedArrays(): index arrays don't have the same length, nothing done.", 0);
 
             return first.size();
@@ -90,13 +89,12 @@ class CombineIndexedArrays {
         }
 
         /* Terminator functions for recursive calls */
-        inline static std::size_t indexCount() { return 0; }
-        template<std::size_t size> inline static void writeCombinedIndices(std::vector<Math::Vector<size, UnsignedInt>>&) {}
-        template<std::size_t size> inline static void writeCombinedArrays(const std::vector<Math::Vector<size, UnsignedInt>>&) {}
+        static std::size_t indexCount() { return 0; }
+        template<std::size_t size> static void writeCombinedIndices(std::vector<Math::Vector<size, UnsignedInt>>&) {}
+        template<std::size_t size> static void writeCombinedArrays(const std::vector<Math::Vector<size, UnsignedInt>>&) {}
 };
 
 }
-#endif
 
 /**
 @brief Combine indexed arrays

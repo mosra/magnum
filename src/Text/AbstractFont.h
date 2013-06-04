@@ -52,15 +52,15 @@ information. See TextRenderer for information about text rendering.
 
 Plugin implements functions open(), close(), createGlyphCache() and layout().
 */
-class MAGNUM_TEXT_EXPORT AbstractFont: public Corrade::PluginManager::AbstractPlugin {
-    PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.1")
+class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
+    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.1")
 
     public:
         /** @brief Default constructor */
         explicit AbstractFont();
 
         /** @brief Plugin manager constructor */
-        explicit AbstractFont(Corrade::PluginManager::AbstractPluginManager* manager, std::string plugin);
+        explicit AbstractFont(PluginManager::AbstractManager* manager, std::string plugin);
 
         /**
          * @brief Open font from file
@@ -87,7 +87,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public Corrade::PluginManager::AbstractPl
         virtual void close() = 0;
 
         /** @brief Font size */
-        inline Float size() const { return _size; }
+        Float size() const { return _size; }
 
         /**
          * @brief Create glyph cache for given character set
@@ -132,7 +132,7 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
         virtual ~AbstractLayouter() = 0;
 
         /** @brief Count of glyphs in laid out text */
-        inline UnsignedInt glyphCount() const {
+        UnsignedInt glyphCount() const {
             return _glyphCount;
         }
 

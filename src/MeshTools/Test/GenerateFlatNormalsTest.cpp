@@ -30,7 +30,7 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class GenerateFlatNormalsTest: public Corrade::TestSuite::Tester {
+class GenerateFlatNormalsTest: public TestSuite::Tester {
     public:
         GenerateFlatNormalsTest();
 

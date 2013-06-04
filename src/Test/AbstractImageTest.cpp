@@ -26,10 +26,11 @@
 #include <TestSuite/Tester.h>
 
 #include "AbstractImage.h"
+#include "ImageFormat.h"
 
 namespace Magnum { namespace Test {
 
-class AbstractImageTest: public Corrade::TestSuite::Tester {
+class AbstractImageTest: public TestSuite::Tester {
     public:
         explicit AbstractImageTest();
 
@@ -44,14 +45,14 @@ AbstractImageTest::AbstractImageTest() {
 
 void AbstractImageTest::debugFormat() {
     std::ostringstream o;
-    Debug(&o) << AbstractImage::Format::RGBA;
-    CORRADE_COMPARE(o.str(), "AbstractImage::Format::RGBA\n");
+    Debug(&o) << ImageFormat::RGBA;
+    CORRADE_COMPARE(o.str(), "ImageFormat::RGBA\n");
 }
 
 void AbstractImageTest::debugType() {
     std::ostringstream o;
-    Debug(&o) << AbstractImage::Type::UnsignedShort5551;
-    CORRADE_COMPARE(o.str(), "AbstractImage::Type::UnsignedShort5551\n");
+    Debug(&o) << ImageType::UnsignedShort5551;
+    CORRADE_COMPARE(o.str(), "ImageType::UnsignedShort5551\n");
 }
 
 }}

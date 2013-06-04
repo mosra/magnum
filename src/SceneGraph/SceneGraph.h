@@ -46,10 +46,18 @@ template<class T = Float> using AbstractCamera2D = AbstractCamera<2, T>;
 template<class T = Float> using AbstractCamera3D = AbstractCamera<3, T>;
 #endif
 
+/* Enum CachedTransformation and CachedTransformations used only directly */
+
 template<UnsignedInt dimensions, class T = Float> class AbstractFeature;
 #ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T = Float> using AbstractFeature2D = AbstractFeature<2, T>;
 template<class T = Float> using AbstractFeature3D = AbstractFeature<3, T>;
+#endif
+
+template<UnsignedInt dimensions, class T = Float> class AbstractFeatureGroup;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+template<class T = Float> using AbstractFeatureGroup2D = AbstractFeatureGroup<2, T>;
+template<class T = Float> using AbstractFeatureGroup3D = AbstractFeatureGroup<3, T>;
 #endif
 
 template<UnsignedInt dimensions, class Derived, class T = Float> class AbstractGroupedFeature;

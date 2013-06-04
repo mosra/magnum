@@ -115,9 +115,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT Profiler {
          */
         static const Section otherSection = 0;
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
         explicit Profiler(): enabled(false), measureDuration(60), currentFrame(0), frameCount(0), sections{"Other"}, currentSection(otherSection) {}
-        #endif
 
         /**
          * @brief Set measure duration
@@ -174,7 +172,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT Profiler {
          * Same as calling `start(Profiler::otherSection)`.
          * @note Does nothing if profiling is disabled.
          */
-        inline void start() { start(otherSection); }
+        void start() { start(otherSection); }
 
         /**
          * @brief Stop profiling

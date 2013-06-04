@@ -30,6 +30,7 @@
 
 #include <Containers/EnumSet.h>
 
+#include "Magnum.h"
 #include "Primitives/magnumPrimitivesVisibility.h"
 #include "Trade/Trade.h"
 
@@ -53,7 +54,7 @@ class MAGNUM_PRIMITIVES_EXPORT Cylinder {
         };
 
         /** @brief %Flags */
-        typedef Corrade::Containers::EnumSet<Flag, int> Flags;
+        typedef Containers::EnumSet<Flag, int> Flags;
 
         /**
          * @brief Solid cylinder

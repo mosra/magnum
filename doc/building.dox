@@ -97,17 +97,17 @@ below). Using `WITH_*` CMake parameters you can specify which parts will be buil
 and which not:
 
  - `WITH_DEBUGTOOLS` - DebugTools library. Enables also building of MeshTools,
-   Physics, Primitives, SceneGraph and Shaders libraries.
+   Primitives, SceneGraph, Shaders and Shapes libraries.
  - `WITH_MESHTOOLS` - MeshTools library. Enabled automatically if `WITH_DEBUGTOOLS`
    is enabled.
- - `WITH_PHYSICS` - Physics library. Enables also building of SceneGraph
-   library. Enabled automatically if `WITH_DEBUGTOOLS` is enabled.
  - `WITH_PRIMITIVES` - Primitives library. Enabled automatically if `WITH_DEBUGTOOLS`
    is enabled.
  - `WITH_SCENEGRAPH` - SceneGraph library. Enabled automatically if `WITH_DEBUGTOOLS`
-   or `WITH_PHYSICS` is enabled.
+   or `WITH_SHAPES` is enabled.
  - `WITH_SHADERS` - Shaders library. Enabled automatically if `WITH_DEBUGTOOLS`
    is enabled.
+ - `WITH_SHAPES` - Shapes library. Enables also building of SceneGraph library.
+   Enabled automatically if `WITH_DEBUGTOOLS` is enabled.
  - `WITH_TEXT` - Text library. Enables also building of TextureTools library.
  - `WITH_TEXTURETOOLS` - TextureTools library. Enabled automatically if `WITH_TEXT`
    is enabled.
@@ -207,17 +207,21 @@ depending projects.
 You will need [Native Client SDK](https://developers.google.com/native-client/beta/sdk/download).
 Tested version is `pepper_22`.
 
-Make sure you have `toolchains` Git submodule updated, as
-@ref building-download "explained above". Don't forget to adapt `NACL_PREFIX`
-variable in `generic/NaCl-glibc-x86-32.cmake` and `generic/NaCl-glibc-x86-64.cmake`
-to path where your SDK is installed. Default is `/usr/nacl`.  You may need to
-adapt also `NACL_TOOLCHAIN_PATH` so CMake is able to find the compiler.
+Make sure you have `toolchains` submodule updated, as
+@ref building-download "explained above". You can choose from either `glibc` or
+`newlib` toolchain. `Newlib` supports only static linking, thus `BUILD_STATIC`
+is always enabled. Don't forget to adapt `NACL_PREFIX` variable in
+`generic/NaCl-*-x86-32.cmake` and `generic/NaCl-*-x86-64.cmake` to path where
+your SDK is installed. Default is `/usr/nacl`. You may need to adapt also
+`NACL_TOOLCHAIN_PATH` so CMake is able to find the compiler. NaCl currently
+supports only OpenGL ES 2, thus `TARGET_GLES` and `TARGET_GLES2` is always
+enabled.
 
 Then create build directories for x86-32 and x86-64 and run cmake and make in
-them. The toolchains needs access to its platform file, so be sure to properly
+them. The toolchains need access to its platform file, so be sure to properly
 set **absolute** path to `modules/` directory containing `Platform/NaCl.cmake`.
-Also adapt `CMAKE_INSTALL_PREFIX` to the same value you entered into toolchain
-files above.
+Also adapt `CMAKE_INSTALL_PREFIX` to the same value as in `NACL_PREFIX` in
+toolchain file.
 
     mkdir -p build-nacl-x86-32
     cd build-nacl-x86-32
@@ -243,8 +247,8 @@ files above.
 Then you can install both versions using `make install` to make them available
 for depending projects. The headers are shared by both versions.
 
-For ArchLinux there is also prepared package file in root, named
-`PKGBUILD-nacl`.
+For ArchLinux there are also prepared package files in root, named
+`PKGBUILD-nacl-glibc` and `PKGBUILD-nacl-newlib`.
 
 */
 }

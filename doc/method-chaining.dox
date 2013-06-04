@@ -43,9 +43,9 @@ number of needed bindings. Consider the following example:
 @code
 Texture2D *carDiffuseTexture, *carSpecularTexture, *carBumpTexture;
 
-carDiffuseTexture->setStorage(5, Texture2D::InternalFormat::SRGB8);
-carSpecularTexture->setStorage(3, Texture2D::InternalFormat::R8);
-carBumpTexture->setStorage(5, Texture2D::InternalFormat::RGB8);
+carDiffuseTexture->setStorage(5, TextureFormat::SRGB8);
+carSpecularTexture->setStorage(3, TextureFormat::R8);
+carBumpTexture->setStorage(5, TextureFormat::RGB8);
 carDiffuseTexture->setSubImage(0, {}, diffuse);
 carSpecularTexture->setSubImage(0, {}, specular;
 carBumpTexture->setSubImage(0, {}, bump);
@@ -61,13 +61,13 @@ names and after each configuration step the texture must be rebound to another.
 With method chaining used the code looks much lighter and each object is
 configured in one run, reducing count of bind calls from 9 to 3.
 @code
-carDiffuseTexture->setStorage(5, Texture2D::InternalFormat::SRGB8)
+carDiffuseTexture->setStorage(5, TextureFormat::SRGB8)
     ->setSubImage(0, {}, diffuse)
     ->generateMipmap();
-carSpecularTexture->setStorage(3, Texture2D::InternalFormat::R8)
+carSpecularTexture->setStorage(3, TextureFormat::R8)
     ->setSubImage(0, {}, diffuse)
     ->generateMipmap();
-carBumpTexture->setStorage(5, Texture2D::InternalFormat::RGB8)
+carBumpTexture->setStorage(5, TextureFormat::RGB8)
     ->setSubImage(0, {}, bump)
     ->generateMipmap();
 @endcode
@@ -86,5 +86,10 @@ Scene3D scene;
     ->rotateX(90.0_degf)
     ->translate({-1.5f, 0.5f, 7.0f});
 @endcode
+
+In most cases method chaining methods return pointer to the object, because
+most of the objects are commonly created on the heap. The only exception are
+Shader methods, which return reference, because the class is commonly created
+as local variable in shader constructors.
 */
 }

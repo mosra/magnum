@@ -79,8 +79,6 @@ class WindowlessGlxApplication {
         /** @copydoc GlutApplication::GlutApplication(const Arguments&, Configuration*) */
         explicit WindowlessGlxApplication(const Arguments& arguments, Configuration* configuration);
 
-        ~WindowlessGlxApplication();
-
         /**
          * @brief Execute application
          * @return Value for returning from `main()`.
@@ -88,6 +86,10 @@ class WindowlessGlxApplication {
         virtual int exec() = 0;
 
     protected:
+        /* Nobody will need to have (and delete) WindowlessGlxApplication*,
+           thus this is faster than public pure virtual destructor */
+        ~WindowlessGlxApplication();
+
         /** @copydoc GlutApplication::createContext() */
         void createContext(Configuration* configuration);
 

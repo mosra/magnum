@@ -26,7 +26,6 @@
 
 #include <stack>
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Magnum { namespace MeshTools { namespace Implementation {
 
 void Tipsify::operator()(std::size_t cacheSize) {
@@ -158,4 +157,3 @@ void Tipsify::buildAdjacency(std::vector<UnsignedInt>& liveTriangleCount, std::v
 }
 
 }}}
-#endif

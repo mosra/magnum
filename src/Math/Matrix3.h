@@ -53,7 +53,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          *      Matrix4::translation(const Vector3&), Vector2::xAxis(),
          *      Vector2::yAxis()
          */
-        inline constexpr static Matrix3<T> translation(const Vector2<T>& vector) {
+        constexpr static Matrix3<T> translation(const Vector2<T>& vector) {
             return {{      T(1),       T(0), T(0)},
                     {      T(0),       T(1), T(0)},
                     {vector.x(), vector.y(), T(1)}};
@@ -66,7 +66,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @see rotationScaling() const, Matrix4::scaling(const Vector3&),
          *      Vector2::xScale(), Vector2::yScale()
          */
-        inline constexpr static Matrix3<T> scaling(const Vector2<T>& vector) {
+        constexpr static Matrix3<T> scaling(const Vector2<T>& vector) {
             return {{vector.x(),       T(0), T(0)},
                     {      T(0), vector.y(), T(0)},
                     {      T(0),       T(0), T(1)}};
@@ -79,14 +79,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @see rotation() const, Complex::rotation(), DualComplex::rotation(),
          *      Matrix4::rotation(Rad, const Vector3&)
          */
-        static Matrix3<T> rotation(Rad<T> angle) {
-            T sine = std::sin(angle.toUnderlyingType());
-            T cosine = std::cos(angle.toUnderlyingType());
-
-            return {{ cosine,   sine, T(0)},
-                    {  -sine, cosine, T(0)},
-                    {   T(0),   T(0), T(1)}};
-        }
+        static Matrix3<T> rotation(Rad<T> angle);
 
         /**
          * @brief 2D reflection matrix
@@ -120,14 +113,14 @@ template<class T> class Matrix3: public Matrix<3, T> {
          *
          * @see rotationScaling() const, translation() const
          */
-        inline constexpr static Matrix3<T> from(const Matrix<2, T>& rotationScaling, const Vector2<T>& translation) {
+        constexpr static Matrix3<T> from(const Matrix<2, T>& rotationScaling, const Vector2<T>& translation) {
             return {{rotationScaling[0], T(0)},
                     {rotationScaling[1], T(0)},
                     {       translation, T(1)}};
         }
 
         /** @copydoc Matrix::Matrix(ZeroType) */
-        inline constexpr explicit Matrix3(typename Matrix<3, T>::ZeroType): Matrix<3, T>(Matrix<3, T>::Zero) {}
+        constexpr explicit Matrix3(typename Matrix<3, T>::ZeroType): Matrix<3, T>(Matrix<3, T>::Zero) {}
 
         /**
          * @brief Default constructor
@@ -137,20 +130,23 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @p value allows you to specify value on diagonal.
          * @todo Use constexpr implementation in Matrix, when done
          */
-        inline constexpr /*implicit*/ Matrix3(typename Matrix<3, T>::IdentityType = (Matrix<3, T>::Identity), T value = T(1)): Matrix<3, T>(
+        constexpr /*implicit*/ Matrix3(typename Matrix<3, T>::IdentityType = (Matrix<3, T>::Identity), T value = T(1)): Matrix<3, T>(
             Vector<3, T>(value,  T(0),  T(0)),
             Vector<3, T>( T(0), value,  T(0)),
             Vector<3, T>( T(0),  T(0), value)
         ) {}
 
         /** @brief %Matrix from column vectors */
-        inline constexpr /*implicit*/ Matrix3(const Vector3<T>& first, const Vector3<T>& second, const Vector3<T>& third): Matrix<3, T>(first, second, third) {}
+        constexpr /*implicit*/ Matrix3(const Vector3<T>& first, const Vector3<T>& second, const Vector3<T>& third): Matrix<3, T>(first, second, third) {}
 
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */
-        template<class U> inline constexpr explicit Matrix3(const RectangularMatrix<3, 3, U>& other): Matrix<3, T>(other) {}
+        template<class U> constexpr explicit Matrix3(const RectangularMatrix<3, 3, U>& other): Matrix<3, T>(other) {}
+
+        /** @brief Construct matrix from external representation */
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(std::declval<U>()))> constexpr explicit Matrix3(const U& other): Matrix<3, T>(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        inline constexpr Matrix3(const RectangularMatrix<3, 3, T>& other): Matrix<3, T>(other) {}
+        constexpr Matrix3(const RectangularMatrix<3, 3, T>& other): Matrix<3, T>(other) {}
 
         /**
          * @brief Check whether the matrix represents rigid transformation
@@ -159,7 +155,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * no scaling or projection).
          * @see isOrthogonal()
          */
-        inline bool isRigidTransformation() const {
+        bool isRigidTransformation() const {
             return rotationScaling().isOrthogonal() && row(2) == Vector3<T>(T(0), T(0), T(1));
         }
 
@@ -169,8 +165,9 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * Upper-left 2x2 part of the matrix.
          * @see from(const Matrix<2, T>&, const Vector2&), rotation() const,
          *      rotation(T), Matrix4::rotationScaling() const
+         * @todo extract rotation with assert for no scaling
          */
-        inline constexpr Matrix<2, T> rotationScaling() const {
+        constexpr Matrix<2, T> rotationScaling() const {
             return {(*this)[0].xy(),
                     (*this)[1].xy()};
         }
@@ -182,7 +179,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @see rotationScaling() const, rotation(T), Matrix4::rotation() const
          * @todo assert uniform scaling (otherwise this would be garbage)
          */
-        inline Matrix<2, T> rotation() const {
+        Matrix<2, T> rotation() const {
             return {(*this)[0].xy().normalized(),
                     (*this)[1].xy().normalized()};
         }
@@ -195,8 +192,8 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * First two elements of first column.
          * @see up(), Vector2::xAxis(), Matrix4::right()
          */
-        inline Vector2<T>& right() { return (*this)[0].xy(); }
-        inline constexpr Vector2<T> right() const { return (*this)[0].xy(); } /**< @overload */
+        Vector2<T>& right() { return (*this)[0].xy(); }
+        constexpr Vector2<T> right() const { return (*this)[0].xy(); } /**< @overload */
 
         /**
          * @brief Up-pointing 2D vector
@@ -204,8 +201,8 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * First two elements of second column.
          * @see right(), Vector2::yAxis(), Matrix4::up()
          */
-        inline Vector2<T>& up() { return (*this)[1].xy(); }
-        inline constexpr Vector2<T> up() const { return (*this)[1].xy(); } /**< @overload */
+        Vector2<T>& up() { return (*this)[1].xy(); }
+        constexpr Vector2<T> up() const { return (*this)[1].xy(); } /**< @overload */
 
         /**
          * @brief 2D translation part of the matrix
@@ -214,8 +211,8 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @see from(const Matrix<2, T>&, const Vector2&),
          *      translation(const Vector2&), Matrix4::translation()
          */
-        inline Vector2<T>& translation() { return (*this)[2].xy(); }
-        inline constexpr Vector2<T> translation() const { return (*this)[2].xy(); } /**< @overload */
+        Vector2<T>& translation() { return (*this)[2].xy(); }
+        constexpr Vector2<T> translation() const { return (*this)[2].xy(); } /**< @overload */
 
         /**
          * @brief Inverted rigid transformation matrix
@@ -225,13 +222,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @see isRigidTransformation(), invertedOrthogonal(),
          *      rotationScaling() const, translation() const
          */
-        inline Matrix3<T> invertedRigid() const {
-            CORRADE_ASSERT(isRigidTransformation(),
-                "Math::Matrix3::invertedRigid(): the matrix doesn't represent rigid transformation", {});
-
-            Matrix<2, T> inverseRotation = rotationScaling().transposed();
-            return from(inverseRotation, inverseRotation*-translation());
-        }
+        Matrix3<T> invertedRigid() const;
 
         /**
          * @brief Transform 2D vector with the matrix
@@ -243,7 +234,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @see Complex::transformVector(), Matrix4::transformVector()
          * @todo extract 2x2 matrix and multiply directly? (benchmark that)
          */
-        inline Vector2<T> transformVector(const Vector2<T>& vector) const {
+        Vector2<T> transformVector(const Vector2<T>& vector) const {
             /* Workaround for GCC 4.4 strict-aliasing fascism */
             #ifndef CORRADE_GCC44_COMPATIBILITY
             return ((*this)*Vector3<T>(vector, T(0))).xy();
@@ -262,7 +253,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @f]
          * @see DualComplex::transformPoint(), Matrix4::transformPoint()
          */
-        inline Vector2<T> transformPoint(const Vector2<T>& vector) const {
+        Vector2<T> transformPoint(const Vector2<T>& vector) const {
             /* Workaround for GCC 4.4 strict-aliasing fascism */
             #ifndef CORRADE_GCC44_COMPATIBILITY
             return ((*this)*Vector3<T>(vector, T(1))).xy();
@@ -281,6 +272,23 @@ MAGNUM_MATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(Matrix3, 3)
 /** @debugoperator{Magnum::Math::Matrix3} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Matrix3<T>& value) {
     return debug << static_cast<const Matrix<3, T>&>(value);
+}
+
+template<class T> Matrix3<T> Matrix3<T>::rotation(const Rad<T> angle) {
+    const T sine = std::sin(angle.toUnderlyingType());
+    const T cosine = std::cos(angle.toUnderlyingType());
+
+    return {{ cosine,   sine, T(0)},
+            {  -sine, cosine, T(0)},
+            {   T(0),   T(0), T(1)}};
+}
+
+template<class T> inline Matrix3<T> Matrix3<T>::invertedRigid() const {
+    CORRADE_ASSERT(isRigidTransformation(),
+        "Math::Matrix3::invertedRigid(): the matrix doesn't represent rigid transformation", {});
+
+    Matrix<2, T> inverseRotation = rotationScaling().transposed();
+    return from(inverseRotation, inverseRotation*-translation());
 }
 
 }}

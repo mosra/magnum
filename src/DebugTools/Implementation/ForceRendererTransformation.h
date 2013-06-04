@@ -37,7 +37,7 @@ template<> inline Matrix3 forceRendererTransformation<2>(const Vector2& forcePos
     return Matrix3::from({force, Vector2(-force.y(), force.x())}, forcePosition);
 }
 
-template<> inline Matrix4 forceRendererTransformation<3>(const Vector3& forcePosition, const Vector3& force) {
+template<> Matrix4 forceRendererTransformation<3>(const Vector3& forcePosition, const Vector3& force) {
     const Matrix4 translation = Matrix4::translation(forcePosition);
     const Float forceLength = force.length();
 

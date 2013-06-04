@@ -36,20 +36,19 @@ using namespace std;
 
 namespace Magnum { namespace SceneGraph {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
 template<UnsignedInt dimensions, class T> class Camera {};
 
 template<class T> class Camera<2, T> {
     public:
-        inline constexpr static Math::Matrix3<T> aspectRatioScale(const Math::Vector2<T>& scale) {
+        constexpr static Math::Matrix3<T> aspectRatioScale(const Math::Vector2<T>& scale) {
             return Math::Matrix3<T>::scaling({scale.x(), scale.y()});
         }
 };
 template<class T> class Camera<3, T> {
     public:
-        inline constexpr static Math::Matrix4<T> aspectRatioScale(const Math::Vector2<T>& scale) {
+        constexpr static Math::Matrix4<T> aspectRatioScale(const Math::Vector2<T>& scale) {
             return Math::Matrix4<T>::scaling({scale.x(), scale.y(), 1.0f});
         }
 };
@@ -70,10 +69,9 @@ template<UnsignedInt dimensions, class T> typename DimensionTraits<dimensions, T
 }
 
 }
-#endif
 
 template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::AbstractCamera(AbstractObject<dimensions, T>* object): AbstractFeature<dimensions, T>(object), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {
-    AbstractFeature<dimensions, T>::setCachedTransformations(AbstractFeature<dimensions, T>::CachedTransformation::InvertedAbsolute);
+    AbstractFeature<dimensions, T>::setCachedTransformations(CachedTransformation::InvertedAbsolute);
 }
 
 template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::~AbstractCamera() {}
@@ -90,7 +88,7 @@ template<UnsignedInt dimensions, class T> void AbstractCamera<dimensions, T>::se
 }
 
 template<UnsignedInt dimensions, class T> void AbstractCamera<dimensions, T>::draw(DrawableGroup<dimensions, T>& group) {
-    AbstractObject<dimensions, T>* scene = AbstractFeature<dimensions, T>::object()->sceneObject();
+    AbstractObject<dimensions, T>* scene = AbstractFeature<dimensions, T>::object()->scene();
     CORRADE_ASSERT(scene, "Camera::draw(): cannot draw when camera is not part of any scene", );
 
     /* Compute camera matrix */

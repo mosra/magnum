@@ -53,17 +53,15 @@
 
 namespace Magnum { namespace Math {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<class T> struct TypeTraitsDefault {
         TypeTraitsDefault() = delete;
 
-        inline constexpr static bool equals(T a, T b) {
+        constexpr static bool equals(T a, T b) {
             return a == b;
         }
     };
 }
-#endif
 
 /**
 @brief Traits class for numeric types
@@ -96,7 +94,7 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
      * inequal. Returns 1 for integer types and reasonably small value for
      * floating-point types. Not implemented for arbitrary types.
      */
-    inline constexpr static T epsilon();
+    constexpr static T epsilon();
 
     /**
      * @brief Fuzzy compare
@@ -116,14 +114,14 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
  * http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
  */
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 /* Integral scalar types */
 namespace Implementation {
     template<class T> struct TypeTraitsIntegral: TypeTraitsDefault<T> {
-        inline constexpr static T epsilon() { return T(1); }
+        constexpr static T epsilon() { return T(1); }
     };
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template<> struct TypeTraits<UnsignedByte>: Implementation::TypeTraitsIntegral<UnsignedByte> {
     typedef Float FloatingPointType;
 };
@@ -162,7 +160,7 @@ namespace Implementation {
     template<class T> struct TypeTraitsFloatingPoint {
         TypeTraitsFloatingPoint() = delete;
 
-        inline static bool equals(T a, T b) {
+        static bool equals(T a, T b) {
             return std::abs(a - b) < TypeTraits<T>::epsilon();
         }
     };
@@ -171,19 +169,19 @@ namespace Implementation {
 template<> struct TypeTraits<Float>: Implementation::TypeTraitsFloatingPoint<Float> {
     typedef Float FloatingPointType;
 
-    inline constexpr static Float epsilon() { return FLOAT_EQUALITY_PRECISION; }
+    constexpr static Float epsilon() { return FLOAT_EQUALITY_PRECISION; }
 };
 #ifndef MAGNUM_TARGET_GLES
 template<> struct TypeTraits<Double>: Implementation::TypeTraitsFloatingPoint<Double> {
     typedef Double FloatingPointType;
 
-    inline constexpr static Double epsilon() { return DOUBLE_EQUALITY_PRECISION; }
+    constexpr static Double epsilon() { return DOUBLE_EQUALITY_PRECISION; }
 };
 #endif
 template<> struct TypeTraits<long double>: Implementation::TypeTraitsFloatingPoint<long double> {
     typedef long double FloatingPointType;
 
-    inline constexpr static long double epsilon() { return LONG_DOUBLE_EQUALITY_PRECISION; }
+    constexpr static long double epsilon() { return LONG_DOUBLE_EQUALITY_PRECISION; }
 };
 
 /* Comparing squared length to 1 is not sufficient to compare within range

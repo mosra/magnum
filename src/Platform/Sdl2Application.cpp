@@ -24,8 +24,6 @@
 
 #include "Sdl2Application.h"
 
-#include <Utility/utilities.h>
-
 #include "Context.h"
 #include "ExtensionWrangler.h"
 
@@ -127,57 +125,60 @@ Sdl2Application::~Sdl2Application() {
 }
 
 int Sdl2Application::exec() {
-    while(!(flags & Flag::Exit)) {
-        SDL_Event event;
+    while(!(flags & Flag::Exit)) mainLoop();
+    return 0;
+}
 
-        while(SDL_PollEvent(&event)) {
-            switch(event.type) {
-                case SDL_WINDOWEVENT:
-                    switch(event.window.event) {
-                        case SDL_WINDOWEVENT_RESIZED:
-                            viewportEvent({event.window.data1, event.window.data2});
-                            flags |= Flag::Redraw;
-                            break;
-                        case SDL_WINDOWEVENT_EXPOSED:
-                            flags |= Flag::Redraw;
-                            break;
-                    } break;
+void Sdl2Application::mainLoop() {
+    SDL_Event event;
 
-                case SDL_KEYDOWN:
-                case SDL_KEYUP: {
-                    KeyEvent e(static_cast<KeyEvent::Key>(event.key.keysym.sym), fixedModifiers(event.key.keysym.mod));
-                    event.type == SDL_KEYDOWN ? keyPressEvent(e) : keyReleaseEvent(e);
+    while(SDL_PollEvent(&event)) {
+        switch(event.type) {
+            case SDL_WINDOWEVENT:
+                switch(event.window.event) {
+                    case SDL_WINDOWEVENT_RESIZED:
+                        viewportEvent({event.window.data1, event.window.data2});
+                        flags |= Flag::Redraw;
+                        break;
+                    case SDL_WINDOWEVENT_EXPOSED:
+                        flags |= Flag::Redraw;
+                        break;
                 } break;
 
-                case SDL_MOUSEBUTTONDOWN:
-                case SDL_MOUSEBUTTONUP: {
-                    MouseEvent e(static_cast<MouseEvent::Button>(event.button.button), {event.button.x, event.button.y});
-                    event.type == SDL_MOUSEBUTTONDOWN ? mousePressEvent(e) : mouseReleaseEvent(e);
+            case SDL_KEYDOWN:
+            case SDL_KEYUP: {
+                KeyEvent e(static_cast<KeyEvent::Key>(event.key.keysym.sym), fixedModifiers(event.key.keysym.mod));
+                event.type == SDL_KEYDOWN ? keyPressEvent(e) : keyReleaseEvent(e);
+            } break;
+
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP: {
+                MouseEvent e(static_cast<MouseEvent::Button>(event.button.button), {event.button.x, event.button.y});
+                event.type == SDL_MOUSEBUTTONDOWN ? mousePressEvent(e) : mouseReleaseEvent(e);
+            } break;
+
+            case SDL_MOUSEWHEEL:
+                if(event.wheel.y != 0) {
+                    MouseEvent e(event.wheel.y < 0 ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {event.wheel.x, event.wheel.y});
+                    mousePressEvent(e);
                 } break;
 
-                case SDL_MOUSEWHEEL:
-                    if(event.wheel.y != 0) {
-                        MouseEvent e(event.wheel.y < 0 ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {event.wheel.x, event.wheel.y});
-                        mousePressEvent(e);
-                    } break;
-
-                case SDL_MOUSEMOTION: {
-                    MouseMoveEvent e({event.motion.x, event.motion.y}, {event.motion.xrel, event.motion.yrel});
-                    mouseMoveEvent(e);
-                    break;
-                }
-
-                case SDL_QUIT: return 0;
+            case SDL_MOUSEMOTION: {
+                MouseMoveEvent e({event.motion.x, event.motion.y}, {event.motion.xrel, event.motion.yrel});
+                mouseMoveEvent(e);
+                break;
             }
-        }
 
-        if(flags & Flag::Redraw) {
-            flags &= ~Flag::Redraw;
-            drawEvent();
-        } else Corrade::Utility::sleep(5);
+            case SDL_QUIT:
+                flags |= Flag::Exit;
+                return;
+        }
     }
 
-    return 0;
+    if(flags & Flag::Redraw) {
+        flags &= ~Flag::Redraw;
+        drawEvent();
+    } else SDL_WaitEvent(nullptr);
 }
 
 void Sdl2Application::setMouseLocked(bool enabled) {

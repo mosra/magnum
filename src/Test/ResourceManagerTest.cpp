@@ -32,7 +32,7 @@
 
 namespace Magnum { namespace Test {
 
-class ResourceManagerTest: public Corrade::TestSuite::Tester {
+class ResourceManagerTest: public TestSuite::Tester {
     public:
         ResourceManagerTest();
 
@@ -50,8 +50,8 @@ class Data {
     public:
         static std::size_t count;
 
-        inline Data() { ++count; }
-        inline ~Data() { --count; }
+        Data() { ++count; }
+        ~Data() { --count; }
 };
 
 typedef Magnum::ResourceManager<Int, Data> ResourceManager;

@@ -29,9 +29,9 @@
 #ifdef MAGNUM_BUILD_STATIC
 #include <Utility/Resource.h>
 static int magnumTextureToolsResourceImport() {
-    RESOURCE_INITIALIZE(MagnumTextureTools_RCS)
+    CORRADE_RESOURCE_INITIALIZE(MagnumTextureTools_RCS)
     return 0;
-} AUTOMATIC_INITIALIZER(magnumTextureToolsResourceImport)
+} CORRADE_AUTOMATIC_INITIALIZER(magnumTextureToolsResourceImport)
 #endif
 
 #endif

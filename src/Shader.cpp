@@ -27,8 +27,6 @@
 #include <fstream>
 #include <Utility/Assert.h>
 
-#define COMPILER_MESSAGE_MAX_LENGTH 1024
-
 /* libgles-omap3-dev_4.03.00.02-r15.6 on BeagleBoard/Ångström linux 2011.3 doesn't have GLchar */
 #ifdef MAGNUM_TARGET_GLES
 typedef char GLchar;
@@ -36,23 +34,42 @@ typedef char GLchar;
 
 namespace Magnum {
 
-Shader::Shader(Version version, Type type): _type(type), _state(State::Initialized), shader(0) {
-    shader = glCreateShader(static_cast<GLenum>(_type));
+namespace {
+
+std::string shaderName(const Shader::Type type) {
+    switch(type) {
+        case Shader::Type::Vertex:                  return "vertex";
+        #ifndef MAGNUM_TARGET_GLES
+        case Shader::Type::Geometry:                return "geometry";
+        case Shader::Type::TessellationControl:     return "tessellation control";
+        case Shader::Type::TessellationEvaluation:  return "tessellation evaluation";
+        case Shader::Type::Compute:                 return "compute";
+        #endif
+        case Shader::Type::Fragment:                return "fragment";
+    }
+
+    CORRADE_ASSERT_UNREACHABLE();
+}
+
+}
+
+Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
+    _id = glCreateShader(static_cast<GLenum>(_type));
 
     switch(version) {
         #ifndef MAGNUM_TARGET_GLES
-        case Version::GL210: addSource("#version 120\n"); return;
-        case Version::GL300: addSource("#version 130\n"); return;
-        case Version::GL310: addSource("#version 140\n"); return;
-        case Version::GL320: addSource("#version 150\n"); return;
-        case Version::GL330: addSource("#version 330\n"); return;
-        case Version::GL400: addSource("#version 400\n"); return;
-        case Version::GL410: addSource("#version 410\n"); return;
-        case Version::GL420: addSource("#version 420\n"); return;
-        case Version::GL430: addSource("#version 430\n"); return;
+        case Version::GL210: sources.push_back("#version 120\n"); return;
+        case Version::GL300: sources.push_back("#version 130\n"); return;
+        case Version::GL310: sources.push_back("#version 140\n"); return;
+        case Version::GL320: sources.push_back("#version 150\n"); return;
+        case Version::GL330: sources.push_back("#version 330\n"); return;
+        case Version::GL400: sources.push_back("#version 400\n"); return;
+        case Version::GL410: sources.push_back("#version 410\n"); return;
+        case Version::GL420: sources.push_back("#version 420\n"); return;
+        case Version::GL430: sources.push_back("#version 430\n"); return;
         #else
-        case Version::GLES200: addSource("#version 100\n"); return;
-        case Version::GLES300: addSource("#version 300\n"); return;
+        case Version::GLES200: sources.push_back("#version 100\n"); return;
+        case Version::GLES300: sources.push_back("#version 300\n"); return;
         #endif
 
         case Version::None:
@@ -62,54 +79,59 @@ Shader::Shader(Version version, Type type): _type(type), _state(State::Initializ
     CORRADE_ASSERT_UNREACHABLE();
 }
 
-Shader::Shader(Shader&& other): _type(other._type), _state(other._state), sources(other.sources), shader(other.shader) {
-    other.shader = 0;
+Shader::Shader(Shader&& other): _type(other._type), _id(other._id), sources(std::move(other.sources)) {
+    other._id = 0;
+}
+
+Shader::~Shader() {
+    if(_id) glDeleteShader(_id);
 }
 
 Shader& Shader::operator=(Shader&& other) {
-    glDeleteShader(shader);
+    glDeleteShader(_id);
 
     _type = other._type;
-    _state = other._state;
-    sources = other.sources;
-    shader = other.shader;
+    sources = std::move(other.sources);
+    _id = other._id;
 
-    other.shader = 0;
+    other._id = 0;
 
     return *this;
 }
 
-bool Shader::addFile(const std::string& filename) {
+Shader& Shader::addSource(std::string source) {
+    if(!source.empty()) {
+        /* Fix line numbers, so line 41 of third added file is marked as 3(41).
+           Source 0 is the #version string added in constructor. */
+        sources.push_back("#line 1 " + std::to_string((sources.size()+1)/2) + '\n');
+        sources.push_back(std::move(source));
+    }
+
+    return *this;
+}
+
+Shader& Shader::addFile(const std::string& filename) {
     /* Open file */
     std::ifstream file(filename.c_str());
-    if(!file.good()) {
-        file.close();
-
-        Error() << "Shader file " << '\'' + filename + '\'' << " cannot be opened.";
-        return false;
-    }
+    CORRADE_ASSERT(file.good(), "Shader file " << '\'' + filename + '\'' << " cannot be opened.", *this);
 
     /* Get size of shader and initialize buffer */
     file.seekg(0, std::ios::end);
-    std::size_t size = file.tellg();
-    char* source = new char[size+1];
-    source[size] = '\0';
+    std::string source(file.tellg(), '\0');
 
     /* Read data, close */
     file.seekg(0, std::ios::beg);
-    file.read(source, size);
+    file.read(&source[0], source.size());
     file.close();
 
-    /* Add to sources and free the buffer */
-    addSource(source);
-    delete[] source;
+    /* Move to sources */
+    addSource(std::move(source));
 
-    return true;
+    return *this;
 }
 
-GLuint Shader::compile() {
-    /* Already compiled, return */
-    if(_state != State::Initialized) return shader;
+bool Shader::compile() {
+    CORRADE_ASSERT(sources.size() > 1, "Shader::compile(): no files added", false);
 
     /* Array of sources */
     const GLchar** _sources = new const GLchar*[sources.size()];
@@ -117,54 +139,45 @@ GLuint Shader::compile() {
         _sources[i] = static_cast<const GLchar*>(sources[i].c_str());
 
     /* Create shader and set its source */
-    glShaderSource(shader, sources.size(), _sources, nullptr);
+    glShaderSource(_id, sources.size(), _sources, nullptr);
 
     /* Compile shader */
-    glCompileShader(shader);
+    glCompileShader(_id);
     delete _sources;
 
     /* Check compilation status */
-    GLint status;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+    GLint success, logLength;
+    glGetShaderiv(_id, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(_id, GL_INFO_LOG_LENGTH, &logLength);
 
-    /* Display errors or warnings */
-    char message[COMPILER_MESSAGE_MAX_LENGTH];
-    glGetShaderInfoLog(shader, COMPILER_MESSAGE_MAX_LENGTH, nullptr, message);
-
-    if(status == GL_FALSE || message[0] != 0) {
-        Error err;
-        err << "Shader:";
-
-        switch(_type) {
-            case Type::Vertex:      err << "vertex";        break;
-            #ifndef MAGNUM_TARGET_GLES
-            case Type::Geometry:    err << "geometry";      break;
-            case Type::TessellationControl: err << "tessellation control"; break;
-            case Type::TessellationEvaluation: err << "tessellation evaluation"; break;
-            case Type::Compute:     err << "compute";       break;
-            #endif
-            case Type::Fragment:    err << "fragment";      break;
-        }
-
-        /* Show error log and delete shader */
-        if(status == GL_FALSE) {
-            err << "shader failed to compile with the following message:\n"
-                << message;
-
-        /* Or just warnings, if there are any */
-        } else if(message[0] != 0) {
-            err << "shader was successfully compiled with the following message:\n"
-                << message;
-        }
+    /* Error or warning message. The string is returned null-terminated, scrap
+       the \0 at the end afterwards */
+    std::string message(logLength, '\0');
+    if(!message.empty()) {
+        glGetShaderInfoLog(_id, message.size(), nullptr, &message[0]);
+        message.resize(logLength-1);
     }
 
-    if(status == GL_FALSE) {
-        _state = State::Failed;
-        return 0;
-    } else {
-        _state = State::Compiled;
-        return shader;
+    /* Show error log */
+    if(!success) {
+        Error out;
+        out.setFlag(Debug::NewLineAtTheEnd, false);
+        out.setFlag(Debug::SpaceAfterEachValue, false);
+        out << "Shader: " << shaderName(_type)
+            << " shader failed to compile with the following message:\n"
+            << message;
+
+    /* Or just message, if any */
+    } else if(!message.empty()) {
+        Error out;
+        out.setFlag(Debug::NewLineAtTheEnd, false);
+        out.setFlag(Debug::SpaceAfterEachValue, false);
+        out << "Shader: " << shaderName(_type)
+            << " shader was successfully compiled with the following message:\n"
+            << message;
     }
+
+    return success;
 }
 
 }

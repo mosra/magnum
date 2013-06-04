@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractFeature, alias Magnum::SceneGraph::AbstractFeature2D, Magnum::SceneGraph::AbstractFeature3D
+ * @brief Class Magnum::SceneGraph::AbstractFeature, alias Magnum::SceneGraph::AbstractFeature2D, Magnum::SceneGraph::AbstractFeature3D, enum Magnum::SceneGraph::CachedTransformation, enum set Magnum::SceneGraph::CachedTransformations
  */
 
 #include <Containers/EnumSet.h>
@@ -36,18 +36,41 @@
 
 namespace Magnum { namespace SceneGraph {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-namespace Implementation {
-    enum class FeatureCachedTransformation: UnsignedByte {
-        Absolute = 1 << 0,
-        InvertedAbsolute = 1 << 1
-    };
+/**
+@brief Which transformation to cache in given feature
 
-    typedef Corrade::Containers::EnumSet<FeatureCachedTransformation, UnsignedByte> FeatureCachedTransformations;
+@see @ref scenegraph-caching, CachedTransformations,
+    AbstractFeature::setCachedTransformations(), AbstractFeature::clean(),
+    AbstractFeature::cleanInverted()
+@todo Provide also simpler representations from which could benefit
+    other transformation implementations, as they won't need to
+    e.g. create transformation matrix from quaternion?
+ */
+enum class CachedTransformation: UnsignedByte {
+    /**
+     * Absolute transformation is cached.
+     *
+     * If enabled, clean() is called when cleaning object.
+     */
+    Absolute = 1 << 0,
 
-    CORRADE_ENUMSET_OPERATORS(FeatureCachedTransformations)
-}
-#endif
+    /**
+     * Inverted absolute transformation is cached.
+     *
+     * If enabled, cleanInverted() is called when cleaning object.
+     */
+    InvertedAbsolute = 1 << 1
+};
+
+/**
+@brief Which transformations to cache in this feature
+
+@see @ref scenegraph-caching, AbstractFeature::setCachedTransformations(),
+    AbstractFeature::clean(), AbstractFeature::cleanInverted()
+*/
+typedef Containers::EnumSet<CachedTransformation, UnsignedByte> CachedTransformations;
+
+CORRADE_ENUMSET_OPERATORS(CachedTransformations)
 
 /**
 @brief Base for object features
@@ -110,7 +133,7 @@ parameter:
 @code
 class TransformingFeature: public SceneGraph::AbstractFeature3D<> {
     public:
-        template<class T> inline TransformingFeature(SceneGraph::Object<T>* object):
+        template<class T> TransformingFeature(SceneGraph::Object<T>* object):
             SceneGraph::AbstractFeature3D<>(object), transformation(object) {}
 
     private:
@@ -125,16 +148,26 @@ which is derived from
 @ref AbstractTranslationRotation3D "AbstractTranslationRotation3D<>",
 which is automatically extracted from the pointer in our constructor.
 
+@section AbstractFeature-explicit-specializations Explicit template specializations
+
+The following specialization are explicitly compiled into %SceneGraph library.
+For other specializations (e.g. using Double type) you have to use
+AbstractFeature.hpp implementation file to avoid linker errors. See also
+@ref compilation-speedup-hpp for more information.
+
+ - @ref AbstractFeature "AbstractFeature<2, Float>"
+ - @ref AbstractFeature "AbstractFeature<3, Float>"
+
 @see AbstractFeature2D, AbstractFeature3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt dimensions, class T> class AbstractFeature: private Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature: private Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>
 #else
 template<UnsignedInt dimensions, class T = Float> class AbstractFeature
 #endif
 {
-    friend class Corrade::Containers::LinkedList<AbstractFeature<dimensions, T>>;
-    friend class Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
+    friend class Containers::LinkedList<AbstractFeature<dimensions, T>>;
+    friend class Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
     template<class Transformation> friend class Object;
 
     public:
@@ -142,40 +175,38 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
          * @brief Constructor
          * @param object    %Object holding this feature
          */
-        inline explicit AbstractFeature(AbstractObject<dimensions, T>* object) {
-            object->Corrade::Containers::template LinkedList<AbstractFeature<dimensions, T>>::insert(this);
-        }
+        explicit AbstractFeature(AbstractObject<dimensions, T>* object);
 
         virtual ~AbstractFeature() = 0;
 
         /** @brief %Object holding this feature */
-        inline AbstractObject<dimensions, T>* object() {
-            return Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
+        AbstractObject<dimensions, T>* object() {
+            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
         }
 
         /** @overload */
-        inline const AbstractObject<dimensions, T>* object() const {
-            return Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
+        const AbstractObject<dimensions, T>* object() const {
+            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
         }
 
         /** @brief Previous feature or `nullptr`, if this is first feature */
-        inline AbstractFeature<dimensions, T>* previousFeature() {
-            return Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::previous();
+        AbstractFeature<dimensions, T>* previousFeature() {
+            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::previous();
         }
 
         /** @overload */
-        inline const AbstractFeature<dimensions, T>* previousFeature() const {
-            return Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::previous();
+        const AbstractFeature<dimensions, T>* previousFeature() const {
+            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::previous();
         }
 
         /** @brief Next feature or `nullptr`, if this is last feature */
-        inline AbstractFeature<dimensions, T>* nextFeature() {
-            return Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::next();
+        AbstractFeature<dimensions, T>* nextFeature() {
+            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::next();
         }
 
         /** @overload */
-        inline const AbstractFeature<dimensions, T>* nextFeature() const {
-            return Corrade::Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::next();
+        const AbstractFeature<dimensions, T>* nextFeature() const {
+            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::next();
         }
 
         /**
@@ -185,52 +216,13 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
          */
 
         /**
-         * @brief Which transformation to cache in this feature
-         *
-         * @see @ref scenegraph-caching, CachedTransformations,
-         *      setCachedTransformations(), clean(), cleanInverted()
-         * @todo Provide also simpler representations from which could benefit
-         *      other transformation implementations, as they won't need to
-         *      e.g. create transformation matrix from quaternion?
-         */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Implementation::FeatureCachedTransformation CachedTransformation;
-        #else
-        enum class CachedTransformation: UnsignedByte {
-            /**
-             * Absolute transformation is cached.
-             *
-             * If enabled, clean() is called when cleaning object.
-             */
-            Absolute = 1 << 0,
-
-            /**
-             * Inverted absolute transformation is cached.
-             *
-             * If enabled, cleanInverted() is called when cleaning object.
-             */
-            InvertedAbsolute = 1 << 1
-        };
-        #endif
-
-        /**
-         * @brief Which transformations to cache in this feature
-         *
-         * @see @ref scenegraph-caching, setCachedTransformations(), clean(),
-         *      cleanInverted()
-         */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Implementation::FeatureCachedTransformations CachedTransformations;
-        #else
-        typedef Corrade::Containers::EnumSet<CachedTransformation, UnsignedByte> CachedTransformations;
-        #endif
-
-        /**
          * @brief Which transformations are cached
          *
          * @see @ref scenegraph-caching, clean(), cleanInverted()
          */
-        inline CachedTransformations cachedTransformations() const { return _cachedTransformations; }
+        CachedTransformations cachedTransformations() const {
+            return _cachedTransformations;
+        }
 
     protected:
         /**
@@ -243,7 +235,9 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
          * Nothing is enabled by default.
          * @see @ref scenegraph-caching
          */
-        inline void setCachedTransformations(CachedTransformations transformations) { _cachedTransformations = transformations; }
+        void setCachedTransformations(CachedTransformations transformations) {
+            _cachedTransformations = transformations;
+        }
 
         /**
          * @brief Mark feature as dirty
@@ -255,7 +249,7 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
          * Default implementation does nothing.
          * @see @ref scenegraph-caching
          */
-        inline virtual void markDirty() {}
+        virtual void markDirty();
 
         /**
          * @brief Clean data based on absolute transformation
@@ -289,10 +283,6 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
     private:
         CachedTransformations _cachedTransformations;
 };
-
-template<UnsignedInt dimensions, class T> inline AbstractFeature<dimensions, T>::~AbstractFeature() {}
-template<UnsignedInt dimensions, class T> inline void AbstractFeature<dimensions, T>::clean(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
-template<UnsignedInt dimensions, class T> inline void AbstractFeature<dimensions, T>::cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**

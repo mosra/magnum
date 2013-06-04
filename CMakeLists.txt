@@ -35,16 +35,16 @@ cmake_dependent_option(TARGET_DESKTOP_GLES "Build for OpenGL ES on desktop" OFF 
 # Parts of the library
 option(WITH_DEBUGTOOLS "Build DebugTools library" ON)
 cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" ON "NOT WITH_DEBUGTOOLS" ON)
-cmake_dependent_option(WITH_PHYSICS "Build Physics library" ON "NOT WITH_DEBUGTOOLS" ON)
 cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" ON "NOT WITH_DEBUGTOOLS" ON)
-cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" ON "NOT WITH_DEBUGTOOLS;NOT WITH_PHYSICS" ON)
+cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" ON "NOT WITH_DEBUGTOOLS;NOT WITH_SHAPES" ON)
 cmake_dependent_option(WITH_SHADERS "Build Shaders library" ON "NOT WITH_DEBUGTOOLS" ON)
+cmake_dependent_option(WITH_SHAPES "Build Shapes library" ON "NOT WITH_DEBUGTOOLS" ON)
 option(WITH_TEXT "Build Text library" ON)
 cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT WITH_TEXT" ON)
-option(WITH_MAGNUMINFO "Build magnum-info utility" ON)
+option(WITH_MAGNUMINFO "Build magnum-info utility" OFF)
 
 # Application libraries
-if(${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
+if(CORRADE_TARGET_NACL)
     option(WITH_NACLAPPLICATION "Build NaClApplication library" OFF)
 else()
     option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
@@ -73,14 +73,19 @@ endif()
 
 find_package(Corrade REQUIRED)
 
-if(BUILD_STATIC)
-    set(MAGNUM_BUILD_STATIC 1)
-endif()
-
-# If targeting NaCl, set explicit OpenGL ES 2.0 support
-if(CORRADE_TARGET_NACL)
+# If targeting NaCl or Emscripten, set explicit OpenGL ES 2.0 support
+if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN)
     set(TARGET_GLES 1)
     set(TARGET_GLES2 1)
+
+    # Newlib toolchain supports only static linking
+    if(CORRADE_TARGET_NACL_NEWLIB)
+        set(BUILD_STATIC OFF)
+    endif()
+endif()
+
+if(BUILD_STATIC)
+    set(MAGNUM_BUILD_STATIC 1)
 endif()
 
 # Check dependencies

@@ -30,6 +30,7 @@
 
 #include <bitset>
 #include <vector>
+#include <Containers/EnumSet.h>
 
 #include "Magnum.h"
 #include "OpenGL.h"
@@ -37,11 +38,9 @@
 
 namespace Magnum {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     struct State;
 }
-#endif
 
 /**
 @brief OpenGL version
@@ -110,13 +109,13 @@ class MAGNUM_EXPORT Extension {
         static const std::vector<Extension>& extensions(Version version);
 
         /** @brief Minimal version required by this extension */
-        inline constexpr Version requiredVersion() const { return _requiredVersion; }
+        constexpr Version requiredVersion() const { return _requiredVersion; }
 
         /** @brief Version in which this extension was adopted to core */
-        inline constexpr Version coreVersion() const { return _coreVersion; }
+        constexpr Version coreVersion() const { return _coreVersion; }
 
         /** @brief %Extension string */
-        inline constexpr const char* string() const { return _string; }
+        constexpr const char* string() const { return _string; }
 
     private:
         /* GCC 4.6 doesn't like const members, as std::vector doesn't have
@@ -126,7 +125,7 @@ class MAGNUM_EXPORT Extension {
         Version _coreVersion;
         const char* _string;
 
-        inline constexpr Extension(std::size_t index, Version requiredVersion, Version coreVersion, const char* string): _index(index), _requiredVersion(requiredVersion), _coreVersion(coreVersion), _string(string) {}
+        constexpr Extension(std::size_t index, Version requiredVersion, Version coreVersion, const char* string): _index(index), _requiredVersion(requiredVersion), _coreVersion(coreVersion), _string(string) {}
 };
 
 /**
@@ -147,11 +146,50 @@ class MAGNUM_EXPORT Context {
 
     public:
         /**
+         * @brief Context flag
+         *
+         * @see Flags, flags()
+         */
+        enum class Flag: GLint {
+            #ifndef MAGNUM_TARGET_GLES3
+            /**
+             * Debug context
+             * @requires_gl43 %Extension @es_extension{KHR,debug}
+             * @requires_es_extension %Extension @es_extension{KHR,debug}
+             */
+            #ifndef MAGNUM_TARGET_GLES
+            Debug = GL_CONTEXT_FLAG_DEBUG_BIT,
+            #else
+            Debug = GL_CONTEXT_FLAG_DEBUG_BIT_KHR,
+            #endif
+            #endif
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Context with robust buffer access
+             * @requires_extension %Extension @extension{EXT,robustness}
+             * @requires_es_extension %Extension @es_extension{EXT,robustness}
+             * @todo In ES available under glGetIntegerv(CONTEXT_ROBUST_ACCESS_EXT),
+             *      how to make it compatible?
+             */
+            Robustness = GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB
+            #endif
+        };
+
+        /**
+         * @brief Context flags
+         *
+         * @see flags()
+         */
+        typedef Containers::EnumSet<Flag, GLint> Flags;
+
+        /**
          * @brief Constructor
          *
          * Constructed automatically, see class documentation for more
          * information.
          * @see @fn_gl{Get} with @def_gl{MAJOR_VERSION}, @def_gl{MINOR_VERSION},
+         *      @def_gl{CONTEXT_FLAGS}, @def_gl{NUM_EXTENSIONS},
          *      @fn_gl{GetString} with @def_gl{EXTENSIONS}
          */
         explicit Context();
@@ -159,7 +197,7 @@ class MAGNUM_EXPORT Context {
         ~Context();
 
         /** @brief Current context */
-        inline static Context* current() { return _current; }
+        static Context* current() { return _current; }
 
         /**
          * @brief OpenGL version
@@ -167,7 +205,7 @@ class MAGNUM_EXPORT Context {
          * @see majorVersion(), minorVersion(), versionString(),
          *      shadingLanguageVersionString()
          */
-        inline Version version() const { return _version; }
+        Version version() const { return _version; }
 
         /**
          * @brief Major OpenGL version (e.g. `4`)
@@ -175,7 +213,7 @@ class MAGNUM_EXPORT Context {
          * @see minorVersion(), version(), versionString(),
          *      shadingLanguageVersionString()
          */
-        inline Int majorVersion() const { return _majorVersion; }
+        Int majorVersion() const { return _majorVersion; }
 
         /**
          * @brief Minor OpenGL version (e.g. `3`)
@@ -183,45 +221,66 @@ class MAGNUM_EXPORT Context {
          * @see majorVersion(), version(), versionString(),
          *      shadingLanguageVersionString()
          */
-        inline Int minorVersion() const { return _minorVersion; }
+        Int minorVersion() const { return _minorVersion; }
 
         /**
          * @brief Vendor string
          *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls.
          * @see rendererString(), @fn_gl{GetString} with @def_gl{VENDOR}
          */
-        inline std::string vendorString() const {
+        std::string vendorString() const {
             return reinterpret_cast<const char*>(glGetString(GL_VENDOR));
         }
 
         /**
          * @brief %Renderer string
          *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls.
          * @see vendorString(), @fn_gl{GetString} with @def_gl{RENDERER}
          */
-        inline std::string rendererString() const {
+        std::string rendererString() const {
             return reinterpret_cast<const char*>(glGetString(GL_RENDERER));
         }
 
         /**
          * @brief Version string
          *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls.
          * @see shadingLanguageVersionString(), version(), @fn_gl{GetString}
          *      with @def_gl{VERSION}
          */
-        inline std::string versionString() const {
+        std::string versionString() const {
             return reinterpret_cast<const char*>(glGetString(GL_VERSION));
         }
 
         /**
          * @brief Shading language version string
          *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls.
          * @see versionString(), version(), @fn_gl{GetString} with
          *      @def_gl{SHADING_LANGUAGE_VERSION}
          */
-        inline std::string shadingLanguageVersionString() const {
+        std::string shadingLanguageVersionString() const {
             return reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
         }
+
+        /**
+         * @brief Shading language version strings
+         *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls.
+         * @see versionString(), version(), @fn_gl{Get} with @def_gl{NUM_SHADING_LANGUAGE_VERSIONS},
+         *      @fn_gl{GetString} with @def_gl{SHADING_LANGUAGE_VERSION}
+         */
+        std::vector<std::string> shadingLanguageVersionStrings() const;
+
+        /** @brief Context flags */
+        Flags flags() const { return _flags; }
 
         /**
          * @brief Supported extensions
@@ -231,7 +290,7 @@ class MAGNUM_EXPORT Context {
          *
          * @see isExtensionSupported(), Extension::extensions()
          */
-        inline const std::vector<Extension>& supportedExtensions() const {
+        const std::vector<Extension>& supportedExtensions() const {
             return _supportedExtensions;
         }
 
@@ -240,7 +299,7 @@ class MAGNUM_EXPORT Context {
          *
          * @see supportedVersion(), MAGNUM_ASSERT_VERSION_SUPPORTED()
          */
-        inline bool isVersionSupported(Version version) const {
+        bool isVersionSupported(Version version) const {
             #ifndef CORRADE_GCC44_COMPATIBILITY
             return _version >= version;
             #else
@@ -280,7 +339,7 @@ class MAGNUM_EXPORT Context {
          * @see isExtensionSupported(const Extension&) const,
          *      MAGNUM_ASSERT_EXTENSION_SUPPORTED()
          */
-        template<class T> inline bool isExtensionSupported() const {
+        template<class T> bool isExtensionSupported() const {
             return isVersionSupported(T::coreVersion()) || (isVersionSupported(T::requiredVersion()) && extensionStatus[T::Index]);
         }
 
@@ -294,12 +353,12 @@ class MAGNUM_EXPORT Context {
          * @see supportedExtensions(), Extension::extensions(),
          *      MAGNUM_ASSERT_EXTENSION_SUPPORTED()
          */
-        inline bool isExtensionSupported(const Extension& extension) const {
+        bool isExtensionSupported(const Extension& extension) const {
             return isVersionSupported(extension._coreVersion) || (isVersionSupported(extension._requiredVersion) && extensionStatus[extension._index]);
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        inline Implementation::State* state() { return _state; }
+        Implementation::State* state() { return _state; }
         #endif
 
     private:
@@ -308,6 +367,7 @@ class MAGNUM_EXPORT Context {
         Version _version;
         Int _majorVersion;
         Int _minorVersion;
+        Flags _flags;
 
         std::bitset<128> extensionStatus;
         std::vector<Extension> _supportedExtensions;
@@ -337,7 +397,7 @@ MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
 #else
 #define MAGNUM_ASSERT_VERSION_SUPPORTED(version)                            \
     do {                                                                    \
-        if(!Context::current()->isVersionSupported(version)) {    \
+        if(!Magnum::Context::current()->isVersionSupported(version)) {      \
             Corrade::Utility::Error() << "Magnum: required version" << version << "is not supported"; \
             std::exit(-3);                                                  \
         }                                                                   \
@@ -367,7 +427,7 @@ MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
 #else
 #define MAGNUM_ASSERT_EXTENSION_SUPPORTED(extension)                        \
     do {                                                                    \
-        if(!Context::current()->isExtensionSupported<extension>()) { \
+        if(!Magnum::Context::current()->isExtensionSupported<extension>()) { \
             Corrade::Utility::Error() << "Magnum: required extension" << extension::string() << "is not supported"; \
             std::exit(-3);                                                  \
         }                                                                   \

@@ -35,7 +35,6 @@
 
 namespace Magnum { namespace Math { namespace Algorithms {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
 template<class T> T pythagoras(T a, T b) {
@@ -50,13 +49,12 @@ template<class T> T pythagoras(T a, T b) {
 }
 
 template<class T> constexpr T smallestDelta();
-template<> inline constexpr Float smallestDelta<Float>() { return 1.0e-32; }
+template<> constexpr Float smallestDelta<Float>() { return 1.0e-32; }
 #ifndef MAGNUM_TARGET_GLES
-template<> inline constexpr Double smallestDelta<Double>() { return 1.0e-64; }
+template<> constexpr Double smallestDelta<Double>() { return 1.0e-64; }
 #endif
 
 }
-#endif
 
 /**
 @brief Singular Value Decomposition

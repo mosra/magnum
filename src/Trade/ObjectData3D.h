@@ -74,13 +74,13 @@ class MAGNUM_EXPORT ObjectData3D {
         explicit ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation);
 
         /** @brief Destructor */
-        inline virtual ~ObjectData3D() {}
+        virtual ~ObjectData3D() {}
 
         /** @brief Child objects */
-        inline std::vector<UnsignedInt>& children() { return _children; }
+        std::vector<UnsignedInt>& children() { return _children; }
 
         /** @brief Transformation (relative to parent) */
-        inline Matrix4 transformation() const { return _transformation; }
+        Matrix4 transformation() const { return _transformation; }
 
         /**
          * @brief Instance type
@@ -89,14 +89,14 @@ class MAGNUM_EXPORT ObjectData3D {
          * If the instance is of type InstanceType::Mesh, the instance can be
          * casted to MeshObjectData3D and provide more information.
          */
-        inline InstanceType instanceType() const { return _instanceType; }
+        InstanceType instanceType() const { return _instanceType; }
 
         /**
          * @brief Instance ID
          * @return ID of given camera / light / mesh etc., specified by
          *      instanceType()
          */
-        inline Int instanceId() const { return _instanceId; }
+        Int instanceId() const { return _instanceId; }
 
     private:
         std::vector<UnsignedInt> _children;

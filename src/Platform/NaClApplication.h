@@ -102,8 +102,6 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
          */
         explicit NaClApplication(const Arguments& arguments, Configuration* configuration);
 
-        ~NaClApplication();
-
         /** @brief Whether the application runs fullscreen */
         bool isFullscreen();
 
@@ -118,6 +116,10 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         bool setFullscreen(bool enabled);
 
     protected:
+        /* Nobody will need to have (and delete) NaClApplication*, thus this is
+           faster than public pure virtual destructor */
+        ~NaClApplication();
+
         /** @copydoc GlutApplication::createContext() */
         void createContext(Configuration* configuration);
 
@@ -136,7 +138,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         void swapBuffers();
 
         /** @copydoc GlutApplication::redraw() */
-        inline void redraw() { flags |= Flag::Redraw; }
+        void redraw() { flags |= Flag::Redraw; }
 
         /*@}*/
 
@@ -166,9 +168,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
 
     public:
         /** @brief Whether mouse is locked */
-        inline bool isMouseLocked() const {
-            return flags & Flag::MouseLocked;
-        }
+        bool isMouseLocked() const { return flags & Flag::MouseLocked; }
 
         /**
          * @brief Enable or disable mouse locking
@@ -218,13 +218,13 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
             WillBeFullscreen = 1 << 4,
             MouseLocked = 1 << 5
         };
-        typedef Corrade::Containers::EnumSet<Flag, UnsignedByte> Flags;
+        typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
 
-        inline void Graphics3DContextLost() override {
+        void Graphics3DContextLost() override {
             CORRADE_ASSERT(false, "NaClApplication: context unexpectedly lost", );
         }
 
-        inline void MouseLockLost() override {
+        void MouseLockLost() override {
             flags &= ~Flag::MouseLocked;
         }
 
@@ -257,11 +257,10 @@ class NaClApplication::Configuration {
     Configuration& operator=(Configuration&&) = delete;
 
     public:
-        explicit Configuration();
-        ~Configuration();
+        constexpr explicit Configuration(): _size(640, 480), _sampleCount(0) {}
 
         /** @brief Window size */
-        inline Vector2i size() const { return _size; }
+        Vector2i size() const { return _size; }
 
         /**
          * @brief Set window size
@@ -269,13 +268,13 @@ class NaClApplication::Configuration {
          *
          * Default is `{640, 480}`.
          */
-        inline Configuration* setSize(const Vector2i& size) {
+        Configuration* setSize(const Vector2i& size) {
             _size = size;
             return this;
         }
 
         /** @brief Sample count */
-        inline Int sampleCount() const { return _sampleCount; }
+        Int sampleCount() const { return _sampleCount; }
 
         /**
          * @brief Set sample count
@@ -284,7 +283,7 @@ class NaClApplication::Configuration {
          * Default is `0`, thus no multisampling. See also
          * @ref Renderer::Feature "Renderer::Feature::Multisampling".
          */
-        inline Configuration* setSampleCount(Int count) {
+        Configuration* setSampleCount(Int count) {
             _sampleCount = count;
             return this;
         }
@@ -334,12 +333,10 @@ class NaClApplication::InputEvent {
          *
          * @see modifiers()
          */
-        typedef Corrade::Containers::EnumSet<Modifier, std::uint32_t> Modifiers;
-
-        inline virtual ~InputEvent() {}
+        typedef Containers::EnumSet<Modifier, std::uint32_t> Modifiers;
 
         /** @brief Modifiers */
-        inline Modifiers modifiers() const { return _modifiers; }
+        constexpr Modifiers modifiers() const { return _modifiers; }
 
         /**
          * @brief Set event as accepted
@@ -348,14 +345,16 @@ class NaClApplication::InputEvent {
          * propagated elsewhere (e.g. to the browser). By default is each
          * event ignored.
          */
-        inline void setAccepted(bool accepted = true) { _accepted = accepted; }
+        void setAccepted(bool accepted = true) { _accepted = accepted; }
 
         /** @brief Whether the event is accepted */
-        inline bool isAccepted() { return _accepted; }
+        constexpr bool isAccepted() const { return _accepted; }
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
-        inline InputEvent(Modifiers modifiers): _accepted(false), _modifiers(modifiers) {}
+        constexpr InputEvent(Modifiers modifiers): _accepted(false), _modifiers(modifiers) {}
+
+        ~InputEvent() = default;
     #endif
 
     private:
@@ -450,10 +449,10 @@ class NaClApplication::KeyEvent: public NaClApplication::InputEvent {
         };
 
         /** @brief Key */
-        inline Key key() const { return _key; }
+        constexpr Key key() const { return _key; }
 
     private:
-        inline KeyEvent(Key key, Modifiers modifiers): InputEvent(modifiers), _key(key) {}
+        constexpr KeyEvent(Key key, Modifiers modifiers): InputEvent(modifiers), _key(key) {}
 
         const Key _key;
 };
@@ -480,13 +479,13 @@ class NaClApplication::MouseEvent: public NaClApplication::InputEvent {
         };
 
         /** @brief Button */
-        inline Button button() const { return _button; }
+        constexpr Button button() const { return _button; }
 
         /** @brief Position */
-        inline Vector2i position() const { return _position; }
+        constexpr Vector2i position() const { return _position; }
 
     private:
-        inline MouseEvent(Button button, const Vector2i& position, Modifiers modifiers): InputEvent(modifiers), _button(button), _position(position) {}
+        constexpr MouseEvent(Button button, const Vector2i& position, Modifiers modifiers): InputEvent(modifiers), _button(button), _position(position) {}
 
         const Button _button;
         const Vector2i _position;
@@ -503,41 +502,37 @@ class NaClApplication::MouseMoveEvent: public NaClApplication::InputEvent {
 
     public:
         /** @brief Position */
-        inline Vector2i position() const { return _position; }
+        constexpr Vector2i position() const { return _position; }
 
         /**
          * @brief Relative position
          *
          * Position relative to previous event.
          */
-        inline Vector2i relativePosition() const { return _relativePosition; }
+        constexpr Vector2i relativePosition() const { return _relativePosition; }
 
     private:
-        inline MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition, Modifiers modifiers): InputEvent(modifiers), _position(position), _relativePosition(relativePosition) {}
+        constexpr MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition, Modifiers modifiers): InputEvent(modifiers), _position(position), _relativePosition(relativePosition) {}
 
         const Vector2i _position, _relativePosition;
 };
 
 CORRADE_ENUMSET_OPERATORS(NaClApplication::Flags)
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<class Application> class NaClModule: public pp::Module {
         public:
-            inline ~NaClModule() {
-                glTerminatePPAPI();
-            }
+            ~NaClModule() { glTerminatePPAPI(); }
 
-            inline bool Init() override {
+            bool Init() override {
                 return glInitializePPAPI(get_browser_interface());
             }
 
-            inline pp::Instance* CreateInstance(PP_Instance instance) {
+            pp::Instance* CreateInstance(PP_Instance instance) {
                 return new Application(instance);
             }
     };
 }
-#endif
 
 /** @hideinitializer
 @brief Entry point for NaCl application

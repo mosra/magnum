@@ -26,15 +26,16 @@
 
 #include "Extensions.h"
 #include "Image.h"
+#include "TextureFormat.h"
 #include "TextureTools/DistanceField.h"
 
 namespace Magnum { namespace Text {
 
 namespace {
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
-    const AbstractTexture::InternalFormat internalFormat = AbstractTexture::InternalFormat::R8;
+    const TextureFormat internalFormat = TextureFormat::R8;
     #else
-    const AbstractTexture::InternalFormat internalFormat = AbstractTexture::InternalFormat::Red;
+    const TextureFormat internalFormat = TextureFormat::Red;
     #endif
 }
 
@@ -50,9 +51,9 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, c
 
 void DistanceFieldGlyphCache::setImage(const Vector2i& offset, Image2D* const image) {
     Texture2D input;
-    input.setWrapping(Texture2D::Wrapping::ClampToEdge)
-        ->setMinificationFilter(Texture2D::Filter::Linear)
-        ->setMagnificationFilter(Texture2D::Filter::Linear)
+    input.setWrapping(Sampler::Wrapping::ClampToEdge)
+        ->setMinificationFilter(Sampler::Filter::Linear)
+        ->setMagnificationFilter(Sampler::Filter::Linear)
         ->setImage(0, internalFormat, image);
 
     /* Create distance field from input texture */

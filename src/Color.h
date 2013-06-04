@@ -36,11 +36,10 @@
 
 namespace Magnum {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
 
 /* Convert color from HSV */
-template<class T> inline typename std::enable_if<std::is_floating_point<T>::value, Color3<T>>::type fromHSV(typename Color3<T>::HSV hsv) {
+template<class T> typename std::enable_if<std::is_floating_point<T>::value, Color3<T>>::type fromHSV(typename Color3<T>::HSV hsv) {
     Math::Deg<T> hue;
     T saturation, value;
     std::tie(hue, saturation, value) = hsv;
@@ -133,7 +132,6 @@ template<class T> inline constexpr typename std::enable_if<std::is_integral<T>::
 }
 
 }
-#endif
 
 /**
 @brief Three-component (RGB) color
@@ -174,11 +172,11 @@ class Color3: public Math::Vector3<T> {
          *
          * Hue can overflow the range @f$ [0.0, 360.0] @f$.
          */
-        inline constexpr static Color3<T> fromHSV(HSV hsv) {
+        constexpr static Color3<T> fromHSV(HSV hsv) {
             return Implementation::fromHSV<T>(hsv);
         }
         /** @overload */
-        inline constexpr static Color3<T> fromHSV(Math::Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value) {
+        constexpr static Color3<T> fromHSV(Math::Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value) {
             return fromHSV(std::make_tuple(hue, saturation, value));
         }
 
@@ -187,13 +185,13 @@ class Color3: public Math::Vector3<T> {
          *
          * All components are set to zero.
          */
-        inline constexpr /*implicit*/ Color3() {}
+        constexpr /*implicit*/ Color3() {}
 
         /**
          * @brief Gray constructor
          * @param rgb   RGB value
          */
-        inline constexpr explicit Color3(T rgb): Math::Vector3<T>(rgb) {}
+        constexpr explicit Color3(T rgb): Math::Vector3<T>(rgb) {}
 
         /**
          * @brief Constructor
@@ -201,20 +199,20 @@ class Color3: public Math::Vector3<T> {
          * @param g     G value
          * @param b     B value
          */
-        inline constexpr /*implicit*/ Color3(T r, T g, T b): Math::Vector3<T>(r, g, b) {}
+        constexpr /*implicit*/ Color3(T r, T g, T b): Math::Vector3<T>(r, g, b) {}
 
         /** @copydoc Math::Vector::Vector(const Vector<size, U>&) */
-        template<class U> inline constexpr explicit Color3(const Math::Vector<3, U>& other): Math::Vector3<T>(other) {}
+        template<class U> constexpr explicit Color3(const Math::Vector<3, U>& other): Math::Vector3<T>(other) {}
 
         /** @brief Copy constructor */
-        inline constexpr Color3(const Math::Vector<3, T>& other): Math::Vector3<T>(other) {}
+        constexpr Color3(const Math::Vector<3, T>& other): Math::Vector3<T>(other) {}
 
-        inline T& r() { return Math::Vector3<T>::x(); }                 /**< @brief R component */
-        inline constexpr T r() const { return Math::Vector3<T>::x(); }  /**< @overload */
-        inline T& g() { return Math::Vector3<T>::y(); }                 /**< @brief G component */
-        inline constexpr T g() const { return Math::Vector3<T>::y(); }  /**< @overload */
-        inline T& b() { return Math::Vector3<T>::z(); }                 /**< @brief B component */
-        inline constexpr T b() const { return Math::Vector3<T>::z(); }  /**< @overload */
+        T& r() { return Math::Vector3<T>::x(); }                /**< @brief R component */
+        constexpr T r() const { return Math::Vector3<T>::x(); } /**< @overload */
+        T& g() { return Math::Vector3<T>::y(); }                /**< @brief G component */
+        constexpr T g() const { return Math::Vector3<T>::y(); } /**< @overload */
+        T& b() { return Math::Vector3<T>::z(); }                /**< @brief B component */
+        constexpr T b() const { return Math::Vector3<T>::z(); } /**< @overload */
 
         /**
          * @brief Convert to HSV
@@ -227,7 +225,7 @@ class Color3: public Math::Vector3<T> {
          *
          * @see hue(), saturation(), value(), fromHSV()
          */
-        inline constexpr HSV toHSV() const {
+        constexpr HSV toHSV() const {
             return Implementation::toHSV<T>(*this);
         }
 
@@ -237,7 +235,7 @@ class Color3: public Math::Vector3<T> {
          *
          * @see saturation(), value(), toHSV(), fromHSV()
          */
-        inline constexpr Math::Deg<FloatingPointType> hue() const {
+        constexpr Math::Deg<FloatingPointType> hue() const {
             return Math::Deg<FloatingPointType>(Implementation::hue<T>(*this));
         }
 
@@ -247,7 +245,7 @@ class Color3: public Math::Vector3<T> {
          *
          * @see hue(), value(), toHSV(), fromHSV()
          */
-        inline constexpr FloatingPointType saturation() const {
+        constexpr FloatingPointType saturation() const {
             return Implementation::saturation<T>(*this);
         }
 
@@ -257,7 +255,7 @@ class Color3: public Math::Vector3<T> {
          *
          * @see hue(), saturation(), toHSV(), fromHSV()
          */
-        inline constexpr FloatingPointType value() const {
+        constexpr FloatingPointType value() const {
             return Implementation::value<T>(*this);
         }
 
@@ -291,11 +289,11 @@ class Color4: public Math::Vector4<T> {
          * @param a     Alpha value, defaults to 1.0 for floating-point types
          *      and maximum positive value for integral types.
          */
-        inline constexpr static Color4<T> fromHSV(HSV hsv, T a = Implementation::defaultAlpha<T>()) {
+        constexpr static Color4<T> fromHSV(HSV hsv, T a = Implementation::defaultAlpha<T>()) {
             return Color4<T>(Implementation::fromHSV<T>(hsv), a);
         }
         /** @overload */
-        inline constexpr static Color4<T> fromHSV(Math::Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value, T alpha) {
+        constexpr static Color4<T> fromHSV(Math::Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value, T alpha) {
             return fromHSV(std::make_tuple(hue, saturation, value), alpha);
         }
 
@@ -305,14 +303,14 @@ class Color4: public Math::Vector4<T> {
          * RGB components are set to zero, A component is set to 1.0 for
          * floating-point types and maximum positive value for integral types.
          */
-        inline constexpr /*implicit*/ Color4(): Math::Vector4<T>(T(0), T(0), T(0), Implementation::defaultAlpha<T>()) {}
+        constexpr /*implicit*/ Color4(): Math::Vector4<T>(T(0), T(0), T(0), Implementation::defaultAlpha<T>()) {}
 
         /**
          * @copydoc Color3::Color3(T)
          * @param alpha Alpha value, defaults to 1.0 for floating-point types
          *      and maximum positive value for integral types.
          */
-        inline constexpr explicit Color4(T rgb, T alpha = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb, rgb, rgb, alpha) {}
+        constexpr explicit Color4(T rgb, T alpha = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb, rgb, rgb, alpha) {}
 
         /**
          * @brief Constructor
@@ -322,7 +320,7 @@ class Color4: public Math::Vector4<T> {
          * @param a     A value, defaults to 1.0 for floating-point types and
          *      maximum positive value for integral types.
          */
-        inline constexpr /*implicit*/ Color4(T r, T g, T b, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(r, g, b, a) {}
+        constexpr /*implicit*/ Color4(T r, T g, T b, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(r, g, b, a) {}
 
         /**
          * @brief Constructor
@@ -331,22 +329,22 @@ class Color4: public Math::Vector4<T> {
          */
         /* Not marked as explicit, because conversion from Color3 to Color4
            is fairly common, nearly always with A set to 1 */
-        inline constexpr /*implicit*/ Color4(const Math::Vector3<T>& rgb, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
+        constexpr /*implicit*/ Color4(const Math::Vector3<T>& rgb, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
 
         /** @copydoc Math::Vector::Vector(const Vector<size, U>&) */
-        template<class U> inline constexpr explicit Color4(const Math::Vector<4, U>& other): Math::Vector4<T>(other) {}
+        template<class U> constexpr explicit Color4(const Math::Vector<4, U>& other): Math::Vector4<T>(other) {}
 
         /** @brief Copy constructor */
-        inline constexpr Color4(const Math::Vector<4, T>& other): Math::Vector4<T>(other) {}
+        constexpr Color4(const Math::Vector<4, T>& other): Math::Vector4<T>(other) {}
 
-        inline T& r() { return Math::Vector4<T>::x(); }                 /**< @brief R component */
-        inline constexpr T r() const { return Math::Vector4<T>::x(); }  /**< @overload */
-        inline T& g() { return Math::Vector4<T>::y(); }                 /**< @brief G component */
-        inline constexpr T g() const { return Math::Vector4<T>::y(); }  /**< @overload */
-        inline T& b() { return Math::Vector4<T>::z(); }                 /**< @brief B component */
-        inline constexpr T b() const { return Math::Vector4<T>::z(); }  /**< @overload */
-        inline T& a() { return Math::Vector4<T>::w(); }                 /**< @brief A component */
-        inline constexpr T a() const { return Math::Vector4<T>::w(); }  /**< @overload */
+        T& r() { return Math::Vector4<T>::x(); }                /**< @brief R component */
+        constexpr T r() const { return Math::Vector4<T>::x(); } /**< @overload */
+        T& g() { return Math::Vector4<T>::y(); }                /**< @brief G component */
+        constexpr T g() const { return Math::Vector4<T>::y(); } /**< @overload */
+        T& b() { return Math::Vector4<T>::z(); }                /**< @brief B component */
+        constexpr T b() const { return Math::Vector4<T>::z(); } /**< @overload */
+        T& a() { return Math::Vector4<T>::w(); }                /**< @brief A component */
+        constexpr T a() const { return Math::Vector4<T>::w(); } /**< @overload */
 
         /**
          * @brief RGB part of the vector
@@ -354,26 +352,26 @@ class Color4: public Math::Vector4<T> {
          *
          * @see swizzle()
          */
-        inline Color3<T>& rgb() { return Color3<T>::from(Math::Vector4<T>::data()); }
-        inline constexpr Color3<T> rgb() const { return Color3<T>::from(Math::Vector4<T>::data()); } /**< @overload */
+        Color3<T>& rgb() { return Color3<T>::from(Math::Vector4<T>::data()); }
+        constexpr Color3<T> rgb() const { return Color3<T>::from(Math::Vector4<T>::data()); } /**< @overload */
 
         /** @copydoc Color3::toHSV() */
-        inline constexpr HSV toHSV() const {
+        constexpr HSV toHSV() const {
             return Implementation::toHSV<T>(rgb());
         }
 
         /** @copydoc Color3::hue() */
-        inline constexpr Math::Deg<FloatingPointType> hue() const {
+        constexpr Math::Deg<FloatingPointType> hue() const {
             return Implementation::hue<T>(rgb());
         }
 
         /** @copydoc Color3::saturation() */
-        inline constexpr FloatingPointType saturation() const {
+        constexpr FloatingPointType saturation() const {
             return Implementation::saturation<T>(rgb());
         }
 
         /** @copydoc Color3::value() */
-        inline constexpr FloatingPointType value() const {
+        constexpr FloatingPointType value() const {
             return Implementation::value<T>(rgb());
         }
 
