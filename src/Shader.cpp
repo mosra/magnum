@@ -103,7 +103,7 @@ Shader& Shader::addSource(std::string source) {
     if(!source.empty()) {
         /* Fix line numbers, so line 41 of third added file is marked as 3(41).
            Source 0 is the #version string added in constructor. */
-        sources.push_back("#line 1 " + std::to_string(sources.size()) + '\n');
+        sources.push_back("#line 1 " + std::to_string((sources.size()+1)/2) + '\n');
         sources.push_back(std::move(source));
     }
 
