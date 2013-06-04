@@ -146,7 +146,12 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         #ifndef CORRADE_GCC46_COMPATIBILITY
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> constexpr explicit RectangularMatrix(const U& other): RectangularMatrix(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(other)) {}
         #else
-        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> explicit RectangularMatrix(const U& other) {
+        #ifndef CORRADE_GCC44_COMPATIBILITY
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> explicit RectangularMatrix(const U& other)
+        #else
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(*static_cast<const U*>(nullptr)))> explicit RectangularMatrix(const U& other)
+        #endif
+        {
             *this = Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(other);
         }
         #endif
@@ -158,7 +163,12 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         RectangularMatrix<cols, rows, T>& operator=(const RectangularMatrix<cols, rows, T>&) = default;
 
         /** @brief Convert matrix to external representation */
-        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(std::declval<RectangularMatrix<cols, rows, T>>()))> constexpr explicit operator U() const {
+        #ifndef CORRADE_GCC44_COMPATIBILITY
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(std::declval<RectangularMatrix<cols, rows, T>>()))> constexpr explicit operator U() const
+        #else
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(*static_cast<const RectangularMatrix<cols, rows, T>*>(nullptr)))> constexpr operator U() const
+        #endif
+        {
             /** @bug Why this is not constexpr under GCC 4.6? */
             return Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(*this);
         }

@@ -206,7 +206,11 @@ template<class T> class Matrix4: public Matrix<4, T> {
         template<class U> constexpr explicit Matrix4(const RectangularMatrix<4, 4, U>& other): Matrix<4, T>(other) {}
 
         /** @brief Construct matrix from external representation */
+        #ifndef CORRADE_GCC44_COMPATIBILITY
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(std::declval<U>()))> constexpr explicit Matrix4(const U& other): Matrix<4, T>(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(other)) {}
+        #else
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(*static_cast<const U*>(nullptr)))> constexpr explicit Matrix4(const U& other): Matrix<4, T>(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(other)) {}
+        #endif
 
         /** @brief Copy constructor */
         constexpr Matrix4(const RectangularMatrix<4, 4, T>& other): Matrix<4, T>(other) {}

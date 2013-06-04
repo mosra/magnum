@@ -143,7 +143,11 @@ template<class T> class Matrix3: public Matrix<3, T> {
         template<class U> constexpr explicit Matrix3(const RectangularMatrix<3, 3, U>& other): Matrix<3, T>(other) {}
 
         /** @brief Construct matrix from external representation */
+        #ifndef CORRADE_GCC44_COMPATIBILITY
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(std::declval<U>()))> constexpr explicit Matrix3(const U& other): Matrix<3, T>(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(other)) {}
+        #else
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(*static_cast<const U*>(nullptr)))> constexpr explicit Matrix3(const U& other): Matrix<3, T>(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(other)) {}
+        #endif
 
         /** @brief Copy constructor */
         constexpr Matrix3(const RectangularMatrix<3, 3, T>& other): Matrix<3, T>(other) {}

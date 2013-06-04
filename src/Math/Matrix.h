@@ -98,7 +98,11 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         template<class U> constexpr explicit Matrix(const RectangularMatrix<size, size, U>& other): RectangularMatrix<size, size, T>(other) {}
 
         /** @brief Construct matrix from external representation */
+        #ifndef CORRADE_GCC44_COMPATIBILITY
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<size, size, T, U>::from(std::declval<U>()))> constexpr explicit Matrix(const U& other): RectangularMatrix<size, size, T>(Implementation::RectangularMatrixConverter<size, size, T, U>::from(other)) {}
+        #else
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<size, size, T, U>::from(*static_cast<const U*>(nullptr)))> constexpr explicit Matrix(const U& other): RectangularMatrix<size, size, T>(Implementation::RectangularMatrixConverter<size, size, T, U>::from(other)) {}
+        #endif
 
         /** @brief Copy constructor */
         constexpr Matrix(const RectangularMatrix<size, size, T>& other): RectangularMatrix<size, size, T>(other) {}

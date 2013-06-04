@@ -162,10 +162,11 @@ template<std::size_t size, class T> class Vector {
         template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> constexpr explicit Vector(const U& other): Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
         #else
         #ifndef CORRADE_GCC44_COMPATIBILITY
-        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> explicit Vector(const U& other) {
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> explicit Vector(const U& other)
         #else
-        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(*static_cast<const U*>(nullptr)))> explicit Vector(const U& other) {
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(*static_cast<const U*>(nullptr)))> explicit Vector(const U& other)
         #endif
+        {
             *this = Implementation::VectorConverter<size, T, U>::from(other);
         }
         #endif
@@ -178,10 +179,11 @@ template<std::size_t size, class T> class Vector {
 
         /** @brief Convert vector to external representation */
         #ifndef CORRADE_GCC44_COMPATIBILITY
-        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(std::declval<Vector<size, T>>()))> constexpr explicit operator U() const {
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(std::declval<Vector<size, T>>()))> constexpr explicit operator U() const
         #else
-        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(*static_cast<const Vector<size, T>*>(nullptr)))> constexpr operator U() const {
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(*static_cast<const Vector<size, T>*>(nullptr)))> constexpr operator U() const
         #endif
+        {
             /** @bug Why this is not constexpr under GCC 4.6? */
             return Implementation::VectorConverter<size, T, U>::to(*this);
         }
