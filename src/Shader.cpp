@@ -58,18 +58,18 @@ Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
 
     switch(version) {
         #ifndef MAGNUM_TARGET_GLES
-        case Version::GL210: addSource("#version 120\n"); return;
-        case Version::GL300: addSource("#version 130\n"); return;
-        case Version::GL310: addSource("#version 140\n"); return;
-        case Version::GL320: addSource("#version 150\n"); return;
-        case Version::GL330: addSource("#version 330\n"); return;
-        case Version::GL400: addSource("#version 400\n"); return;
-        case Version::GL410: addSource("#version 410\n"); return;
-        case Version::GL420: addSource("#version 420\n"); return;
-        case Version::GL430: addSource("#version 430\n"); return;
+        case Version::GL210: sources.push_back("#version 120\n"); return;
+        case Version::GL300: sources.push_back("#version 130\n"); return;
+        case Version::GL310: sources.push_back("#version 140\n"); return;
+        case Version::GL320: sources.push_back("#version 150\n"); return;
+        case Version::GL330: sources.push_back("#version 330\n"); return;
+        case Version::GL400: sources.push_back("#version 400\n"); return;
+        case Version::GL410: sources.push_back("#version 410\n"); return;
+        case Version::GL420: sources.push_back("#version 420\n"); return;
+        case Version::GL430: sources.push_back("#version 430\n"); return;
         #else
-        case Version::GLES200: addSource("#version 100\n"); return;
-        case Version::GLES300: addSource("#version 300\n"); return;
+        case Version::GLES200: sources.push_back("#version 100\n"); return;
+        case Version::GLES300: sources.push_back("#version 300\n"); return;
         #endif
 
         case Version::None:
