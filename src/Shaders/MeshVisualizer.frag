@@ -25,6 +25,7 @@
 #ifndef NEW_GLSL
 #define in varying
 #define fragmentColor gl_FragColor
+#define const
 #endif
 
 #ifndef EXPLICIT_UNIFORM_LOCATION
@@ -49,15 +50,17 @@ uniform lowp float smoothness;
 #endif
 
 #ifndef NO_GEOMETRY_SHADER
-noperspective in vec3 dist;
+noperspective in lowp vec3 dist;
 #else
-in vec3 barycentric;
+in lowp vec3 barycentric;
 #endif
 #endif
 
+#ifdef NEW_GLSL
 out vec4 fragmentColor;
+#endif
 
-#if defined(WIREFRAME_RENDERING) && defined(NO_GEOMETRY_SHADER) && defined(GL_ES)
+#if defined(WIREFRAME_RENDERING) && defined(GL_ES) && __VERSION__ < 300
 #extension GL_OES_standard_derivatives : enable
 #endif
 
@@ -70,9 +73,9 @@ void main() {
     /* Smooth step between face color and wireframe color based on distance */
     fragmentColor = mix(wireframeColor, color, smoothstep(wireframeWidth-smoothness, wireframeWidth+smoothness, nearest));
     #else
-    const vec3 d = fwidth(barycentric);
-    const vec3 factor = smoothstep(vec3(0.0), d*1.5, barycentric);
-    const float nearest = min(min(factor.x, factor.y), factor.z);
+    const lowp vec3 d = fwidth(barycentric);
+    const lowp vec3 factor = smoothstep(vec3(0.0), d*1.5, barycentric);
+    const lowp float nearest = min(min(factor.x, factor.y), factor.z);
     fragmentColor = mix(wireframeColor, color, nearest);
     #endif
 

@@ -36,6 +36,9 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     #ifndef MAGNUM_TARGET_GLES
     if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader))
         MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(flags & Flag::Wireframe)
+        MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::OES::standard_derivatives);
     #endif
 
     Utility::Resource rs("MagnumShaders");
@@ -109,6 +112,16 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
                 viewportSizeUniform = uniformLocation("viewportSize");
         }
     }
+
+    /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
+    #ifdef MAGNUM_TARGET_GLES
+    setColor(Color3<>(1.0f));
+    if(flags & Flag::Wireframe) {
+        setWireframeColor(Color3<>(0.0f));
+        setWireframeWidth(1.0f);
+        setSmoothness(2.0f);
+    }
+    #endif
 }
 
 }}
