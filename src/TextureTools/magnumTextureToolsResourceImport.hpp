@@ -28,6 +28,8 @@
 
 #ifdef MAGNUM_BUILD_STATIC
 #include <Utility/Resource.h>
+#include <Utility/utilities.h>
+
 static int magnumTextureToolsResourceImport() {
     CORRADE_RESOURCE_INITIALIZE(MagnumTextureTools_RCS)
     return 0;
