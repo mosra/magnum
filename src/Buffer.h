@@ -590,10 +590,16 @@ class MAGNUM_EXPORT Buffer {
          *
          * @see setData(GLsizeiptr, const GLvoid*, Usage).
          */
+        #ifdef CORRADE_GCC46_COMPATIBILITY
+        #define size size_ /* With GCC 4.6 it conflicts with size(). WTF. */
+        #endif
         template<std::size_t size, class T> Buffer* setData(const T(&data)[size], Usage usage) {
             setData(size*sizeof(T), data, usage);
             return this;
         }
+        #ifdef CORRADE_GCC46_COMPATIBILITY
+        #undef size
+        #endif
 
         /**
          * @brief Set buffer data
@@ -639,10 +645,16 @@ class MAGNUM_EXPORT Buffer {
          *
          * @see setSubData(GLintptr, GLsizeiptr, const GLvoid*)
          */
+        #ifdef CORRADE_GCC46_COMPATIBILITY
+        #define size size_ /* With GCC 4.6 it conflicts with size(). WTF. */
+        #endif
         template<std::size_t size, class T> Buffer* setSubData(GLintptr offset, const T(&data)[size]) {
             setSubData(offset, size*sizeof(T), data);
             return this;
         }
+        #ifdef CORRADE_GCC46_COMPATIBILITY
+        #undef size
+        #endif
 
         /**
          * @brief Set buffer subdata
