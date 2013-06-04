@@ -39,15 +39,45 @@ namespace Magnum { namespace Shaders {
 /**
 @brief %Mesh visualization shader
 
-Uses geometry shader to visualize wireframe. You need to call at least
-setTransformationProjectionMatrix() (and setViewportSize(), if
-@ref Flag "Flag::Wireframe" is enabled) to be able to render.
-@requires_gl32 %Extension @extension{ARB,geometry_shader4} if
-    @ref Magnum::Shaders::MeshVisualizer::Flag "Flag::Wireframe" is enabled.
+Uses geometry shader to visualize wireframe. You need to provide @ref Position
+attribute in your triangle mesh and call at least @ref setTransformationProjectionMatrix()
+to be able to render.
+
+@section ShadersMeshVisualizer-wireframe Wireframe visualization
+
+Wireframe visualization is done by enabling @ref Flag "Flag::Wireframe". It is
+done either using geometry shaders or with help of additional vertex information.
+
+If you have geometry shaders available, you don't need to do anything else.
+
+@requires_gl32 %Extension @extension{ARB,geometry_shader4} for wireframe
+    rendering using geometry shaders.
+
+If you don't have geometry shaders, you need to set @ref Flag "Flag::NoGeometryShader"
+(it's enabled by default in OpenGL ES) and use only **non-indexed** triangle
+meshes (see MeshTools::duplicate() for possible solution). Additionaly, if you
+have OpenGL < 3.1 or OpenGL ES 2.0, you need to provide also @ref VertexIndex
+attribute.
+
+@requires_es_extension %Extension @extension{OES,standard_derivatives} for
+    wireframe rendering.
+
+@todo Understand and add support wireframe width/smoothness without GS
 */
 class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Vector3> Position; /**< @brief Vertex position */
+
+        /**
+         * @brief Vertex index
+         *
+         * Used only in OpenGL < 3.1 and OpenGL ES 2.0 if @ref Flag "Flag::Wireframe"
+         * is enabled. This attribute specifies index of given vertex in
+         * triangle, i.e. `0` for first, `1` for second, `2` for third. In
+         * OpenGL 3.1, OpenGL ES 3.0 and newer this value is provided by the
+         * shader itself, so the attribute is not needed.
+         */
+        typedef Attribute<1, Float> VertexIndex;
 
         /**
          * @brief %Flag
@@ -55,7 +85,22 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * @see Flags, MeshVisualizer()
          */
         enum class Flag: UnsignedByte {
-            Wireframe = 1 << 0      /**< Visualize wireframe */
+            /**
+             * Visualize wireframe. On OpenGL ES this also enables
+             * @ref Flag "Flag::NoGeometryShader".
+             */
+            #ifndef MAGNUM_TARGET_GLES
+            Wireframe = 1 << 0,
+            #else
+            Wireframe = (1 << 0) | (1 << 1),
+            #endif
+
+            /**
+             * Don't use geometry shader for wireframe visualization. If
+             * enabled, you might need to provide also VertexIndex attribute in
+             * the mesh. In OpenGL ES enabled alongside @ref Flag "Flag::Wireframe".
+             */
+            NoGeometryShader = 1 << 1
         };
 
         /** @brief %Flags */

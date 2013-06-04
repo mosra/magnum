@@ -22,10 +22,41 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-layout(location = 0) uniform mat4 transformationProjectionMatrix;
+#ifndef NEW_GLSL
+#define in attribute
+#define out varying
+#endif
 
-layout(location = 0) in vec4 position;
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 0) uniform mat4 transformationProjectionMatrix;
+#else
+uniform highp mat4 transformationProjectionMatrix;
+#endif
+
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = 0) highp in vec4 position;
+#else
+in highp vec4 position;
+#endif
+
+#if defined(WIREFRAME_RENDERING) && defined(NO_GEOMETRY_SHADER)
+#if (!defined(GL_ES) && __VERSION__ < 140) || (defined(GL_ES) && __VERSION__ < 300)
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = 1) highp in float vertexIndex;
+#else
+in lowp float vertexIndex;
+#endif
+#define gl_VertexID int(vertexIndex)
+#endif
+
+out vec3 barycentric;
+#endif
 
 void main() {
     gl_Position = transformationProjectionMatrix*position;
+
+    #if defined(WIREFRAME_RENDERING) && defined(NO_GEOMETRY_SHADER)
+    barycentric = vec3(0.0);
+    barycentric[gl_VertexID % 3] = 1.0;
+    #endif
 }
