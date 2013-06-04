@@ -110,7 +110,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * @brief Constructor
          * @param flags     %Flags
          */
-        explicit MeshVisualizer(Flags flags);
+        explicit MeshVisualizer(Flags flags = Flags());
 
         /**
          * @brief Set transformation and projection matrix
