@@ -224,7 +224,12 @@ void Matrix4Test::convert() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Mat4, Matrix4>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Matrix4, Mat4>::value));
+    {
+        #ifdef CORRADE_GCC44_COMPATIBILITY
+        CORRADE_EXPECT_FAIL("GCC 4.4 doesn't have explicit conversion operators");
+        #endif
+        CORRADE_VERIFY(!(std::is_convertible<Matrix4, Mat4>::value));
+    }
 }
 
 void Matrix4Test::isRigidTransformation() {

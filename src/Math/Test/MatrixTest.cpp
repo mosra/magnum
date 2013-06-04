@@ -198,7 +198,12 @@ void MatrixTest::convert() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Mat3, Matrix3>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Matrix3, Mat3>::value));
+    {
+        #ifdef CORRADE_GCC44_COMPATIBILITY
+        CORRADE_EXPECT_FAIL("GCC 4.4 doesn't have explicit conversion operators");
+        #endif
+        CORRADE_VERIFY(!(std::is_convertible<Matrix3, Mat3>::value));
+    }
 }
 
 void MatrixTest::isOrthogonal() {

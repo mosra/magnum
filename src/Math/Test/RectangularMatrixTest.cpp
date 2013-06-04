@@ -215,7 +215,12 @@ void RectangularMatrixTest::convert() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Mat2x3, Matrix2x3>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Matrix2x3, Mat2x3>::value));
+    {
+        #ifdef CORRADE_GCC44_COMPATIBILITY
+        CORRADE_EXPECT_FAIL("GCC 4.4 doesn't have explicit conversion operators");
+        #endif
+        CORRADE_VERIFY(!(std::is_convertible<Matrix2x3, Mat2x3>::value));
+    }
 }
 
 void RectangularMatrixTest::data() {
