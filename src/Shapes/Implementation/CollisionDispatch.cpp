@@ -36,7 +36,8 @@
 namespace Magnum { namespace Shapes { namespace Implementation {
 
 template<> bool collides(const AbstractShape<2>* const a, const AbstractShape<2>* const b) {
-    if(a->type() < b->type()) return collides(b, a);
+    /* GCC 4.4 doesn't have comparison operators for strongly typed enums */
+    if(UnsignedInt(a->type()) < UnsignedInt(b->type())) return collides(b, a);
 
     switch(UnsignedInt(a->type())*UnsignedInt(b->type())) {
         #define _c(aType, aClass, bType, bClass) \
@@ -58,7 +59,8 @@ template<> bool collides(const AbstractShape<2>* const a, const AbstractShape<2>
 }
 
 template<> bool collides(const AbstractShape<3>* const a, const AbstractShape<3>* const b) {
-    if(a->type() < b->type()) return collides(b, a);
+    /* GCC 4.4 doesn't have comparison operators for strongly typed enums */
+    if(UnsignedInt(a->type()) < UnsignedInt(b->type())) return collides(b, a);
 
     switch(UnsignedInt(a->type())*UnsignedInt(b->type())) {
         #define _c(aType, aClass, bType, bClass) \
