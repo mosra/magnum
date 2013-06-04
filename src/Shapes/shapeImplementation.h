@@ -108,7 +108,7 @@ template<UnsignedInt dimensions> struct TypeOf<Shapes::Box<dimensions>> {
     }
 };
 template<> struct TypeOf<Shapes::Plane> {
-    constexpr static typename ShapeDimensionTraits<3>::Type type() {
+    constexpr static ShapeDimensionTraits<3>::Type type() {
         return ShapeDimensionTraits<3>::Type::Plane;
     }
 };
