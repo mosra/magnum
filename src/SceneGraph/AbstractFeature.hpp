@@ -36,7 +36,8 @@ template<UnsignedInt dimensions, class T> AbstractFeature<dimensions, T>::Abstra
     object->Containers::template LinkedList<AbstractFeature<dimensions, T>>::insert(this);
 }
 
-template<UnsignedInt dimensions, class T> AbstractFeature<dimensions, T>::~AbstractFeature() = default;
+/* `= default` causes linker errors in GCC 4.5 */
+template<UnsignedInt dimensions, class T> AbstractFeature<dimensions, T>::~AbstractFeature() {}
 
 template<UnsignedInt dimensions, class T> void AbstractFeature<dimensions, T>::markDirty() {}
 

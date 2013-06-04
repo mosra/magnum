@@ -63,8 +63,10 @@ Debug operator<<(Debug debug, ShapeDimensionTraits<3>::Type value) {
     return debug << "Shapes::Shape3D::Type::(unknown)";
 }
 
+/* `= default` causes linker errors in GCC 4.5 */
+template<UnsignedInt dimensions> AbstractShape<dimensions>::AbstractShape() {}
+
 template<UnsignedInt dimensions> AbstractShape<dimensions>::~AbstractShape() = default;
-template<UnsignedInt dimensions> AbstractShape<dimensions>::AbstractShape() = default;
 
 template struct AbstractShape<2>;
 template struct AbstractShape<3>;
