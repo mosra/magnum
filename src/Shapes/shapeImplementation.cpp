@@ -66,7 +66,8 @@ Debug operator<<(Debug debug, ShapeDimensionTraits<3>::Type value) {
 /* `= default` causes linker errors in GCC 4.5 */
 template<UnsignedInt dimensions> AbstractShape<dimensions>::AbstractShape() {}
 
-template<UnsignedInt dimensions> AbstractShape<dimensions>::~AbstractShape() = default;
+/* `= default` causes linker errors in GCC 4.4 */
+template<UnsignedInt dimensions> AbstractShape<dimensions>::~AbstractShape() {}
 
 template struct AbstractShape<2>;
 template struct AbstractShape<3>;

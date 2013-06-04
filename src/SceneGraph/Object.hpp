@@ -44,7 +44,8 @@ template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::~Abstra
 template<UnsignedInt dimensions, class T> AbstractTransformation<dimensions, T>::AbstractTransformation() {}
 template<UnsignedInt dimensions, class T> AbstractTransformation<dimensions, T>::~AbstractTransformation() {}
 
-template<class Transformation> Object<Transformation>::~Object() = default;
+/* `= default` causes linker errors in GCC 4.4 */
+template<class Transformation> Object<Transformation>::~Object() {}
 
 template<class Transformation> Scene<Transformation>* Object<Transformation>::scene() {
     Object<Transformation>* p(this);
