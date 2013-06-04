@@ -132,7 +132,7 @@ template<UnsignedInt dimensions> struct MAGNUM_SHAPES_EXPORT AbstractShape {
 template<class T> struct Shape: AbstractShape<T::Dimensions> {
     T shape;
 
-    explicit Shape() = default;
+    explicit Shape();
     explicit Shape(const T& shape): shape(shape) {}
     explicit Shape(T&& shape): shape(std::move(shape)) {}
 
@@ -149,6 +149,8 @@ template<class T> struct Shape: AbstractShape<T::Dimensions> {
         static_cast<Shape<T>*>(result)->shape = shape.transformed(matrix);
     }
 };
+
+template<class T> Shape<T>::Shape() = default;
 
 }}}
 
