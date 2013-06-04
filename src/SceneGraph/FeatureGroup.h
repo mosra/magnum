@@ -50,7 +50,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractFeatureGroup {
     template<UnsignedInt, class, class> friend class FeatureGroup;
 
     explicit AbstractFeatureGroup();
-    ~AbstractFeatureGroup();
+    virtual ~AbstractFeatureGroup();
 
     void add(AbstractFeature<dimensions, T>* feature);
     void remove(AbstractFeature<dimensions, T>* feature);
@@ -80,7 +80,7 @@ class FeatureGroup: public AbstractFeatureGroup<dimensions, T> {
          *
          * Removes all features belonging to this group, but not deletes them.
          */
-        virtual ~FeatureGroup();
+        ~FeatureGroup();
 
         /** @brief Whether the group is empty */
         bool isEmpty() const { return this->features.empty(); }
