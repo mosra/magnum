@@ -72,7 +72,7 @@ if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN)
 
     # Newlib toolchain supports only static linking
     if(CORRADE_TARGET_NACL_NEWLIB)
-        set(BUILD_STATIC OFF)
+        set(BUILD_STATIC ON)
     endif()
 endif()
 
