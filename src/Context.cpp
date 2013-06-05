@@ -292,6 +292,14 @@ Context::Context() {
     #endif
     _version = static_cast<Version>(_majorVersion*100+_minorVersion*10);
 
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_ASSERT(isVersionSupported(Version::GL210), "Context: unsupported OpenGL version" << Int(_version), );
+    #elif defined(MAGNUM_TARGET_GLES2)
+    CORRADE_ASSERT(isVersionSupported(Version::GLES200), "Context: unsupported OpenGL ES version" << Int(_version), );
+    #else
+    CORRADE_ASSERT(isVersionSupported(Version::GLES300), "Context: unsupported OpenGL ES version" << Int(_version), );
+    #endif
+
     /* Context flags are supported since GL 3.0 */
     #ifndef MAGNUM_TARGET_GLES
     /**
