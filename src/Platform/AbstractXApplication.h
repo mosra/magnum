@@ -35,6 +35,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 /* undef Xlib nonsense to avoid conflicts */
+#undef Complex
 #undef None
 #undef Always
 
