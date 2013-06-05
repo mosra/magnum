@@ -28,6 +28,7 @@
  * @brief Class Magnum::Text::GlyphCache
  */
 
+#include <vector>
 #include <unordered_map>
 
 #include "Math/Geometry/Rectangle.h"
