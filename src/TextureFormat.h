@@ -475,7 +475,32 @@ enum class TextureFormat: GLenum {
      * @requires_gl Packed 8bit types are not available in OpenGL ES.
      */
     R3B3G2 = GL_R3_G3_B2,
+    #endif
 
+    #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
+    /**
+     * Luminance, normalized unsigned, single value used for all RGB channels.
+     * Size implementation-dependent.
+     * @deprecated Included for compatibility reasons only, use
+     *      @ref Magnum::TextureFormat "TextureFormat::R8" instead.
+     * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
+     *      @ref Magnum::TextureFormat "TextureFormat::R8" instead.
+     */
+    Luminance = GL_LUMINANCE,
+
+    /**
+     * Floating-point luminance and alpha channel. First value is used for all
+     * RGB channels, second value is used for alpha channel. Size
+     * implementation-dependent.
+     * @deprecated Included for compatibility reasons only, use
+     *      @ref Magnum::TextureFormat "TextureFormat::RG" instead.
+     * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
+     *      @ref Magnum::TextureFormat "TextureFormat::RG" instead.
+     */
+    LuminanceAlpha = GL_LUMINANCE_ALPHA,
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
     /**
      * RGB, each component normalized unsigned 4bit.
      * @requires_gl Packed 12bit types are not available in OpenGL ES.

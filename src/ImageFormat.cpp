@@ -37,7 +37,13 @@ Debug operator<<(Debug debug, ImageFormat value) {
         _c(Green)
         _c(Blue)
         #endif
+        #ifdef MAGNUM_TARGET_GLES2
+        _c(Luminance)
+        #endif
         _c(RG)
+        #ifdef MAGNUM_TARGET_GLES2
+        _c(LuminanceAlpha)
+        #endif
         _c(RGB)
         _c(RGBA)
         #ifndef MAGNUM_TARGET_GLES

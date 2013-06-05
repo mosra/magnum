@@ -68,8 +68,18 @@ enum class ImageFormat: GLenum {
      *      available in OpenGL ES.
      */
     Blue = GL_BLUE,
+    #endif
 
-    /** @todo GL_ALPHA? */
+    #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
+    /**
+     * Floating-point luminance channel. The value is used for all RGB
+     * channels.
+     * @deprecated Included for compatibility reasons only, use
+     *      @ref Magnum::ImageFormat "ImageFormat::Red" instead.
+     * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
+     *      @ref Magnum::ImageFormat "ImageFormat::Red" instead.
+     */
+    Luminance = GL_LUMINANCE,
     #endif
 
     /**
@@ -82,6 +92,18 @@ enum class ImageFormat: GLenum {
     RG = GL_RG,
     #else
     RG = GL_RG_EXT,
+    #endif
+
+    #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
+    /**
+     * Floating-point luminance and alpha channel. First value is used for all
+     * RGB channels, second value is used for alpha channel.
+     * @deprecated Included for compatibility reasons only, use
+     *      @ref Magnum::ImageFormat "ImageFormat::RG" instead.
+     * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
+     *      @ref Magnum::ImageFormat "ImageFormat::RG" instead.
+     */
+    LuminanceAlpha = GL_LUMINANCE_ALPHA,
     #endif
 
     /**

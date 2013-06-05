@@ -29,8 +29,6 @@ add any performance gains, is not supported in %Magnum.
 
 @section unsupported-features Unsupported features
 
-- Luminance texture formats (OpenGL ES) are not supported, as they are
-  deprecated in OpenGL ES 3.0 and not present in core desktop OpenGL.
 - Fixed precision data types (OpenGL ES) are not supported, as they occupy the
   same memory as floats and they aren't faster than floats on current hardware
   anymore.
