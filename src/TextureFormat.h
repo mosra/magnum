@@ -147,6 +147,7 @@ enum class TextureFormat: GLenum {
      * @requires_gles30 Only unsigned formats are available in OpenGL ES 2.0.
      */
     RGBA8Snorm = GL_RGBA8_SNORM,
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     /**
@@ -212,6 +213,7 @@ enum class TextureFormat: GLenum {
     RGBA16Snorm = GL_RGBA16_SNORM,
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
     /**
      * Red component, non-normalized unsigned byte.
      * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}

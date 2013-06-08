@@ -449,11 +449,13 @@ enum class ImageType: GLenum {
      * @requires_gl30 %Extension @extension{EXT,packed_depth_stencil}
      * @requires_gles30 For texture data only, extension @es_extension{OES,packed_depth_stencil}.
      */
-    #ifdef MAGNUM_TARGET_GLES2
-    UnsignedInt248 = GL_UNSIGNED_INT_24_8_OES
-    #else
+    #ifndef MAGNUM_TARGET_GLES2
     UnsignedInt248 = GL_UNSIGNED_INT_24_8,
+    #else
+    UnsignedInt248 = GL_UNSIGNED_INT_24_8_OES,
+    #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
     /**
      * Float + unsigned int, depth component 32bit float, 24bit gap, stencil
      * index 8bit.
