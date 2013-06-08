@@ -517,14 +517,16 @@ enum class TextureFormat: GLenum {
     RGB5 = GL_RGB5,
     #endif
 
-    /* 1.5.6 <= GLEW < 1.8.0 doesn't have this, even if there is
-       GL_ARB_ES2_compatibility */
-    #if defined(GL_RGB565) || defined(DOXYGEN_GENERATING_OUTPUT)
     /**
      * RGB, normalized unsigned, red and blue component 5bit, green 6bit.
      * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
      */
+    /* 1.5.6 <= GLEW < 1.8.0 doesn't have this, even if there is
+       GL_ARB_ES2_compatibility */
+    #ifdef GL_RGB565
     RGB565 = GL_RGB565,
+    #else
+    RGB565 = 0x8D62,
     #endif
 
     #ifndef MAGNUM_TARGET_GLES3
