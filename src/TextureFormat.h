@@ -495,9 +495,9 @@ enum class TextureFormat: GLenum {
      * RGB channels, second value is used for alpha channel. Size
      * implementation-dependent.
      * @deprecated Included for compatibility reasons only, use
-     *      @ref Magnum::TextureFormat "TextureFormat::RG" instead.
+     *      @ref Magnum::TextureFormat "TextureFormat::RG8" instead.
      * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
-     *      @ref Magnum::TextureFormat "TextureFormat::RG" instead.
+     *      @ref Magnum::TextureFormat "TextureFormat::RG8" instead.
      */
     LuminanceAlpha = GL_LUMINANCE_ALPHA,
     #endif
