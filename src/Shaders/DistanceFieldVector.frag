@@ -25,6 +25,7 @@
 #ifndef NEW_GLSL
 #define in varying
 #define fragmentColor gl_FragColor
+#define texture texture2D
 #endif
 
 #ifndef GL_ES
@@ -52,10 +53,10 @@ layout(binding = 16) uniform sampler2D vectorTexture;
 uniform lowp sampler2D vectorTexture;
 #endif
 
-in vec2 fragmentTextureCoordinates;
+in mediump vec2 fragmentTextureCoordinates;
 
 #ifdef NEW_GLSL
-out vec4 fragmentColor;
+out lowp vec4 fragmentColor;
 #endif
 
 void main() {

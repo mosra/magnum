@@ -85,8 +85,16 @@ template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldV
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>())
+    #endif
+    {
         AbstractShaderProgram::setUniform(AbstractShaderProgram::uniformLocation("vectorTexture"),
                                           AbstractVector<dimensions>::VectorTextureLayer);
+    }
+
+    /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
+    #ifdef MAGNUM_TARGET_GLES
+    setOutlineRange(0.5f, 1.0f);
+    setSmoothness(0.04f);
     #endif
 }
 
