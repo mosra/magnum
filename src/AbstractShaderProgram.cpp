@@ -116,10 +116,9 @@ std::pair<bool, std::string> AbstractShaderProgram::validate() {
     /* Error or warning message. The string is returned null-terminated, scrap
        the \0 at the end afterwards */
     std::string message(logLength, '\n');
-    if(!message.empty()) {
+    if(message.size() > 1)
         glGetProgramInfoLog(_id, message.size(), nullptr, &message[0]);
-        message.resize(logLength-1);
-    }
+    message.resize(std::max(logLength, 1)-1);
 
     return {success, std::move(message)};
 }
@@ -159,10 +158,9 @@ bool AbstractShaderProgram::link() {
     /* Error or warning message. The string is returned null-terminated, scrap
        the \0 at the end afterwards */
     std::string message(logLength, '\n');
-    if(!message.empty()) {
+    if(message.size() > 1)
         glGetProgramInfoLog(_id, message.size(), nullptr, &message[0]);
-        message.resize(logLength-1);
-    }
+    message.resize(std::max(logLength, 1)-1);
 
     /* Show error log and delete shader */
     if(!success) {
