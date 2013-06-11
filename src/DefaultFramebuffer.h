@@ -285,7 +285,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @endcode
          *
          * If @extension{EXT,direct_state_access} is not available and the
-         * framebufferbuffer is not currently bound, it is bound before the
+         * framebuffer is not currently bound, it is bound before the
          * operation.
          * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffers} or
          *      @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access}
@@ -303,7 +303,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * only one (unnamed) output.
          *
          * If @extension{EXT,direct_state_access} is not available and the
-         * framebufferbuffer is not currently bound, it is bound before the
+         * framebuffer is not currently bound, it is bound before the
          * operation.
          * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffer} or
          *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access},
@@ -323,7 +323,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @return Pointer to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available and the
-         * framebufferbuffer is not currently bound, it is bound before the
+         * framebuffer is not currently bound, it is bound before the
          * operation.
          * @see mapForDraw(), @fn_gl{BindFramebuffer}, @fn_gl{ReadBuffer} or
          *      @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access}
