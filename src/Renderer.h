@@ -1043,6 +1043,17 @@ class MAGNUM_EXPORT Renderer {
         #endif
 };
 
+/** @debugoperator{Renderer} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::Error value);
+
+#ifndef MAGNUM_TARGET_GLES3
+/** @debugoperator{Renderer} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::ResetNotificationStrategy value);
+
+/** @debugoperator{Renderer} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::GraphicsResetStatus value);
+#endif
+
 }
 
 #endif

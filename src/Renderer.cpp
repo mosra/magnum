@@ -233,4 +233,51 @@ Renderer::GraphicsResetStatus Renderer::graphicsResetStatusImplementationRobustn
 }
 #endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+Debug operator<<(Debug debug, const Renderer::Error value) {
+    switch(value) {
+        #define _c(value) case Renderer::Error::value: return debug << "Renderer::Error::" #value;
+        _c(NoError)
+        _c(InvalidEnum)
+        _c(InvalidValue)
+        _c(InvalidOperation)
+        _c(InvalidFramebufferOperation)
+        _c(OutOfMemory)
+        #ifndef MAGNUM_TARGET_GLES3
+        _c(StackUnderflow)
+        _c(StackOverflow)
+        #endif
+        #undef _c
+    }
+
+    return debug << "Renderer::Error::(invalid)";
+}
+
+#ifndef MAGNUM_TARGET_GLES3
+Debug operator<<(Debug debug, const Renderer::ResetNotificationStrategy value) {
+    switch(value) {
+        #define _c(value) case Renderer::ResetNotificationStrategy::value: return debug << "Renderer::ResetNotificationStrategy::" #value;
+        _c(NoResetNotification)
+        _c(LoseContextOnReset)
+        #undef _c
+    }
+
+    return debug << "Renderer::ResetNotificationStrategy::(invalid)";
+}
+
+Debug operator<<(Debug debug, const Renderer::GraphicsResetStatus value) {
+    switch(value) {
+        #define _c(value) case Renderer::GraphicsResetStatus::value: return debug << "Renderer::GraphicsResetStatus::" #value;
+        _c(NoError)
+        _c(GuiltyContextReset)
+        _c(InnocentContextReset)
+        _c(UnknownContextReset)
+        #undef _c
+    }
+
+    return debug << "Renderer::ResetNotificationStrategy::(invalid)";
+}
+#endif
+#endif
+
 }
