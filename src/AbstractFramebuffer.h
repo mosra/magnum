@@ -36,10 +36,10 @@
 namespace Magnum {
 
 /**
- * @brief Mask for framebuffer clearing
- *
- * @see AbstractFramebuffer, FramebufferClearMask
- */
+@brief Mask for framebuffer clearing
+
+@see AbstractFramebuffer, FramebufferClearMask
+*/
 enum class FramebufferClear: GLbitfield {
     Color = GL_COLOR_BUFFER_BIT,    /**< Color */
     Depth = GL_DEPTH_BUFFER_BIT,    /**< Depth value */
@@ -47,21 +47,21 @@ enum class FramebufferClear: GLbitfield {
 };
 
 /**
- * @brief Mask for clearing
- *
- * @see AbstractFramebuffer::clear()
- */
+@brief Mask for clearing
+
+@see AbstractFramebuffer::clear()
+*/
 typedef Containers::EnumSet<FramebufferClear, GLbitfield,
     GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT> FramebufferClearMask;
 
 /**
- * @brief Mask for framebuffer blitting
- *
- * @see AbstractFramebuffer, FramebufferBlitMask
- * @requires_gl30 %Extension @extension{EXT,framebuffer_object}
- * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
- *      @es_extension{NV,framebuffer_blit}
- */
+@brief Mask for framebuffer blitting
+
+@see AbstractFramebuffer, FramebufferBlitMask
+@requires_gl30 %Extension @extension{ARB,framebuffer_object}
+@requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
+    @es_extension{NV,framebuffer_blit}
+*/
 enum class FramebufferBlit: GLbitfield {
     ColorBuffer = GL_COLOR_BUFFER_BIT,    /**< Color buffer */
     DepthBuffer = GL_DEPTH_BUFFER_BIT,    /**< Depth buffer */
@@ -69,36 +69,38 @@ enum class FramebufferBlit: GLbitfield {
 };
 
 /**
- * @brief Mask for framebuffer blitting
- *
- * @see AbstractFramebuffer::blit()
- * @requires_gl30 %Extension @extension{EXT,framebuffer_object}
- * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
- *      @es_extension{NV,framebuffer_blit}
- */
+@brief Mask for framebuffer blitting
+
+@see AbstractFramebuffer::blit()
+@requires_gl30 %Extension @extension{ARB,framebuffer_object}
+@requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
+    @es_extension{NV,framebuffer_blit}
+*/
 typedef Containers::EnumSet<FramebufferBlit, GLbitfield,
     GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT> FramebufferBlitMask;
 
 /**
- * @brief %Framebuffer blit filtering
- *
- * @see AbstractFramebuffer::blit()
- */
+@brief %Framebuffer blit filtering
+
+@see AbstractFramebuffer::blit()
+@requires_gl30 %Extension @extension{ARB,framebuffer_object}
+@requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
+    @es_extension{NV,framebuffer_blit}
+*/
 enum class FramebufferBlitFilter: GLenum {
     Nearest = GL_NEAREST,   /**< Nearest neighbor filtering */
     Linear = GL_LINEAR      /**< Linear interpolation filtering */
 };
 
 /**
- * @brief Target for binding framebuffer
- *
- * @see DefaultFramebuffer::bind(), Framebuffer::bind()
- * @requires_gl30 %Extension @extension{EXT,framebuffer_object}
- */
+@brief Target for binding framebuffer
+
+@see DefaultFramebuffer::bind(), Framebuffer::bind()
+@requires_gl30 %Extension @extension{ARB,framebuffer_object}
+*/
 enum class FramebufferTarget: GLenum {
     /**
      * For reading only.
-     * @requires_gl30 %Extension @extension{EXT,framebuffer_blit}
      * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample},
      *      @es_extension{ANGLE,framebuffer_blit} or @es_extension{NV,framebuffer_blit}
      */
@@ -110,7 +112,6 @@ enum class FramebufferTarget: GLenum {
 
     /**
      * For drawing only.
-     * @requires_gl30 %Extension @extension{EXT,framebuffer_blit}
      * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample},
      *      @es_extension{ANGLE,framebuffer_blit} or @es_extension{NV,framebuffer_blit}
      */
@@ -163,7 +164,6 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * Framebuffer::mapForDraw() for specifying particular buffers for
          * blitting operation.
          * @see @fn_gl{BlitFramebuffer}
-         * @requires_gl30 %Extension @extension{EXT,framebuffer_blit}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
          *      @es_extension{NV,framebuffer_blit}
          */
@@ -182,7 +182,6 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @ref FramebufferBlitFilter "FramebufferBlitFilter::Nearest"
          * filtering is used by default.
          * @see @fn_gl{BlitFramebuffer}
-         * @requires_gl30 %Extension @extension{EXT,framebuffer_blit}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
          *      @es_extension{NV,framebuffer_blit}
          */
@@ -272,8 +271,10 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         FramebufferTarget MAGNUM_LOCAL bindInternal();
         void MAGNUM_LOCAL setViewportInternal();
 
+        #ifdef MAGNUM_TARGET_GLES2
         static MAGNUM_LOCAL FramebufferTarget readTarget;
         static MAGNUM_LOCAL FramebufferTarget drawTarget;
+        #endif
 
         typedef void(AbstractFramebuffer::*DrawBuffersImplementation)(GLsizei, const GLenum*);
         static MAGNUM_LOCAL DrawBuffersImplementation drawBuffersImplementation;

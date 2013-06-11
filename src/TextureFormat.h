@@ -823,7 +823,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * 24bit depth and 8bit stencil component.
-     * @requires_gl30 %Extension @extension{EXT,packed_depth_stencil}
+     * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
      * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil} and
      *      (@es_extension{OES,required_internalformat} or
      *      (@es_extension{EXT,texture_storage} and @es_extension{ANGLE,depth_texture}))

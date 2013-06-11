@@ -892,7 +892,7 @@ class MAGNUM_EXPORT Renderer {
             /**
              * The framebuffer object is not complete.
              * @see AbstractFramebuffer::checkStatus()
-             * @requires_gl30 %Extension @extension{EXT,framebuffer_object}
+             * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
              */
             InvalidFramebufferOperation = GL_INVALID_FRAMEBUFFER_OPERATION,
 

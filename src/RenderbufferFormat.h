@@ -36,6 +36,7 @@ namespace Magnum {
 @brief Internal renderbuffer format
 
 @see Renderbuffer
+@requires_gl30 %Extension @extension{ARB,framebuffer_object}
 @todo RGB, RGB8 ES only (ES3 + @es_extension{OES,rgb8_rgba8})
  */
 enum class RenderbufferFormat: GLenum {
@@ -481,7 +482,6 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * 24bit depth and 8bit stencil component.
-     * @requires_gl30 %Extension @extension{EXT,packed_depth_stencil}
      * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil}
      */
     #ifdef MAGNUM_TARGET_GLES2

@@ -253,7 +253,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @see setMinificationFilter(), @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl{GenerateMipmap} or
          *      @fn_gl_extension{GenerateTextureMipmap,EXT,direct_state_access}
-         * @requires_gl30 %Extension @extension{EXT,framebuffer_object}
+         * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
          */
         AbstractTexture* generateMipmap();
 

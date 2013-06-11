@@ -97,14 +97,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,texture_float),                   // done
         _extension(GL,ARB,depth_buffer_float),              // done
         _extension(GL,ARB,texture_rg),                      // done
-        /**
-         * @todo Remove as it doesn't have the same functionality present in
-         *      GL 3.0 and replace with ARB_framebuffer_object?
-         */
-        _extension(GL,EXT,framebuffer_object),
-        _extension(GL,EXT,packed_depth_stencil),            // done
-        _extension(GL,EXT,framebuffer_blit),                // done
-        _extension(GL,EXT,framebuffer_multisample),
+        _extension(GL,ARB,framebuffer_object),
         _extension(GL,EXT,gpu_shader4),
         _extension(GL,EXT,packed_float),                    // done
         _extension(GL,EXT,texture_array),

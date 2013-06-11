@@ -236,7 +236,7 @@ enum class ImageFormat: GLenum {
 
     /**
      * Depth and stencil.
-     * @requires_gl30 %Extension @extension{EXT,packed_depth_stencil}
+     * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
      * @requires_gles30 For texture data only, extension @es_extension{OES,packed_depth_stencil}.
      * @requires_es_extension For framebuffer reading only, extension
      *      @es_extension2{NV,read_depth_stencil,GL_NV_read_depth_stencil}.
@@ -446,7 +446,7 @@ enum class ImageType: GLenum {
 
     /**
      * Unsigned int, depth component 24bit, stencil index 8bit.
-     * @requires_gl30 %Extension @extension{EXT,packed_depth_stencil}
+     * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
      * @requires_gles30 For texture data only, extension @es_extension{OES,packed_depth_stencil}.
      */
     #ifndef MAGNUM_TARGET_GLES2

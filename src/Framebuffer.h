@@ -94,7 +94,7 @@ attachTexture2D(), attachCubeMapTexture() and attachTexture3D() use DSA
 to avoid unnecessary calls to @fn_gl{BindFramebuffer}. See their respective
 documentation for more information.
 
-@requires_gl30 %Extension @extension{EXT,framebuffer_object}
+@requires_gl30 %Extension @extension{ARB,framebuffer_object}
 */
 class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
     friend class Context;

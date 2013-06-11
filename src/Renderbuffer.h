@@ -49,7 +49,7 @@ If extension @extension{EXT,direct_state_access} is available, function
 setStorage() uses DSA to avoid unnecessary calls to @fn_gl{BindFramebuffer}.
 See its documentation for more information.
 
-@requires_gl30 %Extension @extension{EXT,framebuffer_object}
+@requires_gl30 %Extension @extension{ARB,framebuffer_object}
 */
 class MAGNUM_EXPORT Renderbuffer {
     friend class Context;
@@ -105,7 +105,6 @@ class MAGNUM_EXPORT Renderbuffer {
          * operation.
          * @see @fn_gl{BindRenderbuffer}, @fn_gl{RenderbufferStorage} or
          *      @fn_gl_extension{NamedRenderbufferStorage,EXT,direct_state_access}
-         * @requires_gl30 %Extension @extension{EXT,framebuffer_multisample}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_multisample}
          *      or @es_extension{NV,framebuffer_multisample}
          * @todo How about @es_extension{APPLE,framebuffer_multisample}?

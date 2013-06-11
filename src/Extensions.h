@@ -76,6 +76,7 @@ namespace GL {
         _extension(GL,ARB,texture_float,                GL210, GL300) // #41
         _extension(GL,ARB,depth_buffer_float,           GL210, GL300) // #43
         _extension(GL,ARB,draw_instanced,               GL210, GL310) // #44
+        _extension(GL,ARB,framebuffer_object,           GL210, GL300) // #45
         _extension(GL,ARB,geometry_shader4,             GL210, GL320) // #47
         _extension(GL,ARB,instanced_arrays,             GL210, GL330) // #49
         _extension(GL,ARB,map_buffer_range,             GL210, GL300) // #50
@@ -154,10 +155,8 @@ namespace GL {
         _extension(GL,ARB,texture_storage_multisample,  GL210, GL430) // #141
     } namespace EXT {
         _extension(GL,EXT,texture_filter_anisotropic,   GL210,  None) // #187
-        _extension(GL,EXT,framebuffer_object,           GL210, GL300) // #310
-        _extension(GL,EXT,packed_depth_stencil,         GL210, GL300) // #312
-        _extension(GL,EXT,framebuffer_blit,             GL210, GL300) // #316
-        _extension(GL,EXT,framebuffer_multisample,      GL210, GL300) // #317
+        /* EXT_framebuffer_object, EXT_packed_depth_stencil, EXT_framebuffer_blit,
+           EXT_framebuffer_multisample replaced with ARB_framebuffer_object */
         _extension(GL,EXT,gpu_shader4,                  GL210, GL300) // #326
         _extension(GL,EXT,packed_float,                 GL210, GL300) // #328
         _extension(GL,EXT,texture_array,                GL210, GL300) // #329
