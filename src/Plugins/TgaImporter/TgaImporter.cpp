@@ -27,7 +27,6 @@
 #include <fstream>
 #include <sstream>
 #include <Utility/Endianness.h>
-#include <Math/Vector2.h>
 #include <ImageFormat.h>
 #include <Trade/ImageData.h>
 
