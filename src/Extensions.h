@@ -205,7 +205,7 @@ namespace GL {
         _extension(GL,EXT,separate_shader_objects,  GLES200,    None) // #101
         _extension(GL,EXT,texture_rg,               GLES200, GLES300) // #103
         _extension(GL,EXT,sRGB,                     GLES200,    None) // #105
-        _extension(GL,EXT,robustness,               GLES200,    None) // #105
+        _extension(GL,EXT,robustness,               GLES200,    None) // #107
         _extension(GL,EXT,texture_storage,          GLES200, GLES300) // #108
         _extension(GL,EXT,map_buffer_range,         GLES200, GLES300) // #121
         _extension(GL,EXT,disjoint_timer_query,     GLES200,    None) // #150
@@ -239,7 +239,7 @@ namespace GL {
         _extension(GL,OES,depth_texture,            GLES200, GLES300) // #44
         _extension(GL,OES,standard_derivatives,     GLES200, GLES300) // #45
         _extension(GL,OES,vertex_array_object,      GLES200, GLES300) // #71
-        _extension(GL,OES,required_internalformat,  GLES200, GLES300) // #?
+        _extension(GL,OES,required_internalformat,  GLES200, GLES300) // #115
     }
     #endif
 }
