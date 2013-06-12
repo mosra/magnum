@@ -31,19 +31,17 @@
 
 namespace Magnum { namespace Text {
 
-namespace {
-    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
-    const TextureFormat internalFormat = TextureFormat::R8;
-    #else
-    const TextureFormat internalFormat = TextureFormat::Red;
-    #endif
-}
-
 GlyphCache::GlyphCache(const Vector2i& size): _size(size) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);
+    #endif
+
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
+    const TextureFormat internalFormat = TextureFormat::R8;
     #else
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::EXT::texture_rg);
+    const TextureFormat internalFormat =
+        Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>() ?
+        TextureFormat::Red : TextureFormat::Luminance;
     #endif
 
     initialize(internalFormat, size);
@@ -59,12 +57,6 @@ GlyphCache::~GlyphCache() = default;
 
 /** @todo Delegating constructor when support for GCC 4.6 is dropped */
 void GlyphCache::initialize(const TextureFormat internalFormat, const Vector2i& size) {
-    #ifndef MAGNUM_TARGET_GLES
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_storage);
-    #else
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::EXT::texture_storage);
-    #endif
-
     _texture.setWrapping(Sampler::Wrapping::ClampToEdge)
         ->setMinificationFilter(Sampler::Filter::Linear)
         ->setMagnificationFilter(Sampler::Filter::Linear)

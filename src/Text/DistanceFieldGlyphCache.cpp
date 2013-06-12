@@ -26,30 +26,54 @@
 
 #include "Extensions.h"
 #include "Image.h"
+#ifndef CORRADE_NO_ASSERT
+#include "ImageFormat.h"
+#endif
 #include "TextureFormat.h"
 #include "TextureTools/DistanceField.h"
 
 namespace Magnum { namespace Text {
 
-namespace {
-    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
-    const TextureFormat internalFormat = TextureFormat::R8;
-    #else
-    const TextureFormat internalFormat = TextureFormat::Red;
-    #endif
-}
-
 DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, const Vector2i& distanceFieldSize, UnsignedInt radius): GlyphCache(originalSize, Vector2i(radius)), scale(Vector2(distanceFieldSize)/originalSize), radius(radius) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);
+    #endif
+
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
+    const TextureFormat internalFormat = TextureFormat::R8;
     #else
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::EXT::texture_rg);
+    const TextureFormat internalFormat =
+        Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>() ?
+        TextureFormat::Red : TextureFormat::RGB;
+    if(internalFormat == TextureFormat::RGB)
+        Warning() << "Text::DistanceFieldGlyphCache:" << Extensions::GL::EXT::texture_rg::string() << "not supported, using inefficient RGB format for glyph cache texture";
     #endif
 
     initialize(internalFormat, distanceFieldSize);
 }
 
 void DistanceFieldGlyphCache::setImage(const Vector2i& offset, Image2D* const image) {
+    #ifndef MAGNUM_TARGET_GLES
+    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);
+    #endif
+
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
+    const TextureFormat internalFormat = TextureFormat::R8;
+    CORRADE_ASSERT(image->format() == ImageFormat::Red,
+        "Text::DistanceFieldGlyphCache::setImage(): expected" << ImageFormat::Red << "but got" << image->format(), );
+    #else
+    TextureFormat internalFormat;
+    if(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>()) {
+        internalFormat = TextureFormat::Red;
+        CORRADE_ASSERT(image->format() == ImageFormat::Red,
+            "Text::DistanceFieldGlyphCache::setImage(): expected" << ImageFormat::Red << "but got" << image->format(), );
+    } else {
+        internalFormat = TextureFormat::Luminance;
+        CORRADE_ASSERT(image->format() == ImageFormat::Luminance,
+            "Text::DistanceFieldGlyphCache::setImage(): expected" << ImageFormat::Luminance << "but got" << image->format(), );
+    }
+    #endif
+
     Texture2D input;
     input.setWrapping(Sampler::Wrapping::ClampToEdge)
         ->setMinificationFilter(Sampler::Filter::Linear)
