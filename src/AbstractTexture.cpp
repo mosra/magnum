@@ -717,13 +717,16 @@ void AbstractTexture::storageImplementationFallback(const GLenum target, const G
     } else if(target == GL_TEXTURE_CUBE_MAP) {
         Vector2i levelSize = size;
         for(GLsizei level = 0; level != levels; ++level) {
-            for(GLenum face: {GL_TEXTURE_CUBE_MAP_POSITIVE_X,
-                              GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-                              GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
-                              GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-                              GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-                              GL_TEXTURE_CUBE_MAP_NEGATIVE_Z})
-                (this->*image2DImplementation)(face, level, internalFormat, levelSize, format, type, nullptr);
+            const std::initializer_list<GLenum> faces = {
+                GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+                GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+                GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+                GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+                GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+                GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+            };
+            for(auto it = faces.begin(); it != faces.end(); ++it)
+                (this->*image2DImplementation)(*it, level, internalFormat, levelSize, format, type, nullptr);
             levelSize = Math::max(Vector2i(1), levelSize/2);
         }
 
