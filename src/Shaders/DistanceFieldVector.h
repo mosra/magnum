@@ -81,12 +81,12 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @return Pointer to self (for method chaining)
          *
          * Parameter @p start describes where fill ends and possible outline
-         * starts. Initial value is `0.5f`, smaller values will make the vector
-         * art look thinner, larger will make it look thicker.
+         * starts. Initial value is `0.5f`, larger values will make the vector
+         * art look thinner, smaller will make it look thicker.
          *
          * Parameter @p end describes where outline ends. If set to value
-         * smaller than @p start the outline is not drawn. Initial value is
-         * `0.0f`.
+         * larger than @p start the outline is not drawn. Initial value is
+         * `1.0f`.
          *
          * @see setOutlineColor()
          */

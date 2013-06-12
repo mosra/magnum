@@ -56,9 +56,9 @@ foundation for features like outlining, glow or drop shadow essentialy for free.
 For each pixel inside @p rectangle the algorithm looks at corresponding pixel in
 @p input and tries to find nearest pixel of opposite color in area given by
 @p radius. Signed distance between the points is then saved as value of given
-pixel in @p output. Value of `0` means that the pixel was originally colored
-white and nearest black pixel is farther than @p radius, value of `1` means that
-the pixel was originally black and nearest white pixel is farther than
+pixel in @p output. Value of `1.0` means that the pixel was originally colored
+white and nearest black pixel is farther than @p radius, value of `0.0` means
+that the pixel was originally black and nearest white pixel is farther than
 @p radius. Values around `0.5` are around edges.
 
 The resulting texture can be used with bilinear filtering. It can be converted
