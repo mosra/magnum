@@ -133,7 +133,7 @@ ImageData2D* TgaImporter::image2D(UnsignedInt id) {
 
     /* Compressed files */
     } else {
-        Error() << "Trade::TgaImporter::TgaImporter::image2D(): compressed files are not supported";
+        Error() << "Trade::TgaImporter::TgaImporter::image2D(): unsupported (compressed?) image type:" << header.imageType;
         return nullptr;
     }
 

@@ -108,7 +108,7 @@ void TgaImporterTest::compressed() {
     std::ostringstream debug;
     Error::setOutput(&debug);
     CORRADE_VERIFY(!importer.image2D(0));
-    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::TgaImporter::image2D(): compressed files are not supported\n");
+    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::TgaImporter::image2D(): unsupported (compressed?) image type: 9\n");
 }
 
 void TgaImporterTest::colorBits16() {
