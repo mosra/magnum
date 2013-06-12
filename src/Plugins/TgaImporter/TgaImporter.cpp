@@ -26,12 +26,15 @@
 
 #include <fstream>
 #include <sstream>
-#include <algorithm>
 #include <Utility/Endianness.h>
 #include <Math/Vector2.h>
 #include <ImageFormat.h>
-#include <Swizzle.h>
 #include <Trade/ImageData.h>
+
+#ifdef MAGNUM_TARGET_GLES
+#include <algorithm>
+#include <Swizzle.h>
+#endif
 
 #include "TgaHeader.h"
 
