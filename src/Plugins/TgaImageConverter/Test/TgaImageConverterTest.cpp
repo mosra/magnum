@@ -48,7 +48,12 @@ class TgaImageConverterTest: public TestSuite::Tester {
 };
 
 namespace {
-    const Image2D original({2, 3}, ImageFormat::BGR, ImageType::UnsignedByte, new char[18] {
+    #ifndef MAGNUM_TARGET_GLES
+    const Image2D original({2, 3}, ImageFormat::BGR, ImageType::UnsignedByte, new char[18]
+    #else
+    const Image2D original({2, 3}, ImageFormat::RGB, ImageType::UnsignedByte, new char[18]
+    #endif
+    {
         1, 2, 3, 2, 3, 4,
         3, 4, 5, 4, 5, 6,
         5, 6, 7, 6, 7, 8
@@ -98,7 +103,11 @@ void TgaImageConverterTest::data() {
     CORRADE_VERIFY(converted);
 
     CORRADE_COMPARE(converted->size(), Vector2i(2, 3));
+    #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(converted->format(), ImageFormat::BGR);
+    #else
+    CORRADE_COMPARE(converted->format(), ImageFormat::RGB);
+    #endif
     CORRADE_COMPARE(converted->type(), ImageType::UnsignedByte);
     CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(converted->data()), 2*3*3),
                     std::string(reinterpret_cast<const char*>(original.data()), 2*3*3));
@@ -115,7 +124,11 @@ void TgaImageConverterTest::file() {
     CORRADE_VERIFY(converted);
 
     CORRADE_COMPARE(converted->size(), Vector2i(2, 3));
+    #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(converted->format(), ImageFormat::BGR);
+    #else
+    CORRADE_COMPARE(converted->format(), ImageFormat::RGB);
+    #endif
     CORRADE_COMPARE(converted->type(), ImageType::UnsignedByte);
     CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(converted->data()), 2*3*3),
                     std::string(reinterpret_cast<const char*>(original.data()), 2*3*3));

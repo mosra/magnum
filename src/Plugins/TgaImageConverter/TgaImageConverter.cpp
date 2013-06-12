@@ -29,6 +29,11 @@
 #include <Image.h>
 #include <ImageFormat.h>
 
+#ifdef MAGNUM_TARGET_GLES
+#include <algorithm>
+#include <Swizzle.h>
+#endif
+
 #include "TgaImporter/TgaHeader.h"
 
 namespace Magnum { namespace Trade { namespace TgaImageConverter {
@@ -42,9 +47,16 @@ TgaImageConverter::Features TgaImageConverter::features() const {
 }
 
 std::pair<const unsigned char*, std::size_t> TgaImageConverter::convertToData(const Image2D* const image) const {
+    #ifndef MAGNUM_TARGET_GLES
     if(image->format() != ImageFormat::BGR &&
        image->format() != ImageFormat::BGRA &&
-       image->format() != ImageFormat::Red) {
+       image->format() != ImageFormat::Red)
+    #else
+    if(image->format() != ImageFormat::RGB &&
+       image->format() != ImageFormat::RGBA &&
+       image->format() != ImageFormat::Red)
+    #endif
+    {
         Error() << "Trade::TgaImageConverter::TgaImageConverter::convertToData(): unsupported image format" << image->format();
         return {nullptr, 0};
     }
@@ -68,6 +80,18 @@ std::pair<const unsigned char*, std::size_t> TgaImageConverter::convertToData(co
 
     /* Fill data */
     std::copy(image->data(), image->data()+pixelSize*image->size().product(), data+sizeof(TgaImporter::TgaHeader));
+
+    #ifdef MAGNUM_TARGET_GLES
+    if(image->format() == ImageFormat::RGB) {
+        auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data+sizeof(TgaImporter::TgaHeader));
+        std::transform(pixels, pixels + image->size().product(), pixels,
+            [](Math::Vector3<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r'>(pixel); });
+    } else if(image->format() == ImageFormat::RGBA) {
+        auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data+sizeof(TgaImporter::TgaHeader));
+        std::transform(pixels, pixels + image->size().product(), pixels,
+            [](Math::Vector4<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r', 'a'>(pixel); });
+    }
+    #endif
 
     return {data, size};
 }
