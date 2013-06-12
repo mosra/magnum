@@ -200,6 +200,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *      Framebuffer::mapForRead(), DefaultFramebuffer::mapForDraw(),
          *      Framebuffer::mapForDraw(), @fn_gl{BindFramebuffer},
          *      @fn_gl{Viewport}
+         * @todo Bind internally to ReadDraw if separate binding points are not
+         *      supported
          */
         void bind(FramebufferTarget target);
 

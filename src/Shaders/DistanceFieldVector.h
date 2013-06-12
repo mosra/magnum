@@ -43,6 +43,9 @@ Renders vector art in form of signed distance field. See TextureTools::distanceF
 for more information. Note that the final rendered outlook will greatly depend
 on radius of input distance field and value passed to setSmoothness().
 @see DistanceFieldVector2D, DistanceFieldVector3D
+@todo Use fragment shader derivations to have proper smoothness in perspective/
+    large zoom levels, make it optional as it might have negative performance
+    impact
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector: public AbstractVector<dimensions> {
     public:

@@ -55,6 +55,7 @@ font->createGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
 @endcode
 
 See TextRenderer for information about text rendering.
+@todo Some way for Font to negotiate or check internal texture format
 */
 class MAGNUM_TEXT_EXPORT GlyphCache {
     public:

@@ -80,6 +80,9 @@ http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnifica
     inefficient supported format is in most cases @ref TextureFormat "TextureFormat::RGB",
     rendering to @ref TextureFormat "TextureFormat::Luminance" is not supported
     in most cases.
+
+@bug ES (and maybe GL < 3.20) implementation behaves slightly different
+    (jaggies, visible e.g. when rendering outlined fonts)
 */
 #ifndef MAGNUM_TARGET_GLES
 void MAGNUM_TEXTURETOOLS_EXPORT distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectangle, Int radius, const Vector2i& imageSize = Vector2i());
