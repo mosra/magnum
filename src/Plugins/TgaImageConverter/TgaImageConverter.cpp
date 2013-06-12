@@ -26,6 +26,7 @@
 
 #include <fstream>
 #include <tuple>
+#include <Utility/Endianness.h>
 #include <Image.h>
 #include <ImageFormat.h>
 
@@ -75,8 +76,8 @@ std::pair<const unsigned char*, std::size_t> TgaImageConverter::convertToData(co
     auto header = reinterpret_cast<TgaImporter::TgaHeader*>(data);
     header->imageType = image->format() == ImageFormat::Red ? 3 : 2;
     header->bpp = pixelSize*8;
-    header->width = image->size().x();
-    header->height = image->size().y();
+    header->width = Utility::Endianness::littleEndian(image->size().x());
+    header->height = Utility::Endianness::littleEndian(image->size().y());
 
     /* Fill data */
     std::copy(image->data(), image->data()+pixelSize*image->size().product(), data+sizeof(TgaImporter::TgaHeader));
