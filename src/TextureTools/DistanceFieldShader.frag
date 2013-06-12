@@ -22,40 +22,90 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef NEW_GLSL
+#define in varying
+#define value gl_FragColor.x
+#define const
+#define texture texture2D
+#endif
+
+#if (defined(GL_ES) && __VERSION__ >= 300) || (!defined(GL_ES) && __VERSION__ >= 150)
+#define TEXELFETCH_USABLE
+#endif
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0) uniform int radius;
 layout(location = 1) uniform vec2 scaling;
-layout(binding = 8) uniform sampler2D texture;
+layout(binding = 8) uniform sampler2D textureData;
+#else
+uniform lowp int radius;
+uniform mediump vec2 scaling;
+uniform lowp sampler2D textureData;
+#endif
 
-layout(pixel_center_integer) in vec4 gl_FragCoord;
+#ifdef TEXELFETCH_USABLE
+layout(pixel_center_integer) in mediump vec4 gl_FragCoord;
+#else
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 2) uniform vec2 imageSizeInverted;
+#else
+uniform mediump vec2 imageSizeInverted;
+#endif
+#endif
 
-out float value;
+#ifdef NEW_GLSL
+out lowp float value;
+#endif
 
-ivec2 rotate(const ivec2 vec) {
-    return ivec2(-vec.y, vec.x);
+#ifdef TEXELFETCH_USABLE
+mediump ivec2 rotate(const mediump ivec2 vec) {
+    return mediump ivec2(-vec.y, vec.x);
 }
 
-bool hasValue(const ivec2 position, const ivec2 offset) {
-    return texelFetch(texture, position+offset, 0).r > 0.5;
+bool hasValue(const mediump ivec2 position, const mediump ivec2 offset) {
+    return texelFetch(textureData, position+offset, 0).r > 0.5;
 }
+#else
+mediump vec2 rotate(const mediump vec2 vec) {
+    return mediump vec2(-vec.y, vec.x);
+}
+
+bool hasValue(const mediump vec2 position, const mediump vec2 offset) {
+    return texture(textureData, position+offset).r > 0.5;
+}
+#endif
 
 void main() {
-    const ivec2 position = ivec2(gl_FragCoord.xy*scaling);
+    #ifdef TEXELFETCH_USABLE
+    const mediump ivec2 position = ivec2(gl_FragCoord.xy*scaling);
+    #else
+    const mediump vec2 position = gl_FragCoord.xy*scaling*imageSizeInverted;
+    #endif
 
     /* If pixel at the position is inside (1), we are looking for nearest pixel
        outside and the value will be positive (> 0.5). If it is outside (0), we
        are looking for nearest pixel inside and the value will be negative
        (< 0.5). */
+    #ifdef TEXELFETCH_USABLE
     const bool isInside = hasValue(position, ivec2(0, 0));
-    const float sign = isInside ? 1.0 : -1.0;
+    #else
+    const bool isInside = hasValue(position, vec2(0.0, 0.0));
+    #endif
+    const highp float sign = isInside ? 1.0 : -1.0;
 
     /* Minimal found distance is just out of the radius (i.e. infinity) */
-    float minDistanceSquared = float((radius+1)*(radius+1));
+    highp float minDistanceSquared = float((radius+1)*(radius+1));
 
     /* Go in circles around the point and find nearest value */
     int radiusLimit = radius;
     for(int i = 1; i <= radiusLimit; ++i) {
         for(int j = 0, jmax = i*2; j != jmax; ++j) {
-            const ivec2 offset = {-i+j, i};
+            #ifdef TEXELFETCH_USABLE
+            const lowp ivec2 offset = ivec2(-i+j, i);
+            #else
+            const lowp vec2 pixelOffset = vec2(float(-i+j), float(i));
+            const lowp vec2 offset = pixelOffset*imageSizeInverted;
+            #endif
 
             /* If any of the four values is opposite of what is on the pixel,
                we found nearest value */
@@ -63,7 +113,11 @@ void main() {
                hasValue(position, rotate(offset)) == !isInside ||
                hasValue(position, rotate(rotate(offset))) == !isInside ||
                hasValue(position, rotate(rotate(rotate(offset)))) == !isInside) {
-                const float distanceSquared = dot(vec2(offset), vec2(offset));
+                #ifdef TEXELFETCH_USABLE
+                const mediump float distanceSquared = dot(vec2(offset), vec2(offset));
+                #else
+                const mediump float distanceSquared = dot(pixelOffset, pixelOffset);
+                #endif
 
                 /* Set smaller distance, if found, or continue with lookup for
                    smaller */
@@ -73,7 +127,11 @@ void main() {
                 /* Set radius limit to max radius which can contain smaller
                    value, e.g. for distance 3.5 we can find smaller value even
                    in radius 3 */
+                #ifdef NEW_GLSL
                 radiusLimit = min(radius, int(floor(length(vec2(offset)))));
+                #else
+                radiusLimit = int(min(float(radius), floor(length(vec2(offset)))));
+                #endif
             }
         }
     }

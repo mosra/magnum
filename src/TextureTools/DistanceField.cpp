@@ -39,6 +39,8 @@ namespace {
 
 class DistanceFieldShader: public AbstractShaderProgram {
     public:
+        typedef Attribute<0, Vector2> Position;
+
         enum: Int {
             TextureLayer = 8
         };
@@ -50,62 +52,148 @@ class DistanceFieldShader: public AbstractShaderProgram {
             return this;
         }
 
-        DistanceFieldShader* setScaling(Vector2 scaling) {
+        DistanceFieldShader* setScaling(const Vector2& scaling) {
             setUniform(scalingUniform, scaling);
             return this;
         }
 
+        DistanceFieldShader* setImageSizeInverted(const Vector2& size) {
+            setUniform(imageSizeInvertedUniform, size);
+            return this;
+        }
+
     private:
-        static const Int radiusUniform = 0,
-            scalingUniform = 1;
+        Int radiusUniform,
+            scalingUniform,
+            imageSizeInvertedUniform;
 };
 
-DistanceFieldShader::DistanceFieldShader() {
-    MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::explicit_attrib_location);
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::explicit_uniform_location);
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::shading_language_420pack);
-
-    /** @todo compatibility! */
-
+DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) {
     Utility::Resource rs("MagnumTextureTools");
 
-    Shader vert(Version::GL330, Shader::Type::Vertex);
-    vert.addSource(rs.get("DistanceFieldShader.vert"));
+    #ifndef MAGNUM_TARGET_GLES
+    const Version v = Context::current()->supportedVersion({Version::GL320, Version::GL300, Version::GL210});
+    #else
+    const Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
+    #endif
+
+    Shader vert(v, Shader::Type::Vertex);
+    vert.addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("DistanceFieldShader.vert"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     attachShader(vert);
 
-    Shader frag(Version::GL330, Shader::Type::Fragment);
+    Shader frag(v, Shader::Type::Fragment);
     frag.addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get("DistanceFieldShader.frag"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
     attachShader(frag);
 
+    /* Older GLSL doesn't have gl_VertexID, vertices must be supplied explicitly */
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isVersionSupported(Version::GL300))
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES300))
+    #endif
+    {
+        bindAttributeLocation(Position::Location, "position");
+    }
+
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
+    #endif
+    {
+        radiusUniform = uniformLocation("radius");
+        scalingUniform = uniformLocation("scaling");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!Context::current()->isVersionSupported(Version::GL300))
+        #else
+        if(!Context::current()->isVersionSupported(Version::GLES300))
+        #endif
+        {
+            imageSizeInvertedUniform = uniformLocation("imageSizeInverted");
+        }
+    }
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>())
+    #endif
+    {
+        setUniform(uniformLocation("textureData"), TextureLayer);
+    }
 }
 
 }
-
-void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectangle, const Int radius) {
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::EXT::framebuffer_object);
+#ifndef MAGNUM_TARGET_GLES
+void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectangle, const Int radius, const Vector2i&)
+#else
+void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectangle, const Int radius, const Vector2i& imageSize)
+#endif
+{
+    #ifndef MAGNUM_TARGET_GLES
+    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::framebuffer_object);
+    #endif
 
     /** @todo Disable depth test, blending and then enable it back (if was previously) */
+
+    #ifndef MAGNUM_TARGET_GLES
+    Vector2i imageSize = input->imageSize(0);
+    #endif
 
     Framebuffer framebuffer(rectangle);
     framebuffer.attachTexture2D(Framebuffer::ColorAttachment(0), output, 0);
     framebuffer.bind(FramebufferTarget::Draw);
+    framebuffer.clear(FramebufferClear::Color);
+
+    const Framebuffer::Status status = framebuffer.checkStatus(FramebufferTarget::Draw);
+    if(status != Framebuffer::Status::Complete) {
+        Error() << "TextureTools::distanceField(): cannot render to given output texture, unexpected framebuffer status"
+                << status;
+        return;
+    }
 
     DistanceFieldShader shader;
     shader.setRadius(radius)
-        ->setScaling(Vector2(input->imageSize(0))/rectangle.size())
+        ->setScaling(Vector2(imageSize)/rectangle.size())
         ->use();
 
     input->bind(DistanceFieldShader::TextureLayer);
 
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isVersionSupported(Version::GL300))
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES300))
+    #endif
+    {
+        shader.setImageSizeInverted(Vector2(1)/imageSize);
+    }
+
     Mesh mesh;
     mesh.setPrimitive(Mesh::Primitive::Triangles)
-        ->setVertexCount(3)
-        ->draw();
+        ->setVertexCount(3);
+
+    /* Older GLSL doesn't have gl_VertexID, vertices must be supplied explicitly */
+    Buffer buffer;
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isVersionSupported(Version::GL300))
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES300))
+    #endif
+    {
+        constexpr Vector2 triangle[] = {
+            Vector2(-1.0,  1.0),
+            Vector2(-1.0, -3.0),
+            Vector2( 3.0,  1.0)
+        };
+        buffer.setData(triangle, Buffer::Usage::StaticDraw);
+        mesh.addVertexBuffer(&buffer, 0, DistanceFieldShader::Position());
+    }
+
+    /* Draw the mesh */
+    mesh.draw();
 }
 
 }}

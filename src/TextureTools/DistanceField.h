@@ -28,6 +28,9 @@
  * @brief Function Magnum::TextureTools::distanceField()
  */
 
+#ifndef MAGNUM_TARGET_GLES
+#include "Math/Vector2.h"
+#endif
 #include "Magnum.h"
 
 #include "TextureTools/magnumTextureToolsVisibility.h"
@@ -40,6 +43,8 @@ namespace Magnum { namespace TextureTools {
 @param output       Output texture
 @param rectangle    Rectangle in output texture where to render
 @param radius       Max lookup radius in input texture
+@param imageSize    Input texture size. Needed only in OpenGL ES, in desktop
+    OpenGL the information is gathered automatically using Texture::imageSize().
 
 Converts binary image (stored in red channel of @p input) to signed distance
 field (stored in red channel in @p rectangle of @p output). The purpose of this
@@ -66,8 +71,21 @@ and Special Effects, SIGGRAPH 2007,
 http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnification.pdf*
 
 @attention This is GPU-only implementation, so it expects active context.
+
+@note If internal format of @p output texture is not renderable, this function
+    prints message to error output and does nothing. In desktop OpenGL and
+    OpenGL ES 3.0 it's common to render to @ref TextureFormat "TextureFormat::R8".
+    In OpenGL ES 2.0 you can use @ref TextureFormat "TextureFormat::Red" if
+    @es_extension{EXT,texture_rg} is available, if not, the smallest but still
+    inefficient supported format is in most cases @ref TextureFormat "TextureFormat::RGB",
+    rendering to @ref TextureFormat "TextureFormat::Luminance" is not supported
+    in most cases.
 */
-void MAGNUM_TEXTURETOOLS_EXPORT distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectangle, Int radius);
+#ifndef MAGNUM_TARGET_GLES
+void MAGNUM_TEXTURETOOLS_EXPORT distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectangle, Int radius, const Vector2i& imageSize = Vector2i());
+#else
+void MAGNUM_TEXTURETOOLS_EXPORT distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectangle, Int radius, const Vector2i& imageSize);
+#endif
 
 }}
 

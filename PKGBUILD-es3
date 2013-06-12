@@ -27,7 +27,6 @@ build() {
         -DTARGET_GLES=ON \
         -DTARGET_GLES2=OFF \
         -DWITH_TEXT=OFF \
-        -DWITH_TEXTURETOOLS=OFF \
         -DWITH_MAGNUMINFO=OFF \
         -DWITH_XEGLAPPLICATION=ON
     make
