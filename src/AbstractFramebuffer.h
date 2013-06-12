@@ -190,7 +190,6 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         }
 
         explicit AbstractFramebuffer() = default;
-        virtual ~AbstractFramebuffer() = 0;
 
         /**
          * @brief Bind framebuffer for rendering
@@ -269,6 +268,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
     #else
     protected:
     #endif
+        ~AbstractFramebuffer() = default;
+
         void MAGNUM_LOCAL bindInternal(FramebufferTarget target);
         FramebufferTarget MAGNUM_LOCAL bindInternal();
         void MAGNUM_LOCAL setViewportInternal();

@@ -47,8 +47,6 @@ FramebufferTarget AbstractFramebuffer::readTarget = FramebufferTarget::ReadDraw;
 FramebufferTarget AbstractFramebuffer::drawTarget = FramebufferTarget::ReadDraw;
 #endif
 
-AbstractFramebuffer::~AbstractFramebuffer() {}
-
 void AbstractFramebuffer::bind(FramebufferTarget target) {
     bindInternal(target);
     setViewportInternal();
