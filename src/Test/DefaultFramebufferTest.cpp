@@ -22,23 +22,31 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @page unsupported Unsupported OpenGL features
+#include <sstream>
+#include <TestSuite/Tester.h>
 
-Some functionality, which is either soon-to-be deprecated or isn't proven to
-add any performance gains, is not supported in %Magnum.
+#include "DefaultFramebuffer.h"
 
-@section unsupported-features Unsupported features
+namespace Magnum { namespace Test {
 
-- Fixed precision data types (OpenGL ES) are not supported, as they occupy the
-  same memory as floats and they aren't faster than floats on current hardware
-  anymore.
+class DefaultFramebufferTest: public TestSuite::Tester {
+    public:
+        explicit DefaultFramebufferTest();
 
-@section unsupported-extensions Unsupported extensions
+        void debugStatus();
+};
 
-- @extension{INTEL,map_texture} negatively affects texture access performance.
-  Combination of buffer mapping and pixel buffers might be of the same or
-  better performance, without affecting texture access speed.
-- @extension{NV,draw_texture} can be done with framebuffer blitting and
-  doesn't make any full-screen postprocessing easier, as shaders are excluded.
+DefaultFramebufferTest::DefaultFramebufferTest() {
+    addTests({&DefaultFramebufferTest::debugStatus});
+}
 
-*/
+void DefaultFramebufferTest::debugStatus() {
+    std::ostringstream out;
+
+    Debug(&out) << DefaultFramebuffer::Status::Undefined;
+    CORRADE_COMPARE(out.str(), "DefaultFramebuffer::Status::Undefined\n");
+}
+
+}}
+
+CORRADE_TEST_MAIN(Magnum::Test::DefaultFramebufferTest)

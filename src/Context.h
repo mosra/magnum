@@ -382,8 +382,8 @@ class MAGNUM_EXPORT Context {
 Useful for initial checks on availability of required features.
 
 By default, if assertion fails, an message is printed to error output and the
-application exits with value `-3`. If `CORRADE_NO_ASSERT` is defined, this
-macro does nothing. Example usage:
+application aborts. If `CORRADE_NO_ASSERT` is defined, this macro does nothing.
+Example usage:
 @code
 MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
 @endcode
@@ -399,7 +399,7 @@ MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
     do {                                                                    \
         if(!Magnum::Context::current()->isVersionSupported(version)) {      \
             Corrade::Utility::Error() << "Magnum: required version" << version << "is not supported"; \
-            std::exit(-3);                                                  \
+            std::abort();                                                   \
         }                                                                   \
     } while(0)
 #endif
@@ -412,8 +412,8 @@ MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
 Useful for initial checks on availability of required features.
 
 By default, if assertion fails, an message is printed to error output and the
-application exits with value `-3`. If `CORRADE_NO_ASSERT` is defined, this
-macro does nothing. Example usage:
+application aborts. If `CORRADE_NO_ASSERT` is defined, this macro does nothing.
+Example usage:
 @code
 MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
 @endcode
@@ -429,7 +429,7 @@ MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
     do {                                                                    \
         if(!Magnum::Context::current()->isExtensionSupported<extension>()) { \
             Corrade::Utility::Error() << "Magnum: required extension" << extension::string() << "is not supported"; \
-            std::exit(-3);                                                  \
+            std::abort();                                                   \
         }                                                                   \
     } while(0)
 #endif

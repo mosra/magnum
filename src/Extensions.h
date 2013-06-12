@@ -76,6 +76,7 @@ namespace GL {
         _extension(GL,ARB,texture_float,                GL210, GL300) // #41
         _extension(GL,ARB,depth_buffer_float,           GL210, GL300) // #43
         _extension(GL,ARB,draw_instanced,               GL210, GL310) // #44
+        _extension(GL,ARB,framebuffer_object,           GL210, GL300) // #45
         _extension(GL,ARB,geometry_shader4,             GL210, GL320) // #47
         _extension(GL,ARB,instanced_arrays,             GL210, GL330) // #49
         _extension(GL,ARB,map_buffer_range,             GL210, GL300) // #50
@@ -154,10 +155,8 @@ namespace GL {
         _extension(GL,ARB,texture_storage_multisample,  GL210, GL430) // #141
     } namespace EXT {
         _extension(GL,EXT,texture_filter_anisotropic,   GL210,  None) // #187
-        _extension(GL,EXT,framebuffer_object,           GL210, GL300) // #310
-        _extension(GL,EXT,packed_depth_stencil,         GL210, GL300) // #312
-        _extension(GL,EXT,framebuffer_blit,             GL210, GL300) // #316
-        _extension(GL,EXT,framebuffer_multisample,      GL210, GL300) // #317
+        /* EXT_framebuffer_object, EXT_packed_depth_stencil, EXT_framebuffer_blit,
+           EXT_framebuffer_multisample replaced with ARB_framebuffer_object */
         _extension(GL,EXT,gpu_shader4,                  GL210, GL300) // #326
         _extension(GL,EXT,packed_float,                 GL210, GL300) // #328
         _extension(GL,EXT,texture_array,                GL210, GL300) // #329
@@ -206,10 +205,13 @@ namespace GL {
         _extension(GL,EXT,separate_shader_objects,  GLES200,    None) // #101
         _extension(GL,EXT,texture_rg,               GLES200, GLES300) // #103
         _extension(GL,EXT,sRGB,                     GLES200,    None) // #105
-        _extension(GL,EXT,robustness,               GLES200,    None) // #105
+        _extension(GL,EXT,multisampled_render_to_texture, GLES200, None) // #106
+        _extension(GL,EXT,robustness,               GLES200,    None) // #107
         _extension(GL,EXT,texture_storage,          GLES200, GLES300) // #108
         _extension(GL,EXT,map_buffer_range,         GLES200, GLES300) // #121
         _extension(GL,EXT,disjoint_timer_query,     GLES200,    None) // #150
+    } namespace KHR {
+        _extension(GL,KHR,debug,                    GLES200,    None) // #118
     } namespace NV {
         _extension(GL,NV,draw_buffers,              GLES200, GLES300) // #91
         _extension(GL,NV,read_buffer,               GLES200, GLES300) // #93
@@ -238,7 +240,8 @@ namespace GL {
         _extension(GL,OES,depth_texture,            GLES200, GLES300) // #44
         _extension(GL,OES,standard_derivatives,     GLES200, GLES300) // #45
         _extension(GL,OES,vertex_array_object,      GLES200, GLES300) // #71
-        _extension(GL,OES,required_internalformat,  GLES200, GLES300) // #?
+        _extension(GL,OES,required_internalformat,  GLES200, GLES300) // #115
+        _extension(GL,OES,surfaceless_context,      GLES200, GLES300) // #116
     }
     #endif
 }

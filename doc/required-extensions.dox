@@ -48,12 +48,10 @@ supported on Intel GPUs even if they are capable of OpenGL 2.1 only).
 - @subpage requires-gl43
 - @subpage requires-extension
 - @subpage requires-gl
+- @subpage requires-gles20
 - @subpage requires-gles30
 - @subpage requires-es-extension
 - @subpage unsupported
-
-@page requires-gl Functionality requiring desktop OpenGL (not available on OpenGL ES)
-@see @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES"
 
 @page requires-gl30 Functionality requiring OpenGL 3.0
 @page requires-gl31 Functionality requiring OpenGL 3.1
@@ -66,8 +64,14 @@ supported on Intel GPUs even if they are capable of OpenGL 2.1 only).
 
 @page requires-extension Functionality requiring specific OpenGL extension
 
-@page requires-gles30 Functionality requiring OpenGL ES 3.0
+@page requires-gl Functionality requiring desktop OpenGL (not available on OpenGL ES)
+@see @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES"
+
+@page requires-gles20 Functionality requiring OpenGL ES 2.0 (not available in ES 3.0 and desktop OpenGL)
 @see @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2"
+
+@page requires-gles30 Functionality requiring OpenGL ES 3.0
+@see @ref MAGNUM_TARGET_GLES3_ "MAGNUM_TARGET_GLES3"
 
 @page requires-es-extension Functionality requiring specific OpenGL ES extension
 @see @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2"

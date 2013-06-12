@@ -85,8 +85,10 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationPro
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>())
-        AbstractShaderProgram::setUniform(AbstractShaderProgram::uniformLocation("vectorTexture"), AbstractVector<dimensions>::VectorTextureLayer);
     #endif
+    {
+        AbstractShaderProgram::setUniform(AbstractShaderProgram::uniformLocation("vectorTexture"), AbstractVector<dimensions>::VectorTextureLayer);
+    }
 }
 
 template class Vector<2>;

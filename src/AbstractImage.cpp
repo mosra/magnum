@@ -100,10 +100,16 @@ std::size_t AbstractImage::pixelSize(ImageFormat format, ImageType type) {
         case ImageFormat::GreenInteger:
         case ImageFormat::BlueInteger:
         #endif
+        #ifdef MAGNUM_TARGET_GLES2
+        case ImageFormat::Luminance:
+        #endif
             return 1*size;
         case ImageFormat::RG:
         #ifndef MAGNUM_TARGET_GLES2
         case ImageFormat::RGInteger:
+        #endif
+        #ifdef MAGNUM_TARGET_GLES2
+        case ImageFormat::LuminanceAlpha:
         #endif
             return 2*size;
         case ImageFormat::RGB:

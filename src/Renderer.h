@@ -871,6 +871,69 @@ class MAGNUM_EXPORT Renderer {
          */
         static void finish() { glFinish(); }
 
+        /**
+         * @brief Error status
+         *
+         * @see error()
+         */
+        enum class Error: GLenum {
+            /** No error has been recorded */
+            NoError = GL_NO_ERROR,
+
+            /** An unacceptable value specified for enumerated argument */
+            InvalidEnum = GL_INVALID_ENUM,
+
+            /** A numeric argument is out of range */
+            InvalidValue = GL_INVALID_VALUE,
+
+            /** The specified operation is not allowed in the current state */
+            InvalidOperation = GL_INVALID_OPERATION,
+
+            /**
+             * The framebuffer object is not complete.
+             * @see AbstractFramebuffer::checkStatus()
+             * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
+             */
+            InvalidFramebufferOperation = GL_INVALID_FRAMEBUFFER_OPERATION,
+
+            /** There is not enough memory left to execute the command. */
+            OutOfMemory = GL_OUT_OF_MEMORY,
+
+            #ifndef MAGNUM_TARGET_GLES3
+            /**
+             * Given operation would cause an internal stack to underflow.
+             * @requires_gl43 %Extension @extension{KHR,debug}
+             * @requires_es_extension %Extension @es_extension2{KHR,debug,debug}
+             */
+            #ifndef MAGNUM_TARGET_GLES2
+            StackUnderflow = GL_STACK_UNDERFLOW,
+            #else
+            StackUnderflow = GL_STACK_UNDERFLOW_KHR,
+            #endif
+
+            /**
+             * Given operation would cause an internal stack to overflow.
+             * @requires_gl43 %Extension @extension{KHR,debug}
+             * @requires_es_extension %Extension @es_extension2{KHR,debug,debug}
+             */
+            #ifndef MAGNUM_TARGET_GLES2
+            StackOverflow = GL_STACK_OVERFLOW
+            #else
+            StackOverflow = GL_STACK_OVERFLOW_KHR
+            #endif
+            #endif
+        };
+
+        /**
+         * @brief Error status
+         *
+         * Returns error flag, if any set. If there aren't any more error
+         * flags, returns @ref Error "Error::NoError". Thus this function
+         * should be always called in a loop until it returns @ref Error "Error::NoError".
+         * @see @fn_gl{GetError}
+         */
+        static Error error() { return static_cast<Error>(glGetError()); }
+
         #ifndef MAGNUM_TARGET_GLES3
         /**
          * @brief Graphics reset notification strategy
@@ -979,6 +1042,17 @@ class MAGNUM_EXPORT Renderer {
         static GraphicsResetStatusImplementation graphicsResetStatusImplementation;
         #endif
 };
+
+/** @debugoperator{Renderer} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::Error value);
+
+#ifndef MAGNUM_TARGET_GLES3
+/** @debugoperator{Renderer} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::ResetNotificationStrategy value);
+
+/** @debugoperator{Renderer} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::GraphicsResetStatus value);
+#endif
 
 }
 

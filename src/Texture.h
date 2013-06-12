@@ -282,14 +282,19 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * is immutable and calling setStorage() or setImage() is not allowed.
          *
          * If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some layer before the operation.
+         * texture is bound to some layer before the operation. If
+         * OpenGL 4.2, @extension{ARB,texture_storage}, OpenGL ES 3.0 or @es_extension{EXT,texture_storage}
+         * in OpenGL ES 2.0 is not available, the feature is emulated with
+         * sequence of setImage() calls.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexStorage1D}/@fn_gl{TexStorage2D}/@fn_gl{TexStorage3D}
          *      or @fn_gl_extension{TextureStorage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureStorage2D,EXT,direct_state_access}/
-         *      @fn_gl_extension{TextureStorage3D,EXT,direct_state_access}
-         * @requires_gl42 %Extension @extension{ARB,texture_storage}
-         * @requires_gles30 %Extension @es_extension{EXT,texture_storage}
+         *      @fn_gl_extension{TextureStorage3D,EXT,direct_state_access},
+         *      eventually @fn_gl{TexImage1D}/@fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
+         *      @fn_gl_extension{TextureImage1D,EXT,direct_state_access}/
+         *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
+         *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}.
          */
         Texture<Dimensions>* setStorage(Int levels, TextureFormat internalFormat, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {
             DataHelper<Dimensions>::setStorage(this, _target, levels, internalFormat, size);

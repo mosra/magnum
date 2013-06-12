@@ -97,14 +97,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,texture_float),                   // done
         _extension(GL,ARB,depth_buffer_float),              // done
         _extension(GL,ARB,texture_rg),                      // done
-        /**
-         * @todo Remove as it doesn't have the same functionality present in
-         *      GL 3.0 and replace with ARB_framebuffer_object?
-         */
-        _extension(GL,EXT,framebuffer_object),
-        _extension(GL,EXT,packed_depth_stencil),            // done
-        _extension(GL,EXT,framebuffer_blit),                // done
-        _extension(GL,EXT,framebuffer_multisample),
+        _extension(GL,ARB,framebuffer_object),
         _extension(GL,EXT,gpu_shader4),
         _extension(GL,EXT,packed_float),                    // done
         _extension(GL,EXT,texture_array),
@@ -213,7 +206,13 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,disjoint_timer_query),
         _extension(GL,EXT,separate_shader_objects),
         _extension(GL,EXT,sRGB),
+        /**
+         * @todo Support also IMG_multisampled_render_to_texture? It has
+         *      different enum values (!)
+         */
+        _extension(GL,EXT,multisampled_render_to_texture),
         _extension(GL,EXT,robustness),
+        _extension(GL,KHR,debug),
         _extension(GL,NV,read_buffer_front),
         _extension(GL,NV,read_stencil),
         _extension(GL,NV,texture_border_clamp),             // done
@@ -253,7 +252,8 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,depth_texture),
         _extension(GL,OES,standard_derivatives),            // done
         _extension(GL,OES,vertex_array_object),
-        _extension(GL,OES,required_internalformat)};
+        _extension(GL,OES,required_internalformat),
+        _extension(GL,OES,surfaceless_context)};            // done
     #endif
 
     switch(version) {
@@ -291,6 +291,14 @@ Context::Context() {
     _minorVersion = 0;
     #endif
     _version = static_cast<Version>(_majorVersion*100+_minorVersion*10);
+
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_ASSERT(isVersionSupported(Version::GL210), "Context: unsupported OpenGL version" << Int(_version), );
+    #elif defined(MAGNUM_TARGET_GLES2)
+    CORRADE_ASSERT(isVersionSupported(Version::GLES200), "Context: unsupported OpenGL ES version" << Int(_version), );
+    #else
+    CORRADE_ASSERT(isVersionSupported(Version::GLES300), "Context: unsupported OpenGL ES version" << Int(_version), );
+    #endif
 
     /* Context flags are supported since GL 3.0 */
     #ifndef MAGNUM_TARGET_GLES

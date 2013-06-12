@@ -147,6 +147,7 @@ enum class TextureFormat: GLenum {
      * @requires_gles30 Only unsigned formats are available in OpenGL ES 2.0.
      */
     RGBA8Snorm = GL_RGBA8_SNORM,
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     /**
@@ -212,6 +213,7 @@ enum class TextureFormat: GLenum {
     RGBA16Snorm = GL_RGBA16_SNORM,
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
     /**
      * Red component, non-normalized unsigned byte.
      * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
@@ -469,6 +471,29 @@ enum class TextureFormat: GLenum {
     RGBA32F = GL_RGBA32F,
     #endif
 
+    #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
+    /**
+     * Luminance, normalized unsigned, single value used for all RGB channels.
+     * Size implementation-dependent.
+     * @deprecated Included for compatibility reasons only, use
+     *      @ref Magnum::TextureFormat "TextureFormat::R8" instead.
+     * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
+     *      @ref Magnum::TextureFormat "TextureFormat::R8" instead.
+     */
+    Luminance = GL_LUMINANCE,
+
+    /**
+     * Floating-point luminance and alpha channel. First value is used for all
+     * RGB channels, second value is used for alpha channel. Size
+     * implementation-dependent.
+     * @deprecated Included for compatibility reasons only, use
+     *      @ref Magnum::TextureFormat "TextureFormat::RG8" instead.
+     * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
+     *      @ref Magnum::TextureFormat "TextureFormat::RG8" instead.
+     */
+    LuminanceAlpha = GL_LUMINANCE_ALPHA,
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES
     /**
      * RGB, normalized unsigned, red and green component 3bit, blue 2bit.
@@ -490,14 +515,16 @@ enum class TextureFormat: GLenum {
     RGB5 = GL_RGB5,
     #endif
 
-    /* 1.5.6 <= GLEW < 1.8.0 doesn't have this, even if there is
-       GL_ARB_ES2_compatibility */
-    #if defined(GL_RGB565) || defined(DOXYGEN_GENERATING_OUTPUT)
     /**
      * RGB, normalized unsigned, red and blue component 5bit, green 6bit.
      * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
      */
+    /* 1.5.6 <= GLEW < 1.8.0 doesn't have this, even if there is
+       GL_ARB_ES2_compatibility */
+    #ifdef GL_RGB565
     RGB565 = GL_RGB565,
+    #else
+    RGB565 = 0x8D62,
     #endif
 
     #ifndef MAGNUM_TARGET_GLES3
@@ -519,7 +546,53 @@ enum class TextureFormat: GLenum {
      * @requires_gl Packed 36bit types are not available in OpenGL ES.
      */
     RGB12 = GL_RGB12,
+    #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    /**
+     * RGB, float, red and green component 11bit, blue 10bit.
+     * @requires_gl30 %Extension @extension{EXT,packed_float}
+     * @requires_gles30 Only normalized integral formats are available in
+     *      OpenGL ES 2.0.
+     */
+    R11FG11FB10F = GL_R11F_G11F_B10F,
+
+    /**
+     * RGB, unsigned with exponent, each RGB component 9bit, exponent 5bit.
+     * @requires_gl30 %Extension @extension{EXT,texture_shared_exponent}
+     * @requires_gles30 Use @ref Magnum::TextureFormat "TextureFormat::RGB" in
+     *      OpenGL ES 2.0 instead.
+     */
+    RGB9E5 = GL_RGB9_E5,
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES3
+    /**
+     * sRGB, normalized unsigned, size implementation-dependent.
+     * @todo is this allowed in core?
+     * @deprecated Prefer to use the exactly specified version of this format,
+     *      i.e. @ref Magnum::TextureFormat "TextureFormat::SRGB8".
+     * @requires_es_extension %Extension @es_extension{EXT,sRGB} in OpenGL ES
+     *      2.0, use @ref Magnum::TextureFormat "TextureFormat::SRGB8" in
+     *      OpenGL ES 3.0 instead.
+     */
+    #ifndef MAGNUM_TARGET_GLES
+    SRGB = GL_SRGB,
+    #else
+    SRGB = GL_SRGB_EXT,
+    #endif
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /**
+     * sRGB, each component normalized unsigned byte.
+     * @requires_gles30 Use @ref Magnum::TextureFormat "TextureFormat::SRGB" in
+     *      OpenGL ES 2.0 instead.
+     */
+    SRGB8 = GL_SRGB8,
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
     /**
      * RGBA, normalized unsigned, each component 2bit.
      * @requires_gl Packed 8bit types are not available in OpenGL ES.
@@ -566,52 +639,6 @@ enum class TextureFormat: GLenum {
      * @requires_gl Packed 48bit types are not available in OpenGL ES.
      */
     RGBA12 = GL_RGBA12,
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES2
-    /**
-     * RGB, float, red and green component 11bit, blue 10bit.
-     * @requires_gl30 %Extension @extension{EXT,packed_float}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     */
-    R11FG11FB10F = GL_R11F_G11F_B10F,
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES2
-    /**
-     * RGB, unsigned with exponent, each RGB component 9bit, exponent 5bit.
-     * @requires_gl30 %Extension @extension{EXT,texture_shared_exponent}
-     * @requires_gles30 Use @ref Magnum::TextureFormat "TextureFormat::RGB" in
-     *      OpenGL ES 2.0 instead.
-     */
-    RGB9E5 = GL_RGB9_E5,
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES3
-    /**
-     * sRGB, normalized unsigned, size implementation-dependent.
-     * @todo is this allowed in core?
-     * @deprecated Prefer to use the exactly specified version of this format,
-     *      i.e. @ref Magnum::TextureFormat "TextureFormat::SRGB8".
-     * @requires_es_extension %Extension @es_extension{EXT,sRGB} in OpenGL ES
-     *      2.0, use @ref Magnum::TextureFormat "TextureFormat::SRGB8" in
-     *      OpenGL ES 3.0 instead.
-     */
-    #ifndef MAGNUM_TARGET_GLES
-    SRGB = GL_SRGB,
-    #else
-    SRGB = GL_SRGB_EXT,
-    #endif
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES2
-    /**
-     * sRGB, each component normalized unsigned byte.
-     * @requires_gles30 Use @ref Magnum::TextureFormat "TextureFormat::SRGB" in
-     *      OpenGL ES 2.0 instead.
-     */
-    SRGB8 = GL_SRGB8,
     #endif
 
     #ifndef MAGNUM_TARGET_GLES3
@@ -700,20 +727,6 @@ enum class TextureFormat: GLenum {
        late as of 1.8.0 { */
 
     /**
-     * BPTC compressed RGBA, normalized unsigned.
-     * @requires_gl42 %Extension @extension{ARB,texture_compression_bptc}
-     * @requires_gl BPTC texture compression is not available in OpenGL ES.
-     */
-    CompressedRGBABtpcUnorm = GL_COMPRESSED_RGBA_BPTC_UNORM_ARB,
-
-    /**
-     * BPTC compressed sRGBA, normalized unsigned.
-     * @requires_gl42 %Extension @extension{ARB,texture_compression_bptc}
-     * @requires_gl BPTC texture compression is not available in OpenGL ES.
-     */
-    CompressedSRGBAlphaBtpcUnorm = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM_ARB,
-
-    /**
      * BPTC compressed RGB, unsigned float.
      * @requires_gl42 %Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES.
@@ -727,6 +740,20 @@ enum class TextureFormat: GLenum {
      */
     CompressedRGBBptcSignedFloat = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_ARB,
 
+    /**
+     * BPTC compressed RGBA, normalized unsigned.
+     * @requires_gl42 %Extension @extension{ARB,texture_compression_bptc}
+     * @requires_gl BPTC texture compression is not available in OpenGL ES.
+     */
+    CompressedRGBABptcUnorm = GL_COMPRESSED_RGBA_BPTC_UNORM_ARB,
+
+    /**
+     * BPTC compressed sRGBA, normalized unsigned.
+     * @requires_gl42 %Extension @extension{ARB,texture_compression_bptc}
+     * @requires_gl BPTC texture compression is not available in OpenGL ES.
+     */
+    CompressedSRGBAlphaBptcUnorm = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM_ARB,
+
     /*}*/
     #endif
 
@@ -738,18 +765,6 @@ enum class TextureFormat: GLenum {
      *      @es_extension{ANGLE,depth_texture}
      */
     DepthComponent = GL_DEPTH_COMPONENT,
-
-    /**
-     * Depth and stencil component, size implementation-dependent.
-     * @deprecated Prefer to use exactly specified version of this format, e.g.
-     *      @ref Magnum::TextureFormat "TextureFormat::Depth24Stencil8".
-     * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil}
-     */
-    #ifndef MAGNUM_TARGET_GLES2
-    DepthStencil = GL_DEPTH_STENCIL,
-    #else
-    DepthStencil = GL_DEPTH_STENCIL_OES,
-    #endif
 
     /**
      * Depth component, 16bit.
@@ -795,8 +810,20 @@ enum class TextureFormat: GLenum {
     #endif
 
     /**
+     * Depth and stencil component, size implementation-dependent.
+     * @deprecated Prefer to use exactly specified version of this format, e.g.
+     *      @ref Magnum::TextureFormat "TextureFormat::Depth24Stencil8".
+     * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil}
+     */
+    #ifndef MAGNUM_TARGET_GLES2
+    DepthStencil = GL_DEPTH_STENCIL,
+    #else
+    DepthStencil = GL_DEPTH_STENCIL_OES,
+    #endif
+
+    /**
      * 24bit depth and 8bit stencil component.
-     * @requires_gl30 %Extension @extension{EXT,packed_depth_stencil}
+     * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
      * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil} and
      *      (@es_extension{OES,required_internalformat} or
      *      (@es_extension{EXT,texture_storage} and @es_extension{ANGLE,depth_texture}))

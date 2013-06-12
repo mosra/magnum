@@ -77,6 +77,13 @@ avoid redundant consistency checks and memory reallocations when updating
 texture data, set texture storage at once using @ref Texture::setStorage() "setStorage()"
 and then set data using @ref Texture::setSubImage() "setSubImage()".
 
+Function @ref Texture::setStorage() "setStorage()" creates immutable texture
+storage, removing the need for additional consistency checks and memory
+reallocations when updating the data later. If OpenGL 4.2, @extension{ARB,texture_storage},
+OpenGL ES 3.0 or @es_extension{EXT,texture_storage} in OpenGL ES 2.0 is not
+available, the feature is emulated with sequence of @ref Texture::setImage() "setImage()"
+calls.
+
 You can use functions invalidateImage() and @ref Texture::invalidateSubImage() "invalidateSubImage()"
 if you don't need texture data anymore to avoid unnecessary memory operations
 performed by OpenGL in order to preserve the data. If running on OpenGL ES or
@@ -251,7 +258,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @see setMinificationFilter(), @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl{GenerateMipmap} or
          *      @fn_gl_extension{GenerateTextureMipmap,EXT,direct_state_access}
-         * @requires_gl30 %Extension @extension{EXT,framebuffer_object}
+         * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
          */
         AbstractTexture* generateMipmap();
 
@@ -319,12 +326,14 @@ class MAGNUM_EXPORT AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES
         typedef void(AbstractTexture::*Storage1DImplementation)(GLenum, GLsizei, TextureFormat, const Math::Vector<1, GLsizei>&);
+        void MAGNUM_LOCAL storageImplementationFallback(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
         void MAGNUM_LOCAL storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
         void MAGNUM_LOCAL storageImplementationDSA(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
         static Storage1DImplementation storage1DImplementation;
         #endif
 
         typedef void(AbstractTexture::*Storage2DImplementation)(GLenum, GLsizei, TextureFormat, const Vector2i&);
+        void MAGNUM_LOCAL storageImplementationFallback(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
         void MAGNUM_LOCAL storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL storageImplementationDSA(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
@@ -332,6 +341,7 @@ class MAGNUM_EXPORT AbstractTexture {
         static Storage2DImplementation storage2DImplementation;
 
         typedef void(AbstractTexture::*Storage3DImplementation)(GLenum, GLsizei, TextureFormat, const Vector3i&);
+        void MAGNUM_LOCAL storageImplementationFallback(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
         void MAGNUM_LOCAL storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL storageImplementationDSA(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
@@ -404,6 +414,8 @@ class MAGNUM_EXPORT AbstractTexture {
 
         void MAGNUM_LOCAL destroy();
         void MAGNUM_LOCAL move();
+        ImageFormat MAGNUM_LOCAL imageFormatForInternalFormat(TextureFormat internalFormat);
+        ImageType MAGNUM_LOCAL imageTypeForInternalFormat(TextureFormat internalFormat);
 
         GLuint _id;
 };

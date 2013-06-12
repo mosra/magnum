@@ -68,8 +68,18 @@ enum class ImageFormat: GLenum {
      *      available in OpenGL ES.
      */
     Blue = GL_BLUE,
+    #endif
 
-    /** @todo GL_ALPHA? */
+    #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
+    /**
+     * Floating-point luminance channel. The value is used for all RGB
+     * channels.
+     * @deprecated Included for compatibility reasons only, use
+     *      @ref Magnum::ImageFormat "ImageFormat::Red" instead.
+     * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
+     *      @ref Magnum::ImageFormat "ImageFormat::Red" instead.
+     */
+    Luminance = GL_LUMINANCE,
     #endif
 
     /**
@@ -82,6 +92,18 @@ enum class ImageFormat: GLenum {
     RG = GL_RG,
     #else
     RG = GL_RG_EXT,
+    #endif
+
+    #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
+    /**
+     * Floating-point luminance and alpha channel. First value is used for all
+     * RGB channels, second value is used for alpha channel.
+     * @deprecated Included for compatibility reasons only, use
+     *      @ref Magnum::ImageFormat "ImageFormat::RG" instead.
+     * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
+     *      @ref Magnum::ImageFormat "ImageFormat::RG" instead.
+     */
+    LuminanceAlpha = GL_LUMINANCE_ALPHA,
     #endif
 
     /**
@@ -214,7 +236,7 @@ enum class ImageFormat: GLenum {
 
     /**
      * Depth and stencil.
-     * @requires_gl30 %Extension @extension{EXT,packed_depth_stencil}
+     * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
      * @requires_gles30 For texture data only, extension @es_extension{OES,packed_depth_stencil}.
      * @requires_es_extension For framebuffer reading only, extension
      *      @es_extension2{NV,read_depth_stencil,GL_NV_read_depth_stencil}.
@@ -424,14 +446,16 @@ enum class ImageType: GLenum {
 
     /**
      * Unsigned int, depth component 24bit, stencil index 8bit.
-     * @requires_gl30 %Extension @extension{EXT,packed_depth_stencil}
+     * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
      * @requires_gles30 For texture data only, extension @es_extension{OES,packed_depth_stencil}.
      */
-    #ifdef MAGNUM_TARGET_GLES2
-    UnsignedInt248 = GL_UNSIGNED_INT_24_8_OES
-    #else
+    #ifndef MAGNUM_TARGET_GLES2
     UnsignedInt248 = GL_UNSIGNED_INT_24_8,
+    #else
+    UnsignedInt248 = GL_UNSIGNED_INT_24_8_OES,
+    #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
     /**
      * Float + unsigned int, depth component 32bit float, 24bit gap, stencil
      * index 8bit.

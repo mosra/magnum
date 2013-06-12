@@ -28,6 +28,7 @@
  * @brief Class Magnum::Text::GlyphCache
  */
 
+#include <vector>
 #include <unordered_map>
 
 #include "Math/Geometry/Rectangle.h"
@@ -54,6 +55,7 @@ font->createGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
 @endcode
 
 See TextRenderer for information about text rendering.
+@todo Some way for Font to negotiate or check internal texture format
 */
 class MAGNUM_TEXT_EXPORT GlyphCache {
     public:
@@ -68,9 +70,10 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * @brief Constructor
          * @param size              Glyph cache texture size
          *
-         * Sets internal texture format to red channel only. Requires
-         * @extension{ARB,texture_rg} (also part of OpenGL ES 3.0 or available
-         * as @es_extension{EXT,texture_rg} in ES 2.0).
+         * Sets internal texture format to red channel only. On desktop OpenGL
+         * requires @extension{ARB,texture_rg} (also part of OpenGL ES 3.0), in
+         * ES2 uses @es_extension{EXT,texture_rg}, if available, or
+         * @ref TextureFormat "TextureFormat::Luminance" as fallback.
          */
         explicit GlyphCache(const Vector2i& size);
 

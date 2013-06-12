@@ -43,6 +43,9 @@ Renders vector art in form of signed distance field. See TextureTools::distanceF
 for more information. Note that the final rendered outlook will greatly depend
 on radius of input distance field and value passed to setSmoothness().
 @see DistanceFieldVector2D, DistanceFieldVector3D
+@todo Use fragment shader derivations to have proper smoothness in perspective/
+    large zoom levels, make it optional as it might have negative performance
+    impact
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector: public AbstractVector<dimensions> {
     public:
@@ -81,12 +84,12 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @return Pointer to self (for method chaining)
          *
          * Parameter @p start describes where fill ends and possible outline
-         * starts. Initial value is `0.5f`, smaller values will make the vector
-         * art look thinner, larger will make it look thicker.
+         * starts. Initial value is `0.5f`, larger values will make the vector
+         * art look thinner, smaller will make it look thicker.
          *
          * Parameter @p end describes where outline ends. If set to value
-         * smaller than @p start the outline is not drawn. Initial value is
-         * `0.0f`.
+         * larger than @p start the outline is not drawn. Initial value is
+         * `1.0f`.
          *
          * @see setOutlineColor()
          */

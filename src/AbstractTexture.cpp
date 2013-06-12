@@ -29,6 +29,8 @@
 #include "Context.h"
 #include "Extensions.h"
 #include "Image.h"
+#include "ImageFormat.h"
+#include "TextureFormat.h"
 #include "Implementation/State.h"
 #include "Implementation/TextureState.h"
 
@@ -50,12 +52,12 @@ AbstractTexture::MipmapImplementation AbstractTexture::mipmapImplementation =
     &AbstractTexture::mipmapImplementationDefault;
 #ifndef MAGNUM_TARGET_GLES
 AbstractTexture::Storage1DImplementation AbstractTexture::storage1DImplementation =
-    &AbstractTexture::storageImplementationDefault;
+    &AbstractTexture::storageImplementationFallback;
 #endif
 AbstractTexture::Storage2DImplementation AbstractTexture::storage2DImplementation =
-    &AbstractTexture::storageImplementationDefault;
+    &AbstractTexture::storageImplementationFallback;
 AbstractTexture::Storage3DImplementation AbstractTexture::storage3DImplementation =
-    &AbstractTexture::storageImplementationDefault;
+    &AbstractTexture::storageImplementationFallback;
 #ifndef MAGNUM_TARGET_GLES
 AbstractTexture::GetImageImplementation AbstractTexture::getImageImplementation =
     &AbstractTexture::getImageImplementationDefault;
@@ -205,9 +207,6 @@ void AbstractTexture::initializeContextBasedFunctionality(Context* context) {
         parameterfvImplementation = &AbstractTexture::parameterImplementationDSA;
         getLevelParameterivImplementation = &AbstractTexture::getLevelParameterImplementationDSA;
         mipmapImplementation = &AbstractTexture::mipmapImplementationDSA;
-        storage1DImplementation = &AbstractTexture::storageImplementationDSA;
-        storage2DImplementation = &AbstractTexture::storageImplementationDSA;
-        storage3DImplementation = &AbstractTexture::storageImplementationDSA;
         getImageImplementation = &AbstractTexture::getImageImplementationDSA;
         image1DImplementation = &AbstractTexture::imageImplementationDSA;
         image2DImplementation = &AbstractTexture::imageImplementationDSA;
@@ -230,7 +229,394 @@ void AbstractTexture::initializeContextBasedFunctionality(Context* context) {
 
         getImageImplementation = &AbstractTexture::getImageImplementationRobustness;
     }
+
+    if(context->isExtensionSupported<Extensions::GL::ARB::texture_storage>()) {
+        Debug() << "AbstractTexture: using" << Extensions::GL::ARB::texture_storage::string() << "features";
+
+        if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+            storage1DImplementation = &AbstractTexture::storageImplementationDSA;
+            storage2DImplementation = &AbstractTexture::storageImplementationDSA;
+            storage3DImplementation = &AbstractTexture::storageImplementationDSA;
+        } else {
+            storage1DImplementation = &AbstractTexture::storageImplementationDefault;
+            storage2DImplementation = &AbstractTexture::storageImplementationDefault;
+            storage3DImplementation = &AbstractTexture::storageImplementationDefault;
+        }
+    }
     #endif
+}
+
+ImageFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat internalFormat) {
+    switch(internalFormat) {
+        case TextureFormat::Red:
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::R8:
+        case TextureFormat::R8Snorm:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::R16:
+        case TextureFormat::R16Snorm:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::R16F:
+        case TextureFormat::R32F:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::CompressedRed:
+        case TextureFormat::CompressedRedRtgc1:
+        case TextureFormat::CompressedSignedRedRgtc1:
+        #endif
+            return ImageFormat::Red;
+
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::R8UI:
+        case TextureFormat::R8I:
+        case TextureFormat::R16UI:
+        case TextureFormat::R16I:
+        case TextureFormat::R32UI:
+        case TextureFormat::R32I:
+            return ImageFormat::RedInteger;
+        #endif
+
+        case TextureFormat::RG:
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::RG8:
+        case TextureFormat::RG8Snorm:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::RG16:
+        case TextureFormat::RG16Snorm:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::RG16F:
+        case TextureFormat::RG32F:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::CompressedRG:
+        case TextureFormat::CompressedRGRgtc2:
+        case TextureFormat::CompressedSignedRGRgtc2:
+        #endif
+            return ImageFormat::RG;
+
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::RG8UI:
+        case TextureFormat::RG8I:
+        case TextureFormat::RG16UI:
+        case TextureFormat::RG16I:
+        case TextureFormat::RG32UI:
+        case TextureFormat::RG32I:
+            return ImageFormat::RGInteger;
+        #endif
+
+        case TextureFormat::RGB:
+        case TextureFormat::RGB8:
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::RGB8Snorm:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::RGB16:
+        case TextureFormat::RGB16Snorm:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::RGB16F:
+        case TextureFormat::RGB32F:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::R3B3G2:
+        case TextureFormat::RGB4:
+        case TextureFormat::RGB5:
+        #endif
+        case TextureFormat::RGB565:
+        #ifndef MAGNUM_TARGET_GLES3
+        case TextureFormat::RGB10:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::RGB12:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::R11FG11FB10F:
+        case TextureFormat::RGB9E5:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES3
+        case TextureFormat::SRGB:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::SRGB8:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::CompressedRGB:
+        case TextureFormat::CompressedRGBBptcUnsignedFloat:
+        case TextureFormat::CompressedRGBBptcSignedFloat:
+        #endif
+            return ImageFormat::RGB;
+
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::RGB8UI:
+        case TextureFormat::RGB8I:
+        case TextureFormat::RGB16UI:
+        case TextureFormat::RGB16I:
+        case TextureFormat::RGB32UI:
+        case TextureFormat::RGB32I:
+            return ImageFormat::RGBInteger;
+        #endif
+
+        case TextureFormat::RGBA:
+        case TextureFormat::RGBA8:
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::RGBA8Snorm:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::RGBA16:
+        case TextureFormat::RGBA16Snorm:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::RGBA16F:
+        case TextureFormat::RGBA32F:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::RGBA2:
+        #endif
+        case TextureFormat::RGBA4:
+        case TextureFormat::RGB5A1:
+        case TextureFormat::RGB10A2:
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::RGBA12:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES3
+        case TextureFormat::SRGBAlpha:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::SRGB8Alpha8:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::CompressedRGBA:
+        case TextureFormat::CompressedRGBABptcUnorm:
+        case TextureFormat::CompressedSRGBAlphaBptcUnorm:
+        #endif
+            return ImageFormat::RGBA;
+
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::RGBA8UI:
+        case TextureFormat::RGBA8I:
+        case TextureFormat::RGBA16UI:
+        case TextureFormat::RGBA16I:
+        case TextureFormat::RGBA32UI:
+        case TextureFormat::RGBA32I:
+        case TextureFormat::RGB10A2UI:
+            return ImageFormat::RGBAInteger;
+        #endif
+
+        #ifdef MAGNUM_TARGET_GLES2
+        case TextureFormat::Luminance:
+            return ImageFormat::Luminance;
+        case TextureFormat::LuminanceAlpha:
+            return ImageFormat::LuminanceAlpha;
+        #endif
+
+        case TextureFormat::DepthComponent:
+        case TextureFormat::DepthComponent16:
+        case TextureFormat::DepthComponent24:
+        #ifndef MAGNUM_TARGET_GLES3
+        case TextureFormat::DepthComponent32:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::DepthComponent32F:
+        #endif
+            return ImageFormat::DepthComponent;
+
+        case TextureFormat::DepthStencil:
+        case TextureFormat::Depth24Stencil8:
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::Depth32FStencil8:
+        #endif
+            return ImageFormat::DepthStencil;
+    }
+
+    CORRADE_ASSERT_UNREACHABLE();
+}
+
+ImageType AbstractTexture::imageTypeForInternalFormat(const TextureFormat internalFormat) {
+    switch(internalFormat) {
+        case TextureFormat::Red:
+        case TextureFormat::RG:
+        case TextureFormat::RGB:
+        case TextureFormat::RGBA:
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::R8:
+        case TextureFormat::RG8:
+        #endif
+        case TextureFormat::RGB8:
+        case TextureFormat::RGBA8:
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::R8UI:
+        case TextureFormat::RG8UI:
+        case TextureFormat::RGB8UI:
+        case TextureFormat::RGBA8UI:
+        #endif
+        #ifdef MAGNUM_TARGET_GLES2
+        case TextureFormat::Luminance:
+        case TextureFormat::LuminanceAlpha:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES3
+        case TextureFormat::SRGB:
+        case TextureFormat::SRGBAlpha:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::SRGB8:
+        case TextureFormat::SRGB8Alpha8:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::RGBA2: /**< @todo really? */
+        case TextureFormat::CompressedRed:
+        case TextureFormat::CompressedRG:
+        case TextureFormat::CompressedRGB:
+        case TextureFormat::CompressedRGBA:
+        case TextureFormat::CompressedRedRtgc1:
+        case TextureFormat::CompressedRGRgtc2:
+        case TextureFormat::CompressedRGBABptcUnorm:
+        case TextureFormat::CompressedSRGBAlphaBptcUnorm:
+        #endif
+            return ImageType::UnsignedByte;
+
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::R8Snorm:
+        case TextureFormat::RG8Snorm:
+        case TextureFormat::RGB8Snorm:
+        case TextureFormat::RGBA8Snorm:
+        case TextureFormat::R8I:
+        case TextureFormat::RG8I:
+        case TextureFormat::RGB8I:
+        case TextureFormat::RGBA8I:
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::CompressedSignedRedRgtc1:
+        case TextureFormat::CompressedSignedRGRgtc2:
+        #endif
+            return ImageType::Byte;
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::R16:
+        case TextureFormat::RG16:
+        case TextureFormat::RGB16:
+        case TextureFormat::RGBA16:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::R16UI:
+        case TextureFormat::RG16UI:
+        case TextureFormat::RGB16UI:
+        case TextureFormat::RGBA16UI:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::RGB12: /**< @todo really? */
+        #endif
+        case TextureFormat::RGBA4: /**< @todo really? */
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::RGBA12: /**< @todo really? */
+        #endif
+            return ImageType::UnsignedShort;
+
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::R16Snorm:
+        case TextureFormat::RG16Snorm:
+        case TextureFormat::RGB16Snorm:
+        case TextureFormat::RGBA16Snorm:
+        #endif
+        case TextureFormat::R16I:
+        case TextureFormat::RG16I:
+        case TextureFormat::RGB16I:
+        case TextureFormat::RGBA16I:
+            return ImageType::Short;
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::R16F:
+        case TextureFormat::RG16F:
+        case TextureFormat::RGB16F:
+        case TextureFormat::RGBA16F:
+            return ImageType::HalfFloat;
+
+        case TextureFormat::R32UI:
+        case TextureFormat::RG32UI:
+        case TextureFormat::RGB32UI:
+        case TextureFormat::RGBA32UI:
+            return ImageType::UnsignedInt;
+
+        case TextureFormat::R32I:
+        case TextureFormat::RG32I:
+        case TextureFormat::RGB32I:
+        case TextureFormat::RGBA32I:
+            return ImageType::Int;
+
+        case TextureFormat::R32F:
+        case TextureFormat::RG32F:
+        case TextureFormat::RGB32F:
+        case TextureFormat::RGBA32F:
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::CompressedRGBBptcUnsignedFloat:
+        case TextureFormat::CompressedRGBBptcSignedFloat:
+        #endif
+            return ImageType::Float;
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::R3B3G2:
+            return ImageType::UnsignedByte332;
+        case TextureFormat::RGB4:
+            return ImageType::UnsignedShort4444;
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::RGB5:
+        #endif
+        case TextureFormat::RGB5A1:
+            return ImageType::UnsignedShort5551;
+
+        case TextureFormat::RGB565:
+            return ImageType::UnsignedShort565;
+
+        #ifndef MAGNUM_TARGET_GLES3
+        case TextureFormat::RGB10:
+        #endif
+        case TextureFormat::RGB10A2:
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::RGB10A2UI:
+        #endif
+            return ImageType::UnsignedInt2101010Rev; /**< @todo Rev for all? */
+
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::R11FG11FB10F:
+            return ImageType::UnsignedInt10F11F11FRev;
+        case TextureFormat::RGB9E5:
+            return ImageType::UnsignedInt5999Rev;
+        #endif
+
+        case TextureFormat::DepthComponent16:
+            return ImageType::UnsignedShort;
+
+        case TextureFormat::DepthComponent:
+        case TextureFormat::DepthComponent24:
+        #ifndef MAGNUM_TARGET_GLES3
+        case TextureFormat::DepthComponent32:
+        #endif
+            return ImageType::UnsignedInt;
+
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::DepthComponent32F:
+            return ImageType::Float;
+        #endif
+
+        case TextureFormat::DepthStencil:
+        case TextureFormat::Depth24Stencil8:
+            return ImageType::UnsignedInt248;
+
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::Depth32FStencil8:
+            return ImageType::Float32UnsignedInt248Rev;
+        #endif
+    }
+
+    CORRADE_ASSERT_UNREACHABLE();
 }
 
 void AbstractTexture::parameterImplementationDefault(GLenum parameter, GLint value) {
@@ -278,7 +664,20 @@ void AbstractTexture::getLevelParameterImplementationDSA(GLenum target, GLint le
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector< 1, GLsizei >& size) {
+void AbstractTexture::storageImplementationFallback(const GLenum target, const GLsizei levels, const TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size) {
+    CORRADE_INTERNAL_ASSERT(target == GL_TEXTURE_1D);
+
+    const ImageFormat format = imageFormatForInternalFormat(internalFormat);
+    const ImageType type = imageTypeForInternalFormat(internalFormat);
+
+    auto levelSize = size;
+    for(GLsizei level = 0; level != levels; ++level) {
+        (this->*image1DImplementation)(target, level, internalFormat, levelSize, format, type, nullptr);
+        levelSize = Math::max(Math::Vector<1, GLsizei>(1), levelSize/2);
+    }
+}
+
+void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size) {
     bindInternal();
     /** @todo Re-enable when extension wrangler is available for ES2 */
     #ifndef MAGNUM_TARGET_GLES2
@@ -292,10 +691,55 @@ void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels
     #endif
 }
 
-void AbstractTexture::storageImplementationDSA(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector< 1, GLsizei >& size) {
+void AbstractTexture::storageImplementationDSA(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size) {
     glTextureStorage1DEXT(_id, target, levels, GLenum(internalFormat), size[0]);
 }
 #endif
+
+void AbstractTexture::storageImplementationFallback(const GLenum target, const GLsizei levels, const TextureFormat internalFormat, const Vector2i& size) {
+    const ImageFormat format = imageFormatForInternalFormat(internalFormat);
+    const ImageType type = imageTypeForInternalFormat(internalFormat);
+
+    /* Common code for classic types */
+    #ifndef MAGNUM_TARGET_GLES
+    if(target == GL_TEXTURE_2D || target == GL_TEXTURE_RECTANGLE)
+    #else
+    if(target == GL_TEXTURE_2D)
+    #endif
+    {
+        Vector2i levelSize = size;
+        for(GLsizei level = 0; level != levels; ++level) {
+            (this->*image2DImplementation)(target, level, internalFormat, levelSize, format, type, nullptr);
+            levelSize = Math::max(Vector2i(1), levelSize/2);
+        }
+
+    /* Cube map additionaly needs to specify all faces */
+    } else if(target == GL_TEXTURE_CUBE_MAP) {
+        Vector2i levelSize = size;
+        for(GLsizei level = 0; level != levels; ++level) {
+            for(GLenum face: {GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+                              GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+                              GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+                              GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+                              GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+                              GL_TEXTURE_CUBE_MAP_NEGATIVE_Z})
+                (this->*image2DImplementation)(face, level, internalFormat, levelSize, format, type, nullptr);
+            levelSize = Math::max(Vector2i(1), levelSize/2);
+        }
+
+    #ifndef MAGNUM_TARGET_GLES
+    /* Array texture is not scaled in "layer" dimension */
+    } else if(target == GL_TEXTURE_1D_ARRAY) {
+        Vector2i levelSize = size;
+        for(GLsizei level = 0; level != levels; ++level) {
+            (this->*image2DImplementation)(target, level, internalFormat, levelSize, format, type, nullptr);
+            levelSize.x() = Math::max(1, levelSize.x()/2);
+        }
+    #endif
+
+    /* No other targets are available */
+    } else CORRADE_ASSERT_UNREACHABLE();
+}
 
 void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size) {
     bindInternal();
@@ -316,6 +760,43 @@ void AbstractTexture::storageImplementationDSA(GLenum target, GLsizei levels, Te
     glTextureStorage2DEXT(_id, target, levels, GLenum(internalFormat), size.x(), size.y());
 }
 #endif
+
+void AbstractTexture::storageImplementationFallback(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size) {
+    const ImageFormat format = imageFormatForInternalFormat(internalFormat);
+    const ImageType type = imageTypeForInternalFormat(internalFormat);
+
+    /* Common code for classic type */
+    #ifndef MAGNUM_TARGET_GLES2
+    if(target == GL_TEXTURE_3D)
+    #else
+    if(target == GL_TEXTURE_3D_OES)
+    #endif
+    {
+        Vector3i levelSize = size;
+        for(GLsizei level = 0; level != levels; ++level) {
+            (this->*image3DImplementation)(target, level, internalFormat, levelSize, format, type, nullptr);
+            levelSize = Math::max(Vector3i(1), levelSize/2);
+        }
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Array texture is not scaled in "layer" dimension */
+    }
+    #ifndef MAGNUM_TARGET_GLES
+    else if(target == GL_TEXTURE_2D_ARRAY || target == GL_TEXTURE_CUBE_MAP_ARRAY)
+    #else
+    else if(target == GL_TEXTURE_2D_ARRAY)
+    #endif
+    {
+        Vector3i levelSize = size;
+        for(GLsizei level = 0; level != levels; ++level) {
+            (this->*image3DImplementation)(target, level, internalFormat, levelSize, format, type, nullptr);
+            levelSize.xy() = Math::max(Vector2i(1), levelSize.xy()/2);
+        }
+    #endif
+
+    /* No other targets are available */
+    } else CORRADE_ASSERT_UNREACHABLE();
+}
 
 void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size) {
     bindInternal();

@@ -34,16 +34,18 @@
 
 namespace Magnum {
 
+AbstractFramebuffer::CheckStatusImplementation AbstractFramebuffer::checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDefault;
+
 AbstractFramebuffer::ReadImplementation AbstractFramebuffer::readImplementation = &AbstractFramebuffer::readImplementationDefault;
 
 AbstractFramebuffer::DrawBuffersImplementation AbstractFramebuffer::drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDefault;
 AbstractFramebuffer::DrawBufferImplementation AbstractFramebuffer::drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDefault;
 AbstractFramebuffer::ReadBufferImplementation AbstractFramebuffer::readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDefault;
 
+#ifdef MAGNUM_TARGET_GLES2
 FramebufferTarget AbstractFramebuffer::readTarget = FramebufferTarget::ReadDraw;
 FramebufferTarget AbstractFramebuffer::drawTarget = FramebufferTarget::ReadDraw;
-
-AbstractFramebuffer::~AbstractFramebuffer() {}
+#endif
 
 void AbstractFramebuffer::bind(FramebufferTarget target) {
     bindInternal(target);
@@ -81,10 +83,15 @@ FramebufferTarget AbstractFramebuffer::bindInternal() {
 
     /* Or bind it, if not already */
     state->readBinding = _id;
-    if(readTarget == FramebufferTarget::ReadDraw) state->drawBinding = _id;
 
+    #ifndef MAGNUM_TARGET_GLES2
+    glBindFramebuffer(GLenum(FramebufferTarget::Read), _id);
+    return FramebufferTarget::Read;
+    #else
+    if(readTarget == FramebufferTarget::ReadDraw) state->drawBinding = _id;
     glBindFramebuffer(GLenum(readTarget), _id);
     return readTarget;
+    #endif
 }
 
 void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& sourceRectangle, const Rectanglei& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter) {
@@ -126,12 +133,20 @@ void AbstractFramebuffer::setViewportInternal() {
 }
 
 void AbstractFramebuffer::clear(FramebufferClearMask mask) {
+    #ifndef MAGNUM_TARGET_GLES2
+    bindInternal(FramebufferTarget::Draw);
+    #else
     bindInternal(drawTarget);
+    #endif
     glClear(static_cast<GLbitfield>(mask));
 }
 
 void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Image2D* image) {
+    #ifndef MAGNUM_TARGET_GLES2
+    bindInternal(FramebufferTarget::Read);
+    #else
     bindInternal(readTarget);
+    #endif
     const std::size_t dataSize = image->pixelSize()*size.product();
     char* const data = new char[dataSize];
     readImplementation(offset, size, image->format(), image->type(), dataSize, data);
@@ -140,7 +155,11 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Ima
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, BufferImage2D* image, Buffer::Usage usage) {
+    #ifndef MAGNUM_TARGET_GLES2
+    bindInternal(FramebufferTarget::Read);
+    #else
     bindInternal(readTarget);
+    #endif
     /* If the buffer doesn't have sufficient size, resize it */
     /** @todo Explicitly reset also when buffer usage changes */
     if(image->size() != size)
@@ -177,20 +196,40 @@ void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attach
 
 void AbstractFramebuffer::initializeContextBasedFunctionality(Context* context) {
     #ifndef MAGNUM_TARGET_GLES
-    if(context->isExtensionSupported<Extensions::GL::EXT::framebuffer_blit>()) {
-        Debug() << "AbstractFramebuffer: using" << Extensions::GL::EXT::framebuffer_blit::string() << "features";
-
-        readTarget = FramebufferTarget::Read;
-        drawTarget = FramebufferTarget::Draw;
-    }
-
     if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         Debug() << "AbstractFramebuffer: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
 
+        checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDSA;
         drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDSA;
         drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDSA;
         readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDSA;
     }
+    #endif
+
+    #ifdef MAGNUM_TARGET_GLES2
+    /* Optimistically set separate binding targets and check if one of the
+       extensions providing them is available */
+    readTarget = FramebufferTarget::Read;
+    drawTarget = FramebufferTarget::Draw;
+
+    if(context->isExtensionSupported<Extensions::GL::ANGLE::framebuffer_blit>())
+        Debug() << "AbstractFramebuffer: using" << Extensions::GL::ANGLE::framebuffer_blit::string() << "features";
+
+    else if(context->isExtensionSupported<Extensions::GL::APPLE::framebuffer_multisample>())
+        Debug() << "AbstractFramebuffer: using" << Extensions::GL::APPLE::framebuffer_multisample::string() << "features";
+
+    else if(context->isExtensionSupported<Extensions::GL::NV::framebuffer_blit>())
+        Debug() << "AbstractFramebuffer: using" << Extensions::GL::NV::framebuffer_blit::string() << "features";
+
+    /* NV_framebuffer_multisample requires NV_framebuffer_blit, which has these
+       enums. However, on my system only NV_framebuffer_multisample is
+       supported, but NV_framebuffer_blit isn't. I will hold my breath and
+       assume these enums are available. */
+    else if(context->isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>())
+        Debug() << "AbstractFramebuffer: using" << Extensions::GL::NV::framebuffer_multisample::string() << "features";
+
+    /* If no such extension is available, reset back to unified target */
+    else readTarget = drawTarget = FramebufferTarget::ReadDraw;
     #endif
 
     #ifndef MAGNUM_TARGET_GLES3
@@ -216,10 +255,25 @@ void AbstractFramebuffer::initializeContextBasedFunctionality(Context* context) 
     #endif
 }
 
+GLenum AbstractFramebuffer::checkStatusImplementationDefault(const FramebufferTarget target) {
+    bindInternal(target);
+    return glCheckFramebufferStatus(GLenum(target));
+}
+
+#ifndef MAGNUM_TARGET_GLES
+GLenum AbstractFramebuffer::checkStatusImplementationDSA(const FramebufferTarget target) {
+    return glCheckNamedFramebufferStatusEXT(_id, GLenum(target));
+}
+#endif
+
 void AbstractFramebuffer::drawBuffersImplementationDefault(GLsizei count, const GLenum* buffers) {
     /** @todo Re-enable when extension wrangler is available for ES2 */
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES2
+    bindInternal(FramebufferTarget::Draw);
+    #else
     bindInternal(drawTarget);
+    #endif
     glDrawBuffers(count, buffers);
     #else
     static_cast<void>(count);
@@ -236,7 +290,11 @@ void AbstractFramebuffer::drawBuffersImplementationDSA(GLsizei count, const GLen
 void AbstractFramebuffer::drawBufferImplementationDefault(GLenum buffer) {
     /** @todo Re-enable when extension wrangler is available for ES2 */
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES2
+    bindInternal(FramebufferTarget::Draw);
+    #else
     bindInternal(drawTarget);
+    #endif
     #ifndef MAGNUM_TARGET_GLES3
     glDrawBuffer(buffer);
     #else
@@ -256,7 +314,11 @@ void AbstractFramebuffer::drawBufferImplementationDSA(GLenum buffer) {
 void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
     /** @todo Get some extension wrangler instead to avoid undeclared glReadBuffer() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES2
+    bindInternal(FramebufferTarget::Read);
+    #else
     bindInternal(readTarget);
+    #endif
     glReadBuffer(buffer);
     #else
     static_cast<void>(buffer);

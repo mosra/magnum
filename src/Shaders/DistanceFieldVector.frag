@@ -25,18 +25,19 @@
 #ifndef NEW_GLSL
 #define in varying
 #define fragmentColor gl_FragColor
+#define texture texture2D
 #endif
 
 #ifndef GL_ES
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1) uniform lowp vec4 color;
 layout(location = 2) uniform lowp vec4 outlineColor;
-layout(location = 3) uniform lowp vec2 outlineRange = vec2(0.5, 0.0);
+layout(location = 3) uniform lowp vec2 outlineRange = vec2(0.5, 1.0);
 layout(location = 4) uniform lowp float smoothness = 0.04;
 #else
 uniform lowp vec4 color;
 uniform lowp vec4 outlineColor;
-uniform lowp vec2 outlineRange = vec2(0.5, 0.0);
+uniform lowp vec2 outlineRange = vec2(0.5, 1.0);
 uniform lowp float smoothness = 0.04;
 #endif
 #else
@@ -52,10 +53,10 @@ layout(binding = 16) uniform sampler2D vectorTexture;
 uniform lowp sampler2D vectorTexture;
 #endif
 
-in vec2 fragmentTextureCoordinates;
+in mediump vec2 fragmentTextureCoordinates;
 
 #ifdef NEW_GLSL
-out vec4 fragmentColor;
+out lowp vec4 fragmentColor;
 #endif
 
 void main() {
@@ -65,9 +66,9 @@ void main() {
     fragmentColor = smoothstep(outlineRange.x-smoothness, outlineRange.x+smoothness, intensity)*color;
 
     /* Outline */
-    if(outlineRange.x < outlineRange.y) {
+    if(outlineRange.x > outlineRange.y) {
         lowp float mid = (outlineRange.x + outlineRange.y)/2.0;
-        lowp float half = (outlineRange.y - outlineRange.x)/2.0;
+        lowp float half = (outlineRange.x - outlineRange.y)/2.0;
         fragmentColor += smoothstep(half+smoothness, half-smoothness, distance(mid, intensity))*outlineColor;
     }
 }
