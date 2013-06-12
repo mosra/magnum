@@ -34,6 +34,8 @@
 
 namespace Magnum {
 
+AbstractFramebuffer::CheckStatusImplementation AbstractFramebuffer::checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDefault;
+
 AbstractFramebuffer::ReadImplementation AbstractFramebuffer::readImplementation = &AbstractFramebuffer::readImplementationDefault;
 
 AbstractFramebuffer::DrawBuffersImplementation AbstractFramebuffer::drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDefault;
@@ -199,6 +201,7 @@ void AbstractFramebuffer::initializeContextBasedFunctionality(Context* context) 
     if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         Debug() << "AbstractFramebuffer: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
 
+        checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDSA;
         drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDSA;
         drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDSA;
         readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDSA;
@@ -253,6 +256,17 @@ void AbstractFramebuffer::initializeContextBasedFunctionality(Context* context) 
     static_cast<void>(context);
     #endif
 }
+
+GLenum AbstractFramebuffer::checkStatusImplementationDefault(const FramebufferTarget target) {
+    bindInternal(target);
+    return glCheckFramebufferStatus(GLenum(target));
+}
+
+#ifndef MAGNUM_TARGET_GLES
+GLenum AbstractFramebuffer::checkStatusImplementationDSA(const FramebufferTarget target) {
+    return glCheckNamedFramebufferStatusEXT(_id, GLenum(target));
+}
+#endif
 
 void AbstractFramebuffer::drawBuffersImplementationDefault(GLsizei count, const GLenum* buffers) {
     /** @todo Re-enable when extension wrangler is available for ES2 */

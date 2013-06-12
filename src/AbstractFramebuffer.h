@@ -276,6 +276,9 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         static MAGNUM_LOCAL FramebufferTarget drawTarget;
         #endif
 
+        typedef GLenum(AbstractFramebuffer::*CheckStatusImplementation)(FramebufferTarget);
+        static CheckStatusImplementation checkStatusImplementation;
+
         typedef void(AbstractFramebuffer::*DrawBuffersImplementation)(GLsizei, const GLenum*);
         static MAGNUM_LOCAL DrawBuffersImplementation drawBuffersImplementation;
 
@@ -293,6 +296,11 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+
+        GLenum MAGNUM_LOCAL checkStatusImplementationDefault(FramebufferTarget target);
+        #ifndef MAGNUM_TARGET_GLES
+        GLenum MAGNUM_LOCAL checkStatusImplementationDSA(FramebufferTarget target);
+        #endif
 
         void MAGNUM_LOCAL drawBuffersImplementationDefault(GLsizei count, const GLenum* buffers);
         #ifndef MAGNUM_TARGET_GLES

@@ -206,6 +206,11 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,disjoint_timer_query),
         _extension(GL,EXT,separate_shader_objects),
         _extension(GL,EXT,sRGB),
+        /**
+         * @todo Support also IMG_multisampled_render_to_texture? It has
+         *      different enum values (!)
+         */
+        _extension(GL,EXT,multisampled_render_to_texture),
         _extension(GL,EXT,robustness),
         _extension(GL,KHR,debug),
         _extension(GL,NV,read_buffer_front),
@@ -247,7 +252,8 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,depth_texture),
         _extension(GL,OES,standard_derivatives),            // done
         _extension(GL,OES,vertex_array_object),
-        _extension(GL,OES,required_internalformat)};
+        _extension(GL,OES,required_internalformat),
+        _extension(GL,OES,surfaceless_context)};            // done
     #endif
 
     switch(version) {

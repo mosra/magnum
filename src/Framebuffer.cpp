@@ -172,4 +172,27 @@ void Framebuffer::texture3DImplementationDSA(BufferAttachment attachment, Textur
 }
 #endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+Debug operator<<(Debug debug, const Framebuffer::Status value) {
+    switch(value) {
+        #define _c(value) case Framebuffer::Status::value: return debug << "Framebuffer::Status::" #value;
+        _c(Complete)
+        _c(IncompleteAttachment)
+        _c(IncompleteMissingAttachment)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(IncompleteDrawBuffer)
+        _c(IncompleteReadBuffer)
+        #endif
+        _c(Unsupported)
+        _c(IncompleteMultisample)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(IncompleteLayerTargets)
+        #endif
+        #undef _c
+    }
+
+    return debug << "Framebuffer::Status::(invalid)";
+}
+#endif
+
 }

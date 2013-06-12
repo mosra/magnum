@@ -90,4 +90,17 @@ void DefaultFramebuffer::initializeContextBasedFunctionality(Context* context) {
     #endif
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+Debug operator<<(Debug debug, const DefaultFramebuffer::Status value) {
+    switch(value) {
+        #define _c(value) case DefaultFramebuffer::Status::value: return debug << "DefaultFramebuffer::Status::" #value;
+        _c(Complete)
+        _c(Undefined)
+        #undef _c
+    }
+
+    return debug << "DefaultFramebuffer::Status::(invalid)";
+}
+#endif
+
 }

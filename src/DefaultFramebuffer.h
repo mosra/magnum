@@ -80,6 +80,27 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
     friend class Context;
 
     public:
+        /**
+         * @brief Status
+         *
+         * @see checkStatus()
+         * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
+         */
+        enum class Status: GLenum {
+            /** The framebuffer is complete */
+            Complete = GL_FRAMEBUFFER_COMPLETE,
+
+            /**
+             * The default framebuffer does not exist.
+             * @requires_es_extension %Extension @es_extension{OES,surfaceless_context}
+             */
+            #ifndef MAGNUM_TARGET_GLES2
+            Undefined = GL_FRAMEBUFFER_UNDEFINED
+            #else
+            Undefined = GL_FRAMEBUFFER_UNDEFINED_OES
+            #endif
+        };
+
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Draw attachment
@@ -270,6 +291,21 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
         explicit MAGNUM_LOCAL DefaultFramebuffer();
 
+        /**
+         * @brief Check framebuffer status
+         * @param target    Target for which to check the status
+         *
+         * If @extension{EXT,direct_state_access} is not available and the
+         * framebuffer is not currently bound, it is bound before the
+         * operation.
+         * @see @fn_gl{BindFramebuffer}, @fn_gl{CheckFramebufferStatus} or
+         *      @fn_gl_extension{CheckNamedFramebufferStatus,EXT,direct_state_access}
+         * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
+         */
+        Status checkStatus(FramebufferTarget target) {
+            return Status((this->*checkStatusImplementation)(target));
+        }
+
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Map shader outputs to buffer attachment
@@ -379,6 +415,9 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
 /** @brief Default framebuffer instance */
 extern DefaultFramebuffer MAGNUM_EXPORT defaultFramebuffer;
+
+/** @debugoperator{DefaultFramebuffer} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, DefaultFramebuffer::Status value);
 
 }
 

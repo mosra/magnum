@@ -213,6 +213,66 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
         };
 
         /**
+         * @brief Status
+         *
+         * @see checkStatus()
+         */
+        enum class Status: GLenum {
+            /** The framebuffer is complete */
+            Complete = GL_FRAMEBUFFER_COMPLETE,
+
+            /** Any of the attachment points are incomplete */
+            IncompleteAttachment = GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT,
+
+            /** The framebuffer does not have at least one image attached to it */
+            IncompleteMissingAttachment = GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /** @todo Why exactly this is not needed? */
+            /**
+             * No object attached to any draw color attachment points
+             * @requires_gl Not available in OpenGL ES.
+             */
+            IncompleteDrawBuffer = GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER,
+
+            /**
+             * No object attached to read color attachment point
+             * @requires_gl Not available in OpenGL ES.
+             */
+            IncompleteReadBuffer = GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER,
+            #endif
+
+            /**
+             * Combination of internal formats of the attached images violates
+             * an implementation-dependent set of restrictions.
+             */
+            Unsupported = GL_FRAMEBUFFER_UNSUPPORTED,
+
+            /**
+             * Sample count or locations are not the same for all attached
+             * images.
+             * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_multisample},
+             *      @es_extension{APPLE,framebuffer_multisample},
+             *      @es_extension{EXT,multisampled_render_to_texture} or
+             *      @es_extension{NV,framebuffer_multisample}
+             */
+            #ifndef MAGNUM_TARGET_GLES2
+            IncompleteMultisample = GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE,
+            #else
+            IncompleteMultisample = GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_APPLE,
+            #endif
+
+            #ifndef MAGNUM_TARGET_GLES
+            /** @todo Why exactly this is not needed? */
+            /**
+             * Mismatched layered color attachments
+             * @requires_gl Not available in OpenGL ES.
+             */
+            IncompleteLayerTargets = GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS
+            #endif
+        };
+
+        /**
          * @brief Constructor
          *
          * Generates new OpenGL framebuffer.
@@ -227,6 +287,20 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @see @fn_gl{DeleteFramebuffers}
          */
         ~Framebuffer();
+
+        /**
+         * @brief Check framebuffer status
+         * @param target    Target for which check the status
+         *
+         * If @extension{EXT,direct_state_access} is not available and the
+         * framebuffer is not currently bound, it is bound before the
+         * operation.
+         * @see @fn_gl{BindFramebuffer}, @fn_gl{CheckFramebufferStatus} or
+         *      @fn_gl_extension{CheckNamedFramebufferStatus,EXT,direct_state_access}
+         */
+        Status checkStatus(FramebufferTarget target) {
+            return Status((this->*checkStatusImplementation)(target));
+        }
 
         /**
          * @brief Map shader output to attachments
@@ -451,6 +525,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
         #endif
         static Texture3DImplementation texture3DImplementation;
 };
+
+/** @debugoperator{DefaultFramebuffer} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Framebuffer::Status value);
 
 }
 
