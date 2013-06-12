@@ -272,7 +272,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
     #else
     protected:
     #endif
-        ~AbstractFramebuffer() = default;
+        ~AbstractFramebuffer();
 
         void MAGNUM_LOCAL bindInternal(FramebufferTarget target);
         FramebufferTarget MAGNUM_LOCAL bindInternal();
@@ -333,6 +333,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 };
 
 inline AbstractFramebuffer::AbstractFramebuffer() = default;
+inline AbstractFramebuffer::~AbstractFramebuffer() = default;
 
 CORRADE_ENUMSET_OPERATORS(FramebufferClearMask)
 CORRADE_ENUMSET_OPERATORS(FramebufferBlitMask)
