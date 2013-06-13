@@ -61,7 +61,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug() << "";
 
     Debug() << "Used application: Platform::WindowlessGlxApplication";
-
     Debug() << "Compilation flags:";
     #ifdef CORRADE_GCC46_COMPATIBILITY
     Debug() << "    CORRADE_GCC46_COMPATIBILITY";
@@ -72,9 +71,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifdef CORRADE_BUILD_STATIC
     Debug() << "    CORRADE_BUILD_STATIC";
     #endif
-    #ifdef MAGNUM_BUILD_STATIC
-    Debug() << "    MAGNUM_BUILD_STATIC";
-    #endif
     #ifdef CORRADE_TARGET_NACL
     Debug() << "    CORRADE_TARGET_NACL";
     #endif
@@ -83,6 +79,12 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #endif
     #ifdef CORRADE_TARGET_NACL_GLIBC
     Debug() << "    CORRADE_TARGET_NACL_GLIBC";
+    #endif
+    #ifdef CORRADE_TARGET_EMSCRIPTEN
+    Debug() << "    CORRADE_TARGET_EMSCRIPTEN";
+    #endif
+    #ifdef MAGNUM_BUILD_STATIC
+    Debug() << "    MAGNUM_BUILD_STATIC";
     #endif
     #ifdef MAGNUM_TARGET_GLES
     Debug() << "    MAGNUM_TARGET_GLES";
