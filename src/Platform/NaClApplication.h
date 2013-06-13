@@ -61,7 +61,7 @@ You need to implement at least drawEvent() and viewportEvent() to be able to
 draw on the screen. The subclass must be then registered to NaCl API using
 MAGNUM_NACLAPPLICATION_MAIN() macro.
 @code
-class MyApplication: public Magnum::Platform::Sdl2Application {
+class MyApplication: public Magnum::Platform::NaClApplication {
     // implement required methods...
 };
 MAGNUM_NACLAPPLICATION_MAIN(MyApplication)
