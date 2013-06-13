@@ -24,9 +24,16 @@
 
 #include <Utility/Debug.h>
 #include <corradeCompatibility.h>
+#ifdef CORRADE_TARGET_NACL
+#include <Utility/NaClStreamBuffer.h>
+#endif
 
 #include "Context.h"
+#ifndef CORRADE_TARGET_NACL
 #include "Platform/WindowlessGlxApplication.h"
+#else
+#include "Platform/WindowlessNaClApplication.h"
+#endif
 
 namespace Magnum {
 
@@ -39,6 +46,13 @@ class MagnumInfo: public Platform::WindowlessApplication {
 
 MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplication(arguments) {
     Context* c = Context::current();
+
+    /* Pass debug output as messages to JavaScript */
+    #ifdef CORRADE_TARGET_NACL
+    Utility::NaClMessageStreamBuffer buffer(this);
+    std::ostream out(&buffer);
+    Debug::setOutput(&out);
+    #endif
 
     Debug() << "";
     Debug() << "  +---------------------------------------------------------+";
