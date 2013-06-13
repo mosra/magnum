@@ -30,14 +30,14 @@
 
 namespace Magnum {
 
-class MagnumInfo: public Platform::WindowlessGlxApplication {
+class MagnumInfo: public Platform::WindowlessApplication {
     public:
         explicit MagnumInfo(const Arguments& arguments);
 
         int exec() override { return 0; }
 };
 
-MagnumInfo::MagnumInfo(const Arguments& arguments): WindowlessGlxApplication(arguments) {
+MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplication(arguments) {
     Context* c = Context::current();
 
     Debug() << "";
@@ -136,4 +136,4 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): WindowlessGlxApplication(arg
 
 }
 
-MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN(Magnum::MagnumInfo)
+MAGNUM_WINDOWLESSAPPLICATION_MAIN(Magnum::MagnumInfo)
