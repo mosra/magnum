@@ -24,21 +24,35 @@
 
 #include <Utility/Debug.h>
 #include <corradeCompatibility.h>
+#ifdef CORRADE_TARGET_NACL
+#include <Utility/NaClStreamBuffer.h>
+#endif
 
 #include "Context.h"
+#ifndef CORRADE_TARGET_NACL
 #include "Platform/WindowlessGlxApplication.h"
+#else
+#include "Platform/WindowlessNaClApplication.h"
+#endif
 
 namespace Magnum {
 
-class MagnumInfo: public Platform::WindowlessGlxApplication {
+class MagnumInfo: public Platform::WindowlessApplication {
     public:
         explicit MagnumInfo(const Arguments& arguments);
 
         int exec() override { return 0; }
 };
 
-MagnumInfo::MagnumInfo(const Arguments& arguments): WindowlessGlxApplication(arguments) {
+MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplication(arguments) {
     Context* c = Context::current();
+
+    /* Pass debug output as messages to JavaScript */
+    #ifdef CORRADE_TARGET_NACL
+    Utility::NaClMessageStreamBuffer buffer(this);
+    std::ostream out(&buffer);
+    Debug::setOutput(&out);
+    #endif
 
     Debug() << "";
     Debug() << "  +---------------------------------------------------------+";
@@ -47,43 +61,44 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): WindowlessGlxApplication(arg
     Debug() << "";
 
     Debug() << "Used application: Platform::WindowlessGlxApplication";
-    {
-        Debug d;
-        d << "Compilation flags:";
-        #ifdef CORRADE_GCC44_COMPATIBILITY
-        d << "CORRADE_GCC44_COMPATIBILITY";
-        #endif
-        #ifdef CORRADE_GCC45_COMPATIBILITY
-        d << "CORRADE_GCC45_COMPATIBILITY";
-        #endif
-        #ifdef CORRADE_GCC46_COMPATIBILITY
-        d << "CORRADE_GCC46_COMPATIBILITY";
-        #endif
-        #ifdef CORRADE_BUILD_STATIC
-        d << "CORRADE_BUILD_STATIC";
-        #endif
-        #ifdef MAGNUM_BUILD_STATIC
-        d << "MAGNUM_BUILD_STATIC";
-        #endif
-        #ifdef CORRADE_TARGET_NACL
-        d << "CORRADE_TARGET_NACL";
-        #endif
-        #ifdef CORRADE_TARGET_NACL_NEWLIB
-        d << "CORRADE_TARGET_NACL_NEWLIB";
-        #endif
-        #ifdef CORRADE_TARGET_NACL_GLIBC
-        d << "CORRADE_TARGET_NACL_GLIBC";
-        #endif
-        #ifdef MAGNUM_TARGET_GLES
-        d << "MAGNUM_TARGET_GLES";
-        #endif
-        #ifdef MAGNUM_TARGET_GLES2
-        d << "MAGNUM_TARGET_GLES2";
-        #endif
-        #ifdef MAGNUM_TARGET_DESKTOP_GLES
-        d << "MAGNUM_TARGET_DESKTOP_GLES";
-        #endif
-    }
+
+    Debug() << "Compilation flags:";
+    #ifdef CORRADE_GCC44_COMPATIBILITY
+    Debug() << "    CORRADE_GCC44_COMPATIBILITY";
+    #endif
+    #ifdef CORRADE_GCC45_COMPATIBILITY
+    Debug() << "    CORRADE_GCC45_COMPATIBILITY";
+    #endif
+    #ifdef CORRADE_GCC46_COMPATIBILITY
+    Debug() << "    CORRADE_GCC46_COMPATIBILITY";
+    #endif
+    #ifdef CORRADE_GCC47_COMPATIBILITY
+    Debug() << "    CORRADE_GCC47_COMPATIBILITY";
+    #endif
+    #ifdef CORRADE_BUILD_STATIC
+    Debug() << "    CORRADE_BUILD_STATIC";
+    #endif
+    #ifdef MAGNUM_BUILD_STATIC
+    Debug() << "    MAGNUM_BUILD_STATIC";
+    #endif
+    #ifdef CORRADE_TARGET_NACL
+    Debug() << "    CORRADE_TARGET_NACL";
+    #endif
+    #ifdef CORRADE_TARGET_NACL_NEWLIB
+    Debug() << "    CORRADE_TARGET_NACL_NEWLIB";
+    #endif
+    #ifdef CORRADE_TARGET_NACL_GLIBC
+    Debug() << "    CORRADE_TARGET_NACL_GLIBC";
+    #endif
+    #ifdef MAGNUM_TARGET_GLES
+    Debug() << "    MAGNUM_TARGET_GLES";
+    #endif
+    #ifdef MAGNUM_TARGET_GLES2
+    Debug() << "    MAGNUM_TARGET_GLES2";
+    #endif
+    #ifdef MAGNUM_TARGET_DESKTOP_GLES
+    Debug() << "    MAGNUM_TARGET_DESKTOP_GLES";
+    #endif
     Debug() << "";
 
     Debug() << "Vendor:" << c->vendorString();
@@ -145,4 +160,4 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): WindowlessGlxApplication(arg
 
 }
 
-MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN(Magnum::MagnumInfo)
+MAGNUM_WINDOWLESSAPPLICATION_MAIN(Magnum::MagnumInfo)

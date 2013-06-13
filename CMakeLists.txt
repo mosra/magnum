@@ -26,6 +26,9 @@
 cmake_minimum_required(VERSION 2.8)
 project(Magnum)
 
+# Find Corrade first so we can check on the target
+find_package(Corrade REQUIRED)
+
 include(CMakeDependentOption)
 
 option(TARGET_GLES "Build for OpenGL ES instead of desktop OpenGL" OFF)
@@ -46,6 +49,7 @@ option(WITH_MAGNUMINFO "Build magnum-info utility" OFF)
 # Application libraries
 if(CORRADE_TARGET_NACL)
     option(WITH_NACLAPPLICATION "Build NaClApplication library" OFF)
+    cmake_dependent_option(WITH_WINDOWLESSNACLAPPLICATION "Build WindowlessNaClApplication library" OFF "NOT WITH_MAGNUMINFO" ON)
 else()
     option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
     cmake_dependent_option(WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "NOT WITH_MAGNUMINFO" ON)
@@ -70,8 +74,6 @@ if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION} VERSION_
     cmake_policy(SET CMP0017 NEW)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Magnum_SOURCE_DIR}/modules-compatibility/")
 endif()
-
-find_package(Corrade REQUIRED)
 
 # If targeting NaCl or Emscripten, set explicit OpenGL ES 2.0 support
 if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN)
@@ -123,6 +125,7 @@ endif()
 include(CorradeLibSuffix)
 set(MAGNUM_BINARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/bin)
 set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
+set(MAGNUM_DATA_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/magnum)
 set(MAGNUM_CMAKE_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
 

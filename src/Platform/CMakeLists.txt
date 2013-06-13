@@ -72,6 +72,18 @@ if(WITH_NACLAPPLICATION)
     install(TARGETS MagnumNaClApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
+# Windowless NaCl application
+if(WITH_WINDOWLESSNACLAPPLICATION)
+    if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
+        message(FATAL_ERROR "WindowlessNaClApplication is available only when targeting Google Chrome Native Client. Set WITH_WINDOWLESSNACLAPPLICATION to OFF to skip building it.")
+    endif()
+
+    add_library(MagnumWindowlessNaClApplication STATIC
+        WindowlessNaClApplication.cpp)
+    install(FILES WindowlessNaClApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(TARGETS MagnumWindowlessNaClApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+endif()
+
 # GLX application
 if(WITH_GLXAPPLICATION)
     set(NEED_ABSTRACTXAPPLICATION 1)
@@ -144,11 +156,20 @@ endif()
 
 # Magnum Info
 if(WITH_MAGNUMINFO)
-    if(UNIX)
-        add_executable(magnum-info magnum-info.cpp)
+    if(NOT UNIX AND NOT CORRADE_TARGET_NACL)
+        message(FATAL_ERROR "magnum-info is not available on this platform. Set WITH_MAGNUMINFO to OFF to suppress this warning.")
+    endif()
+
+    add_executable(magnum-info magnum-info.cpp)
+    if(UNIX AND NOT CORRADE_TARGET_NACL)
         target_link_libraries(magnum-info Magnum MagnumWindowlessGlxApplication ${X11_LIBRARIES})
-        install(TARGETS magnum-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-    else()
-        message(WARNING "magnum-info is currently available only on Unix. Set WITH_MAGNUMINFO to OFF to suppress this warning.")
+    elseif(CORRADE_TARGET_NACL)
+        target_link_libraries(magnum-info Magnum MagnumWindowlessNaClApplication ppapi_cpp ppapi)
+    endif()
+
+    install(TARGETS magnum-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+    if(CORRADE_TARGET_NACL)
+        install(FILES magnum-info-nacl.html DESTINATION ${MAGNUM_DATA_INSTALL_DIR} RENAME magnum-info.html)
+        install(FILES magnum-info-nacl.nmf DESTINATION ${MAGNUM_DATA_INSTALL_DIR} RENAME magnum-info.nmf)
     endif()
 endif()

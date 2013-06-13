@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Magnum Info</title>
+<style type="text/css">
+body {
+    margin: 0px;
+    padding: 0px;
+    font-family: sans-serif;
+    background-color: #111111;
+    color: #aaaaaa;
+}
+
+h1 {
+    text-align: center;
+    font-size: 20px;
+}
+
+#listener {
+    border-style: solid;
+    border-color: #333333;
+    border-width: 1px;
+    padding: 1px;
+    width: 640px;
+    height: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+#module {
+    visibility: hidden;
+    position: absolute;
+}
+
+#info {
+    width: 640px;
+    height: 480px;
+    overflow: auto;
+    font-family: monospace;
+    white-space: pre-wrap;
+}
+
+#status {
+    position: absolute;
+    width: 640px;
+    text-align: center;
+    top: 200px;
+    font-size: 30px;
+    font-weight: bold;
+    z-index: 9;
+}
+</style>
+</head>
+<body onload="pageLoaded();">
+<h1>Magnum Info</h1>
+<div id="listener">
+<script type="text/javascript">
+var module = null;
+
+function pageLoaded() {
+    if(!module) setStatus('Loading...');
+}
+
+function moduleLoaded() {
+    module = document.getElementById('module');
+    setStatus('');
+}
+
+function messageReceived(message) {
+    var info = document.getElementById('info');
+    info.innerHTML += message.data;
+}
+
+function setStatus(message) {
+    var status = document.getElementById('status');
+    if(status) status.innerHTML = message;
+}
+
+var listener = document.getElementById('listener');
+listener.addEventListener('load', moduleLoaded, true);
+listener.addEventListener('message', messageReceived, true);
+</script>
+<embed name="nacl" id="module" type="application/x-nacl" src="magnum-info.nmf" />
+<div id="status">Initialization...</div>
+<div id="info"></div>
+</div>
+</body>
+</html>
