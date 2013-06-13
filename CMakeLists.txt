@@ -26,6 +26,9 @@
 cmake_minimum_required(VERSION 2.8.8)
 project(Magnum)
 
+# Find Corrade first so we can check on the target
+find_package(Corrade REQUIRED)
+
 include(CMakeDependentOption)
 
 option(TARGET_GLES "Build for OpenGL ES instead of desktop OpenGL" OFF)
@@ -62,8 +65,6 @@ if(BUILD_TESTS)
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
-
-find_package(Corrade REQUIRED)
 
 # If targeting NaCl or Emscripten, set explicit OpenGL ES 2.0 support
 if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN)
