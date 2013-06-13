@@ -27,16 +27,35 @@
 #include <ppapi/cpp/graphics_3d.h>
 #include <ppapi/cpp/fullscreen.h>
 #include <ppapi/cpp/completion_callback.h>
+#include <Utility/NaClStreamBuffer.h>
 
 #include "Context.h"
 
 namespace Magnum { namespace Platform {
 
+struct NaClApplication::ConsoleDebugOutput {
+    explicit ConsoleDebugOutput(pp::Instance* instance);
+
+    Utility::NaClConsoleStreamBuffer debugBuffer, warningBuffer, errorBuffer;
+    std::ostream debugOutput, warningOutput, errorOutput;
+};
+
+NaClApplication::ConsoleDebugOutput::ConsoleDebugOutput(pp::Instance* instance): debugBuffer(instance, Utility::NaClConsoleStreamBuffer::LogLevel::Log), warningBuffer(instance, Utility::NaClConsoleStreamBuffer::LogLevel::Warning), errorBuffer(instance, Utility::NaClConsoleStreamBuffer::LogLevel::Error), debugOutput(&debugBuffer), warningOutput(&warningBuffer), errorOutput(&errorBuffer) {
+    /* Inform about this change on standard output */
+    Debug() << "Platform::NaClApplication: redirecting Debug, Warning and Error output to JavaScript console";
+
+    Debug::setOutput(&debugOutput);
+    Warning::setOutput(&warningOutput);
+    Error::setOutput(&errorOutput);
+}
+
 NaClApplication::NaClApplication(const Arguments& arguments): Instance(arguments), Graphics3DClient(this), MouseLock(this), c(nullptr) {
+    debugOutput = new ConsoleDebugOutput(this);
     createContext(new Configuration);
 }
 
 NaClApplication::NaClApplication(const Arguments& arguments, Configuration* configuration): Instance(arguments), Graphics3DClient(this), MouseLock(this), graphics(nullptr), fullscreen(nullptr), c(nullptr) {
+    debugOutput = new ConsoleDebugOutput(this);
     if(configuration) createContext(configuration);
 }
 
@@ -95,6 +114,7 @@ NaClApplication::~NaClApplication() {
     delete c;
     delete fullscreen;
     delete graphics;
+    delete debugOutput;
 }
 
 bool NaClApplication::isFullscreen() {

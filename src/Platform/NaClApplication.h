@@ -61,7 +61,7 @@ You need to implement at least drawEvent() and viewportEvent() to be able to
 draw on the screen. The subclass must be then registered to NaCl API using
 MAGNUM_NACLAPPLICATION_MAIN() macro.
 @code
-class MyApplication: public Magnum::Platform::Sdl2Application {
+class MyApplication: public Magnum::Platform::NaClApplication {
     // implement required methods...
 };
 MAGNUM_NACLAPPLICATION_MAIN(MyApplication)
@@ -70,6 +70,19 @@ MAGNUM_NACLAPPLICATION_MAIN(MyApplication)
 If no other application header is included this class is also aliased to
 `Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
 to simplify porting.
+
+@section NaClApplication-html HTML markup and NMF file
+
+You need to provide HTML markup containing `&lt;embed&gt;` pointing to `*.nmf`
+file describing the application.
+
+@todoc Document this better, add "bootstrap" examples
+
+@subsection NaClApplication-html-console Redirecting output to Chrome's JavaScript console
+
+The application redirects @ref Debug, @ref Warning and @ref Error output to
+JavaScript console. See also @ref Corrade::Utility::NaClConsoleStreamBuffer for
+more information.
 */
 class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public pp::MouseLock {
     public:
@@ -210,6 +223,8 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         /*@}*/
 
     private:
+        struct ConsoleDebugOutput;
+
         enum class Flag: UnsignedByte {
             ViewportUpdated = 1 << 0,
             SwapInProgress = 1 << 1,
@@ -240,6 +255,8 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         Context* c;
         Vector2i viewportSize;
         Flags flags;
+
+        ConsoleDebugOutput* debugOutput;
 
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 };
