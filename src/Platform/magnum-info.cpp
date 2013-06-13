@@ -61,40 +61,38 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug() << "";
 
     Debug() << "Used application: Platform::WindowlessGlxApplication";
-    {
-        Debug d;
-        d << "Compilation flags:";
-        #ifdef CORRADE_GCC46_COMPATIBILITY
-        d << "CORRADE_GCC46_COMPATIBILITY";
-        #endif
-        #ifdef CORRADE_GCC47_COMPATIBILITY
-        d << "CORRADE_GCC47_COMPATIBILITY";
-        #endif
-        #ifdef CORRADE_BUILD_STATIC
-        d << "CORRADE_BUILD_STATIC";
-        #endif
-        #ifdef MAGNUM_BUILD_STATIC
-        d << "MAGNUM_BUILD_STATIC";
-        #endif
-        #ifdef CORRADE_TARGET_NACL
-        d << "CORRADE_TARGET_NACL";
-        #endif
-        #ifdef CORRADE_TARGET_NACL_NEWLIB
-        d << "CORRADE_TARGET_NACL_NEWLIB";
-        #endif
-        #ifdef CORRADE_TARGET_NACL_GLIBC
-        d << "CORRADE_TARGET_NACL_GLIBC";
-        #endif
-        #ifdef MAGNUM_TARGET_GLES
-        d << "MAGNUM_TARGET_GLES";
-        #endif
-        #ifdef MAGNUM_TARGET_GLES2
-        d << "MAGNUM_TARGET_GLES2";
-        #endif
-        #ifdef MAGNUM_TARGET_DESKTOP_GLES
-        d << "MAGNUM_TARGET_DESKTOP_GLES";
-        #endif
-    }
+
+    Debug() << "Compilation flags:";
+    #ifdef CORRADE_GCC46_COMPATIBILITY
+    Debug() << "    CORRADE_GCC46_COMPATIBILITY";
+    #endif
+    #ifdef CORRADE_GCC47_COMPATIBILITY
+    Debug() << "    CORRADE_GCC47_COMPATIBILITY";
+    #endif
+    #ifdef CORRADE_BUILD_STATIC
+    Debug() << "    CORRADE_BUILD_STATIC";
+    #endif
+    #ifdef MAGNUM_BUILD_STATIC
+    Debug() << "    MAGNUM_BUILD_STATIC";
+    #endif
+    #ifdef CORRADE_TARGET_NACL
+    Debug() << "    CORRADE_TARGET_NACL";
+    #endif
+    #ifdef CORRADE_TARGET_NACL_NEWLIB
+    Debug() << "    CORRADE_TARGET_NACL_NEWLIB";
+    #endif
+    #ifdef CORRADE_TARGET_NACL_GLIBC
+    Debug() << "    CORRADE_TARGET_NACL_GLIBC";
+    #endif
+    #ifdef MAGNUM_TARGET_GLES
+    Debug() << "    MAGNUM_TARGET_GLES";
+    #endif
+    #ifdef MAGNUM_TARGET_GLES2
+    Debug() << "    MAGNUM_TARGET_GLES2";
+    #endif
+    #ifdef MAGNUM_TARGET_DESKTOP_GLES
+    Debug() << "    MAGNUM_TARGET_DESKTOP_GLES";
+    #endif
     Debug() << "";
 
     Debug() << "Vendor:" << c->vendorString();
