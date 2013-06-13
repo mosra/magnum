@@ -77,9 +77,10 @@ file describing the application.
 
 @subsection WindowlessNaClApplication-html-console Redirecting output to Chrome's JavaScript console
 
-The application redirects @ref Debug, @ref Warning and @ref Error output to
-JavaScript console. See also @ref Corrade::Utility::NaClConsoleStreamBuffer for
-more information.
+The application redirects @ref Corrade::Utility::Debug "Debug",
+@ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error"
+output to JavaScript console. See also @ref Corrade::Utility::NaClConsoleStreamBuffer
+for more information.
 */
 class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClient {
     public:
