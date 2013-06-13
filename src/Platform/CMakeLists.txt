@@ -72,6 +72,18 @@ if(WITH_NACLAPPLICATION)
     install(TARGETS MagnumNaClApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
+# Windowless NaCl application
+if(WITH_WINDOWLESSNACLAPPLICATION)
+    if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
+        message(FATAL_ERROR "WindowlessNaClApplication is available only when targeting Google Chrome Native Client. Set WITH_WINDOWLESSNACLAPPLICATION to OFF to skip building it.")
+    endif()
+
+    add_library(MagnumWindowlessNaClApplication STATIC
+        WindowlessNaClApplication.cpp)
+    install(FILES WindowlessNaClApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(TARGETS MagnumWindowlessNaClApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+endif()
+
 # GLX application
 if(WITH_GLXAPPLICATION)
     set(NEED_ABSTRACTXAPPLICATION 1)

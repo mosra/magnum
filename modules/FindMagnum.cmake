@@ -185,8 +185,8 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             endif()
         endif()
 
-        # NaCl application dependencies
-        if(${component} STREQUAL NaClApplication)
+        # (Windowless) NaCl application dependencies
+        if(${component} STREQUAL NaClApplication OR ${component} STREQUAL WindowlessNaClApplication)
             set(_MAGNUM_${_COMPONENT}_LIBRARIES ppapi_cpp ppapi ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
         endif()
 

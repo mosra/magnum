@@ -49,6 +49,7 @@ option(WITH_MAGNUMINFO "Build magnum-info utility" OFF)
 # Application libraries
 if(CORRADE_TARGET_NACL)
     option(WITH_NACLAPPLICATION "Build NaClApplication library" OFF)
+    cmake_dependent_option(WITH_WINDOWLESSNACLAPPLICATION "Build WindowlessNaClApplication library" OFF "NOT WITH_MAGNUMINFO" ON)
 else()
     option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
     cmake_dependent_option(WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "NOT WITH_MAGNUMINFO" ON)
