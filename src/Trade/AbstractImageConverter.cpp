@@ -24,6 +24,7 @@
 
 #include "AbstractImageConverter.h"
 
+#include <Containers/Array.h>
 #include <Utility/Assert.h>
 
 namespace Magnum { namespace Trade {
@@ -39,7 +40,7 @@ Image2D* AbstractImageConverter::convertToImage(const Image2D* const) const {
     CORRADE_ASSERT(false, "Trade::AbstractImageConverter::convertToImage(): feature not implemented", nullptr);
 }
 
-std::pair<const unsigned char*, std::size_t> AbstractImageConverter::convertToData(const Image2D* const) const {
+Containers::Array<unsigned char> AbstractImageConverter::convertToData(const Image2D* const) const {
     CORRADE_ASSERT(features() & Feature::ConvertToData,
         "Trade::AbstractImageConverter::convertToData(): feature advertised but not implemented", {});
 

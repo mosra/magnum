@@ -100,7 +100,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
          * Returns data pointer and size on success, `nullptr` otherwise.
          * @see features(), convertToImage(), convertToFile()
          */
-        virtual std::pair<const unsigned char*, std::size_t> convertToData(const Image2D* image) const;
+        virtual Containers::Array<unsigned char> convertToData(const Image2D* image) const;
 
         /**
          * @brief Convert image and save it to file
