@@ -27,6 +27,7 @@
 #include <fstream>
 #include <sstream>
 #include <Utility/Endianness.h>
+#include <Containers/Array.h>
 #include <ImageFormat.h>
 #include <Trade/ImageData.h>
 
@@ -45,41 +46,30 @@ TgaImporter::TgaImporter(PluginManager::AbstractManager* manager, std::string pl
 
 TgaImporter::~TgaImporter() { close(); }
 
-TgaImporter::Features TgaImporter::features() const {
-    return Feature::OpenData|Feature::OpenFile;
+auto TgaImporter::doFeatures() const -> Features { return Feature::OpenData; }
+
+bool TgaImporter::doIsOpened() const { return in; }
+
+void TgaImporter::doOpenData(const Containers::ArrayReference<const unsigned char> data) {
+    in = new std::istringstream(std::string(reinterpret_cast<const char*>(data.begin()), data.size()));
 }
 
-bool TgaImporter::TgaImporter::openData(const void* const data, const std::size_t size) {
-    close();
-
-    in = new std::istringstream(std::string(reinterpret_cast<const char*>(data), size));
-    return true;
-}
-
-bool TgaImporter::TgaImporter::openFile(const std::string& filename) {
-    close();
-
+void TgaImporter::doOpenFile(const std::string& filename) {
     in = new std::ifstream(filename.c_str());
-    if(in->good()) return true;
+    if(in->good()) return;
 
     Error() << "Trade::TgaImporter::TgaImporter::openFile(): cannot open file" << filename;
     close();
-    return false;
 }
 
-void TgaImporter::close() {
+void TgaImporter::doClose() {
     delete in;
     in = nullptr;
 }
 
-UnsignedInt TgaImporter::TgaImporter::image2DCount() const {
-    return in ? 1 : 0;
-}
+UnsignedInt TgaImporter::doImage2DCount() const { return 1; }
 
-ImageData2D* TgaImporter::image2D(UnsignedInt id) {
-    CORRADE_ASSERT(in, "Trade::TgaImporter::TgaImporter::image2D(): no file opened", nullptr);
-    CORRADE_ASSERT(id == 0, "Trade::TgaImporter::TgaImporter::image2D(): wrong image ID", nullptr);
-
+ImageData2D* TgaImporter::doImage2D(UnsignedInt) {
     /* Check if the file is long enough */
     in->seekg(0, std::istream::end);
     std::streampos filesize = in->tellg();

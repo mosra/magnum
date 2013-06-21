@@ -26,6 +26,7 @@
 
 #include <fstream>
 #include <tuple>
+#include <Containers/Array.h>
 #include <Utility/Endianness.h>
 #include <Image.h>
 #include <ImageFormat.h>
@@ -43,11 +44,9 @@ TgaImageConverter::TgaImageConverter() = default;
 
 TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager* manager, std::string plugin): AbstractImageConverter(manager, std::move(plugin)) {}
 
-TgaImageConverter::Features TgaImageConverter::features() const {
-    return Feature::ConvertToData|Feature::ConvertToFile;
-}
+auto TgaImageConverter::doFeatures() const -> Features { return Feature::ConvertData; }
 
-std::pair<const unsigned char*, std::size_t> TgaImageConverter::convertToData(const Image2D* const image) const {
+Containers::Array<unsigned char> TgaImageConverter::doExportToData(const Image2D* const image) const {
     #ifndef MAGNUM_TARGET_GLES
     if(image->format() != ImageFormat::BGR &&
        image->format() != ImageFormat::BGRA &&
@@ -59,62 +58,41 @@ std::pair<const unsigned char*, std::size_t> TgaImageConverter::convertToData(co
     #endif
     {
         Error() << "Trade::TgaImageConverter::TgaImageConverter::convertToData(): unsupported image format" << image->format();
-        return {nullptr, 0};
+        return nullptr;
     }
 
     if(image->type() != ImageType::UnsignedByte) {
         Error() << "Trade::TgaImageConverter::TgaImageConverter::convertToData(): unsupported image type" << image->type();
-        return {nullptr, 0};
+        return nullptr;
     }
 
     /* Initialize data buffer */
     const UnsignedByte pixelSize = image->pixelSize();
-    const std::size_t size = sizeof(TgaImporter::TgaHeader) + pixelSize*image->size().product();
-    unsigned char* data = new unsigned char[size]();
+    auto data = Containers::Array<unsigned char>::zeroInitialized(sizeof(TgaImporter::TgaHeader) + pixelSize*image->size().product());
 
     /* Fill header */
-    auto header = reinterpret_cast<TgaImporter::TgaHeader*>(data);
+    auto header = reinterpret_cast<TgaImporter::TgaHeader*>(data.begin());
     header->imageType = image->format() == ImageFormat::Red ? 3 : 2;
     header->bpp = pixelSize*8;
     header->width = Utility::Endianness::littleEndian(image->size().x());
     header->height = Utility::Endianness::littleEndian(image->size().y());
 
     /* Fill data */
-    std::copy(image->data(), image->data()+pixelSize*image->size().product(), data+sizeof(TgaImporter::TgaHeader));
+    std::copy(image->data(), image->data()+pixelSize*image->size().product(), data.begin()+sizeof(TgaImporter::TgaHeader));
 
     #ifdef MAGNUM_TARGET_GLES
     if(image->format() == ImageFormat::RGB) {
-        auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data+sizeof(TgaImporter::TgaHeader));
+        auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.begin()+sizeof(TgaImporter::TgaHeader));
         std::transform(pixels, pixels + image->size().product(), pixels,
             [](Math::Vector3<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r'>(pixel); });
     } else if(image->format() == ImageFormat::RGBA) {
-        auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data+sizeof(TgaImporter::TgaHeader));
+        auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data.begin()+sizeof(TgaImporter::TgaHeader));
         std::transform(pixels, pixels + image->size().product(), pixels,
             [](Math::Vector4<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r', 'a'>(pixel); });
     }
     #endif
 
-    return {data, size};
-}
-
-bool TgaImageConverter::convertToFile(const Image2D* const image, const std::string& filename) const {
-    /* Convert the image */
-    const unsigned char* data;
-    std::size_t size;
-    std::tie(data, size) = convertToData(image);
-    if(!data) return false;
-
-    /* Open file */
-    std::ofstream out(filename.c_str());
-    if(!out.good()) {
-        delete[] data;
-        return false;
-    }
-
-    /* Write contents */
-    out.write(reinterpret_cast<const char*>(data), size);
-    delete[] data;
-    return true;
+    return std::move(data);
 }
 
 }}}

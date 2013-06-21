@@ -47,9 +47,9 @@ class TgaImageConverter: public AbstractImageConverter {
         /** @brief Plugin manager constructor */
         explicit TgaImageConverter(PluginManager::AbstractManager* manager, std::string plugin);
 
-        Features features() const override;
-        std::pair<const unsigned char*, std::size_t> convertToData(const Image2D* const image) const override;
-        bool convertToFile(const Image2D* const image, const std::string& filename) const override;
+    private:
+        Features doFeatures() const override;
+        Containers::Array<unsigned char> doExportToData(const Image2D* const image) const override;
 };
 
 }}}

@@ -25,4 +25,4 @@
 #include "TgaImporter.h"
 
 CORRADE_PLUGIN_REGISTER(TgaImporter, Magnum::Trade::TgaImporter::TgaImporter,
-    "cz.mosra.magnum.Trade.AbstractImporter/0.2.1")
+    "cz.mosra.magnum.Trade.AbstractImporter/0.3")

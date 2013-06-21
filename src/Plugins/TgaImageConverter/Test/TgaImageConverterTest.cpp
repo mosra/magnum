@@ -24,6 +24,7 @@
 
 #include <sstream>
 #include <tuple>
+#include <Containers/Array.h>
 #include <TestSuite/Tester.h>
 #include <Utility/Directory.h>
 #include <Image.h>
@@ -44,7 +45,6 @@ class TgaImageConverterTest: public TestSuite::Tester {
         void wrongType();
 
         void data();
-        void file();
 };
 
 namespace {
@@ -64,8 +64,7 @@ TgaImageConverterTest::TgaImageConverterTest() {
     addTests({&TgaImageConverterTest::wrongFormat,
               &TgaImageConverterTest::wrongType,
 
-              &TgaImageConverterTest::data,
-              &TgaImageConverterTest::file});
+              &TgaImageConverterTest::data});
 }
 
 void TgaImageConverterTest::wrongFormat() {
@@ -74,8 +73,7 @@ void TgaImageConverterTest::wrongFormat() {
     std::ostringstream out;
     Error::setOutput(&out);
 
-    const unsigned char* data;
-    std::tie(data, std::ignore) = TgaImageConverter().convertToData(&image);
+    const auto data = TgaImageConverter().exportToData(&image);
     CORRADE_VERIFY(!data);
     CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::TgaImageConverter::convertToData(): unsupported image format ImageFormat::RG\n");
 }
@@ -86,19 +84,16 @@ void TgaImageConverterTest::wrongType() {
     std::ostringstream out;
     Error::setOutput(&out);
 
-    const unsigned char* data;
-    std::tie(data, std::ignore) = TgaImageConverter().convertToData(&image);
+    const auto data = TgaImageConverter().exportToData(&image);
     CORRADE_VERIFY(!data);
     CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::TgaImageConverter::convertToData(): unsupported image type ImageType::Float\n");
 }
 
 void TgaImageConverterTest::data() {
-    const unsigned char* data;
-    std::size_t size;
-    std::tie(data, size) = TgaImageConverter().convertToData(&original);
+    const auto data = TgaImageConverter().exportToData(&original);
 
     TgaImporter::TgaImporter importer;
-    CORRADE_VERIFY(importer.openData(data, size));
+    CORRADE_VERIFY(importer.openData(data));
     Trade::ImageData2D* converted = importer.image2D(0);
     CORRADE_VERIFY(converted);
 
@@ -111,29 +106,6 @@ void TgaImageConverterTest::data() {
     CORRADE_COMPARE(converted->type(), ImageType::UnsignedByte);
     CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(converted->data()), 2*3*3),
                     std::string(reinterpret_cast<const char*>(original.data()), 2*3*3));
-}
-
-void TgaImageConverterTest::file() {
-    const std::string filename = Utility::Directory::join(TGAIMAGECONVERTER_TEST_DIR, "file.tga");
-    Utility::Directory::rm(filename);
-    CORRADE_VERIFY(TgaImageConverter().convertToFile(&original, filename));
-
-    TgaImporter::TgaImporter importer;
-    CORRADE_VERIFY(importer.openFile(filename));
-    Trade::ImageData2D* converted = importer.image2D(0);
-    CORRADE_VERIFY(converted);
-
-    CORRADE_COMPARE(converted->size(), Vector2i(2, 3));
-    #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(converted->format(), ImageFormat::BGR);
-    #else
-    CORRADE_COMPARE(converted->format(), ImageFormat::RGB);
-    #endif
-    CORRADE_COMPARE(converted->type(), ImageType::UnsignedByte);
-    CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(converted->data()), 2*3*3),
-                    std::string(reinterpret_cast<const char*>(original.data()), 2*3*3));
-
-    Utility::Directory::rm(filename);
 }
 
 }}}}
