@@ -44,17 +44,31 @@ Importer is used for importing data like scenes, lights, objects, images,
 textures etc.
 
 @section AbstractImporter-subclassing Subclassing
-Plugin implements function features(), one or more open() functions,
-function close() and one or more pairs of data access functions, based on
-which features are supported in given format.
+
+Plugin implements function doFeatures(), doIsOpened(), one of or both
+doOpenData() and doOpenFile() functions, function doClose() and one or more
+tuples of data access functions, based on which features are supported in given
+format.
 
 For multi-data formats file opening shouldn't take long, all parsing should
 be done in data parsing functions, because the user might want to import only
 some data. This is obviously not the case for single-data formats like images,
 as the file contains all data user wants to import.
+
+You don't need to do most of the redundant sanity checks, these things are
+checked by the implementation:
+
+-   Functions doOpenData() and doOpenFile() are called after the previous file
+    was closed, function doClose() is called only if there is any file opened.
+-   Function doOpenData() is called only if @ref Feature "Feature::OpenData"
+    is supported.
+-   All `do*()` implementations working on opened file are called only if
+    there is any file opened.
+-   All `do*()` implementations taking data ID as parameter are called only if
+    the ID is from valid range.
 */
 class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
-    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.2.1")
+    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.3")
 
     public:
         /**
@@ -63,8 +77,8 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * @see Features, features()
          */
         enum class Feature: UnsignedByte {
-            OpenData = 1 << 0,  /**< Opening files from raw data */
-            OpenFile = 1 << 1   /**< Opening files specified by filename */
+            /** Opening files from raw data using openData() */
+            OpenData = 1 << 0
         };
 
         /** @brief Set of features supported by this importer */
@@ -77,7 +91,10 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
         explicit AbstractImporter(PluginManager::AbstractManager* manager, std::string plugin);
 
         /** @brief Features supported by this importer */
-        virtual Features features() const = 0;
+        Features features() const { return doFeatures(); }
+
+        /** @brief Whether any file is opened */
+        bool isOpened() const { return doIsOpened(); }
 
         /**
          * @brief Open raw data
@@ -89,35 +106,23 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * supported. Returns `true` on success, `false` otherwise.
          * @see features(), openFile()
          */
-        virtual bool openData(const void* const data, const std::size_t size);
-
-        /**
-         * @brief Open raw data
-         * @param data      Data
-         *
-         * Convenience alternative to above function useful when array size is
-         * known at compile-time.
-         */
-        template<std::size_t size, class T> bool openData(const T(&data)[size]) {
-            return openData(data, size*sizeof(T));
-        }
+        bool openData(Containers::ArrayReference<const unsigned char> data);
 
         /**
          * @brief Open file
          * @param filename  Filename
          *
          * Closes previous file, if it was opened, and tries to open given
-         * file. Available only if @ref Feature "Feature::OpenFile" is
-         * supported. Returns `true` on success, `false` otherwise.
+         * file. Returns `true` on success, `false` otherwise.
          * @see features(), openData()
          */
-        virtual bool openFile(const std::string& filename);
+        bool openFile(const std::string& filename);
 
         /** @brief Close file */
-        virtual void close() = 0;
+        void close();
 
         /** @{ @name Data accessors
-         * Each function pair provides access to the data.
+         * Each function tuple provides access to given data.
          */
 
         /**
@@ -129,10 +134,10 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * @note The function is not const, because the value will probably
          *      be lazy-populated.
          */
-        virtual Int defaultScene() { return -1; }
+        Int defaultScene();
 
         /** @brief %Scene count */
-        virtual UnsignedInt sceneCount() const { return 0; }
+        UnsignedInt sceneCount() const;
 
         /**
          * @brief %Scene ID for given name
@@ -140,7 +145,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * If no scene for given name exists, returns `-1`.
          * @see sceneName()
          */
-        virtual Int sceneForName(const std::string& name);
+        Int sceneForName(const std::string& name);
 
         /**
          * @brief %Scene name
@@ -148,7 +153,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          *
          * @see sceneForName()
          */
-        virtual std::string sceneName(UnsignedInt id);
+        std::string sceneName(UnsignedInt id);
 
         /**
          * @brief %Scene
@@ -157,10 +162,10 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * Returns given scene or `nullptr` if import failed. Deleting the data
          * is user responsibility.
          */
-        virtual SceneData* scene(UnsignedInt id);
+        SceneData* scene(UnsignedInt id);
 
         /** @brief %Light count */
-        virtual UnsignedInt lightCount() const { return 0; }
+        UnsignedInt lightCount() const;
 
         /**
          * @brief %Light ID for given name
@@ -168,7 +173,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * If no light for given name exists, returns `-1`.
          * @see lightName()
          */
-        virtual Int lightForName(const std::string& name);
+        Int lightForName(const std::string& name);
 
         /**
          * @brief %Light name
@@ -176,7 +181,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          *
          * @see lightForName()
          */
-        virtual std::string lightName(UnsignedInt id);
+        std::string lightName(UnsignedInt id);
 
         /**
          * @brief %Light
@@ -185,10 +190,10 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * Returns given light or `nullptr` if importing failed. Deleting the
          * data is user responsibility.
          */
-        virtual LightData* light(UnsignedInt id);
+        LightData* light(UnsignedInt id);
 
         /** @brief Camera count */
-        virtual UnsignedInt cameraCount() const { return 0; }
+        UnsignedInt cameraCount() const;
 
         /**
          * @brief Camera ID for given name
@@ -196,7 +201,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * If no camera for given name exists, returns `-1`.
          * @see cameraName()
          */
-        virtual Int cameraForName(const std::string& name);
+        Int cameraForName(const std::string& name);
 
         /**
          * @brief Camera name
@@ -204,7 +209,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          *
          * @see cameraForName()
          */
-        virtual std::string cameraName(UnsignedInt id);
+        std::string cameraName(UnsignedInt id);
 
         /**
          * @brief Camera
@@ -213,10 +218,10 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * Returns given camera or `nullptr` if importing failed. Deleting the
          * data is user responsibility.
          */
-        virtual CameraData* camera(UnsignedInt id);
+        CameraData* camera(UnsignedInt id);
 
         /** @brief Two-dimensional object count */
-        virtual UnsignedInt object2DCount() const { return 0; }
+        UnsignedInt object2DCount() const;
 
         /**
          * @brief Two-dimensional object ID for given name
@@ -224,7 +229,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * If no scene for given name exists, returns `-1`.
          * @see object2DName()
          */
-        virtual Int object2DForName(const std::string& name);
+        Int object2DForName(const std::string& name);
 
         /**
          * @brief Two-dimensional object name
@@ -232,7 +237,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          *
          * @see object2DForName()
          */
-        virtual std::string object2DName(UnsignedInt id);
+        std::string object2DName(UnsignedInt id);
 
         /**
          * @brief Two-dimensional object
@@ -241,10 +246,10 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * Returns given object or `nullptr` if importing failed. Deleting the
          * data is user responsibility.
          */
-        virtual ObjectData2D* object2D(UnsignedInt id);
+        ObjectData2D* object2D(UnsignedInt id);
 
         /** @brief Three-dimensional object count */
-        virtual UnsignedInt object3DCount() const { return 0; }
+        UnsignedInt object3DCount() const;
 
         /**
          * @brief Three-dimensional object ID for given name
@@ -252,7 +257,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * If no scene for given name exists, returns `-1`.
          * @see object3DName()
          */
-        virtual Int object3DForName(const std::string& name);
+        Int object3DForName(const std::string& name);
 
         /**
          * @brief Three-dimensional object name
@@ -260,7 +265,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          *
          * @see object3DForName()
          */
-        virtual std::string object3DName(UnsignedInt id);
+        std::string object3DName(UnsignedInt id);
 
         /**
          * @brief Three-dimensional object
@@ -269,10 +274,10 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * Returns given object or `nullptr` if importing failed. Deleting the
          * data is user responsibility.
          */
-        virtual ObjectData3D* object3D(UnsignedInt id);
+        ObjectData3D* object3D(UnsignedInt id);
 
         /** @brief Two-dimensional mesh count */
-        virtual UnsignedInt mesh2DCount() const { return 0; }
+        UnsignedInt mesh2DCount() const;
 
         /**
          * @brief Two-dimensional mesh ID for given name
@@ -280,7 +285,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * If no mesh for given name exists, returns `-1`.
          * @see mesh2DName()
          */
-        virtual Int mesh2DForName(const std::string& name);
+        Int mesh2DForName(const std::string& name);
 
         /**
          * @brief Two-dimensional mesh name
@@ -288,7 +293,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          *
          * @see mesh2DForName()
          */
-        virtual std::string mesh2DName(UnsignedInt id);
+        std::string mesh2DName(UnsignedInt id);
 
         /**
          * @brief Two-dimensional mesh
@@ -297,10 +302,10 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * Returns given mesh or `nullptr` if importing failed. Deleting the
          * data is user responsibility.
          */
-        virtual MeshData2D* mesh2D(UnsignedInt id);
+        MeshData2D* mesh2D(UnsignedInt id);
 
         /** @brief Three-dimensional mesh count */
-        virtual UnsignedInt mesh3DCount() const { return 0; }
+        UnsignedInt mesh3DCount() const;
 
         /**
          * @brief Three-dimensional mesh ID for given name
@@ -308,7 +313,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * If no mesh for given name exists, returns `-1`.
          * @see mesh3DName()
          */
-        virtual Int mesh3DForName(const std::string& name);
+        Int mesh3DForName(const std::string& name);
 
         /**
          * @brief Three-dimensional mesh name
@@ -316,7 +321,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          *
          * @see mesh3DForName()
          */
-        virtual std::string mesh3DName(UnsignedInt id);
+        std::string mesh3DName(UnsignedInt id);
 
         /**
          * @brief Three-dimensional mesh
@@ -325,10 +330,10 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * Returns given mesh or `nullptr` if importing failed. Deleting the
          * data is user responsibility.
          */
-        virtual MeshData3D* mesh3D(UnsignedInt id);
+        MeshData3D* mesh3D(UnsignedInt id);
 
         /** @brief Material count */
-        virtual UnsignedInt materialCount() const { return 0; }
+        UnsignedInt materialCount() const;
 
         /**
          * @brief Material ID for given name
@@ -336,7 +341,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * If no material for given name exists, returns `-1`.
          * @see materialName()
          */
-        virtual Int materialForName(const std::string& name);
+        Int materialForName(const std::string& name);
 
         /**
          * @brief Material name
@@ -344,7 +349,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          *
          * @see materialForName()
          */
-        virtual std::string materialName(UnsignedInt id);
+        std::string materialName(UnsignedInt id);
 
         /**
          * @brief Material
@@ -353,10 +358,10 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * Returns given material or `nullptr` if importing failed. Deleting
          * the data is user responsibility.
          */
-        virtual AbstractMaterialData* material(UnsignedInt id);
+        AbstractMaterialData* material(UnsignedInt id);
 
         /** @brief %Texture count */
-        virtual UnsignedInt textureCount() const { return 0; }
+        UnsignedInt textureCount() const;
 
         /**
          * @brief %Texture ID for given name
@@ -364,7 +369,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * If no texture for given name exists, returns `-1`.
          * @see textureName()
          */
-        virtual Int textureForName(const std::string& name);
+        Int textureForName(const std::string& name);
 
         /**
          * @brief %Texture name
@@ -372,7 +377,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          *
          * @see textureForName()
          */
-        virtual std::string textureName(UnsignedInt id);
+        std::string textureName(UnsignedInt id);
 
         /**
          * @brief %Texture
@@ -381,10 +386,10 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * Returns given texture or `nullptr` if importing failed. Deleting the
          * data is user responsibility.
          */
-        virtual TextureData* texture(UnsignedInt id);
+        TextureData* texture(UnsignedInt id);
 
         /** @brief One-dimensional image count */
-        virtual UnsignedInt image1DCount() const { return 0; }
+        UnsignedInt image1DCount() const;
 
         /**
          * @brief One-dimensional image ID for given name
@@ -392,7 +397,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * If no image for given name exists, returns `-1`.
          * @see image1Dname()
          */
-        virtual Int image1DForName(const std::string& name);
+        Int image1DForName(const std::string& name);
 
         /**
          * @brief One-dimensional image name
@@ -400,7 +405,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          *
          * @see image1DForName()
          */
-        virtual std::string image1DName(UnsignedInt id);
+        std::string image1DName(UnsignedInt id);
 
         /**
          * @brief One-dimensional image
@@ -409,10 +414,10 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * Returns given image or `nullptr` if importing failed. Deleting the
          * data is user responsibility.
          */
-        virtual ImageData1D* image1D(UnsignedInt id);
+        ImageData1D* image1D(UnsignedInt id);
 
         /** @brief Two-dimensional image count */
-        virtual UnsignedInt image2DCount() const { return 0; }
+        UnsignedInt image2DCount() const;
 
         /**
          * @brief Two-dimensional image ID for given name
@@ -420,7 +425,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * If no image for given name exists, returns `-1`.
          * @see image2DName()
          */
-        virtual Int image2DForName(const std::string& name);
+        Int image2DForName(const std::string& name);
 
         /**
          * @brief Two-dimensional image name
@@ -428,7 +433,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          *
          * @see image2DForName()
          */
-        virtual std::string image2DName(UnsignedInt id);
+        std::string image2DName(UnsignedInt id);
 
         /**
          * @brief Two-dimensional image
@@ -437,10 +442,10 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * Returns given image or `nullptr` if importing failed. Deleting the
          * data is user responsibility.
          */
-        virtual ImageData2D* image2D(UnsignedInt id);
+        ImageData2D* image2D(UnsignedInt id);
 
         /** @brief Three-dimensional image count */
-        virtual UnsignedInt image3DCount() const { return 0; }
+        UnsignedInt image3DCount() const;
 
         /**
          * @brief Three-dimensional image ID for given name
@@ -448,7 +453,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * If no image for given name exists, returns `-1`.
          * @see image3DName()
          */
-        virtual Int image3DForName(const std::string& name);
+        Int image3DForName(const std::string& name);
 
         /**
          * @brief Three-dimensional image name
@@ -456,7 +461,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          *
          * @see image3DForName()
          */
-        virtual std::string image3DName(UnsignedInt id);
+        std::string image3DName(UnsignedInt id);
 
         /**
          * @brief Three-dimensional image
@@ -465,9 +470,182 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * Returns given image or `nullptr` if importing failed. Deleting the
          * data is user responsibility.
          */
-        virtual ImageData3D* image3D(UnsignedInt id);
+        ImageData3D* image3D(UnsignedInt id);
 
         /*@}*/
+
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #else
+    protected:
+    #endif
+        /** @brief Implementation for features() */
+        virtual Features doFeatures() const = 0;
+
+        /** @brief Implementation for isOpened() */
+        virtual bool doIsOpened() const = 0;
+
+        /** @brief Implementation for openData() */
+        virtual void doOpenData(Containers::ArrayReference<const unsigned char> data);
+
+        /**
+         * @brief Implementation for openFile()
+         *
+         * If @ref Feature "Feature::OpenData" is supported, default
+         * implementation opens the file and calls doOpenData() with its
+         * contents.
+         */
+        virtual void doOpenFile(const std::string& filename);
+
+        /** @brief Implementation for close() */
+        virtual void doClose() = 0;
+
+        /** @brief Implementation for defaultScene() */
+        virtual Int doDefaultScene();
+
+        /** @brief Implementation for sceneCount() */
+        virtual UnsignedInt doSceneCount() const;
+
+        /** @brief Implementation for sceneForName() */
+        virtual Int doSceneForName(const std::string& name);
+
+        /** @brief Implementation for sceneName() */
+        virtual std::string doSceneName(UnsignedInt id);
+
+        /** @brief Implementation for scene() */
+        virtual SceneData* doScene(UnsignedInt id);
+
+        /** @brief Implementation for lightCount() */
+        virtual UnsignedInt doLightCount() const;
+
+        /** @brief Implementation for lightForName() */
+        virtual Int doLightForName(const std::string& name);
+
+        /** @brief Implementation for lightName() */
+        virtual std::string doLightName(UnsignedInt id);
+
+        /** @brief Implementation for light() */
+        virtual LightData* doLight(UnsignedInt id);
+
+        /** @brief Implementation for cameraCount() */
+        virtual UnsignedInt doCameraCount() const;
+
+        /** @brief Implementation for cameraForName() */
+        virtual Int doCameraForName(const std::string& name);
+
+        /** @brief Implementation for cameraName() */
+        virtual std::string doCameraName(UnsignedInt id);
+
+        /** @brief Implementation for camera() */
+        virtual CameraData* doCamera(UnsignedInt id);
+
+        /** @brief Implementation for object2DCount() */
+        virtual UnsignedInt doObject2DCount() const;
+
+        /** @brief Implementation for object2DForName() */
+        virtual Int doObject2DForName(const std::string& name);
+
+        /** @brief Implementation for object2DName() */
+        virtual std::string doObject2DName(UnsignedInt id);
+
+        /** @brief Implementation for object2D() */
+        virtual ObjectData2D* doObject2D(UnsignedInt id);
+
+        /** @brief Implementation for object3DCount() */
+        virtual UnsignedInt doObject3DCount() const;
+
+        /** @brief Implementation for object3DForName() */
+        virtual Int doObject3DForName(const std::string& name);
+
+        /** @brief Implementation for object3DName() */
+        virtual std::string doObject3DName(UnsignedInt id);
+
+        /** @brief Implementation for object3D() */
+        virtual ObjectData3D* doObject3D(UnsignedInt id);
+
+        /** @brief Implementation for mesh2DCount() */
+        virtual UnsignedInt doMesh2DCount() const;
+
+        /** @brief Implementation for mesh2DForName() */
+        virtual Int doMesh2DForName(const std::string& name);
+
+        /** @brief Implementation for mesh2DName() */
+        virtual std::string doMesh2DName(UnsignedInt id);
+
+        /** @brief Implementation for mesh2D() */
+        virtual MeshData2D* doMesh2D(UnsignedInt id);
+
+        /** @brief Implementation for mesh3DCount() */
+        virtual UnsignedInt doMesh3DCount() const;
+
+        /** @brief Implementation for mesh3DForName() */
+        virtual Int doMesh3DForName(const std::string& name);
+
+        /** @brief Implementation for mesh3DName() */
+        virtual std::string doMesh3DName(UnsignedInt id);
+
+        /** @brief Implementation for mesh3D() */
+        virtual MeshData3D* doMesh3D(UnsignedInt id);
+
+        /** @brief Implementation for materialCount() */
+        virtual UnsignedInt doMaterialCount() const;
+
+        /** @brief Implementation for materialForName() */
+        virtual Int doMaterialForName(const std::string& name);
+
+        /** @brief Implementation for materialName() */
+        virtual std::string doMaterialName(UnsignedInt id);
+
+        /** @brief Implementation for material() */
+        virtual AbstractMaterialData* doMaterial(UnsignedInt id);
+
+        /** @brief Implementation for textureCount() */
+        virtual UnsignedInt doTextureCount() const;
+
+        /** @brief Implementation for textureForName() */
+        virtual Int doTextureForName(const std::string& name);
+
+        /** @brief Implementation for textureName() */
+        virtual std::string doTextureName(UnsignedInt id);
+
+        /** @brief Implementation for texture() */
+        virtual TextureData* doTexture(UnsignedInt id);
+
+        /** @brief Implementation for image1DCount() */
+        virtual UnsignedInt doImage1DCount() const;
+
+        /** @brief Implementation for image1DForName() */
+        virtual Int doImage1DForName(const std::string& name);
+
+        /** @brief Implementation for image1DName() */
+        virtual std::string doImage1DName(UnsignedInt id);
+
+        /** @brief Implementation for image1D() */
+        virtual ImageData1D* doImage1D(UnsignedInt id);
+
+        /** @brief Implementation for image2DCount() */
+        virtual UnsignedInt doImage2DCount() const;
+
+        /** @brief Implementation for image2DForName() */
+        virtual Int doImage2DForName(const std::string& name);
+
+        /** @brief Implementation for image2DName() */
+        virtual std::string doImage2DName(UnsignedInt id);
+
+        /** @brief Implementation for image2D() */
+        virtual ImageData2D* doImage2D(UnsignedInt id);
+
+        /** @brief Implementation for image3DCount() */
+        virtual UnsignedInt doImage3DCount() const;
+
+        /** @brief Implementation for image3DForName() */
+        virtual Int doImage3DForName(const std::string& name);
+
+        /** @brief Implementation for image3DName() */
+        virtual std::string doImage3DName(UnsignedInt id);
+
+        /** @brief Implementation for image3D() */
+        virtual ImageData3D* doImage3D(UnsignedInt id);
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractImporter::Features)
