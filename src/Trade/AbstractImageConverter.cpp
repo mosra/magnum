@@ -24,6 +24,7 @@
 
 #include "AbstractImageConverter.h"
 
+#include <fstream>
 #include <Containers/Array.h>
 #include <Utility/Assert.h>
 
@@ -33,25 +34,48 @@ AbstractImageConverter::AbstractImageConverter() = default;
 
 AbstractImageConverter::AbstractImageConverter(PluginManager::AbstractManager* manager, std::string plugin): AbstractPlugin(manager, std::move(plugin)) {}
 
-Image2D* AbstractImageConverter::convertToImage(const Image2D* const) const {
-    CORRADE_ASSERT(features() & Feature::ConvertToImage,
-        "Trade::AbstractImageConverter::convertToImage(): feature advertised but not implemented", nullptr);
+Image2D* AbstractImageConverter::exportToImage(const Image2D* const image) const {
+    CORRADE_ASSERT(features() & Feature::ConvertImage,
+        "Trade::AbstractImageConverter::exportToImage(): feature not supported", nullptr);
 
-    CORRADE_ASSERT(false, "Trade::AbstractImageConverter::convertToImage(): feature not implemented", nullptr);
+    return doExportToImage(image);
 }
 
-Containers::Array<unsigned char> AbstractImageConverter::convertToData(const Image2D* const) const {
-    CORRADE_ASSERT(features() & Feature::ConvertToData,
-        "Trade::AbstractImageConverter::convertToData(): feature advertised but not implemented", {});
-
-    CORRADE_ASSERT(false, "Trade::AbstractImageConverter::convertToData(): feature not implemented", {});
+Image2D* AbstractImageConverter::doExportToImage(const Image2D*) const {
+    CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToImage(): feature advertised but not implemented", nullptr);
 }
 
-bool AbstractImageConverter::convertToFile(const Image2D* const, const std::string&) const {
-    CORRADE_ASSERT(features() & Feature::ConvertToFile,
-        "Trade::AbstractImageConverter::convertToFile(): feature advertised but not implemented", false);
+Containers::Array<unsigned char> AbstractImageConverter::exportToData(const Image2D* const image) const {
+    CORRADE_ASSERT(features() & Feature::ConvertData,
+        "Trade::AbstractImageConverter::exportToData(): feature not supported", nullptr);
 
-    CORRADE_ASSERT(false, "Trade::AbstractImageConverter::convertToFile(): feature not implemented", false);
+    return doExportToData(image);
+}
+
+Containers::Array<unsigned char> AbstractImageConverter::doExportToData(const Image2D*) const {
+    CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToData(): feature advertised but not implemented", nullptr);
+}
+
+bool AbstractImageConverter::exportToFile(const Image2D* const image, const std::string& filename) const {
+    return doExportToFile(image, filename);
+}
+
+bool AbstractImageConverter::doExportToFile(const Image2D* const image, const std::string& filename) const {
+    CORRADE_ASSERT(features() & Feature::ConvertData, "Trade::AbstractImageConverter::exportToFile(): not implemented", nullptr);
+
+    auto data = doExportToData(image);
+    if(!data) return false;
+
+    /* Open file */
+    std::ofstream out(filename.data(), std::ios::binary);
+    if(!out.good()) {
+        Error() << "Trade::AbstractImageConverter::exportToFile(): cannot write to file" << filename;
+        return false;
+    }
+
+    /* Write data, close */
+    out.write(reinterpret_cast<const char*>(data.begin()), data.size());
+    return true;
 }
 
 }}

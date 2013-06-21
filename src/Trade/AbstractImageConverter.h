@@ -44,12 +44,19 @@ or compressing them.
 
 @section AbstractImageConverter-subclassing Subclassing
 
-Plugin implements function features() and one or more of convertToImage(),
-convertToData() or convertToFile() functions based on what features are
+Plugin implements function doFeatures() and one or more of doExportToImage(),
+doExportToData() or doExportToFile() functions based on what features are
 supported.
+
+You don't need to do most of the redundant sanity checks, these things are
+checked by the implementation:
+
+-   Functions doExportToImage() or doExportToData() are called only if
+    @ref Feature "Feature::ConvertImage" or @ref Feature "Feature::ConvertData"
+    is supported.
 */
 class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin {
-    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImageConverter/0.1")
+    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImageConverter/0.2")
 
     public:
         /**
@@ -58,14 +65,11 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
          * @see Features, features()
          */
         enum class Feature: UnsignedByte {
-            /** Converting to image with different format with convertToImage() */
-            ConvertToImage = 1 << 0,
+            /** Conversion to image with different format with exportToImage() */
+            ConvertImage = 1 << 0,
 
-            /** Converting to data with convertToData() */
-            ConvertToData = 1 << 1,
-
-            /** Converting to file with convertToFile() */
-            ConvertToFile = 1 << 2
+            /** Exporting to raw data with exportToData() */
+            ConvertData = 1 << 1
         };
 
         /**
@@ -82,34 +86,56 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
         explicit AbstractImageConverter(PluginManager::AbstractManager* manager, std::string plugin);
 
         /** @brief Features supported by this converter */
-        virtual Features features() const = 0;
+        Features features() const { return doFeatures(); }
 
         /**
          * @brief Convert image to different format
          *
-         * Available only if @ref Feature "Feature::ConvertToImage" is supported.
+         * Available only if @ref Feature "Feature::ConvertImage" is supported.
          * Returns converted image on success, `nullptr` otherwise.
-         * @see features(), convertToData(), convertToFile()
+         * @see features(), exportToData(), exportToFile()
          */
-        virtual Image2D* convertToImage(const Image2D* image) const;
+        Image2D* exportToImage(const Image2D* image) const;
 
         /**
-         * @brief Convert image to raw data
+         * @brief Export image to raw data
          *
-         * Available only if @ref Feature "Feature::ConvertToData" is supported.
-         * Returns data pointer and size on success, `nullptr` otherwise.
-         * @see features(), convertToImage(), convertToFile()
+         * Available only if @ref Feature "Feature::ConvertData" is supported.
+         * Returns data on success, zero-sized array otherwise.
+         * @see features(), exportToImage(), exportToFile()
          */
-        virtual Containers::Array<unsigned char> convertToData(const Image2D* image) const;
+        Containers::Array<unsigned char> exportToData(const Image2D* image) const;
 
         /**
-         * @brief Convert image and save it to file
+         * @brief Export image to file
          *
-         * Available only if @ref Feature "Feature::ConvertToFile" is supported.
          * Returns `true` on success, `false` otherwise.
-         * @see features(), convertToImage(), convertToData()
+         * @see features(), exportToImage(), exportToData()
          */
-        virtual bool convertToFile(const Image2D* image, const std::string& filename) const;
+        bool exportToFile(const Image2D* image, const std::string& filename) const;
+
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #else
+    protected:
+    #endif
+        /** @brief Implementation of features() */
+        virtual Features doFeatures() const = 0;
+
+        /** @brief Implementation of exportToImage() */
+        virtual Image2D* doExportToImage(const Image2D* image) const;
+
+        /** @brief Implementation of exportToData() */
+        virtual Containers::Array<unsigned char> doExportToData(const Image2D* image) const;
+
+        /**
+         * @brief Implementation of exportToFile()
+         *
+         * If @ref Feature "Feature::ConvertData" is supported, default
+         * implementation calls doExportToData() and saves the result to given
+         * file.
+         */
+        virtual bool doExportToFile(const Image2D* image, const std::string& filename) const;
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractImageConverter::Features)

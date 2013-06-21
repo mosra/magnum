@@ -27,6 +27,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/testConfigure.h.cmake
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
+corrade_add_test(TradeAbstractImageConverterTest AbstractImageConverterTest.cpp LIBRARIES Magnum)
 corrade_add_test(TradeAbstractImporterTest AbstractImporterTest.cpp LIBRARIES Magnum)
 corrade_add_test(TradeObjectData2DTest ObjectData2DTest.cpp LIBRARIES Magnum)
 corrade_add_test(TradeObjectData3DTest ObjectData3DTest.cpp LIBRARIES Magnum)
