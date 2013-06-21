@@ -22,30 +22,9 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-set(MagnumText_SRCS
-    AbstractFont.cpp
-    DistanceFieldGlyphCache.cpp
-    GlyphCache.cpp
-    TextRenderer.cpp)
-set(MagnumText_HEADERS
-    AbstractFont.h
-    DistanceFieldGlyphCache.h
-    GlyphCache.h
-    Text.h
-    TextRenderer.h
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/testConfigure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/testConfigure.h)
 
-    magnumTextVisibility.h)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-add_library(MagnumText ${SHARED_OR_STATIC} ${MagnumText_SRCS})
-if(BUILD_STATIC_PIC)
-    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
-    set_target_properties(MagnumText PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
-endif()
-target_link_libraries(MagnumText Magnum MagnumTextureTools)
-
-install(TARGETS MagnumText DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-install(FILES ${MagnumText_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Text)
-
-if(BUILD_TESTS)
-    add_subdirectory(Test)
-endif()
+corrade_add_test(TextAbstractFontTest AbstractFontTest.cpp LIBRARIES Magnum MagnumText)

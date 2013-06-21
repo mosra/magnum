@@ -22,13 +22,107 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Text/AbstractFont.h"
+#include "AbstractFont.h"
+
+#include <fstream>
+#include <Containers/Array.h>
+#include <Utility/Unicode.h>
 
 namespace Magnum { namespace Text {
 
 AbstractFont::AbstractFont(): _size(0.0f) {}
 
 AbstractFont::AbstractFont(PluginManager::AbstractManager* manager, std::string plugin): AbstractPlugin(manager, std::move(plugin)), _size(0.0f) {}
+
+bool AbstractFont::openData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, const Float size) {
+    CORRADE_ASSERT(features() & Feature::OpenData,
+        "Text::AbstractFont::openData(): feature not supported", false);
+    CORRADE_ASSERT(!data.empty(),
+        "Text::AbstractFont::openData(): no data passed", false);
+
+    close();
+    doOpenData(data, size);
+    return isOpened();
+}
+
+void AbstractFont::doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, const Float size) {
+    CORRADE_ASSERT(!(features() & Feature::MultiFile),
+        "Text::AbstractFont::openData(): feature advertised but not implemented", );
+    CORRADE_ASSERT(data.size() == 1,
+        "Text::AbstractFont::openData(): expected just one file for single-file format", );
+
+    close();
+    doOpenSingleData(data[0].second, size);
+}
+
+bool AbstractFont::openSingleData(const Containers::ArrayReference<const unsigned char> data, const Float size) {
+    CORRADE_ASSERT(features() & Feature::OpenData,
+        "Text::AbstractFont::openSingleData(): feature not supported", false);
+    CORRADE_ASSERT(!(features() & Feature::MultiFile),
+        "Text::AbstractFont::openSingleData(): the format is not single-file", false);
+
+    close();
+    doOpenSingleData(data, size);
+    return isOpened();
+}
+
+void AbstractFont::doOpenSingleData(Containers::ArrayReference<const unsigned char>, Float) {
+    CORRADE_ASSERT(false, "Text::AbstractFont::openSingleData(): feature advertised but not implemented", );
+}
+
+bool AbstractFont::openFile(const std::string& filename, const Float size) {
+    close();
+    doOpenFile(filename, size);
+    return isOpened();
+}
+
+void AbstractFont::doOpenFile(const std::string& filename, const Float size) {
+    CORRADE_ASSERT(features() & Feature::OpenData && !(features() & Feature::MultiFile),
+        "Text::AbstractFont::openFile(): not implemented", );
+
+    /* Open file */
+    std::ifstream in(filename.data(), std::ios::binary);
+    if(!in.good()) {
+        Error() << "Trade::AbstractFont::openFile(): cannot open file" << filename;
+        return;
+    }
+
+    /* Create array to hold file contents */
+    in.seekg(0, std::ios::end);
+    Containers::Array<unsigned char> data(in.tellg());
+
+    /* Read data, close */
+    in.seekg(0, std::ios::beg);
+    in.read(reinterpret_cast<char*>(data.begin()), data.size());
+    in.close();
+
+    doOpenSingleData(data, size);
+}
+
+void AbstractFont::close() {
+    if(isOpened()) doClose();
+}
+
+void AbstractFont::createGlyphCache(GlyphCache* const cache, const std::string& characters) {
+    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::createGlyphCache(): no font opened", );
+
+    /* Get glyph codes from characters */
+    std::u32string unicodeCharacters;
+    unicodeCharacters.reserve(characters.size()+1);
+    for(std::size_t i = 0; i != characters.size(); ) {
+        char32_t unicode;
+        std::tie(unicode, i) = Utility::Unicode::nextChar(characters, i);
+        unicodeCharacters.push_back(unicode);
+    }
+
+    doCreateGlyphCache(cache, unicodeCharacters);
+}
+
+AbstractLayouter* AbstractFont::layout(const GlyphCache* const cache, const Float size, const std::string& text) {
+    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::layout(): no font opened", nullptr);
+
+    return doLayout(cache, size, text);
+}
 
 AbstractLayouter::AbstractLayouter(): _glyphCount(0) {}
 
