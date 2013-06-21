@@ -28,3 +28,4 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/testConfigure.h.cmake
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 corrade_add_test(TextAbstractFontTest AbstractFontTest.cpp LIBRARIES Magnum MagnumText)
+corrade_add_test(TextAbstractFontConverterTest AbstractFontConverterTest.cpp LIBRARIES Magnum MagnumText)

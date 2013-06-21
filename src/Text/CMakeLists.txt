@@ -24,11 +24,13 @@
 
 set(MagnumText_SRCS
     AbstractFont.cpp
+    AbstractFontConverter.cpp
     DistanceFieldGlyphCache.cpp
     GlyphCache.cpp
     TextRenderer.cpp)
 set(MagnumText_HEADERS
     AbstractFont.h
+    AbstractFontConverter.h
     DistanceFieldGlyphCache.h
     GlyphCache.h
     Text.h
