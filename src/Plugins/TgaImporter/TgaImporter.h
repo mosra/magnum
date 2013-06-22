@@ -28,21 +28,15 @@
  * @brief Class Magnum::Trade::TgaImporter::TgaImporter
  */
 
+#include <Utility/Visibility.h>
 #include <Trade/AbstractImporter.h>
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifdef _WIN32
-    #ifdef TgaImporter_EXPORTS
-        #define MAGNUM_TGAIMPORTER_EXPORT __declspec(dllexport)
-    #else
-        #define MAGNUM_TGAIMPORTER_EXPORT __declspec(dllimport)
-    #endif
-    #define MAGNUM_TGAIMPORTER_LOCAL
+#ifdef TgaImporter_EXPORTS
+    #define MAGNUM_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_EXPORT
 #else
-    #define MAGNUM_TGAIMPORTER_EXPORT __attribute__ ((visibility ("default")))
-    #define MAGNUM_TGAIMPORTER_LOCAL __attribute__ ((visibility ("hidden")))
+    #define MAGNUM_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_IMPORT
 #endif
-#endif
+#define MAGNUM_TGAIMPORTER_LOCAL CORRADE_VISIBILITY_LOCAL
 
 namespace Magnum { namespace Trade { namespace TgaImporter {
 
