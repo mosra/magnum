@@ -28,7 +28,7 @@
  * @brief Forward declarations for Magnum namespace
  */
 
-#include <corradeConfigure.h>
+#include <Utility/Utility.h>
 
 #include "Math/Math.h"
 #include "Types.h"
@@ -37,14 +37,6 @@
 #ifndef DOXYGEN_GENERATING_OUTPUT
 typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
 #endif
-
-namespace Corrade {
-    namespace Utility {
-        class Debug;
-        class Warning;
-        class Error;
-    }
-}
 
 namespace Magnum {
 
