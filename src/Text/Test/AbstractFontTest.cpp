@@ -38,15 +38,11 @@ class AbstractFontTest: public TestSuite::Tester {
 
         void openSingleData();
         void openFile();
-
-        void createGlyphCache();
 };
 
 AbstractFontTest::AbstractFontTest() {
     addTests({&AbstractFontTest::openSingleData,
-              &AbstractFontTest::openFile,
-
-              &AbstractFontTest::createGlyphCache});
+              &AbstractFontTest::openFile});
 }
 
 namespace {
@@ -87,30 +83,6 @@ void AbstractFontTest::openFile() {
     CORRADE_VERIFY(!font.isOpened());
     font.openFile(Utility::Directory::join(TEXT_TEST_DIR, "data.bin"), 3.0f);
     CORRADE_VERIFY(font.isOpened());
-}
-
-void AbstractFontTest::createGlyphCache() {
-    class CachingFont: public Text::AbstractFont {
-        public:
-            std::u32string cacheCharacters;
-
-        private:
-            Features doFeatures() const override { return {}; }
-            bool doIsOpened() const override { return true; }
-            void doClose() override {}
-
-            void doCreateGlyphCache(GlyphCache*, const std::u32string& characters) override {
-                cacheCharacters = characters;
-            }
-
-            AbstractLayouter* doLayout(const GlyphCache*, Float, const std::string&) override {
-                return nullptr;
-            }
-    };
-
-    CachingFont font;
-    font.createGlyphCache(nullptr, "žluťoučký kůň");
-    CORRADE_COMPARE(font.cacheCharacters, U"\u017Elu\u0165ou\u010Dk\u00FD k\u016F\u0148");
 }
 
 }}}

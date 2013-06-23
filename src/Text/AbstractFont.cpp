@@ -106,16 +106,7 @@ void AbstractFont::close() {
 void AbstractFont::createGlyphCache(GlyphCache* const cache, const std::string& characters) {
     CORRADE_ASSERT(isOpened(), "Text::AbstractFont::createGlyphCache(): no font opened", );
 
-    /* Get glyph codes from characters */
-    std::u32string unicodeCharacters;
-    unicodeCharacters.reserve(characters.size()+1);
-    for(std::size_t i = 0; i != characters.size(); ) {
-        char32_t unicode;
-        std::tie(unicode, i) = Utility::Unicode::nextChar(characters, i);
-        unicodeCharacters.push_back(unicode);
-    }
-
-    doCreateGlyphCache(cache, unicodeCharacters);
+    doCreateGlyphCache(cache, Utility::Unicode::utf32(characters));
 }
 
 AbstractLayouter* AbstractFont::layout(const GlyphCache* const cache, const Float size, const std::string& text) {
