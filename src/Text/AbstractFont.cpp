@@ -105,6 +105,8 @@ void AbstractFont::close() {
 
 void AbstractFont::createGlyphCache(GlyphCache* const cache, const std::string& characters) {
     CORRADE_ASSERT(isOpened(), "Text::AbstractFont::createGlyphCache(): no font opened", );
+    CORRADE_ASSERT(!characters.empty() || features() & Feature::Enumerable,
+        "Text::AbstractFont::createGlyphCache(): the font is not enumerable, can't create cache from all characters", );
 
     doCreateGlyphCache(cache, Utility::Unicode::utf32(characters));
 }

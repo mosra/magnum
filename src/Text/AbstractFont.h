@@ -81,7 +81,13 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
              * The format is multi-file, thus openSingleData() convenience
              * function cannot be used.
              */
-            MultiFile = 1 << 1
+            MultiFile = 1 << 1,
+
+            /**
+             * The font is enumerable, i.e. it is possible to loop over all
+             * characters in the font.
+             */
+            Enumerable = 1 << 2
         };
 
         /** @brief Set of features supported by this importer */
@@ -146,7 +152,9 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @param cache         Glyph cache instance
          * @param characters    UTF-8 characters to render
          *
-         * Fills the cache with given characters.
+         * Fills the cache with given characters. If @ref Feature "Feature::Enumerable"
+         * is supported, @p characters can be empty and all glyphs from given
+         * font will be added to the cache.
          */
         void createGlyphCache(GlyphCache* cache, const std::string& characters);
 
