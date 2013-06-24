@@ -30,6 +30,13 @@
 
 #include <Trade/AbstractImageConverter.h>
 
+#ifdef TgaImageConverter_EXPORTS
+    #define MAGNUM_TRADE_TGAIMAGECONVERTER_EXPORT CORRADE_VISIBILITY_EXPORT
+#else
+    #define MAGNUM_TRADE_TGAIMAGECONVERTER_EXPORT CORRADE_VISIBILITY_IMPORT
+#endif
+#define MAGNUM_TRADE_TGAIMAGECONVERTER_LOCAL CORRADE_VISIBILITY_LOCAL
+
 namespace Magnum { namespace Trade { namespace TgaImageConverter {
 
 /**
@@ -39,7 +46,7 @@ Supports images with format @ref ImageFormat "ImageFormat::BGR",
 @ref ImageFormat "ImageFormat::BGRA" or @ref ImageFormat "ImageFormat::Red" and
 type @ref ImageType "ImageType::UnsignedByte".
 */
-class TgaImageConverter: public AbstractImageConverter {
+class MAGNUM_TRADE_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageConverter {
     public:
         /** @brief Default constructor */
         explicit TgaImageConverter();
@@ -48,8 +55,8 @@ class TgaImageConverter: public AbstractImageConverter {
         explicit TgaImageConverter(PluginManager::AbstractManager* manager, std::string plugin);
 
     private:
-        Features doFeatures() const override;
-        Containers::Array<unsigned char> doExportToData(const Image2D* const image) const override;
+        Features MAGNUM_TRADE_TGAIMAGECONVERTER_LOCAL doFeatures() const override;
+        Containers::Array<unsigned char> MAGNUM_TRADE_TGAIMAGECONVERTER_LOCAL doExportToData(const Image2D* const image) const override;
 };
 
 }}}
