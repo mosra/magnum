@@ -105,6 +105,16 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
             return it == glyphs.end() ? glyphs.at(0) : it->second;
         }
 
+        /** @brief Iterator access to cache data */
+        std::unordered_map<UnsignedInt, std::pair<Vector2i, Rectanglei>>::const_iterator begin() const {
+            return glyphs.begin();
+        }
+
+        /** @brief Iterator access to cache data */
+        std::unordered_map<UnsignedInt, std::pair<Vector2i, Rectanglei>>::const_iterator end() const {
+            return glyphs.end();
+        }
+
         /**
          * @brief Layout glyphs with given sizes to the cache
          *
