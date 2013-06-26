@@ -103,6 +103,18 @@ void AbstractFont::close() {
     if(isOpened()) doClose();
 }
 
+UnsignedInt AbstractFont::glyphId(const char32_t character) {
+    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::glyphId(): no font opened", 0);
+
+    return doGlyphId(character);
+}
+
+Vector2 AbstractFont::glyphAdvance(const UnsignedInt glyph) {
+    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::glyphAdvance(): no font opened", {});
+
+    return doGlyphAdvance(glyph);
+}
+
 void AbstractFont::createGlyphCache(GlyphCache* const cache, const std::string& characters) {
     CORRADE_ASSERT(isOpened(), "Text::AbstractFont::createGlyphCache(): no font opened", );
     CORRADE_ASSERT(!characters.empty() || features() & Feature::Enumerable,

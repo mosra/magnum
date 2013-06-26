@@ -148,6 +148,24 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         Float size() const { return _size; }
 
         /**
+         * @brief Glyph ID for given character
+         *
+         * @note This function is not meant to be used in performance-critical
+         *      code, only for font observations and conversions.
+         */
+        UnsignedInt glyphId(char32_t character);
+
+        /**
+         * @brief Glyph advance
+         * @param glyph     Glyph ID
+         *
+         * @note This function is not meant to be used in performance-critical
+         *      code, only for font observations and conversions.
+         * @see glyphId()
+         */
+        Vector2 glyphAdvance(UnsignedInt glyph);
+
+        /**
          * @brief Create glyph cache for given character set
          * @param cache         Glyph cache instance
          * @param characters    UTF-8 characters to render
@@ -209,6 +227,12 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
 
         /** @brief Implementation for close() */
         virtual void doClose() = 0;
+
+        /** @brief Implementation for glyphId() */
+        virtual UnsignedInt doGlyphId(char32_t character) = 0;
+
+        /** @brief Implementation for glyphAdvance() */
+        virtual Vector2 doGlyphAdvance(UnsignedInt glyph) = 0;
 
         /**
          * @brief Implementation for createGlyphCache()

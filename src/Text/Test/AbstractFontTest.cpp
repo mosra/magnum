@@ -59,6 +59,10 @@ class SingleDataFont: public Text::AbstractFont {
 
         void doCreateGlyphCache(GlyphCache*, const std::u32string&) override {}
 
+        UnsignedInt doGlyphId(char32_t) override { return 0; }
+
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+
         AbstractLayouter* doLayout(const GlyphCache*, Float, const std::string&) {
             return nullptr;
         }
