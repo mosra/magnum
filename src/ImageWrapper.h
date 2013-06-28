@@ -52,6 +52,7 @@ Interchangeable with Image, BufferImage or Trade::ImageData.
 template<UnsignedInt dimensions> class ImageWrapper: public AbstractImage {
     public:
         const static UnsignedInt Dimensions = dimensions; /**< @brief %Image dimension count */
+
         /**
          * @brief Constructor
          * @param size              %Image size
@@ -62,7 +63,7 @@ template<UnsignedInt dimensions> class ImageWrapper: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        explicit ImageWrapper(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ImageFormat format, ImageType type, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
+        constexpr explicit ImageWrapper(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ImageFormat format, ImageType type, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
 
         /**
          * @brief Constructor
@@ -73,14 +74,14 @@ template<UnsignedInt dimensions> class ImageWrapper: public AbstractImage {
          * Data pointer is set to zero, call setData() to fill the image with
          * data.
          */
-        explicit ImageWrapper(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ImageFormat format, ImageType type): AbstractImage(format, type), _size(size), _data(nullptr) {}
+        constexpr explicit ImageWrapper(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ImageFormat format, ImageType type): AbstractImage(format, type), _size(size), _data(nullptr) {}
 
         /** @brief %Image size */
-        typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
+        constexpr typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
         /** @brief Pointer to raw data */
         unsigned char* data() { return _data; }
-        const unsigned char* data() const { return _data; } /**< @overload */
+        constexpr const unsigned char* data() const { return _data; } /**< @overload */
 
         /**
          * @brief Set image data

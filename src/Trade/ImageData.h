@@ -57,6 +57,18 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
          */
         explicit ImageData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ImageFormat format, ImageType type, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
 
+        /** @brief Copying is not allowed */
+        ImageData(const ImageData<dimensions>&& other) = delete;
+
+        /** @brief Move constructor */
+        ImageData(ImageData<dimensions>&& other) noexcept;
+
+        /** @brief Copying is not allowed */
+        ImageData<dimensions>& operator=(const ImageData<dimensions>&& other) = delete;
+
+        /** @brief Move assignment */
+        ImageData<dimensions>& operator=(ImageData<dimensions>&& other) noexcept;
+
         /** @brief Destructor */
         ~ImageData() { delete[] _data; }
 
@@ -80,6 +92,18 @@ typedef ImageData<2> ImageData2D;
 
 /** @brief Three-dimensional image */
 typedef ImageData<3> ImageData3D;
+
+template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(ImageData<dimensions>&& other) noexcept: AbstractImage(std::move(other)), _size(std::move(other._size)), _data(std::move(other._data)) {
+    other._size = {};
+    other._data = nullptr;
+}
+
+template<UnsignedInt dimensions> inline ImageData<dimensions>& ImageData<dimensions>::operator=(ImageData<dimensions>&& other) noexcept {
+    AbstractImage::operator=(std::move(other));
+    std::swap(_size, other._size);
+    std::swap(_data, other._data);
+    return *this;
+}
 
 }}
 

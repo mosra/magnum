@@ -46,11 +46,6 @@ functions operating with images). It also possibly needs to be "stackable" to
 easily revert the state back.
 */
 class MAGNUM_EXPORT AbstractImage {
-    AbstractImage(const AbstractImage&) = delete;
-    AbstractImage(AbstractImage&&) = delete;
-    AbstractImage& operator=(const AbstractImage&) = delete;
-    AbstractImage& operator=(AbstractImage&&) = delete;
-
     public:
         /**
          * @brief Pixel size (in bytes)
@@ -66,16 +61,13 @@ class MAGNUM_EXPORT AbstractImage {
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
          */
-        explicit AbstractImage(ImageFormat format, ImageType type): _format(format), _type(type) {}
-
-        /** @brief Destructor */
-        virtual ~AbstractImage() = 0;
+        constexpr explicit AbstractImage(ImageFormat format, ImageType type): _format(format), _type(type) {}
 
         /** @brief Format of pixel data */
-        ImageFormat format() const { return _format; }
+        constexpr ImageFormat format() const { return _format; }
 
         /** @brief Data type of pixel data */
-        ImageType type() const { return _type; }
+        constexpr ImageType type() const { return _type; }
 
         /**
          * @brief Pixel size (in bytes)
@@ -83,6 +75,9 @@ class MAGNUM_EXPORT AbstractImage {
          * Convenience member alternative for pixelSize(Format, Type).
          */
         std::size_t pixelSize() const { return pixelSize(_format, _type); }
+
+    protected:
+        ~AbstractImage() = default;
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:

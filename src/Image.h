@@ -67,6 +67,18 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          */
         explicit Image(ImageFormat format, ImageType type): AbstractImage(format, type), _data(nullptr) {}
 
+        /** @brief Copying is not allowed */
+        Image(const Image<dimensions>&& other) = delete;
+
+        /** @brief Move constructor */
+        Image(Image<dimensions>&& other) noexcept;
+
+        /** @brief Copying is not allowed */
+        Image<dimensions>& operator=(const Image<dimensions>&& other) = delete;
+
+        /** @brief Move assignment */
+        Image<dimensions>& operator=(Image<dimensions>&& other) noexcept;
+
         /** @brief Destructor */
         ~Image() { delete[] _data; }
 
@@ -102,6 +114,18 @@ typedef Image<2> Image2D;
 
 /** @brief Three-dimensional image */
 typedef Image<3> Image3D;
+
+template<UnsignedInt dimensions> inline Image<dimensions>::Image(Image<dimensions>&& other) noexcept: AbstractImage(std::move(other)), _size(std::move(other._size)), _data(std::move(other._data)) {
+    other._size = {};
+    other._data = nullptr;
+}
+
+template<UnsignedInt dimensions> inline Image<dimensions>& Image<dimensions>::operator=(Image<dimensions>&& other) noexcept {
+    AbstractImage::operator=(std::move(other));
+    std::swap(_size, other._size);
+    std::swap(_data, other._data);
+    return *this;
+}
 
 }
 
