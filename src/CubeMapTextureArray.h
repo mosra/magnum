@@ -165,7 +165,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @brief Set image data
          * @param level             Mip level
          * @param internalFormat    Internal format
-         * @param image             Image, ImageWrapper, BufferImage or
+         * @param image             Image, ImageReference, BufferImage or
          *      Trade::ImageData of the same dimension count
          * @return Pointer to self (for method chaining)
          *
@@ -184,7 +184,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @brief Set texture image 3D subdata
          * @param level         Mip level
          * @param offset        Offset where to put data in the texture
-         * @param image         Image3D, ImageWrapper3D, BufferImage3D or
+         * @param image         Image3D, ImageReference3D, BufferImage3D or
          *      Trade::ImageData3D
          * @return Pointer to self (for method chaining)
          *
@@ -210,7 +210,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @param coordinate    Coordinate
          * @param level         Mip level
          * @param offset        Offset where to put data in the texture
-         * @param image         Image2D, ImageWrapper2D, BufferImage2D or
+         * @param image         Image2D, ImageReference2D, BufferImage2D or
          *      Trade::ImageData2D
          * @return Pointer to self (for method chaining)
          *

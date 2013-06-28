@@ -38,7 +38,7 @@ namespace Magnum {
 /**
 @brief Non-templated base for one-, two- or three-dimensional images
 
-See Image, ImageWrapper, BufferImage, Trade::ImageData documentation for
+See Image, ImageReference, BufferImage, Trade::ImageData documentation for
 more information.
 @todo Where to put glClampColor() and glPixelStore() encapsulation? It is
 needed in AbstractFramebuffer::read(), Texture::setImage() etc (i.e. all

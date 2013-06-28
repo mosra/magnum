@@ -113,7 +113,7 @@ set(Magnum_HEADERS
     Framebuffer.h
     Image.h
     ImageFormat.h
-    ImageWrapper.h
+    ImageReference.h
     Magnum.h
     Mesh.h
     OpenGL.h

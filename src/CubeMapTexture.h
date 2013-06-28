@@ -165,7 +165,7 @@ class CubeMapTexture: public AbstractTexture {
          * @param coordinate        Coordinate
          * @param level             Mip level
          * @param internalFormat    Internal format
-         * @param image             Image, ImageWrapper, BufferImage or
+         * @param image             Image, ImageReference, BufferImage or
          *      Trade::ImageData of the same dimension count
          * @return Pointer to self (for method chaining)
          *
@@ -181,7 +181,7 @@ class CubeMapTexture: public AbstractTexture {
          * @param coordinate        Coordinate
          * @param level             Mip level
          * @param offset            Offset where to put data in the texture
-         * @param image             Image, ImageWrapper, BufferImage or
+         * @param image             Image, ImageReference, BufferImage or
          *      Trade::ImageData of the same or one less dimension count
          * @return Pointer to self (for method chaining)
          *

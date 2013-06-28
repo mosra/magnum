@@ -38,7 +38,7 @@ namespace Magnum { namespace Trade {
 @brief %Image data
 
 Access to image data provided by AbstractImporter subclasses. Interchangeable
-with Image, ImageWrapper or BufferImage.
+with Image, ImageReference or BufferImage.
 @see ImageData1D, ImageData2D, ImageData3D
 */
 template<UnsignedInt dimensions> class ImageData: public AbstractImage {

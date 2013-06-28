@@ -40,7 +40,7 @@ namespace Magnum {
 Note that some formats can be used only for framebuffer reading (using
 AbstractFramebuffer::read()) and some only for texture data (using Texture::setImage()
 and others).
-@see Image, ImageWrapper, BufferImage, Trade::ImageData
+@see Image, ImageReference, BufferImage, Trade::ImageData
 */
 enum class ImageFormat: GLenum {
     /**
@@ -254,7 +254,7 @@ enum class ImageFormat: GLenum {
 Note that some formats can be used only for framebuffer reading (using
 AbstractFramebuffer::read()) and some only for texture data (using Texture::setImage()
 and others).
-@see Image, ImageWrapper, BufferImage, Trade::ImageData
+@see Image, ImageReference, BufferImage, Trade::ImageData
  */
 enum class ImageType: GLenum {
     /** Each component unsigned byte. */

@@ -378,10 +378,10 @@ typedef Image<3> Image3D;
 enum class ImageFormat: GLenum;
 enum class ImageType: GLenum;
 
-template<UnsignedInt> class ImageWrapper;
-typedef ImageWrapper<1> ImageWrapper1D;
-typedef ImageWrapper<2> ImageWrapper2D;
-typedef ImageWrapper<3> ImageWrapper3D;
+template<UnsignedInt> class ImageReference;
+typedef ImageReference<1> ImageReference1D;
+typedef ImageReference<2> ImageReference2D;
+typedef ImageReference<3> ImageReference3D;
 
 class Mesh;
 

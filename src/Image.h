@@ -37,7 +37,7 @@ namespace Magnum {
 /**
 @brief %Image
 
-Stores image data on client memory. Interchangeable with ImageWrapper,
+Stores image data on client memory. Interchangeable with ImageReference,
 BufferImage or Trade::ImageData.
 @see Image1D, Image2D, Image3D
 */

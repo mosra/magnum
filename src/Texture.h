@@ -346,7 +346,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set image data
          * @param level             Mip level
          * @param internalFormat    Internal format
-         * @param image             Image, ImageWrapper, BufferImage or
+         * @param image             Image, ImageReference, BufferImage or
          *      Trade::ImageData of the same dimension count
          * @return Pointer to self (for method chaining)
          *
@@ -373,7 +373,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set image subdata
          * @param level             Mip level
          * @param offset            Offset where to put data in the texture
-         * @param image             Image, ImageWrapper, BufferImage or
+         * @param image             Image, ImageReference, BufferImage or
          *      Trade::ImageData of the same or one less dimension count
          * @return Pointer to self (for method chaining)
          *
